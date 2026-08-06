@@ -52,7 +52,7 @@ enum class DiaryKind {
 extern bool write_level;
 
 class FloorType;
-class PlayerType;
+class CreatureEntity;
 enum class QuestId : short;
-int exe_write_diary_quest(PlayerType *player_ptr, DiaryKind dk, QuestId quest_id);
+int exe_write_diary_quest(CreatureEntity &creature, DiaryKind dk, QuestId quest_id);
 void exe_write_diary(const FloorType &floor, DiaryKind dk, int num, std::string_view note = "");

@@ -6,27 +6,38 @@
 #include "monster-floor/monster-summon.h"
 #include "monster-floor/one-monster-placer.h"
 #include "monster-floor/place-monster-types.h"
+#include "player/patron.h"
 #include "spell/summon-types.h"
+#include "system/creature-entity.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/player-type-definition.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
-int AllianceSlaanesh::calcImpressionPoint(PlayerType *creature_ptr) const
+int AllianceSlaanesh::calcImpressionPoint(const CreatureEntity &creature) const
 {
     int impression = 0;
 
     impression += calcIronmanHostilityPenalty();
     // プレイヤーの魅力と魔法力を評価（スラーネッシュは快楽と魔法を重視）
-    impression += Alliance::calcPlayerPower(*creature_ptr, 2, 30);
+    impression += Alliance::calcPlayerPower(creature, 2, 30);
 
     // 魅力による追加ボーナス
-    impression += (creature_ptr->stat_use[A_CHR] - 10) * 5;
+    impression += (creature.get_stat_use(A_CHR) - 10) * 5;
+
+    // スラーネッシュを崇拝するクリーチャーへの好意
+    if (creature.get_patron() == static_cast<int16_t>(PatronType::SLAANESH)) {
+        impression += 30;
+    }
+
+    // 宿敵コーンをパトロンとするクリーチャーへの嫌悪
+    if (creature.get_patron() == static_cast<int16_t>(PatronType::KHORNE)) {
+        impression -= 20;
+    }
 
     // 魔法使用による好感度向上（コーンとは逆）
-    // if (creature_ptr->realm1 != REALM_NONE || creature_ptr->realm2 != REALM_NONE) {
+    // if (creature.realm1 != REALM_NONE || creature.realm2 != REALM_NONE) {
     //     impression += 50;
     // }
 
@@ -55,17 +66,17 @@ bool AllianceSlaanesh::isAnnihilated()
     return false; // TODO: MonraceList::get_instance().get_monrace(MonraceId::SLAANESH_GOD).mob_num == 0;
 }
 
-void AllianceSlaanesh::panishment(PlayerType &player_ptr)
+void AllianceSlaanesh::panishment(CreatureEntity &creature)
 {
-    auto impression = calcImpressionPoint(&player_ptr);
+    auto impression = calcImpressionPoint(creature);
     if (isAnnihilated() || impression > -40) {
         return;
     }
 
     /*
     if (one_in_(20)) {
-        Pos2D m_pos(player_ptr.get_position());
-        m_pos = scatter(&player_ptr, m_pos, 12, PROJECT_NONE);
+        Pos2D m_pos(creature.get_position());
+        m_pos = scatter(*creature.get_floor(), m_pos, 12, PROJECT_NONE);
 
         // スラーネッシュの怒りレベルに応じて異なる復讐者を派遣
         MonraceId avenger_id;
@@ -83,14 +94,14 @@ void AllianceSlaanesh::panishment(PlayerType &player_ptr)
                        "\"Beautiful destruction!\" Daemonettes appear, dancing to seduce you!"));
         }
 
-        const auto m_idx = place_monster_one(&player_ptr, m_pos.y, m_pos.x, avenger_id, PM_ALLOW_GROUP | PM_SLAANESH);
+        const auto m_idx = place_monster_one(creature, m_pos.y, m_pos.x, avenger_id, PM_ALLOW_GROUP | PM_SLAANESH);
         if (m_idx) {
-            disturb(&player_ptr, true, true);
+            disturb(creature, true, true);
 
             // 追加の配下召喚（快楽と誘惑の混沌）
             for (int k = 0; k < 2 + (impression < -250 ? 3 : 0); k++) {
-                summon_specific(&player_ptr, m_pos.y, m_pos.x,
-                               std::max(player_ptr.current_floor_ptr->monster_level, 8),
+                summon_specific(&creature, m_pos.y, m_pos.x,
+                               std::max(creature.get_floor()->monster_level, 8),
                                SUMMON_ALLIANCE, PM_ALLOW_GROUP, m_idx);
             }
         }
@@ -104,14 +115,14 @@ void AllianceSlaanesh::panishment(PlayerType &player_ptr)
     */
 
     if (one_in_(25)) {
-        Pos2D m_pos(player_ptr.get_position());
-        m_pos = scatter(&player_ptr, m_pos, 10, PROJECT_NONE);
-        const auto m_idx = place_monster_one(&player_ptr, m_pos.y, m_pos.x, MonraceId::SLAANESH_CHOSEN, PM_ALLOW_GROUP);
+        Pos2D m_pos(creature.get_position());
+        m_pos = scatter(*creature.get_floor(), m_pos, 10, PROJECT_NONE);
+        const auto m_idx = place_monster_one(creature, m_pos.y, m_pos.x, MonraceId::SLAANESH_CHOSEN, PM_ALLOW_GROUP);
         if (m_idx) {
             msg_print(_("スラーネッシュの選ばれし者があなたを誘惑すべく現れた！", "Slaanesh's Chosen appears to seduce you!"));
-            disturb(&player_ptr, true, true);
+            disturb(creature, true, true);
             for (int k = 0; k < 2; k++) {
-                summon_specific(&player_ptr, m_pos.y, m_pos.x, std::max(player_ptr.current_floor_ptr->monster_level, 3), SUMMON_ALLIANCE, PM_ALLOW_GROUP, m_idx);
+                summon_specific(creature, m_pos.y, m_pos.x, std::max(creature.get_floor()->monster_level, 3), SUMMON_ALLIANCE, PM_ALLOW_GROUP, m_idx);
             }
         }
     }

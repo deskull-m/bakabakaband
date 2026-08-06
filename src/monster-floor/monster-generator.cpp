@@ -20,6 +20,7 @@
 #include "monster/smart-learn-types.h"
 #include "mspell/summon-checker.h"
 #include "spell/summon-types.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/enums/terrain/terrain-characteristics.h"
@@ -27,8 +28,6 @@
 #include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/monster-entity.h"
-#include "system/player-type-definition.h"
 #include "target/projection-path-calculator.h"
 #include "util/string-processor.h"
 #include "view/display-messages.h"
@@ -39,14 +38,14 @@
 
 /*!
  * @brief モンスター1体を目標地点に可能な限り近い位置に生成する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param monracde_id 生成モンスター種族
  * @param pos 中心生成位置座標
  * @param max_distance 生成位置の最大半径
  * @return 生成成功ならば結果生成位置座標、失敗ならばnullopt
  *
  */
-tl::optional<Pos2D> mon_scatter(PlayerType *player_ptr, MonraceId monrace_id, const Pos2D &pos, int max_distance)
+tl::optional<Pos2D> mon_scatter(CreatureEntity &creature, MonraceId monrace_id, const Pos2D &pos, int max_distance)
 {
     constexpr auto max_distance_permitted = 10;
     std::vector<Pos2D> places;
@@ -59,8 +58,8 @@ tl::optional<Pos2D> mon_scatter(PlayerType *player_ptr, MonraceId monrace_id, co
         return tl::nullopt;
     }
 
-    const auto p_pos = player_ptr->get_position();
-    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto p_pos = creature.get_position();
+    const auto &floor = *creature.get_floor();
     const auto &monraces = MonraceList::get_instance();
     auto dist = 0;
     for (auto nx = pos.x - max_distance; nx <= pos.x + max_distance; nx++) {
@@ -76,7 +75,7 @@ tl::optional<Pos2D> mon_scatter(PlayerType *player_ptr, MonraceId monrace_id, co
 
             if (MonraceList::is_valid(monrace_id)) {
                 const auto &monrace = monraces.get_monrace(monrace_id);
-                if (!monster_can_enter(player_ptr, pos_neighbor.y, pos_neighbor.x, monrace, 0)) {
+                if (!monster_can_enter(creature, pos_neighbor.y, pos_neighbor.x, monrace, 0)) {
                     continue;
                 }
             } else {
@@ -115,7 +114,7 @@ tl::optional<Pos2D> mon_scatter(PlayerType *player_ptr, MonraceId monrace_id, co
 
 /*!
  * @brief モンスターを増殖生成する / Let the given monster attempt to reproduce.
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param m_idx 増殖するモンスター情報ID
  * @param r_idx 増殖させたいモンスターID
  * @param clone クローン・モンスター処理ならばtrue
@@ -124,26 +123,26 @@ tl::optional<Pos2D> mon_scatter(PlayerType *player_ptr, MonraceId monrace_id, co
  * @details
  * Note that "reproduction" REQUIRES empty space.
  */
-tl::optional<MONSTER_IDX> multiply_monster(PlayerType *player_ptr, MONSTER_IDX m_idx, MonraceId r_idx, bool clone, BIT_FLAGS mode)
+tl::optional<MONSTER_IDX> multiply_monster(CreatureEntity &creature, MONSTER_IDX m_idx, MonraceId r_idx, bool clone, BIT_FLAGS mode)
 {
-    auto &floor = *player_ptr->current_floor_ptr;
-    auto &monster = floor.m_list[m_idx];
-    const auto pos = mon_scatter(player_ptr, monster.r_idx, monster.get_position(), 1);
+    auto &floor = *creature.get_floor();
+    auto &monster = floor.get_monster(m_idx);
+    const auto pos = mon_scatter(creature, monster.get_r_idx(), monster.get_position(), 1);
     if (!pos) {
         return tl::nullopt;
     }
 
-    if (monster.mflag2.has(MonsterConstantFlagType::NOPET)) {
+    if (monster.is_nopet()) {
         mode |= PM_NO_PET;
     }
 
-    const auto multiplied_m_idx = place_specific_monster(player_ptr, pos->y, pos->x, r_idx, (mode | PM_NO_KAGE | PM_MULTIPLY), m_idx);
+    const auto multiplied_m_idx = place_specific_monster(creature, pos->y, pos->x, r_idx, (mode | PM_NO_KAGE | PM_MULTIPLY), m_idx);
     if (!multiplied_m_idx) {
         return tl::nullopt;
     }
 
-    if (clone || monster.mflag2.has(MonsterConstantFlagType::CLONED)) {
-        floor.m_list[*multiplied_m_idx].mflag2.set({ MonsterConstantFlagType::CLONED, MonsterConstantFlagType::NOPET });
+    if (clone || monster.is_cloned()) {
+        floor.get_monster(*multiplied_m_idx).set_constant_flags({ MonsterConstantFlagType::CLONED, MonsterConstantFlagType::NOPET });
     }
 
     return multiplied_m_idx;
@@ -156,10 +155,10 @@ tl::optional<MONSTER_IDX> multiply_monster(PlayerType *player_ptr, MONSTER_IDX m
  * @param mode 生成オプション
  * @param summoner_m_idx モンスターの召喚による場合、召喚主のモンスターID
  */
-static void place_monster_group(PlayerType *player_ptr, const Pos2D &pos_center, MonraceId monrace_id, BIT_FLAGS mode, tl::optional<MONSTER_IDX> summoner_m_idx)
+static void place_monster_group(CreatureEntity &creature, const Pos2D &pos_center, MonraceId monrace_id, BIT_FLAGS mode, tl::optional<MONSTER_IDX> summoner_m_idx)
 {
     const auto &monrace = MonraceList::get_instance().get_monrace(monrace_id);
-    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto floor_level = floor.dun_level;
     auto extra = 0;
     if (monrace.level > floor_level) {
@@ -187,17 +186,17 @@ static void place_monster_group(PlayerType *player_ptr, const Pos2D &pos_center,
     const size_t total_size = total_int;
     std::vector<Pos2D> positions;
     positions.push_back(pos_center);
-    const auto p_pos = player_ptr->get_position();
+    const auto p_pos = creature.get_position();
     for (size_t n = 0; (n < positions.size()) && (positions.size() < total_size); n++) {
         for (auto i = 0; (i < 8) && (positions.size() < total_size); i++) {
             //!< @details 要素数が変わると参照がダングリング状態になるので毎回取得する必要がある.
             const auto &pos_neighbor = positions.at(n);
-            const auto pos = scatter(player_ptr, pos_neighbor, 4, PROJECT_NONE);
+            const auto pos = scatter(floor, pos_neighbor, 4, PROJECT_NONE);
             if (!floor.can_generate_monster_at(pos) || (p_pos == pos)) {
                 continue;
             }
 
-            if (place_monster_one(player_ptr, pos.y, pos.x, monrace_id, mode, summoner_m_idx)) {
+            if (place_monster_one(creature, pos.y, pos.x, monrace_id, mode, summoner_m_idx)) {
                 positions.push_back(pos);
             }
         }
@@ -205,7 +204,7 @@ static void place_monster_group(PlayerType *player_ptr, const Pos2D &pos_center,
 }
 /*!
  * @brief 特定モンスターを生成する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param src_idx 召喚主のモンスター情報ID
  * @param y 生成地点y座標
  * @param x 生成地点x座標
@@ -215,15 +214,16 @@ static void place_monster_group(PlayerType *player_ptr, const Pos2D &pos_center,
  * @return 生成に成功したらモンスターID、失敗したらtl::nullopt
  * @details 護衛も一緒に生成する
  */
-tl::optional<MONSTER_IDX> place_specific_monster(PlayerType *player_ptr, POSITION y, POSITION x, MonraceId r_idx, BIT_FLAGS mode, tl::optional<MONSTER_IDX> summoner_m_idx)
+tl::optional<MONSTER_IDX> place_specific_monster(CreatureEntity &creature, POSITION y, POSITION x, MonraceId r_idx, BIT_FLAGS mode, tl::optional<MONSTER_IDX> summoner_m_idx)
 {
     const Pos2D pos(y, x);
+    const auto &floor = *creature.get_floor();
     const auto &monrace = MonraceList::get_instance().get_monrace(r_idx);
     if (!(mode & PM_NO_KAGE) && one_in_(333)) {
         mode |= PM_KAGE;
     }
 
-    const auto m_idx = place_monster_one(player_ptr, y, x, r_idx, mode, summoner_m_idx);
+    const auto m_idx = place_monster_one(creature, y, x, r_idx, mode, summoner_m_idx);
     if (!m_idx) {
         return tl::nullopt;
     }
@@ -243,43 +243,42 @@ tl::optional<MONSTER_IDX> place_specific_monster(PlayerType *player_ptr, POSITIO
             constexpr auto scatter_max = 40;
             int d;
             for (d = scatter_min; d <= scatter_max; d++) {
-                const auto pos_neighbor = scatter(player_ptr, pos, d, PROJECT_NONE);
-                if (place_monster_one(player_ptr, pos_neighbor.y, pos_neighbor.x, reinforce.get_monrace_id(), mode | PM_HAVE_MASTER, *m_idx)) {
+                const auto pos_neighbor = scatter(floor, pos, d, PROJECT_NONE);
+                if (place_monster_one(creature, pos_neighbor.y, pos_neighbor.x, reinforce.get_monrace_id(), mode, *m_idx)) {
                     break;
                 }
             }
             if (d > scatter_max) {
-                msg_format_wizard(player_ptr, CHEAT_MONSTER, _("護衛の指定生成に失敗しました。", "Failed fixed escorts."));
+                msg_format_wizard(creature, CHEAT_MONSTER, _("護衛の指定生成に失敗しました。", "Failed fixed escorts."));
             }
         }
     }
 
     if (monrace.misc_flags.has(MonsterMiscType::HAS_FRIENDS)) {
-        place_monster_group(player_ptr, pos, r_idx, mode, summoner_m_idx);
+        place_monster_group(creature, pos, r_idx, mode, summoner_m_idx);
     }
 
     if (monrace.misc_flags.has_not(MonsterMiscType::ESCORT)) {
         return m_idx;
     }
 
-    const auto &floor = *player_ptr->current_floor_ptr;
-    const auto p_pos = player_ptr->get_position();
+    const auto p_pos = creature.get_position();
     for (auto i = 0; i < 32; i++) {
         constexpr auto d = 3;
-        const auto pos_neighbor = scatter(player_ptr, pos, d, PROJECT_NONE);
+        const auto pos_neighbor = scatter(floor, pos, d, PROJECT_NONE);
         if (!floor.can_generate_monster_at(pos_neighbor) || (p_pos == pos_neighbor)) {
             continue;
         }
 
-        get_mon_num_prep_escort(player_ptr, r_idx, *m_idx, player_ptr->current_floor_ptr->get_monrace_hook_terrain_at(pos_neighbor));
-        const auto monrace_id = get_mon_num(player_ptr, 0, monrace.level, 0);
+        get_mon_num_prep_escort(creature, r_idx, *m_idx, creature.get_floor()->get_monrace_hook_terrain_at(pos_neighbor));
+        const auto monrace_id = get_mon_num(creature, 0, monrace.level, 0);
         if (!MonraceList::is_valid(monrace_id)) {
             break;
         }
 
-        (void)place_monster_one(player_ptr, pos_neighbor.y, pos_neighbor.x, monrace_id, mode, *m_idx);
+        (void)place_monster_one(creature, pos_neighbor.y, pos_neighbor.x, monrace_id, mode, *m_idx);
         if (monrace.misc_flags.has(MonsterMiscType::HAS_FRIENDS) || monrace.misc_flags.has(MonsterMiscType::MORE_ESCORT)) {
-            place_monster_group(player_ptr, pos_neighbor, monrace_id, mode | PM_HAVE_MASTER, *m_idx);
+            place_monster_group(creature, pos_neighbor, monrace_id, mode | PM_HAVE_MASTER, *m_idx);
         }
     }
 
@@ -287,21 +286,21 @@ tl::optional<MONSTER_IDX> place_specific_monster(PlayerType *player_ptr, POSITIO
 }
 /*!
  * @brief フロア相当のモンスターを1体生成する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param y 生成地点y座標
  * @param x 生成地点x座標
  * @param mode 生成オプション
  * @return 生成に成功したらモンスターID、失敗したらtl::nullopt
  */
-tl::optional<MONSTER_IDX> place_random_monster(PlayerType *player_ptr, POSITION y, POSITION x, BIT_FLAGS mode)
+tl::optional<MONSTER_IDX> place_random_monster(CreatureEntity &creature, POSITION y, POSITION x, BIT_FLAGS mode)
 {
     const Pos2D pos(y, x);
-    const auto &floor = *player_ptr->current_floor_ptr;
-    get_mon_num_prep_enum(player_ptr, floor.get_monrace_hook(), floor.get_monrace_hook_terrain_at(pos));
+    const auto &floor = *creature.get_floor();
+    get_mon_num_prep_enum(creature, floor.get_monrace_hook(), floor.get_monrace_hook_terrain_at(pos));
     const auto &monraces = MonraceList::get_instance();
     MonraceId monrace_id;
     do {
-        monrace_id = get_mon_num(player_ptr, 0, floor.monster_level, PM_NONE);
+        monrace_id = get_mon_num(creature, 0, floor.monster_level, PM_NONE);
     } while ((mode & PM_NO_QUEST) && MonraceList::get_instance().get_monrace(monrace_id).misc_flags.has(MonsterMiscType::NO_QUEST));
     if (!MonraceList::is_valid(monrace_id)) {
         return tl::nullopt;
@@ -315,15 +314,15 @@ tl::optional<MONSTER_IDX> place_random_monster(PlayerType *player_ptr, POSITION 
         mode |= PM_JURAL;
     }
 
-    return place_specific_monster(player_ptr, y, x, monrace_id, mode);
+    return place_specific_monster(creature, y, x, monrace_id, mode);
 }
 
-static tl::optional<MonraceId> select_horde_leader_r_idx(PlayerType *player_ptr)
+static tl::optional<MonraceId> select_horde_leader_r_idx(CreatureEntity &creature)
 {
-    const auto *floor_ptr = player_ptr->current_floor_ptr;
+    const auto *floor_ptr = creature.get_floor();
 
     for (auto attempts = 1000; attempts > 0; --attempts) {
-        const auto monrace_id = get_mon_num(player_ptr, 0, floor_ptr->monster_level, PM_NONE);
+        const auto monrace_id = get_mon_num(creature, 0, floor_ptr->monster_level, PM_NONE);
         if (!MonraceList::is_valid(monrace_id)) {
             return tl::nullopt;
         }
@@ -344,17 +343,17 @@ static tl::optional<MonraceId> select_horde_leader_r_idx(PlayerType *player_ptr)
 
 /*!
  * @brief 指定地点に1種類のモンスター種族による群れを生成する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param y 生成地点y座標
  * @param x 生成地点x座標
  * @return 生成に成功したらtrue
  */
-bool alloc_horde(PlayerType *player_ptr, POSITION y, POSITION x, summon_specific_pf summon_specific)
+bool alloc_horde(CreatureEntity &creature, POSITION y, POSITION x, summon_specific_pf summon_specific)
 {
     Pos2D pos(y, x);
-    const auto &floor = *player_ptr->current_floor_ptr;
-    get_mon_num_prep_enum(player_ptr, floor.get_monrace_hook(), floor.get_monrace_hook_terrain_at(pos));
-    const auto monrace_id = select_horde_leader_r_idx(player_ptr);
+    const auto &floor = *creature.get_floor();
+    get_mon_num_prep_enum(creature, floor.get_monrace_hook(), floor.get_monrace_hook_terrain_at(pos));
+    const auto monrace_id = select_horde_leader_r_idx(creature);
     if (!monrace_id) {
         return false;
     }
@@ -364,16 +363,16 @@ bool alloc_horde(PlayerType *player_ptr, POSITION y, POSITION x, summon_specific
             return false;
         }
 
-        if (place_specific_monster(player_ptr, y, x, *monrace_id, 0L)) {
+        if (place_specific_monster(creature, y, x, *monrace_id, 0L)) {
             break;
         }
     }
 
     const auto m_idx = floor.get_grid(pos).m_idx;
-    const auto &monentity = floor.m_list[m_idx];
+    const auto &monentity = floor.get_monster(m_idx);
     for (auto attempts = randint1(10) + 5; attempts > 0; attempts--) {
-        const auto pos_scat = scatter(player_ptr, pos, 5, PROJECT_NONE);
-        (void)(*summon_specific)(player_ptr, pos_scat.y, pos_scat.x, floor.dun_level + 5, SUMMON_KIN, PM_ALLOW_GROUP, 0);
+        const auto pos_scat = scatter(floor, pos, 5, PROJECT_NONE);
+        (void)(*summon_specific)(creature, pos_scat.y, pos_scat.x, floor.dun_level + 5, SUMMON_KIN, PM_ALLOW_GROUP, m_idx);
         pos = pos_scat;
     }
 
@@ -381,20 +380,20 @@ bool alloc_horde(PlayerType *player_ptr, POSITION y, POSITION x, summon_specific
         return true;
     }
 
-    const auto &monrace = monentity.mflag2.has(MonsterConstantFlagType::CHAMELEON) ? monentity.get_monrace() : MonraceList::get_instance().get_monrace(*monrace_id);
+    const auto &monrace = monentity.is_chameleon() ? monentity.get_monrace() : MonraceList::get_instance().get_monrace(*monrace_id);
     msg_format(_("モンスターの大群(%c)", "Monster horde (%c)."), monrace.symbol_definition.character);
     return true;
 }
 
 /*!
  * @brief ダンジョンの主生成を試みる / Put the Guardian
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param def_val 現在の主の生成状態
  * @return 生成に成功したらtrue
  */
-bool alloc_guardian(PlayerType *player_ptr, bool def_val)
+bool alloc_guardian(CreatureEntity &creature, bool def_val)
 {
-    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto &dungeon = floor.get_dungeon_definition();
     if (!dungeon.has_guardian()) {
         return def_val;
@@ -408,7 +407,7 @@ bool alloc_guardian(PlayerType *player_ptr, bool def_val)
         return def_val;
     }
 
-    const auto p_pos = player_ptr->get_position();
+    const auto p_pos = creature.get_position();
     auto try_count = 4000;
     while (try_count > 0) {
         const auto pos = Pos2D(randint1(floor.height - 4), randint1(floor.width - 4)) + Pos2DVec(2, 2);
@@ -417,12 +416,12 @@ bool alloc_guardian(PlayerType *player_ptr, bool def_val)
             continue;
         }
 
-        if (!monster_can_cross_terrain(player_ptr, floor.get_grid(pos).feat, monrace, 0)) {
+        if (!monster_can_cross_terrain(creature, floor.get_grid(pos).feat, monrace, 0)) {
             try_count++;
             continue;
         }
 
-        if (place_specific_monster(player_ptr, pos.y, pos.x, dungeon.final_guardian, (PM_ALLOW_GROUP | PM_NO_KAGE | PM_NO_PET))) {
+        if (place_specific_monster(creature, pos.y, pos.x, dungeon.final_guardian, (PM_ALLOW_GROUP | PM_NO_KAGE | PM_NO_PET))) {
             return true;
         }
 
@@ -440,14 +439,14 @@ bool alloc_guardian(PlayerType *player_ptr, bool def_val)
  * @param max_dis プレイヤーから離れるべき最大距離 (デバッグ用)
  * @return 生成に成功したらtrue
  */
-bool alloc_monster(PlayerType *player_ptr, int min_dis, BIT_FLAGS mode, summon_specific_pf summon_specific, int max_dis)
+bool alloc_monster(CreatureEntity &creature, int min_dis, BIT_FLAGS mode, summon_specific_pf summon_specific, int max_dis)
 {
-    if (alloc_guardian(player_ptr, false)) {
+    if (alloc_guardian(creature, false)) {
         return true;
     }
 
-    const auto p_pos = player_ptr->get_position();
-    auto &floor = *player_ptr->current_floor_ptr;
+    const auto p_pos = creature.get_position();
+    auto &floor = *creature.get_floor();
     Pos2D pos(0, 0);
     auto attempts_left = 10000;
     while (attempts_left--) {
@@ -478,8 +477,8 @@ bool alloc_monster(PlayerType *player_ptr, int min_dis, BIT_FLAGS mode, summon_s
     }
 
     if (randint1(5000) <= floor.dun_level) {
-        return alloc_horde(player_ptr, pos.y, pos.x, summon_specific);
+        return alloc_horde(creature, pos.y, pos.x, summon_specific);
     }
 
-    return place_random_monster(player_ptr, pos.y, pos.x, (mode | PM_ALLOW_GROUP)).has_value();
+    return place_random_monster(creature, pos.y, pos.x, (mode | PM_ALLOW_GROUP)).has_value();
 }

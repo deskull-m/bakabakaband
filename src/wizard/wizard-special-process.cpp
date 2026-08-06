@@ -34,9 +34,11 @@
 #include "monster-floor/monster-remover.h"
 #include "monster/monster-describer.h"
 #include "monster/monster-description-types.h"
+#include "monster/monster-update.h"
 #include "object-enchant/item-apply-magic.h"
 #include "object-enchant/item-magic-applier.h"
 #include "perception/object-perception.h"
+#include "player-ability/player-ability-types.h"
 #include "player-base/player-class.h"
 #include "player-base/player-race.h"
 #include "player-info/class-info.h"
@@ -56,18 +58,23 @@
 #include "spell/spells-status.h"
 #include "status/bad-status-setter.h"
 #include "system/artifact-type-definition.h"
+#include "system/artifact/artifact-record.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/dungeon/dungeon-list.h"
+#include "system/dungeon/quest-definition.h"
 #include "system/enums/dungeon/dungeon-id.h"
 #include "system/floor/floor-info.h"
 #include "system/floor/wilderness-grid.h"
 #include "system/grid-type-definition.h"
+#include "system/inner-game-data.h"
 #include "system/item-entity.h"
-#include "system/monster-entity.h"
 #include "system/redrawing-flags-updater.h"
 #include "system/terrain/terrain-definition.h"
 #include "system/terrain/terrain-list.h"
 #include "target/grid-selector.h"
+#include "target/target-setter.h"
+#include "target/target-types.h"
 #include "util/angband-files.h"
 #include "util/candidate-selector.h"
 #include "util/dice.h"
@@ -88,12 +95,12 @@
 /*!
  * @brief プレイヤーを完全回復する
  */
-void wiz_cure_all(PlayerType *player_ptr)
+void wiz_cure_all(CreatureEntity &creature)
 {
-    (void)life_stream(player_ptr, false, false);
-    (void)restore_mana(player_ptr, true);
-    (void)set_food(player_ptr, PY_FOOD_MAX - 1);
-    BadStatusSetter bss(player_ptr);
+    (void)life_stream(creature, false, false);
+    (void)restore_mana(creature, true);
+    (void)set_food(creature, PY_FOOD_MAX - 1);
+    BadStatusSetter bss(creature);
     (void)bss.set_fear(0);
     (void)bss.set_deceleration(0, false);
     msg_print("You're fully cured by wizard command.");
@@ -110,18 +117,19 @@ static tl::optional<tval_desc> wiz_select_tval()
 static tl::optional<short> wiz_select_sval(const tval_desc &td)
 {
     std::vector<short> bi_ids;
-    for (const auto &baseitem : BaseitemList::get_instance()) {
-        if (!baseitem.is_valid() || baseitem.bi_key.tval() != td.tval) {
+    const auto &baseitems = BaseitemList::get_instance();
+    for (short bi_id : baseitems.collect_valid_bi_ids()) {
+        const auto &baseitem = baseitems.get_baseitem(bi_id);
+        if (baseitem.bi_key.tval() != td.tval) {
             continue;
         }
 
-        bi_ids.push_back(baseitem.idx);
+        bi_ids.push_back(bi_id);
     }
 
     const auto prompt = format(_("%s群の具体的なアイテムを選んで下さい", "What Kind of %s? "), td.desc);
 
     CandidateSelector cs(prompt, 15);
-    const auto &baseitems = BaseitemList::get_instance();
     const auto choice = cs.select(bi_ids,
         [&baseitems](short bi_id) { return baseitems.get_baseitem(bi_id).stripped_name(); });
     return (choice != bi_ids.end()) ? tl::make_optional(*choice) : tl::nullopt;
@@ -157,7 +165,7 @@ static tl::optional<short> wiz_create_itemtype()
  * Hack -- this routine always makes a "dungeon object", and applies
  * magic to it, and attempts to decline cursed items.
  */
-void wiz_create_item(PlayerType *player_ptr)
+void wiz_create_item(CreatureEntity &creature)
 {
     screen_save();
     const auto bi_id = wiz_create_itemtype();
@@ -173,7 +181,7 @@ void wiz_create_item(PlayerType *player_ptr)
                 continue;
             }
 
-            (void)create_named_art(player_ptr, fa_id, player_ptr->y, player_ptr->x);
+            (void)create_named_art(creature, fa_id, creature.y, creature.x);
             msg_print("Allocated(INSTA_ART).");
             return;
         }
@@ -181,23 +189,9 @@ void wiz_create_item(PlayerType *player_ptr)
 
     ItemEntity item;
     item.generate(*bi_id);
-    ItemMagicApplier(player_ptr, &item, player_ptr->current_floor_ptr->dun_level, AM_NO_FIXED_ART).execute();
-    (void)drop_near(player_ptr, item, player_ptr->get_position());
+    ItemMagicApplier(creature, &item, creature.get_floor()->dun_level, AM_NO_FIXED_ART).execute();
+    (void)drop_near(creature, item, creature.get_position());
     msg_print("Allocated.");
-}
-
-/*!
- * @brief 指定したIDの固定アーティファクトの名称を取得する
- *
- * @param fa_id 固定アーティファクトのID
- * @return 固定アーティファクトの名称(Ex. ★ロング・ソード『リンギル』)を保持する std::string オブジェクト
- */
-static std::string wiz_make_named_artifact_desc(PlayerType *player_ptr, FixedArtifactId fa_id)
-{
-    const auto &artifact = ArtifactList::get_instance().get_artifact(fa_id);
-    ItemEntity item(artifact.bi_key);
-    item.fa_id = fa_id;
-    return describe_flavor(player_ptr, item, OD_NAME_ONLY | OD_STORE);
 }
 
 /**
@@ -206,11 +200,12 @@ static std::string wiz_make_named_artifact_desc(PlayerType *player_ptr, FixedArt
  * @param fa_ids 選択する候補となる固定アーティファクトのIDのリスト
  * @return 選択した固定アーティファクトのIDを返す。但しキャンセルした場合は tl::nullopt を返す。
  */
-static tl::optional<FixedArtifactId> wiz_select_named_artifact(PlayerType *player_ptr, const std::vector<FixedArtifactId> &fa_ids)
+static tl::optional<FixedArtifactId> wiz_select_named_artifact(const std::vector<FixedArtifactId> &fa_ids)
 {
     CandidateSelector cs("Which artifact: ", 15);
 
-    auto describe_artifact = [player_ptr](FixedArtifactId fa_id) { return wiz_make_named_artifact_desc(player_ptr, fa_id); };
+    const auto &artifacts = ArtifactList::get_instance();
+    const auto describe_artifact = [&artifacts](auto fa_id) { return artifacts.get_artifact(fa_id).build_full_name(); };
     const auto it = cs.select(fa_ids, describe_artifact);
     return (it != fa_ids.end()) ? tl::make_optional(*it) : tl::nullopt;
 }
@@ -238,7 +233,7 @@ static std::vector<FixedArtifactId> wiz_collect_group_fa_ids(const grouper &grou
 /*!
  * @brief 固定アーティファクトを生成する / Create the artifact
  */
-void wiz_create_named_art(PlayerType *player_ptr)
+void wiz_create_named_art(CreatureEntity &creature)
 {
     screen_save();
     for (auto i = 0U; i < group_artifact_list.size(); ++i) {
@@ -264,39 +259,40 @@ void wiz_create_named_art(PlayerType *player_ptr)
 
         auto fa_ids = wiz_collect_group_fa_ids(group_artifact_list[idx]);
         std::sort(fa_ids.begin(), fa_ids.end(), [](FixedArtifactId id1, FixedArtifactId id2) { return ArtifactList::get_instance().order(id1, id2); });
-        created_fa_id = wiz_select_named_artifact(player_ptr, fa_ids);
+        created_fa_id = wiz_select_named_artifact(fa_ids);
     }
 
     screen_load();
-    const auto &artifact = ArtifactList::get_instance().get_artifact(*created_fa_id);
-    if (artifact.is_generated) {
+    if (ArtifactRecords::get_instance().get_generated(*created_fa_id)) {
         msg_print("It's already allocated.");
         return;
     }
 
-    (void)create_named_art(player_ptr, *created_fa_id, player_ptr->y, player_ptr->x);
+    (void)create_named_art(creature, *created_fa_id, creature.y, creature.x);
     msg_print("Allocated.");
 }
 
-static void wiz_change_status_max(PlayerType *player_ptr)
+static void wiz_change_status_max(CreatureEntity &creature)
 {
     for (auto i = 0; i < A_MAX; ++i) {
-        player_ptr->stat_cur[i] = player_ptr->stat_max_max[i];
-        player_ptr->stat_max[i] = player_ptr->stat_max_max[i];
+        // 限界値 (stat_max_max) も能力値上限 (表示 200.0) まで突破させる
+        creature.set_stat_max_max(i, STAT_MAX_VALUE);
+        creature.set_stat_cur(i, creature.get_stat_max_max(i));
+        creature.set_stat_max(i, creature.get_stat_max_max(i));
     }
 
     for (auto tval : TV_WEAPON_RANGE) {
-        for (auto &exp : player_ptr->weapon_exp[tval]) {
+        for (auto &exp : creature.weapon_exp[tval]) {
             exp = PlayerSkill::weapon_exp_at(PlayerSkillRank::MASTER);
         }
     }
-    PlayerSkill(player_ptr).limit_weapon_skills_by_max_value();
+    PlayerSkill(creature).limit_weapon_skills_by_max_value();
 
-    for (auto &[type, exp] : player_ptr->skill_exp) {
-        exp = class_skills_info[enum2i(player_ptr->pclass)].s_max[type];
+    for (auto &[type, exp] : creature.skill_exp) {
+        exp = class_skills_info[enum2i(creature.pclass)].s_max[type];
     }
 
-    const std::span spells_exp_span(player_ptr->spell_exp);
+    const std::span spells_exp_span(creature.spell_exp);
     for (auto &exp : spells_exp_span.first(32)) {
         exp = PlayerSkill::spell_exp_at(PlayerSkillRank::MASTER);
     }
@@ -304,44 +300,44 @@ static void wiz_change_status_max(PlayerType *player_ptr)
         exp = PlayerSkill::spell_exp_at(PlayerSkillRank::EXPERT);
     }
 
-    player_ptr->au = 999999999;
+    creature.set_au(999999999);
 
-    if (PlayerRace(player_ptr).equals(PlayerRaceType::ANDROID)) {
+    if (CreatureRace(&creature).equals(PlayerRaceType::ANDROID)) {
         return;
     }
 
-    player_ptr->max_exp = 99999999;
-    player_ptr->exp = 99999999;
-    player_ptr->exp_frac = 0;
+    creature.set_max_exp(99999999);
+    creature.set_exp(99999999);
+    creature.exp_frac = 0;
 }
 
 /*!
  * @brief プレイヤーの現能力値を調整する / Change various "permanent" player variables.
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
-void wiz_change_status(PlayerType *player_ptr)
+void wiz_change_status(CreatureEntity &creature)
 {
-    const auto finalizer = util::make_finalizer([player_ptr]() {
-        check_experience(static_cast<CreatureEntity &>(*player_ptr));
-        do_cmd_redraw(player_ptr);
+    const auto finalizer = util::make_finalizer([&creature]() {
+        check_experience(creature);
+        do_cmd_redraw(creature);
     });
 
     constexpr auto msg = _("全てのステータスを最大にしますか？", "Maximize all statuses? ");
-    if (input_check_strict(player_ptr, msg, { UserCheck::NO_ESCAPE, UserCheck::NO_HISTORY })) {
-        wiz_change_status_max(player_ptr);
+    if (input_check_strict(creature, msg, { UserCheck::NO_ESCAPE, UserCheck::NO_HISTORY })) {
+        wiz_change_status_max(creature);
         return;
     }
 
     for (int i = 0; i < A_MAX; i++) {
-        const auto max_max_ability_score = player_ptr->stat_max_max[i];
-        const auto max_ability_score = player_ptr->stat_max[i];
+        const auto max_max_ability_score = creature.get_stat_max_max(i);
+        const auto max_ability_score = creature.get_stat_max(i);
         const auto new_ability_score = input_numerics(stat_names[i], 3, max_max_ability_score, max_ability_score);
         if (!new_ability_score.has_value()) {
             return;
         }
 
-        player_ptr->stat_cur[i] = *new_ability_score;
-        player_ptr->stat_max[i] = *new_ability_score;
+        creature.set_stat_cur(i, *new_ability_score);
+        creature.set_stat_max(i, *new_ability_score);
     }
 
     const auto unskilled = PlayerSkill::weapon_exp_at(PlayerSkillRank::UNSKILLED);
@@ -353,61 +349,61 @@ void wiz_change_status(PlayerType *player_ptr)
 
     for (auto tval : TV_WEAPON_RANGE) {
         for (int i = 0; i < 64; i++) {
-            player_ptr->weapon_exp[tval][i] = *proficiency;
+            creature.set_weapon_exp(tval, i, *proficiency);
         }
     }
 
-    PlayerSkill(player_ptr).limit_weapon_skills_by_max_value();
+    PlayerSkill(creature).limit_weapon_skills_by_max_value();
     for (auto j : PLAYER_SKILL_KIND_TYPE_RANGE) {
-        player_ptr->skill_exp[j] = *proficiency;
-        auto short_pclass = enum2i(player_ptr->pclass);
-        if (player_ptr->skill_exp[j] > class_skills_info[short_pclass].s_max[j]) {
-            player_ptr->skill_exp[j] = class_skills_info[short_pclass].s_max[j];
+        creature.set_skill_exp(j, *proficiency);
+        auto short_pclass = enum2i(creature.pclass);
+        if (creature.get_skill_exp(j) > class_skills_info[short_pclass].s_max[j]) {
+            creature.set_skill_exp(j, class_skills_info[short_pclass].s_max[j]);
         }
     }
 
     int k;
     for (k = 0; k < 32; k++) {
-        player_ptr->spell_exp[k] = std::min(PlayerSkill::spell_exp_at(PlayerSkillRank::MASTER), *proficiency);
+        creature.set_spell_exp(k, std::min(PlayerSkill::spell_exp_at(PlayerSkillRank::MASTER), *proficiency));
     }
 
     for (; k < 64; k++) {
-        player_ptr->spell_exp[k] = std::min(PlayerSkill::spell_exp_at(PlayerSkillRank::EXPERT), *proficiency);
+        creature.set_spell_exp(k, std::min(PlayerSkill::spell_exp_at(PlayerSkillRank::EXPERT), *proficiency));
     }
 
-    const auto gold = input_numerics("Gold: ", 0, MAX_INT, player_ptr->au);
+    const auto gold = input_numerics("Gold: ", 0, MAX_INT, creature.get_au());
     if (!gold.has_value()) {
         return;
     }
 
-    player_ptr->au = *gold;
-    if (PlayerRace(player_ptr).equals(PlayerRaceType::ANDROID)) {
+    creature.set_au(*gold);
+    if (CreatureRace(&creature).equals(PlayerRaceType::ANDROID)) {
         return;
     }
 
-    const auto experience = input_numerics("Experience: ", 0, MAX_INT, player_ptr->max_exp);
+    const auto experience = input_numerics("Experience: ", 0, MAX_INT, creature.get_max_exp());
     if (!experience) {
         return;
     }
 
-    player_ptr->max_exp = *experience;
-    player_ptr->exp = *experience;
-    player_ptr->exp_frac = 0;
+    creature.set_max_exp(*experience);
+    creature.set_exp(*experience);
+    creature.exp_frac = 0;
 }
 
 /*!
  * @brief 指定された地点の地形IDを変更する /
  * Create desired feature
- * @param creaturer_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
-void wiz_create_feature(PlayerType *player_ptr)
+void wiz_create_feature(CreatureEntity &creature)
 {
-    const auto pos = point_target(player_ptr);
+    const auto pos = point_target(creature);
     if (!pos) {
         return;
     }
 
-    auto &grid = player_ptr->current_floor_ptr->get_grid(*pos);
+    auto &grid = creature.get_floor()->get_grid(*pos);
     const int max = TerrainList::get_instance().size() - 1;
     const auto f_val1 = input_numerics(_("実地形ID", "FeatureID"), 0, max, grid.feat);
     if (!f_val1.has_value()) {
@@ -419,7 +415,7 @@ void wiz_create_feature(PlayerType *player_ptr)
         return;
     }
 
-    set_terrain_id_to_grid(player_ptr, *pos, *f_val1);
+    set_terrain_id_to_grid(creature, *pos, *f_val1);
     grid.mimic = *f_val2;
     const auto &terrain = grid.get_terrain(TerrainKind::MIMIC);
     if (terrain.flags.has(TerrainCharacteristics::RUNE_PROTECTION) || terrain.flags.has(TerrainCharacteristics::RUNE_EXPLOSION)) {
@@ -428,14 +424,13 @@ void wiz_create_feature(PlayerType *player_ptr)
         grid.info |= CAVE_GLOW | CAVE_OBJECT;
     }
 
-    note_spot(player_ptr, *pos);
-    lite_spot(player_ptr, *pos);
+    note_spot(creature, *pos);
+    lite_spot(creature, *pos);
     RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::FLOW);
 }
 
 /*!
  * @brief デバッグ帰還のダンジョンを選ぶ
- * @param player_ptr プレイヤーへの参照ポインタ
  */
 static tl::optional<DungeonId> select_debugging_dungeon()
 {
@@ -450,7 +445,6 @@ static tl::optional<DungeonId> select_debugging_dungeon()
 
 /*
  * @brief 選択したダンジョンの任意レベルを選択する
- * @param player_ptr プレイヤーへの参照ポインタ
  * @param dungeon_id ダンジョン番号
  * @return レベルを選択したらその値、キャンセルならnullopt
  */
@@ -472,9 +466,9 @@ static tl::optional<int> select_debugging_floor(const FloorType &floor, DungeonI
  * @brief 任意のダンジョン及び階層に飛ぶtための選択処理
  * Go to any level
  */
-void wiz_jump_to_dungeon(PlayerType *player_ptr)
+void wiz_jump_to_dungeon(CreatureEntity &creature)
 {
-    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto dungeon_id = select_debugging_dungeon();
     if (!dungeon_id) {
         return;
@@ -482,7 +476,7 @@ void wiz_jump_to_dungeon(PlayerType *player_ptr)
 
     if (dungeon_id == DungeonId::WILDERNESS) {
         if (floor.is_underground() && input_check("Jump to the ground? ")) {
-            jump_floor(player_ptr, DungeonId::WILDERNESS, 0);
+            jump_floor(creature, DungeonId::WILDERNESS, 0);
         }
         return;
     }
@@ -494,22 +488,24 @@ void wiz_jump_to_dungeon(PlayerType *player_ptr)
 
     msg_format("You jump to dungeon level %d.", *level);
     if (autosave_l) {
-        do_cmd_save_game(player_ptr, true);
+        do_cmd_save_game(creature, true);
     }
 
-    jump_floor(player_ptr, *dungeon_id, *level);
+    jump_floor(creature, *dungeon_id, *level);
 }
 
 /*!
  * @brief 全ベースアイテムを鑑定済みにする
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
-void wiz_learn_items_all(PlayerType *player_ptr)
+void wiz_learn_items_all(CreatureEntity &creature)
 {
-    for (const auto &baseitem : BaseitemList::get_instance()) {
-        if (baseitem.is_valid() && baseitem.level <= command_arg) {
-            ItemEntity item(baseitem.idx);
-            object_aware(player_ptr, item);
+    const auto &baseitems = BaseitemList::get_instance();
+    for (short bi_id : baseitems.collect_valid_bi_ids()) {
+        const auto &baseitem = baseitems.get_baseitem(bi_id);
+        if (baseitem.level <= command_arg) {
+            ItemEntity item(bi_id);
+            object_aware(creature, item);
         }
     }
 }
@@ -594,7 +590,7 @@ static tl::optional<std::tuple<RealmType, RealmType, ElementRealmType>> wiz_sele
 /*!
  * @brief プレイヤーの種族を変更する
  */
-void wiz_reset_race(PlayerType *player_ptr)
+void wiz_reset_race(CreatureEntity &creature)
 {
     CandidateSelector cs("Which race: ", 15);
     constexpr EnumRange races(PlayerRaceType::HUMAN, PlayerRaceType::MAX);
@@ -605,17 +601,17 @@ void wiz_reset_race(PlayerType *player_ptr)
         return;
     }
 
-    player_ptr->prace = *chosen_race;
-    player_ptr->race = &race_info[enum2i(player_ptr->prace)];
+    creature.prace = *chosen_race;
+    creature.race = &race_info[enum2i(creature.prace)];
     change_birth_flags();
-    handle_stuff(player_ptr);
+    handle_stuff(creature);
 }
 
 /*!
  * @brief プレイヤーの職業を変更する
  * @todo 魔法領域の再選択などがまだ不完全、要実装。
  */
-void wiz_reset_class(PlayerType *player_ptr)
+void wiz_reset_class(CreatureEntity &creature)
 {
     CandidateSelector cs("Which class: ", 15);
     constexpr EnumRange classes(PlayerClassType::WARRIOR, PlayerClassType::MAX);
@@ -631,55 +627,54 @@ void wiz_reset_class(PlayerType *player_ptr)
         return;
     }
 
-    player_ptr->pclass = *chosen_class;
-    cp_ptr = &class_info.at(player_ptr->pclass);
-    player_ptr->pclass_ref = &class_info.at(player_ptr->pclass);
-    mp_ptr = &class_magics_info[enum2i(player_ptr->pclass)];
-    PlayerClass(player_ptr).init_specific_data();
-    PlayerRealm pr(player_ptr);
+    creature.pclass = *chosen_class;
+    cp_ptr = &class_info.at(creature.pclass);
+    creature.pclass_ref = &class_info.at(creature.pclass);
+    mp_ptr = &class_magics_info[enum2i(creature.pclass)];
+    CreatureClass(creature).init_specific_data();
+    PlayerRealm pr(creature);
     pr.reset();
     const auto &[realm1, realm2, element_realm] = *chosen_realms;
     if (realm1 != RealmType::NONE) {
         pr.set(realm1, realm2);
     }
-    player_ptr->element_realm = element_realm;
-    PlayerSpellStatus pss(player_ptr);
+    creature.set_element_realm(element_realm);
+    PlayerSpellStatus pss(creature);
     pss.realm1().initialize();
     pss.realm2().initialize();
-    player_ptr->learned_spells = 0;
+    creature.set_learned_spells(0);
     change_birth_flags();
-    handle_stuff(player_ptr);
+    handle_stuff(creature);
 }
 
 /*!
  * @brief プレイヤーの領域を変更する
  * @todo 存在有無などは未判定。そのうちすべき。
  */
-void wiz_reset_realms(PlayerType *player_ptr)
+void wiz_reset_realms(CreatureEntity &creature)
 {
-    const auto chosen_realms = wiz_select_realms(player_ptr->pclass);
+    const auto chosen_realms = wiz_select_realms(creature.pclass);
     if (!chosen_realms) {
         return;
     }
 
-    PlayerRealm pr(player_ptr);
+    PlayerRealm pr(creature);
     pr.reset();
     const auto &[realm1, realm2, element_realm] = *chosen_realms;
     if (realm1 != RealmType::NONE) {
         pr.set(realm1, realm2);
     }
-    player_ptr->element_realm = element_realm;
-    PlayerSpellStatus pss(player_ptr);
+    creature.set_element_realm(element_realm);
+    PlayerSpellStatus pss(creature);
     pss.realm1().initialize();
     pss.realm2().initialize();
-    player_ptr->learned_spells = 0;
+    creature.set_learned_spells(0);
     change_birth_flags();
-    handle_stuff(player_ptr);
+    handle_stuff(creature);
 }
 
 /*!
  * @brief 現在のオプション設定をダンプ出力する
- * @param player_ptr プレイヤーへの参照ポインタ
  */
 void wiz_dump_options()
 {
@@ -723,50 +718,143 @@ void wiz_dump_options()
 }
 
 /*!
- * @brief プレイヤー近辺の全モンスターを消去する / Delete all nearby monsters
+ * @brief 現在のフロアの地形をテキストファイルにダンプする
+ * @param creature クリーチャーへの参照
+ * @details Vault 定義 (VaultDefinitions) と同じ N:/X:/D: 形式で出力し、後で
+ *          vault-editor で編集しやすい形に整える土台とする。各グリッドには
+ *          その地形の標準表示文字 (TerrainKind::NORMAL の F_LIT_STANDARD) を割り当てる。
  */
-void wiz_zap_surrounding_monsters(PlayerType *player_ptr)
+void wiz_dump_current_floor(CreatureEntity &creature)
 {
-    const auto &floor = *player_ptr->current_floor_ptr;
-    for (MONSTER_IDX i = 1; i < floor.m_max; i++) {
-        const auto &monster = floor.m_list[i];
-        if (!monster.is_valid() || (i == player_ptr->riding) || (monster.cdis > MAX_PLAYER_SIGHT)) {
-            continue;
+    const auto &floor = *creature.get_floor();
+    const auto path = path_build(ANGBAND_DIR_USER, "floor-dump.txt");
+    const auto &filename = path.string();
+    std::ofstream ofs(path);
+    if (ofs.bad()) {
+        msg_format(_("ファイル %s を開けませんでした。", "Failed to open file %s."), filename.data());
+        msg_erase();
+        return;
+    }
+
+    const auto height = floor.height;
+    const auto width = floor.width;
+    ofs << "# Current floor dump\n";
+    ofs << format("# Dungeon Level: %d\n", floor.dun_level);
+    ofs << format("# Size (rows x cols): %d x %d\n", height, width);
+    ofs << "# Player position (y, x): " << format("%d, %d\n", creature.y, creature.x);
+    ofs << "#\n";
+    ofs << "# Vault 定義と同じ N:/X:/D: 形式で出力している。各文字は地形の標準表示文字。\n";
+    ofs << "\n";
+    ofs << "N:0:Floor Dump\n";
+    ofs << format("X:0:0:%d:%d\n", height, width);
+
+    for (auto y = 0; y < height; y++) {
+        std::string row;
+        row.reserve(width);
+        for (auto x = 0; x < width; x++) {
+            const auto &terrain = floor.get_grid({ y, x }).get_terrain(TerrainKind::NORMAL);
+            const auto ch = terrain.symbol_definitions.at(F_LIT_STANDARD).character;
+            row.push_back(ch == '\0' ? ' ' : ch);
         }
 
+        ofs << "D:" << row << '\n';
+    }
+
+    if (ofs.bad()) {
+        msg_format(_("ファイル %s への書き込みに失敗しました。", "Failed to write to file %s."), filename.data());
+        msg_erase();
+        return;
+    }
+
+    msg_format(_("現在のフロアをファイル %s に書き出しました。", "Current floor dump saved to file %s."), filename.data());
+}
+
+/*!
+ * @brief プレイヤー近辺の全モンスターを消去する / Delete all nearby monsters
+ */
+void wiz_zap_surrounding_monsters(CreatureEntity &creature)
+{
+    const auto &floor = *creature.get_floor();
+    // [提案 14b]
+    const auto p_pos = creature.get_position();
+    const auto targets = creature.collect_creatures([&](const CreatureEntity &mon) {
+        return Grid::calc_distance(p_pos, mon.get_position()) <= MAX_PLAYER_SIGHT;
+    });
+    const auto riding_idx = creature.get_riding();
+    for (auto i : targets) {
+        if (i == riding_idx) {
+            continue;
+        }
+        const auto &monster = floor.get_monster(i);
         if (record_named_pet && monster.is_named_pet()) {
-            const auto m_name = monster_desc(player_ptr, monster, MD_INDEF_VISIBLE);
+            const auto m_name = monster_desc(creature, monster, MD_INDEF_VISIBLE);
             exe_write_diary(floor, DiaryKind::NAMED_PET, RECORD_NAMED_PET_WIZ_ZAP, m_name);
         }
 
-        delete_monster_idx(player_ptr, i);
+        delete_monster_idx(creature, i);
     }
 }
 
 /*!
  * @brief フロアに存在する全モンスターを消去する / Delete all monsters
- * @param player_ptr 術者の参照ポインタ
+ * @param creature クリーチャーへの参照
  */
-void wiz_zap_floor_monsters(PlayerType *player_ptr)
+void wiz_zap_floor_monsters(CreatureEntity &creature)
 {
-    const auto &floor = *player_ptr->current_floor_ptr;
-    for (MONSTER_IDX i = 1; i < floor.m_max; i++) {
-        const auto &monster = floor.m_list[i];
-        if (!monster.is_valid() || monster.is_riding()) {
-            continue;
-        }
-
+    const auto &floor = *creature.get_floor();
+    // [提案 14b]
+    const auto targets = creature.collect_creatures([](const CreatureEntity &mon) {
+        return !mon.is_riding();
+    });
+    for (auto i : targets) {
+        const auto &monster = floor.get_monster(i);
         if (record_named_pet && monster.is_named_pet()) {
-            const auto m_name = monster_desc(player_ptr, monster, MD_INDEF_VISIBLE);
+            const auto m_name = monster_desc(creature, monster, MD_INDEF_VISIBLE);
             exe_write_diary(floor, DiaryKind::NAMED_PET, RECORD_NAMED_PET_WIZ_ZAP, m_name);
         }
 
-        delete_monster_idx(player_ptr, i);
+        delete_monster_idx(creature, i);
     }
 }
 
+/*!
+ * @brief 対象モンスターを指定レベルまでレベルアップさせ最大HPを成長させる (デバッグ用)
+ * @param creature プレイヤーへの参照
+ * @details レベル別HPテーブルを上の添字へ伸ばすモンスターHP成長機構
+ *          (CreatureEntity::grow_hp_table_to_level) を検証するためのコマンド。
+ *          通常プレイのゲームバランスには影響しない (本コマンド経由でのみ発火する)。
+ */
+void wiz_level_up_target_monster(CreatureEntity &creature)
+{
+    const auto pos = target_set(creature, TARGET_KILL).get_position();
+    if (!pos) {
+        return;
+    }
+
+    auto &floor = *creature.get_floor();
+    const auto &grid = floor.get_grid(*pos);
+    if (!grid.has_monster()) {
+        msg_print(_("そこにはモンスターはいない。", "There is no monster there."));
+        return;
+    }
+
+    auto &monster = floor.get_monster(grid.m_idx);
+    const auto m_name = monster_desc(creature, monster, 0);
+    const auto input_level = input_integer(_("レベル", "Level"), monster.get_level() + 1, PY_MAX_LEVEL, monster.get_level() + 1);
+    if (!input_level.has_value()) {
+        return;
+    }
+
+    const auto old_maxhp = monster.get_max_maxhp();
+    monster.grow_hp_table_to_level(*input_level);
+    update_monster(creature, grid.m_idx, false);
+    RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::HEALTH);
+    msg_format(_("%s^をレベル%dに成長させた (最大HP %d→%d)。", "%s^ grew to level %d (max HP %d -> %d)."),
+        m_name.data(), monster.get_level(), old_maxhp, monster.get_max_maxhp());
+}
+
 /* @brief 死を欺く仕様(馬鹿馬鹿蛮怒独自実装) */
-void cheat_death(PlayerType *player_ptr, bool no_penalty)
+void cheat_death(CreatureEntity &creature, bool no_penalty)
 {
     if (!no_penalty) {
 
@@ -774,13 +862,13 @@ void cheat_death(PlayerType *player_ptr, bool no_penalty)
 
         case 0: {
             auto blank_years = Dice::roll(8, 10);
-            player_ptr->prestige /= 2;
-            player_ptr->age += static_cast<int16_t>(blank_years);
+            creature.divide_prestige(2);
+            creature.add_age(static_cast<int16_t>(blank_years));
 
-            player_ptr->max_max_exp = (player_ptr->max_max_exp * 6 / (randint1(3) + 6));
-            player_ptr->max_exp = player_ptr->max_max_exp;
-            player_ptr->exp = player_ptr->max_max_exp;
-            player_ptr->au /= 2;
+            creature.set_max_max_exp((creature.get_max_max_exp() * 6 / (randint1(3) + 6)));
+            creature.set_max_exp(creature.get_max_max_exp());
+            creature.set_exp(creature.get_max_max_exp());
+            creature.divide_au(2);
 
             msg_print(_("『ぬわああああん、疲れたなもおおおおん！』", "\"Aaaaaah! I'm hellish tireeeed!\""));
             msg_format(_("あなたは死んだ罰として＠人墓場でイェンダーの魔法使い共に%d年間奴隷労働を強いられた！",
@@ -791,8 +879,8 @@ void cheat_death(PlayerType *player_ptr, bool no_penalty)
 
         case 1: {
             auto blank_years = Dice::roll(2, 10);
-            player_ptr->prestige /= 2;
-            player_ptr->age += static_cast<int16_t>(blank_years);
+            creature.divide_prestige(2);
+            creature.add_age(static_cast<int16_t>(blank_years));
             msg_print(_("『猿先生何も考えてないと思うよ』", "\"I think that Mr.Sawatari thinks nothing.\""));
             msg_format(_("あなたは連載%d年の間猿空間に迷い込んでいた！ついでに死んだ設定も忘れ去られていた！",
                            "You have been lost in the *S*A*R*U* space for %d years! By the way, the dead setting was also forgotten!"),
@@ -806,7 +894,7 @@ void cheat_death(PlayerType *player_ptr, bool no_penalty)
             break;
 
         case 3:
-            msg_format(_("王大人『%s 死亡確認』", "\"Lord Wang confirmed that %s is dead.\""), player_ptr->name.data());
+            msg_format(_("王大人『%s 死亡確認』", "\"Lord Wang confirmed that %s is dead.\""), creature.name.data());
             break;
 
         default:
@@ -814,43 +902,42 @@ void cheat_death(PlayerType *player_ptr, bool no_penalty)
         }
     }
 
-    auto &world = AngbandWorld::get_instance();
-    world.noscore |= 0x0001;
+    InnerGameData::get_instance().add_no_score(0x0001);
     msg_erase();
 
-    player_ptr->is_dead_ = false;
-    (void)life_stream(player_ptr, false, false);
-    (void)restore_mana(player_ptr, true);
-    (void)recall_player(player_ptr, 0);
-    reserve_alter_reality(player_ptr, 0);
+    creature.is_dead_ = false;
+    (void)life_stream(creature, false, false);
+    (void)restore_mana(creature, true);
+    (void)recall_player(creature, 0);
+    reserve_alter_reality(creature, 0);
 
-    player_ptr->died_from = _("死の欺き", "Cheating death");
-    (void)set_food(player_ptr, PY_FOOD_MAX - 1);
+    creature.died_from = _("死の欺き", "Cheating death");
+    (void)set_food(creature, PY_FOOD_MAX - 1);
 
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *creature.get_floor();
     floor.dun_level = 0;
     floor.inside_arena = false;
     AngbandSystem::get_instance().set_phase_out(false);
     leaving_quest = QuestId::NONE;
     floor.quest_number = QuestId::NONE;
     if (floor.is_underground()) {
-        player_ptr->recall_dungeon = floor.dungeon_id;
+        creature.set_recall_dungeon(floor.dungeon_id);
     }
 
     floor.reset_dungeon_index();
     auto &wilderness = WildernessGrids::get_instance();
     wilderness.initialize_position();
     if (vanilla_town) {
-        player_ptr->oldpy = 10;
-        player_ptr->oldpx = 34;
+        creature.oldpy = 10;
+        creature.oldpx = 34;
     } else {
-        player_ptr->oldpy = 33;
-        player_ptr->oldpx = 131;
+        creature.oldpy = 33;
+        creature.oldpx = 131;
     }
 
-    world.set_wild_mode(false);
-    player_ptr->leaving = true;
+    AngbandWorld::get_instance().set_wild_mode(false);
+    creature.set_leaving(true);
     constexpr auto note = _("                            しかし、生き返った。", "                            but revived.");
     exe_write_diary(floor, DiaryKind::DESCRIPTION, 1, note);
-    leave_floor(player_ptr);
+    leave_floor(creature);
 }

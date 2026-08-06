@@ -18,6 +18,7 @@
 #include "grid/grid.h"
 #include "monster-attack/monster-attack-player.h"
 #include "monster-attack/monster-attack-table.h"
+#include "monster-floor/monster-drop-generator.h"
 #include "monster-floor/monster-move.h"
 #include "monster-floor/place-monster-types.h"
 #include "monster-race/monster-kind-mask.h"
@@ -28,34 +29,135 @@
 #include "monster/monster-info.h"
 #include "monster/monster-list.h"
 #include "monster/monster-status-setter.h"
+#include "monster/monster-timed-effects.h"
 #include "monster/monster-update.h"
 #include "monster/monster-util.h"
 #include "object/warning.h"
+#include "player-ability/player-ability-types.h"
+#include "player-base/player-class.h"
+#include "player/digestion-processor.h"
+#include "player/player-sex.h"
 #include "player/player-status.h"
+#include "system/creature-entity.h"
+#include "system/dungeon/quest-definition.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/enums/terrain/terrain-characteristics.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "view/display-messages.h"
 #include "wizard/wizard-messages.h"
 #include "world/world.h"
+#include <algorithm>
 #include <range/v3/algorithm.hpp>
 #include <time.h>
 
+namespace {
 /*!
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @brief 無形/エネルギー体の部族フラグ (体格サイズを持たないため HUGE/LARGE/SMALL 不可)
+ */
+const EnumClassFlagGroup<MonsterKindType> FORMLESS_KINDS = {
+    MonsterKindType::GHOST,
+    MonsterKindType::ELEMENTAL,
+    MonsterKindType::VORTEX,
+};
+
+/*!
+ * @brief 柔組織(肉)を持たない部族フラグ (肥満 FAT / 痩せ GAUNT 不可)
+ * @details 構造物・機械・素材製・骨格・無形・抽象・不定形、および植物/菌
+ * (植物・菌の体格変化はいずれ別途定義するため現状は除外)。
+ */
+const EnumClassFlagGroup<MonsterKindType> NON_FLESH_KINDS = {
+    // 構造物・機械
+    MonsterKindType::GOLEM,
+    MonsterKindType::ROBOT,
+    MonsterKindType::WHEEL,
+    MonsterKindType::SHIP,
+    MonsterKindType::MIMIC,
+    MonsterKindType::ALARM,
+    MonsterKindType::EXPLOSIVE,
+    // 素材製
+    MonsterKindType::WOODEN,
+    MonsterKindType::IRON,
+    MonsterKindType::COPPER,
+    MonsterKindType::STONE,
+    MonsterKindType::SILVER,
+    MonsterKindType::GOLD,
+    MonsterKindType::MITHRIL,
+    MonsterKindType::ADAMANTITE,
+    MonsterKindType::DARKSTEEL,
+    MonsterKindType::WARPSTONE,
+    MonsterKindType::PAPER,
+    // 骨格 (肉が無い)
+    MonsterKindType::SKELETON,
+    MonsterKindType::LICH,
+    // 無形/エネルギー/抽象/不定形
+    MonsterKindType::GHOST,
+    MonsterKindType::ELEMENTAL,
+    MonsterKindType::VORTEX,
+    MonsterKindType::QUANTUM,
+    MonsterKindType::VIRUS,
+    MonsterKindType::WALL,
+    MonsterKindType::OOZE,
+    // 植物・菌 (肥満/痩せは別途定義予定)
+    MonsterKindType::PLANT,
+    MonsterKindType::TREEFOLK,
+    MonsterKindType::FUNGAS,
+    MonsterKindType::FUNGUS,
+};
+
+/*!
+ * @brief NONLIVING でも肉体(柔組織)を持つ例外部族フラグ
+ * @details デーモン等は NONLIVING 扱いだが肉体を持つため肥満/痩せの対象とする。
+ */
+const EnumClassFlagGroup<MonsterKindType> FLESHY_NONLIVING_KINDS = {
+    MonsterKindType::DEMON,
+    MonsterKindType::ZOMBIE,
+    MonsterKindType::VAMPIRE,
+};
+
+/*!
+ * @brief 有形の実体を持つか (体格サイズ HUGE/LARGE/SMALL の付与対象か)
+ * @details 無形/エネルギー体でなければ有形とみなす。構造物・素材製・不定形(ウーズ)も対象。
+ */
+bool has_solid_body(const MonraceDefinition &monrace)
+{
+    return monrace.kind_flags.has_none_of(FORMLESS_KINDS);
+}
+
+/*!
+ * @brief 柔組織(肉)を持つか (肥満 FAT / 痩せ GAUNT の付与対象か)
+ * @details 非肉体系フラグを持たず、かつ生者または肉体系 NONLIVING 例外(デーモン等)であること。
+ */
+bool has_flesh_body(const MonraceDefinition &monrace)
+{
+    if (monrace.kind_flags.has_any_of(NON_FLESH_KINDS)) {
+        return false;
+    }
+
+    return monrace.kind_flags.has_not(MonsterKindType::NONLIVING) || monrace.kind_flags.has_any_of(FLESHY_NONLIVING_KINDS);
+}
+
+/*!
+ * @brief 不定形の部族か (体格サイズ変化を積極的に起こす対象か)
+ */
+bool is_actively_resizable(const MonraceDefinition &monrace)
+{
+    return monrace.kind_flags.has(MonsterKindType::OOZE);
+}
+}
+
+/*!
+ * @param creature クリーチャーへの参照
  * @brief モンスターの表層IDを設定する / Set initial racial appearance of a monster
  * @param r_idx モンスター種族ID
  * @return モンスター種族の表層ID
  */
-static MonraceId initial_r_appearance(PlayerType *player_ptr, MonraceId r_idx, BIT_FLAGS generate_mode)
+static MonraceId initial_r_appearance(CreatureEntity &creature, MonraceId r_idx, BIT_FLAGS generate_mode)
 {
-    auto *floor_ptr = player_ptr->current_floor_ptr;
-    if (is_chargeman(player_ptr) && any_bits(generate_mode, PM_JURAL) && none_bits(generate_mode, PM_MULTIPLY | PM_KAGE)) {
+    if (creature.is_chargeman() && any_bits(generate_mode, PM_JURAL) && none_bits(generate_mode, PM_MULTIPLY | PM_KAGE)) {
         return MonraceId::ALIEN_JURAL;
     }
 
@@ -63,12 +165,12 @@ static MonraceId initial_r_appearance(PlayerType *player_ptr, MonraceId r_idx, B
         return r_idx;
     }
 
-    get_mon_num_prep_enum(player_ptr, MonraceHook::TANUKI);
+    get_mon_num_prep_enum(creature, MonraceHook::TANUKI);
     auto attempts = 1000;
-    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     auto min = std::min(floor.base_level - 5, 50);
     while (--attempts) {
-        auto ap_r_idx = get_mon_num(player_ptr, 0, floor_ptr->base_level + 10, PM_NONE);
+        auto ap_r_idx = get_mon_num(creature, 0, floor.base_level + 10, PM_NONE);
         if (MonraceList::get_instance().get_monrace(ap_r_idx).level >= min) {
             return ap_r_idx;
         }
@@ -79,7 +181,7 @@ static MonraceId initial_r_appearance(PlayerType *player_ptr, MonraceId r_idx, B
 
 /*!
  * @brief ユニークが生成可能か評価する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param r_idx 生成モンスター種族
  * @return ユニークの生成が不可能な条件ならFALSE、それ以外はTRUE
  */
@@ -137,7 +239,7 @@ static bool check_quest_placeable(const FloorType &floor, MonraceId r_idx)
     }
     const auto has_quest_monrace = [&](const Pos2D &pos) {
         const auto &grid = floor.get_grid(pos);
-        return grid.has_monster() && (floor.m_list[grid.m_idx].r_idx == quest.r_idx);
+        return grid.has_monster() && (floor.m_list[grid.m_idx].get_r_idx() == quest.r_idx);
     };
     const auto number_mon = ranges::count_if(floor.get_area(), has_quest_monrace);
 
@@ -149,15 +251,15 @@ static bool check_quest_placeable(const FloorType &floor, MonraceId r_idx)
 
 /*!
  * @brief 守りのルーン上にモンスターの配置を試みる
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param r_idx 生成モンスター種族
  * @param y 生成位置y座標
  * @param x 生成位置x座標
  * @return 生成が可能ならTRUE、不可能ならFALSE
  */
-static bool check_procection_rune(PlayerType *player_ptr, MonraceId monrace_id, const Pos2D &pos)
+static bool check_procection_rune(CreatureEntity &creature, MonraceId monrace_id, const Pos2D &pos)
 {
-    auto &grid = player_ptr->current_floor_ptr->get_grid(pos);
+    auto &grid = creature.get_floor()->get_grid(pos);
     if (!grid.is_rune_protection()) {
         return true;
     }
@@ -174,13 +276,13 @@ static bool check_procection_rune(PlayerType *player_ptr, MonraceId monrace_id, 
     reset_bits(grid.info, CAVE_MARK);
     reset_bits(grid.info, CAVE_OBJECT);
     grid.mimic = 0;
-    note_spot(player_ptr, pos);
+    note_spot(creature, pos);
     return true;
 }
 
-static void warn_unique_generation(PlayerType *player_ptr, MonraceId r_idx)
+static void warn_unique_generation(CreatureEntity &creature, MonraceId r_idx)
 {
-    if (!player_ptr->warning || !AngbandWorld::get_instance().character_dungeon) {
+    if (!creature.has_warning_flag() || !AngbandWorld::get_instance().character_dungeon) {
         return;
     }
 
@@ -190,23 +292,23 @@ static void warn_unique_generation(PlayerType *player_ptr, MonraceId r_idx)
     }
 
     std::string color;
-    if (monrace.level > player_ptr->level + 30) {
+    if (monrace.level > creature.get_level() + 30) {
         color = _("黒く", "black");
-    } else if (monrace.level > player_ptr->level + 15) {
+    } else if (monrace.level > creature.get_level() + 15) {
         color = _("紫色に", "purple");
-    } else if (monrace.level > player_ptr->level + 5) {
+    } else if (monrace.level > creature.get_level() + 5) {
         color = _("ルビー色に", "deep red");
-    } else if (monrace.level > player_ptr->level - 5) {
+    } else if (monrace.level > creature.get_level() - 5) {
         color = _("赤く", "red");
-    } else if (monrace.level > player_ptr->level - 15) {
+    } else if (monrace.level > creature.get_level() - 15) {
         color = _("ピンク色に", "pink");
     } else {
         color = _("白く", "white");
     }
 
-    auto *o_ptr = choose_warning_item(player_ptr);
-    if (o_ptr != nullptr) {
-        const auto item_name = describe_flavor(player_ptr, *o_ptr, (OD_OMIT_PREFIX | OD_NAME_ONLY));
+    const auto &item = choose_warning_item(creature);
+    if (item) {
+        const auto item_name = describe_flavor(creature, *item, (OD_OMIT_PREFIX | OD_NAME_ONLY));
         msg_format(_("%sは%s光った。", "%s glows %s."), item_name.data(), color.data());
     } else {
         msg_format(_("%s光る物が頭に浮かんだ。", "A %s image forms in your mind."), color.data());
@@ -215,7 +317,7 @@ static void warn_unique_generation(PlayerType *player_ptr, MonraceId r_idx)
 
 /*!
  * @brief モンスターを一体生成する / Attempt to place a monster of the given race at the given location.
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param player プレイヤーへの参照
  * @param y 生成位置y座標
  * @param x 生成位置x座標
  * @param r_idx 生成モンスター種族
@@ -223,9 +325,9 @@ static void warn_unique_generation(PlayerType *player_ptr, MonraceId r_idx)
  * @param summoner_m_idx モンスターの召喚による場合、召喚主のモンスターID
  * @return 生成に成功したらモンスターID、失敗したらtl::nullopt
  */
-tl::optional<MONSTER_IDX> place_monster_one(PlayerType *player_ptr, POSITION y, POSITION x, MonraceId r_idx, BIT_FLAGS mode, tl::optional<MONSTER_IDX> summoner_m_idx)
+tl::optional<MONSTER_IDX> place_monster_one(CreatureEntity &player, POSITION y, POSITION x, MonraceId r_idx, BIT_FLAGS mode, tl::optional<MONSTER_IDX> summoner_m_idx)
 {
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *player.get_floor();
     auto pos = Pos2D(y, x);
     auto *g_ptr = &floor.grid_array[y][x];
     auto &monrace = MonraceList::get_instance().get_monrace(r_idx);
@@ -234,15 +336,15 @@ tl::optional<MONSTER_IDX> place_monster_one(PlayerType *player_ptr, POSITION y, 
         return tl::nullopt;
     }
 
-    if (none_bits(mode, PM_IGNORE_TERRAIN) && (g_ptr->has(TerrainCharacteristics::PATTERN) || !monster_can_enter(player_ptr, pos.y, pos.x, monrace, 0))) {
+    if (none_bits(mode, PM_IGNORE_TERRAIN) && (g_ptr->has(TerrainCharacteristics::PATTERN) || !monster_can_enter(player, pos.y, pos.x, monrace, 0))) {
         return tl::nullopt;
     }
 
-    if (!check_unique_placeable(floor, r_idx, mode) || !check_quest_placeable(floor, r_idx) || !check_procection_rune(player_ptr, r_idx, pos)) {
+    if (!check_unique_placeable(floor, r_idx, mode) || !check_quest_placeable(floor, r_idx) || !check_procection_rune(const_cast<CreatureEntity &>(player), r_idx, pos)) {
         return tl::nullopt;
     }
 
-    msg_format_wizard(player_ptr, CHEAT_MONSTER, _("%s(Lv%d)を生成しました。", "%s(Lv%d) was generated."), monrace.name.data(), monrace.level);
+    msg_format_wizard(player, CHEAT_MONSTER, _("%s(Lv%d)を生成しました。", "%s(Lv%d) was generated."), monrace.name.data(), monrace.level);
     if (monrace.kind_flags.has(MonsterKindType::UNIQUE) || monrace.population_flags.has(MonsterPopulationType::NAZGUL) || (monrace.level < 10)) {
         reset_bits(mode, PM_KAGE);
     }
@@ -253,235 +355,309 @@ tl::optional<MONSTER_IDX> place_monster_one(PlayerType *player_ptr, POSITION y, 
         return tl::nullopt;
     }
 
-    MonsterEntity *m_ptr;
+    CreatureEntity *m_ptr;
     m_ptr = &floor.m_list[g_ptr->m_idx];
     m_ptr->wipe(); // モンスターを初期化（古いデータをクリア）
 
     // モンスターの能力値をランダムに初期化
-    get_stats(m_ptr);
+    get_stats(*m_ptr);
 
-    m_ptr->alliance_idx = monrace.alliance_idx;
+    m_ptr->set_alliance_idx(monrace.alliance_idx);
 
-    m_ptr->mflag.clear();
-    m_ptr->mflag2.clear();
-    m_ptr->current_floor_ptr = player_ptr->current_floor_ptr;
+    m_ptr->clear_temporary_flags();
+    m_ptr->clear_constant_flags();
+    m_ptr->set_floor(player.get_floor());
 
     if (monrace.misc_flags.has(MonsterMiscType::CHAMELEON)) {
-        m_ptr->r_idx = r_idx;
-        choose_chameleon_polymorph(player_ptr, g_ptr->m_idx, g_ptr->get_terrain_id(), summoner_m_idx);
-        m_ptr->mflag2.set(MonsterConstantFlagType::CHAMELEON);
+        m_ptr->set_r_idx(r_idx);
+        choose_chameleon_polymorph(player, g_ptr->m_idx, g_ptr->get_terrain_id(), summoner_m_idx);
+        m_ptr->set_constant_flag(MonsterConstantFlagType::CHAMELEON);
     } else if (any_bits(mode, PM_CHAMELEON_FINAL_SUMMON)) {
-        m_ptr->r_idx = r_idx;
-        m_ptr->ap_r_idx = r_idx;
-        m_ptr->mflag2.set(MonsterConstantFlagType::CHAMELEON);
+        m_ptr->polymorph_to(r_idx);
+        m_ptr->set_constant_flag(MonsterConstantFlagType::CHAMELEON);
     } else {
-        m_ptr->r_idx = r_idx;
+        m_ptr->set_r_idx(r_idx);
         if (any_bits(mode, PM_KAGE) && none_bits(mode, PM_FORCE_PET)) {
-            m_ptr->ap_r_idx = MonraceId::KAGE;
-            m_ptr->mflag2.set(MonsterConstantFlagType::KAGE);
+            m_ptr->set_ap_r_idx(MonraceId::KAGE);
+            m_ptr->set_constant_flag(MonsterConstantFlagType::KAGE);
         } else {
-            m_ptr->ap_r_idx = initial_r_appearance(player_ptr, r_idx, mode);
+            m_ptr->set_ap_r_idx(initial_r_appearance(const_cast<CreatureEntity &>(player), r_idx, mode));
         }
     }
 
     const auto &new_monrace = m_ptr->get_monrace();
+    // 種族側で能力値補正が指定されていれば、ロール結果に加算する。
+    // 補正値は内部 10 単位 (表示 1.0 = 10) で格納されており、tl::nullopt の能力値は補正しない。
+    constexpr short stat_min = STAT_MIN_VALUE;
+    constexpr short stat_max = STAT_MAX_VALUE;
+    for (auto stat = 0; stat < A_MAX; ++stat) {
+        const auto &mod = new_monrace.stat_modifiers[stat];
+        if (!mod.has_value()) {
+            continue;
+        }
+        auto adjusted = static_cast<int>(m_ptr->get_stat_max(stat)) + *mod;
+        adjusted = std::clamp(adjusted, static_cast<int>(stat_min), static_cast<int>(stat_max));
+        m_ptr->set_stat_max(stat, static_cast<short>(adjusted));
+        m_ptr->set_stat_cur(stat, static_cast<short>(adjusted));
+        if (m_ptr->get_stat_max_max(stat) < m_ptr->get_stat_max(stat)) {
+            m_ptr->set_stat_max_max(stat, m_ptr->get_stat_max(stat));
+        }
+        m_ptr->set_stat_use(stat, m_ptr->get_stat_max(stat));
+    }
     const auto is_summoned = summoner_m_idx.has_value();
-    const MonsterEntity &summoner = floor.m_list[summoner_m_idx.value_or(0)];
+    const CreatureEntity &summoner = floor.m_list[summoner_m_idx.value_or(0)];
 
-    auto same_appearance_as_parent = m_ptr->mflag2.has_not(MonsterConstantFlagType::CHAMELEON);
+    auto same_appearance_as_parent = !m_ptr->is_chameleon();
     same_appearance_as_parent &= any_bits(mode, PM_MULTIPLY);
     same_appearance_as_parent &= is_summoned && !summoner.is_original_ap();
 
     if (same_appearance_as_parent) {
-        m_ptr->ap_r_idx = summoner.ap_r_idx;
-        if (summoner.mflag2.has(MonsterConstantFlagType::KAGE)) {
-            m_ptr->mflag2.set(MonsterConstantFlagType::KAGE);
+        m_ptr->set_ap_r_idx(summoner.get_ap_r_idx());
+        if (summoner.is_kage()) {
+            m_ptr->set_constant_flag(MonsterConstantFlagType::KAGE);
         }
     }
 
     time_t now = time(nullptr);
     struct tm *t = localtime(&now);
     if (t->tm_mon == 11 && t->tm_mday >= 24 && t->tm_mday <= 25 && one_in_(6)) {
-        if (none_bits(mode, PM_MULTIPLY | PM_KAGE) && m_ptr->r_idx != MonraceId::SANTA) {
-            m_ptr->mflag2.set(MonsterConstantFlagType::SANTA);
+        if (none_bits(mode, PM_MULTIPLY | PM_KAGE) && m_ptr->get_r_idx() != MonraceId::SANTA) {
+            m_ptr->set_constant_flag(MonsterConstantFlagType::SANTA);
         }
     }
 
-    if (monrace.kind_flags.has_not(MonsterKindType::UNIQUE) && one_in_(100)) {
-        m_ptr->mflag2.set(MonsterConstantFlagType::HUGE);
-    } else if (monrace.kind_flags.has_not(MonsterKindType::UNIQUE) &&
-               m_ptr->mflag2.has_not(MonsterConstantFlagType::HUGE) && one_in_(15)) {
-        m_ptr->mflag2.set(MonsterConstantFlagType::LARGE);
+    // 体格サイズ (巨大/大型/小型): 有形の実体を持つ部族のみ。無形/エネルギー体は対象外。
+    // 不定形 (ウーズ) は積極的にサイズ変化させる。
+    const auto is_not_unique = new_monrace.kind_flags.has_not(MonsterKindType::UNIQUE);
+    if (is_not_unique && has_solid_body(new_monrace)) {
+        const auto resizable = is_actively_resizable(new_monrace);
+        const auto huge_chance = resizable ? 30 : 100;
+        const auto large_chance = resizable ? 6 : 15;
+        const auto small_chance = resizable ? 6 : 18;
+        if (one_in_(huge_chance)) {
+            m_ptr->set_constant_flag(MonsterConstantFlagType::HUGE);
+        } else if (one_in_(large_chance)) {
+            m_ptr->set_constant_flag(MonsterConstantFlagType::LARGE);
+        }
+
+        if (!m_ptr->is_large() && !m_ptr->is_huge() && one_in_(small_chance)) {
+            m_ptr->set_constant_flag(MonsterConstantFlagType::SMALL);
+        }
     }
 
-    if (monrace.kind_flags.has_not(MonsterKindType::UNIQUE) &&
-        m_ptr->mflag2.has_not(MonsterConstantFlagType::LARGE) &&
-        m_ptr->mflag2.has_not(MonsterConstantFlagType::HUGE) && one_in_(18)) {
-        m_ptr->mflag2.set(MonsterConstantFlagType::SMALL);
-    }
-
-    if (monrace.kind_flags.has_not(MonsterKindType::UNIQUE) &&
-        monrace.kind_flags.has_not(MonsterKindType::NONLIVING) && one_in_(20)) {
-        m_ptr->mflag2.set(MonsterConstantFlagType::FAT);
-    } else if (monrace.kind_flags.has_not(MonsterKindType::UNIQUE) &&
-               monrace.kind_flags.has_not(MonsterKindType::NONLIVING) &&
-               m_ptr->mflag2.has_not(MonsterConstantFlagType::FAT) && one_in_(25)) {
-        m_ptr->mflag2.set(MonsterConstantFlagType::GAUNT);
+    // 肥満/痩せ: 柔組織(肉)を持つ部族のみ。NONLIVING でも肉体系(デーモン等)は対象。
+    // 構造物・素材製・骨格・無形・不定形・植物/菌は対象外。
+    if (is_not_unique && has_flesh_body(new_monrace) && one_in_(20)) {
+        m_ptr->set_constant_flag(MonsterConstantFlagType::FAT);
+    } else if (is_not_unique && has_flesh_body(new_monrace) && !m_ptr->is_fat() && one_in_(25)) {
+        m_ptr->set_constant_flag(MonsterConstantFlagType::GAUNT);
     }
 
     if (monrace.kind_flags.has_not(MonsterKindType::UNIQUE) &&
         monrace.kind_flags.has(MonsterKindType::HUMAN) && one_in_(80)) {
-        m_ptr->mflag2.set(MonsterConstantFlagType::NAKED);
+        m_ptr->set_constant_flag(MonsterConstantFlagType::NAKED);
     }
 
     if (monrace.kind_flags.has_not(MonsterKindType::UNIQUE) &&
         monrace.kind_flags.has_not(MonsterKindType::NONLIVING) &&
         monrace.kind_flags.has_not(MonsterKindType::UNDEAD) && one_in_(50)) {
-        m_ptr->mflag2.set(MonsterConstantFlagType::ZOMBIFIED);
+        m_ptr->set_constant_flag(MonsterConstantFlagType::ZOMBIFIED);
     }
 
     if (monrace.kind_flags.has_not(MonsterKindType::UNIQUE) &&
         monrace.misc_flags.has(MonsterMiscType::NO_WAIFUZATION) && one_in_(20)) {
-        m_ptr->mflag2.set(MonsterConstantFlagType::WAIFUIZED);
+        m_ptr->set_constant_flag(MonsterConstantFlagType::WAIFUIZED);
     }
 
     // 違法改造フラグの付与
     if (monrace.kind_flags.has_not(MonsterKindType::UNIQUE) &&
         (monrace.kind_flags.has(MonsterKindType::GOLEM) || monrace.kind_flags.has(MonsterKindType::ROBOT)) &&
         one_in_(40)) {
-        m_ptr->mflag2.set(MonsterConstantFlagType::ILLEGAL_MODIFIED);
+        m_ptr->set_constant_flag(MonsterConstantFlagType::ILLEGAL_MODIFIED);
     }
 
-    // 軽量化フラグの付与
+    // 軽量化フラグの付与 (構造物系: ゴーレム・ロボット)
     if (monrace.kind_flags.has_not(MonsterKindType::UNIQUE) &&
-        monrace.kind_flags.has(MonsterKindType::GOLEM) &&
+        (monrace.kind_flags.has(MonsterKindType::GOLEM) || monrace.kind_flags.has(MonsterKindType::ROBOT)) &&
         one_in_(15)) {
-        m_ptr->mflag2.set(MonsterConstantFlagType::LIGHTWEIGHT);
+        m_ptr->set_constant_flag(MonsterConstantFlagType::LIGHTWEIGHT);
     }
 
-    if (m_ptr->mflag2.has_not(MonsterConstantFlagType::CHAMELEON) && is_summoned && new_monrace.kind_flags.has_none_of(alignment_mask)) {
-        m_ptr->sub_align = summoner.sub_align;
-    } else if (m_ptr->mflag2.has(MonsterConstantFlagType::CHAMELEON) && new_monrace.kind_flags.has(MonsterKindType::UNIQUE) && !is_summoned) {
-        m_ptr->sub_align = SUB_ALIGN_NEUTRAL;
+    if (!m_ptr->is_chameleon() && is_summoned && new_monrace.kind_flags.has_none_of(alignment_mask)) {
+        m_ptr->set_sub_align(summoner.get_sub_align());
+    } else if (m_ptr->is_chameleon() && new_monrace.kind_flags.has(MonsterKindType::UNIQUE) && !is_summoned) {
+        m_ptr->set_sub_align(SUB_ALIGN_NEUTRAL);
     } else {
-        m_ptr->sub_align = SUB_ALIGN_NEUTRAL;
+        m_ptr->set_sub_align(SUB_ALIGN_NEUTRAL);
         if (new_monrace.kind_flags.has(MonsterKindType::EVIL)) {
-            set_bits(m_ptr->sub_align, SUB_ALIGN_EVIL);
+            m_ptr->add_sub_align(SUB_ALIGN_EVIL);
         }
         if (new_monrace.kind_flags.has(MonsterKindType::GOOD)) {
-            set_bits(m_ptr->sub_align, SUB_ALIGN_GOOD);
+            m_ptr->add_sub_align(SUB_ALIGN_GOOD);
         }
     }
 
     m_ptr->y = y;
     m_ptr->x = x;
-    m_ptr->current_floor_ptr = &floor;
+    m_ptr->set_floor(&floor);
 
-    for (const auto mte : MONSTER_TIMED_EFFECT_RANGE) {
-        m_ptr->mtimed[mte] = 0;
+    // 種族の MALE/FEMALE 指定からモンスターの性別を決定する。
+    // データソースは 2 系統:
+    //   1) MonraceDefinition::sex (MonsterSex enum)         例: 女王ベトベト
+    //   2) MonraceDefinition::kind_flags の MALE/FEMALE     例: 一般人間モンスター
+    // 両系統で OR 集約し、両方真→両性、片方→該当、なし→無性とする。
+    {
+        const auto has_male = new_monrace.kind_flags.has(MonsterKindType::MALE) || (new_monrace.sex == MonsterSex::MALE);
+        const auto has_female = new_monrace.kind_flags.has(MonsterKindType::FEMALE) || (new_monrace.sex == MonsterSex::FEMALE);
+        if (has_male && has_female) {
+            m_ptr->psex = SEX_BISEXUAL;
+        } else if (has_male) {
+            m_ptr->psex = SEX_MALE;
+        } else if (has_female) {
+            m_ptr->psex = SEX_FEMALE;
+        } else {
+            m_ptr->psex = SEX_ASEXUAL;
+        }
     }
 
-    m_ptr->cdis = 0;
+    for (const auto mte : MONSTER_TIMED_EFFECT_LIST) {
+        m_ptr->set_timed_effect(mte, 0);
+    }
+
     m_ptr->reset_target();
-    m_ptr->name.clear();
-    m_ptr->exp = 0;
+    // UNIQUE モンスターはペットでなくとも creature.name に種族名を保持し、
+    // ペットの個体名と同じ変数 (CreatureEntity::name) で名前を扱えるようにする。
+    if (new_monrace.kind_flags.has(MonsterKindType::UNIQUE)) {
+        m_ptr->name = new_monrace.name.string();
+    } else {
+        m_ptr->name.clear();
+    }
+    m_ptr->set_exp(0);
 
     if (is_summoned) {
-        m_ptr->parent_m_idx = *summoner_m_idx;
+        m_ptr->set_parent_m_idx(*summoner_m_idx);
         if (summoner.get_monrace().kind_flags.has(MonsterKindType::QUYLTHLUG)) {
-            m_ptr->mflag2.set(MonsterConstantFlagType::QUYLTHLUG_BORN);
+            m_ptr->set_constant_flag(MonsterConstantFlagType::QUYLTHLUG_BORN);
         }
     } else {
-        m_ptr->parent_m_idx = 0;
+        m_ptr->set_parent_m_idx(0);
     }
 
     // 変身情報のコピー
-    m_ptr->transform_r_idx = new_monrace.transform_r_idx;
-    m_ptr->transform_hp_threshold = new_monrace.transform_hp_threshold;
-    m_ptr->has_transformed = false;
+    m_ptr->set_transform_r_idx(new_monrace.transform_r_idx);
+    m_ptr->set_transform_hp_threshold(new_monrace.transform_hp_threshold);
+    m_ptr->set_has_transformed(false);
 
     if (any_bits(mode, PM_CLONE)) {
-        m_ptr->mflag2.set(MonsterConstantFlagType::CLONED);
+        m_ptr->set_constant_flag(MonsterConstantFlagType::CLONED);
     }
 
     if (any_bits(mode, PM_NO_PET)) {
-        m_ptr->mflag2.set(MonsterConstantFlagType::NOPET);
+        m_ptr->set_constant_flag(MonsterConstantFlagType::NOPET);
     }
-
-    // 変身情報のコピー
-    m_ptr->transform_r_idx = new_monrace.transform_r_idx;
-    m_ptr->transform_hp_threshold = new_monrace.transform_hp_threshold;
-    m_ptr->has_transformed = false;
 
     // モンスターのフラグに基づいて対応するプレイヤー種族IDと職業IDを初期化
     m_ptr->initialize_equivalent_player_races();
     m_ptr->initialize_equivalent_player_classes();
 
+    // 材質 (副種族) を初期化し、その能力値修正を能力値へ適用する。
+    m_ptr->initialize_materials();
+    m_ptr->apply_material_stat_modifiers();
+
+    // 非プレイヤーにも性格・魔法領域を設定する
+    // (性格はいかさま以外ランダム、領域は領域持ち職業のみ全領域から完全ランダム)
+    m_ptr->assign_random_personality();
+    m_ptr->assign_random_realm();
+
+    // [提案 C1] JSON で種族・職業が固定指定されたモンスターに prace/pclass を付与
+    // (効果は未反映。フィールド付与のみ)
+    m_ptr->assign_fixed_player_race_and_class();
+
+    // [提案 C7] pclass が付与されたモンスターの class_specific_data を初期化
+    // (青魔/侍/僧/忍者のみ。groundwork で実効果反映は将来)
+    CreatureClass(*m_ptr).init_monster_specific_data();
+
+    // [提案 C5-1] JSON で突然変異が固定指定されたモンスターに付与 (付与のみ、per-turn 処理は別段)
+    m_ptr->assign_fixed_mutations();
+
     // 種族が指定されている場合、身長・体重を設定
-    get_height_weight_for_creature(m_ptr);
+    get_height_weight(*m_ptr);
 
     // 所持金を初期化（能力値に基づいて計算）
-    get_money_for_creature(m_ptr);
+    get_money_for_creature(*m_ptr);
 
-    m_ptr->ml = false;
+    // 満腹度を常に満腹状態 (食べ過ぎにはならない最大値) にする
+    m_ptr->set_food(PY_FOOD_MAX - 1);
+
+    // 最大MPを算出して満タンで開始する。プレイヤーと同じ calc_creature_mana()
+    // (レベル・INT ベースの基礎MP) を用いる。これにより regenerate_monsters() の
+    // 自然回復 (regenmana) が機能し、種族固有能力の行使にMPを使える。
+    m_ptr->set_max_mp(calc_creature_mana(*m_ptr));
+    m_ptr->set_current_mp(m_ptr->get_max_mp());
+
+    m_ptr->set_visible_on_map(false);
     if (any_bits(mode, PM_FORCE_PET)) {
-        set_pet(player_ptr, *m_ptr);
+        set_pet(player, *m_ptr);
     } else {
         auto should_be_friendly = !is_summoned && new_monrace.behavior_flags.has(MonsterBehaviorType::FRIENDLY);
         should_be_friendly |= is_summoned && summoner.is_friendly();
         should_be_friendly |= any_bits(mode, PM_FORCE_FRIENDLY);
-        auto force_hostile = monster_has_hostile_to_player(player_ptr, 0, -1, new_monrace);
-        force_hostile |= player_ptr->current_floor_ptr->inside_arena;
-        if (m_ptr->alliance_idx != AllianceType::NONE) {
-            should_be_friendly |= alliance_list.at(m_ptr->alliance_idx)->isFriendly(player_ptr);
+        auto force_hostile = monster_has_hostile_to_player(player, 0, -1, new_monrace);
+        force_hostile |= floor.inside_arena;
+        if (m_ptr->get_alliance_idx() != AllianceType::NONE) {
+            should_be_friendly |= alliance_list.at(m_ptr->get_alliance_idx())->isFriendly(player);
         }
         if (should_be_friendly && !force_hostile) {
             m_ptr->set_friendly();
         }
     }
 
-    m_ptr->mtimed[MonsterTimedEffect::SLEEP] = 0;
+    m_ptr->set_timed_effect(CreatureTimedEffect::SLEEP_OR_PARALYSIS, 0);
     if (any_bits(mode, PM_ALLOW_SLEEP) && new_monrace.sleep && !ironman_nightmare) {
         int val = new_monrace.sleep;
-        (void)set_monster_csleep(player_ptr, g_ptr->m_idx, (val * 2) + randint1(val * 10));
+        (void)set_monster_csleep(floor, g_ptr->m_idx, (val * 2) + randint1(val * 10));
     }
 
-    if (new_monrace.misc_flags.has(MonsterMiscType::FORCE_MAXHP)) {
-        m_ptr->max_maxhp = new_monrace.hit_dice.maxroll();
-    } else {
-        m_ptr->max_maxhp = new_monrace.hit_dice.roll();
-    }
+    // 敵モンスターの基礎最大HPをレベル別HPテーブル経由で算出する (プレイヤーと
+    // 共通の累積式)。hit_dice をモンスター種族のものに揃えたうえで
+    // roll_monster_hp_table() が per-level ダイスを較正して hp_table[] を埋め、
+    // 実効レベルの累積HP (hp_table[level-1] 相当) を返す。期待値は従来の単発ロール
+    // (hit_dice.roll()) と一致し、分散のみ低下する (スケール保存)。FORCE_MAXHP は
+    // 従来通り hit_dice.maxroll() を基礎HPとする。サイズ補正・CON補正・状態補正は
+    // 従来通り後段で乗算。
+    m_ptr->hit_dice = new_monrace.hit_dice;
+    m_ptr->max_maxhp = m_ptr->roll_monster_hp_table(new_monrace.misc_flags.has(MonsterMiscType::FORCE_MAXHP));
 
-    if (m_ptr->mflag2.has(MonsterConstantFlagType::HUGE)) {
+    if (m_ptr->is_huge()) {
         m_ptr->max_maxhp *= (randint1(8) + 15) / 8;
         m_ptr->max_maxhp = std::min(MONSTER_MAXHP, m_ptr->max_maxhp);
-    } else if (m_ptr->mflag2.has(MonsterConstantFlagType::LARGE)) {
+    } else if (m_ptr->is_large()) {
         m_ptr->max_maxhp *= (randint1(5) + 10) / 8;
         m_ptr->max_maxhp = std::min(MONSTER_MAXHP, m_ptr->max_maxhp);
     }
-    if (m_ptr->mflag2.has(MonsterConstantFlagType::SMALL)) {
+    if (m_ptr->is_small()) {
         m_ptr->max_maxhp *= (randint1(2) + 4) / 8;
         m_ptr->max_maxhp = std::max(1, m_ptr->max_maxhp);
     }
-    if (m_ptr->mflag2.has(MonsterConstantFlagType::FAT)) {
+    if (m_ptr->is_fat()) {
         m_ptr->max_maxhp *= (randint1(3) + 8) / 8;
         m_ptr->max_maxhp = std::min(MONSTER_MAXHP, m_ptr->max_maxhp);
     }
-    if (m_ptr->mflag2.has(MonsterConstantFlagType::GAUNT)) {
+    if (m_ptr->is_gaunt()) {
         m_ptr->max_maxhp *= (randint1(3) + 4) / 8;
         m_ptr->max_maxhp = std::max(1, m_ptr->max_maxhp);
     }
-    if (m_ptr->mflag2.has(MonsterConstantFlagType::ZOMBIFIED)) {
+    if (m_ptr->is_zombified()) {
         m_ptr->max_maxhp *= (randint1(3) + 5) / 8;
         m_ptr->max_maxhp = std::max(1, m_ptr->max_maxhp);
         // ゾンビ化したモンスターにUNDEADフラグを付与
         m_ptr->get_monrace().kind_flags.set(MonsterKindType::UNDEAD);
     }
-    if (m_ptr->mflag2.has(MonsterConstantFlagType::ILLEGAL_MODIFIED)) {
+    if (m_ptr->is_illegal_modified()) {
         m_ptr->max_maxhp *= (randint1(3) + 10) / 8; // 1.5倍～1.75倍のHPボーナス
         m_ptr->max_maxhp = std::min(MONSTER_MAXHP, m_ptr->max_maxhp);
     }
-    if (m_ptr->mflag2.has(MonsterConstantFlagType::LIGHTWEIGHT)) {
+    if (m_ptr->is_lightweight()) {
         m_ptr->max_maxhp *= (randint1(2) + 5) / 8; // 0.625倍～0.75倍のHP減少
         m_ptr->max_maxhp = std::max(1, m_ptr->max_maxhp);
     }
@@ -501,54 +677,80 @@ tl::optional<MONSTER_IDX> place_monster_one(PlayerType *player_ptr, POSITION y, 
         m_ptr->max_maxhp = std::min(MONSTER_MAXHP, hp);
     }
 
-    m_ptr->maxhp = m_ptr->max_maxhp;
+    // 耐久(CON)に基づく最大HP補正をプレイヤーと共通の式で常に適用する。
+    // 低CON個体では負値となり得るため、プレイヤーと共通の下限 (レベル+1) を保証する。
+    {
+        auto hp = m_ptr->max_maxhp + m_ptr->calc_max_hp_con_bonus();
+        m_ptr->max_maxhp = std::clamp(hp, m_ptr->calc_min_max_hp(), MONSTER_MAXHP);
+    }
+
+    // 一時状態(英雄化/狂戦士化/つよし/呪術)による最大HP補正も共通式で適用する。
+    // 生成直後の通常モンスターは該当状態を持たないため通常は 0。
+    {
+        auto hp = m_ptr->max_maxhp + m_ptr->calc_max_hp_status_bonus();
+        m_ptr->max_maxhp = std::min(MONSTER_MAXHP, hp);
+    }
+
+    // 本来の最大HP (max_maxhp) を確定済み。一時減少を反映した現在の最大HP (maxhp) を導く。
+    m_ptr->refresh_max_hp();
     if (new_monrace.cur_hp_per != 0) {
         m_ptr->hp = m_ptr->maxhp * new_monrace.cur_hp_per / 100;
     } else {
         m_ptr->hp = m_ptr->maxhp;
     }
 
-    m_ptr->dealt_damage = 0;
+    m_ptr->set_dealt_damage(0);
     if (monrace.suicide_dice_num && monrace.suicide_dice_side) {
-        m_ptr->death_count = Dice::roll(monrace.suicide_dice_num, monrace.suicide_dice_side);
+        m_ptr->set_death_count(Dice::roll(monrace.suicide_dice_num, monrace.suicide_dice_side));
     }
+
+    // [Phase 2] body_structure 由来の拡張装備スロットを初期化
+    m_ptr->init_extended_inventory();
 
     m_ptr->set_individual_speed(floor.inside_arena);
 
     // Initialize AC from monster race
-    m_ptr->ac = new_monrace.ac;
-    if (m_ptr->mflag2.has(MonsterConstantFlagType::ILLEGAL_MODIFIED)) {
-        m_ptr->ac += randint1(10) + 5; // +6～+15のACボーナス
+    m_ptr->set_ac(new_monrace.ac);
+    if (m_ptr->is_illegal_modified()) {
+        m_ptr->set_ac(m_ptr->ac + randint1(10) + 5); // +6～+15のACボーナス
     }
 
-    if (m_ptr->mflag2.has(MonsterConstantFlagType::HUGE)) {
+    if (m_ptr->is_huge()) {
         m_ptr->speed -= randint1(2) + 2;
     }
-    if (m_ptr->mflag2.has(MonsterConstantFlagType::GAUNT)) {
+    if (m_ptr->is_gaunt()) {
         m_ptr->speed -= randint1(3);
     }
-    if (m_ptr->mflag2.has(MonsterConstantFlagType::SMALL)) {
+    if (m_ptr->is_small()) {
         m_ptr->speed += randint1(2) + 1;
     }
-    if (m_ptr->mflag2.has(MonsterConstantFlagType::ILLEGAL_MODIFIED)) {
+    if (m_ptr->is_illegal_modified()) {
         m_ptr->speed += randint1(5) + 3; // +3～+7の加速ボーナス
     }
-    if (m_ptr->mflag2.has(MonsterConstantFlagType::LIGHTWEIGHT)) {
+    if (m_ptr->is_lightweight()) {
         m_ptr->speed += randint1(3) + 2; // +2～+4の加速ボーナス
     }
 
+    // [提案C1第11弾] 付与種族の加速 (TR_SPEED) を生成時速度へ opt-in 反映 (既定OFF)。
+    // プレイヤーの種族速度は種族依存 (KLACKON/SPRITE のみ) かつ位置/レベル依存で動的なため、
+    // 静的な speed フィールドで動くモンスターには保守的な固定近似 (+3) を用いる。調整用定数。
+    if (m_ptr->has_race_granted_speed()) {
+        constexpr short race_granted_speed_bonus = 3;
+        m_ptr->speed += race_granted_speed_bonus;
+    }
+
     if (any_bits(mode, PM_HASTE)) {
-        (void)set_monster_fast(player_ptr, g_ptr->m_idx, 100);
+        (void)set_monster_fast(floor, g_ptr->m_idx, 100);
     }
 
     if (!ironman_nightmare) {
-        m_ptr->energy_need = ENERGY_NEED() - randnum0<short>(100);
+        m_ptr->set_energy_need(ENERGY_NEED() - randnum0<short>(100));
     } else {
-        m_ptr->energy_need = ENERGY_NEED() - randnum0<short>(100) * 2;
+        m_ptr->set_energy_need(ENERGY_NEED() - randnum0<short>(100) * 2);
     }
 
     if (!ironman_nightmare) {
-        m_ptr->mflag.set(MonsterTemporaryFlagType::PREVENT_MAGIC);
+        m_ptr->set_temporary_flag(MonsterTemporaryFlagType::PREVENT_MAGIC);
     }
 
     auto is_awake_lightning_monster = new_monrace.brightness_flags.has_any_of(self_ld_mask);
@@ -557,14 +759,18 @@ tl::optional<MONSTER_IDX> place_monster_one(PlayerType *player_ptr, POSITION y, 
         RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::MONSTER_LITE);
     }
 
-    update_monster(player_ptr, g_ptr->m_idx, true);
+    update_monster(const_cast<CreatureEntity &>(player), g_ptr->m_idx, true);
     m_ptr->get_real_monrace().increment_current_numbers();
 
+    // [ドロップ品移行] 一般ドロップ品を生成時に所持品として前生成する。
+    // 死亡時は drop_all_inventory() でまとめて床へ放出される。
+    generate_monster_drop_items(const_cast<CreatureEntity &>(player), *m_ptr);
+
     if (any_bits(mode, PM_AMBUSH)) {
-        auto m_name = monster_desc(player_ptr, *m_ptr, 0);
+        auto m_name = monster_desc(player, *m_ptr, 0);
         msg_format(_("突如%sがあなたに襲い掛かってきた！", "Suddenly %s has ambushed you!"), m_name.data());
-        disturb(player_ptr, false, true);
-        MonsterAttackPlayer(player_ptr, g_ptr->m_idx).make_attack_normal();
+        disturb(player, false, true);
+        MonsterAttackPlayer(player, g_ptr->m_idx).make_attack_normal();
     }
 
     /*
@@ -572,14 +778,14 @@ tl::optional<MONSTER_IDX> place_monster_one(PlayerType *player_ptr, POSITION y, 
      * A unique monster move from old saved floor.
      */
     if (world.character_dungeon && (new_monrace.kind_flags.has(MonsterKindType::UNIQUE) || new_monrace.population_flags.has(MonsterPopulationType::NAZGUL))) {
-        m_ptr->get_real_monrace().floor_id = player_ptr->floor_id;
+        m_ptr->get_real_monrace().floor_id = player.floor_id;
     }
 
     if (new_monrace.misc_flags.has(MonsterMiscType::MULTIPLY)) {
         floor.num_repro++;
     }
 
-    warn_unique_generation(player_ptr, r_idx);
-    activate_explosive_rune(player_ptr, pos, new_monrace);
+    warn_unique_generation(const_cast<CreatureEntity &>(player), r_idx);
+    activate_explosive_rune(player, pos, new_monrace);
     return m_ptr->is_valid() ? tl::make_optional(g_ptr->m_idx) : tl::nullopt;
 }

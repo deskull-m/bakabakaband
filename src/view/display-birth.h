@@ -1,4 +1,4 @@
 #pragma once
 
-class PlayerType;
-void birth_put_stats(PlayerType *player_ptr);
+class CreatureEntity;
+void birth_put_stats(CreatureEntity &creature);

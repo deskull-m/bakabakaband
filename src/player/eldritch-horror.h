@@ -2,6 +2,5 @@
 
 #include <tl/optional.hpp>
 
-class MonsterEntity;
-class PlayerType;
-void sanity_blast(PlayerType *player_ptr, tl::optional<short> m_idx = tl::nullopt, bool necro = false);
+class CreatureEntity;
+void sanity_blast(CreatureEntity &creature, tl::optional<short> m_idx = tl::nullopt, bool necro = false);

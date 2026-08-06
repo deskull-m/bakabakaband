@@ -25,8 +25,13 @@
 #include "sv-definition/sv-ring-types.h"
 #include "sv-definition/sv-weapon-types.h"
 #include "system/artifact-type-definition.h"
+#include "system/baseitem/baseitem-config.h"
+#include "system/baseitem/baseitem-configs.h"
 #include "system/baseitem/baseitem-definition.h"
 #include "system/baseitem/baseitem-list.h"
+#include "system/baseitem/baseitem-record.h"
+#include "system/baseitem/baseitem-records.h"
+#include "system/dungeon/quest-definition.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
@@ -110,7 +115,7 @@ void ItemEntity::generate(short new_bi_id)
         }
 
         if (this->is_worthless()) {
-            this->ident |= (IDENT_BROKEN);
+            this->ident.set(IdentificationFlag::BROKEN);
         }
 
         if (baseitem.gen_flags.has(ItemGenerationTraitType::CURSED)) {
@@ -393,7 +398,7 @@ bool ItemEntity::is_valid() const
 
 bool ItemEntity::is_broken() const
 {
-    return any_bits(this->ident, IDENT_BROKEN);
+    return this->ident.has(IdentificationFlag::BROKEN);
 }
 
 bool ItemEntity::is_cursed() const
@@ -413,12 +418,13 @@ bool ItemEntity::is_held_by_monster() const
 bool ItemEntity::is_known() const
 {
     const auto &baseitem = this->get_baseitem();
-    return any_bits(this->ident, IDENT_KNOWN) || (baseitem.easy_know && baseitem.aware);
+    const auto &baseitem_record = this->get_baseitem_record();
+    return this->ident.has(IdentificationFlag::KNOWN) || (baseitem.easy_know && baseitem_record.is_aware());
 }
 
 bool ItemEntity::is_fully_known() const
 {
-    return any_bits(this->ident, IDENT_FULL_KNOWN);
+    return this->ident.has(IdentificationFlag::FULL_KNOWN);
 }
 
 /*!
@@ -427,7 +433,7 @@ bool ItemEntity::is_fully_known() const
  */
 bool ItemEntity::is_aware() const
 {
-    return this->get_baseitem().aware;
+    return this->get_baseitem_record().is_aware();
 }
 
 /*
@@ -436,7 +442,7 @@ bool ItemEntity::is_aware() const
  */
 bool ItemEntity::is_tried() const
 {
-    return this->get_baseitem().tried;
+    return this->get_baseitem_record().is_tried();
 }
 
 /*!
@@ -641,7 +647,7 @@ int ItemEntity::calc_price() const
 
         value = object_value_real(this);
     } else {
-        if (any_bits(this->ident, IDENT_SENSE) && is_worthless) {
+        if (this->ident.has(IdentificationFlag::SENSE) && is_worthless) {
             return 0;
         }
 
@@ -833,7 +839,7 @@ bool ItemEntity::is_target_of(QuestId quest_id) const
         return false;
     }
 
-    const auto &artifact = quest.get_reward();
+    const auto &artifact = quest.get_reward_artifact();
     if (artifact.gen_flags.has(ItemGenerationTraitType::INSTA_ART)) {
         return false;
     }
@@ -841,9 +847,14 @@ bool ItemEntity::is_target_of(QuestId quest_id) const
     return this->bi_key == artifact.bi_key;
 }
 
-BaseitemDefinition &ItemEntity::get_baseitem() const
+const BaseitemDefinition &ItemEntity::get_baseitem() const
 {
     return BaseitemList::get_instance().get_baseitem(this->bi_id);
+}
+
+BaseitemRecord &ItemEntity::get_baseitem_record() const
+{
+    return BaseitemRecords::get_instance().get_record(this->bi_id);
 }
 
 EgoItemDefinition &ItemEntity::get_ego() const
@@ -859,6 +870,15 @@ ArtifactType &ItemEntity::get_fixed_artifact()
 const ArtifactType &ItemEntity::get_fixed_artifact() const
 {
     return ArtifactList::get_instance().get_artifact(this->fa_id);
+}
+
+std::string ItemEntity::get_fixed_artifact_name() const
+{
+    if (this->fa_id == FixedArtifactId::NONE) {
+        return "";
+    }
+
+    return this->get_fixed_artifact().build_full_name();
 }
 
 TrFlags ItemEntity::get_flags() const
@@ -1034,7 +1054,7 @@ int ItemEntity::is_similar_part(const ItemEntity &other) const
     case ItemKindType::SCROLL:
         break;
     case ItemKindType::STAFF:
-        if ((none_bits(this->ident, IDENT_EMPTY) && !this->is_known()) || (none_bits(other.ident, IDENT_EMPTY) && !other.is_known())) {
+        if ((!this->ident.has(IdentificationFlag::EMPTY) && !this->is_known()) || (!other.ident.has(IdentificationFlag::EMPTY) && !other.is_known())) {
             return 0;
         }
 
@@ -1044,7 +1064,7 @@ int ItemEntity::is_similar_part(const ItemEntity &other) const
 
         break;
     case ItemKindType::WAND:
-        if ((none_bits(this->ident, IDENT_EMPTY) && !this->is_known()) || (none_bits(other.ident, IDENT_EMPTY) && !other.is_known())) {
+        if ((!this->ident.has(IdentificationFlag::EMPTY) && !this->is_known()) || (!other.ident.has(IdentificationFlag::EMPTY) && !other.is_known())) {
             return 0;
         }
 
@@ -1129,7 +1149,7 @@ int ItemEntity::is_similar_part(const ItemEntity &other) const
         return 0;
     }
 
-    if (any_bits(this->ident, IDENT_BROKEN) != any_bits(other.ident, IDENT_BROKEN)) {
+    if (this->ident.has(IdentificationFlag::BROKEN) != other.ident.has(IdentificationFlag::BROKEN)) {
         return 0;
     }
 
@@ -1353,9 +1373,9 @@ std::string ItemEntity::build_activation_description() const
 void ItemEntity::mark_as_known()
 {
     this->feeling = FEEL_NONE;
-    this->ident &= ~(IDENT_SENSE);
-    this->ident &= ~(IDENT_EMPTY);
-    this->ident |= (IDENT_KNOWN);
+    this->ident.reset(IdentificationFlag::SENSE);
+    this->ident.reset(IdentificationFlag::EMPTY);
+    this->ident.set(IdentificationFlag::KNOWN);
 }
 
 /*!
@@ -1363,7 +1383,7 @@ void ItemEntity::mark_as_known()
  */
 void ItemEntity::mark_as_tried() const
 {
-    this->get_baseitem().mark_trial(true);
+    this->get_baseitem_record().mark_trial(true);
 }
 
 void ItemEntity::set_position(const Pos2D &pos)
@@ -1384,7 +1404,7 @@ bool ItemEntity::try_become_artifact(int dungeon_level)
     }
 
     for (const auto &[a_idx, artifact] : ArtifactList::get_instance()) {
-        if (!artifact.can_generate(this->bi_key)) {
+        if (!artifact.can_generate(a_idx, this->bi_key)) {
             continue;
         }
 
@@ -1418,18 +1438,18 @@ void ItemEntity::absorb(ItemEntity &other)
         this->mark_as_known();
     }
 
-    if (((this->ident & IDENT_STORE) || (other.ident & IDENT_STORE)) && (!((this->ident & IDENT_STORE) && (other.ident & IDENT_STORE)))) {
-        if (other.ident & IDENT_STORE) {
-            other.ident &= 0xEF;
+    if (((this->ident.has(IdentificationFlag::STORE)) || (other.ident.has(IdentificationFlag::STORE))) && (!((this->ident.has(IdentificationFlag::STORE)) && (other.ident.has(IdentificationFlag::STORE))))) {
+        if (other.ident.has(IdentificationFlag::STORE)) {
+            other.ident.reset(IdentificationFlag::STORE);
         }
 
-        if (this->ident & IDENT_STORE) {
-            this->ident &= 0xEF;
+        if (this->ident.has(IdentificationFlag::STORE)) {
+            this->ident.reset(IdentificationFlag::STORE);
         }
     }
 
     if (other.is_fully_known()) {
-        this->ident |= (IDENT_FULL_KNOWN);
+        this->ident.set(IdentificationFlag::FULL_KNOWN);
     }
 
     if (other.is_inscribed()) {
@@ -1593,18 +1613,19 @@ std::string ItemEntity::build_activation_description_dragon_breath() const
  */
 uint8_t ItemEntity::get_color() const
 {
-    const auto &baseitem = this->get_baseitem();
-    const auto flavor = baseitem.flavor;
+    const auto &baseitem_configs = BaseitemConfigs::get_instance();
+    const auto flavor = this->get_baseitem_record().get_appearance_id();
     if (flavor != 0) {
-        return BaseitemList::get_instance().get_baseitem(flavor).symbol_config.color;
+        return baseitem_configs.get_color(flavor);
     }
 
-    const auto &symbol_config = baseitem.symbol_config;
+    const auto &symbol_config = baseitem_configs.get_config(this->bi_id);
     auto has_attr = this->is_valid();
     has_attr &= this->is_corpse();
-    has_attr &= symbol_config.color == TERM_DARK;
+    const auto color = symbol_config.get_color();
+    has_attr &= color == TERM_DARK;
     if (!has_attr) {
-        return symbol_config.color;
+        return color;
     }
 
     return this->get_monrace().symbol_config.color;
@@ -1618,9 +1639,9 @@ uint8_t ItemEntity::get_color() const
  */
 char ItemEntity::get_character() const
 {
-    const auto &baseitem = this->get_baseitem();
-    const auto flavor = baseitem.flavor;
-    return flavor ? BaseitemList::get_instance().get_baseitem(flavor).symbol_config.character : baseitem.symbol_config.character;
+    const auto flavor = this->get_baseitem_record().get_appearance_id();
+    const auto &configs = BaseitemConfigs::get_instance();
+    return flavor > 0 ? configs.get_character(flavor) : configs.get_character(this->bi_id);
 }
 
 /*!

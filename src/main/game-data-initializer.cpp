@@ -14,6 +14,7 @@
 #include "system/baseitem/baseitem-allocation.h"
 #include "system/baseitem/baseitem-definition.h"
 #include "system/baseitem/baseitem-list.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/dungeon/dungeon-list.h"
 #include "system/dungeon/dungeon-record.h"
@@ -23,8 +24,6 @@
 #include "system/item-entity.h"
 #include "system/monrace/monrace-allocation.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "term/gameterm.h"
 #include "util/angband-files.h"
@@ -50,10 +49,10 @@ static void init_gf_colors()
  * Initialize some other arrays
  * @return エラーコード
  */
-void init_other(PlayerType *player_ptr)
+void init_other(CreatureEntity &creature)
 {
     auto &floor_data = FloorList::get_instance();
-    player_ptr->current_floor_ptr = &floor_data.get_floor(0); // TODO:本当はこんなところで初期化したくない ← FloorTypeの方で初期化するべき？
+    creature.set_floor(&floor_data.get_floor(0)); // TODO:本当はこんなところで初期化したくない ← FloorTypeの方で初期化するべき？
 
     init_gf_colors();
 

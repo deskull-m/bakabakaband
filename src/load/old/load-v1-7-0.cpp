@@ -1,20 +1,19 @@
 #include "load/old/load-v1-7-0.h"
-#include "dungeon/quest.h"
 #include "game-option/birth-options.h"
 #include "load/load-util.h"
 #include "load/old/load-v1-5-0.h"
+#include "system/dungeon/quest-definition.h"
 #include "system/enums/dungeon/dungeon-id.h"
 #include "system/floor/floor-info.h"
-#include "system/player-type-definition.h"
 
-void set_exp_frac_old(PlayerType *player_ptr)
+void set_exp_frac_old(CreatureEntity &creature)
 {
-    player_ptr->exp_frac = rd_u16b();
+    creature.exp_frac = rd_u16b();
 }
 
-void remove_water_cave(PlayerType *player_ptr)
+void remove_water_cave(CreatureEntity &creature)
 {
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *creature.get_floor();
     if (floor.quest_number != i2enum<QuestId>(OLD_QUEST_WATER_CAVE)) {
         return;
     }

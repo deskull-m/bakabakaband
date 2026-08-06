@@ -11,13 +11,15 @@
 #include "object/item-use-flags.h"
 #include "object/object-info.h"
 #include "player/player-status-flags.h"
+#include "system/baseitem/baseitem-service.h"
+#include "system/creature-entity.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "term/gameterm.h"
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
 #include "term/z-form.h"
 #include "util/bit-flags-calculator.h"
+#include "util/enum-converter.h"
 #include "util/string-processor.h"
 #include "view/display-symbol.h"
 #include <array>
@@ -29,9 +31,8 @@
  * @param target_item アイテムの選択処理を行うか否か。
  * @return 選択したアイテムのタグ
  */
-COMMAND_CODE show_equipment(PlayerType *player_ptr, int target_item, BIT_FLAGS mode, const ItemTester &item_tester)
+COMMAND_CODE show_equipment(CreatureEntity &creature, int target_item, BIT_FLAGS mode, const ItemTester &item_tester)
 {
-    COMMAND_CODE i;
     int j, k, l;
     COMMAND_CODE out_index[23]{};
     TERM_COLOR out_color[23]{};
@@ -40,18 +41,19 @@ COMMAND_CODE show_equipment(PlayerType *player_ptr, int target_item, BIT_FLAGS m
     auto col = command_gap;
     const auto &[wid, hgt] = term_get_size();
     auto len = wid - col - 1;
-    for (k = 0, i = INVEN_MAIN_HAND; i < INVEN_TOTAL; i++) {
-        const auto &item = *player_ptr->inventory[i];
-        auto only_slot = !(player_ptr->select_ring_slot ? is_ring_slot(i) : (item_tester.okay(&item) || any_bits(mode, USE_FULL)));
-        auto is_any_hand = (i == INVEN_MAIN_HAND) && can_attack_with_sub_hand(player_ptr);
-        is_any_hand |= (i == INVEN_SUB_HAND) && can_attack_with_main_hand(player_ptr);
-        auto is_two_handed = is_any_hand && has_two_handed_weapons(player_ptr);
+    k = 0;
+    for (const auto i_idx : INVEN_WIELDING_SLOTS) {
+        const auto &item = *creature.inventory[i_idx];
+        auto only_slot = !(creature.is_select_ring_slot() ? is_ring_slot(i_idx) : (item_tester.okay(&item) || any_bits(mode, USE_FULL)));
+        auto is_any_hand = (i_idx == INVEN_MAIN_HAND) && can_attack_with_sub_hand(creature);
+        is_any_hand |= (i_idx == INVEN_SUB_HAND) && can_attack_with_main_hand(creature);
+        auto is_two_handed = is_any_hand && creature.has_two_handed_weapons();
         only_slot &= !is_two_handed || any_bits(mode, IGNORE_BOTHHAND_SLOT);
         if (only_slot) {
             continue;
         }
 
-        const auto item_name = describe_flavor(player_ptr, item, 0);
+        const auto item_name = describe_flavor(creature, item, 0);
         if (is_two_handed) {
             out_desc[k] = _("(武器を両手持ち)", "(wielding with two-hands)");
             out_color[k] = TERM_WHITE;
@@ -60,7 +62,7 @@ COMMAND_CODE show_equipment(PlayerType *player_ptr, int target_item, BIT_FLAGS m
             out_color[k] = tval_to_attr[enum2i(item.bi_key.tval()) % 128];
         }
 
-        out_index[k] = i;
+        out_index[k] = i_idx;
         if (item.timeout) {
             out_color[k] = TERM_L_DARK;
         }
@@ -86,10 +88,11 @@ COMMAND_CODE show_equipment(PlayerType *player_ptr, int target_item, BIT_FLAGS m
     }
 
     col = (len > wid - _(6, 4)) ? 0 : (wid - len - 1);
-    const auto equip_label = prepare_label_string(player_ptr, USE_EQUIP, item_tester);
+    const auto equip_label = prepare_label_string(creature, USE_EQUIP, item_tester);
+    const auto &empty_symbol = BaseitemService::get_dummy_symbol();
     for (j = 0; j < k; j++) {
-        i = out_index[j];
-        const auto &item = *player_ptr->inventory[i];
+        const auto i = out_index[j];
+        const auto &item = *creature.inventory[i];
         prt("", j + 1, col ? col - 2 : col);
         std::string head;
         if (use_menu && target_item) {
@@ -108,7 +111,8 @@ COMMAND_CODE show_equipment(PlayerType *player_ptr, int target_item, BIT_FLAGS m
         put_str(head, j + 1, col);
         int cur_col = col + 3;
         if (show_item_graph) {
-            term_queue_bigchar(cur_col, j + 1, { item.get_symbol(), {} });
+            const auto ds = item.is_valid() ? item.get_symbol() : empty_symbol;
+            term_queue_bigchar(cur_col, j + 1, { ds, {} });
             if (use_bigtile) {
                 cur_col++;
             }
@@ -117,7 +121,7 @@ COMMAND_CODE show_equipment(PlayerType *player_ptr, int target_item, BIT_FLAGS m
         }
 
         if (show_labels) {
-            const auto label = format(_("%-7s: ", "%-14s: "), mention_use(player_ptr, i));
+            const auto label = format(_("%-7s: ", "%-14s: "), mention_use(creature, i));
             put_str(label, j + 1, cur_col);
             c_put_str(out_color[j], out_desc[j], j + 1, _(cur_col + 9, cur_col + 16));
         } else {

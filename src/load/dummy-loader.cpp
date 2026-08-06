@@ -3,8 +3,6 @@
 #include "load/monster/monster-loader-factory.h"
 #include "load/old/monster-loader-savefile50.h"
 #include "system/floor/floor-info.h"
-#include "system/monster-entity.h"
-#include "system/player-type-definition.h"
 
 /*!
  * @brief ダミーバイトを読み込む
@@ -30,13 +28,14 @@ void rd_dummy2(void)
 
 /*!
  * @brief 馬鹿馬鹿蛮怒 v1.5.0より大きなバージョンにおいて、ダミーでモンスターを読み込む
- * @param player_ptr プレーヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @details もはや何に使われていたのか不明
  */
 void rd_dummy_monsters()
 {
     auto tmp16s = rd_s16b();
-    MonsterEntity dummy_mon;
+    CreatureEntity dummy_mon;
+    dummy_mon.init_monster_profile();
     auto monster_loader = MonsterLoaderFactory::create_loader();
     for (int i = 0; i < tmp16s; i++) {
         monster_loader->rd_monster(dummy_mon);

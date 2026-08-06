@@ -7,10 +7,9 @@
 #include "player-base/player-class.h"
 #include "player-info/equipment-info.h"
 #include "sv-definition/sv-weapon-types.h"
+#include "system/creature-entity.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
-#include "system/player-type-definition.h"
 #include "view/display-messages.h"
 
 /*!
@@ -48,13 +47,13 @@ std::tuple<int, std::string, SoundKind> apply_critical_norm_damage(int k, int ba
  * @param mode オプションフラグ
  * @return クリティカル修正が入ったダメージ値
  */
-int critical_norm(PlayerType *player_ptr, WEIGHT weight, int plus, int dam, int16_t meichuu, combat_options mode, bool impact)
+int critical_norm(CreatureEntity &creature, WEIGHT weight, int plus, int dam, int16_t meichuu, combat_options mode, bool impact)
 {
     /* Extract "blow" power */
-    int i = (weight + (meichuu * 3 + plus * 5) + player_ptr->skill_thn);
+    int i = (weight + (meichuu * 3 + plus * 5) + creature.get_skill_to_hit_melee());
 
     /* Chance */
-    auto pow = PlayerClass(player_ptr).equals(PlayerClassType::NINJA) ? 4444 : 5000;
+    auto pow = CreatureClass(creature).equals(PlayerClassType::NINJA) ? 4444 : 5000;
     if (impact) {
         pow /= 2;
     }
@@ -79,13 +78,13 @@ int critical_norm(PlayerType *player_ptr, WEIGHT weight, int plus, int dam, int1
 
 /*!
  * @brief 忍者ヒットで急所を突く
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param pa_ptr 直接攻撃構造体への参照ポインタ
  * @details 闇討ち＆追討ちを実施した後に致命傷チェックを行う
  * チェックを通ったら、ユニークならば2倍ダメージ、それ以外は一撃死
  * @todo 3つの処理をdetailsに書くよりは関数自体を分割すべきだが、一旦後回しにする。他の項目と一緒に処理する
  */
-static void ninja_critical(PlayerType *player_ptr, player_attack_type *pa_ptr)
+static void ninja_critical(CreatureEntity &creature, player_attack_type *pa_ptr)
 {
     auto &monrace = pa_ptr->m_ptr->get_monrace();
     int maxhp = pa_ptr->m_ptr->maxhp;
@@ -94,13 +93,14 @@ static void ninja_critical(PlayerType *player_ptr, player_attack_type *pa_ptr)
         pa_ptr->attack_damage *= 5;
         pa_ptr->drain_result *= 2;
         msg_format(_("刃が%sに深々と突き刺さった！", "You critically injured %s!"), pa_ptr->m_name);
+        sound(SoundKind::NINJA_CRITICAL_HIT);
         return;
     }
 
     const auto no_instantly_death = monrace.resistance_flags.has(MonsterResistanceType::NO_INSTANTLY_DEATH);
     bool is_weaken = pa_ptr->m_ptr->hp < maxhp / 2;
     bool is_unique = monrace.kind_flags.has(MonsterKindType::UNIQUE) || no_instantly_death;
-    bool is_critical = (is_weaken && one_in_((player_ptr->num_blow[0] + player_ptr->num_blow[1] + 1) * 10)) || ((one_in_(666) || ((pa_ptr->backstab || pa_ptr->surprise_attack) && one_in_(11))) && !is_unique);
+    bool is_critical = (is_weaken && one_in_((creature.get_num_blow(0) + creature.get_num_blow(1) + 1) * 10)) || ((one_in_(666) || ((pa_ptr->backstab || pa_ptr->surprise_attack) && one_in_(11))) && !is_unique);
     if (!is_critical) {
         return;
     }
@@ -112,26 +112,29 @@ static void ninja_critical(PlayerType *player_ptr, player_attack_type *pa_ptr)
         pa_ptr->attack_damage = std::max(pa_ptr->attack_damage * 5, pa_ptr->m_ptr->hp / 2);
         pa_ptr->drain_result *= 2;
         msg_format(_("%sに致命傷を負わせた！", "You fatally injured %s!"), pa_ptr->m_name);
+        sound(SoundKind::NINJA_FATAL_HIT);
     } else {
         pa_ptr->attack_damage = pa_ptr->m_ptr->hp + 1;
         msg_format(_("刃が%sの急所を貫いた！", "You hit %s on a fatal spot!"), pa_ptr->m_name);
+        sound(SoundKind::FATAL_SPOT);
     }
 }
 
 /*!
  * @brief 急所を突く
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param pa_ptr 直接攻撃構造体への参照ポインタ
  */
-void critical_attack(PlayerType *player_ptr, player_attack_type *pa_ptr)
+void critical_attack(CreatureEntity &creature, player_attack_type *pa_ptr)
 {
-    auto *o_ptr = player_ptr->inventory[enum2i(INVEN_MAIN_HAND) + pa_ptr->hand].get();
+    auto *o_ptr = creature.inventory[enum2i(INVEN_MAIN_HAND) + pa_ptr->hand].get();
     auto &monrace = pa_ptr->m_ptr->get_monrace();
     const auto no_instantly_death = monrace.resistance_flags.has(MonsterResistanceType::NO_INSTANTLY_DEATH);
     if ((o_ptr->bi_key == BaseitemKey(ItemKindType::SWORD, SV_POISON_NEEDLE)) || (pa_ptr->mode == HISSATSU_KYUSHO)) {
         if ((randint1(randint1(monrace.level / 7) + 5) == 1) && monrace.kind_flags.has_not(MonsterKindType::UNIQUE) && !no_instantly_death) {
             pa_ptr->attack_damage = pa_ptr->m_ptr->hp + 1;
             msg_format(_("%sの急所を突き刺した！", "You hit %s on a fatal spot!"), pa_ptr->m_name);
+            sound(SoundKind::FATAL_SPOT);
         } else {
             if (no_instantly_death) {
                 monrace.r_resistance_flags.set(MonsterResistanceType::NO_INSTANTLY_DEATH);
@@ -142,13 +145,13 @@ void critical_attack(PlayerType *player_ptr, player_attack_type *pa_ptr)
         return;
     }
 
-    if (!PlayerClass(player_ptr).equals(PlayerClassType::NINJA)) {
+    if (!CreatureClass(creature).equals(PlayerClassType::NINJA)) {
         return;
     }
 
-    const auto has_weapon = has_melee_weapon(player_ptr, enum2i(INVEN_MAIN_HAND) + pa_ptr->hand);
-    const auto is_ninja_hit = has_weapon && !player_ptr->is_icky_wield[pa_ptr->hand] && ((player_ptr->cur_lite <= 0) || one_in_(7));
+    const auto has_weapon = has_melee_weapon(creature, enum2i(INVEN_MAIN_HAND) + pa_ptr->hand);
+    const auto is_ninja_hit = has_weapon && !creature.is_icky_wield(pa_ptr->hand) && ((creature.get_cur_lite() <= 0) || one_in_(7));
     if (is_ninja_hit) {
-        ninja_critical(player_ptr, pa_ptr);
+        ninja_critical(creature, pa_ptr);
     }
 }

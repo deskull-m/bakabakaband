@@ -1,22 +1,22 @@
 #include "alliance/alliance-anor-londo.h"
+#include "system/creature-entity.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/player-type-definition.h"
 
 /*!
  * @brief アノール・ロンドのアライアンス印象値を計算する
  * 太陽と光の都市として、INTとCHRをベースとした印象値計算を行う
- * @param creature_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return 印象値
  */
-int AllianceAnorLondo::calcImpressionPoint(PlayerType *creature_ptr) const
+int AllianceAnorLondo::calcImpressionPoint(const CreatureEntity &creature) const
 {
     int bias = 12;
     int level = 25;
 
-    int base_stat = (creature_ptr->stat_max[A_INT] + creature_ptr->stat_max[A_CHR]) / 2;
-    int impression = base_stat + bias + creature_ptr->level / level;
+    int base_stat = (creature.get_stat_max(A_INT) + creature.get_stat_max(A_CHR)) / 2;
+    int impression = base_stat + bias + creature.get_level() / level;
     impression += calcIronmanHostilityPenalty();
 
     // 最低値保証
@@ -29,9 +29,9 @@ int AllianceAnorLondo::calcImpressionPoint(PlayerType *creature_ptr) const
 
 /*!
  * @brief アノール・ロンドのアライアンス懲罰処理
- * @param player_ptr プレイヤーへの参照
+ * @param creature クリーチャーへの参照
  */
-void AllianceAnorLondo::panishment([[maybe_unused]] PlayerType &player_ptr)
+void AllianceAnorLondo::panishment([[maybe_unused]] CreatureEntity &creature)
 {
     // 基本的な懲罰処理を実装
 }
@@ -42,6 +42,5 @@ void AllianceAnorLondo::panishment([[maybe_unused]] PlayerType &player_ptr)
  */
 bool AllianceAnorLondo::isAnnihilated()
 {
-    const auto &monrace_list = MonraceList::get_instance();
-    return monrace_list.get_monrace(MonraceId::GWYN).mob_num == 0;
+    return all_monraces_extinct({ MonraceId::GWYN });
 }

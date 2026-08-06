@@ -1,22 +1,22 @@
 #include "alliance/alliance-khaine.h"
 #include "player-base/player-class.h"
 #include "player-base/player-race.h"
-#include "system/player-type-definition.h"
+#include "system/creature-entity.h"
 
 /*!
  * @brief カインのアライアンス印象値を計算する
  * パトロンリストでのboost_statがA_STRなので、STRベースの印象値計算を行う
- * @param creature_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return 印象値
  */
-int AllianceKhaine::calcImpressionPoint(PlayerType *creature_ptr) const
+int AllianceKhaine::calcImpressionPoint(const CreatureEntity &creature) const
 {
     // bias = 15, level = 30 (Khaineは戦闘と殺戮の神なので、攻撃的な傾向)
     int bias = 15;
     int level = 30;
 
     // STRベースでパトロンの傾向を反映した印象値計算
-    int impression = creature_ptr->stat_max[A_STR] + bias + creature_ptr->level / level;
+    int impression = creature.get_stat_max(A_STR) + bias + creature.get_level() / level;
     if (impression < 1) {
         impression = 1;
     }
@@ -26,9 +26,9 @@ int AllianceKhaine::calcImpressionPoint(PlayerType *creature_ptr) const
 
 /*!
  * @brief カインのアライアンス懲罰処理
- * @param player_ptr プレイヤーへの参照
+ * @param creature クリーチャーへの参照
  */
-void AllianceKhaine::panishment([[maybe_unused]] PlayerType &player_ptr)
+void AllianceKhaine::panishment([[maybe_unused]] CreatureEntity &creature)
 {
     // カインの懲罰処理 - 戦闘の神なので体力を減らす
     // 基本的な懲罰処理を実装

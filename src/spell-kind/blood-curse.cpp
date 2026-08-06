@@ -11,16 +11,15 @@
 #include "spell/summon-types.h"
 #include "status/base-status.h"
 #include "status/experience.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
-#include "system/monster-entity.h"
-#include "system/player-type-definition.h"
 #include "view/display-messages.h"
 
-void blood_curse_to_enemy(PlayerType *player_ptr, MONSTER_IDX m_idx)
+void blood_curse_to_enemy(CreatureEntity &creature, MONSTER_IDX m_idx)
 {
-    const auto &monster = player_ptr->current_floor_ptr->m_list[m_idx];
-    const auto &grid = player_ptr->current_floor_ptr->grid_array[monster.y][monster.x];
+    const auto &monster = creature.get_floor()->get_monster(m_idx);
+    const auto &grid = creature.get_floor()->grid_array[monster.y][monster.x];
     BIT_FLAGS curse_flg = (PROJECT_GRID | PROJECT_ITEM | PROJECT_KILL | PROJECT_JUMP);
     int count = 0;
     bool is_first_loop = true;
@@ -31,7 +30,7 @@ void blood_curse_to_enemy(PlayerType *player_ptr, MONSTER_IDX m_idx)
         case 2:
             if (!count) {
                 msg_print(_("地面が揺れた...", "The ground trembles..."));
-                earthquake(player_ptr, monster.get_position(), 4 + randint0(4), 0); // 血の呪いによる地震なのでm_idxではなく0を渡す
+                earthquake(creature, monster.get_position(), 4 + randint0(4), 0); // 血の呪いによる地震なのでm_idxではなく0を渡す
                 if (!one_in_(6)) {
                     break;
                 }
@@ -44,7 +43,7 @@ void blood_curse_to_enemy(PlayerType *player_ptr, MONSTER_IDX m_idx)
             if (!count) {
                 int extra_dam = Dice::roll(10, 10);
                 msg_print(_("純粋な魔力の次元への扉が開いた！", "A portal opens to a plane of raw mana!"));
-                project(player_ptr, 0, 8, monster.y, monster.x, extra_dam, AttributeType::MANA, curse_flg);
+                project(creature, 0, 8, monster.y, monster.x, extra_dam, AttributeType::MANA, curse_flg);
                 if (!one_in_(6)) {
                     break;
                 }
@@ -55,10 +54,10 @@ void blood_curse_to_enemy(PlayerType *player_ptr, MONSTER_IDX m_idx)
             if (!count) {
                 msg_print(_("空間が歪んだ！", "Space warps about you!"));
                 if (monster.is_valid()) {
-                    teleport_away(player_ptr, grid.m_idx, Dice::roll(10, 10), TELEPORT_PASSIVE);
+                    teleport_away(creature, grid.m_idx, Dice::roll(10, 10), TELEPORT_PASSIVE);
                 }
                 if (one_in_(13)) {
-                    count += activate_hi_summon(player_ptr, monster.y, monster.x, true);
+                    count += activate_hi_summon(creature, monster.y, monster.x, true);
                 }
                 if (!one_in_(6)) {
                     break;
@@ -69,7 +68,7 @@ void blood_curse_to_enemy(PlayerType *player_ptr, MONSTER_IDX m_idx)
         case 10:
         case 11:
             msg_print(_("エネルギーのうねりを感じた！", "You feel a surge of energy!"));
-            project(player_ptr, 0, 7, monster.y, monster.x, 50, AttributeType::DISINTEGRATE, curse_flg);
+            project(creature, 0, 7, monster.y, monster.x, 50, AttributeType::DISINTEGRATE, curse_flg);
             if (!one_in_(6)) {
                 break;
             }
@@ -79,14 +78,14 @@ void blood_curse_to_enemy(PlayerType *player_ptr, MONSTER_IDX m_idx)
         case 14:
         case 15:
         case 16:
-            aggravate_monsters(player_ptr, 0);
+            aggravate_monsters(creature, 0);
             if (!one_in_(6)) {
                 break;
             }
             [[fallthrough]];
         case 17:
         case 18:
-            count += activate_hi_summon(player_ptr, monster.y, monster.x, true);
+            count += activate_hi_summon(creature, monster.y, monster.x, true);
             if (!one_in_(6)) {
                 break;
             }
@@ -104,8 +103,8 @@ void blood_curse_to_enemy(PlayerType *player_ptr, MONSTER_IDX m_idx)
                 mode |= (PM_NO_PET | PM_FORCE_FRIENDLY);
             }
 
-            const auto level = pet ? player_ptr->level * 2 / 3 + randint1(player_ptr->level / 2) : player_ptr->current_floor_ptr->dun_level;
-            count += summon_specific(player_ptr, player_ptr->y, player_ptr->x, level, SUMMON_NONE, mode) ? 1 : 0;
+            const auto level = pet ? creature.get_level() * 2 / 3 + randint1(creature.get_level() / 2) : creature.get_floor()->dun_level;
+            count += summon_specific(creature, creature.y, creature.x, level, SUMMON_NONE, mode) ? 1 : 0;
             if (!one_in_(6)) {
                 break;
             }
@@ -114,15 +113,15 @@ void blood_curse_to_enemy(PlayerType *player_ptr, MONSTER_IDX m_idx)
         case 23:
         case 24:
         case 25:
-            if (player_ptr->hold_exp && evaluate_percent(75)) {
+            if (creature.has_hold_exp() && evaluate_percent(75)) {
                 break;
             }
 
             msg_print(_("経験値が体から吸い取られた気がする！", "You feel your experience draining away..."));
-            if (player_ptr->hold_exp) {
-                lose_exp(static_cast<CreatureEntity &>(*player_ptr), player_ptr->exp / 160);
+            if (creature.has_hold_exp()) {
+                lose_exp(creature, creature.get_exp() / 160);
             } else {
-                lose_exp(static_cast<CreatureEntity &>(*player_ptr), player_ptr->exp / 16);
+                lose_exp(creature, creature.get_exp() / 16);
             }
             if (!one_in_(6)) {
                 break;
@@ -135,11 +134,11 @@ void blood_curse_to_enemy(PlayerType *player_ptr, MONSTER_IDX m_idx)
             if (one_in_(13)) {
                 for (int i = 0; i < A_MAX; i++) {
                     do {
-                        (void)do_dec_stat(player_ptr, i);
+                        (void)do_dec_stat(creature, i);
                     } while (one_in_(2));
                 }
             } else {
-                (void)do_dec_stat(player_ptr, randint0(6));
+                (void)do_dec_stat(creature, randint0(6));
             }
 
             break;

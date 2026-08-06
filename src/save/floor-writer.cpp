@@ -9,12 +9,12 @@
 #include "load/floor-loader.h"
 #include "monster/monster-compaction.h"
 #include "save/item-writer.h"
-#include "save/monster-entity-writer.h"
+#include "save/monster-writer.h"
 #include "save/save-util.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "term/z-form.h"
 #include "util/angband-files.h"
@@ -64,9 +64,9 @@ std::vector<GridTemplate> generate_sorted_grid_templates(const FloorType &floor)
  * @brief 保存フロアの書き込み / Actually write a saved floor data using effectively compressed format.
  * @param sf_ptr 保存したいフロアの参照ポインタ
  */
-void wr_saved_floor(PlayerType *player_ptr, saved_floor_type *sf_ptr)
+void wr_saved_floor(CreatureEntity &creature, saved_floor_type *sf_ptr)
 {
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *creature.get_floor();
     if (!sf_ptr) {
         wr_s16b((int16_t)floor.dun_level);
     } else {
@@ -80,9 +80,9 @@ void wr_saved_floor(PlayerType *player_ptr, saved_floor_type *sf_ptr)
     }
 
     wr_u16b((uint16_t)floor.base_level);
-    wr_u16b((int16_t)player_ptr->current_floor_ptr->num_repro);
-    wr_u16b((uint16_t)player_ptr->y);
-    wr_u16b((uint16_t)player_ptr->x);
+    wr_u16b((int16_t)creature.get_floor()->num_repro);
+    wr_u16b((uint16_t)creature.y);
+    wr_u16b((uint16_t)creature.x);
     wr_u16b((uint16_t)floor.height);
     wr_u16b((uint16_t)floor.width);
     wr_byte(static_cast<uint8_t>(DungeonFeeling::get_instance().get_feeling()));
@@ -148,19 +148,19 @@ void wr_saved_floor(PlayerType *player_ptr, saved_floor_type *sf_ptr)
     /*** Dump the monsters ***/
     wr_u16b(floor.m_max);
     for (int i = 1; i < floor.m_max; i++) {
-        MonsterEntityWriter(floor.m_list[i]).write_to_savedata();
+        MonsterWriter(floor.m_list[i]).write_to_savedata();
     }
 }
 
 /*!
  * @brief 現在フロアの書き込み /
  * Write the current dungeon (new method)
- * @player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return 保存に成功したらTRUE
  */
-bool wr_dungeon(PlayerType *player_ptr)
+bool wr_dungeon(CreatureEntity &creature)
 {
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *creature.get_floor();
     floor.forget_lite();
     floor.forget_view();
     floor.forget_mon_lite();
@@ -175,10 +175,10 @@ bool wr_dungeon(PlayerType *player_ptr)
     RedrawingFlagsUpdater::get_instance().set_flags(flags);
     wr_s16b(max_floor_id);
     wr_byte(static_cast<uint8_t>(floor.dungeon_id));
-    if (!player_ptr->in_saved_floor()) {
+    if (creature.floor_id == 0) {
         /* No array elements */
         wr_byte(0);
-        wr_saved_floor(player_ptr, nullptr);
+        wr_saved_floor(creature, nullptr);
         return true;
     }
 
@@ -196,8 +196,8 @@ bool wr_dungeon(PlayerType *player_ptr)
     }
 
     saved_floor_type *cur_sf_ptr;
-    cur_sf_ptr = get_sf_ptr(player_ptr->floor_id);
-    if (!save_floor(player_ptr, cur_sf_ptr, SLF_SECOND)) {
+    cur_sf_ptr = get_sf_ptr(creature.floor_id);
+    if (!save_floor(creature, cur_sf_ptr, SLF_SECOND)) {
         return false;
     }
 
@@ -206,26 +206,26 @@ bool wr_dungeon(PlayerType *player_ptr)
         if (!is_saved_floor(sf_ptr)) {
             continue;
         }
-        if (!load_floor(player_ptr, sf_ptr, (SLF_SECOND | SLF_NO_KILL))) {
+        if (!load_floor(creature, sf_ptr, (SLF_SECOND | SLF_NO_KILL))) {
             wr_byte(1);
             continue;
         }
 
         wr_byte(0);
-        wr_saved_floor(player_ptr, sf_ptr);
+        wr_saved_floor(creature, sf_ptr);
     }
 
-    return load_floor(player_ptr, cur_sf_ptr, (SLF_SECOND));
+    return load_floor(creature, cur_sf_ptr, (SLF_SECOND));
 }
 
 /*!
  * @brief ゲームプレイ中のフロア一時保存出力処理サブルーチン / Actually write a temporary saved floor file
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param sf_ptr 保存フロア参照ポインタ
  */
-static bool save_floor_aux(PlayerType *player_ptr, saved_floor_type *sf_ptr)
+static bool save_floor_aux(CreatureEntity &creature, saved_floor_type *sf_ptr)
 {
-    compact_monsters(player_ptr, 0);
+    compact_monsters(creature, 0);
 
     auto tmp8u = static_cast<uint8_t>(Rand_external(256));
     save_xor_byte = 0;
@@ -235,7 +235,7 @@ static bool save_floor_aux(PlayerType *player_ptr, saved_floor_type *sf_ptr)
     v_stamp = 0L;
     x_stamp = 0L;
     wr_u32b(saved_floor_file_sign);
-    wr_saved_floor(player_ptr, sf_ptr);
+    wr_saved_floor(creature, sf_ptr);
     wr_u32b(v_stamp);
     wr_u32b(x_stamp);
 
@@ -243,11 +243,11 @@ static bool save_floor_aux(PlayerType *player_ptr, saved_floor_type *sf_ptr)
 }
 /*!
  * @brief ゲームプレイ中のフロア一時保存出力処理メインルーチン / Attempt to save the temporarily saved-floor data
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param sf_ptr 保存フロア参照ポインタ
  * @param mode 保存オプション
  */
-bool save_floor(PlayerType *player_ptr, saved_floor_type *sf_ptr, BIT_FLAGS mode)
+bool save_floor(CreatureEntity &creature, saved_floor_type *sf_ptr, BIT_FLAGS mode)
 {
     FILE *old_fff = nullptr;
     byte old_xor_byte = 0;
@@ -279,7 +279,7 @@ bool save_floor(PlayerType *player_ptr, saved_floor_type *sf_ptr, BIT_FLAGS mode
         saving_savefile = angband_fopen(floor_savefile, FileOpenMode::WRITE, true);
         safe_setuid_drop();
         if (saving_savefile) {
-            if (save_floor_aux(player_ptr, sf_ptr)) {
+            if (save_floor_aux(creature, sf_ptr)) {
                 is_save_successful = true;
             }
 

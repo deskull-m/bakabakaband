@@ -1,4 +1,4 @@
 #pragma once
 
-class PlayerType;
-bool activate_toragoroshi(PlayerType *player_ptr);
+class CreatureEntity;
+bool activate_toragoroshi(CreatureEntity &creature);

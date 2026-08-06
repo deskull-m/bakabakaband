@@ -2,8 +2,8 @@
 #include "inventory/inventory-slot-types.h"
 #include "object/tval-types.h"
 #include "sv-definition/sv-lite-types.h"
+#include "system/creature-entity.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "view/display-messages.h"
 
@@ -11,10 +11,10 @@
  * @brief 寿命つき光源の燃素追加処理 /
  * Charge a lite (torch or latern)
  */
-void phlogiston(PlayerType *player_ptr)
+void phlogiston(CreatureEntity &creature)
 {
     short max_flog = 0;
-    auto *o_ptr = player_ptr->inventory[INVEN_LITE].get();
+    auto *o_ptr = creature.inventory[INVEN_LITE].get();
     const auto &bi_key = o_ptr->bi_key;
     if (bi_key == BaseitemKey(ItemKindType::LITE, SV_LITE_LANTERN)) {
         max_flog = FUEL_LAMP;

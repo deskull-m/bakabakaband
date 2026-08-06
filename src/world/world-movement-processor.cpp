@@ -10,13 +10,14 @@
 #include "main/sound-definitions-table.h"
 #include "main/sound-of-music.h"
 #include "system/angband-system.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/dungeon/dungeon-record.h"
+#include "system/dungeon/quest-definition.h"
 #include "system/enums/dungeon/dungeon-id.h"
 #include "system/floor/floor-info.h"
 #include "system/floor/wilderness-grid.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "util/enum-range.h"
 #include "view/display-messages.h"
@@ -25,12 +26,12 @@
 
 /*!
  * @brief プレイヤーの現在ダンジョンIDと階層に応じて、ダンジョン内ランクエの自動放棄を行う
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
-void check_random_quest_auto_failure(PlayerType *player_ptr)
+void check_random_quest_auto_failure(CreatureEntity &creature)
 {
     auto &quests = QuestList::get_instance();
-    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     if (floor.dungeon_id != DungeonId::ANGBAND) {
         return;
     }
@@ -46,7 +47,7 @@ void check_random_quest_auto_failure(PlayerType *player_ptr)
         }
 
         quest.status = QuestStatusType::FAILED;
-        quest.complev = (byte)player_ptr->level;
+        quest.complev = (byte)creature.get_level();
         world.play_time.update();
         quest.comptime = world.play_time.elapsed_sec();
         quest.get_bounty().misc_flags.reset(MonsterMiscType::QUESTOR);
@@ -56,33 +57,34 @@ void check_random_quest_auto_failure(PlayerType *player_ptr)
 /*!
  * @brief 10ゲームターンが進行するごとに帰還の残り時間カウントダウンと発動を処理する。
  * / Handle involuntary movement once every 10 game turns
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @details
  * Autosave BEFORE resetting the recall counter (rr9)
- * The player is yanked up/down as soon as he loads the autosaved game.
+ * The creature is yanked up/down as soon as he loads the autosaved game.
  */
-void execute_recall(PlayerType *player_ptr)
+void execute_recall(CreatureEntity &creature)
 {
-    if (player_ptr->word_recall == 0) {
+    const auto recall = creature.get_timed_effect(CreatureTimedEffect::WORD_RECALL);
+    if (recall == 0) {
         return;
     }
 
-    if (autosave_l && (player_ptr->word_recall == 1) && !AngbandSystem::get_instance().is_phase_out()) {
-        do_cmd_save_game(player_ptr, true);
+    if (autosave_l && (recall == 1) && !AngbandSystem::get_instance().is_phase_out()) {
+        do_cmd_save_game(creature, true);
     }
 
-    player_ptr->word_recall--;
+    creature.set_timed_effect(CreatureTimedEffect::WORD_RECALL, recall - 1);
     RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
-    if (player_ptr->word_recall != 0) {
+    if (creature.get_timed_effect(CreatureTimedEffect::WORD_RECALL) != 0) {
         return;
     }
 
-    disturb(player_ptr, false, true);
-    auto &floor = *player_ptr->current_floor_ptr;
+    disturb(creature, false, true);
+    auto &floor = *creature.get_floor();
     if (floor.is_underground() || floor.is_in_quest() || floor.is_entering_dungeon()) {
         msg_print(_("上に引っ張りあげられる感じがする！", "You feel yourself yanked upwards!"));
         if (floor.is_underground()) {
-            player_ptr->recall_dungeon = floor.dungeon_id;
+            creature.set_recall_dungeon(floor.dungeon_id);
         }
         if (record_stair) {
             exe_write_diary(floor, DiaryKind::RECALL, floor.dun_level);
@@ -90,16 +92,16 @@ void execute_recall(PlayerType *player_ptr)
 
         floor.dun_level = 0;
         floor.reset_dungeon_index();
-        leave_quest_check(player_ptr);
-        leave_tower_check(player_ptr);
+        leave_quest_check(creature);
+        leave_tower_check(creature);
         floor.quest_number = QuestId::NONE;
-        player_ptr->leaving = true;
+        creature.set_leaving(true);
         sound(SoundKind::TPLEVEL);
         return;
     }
 
     msg_print(_("下に引きずり降ろされる感じがする！", "You feel yourself yanked downwards!"));
-    floor.set_dungeon_index(player_ptr->recall_dungeon);
+    floor.set_dungeon_index(creature.get_recall_dungeon());
     if (record_stair) {
         exe_write_diary(floor, DiaryKind::RECALL, floor.dun_level);
     }
@@ -120,10 +122,10 @@ void execute_recall(PlayerType *player_ptr)
 
     auto &world = AngbandWorld::get_instance();
     if (world.is_wild_mode()) {
-        WildernessGrids::get_instance().set_player_position(player_ptr->get_position());
+        WildernessGrids::get_instance().set_player_position(creature.get_position());
     } else {
-        player_ptr->oldpx = player_ptr->x;
-        player_ptr->oldpy = player_ptr->y;
+        creature.oldpx = creature.x;
+        creature.oldpy = creature.y;
     }
 
     world.set_wild_mode(false);
@@ -133,46 +135,47 @@ void execute_recall(PlayerType *player_ptr)
      * and create a first saved floor
      */
     FloorChangeModesStore::get_instace()->set(FloorChangeMode::FIRST_FLOOR);
-    player_ptr->leaving = true;
+    creature.set_leaving(true);
 
-    check_random_quest_auto_failure(player_ptr);
+    check_random_quest_auto_failure(creature);
     sound(SoundKind::TPLEVEL);
 }
 
 /*!
  * @brief 10ゲームターンが進行するごとにフロア・リセット/現実変容の残り時間カウントダウンと発動を処理する。
  * / Handle involuntary movement once every 10 game turns
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
-void execute_floor_reset(PlayerType *player_ptr)
+void execute_floor_reset(CreatureEntity &creature)
 {
-    const auto &floor = *player_ptr->current_floor_ptr;
-    if (player_ptr->alter_reality == 0) {
+    const auto &floor = *creature.get_floor();
+    const auto alter = creature.get_timed_effect(CreatureTimedEffect::ALTER_REALITY);
+    if (alter == 0) {
         return;
     }
 
-    if (autosave_l && (player_ptr->alter_reality == 1) && !AngbandSystem::get_instance().is_phase_out()) {
-        do_cmd_save_game(player_ptr, true);
+    if (autosave_l && (alter == 1) && !AngbandSystem::get_instance().is_phase_out()) {
+        do_cmd_save_game(creature, true);
     }
 
-    player_ptr->alter_reality--;
+    creature.set_timed_effect(CreatureTimedEffect::ALTER_REALITY, alter - 1);
     RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
-    if (player_ptr->alter_reality != 0) {
+    if (creature.get_timed_effect(CreatureTimedEffect::ALTER_REALITY) != 0) {
         return;
     }
 
-    disturb(player_ptr, false, true);
+    disturb(creature, false, true);
     if (!inside_quest(floor.get_quest_id()) && floor.is_underground()) {
         msg_print(_("世界が変わった！", "The world changes!"));
 
         /* 時空崩壊度進行 */
-        if (player_ptr->prace != PlayerRaceType::AMBERITE) {
+        if (creature.prace != PlayerRaceType::AMBERITE) {
             msg_print(_("乱暴な現実の変容で時空崩壊が進んだ！", "World collapsion has progressed due to the violent transformation of reality!"));
-            wc_ptr->plus_perm_collapsion(20 + player_ptr->current_floor_ptr->dun_level / 2);
+            wc_ptr->plus_perm_collapsion(20 + creature.get_floor()->dun_level / 2);
         }
 
         FloorChangeModesStore::get_instace()->set(FloorChangeMode::FIRST_FLOOR);
-        player_ptr->leaving = true;
+        creature.set_leaving(true);
     } else {
         msg_print(_("世界が少しの間変化したようだ。", "The world seems to change for a moment!"));
     }

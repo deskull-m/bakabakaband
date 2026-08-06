@@ -4,9 +4,9 @@
 #include "mind/mind-force-trainer.h"
 #include "mind/mind-types.h"
 #include "player-info/equipment-info.h"
-#include "system/player-type-definition.h"
+#include "system/creature-entity.h"
 
-static std::string switch_mind_mindcrafter(PlayerType *player_ptr, const PLAYER_LEVEL plev, const int power)
+static std::string switch_mind_mindcrafter(CreatureEntity &creature, const PLAYER_LEVEL plev, const int power)
 {
     switch (power) {
     case 1:
@@ -35,16 +35,16 @@ static std::string switch_mind_mindcrafter(PlayerType *player_ptr, const PLAYER_
     case 12:
         return format(" %sd%d+%d", KWD_DAM, plev * 3, plev * 3);
     case 13:
-        return format(_(" 行動:%ld回", " %ld acts."), (long int)(player_ptr->csp + 100 - player_ptr->energy_need - 50) / 100);
+        return format(_(" 行動:%ld回", " %ld acts."), (long int)(creature.get_current_mp() + 100 - creature.get_energy_need() - 50) / 100);
     default:
         return std::string();
     }
 }
 
-static std::string switch_mind_ki(PlayerType *player_ptr, const PLAYER_LEVEL plev, const int power)
+static std::string switch_mind_ki(CreatureEntity &creature, const PLAYER_LEVEL plev, const int power)
 {
-    int boost = get_current_ki(player_ptr);
-    if (heavy_armor(player_ptr)) {
+    int boost = get_current_ki(creature);
+    if (heavy_armor(creature)) {
         boost /= 2;
     }
 
@@ -140,14 +140,14 @@ static std::string switch_mind_ninja(const PLAYER_LEVEL plev, const int power)
  * @param power モンスター魔法のID
  * @return std::string 特殊技能の情報を表す文字列
  */
-std::string mindcraft_info(PlayerType *player_ptr, MindKindType use_mind, int power)
+std::string mindcraft_info(CreatureEntity &creature, MindKindType use_mind, int power)
 {
-    const PLAYER_LEVEL plev = player_ptr->level;
+    const PLAYER_LEVEL plev = creature.get_level();
     switch (use_mind) {
     case MindKindType::MINDCRAFTER:
-        return switch_mind_mindcrafter(player_ptr, plev, power);
+        return switch_mind_mindcrafter(creature, plev, power);
     case MindKindType::KI:
-        return switch_mind_ki(player_ptr, plev, power);
+        return switch_mind_ki(creature, plev, power);
     case MindKindType::MIRROR_MASTER:
         return switch_mind_mirror_master(plev, power);
     case MindKindType::NINJUTSU:

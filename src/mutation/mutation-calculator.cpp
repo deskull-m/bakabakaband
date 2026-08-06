@@ -14,15 +14,16 @@
 #include "mutation/mutation-calculator.h"
 #include "mutation/mutation-flag-types.h"
 #include "player-base/player-race.h"
-#include "system/player-type-definition.h"
+#include "player-info/race-types.h"
+#include "system/creature-entity.h"
 
 /*!
  * @brief 現在プレイヤー得ている突然変異の数を返す。
  * @return 現在得ている突然変異の数
  */
-static int count_mutations(PlayerType *player_ptr)
+static int count_mutations(CreatureEntity &creature)
 {
-    return player_ptr->muta.count();
+    return creature.get_mutations().count();
 }
 
 /*!
@@ -33,19 +34,19 @@ static int count_mutations(PlayerType *player_ptr)
  * Beastman get 10 "free" mutations and only 5% decrease per additional mutation.
  * Max 90% decrease in regeneration speed.
  */
-int calc_mutant_regenerate_mod(PlayerType *player_ptr)
+int calc_mutant_regenerate_mod(CreatureEntity &creature)
 {
     int regen;
     int mod = 10;
-    int count = count_mutations(player_ptr);
-    if (player_ptr->ppersonality == PERSONALITY_LUCKY) {
+    int count = count_mutations(creature);
+    if (creature.ppersonality == PERSONALITY_LUCKY) {
         count--;
     }
-    if (player_ptr->ppersonality == PERSONALITY_MESUGAKI) {
+    if (creature.ppersonality == PERSONALITY_MESUGAKI) {
         count--;
     }
 
-    if (PlayerRace(player_ptr).equals(PlayerRaceType::BEASTMAN)) {
+    if (CreatureRace(&creature).equals(PlayerRaceType::BEASTMAN)) {
         count -= 10;
         mod = 5;
     }

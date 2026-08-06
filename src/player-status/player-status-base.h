@@ -2,9 +2,14 @@
 #include "player/player-status-flags.h"
 #include "system/angband.h"
 
-class PlayerType;
+class CreatureEntity;
 class PlayerStatusBase {
 public:
+    PlayerStatusBase(const PlayerStatusBase &) = default;
+    PlayerStatusBase(PlayerStatusBase &&) = default;
+    PlayerStatusBase &operator=(const PlayerStatusBase &) = delete;
+    PlayerStatusBase &operator=(PlayerStatusBase &&) = delete;
+
     virtual ~PlayerStatusBase() = default;
     virtual int16_t get_value();
     virtual BIT_FLAGS get_all_flags();
@@ -12,12 +17,12 @@ public:
     virtual BIT_FLAGS get_bad_flags();
 
 protected:
-    PlayerStatusBase(PlayerType *player_ptr);
+    PlayerStatusBase(CreatureEntity &creature);
 
     int16_t default_value;
     int16_t min_value;
     int16_t max_value;
-    PlayerType *player_ptr;
+    CreatureEntity &creature;
     tr_type tr_flag;
     tr_type tr_bad_flag;
     virtual void set_locals();

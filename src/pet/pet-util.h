@@ -19,6 +19,9 @@ enum pet_command {
     PET_RIDING = 14, /*!< ペットに関するコマンド: ペットに乗る */
     PET_NAME = 15, /*!< ペットに関するコマンド: ペットに名前をつける */
     PET_TWO_HANDS = 16, /*!< ペットに関するコマンド: 騎乗中に両手で武器を使うかどうか */
+    PET_VIEW_INVENTORY = 17, /*!< ペットに関するコマンド: ペットの所持品を確認 (フェーズ C-3) */
+    PET_GIVE_ITEM = 18, /*!< ペットに関するコマンド: アイテムをペットに渡す (フェーズ C-3 拡張) */
+    PET_TAKE_ITEM = 19, /*!< ペットに関するコマンド: ペットの所持品を受け取る (フェーズ C-3 拡張) */
 };
 
 enum pet_follow_distance {
@@ -42,7 +45,7 @@ enum pet_permission {
 
 extern int total_friends;
 
+class CreatureEntity;
 class Grid;
-class PlayerType;
-bool can_player_ride_pet(PlayerType *player_ptr, const Grid &grid, bool now_riding);
-PERCENTAGE calculate_upkeep(PlayerType *player_ptr);
+bool can_player_ride_pet(CreatureEntity &creature, const Grid &grid, bool now_riding);
+PERCENTAGE calculate_upkeep(CreatureEntity &creature);

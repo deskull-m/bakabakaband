@@ -5,37 +5,39 @@
 #include "pet/pet-util.h"
 #include "player-base/player-class.h"
 #include "player-status/player-hand-types.h"
+#include "system/creature-entity.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "util/bit-flags-calculator.h"
 
 /*!
  * @brief プレイヤーが現在右手/左手に武器を持っているか判定する /
- * @param i 判定する手のID(右手:INVEN_MAIN_HAND 左手:INVEN_SUB_HAND)
+ * @param creature クリーチャーへの参照
+ * @param slot 判定する手のID(右手:INVEN_MAIN_HAND 左手:INVEN_SUB_HAND)
  * @return 持っているならばTRUE
  */
-bool has_melee_weapon(PlayerType *player_ptr, int slot)
+bool has_melee_weapon(CreatureEntity &creature, int slot)
 {
-    const auto o_ptr = player_ptr->inventory[slot].get();
+    const auto o_ptr = creature.inventory[slot].get();
     return o_ptr->is_valid() && o_ptr->is_melee_weapon();
 }
 
 /*!
  * @brief プレイヤーの現在開いている手の状態を返す
+ * @param creature クリーチャーへの参照
  * @param riding_control 乗馬中により片手を必要としている状態ならばTRUEを返す。
  * @return 開いている手のビットフラグ
  */
-BIT_FLAGS16 empty_hands(PlayerType *player_ptr, bool riding_control)
+BIT_FLAGS16 empty_hands(CreatureEntity &creature, bool riding_control)
 {
     BIT_FLAGS16 status = EMPTY_HAND_NONE;
-    if (!player_ptr->inventory[INVEN_MAIN_HAND]->is_valid()) {
+    if (!creature.inventory[INVEN_MAIN_HAND]->is_valid()) {
         status |= EMPTY_HAND_MAIN;
     }
-    if (!player_ptr->inventory[INVEN_SUB_HAND]->is_valid()) {
+    if (!creature.inventory[INVEN_SUB_HAND]->is_valid()) {
         status |= EMPTY_HAND_SUB;
     }
 
-    if (riding_control && (status != EMPTY_HAND_NONE) && player_ptr->riding && none_bits(player_ptr->pet_extra_flags, PF_TWO_HANDS)) {
+    if (riding_control && (status != EMPTY_HAND_NONE) && creature.get_riding() && !creature.has_pet_extra_flag(PF_TWO_HANDS)) {
         if (any_bits(status, EMPTY_HAND_SUB)) {
             reset_bits(status, EMPTY_HAND_SUB);
         } else if (any_bits(status, EMPTY_HAND_MAIN)) {
@@ -46,36 +48,37 @@ BIT_FLAGS16 empty_hands(PlayerType *player_ptr, bool riding_control)
     return status;
 }
 
-bool can_two_hands_wielding(PlayerType *player_ptr)
+bool can_two_hands_wielding(CreatureEntity &creature)
 {
-    return !player_ptr->riding || any_bits(player_ptr->pet_extra_flags, PF_TWO_HANDS);
+    return !creature.get_riding() || creature.has_pet_extra_flag(PF_TWO_HANDS);
 }
 
 /*!
  * @brief プレイヤーが防具重量制限のある職業時にペナルティを受ける状態にあるかどうかを返す。
+ * @param creature クリーチャーへの参照
  * @return ペナルティが適用されるならばTRUE。
  */
-bool heavy_armor(PlayerType *player_ptr)
+bool heavy_armor(CreatureEntity &creature)
 {
-    PlayerClass pc(player_ptr);
+    CreatureClass pc(creature);
     if (!pc.is_martial_arts_pro() && !pc.equals(PlayerClassType::NINJA)) {
         return false;
     }
 
     WEIGHT monk_arm_wgt = 0;
-    if (player_ptr->inventory[INVEN_MAIN_HAND]->bi_key.tval() > ItemKindType::SWORD) {
-        monk_arm_wgt += player_ptr->inventory[INVEN_MAIN_HAND]->weight;
+    if (creature.inventory[INVEN_MAIN_HAND]->bi_key.tval() > ItemKindType::SWORD) {
+        monk_arm_wgt += creature.inventory[INVEN_MAIN_HAND]->weight;
     }
 
-    if (player_ptr->inventory[INVEN_SUB_HAND]->bi_key.tval() > ItemKindType::SWORD) {
-        monk_arm_wgt += player_ptr->inventory[INVEN_SUB_HAND]->weight;
+    if (creature.inventory[INVEN_SUB_HAND]->bi_key.tval() > ItemKindType::SWORD) {
+        monk_arm_wgt += creature.inventory[INVEN_SUB_HAND]->weight;
     }
 
-    monk_arm_wgt += player_ptr->inventory[INVEN_BODY]->weight;
-    monk_arm_wgt += player_ptr->inventory[INVEN_HEAD]->weight;
-    monk_arm_wgt += player_ptr->inventory[INVEN_OUTER]->weight;
-    monk_arm_wgt += player_ptr->inventory[INVEN_ARMS]->weight;
-    monk_arm_wgt += player_ptr->inventory[INVEN_FEET]->weight;
+    monk_arm_wgt += creature.inventory[INVEN_BODY]->weight;
+    monk_arm_wgt += creature.inventory[INVEN_HEAD]->weight;
+    monk_arm_wgt += creature.inventory[INVEN_OUTER]->weight;
+    monk_arm_wgt += creature.inventory[INVEN_ARMS]->weight;
+    monk_arm_wgt += creature.inventory[INVEN_FEET]->weight;
 
-    return monk_arm_wgt > (100 + (player_ptr->level * 4));
+    return monk_arm_wgt > (100 + (creature.get_level() * 4));
 }

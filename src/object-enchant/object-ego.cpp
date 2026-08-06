@@ -56,7 +56,7 @@ EgoType get_random_ego(byte slot, bool good)
 
 /*!
  * @brief エゴオブジェクトに呪いを付加する
- * @param player_ptr プレイヤー情報への参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param o_ptr オブジェクト情報への参照ポインタ
  * @param gen_flags 生成フラグ(参照渡し)
  */
@@ -154,7 +154,7 @@ static void ego_invest_extra_abilities(ItemEntity *o_ptr, EnumClassFlagGroup<Ite
 
 /*!
  * @brief エゴアイテムの追加能力/耐性フラグを解釈する
- * @param player_ptr プレイヤー情報への参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param o_ptr オブジェクト情報への参照ポインタ
  * @param ego エゴアイテム情報への参照
  * @param gen_flags 生成フラグ(参照渡し)
@@ -204,7 +204,7 @@ static bool ego_has_flag(ItemEntity *o_ptr, const EgoItemDefinition &ego, tr_typ
 
 /*!
  * @brief エゴに追加攻撃のpvalを付加する
- * @param player_ptr プレイヤー情報への参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param o_ptr オブジェクト情報への参照ポインタ
  * @param ego エゴアイテム情報への参照
  * @param lev 生成階
@@ -247,7 +247,7 @@ void ego_invest_extra_attack(ItemEntity *o_ptr, const EgoItemDefinition &ego, DE
 
 /*!
  * @brief オブジェクトをエゴアイテムにする
- * @param player_ptr プレイヤー情報への参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param o_ptr オブジェクト情報への参照ポインタ
  * @param lev 生成階
  */
@@ -259,7 +259,7 @@ void apply_ego(ItemEntity *o_ptr, DEPTH lev)
     ego_interpret_extra_abilities(o_ptr, ego, gen_flags);
 
     if (!ego.cost) {
-        o_ptr->ident |= (IDENT_BROKEN);
+        o_ptr->ident.set(IdentificationFlag::BROKEN);
     }
 
     ego_invest_curse(o_ptr, gen_flags);

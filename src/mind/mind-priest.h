@@ -1,4 +1,4 @@
 #pragma once
 
-class PlayerType;
-bool bless_weapon(PlayerType *player_ptr);
+class CreatureEntity;
+bool bless_weapon(CreatureEntity &creature);

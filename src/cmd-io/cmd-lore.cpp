@@ -5,8 +5,10 @@
 #include "game-option/game-play-options.h"
 #include "io/input-key-acceptor.h"
 #include "lore/lore-util.h"
+#include "system/creature-entity.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
+#include "system/monrace/monrace-service.h"
 #include "system/player-type-definition.h"
 #include "term/gameterm.h"
 #include "term/screen-processor.h"
@@ -16,33 +18,32 @@
 #include "util/int-char-converter.h"
 #include "util/string-processor.h"
 #include "view/display-lore.h"
+#include <fmt/format.h>
 
 namespace {
 std::pair<std::string, std::vector<MonraceId>> collect_monraces(char symbol)
 {
-    const auto &monraces = MonraceList::get_instance();
     const auto is_known_only = !cheat_know;
-
     switch (symbol) {
     case KTRL('A'): {
         constexpr auto msg = _("全モンスターのリスト", "Full monster list.");
         auto filter = [](const MonraceDefinition &) { return true; };
-        return std::make_pair(msg, monraces.search(std::move(filter), is_known_only));
+        return std::make_pair(msg, MonraceService::search(std::move(filter), is_known_only));
     }
     case KTRL('U'): {
         constexpr auto msg = _("ユニーク・モンスターのリスト", "Unique monster list.");
         auto filter = [](const MonraceDefinition &monrace) { return monrace.kind_flags.has(MonsterKindType::UNIQUE); };
-        return std::make_pair(msg, monraces.search(std::move(filter), is_known_only));
+        return std::make_pair(msg, MonraceService::search(std::move(filter), is_known_only));
     }
     case KTRL('N'): {
         constexpr auto msg = _("ユニーク外モンスターのリスト", "Non-unique monster list.");
         auto filter = [](const MonraceDefinition &monrace) { return monrace.kind_flags.has_not(MonsterKindType::UNIQUE); };
-        return std::make_pair(msg, monraces.search(std::move(filter), is_known_only));
+        return std::make_pair(msg, MonraceService::search(std::move(filter), is_known_only));
     }
     case KTRL('R'): {
         constexpr auto msg = _("乗馬可能モンスターのリスト", "Ridable monster list.");
         auto filter = [](const MonraceDefinition &monrace) { return monrace.misc_flags.has(MonsterMiscType::RIDING); };
-        return std::make_pair(msg, monraces.search(std::move(filter), is_known_only));
+        return std::make_pair(msg, MonraceService::search(std::move(filter), is_known_only));
     }
     case KTRL('M'): {
         const auto monster_name = input_string(_("名前(英語の場合小文字で可)", "Enter name:"), MAX_MONSTER_NAME);
@@ -50,8 +51,8 @@ std::pair<std::string, std::vector<MonraceId>> collect_monraces(char symbol)
             return { "", {} };
         }
 
-        auto msg = format(_("名前:%sにマッチ", "Monsters' names with \"%s\""), monster_name->data());
-        return std::make_pair(msg, monraces.search_by_name(*monster_name, is_known_only));
+        const auto msg = fmt::format(_("名前:{}にマッチ", "Monsters' names with \"{}\""), monster_name->data());
+        return std::make_pair(msg, MonraceService::search_by_name(*monster_name, is_known_only));
     }
     default: {
         int ident_i;
@@ -62,8 +63,8 @@ std::pair<std::string, std::vector<MonraceId>> collect_monraces(char symbol)
         }
 
         if (ident_info[ident_i]) {
-            auto msg = format("%c - %s.", symbol, ident_info[ident_i] + 2);
-            return std::make_pair(msg, monraces.search_by_symbol(symbol, is_known_only));
+            const auto msg = fmt::format("{} - {}.", symbol, ident_info[ident_i] + 2);
+            return std::make_pair(msg, MonraceService::search_by_symbol(symbol, is_known_only));
         }
 
         return std::make_pair(_("無効な文字", "Unknown Symbol"), std::vector<MonraceId>{});
@@ -75,7 +76,7 @@ std::pair<std::string, std::vector<MonraceId>> collect_monraces(char symbol)
 /*!
  * @brief モンスターの思い出を見るコマンドのメインルーチン
  * Identify a character, allow recall of monsters
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @details
  * <pre>
  * Several "special" responses recall "multiple" monsters:
@@ -88,7 +89,7 @@ std::pair<std::string, std::vector<MonraceId>> collect_monraces(char symbol)
  * Note that the player ghosts are ignored.
  * </pre>
  */
-void do_cmd_query_symbol(PlayerType *player_ptr)
+void do_cmd_query_symbol(CreatureEntity &creature)
 {
     constexpr auto prompt = _("知りたい文字を入力して下さい(記号 or ^A全,^Uユ,^N非ユ,^R乗馬,^M名前): ",
         "Enter character to be identified(^A:All,^U:Uniqs,^N:Non uniqs,^M:Name): ");
@@ -126,11 +127,11 @@ void do_cmd_query_symbol(PlayerType *player_ptr)
     while (true) {
         const auto monrace_id = monrace_ids[i];
         tracker.set_trackee(monrace_id);
-        handle_stuff(player_ptr);
+        handle_stuff(creature);
         while (true) {
             if (recall) {
                 screen_save();
-                screen_roff(player_ptr, monrace_ids[i], MONSTER_LORE_NORMAL);
+                screen_roff(creature, monrace_ids[i], MONSTER_LORE_NORMAL);
             }
 
             roff_top(monrace_id);

@@ -9,7 +9,7 @@
 #include <tl/optional.hpp>
 
 enum class MonsterAbilityType;
-class PlayerType;
+class CreatureEntity;
 struct monster_power;
-int calculate_blue_magic_failure_probability(PlayerType *player_ptr, const monster_power &mp, int need_mana);
-tl::optional<MonsterAbilityType> get_learned_power(PlayerType *player_ptr);
+int calculate_blue_magic_failure_probability(CreatureEntity &creature, const monster_power &mp, int need_mana);
+tl::optional<MonsterAbilityType> get_learned_power(CreatureEntity &creature);

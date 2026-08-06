@@ -2,13 +2,16 @@
 
 angband_files = \
 	book-000_en.txt book-000_jp.txt \
-	book-001_en.txt book-001_jp.txt \
-	book-002_en.txt book-002_jp.txt \
-	book-003_en.txt book-003_jp.txt \
-	book-004_en.txt book-004_jp.txt \
+	book-001_jp.txt \
+	book-002_jp.txt \
+	book-003_jp.txt \
+	book-004_jp.txt \
 	book-005_en.txt book-005_jp.txt \
 	book-006_en.txt book-006_jp.txt \
-	book-007_en.txt book-007_jp.txt
+	book-007_en.txt book-007_jp.txt \
+	book-008_en.txt book-008_jp.txt \
+	book-009_en.txt book-009_jp.txt \
+	book-010_en.txt book-010_jp.txt
 
 EXTRA_DIST = \
 	$(angband_files)

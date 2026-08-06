@@ -3,7 +3,7 @@
 #include "player-info/class-info.h"
 #include "player-info/race-info.h"
 #include "player/player-realm.h"
-#include "system/player-type-definition.h"
+#include "system/creature-entity.h"
 #include "system/system-variables.h"
 #include "term/z-form.h"
 #include "util/string-processor.h"
@@ -11,7 +11,7 @@
 /*!
  * @brief process_pref_fileのサブルーチンとして条件分岐処理の解釈と結果を返す
  * Helper function for "process_pref_file()"
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param sp テキスト文字列の参照ポインタ
  * @param fp 再帰中のポインタ参照
  * @return
@@ -25,7 +25,7 @@
  *   result
  * </pre>
  */
-std::string process_pref_file_expr(PlayerType *player_ptr, char **sp, char *fp)
+std::string process_pref_file_expr(CreatureEntity &creature, char **sp, char *fp)
 {
     char *s = (*sp);
     while (iswspace(*s)) {
@@ -46,13 +46,13 @@ std::string process_pref_file_expr(PlayerType *player_ptr, char **sp, char *fp)
         s++;
 
         /* First */
-        t = process_pref_file_expr(player_ptr, &s, &f);
+        t = process_pref_file_expr(creature, &s, &f);
 
         if (t.empty()) {
         } else if (t == "IOR") {
             v = "0";
             while (*s && (f != b2)) {
-                t = process_pref_file_expr(player_ptr, &s, &f);
+                t = process_pref_file_expr(creature, &s, &f);
                 if (!t.empty() && t != "0") {
                     v = "1";
                 }
@@ -60,7 +60,7 @@ std::string process_pref_file_expr(PlayerType *player_ptr, char **sp, char *fp)
         } else if (t == "AND") {
             v = "1";
             while (*s && (f != b2)) {
-                t = process_pref_file_expr(player_ptr, &s, &f);
+                t = process_pref_file_expr(creature, &s, &f);
                 if (!t.empty() && t == "0") {
                     v = "0";
                 }
@@ -68,7 +68,7 @@ std::string process_pref_file_expr(PlayerType *player_ptr, char **sp, char *fp)
         } else if (t == "NOT") {
             v = "1";
             while (*s && (f != b2)) {
-                t = process_pref_file_expr(player_ptr, &s, &f);
+                t = process_pref_file_expr(creature, &s, &f);
                 if (!t.empty() && t == "1") {
                     v = "0";
                 }
@@ -76,10 +76,10 @@ std::string process_pref_file_expr(PlayerType *player_ptr, char **sp, char *fp)
         } else if (t == "EQU") {
             v = "0";
             if (*s && (f != b2)) {
-                t = process_pref_file_expr(player_ptr, &s, &f);
+                t = process_pref_file_expr(creature, &s, &f);
             }
             while (*s && (f != b2)) {
-                auto p = process_pref_file_expr(player_ptr, &s, &f);
+                auto p = process_pref_file_expr(creature, &s, &f);
                 if (t == p) {
                     v = "1";
                 }
@@ -87,10 +87,10 @@ std::string process_pref_file_expr(PlayerType *player_ptr, char **sp, char *fp)
         } else if (t == "LEQ") {
             v = "1";
             if (*s && (f != b2)) {
-                t = process_pref_file_expr(player_ptr, &s, &f);
+                t = process_pref_file_expr(creature, &s, &f);
             }
             while (*s && (f != b2)) {
-                auto p = process_pref_file_expr(player_ptr, &s, &f);
+                auto p = process_pref_file_expr(creature, &s, &f);
                 if (!p.empty() && atoi(t.data()) > atoi(p.data())) {
                     v = "0";
                 }
@@ -98,17 +98,17 @@ std::string process_pref_file_expr(PlayerType *player_ptr, char **sp, char *fp)
         } else if (t == "GEQ") {
             v = "1";
             if (*s && (f != b2)) {
-                t = process_pref_file_expr(player_ptr, &s, &f);
+                t = process_pref_file_expr(creature, &s, &f);
             }
             while (*s && (f != b2)) {
-                auto p = process_pref_file_expr(player_ptr, &s, &f);
+                auto p = process_pref_file_expr(creature, &s, &f);
                 if (!p.empty() && atoi(t.data()) < atoi(p.data())) {
                     v = "0";
                 }
             }
         } else {
             while (*s && (f != b2)) {
-                t = process_pref_file_expr(player_ptr, &s, &f);
+                t = process_pref_file_expr(creature, &s, &f);
             }
         }
 
@@ -163,12 +163,12 @@ std::string process_pref_file_expr(PlayerType *player_ptr, char **sp, char *fp)
             v = "OFF";
         }
     } else if (streq(b + 1, "RACE")) {
-        v = player_ptr->race->title.en_string();
+        v = creature.get_race_info()->title.en_string();
     } else if (streq(b + 1, "CLASS")) {
-        v = (*player_ptr->pclass_ref).title.en_string();
+        v = (*creature.get_class_info()).title.en_string();
     } else if (streq(b + 1, "PLAYER")) {
         static char tmp_player_name[64];
-        const char *pn = player_ptr->name.c_str();
+        const char *pn = creature.name.c_str();
         char *tpn = tmp_player_name;
         for (; *pn; pn++, tpn++) {
 #ifdef JP
@@ -184,19 +184,19 @@ std::string process_pref_file_expr(PlayerType *player_ptr, char **sp, char *fp)
         *tpn = '\0';
         v = tmp_player_name;
     } else if (streq(b + 1, "REALM1")) {
-        v = PlayerRealm(player_ptr).realm1().get_name().en_string();
+        v = PlayerRealm(creature).realm1().get_name().en_string();
     } else if (streq(b + 1, "REALM2")) {
-        v = PlayerRealm(player_ptr).realm2().get_name().en_string();
+        v = PlayerRealm(creature).realm2().get_name().en_string();
     } else if (streq(b + 1, "LEVEL")) {
-        v = format("%02d", player_ptr->level);
+        v = format("%02d", creature.get_level());
     } else if (streq(b + 1, "AUTOREGISTER")) {
-        if (player_ptr->autopick_autoregister) {
+        if (creature.is_autopick_autoregister()) {
             v = "1";
         } else {
             v = "0";
         }
     } else if (streq(b + 1, "MONEY")) {
-        v = format("%09ld", (long int)player_ptr->au);
+        v = format("%09ld", (long int)creature.get_au());
     }
 
     *fp = f;

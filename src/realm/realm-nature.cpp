@@ -36,25 +36,25 @@
 #include "status/buff-setter.h"
 #include "status/element-resistance.h"
 #include "sv-definition/sv-food-types.h"
+#include "system/creature-entity.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "target/target-getter.h"
 #include "util/dice.h"
 #include "view/display-messages.h"
 
 /*!
  * @brief 自然領域魔法の各処理を行う
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param spell 魔法ID
  * @param mode 処理内容 (SpellProcessType::NAME / SPELL_DESC / SpellProcessType::INFO / SpellProcessType::CAST)
  * @return SpellProcessType::NAME / SPELL_DESC / SpellProcessType::INFO 時には文字列を返す。SpellProcessType::CAST時は tl::nullopt を返す。
  */
-tl::optional<std::string> do_nature_spell(PlayerType *player_ptr, SPELL_IDX spell, SpellProcessType mode)
+tl::optional<std::string> do_nature_spell(CreatureEntity &creature, SPELL_IDX spell, SpellProcessType mode)
 {
     bool info = mode == SpellProcessType::INFO;
     bool cast = mode == SpellProcessType::CAST;
 
-    PLAYER_LEVEL plev = player_ptr->level;
+    PLAYER_LEVEL plev = creature.get_level();
 
     switch (spell) {
     case 0: {
@@ -65,7 +65,7 @@ tl::optional<std::string> do_nature_spell(PlayerType *player_ptr, SPELL_IDX spel
         }
 
         if (cast) {
-            detect_monsters_normal(player_ptr, rad);
+            detect_monsters_normal(creature, rad);
         }
     } break;
 
@@ -80,12 +80,12 @@ tl::optional<std::string> do_nature_spell(PlayerType *player_ptr, SPELL_IDX spel
         if (cast) {
             project_length = range;
 
-            const auto dir = get_aim_dir(player_ptr);
+            const auto dir = get_aim_dir(creature);
             if (!dir) {
                 return tl::nullopt;
             }
 
-            fire_beam(player_ptr, AttributeType::ELEC, dir, dice.roll());
+            fire_beam(creature, AttributeType::ELEC, dir, dice.roll());
         }
     } break;
 
@@ -97,9 +97,9 @@ tl::optional<std::string> do_nature_spell(PlayerType *player_ptr, SPELL_IDX spel
         }
 
         if (cast) {
-            detect_traps(player_ptr, rad, true);
-            detect_doors(player_ptr, rad);
-            detect_stairs(player_ptr, rad);
+            detect_traps(creature, rad, true);
+            detect_doors(creature, rad);
+            detect_stairs(creature, rad);
         }
     } break;
 
@@ -107,7 +107,7 @@ tl::optional<std::string> do_nature_spell(PlayerType *player_ptr, SPELL_IDX spel
         if (cast) {
             msg_print(_("食料を生成した。", "A food ration is produced."));
             ItemEntity item({ ItemKindType::FOOD, SV_FOOD_RATION });
-            (void)drop_near(player_ptr, item, player_ptr->get_position());
+            (void)drop_near(creature, item, creature.get_position());
         }
     } break;
 
@@ -120,12 +120,12 @@ tl::optional<std::string> do_nature_spell(PlayerType *player_ptr, SPELL_IDX spel
         }
 
         if (cast) {
-            lite_area(player_ptr, dice.roll(), rad);
+            lite_area(creature, dice.roll(), rad);
 
-            PlayerRace race(player_ptr);
-            if (race.life() == PlayerRaceLifeType::UNDEAD && race.tr_flags().has(TR_VUL_LITE) && !has_resist_lite(player_ptr)) {
+            CreatureRace race(&creature);
+            if (race.life() == PlayerRaceLifeType::UNDEAD && race.tr_flags().has(TR_VUL_LITE) && !creature.has_resist_lite()) {
                 msg_print(_("日の光があなたの肉体を焦がした！", "The daylight scorches your flesh!"));
-                take_hit(player_ptr, DAMAGE_NOESCAPE, Dice::roll(2, 2), _("日の光", "daylight"));
+                take_hit(creature, DAMAGE_NOESCAPE, Dice::roll(2, 2), _("日の光", "daylight"));
             }
         }
     } break;
@@ -138,12 +138,12 @@ tl::optional<std::string> do_nature_spell(PlayerType *player_ptr, SPELL_IDX spel
         }
 
         if (cast) {
-            const auto dir = get_aim_dir(player_ptr);
+            const auto dir = get_aim_dir(creature);
             if (!dir) {
                 return tl::nullopt;
             }
 
-            charm_animal(player_ptr, dir, plev);
+            charm_animal(creature, dir, plev);
         }
     } break;
 
@@ -156,9 +156,9 @@ tl::optional<std::string> do_nature_spell(PlayerType *player_ptr, SPELL_IDX spel
         }
 
         if (cast) {
-            set_oppose_cold(player_ptr, dice.roll() + base, false);
-            set_oppose_fire(player_ptr, dice.roll() + base, false);
-            set_oppose_elec(player_ptr, dice.roll() + base, false);
+            set_oppose_cold(creature, dice.roll() + base, false);
+            set_oppose_fire(creature, dice.roll() + base, false);
+            set_oppose_elec(creature, dice.roll() + base, false);
         }
     } break;
 
@@ -170,8 +170,8 @@ tl::optional<std::string> do_nature_spell(PlayerType *player_ptr, SPELL_IDX spel
         }
 
         if (cast) {
-            BadStatusSetter bss(player_ptr);
-            hp_player(player_ptr, dice.roll());
+            BadStatusSetter bss(creature);
+            hp_player(creature, dice.roll());
             (void)bss.set_cut(0);
             (void)bss.set_poison(0);
         }
@@ -186,12 +186,12 @@ tl::optional<std::string> do_nature_spell(PlayerType *player_ptr, SPELL_IDX spel
         }
 
         if (cast) {
-            const auto dir = get_aim_dir(player_ptr);
+            const auto dir = get_aim_dir(creature);
             if (!dir) {
                 return tl::nullopt;
             }
 
-            wall_to_mud(player_ptr, dir, base + dice.roll());
+            wall_to_mud(creature, dir, base + dice.roll());
         }
     } break;
 
@@ -203,11 +203,11 @@ tl::optional<std::string> do_nature_spell(PlayerType *player_ptr, SPELL_IDX spel
         }
 
         if (cast) {
-            const auto dir = get_aim_dir(player_ptr);
+            const auto dir = get_aim_dir(creature);
             if (!dir) {
                 return tl::nullopt;
             }
-            fire_bolt_or_beam(player_ptr, beam_chance(player_ptr) - 10, AttributeType::COLD, dir, dice.roll());
+            fire_bolt_or_beam(creature, beam_chance(creature) - 10, AttributeType::COLD, dir, dice.roll());
         }
     } break;
 
@@ -220,11 +220,11 @@ tl::optional<std::string> do_nature_spell(PlayerType *player_ptr, SPELL_IDX spel
         }
 
         if (cast) {
-            map_area(player_ptr, rad1);
-            detect_traps(player_ptr, rad2, true);
-            detect_doors(player_ptr, rad2);
-            detect_stairs(player_ptr, rad2);
-            detect_monsters_normal(player_ptr, rad2);
+            map_area(creature, rad1);
+            detect_traps(creature, rad2, true);
+            detect_doors(creature, rad2);
+            detect_stairs(creature, rad2);
+            detect_monsters_normal(creature, rad2);
         }
     } break;
 
@@ -236,11 +236,11 @@ tl::optional<std::string> do_nature_spell(PlayerType *player_ptr, SPELL_IDX spel
         }
 
         if (cast) {
-            const auto dir = get_aim_dir(player_ptr);
+            const auto dir = get_aim_dir(creature);
             if (!dir) {
                 return tl::nullopt;
             }
-            fire_bolt_or_beam(player_ptr, beam_chance(player_ptr) - 10, AttributeType::FIRE, dir, dice.roll());
+            fire_bolt_or_beam(creature, beam_chance(creature) - 10, AttributeType::FIRE, dir, dice.roll());
         }
     } break;
 
@@ -252,12 +252,12 @@ tl::optional<std::string> do_nature_spell(PlayerType *player_ptr, SPELL_IDX spel
         }
 
         if (cast) {
-            const auto dir = get_aim_dir(player_ptr);
+            const auto dir = get_aim_dir(creature);
             if (!dir) {
                 return tl::nullopt;
             }
             msg_print(_("太陽光線が現れた。", "A line of sunlight appears."));
-            lite_line(player_ptr, dir, dice.roll());
+            lite_line(creature, dir, dice.roll());
         }
     } break;
 
@@ -267,13 +267,13 @@ tl::optional<std::string> do_nature_spell(PlayerType *player_ptr, SPELL_IDX spel
             return info_power(power);
         }
         if (cast) {
-            slow_monsters(player_ptr, plev);
+            slow_monsters(creature, plev);
         }
     } break;
 
     case 14: {
         if (cast) {
-            if (!(summon_specific(player_ptr, player_ptr->y, player_ptr->x, plev, SUMMON_ANIMAL_RANGER, (PM_ALLOW_GROUP | PM_FORCE_PET)))) {
+            if (!(summon_specific(creature, creature.y, creature.x, plev, SUMMON_ANIMAL_RANGER, (PM_ALLOW_GROUP | PM_FORCE_PET)))) {
                 msg_print(_("動物は現れなかった。", "No animals arrive."));
             }
             break;
@@ -286,13 +286,13 @@ tl::optional<std::string> do_nature_spell(PlayerType *player_ptr, SPELL_IDX spel
             return info_heal(heal);
         }
         if (cast) {
-            (void)cure_critical_wounds(player_ptr, heal);
+            (void)cure_critical_wounds(creature, heal);
         }
     } break;
 
     case 16: {
         if (cast) {
-            stair_creation(player_ptr);
+            stair_creation(creature);
         }
     } break;
 
@@ -305,7 +305,7 @@ tl::optional<std::string> do_nature_spell(PlayerType *player_ptr, SPELL_IDX spel
         }
 
         if (cast) {
-            set_shield(player_ptr, dice.roll() + base, false);
+            set_shield(creature, dice.roll() + base, false);
         }
     } break;
 
@@ -318,17 +318,17 @@ tl::optional<std::string> do_nature_spell(PlayerType *player_ptr, SPELL_IDX spel
         }
 
         if (cast) {
-            set_oppose_acid(player_ptr, dice.roll() + base, false);
-            set_oppose_elec(player_ptr, dice.roll() + base, false);
-            set_oppose_fire(player_ptr, dice.roll() + base, false);
-            set_oppose_cold(player_ptr, dice.roll() + base, false);
-            set_oppose_pois(player_ptr, dice.roll() + base, false);
+            set_oppose_acid(creature, dice.roll() + base, false);
+            set_oppose_elec(creature, dice.roll() + base, false);
+            set_oppose_fire(creature, dice.roll() + base, false);
+            set_oppose_cold(creature, dice.roll() + base, false);
+            set_oppose_pois(creature, dice.roll() + base, false);
         }
     } break;
 
     case 19: {
         if (cast) {
-            tree_creation(player_ptr, player_ptr->y, player_ptr->x);
+            tree_creation(creature, creature.y, creature.x);
         }
     } break;
 
@@ -338,13 +338,13 @@ tl::optional<std::string> do_nature_spell(PlayerType *player_ptr, SPELL_IDX spel
             return info_power(power);
         }
         if (cast) {
-            charm_animals(player_ptr, power);
+            charm_animals(creature, power);
         }
     } break;
 
     case 21: {
         if (cast) {
-            if (!identify_fully(player_ptr, false)) {
+            if (!identify_fully(creature, false)) {
                 return tl::nullopt;
             }
         }
@@ -352,13 +352,13 @@ tl::optional<std::string> do_nature_spell(PlayerType *player_ptr, SPELL_IDX spel
 
     case 22: {
         if (cast) {
-            wall_stone(player_ptr);
+            wall_stone(creature);
         }
     } break;
 
     case 23: {
         if (cast) {
-            if (!rustproof(player_ptr)) {
+            if (!rustproof(creature)) {
                 return tl::nullopt;
             }
         }
@@ -372,13 +372,13 @@ tl::optional<std::string> do_nature_spell(PlayerType *player_ptr, SPELL_IDX spel
         }
 
         if (cast) {
-            earthquake(player_ptr, player_ptr->get_position(), rad);
+            earthquake(creature, creature.get_position(), rad);
         }
     } break;
 
     case 25:
         if (cast) {
-            massacre(player_ptr);
+            massacre(creature);
         }
         break;
 
@@ -391,12 +391,12 @@ tl::optional<std::string> do_nature_spell(PlayerType *player_ptr, SPELL_IDX spel
         }
 
         if (cast) {
-            const auto dir = get_aim_dir(player_ptr);
+            const auto dir = get_aim_dir(creature);
             if (!dir) {
                 return tl::nullopt;
             }
 
-            fire_ball(player_ptr, AttributeType::COLD, dir, dam, rad);
+            fire_ball(creature, AttributeType::COLD, dir, dam, rad);
         }
     } break;
 
@@ -409,11 +409,11 @@ tl::optional<std::string> do_nature_spell(PlayerType *player_ptr, SPELL_IDX spel
         }
 
         if (cast) {
-            const auto dir = get_aim_dir(player_ptr);
+            const auto dir = get_aim_dir(creature);
             if (!dir) {
                 return tl::nullopt;
             }
-            fire_ball(player_ptr, AttributeType::ELEC, dir, dam, rad);
+            fire_ball(creature, AttributeType::ELEC, dir, dam, rad);
             break;
         }
     } break;
@@ -427,11 +427,11 @@ tl::optional<std::string> do_nature_spell(PlayerType *player_ptr, SPELL_IDX spel
         }
 
         if (cast) {
-            const auto dir = get_aim_dir(player_ptr);
+            const auto dir = get_aim_dir(creature);
             if (!dir) {
                 return tl::nullopt;
             }
-            fire_ball(player_ptr, AttributeType::WATER, dir, dam, rad);
+            fire_ball(creature, AttributeType::WATER, dir, dam, rad);
         }
     } break;
 
@@ -444,22 +444,22 @@ tl::optional<std::string> do_nature_spell(PlayerType *player_ptr, SPELL_IDX spel
         }
 
         if (cast) {
-            fire_ball(player_ptr, AttributeType::LITE, Direction::self(), dam, rad);
-            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::KNOWLEDGE, 1);
-            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::ENLIGHTEN, 1);
-            wiz_lite(player_ptr, false);
+            fire_ball(creature, AttributeType::LITE, Direction::self(), dam, rad);
+            chg_virtue(creature, Virtue::KNOWLEDGE, 1);
+            chg_virtue(creature, Virtue::ENLIGHTEN, 1);
+            wiz_lite(creature, false);
 
-            PlayerRace race(player_ptr);
-            if (race.life() == PlayerRaceLifeType::UNDEAD && race.tr_flags().has(TR_VUL_LITE) && !has_resist_lite(player_ptr)) {
+            CreatureRace race(&creature);
+            if (race.life() == PlayerRaceLifeType::UNDEAD && race.tr_flags().has(TR_VUL_LITE) && !creature.has_resist_lite()) {
                 msg_print(_("日光があなたの肉体を焦がした！", "The sunlight scorches your flesh!"));
-                take_hit(player_ptr, DAMAGE_NOESCAPE, 50, _("日光", "sunlight"));
+                take_hit(creature, DAMAGE_NOESCAPE, 50, _("日光", "sunlight"));
             }
         }
     } break;
 
     case 30: {
         if (cast) {
-            brand_weapon(player_ptr, randint0(2));
+            brand_weapon(creature, randint0(2));
         }
     } break;
 
@@ -474,9 +474,9 @@ tl::optional<std::string> do_nature_spell(PlayerType *player_ptr, SPELL_IDX spel
         }
 
         if (cast) {
-            dispel_monsters(player_ptr, d_dam);
-            earthquake(player_ptr, player_ptr->get_position(), q_rad);
-            project(player_ptr, 0, b_rad, player_ptr->y, player_ptr->x, b_dam, AttributeType::DISINTEGRATE, PROJECT_KILL | PROJECT_ITEM);
+            dispel_monsters(creature, d_dam);
+            earthquake(creature, creature.get_position(), q_rad);
+            project(creature, 0, b_rad, creature.y, creature.x, b_dam, AttributeType::DISINTEGRATE, PROJECT_KILL | PROJECT_ITEM);
         }
     } break;
     }

@@ -1,10 +1,10 @@
 #include "alliance/alliance-suren.h"
+#include "system/creature-entity.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/player-type-definition.h"
 
-int AllianceSuren::calcImpressionPoint([[maybe_unused]] PlayerType *creature_ptr) const
+int AllianceSuren::calcImpressionPoint([[maybe_unused]] const CreatureEntity &creature) const
 {
     int result = 0;
     result += calcIronmanHostilityPenalty();
@@ -31,5 +31,5 @@ int AllianceSuren::calcImpressionPoint([[maybe_unused]] PlayerType *creature_ptr
 
 bool AllianceSuren::isAnnihilated()
 {
-    return MonraceList::get_instance().get_monrace(MonraceId::SUREN).mob_num == 0;
+    return all_monraces_extinct({ MonraceId::SUREN });
 }

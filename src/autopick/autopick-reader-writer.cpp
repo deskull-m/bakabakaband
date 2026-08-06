@@ -5,7 +5,7 @@
 #include "io/files-util.h"
 #include "io/read-pref-file.h"
 #include "system/angband-exceptions.h"
-#include "system/player-type-definition.h"
+#include "system/creature-entity.h"
 #include "util/angband-files.h"
 #include "util/string-processor.h"
 #include "view/display-messages.h"
@@ -17,14 +17,14 @@
 /*!
  * @brief Load an autopick preference file
  */
-void autopick_load_pref(PlayerType *player_ptr, bool disp_mes)
+void autopick_load_pref(CreatureEntity &creature, bool disp_mes)
 {
     init_autopick();
 
-    const auto path = search_pickpref_path(player_ptr->base_name);
+    const auto path = search_pickpref_path(creature.base_name);
     if (!path.empty()) {
         const auto pickpref_filename = path.filename().string();
-        if (process_autopick_file(player_ptr, pickpref_filename) == 0) {
+        if (process_autopick_file(creature, pickpref_filename) == 0) {
             if (disp_mes) {
                 msg_format(_("%sを読み込みました。", "Loaded '%s'."), pickpref_filename.data());
             }

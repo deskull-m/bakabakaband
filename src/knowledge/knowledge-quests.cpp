@@ -7,7 +7,6 @@
 #include "knowledge/knowledge-quests.h"
 #include "artifact/fixed-art-types.h"
 #include "core/show-file.h"
-#include "dungeon/quest.h"
 #include "flavor/flavor-describer.h"
 #include "flavor/object-flavor-types.h"
 #include "info-reader/fixed-map-parser.h"
@@ -15,14 +14,15 @@
 #include "locale/english.h"
 #include "object-enchant/special-object-flags.h"
 #include "system/artifact-type-definition.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-record.h"
+#include "system/dungeon/quest-definition.h"
 #include "system/enums/dungeon/dungeon-id.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/floor/floor-info.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/player-type-definition.h"
 #include "term/screen-processor.h"
 #include "util/angband-files.h"
 #include "util/enum-converter.h"
@@ -32,21 +32,21 @@
 
 /*!
  * @brief Check on the status of an active quest
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
-void do_cmd_checkquest(PlayerType *player_ptr)
+void do_cmd_checkquest(CreatureEntity &creature)
 {
     screen_save();
-    do_cmd_knowledge_quests(player_ptr);
+    do_cmd_knowledge_quests(creature);
     screen_load();
 }
 
 /*!
  * @brief Print all active quests
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @todo PlayerTypeではなくQUEST_IDXを引数にすべきかもしれない
  */
-static void do_cmd_knowledge_quests_current(PlayerType *player_ptr, FILE *fff)
+static void do_cmd_knowledge_quests_current(CreatureEntity &creature, FILE *fff)
 {
     const auto &quests = QuestList::get_instance();
     std::string rand_tmp_str;
@@ -67,14 +67,14 @@ static void do_cmd_knowledge_quests_current(PlayerType *player_ptr, FILE *fff)
             continue;
         }
 
-        const auto old_quest = player_ptr->current_floor_ptr->quest_number;
+        const auto old_quest = creature.get_floor()->quest_number;
 
         quest_text_lines.clear();
 
-        player_ptr->current_floor_ptr->quest_number = quest_id;
+        creature.get_floor()->quest_number = quest_id;
         init_flags = INIT_SHOW_TEXT;
-        parse_fixed_map(player_ptr, QUEST_DEFINITION_LIST, 0, 0, 0, 0);
-        player_ptr->current_floor_ptr->quest_number = old_quest;
+        parse_fixed_map(creature, QUEST_DEFINITION_LIST, 0, 0, 0, 0);
+        creature.get_floor()->quest_number = old_quest;
         if (quest.flags & QUEST_FLAG_SILENT) {
             continue;
         }
@@ -102,11 +102,10 @@ static void do_cmd_knowledge_quests_current(PlayerType *player_ptr, FILE *fff)
                 case QuestKindType::FIND_ARTIFACT: {
                     std::string item_name("");
                     if (quest.has_reward()) {
-                        const auto &artifact = quest.get_reward();
-                        ItemEntity item(artifact.bi_key);
-                        item.fa_id = quest.reward_fa_id;
-                        item.ident = IDENT_STORE;
-                        item_name = describe_flavor(player_ptr, item, OD_NAME_ONLY);
+                        ItemEntity item(quest.get_reward_bi_id());
+                        item.fa_id = quest.get_reward().value_or(FixedArtifactId::NONE);
+                        item.ident.set(IdentificationFlag::STORE);
+                        item_name = describe_flavor(creature, item, OD_NAME_ONLY);
                     }
 
                     note = format(_("\n   - %sを見つけ出す。", "\n   - Find %s."), item_name.data());
@@ -179,18 +178,18 @@ static void do_cmd_knowledge_quests_current(PlayerType *player_ptr, FILE *fff)
     }
 }
 
-static bool do_cmd_knowledge_quests_aux(PlayerType *player_ptr, FILE *fff, QuestId q_idx)
+static bool do_cmd_knowledge_quests_aux(CreatureEntity &creature, FILE *fff, QuestId q_idx)
 {
     const auto &quests = QuestList::get_instance();
     const auto &quest = quests.get_quest(q_idx);
 
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *creature.get_floor();
     auto is_fixed_quest = QuestType::is_fixed(q_idx);
     if (is_fixed_quest) {
         const auto old_quest = floor.quest_number;
         floor.quest_number = q_idx;
         init_flags = INIT_NAME_ONLY;
-        parse_fixed_map(player_ptr, QUEST_DEFINITION_LIST, 0, 0, 0, 0);
+        parse_fixed_map(creature, QUEST_DEFINITION_LIST, 0, 0, 0, 0);
         floor.quest_number = old_quest;
         if (quest.flags & QUEST_FLAG_SILENT) {
             return false;
@@ -228,18 +227,18 @@ static bool do_cmd_knowledge_quests_aux(PlayerType *player_ptr, FILE *fff, Quest
 
 /*
  * Print all finished quests
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param fff セーブファイル (展開済？)
  * @param quest_ids 受注したことのあるクエスト群
  */
-void do_cmd_knowledge_quests_completed(PlayerType *player_ptr, FILE *fff, const std::vector<QuestId> &quest_ids)
+void do_cmd_knowledge_quests_completed(CreatureEntity &creature, FILE *fff, const std::vector<QuestId> &quest_ids)
 {
     fprintf(fff, _("《達成したクエスト》\n", "< Completed Quest >\n"));
     int16_t total = 0;
     for (const auto quest_id : quest_ids) {
         const auto &quests = QuestList::get_instance();
         const auto &quest = quests.get_quest(quest_id);
-        if (quest.status == QuestStatusType::FINISHED && do_cmd_knowledge_quests_aux(player_ptr, fff, quest_id)) {
+        if (quest.status == QuestStatusType::FINISHED && do_cmd_knowledge_quests_aux(creature, fff, quest_id)) {
             ++total;
         }
     }
@@ -251,18 +250,18 @@ void do_cmd_knowledge_quests_completed(PlayerType *player_ptr, FILE *fff, const 
 
 /*
  * Print all failed quests
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param fff セーブファイル (展開済？)
  * @param quest_ids 受注したことのあるクエスト群
  */
-void do_cmd_knowledge_quests_failed(PlayerType *player_ptr, FILE *fff, const std::vector<QuestId> &quest_ids)
+void do_cmd_knowledge_quests_failed(CreatureEntity &creature, FILE *fff, const std::vector<QuestId> &quest_ids)
 {
     fprintf(fff, _("《失敗したクエスト》\n", "< Failed Quest >\n"));
     int16_t total = 0;
     for (const auto quest_id : quest_ids) {
         const auto &quests = QuestList::get_instance();
         const auto &quest = quests.get_quest(quest_id);
-        if (((quest.status == QuestStatusType::FAILED_DONE) || (quest.status == QuestStatusType::FAILED)) && do_cmd_knowledge_quests_aux(player_ptr, fff, quest_id)) {
+        if (((quest.status == QuestStatusType::FAILED_DONE) || (quest.status == QuestStatusType::FAILED)) && do_cmd_knowledge_quests_aux(creature, fff, quest_id)) {
             ++total;
         }
     }
@@ -299,9 +298,9 @@ static void do_cmd_knowledge_quests_wiz_random(FILE *fff)
 
 /*
  * Print quest status of all active quests
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
-void do_cmd_knowledge_quests(PlayerType *player_ptr)
+void do_cmd_knowledge_quests(CreatureEntity &creature)
 {
     FILE *fff = nullptr;
     GAME_TEXT file_name[FILE_NAME_SIZE];
@@ -311,26 +310,26 @@ void do_cmd_knowledge_quests(PlayerType *player_ptr)
 
     const auto &quests = QuestList::get_instance();
     const auto quest_ids = quests.get_sorted_quest_ids();
-    do_cmd_knowledge_quests_current(player_ptr, fff);
+    do_cmd_knowledge_quests_current(creature, fff);
     fputc('\n', fff);
-    do_cmd_knowledge_quests_completed(player_ptr, fff, quest_ids);
+    do_cmd_knowledge_quests_completed(creature, fff, quest_ids);
     fputc('\n', fff);
-    do_cmd_knowledge_quests_failed(player_ptr, fff, quest_ids);
+    do_cmd_knowledge_quests_failed(creature, fff, quest_ids);
     if (AngbandWorld::get_instance().wizard) {
         fputc('\n', fff);
         do_cmd_knowledge_quests_wiz_random(fff);
     }
 
     angband_fclose(fff);
-    FileDisplayer(player_ptr->name).display(true, file_name, 0, 0, _("クエスト達成状況", "Quest status"));
+    FileDisplayer(creature.name).display(true, file_name, 0, 0, _("クエスト達成状況", "Quest status"));
     fd_kill(file_name);
 }
 
 /*!
  * @brief 死亡履歴を表示する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
-void do_cmd_knowledge_death_history(PlayerType *player_ptr)
+void do_cmd_knowledge_death_history(CreatureEntity &creature)
 {
     FILE *fff = nullptr;
     GAME_TEXT file_name[FILE_NAME_SIZE];
@@ -340,11 +339,11 @@ void do_cmd_knowledge_death_history(PlayerType *player_ptr)
 
     fprintf(fff, _("《死亡履歴》\n", "< Death History >\n"));
 
-    if (player_ptr->death_history.empty()) {
+    if (creature.death_history.empty()) {
         fprintf(fff, _("まだ一度も死亡していない。\n", "You have never died.\n"));
     } else {
         int16_t total = 0;
-        for (const auto &record : player_ptr->death_history) {
+        for (const auto &record : creature.death_history) {
             total++;
 
             // 死亡原因の名前を取得
@@ -369,6 +368,6 @@ void do_cmd_knowledge_death_history(PlayerType *player_ptr)
     }
 
     angband_fclose(fff);
-    FileDisplayer(player_ptr->name).display(true, file_name, 0, 0, _("死亡履歴", "Death History"));
+    FileDisplayer(creature.name).display(true, file_name, 0, 0, _("死亡履歴", "Death History"));
     fd_kill(file_name);
 }

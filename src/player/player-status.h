@@ -12,36 +12,25 @@ class ItemEntity;
 class PlayerType;
 class CreatureEntity;
 
-int calc_weapon_weight_limit(PlayerType *player_ptr);
-int calc_bow_weight_limit(PlayerType *player_ptr);
-int calc_inventory_weight(PlayerType *player_ptr);
+int calc_weapon_weight_limit(CreatureEntity &creature);
+int calc_bow_weight_limit(CreatureEntity &creature);
+int calc_inventory_weight(CreatureEntity &creature);
 
-short calc_num_fire(PlayerType *player_ptr, const ItemEntity *o_ptr);
-int calc_weight_limit(PlayerType *player_ptr);
-void update_creature(PlayerType *player_ptr);
-bool player_has_no_spellbooks(PlayerType *player_ptr);
+short calc_num_fire(CreatureEntity &creature, const ItemEntity *o_ptr);
+int calc_weight_limit(CreatureEntity &creature);
+int calc_creature_mana(CreatureEntity &creature);
+void update_creature(CreatureEntity &creature);
+bool player_has_no_spellbooks(CreatureEntity &creature);
 
 void check_experience(CreatureEntity &creature);
-void wreck_the_pattern(PlayerType *player_ptr);
+void wreck_the_pattern(CreatureEntity &creature);
 std::string cnv_stat(int val);
 int16_t modify_stat_value(int value, int amount);
-uint32_t calc_score(PlayerType *player_ptr);
+uint32_t calc_score(CreatureEntity &creature);
 
-bool is_blessed(PlayerType *player_ptr);
-bool is_time_limit_esp(PlayerType *player_ptr);
-bool is_time_limit_stealth(PlayerType *player_ptr);
-bool is_fast(PlayerType *player_ptr);
-bool is_invuln(PlayerType *player_ptr);
-bool is_hero(PlayerType *player_ptr);
-bool is_shero(PlayerType *player_ptr);
-bool is_echizen(PlayerType *player_ptr);
-bool is_tough(PlayerType *player_ptr);
-bool is_chargeman(PlayerType *player_ptr);
-bool is_sushi_eater(PlayerType *player_ptr);
+void stop_mouth(CreatureEntity &creature);
 
-void stop_mouth(PlayerType *player_ptr);
-
-bool set_quick_and_tiny(PlayerType *player_ptr);
-bool set_musasi(PlayerType *player_ptr);
-bool set_icing_and_twinkle(PlayerType *player_ptr);
-bool set_anubis_and_chariot(PlayerType *player_ptr);
+bool set_quick_and_tiny(CreatureEntity &creature);
+bool set_musasi(CreatureEntity &creature);
+bool set_icing_and_twinkle(CreatureEntity &creature);
+bool set_anubis_and_chariot(CreatureEntity &creature);

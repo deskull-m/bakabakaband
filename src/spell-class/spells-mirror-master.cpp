@@ -25,18 +25,16 @@
 #include "pet/pet-util.h"
 #include "spell-kind/spells-teleport.h"
 #include "system/angband-system.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/enums/terrain/terrain-tag.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
-#include "system/monster-entity.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "system/terrain/terrain-definition.h"
 #include "target/grid-selector.h"
 #include "target/projection-path-calculator.h"
 #include "target/target-checker.h"
-#include "timed-effect/timed-effects.h"
 #include "tracking/lore-tracker.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
@@ -44,15 +42,15 @@
 #include <map>
 #include <range/v3/view.hpp>
 
-SpellsMirrorMaster::SpellsMirrorMaster(PlayerType *player_ptr)
-    : player_ptr(player_ptr)
+SpellsMirrorMaster::SpellsMirrorMaster(CreatureEntity &creature)
+    : creature_ptr(&creature)
 {
 }
 
 void SpellsMirrorMaster::remove_mirror(int y, int x)
 {
     const Pos2D pos(y, x);
-    auto &floor = *this->player_ptr->current_floor_ptr;
+    auto &floor = *this->creature_ptr->get_floor();
     auto &grid = floor.get_grid(pos);
     reset_bits(grid.info, CAVE_OBJECT);
     grid.mimic = 0;
@@ -63,24 +61,24 @@ void SpellsMirrorMaster::remove_mirror(int y, int x)
         }
 
         if (grid.has_monster()) {
-            update_monster(this->player_ptr, grid.m_idx, false);
+            update_monster(*this->creature_ptr, grid.m_idx, false);
         }
 
-        update_local_illumination(this->player_ptr, pos);
+        update_local_illumination(*this->creature_ptr, pos);
     }
 
-    note_spot(this->player_ptr, pos);
-    lite_spot(this->player_ptr, pos);
+    note_spot(*this->creature_ptr, pos);
+    lite_spot(*this->creature_ptr, pos);
 }
 
 /*!
  * @brief 全鏡の消去 / Remove all mirrors in this floor
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param explode 爆発処理を伴うならばTRUE
  */
 void SpellsMirrorMaster::remove_all_mirrors(bool explode)
 {
-    const auto &floor = *this->player_ptr->current_floor_ptr;
+    const auto &floor = *this->creature_ptr->get_floor();
     for (const auto &pos : floor.get_area()) {
         if (!floor.get_grid(pos).is_mirror()) {
             continue;
@@ -92,24 +90,24 @@ void SpellsMirrorMaster::remove_all_mirrors(bool explode)
         }
 
         constexpr BIT_FLAGS projection = PROJECT_GRID | PROJECT_ITEM | PROJECT_KILL | PROJECT_JUMP | PROJECT_NO_HANGEKI;
-        project(this->player_ptr, 0, 2, pos.y, pos.x, this->player_ptr->level / 2 + 5, AttributeType::SHARDS, projection);
+        project(*this->creature_ptr, 0, 2, pos.y, pos.x, this->creature_ptr->get_level() / 2 + 5, AttributeType::SHARDS, projection);
     }
 }
 
 /*!
  * @brief 鏡抜け処理のメインルーチン /
  * Mirror Master's Dimension Door
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return ターンを消費した場合TRUEを返す
  */
 bool SpellsMirrorMaster::mirror_tunnel()
 {
-    const auto pos = point_target(this->player_ptr);
+    const auto pos = point_target(*this->creature_ptr);
     if (!pos) {
         return false;
     }
 
-    if (exe_dimension_door(this->player_ptr, *pos)) {
+    if (exe_dimension_door(*this->creature_ptr, *pos)) {
         return true;
     }
 
@@ -123,8 +121,8 @@ bool SpellsMirrorMaster::mirror_tunnel()
  */
 tl::optional<std::string> SpellsMirrorMaster::place_mirror()
 {
-    const auto p_pos = this->player_ptr->get_position();
-    auto &floor = *this->player_ptr->current_floor_ptr;
+    const auto p_pos = this->creature_ptr->get_position();
+    auto &floor = *this->creature_ptr->get_floor();
     auto &grid = floor.get_grid(p_pos);
     if (!grid.is_clean()) {
         return _("床上のアイテムが呪文を跳ね返した。", "The object resists the spell.");
@@ -133,15 +131,15 @@ tl::optional<std::string> SpellsMirrorMaster::place_mirror()
     set_bits(grid.info, CAVE_OBJECT | CAVE_GLOW);
     grid.set_terrain_id(TerrainTag::MIRROR, TerrainKind::MIMIC);
 
-    note_spot(this->player_ptr, p_pos);
-    lite_spot(this->player_ptr, p_pos);
-    update_local_illumination(this->player_ptr, p_pos);
+    note_spot(*this->creature_ptr, p_pos);
+    lite_spot(*this->creature_ptr, p_pos);
+    update_local_illumination(*this->creature_ptr, p_pos);
     return tl::nullopt;
 }
 
 /*!
  * @brief 静水
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return ペットを操っている場合を除きTRUE
  */
 bool SpellsMirrorMaster::mirror_concentration()
@@ -151,16 +149,16 @@ bool SpellsMirrorMaster::mirror_concentration()
         return false;
     }
 
-    if (!this->player_ptr->current_floor_ptr->grid_array[this->player_ptr->y][this->player_ptr->x].is_mirror()) {
+    if (!this->creature_ptr->get_floor()->grid_array[this->creature_ptr->y][this->creature_ptr->x].is_mirror()) {
         msg_print(_("鏡の上でないと集中できない！", "There's no mirror here!"));
         return true;
     }
 
     msg_print(_("少し頭がハッキリした。", "You feel your head clear a little."));
-    this->player_ptr->csp += (5 + this->player_ptr->level * this->player_ptr->level / 100);
-    if (this->player_ptr->csp >= this->player_ptr->msp) {
-        this->player_ptr->csp = this->player_ptr->msp;
-        this->player_ptr->csp_frac = 0;
+    this->creature_ptr->add_current_mp(5 + this->creature_ptr->get_level() * this->creature_ptr->get_level() / 100);
+    if (this->creature_ptr->get_current_mp() >= this->creature_ptr->get_max_mp()) {
+        this->creature_ptr->set_current_mp(this->creature_ptr->get_max_mp());
+        this->creature_ptr->current_mp_frac = 0;
     }
 
     RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::MP);
@@ -174,7 +172,7 @@ bool SpellsMirrorMaster::mirror_concentration()
  */
 void SpellsMirrorMaster::seal_of_mirror(const int dam)
 {
-    const auto &floor = *this->player_ptr->current_floor_ptr;
+    const auto &floor = *this->creature_ptr->get_floor();
     for (const auto &pos : floor.get_area()) {
         const auto &g_ref = floor.get_grid(pos);
         if (!g_ref.is_mirror()) {
@@ -182,7 +180,7 @@ void SpellsMirrorMaster::seal_of_mirror(const int dam)
         }
 
         constexpr BIT_FLAGS flags = PROJECT_GRID | PROJECT_ITEM | PROJECT_KILL | PROJECT_JUMP;
-        if (!affect_monster(this->player_ptr, 0, 0, pos.y, pos.x, dam, AttributeType::GENOCIDE, flags, true)) {
+        if (!affect_monster(*this->creature_ptr, 0, 0, pos.y, pos.x, dam, AttributeType::GENOCIDE, flags, true)) {
             continue;
         }
 
@@ -194,13 +192,13 @@ void SpellsMirrorMaster::seal_of_mirror(const int dam)
 
 void SpellsMirrorMaster::seeker_ray(const Direction &dir, int dam)
 {
-    const auto pos = dir.get_target_position(this->player_ptr->get_position());
+    const auto pos = dir.get_target_position(this->creature_ptr->get_position());
     project_seeker_ray(pos.x, pos.y, dam);
 }
 
 void SpellsMirrorMaster::super_ray(const Direction &dir, int dam)
 {
-    const auto pos = dir.get_target_position(this->player_ptr->get_position());
+    const auto pos = dir.get_target_position(this->creature_ptr->get_position());
     project_super_ray(pos.x, pos.y, dam);
 }
 
@@ -211,7 +209,7 @@ void SpellsMirrorMaster::super_ray(const Direction &dir, int dam)
  */
 Pos2D SpellsMirrorMaster::get_next_mirror_position(const Pos2D &pos_current) const
 {
-    const auto &floor = *this->player_ptr->current_floor_ptr;
+    const auto &floor = *this->creature_ptr->get_floor();
     const auto has_mirror = [&](const Pos2D &pos) { return floor.get_grid(pos).is_mirror(); };
     const auto mirror_positions = floor.get_area() | ranges::views::filter(has_mirror) | ranges::to_vector;
 
@@ -231,14 +229,14 @@ void SpellsMirrorMaster::project_seeker_ray(int target_x, int target_y, int dam)
 {
     constexpr auto typ = AttributeType::SEEKER;
     BIT_FLAGS flag = PROJECT_BEAM | PROJECT_KILL | PROJECT_GRID | PROJECT_ITEM | PROJECT_THRU | PROJECT_MIRROR;
-    monster_target_y = this->player_ptr->y;
-    monster_target_x = this->player_ptr->x;
-    auto &floor = *this->player_ptr->current_floor_ptr;
+    monster_target_y = this->creature_ptr->y;
+    monster_target_x = this->creature_ptr->x;
+    auto &floor = *this->creature_ptr->get_floor();
 
     ProjectResult res;
 
-    auto x1 = this->player_ptr->x;
-    auto y1 = this->player_ptr->y;
+    auto x1 = this->creature_ptr->x;
+    auto y1 = this->creature_ptr->y;
 
     auto y2 = target_y;
     auto x2 = target_x;
@@ -248,14 +246,14 @@ void SpellsMirrorMaster::project_seeker_ray(int target_x, int target_y, int dam)
     }
 
     /* Calculate the projection path */
-    handle_stuff(this->player_ptr);
+    handle_stuff(*this->creature_ptr);
 
     project_m_n = 0;
     project_m_x = 0;
     project_m_y = 0;
     auto visual = false;
     auto &tracker = LoreTracker::get_instance();
-    const auto p_pos = this->player_ptr->get_position();
+    const auto p_pos = this->creature_ptr->get_position();
     const auto range = project_length != 0 ? project_length : AngbandSystem::get_instance().get_max_range();
     while (true) {
         ProjectionPath path_g(floor, range, p_pos, { y1, x1 }, { y2, x2 }, flag);
@@ -267,16 +265,16 @@ void SpellsMirrorMaster::project_seeker_ray(int target_x, int target_y, int dam)
         for (auto path_g_itr = path_g.begin(); path_g_itr != path_g.end(); path_g_itr++) {
             const auto &pos_dst = *path_g_itr;
             const auto &pos_src = *(path_g_itr == path_g.begin() ? path_g.begin() : path_g_itr - 1);
-            if (delay_factor > 0 && !this->player_ptr->effects()->blindness().is_blind()) {
+            if (delay_factor > 0 && !this->creature_ptr->is_blind()) {
                 if (panel_contains(pos_dst) && floor.has_los_at(pos_dst)) {
-                    print_bolt_pict(this->player_ptr, pos_src, pos_dst, typ);
+                    print_bolt_pict(*this->creature_ptr, pos_src, pos_dst, typ);
                     move_cursor_relative(pos_dst.y, pos_dst.x);
                     term_fresh();
                     term_xtra(TERM_XTRA_DELAY, delay_factor);
-                    lite_spot(this->player_ptr, pos_dst);
+                    lite_spot(*this->creature_ptr, pos_dst);
                     term_fresh();
 
-                    print_bolt_pict(this->player_ptr, pos_dst, pos_dst, typ);
+                    print_bolt_pict(*this->creature_ptr, pos_dst, pos_dst, typ);
 
                     visual = true;
                 } else if (visual) {
@@ -284,26 +282,26 @@ void SpellsMirrorMaster::project_seeker_ray(int target_x, int target_y, int dam)
                 }
             }
 
-            if (affect_item(this->player_ptr, 0, 0, pos_dst.y, pos_dst.x, dam, typ)) {
+            if (affect_item(*this->creature_ptr, 0, 0, pos_dst.y, pos_dst.x, dam, typ)) {
                 res.notice = true;
             }
         }
 
         for (const auto &[py, px] : path_g) {
-            if (affect_monster(this->player_ptr, 0, 0, py, px, dam, typ, flag, true)) {
+            if (affect_monster(*this->creature_ptr, 0, 0, py, px, dam, typ, flag, true)) {
                 res.notice = true;
             }
             const auto &grid = floor.grid_array[project_m_y][project_m_x];
-            const auto &monster = floor.m_list[grid.m_idx];
-            if (project_m_n == 1 && grid.has_monster() && monster.ml) {
-                if (!this->player_ptr->effects()->hallucination().is_hallucinated()) {
-                    tracker.set_trackee(monster.ap_r_idx);
+            const auto &monster = floor.get_monster(grid.m_idx);
+            if (project_m_n == 1 && grid.has_monster() && monster.is_visible_on_map()) {
+                if (!this->creature_ptr->is_hallucinated()) {
+                    tracker.set_trackee(monster.get_ap_r_idx());
                 }
 
-                health_track(this->player_ptr, grid.m_idx);
+                health_track(*this->creature_ptr, grid.m_idx);
             }
 
-            (void)affect_feature(this->player_ptr, 0, 0, py, px, dam, typ);
+            (void)affect_feature(*this->creature_ptr, 0, 0, py, px, dam, typ);
         }
 
         const auto &[y, x] = path_g.back();
@@ -323,7 +321,7 @@ void SpellsMirrorMaster::project_seeker_ray(int target_x, int target_y, int dam)
     }
 }
 
-static void draw_super_ray_pict(PlayerType *player_ptr, const std::map<int, std::vector<ProjectionPath::pp_const_iterator>> &pos_list_map,
+static void draw_super_ray_pict(CreatureEntity &creature, const std::map<int, std::vector<ProjectionPath::pp_const_iterator>> &pos_list_map,
     const std::vector<ProjectionPath> &second_path_g_list, const Pos2D &center)
 {
     if (delay_factor <= 0) {
@@ -340,7 +338,7 @@ static void draw_super_ray_pict(PlayerType *player_ptr, const std::map<int, std:
     // スーパーレイの描画を行った座標のリスト。スーパーレイの全ての描画完了後に描画を消去するのに使用する。
     std::vector<Pos2D> drawn_pos_list;
 
-    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     for (const auto &[n, pos_list] : pos_list_map) {
         // スーパーレイの最終到達点の座標の描画を行った座標のリスト。最終到達点の描画を '*' で上書きするのに使用する。
         std::vector<Pos2D> drawn_last_pos_list;
@@ -350,11 +348,11 @@ static void draw_super_ray_pict(PlayerType *player_ptr, const std::map<int, std:
             const auto &pos_new = *it;
 
             if (panel_contains(pos) && floor.has_los_at(pos)) {
-                print_bolt_pict(player_ptr, pos, pos, typ);
+                print_bolt_pict(creature, pos, pos, typ);
                 drawn_pos_list.push_back(pos);
             }
             if (panel_contains(pos_new) && floor.has_los_at(pos_new)) {
-                print_bolt_pict(player_ptr, pos, pos_new, typ);
+                print_bolt_pict(creature, pos, pos_new, typ);
                 if (std::find(last_pos_list.begin(), last_pos_list.end(), *it) != last_pos_list.end()) {
                     drawn_last_pos_list.push_back(pos_new);
                 }
@@ -365,7 +363,7 @@ static void draw_super_ray_pict(PlayerType *player_ptr, const std::map<int, std:
 
         for (const auto &pos : drawn_last_pos_list) {
             if (panel_contains(pos) && floor.has_los_at(pos)) {
-                print_bolt_pict(player_ptr, pos, pos, typ);
+                print_bolt_pict(creature, pos, pos, typ);
                 drawn_pos_list.push_back(pos);
             }
         }
@@ -375,32 +373,32 @@ static void draw_super_ray_pict(PlayerType *player_ptr, const std::map<int, std:
     term_xtra(TERM_XTRA_DELAY, delay_factor);
 
     for (const auto &pos : drawn_pos_list) {
-        lite_spot(player_ptr, pos);
+        lite_spot(creature, pos);
     }
 }
 
-static bool activate_super_ray_effect(PlayerType *player_ptr, int y, int x, int dam, BIT_FLAGS flag)
+static bool activate_super_ray_effect(CreatureEntity &creature, int y, int x, int dam, BIT_FLAGS flag)
 {
     constexpr auto typ = AttributeType::SUPER_RAY;
     auto notice = false;
 
-    (void)affect_feature(player_ptr, 0, 0, y, x, dam, typ);
+    (void)affect_feature(creature, 0, 0, y, x, dam, typ);
 
-    if (affect_item(player_ptr, 0, 0, y, x, dam, typ)) {
+    if (affect_item(creature, 0, 0, y, x, dam, typ)) {
         notice = true;
     }
 
-    (void)affect_monster(player_ptr, 0, 0, y, x, dam, typ, flag, true);
+    (void)affect_monster(creature, 0, 0, y, x, dam, typ, flag, true);
 
-    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto &grid = floor.grid_array[project_m_y][project_m_x];
-    const auto &monster = floor.m_list[grid.m_idx];
-    if (project_m_n == 1 && grid.has_monster() && monster.ml) {
-        if (!player_ptr->effects()->hallucination().is_hallucinated()) {
-            LoreTracker::get_instance().set_trackee(monster.ap_r_idx);
+    const auto &monster = floor.get_monster(grid.m_idx);
+    if (project_m_n == 1 && grid.has_monster() && monster.is_visible_on_map()) {
+        if (!creature.is_hallucinated()) {
+            LoreTracker::get_instance().set_trackee(monster.get_ap_r_idx());
         }
 
-        health_track(player_ptr, grid.m_idx);
+        health_track(creature, grid.m_idx);
     }
 
     return notice;
@@ -411,12 +409,12 @@ void SpellsMirrorMaster::project_super_ray(int target_x, int target_y, int dam)
     const Pos2D pos_target(target_y, target_x);
     constexpr auto typ = AttributeType::SUPER_RAY;
     BIT_FLAGS flag = PROJECT_BEAM | PROJECT_KILL | PROJECT_GRID | PROJECT_ITEM | PROJECT_THRU | PROJECT_MIRROR;
-    monster_target_y = this->player_ptr->y;
-    monster_target_x = this->player_ptr->x;
-    const auto &floor = *this->player_ptr->current_floor_ptr;
+    monster_target_y = this->creature_ptr->y;
+    monster_target_x = this->creature_ptr->x;
+    const auto &floor = *this->creature_ptr->get_floor();
 
     ProjectResult res;
-    const auto p_pos = this->player_ptr->get_position();
+    const auto p_pos = this->creature_ptr->get_position();
     if (p_pos == pos_target) {
         flag &= ~(PROJECT_THRU);
     }
@@ -426,7 +424,7 @@ void SpellsMirrorMaster::project_super_ray(int target_x, int target_y, int dam)
     auto range = project_length != 0 ? project_length : system.get_max_range(); //!< @details 変数スコープが長く同一値を保証できないので後で再代入する.
     ProjectionPath path_g(floor, range, p_pos, p_pos, pos_target, flag);
     std::vector<ProjectionPath> second_path_g_list;
-    handle_stuff(this->player_ptr);
+    handle_stuff(*this->creature_ptr);
 
     if (path_g.path_num() == 0) {
         return;
@@ -441,13 +439,13 @@ void SpellsMirrorMaster::project_super_ray(int target_x, int target_y, int dam)
     for (const auto &pos_dst : path_g) {
         if (delay_factor > 0) {
             if (panel_contains(pos_dst) && floor.has_los_at(pos_dst)) {
-                print_bolt_pict(this->player_ptr, pos_src, pos_dst, typ);
+                print_bolt_pict(*this->creature_ptr, pos_src, pos_dst, typ);
                 move_cursor_relative(pos_dst.y, pos_dst.x);
                 term_fresh();
                 term_xtra(TERM_XTRA_DELAY, delay_factor);
-                lite_spot(this->player_ptr, pos_dst);
+                lite_spot(*this->creature_ptr, pos_dst);
                 term_fresh();
-                print_bolt_pict(this->player_ptr, pos_dst, pos_dst, typ);
+                print_bolt_pict(*this->creature_ptr, pos_dst, pos_dst, typ);
                 drawn_pos_list.push_back(pos_dst);
                 visual = true;
             } else if (visual) {
@@ -463,7 +461,7 @@ void SpellsMirrorMaster::project_super_ray(int target_x, int target_y, int dam)
     }
 
     for (const auto &pos : drawn_pos_list) {
-        lite_spot(this->player_ptr, pos);
+        lite_spot(*this->creature_ptr, pos);
     }
 
     if (const auto &pos = path_g.back(); floor.get_grid(pos).is_mirror()) {
@@ -478,7 +476,7 @@ void SpellsMirrorMaster::project_super_ray(int target_x, int target_y, int dam)
     }
 
     for (const auto &pos : path_g) {
-        res.notice |= activate_super_ray_effect(this->player_ptr, pos.y, pos.x, dam, flag);
+        res.notice |= activate_super_ray_effect(*this->creature_ptr, pos.y, pos.x, dam, flag);
     }
 
     // 起点の鏡からの距離 → 8方向へのスーパーレイの軌道上のその距離にある座標のイテレータのリストの map
@@ -492,12 +490,12 @@ void SpellsMirrorMaster::project_super_ray(int target_x, int target_y, int dam)
         }
     }
 
-    draw_super_ray_pict(this->player_ptr, pos_list_map, second_path_g_list, path_g.back());
+    draw_super_ray_pict(*this->creature_ptr, pos_list_map, second_path_g_list, path_g.back());
 
     for (auto &&[n, pos_list] : pos_list_map) {
         rand_shuffle(pos_list.begin(), pos_list.end());
         for (const auto &it : pos_list) {
-            res.notice |= activate_super_ray_effect(this->player_ptr, it->y, it->x, dam, flag);
+            res.notice |= activate_super_ray_effect(*this->creature_ptr, it->y, it->x, dam, flag);
         }
     }
 }

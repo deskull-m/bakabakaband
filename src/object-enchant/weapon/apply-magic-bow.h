@@ -3,19 +3,23 @@
 #include "object-enchant/weapon/abstract-weapon-enchanter.h"
 #include "system/angband.h"
 
+class CreatureEntity;
 class ItemEntity;
-class PlayerType;
 class BowEnchanter : public AbstractWeaponEnchanter {
 public:
-    BowEnchanter(PlayerType *player_ptr, ItemEntity *o_ptr, DEPTH level, int power);
+    BowEnchanter(CreatureEntity &creature, ItemEntity *o_ptr, DEPTH level, int power);
+    BowEnchanter(const BowEnchanter &) = default;
+    BowEnchanter(BowEnchanter &&) = default;
+    BowEnchanter &operator=(const BowEnchanter &) = delete;
+    BowEnchanter &operator=(BowEnchanter &&) = delete;
     void apply_magic() override;
 
 protected:
-    void sval_enchant() override{};
-    void give_ego_index() override{};
-    void give_high_ego_index() override{};
-    void give_cursed() override{};
+    void sval_enchant() override {};
+    void give_ego_index() override {};
+    void give_high_ego_index() override {};
+    void give_cursed() override {};
 
 private:
-    PlayerType *player_ptr;
+    CreatureEntity &creature;
 };

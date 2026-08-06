@@ -184,12 +184,16 @@ static void display_usage(const char *program)
     puts("  -d<def>  Define a 'lib' dir sub-path");
     puts("  --output-spoilers");
     puts("           Output auto generated spoilers and exit");
+    puts("  --bot-json-output[=path]");
+    puts("           Output bot-readable JSON Lines snapshots before player input");
     puts("");
 
 #ifdef USE_X11
     puts("  -mx11    To use X11");
     puts("  --       Sub options");
     puts("  -- -d    Set display name");
+    puts("  -- -fb   Use bitmap fonts");
+    puts("  -- -ft   Use TrueType fonts");
     puts("  -- -o    Request old 8x8 tile graphics");
     puts("  -- -a    Request Adam Bolt 16x16 tile graphics");
     puts("  -- -b    Request Bigtile graphics mode");
@@ -220,12 +224,28 @@ static void display_usage(const char *program)
  */
 static bool parse_long_opt(const char *opt)
 {
-    if (strcmp(opt + 2, "output-spoilers") != 0) {
+    static constexpr std::string_view bot_json_output = "bot-json-output";
+    const std::string_view option(opt + 2);
+    if (option == bot_json_output) {
+        arg_bot_json_output = true;
+        return false;
+    }
+
+    if (option.starts_with(bot_json_output) && option[bot_json_output.size()] == '=') {
+        arg_bot_json_output = true;
+        const auto path = option.substr(bot_json_output.size() + 1);
+        if (!path.empty()) {
+            arg_bot_json_output_path = path;
+        }
+        return false;
+    }
+
+    if (option != "output-spoilers") {
         return true;
     }
 
     init_stuff();
-    init_angband(p_ptr, true);
+    init_angband(PlayerType::get_instance(), true);
     switch (output_all_spoilers()) {
     case SpoilerOutputResultType::SUCCESSFUL:
         puts("Successfully created a spoiler file.");
@@ -284,7 +304,7 @@ int main(int argc, char *argv[])
 #ifdef SET_UID
     char tmp_name[128];
     user_name(tmp_name, ids.get_user_id());
-    p_ptr->name = tmp_name;
+    PlayerType::get_instance().name = tmp_name;
 #ifdef PRIVATE_USER_PATH
     create_user_dir();
 #endif /* PRIVATE_USER_PATH */
@@ -338,9 +358,12 @@ int main(int argc, char *argv[])
                 break;
             }
 
-            p_ptr->name = &argv[i][2];
-            if (p_ptr->name.length() > 40) {
-                p_ptr->name.resize(40);
+            {
+                auto &creature = PlayerType::get_instance();
+                creature.name = &argv[i][2];
+                if (creature.name.length() > 40) {
+                    creature.name.resize(40);
+                }
             }
             break;
         case 'm':
@@ -395,7 +418,7 @@ int main(int argc, char *argv[])
         argv[1] = nullptr;
     }
 
-    process_player_name(p_ptr, true);
+    process_player_name(PlayerType::get_instance(), true);
     quit_aux = quit_hook;
 
 #ifdef USE_X11
@@ -440,7 +463,7 @@ int main(int argc, char *argv[])
 
     {
         TermCenteredOffsetSetter tcos(MAIN_TERM_MIN_COLS, MAIN_TERM_MIN_ROWS);
-        init_angband(p_ptr, false);
+        init_angband(PlayerType::get_instance(), false);
         pause_line(MAIN_TERM_MIN_ROWS - 1);
     }
 
@@ -449,7 +472,7 @@ int main(int argc, char *argv[])
     clear_png_display();
 #endif
 
-    play_game(p_ptr, new_game, browsing_movie);
+    play_game(PlayerType::get_instance(), new_game, browsing_movie);
     quit("");
     return 0;
 }

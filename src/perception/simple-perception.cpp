@@ -21,22 +21,21 @@
 #include "object/object-info.h"
 #include "perception/object-perception.h"
 #include "player/player-status-flags.h"
+#include "system/creature-entity.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
-#include "timed-effect/timed-effects.h"
 #include "view/display-messages.h"
 
 /*!
  * @brief 擬似鑑定を実際に行い判定を反映する
  * @param slot 擬似鑑定を行うプレイヤーの所持リストID
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param heavy 重度の擬似鑑定を行うならばTRUE
  */
-static void sense_inventory_aux(PlayerType *player_ptr, INVENTORY_IDX slot, bool heavy)
+static void sense_inventory_aux(CreatureEntity &creature, INVENTORY_IDX slot, bool heavy)
 {
-    auto &item = *player_ptr->inventory[slot];
-    if (any_bits(item.ident, IDENT_SENSE) || item.is_known()) {
+    auto &item = *creature.inventory[slot];
+    if (item.ident.has(IdentificationFlag::SENSE) || item.is_known()) {
         return;
     }
 
@@ -45,7 +44,7 @@ static void sense_inventory_aux(PlayerType *player_ptr, INVENTORY_IDX slot, bool
         return;
     }
 
-    if ((player_ptr->muta.has(PlayerMutationType::BAD_LUCK)) && !randint0(13)) {
+    if ((creature.get_mutations().has(PlayerMutationType::BAD_LUCK)) && !randint0(13)) {
         switch (feel) {
         case FEEL_TERRIBLE: {
             feel = FEEL_SPECIAL;
@@ -90,17 +89,17 @@ static void sense_inventory_aux(PlayerType *player_ptr, INVENTORY_IDX slot, bool
     }
 
     if (disturb_minor) {
-        disturb(player_ptr, false, false);
+        disturb(creature, false, false);
     }
 
-    const auto item_name = describe_flavor(player_ptr, item, (OD_OMIT_PREFIX | OD_NAME_ONLY));
+    const auto item_name = describe_flavor(creature, item, (OD_OMIT_PREFIX | OD_NAME_ONLY));
     if (slot >= INVEN_MAIN_HAND) {
 #ifdef JP
         constexpr auto mes = "%s%s(%c)は%sという感じがする...";
-        msg_format(mes, describe_use(player_ptr, slot), item_name.data(), index_to_label(slot), game_inscriptions[feel]);
+        msg_format(mes, describe_use(creature, slot), item_name.data(), index_to_label(slot), game_inscriptions[feel]);
 #else
         constexpr auto mes = "You feel the %s (%c) you are %s %s %s...";
-        msg_format(mes, item_name.data(), index_to_label(slot), describe_use(player_ptr, slot),
+        msg_format(mes, item_name.data(), index_to_label(slot), describe_use(creature, slot),
             ((item.number == 1) ? "is" : "are"), game_inscriptions[feel]);
 #endif
 
@@ -114,10 +113,10 @@ static void sense_inventory_aux(PlayerType *player_ptr, INVENTORY_IDX slot, bool
 #endif
     }
 
-    item.ident |= (IDENT_SENSE);
+    item.ident.set(IdentificationFlag::SENSE);
     item.feeling = feel;
 
-    autopick_alter_item(player_ptr, slot, destroy_feeling);
+    autopick_alter_item(creature, slot, destroy_feeling);
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     static constexpr auto flags_srf = {
         StatusRecalculatingFlag::COMBINATION,
@@ -143,16 +142,16 @@ static void sense_inventory_aux(PlayerType *player_ptr, INVENTORY_IDX slot, bool
  *   Class 4 = Ranger  --> slow but heavy  (changed!)\n
  *   Class 5 = Paladin --> slow but heavy\n
  */
-void sense_inventory1(PlayerType *player_ptr)
+void sense_inventory1(CreatureEntity &creature)
 {
-    PLAYER_LEVEL plev = player_ptr->level;
+    PLAYER_LEVEL plev = creature.get_level();
     bool heavy = false;
     ItemEntity *o_ptr;
-    if (player_ptr->effects()->confusion().is_confused()) {
+    if (creature.is_confused()) {
         return;
     }
 
-    switch (player_ptr->pclass) {
+    switch (creature.pclass) {
     case PlayerClassType::WARRIOR:
     case PlayerClassType::ARCHER:
     case PlayerClassType::SAMURAI:
@@ -275,12 +274,12 @@ void sense_inventory1(PlayerType *player_ptr)
         break;
     }
 
-    if (compare_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::KNOWLEDGE, 100)) {
+    if (compare_virtue(creature, Virtue::KNOWLEDGE, 100)) {
         heavy = true;
     }
 
-    for (INVENTORY_IDX i = 0; i < INVEN_TOTAL; i++) {
-        o_ptr = player_ptr->inventory[i].get();
+    for (const auto i_idx : INVEN_ALL_SLOTS) {
+        o_ptr = creature.inventory[i_idx].get();
 
         if (!o_ptr->is_valid()) {
             continue;
@@ -316,31 +315,31 @@ void sense_inventory1(PlayerType *player_ptr)
             continue;
         }
 
-        if ((i < INVEN_MAIN_HAND) && (0 != randint0(5))) {
+        if ((i_idx < INVEN_MAIN_HAND) && (0 != randint0(5))) {
             continue;
         }
 
-        if (has_good_luck(player_ptr) && !randint0(13)) {
+        if (has_good_luck(creature) && !randint0(13)) {
             heavy = true;
         }
 
-        sense_inventory_aux(player_ptr, i, heavy);
+        sense_inventory_aux(creature, i_idx, heavy);
     }
 }
 
 /*!
  * @brief 1プレイヤーターン毎に武器、防具以外の擬似鑑定が行われるかを判定する。
  */
-void sense_inventory2(PlayerType *player_ptr)
+void sense_inventory2(CreatureEntity &creature)
 {
-    PLAYER_LEVEL plev = player_ptr->level;
+    PLAYER_LEVEL plev = creature.get_level();
     ItemEntity *o_ptr;
 
-    if (player_ptr->effects()->confusion().is_confused()) {
+    if (creature.is_confused()) {
         return;
     }
 
-    switch (player_ptr->pclass) {
+    switch (creature.pclass) {
     case PlayerClassType::WARRIOR:
     case PlayerClassType::ARCHER:
     case PlayerClassType::SAMURAI:
@@ -407,9 +406,9 @@ void sense_inventory2(PlayerType *player_ptr)
         break;
     }
 
-    for (INVENTORY_IDX i = 0; i < INVEN_TOTAL; i++) {
+    for (const auto i_idx : INVEN_ALL_SLOTS) {
         bool okay = false;
-        o_ptr = player_ptr->inventory[i].get();
+        o_ptr = creature.inventory[i_idx].get();
         if (!o_ptr->is_valid()) {
             continue;
         }
@@ -431,11 +430,11 @@ void sense_inventory2(PlayerType *player_ptr)
             continue;
         }
 
-        if ((i < INVEN_MAIN_HAND) && (0 != randint0(5))) {
+        if ((i_idx < INVEN_MAIN_HAND) && (0 != randint0(5))) {
             continue;
         }
 
-        sense_inventory_aux(player_ptr, i, true);
+        sense_inventory_aux(creature, i_idx, true);
     }
 }
 

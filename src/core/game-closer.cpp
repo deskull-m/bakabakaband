@@ -23,8 +23,9 @@
 #include "player/player-sex.h"
 #include "player/process-death.h"
 #include "save/save.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
-#include "system/player-type-definition.h"
+#include "system/inner-game-data.h"
 #include "term/gameterm.h"
 #include "term/screen-processor.h"
 #include "util/angband-files.h"
@@ -35,51 +36,51 @@
 #include "world/world-collapsion.h"
 #include "world/world.h"
 
-static void clear_floor(PlayerType *player_ptr)
+static void clear_floor(CreatureEntity &creature)
 {
     (void)fd_close(highscore_fd);
     highscore_fd = -1;
-    clear_saved_floor_files(player_ptr);
+    clear_saved_floor_files(creature);
     signals_handle_tstp();
 }
 
-static void send_world_score_on_closing(PlayerType *player_ptr, bool do_send)
+static void send_world_score_on_closing(CreatureEntity &creature, bool do_send)
 {
-    if (send_world_score(player_ptr, do_send)) {
+    if (send_world_score(creature, do_send)) {
         return;
     }
 
     if (!input_check_strict(
-            player_ptr, _("後でスコアを登録するために待機しますか？", "Stand by for later score registration? "), { UserCheck::NO_ESCAPE, UserCheck::NO_HISTORY })) {
+            creature, _("後でスコアを登録するために待機しますか？", "Stand by for later score registration? "), { UserCheck::NO_ESCAPE, UserCheck::NO_HISTORY })) {
         return;
     }
 
     AngbandSystem::get_instance().set_awaiting_report_score(true);
-    player_ptr->is_dead_ = false;
-    if (!save_player(player_ptr, SaveType::CLOSE_GAME)) {
+    creature.is_dead_ = false;
+    if (!save_player(creature, SaveType::CLOSE_GAME)) {
         msg_print(_("セーブ失敗！", "death save failed!"));
     }
 }
 
 /*!
  * @brief ゲームクローズ時、プレイヤーが死亡か世界崩壊しているかのしているかのチェックを行いそうならば確認キー入力とスコア表示、現フロアの初期化を行う。
- * @param player_ptr プレイヤー構造体参照ポインタ。
+ * @param creature クリーチャーへの参照
  * @return 死亡していればTRUE, まだ生きているならば各処理を済ませた上ででFALSE。
  */
-static bool check_death(PlayerType *player_ptr)
+static bool check_death(CreatureEntity &creature)
 {
-    if (player_ptr->is_dead() || wc_ptr->is_blown_away()) {
+    if (creature.is_dead() || wc_ptr->is_blown_away()) {
         return true;
     }
 
-    do_cmd_save_game(player_ptr, false);
+    do_cmd_save_game(creature, false);
     prt(_("リターンキーか ESC キーを押して下さい。", "Press Return (or Escape)."), 0, 40);
     play_music(TERM_XTRA_MUSIC_BASIC, MUSIC_BASIC_EXIT);
     if (inkey() != ESCAPE) {
-        predict_score(player_ptr);
+        predict_score(creature);
     }
 
-    clear_floor(player_ptr);
+    clear_floor(creature);
     return false;
 }
 
@@ -87,19 +88,19 @@ static bool check_death(PlayerType *player_ptr)
  * @brief 勝利者用の引退演出処理 /
  * Change the player into a King! -RAK-
  */
-static void kingly(PlayerType *player_ptr)
+static void kingly(CreatureEntity &creature)
 {
-    bool seppuku = streq(player_ptr->died_from, "Seppuku");
-    auto &floor = *player_ptr->current_floor_ptr;
+    bool seppuku = streq(creature.died_from, "Seppuku");
+    auto &floor = *creature.get_floor();
     floor.dun_level = 0;
     if (!seppuku) {
         /* 引退したときの識別文字 */
-        player_ptr->died_from = _("ripe", "Ripe Old Age");
+        creature.died_from = _("ripe", "Ripe Old Age");
     }
 
-    player_ptr->exp = player_ptr->max_exp;
-    player_ptr->level = player_ptr->max_plv;
-    player_ptr->au += 10000000L;
+    creature.set_exp(creature.get_max_exp());
+    creature.set_level(creature.get_max_plv());
+    creature.add_au(10000000L);
     term_clear();
 
     put_str("#", 1, 39);
@@ -138,15 +139,15 @@ static void kingly(PlayerType *player_ptr)
 /*!
  * @brief ゲーム終了処理 /
  * Close up the current game (player may or may not be dead)
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @details
  * <pre>
  * This function is called only from "main.c" and "signals.c".
  * </pre>
  */
-void close_game(PlayerType *player_ptr)
+void close_game(CreatureEntity &creature)
 {
-    handle_stuff(player_ptr);
+    handle_stuff(creature);
     msg_erase();
     flush();
     signals_ignore_tstp();
@@ -158,23 +159,23 @@ void close_game(PlayerType *player_ptr)
     highscore_fd = fd_open(path, O_RDWR);
     safe_setuid_drop();
 
-    if (!check_death(player_ptr)) {
+    if (!check_death(creature)) {
         return;
     }
 
     TermCenteredOffsetSetter tcos(MAIN_TERM_MIN_COLS, MAIN_TERM_MIN_ROWS);
     if (world.total_winner) {
-        kingly(player_ptr);
+        kingly(creature);
     }
 
-    print_tomb(player_ptr);
+    print_tomb(creature);
 
     auto do_send = true;
     if (!cheat_save || input_check(_("死んだデータをセーブしますか？ ", "Save death? "))) {
         world.play_time.update();
-        world.sf_play_time += world.play_time.elapsed_sec();
+        InnerGameData::get_instance().add_play_time(world.play_time.elapsed_sec());
 
-        if (!save_player(player_ptr, SaveType::CLOSE_GAME)) {
+        if (!save_player(creature, SaveType::CLOSE_GAME)) {
             msg_print(_("セーブ失敗！", "death save failed!"));
         }
     } else {
@@ -182,16 +183,16 @@ void close_game(PlayerType *player_ptr)
     }
 
     flush();
-    show_death_info(player_ptr);
+    show_death_info(creature);
     term_clear();
-    if (check_score(player_ptr)) {
-        send_world_score_on_closing(player_ptr, do_send);
+    if (check_score(creature)) {
+        send_world_score_on_closing(creature, do_send);
         if (!AngbandSystem::get_instance().is_awaiting_report_status()) {
-            (void)top_twenty(player_ptr);
+            (void)top_twenty(creature);
         }
     } else if (highscore_fd >= 0) {
         display_scores(0, 10, -1, nullptr);
     }
 
-    clear_floor(player_ptr);
+    clear_floor(creature);
 }

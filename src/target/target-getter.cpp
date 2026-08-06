@@ -8,14 +8,12 @@
 #include "main/sound-of-music.h"
 #include "monster/monster-describer.h"
 #include "monster/monster-status.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
-#include "system/player-type-definition.h"
 #include "target/target-checker.h"
 #include "target/target-setter.h"
 #include "target/target-types.h"
-#include "timed-effect/timed-effects.h"
 #include "util/finalizer.h"
 #include "view/display-messages.h"
 #include <string>
@@ -29,8 +27,9 @@
  * falseの場合、かならず方向かターゲットを選択し、繰り返しコマンドの対象とならない。
  * @return 指定した方向、またはターゲット(座標はグローバル変数target_row/target_colに格納される)
  */
-Direction get_aim_dir(PlayerType *player_ptr, bool enable_repeat)
+Direction get_aim_dir(CreatureEntity &subject, bool enable_repeat)
 {
+    auto &creature = subject;
     auto dir = Direction::none();
     auto target = Target::get_last_target();
     if (enable_repeat) {
@@ -73,7 +72,7 @@ Direction get_aim_dir(PlayerType *player_ptr, bool enable_repeat)
         static const std::unordered_set target_commands = { '*', ' ', '\r', 'T', 't', '.', '5', '0', '*' };
         if (target_commands.contains(command)) {
             if (select_new_target_commands.contains(command)) {
-                target = target_set(player_ptr, TARGET_KILL);
+                target = target_set(creature, TARGET_KILL);
             }
             if (target.is_okay()) {
                 dir = Direction::targetting(target);
@@ -88,7 +87,7 @@ Direction get_aim_dir(PlayerType *player_ptr, bool enable_repeat)
     }
 
     command_dir = dir;
-    if (player_ptr->effects()->confusion().is_confused()) {
+    if (creature.is_confused()) {
         dir = rand_choice(Direction::directions_8());
     }
 
@@ -107,7 +106,7 @@ Direction get_aim_dir(PlayerType *player_ptr, bool enable_repeat)
  * @brief 上下左右および斜め方向を指定する
  * @return 指定した方向
  */
-Direction get_direction(PlayerType *player_ptr)
+Direction get_direction(CreatureEntity &creature)
 {
     Direction dir = command_dir;
     const auto code = repeat_pull();
@@ -132,7 +131,7 @@ Direction get_direction(PlayerType *player_ptr)
     const auto finalizer = util::make_finalizer([] {
         repeat_push(static_cast<short>(command_dir.dir()));
     });
-    const auto is_confused = player_ptr->effects()->confusion().is_confused();
+    const auto is_confused = creature.is_confused();
     if (is_confused && evaluate_percent(75)) {
         dir = rand_choice(Direction::directions_8());
     }
@@ -146,8 +145,8 @@ Direction get_direction(PlayerType *player_ptr)
         return dir;
     }
 
-    const auto &monster = player_ptr->current_floor_ptr->m_list[player_ptr->riding];
-    const auto m_name = monster_desc(player_ptr, monster, 0);
+    const auto &monster = creature.get_floor()->get_monster(creature.get_riding());
+    const auto m_name = monster_desc(creature, monster, 0);
     const auto fmt = monster.is_confused()
                          ? _("%sは混乱している。", "%s^ is confused.")
                          : _("%sは思い通りに動いてくれない。", "You cannot control %s.");
@@ -165,7 +164,7 @@ Direction get_direction(PlayerType *player_ptr)
  * @note この関数は繰り返し可能なコマンドに使用する。
  * (例) 走る、歩く、ドア開閉、ドア破壊、罠解除、楔を打つ、掘るなど
  */
-Direction get_rep_dir(PlayerType *player_ptr, bool under)
+Direction get_rep_dir(CreatureEntity &creature, bool under)
 {
     Direction dir = command_dir;
     const auto code = repeat_pull();
@@ -197,13 +196,13 @@ Direction get_rep_dir(PlayerType *player_ptr, bool under)
     }
 
     command_dir = dir;
-    auto is_confused = player_ptr->effects()->confusion().is_confused();
+    auto is_confused = creature.is_confused();
     if (is_confused) {
         if (evaluate_percent(75)) {
             dir = rand_choice(Direction::directions_8());
         }
-    } else if (player_ptr->riding) {
-        const auto &monster = player_ptr->current_floor_ptr->m_list[player_ptr->riding];
+    } else if (creature.get_riding()) {
+        const auto &monster = creature.get_floor()->get_monster(creature.get_riding());
         const auto &monrace = monster.get_monrace();
         if (monster.is_confused()) {
             if (evaluate_percent(75)) {
@@ -220,8 +219,8 @@ Direction get_rep_dir(PlayerType *player_ptr, bool under)
         if (is_confused) {
             msg_print(_("あなたは混乱している。", "You are confused."));
         } else {
-            const auto &monster = player_ptr->current_floor_ptr->m_list[player_ptr->riding];
-            const auto m_name = monster_desc(player_ptr, monster, 0);
+            const auto &monster = creature.get_floor()->get_monster(creature.get_riding());
+            const auto m_name = monster_desc(creature, monster, 0);
             if (monster.is_confused()) {
                 msg_format(_("%sは混乱している。", "%s^ is confused."), m_name.data());
             } else {

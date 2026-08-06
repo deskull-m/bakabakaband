@@ -18,13 +18,15 @@
 #include "monster/monster-describer.h"
 #include "monster/monster-description-types.h"
 #include "pet/pet-util.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/monster-entity.h"
+#include "system/monrace/monrace-records.h"
 #include "system/player-type-definition.h"
 #include "term/gameterm.h"
 #include "term/screen-processor.h"
+#include "term/term-color-types.h"
 #include "tracking/lore-tracker.h"
 #include "util/angband-files.h"
 #include "util/int-char-converter.h"
@@ -39,7 +41,7 @@
 
 /*!
  * @brief 特定の与えられた条件に応じてモンスターのIDリストを作成する / Build a list of monster indexes in the given group.
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param grp_cur グループ種別。リスト表記中の左一覧（各シンボル及び/ユニーク(-1)/騎乗可能モンスター(-2)/賞金首(-3)/アンバーの王族(-4)）を参照できる
  * @param mode 思い出の扱いに関するモード
  * @return 作成したモンスターのIDリスト
@@ -63,73 +65,74 @@ static std::vector<MonraceId> collect_monsters(short grp_cur, monster_lore_mode 
     const auto grp_pervert = (MONRACE_CHARACTERS_GROUP[grp_cur] == "Perverts");
 
     const auto &monraces = MonraceList::get_instance();
+    const auto &monrace_records = MonraceRecords::get_instance();
     std::vector<MonraceId> monrace_ids;
     for (const auto &[monrace_id, monrace] : monraces) {
-        if (((mode != MONSTER_LORE_DEBUG) && (mode != MONSTER_LORE_RESEARCH)) && !cheat_know && !monrace.r_sights) {
+        if (((mode != MONSTER_LORE_DEBUG) && (mode != MONSTER_LORE_RESEARCH)) && !cheat_know && !monrace_records.has_been_seen(monrace_id)) {
             continue;
         }
 
         if (grp_unique) {
-            if (monrace.kind_flags.has_not(MonsterKindType::UNIQUE)) {
+            if (monrace->kind_flags.has_not(MonsterKindType::UNIQUE)) {
                 continue;
             }
         } else if (grp_riding) {
-            if (monrace.misc_flags.has_not(MonsterMiscType::RIDING)) {
+            if (monrace->misc_flags.has_not(MonsterMiscType::RIDING)) {
                 continue;
             }
         } else if (grp_wanted) {
             const auto &world = AngbandWorld::get_instance();
             auto wanted = world.knows_daily_bounty && (world.today_mon == monrace_id);
-            wanted |= monrace.is_bounty(false);
+            wanted |= monrace->is_bounty(false);
             if (!wanted) {
                 continue;
             }
         } else if (grp_amberite) {
-            if (monrace.kind_flags.has_not(MonsterKindType::AMBERITE)) {
+            if (monrace->kind_flags.has_not(MonsterKindType::AMBERITE)) {
                 continue;
             }
         } else if (grp_chaosian) {
-            if (monrace.kind_flags.has_not(MonsterKindType::CHOASIAN)) {
+            if (monrace->kind_flags.has_not(MonsterKindType::CHOASIAN)) {
                 continue;
             }
         } else if (grp_skeleton) {
-            if (monrace.kind_flags.has_not(MonsterKindType::SKELETON)) {
+            if (monrace->kind_flags.has_not(MonsterKindType::SKELETON)) {
                 continue;
             }
         } else if (grp_zombie) {
-            if (monrace.kind_flags.has_not(MonsterKindType::ZOMBIE)) {
+            if (monrace->kind_flags.has_not(MonsterKindType::ZOMBIE)) {
                 continue;
             }
         } else if (grp_cancer) {
-            if (monrace.kind_flags.has_not(MonsterKindType::CANCER)) {
+            if (monrace->kind_flags.has_not(MonsterKindType::CANCER)) {
                 continue;
             }
         } else if (grp_fungas) {
-            if (monrace.kind_flags.has_not(MonsterKindType::FUNGAS)) {
+            if (monrace->kind_flags.has_not(MonsterKindType::FUNGAS)) {
                 continue;
             }
         } else if (grp_turtle) {
-            if (monrace.kind_flags.has_not(MonsterKindType::TURTLE)) {
+            if (monrace->kind_flags.has_not(MonsterKindType::TURTLE)) {
                 continue;
             }
         } else if (grp_mimic) {
-            if (monrace.kind_flags.has_not(MonsterKindType::MIMIC)) {
+            if (monrace->kind_flags.has_not(MonsterKindType::MIMIC)) {
                 continue;
             }
         } else if (grp_ixitxachitl) {
-            if (monrace.kind_flags.has_not(MonsterKindType::IXITXACHITL)) {
+            if (monrace->kind_flags.has_not(MonsterKindType::IXITXACHITL)) {
                 continue;
             }
         } else if (grp_naga) {
-            if (monrace.kind_flags.has_not(MonsterKindType::NAGA)) {
+            if (monrace->kind_flags.has_not(MonsterKindType::NAGA)) {
                 continue;
             }
         } else if (grp_pervert) {
-            if (monrace.kind_flags.has_not(MonsterKindType::PERVERT)) {
+            if (monrace->kind_flags.has_not(MonsterKindType::PERVERT)) {
                 continue;
             }
         } else {
-            if (angband_strchr(group_char.data(), monrace.symbol_definition.character) == nullptr) {
+            if (angband_strchr(group_char.data(), monrace->symbol_definition.character) == nullptr) {
                 continue;
             }
         }
@@ -150,9 +153,9 @@ static std::vector<MonraceId> collect_monsters(short grp_cur, monster_lore_mode 
 /*!
  * @brief 現在のペットを表示するコマンドのメインルーチン /
  * Display current pets
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
-void do_cmd_knowledge_pets(PlayerType *player_ptr)
+void do_cmd_knowledge_pets(CreatureEntity &creature)
 {
     FILE *fff = nullptr;
     GAME_TEXT file_name[FILE_NAME_SIZE];
@@ -161,18 +164,18 @@ void do_cmd_knowledge_pets(PlayerType *player_ptr)
     }
 
     int t_friends = 0;
-    for (int i = player_ptr->current_floor_ptr->m_max - 1; i >= 1; i--) {
-        const auto &monster = player_ptr->current_floor_ptr->m_list[i];
+    for (int i = creature.get_floor()->m_max - 1; i >= 1; i--) {
+        const auto &monster = creature.get_floor()->get_monster(static_cast<MONSTER_IDX>(i));
         if (!monster.is_valid() || !monster.is_pet()) {
             continue;
         }
 
         t_friends++;
-        const auto pet_name = monster_desc(player_ptr, monster, MD_ASSUME_VISIBLE | MD_INDEF_VISIBLE);
+        const auto pet_name = monster_desc(creature, monster, MD_ASSUME_VISIBLE | MD_INDEF_VISIBLE);
         fprintf(fff, "%s (%s)\n", pet_name.data(), monster.build_looking_description(false).data());
     }
 
-    int show_upkeep = calculate_upkeep(player_ptr);
+    int show_upkeep = calculate_upkeep(creature);
 
     fprintf(fff, "----------------------------------------------\n");
 #ifdef JP
@@ -183,17 +186,17 @@ void do_cmd_knowledge_pets(PlayerType *player_ptr)
     fprintf(fff, _(" 維持コスト: %d%% MP\n", "   Upkeep: %d%% mana.\n"), show_upkeep);
 
     angband_fclose(fff);
-    FileDisplayer(player_ptr->name).display(true, file_name, 0, 0, _("現在のペット", "Current Pets"));
+    FileDisplayer(creature.name).display(true, file_name, 0, 0, _("現在のペット", "Current Pets"));
     fd_kill(file_name);
 }
 
 /*!
  * @brief 現在までに倒したモンスターを表示するコマンドのメインルーチン /
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * Total kill count
- * @note the player ghosts are ignored.
+ * @note the creature ghosts are ignored.
  */
-void do_cmd_knowledge_kill_count(PlayerType *player_ptr)
+void do_cmd_knowledge_kill_count(CreatureEntity &creature)
 {
     FILE *fff = nullptr;
     GAME_TEXT file_name[FILE_NAME_SIZE];
@@ -261,7 +264,7 @@ void do_cmd_knowledge_kill_count(PlayerType *player_ptr)
 #endif
 
     angband_fclose(fff);
-    FileDisplayer(player_ptr->name).display(true, file_name, 0, 0, _("倒した敵の数", "Kill Count"));
+    FileDisplayer(creature.name).display(true, file_name, 0, 0, _("怕した敵の数", "Kill Count"));
     fd_kill(file_name);
 }
 
@@ -309,13 +312,13 @@ static void display_monster_list(int col, int row, int per_page, const std::vect
 
 /*!
  * Display known monsters.
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param need_redraw 画面の再描画が必要な時TRUE
  * @param visual_only ？？？
  * @param direct_r_idx モンスターID
  * @todo 引数の詳細について加筆求む
  */
-void do_cmd_knowledge_monsters(PlayerType *player_ptr, bool *need_redraw, bool visual_only, tl::optional<MonraceId> direct_r_idx)
+void do_cmd_knowledge_monsters(CreatureEntity &creature, bool *need_redraw, bool visual_only, tl::optional<MonraceId> direct_r_idx)
 {
     TermCenteredOffsetSetter tcos(MAIN_TERM_MIN_COLS, tl::nullopt);
 
@@ -434,7 +437,7 @@ void do_cmd_knowledge_monsters(PlayerType *player_ptr, bool *need_redraw, bool v
             symbol_ptr = &monrace.symbol_config;
             if (!visual_only) {
                 tracker.set_trackee(monrace_ids[mon_cur]);
-                handle_stuff(player_ptr);
+                handle_stuff(creature);
             }
 
             if (visual_list) {
@@ -471,7 +474,7 @@ void do_cmd_knowledge_monsters(PlayerType *player_ptr, bool *need_redraw, bool v
         case 'R':
         case 'r': {
             if (!visual_list && !visual_only && MonraceList::is_valid(monrace_ids[mon_cur])) {
-                screen_roff(player_ptr, monrace_ids[mon_cur], MONSTER_LORE_NORMAL);
+                screen_roff(creature, monrace_ids[mon_cur], MONSTER_LORE_NORMAL);
                 (void)inkey();
                 redraw = true;
             }
@@ -490,7 +493,7 @@ void do_cmd_knowledge_monsters(PlayerType *player_ptr, bool *need_redraw, bool v
 
 /*
  * List wanted monsters
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
 void do_cmd_knowledge_bounty(std::string_view player_name)
 {

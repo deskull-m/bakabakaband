@@ -6,10 +6,14 @@
 
 #include "knowledge/knowledge-uniques.h"
 #include "core/show-file.h"
+#include "game-option/cheat-options.h"
 #include "io-dump/dump-util.h"
+#include "system/creature-entity.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
+#include "system/monrace/monrace-records.h"
 #include "system/player-type-definition.h"
+#include "term/z-form.h"
 #include "util/angband-files.h"
 #include "util/string-processor.h"
 
@@ -34,19 +38,24 @@ UniqueList::UniqueList(bool is_alive)
 
 void UniqueList::sweep()
 {
-    auto &monraces = MonraceList::get_instance();
+    const auto &monraces = MonraceList::get_instance();
+    const auto &records = MonraceRecords::get_instance();
     for (auto &[monrace_id, monrace] : monraces) {
-        if (!monrace.is_valid() || !monrace.should_display(this->is_alive)) {
+        if (!cheat_know && !records.has_been_seen(monrace_id)) {
             continue;
         }
 
-        if (!monrace.level) {
+        if (!monrace->is_valid() || !monrace->should_display(this->is_alive)) {
+            continue;
+        }
+
+        if (!monrace->level) {
             this->num_uniques_surface++;
             this->monrace_ids.push_back(monrace_id);
             continue;
         }
 
-        const auto lev = (monrace.level - 1) / 10;
+        const auto lev = (monrace->level - 1) / 10;
         if (lev >= 10) {
             this->num_uniques_over100++;
             this->monrace_ids.push_back(monrace_id);
@@ -100,7 +109,7 @@ static void display_uniques(UniqueList *unique_list_ptr, FILE *fff)
     for (auto monrace_id : unique_list_ptr->monrace_ids) {
         const auto &monrace = monraces.get_monrace(monrace_id);
         std::string details;
-        if (monrace.defeat_level && monrace.defeat_time) {
+        if (!unique_list_ptr->is_alive && monrace.defeat_level && monrace.defeat_time) {
             details = format(_(" - レベル%2d - %d:%02d:%02d", " - level %2d - %d:%02d:%02d"), monrace.defeat_level, monrace.defeat_time / (60 * 60),
                 (monrace.defeat_time / 60) % 60, monrace.defeat_time % 60);
         }
@@ -115,10 +124,10 @@ static void display_uniques(UniqueList *unique_list_ptr, FILE *fff)
 
 /*!
  * @brief 既知の生きているユニークまたは撃破済ユニークの一覧を表示させる
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param is_alive 生きているユニークのリストならばTRUE、撃破したユニークのリストならばFALSE
  */
-void do_cmd_knowledge_uniques(PlayerType *player_ptr, bool is_alive)
+void do_cmd_knowledge_uniques(CreatureEntity &creature, bool is_alive)
 {
     UniqueList unique_list(is_alive);
     FILE *fff = nullptr;
@@ -133,6 +142,6 @@ void do_cmd_knowledge_uniques(PlayerType *player_ptr, bool is_alive)
     display_uniques(&unique_list, fff);
     angband_fclose(fff);
     concptr title_desc = unique_list.is_alive ? _("まだ生きているユニーク・モンスター", "Alive Uniques") : _("もう撃破したユニーク・モンスター", "Dead Uniques");
-    FileDisplayer(player_ptr->name).display(true, file_name, 0, 0, title_desc);
+    FileDisplayer(creature.name).display(true, file_name, 0, 0, title_desc);
     fd_kill(file_name);
 }

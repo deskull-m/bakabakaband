@@ -7,13 +7,12 @@
 #include "player-info/ninja-data-type.h"
 #include "player/special-defense-types.h"
 #include "system/angband-system.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/enums/terrain/terrain-characteristics.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "util/point-2d.h"
 #include "view/display-messages.h"
@@ -144,23 +143,23 @@ static void update_monster_dark(
  * changes are drawn via lite_spot().
  * @todo player-status からのみ呼ばれている。しかしあちらは行数が酷いので要調整
  */
-void update_mon_lite(PlayerType *player_ptr)
+void update_mon_lite(CreatureEntity &creature)
 {
     // 座標たちを記録する配列。
     std::vector<Pos2D> points;
 
     void (*add_mon_lite)(FloorType &, std::vector<Pos2D> &, const Pos2D &p_pos, const Pos2D &pos, const monster_lite_type &);
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *creature.get_floor();
     const auto &dungeon = floor.get_dungeon_definition();
-    const auto dis_lim = (dungeon.flags.has(DungeonFeatureType::DARKNESS) && !player_ptr->see_nocto) ? (MAX_PLAYER_SIGHT / 2 + 1) : (MAX_PLAYER_SIGHT + 3);
+    const auto dis_lim = (dungeon.flags.has(DungeonFeatureType::DARKNESS) && !creature.has_see_nocto()) ? (MAX_PLAYER_SIGHT / 2 + 1) : (MAX_PLAYER_SIGHT + 3);
     floor.reset_mon_lite();
     const auto &world = AngbandWorld::get_instance();
-    const auto p_pos = player_ptr->get_position();
+    const auto p_pos = creature.get_position();
     if (!world.timewalk_m_idx) {
         for (auto i = 1; i < floor.m_max; i++) {
-            const auto &monster = floor.m_list[i];
+            const auto &monster = floor.get_monster(static_cast<MONSTER_IDX>(i));
             const auto &monrace = monster.get_monrace();
-            if (!monster.is_valid() || (monster.cdis > dis_lim)) {
+            if (!monster.is_valid() || (Grid::calc_distance(p_pos, monster.get_position()) > dis_lim)) {
                 continue;
             }
 
@@ -298,23 +297,23 @@ void update_mon_lite(PlayerType *player_ptr)
     points.insert(points.end(), points_mon_lite.begin(), points_mon_lite.end());
     floor.set_mon_lite(points, end_temp);
     RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::DELAY_VISIBILITY);
-    player_ptr->monlite = (floor.get_grid(p_pos).info & CAVE_MNLT) != 0;
-    const auto ninja_data = PlayerClass(player_ptr).get_specific_data<ninja_data_type>();
+    creature.set_monlite((floor.get_grid(p_pos).info & CAVE_MNLT) != 0);
+    const auto ninja_data = CreatureClass(creature).get_specific_data<ninja_data_type>();
     if (!ninja_data || !ninja_data->s_stealth) {
-        player_ptr->old_monlite = player_ptr->monlite;
+        creature.set_was_monlite(creature.is_monlite());
         return;
     }
 
-    if (player_ptr->old_monlite == player_ptr->monlite) {
-        player_ptr->old_monlite = player_ptr->monlite;
+    if (creature.was_monlite() == creature.is_monlite()) {
+        creature.set_was_monlite(creature.is_monlite());
         return;
     }
 
-    if (player_ptr->monlite) {
+    if (creature.is_monlite()) {
         msg_print(_("影の覆いが薄れた気がする。", "Your mantle of shadow becomes thin."));
     } else {
         msg_print(_("影の覆いが濃くなった！", "Your mantle of shadow is restored to its original darkness."));
     }
 
-    player_ptr->old_monlite = player_ptr->monlite;
+    creature.set_was_monlite(creature.is_monlite());
 }

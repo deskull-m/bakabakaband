@@ -3,14 +3,14 @@
 #include "game-option/cheat-types.h"
 #include "io/write-diary.h"
 #include "system/angband-exceptions.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
-#include "system/player-type-definition.h"
 #include "view/display-messages.h"
 #include <array>
 #include <sstream>
 #include <string>
 
-void msg_print_wizard(PlayerType *player_ptr, int cheat_type, std::string_view msg)
+void msg_print_wizard(CreatureEntity &creature, int cheat_type, std::string_view msg)
 {
     constexpr auto max_type = 4;
     if ((cheat_type < 0) || (cheat_type >= max_type)) {
@@ -39,14 +39,14 @@ void msg_print_wizard(PlayerType *player_ptr, int cheat_type, std::string_view m
     const auto mes = ss.str();
     msg_print(mes);
     if (cheat_diary_output) {
-        exe_write_diary(*player_ptr->current_floor_ptr, DiaryKind::WIZARD_LOG, 0, mes);
+        exe_write_diary(*creature.get_floor(), DiaryKind::WIZARD_LOG, 0, mes);
     }
 }
 
 /*
  * Display a formatted message, using "vstrnfmt()" and "msg_print()".
  */
-void msg_format_wizard(PlayerType *player_ptr, int cheat_type, const char *fmt, ...)
+void msg_format_wizard(CreatureEntity &creature, int cheat_type, const char *fmt, ...)
 {
     if (!cheat_room && cheat_type == CHEAT_DUNGEON) {
         return;
@@ -65,5 +65,5 @@ void msg_format_wizard(PlayerType *player_ptr, int cheat_type, const char *fmt, 
     va_start(vp, fmt);
     const auto buf = vformat(fmt, vp);
     va_end(vp);
-    msg_print_wizard(player_ptr, cheat_type, buf);
+    msg_print_wizard(creature, cheat_type, buf);
 }

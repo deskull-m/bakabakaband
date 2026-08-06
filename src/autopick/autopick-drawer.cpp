@@ -10,7 +10,7 @@
 #include "autopick/autopick-entry.h"
 #include "autopick/autopick-util.h"
 #include "io/pref-file-expressor.h"
-#include "system/player-type-definition.h"
+#include "system/creature-entity.h"
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
 #include "view/display-util.h"
@@ -20,7 +20,7 @@ constexpr auto DESCRIPT_HGT = 3;
 constexpr std::string_view EXPRESSION_DIRECTIVE_PREFIX = "?:";
 constexpr std::string_view AUTOREGISTER_DIRECTIVE = "$AUTOREGISTER";
 
-static void process_dirty_expression(PlayerType *player_ptr, text_body_type *tb)
+static void process_dirty_expression(CreatureEntity &creature, text_body_type *tb)
 {
     if ((tb->dirty_flags & DIRTY_EXPRESSION) == 0) {
         return;
@@ -43,7 +43,7 @@ static void process_dirty_expression(PlayerType *player_ptr, text_body_type *tb)
         std::string s_keep(s);
         auto ss = s_keep.data();
         char f;
-        auto v = process_pref_file_expr(player_ptr, &ss, &f);
+        auto v = process_pref_file_expr(creature, &ss, &f);
         if (v == "0") {
             state |= LSTAT_BYPASS;
         } else {
@@ -59,7 +59,7 @@ static void process_dirty_expression(PlayerType *player_ptr, text_body_type *tb)
 /*!
  * @brief Draw text
  */
-void draw_text_editor(PlayerType *player_ptr, text_body_type *tb)
+void draw_text_editor(CreatureEntity &creature, text_body_type *tb)
 {
     int by1 = 0, by2 = 0;
 
@@ -126,7 +126,7 @@ void draw_text_editor(PlayerType *player_ptr, text_body_type *tb)
         term_putstr(0, tb->hgt + 1, sepa_length, TERM_WHITE, buf);
     }
 
-    process_dirty_expression(player_ptr, tb);
+    process_dirty_expression(creature, tb);
     if (tb->mark) {
         tb->dirty_flags |= DIRTY_ALL;
 
@@ -263,19 +263,17 @@ void draw_text_editor(PlayerType *player_ptr, text_body_type *tb)
             break;
         }
     } else if (autopick_new_entry(entry, *tb->lines_list[tb->cy], false)) {
-        char buf[MAX_LINELEN];
-
-        describe_autopick(buf, *entry);
-
+        std::stringstream ss;
+        ss << describe_autopick(*entry);
         if (tb->states[tb->cy] & LSTAT_AUTOREGISTER) {
-            strcat(buf, _("この行は後で削除されます。", "  This line will be deleted later."));
+            ss << _("この行は後で削除されます。", "  This line will be deleted later.");
         }
 
         if (tb->states[tb->cy] & LSTAT_BYPASS) {
-            strcat(buf, _("この行は現在は無効な状態です。", "  This line is bypassed currently."));
+            ss << _("この行は現在は無効な状態です。", "  This line is bypassed currently.");
         }
 
-        display_wrap_around(buf, 81, tb->hgt + 2, 0);
+        display_wrap_around(ss.str(), 81, tb->hgt + 2, 0);
     }
 
     if (!str1.empty()) {

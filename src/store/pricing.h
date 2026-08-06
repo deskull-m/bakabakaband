@@ -4,5 +4,5 @@
 
 enum class StoreSaleType;
 class ItemEntity;
-class PlayerType;
-int price_item(PlayerType *player_ptr, const ItemEntity *o_ptr, int greed, bool flip, StoreSaleType store_num);
+class CreatureEntity;
+int price_item(CreatureEntity &creature, const ItemEntity *o_ptr, int greed, bool flip, StoreSaleType store_num);

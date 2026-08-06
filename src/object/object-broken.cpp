@@ -13,8 +13,8 @@
 #include "sv-definition/sv-potion-types.h"
 #include "system/baseitem/baseitem-definition.h"
 #include "system/baseitem/baseitem-list.h"
+#include "system/creature-entity.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "util/bit-flags-calculator.h"
 
 ObjectBreaker::ObjectBreaker(tr_type ignore_flg)
@@ -185,7 +185,7 @@ bool ObjectBreaker::can_destroy(ItemEntity *o_ptr) const
  * @return 薬を浴びたモンスターが起こるならばTRUEを返す
  * @details
  * <pre>
- * (1) they are shattered while in the player's p_ptr->inventory,
+ * (1) they are shattered while in the creature.inventory,
  * due to cold (etc) attacks;
  * (2) they are thrown at a monster, or obstacle;
  * (3) they are shattered by a "cold ball" or other such spell
@@ -202,7 +202,7 @@ bool ObjectBreaker::can_destroy(ItemEntity *o_ptr) const
  *    o_ptr --- pointer to the potion object.
  * </pre>
  */
-bool potion_smash_effect(PlayerType *player_ptr, MONSTER_IDX src_idx, POSITION y, POSITION x, short bi_id)
+bool potion_smash_effect(CreatureEntity &creature, MONSTER_IDX src_idx, POSITION y, POSITION x, short bi_id)
 {
     auto radius = 2;
     auto dt = AttributeType::NONE;
@@ -336,7 +336,7 @@ bool potion_smash_effect(PlayerType *player_ptr, MONSTER_IDX src_idx, POSITION y
         break;
     }
 
-    (void)project(player_ptr, src_idx, radius, y, x, dam, dt, (PROJECT_JUMP | PROJECT_ITEM | PROJECT_KILL));
+    (void)project(creature, src_idx, radius, y, x, dam, dt, (PROJECT_JUMP | PROJECT_ITEM | PROJECT_KILL));
     return angry;
 }
 
@@ -348,7 +348,7 @@ bool potion_smash_effect(PlayerType *player_ptr, MONSTER_IDX src_idx, POSITION y
  * @details
  * Note that artifacts never break, see the "drop_ammo_near()" function.
  */
-PERCENTAGE breakage_chance(PlayerType *player_ptr, ItemEntity *o_ptr, bool has_archer_bonus, SPELL_IDX snipe_type)
+PERCENTAGE breakage_chance(CreatureEntity &creature, ItemEntity *o_ptr, bool has_archer_bonus, SPELL_IDX snipe_type)
 {
     /* Examine the snipe type */
     if (snipe_type) {
@@ -376,7 +376,7 @@ PERCENTAGE breakage_chance(PlayerType *player_ptr, ItemEntity *o_ptr, bool has_a
     }
 
     /* Examine the item type */
-    PERCENTAGE archer_bonus = (has_archer_bonus ? (PERCENTAGE)(player_ptr->level - 1) / 7 + 4 : 0);
+    PERCENTAGE archer_bonus = (has_archer_bonus ? (PERCENTAGE)(creature.get_level() - 1) / 7 + 4 : 0);
     switch (o_ptr->bi_key.tval()) {
         /* Always break */
     case ItemKindType::FLASK:

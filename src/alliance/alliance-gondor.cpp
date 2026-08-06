@@ -1,15 +1,15 @@
 #include "alliance/alliance-gondor.h"
 #include "alliance/alliance.h"
-#include "system/player-type-definition.h"
+#include "system/creature-entity.h"
 #include "view/display-messages.h"
 
 /*!
  * @brief ゴンドールアライアンスの印象ポイント計算
- * @param creature_ptr プレイヤー情報
+ * @param creature クリーチャーへの参照
  * @return 印象ポイント
  * @details 現在は空実装
  */
-int AllianceGondor::calcImpressionPoint([[maybe_unused]] PlayerType *creature_ptr) const
+int AllianceGondor::calcImpressionPoint([[maybe_unused]] const CreatureEntity &creature) const
 {
     int impression = 0;
     impression += calcIronmanHostilityPenalty();
@@ -20,10 +20,10 @@ int AllianceGondor::calcImpressionPoint([[maybe_unused]] PlayerType *creature_pt
 
 /*!
  * @brief ゴンドールアライアンスの制裁処理
- * @param player_ptr プレイヤー情報
+ * @param creature クリーチャーへの参照
  * @details 現在は空実装
  */
-void AllianceGondor::panishment([[maybe_unused]] PlayerType &player_ptr)
+void AllianceGondor::panishment([[maybe_unused]] CreatureEntity &creature)
 {
     // TODO: ゴンドールの制裁システムを実装
     // msg_print("ゴンドールの制裁が発動した！");

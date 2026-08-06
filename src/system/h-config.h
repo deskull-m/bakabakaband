@@ -61,32 +61,23 @@ constexpr auto MAINTAINER = "echizen@users.sourceforge.jp";
     #define DEFAULT_LIB_PATH "./lib/"
   #endif
   
-  #ifdef USE_XFT
-    #ifdef JP
-      #define DEFAULT_X11_FONT "monospace-24:lang=ja:spacing=90"
-      #define DEFAULT_X11_FONT_SUB "sans-serif-16:lang=ja"
-    #else
-      #define DEFAULT_X11_FONT "monospace-24:lang=en:spacing=90"
-      #define DEFAULT_X11_FONT_SUB "sans-serif-16:lang=en"
-    #endif
+  #ifdef JP
+    #define DEFAULT_X11_FONT_BMP "12x24,-*-*-medium-r-normal--24-*-*-*-*-*-jisx0208.1983-0"
+    #define DEFAULT_X11_FONT_BMP_SUB "8x16,-*-*-medium-r-normal--16-*-*-*-*-*-jisx0208.1983-0"
   #else
-    #ifdef JP
-      #define DEFAULT_X11_FONT "12x24,-*-*-medium-r-normal--24-*-*-*-*-*-jisx0208.1983-0"
-      #define DEFAULT_X11_FONT_SUB "8x16,-*-*-medium-r-normal--16-*-*-*-*-*-jisx0208.1983-0"
-    #else
-      #define DEFAULT_X11_FONT "-*-*-medium-r-normal--24-*-*-*-*-*-iso8859-1"
-      #define DEFAULT_X11_FONT_SUB "-*-*-medium-r-normal--16-*-*-*-*-*-iso8859-1"
-    #endif
+    #define DEFAULT_X11_FONT_BMP "-*-*-medium-r-normal--24-*-*-*-*-*-iso8859-1"
+    #define DEFAULT_X11_FONT_BMP_SUB "-*-*-medium-r-normal--16-*-*-*-*-*-iso8859-1"
   #endif
   
-  #define DEFAULT_X11_FONT_0 DEFAULT_X11_FONT
-  #define DEFAULT_X11_FONT_1 DEFAULT_X11_FONT_SUB
-  #define DEFAULT_X11_FONT_2 DEFAULT_X11_FONT_SUB
-  #define DEFAULT_X11_FONT_3 DEFAULT_X11_FONT_SUB
-  #define DEFAULT_X11_FONT_4 DEFAULT_X11_FONT_SUB
-  #define DEFAULT_X11_FONT_5 DEFAULT_X11_FONT_SUB
-  #define DEFAULT_X11_FONT_6 DEFAULT_X11_FONT_SUB
-  #define DEFAULT_X11_FONT_7 DEFAULT_X11_FONT_SUB
+  #ifdef USE_XFT
+    #ifdef JP
+      #define DEFAULT_X11_FONT_TRUETYPE "monospace-24:lang=ja:spacing=90"
+      #define DEFAULT_X11_FONT_TRUETYPE_SUB "sans-serif-16:lang=ja"
+    #else
+      #define DEFAULT_X11_FONT_TRUETYPE "monospace-24:lang=en:spacing=90"
+      #define DEFAULT_X11_FONT_TRUETYPE_SUB "sans-serif-16:lang=en"
+    #endif
+  #endif
   
   #ifdef JP
     #ifdef EUC

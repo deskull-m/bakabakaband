@@ -1,12 +1,12 @@
 #pragma once
 
 class MonsterAttackPlayer;
-class PlayerType;
-void calc_blow_disease(PlayerType *player_ptr, MonsterAttackPlayer *monap_ptr);
-void calc_blow_lose_strength(PlayerType *player_ptr, MonsterAttackPlayer *monap_ptr);
-void calc_blow_lose_intelligence(PlayerType *player_ptr, MonsterAttackPlayer *monap_ptr);
-void calc_blow_lose_wisdom(PlayerType *player_ptr, MonsterAttackPlayer *monap_ptr);
-void calc_blow_lose_dexterity(PlayerType *player_ptr, MonsterAttackPlayer *monap_ptr);
-void calc_blow_lose_constitution(PlayerType *player_ptr, MonsterAttackPlayer *monap_ptr);
-void calc_blow_lose_charisma(PlayerType *player_ptr, MonsterAttackPlayer *monap_ptr);
-void calc_blow_lose_all(PlayerType *player_ptr, MonsterAttackPlayer *monap_ptr);
+class CreatureEntity;
+void calc_blow_disease(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr);
+void calc_blow_lose_strength(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr);
+void calc_blow_lose_intelligence(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr);
+void calc_blow_lose_wisdom(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr);
+void calc_blow_lose_dexterity(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr);
+void calc_blow_lose_constitution(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr);
+void calc_blow_lose_charisma(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr);
+void calc_blow_lose_all(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr);

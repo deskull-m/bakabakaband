@@ -16,6 +16,7 @@
 #include "sv-definition/sv-weapon-types.h"
 #include "system/artifact-type-definition.h"
 #include "system/baseitem/baseitem-definition.h"
+#include "system/creature-entity.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
@@ -30,12 +31,12 @@
 /*!
  * @brief オブジェクトの*鑑定*内容を詳述して表示する /
  * Describe a "fully identified" item
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param item *鑑定*情報を取得する元のオブジェクト構造体参照ポインタ
  * @param mode 表示オプション
  * @return 特筆すべき情報が一つでもあった場合TRUE、一つもなく表示がキャンセルされた場合FALSEを返す。
  */
-bool screen_object(PlayerType *player_ptr, const ItemEntity &item, BIT_FLAGS mode)
+bool screen_object(CreatureEntity &creature, const ItemEntity &item, BIT_FLAGS mode)
 {
     std::array<std::string, 128> info{};
     int trivial_info = 0;
@@ -821,9 +822,9 @@ bool screen_object(PlayerType *player_ptr, const ItemEntity &item, BIT_FLAGS mod
     const auto &[wid, hgt] = term_get_size();
     std::string item_name;
     if (!(mode & SCROBJ_FAKE_OBJECT)) {
-        item_name = describe_flavor(player_ptr, item, 0);
+        item_name = describe_flavor(creature, item, 0);
     } else {
-        item_name = describe_flavor(player_ptr, item, (OD_NAME_ONLY | OD_STORE));
+        item_name = describe_flavor(creature, item, (OD_NAME_ONLY | OD_STORE));
     }
 
     prt(item_name, 0, 0);

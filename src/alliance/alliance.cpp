@@ -15,6 +15,7 @@
 #include "alliance/alliance-court-of-chaos.h"
 #include "alliance/alliance-diabolique.h"
 #include "alliance/alliance-dokachans.h"
+#include "alliance/alliance-eagle-clan.h"
 #include "alliance/alliance-eldrazi.h"
 #include "alliance/alliance-fangfamily.h"
 #include "alliance/alliance-feanor-noldor.h"
@@ -77,11 +78,10 @@
 #include "monster-floor/place-monster-types.h"
 #include "monster-race/race-kind-flags.h"
 #include "spell/summon-types.h"
+#include "system/creature-entity.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/monster-entity.h"
-#include "system/player-type-definition.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
 
@@ -158,6 +158,7 @@ const std::map<AllianceType, std::shared_ptr<Alliance>> alliance_list = {
     { AllianceType::DIABOLIQUE, std::make_unique<AllianceDiabolique>(AllianceType::DIABOLIQUE, "DIABOLIQUE", _("\u30c7\u30a2\u30dc\u30ea\u30ab", "Diabolique"), 5000000L) },
     { AllianceType::SOUKAIYA, std::make_unique<AllianceSoukaiya>(AllianceType::SOUKAIYA, "SOUKAIYA", _("ソウカイヤ", "Soukaiya"), 3000000L) },
     { AllianceType::YEEK_KINGDOM, std::make_unique<AllianceYeekKingdom>(AllianceType::YEEK_KINGDOM, "YEEK-KINGDOM", _("イークの王国", "Yeek Kingdom"), 15000L) },
+    { AllianceType::EAGLE_CLAN, std::make_unique<AllianceEagleClan>(AllianceType::EAGLE_CLAN, "EAGLE-CLAN", _("大鷲の一族", "Eagle Clan"), 2500000L, 600L) },
 };
 
 const std::map<std::tuple<AllianceType, AllianceType>, int> each_alliance_impression = {
@@ -176,16 +177,16 @@ Alliance::Alliance(AllianceType id, std::string tag, std::string name, int64_t b
 
 /*!
  * @brief プレイヤーのレベル自体を印象値に加減算する処理
- * @param player_ptr 評価対象とするプレイヤー
+ * @param creature 評価対象とするクリーチャー
  * @param bias 倍率
  * @param min_level 評価基準最低レベル
  */
-int Alliance::calcPlayerPower(PlayerType const &player_ptr, const int bias, const int min_level)
+int Alliance::calcPlayerPower(const CreatureEntity &creature, const int bias, const int min_level)
 {
-    if (min_level > player_ptr.level) {
+    if (min_level > creature.get_level()) {
         return 0;
     }
-    return (2000 + 10 * (player_ptr.level - min_level + 1) * (player_ptr.level - min_level + 1)) * bias / 100;
+    return (2000 + 10 * (creature.get_level() - min_level + 1) * (creature.get_level() - min_level + 1)) * bias / 100;
 }
 
 /*!
@@ -200,7 +201,7 @@ int Alliance::calcIronmanHostilityPenalty()
     return 0;
 }
 
-void Alliance::panishment([[maybe_unused]] PlayerType &player_ptr)
+void Alliance::panishment([[maybe_unused]] CreatureEntity &creature)
 {
     return;
 }
@@ -210,9 +211,9 @@ int64_t Alliance::calcCurrentPower()
     const auto &monraces = MonraceList::get_instance();
     int64_t res = this->base_power;
     for (auto &[r_idx, r_ref] : monraces) {
-        if (r_ref.alliance_idx == this->id) {
-            if (r_ref.mob_num > 0) {
-                res += monraces.get_monrace(r_idx).calc_power() * r_ref.mob_num;
+        if (r_ref->alliance_idx == this->id) {
+            if (r_ref->mob_num > 0) {
+                res += monraces.get_monrace(r_idx).calc_power() * r_ref->mob_num;
             }
         }
     }
@@ -227,18 +228,30 @@ bool Alliance::isAnnihilated()
     return false;
 }
 
-bool Alliance::isFriendly([[maybe_unused]] PlayerType *creature_ptr) const
+bool Alliance::all_monraces_extinct(std::initializer_list<MonraceId> monrace_ids)
+{
+    const auto &monraces = MonraceList::get_instance();
+    for (const auto monrace_id : monrace_ids) {
+        if (monraces.get_monrace(monrace_id).mob_num != 0) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+bool Alliance::isFriendly([[maybe_unused]] const CreatureEntity &creature) const
 {
     return false;
 }
 
 /*!
  * @brief 襲撃時に出現するモンスターのリストを取得する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param impression_point 印象値
  * @return モンスターIDのリスト（デフォルトは空）
  */
-std::vector<MonraceId> Alliance::get_ambush_monsters([[maybe_unused]] PlayerType *player_ptr, [[maybe_unused]] int impression_point) const
+std::vector<MonraceId> Alliance::get_ambush_monsters([[maybe_unused]] CreatureEntity &creature, [[maybe_unused]] int impression_point) const
 {
     return std::vector<MonraceId>();
 }
@@ -259,7 +272,7 @@ std::string Alliance::get_ambush_message() const
  * @return monster_other で指定したモンスターに敵意を持つならばtrue
  * @details デフォルトではEVIL vs GOOD の属性判定のみを行う。各アライアンスでオーバーライド可能。
  */
-bool Alliance::is_hostile_to(const MonsterEntity &monster_other, const MonraceDefinition &monrace) const
+bool Alliance::is_hostile_to(const CreatureEntity &creature_other, const MonraceDefinition &monrace) const
 {
     uint8_t sub_align2 = SUB_ALIGN_NEUTRAL;
     if (monrace.kind_flags.has(MonsterKindType::EVIL)) {
@@ -268,7 +281,8 @@ bool Alliance::is_hostile_to(const MonsterEntity &monster_other, const MonraceDe
     if (monrace.kind_flags.has(MonsterKindType::GOOD)) {
         sub_align2 |= SUB_ALIGN_GOOD;
     }
-    return MonsterEntity::check_sub_alignments(monster_other.sub_align, sub_align2);
+    const auto sub_align1 = creature_other.has_monster_profile() ? creature_other.get_sub_align() : static_cast<BIT_FLAGS8>(SUB_ALIGN_NEUTRAL);
+    return CreatureEntity::check_sub_alignments(sub_align1, sub_align2);
 }
 
 /*!

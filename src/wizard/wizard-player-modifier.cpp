@@ -9,8 +9,9 @@
 #include "mutation/mutation-investor-remover.h"
 #include "player-info/self-info.h"
 #include "spell/spells-status.h"
-#include "system/player-type-definition.h"
+#include "system/creature-entity.h"
 #include "term/screen-processor.h"
+#include "util/enum-converter.h"
 #include "util/int-char-converter.h"
 #include "view/display-messages.h"
 #include "wizard/wizard-special-process.h"
@@ -54,9 +55,9 @@ void display_wizard_player_modifier_menu()
 
 /*!
  * @brief プレイヤー設定コマンドの入力を受け付ける
- * @param player_ptr プレイヤーの情報へのポインタ
+ * @param creature クリーチャーへの参照
  */
-void wizard_player_modifier(PlayerType *player_ptr)
+void wizard_player_modifier(CreatureEntity &creature)
 {
     screen_save();
     display_wizard_player_modifier_menu();
@@ -72,28 +73,28 @@ void wizard_player_modifier(PlayerType *player_ptr)
     case '\r':
         break;
     case 'a':
-        msg_format("Your alignment is %d.", player_ptr->alignment);
+        msg_format("Your alignment is %d.", creature.alignment);
         break;
     case 'c':
-        wiz_reset_class(player_ptr);
+        wiz_reset_class(creature);
         break;
     case 'e':
-        wiz_change_status(player_ptr);
+        wiz_change_status(creature);
         break;
     case 'k':
-        self_knowledge(player_ptr);
+        self_knowledge(creature);
         break;
     case 'l':
-        roll_hitdice(player_ptr, i2enum<spell_operation>(SPOP_DISPLAY_MES | SPOP_DEBUG));
+        roll_hitdice(creature, i2enum<spell_operation>(SPOP_DISPLAY_MES | SPOP_DEBUG));
         break;
     case 'm':
-        (void)gain_mutation(*player_ptr, command_arg);
+        (void)gain_mutation(creature, command_arg);
         break;
     case 'r':
-        wiz_reset_race(player_ptr);
+        wiz_reset_race(creature);
         break;
     case 'R':
-        wiz_reset_realms(player_ptr);
+        wiz_reset_realms(creature);
         break;
     default:
         msg_print("That is not a valid debug command.");

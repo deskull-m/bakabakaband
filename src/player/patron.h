@@ -7,12 +7,16 @@
 #include <tl/optional.hpp>
 #include <vector>
 
-#define MAX_PATRON 18 /*!< パトロンの最大定義数 / The number of "patrons" available (for Chaos Warriors) */
+#define MAX_PATRON 19 /*!< パトロンの最大定義数 / The number of "patrons" available (for Chaos Warriors) */
 
 enum class PatronType : int16_t {
     NONE = -1, //!< なし
     KHORNE = 11, //!< コーン
+    SLAANESH = 12, //!< スラーネッシュ
+    NURGLE = 13, //!< ナーグル
+    TZEENTCH = 14, //!< ティーンチ
     GETTER = 16, //!< ゲッター
+    EFU = 18, //!< 衛府
 };
 
 /* パトロンからの報酬種別定義 / Chaos Warrior: Reward types: */
@@ -55,7 +59,7 @@ enum patron_reward {
     REW_SER_MONS = 36, /*!< パトロンからの報酬: モンスターの下僕下賜 */
 };
 
-class PlayerType;
+class CreatureEntity;
 enum player_ability_type : int;
 
 /*!
@@ -68,11 +72,10 @@ public:
     Patron(LocalizedString &&name, std::vector<patron_reward> reward_table, const player_ability_type boost_stat, MonraceId monrace_id);
 
     // @note C4458 クラスメンバーの隠蔽 への対応として末尾に「_」を付ける.
-    void gain_level_reward(PlayerType *player_ptr_, int chosen_reward);
-    void admire(PlayerType *player_ptr_);
+    void gain_level_reward(CreatureEntity &creature, int chosen_reward);
+    void admire(CreatureEntity &creature);
 
 private:
-    PlayerType *player_ptr = nullptr; //!< プレイヤー参照ポインタ
     std::vector<patron_reward> reward_table; //!< 報酬テーブル
     player_ability_type boost_stat; //!< 強化能力値傾向
     tl::optional<MonraceId> monrace_id = tl::nullopt; //!< パトロンのモンスターID

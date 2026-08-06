@@ -8,30 +8,32 @@
 #include "player-base/player-class.h"
 #include "player/player-realm.h"
 #include "player/player-skill.h"
+#include "save/creature-common-writer.h"
 #include "save/info-writer.h"
 #include "save/player-class-specific-data-writer.h"
 #include "save/save-util.h"
 #include "system/angband-system.h"
 #include "system/building-type-definition.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/dungeon/dungeon-list.h"
 #include "system/dungeon/dungeon-record.h"
 #include "system/floor/floor-info.h"
+#include "system/floor/town-records.h"
 #include "system/inner-game-data.h"
-#include "system/player-type-definition.h"
-#include "timed-effect/timed-effects.h"
+#include "util/enum-converter.h"
 #include "world/world.h"
 #include <variant>
 
 /*!
  * @brief セーブデータに領域情報を書き込む / Write player realms
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
-static void wr_relams(PlayerType *player_ptr)
+static void wr_relams(CreatureEntity &creature)
 {
-    PlayerRealm pr(player_ptr);
-    if (PlayerClass(player_ptr).equals(PlayerClassType::ELEMENTALIST)) {
-        wr_byte((byte)player_ptr->element_realm);
+    PlayerRealm pr(creature);
+    if (CreatureClass(creature).equals(PlayerClassType::ELEMENTALIST)) {
+        wr_byte((byte)creature.get_element_realm());
     } else {
         wr_byte((byte)pr.realm1().to_enum());
     }
@@ -40,39 +42,40 @@ static void wr_relams(PlayerType *player_ptr)
 
 /*!
  * @brief セーブデータにプレイヤー情報を書き込む / Write some "player" info
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
-void wr_player(PlayerType *player_ptr)
+void wr_player(CreatureEntity &creature)
 {
     auto &system = AngbandSystem::get_instance();
 
-    wr_string(player_ptr->name.data());
-    wr_string(player_ptr->died_from);
-    wr_string(player_ptr->last_message);
+    // セーブデータバージョン 51 以降: CreatureEntity 共通基底フィールドを
+    // wr_creature_common() に集約する。以降のプレイヤー固有フィールドは
+    // 共通フィールドを除いて従来の相対順序を保つ。
+    wr_creature_common(creature);
+
+    wr_string(creature.died_from);
+    wr_string(creature.last_message);
 
     save_quick_start();
     for (int i = 0; i < 4; i++) {
-        wr_string(player_ptr->history[i]);
+        wr_string(creature.history[i]);
     }
 
-    wr_byte((byte)player_ptr->prace);
-    wr_byte((byte)player_ptr->pclass);
-    wr_byte((byte)player_ptr->ppersonality);
-    wr_byte((byte)player_ptr->psex);
-    wr_relams(player_ptr);
+    // prace / pclass は wr_creature_common() の全時限効果後 (v54 拡張) に集約済み
+    wr_byte((byte)creature.ppersonality);
+    wr_byte((byte)creature.psex);
+    wr_relams(creature);
     wr_byte(0);
 
-    wr_byte((byte)player_ptr->hit_dice.sides);
-    wr_u16b(player_ptr->expfact);
+    wr_byte((byte)creature.hit_dice.sides);
+    wr_u16b(creature.expfact);
 
-    wr_s32b(player_ptr->death_count);
-    wr_s16b(player_ptr->age);
-    wr_s16b(player_ptr->ht);
-    wr_s16b(player_ptr->wt);
+    wr_s32b(creature.death_count);
+    // age / ht / wt は wr_creature_common() で保存済み
 
     // 死亡履歴のセーブ
-    wr_u32b(static_cast<uint32_t>(player_ptr->death_history.size()));
-    for (const auto &record : player_ptr->death_history) {
+    wr_u32b(static_cast<uint32_t>(creature.death_history.size()));
+    for (const auto &record : creature.death_history) {
         wr_s32b(record.game_turn);
         wr_s16b(record.day);
         wr_s16b(record.hour);
@@ -82,41 +85,26 @@ void wr_player(PlayerType *player_ptr)
         wr_s16b(enum2i(record.killer_monrace_id));
     }
 
-    for (int i = 0; i < A_MAX; ++i) {
-        wr_s16b(player_ptr->stat_max[i]);
-    }
-
-    for (int i = 0; i < A_MAX; ++i) {
-        wr_s16b(player_ptr->stat_max_max[i]);
-    }
-
-    for (int i = 0; i < A_MAX; ++i) {
-        wr_s16b(player_ptr->stat_cur[i]);
-    }
+    // stat_max / stat_max_max / stat_cur は wr_creature_common() で保存済み (v52 拡張)
 
     for (int i = 0; i < 12; ++i) {
         wr_s16b(0);
     }
 
-    wr_u32b(player_ptr->au);
-    wr_u32b(player_ptr->max_exp);
-    wr_u32b(player_ptr->max_max_exp);
-    wr_u32b(player_ptr->exp);
-    wr_u32b(player_ptr->exp_frac);
-    wr_s16b(player_ptr->level);
+    // au / exp / max_exp / max_max_exp / exp_frac / level は wr_creature_common() で保存済み
 
     for (int i = 0; i < 64; i++) {
-        wr_s16b(player_ptr->spell_exp[i]);
+        wr_s16b(creature.get_spell_exp(i));
     }
 
     for (auto tval : TV_WEAPON_RANGE) {
         for (int j = 0; j < 64; j++) {
-            wr_s16b(player_ptr->weapon_exp[tval][j]);
+            wr_s16b(creature.get_weapon_exp(tval, j));
         }
     }
 
     for (auto i : PLAYER_SKILL_KIND_TYPE_RANGE) {
-        wr_s16b(player_ptr->skill_exp[i]);
+        wr_s16b(creature.get_skill_exp(i));
     }
     for (auto i = 0U; i < MAX_SKILLS - PLAYER_SKILL_KIND_TYPE_RANGE.size(); ++i) {
         // resreved skills
@@ -124,14 +112,14 @@ void wr_player(PlayerType *player_ptr)
     }
 
     // Save martial arts style
-    wr_s16b(static_cast<int16_t>(player_ptr->martial_arts_style));
+    wr_s16b(static_cast<int16_t>(creature.martial_arts_style));
 
-    std::visit(PlayerClassSpecificDataWriter(), player_ptr->class_specific_data);
+    std::visit(PlayerClassSpecificDataWriter(), creature.class_specific_data);
 
     wr_byte(static_cast<uint8_t>(InnerGameData::get_instance().get_start_race()));
-    wr_s32b(player_ptr->old_race1);
-    wr_s32b(player_ptr->old_race2);
-    wr_s16b(player_ptr->old_realm);
+    wr_s32b(creature.get_old_race_flags1());
+    wr_s32b(creature.get_old_race_flags2());
+    wr_s16b(creature.get_old_realm());
 
     const auto &world = AngbandWorld::get_instance();
     for (const auto &[monrace_id, is_achieved] : world.bounties) {
@@ -145,29 +133,24 @@ void wr_player(PlayerType *player_ptr)
         wr_u32b(gladiator.odds);
     }
 
-    wr_s16b(player_ptr->town_num);
+    wr_s16b(creature.get_town_num());
     const auto &entries = ArenaEntryList::get_instance();
     wr_s16b(static_cast<int16_t>(entries.get_current_entry()));
     const auto defeated_entry = entries.get_defeated_entry();
     wr_s16b(static_cast<int16_t>(defeated_entry.value_or(-1)));
-    wr_s16b(player_ptr->current_floor_ptr->inside_arena);
-    wr_s16b(enum2i(player_ptr->current_floor_ptr->quest_number));
+    wr_s16b(creature.get_floor()->inside_arena);
+    wr_s16b(enum2i(creature.get_floor()->quest_number));
     wr_s16b(AngbandSystem::get_instance().is_phase_out());
     wr_byte(world.get_arena());
     wr_byte(0); /* Unused */
 
-    wr_s16b((int16_t)player_ptr->oldpx);
-    wr_s16b((int16_t)player_ptr->oldpy);
+    wr_s16b((int16_t)creature.oldpx);
+    wr_s16b((int16_t)creature.oldpy);
 
     wr_s16b(0);
-    wr_s32b(player_ptr->maxhp);
-    wr_s32b(player_ptr->hp);
-    wr_u32b(player_ptr->hp_frac);
-    wr_s32b(player_ptr->dealt_damage); // セーブファイルバージョン35以降で与ダメージ蓄積を保存
-    wr_s32b(player_ptr->msp);
-    wr_s32b(player_ptr->csp);
-    wr_u32b(player_ptr->csp_frac);
-    wr_s16b(player_ptr->max_plv);
+    // maxhp / hp / dealt_damage / hp_frac / max_mp / current_mp / current_mp_frac は
+    // wr_creature_common() で保存済み (hp_frac/max_mp/current_mp/current_mp_frac は v52 拡張)
+    wr_s16b(creature.get_max_plv());
 
     const auto &dungeon_records = DungeonRecords::get_instance();
     auto tmp8u = static_cast<uint8_t>(dungeon_records.size());
@@ -180,83 +163,31 @@ void wr_player(PlayerType *player_ptr)
     wr_s16b(0);
     wr_s16b(0);
     wr_s16b(0);
-    wr_s16b(player_ptr->prestige);
+    wr_s16b(creature.get_prestige());
 
-    auto effects = player_ptr->effects();
     wr_s16b(0); /* old "rest" */
-    wr_s16b(effects->blindness().current());
-    wr_s16b(effects->paralysis().current());
-    wr_s16b(effects->confusion().current());
-    wr_s16b(player_ptr->food);
+    // 全時限効果 (BLINDNESS / PARALYSIS / CUT / POISON / HALLUCINATION /
+    // PROTECTION / ULTIMATE_RESISTANCE / HERO / ... / TIM_IMM_DARK 等すべて) は
+    // wr_creature_common() の全時限効果ダンプ (v53) に集約済み。ここでは
+    // 時限効果以外の (時限効果と交互配置されていた) フィールドのみ書き出す。
+    wr_s16b(creature.get_food());
     wr_s16b(0); /* old "food_digested" */
     wr_s16b(0); /* old "protection" */
-    wr_s16b(player_ptr->energy_need);
-    wr_s16b(player_ptr->enchant_energy_need);
-    wr_s16b(effects->acceleration().current());
-    wr_s16b(effects->deceleration().current());
-    wr_s16b(effects->fear().current());
-    wr_s16b(effects->cut().current());
-    wr_s16b(effects->stun().current());
-    wr_s16b(effects->poison().current());
-    wr_s16b(effects->hallucination().current());
-    wr_s16b(effects->protection().current());
-    wr_s16b(player_ptr->invuln);
-    wr_s16b(player_ptr->ult_res);
-    wr_s16b(player_ptr->hero);
-    wr_s16b(player_ptr->berserk);
-    wr_s16b(player_ptr->shield);
-    wr_s16b(player_ptr->blessed);
-    wr_s16b(player_ptr->tim_invis);
-    wr_s16b(player_ptr->word_recall);
-    wr_s16b(static_cast<int16_t>(player_ptr->recall_dungeon));
-    wr_s16b(player_ptr->alter_reality);
-    wr_s16b(player_ptr->see_infra);
-    wr_s16b(player_ptr->tim_infra);
-    wr_s16b(player_ptr->oppose_fire);
-    wr_s16b(player_ptr->oppose_cold);
-    wr_s16b(player_ptr->oppose_acid);
-    wr_s16b(player_ptr->oppose_elec);
-    wr_s16b(player_ptr->oppose_pois);
-    wr_s16b(player_ptr->tsuyoshi);
-    wr_s16b(player_ptr->tim_esp);
-    wr_s16b(player_ptr->wraith_form);
-    wr_s16b(player_ptr->resist_magic);
-    wr_s16b(player_ptr->tim_regen);
-    wr_s16b(player_ptr->tim_pass_wall);
-    wr_s16b(player_ptr->tim_stealth);
-    wr_s16b(player_ptr->tim_levitation);
-    wr_s16b(player_ptr->tim_sh_touki);
-    wr_s16b(player_ptr->lightspeed);
-    wr_s16b(player_ptr->tsubureru);
-    wr_s16b(player_ptr->magicdef);
-    wr_s16b(player_ptr->tim_res_nether);
-    wr_s16b(player_ptr->tim_res_lite);
-    wr_s16b(player_ptr->tim_res_dark);
-    wr_s16b(player_ptr->tim_res_fear);
-    wr_s16b(player_ptr->tim_res_time);
-    wr_byte((byte)player_ptr->mimic_form);
-    wr_s16b(player_ptr->tim_mimic);
-    wr_s16b(player_ptr->tim_sh_fire);
-    wr_s16b(player_ptr->tim_sh_holy);
-    wr_s16b(player_ptr->tim_eyeeye);
+    wr_s16b(creature.get_enchant_energy_need());
+    wr_s16b(static_cast<int16_t>(creature.get_recall_dungeon()));
+    wr_s16b(creature.get_infravision());
+    wr_byte((byte)creature.get_mimic_form());
 
-    wr_s16b(player_ptr->tim_reflect);
-    wr_s16b(player_ptr->multishadow);
-    wr_s16b(player_ptr->dustrobe);
-    wr_s16b(player_ptr->tim_emission);
-    wr_s16b(player_ptr->tim_exorcism);
-    wr_s16b(player_ptr->tim_imm_dark);
-
-    wr_s16b(player_ptr->patron);
-    wr_FlagGroup(player_ptr->muta, wr_byte);
-    wr_FlagGroup(player_ptr->trait, wr_byte);
+    wr_s16b(creature.get_patron());
+    wr_FlagGroup(creature.get_mutations(), wr_byte);
+    wr_FlagGroup(creature.get_traits(), wr_byte);
 
     // Save virtues in legacy format (8 entries)
     // First, collect virtues into arrays
     Virtue vir_types[8];
     int16_t vir_values[8];
     int idx = 0;
-    for (const auto &[vir_type, value] : player_ptr->virtues) {
+    for (const auto &[vir_type, value] : creature.virtues) {
         if (idx < 8) {
             vir_types[idx] = vir_type;
             vir_values[idx] = value;
@@ -279,27 +210,26 @@ void wr_player(PlayerType *player_ptr)
         wr_s16b(enum2i(vir_types[i]));
     }
 
-    wr_s32b(int32_t(player_ptr->incident.size()));
-    for (const auto &it : player_ptr->incident) {
+    wr_s32b(int32_t(creature.incident.size()));
+    for (const auto &it : creature.incident) {
         wr_s32b((int32_t)it.first);
         wr_s32b(it.second);
     }
 
     // Save incident_tree (string-keyed, tree-structured incidents)
-    wr_s32b(int32_t(player_ptr->incident_tree.size()));
-    for (const auto &it : player_ptr->incident_tree) {
+    wr_s32b(int32_t(creature.incident_tree.size()));
+    for (const auto &it : creature.incident_tree) {
         wr_string(it.first);
         wr_s32b(it.second);
     }
 
-    wr_s16b(player_ptr->ele_attack);
-    wr_u32b(player_ptr->special_attack);
-    wr_s16b(player_ptr->ele_immune);
-    wr_u32b(player_ptr->special_defense);
-    wr_byte(player_ptr->knowledge);
-    wr_bool(player_ptr->autopick_autoregister);
+    // ELE_ATTACK / ELE_IMMUNE は wr_creature_common() の全時限効果ダンプに集約済み
+    wr_u32b(creature.get_special_attack_flags());
+    wr_u32b(creature.get_special_defense_flags());
+    wr_byte(creature.get_knowledge());
+    wr_bool(creature.is_autopick_autoregister());
     wr_byte(0);
-    wr_byte((byte)player_ptr->action);
+    wr_byte((byte)creature.get_action());
     wr_byte(0);
     wr_bool(preserve_mode);
     wr_bool(system.is_awaiting_report_status());
@@ -317,23 +247,39 @@ void wr_player(PlayerType *player_ptr)
     wr_u32b(system.get_seed_town());
     wr_u16b(system.is_panic_save_executed() ? 1 : 0);
     wr_u16b(world.total_winner);
-    wr_u16b(world.noscore);
-    wr_bool(player_ptr->is_dead());
+    wr_u16b(InnerGameData::get_instance().get_no_score());
+    wr_bool(creature.is_dead());
     const auto &df = DungeonFeeling::get_instance();
     wr_byte(static_cast<uint8_t>(df.get_feeling()));
-    wr_s32b(player_ptr->current_floor_ptr->generated_turn);
+    wr_s32b(creature.get_floor()->generated_turn);
     wr_s32b(df.get_turns());
     wr_s32b(world.game_turn);
     wr_s32b(world.dungeon_turn);
     wr_s32b(world.arena_start_turn);
     wr_s16b(enum2i(world.today_mon));
     wr_s16b(world.knows_daily_bounty ? 1 : 0); // 現在bool型だが、かつてモンスター種族IDを保存していた仕様に合わせる
-    wr_s16b(player_ptr->riding);
-    wr_s16b(player_ptr->floor_id);
+    wr_s16b(creature.get_riding());
+    wr_s16b(creature.floor_id);
 
     /* Save temporary preserved pets (obsolated) */
     wr_s16b(0);
     wr_u32b(world.play_time.elapsed_sec());
-    wr_s32b(player_ptr->visit);
-    wr_u32b(player_ptr->count);
+
+    // 訪問済みの町情報。TownRecords を旧来の creature.visit ビットマスク (u32) に変換して書き出す
+    // (bit N = TownId N)。セーブフォーマット互換のため形式は不変。
+    uint32_t visit_flags = 0;
+    const auto visited_towns = TownRecords::get_instance().get_ids();
+    for (auto i = 0; i < enum2i(TownId::MAX); i++) {
+        if (visited_towns.has(i2enum<TownId>(i))) {
+            visit_flags |= 1U << i;
+        }
+    }
+
+    wr_s32b(visit_flags);
+    wr_u32b(creature.get_count());
+
+    // [モンスタープレイヤー] プレイヤーがモンスター化している場合の種族 ID を保存する。
+    // 通常プレイヤーは PLAYER (= 0)。セーブファイルバージョン 48 以降。
+    wr_s16b(enum2i(creature.get_r_idx()));
+    wr_s16b(enum2i(creature.get_ap_r_idx()));
 }

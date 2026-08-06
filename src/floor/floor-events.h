@@ -1,8 +1,9 @@
 #pragma once
 
 class PlayerType;
+class CreatureEntity;
 class FloorType;
-void day_break(PlayerType *player_ptr);
-void night_falls(PlayerType *player_ptr);
-void update_dungeon_feeling(PlayerType *player_ptr);
-void glow_deep_lava_and_bldg(PlayerType *player_ptr);
+void day_break(CreatureEntity &creature);
+void night_falls(CreatureEntity &creature);
+void update_dungeon_feeling(CreatureEntity &creature);
+void glow_deep_lava_and_bldg(CreatureEntity &creature);

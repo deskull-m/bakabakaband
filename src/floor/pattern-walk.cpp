@@ -18,14 +18,16 @@
 #include "spell/spells-status.h"
 #include "status/bad-status-setter.h"
 #include "status/experience.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
+#include "system/dungeon/quest-definition.h"
 #include "system/enums/dungeon/dungeon-id.h"
+#include "system/enums/terrain/pattern-tile-type.h"
 #include "system/enums/terrain/terrain-tag.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
-#include "system/player-type-definition.h"
 #include "system/terrain/terrain-definition.h"
-#include "timed-effect/timed-effects.h"
+#include "util/enum-converter.h"
 #include "view/display-messages.h"
 #include "world/world-movement-processor.h"
 #include "world/world.h"
@@ -33,13 +35,13 @@
 
 /*!
  * @brief パターン終点到達時のテレポート処理を行う
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
-void pattern_teleport(PlayerType *player_ptr)
+void pattern_teleport(CreatureEntity &creature)
 {
     auto min_level = 0;
     auto max_level = 99;
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *creature.get_floor();
     auto current_level = static_cast<short>(floor.dun_level);
     if (input_check(_("他の階にテレポートしますか？", "Teleport level? "))) {
         if (ironman_downward) {
@@ -66,7 +68,7 @@ void pattern_teleport(PlayerType *player_ptr)
 
         command_arg = *input_level;
     } else if (input_check(_("通常テレポート？", "Normal teleport? "))) {
-        teleport_player(player_ptr, 200, TELEPORT_SPONTANEOUS);
+        teleport_player(creature, 200, TELEPORT_SPONTANEOUS);
         return;
     } else {
         return;
@@ -74,17 +76,17 @@ void pattern_teleport(PlayerType *player_ptr)
 
     msg_format(_("%d 階にテレポートしました。", "You teleport to dungeon level %d."), command_arg);
     if (autosave_l) {
-        do_cmd_save_game(player_ptr, true);
+        do_cmd_save_game(creature, true);
     }
 
     floor.dun_level = command_arg;
-    leave_quest_check(player_ptr);
+    leave_quest_check(creature);
     if (record_stair) {
         exe_write_diary(floor, DiaryKind::PAT_TELE, 0);
     }
 
-    player_ptr->current_floor_ptr->quest_number = QuestId::NONE;
-    PlayerEnergy(player_ptr).reset_player_turn();
+    creature.get_floor()->quest_number = QuestId::NONE;
+    PlayerEnergy(creature).reset_player_turn();
 
     /*
      * Clear all saved floors
@@ -92,37 +94,37 @@ void pattern_teleport(PlayerType *player_ptr)
      */
     FloorChangeModesStore::get_instace()->set(FloorChangeMode::FIRST_FLOOR);
 
-    check_random_quest_auto_failure(player_ptr);
+    check_random_quest_auto_failure(creature);
 
-    player_ptr->leaving = true;
+    creature.set_leaving(true);
 }
 
 /*!
  * @brief 各種パターン地形上の特別な処理 / Returns TRUE if we are on the Pattern...
  * @return 実際にパターン地形上にプレイヤーが居た場合はTRUEを返す。
  */
-bool pattern_effect(PlayerType *player_ptr)
+bool pattern_effect(CreatureEntity &creature)
 {
-    const auto &floor = *player_ptr->current_floor_ptr;
-    const auto p_pos = player_ptr->get_position();
+    const auto &floor = *creature.get_floor();
+    const auto p_pos = creature.get_position();
     const auto &grid = floor.get_grid(p_pos);
     if (!grid.has(TerrainCharacteristics::PATTERN)) {
         return false;
     }
 
-    const auto is_cut = player_ptr->effects()->cut().is_cut();
-    if ((PlayerRace(player_ptr).equals(PlayerRaceType::AMBERITE)) && is_cut && one_in_(10)) {
-        wreck_the_pattern(player_ptr);
+    const auto is_cut = creature.is_cut();
+    if ((CreatureRace(&creature).equals(PlayerRaceType::AMBERITE)) && is_cut && one_in_(10)) {
+        wreck_the_pattern(creature);
     }
 
-    switch (grid.get_terrain().subtype) {
-    case PATTERN_TILE_END:
-        (void)BadStatusSetter(player_ptr).hallucination(0);
-        (void)restore_all_status(player_ptr);
-        (void)restore_level(static_cast<CreatureEntity &>(*player_ptr));
-        (void)cure_critical_wounds(player_ptr, 1000);
+    switch (grid.get_terrain().pattern_tile_type) {
+    case PatternTileType::END:
+        (void)BadStatusSetter(creature).hallucination(0);
+        (void)restore_all_status(creature);
+        (void)restore_level(creature);
+        (void)cure_critical_wounds(creature, 1000);
 
-        set_terrain_id_to_grid(player_ptr, player_ptr->get_position(), TerrainTag::PATTERN_OLD);
+        set_terrain_id_to_grid(creature, creature.get_position(), TerrainTag::PATTERN_OLD);
         msg_print(_("「パターン」のこの部分は他の部分より強力でないようだ。", "This section of the Pattern looks less powerful."));
 
         /*
@@ -133,25 +135,25 @@ bool pattern_effect(PlayerType *player_ptr)
          */
         break;
 
-    case PATTERN_TILE_OLD:
+    case PatternTileType::OLD:
         /* No effect */
         break;
 
-    case PATTERN_TILE_TELEPORT:
-        pattern_teleport(player_ptr);
+    case PatternTileType::TELEPORT:
+        pattern_teleport(creature);
         break;
 
-    case PATTERN_TILE_WRECKED:
-        if (!is_invuln(player_ptr)) {
-            take_hit(player_ptr, DAMAGE_NOESCAPE, 200, _("壊れた「パターン」を歩いたダメージ", "walking the corrupted Pattern"));
+    case PatternTileType::WRECKED:
+        if (!creature.is_invulnerable()) {
+            take_hit(creature, DAMAGE_NOESCAPE, 200, _("壊れた「パターン」を歩いたダメージ", "walking the corrupted Pattern"));
         }
         break;
 
     default:
-        if (PlayerRace(player_ptr).equals(PlayerRaceType::AMBERITE) && !one_in_(2)) {
+        if (CreatureRace(&creature).equals(PlayerRaceType::AMBERITE) && !one_in_(2)) {
             return true;
-        } else if (!is_invuln(player_ptr)) {
-            take_hit(player_ptr, DAMAGE_NOESCAPE, Dice::roll(1, 3), _("「パターン」を歩いたダメージ", "walking the Pattern"));
+        } else if (!creature.is_invulnerable()) {
+            take_hit(creature, DAMAGE_NOESCAPE, Dice::roll(1, 3), _("「パターン」を歩いたダメージ", "walking the Pattern"));
         }
         break;
     }
@@ -161,14 +163,14 @@ bool pattern_effect(PlayerType *player_ptr)
 
 /*!
  * @brief パターンによる移動制限処理
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param pos プレイヤーの移動先座標
  * @return 移動処理が可能である場合（可能な場合に選択した場合）TRUEを返す。
  */
-bool pattern_seq(PlayerType *player_ptr, const Pos2D &pos)
+bool pattern_seq(CreatureEntity &creature, const Pos2D &pos)
 {
-    const auto &floor = *player_ptr->current_floor_ptr;
-    const auto &grid_current = floor.get_grid(player_ptr->get_position());
+    const auto &floor = *creature.get_floor();
+    const auto &grid_current = floor.get_grid(creature.get_position());
     const auto &grid_new = floor.get_grid(pos);
     const auto &terrain_current = grid_current.get_terrain();
     const auto &terrain_new = grid_new.get_terrain();
@@ -178,13 +180,12 @@ bool pattern_seq(PlayerType *player_ptr, const Pos2D &pos)
         return true;
     }
 
-    int pattern_type_cur = is_pattern_tile_cur ? terrain_current.subtype : NOT_PATTERN_TILE;
-    int pattern_type_new = is_pattern_tile_new ? terrain_new.subtype : NOT_PATTERN_TILE;
-    if (pattern_type_new == PATTERN_TILE_START) {
-        const auto effects = player_ptr->effects();
-        const auto is_stunned = effects->stun().is_stunned();
-        const auto is_confused = effects->confusion().is_confused();
-        const auto is_hallucinated = effects->hallucination().is_hallucinated();
+    auto pattern_type_cur = is_pattern_tile_cur ? terrain_current.pattern_tile_type : PatternTileType::NOT_PATTERN;
+    auto pattern_type_new = is_pattern_tile_new ? terrain_new.pattern_tile_type : PatternTileType::NOT_PATTERN;
+    if (pattern_type_new == PatternTileType::START) {
+        const auto is_stunned = creature.is_stunned();
+        const auto is_confused = creature.is_confused();
+        const auto is_hallucinated = creature.is_hallucinated();
         if (is_pattern_tile_cur || is_confused || is_stunned || is_hallucinated) {
             return true;
         }
@@ -193,7 +194,7 @@ bool pattern_seq(PlayerType *player_ptr, const Pos2D &pos)
             "If you start walking the Pattern, you must walk the whole way. Ok? "));
     }
 
-    if ((pattern_type_new == PATTERN_TILE_OLD) || (pattern_type_new == PATTERN_TILE_END) || (pattern_type_new == PATTERN_TILE_WRECKED)) {
+    if ((pattern_type_new == PatternTileType::OLD) || (pattern_type_new == PatternTileType::END) || (pattern_type_new == PatternTileType::WRECKED)) {
         if (is_pattern_tile_cur) {
             return true;
         }
@@ -202,11 +203,11 @@ bool pattern_seq(PlayerType *player_ptr, const Pos2D &pos)
         return false;
     }
 
-    if ((pattern_type_new == PATTERN_TILE_TELEPORT) || (pattern_type_cur == PATTERN_TILE_TELEPORT)) {
+    if ((pattern_type_new == PatternTileType::TELEPORT) || (pattern_type_cur == PatternTileType::TELEPORT)) {
         return true;
     }
 
-    if (pattern_type_cur == PATTERN_TILE_START) {
+    if (pattern_type_cur == PatternTileType::START) {
         if (is_pattern_tile_new) {
             return true;
         }
@@ -215,7 +216,7 @@ bool pattern_seq(PlayerType *player_ptr, const Pos2D &pos)
         return false;
     }
 
-    if ((pattern_type_cur == PATTERN_TILE_OLD) || (pattern_type_cur == PATTERN_TILE_END) || (pattern_type_cur == PATTERN_TILE_WRECKED)) {
+    if ((pattern_type_cur == PatternTileType::OLD) || (pattern_type_cur == PatternTileType::END) || (pattern_type_cur == PatternTileType::WRECKED)) {
         if (is_pattern_tile_new) {
             return true;
         }
@@ -229,23 +230,23 @@ bool pattern_seq(PlayerType *player_ptr, const Pos2D &pos)
         return false;
     }
 
-    byte ok_move = PATTERN_TILE_START;
+    auto ok_move = PatternTileType::START;
     switch (pattern_type_cur) {
-    case PATTERN_TILE_1:
-        ok_move = PATTERN_TILE_2;
+    case PatternTileType::TILE_1:
+        ok_move = PatternTileType::TILE_2;
         break;
-    case PATTERN_TILE_2:
-        ok_move = PATTERN_TILE_3;
+    case PatternTileType::TILE_2:
+        ok_move = PatternTileType::TILE_3;
         break;
-    case PATTERN_TILE_3:
-        ok_move = PATTERN_TILE_4;
+    case PatternTileType::TILE_3:
+        ok_move = PatternTileType::TILE_4;
         break;
-    case PATTERN_TILE_4:
-        ok_move = PATTERN_TILE_1;
+    case PatternTileType::TILE_4:
+        ok_move = PatternTileType::TILE_1;
         break;
     default:
         if (AngbandWorld::get_instance().wizard) {
-            msg_format(_("おかしなパターン歩行、%d。", "Funny Pattern walking, %d."), pattern_type_cur);
+            msg_format(_("おかしなパターン歩行、%d。", "Funny Pattern walking, %d."), enum2i(pattern_type_cur));
         }
         return true;
     }

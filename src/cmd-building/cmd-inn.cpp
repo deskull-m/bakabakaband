@@ -13,41 +13,42 @@
 #include "player-info/race-types.h"
 #include "player/digestion-processor.h"
 #include "player/eldritch-horror.h"
+#include "rumor/rumor-rarity.h"
+#include "rumor/rumor-service.h"
 #include "status/bad-status-setter.h"
 #include "store/rumor.h"
+#include "system/creature-entity.h"
+#include "system/creature-timed-effect-types.h"
 #include "system/inner-game-data.h"
-#include "system/player-type-definition.h"
-#include "timed-effect/timed-effects.h"
 #include "view/display-messages.h"
 #include "world/world-collapsion.h"
 #include "world/world.h"
 
 /*!
  * @brief 宿屋で食事を摂る
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return 満腹ならFALSE、そうでないならTRUE
  */
-static bool buy_food(PlayerType *player_ptr)
+static bool buy_food(CreatureEntity &creature)
 {
-    if (player_ptr->food >= PY_FOOD_FULL) {
+    if (creature.get_food() >= PY_FOOD_FULL) {
         msg_print(_("今は満腹だ。", "You are full now."));
         return false;
     }
 
     msg_print(_("バーテンはいくらかの食べ物とビールをくれた。", "The barkeep gives you some gruel and a beer."));
-    (void)set_food(player_ptr, PY_FOOD_MAX - 1);
+    (void)set_food(creature, PY_FOOD_MAX - 1);
     return true;
 }
 
 /*!
  * @brief 健康体しか宿屋に泊めない処理
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return 毒でも切り傷でもないならTRUE、そうでないならFALSE
  */
-static bool is_healthy_stay(PlayerType *player_ptr)
+static bool is_healthy_stay(CreatureEntity &creature)
 {
-    const auto effects = player_ptr->effects();
-    if (!effects->poison().is_poisoned() && !effects->cut().is_cut()) {
+    if (!creature.is_poisoned() && !creature.is_cut()) {
         return true;
     }
 
@@ -57,35 +58,35 @@ static bool is_healthy_stay(PlayerType *player_ptr)
     return false;
 }
 
-static bool is_player_undead(PlayerType *player_ptr)
+static bool is_player_undead(CreatureEntity &creature)
 {
-    return PlayerRace(player_ptr, true).life() == PlayerRaceLifeType::UNDEAD;
+    return CreatureRace(&creature, true).life() == PlayerRaceLifeType::UNDEAD;
 }
 
 /*!
  * @brief 宿屋に泊まったことを日記に残す
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param prev_hour 宿屋に入った直後のゲーム内時刻
  */
-static void write_diary_stay_inn(PlayerType *player_ptr, int prev_hour)
+static void write_diary_stay_inn(CreatureEntity &creature, int prev_hour)
 {
-    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     if ((prev_hour >= 6) && (prev_hour < 18)) {
-        const auto stay_message = _(is_player_undead(player_ptr) ? "宿屋に泊まった。" : "日が暮れるまで宿屋で過ごした。", "stayed during the day at the inn.");
+        const auto stay_message = _(is_player_undead(creature) ? "宿屋に泊まった。" : "日が暮れるまで宿屋で過ごした。", "stayed during the day at the inn.");
         exe_write_diary(floor, DiaryKind::DESCRIPTION, 0, stay_message);
         return;
     }
 
-    const auto stay_message = _(is_player_undead(player_ptr) ? "夜が明けるまで宿屋で過ごした。" : "宿屋に泊まった。", "stayed overnight at the inn.");
+    const auto stay_message = _(is_player_undead(creature) ? "夜が明けるまで宿屋で過ごした。" : "宿屋に泊まった。", "stayed overnight at the inn.");
     exe_write_diary(floor, DiaryKind::DESCRIPTION, 0, stay_message);
 }
 
 /*!
  * @brief 悪夢モードなら悪夢を見せる
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return 悪夢モードならばTRUE
  */
-static bool has_a_nightmare(PlayerType *player_ptr)
+static bool has_a_nightmare(CreatureEntity &creature)
 {
     if (!ironman_nightmare) {
         return false;
@@ -94,38 +95,38 @@ static bool has_a_nightmare(PlayerType *player_ptr)
     msg_print(_("眠りに就くと恐ろしい光景が心をよぎった。", "Horrible visions flit through your mind as you sleep."));
 
     while (true) {
-        sanity_blast(player_ptr);
+        sanity_blast(creature);
         if (!one_in_(3)) {
             break;
         }
     }
 
     msg_print(_("あなたは絶叫して目を覚ました。", "You awake screaming."));
-    exe_write_diary(*player_ptr->current_floor_ptr, DiaryKind::DESCRIPTION, 0, _("悪夢にうなされてよく眠れなかった。", "had a nightmare."));
+    exe_write_diary(*creature.get_floor(), DiaryKind::DESCRIPTION, 0, _("悪夢にうなされてよく眠れなかった。", "had a nightmare."));
     return true;
 }
 
 /*!
  * @brief 体調を元に戻す
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
-static void back_to_health(PlayerType *player_ptr)
+static void back_to_health(CreatureEntity &creature)
 {
-    BadStatusSetter bss(player_ptr);
+    BadStatusSetter bss(creature);
     (void)bss.set_blindness(0);
     (void)bss.set_confusion(0);
-    player_ptr->effects()->stun().reset();
-    player_ptr->hp = player_ptr->maxhp;
-    player_ptr->csp = player_ptr->msp;
+    creature.set_timed_effect(CreatureTimedEffect::STUN, 0);
+    creature.hp = creature.maxhp;
+    creature.set_current_mp(creature.get_max_mp());
 }
 
 /*!
  * @brief 魔道具術師の取り込んだ魔法をすべて完全に回復した状態にする
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
-static void charge_magic_eating_energy(PlayerType *player_ptr)
+static void charge_magic_eating_energy(CreatureEntity &creature)
 {
-    auto magic_eater_data = PlayerClass(player_ptr).get_specific_data<MagicEaterDataList>();
+    auto magic_eater_data = CreatureClass(creature).get_specific_data<MagicEaterDataList>();
     if (!magic_eater_data) {
         return;
     }
@@ -142,91 +143,102 @@ static void charge_magic_eating_energy(PlayerType *player_ptr)
 
 /*!
  * @brief リフレッシュ結果を画面に表示する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param prev_hour 宿屋に入った直後のゲーム内時刻
  */
-static void display_stay_result(PlayerType *player_ptr, int prev_hour)
+static void display_stay_result(CreatureEntity &creature, int prev_hour)
 {
-    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     if ((prev_hour >= 6) && (prev_hour < 18)) {
 #if JP
         char refresh_message_jp[50];
-        sprintf(refresh_message_jp, "%s%s%s", "あなたはリフレッシュして目覚め、", is_player_undead(player_ptr) ? "夜" : "夕方", "を迎えた。");
+        sprintf(refresh_message_jp, "%s%s%s", "あなたはリフレッシュして目覚め、", is_player_undead(creature) ? "夜" : "夕方", "を迎えた。");
         msg_print(refresh_message_jp);
 #else
-        msg_format("You awake refreshed for the %s.", is_player_undead(player_ptr) ? "evening" : "twilight");
+        msg_format("You awake refreshed for the %s.", is_player_undead(creature) ? "evening" : "twilight");
 #endif
-        const auto awake_message = _(is_player_undead(player_ptr) ? "すがすがしい夜を迎えた。" : "夕方を迎えた。", "awoke refreshed.");
+        const auto awake_message = _(is_player_undead(creature) ? "すがすがしい夜を迎えた。" : "夕方を迎えた。", "awoke refreshed.");
         exe_write_diary(floor, DiaryKind::DESCRIPTION, 0, awake_message);
         return;
     }
 
     msg_print(_("あなたはリフレッシュして目覚め、新たな日を迎えた。", "You awake refreshed for the new day."));
-    const auto awake_message = _(is_player_undead(player_ptr) ? "すがすがしい朝を迎えた。" : "朝を迎えた。", "awoke refreshed.");
+    const auto awake_message = _(is_player_undead(creature) ? "すがすがしい朝を迎えた。" : "朝を迎えた。", "awoke refreshed.");
     exe_write_diary(floor, DiaryKind::DESCRIPTION, 0, awake_message);
 }
 
 /*!
  * @brief 宿屋への宿泊実行処理
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return 泊まれたらTRUE
  */
-static bool stay_inn(PlayerType *player_ptr)
+static bool stay_inn(CreatureEntity &creature)
 {
-    if (!is_healthy_stay(player_ptr)) {
+    if (!is_healthy_stay(creature)) {
         return false;
     }
 
     auto &world = AngbandWorld::get_instance();
     const auto &[prev_day, prev_hour, prev_min] = world.extract_date_time(InnerGameData::get_instance().get_start_race());
-    write_diary_stay_inn(player_ptr, prev_hour);
+    write_diary_stay_inn(creature, prev_hour);
     world.pass_game_turn_by_stay();
-    wc_ptr->plus_timed_world_collapsion(&world, player_ptr, 25000);
-    prevent_turn_overflow(player_ptr);
+    wc_ptr->plus_timed_world_collapsion(&world, creature, 25000);
+    prevent_turn_overflow(creature);
     if ((prev_hour >= 18) && (prev_hour <= 23)) {
-        determine_daily_bounty(player_ptr);
-        exe_write_diary(*player_ptr->current_floor_ptr, DiaryKind::DIALY, 0);
+        determine_daily_bounty(creature);
+        exe_write_diary(*creature.get_floor(), DiaryKind::DIALY, 0);
     }
 
-    player_ptr->hp = player_ptr->maxhp;
-    if (has_a_nightmare(player_ptr)) {
+    creature.hp = creature.maxhp;
+    if (has_a_nightmare(creature)) {
         return true;
     }
 
-    back_to_health(player_ptr);
-    charge_magic_eating_energy(player_ptr);
+    back_to_health(creature);
+    charge_magic_eating_energy(creature);
 
-    display_stay_result(player_ptr, prev_hour);
+    display_stay_result(creature, prev_hour);
 
-    player_ptr->plus_incident_tree("STAY_INN", 1);
+    creature.plus_incident_tree("STAY_INN", 1);
 
     return true;
 }
 
 /*!
  * @brief 宿屋を利用する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param cmd 宿屋の利用施設ID
+ * @param cost 噂を聞くのに払った金額
  * @return 施設の利用が実際に行われたらTRUE
- * @details inn commands
- * Note that resting for the night was a perfect way to avoid player
- * ghosts in the town *if* you could only make it to the inn in time (-:
- * Now that the ghosts are temporarily disabled in 2.8.X, this function
- * will not be that useful.  I will keep it in the hopes the player
- * ghost code does become a reality again. Does help to avoid filthy urchins.
- * Resting at night is also a quick way to restock stores -KMW-
  * @todo 悪夢を見る前後に全回復しているが、何か意図がある？
  */
-bool inn_comm(PlayerType *player_ptr, int cmd)
+bool inn_comm(CreatureEntity &creature, int cmd, int cost)
 {
     switch (cmd) {
     case BACT_FOOD:
-        return buy_food(player_ptr);
+        return buy_food(creature);
     case BACT_REST:
-        return stay_inn(player_ptr);
-    case BACT_RUMORS:
-        display_rumor(player_ptr, true);
+        return stay_inn(creature);
+    case BACT_RUMORS: {
+        constexpr auto high_rarity_rumor_threshold = 100;
+        if (cost >= high_rarity_rumor_threshold) {
+            const auto &rumor = RumorService::pick_rumor(RumorRarity::HIGH);
+            display_selected_rumor(rumor);
+            return true;
+        }
+
+        constexpr auto medium_rarity_rumor_threshold = 10;
+        if (cost >= medium_rarity_rumor_threshold) {
+            const auto &rumor = RumorService::pick_rumor(RumorRarity::MEDIUM);
+            display_selected_rumor(rumor);
+            return true;
+        }
+
+        // V3.2.0.4時点で1～9$を取られる宿屋の噂はなく、デッドコード.
+        const auto &rumor = RumorService::pick_rumor(RumorRarity::LOW);
+        display_selected_rumor(rumor);
         return true;
+    }
     default:
         //!< @todo リファクタリング前のコードもTRUEだった、FALSEにすべきでは.
         return true;

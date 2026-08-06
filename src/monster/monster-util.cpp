@@ -2,6 +2,7 @@
 #include "dungeon/dungeon-flag-types.h"
 #include "dungeon/quest.h"
 #include "game-option/cheat-options.h"
+#include "grid/grid.h"
 #include "monster-floor/place-monster-types.h"
 #include "monster-race/monster-kind-mask.h"
 #include "monster-race/monster-race-hook.h"
@@ -9,11 +10,14 @@
 #include "monster-race/race-flags-resistance.h"
 #include "monster-race/race-misc-flags.h"
 #include "monster/monster-info.h"
+#include "monster/monster-update.h"
 #include "mspell/summon-checker.h"
 #include "spell/summon-types.h"
 #include "system/angband-exceptions.h"
 #include "system/angband-system.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
+#include "system/dungeon/quest-definition.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/enums/terrain/wilderness-terrain.h"
 #include "system/floor/floor-info.h"
@@ -22,8 +26,6 @@
 #include "system/monrace/monrace-allocation.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/monster-entity.h"
-#include "system/player-type-definition.h"
 #include "system/services/dungeon-monrace-service.h"
 #include "system/terrain/terrain-definition.h"
 #include "util/bit-flags-calculator.h"
@@ -108,7 +110,7 @@ static bool restrict_monster_to_dungeon(const DungeonDefinition &dungeon, int fl
         }
     }
 
-    if (dungeon.special_div >= 64) {
+    if (dungeon.normal_monster_rate >= 100) {
         return true;
     }
 
@@ -117,6 +119,8 @@ static bool restrict_monster_to_dungeon(const DungeonDefinition &dungeon, int fl
     }
 
     switch (dungeon.mode) {
+    case DungeonMode::NONE:
+        return true;
     case DungeonMode::AND:
     case DungeonMode::NAND: {
         std::vector<bool> is_possible = {
@@ -164,11 +168,11 @@ static bool restrict_monster_to_dungeon(const DungeonDefinition &dungeon, int fl
     return true;
 }
 
-static bool do_hook(PlayerType *player_ptr, MonraceHook hook, MonraceId monrace_id)
+static bool do_hook(CreatureEntity &creature, MonraceHook hook, MonraceId monrace_id)
 {
     const auto &monraces = MonraceList::get_instance();
     const auto &monrace = monraces.get_monrace(monrace_id);
-    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto is_suitable_for_dungeon = !floor.is_underground() || DungeonMonraceService::is_suitable_for_dungeon(floor.dungeon_id, monrace_id);
     switch (hook) {
     case MonraceHook::NONE:
@@ -195,7 +199,7 @@ static bool do_hook(PlayerType *player_ptr, MonraceHook hook, MonraceId monrace_
     case MonraceHook::ARENA:
         return monrace.can_entry_arena();
     case MonraceHook::NIGHTMARE:
-        return monrace.is_suitable_for_nightmare(player_ptr->level);
+        return monrace.is_suitable_for_nightmare(creature.get_level());
     case MonraceHook::HUMAN:
         return monrace.is_eatable_human();
     case MonraceHook::GLASS:
@@ -208,7 +212,7 @@ static bool do_hook(PlayerType *player_ptr, MonraceHook hook, MonraceId monrace_
         }
 
         const auto hook_tanuki = floor.get_monrace_hook();
-        return do_hook(player_ptr, hook_tanuki, monrace_id);
+        return do_hook(creature, hook_tanuki, monrace_id);
     }
     case MonraceHook::FISHING:
         return monrace.is_catchable_for_fishing();
@@ -243,7 +247,7 @@ static bool do_hook(PlayerType *player_ptr, MonraceHook hook, MonraceId monrace_
     case MonraceHook::GIANT:
         return is_suitable_for_dungeon && monrace.is_suitable_for_giant_pit();
     case MonraceHook::DRAGON:
-        return vault_aux_dragon(player_ptr, monrace_id);
+        return vault_aux_dragon(creature, monrace_id);
     case MonraceHook::DEMON:
         return is_suitable_for_dungeon && monrace.is_suitable_for_demon_pit();
     case MonraceHook::DARK_ELF:
@@ -259,7 +263,7 @@ static bool do_hook(PlayerType *player_ptr, MonraceHook hook, MonraceId monrace_
 
 /*!
  * @brief モンスター生成テーブルの重み修正
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param hook1 生成制約1
  * @param hook2 生成制約2
  * @param summon_specific_type summon_specific によるものの場合、召喚種別を指定する
@@ -267,9 +271,9 @@ static bool do_hook(PlayerType *player_ptr, MonraceHook hook, MonraceId monrace_
  *
  * get_mon_num() を呼ぶ前に get_mon_num_prep() 系関数のいずれかを呼ぶこと。
  */
-void get_mon_num_prep_enum(PlayerType *player_ptr, MonraceHook hook1, MonraceHookTerrain hook2)
+void get_mon_num_prep_enum(CreatureEntity &creature, MonraceHook hook1, MonraceHookTerrain hook2)
 {
-    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto dungeon_level = floor.dun_level;
     const auto &system = AngbandSystem::get_instance();
     auto &table = MonraceAllocationTable::get_instance();
@@ -282,7 +286,7 @@ void get_mon_num_prep_enum(PlayerType *player_ptr, MonraceHook hook1, MonraceHoo
             continue;
         }
 
-        if (!do_hook(player_ptr, hook1, monrace_id)) {
+        if (!do_hook(creature, hook1, monrace_id)) {
             continue;
         }
 
@@ -308,14 +312,14 @@ void get_mon_num_prep_enum(PlayerType *player_ptr, MonraceHook hook1, MonraceHoo
         const auto in_random_quest = floor.is_in_quest() && !QuestType::is_fixed(floor.quest_number);
         const auto cond = !system.is_phase_out() && floor.is_underground() && !in_random_quest;
         if (cond && !restrict_monster_to_dungeon(dungeon, dungeon_level, monrace_id)) {
-            entry.update_prob2(dungeon.special_div);
+            entry.update_prob2(dungeon.normal_monster_rate);
         }
 
         mfdi.update(entry.prob2, entry.level);
 
         // フロアの現在所属アライアンスに応じた生成率修正
-        if (player_ptr->current_floor_ptr->allianceID != AllianceType::NONE) {
-            if (entry.is_same_alliance(player_ptr->current_floor_ptr->allianceID)) {
+        if (creature.get_floor()->allianceID != AllianceType::NONE) {
+            if (entry.is_same_alliance(creature.get_floor()->allianceID)) {
                 entry.prob2 *= ALLIANCE_GENERATE_RATE;
             } else {
                 entry.prob2 /= ALLIANCE_GENERATE_RATE;
@@ -338,11 +342,11 @@ void get_mon_num_prep_enum(PlayerType *player_ptr, MonraceHook hook1, MonraceHoo
  * @param escorted_m_idx 護衛されるモンスターのフロア内インデックス
  * @return 護衛にできるならばtrue
  */
-static bool place_monster_can_escort(PlayerType *player_ptr, MonraceId monrace_id, MonraceId escorted_monrace_id, short escorted_m_idx)
+static bool place_monster_can_escort(CreatureEntity &creature, MonraceId monrace_id, MonraceId escorted_monrace_id, short escorted_m_idx)
 {
-    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto dungeon_id = floor.dungeon_id;
-    const auto &escorted_monster = floor.m_list[escorted_m_idx];
+    const auto &escorted_monster = floor.get_monster(escorted_m_idx);
     const auto &monraces = MonraceList::get_instance();
     const auto &escorted_monrace = monraces.get_monrace(escorted_monrace_id);
     const auto &monrace = monraces.get_monrace(monrace_id);
@@ -373,7 +377,7 @@ static bool place_monster_can_escort(PlayerType *player_ptr, MonraceId monrace_i
     }
 
     if (escorted_monrace.behavior_flags.has(MonsterBehaviorType::FRIENDLY)) {
-        if (monster_has_hostile_to_player(player_ptr, 1, -1, monrace)) {
+        if (monster_has_hostile_to_player(creature, 1, -1, monrace)) {
             return false;
         }
     }
@@ -387,14 +391,14 @@ static bool place_monster_can_escort(PlayerType *player_ptr, MonraceId monrace_i
 
 /*!
  * @brief モンスター生成テーブルの重み修正
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param escorted_monrace_id 護衛されるモンスターの種族ID
  * @param m_idx 護衛されるモンスターのフロア内インデックス
  * @param hook 生成の地形条件
  */
-void get_mon_num_prep_escort(PlayerType *player_ptr, MonraceId escorted_monrace_id, short m_idx, MonraceHookTerrain hook)
+void get_mon_num_prep_escort(CreatureEntity &creature, MonraceId escorted_monrace_id, short m_idx, MonraceHookTerrain hook)
 {
-    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto dungeon_level = floor.dun_level;
     const auto &system = AngbandSystem::get_instance();
     auto &table = MonraceAllocationTable::get_instance();
@@ -407,7 +411,7 @@ void get_mon_num_prep_escort(PlayerType *player_ptr, MonraceId escorted_monrace_
             continue;
         }
 
-        if (!place_monster_can_escort(player_ptr, monrace_id, escorted_monrace_id, m_idx)) {
+        if (!place_monster_can_escort(creature, monrace_id, escorted_monrace_id, m_idx)) {
             continue;
         }
 
@@ -429,7 +433,7 @@ void get_mon_num_prep_escort(PlayerType *player_ptr, MonraceId escorted_monrace_
         const auto in_random_quest = floor.is_in_quest() && !QuestType::is_fixed(floor.quest_number);
         const auto cond = !system.is_phase_out() && floor.is_underground() && !in_random_quest;
         if (cond && !restrict_monster_to_dungeon(dungeon, dungeon_level, monrace_id)) {
-            entry.update_prob2(dungeon.special_div);
+            entry.update_prob2(dungeon.normal_monster_rate);
         }
 
         mfdi.update(entry.prob2, entry.level);
@@ -448,21 +452,21 @@ void get_mon_num_prep_escort(PlayerType *player_ptr, MonraceId escorted_monrace_
  * @param summoner_m_idx モンスターの召喚による場合、召喚者のモンスターID
  * @return 召喚対象にできるならばTRUE
  */
-static bool summon_specific_okay(PlayerType *player_ptr, MonraceId monrace_id, const SummonCondition &condition)
+static bool summon_specific_okay(CreatureEntity &creature, MonraceId monrace_id, const SummonCondition &condition)
 {
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *creature.get_floor();
     if (floor.is_underground() && !DungeonMonraceService::is_suitable_for_dungeon(floor.dungeon_id, monrace_id)) {
         return false;
     }
 
     const auto &monrace = MonraceList::get_instance().get_monrace(monrace_id);
     if (condition.summoner_m_idx) {
-        const auto &monster = floor.m_list[*condition.summoner_m_idx];
+        const auto &monster = floor.get_monster(*condition.summoner_m_idx);
         if (monster_has_hostile_to_other_monster(monster, monrace)) {
             return false;
         }
     } else if (any_bits(condition.mode, PM_FORCE_PET)) {
-        if (monster_has_hostile_to_player(player_ptr, 10, -10, monrace) && !one_in_(std::abs(player_ptr->alignment) / 2 + 1)) {
+        if (monster_has_hostile_to_player(creature, 10, -10, monrace) && !one_in_(std::abs(creature.alignment) / 2 + 1)) {
             return false;
         }
     }
@@ -476,7 +480,7 @@ static bool summon_specific_okay(PlayerType *player_ptr, MonraceId monrace_id, c
     }
 
     const auto is_like_unique = monrace.kind_flags.has(MonsterKindType::UNIQUE) || (monrace.population_flags.has(MonsterPopulationType::NAZGUL));
-    if (any_bits(condition.mode, PM_FORCE_PET) && is_like_unique && monster_has_hostile_to_player(player_ptr, 10, -10, monrace)) {
+    if (any_bits(condition.mode, PM_FORCE_PET) && is_like_unique && monster_has_hostile_to_player(creature, 10, -10, monrace)) {
         return false;
     }
 
@@ -485,21 +489,21 @@ static bool summon_specific_okay(PlayerType *player_ptr, MonraceId monrace_id, c
     }
 
     if (!condition.summoner_m_idx) {
-        return check_summon_specific(player_ptr, MonraceId::PLAYER, monrace_id, condition.type);
+        return check_summon_specific(creature, MonraceId::PLAYER, monrace_id, condition.type);
     }
 
-    const auto &monster = floor.m_list[*condition.summoner_m_idx];
-    return check_summon_specific(player_ptr, monster.r_idx, monrace_id, condition.type);
+    const auto &monster = floor.get_monster(*condition.summoner_m_idx);
+    return check_summon_specific(creature, monster.get_r_idx(), monrace_id, condition.type);
 }
 
 /*!
  * @brief モンスター生成テーブルの重み修正 (召喚用)
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param SummonCondition 生成制約
  */
-void get_mon_num_prep_summon(PlayerType *player_ptr, const SummonCondition &condition)
+void get_mon_num_prep_summon(CreatureEntity &creature, const SummonCondition &condition)
 {
-    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto dungeon_level = floor.dun_level;
     const auto &system = AngbandSystem::get_instance();
     auto &table = MonraceAllocationTable::get_instance();
@@ -512,7 +516,7 @@ void get_mon_num_prep_summon(PlayerType *player_ptr, const SummonCondition &cond
             continue;
         }
 
-        if (!summon_specific_okay(player_ptr, monrace_id, condition)) {
+        if (!summon_specific_okay(creature, monrace_id, condition)) {
             continue;
         }
 
@@ -534,7 +538,7 @@ void get_mon_num_prep_summon(PlayerType *player_ptr, const SummonCondition &cond
         const auto in_random_quest = floor.is_in_quest() && !QuestType::is_fixed(floor.quest_number);
         const auto cond = !system.is_phase_out() && floor.is_underground() && !in_random_quest;
         if (cond && !restrict_monster_to_dungeon(dungeon, dungeon_level, monrace_id, true)) {
-            entry.update_prob2(dungeon.special_div);
+            entry.update_prob2(dungeon.normal_monster_rate);
         }
 
         mfdi.update(entry.prob2, entry.level);
@@ -547,12 +551,12 @@ void get_mon_num_prep_summon(PlayerType *player_ptr, const SummonCondition &cond
 
 /*!
  * @brief カメレオンの王の変身対象となるモンスターかどうか判定する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param ct カメレオンの変身情報
  * @param monrace_id 変身後のモンスター種族ID
  * @return 対象にできるならtrueを返す
  */
-static bool monster_hook_chameleon_lord(PlayerType *player_ptr, const ChameleonTransformation &ct, MonraceId monrace_id)
+static bool monster_hook_chameleon_lord(CreatureEntity &creature, const ChameleonTransformation &ct, MonraceId monrace_id)
 {
     const auto &monraces = MonraceList::get_instance();
     const auto &monrace = monraces.get_monrace(monrace_id);
@@ -572,29 +576,29 @@ static bool monster_hook_chameleon_lord(PlayerType *player_ptr, const ChameleonT
         return false;
     }
 
-    if (!monster_can_cross_terrain(player_ptr, ct.terrain_id, monrace, 0)) {
+    if (!monster_can_cross_terrain(creature, ct.terrain_id, monrace, 0)) {
         return false;
     }
 
-    const auto &floor = *player_ptr->current_floor_ptr;
-    const auto &monster = floor.m_list[ct.m_idx];
+    const auto &floor = *creature.get_floor();
+    const auto &monster = floor.get_monster(ct.m_idx);
     const auto &old_monrace = monster.get_monrace();
     if (old_monrace.misc_flags.has_not(MonsterMiscType::CHAMELEON)) {
         return !monster_has_hostile_to_other_monster(monster, monrace);
     }
 
-    return !ct.summoner_m_idx || !monster_has_hostile_to_other_monster(floor.m_list[*ct.summoner_m_idx], monrace);
+    return !ct.summoner_m_idx || !monster_has_hostile_to_other_monster(floor.get_monster(*ct.summoner_m_idx), monrace);
 }
 
 /*!
  * @brief カメレオンの変身対象となるモンスターかどうか判定する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param ct カメレオンの変身情報
  * @param monrace_id 変身後のモンスター種族ID
  * @return 対象にできるならtrueを返す
  * @todo グローバル変数対策の上 monster_hook.cへ移す。
  */
-static bool monster_hook_chameleon(PlayerType *player_ptr, const ChameleonTransformation &ct, MonraceId monrace_id)
+static bool monster_hook_chameleon(CreatureEntity &creature, const ChameleonTransformation &ct, MonraceId monrace_id)
 {
     const auto &monrace = MonraceList::get_instance().get_monrace(monrace_id);
     if (monrace.kind_flags.has(MonsterKindType::UNIQUE)) {
@@ -613,12 +617,12 @@ static bool monster_hook_chameleon(PlayerType *player_ptr, const ChameleonTransf
         return false;
     }
 
-    if (!monster_can_cross_terrain(player_ptr, ct.terrain_id, monrace, 0)) {
+    if (!monster_can_cross_terrain(creature, ct.terrain_id, monrace, 0)) {
         return false;
     }
 
-    const auto &floor = *player_ptr->current_floor_ptr;
-    const auto &monster = floor.m_list[ct.m_idx];
+    const auto &floor = *creature.get_floor();
+    const auto &monster = floor.get_monster(ct.m_idx);
     const auto &old_monrace = monster.get_monrace();
     if (old_monrace.misc_flags.has_not(MonsterMiscType::CHAMELEON)) {
         if (old_monrace.kind_flags.has(MonsterKindType::GOOD) && monrace.kind_flags.has_not(MonsterKindType::GOOD)) {
@@ -632,23 +636,23 @@ static bool monster_hook_chameleon(PlayerType *player_ptr, const ChameleonTransf
         if (old_monrace.kind_flags.has_none_of(alignment_mask) && monrace.kind_flags.has_any_of(alignment_mask)) {
             return false;
         }
-    } else if (ct.summoner_m_idx && monster_has_hostile_to_other_monster(floor.m_list[*ct.summoner_m_idx], monrace)) {
+    } else if (ct.summoner_m_idx && monster_has_hostile_to_other_monster(floor.get_monster(*ct.summoner_m_idx), monrace)) {
         return false;
     }
 
     const auto hook = floor.get_monrace_hook();
-    return do_hook(player_ptr, hook, monrace_id);
+    return do_hook(creature, hook, monrace_id);
 }
 
 /*!
  * @brief モンスター生成テーブルの重み修正(カメレオン変身専用)
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param ct カメレオンの変身情報
  * @details get_mon_num() を呼ぶ前に get_mon_num_prep 系関数のいずれかを呼ぶこと。
  */
-void get_mon_num_prep_chameleon(PlayerType *player_ptr, const ChameleonTransformation &ct)
+void get_mon_num_prep_chameleon(CreatureEntity &creature, const ChameleonTransformation &ct)
 {
-    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto dungeon_level = floor.dun_level;
     const auto &system = AngbandSystem::get_instance();
     auto &table = MonraceAllocationTable::get_instance();
@@ -662,7 +666,7 @@ void get_mon_num_prep_chameleon(PlayerType *player_ptr, const ChameleonTransform
             continue;
         }
 
-        if (!hook_func(player_ptr, ct, monrace_id)) {
+        if (!hook_func(creature, ct, monrace_id)) {
             continue;
         }
 
@@ -670,7 +674,7 @@ void get_mon_num_prep_chameleon(PlayerType *player_ptr, const ChameleonTransform
         const auto in_random_quest = floor.is_in_quest() && !QuestType::is_fixed(floor.quest_number);
         const auto cond = !system.is_phase_out() && floor.is_underground() && !in_random_quest;
         if (cond && !restrict_monster_to_dungeon(dungeon, dungeon_level, monrace_id, false, true)) {
-            entry.update_prob2(dungeon.special_div);
+            entry.update_prob2(dungeon.normal_monster_rate);
         }
 
         mfdi.update(entry.prob2, entry.level);
@@ -683,12 +687,12 @@ void get_mon_num_prep_chameleon(PlayerType *player_ptr, const ChameleonTransform
 
 /*!
  * @brief モンスター生成テーブルの重み修正(賞金首選定用)
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @details get_mon_num() を呼ぶ前に get_mon_num_prep 系関数のいずれかを呼ぶこと。
  */
-void get_mon_num_prep_bounty(PlayerType *player_ptr)
+void get_mon_num_prep_bounty(CreatureEntity &creature)
 {
-    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto dungeon_level = floor.dun_level;
     const auto &system = AngbandSystem::get_instance();
     auto &table = MonraceAllocationTable::get_instance();
@@ -720,18 +724,18 @@ void get_mon_num_prep_bounty(PlayerType *player_ptr)
 
 /*!
  * @brief モンスターにPRESENT_AT_TURN_STARTを設定する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
-void mark_monsters_present(PlayerType *player_ptr)
+void mark_monsters_present(CreatureEntity &creature)
 {
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *creature.get_floor();
 
     for (MONSTER_IDX m_idx = floor.m_max - 1; m_idx >= 1; m_idx--) {
-        auto &monster = floor.m_list[m_idx];
+        auto &monster = floor.get_monster(m_idx);
         if (!monster.is_valid()) {
             continue;
         }
-        monster.mflag.set(MonsterTemporaryFlagType::PRESENT_AT_TURN_START);
+        monster.set_temporary_flag(MonsterTemporaryFlagType::PRESENT_AT_TURN_START);
     }
 }
 
@@ -743,4 +747,23 @@ bool is_player(MONSTER_IDX m_idx)
 bool is_monster(MONSTER_IDX m_idx)
 {
     return m_idx > 0;
+}
+
+/*!
+ * @brief モンスターを指定位置へ移動する（ノックバック・地震逃げ共通処理）
+ * @param creature 視点クリーチャー（通常プレイヤー）
+ * @param monster 移動するモンスター
+ * @param pos_to 移動先座標
+ */
+void move_monster_to(CreatureEntity &creature, CreatureEntity &monster, const Pos2D &pos_to)
+{
+    auto &floor = *creature.get_floor();
+    const auto pos_from = monster.get_position();
+    auto &grid_from = floor.get_grid(pos_from);
+    auto &grid_to = floor.get_grid(pos_to);
+    grid_to.m_idx = std::exchange(grid_from.m_idx, {});
+    monster.set_position(pos_to);
+    update_monster(creature, grid_to.m_idx, true);
+    lite_spot(creature, pos_from);
+    lite_spot(creature, pos_to);
 }

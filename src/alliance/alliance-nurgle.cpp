@@ -8,40 +8,51 @@
 #include "monster-floor/monster-summon.h"
 #include "monster-floor/one-monster-placer.h"
 #include "monster-floor/place-monster-types.h"
+#include "player/patron.h"
 #include "spell/summon-types.h"
 #include "status/bad-status-setter.h"
+#include "system/creature-entity.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/player-type-definition.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
 /*!
  * @brief ナーグル神アライアンスの印象ポイント計算
- * @param creature_ptr プレイヤー情報
+ * @param creature クリーチャーへの参照
  * @return 印象ポイント
  * @details 腐敗、病気、耐久力を重視し、美しさや清浄さを嫌う
  */
-int AllianceNurgle::calcImpressionPoint(PlayerType *creature_ptr) const
+int AllianceNurgle::calcImpressionPoint(const CreatureEntity &creature) const
 {
     int impression = 0;
 
     impression += calcIronmanHostilityPenalty();
     // 基本的な戦力による評価（控えめ）
-    impression += Alliance::calcPlayerPower(*creature_ptr, 10, 25);
+    impression += Alliance::calcPlayerPower(creature, 10, 25);
 
     // 耐久力を最重視（病気に耐える力）
-    impression += (creature_ptr->stat_use[A_CON] - 10) * 6;
+    impression += (creature.get_stat_use(A_CON) - 10) * 6;
 
     // 筋力も評価（腐敗した肉体でも力強く）
-    impression += (creature_ptr->stat_use[A_STR] - 10) * 3;
+    impression += (creature.get_stat_use(A_STR) - 10) * 3;
 
     // 魅力は逆に低い方が好まれる（醜さは美徳）
-    impression -= (creature_ptr->stat_use[A_CHR] - 10) * 4;
+    impression -= (creature.get_stat_use(A_CHR) - 10) * 4;
+
+    // ナーグルを崇拝するクリーチャーへの好意
+    if (creature.get_patron() == static_cast<int16_t>(PatronType::NURGLE)) {
+        impression += 30;
+    }
+
+    // 宿敵ティーンチをパトロンとするクリーチャーへの嫌悪
+    if (creature.get_patron() == static_cast<int16_t>(PatronType::TZEENTCH)) {
+        impression -= 20;
+    }
 
     // 種族による評価
-    switch (creature_ptr->prace) {
+    switch (creature.prace) {
     case PlayerRaceType::ZOMBIE:
     case PlayerRaceType::SKELETON:
         impression += 200; // アンデッドは最高評価
@@ -74,7 +85,7 @@ int AllianceNurgle::calcImpressionPoint(PlayerType *creature_ptr) const
     }
 
     // 職業による評価
-    switch (creature_ptr->pclass) {
+    switch (creature.pclass) {
     case PlayerClassType::WARRIOR:
     case PlayerClassType::BERSERKER:
         impression += 100; // 戦場で傷つく者
@@ -104,7 +115,7 @@ int AllianceNurgle::calcImpressionPoint(PlayerType *creature_ptr) const
 
     // 現在のHP状況（傷ついているほど好まれる）
     /*
-    int hp_ratio = (creature_ptr->hp * 100) / creature_ptr->maxhp;
+    int hp_ratio = (creature.hp * 100) / creature.maxhp;
     if (hp_ratio <= 25)
         impression += 60;
     else if (hp_ratio <= 50)
@@ -115,13 +126,13 @@ int AllianceNurgle::calcImpressionPoint(PlayerType *creature_ptr) const
 
     // 状態異常持ちを評価
     /*
-    if (creature_ptr->poisoned)
+    if (creature.poisoned)
         impression += 50;
-    if (creature_ptr->diseased)
+    if (creature.diseased)
         impression += 80;
-    if (creature_ptr->cut)
+    if (creature.cut)
         impression += 30;
-    if (creature_ptr->stun)
+    if (creature.stun)
         impression += 20;
     */
 
@@ -130,117 +141,118 @@ int AllianceNurgle::calcImpressionPoint(PlayerType *creature_ptr) const
 
 /*!
  * @brief ナーグル神アライアンスの制裁処理
- * @param player_ptr プレイヤー情報
+ * @param creature クリーチャーへの参照
  * @details 段階的な疫病と腐敗の制裁
  */
-void AllianceNurgle::panishment(PlayerType &player_ptr)
+void AllianceNurgle::panishment(CreatureEntity &creature)
 {
+    if (!creature.is_player()) {
+        return;
+    }
+
     // 印象に応じて段階的な制裁
-    if (this->calcImpressionPoint(&player_ptr) <= -50) {
+    if (this->calcImpressionPoint(creature) <= -50) {
         // 軽微な制裁：軽い病気
         msg_print("あなたの体に軽い不調を感じる...");
         msg_print("「ナーグルの小さな贈り物だ」");
 
-        (void)BadStatusSetter(&player_ptr).set_poison(randint1(20) + 10);
+        (void)BadStatusSetter(creature).set_poison(randint1(20) + 10);
         if (one_in_(3)) {
             msg_print("体がだるく重い...");
-            (void)BadStatusSetter(&player_ptr).set_stun(randint1(10) + 10);
+            (void)BadStatusSetter(creature).set_stun(randint1(10) + 10);
         }
         return;
     }
 
-    if (this->calcImpressionPoint(&player_ptr) <= -100) {
+    if (this->calcImpressionPoint(creature) <= -100) {
         // 中程度の制裁：疫病の使者
         msg_print("腐敗の悪臭が漂ってきた...");
         msg_print("「ナーグルの慈悲深い疫病を受けるがよい」");
 
-        (void)BadStatusSetter(&player_ptr).set_poison(randint1(40) + 20);
+        (void)BadStatusSetter(creature).set_poison(randint1(40) + 20);
         if (one_in_(2)) {
             msg_print("体の傷口が膿み始めた...");
-            (void)BadStatusSetter(&player_ptr).set_cut(randint1(50) + 25);
+            (void)BadStatusSetter(creature).set_cut(randint1(50) + 25);
         }
 
         // 疫病の使者召喚
         /*
         for (int i = 0; i < 2; i++) {
-            MONSTER_IDX m_idx = summon_specific(&player_ptr, 0, player_ptr.y, player_ptr.x,
-                player_ptr.current_floor_ptr->dun_level + 5,
+            MONSTER_IDX m_idx = summon_specific(&creature, 0, creature.y, creature.x,
+                creature.get_floor()->dun_level + 5,
                 SUMMON_DEMON, PM_FORCE_PET | PM_ALLOW_GROUP);
             if (m_idx) {
-                MonsterEntity *m_ptr = &player_ptr.current_floor_ptr->m_list[m_idx];
-                set_monster_hostile(m_ptr);
+                creature.get_floor()->m_list[m_idx].set_hostile();
             }
         }
         return;
         */
     }
 
-    if (this->calcImpressionPoint(&player_ptr) <= -150) {
+    if (this->calcImpressionPoint(creature) <= -150) {
         // 重い制裁：大悪疫
         msg_print("恐ろしい疫病があなたを襲う！");
         msg_print("「ナーグルの偉大なる慈悲を味わうがよい！」");
 
-        (void)BadStatusSetter(&player_ptr).set_poison(randint1(80) + 40);
-        (void)BadStatusSetter(&player_ptr).set_cut(randint1(100) + 50);
-        (void)BadStatusSetter(&player_ptr).set_stun(randint1(50) + 25);
+        (void)BadStatusSetter(creature).set_poison(randint1(80) + 40);
+        (void)BadStatusSetter(creature).set_cut(randint1(100) + 50);
+        (void)BadStatusSetter(creature).set_stun(randint1(50) + 25);
 
         if (one_in_(2)) {
             msg_print("あなたの体が腐敗し始めた...");
-            project(&player_ptr, 0, 3, player_ptr.y, player_ptr.x,
-                player_ptr.level * 2, AttributeType::POIS,
+            project(creature, 0, 3, creature.y, creature.x,
+                creature.get_level() * 2, AttributeType::POIS,
                 PROJECT_KILL | PROJECT_ITEM);
         }
 
         if (one_in_(3)) {
             msg_print("意識が朦朧としてきた...");
-            (void)BadStatusSetter(&player_ptr).set_paralysis(randint1(10) + 5);
+            (void)BadStatusSetter(creature).set_paralysis(randint1(10) + 5);
         }
 
         // より強力な悪魔軍団
         /*
         for (int i = 0; i < 4; i++) {
-            MONSTER_IDX m_idx = summon_specific(&player_ptr, 0, player_ptr.y, player_ptr.x,
-                player_ptr.current_floor_ptr->dun_level + 10,
+            MONSTER_IDX m_idx = summon_specific(&creature, 0, creature.y, creature.x,
+                creature.get_floor()->dun_level + 10,
                 SUMMON_DEMON, PM_FORCE_PET | PM_ALLOW_GROUP);
             if (m_idx) {
-                MonsterEntity *m_ptr = &player_ptr.current_floor_ptr->m_list[m_idx];
-                set_monster_hostile(m_ptr);
+                creature.get_floor()->m_list[m_idx].set_hostile();
             }
         }
         return;
         */
     }
 
-    if (this->calcImpressionPoint(&player_ptr) <= -250) {
+    if (this->calcImpressionPoint(creature) <= -250) {
         // 最重の制裁：腐敗の庭園
         msg_print("周囲の世界が腐敗し始めた！");
         msg_print("「我が庭園へようこそ...永遠の腐敗と再生の世界へ」");
 
         // 極限状態異常
-        (void)BadStatusSetter(&player_ptr).set_poison(randint1(200) + 100);
-        (void)BadStatusSetter(&player_ptr).set_cut(randint1(200) + 100);
-        (void)BadStatusSetter(&player_ptr).set_stun(randint1(100) + 50);
+        (void)BadStatusSetter(creature).set_poison(randint1(200) + 100);
+        (void)BadStatusSetter(creature).set_cut(randint1(200) + 100);
+        (void)BadStatusSetter(creature).set_stun(randint1(100) + 50);
 
-        // 大ダメージ（腐敗エリア攻撃）
-        project(&player_ptr, 0, 5, player_ptr.y, player_ptr.x,
-            player_ptr.level * 4, AttributeType::POIS,
+        // 大ダメージ（腐敗エリア放撃）
+        project(creature, 0, 5, creature.y, creature.x,
+            creature.get_level() * 4, AttributeType::POIS,
             PROJECT_KILL | PROJECT_ITEM | PROJECT_GRID);
 
         if (one_in_(2)) {
             msg_print("あなたの魂まで腐敗の影響を受けている...");
-            (void)BadStatusSetter(&player_ptr).set_paralysis(randint1(20) + 10);
+            (void)BadStatusSetter(creature).set_paralysis(randint1(20) + 10);
         }
     }
 
     // 大軍団召喚
     /*
     for (int i = 0; i < 8; i++) {
-        MONSTER_IDX m_idx = summon_specific(&player_ptr, 0, player_ptr.y, player_ptr.x,
-            player_ptr.current_floor_ptr->dun_level + 15,
+        MONSTER_IDX m_idx = summon_specific(&creature, 0, creature.y, creature.x,
+            creature.get_floor()->dun_level + 15,
             SUMMON_DEMON, PM_FORCE_PET | PM_ALLOW_GROUP);
         if (m_idx) {
-            MonsterEntity *m_ptr = &player_ptr.current_floor_ptr->m_list[m_idx];
-            set_monster_hostile(m_ptr);
+            creature.get_floor()->m_list[m_idx].set_hostile();
         }
     }
     */

@@ -29,11 +29,11 @@
 #include "status/bad-status-setter.h"
 #include "status/buff-setter.h"
 #include "system/angband-system.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/dungeon/dungeon-list.h"
 #include "system/floor/floor-info.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "util/bit-flags-calculator.h"
 #include "util/string-processor.h"
@@ -168,41 +168,41 @@ static void choise_cursed_item(CurseTraitType flag, ItemEntity *o_ptr, int *choi
  * @return 該当の呪いが一つでもあった場合にランダムに選ばれた装備品のオブジェクト構造体参照ポインタを返す。\n
  * 呪いがない場合nullptrを返す。
  */
-ItemEntity *choose_cursed_obj_name(PlayerType *player_ptr, CurseTraitType flag)
+ItemEntity *choose_cursed_obj_name(CreatureEntity &creature, CurseTraitType flag)
 {
     int choices[INVEN_TOTAL - INVEN_MAIN_HAND];
     int number = 0;
-    if (player_ptr->cursed.has_not(flag)) {
+    if (creature.get_cursed_flags().has_not(flag)) {
         return nullptr;
     }
 
-    for (int i = INVEN_MAIN_HAND; i < INVEN_TOTAL; i++) {
-        auto *o_ptr = player_ptr->inventory[i].get();
+    for (const auto i_idx : INVEN_WIELDING_SLOTS) {
+        auto *o_ptr = creature.inventory[i_idx].get();
         if (o_ptr->curse_flags.has(flag)) {
-            choices[number] = i;
+            choices[number] = i_idx;
             number++;
             continue;
         }
 
-        choise_cursed_item(flag, o_ptr, choices, &number, i);
+        choise_cursed_item(flag, o_ptr, choices, &number, i_idx);
     }
 
-    return player_ptr->inventory[choices[randint0(number)]].get();
+    return creature.inventory[choices[randint0(number)]].get();
 }
 
 /*!
  * @brief 呪われている、トランプエゴ等による装備品由来のテレポートを実行する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
-static void curse_teleport(PlayerType *player_ptr)
+static void curse_teleport(CreatureEntity &creature)
 {
-    if ((player_ptr->cursed_special.has_not(CurseSpecialTraitType::TELEPORT_SELF)) || !one_in_(200)) {
+    if ((creature.get_cursed_special_flags().has_not(CurseSpecialTraitType::TELEPORT_SELF)) || !one_in_(200)) {
         return;
     }
 
     int i_keep = 0, count = 0;
-    for (int i = INVEN_MAIN_HAND; i < INVEN_TOTAL; i++) {
-        const auto &item = *player_ptr->inventory[i];
+    for (const auto i_idx : INVEN_WIELDING_SLOTS) {
+        const auto &item = *creature.inventory[i_idx];
         if (!item.is_valid()) {
             continue;
         }
@@ -219,29 +219,29 @@ static void curse_teleport(PlayerType *player_ptr)
 
         count++;
         if (one_in_(count)) {
-            i_keep = i;
+            i_keep = i_idx;
         }
     }
 
-    const auto &item = *player_ptr->inventory[i_keep];
-    const auto item_name = describe_flavor(player_ptr, item, (OD_OMIT_PREFIX | OD_NAME_ONLY));
+    const auto &item = *creature.inventory[i_keep];
+    const auto item_name = describe_flavor(creature, item, (OD_OMIT_PREFIX | OD_NAME_ONLY));
     msg_format(_("%sがテレポートの能力を発動させようとしている。", "Your %s tries to teleport you."), item_name.data());
-    if (input_check_strict(player_ptr, _("テレポートしますか？", "Teleport? "), UserCheck::OKAY_CANCEL)) {
-        disturb(player_ptr, false, true);
-        teleport_player(player_ptr, 50, TELEPORT_SPONTANEOUS);
+    if (input_check_strict(creature, _("テレポートしますか？", "Teleport? "), UserCheck::OKAY_CANCEL)) {
+        disturb(creature, false, true);
+        teleport_player(creature, 50, TELEPORT_SPONTANEOUS);
     } else {
         msg_format(_("%sに{.}(ピリオド)と銘を刻むと発動を抑制できます。", "You can inscribe {.} on your %s to disable random teleportation. "), item_name.data());
-        disturb(player_ptr, true, true);
+        disturb(creature, true, true);
     }
 }
 
 /*!
  * @details 元々呪い効果の発揮ルーチン中にいたので、整合性保持のためここに置いておく
  */
-static void occur_chainsword_effect(PlayerType *player_ptr)
+static void occur_chainsword_effect(CreatureEntity &creature)
 {
     constexpr auto chance_noise = 100;
-    if ((player_ptr->cursed_special.has_not(CurseSpecialTraitType::CHAINSWORD)) || !one_in_(chance_noise)) {
+    if ((creature.get_cursed_special_flags().has_not(CurseSpecialTraitType::CHAINSWORD)) || !one_in_(chance_noise)) {
         return;
     }
 
@@ -250,129 +250,129 @@ static void occur_chainsword_effect(PlayerType *player_ptr)
         msg_print(noise.value());
     }
 
-    disturb(player_ptr, false, false);
+    disturb(creature, false, false);
 }
 
-static void curse_drain_exp(PlayerType *player_ptr)
+static void curse_drain_exp(CreatureEntity &creature)
 {
-    if (PlayerRace(player_ptr).equals(PlayerRaceType::ANDROID) || (player_ptr->cursed.has_not(CurseTraitType::DRAIN_EXP)) || !one_in_(4)) {
+    if (CreatureRace(&creature).equals(PlayerRaceType::ANDROID) || (creature.get_cursed_flags().has_not(CurseTraitType::DRAIN_EXP)) || !one_in_(4)) {
         return;
     }
 
-    player_ptr->exp -= (player_ptr->level + 1) / 2;
-    if (player_ptr->exp < 0) {
-        player_ptr->exp = 0;
+    creature.sub_exp((creature.get_level() + 1) / 2);
+    if (creature.get_exp() < 0) {
+        creature.set_exp(0);
     }
 
-    player_ptr->max_exp -= (player_ptr->level + 1) / 2;
-    if (player_ptr->max_exp < 0) {
-        player_ptr->max_exp = 0;
+    creature.sub_max_exp((creature.get_level() + 1) / 2);
+    if (creature.get_max_exp() < 0) {
+        creature.set_max_exp(0);
     }
 
-    check_experience(static_cast<CreatureEntity &>(*player_ptr));
+    check_experience(creature);
 }
 
-static void multiply_low_curse(PlayerType *player_ptr)
+static void multiply_low_curse(CreatureEntity &creature)
 {
-    if ((player_ptr->cursed.has_not(CurseTraitType::ADD_L_CURSE)) || !one_in_(2000)) {
+    if ((creature.get_cursed_flags().has_not(CurseTraitType::ADD_L_CURSE)) || !one_in_(2000)) {
         return;
     }
 
-    auto *o_ptr = choose_cursed_obj_name(player_ptr, CurseTraitType::ADD_L_CURSE);
+    auto *o_ptr = choose_cursed_obj_name(creature, CurseTraitType::ADD_L_CURSE);
     auto new_curse = get_curse(0, o_ptr);
     if (o_ptr->curse_flags.has(new_curse)) {
         return;
     }
 
-    const auto item_name = describe_flavor(player_ptr, *o_ptr, (OD_OMIT_PREFIX | OD_NAME_ONLY));
+    const auto item_name = describe_flavor(creature, *o_ptr, (OD_OMIT_PREFIX | OD_NAME_ONLY));
     o_ptr->curse_flags.set(new_curse);
     msg_format(_("悪意に満ちた黒いオーラが%sをとりまいた...", "There is a malignant black aura surrounding your %s..."), item_name.data());
     o_ptr->feeling = FEEL_NONE;
     RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
 }
 
-static void multiply_high_curse(PlayerType *player_ptr)
+static void multiply_high_curse(CreatureEntity &creature)
 {
-    if ((player_ptr->cursed.has_not(CurseTraitType::ADD_H_CURSE)) || !one_in_(2000)) {
+    if ((creature.get_cursed_flags().has_not(CurseTraitType::ADD_H_CURSE)) || !one_in_(2000)) {
         return;
     }
 
-    auto *o_ptr = choose_cursed_obj_name(player_ptr, CurseTraitType::ADD_H_CURSE);
+    auto *o_ptr = choose_cursed_obj_name(creature, CurseTraitType::ADD_H_CURSE);
     auto new_curse = get_curse(1, o_ptr);
     if (o_ptr->curse_flags.has(new_curse)) {
         return;
     }
 
-    const auto item_name = describe_flavor(player_ptr, *o_ptr, (OD_OMIT_PREFIX | OD_NAME_ONLY));
+    const auto item_name = describe_flavor(creature, *o_ptr, (OD_OMIT_PREFIX | OD_NAME_ONLY));
     o_ptr->curse_flags.set(new_curse);
     msg_format(_("悪意に満ちた黒いオーラが%sをとりまいた...", "There is a malignant black aura surrounding your %s..."), item_name.data());
     o_ptr->feeling = FEEL_NONE;
     RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
 }
 
-static void persist_curse(PlayerType *player_ptr)
+static void persist_curse(CreatureEntity &creature)
 {
-    if ((player_ptr->cursed.has_not(CurseTraitType::PERSISTENT_CURSE)) || !one_in_(500)) {
+    if ((creature.get_cursed_flags().has_not(CurseTraitType::PERSISTENT_CURSE)) || !one_in_(500)) {
         return;
     }
 
-    auto *o_ptr = choose_cursed_obj_name(player_ptr, CurseTraitType::PERSISTENT_CURSE);
+    auto *o_ptr = choose_cursed_obj_name(creature, CurseTraitType::PERSISTENT_CURSE);
     if (o_ptr->curse_flags.has(CurseTraitType::HEAVY_CURSE)) {
         return;
     }
 
-    const auto item_name = describe_flavor(player_ptr, *o_ptr, (OD_OMIT_PREFIX | OD_NAME_ONLY));
+    const auto item_name = describe_flavor(creature, *o_ptr, (OD_OMIT_PREFIX | OD_NAME_ONLY));
     o_ptr->curse_flags.set(CurseTraitType::HEAVY_CURSE);
     msg_format(_("悪意に満ちた黒いオーラが%sをとりまいた...", "There is a malignant black aura surrounding your %s..."), item_name.data());
     o_ptr->feeling = FEEL_NONE;
     RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
 }
 
-static void curse_call_monster(PlayerType *player_ptr)
+static void curse_call_monster(CreatureEntity &creature)
 {
     const int call_type = PM_ALLOW_GROUP | PM_ALLOW_UNIQUE | PM_NO_PET;
     const int obj_desc_type = OD_OMIT_PREFIX | OD_NAME_ONLY;
-    const auto &floor = *player_ptr->current_floor_ptr;
-    if (player_ptr->cursed.has(CurseTraitType::CALL_ANIMAL) && one_in_(2500)) {
-        if (summon_specific(player_ptr, player_ptr->y, player_ptr->x, floor.dun_level, SUMMON_ANIMAL, call_type)) {
-            const auto item_name = describe_flavor(player_ptr, *choose_cursed_obj_name(player_ptr, CurseTraitType::CALL_ANIMAL), obj_desc_type);
+    const auto &floor = *creature.get_floor();
+    if (creature.get_cursed_flags().has(CurseTraitType::CALL_ANIMAL) && one_in_(2500)) {
+        if (summon_specific(creature, creature.y, creature.x, floor.dun_level, SUMMON_ANIMAL, call_type)) {
+            const auto item_name = describe_flavor(creature, *choose_cursed_obj_name(creature, CurseTraitType::CALL_ANIMAL), obj_desc_type);
             msg_format(_("%sが動物を引き寄せた！", "Your %s has attracted an animal!"), item_name.data());
-            disturb(player_ptr, false, true);
+            disturb(creature, false, true);
         }
     }
 
-    if (player_ptr->cursed.has(CurseTraitType::CALL_DEMON) && one_in_(1111)) {
-        if (summon_specific(player_ptr, player_ptr->y, player_ptr->x, floor.dun_level, SUMMON_DEMON, call_type)) {
-            const auto item_name = describe_flavor(player_ptr, *choose_cursed_obj_name(player_ptr, CurseTraitType::CALL_DEMON), obj_desc_type);
+    if (creature.get_cursed_flags().has(CurseTraitType::CALL_DEMON) && one_in_(1111)) {
+        if (summon_specific(creature, creature.y, creature.x, floor.dun_level, SUMMON_DEMON, call_type)) {
+            const auto item_name = describe_flavor(creature, *choose_cursed_obj_name(creature, CurseTraitType::CALL_DEMON), obj_desc_type);
             msg_format(_("%sが悪魔を引き寄せた！", "Your %s has attracted a demon!"), item_name.data());
-            disturb(player_ptr, false, true);
+            disturb(creature, false, true);
         }
     }
 
-    if (player_ptr->cursed.has(CurseTraitType::CALL_DRAGON) && one_in_(800)) {
-        if (summon_specific(player_ptr, player_ptr->y, player_ptr->x, floor.dun_level, SUMMON_DRAGON, call_type)) {
-            const auto item_name = describe_flavor(player_ptr, *choose_cursed_obj_name(player_ptr, CurseTraitType::CALL_DRAGON), obj_desc_type);
+    if (creature.get_cursed_flags().has(CurseTraitType::CALL_DRAGON) && one_in_(800)) {
+        if (summon_specific(creature, creature.y, creature.x, floor.dun_level, SUMMON_DRAGON, call_type)) {
+            const auto item_name = describe_flavor(creature, *choose_cursed_obj_name(creature, CurseTraitType::CALL_DRAGON), obj_desc_type);
             msg_format(_("%sがドラゴンを引き寄せた！", "Your %s has attracted a dragon!"), item_name.data());
-            disturb(player_ptr, false, true);
+            disturb(creature, false, true);
         }
     }
 
-    if (player_ptr->cursed.has(CurseTraitType::CALL_UNDEAD) && one_in_(1111)) {
-        if (summon_specific(player_ptr, player_ptr->y, player_ptr->x, floor.dun_level, SUMMON_UNDEAD, call_type)) {
-            const auto item_name = describe_flavor(player_ptr, *choose_cursed_obj_name(player_ptr, CurseTraitType::CALL_UNDEAD), obj_desc_type);
+    if (creature.get_cursed_flags().has(CurseTraitType::CALL_UNDEAD) && one_in_(1111)) {
+        if (summon_specific(creature, creature.y, creature.x, floor.dun_level, SUMMON_UNDEAD, call_type)) {
+            const auto item_name = describe_flavor(creature, *choose_cursed_obj_name(creature, CurseTraitType::CALL_UNDEAD), obj_desc_type);
             msg_format(_("%sが死霊を引き寄せた！", "Your %s has attracted an undead!"), item_name.data());
-            disturb(player_ptr, false, true);
+            disturb(creature, false, true);
         }
     }
 }
 
-static void curse_cowardice(PlayerType *player_ptr)
+static void curse_cowardice(CreatureEntity &creature)
 {
-    if (player_ptr->cursed.has_not(CurseTraitType::COWARDICE)) {
+    if (creature.get_cursed_flags().has_not(CurseTraitType::COWARDICE)) {
         return;
     }
 
-    auto *o_ptr = choose_cursed_obj_name(player_ptr, CurseTraitType::COWARDICE);
+    auto *o_ptr = choose_cursed_obj_name(creature, CurseTraitType::COWARDICE);
     auto chance = 1500;
     short duration = 13 + randint1(26);
     if (o_ptr->curse_flags.has(CurseTraitType::HEAVY_CURSE)) {
@@ -380,28 +380,28 @@ static void curse_cowardice(PlayerType *player_ptr)
         duration *= 2;
     }
 
-    if (!one_in_(chance) || (has_resist_fear(player_ptr) != 0)) {
+    if (!one_in_(chance) || (creature.has_resist_fear() != 0)) {
         return;
     }
 
-    disturb(player_ptr, false, true);
+    disturb(creature, false, true);
     msg_print(_("とても暗い... とても恐い！", "It's so dark... so scary!"));
-    (void)BadStatusSetter(player_ptr).mod_fear(duration);
+    (void)BadStatusSetter(creature).mod_fear(duration);
 }
 
 /*!
  * @brief 装備による狂戦士化の発作を引き起こす
- * @param player_ptr プレイヤー情報への参照ポインタ
+ * @param creature クリーチャーへの参照
  */
-static void curse_berserk_rage(PlayerType *player_ptr)
+static void curse_berserk_rage(CreatureEntity &creature)
 {
-    if (player_ptr->cursed.has_not(CurseTraitType::BERS_RAGE)) {
+    if (creature.get_cursed_flags().has_not(CurseTraitType::BERS_RAGE)) {
         return;
     }
 
-    auto *o_ptr = choose_cursed_obj_name(player_ptr, CurseTraitType::BERS_RAGE);
+    auto *o_ptr = choose_cursed_obj_name(creature, CurseTraitType::BERS_RAGE);
     auto chance = 1500;
-    short duration = 10 + randint1(player_ptr->level);
+    short duration = 10 + randint1(creature.get_level());
 
     if (o_ptr->curse_flags.has(CurseTraitType::HEAVY_CURSE)) {
         chance = 150;
@@ -412,119 +412,119 @@ static void curse_berserk_rage(PlayerType *player_ptr)
         return;
     }
 
-    disturb(player_ptr, false, true);
+    disturb(creature, false, true);
     msg_print(_("ウガァァア！", "RAAAAGHH!"));
     msg_print(_("激怒の発作に襲われた！", "You feel a fit of rage coming over you!"));
-    (void)set_berserk(player_ptr, duration, false);
-    (void)BadStatusSetter(player_ptr).set_fear(0);
+    (void)set_berserk(creature, duration, false);
+    (void)BadStatusSetter(creature).set_fear(0);
 }
 
-static void curse_drain_hp(PlayerType *player_ptr)
+static void curse_drain_hp(CreatureEntity &creature)
 {
-    if ((player_ptr->cursed.has_not(CurseTraitType::DRAIN_HP)) || !one_in_(666)) {
+    if ((creature.get_cursed_flags().has_not(CurseTraitType::DRAIN_HP)) || !one_in_(666)) {
         return;
     }
 
-    const auto *item_ptr = choose_cursed_obj_name(player_ptr, CurseTraitType::DRAIN_HP);
-    const auto item_name = describe_flavor(player_ptr, *item_ptr, (OD_OMIT_PREFIX | OD_NAME_ONLY));
+    const auto *item_ptr = choose_cursed_obj_name(creature, CurseTraitType::DRAIN_HP);
+    const auto item_name = describe_flavor(creature, *item_ptr, (OD_OMIT_PREFIX | OD_NAME_ONLY));
     msg_format(_("%sはあなたの体力を吸収した！", "Your %s drains HP from you!"), item_name.data());
-    take_hit(player_ptr, DAMAGE_LOSELIFE, std::min(player_ptr->level * 2, 100), item_name);
+    take_hit(creature, DAMAGE_LOSELIFE, std::min(creature.get_level() * 2, 100), item_name);
 }
 
-static void curse_drain_mp(PlayerType *player_ptr)
+static void curse_drain_mp(CreatureEntity &creature)
 {
-    if ((player_ptr->cursed.has_not(CurseTraitType::DRAIN_MANA)) || (player_ptr->csp == 0) || !one_in_(666)) {
+    if ((creature.get_cursed_flags().has_not(CurseTraitType::DRAIN_MANA)) || (creature.get_current_mp() == 0) || !one_in_(666)) {
         return;
     }
 
-    const auto *item_ptr = choose_cursed_obj_name(player_ptr, CurseTraitType::DRAIN_MANA);
-    const auto item_name = describe_flavor(player_ptr, *item_ptr, (OD_OMIT_PREFIX | OD_NAME_ONLY));
+    const auto *item_ptr = choose_cursed_obj_name(creature, CurseTraitType::DRAIN_MANA);
+    const auto item_name = describe_flavor(creature, *item_ptr, (OD_OMIT_PREFIX | OD_NAME_ONLY));
     msg_format(_("%sはあなたの魔力を吸収した！", "Your %s drains mana from you!"), item_name.data());
-    player_ptr->csp -= std::min<short>(player_ptr->level, 50);
-    if (player_ptr->csp < 0) {
-        player_ptr->csp = 0;
-        player_ptr->csp_frac = 0;
+    creature.sub_current_mp(std::min<short>(creature.get_level(), 50));
+    if (creature.get_current_mp() < 0) {
+        creature.set_current_mp(0);
+        creature.current_mp_frac = 0;
     }
 
     RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::MP);
 }
 
-static void curse_megaton_coin(PlayerType *player_ptr)
+static void curse_megaton_coin(CreatureEntity &creature)
 {
-    if (!get_player_flags(player_ptr, TR_MEGATON_COIN)) {
+    if (!get_player_flags(creature, TR_MEGATON_COIN)) {
         return;
     }
-    const auto &dungeon = player_ptr->current_floor_ptr->get_dungeon_definition();
-    if (!one_in_(364) || player_ptr->current_floor_ptr->dun_level == 0 || player_ptr->current_floor_ptr->dun_level == dungeon.maxdepth ||
-        inside_quest(player_ptr->current_floor_ptr->quest_number) || player_ptr->current_floor_ptr->inside_arena) {
+    const auto &dungeon = creature.get_floor()->get_dungeon_definition();
+    if (!one_in_(364) || creature.get_floor()->dun_level == 0 || creature.get_floor()->dun_level == dungeon.maxdepth ||
+        inside_quest(creature.get_floor()->quest_number) || creature.get_floor()->inside_arena) {
         return;
     }
 
     msg_print(_("メガトンコインで床が抜けた！ンアアアアアアァァァ！", "The floor came off with the Megaton Coin!AAAAaaaaaa!"));
 
     auto dam = Dice::roll(2, 8);
-    take_hit(player_ptr, DAMAGE_NOESCAPE, dam, _("メガトンコイン", "the Megaton Coin"));
+    take_hit(creature, DAMAGE_NOESCAPE, dam, _("メガトンコイン", "the Megaton Coin"));
 
-    if (autosave_l && (player_ptr->hp >= 0)) {
-        do_cmd_save_game(player_ptr, true);
+    if (autosave_l && (creature.hp >= 0)) {
+        do_cmd_save_game(creature, true);
     }
 
-    exe_write_diary(*(player_ptr->current_floor_ptr), DiaryKind::DESCRIPTION, 0, _("メガトンコインで落ちた!", "fell through the Megaton Coin"));
+    exe_write_diary(*(creature.get_floor()), DiaryKind::DESCRIPTION, 0, _("メガトンコインで落ちた!", "fell through the Megaton Coin"));
     auto &fcms = FloorChangeModesStore::get_instace();
     fcms->set({ FloorChangeMode::SAVE_FLOORS,
         FloorChangeMode::DOWN,
         FloorChangeMode::RANDOM_PLACE,
         FloorChangeMode::RANDOM_CONNECT });
 
-    player_ptr->leaving = true;
+    creature.set_leaving(true);
 }
 
-static void occur_curse_effects(PlayerType *player_ptr)
+static void occur_curse_effects(CreatureEntity &creature)
 {
-    auto is_cursed = player_ptr->cursed.has_any_of(TRC_P_FLAG_MASK);
-    is_cursed |= player_ptr->cursed_special.has_any_of(TRCS_P_FLAG_MASK);
+    auto is_cursed = creature.get_cursed_flags().has_any_of(TRC_P_FLAG_MASK);
+    is_cursed |= creature.get_cursed_special_flags().has_any_of(TRCS_P_FLAG_MASK);
     if (!is_cursed || AngbandSystem::get_instance().is_phase_out() || AngbandWorld::get_instance().is_wild_mode()) {
         return;
     }
 
-    curse_teleport(player_ptr);
-    occur_chainsword_effect(player_ptr);
+    curse_teleport(creature);
+    occur_chainsword_effect(creature);
     constexpr auto chance_ty_curse = 200;
-    if (player_ptr->cursed.has(CurseTraitType::TY_CURSE) && one_in_(chance_ty_curse)) {
+    if (creature.get_cursed_flags().has(CurseTraitType::TY_CURSE) && one_in_(chance_ty_curse)) {
         int count = 0;
-        (void)activate_ty_curse(player_ptr, false, &count);
+        (void)activate_ty_curse(creature, false, &count);
     }
 
-    curse_drain_exp(player_ptr);
-    multiply_low_curse(player_ptr);
-    multiply_high_curse(player_ptr);
-    persist_curse(player_ptr);
-    curse_call_monster(player_ptr);
-    curse_cowardice(player_ptr);
-    curse_berserk_rage(player_ptr);
-    if (player_ptr->cursed.has(CurseTraitType::TELEPORT) && one_in_(200) && !player_ptr->anti_tele) {
-        disturb(player_ptr, false, true);
-        teleport_player(player_ptr, 40, TELEPORT_PASSIVE);
+    curse_drain_exp(creature);
+    multiply_low_curse(creature);
+    multiply_high_curse(creature);
+    persist_curse(creature);
+    curse_call_monster(creature);
+    curse_cowardice(creature);
+    curse_berserk_rage(creature);
+    if (creature.get_cursed_flags().has(CurseTraitType::TELEPORT) && one_in_(200) && !creature.has_anti_tele()) {
+        disturb(creature, false, true);
+        teleport_player(creature, 40, TELEPORT_PASSIVE);
     }
 
-    curse_drain_hp(player_ptr);
-    curse_drain_mp(player_ptr);
-    curse_megaton_coin(player_ptr);
+    curse_drain_hp(creature);
+    curse_drain_mp(creature);
+    curse_megaton_coin(creature);
 }
 
 /*!
  * @brief 10ゲームターンが進行するごとに装備効果の発動判定を行う処理
  * / Handle curse effects once every 10 game turns
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
-void execute_cursed_items_effect(PlayerType *player_ptr)
+void execute_cursed_items_effect(CreatureEntity &creature)
 {
-    occur_curse_effects(player_ptr);
-    if (!one_in_(999) || player_ptr->anti_magic || (one_in_(2) && has_resist_curse(player_ptr))) {
+    occur_curse_effects(creature);
+    if (!one_in_(999) || creature.has_anti_magic() || (one_in_(2) && creature.has_resist_curse())) {
         return;
     }
 
-    auto *o_ptr = player_ptr->inventory[INVEN_LITE].get();
+    auto *o_ptr = creature.inventory[INVEN_LITE].get();
     if (!o_ptr->is_specific_artifact(FixedArtifactId::JUDGE)) {
         return;
     }
@@ -535,5 +535,5 @@ void execute_cursed_items_effect(PlayerType *player_ptr)
         msg_print(_("なにかがあなたの体力を吸収した！", "Something drains life from you!"));
     }
 
-    take_hit(player_ptr, DAMAGE_LOSELIFE, std::min<short>(player_ptr->level, 50), _("審判の宝石", "the Jewel of Judgement"));
+    take_hit(creature, DAMAGE_LOSELIFE, std::min<short>(creature.get_level(), 50), _("審判の宝石", "the Jewel of Judgement"));
 }

@@ -18,13 +18,12 @@
 #include "realm/realm-types.h"
 #include "spell-realm/spells-hex.h"
 #include "status/element-resistance.h"
+#include "system/creature-entity.h"
+#include "system/creature-timed-effect-types.h"
 #include "system/floor/floor-info.h"
-#include "system/monster-entity.h"
-#include "system/player-type-definition.h"
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
 #include "term/z-form.h"
-#include "timed-effect/timed-effects.h"
 #include "view/status-bars-table.h"
 #include "window/main-window-row-column.h"
 #include "world/world.h"
@@ -46,17 +45,17 @@
  * @brief プレイヤー能力値を描画する / Print character stat in given row, column
  * @param stat 描画するステータスのID
  */
-void print_stat(PlayerType *player_ptr, int stat)
+void print_stat(CreatureEntity &creature, int stat)
 {
-    if (player_ptr->stat_cur[stat] < player_ptr->stat_max[stat]) {
+    if (creature.get_stat_cur(stat) < creature.get_stat_max(stat)) {
         put_str(stat_names_reduced[stat], ROW_STAT + stat, 0);
-        c_put_str(TERM_YELLOW, cnv_stat(player_ptr->stat_use[stat]), ROW_STAT + stat, COL_STAT + 6);
+        c_put_str(TERM_YELLOW, cnv_stat(creature.get_stat_use(stat)), ROW_STAT + stat, COL_STAT + 6);
     } else {
         put_str(stat_names[stat], ROW_STAT + stat, 0);
-        c_put_str(TERM_L_GREEN, cnv_stat(player_ptr->stat_use[stat]), ROW_STAT + stat, COL_STAT + 6);
+        c_put_str(TERM_L_GREEN, cnv_stat(creature.get_stat_use(stat)), ROW_STAT + stat, COL_STAT + 6);
     }
 
-    if (player_ptr->stat_max[stat] != player_ptr->stat_max_max[stat]) {
+    if (creature.get_stat_max(stat) != creature.get_stat_max_max(stat)) {
         return;
     }
 
@@ -71,68 +70,66 @@ void print_stat(PlayerType *player_ptr, int stat)
 /*!
  * @brief プレイヤーの負傷状態を表示する
  */
-void print_cut(PlayerType *player_ptr)
+void print_cut(CreatureEntity &creature)
 {
-    const auto &player_cut = player_ptr->effects()->cut();
-    if (!player_cut.is_cut()) {
+    if (!creature.is_cut()) {
         put_str("            ", ROW_CUT, COL_CUT);
         return;
     }
 
-    auto [color, stat] = player_cut.get_expr();
+    auto [color, stat] = creature.get_cut_expr();
     c_put_str(color, stat, ROW_CUT, COL_CUT);
 }
 
 /*!
  * @brief プレイヤーの朦朧状態を表示する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
-void print_stun(PlayerType *player_ptr)
+void print_stun(CreatureEntity &creature)
 {
-    const auto &player_stun = player_ptr->effects()->stun();
-    if (!player_stun.is_stunned()) {
+    if (!creature.is_stunned()) {
         put_str("            ", ROW_STUN, COL_STUN);
         return;
     }
 
-    const auto &[color, stat] = player_stun.get_expr();
+    const auto &[color, stat] = creature.get_stun_expr();
     c_put_str(color, stat, ROW_STUN, COL_STUN);
 }
 
 /*!
  * @brief プレイヤーの空腹状態を表示する / Prints status of hunger
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
-void print_hunger(PlayerType *player_ptr)
+void print_hunger(CreatureEntity &creature)
 {
-    if (AngbandWorld::get_instance().wizard && player_ptr->current_floor_ptr->inside_arena) {
+    if (AngbandWorld::get_instance().wizard && creature.get_floor()->inside_arena) {
         return;
     }
 
     const auto [width, height] = term_get_size();
     const auto row = height + ROW_HUNGRY;
 
-    if (player_ptr->food < PY_FOOD_FAINT) {
+    if (creature.get_food() < PY_FOOD_FAINT) {
         c_put_str(TERM_RED, _("衰弱  ", "Weak  "), row, COL_HUNGRY);
         return;
     }
 
-    if (player_ptr->food < PY_FOOD_WEAK) {
+    if (creature.get_food() < PY_FOOD_WEAK) {
         c_put_str(TERM_ORANGE, _("衰弱  ", "Weak  "), row, COL_HUNGRY);
         return;
     }
 
-    if (player_ptr->food < PY_FOOD_ALERT) {
+    if (creature.get_food() < PY_FOOD_ALERT) {
         c_put_str(TERM_YELLOW, _("空腹  ", "Hungry"), row, COL_HUNGRY);
         return;
     }
 
-    if (player_ptr->food < PY_FOOD_FULL) {
+    if (creature.get_food() < PY_FOOD_FULL) {
         c_put_str(TERM_L_GREEN, "      ", row, COL_HUNGRY);
         return;
     }
 
-    if (player_ptr->food < PY_FOOD_MAX) {
+    if (creature.get_food() < PY_FOOD_MAX) {
         c_put_str(TERM_L_GREEN, _("満腹  ", "Full  "), row, COL_HUNGRY);
         return;
     }
@@ -142,21 +139,13 @@ void print_hunger(PlayerType *player_ptr)
 
 /*!
  * @brief プレイヤーの行動状態を表示する / Prints Searching, Resting, Paralysis, or 'count' status
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @details
  * Display is always exactly 10 characters wide (see below)
  * This function was a major bottleneck when resting, so a lot of
  * the text formatting code was optimized in place below.
  */
-/*!
- * @brief プレイヤーの行動状態を表示する / Prints Searching, Resting, Paralysis, or 'count' status
- * @param player_ptr プレイヤーへの参照ポインタ
- * @details
- * Display is always exactly 10 characters wide (see below)
- * This function was a major bottleneck when resting, so a lot of
- * the text formatting code was optimized in place below.
- */
-void print_state(PlayerType *player_ptr)
+void print_state(CreatureEntity &creature)
 {
     TERM_COLOR attr = TERM_WHITE;
     std::string text;
@@ -171,17 +160,17 @@ void print_state(PlayerType *player_ptr)
         return;
     }
 
-    switch (player_ptr->action) {
+    switch (creature.get_action()) {
     case ACTION_SEARCH: {
         text = _("探索", "Sear");
         break;
     }
     case ACTION_REST:
-        if (player_ptr->resting > 0) {
-            text = format("%4d", player_ptr->resting);
-        } else if (player_ptr->resting == COMMAND_ARG_REST_FULL_HEALING) {
+        if (creature.get_resting() > 0) {
+            text = format("%4d", creature.get_resting());
+        } else if (creature.get_resting() == COMMAND_ARG_REST_FULL_HEALING) {
             text = "****";
-        } else if (player_ptr->resting == COMMAND_ARG_REST_UNTIL_DONE) {
+        } else if (creature.get_resting() == COMMAND_ARG_REST_UNTIL_DONE) {
             text = "&&&&";
         } else {
             text = "    ";
@@ -191,7 +180,7 @@ void print_state(PlayerType *player_ptr)
 
     case ACTION_LEARN: {
         text = _("学習", "lear");
-        auto bluemage_data = PlayerClass(player_ptr).get_specific_data<bluemage_data_type>();
+        auto bluemage_data = CreatureClass(creature).get_specific_data<bluemage_data_type>();
         if (bluemage_data->new_magic_learned) {
             attr = TERM_L_RED;
         }
@@ -202,7 +191,7 @@ void print_state(PlayerType *player_ptr)
         break;
     }
     case ACTION_MONK_STANCE: {
-        if (auto stance = PlayerClass(player_ptr).get_monk_stance();
+        if (auto stance = CreatureClass(creature).get_monk_stance();
             stance != MonkStanceType::NONE) {
             switch (stance) {
             case MonkStanceType::GENBU:
@@ -225,7 +214,7 @@ void print_state(PlayerType *player_ptr)
         break;
     }
     case ACTION_SAMURAI_STANCE: {
-        if (auto stance = PlayerClass(player_ptr).get_samurai_stance();
+        if (auto stance = CreatureClass(creature).get_samurai_stance();
             stance != SamuraiStanceType::NONE) {
             text = samurai_stances[enum2i(stance) - 1].desc;
         }
@@ -254,23 +243,27 @@ void print_state(PlayerType *player_ptr)
 
 /*!
  * @brief プレイヤーの行動速度を表示する / Prints the speed_value of a character.			-CJS-
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
-void print_speed(PlayerType *player_ptr)
+void print_speed(CreatureEntity &creature)
 {
+#ifdef GODOT_RICH_UI
+    (void)creature;
+    return; // Godot StatusPanel に表示するため terminal 描画をスキップ
+#else
     const auto &[wid, hgt] = term_get_size();
     auto col_speed = wid + COL_SPEED;
     auto row_speed = hgt + ROW_SPEED;
 
-    const auto speed = static_cast<CreatureEntity &>(*player_ptr).get_speed() - STANDARD_SPEED;
-    const auto &floor = *player_ptr->current_floor_ptr;
-    bool is_player_fast = is_fast(player_ptr);
+    const auto speed = creature.get_speed() - STANDARD_SPEED;
+    const auto &floor = *creature.get_floor();
+    bool is_player_fast = creature.is_fast();
     char buf[32] = "";
     TERM_COLOR attr = TERM_WHITE;
-    const auto is_slow = player_ptr->effects()->deceleration().is_slow();
+    const auto is_slow = creature.is_decelerated();
     if (speed > 0) {
-        if (player_ptr->riding) {
-            const auto &monster = floor.m_list[player_ptr->riding];
+        if (creature.get_riding()) {
+            const auto &monster = floor.get_monster(creature.get_riding());
             if (monster.is_accelerated() && !monster.is_decelerated()) {
                 attr = TERM_L_BLUE;
             } else if (monster.is_decelerated() && !monster.is_accelerated()) {
@@ -278,17 +271,17 @@ void print_speed(PlayerType *player_ptr)
             } else {
                 attr = TERM_GREEN;
             }
-        } else if ((is_player_fast && !is_slow) || player_ptr->lightspeed) {
+        } else if ((is_player_fast && !is_slow) || creature.get_timed_effect(CreatureTimedEffect::LIGHTSPEED)) {
             attr = TERM_YELLOW;
         } else if (is_slow && !is_player_fast) {
             attr = TERM_VIOLET;
         } else {
             attr = TERM_L_GREEN;
         }
-        sprintf(buf, "%s(+%d)", (player_ptr->riding ? _("乗馬", "Ride") : _("加速", "Fast")), speed);
+        sprintf(buf, "%s(+%d)", (creature.get_riding() ? _("乗馬", "Ride") : _("加速", "Fast")), speed);
     } else if (speed < 0) {
-        if (player_ptr->riding) {
-            const auto &monster = floor.m_list[player_ptr->riding];
+        if (creature.get_riding()) {
+            const auto &monster = floor.get_monster(creature.get_riding());
             if (monster.is_accelerated() && !monster.is_decelerated()) {
                 attr = TERM_L_BLUE;
             } else if (monster.is_decelerated() && !monster.is_accelerated()) {
@@ -303,41 +296,51 @@ void print_speed(PlayerType *player_ptr)
         } else {
             attr = TERM_L_UMBER;
         }
-        sprintf(buf, "%s(%d)", (player_ptr->riding ? _("乗馬", "Ride") : _("減速", "Slow")), speed);
-    } else if (player_ptr->riding) {
+        sprintf(buf, "%s(%d)", (creature.get_riding() ? _("乗馬", "Ride") : _("減速", "Slow")), speed);
+    } else if (creature.get_riding()) {
         attr = TERM_GREEN;
         strcpy(buf, _("乗馬中", "Riding"));
     }
 
     c_put_str(attr, format("%-9s", buf), row_speed, col_speed);
+#endif // GODOT_RICH_UI
 }
 
 /*!
  * @brief プレイヤーの呪文学習可能状態を表示する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
-void print_study(PlayerType *player_ptr)
+void print_study(CreatureEntity &creature)
 {
+#ifdef GODOT_RICH_UI
+    (void)creature;
+    return; // Godot StatusPanel に表示するため terminal 描画をスキップ
+#else
     const auto &[wid, hgt] = term_get_size();
     const auto col_study = wid + COL_STUDY;
     const auto row_study = hgt + ROW_STUDY;
-    if (player_ptr->new_spells) {
+    if (creature.new_spells) {
         put_str(_("学習", "Stud"), row_study, col_study);
     } else {
         put_str("    ", row_study, col_study);
     }
+#endif // GODOT_RICH_UI
 }
 
 /*!
  * @brief プレイヤーのものまね可能状態を表示する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
-void print_imitation(PlayerType *player_ptr)
+void print_imitation(CreatureEntity &creature)
 {
+#ifdef GODOT_RICH_UI
+    (void)creature;
+    return; // Godot StatusPanel に表示するため terminal 描画をスキップ
+#else
     const auto &[wid, hgt] = term_get_size();
     const auto col_study = wid + COL_STUDY;
     const auto row_study = hgt + ROW_STUDY;
-    PlayerClass pc(player_ptr);
+    CreatureClass pc(creature);
     if (!pc.equals(PlayerClassType::IMITATOR)) {
         return;
     }
@@ -351,20 +354,21 @@ void print_imitation(PlayerType *player_ptr)
 
     TERM_COLOR attr = mane_data->new_mane ? TERM_L_RED : TERM_WHITE;
     c_put_str(attr, _("まね", "Imit"), row_study, col_study);
+#endif // GODOT_RICH_UI
 }
 
 /*!
  * @brief 画面下部に表示すべき呪術の呪文をリストアップする
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @bar_flags 表示可否を決めるためのフラグ群
  */
-static void add_hex_status_flags(PlayerType *player_ptr, BIT_FLAGS *bar_flags)
+static void add_hex_status_flags(CreatureEntity &creature, BIT_FLAGS *bar_flags)
 {
-    if (!PlayerRealm(player_ptr).is_realm_hex()) {
+    if (!PlayerRealm(creature).is_realm_hex()) {
         return;
     }
 
-    SpellHex spell_hex(player_ptr);
+    SpellHex spell_hex(creature);
     if (spell_hex.is_spelling_specific(HEX_BLESS)) {
         ADD_BAR_FLAG(BAR_BLESSED);
     }
@@ -445,206 +449,209 @@ static void add_hex_status_flags(PlayerType *player_ptr, BIT_FLAGS *bar_flags)
 /*!
  * @brief 下部に状態表示を行う / Show status bar
  */
-void print_status(PlayerType *player_ptr)
+void print_status(CreatureEntity &creature)
 {
+#ifdef GODOT_RICH_UI
+    (void)creature;
+    return; // 状態バーは将来 Godot StatusPanel に移行予定
+#else
     const auto &[wid, hgt] = term_get_size();
     const auto row_statbar = hgt + ROW_STATBAR;
     const auto max_col_statbar = wid + MAX_COL_STATBAR;
     term_erase(0, row_statbar, max_col_statbar);
     BIT_FLAGS bar_flags[3]{};
-    auto effects = player_ptr->effects();
-    if (player_ptr->tsuyoshi) {
+    if (creature.get_timed_effect(CreatureTimedEffect::TSUYOSHI)) {
         ADD_BAR_FLAG(BAR_TSUYOSHI);
     }
 
-    if (effects->hallucination().is_hallucinated()) {
+    if (creature.is_hallucinated()) {
         ADD_BAR_FLAG(BAR_HALLUCINATION);
     }
 
-    if (player_ptr->effects()->blindness().is_blind()) {
+    if (creature.is_blind()) {
         ADD_BAR_FLAG(BAR_BLINDNESS);
     }
 
-    if (effects->paralysis().is_paralyzed()) {
+    if (creature.is_paralyzed()) {
         ADD_BAR_FLAG(BAR_PARALYZE);
     }
 
-    if (effects->confusion().is_confused()) {
+    if (creature.is_confused()) {
         ADD_BAR_FLAG(BAR_CONFUSE);
     }
 
-    if (effects->poison().is_poisoned()) {
+    if (creature.is_poisoned()) {
         ADD_BAR_FLAG(BAR_POISONED);
     }
 
-    if (player_ptr->tim_invis) {
+    if (creature.get_timed_effect(CreatureTimedEffect::TIM_INVIS)) {
         ADD_BAR_FLAG(BAR_SENSEUNSEEN);
     }
 
-    auto sniper_data = PlayerClass(player_ptr).get_specific_data<SniperData>();
+    auto sniper_data = CreatureClass(creature).get_specific_data<SniperData>();
     if (sniper_data && (sniper_data->concent >= CONCENT_RADAR_THRESHOLD)) {
         ADD_BAR_FLAG(BAR_SENSEUNSEEN);
         ADD_BAR_FLAG(BAR_NIGHTSIGHT);
     }
 
-    if (is_time_limit_esp(player_ptr)) {
+    if (creature.is_time_limit_esp()) {
         ADD_BAR_FLAG(BAR_TELEPATHY);
     }
 
-    if (player_ptr->tim_regen) {
+    if (creature.get_timed_effect(CreatureTimedEffect::TIM_REGEN)) {
         ADD_BAR_FLAG(BAR_REGENERATION);
     }
 
-    if (player_ptr->tim_infra) {
+    if (creature.get_timed_effect(CreatureTimedEffect::TIM_INFRA)) {
         ADD_BAR_FLAG(BAR_INFRAVISION);
     }
 
-    if (effects->protection().is_protected()) {
+    if (creature.is_protected_from_evil()) {
         ADD_BAR_FLAG(BAR_PROTEVIL);
     }
 
-    if (is_invuln(player_ptr)) {
+    if (creature.is_invulnerable()) {
         ADD_BAR_FLAG(BAR_INVULN);
     }
 
-    if (player_ptr->wraith_form) {
+    if (creature.get_timed_effect(CreatureTimedEffect::WRAITH_FORM)) {
         ADD_BAR_FLAG(BAR_WRAITH);
     }
 
-    if (player_ptr->tim_pass_wall) {
+    if (creature.get_timed_effect(CreatureTimedEffect::TIM_PASS_WALL)) {
         ADD_BAR_FLAG(BAR_PASSWALL);
     }
 
-    if (player_ptr->tim_reflect) {
+    if (creature.get_timed_effect(CreatureTimedEffect::TIM_REFLECT)) {
         ADD_BAR_FLAG(BAR_REFLECTION);
     }
 
-    if (is_hero(player_ptr)) {
+    if (creature.is_hero()) {
         ADD_BAR_FLAG(BAR_HEROISM);
     }
 
-    if (is_shero(player_ptr)) {
+    if (creature.is_shero()) {
         ADD_BAR_FLAG(BAR_BERSERK);
     }
 
-    if (is_blessed(player_ptr)) {
+    if (creature.is_blessed()) {
         ADD_BAR_FLAG(BAR_BLESSED);
     }
 
-    if (player_ptr->magicdef) {
+    if (creature.get_timed_effect(CreatureTimedEffect::MAGICDEF)) {
         ADD_BAR_FLAG(BAR_MAGICDEFENSE);
     }
 
-    if (player_ptr->tsubureru) {
+    if (creature.get_timed_effect(CreatureTimedEffect::TSUBURERU)) {
         ADD_BAR_FLAG(BAR_EXPAND);
     }
 
-    if (player_ptr->shield) {
+    if (creature.get_timed_effect(CreatureTimedEffect::SHIELD)) {
         ADD_BAR_FLAG(BAR_STONESKIN);
     }
 
-    auto ninja_data = PlayerClass(player_ptr).get_specific_data<ninja_data_type>();
+    auto ninja_data = CreatureClass(creature).get_specific_data<ninja_data_type>();
     if (ninja_data && ninja_data->kawarimi) {
         ADD_BAR_FLAG(BAR_KAWARIMI);
     }
 
-    if (player_ptr->special_defense & DEFENSE_ACID) {
+    if (creature.has_special_defense(DEFENSE_ACID)) {
         ADD_BAR_FLAG(BAR_IMMACID);
     }
 
-    if (is_oppose_acid(player_ptr)) {
+    if (is_oppose_acid(creature)) {
         ADD_BAR_FLAG(BAR_RESACID);
     }
 
-    if (player_ptr->special_defense & DEFENSE_ELEC) {
+    if (creature.has_special_defense(DEFENSE_ELEC)) {
         ADD_BAR_FLAG(BAR_IMMELEC);
     }
 
-    if (is_oppose_elec(player_ptr)) {
+    if (is_oppose_elec(creature)) {
         ADD_BAR_FLAG(BAR_RESELEC);
     }
 
-    if (player_ptr->special_defense & DEFENSE_FIRE) {
+    if (creature.has_special_defense(DEFENSE_FIRE)) {
         ADD_BAR_FLAG(BAR_IMMFIRE);
     }
 
-    if (is_oppose_fire(player_ptr)) {
+    if (is_oppose_fire(creature)) {
         ADD_BAR_FLAG(BAR_RESFIRE);
     }
 
-    if (player_ptr->special_defense & DEFENSE_COLD) {
+    if (creature.has_special_defense(DEFENSE_COLD)) {
         ADD_BAR_FLAG(BAR_IMMCOLD);
     }
 
-    if (is_oppose_cold(player_ptr)) {
+    if (is_oppose_cold(creature)) {
         ADD_BAR_FLAG(BAR_RESCOLD);
     }
 
-    if (is_oppose_pois(player_ptr)) {
+    if (is_oppose_pois(creature)) {
         ADD_BAR_FLAG(BAR_RESPOIS);
     }
 
-    if (player_ptr->word_recall) {
+    if (creature.get_timed_effect(CreatureTimedEffect::WORD_RECALL)) {
         ADD_BAR_FLAG(BAR_RECALL);
     }
 
-    if (player_ptr->alter_reality) {
+    if (creature.get_timed_effect(CreatureTimedEffect::ALTER_REALITY)) {
         ADD_BAR_FLAG(BAR_ALTER);
     }
 
-    if (effects->fear().is_fearful()) {
+    if (creature.is_fearful()) {
         ADD_BAR_FLAG(BAR_AFRAID);
     }
 
-    if (player_ptr->tim_res_time) {
+    if (creature.get_timed_effect(CreatureTimedEffect::TIM_RES_TIME)) {
         ADD_BAR_FLAG(BAR_RESTIME);
     }
 
-    if (player_ptr->multishadow) {
+    if (creature.get_timed_effect(CreatureTimedEffect::MULTISHADOW)) {
         ADD_BAR_FLAG(BAR_MULTISHADOW);
     }
 
-    if (player_ptr->special_attack & ATTACK_CONFUSE) {
+    if (creature.has_special_attack(ATTACK_CONFUSE)) {
         ADD_BAR_FLAG(BAR_ATTKCONF);
     }
 
-    if (player_ptr->resist_magic) {
+    if (creature.get_timed_effect(CreatureTimedEffect::RESIST_MAGIC)) {
         ADD_BAR_FLAG(BAR_REGMAGIC);
     }
 
-    if (player_ptr->ult_res) {
+    if (creature.get_timed_effect(CreatureTimedEffect::ULTIMATE_RESISTANCE)) {
         ADD_BAR_FLAG(BAR_ULTIMATE);
     }
 
-    if (player_ptr->tim_levitation) {
+    if (creature.get_timed_effect(CreatureTimedEffect::TIM_LEVITATION)) {
         ADD_BAR_FLAG(BAR_LEVITATE);
     }
 
-    if (player_ptr->tim_res_nether) {
+    if (creature.get_timed_effect(CreatureTimedEffect::TIM_RES_NETHER)) {
         ADD_BAR_FLAG(BAR_RESNETH);
     }
 
-    if (player_ptr->dustrobe) {
+    if (creature.get_timed_effect(CreatureTimedEffect::DUSTROBE)) {
         ADD_BAR_FLAG(BAR_DUSTROBE);
     }
 
-    if (player_ptr->special_attack & ATTACK_FIRE) {
+    if (creature.has_special_attack(ATTACK_FIRE)) {
         ADD_BAR_FLAG(BAR_ATTKFIRE);
     }
 
-    if (player_ptr->special_attack & ATTACK_COLD) {
+    if (creature.has_special_attack(ATTACK_COLD)) {
         ADD_BAR_FLAG(BAR_ATTKCOLD);
     }
 
-    if (player_ptr->special_attack & ATTACK_ELEC) {
+    if (creature.has_special_attack(ATTACK_ELEC)) {
         ADD_BAR_FLAG(BAR_ATTKELEC);
     }
 
-    if (player_ptr->special_attack & ATTACK_ACID) {
+    if (creature.has_special_attack(ATTACK_ACID)) {
         ADD_BAR_FLAG(BAR_ATTKACID);
     }
 
-    if (player_ptr->special_attack & ATTACK_POIS) {
+    if (creature.has_special_attack(ATTACK_POIS)) {
         ADD_BAR_FLAG(BAR_ATTKPOIS);
     }
 
@@ -652,51 +659,51 @@ void print_status(PlayerType *player_ptr)
         ADD_BAR_FLAG(BAR_SUPERSTEALTH);
     }
 
-    if (player_ptr->tim_sh_fire) {
+    if (creature.get_timed_effect(CreatureTimedEffect::TIM_SH_FIRE)) {
         ADD_BAR_FLAG(BAR_SHFIRE);
     }
 
-    if (is_time_limit_stealth(player_ptr)) {
+    if (creature.is_time_limit_stealth()) {
         ADD_BAR_FLAG(BAR_STEALTH);
     }
 
-    if (player_ptr->tim_sh_touki) {
+    if (creature.get_timed_effect(CreatureTimedEffect::TIM_SH_TOUKI)) {
         ADD_BAR_FLAG(BAR_TOUKI);
     }
 
-    if (player_ptr->tim_sh_holy) {
+    if (creature.get_timed_effect(CreatureTimedEffect::TIM_SH_HOLY)) {
         ADD_BAR_FLAG(BAR_SHHOLY);
     }
 
-    if (player_ptr->tim_eyeeye) {
+    if (creature.get_timed_effect(CreatureTimedEffect::TIM_EYEEYE)) {
         ADD_BAR_FLAG(BAR_EYEEYE);
     }
 
-    if (player_ptr->tim_res_lite) {
+    if (creature.get_timed_effect(CreatureTimedEffect::TIM_RES_LITE)) {
         ADD_BAR_FLAG(BAR_RESLITE);
     }
 
-    if (player_ptr->tim_res_dark) {
+    if (creature.get_timed_effect(CreatureTimedEffect::TIM_RES_DARK)) {
         ADD_BAR_FLAG(BAR_RESDARK);
     }
 
-    if (player_ptr->tim_res_fear) {
+    if (creature.get_timed_effect(CreatureTimedEffect::TIM_RES_FEAR)) {
         ADD_BAR_FLAG(BAR_RESFEAR);
     }
 
-    if (player_ptr->tim_emission) {
+    if (creature.get_timed_effect(CreatureTimedEffect::TIM_EMISSION)) {
         ADD_BAR_FLAG(BAR_EMISSION);
     }
 
-    if (player_ptr->tim_exorcism) {
+    if (creature.get_timed_effect(CreatureTimedEffect::TIM_EXORCISM)) {
         ADD_BAR_FLAG(BAR_EXORCISM);
     }
 
-    if (player_ptr->tim_imm_dark) {
+    if (creature.get_timed_effect(CreatureTimedEffect::TIM_IMM_DARK)) {
         ADD_BAR_FLAG(BAR_IMMDARK);
     }
 
-    add_hex_status_flags(player_ptr, bar_flags);
+    add_hex_status_flags(creature, bar_flags);
     TERM_LEN col = 0, num = 0;
     for (int i = 0; stat_bars[i].sstr; i++) {
         if (IS_BAR_FLAG(i)) {
@@ -745,20 +752,21 @@ void print_status(PlayerType *player_ptr)
             break;
         }
     }
+#endif // GODOT_RICH_UI
 }
 
 /*!
  * @brief プレイヤーのステータスを一括表示する（下部分） / Display extra info (mostly below map)
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
-void print_frame_extra(PlayerType *player_ptr)
+void print_frame_extra(CreatureEntity &creature)
 {
-    print_cut(player_ptr);
-    print_stun(player_ptr);
-    print_hunger(player_ptr);
-    print_state(player_ptr);
-    print_speed(player_ptr);
-    print_study(player_ptr);
-    print_imitation(player_ptr);
-    print_status(player_ptr);
+    print_cut(creature);
+    print_stun(creature);
+    print_hunger(creature);
+    print_state(creature);
+    print_speed(creature);
+    print_study(creature);
+    print_imitation(creature);
+    print_status(creature);
 }

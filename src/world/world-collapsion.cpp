@@ -2,7 +2,7 @@
 #include "market/arena-entry.h"
 #include "object-enchant/tr-flags.h"
 #include "player/player-status-flags.h"
-#include "system/player-type-definition.h"
+#include "system/creature-entity.h"
 #include "world/world.h"
 #include <algorithm>
 #include <cmath>
@@ -23,13 +23,13 @@ bool WorldCollapsion::is_blown_away()
 /*!
  * @brief 時空崩壊度自然進行度計算
  */
-void WorldCollapsion::plus_timed_world_collapsion(AngbandWorld *w_ptr, PlayerType *player_ptr, int multi)
+void WorldCollapsion::plus_timed_world_collapsion(AngbandWorld *w_ptr, CreatureEntity &creature, int multi)
 {
     auto &entries = ArenaEntryList::get_instance();
     if (w_ptr->total_winner && entries.get_current_entry() >= entries.get_max_entries()) {
         return;
     }
-    if (get_player_flags(player_ptr, TR_WORLD_END)) {
+    if (get_player_flags(creature, TR_WORLD_END)) {
         multi *= 2;
     }
     if (w_ptr->total_winner) {

@@ -7,6 +7,7 @@
 #include "io/input-key-acceptor.h"
 #include "io/input-key-requester.h" //!< @todo 相互依存している、後で何とかする.
 #include "main/sound-of-music.h"
+#include "system/creature-entity.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "term/gameterm.h"
@@ -197,16 +198,16 @@ tl::optional<std::string> input_string(std::string_view prompt, int len, std::st
  */
 bool input_check(std::string_view prompt)
 {
-    return input_check_strict(p_ptr, prompt, UserCheck::NONE);
+    return input_check_strict(PlayerType::get_instance(), prompt, UserCheck::NONE);
 }
 
 /*!
  * @details initializer_list を使うと再帰呼び出し扱いになるので一旦FlagGroup で受ける
  */
-bool input_check_strict(PlayerType *player_ptr, std::string_view prompt, UserCheck one_mode)
+bool input_check_strict(CreatureEntity &creature, std::string_view prompt, UserCheck one_mode)
 {
     EnumClassFlagGroup<UserCheck> mode = { one_mode };
-    return input_check_strict(player_ptr, prompt, mode);
+    return input_check_strict(creature, prompt, mode);
 }
 
 /*
@@ -217,7 +218,7 @@ bool input_check_strict(PlayerType *player_ptr, std::string_view prompt, UserChe
  * NO_HISTORY  : no message_add
  * DEFAULT_Y   : accept any key as y, except n and Esc.
  */
-bool input_check_strict(PlayerType *player_ptr, std::string_view prompt, EnumClassFlagGroup<UserCheck> mode)
+bool input_check_strict(CreatureEntity &creature, std::string_view prompt, EnumClassFlagGroup<UserCheck> mode)
 {
     if (!rogue_like_commands) {
         mode.reset(UserCheck::OKAY_CANCEL);
@@ -237,17 +238,17 @@ bool input_check_strict(PlayerType *player_ptr, std::string_view prompt, EnumCla
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     if (auto_more) {
         rfu.set_flag(SubWindowRedrawingFlag::MESSAGE);
-        window_stuff(player_ptr);
+        window_stuff(creature);
         num_more = 0;
     }
 
     msg_erase();
 
     prt(buf, 0, 0);
-    if (mode.has_not(UserCheck::NO_HISTORY) && player_ptr->playing) {
+    if (mode.has_not(UserCheck::NO_HISTORY) && creature.is_playing()) {
         message_add(buf);
         rfu.set_flag(SubWindowRedrawingFlag::MESSAGE);
-        window_stuff(player_ptr);
+        window_stuff(creature);
     }
 
     bool flag = false;

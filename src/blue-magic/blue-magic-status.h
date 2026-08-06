@@ -5,9 +5,9 @@
  */
 
 struct bmc_type;
-class PlayerType;
-bool cast_blue_scare(PlayerType *player_ptr, bmc_type *bmc_ptr);
-bool cast_blue_blind(PlayerType *player_ptr, bmc_type *bmc_ptr);
-bool cast_blue_confusion(PlayerType *player_ptr, bmc_type *bmc_ptr);
-bool cast_blue_slow(PlayerType *player_ptr, bmc_type *bmc_ptr);
-bool cast_blue_sleep(PlayerType *player_ptr, bmc_type *bmc_ptr);
+class CreatureEntity;
+bool cast_blue_scare(CreatureEntity &creature, bmc_type *bmc_ptr);
+bool cast_blue_blind(CreatureEntity &creature, bmc_type *bmc_ptr);
+bool cast_blue_confusion(CreatureEntity &creature, bmc_type *bmc_ptr);
+bool cast_blue_slow(CreatureEntity &creature, bmc_type *bmc_ptr);
+bool cast_blue_sleep(CreatureEntity &creature, bmc_type *bmc_ptr);

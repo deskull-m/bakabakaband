@@ -11,9 +11,9 @@
 #include "main/sound-of-music.h"
 #include "player-status/player-energy.h"
 #include "player/player-move.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "system/terrain/terrain-definition.h"
 #include "view/display-messages.h"
@@ -43,6 +43,7 @@ static bool do_cmd_tunnel_test(const Grid &grid)
 /*!
  * @brief 「掘る」動作コマンドのサブルーチン /
  * Perform the basic "tunnel" command
+ * @param creature クリーチャーへの参照
  * @param y 対象を行うマスのY座標
  * @param x 対象を行うマスのX座標
  * @return 実際に処理が行われた場合TRUEを返す。
@@ -51,18 +52,18 @@ static bool do_cmd_tunnel_test(const Grid &grid)
  * Do not use twall anymore
  * Returns TRUE if repeated commands may continue
  */
-bool exe_tunnel(PlayerType *player_ptr, POSITION y, POSITION x)
+bool exe_tunnel(CreatureEntity &creature, POSITION y, POSITION x)
 {
     auto more = false;
     const Pos2D pos(y, x);
-    const auto &grid = player_ptr->current_floor_ptr->get_grid(pos);
+    const auto &grid = creature.get_floor()->get_grid(pos);
     if (!do_cmd_tunnel_test(grid)) {
         return false;
     }
 
-    PlayerEnergy(player_ptr).set_player_turn_energy(100);
+    PlayerEnergy(creature).set_player_turn_energy(100);
     const auto &terrain = grid.get_terrain();
-    const auto power = terrain.power;
+    const int power = terrain.tunnel_power;
     const auto &terrain_mimic = grid.get_terrain(TerrainKind::MIMIC);
     const auto &name = terrain_mimic.name;
     if (command_rep == 0) {
@@ -76,11 +77,11 @@ bool exe_tunnel(PlayerType *player_ptr, POSITION y, POSITION x)
             msg_print(_("そこは掘れない!", "You can't tunnel through that!"));
         }
     } else if (terrain.flags.has(TerrainCharacteristics::CAN_DIG)) {
-        if (player_ptr->skill_dig > randint0(20 * power)) {
+        if (creature.get_skill_dig() > randint0(20 * power)) {
             sound(SoundKind::DIG_THROUGH);
             msg_format(_("%sをくずした。", "You have removed the %s."), name.data());
-            cave_alter_feat(player_ptr, y, x, TerrainCharacteristics::TUNNEL);
-            player_ptr->plus_incident_tree("TUNNEL", 1);
+            cave_alter_feat(creature, y, x, TerrainCharacteristics::TUNNEL);
+            creature.plus_incident_tree("TUNNEL", 1);
             RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::FLOW);
         } else {
             msg_format(_("%sをくずしている。", "You dig into the %s."), name.data());
@@ -88,7 +89,7 @@ bool exe_tunnel(PlayerType *player_ptr, POSITION y, POSITION x)
         }
     } else {
         bool tree = terrain_mimic.flags.has(TerrainCharacteristics::TREE);
-        if (player_ptr->skill_dig > power + randint0(40 * power)) {
+        if (creature.get_skill_dig() > power + randint0(40 * power)) {
             sound(SoundKind::DIG_THROUGH);
             if (tree) {
                 msg_format(_("%sを切り払った。", "You have cleared away the %s."), name.data());
@@ -101,15 +102,15 @@ bool exe_tunnel(PlayerType *player_ptr, POSITION y, POSITION x)
                 sound(SoundKind::GLASS);
             }
 
-            cave_alter_feat(player_ptr, y, x, TerrainCharacteristics::TUNNEL);
-            player_ptr->plus_incident_tree("TUNNEL", 1);
-            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::DILIGENCE, 1);
-            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::NATURE, -1);
+            cave_alter_feat(creature, y, x, TerrainCharacteristics::TUNNEL);
+            creature.plus_incident_tree("TUNNEL", 1);
+            chg_virtue(creature, Virtue::DILIGENCE, 1);
+            chg_virtue(creature, Virtue::NATURE, -1);
         } else {
             if (tree) {
                 msg_format(_("%sを切っている。", "You chop away at the %s."), name.data());
                 if (one_in_(4)) {
-                    search(player_ptr);
+                    search(creature);
                 }
             } else {
                 msg_format(_("%sに穴を掘っている。", "You tunnel into the %s."), name.data());
@@ -120,7 +121,7 @@ bool exe_tunnel(PlayerType *player_ptr, POSITION y, POSITION x)
     }
 
     if (grid.is_hidden_door() && one_in_(4)) {
-        search(player_ptr);
+        search(creature);
     }
 
     return more;

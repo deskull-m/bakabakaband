@@ -1,0 +1,80 @@
+[gd_scene load_steps=3 format=3 uid="uid://terminal_pane"]
+
+[ext_resource type="Script" path="res://scripts/terminal_pane.gd" id="1_pane"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_pane"]
+bg_color = Color(0, 0, 0, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.5, 0.5, 0.5, 0.8)
+
+[node name="TerminalPane" type="PanelContainer"]
+script = ExtResource("1_pane")
+size_flags_horizontal = 3
+size_flags_vertical = 3
+custom_minimum_size = Vector2(120, 60)
+theme_override_styles/panel = SubResource("StyleBoxFlat_pane")
+
+[node name="PaneVBox" type="VBoxContainer" parent="."]
+layout_mode = 2
+theme_override_constants/separation = 0
+
+[node name="Header" type="PanelContainer" parent="PaneVBox"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 22)
+
+[node name="HBox" type="HBoxContainer" parent="PaneVBox/Header"]
+layout_mode = 2
+theme_override_constants/separation = 1
+
+[node name="TitleLabel" type="Label" parent="PaneVBox/Header/HBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+clip_text = true
+text = "Main"
+
+[node name="VSplitButton" type="Button" parent="PaneVBox/Header/HBox"]
+layout_mode = 2
+custom_minimum_size = Vector2(22, 0)
+focus_mode = 0
+text = "▶"
+tooltip_text = "右に展開"
+flat = true
+
+[node name="HSplitButton" type="Button" parent="PaneVBox/Header/HBox"]
+layout_mode = 2
+custom_minimum_size = Vector2(22, 0)
+focus_mode = 0
+text = "▼"
+tooltip_text = "下に展開"
+flat = true
+
+[node name="CloseButton" type="Button" parent="PaneVBox/Header/HBox"]
+layout_mode = 2
+custom_minimum_size = Vector2(22, 0)
+focus_mode = 0
+text = "×"
+tooltip_text = "閉じる"
+flat = true
+visible = false
+
+[node name="SubViewportContainer" type="SubViewportContainer" parent="PaneVBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+stretch = true
+
+[node name="SubViewport" type="SubViewport" parent="PaneVBox/SubViewportContainer"]
+size = Vector2i(640, 400)
+transparent_bg = false
+render_target_update_mode = 3
+
+[node name="TerminalContainer" type="Node2D" parent="PaneVBox/SubViewportContainer/SubViewport"]
+
+[node name="TileLayer" type="GodotTileLayer" parent="PaneVBox/SubViewportContainer/SubViewport/TerminalContainer"]
+z_index = 0
+
+[node name="Terminal" type="GodotTerminal" parent="PaneVBox/SubViewportContainer/SubViewport/TerminalContainer"]
+z_index = 1

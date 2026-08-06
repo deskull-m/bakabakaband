@@ -1,9 +1,14 @@
 #pragma once
 #include "player-status/player-status-base.h"
 
+class CreatureEntity;
 class PlayerInfravision : public PlayerStatusBase {
 public:
-    PlayerInfravision(PlayerType *player_ptr);
+    PlayerInfravision(CreatureEntity &creature);
+    PlayerInfravision(const PlayerInfravision &) = default;
+    PlayerInfravision(PlayerInfravision &&) = default;
+    PlayerInfravision &operator=(const PlayerInfravision &) = delete;
+    PlayerInfravision &operator=(PlayerInfravision &&) = delete;
 
 protected:
     void set_locals() override;

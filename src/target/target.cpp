@@ -1,7 +1,6 @@
 #include "target/target.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
-#include "system/monster-entity.h"
-#include "system/player-type-definition.h"
 #include "target/target-preparation.h"
 #include <variant>
 
@@ -21,8 +20,8 @@ struct TargetMonster {
 
 class IsOkay {
 public:
-    IsOkay(PlayerType *player_ptr)
-        : player_ptr(player_ptr)
+    IsOkay(CreatureEntity *creature_ptr)
+        : creature_ptr(creature_ptr)
     {
     }
     bool operator()(std::monostate) const
@@ -35,17 +34,17 @@ public:
     }
     bool operator()(const TargetMonster &target_monster) const
     {
-        return target_able(this->player_ptr, target_monster.m_idx);
+        return target_able(*this->creature_ptr, target_monster.m_idx);
     }
 
 private:
-    PlayerType *player_ptr;
+    CreatureEntity *creature_ptr;
 };
 
 class PositionGettor {
 public:
-    PositionGettor(PlayerType *player_ptr)
-        : player_ptr(player_ptr)
+    PositionGettor(CreatureEntity *creature_ptr)
+        : creature_ptr(creature_ptr)
     {
     }
     tl::optional<Pos2D> operator()(std::monostate) const
@@ -58,12 +57,12 @@ public:
     }
     tl::optional<Pos2D> operator()(const TargetMonster &target_monster) const
     {
-        const auto &monster = this->player_ptr->current_floor_ptr->m_list[target_monster.m_idx];
+        const auto &monster = this->creature_ptr->get_floor()->get_monster(target_monster.m_idx);
         return monster.get_position();
     }
 
 private:
-    PlayerType *player_ptr;
+    CreatureEntity *creature_ptr;
 };
 
 class MonsterIndexGetter {
@@ -88,7 +87,7 @@ public:
 class Target::Impl {
 public:
     Impl() = default;
-    PlayerType *player_ptr;
+    CreatureEntity *creature_ptr;
     std::variant<std::monostate, TargetGrid, TargetMonster> target;
 };
 
@@ -127,10 +126,10 @@ Target Target::none()
  * @param pos ターゲットするマスの座標
  * @return 生成したインスタンス
  */
-Target Target::create_grid_target(PlayerType *player_ptr, const Pos2D &pos)
+Target Target::create_grid_target(CreatureEntity &creature, const Pos2D &pos)
 {
     Target target;
-    target.impl->player_ptr = player_ptr;
+    target.impl->creature_ptr = &creature;
     target.impl->target = TargetGrid{ pos };
     return target;
 }
@@ -141,10 +140,10 @@ Target Target::create_grid_target(PlayerType *player_ptr, const Pos2D &pos)
  * @param m_idx ターゲットするモンスターの参照インデックス
  * @return 生成したインスタンス
  */
-Target Target::create_monster_target(PlayerType *player_ptr, short m_idx)
+Target Target::create_monster_target(CreatureEntity &creature, short m_idx)
 {
     Target target;
-    target.impl->player_ptr = player_ptr;
+    target.impl->creature_ptr = &creature;
     target.impl->target = TargetMonster{ m_idx };
     return target;
 }
@@ -184,7 +183,7 @@ void Target::clear_last_target()
  */
 bool Target::is_okay() const
 {
-    return std::visit(IsOkay(this->impl->player_ptr), this->impl->target);
+    return std::visit(IsOkay(this->impl->creature_ptr), this->impl->target);
 }
 
 /*!
@@ -199,7 +198,7 @@ tl::optional<Pos2D> Target::get_position() const
     if (!this->is_okay()) {
         return tl::nullopt;
     }
-    return std::visit(PositionGettor(this->impl->player_ptr), this->impl->target);
+    return std::visit(PositionGettor(this->impl->creature_ptr), this->impl->target);
 }
 
 /*!

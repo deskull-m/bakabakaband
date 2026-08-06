@@ -9,6 +9,7 @@
 #include "load/load-util.h"
 #include "main/sound-of-music.h"
 #include "save/save-util.h"
+#include "system/creature-entity.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "term/gameterm.h"
@@ -168,12 +169,12 @@ bool is_msg_window_flowed(void)
 /*
  * Hack -- flush
  */
-static void msg_flush(PlayerType *player_ptr, int x)
+static void msg_flush(CreatureEntity &creature, int x)
 {
     byte a = TERM_L_BLUE;
     bool show_more = (num_more >= 0);
 
-    if (auto_more && !player_ptr->now_damaged) {
+    if (auto_more && !creature.is_now_damaged()) {
         show_more = is_msg_window_flowed();
     }
 
@@ -181,8 +182,8 @@ static void msg_flush(PlayerType *player_ptr, int x)
         show_more = false;
     }
 
-    player_ptr->now_damaged = false;
-    if (!player_ptr->playing || show_more) {
+    creature.set_now_damaged(false);
+    if (!creature.is_playing() || show_more) {
         term_putstr(x, 0, -1, a, _("-続く-", "-more-"));
         while (true) {
             int cmd = inkey();
@@ -294,7 +295,7 @@ void msg_print(std::string_view msg)
     const auto split_width = wid - 8;
 
     if ((msg_head_pos > 0) && ((msg_head_pos + std::ssize(msg)) > split_width)) {
-        msg_flush(p_ptr, msg_head_pos);
+        msg_flush(PlayerType::get_instance(), msg_head_pos);
         msg_flag = false;
         msg_head_pos = 0;
     }
@@ -310,13 +311,13 @@ void msg_print(std::string_view msg)
     while (std::ssize(msg) > split_width) {
         auto split = split_length(msg, split_width);
         term_putstr(0, 0, split, TERM_WHITE, msg.data());
-        msg_flush(p_ptr, split + 1);
+        msg_flush(PlayerType::get_instance(), split + 1);
         msg.remove_prefix(split);
     }
 
     term_putstr(msg_head_pos, 0, msg.size(), TERM_WHITE, msg.data());
     RedrawingFlagsUpdater::get_instance().set_flag(SubWindowRedrawingFlag::MESSAGE);
-    window_stuff(p_ptr);
+    window_stuff(PlayerType::get_instance());
 
     msg_flag = true;
     msg_head_pos += msg.size() + _(0, 1);
@@ -338,7 +339,7 @@ void msg_erase()
     }
 
     if (msg_head_pos > 0) {
-        msg_flush(p_ptr, msg_head_pos);
+        msg_flush(PlayerType::get_instance(), msg_head_pos);
         msg_flag = false;
         msg_head_pos = 0;
     }

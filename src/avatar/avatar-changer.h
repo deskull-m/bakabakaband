@@ -2,17 +2,20 @@
 
 #include "system/angband.h"
 
-class MonsterEntity;
-class PlayerType;
+class CreatureEntity;
 class AvatarChanger {
 public:
-    AvatarChanger(PlayerType *player_ptr, const MonsterEntity &monster);
+    AvatarChanger(CreatureEntity &creature, const CreatureEntity &target);
+    AvatarChanger(const AvatarChanger &) = default;
+    AvatarChanger(AvatarChanger &&) = default;
+    AvatarChanger &operator=(const AvatarChanger &) = delete;
+    AvatarChanger &operator=(AvatarChanger &&) = delete;
     virtual ~AvatarChanger() = default;
     void change_virtue();
 
 private:
-    PlayerType *player_ptr;
-    const MonsterEntity *m_ptr;
+    CreatureEntity &creature;
+    const CreatureEntity &target;
     void change_virtue_non_beginner();
     void change_virtue_unique();
     void change_virtue_good_evil();

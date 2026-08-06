@@ -10,8 +10,8 @@ enum class BlueMagicType {
     OTHER = 5,
 };
 
-class PlayerType;
-bool do_cmd_cast_learned(PlayerType *player_ptr);
+class CreatureEntity;
+bool do_cmd_cast_learned(CreatureEntity &creature);
 
 inline constexpr std::array<BlueMagicType, 5> BLUE_MAGIC_TYPE_LIST = { {
     BlueMagicType::BOLT,

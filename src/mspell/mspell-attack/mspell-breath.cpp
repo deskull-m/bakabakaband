@@ -13,11 +13,9 @@
 #include "mspell/mspell-data.h"
 #include "mspell/mspell-result.h"
 #include "mspell/mspell-util.h"
+#include "system/creature-entity.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/floor/floor-info.h"
-#include "system/monster-entity.h"
-#include "system/player-type-definition.h"
-#include "timed-effect/timed-effects.h"
 #include "view/display-messages.h"
 
 /*!
@@ -47,19 +45,19 @@ static bool spell_RF4_BREATH_special_message(MonraceId r_idx, AttributeType GF_T
     return false;
 }
 
-static void message_breath(PlayerType *player_ptr, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type, std::string_view type_s, AttributeType GF_TYPE)
+static void message_breath(CreatureEntity &creature, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type, std::string_view type_s, AttributeType GF_TYPE)
 {
-    auto &floor = *player_ptr->current_floor_ptr;
-    const auto &monster = floor.m_list[m_idx];
-    auto see_either = see_monster(player_ptr, m_idx) || see_monster(player_ptr, t_idx);
-    auto known = monster_near_player(floor, m_idx, t_idx);
+    auto &floor = *creature.get_floor();
+    const auto &monster = floor.get_monster(m_idx);
+    auto see_either = see_monster(creature, m_idx) || see_monster(creature, t_idx);
+    auto known = monster_near_player(creature, m_idx, t_idx);
     auto mon_to_mon = (target_type == MONSTER_TO_MONSTER);
     auto mon_to_player = (target_type == MONSTER_TO_PLAYER);
-    const auto m_name = monster_name(player_ptr, m_idx);
-    const auto t_name = monster_name(player_ptr, t_idx);
+    const auto m_name = monster_name(creature, m_idx);
+    const auto t_name = monster_name(creature, t_idx);
 
-    if (!spell_RF4_BREATH_special_message(monster.r_idx, GF_TYPE, m_name.data())) {
-        if (player_ptr->effects()->blindness().is_blind()) {
+    if (!spell_RF4_BREATH_special_message(monster.get_r_idx(), GF_TYPE, m_name.data())) {
+        if (creature.is_blind()) {
             if (mon_to_player || (mon_to_mon && known && see_either)) {
                 msg_format(_("%s^が何かのブレスを吐いた。", "%s^ breathes."), m_name.data());
             }
@@ -83,8 +81,8 @@ static void message_breath(PlayerType *player_ptr, MONSTER_IDX m_idx, MONSTER_ID
 
 static std::pair<MonsterAbilityType, MSpellData> make_breath_elemental(MonsterAbilityType ms_type, AttributeType GF_TYPE, std::string_view type_s)
 {
-    return { ms_type, { [type_s, GF_TYPE](auto *player_ptr, auto m_idx, auto t_idx, int target_type) {
-                           message_breath(player_ptr, m_idx, t_idx, target_type, type_s, GF_TYPE);
+    return { ms_type, { [type_s, GF_TYPE](CreatureEntity &creature, auto m_idx, auto t_idx, int target_type) {
+                           message_breath(creature, m_idx, t_idx, target_type, type_s, GF_TYPE);
                            return false;
                        },
                           GF_TYPE } };
@@ -92,8 +90,8 @@ static std::pair<MonsterAbilityType, MSpellData> make_breath_elemental(MonsterAb
 
 static std::pair<MonsterAbilityType, MSpellData> make_breath_elemental(MonsterAbilityType ms_type, AttributeType GF_TYPE, std::string_view type_s, MSpellDrsData drs)
 {
-    return { ms_type, { [type_s, GF_TYPE](auto *player_ptr, auto m_idx, auto t_idx, int target_type) {
-                           message_breath(player_ptr, m_idx, t_idx, target_type, type_s, GF_TYPE);
+    return { ms_type, { [type_s, GF_TYPE](CreatureEntity &creature, auto m_idx, auto t_idx, int target_type) {
+                           message_breath(creature, m_idx, t_idx, target_type, type_s, GF_TYPE);
                            return false;
                        },
                           GF_TYPE, drs } };
@@ -130,7 +128,7 @@ const std::unordered_map<MonsterAbilityType, MSpellData> breath_list = {
 
 /*!
  * @brief RF4_BR_*の処理。各種ブレス。 /
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param GF_TYPE ブレスの属性
  * @param y 対象の地点のy座標
  * @param x 対象の地点のx座標
@@ -140,34 +138,31 @@ const std::unordered_map<MonsterAbilityType, MSpellData> breath_list = {
  *
  * プレイヤーに当たったらラーニング可。
  */
-MonsterSpellResult spell_RF4_BREATH(PlayerType *player_ptr, MonsterAbilityType ms_type, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
+MonsterSpellResult spell_RF4_BREATH(CreatureEntity &creature, MonsterAbilityType ms_type, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
 {
     auto dam = 0;
     auto mon_to_player = (target_type == MONSTER_TO_PLAYER);
     std::unique_ptr<MSpellData> data;
 
     if (breath_list.find(ms_type) != breath_list.end()) {
-        dam = monspell_damage(player_ptr, ms_type, m_idx, DAM_ROLL);
+        dam = monspell_damage(creature, ms_type, m_idx, DAM_ROLL);
         data = std::make_unique<MSpellData>(breath_list.at(ms_type));
     } else {
         dam = 0;
-        data = std::make_unique<MSpellData>([](auto *player_ptr, auto m_idx, auto t_idx, int target_type) {
-            message_breath(player_ptr, m_idx, t_idx, target_type, _("不明", "Unknown"), AttributeType::NONE);
+        data = std::make_unique<MSpellData>([](CreatureEntity &creature, auto m_idx, auto t_idx, int target_type) {
+            message_breath(creature, m_idx, t_idx, target_type, _("不明", "Unknown"), AttributeType::NONE);
             return false;
         },
             AttributeType::NONE);
     }
 
-    data->msg.output(player_ptr, m_idx, t_idx, target_type);
+    data->msg.output(creature, m_idx, t_idx, target_type);
 
-    const auto proj_res = breath(player_ptr, y, x, m_idx, data->type, dam, 0, target_type);
+    const auto proj_res = breath(creature, y, x, m_idx, data->type, dam, 0, target_type);
 
     if (mon_to_player) {
-        data->drs.execute(player_ptr, m_idx);
+        data->drs.execute(creature, m_idx);
     }
 
-    auto res = MonsterSpellResult::make_valid(dam);
-    res.learnable = proj_res.affected_player;
-
-    return res;
+    return MonsterSpellResult::make_learnable(proj_res.affected_player, dam);
 }

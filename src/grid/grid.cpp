@@ -25,20 +25,17 @@
 #include "monster/monster-info.h"
 #include "monster/monster-update.h"
 #include "player/player-status-flags.h"
-#include "player/player-status.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/enums/grid-flow.h"
 #include "system/enums/terrain/terrain-tag.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
-#include "system/monster-entity.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "system/terrain/terrain-definition.h"
 #include "system/terrain/terrain-list.h"
 #include "term/gameterm.h"
-#include "timed-effect/timed-effects.h"
 #include "view/display-map.h"
 #include "view/display-messages.h"
 #include "window/main-window-util.h"
@@ -56,17 +53,17 @@ bool GridTemplate::matches(const Grid &grid) const
     return is_matched;
 }
 
-void set_terrain_id_to_grid(PlayerType *player_ptr, const Pos2D &pos, TerrainTag tag)
+void set_terrain_id_to_grid(CreatureEntity &creature, const Pos2D &pos, TerrainTag tag)
 {
-    set_terrain_id_to_grid(player_ptr, pos, TerrainList::get_instance().get_terrain_id(tag));
+    set_terrain_id_to_grid(creature, pos, TerrainList::get_instance().get_terrain_id(tag));
 }
 
 /*
  * Change the "feat" flag for a grid, and notice/redraw the grid
  */
-void set_terrain_id_to_grid(PlayerType *player_ptr, const Pos2D &pos, short terrain_id)
+void set_terrain_id_to_grid(CreatureEntity &creature, const Pos2D &pos, short terrain_id)
 {
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *creature.get_floor();
     auto &grid = floor.get_grid(pos);
     const auto &terrain = TerrainList::get_instance().get_terrain(terrain_id);
     const auto &dungeon = floor.get_dungeon_definition();
@@ -98,7 +95,7 @@ void set_terrain_id_to_grid(PlayerType *player_ptr, const Pos2D &pos, short terr
             grid.info &= ~(CAVE_MARK);
         }
 
-        update_local_illumination(player_ptr, pos);
+        update_local_illumination(creature, pos);
     }
 
     if (terrain.flags.has_not(TerrainCharacteristics::REMEMBER)) {
@@ -106,11 +103,11 @@ void set_terrain_id_to_grid(PlayerType *player_ptr, const Pos2D &pos, short terr
     }
 
     if (grid.has_monster()) {
-        update_monster(player_ptr, grid.m_idx, false);
+        update_monster(creature, grid.m_idx, false);
     }
 
-    note_spot(player_ptr, pos);
-    lite_spot(player_ptr, pos);
+    note_spot(creature, pos);
+    lite_spot(creature, pos);
     if (old_los ^ terrain.flags.has(TerrainCharacteristics::LOS)) {
         static constexpr auto flags = {
             StatusRecalculatingFlag::VIEW,
@@ -135,29 +132,29 @@ void set_terrain_id_to_grid(PlayerType *player_ptr, const Pos2D &pos, short terr
         grid_neighbor.info |= CAVE_GLOW;
         if (grid_neighbor.is_view()) {
             if (grid_neighbor.has_monster()) {
-                update_monster(player_ptr, grid_neighbor.m_idx, false);
+                update_monster(creature, grid_neighbor.m_idx, false);
             }
 
-            note_spot(player_ptr, pos_neighbor);
-            lite_spot(player_ptr, pos_neighbor);
+            note_spot(creature, pos_neighbor);
+            lite_spot(creature, pos_neighbor);
         }
 
-        update_local_illumination(player_ptr, pos_neighbor);
+        update_local_illumination(creature, pos_neighbor);
     }
 
-    if (floor.get_grid(player_ptr->get_position()).info & CAVE_GLOW) {
-        set_superstealth(player_ptr, false);
+    if (floor.get_grid(creature.get_position()).info & CAVE_GLOW) {
+        set_superstealth(creature, false);
     }
 }
 
 /*!
  * @brief 新規フロアに入りたてのプレイヤーをランダムな場所に配置する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return 配置に成功したらその座標、失敗したらnullopt
  */
-tl::optional<Pos2D> new_player_spot(PlayerType *player_ptr)
+tl::optional<Pos2D> new_player_spot(CreatureEntity &creature)
 {
-    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     auto max_attempts = 10000;
     Pos2D pos(0, 0);
     while (max_attempts--) {
@@ -190,7 +187,7 @@ tl::optional<Pos2D> new_player_spot(PlayerType *player_ptr)
             }
         }
 
-        if (!player_can_enter(player_ptr, grid.feat, 0)) {
+        if (!player_can_enter(creature, grid.feat, 0)) {
             continue;
         }
 
@@ -215,73 +212,73 @@ tl::optional<Pos2D> new_player_spot(PlayerType *player_ptr)
 
 /*!
  * @brief 対象座標のマスの照明状態を更新する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param pos 更新したいマスの座標
  */
-static void update_local_illumination_aux(PlayerType *player_ptr, const Pos2D &pos)
+static void update_local_illumination_aux(CreatureEntity &creature, const Pos2D &pos)
 {
-    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto &grid = floor.get_grid(pos);
     if (!grid.has_los()) {
         return;
     }
 
     if (grid.has_monster()) {
-        update_monster(player_ptr, grid.m_idx, false);
+        update_monster(creature, grid.m_idx, false);
     }
 
-    note_spot(player_ptr, pos);
-    lite_spot(player_ptr, pos);
+    note_spot(creature, pos);
+    lite_spot(creature, pos);
 }
 
 /*!
  * @brief 指定された座標の照明状態を更新する / Update "local" illumination
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param pos 視界先座標
  */
-void update_local_illumination(PlayerType *player_ptr, const Pos2D &pos)
+void update_local_illumination(CreatureEntity &creature, const Pos2D &pos)
 {
-    if (!player_ptr->current_floor_ptr->contains(pos, FloorBoundary::OUTER_WALL_EXCLUSIVE)) {
+    if (!creature.get_floor()->contains(pos, FloorBoundary::OUTER_WALL_EXCLUSIVE)) {
         return;
     }
 
-    const auto p_pos = player_ptr->get_position();
+    const auto p_pos = creature.get_position();
     if ((pos.y != p_pos.y) && (pos.x != p_pos.x)) {
         const auto yy = (pos.y < p_pos.y) ? (pos.y - 1) : (pos.y + 1);
         const auto xx = (pos.x < p_pos.x) ? (pos.x - 1) : (pos.x + 1);
-        update_local_illumination_aux(player_ptr, { yy, xx });
-        update_local_illumination_aux(player_ptr, { pos.y, xx });
-        update_local_illumination_aux(player_ptr, { yy, pos.x });
+        update_local_illumination_aux(creature, { yy, xx });
+        update_local_illumination_aux(creature, { pos.y, xx });
+        update_local_illumination_aux(creature, { yy, pos.x });
         return;
     }
 
-    if (pos.x != p_pos.x) { //!< y == player_ptr->y
+    if (pos.x != p_pos.x) { //!< y == player.y
         const auto xx = (pos.x < p_pos.x) ? (pos.x - 1) : (pos.x + 1);
         int yy;
         for (auto i = -1; i <= 1; i++) {
             yy = pos.y + i;
-            update_local_illumination_aux(player_ptr, { yy, xx });
+            update_local_illumination_aux(creature, { yy, xx });
         }
 
         yy = pos.y - 1;
-        update_local_illumination_aux(player_ptr, { yy, pos.x });
+        update_local_illumination_aux(creature, { yy, pos.x });
         yy = pos.y + 1;
-        update_local_illumination_aux(player_ptr, { yy, pos.x });
+        update_local_illumination_aux(creature, { yy, pos.x });
         return;
     }
 
-    if (pos.y != p_pos.y) { //!< x == player_ptr->x
-        const auto yy = (pos.y < player_ptr->y) ? (pos.y - 1) : (pos.y + 1);
+    if (pos.y != p_pos.y) { //!< x == player.x
+        const auto yy = (pos.y < creature.y) ? (pos.y - 1) : (pos.y + 1);
         int xx;
         for (auto i = -1; i <= 1; i++) {
             xx = pos.x + i;
-            update_local_illumination_aux(player_ptr, { yy, xx });
+            update_local_illumination_aux(creature, { yy, xx });
         }
 
         xx = pos.x - 1;
-        update_local_illumination_aux(player_ptr, { pos.y, xx });
+        update_local_illumination_aux(creature, { pos.y, xx });
         xx = pos.x + 1;
-        update_local_illumination_aux(player_ptr, { pos.y, xx });
+        update_local_illumination_aux(creature, { pos.y, xx });
     }
 
     if (p_pos != pos) {
@@ -289,7 +286,7 @@ void update_local_illumination(PlayerType *player_ptr, const Pos2D &pos)
     }
 
     for (const auto &d : Direction::directions_8()) {
-        update_local_illumination_aux(player_ptr, pos + d.vec());
+        update_local_illumination_aux(creature, pos + d.vec());
     }
 }
 
@@ -298,27 +295,27 @@ void update_local_illumination(PlayerType *player_ptr, const Pos2D &pos)
  * @return 視覚に収められていないならTRUEを返す
  * @details player_can_see_bold()関数の返り値の否定を返している。
  */
-bool no_lite(PlayerType *player_ptr)
+bool no_lite(CreatureEntity &creature)
 {
-    return !player_can_see_bold(player_ptr, player_ptr->y, player_ptr->x);
+    return !player_can_see_bold(creature, creature.y, creature.x);
 }
 
 /*
  * Place an attr/char pair at the given map coordinate, if legal.
  */
-void print_rel(PlayerType *player_ptr, const DisplaySymbol &symbol, const Pos2D &pos)
+void print_rel(CreatureEntity &creature, const DisplaySymbol &symbol, const Pos2D &pos)
 {
     /* Only do "legal" locations */
     if (panel_contains(pos)) {
-        const auto color = get_monochrome_display_color(player_ptr).value_or(symbol.color);
+        const auto color = get_monochrome_display_color(creature).value_or(symbol.color);
         term_queue_bigchar(panel_col_of(pos.x), pos.y - panel_row_prt, { { color, symbol.character }, {} });
     }
 }
 
-void print_bolt_pict(PlayerType *player_ptr, const Pos2D &pos_src, const Pos2D &pos_dst, AttributeType typ)
+void print_bolt_pict(CreatureEntity &creature, const Pos2D &pos_src, const Pos2D &pos_dst, AttributeType typ)
 {
-    const auto symbol = bolt_pict(pos_src, pos_dst, typ);
-    print_rel(player_ptr, symbol, pos_dst);
+    const auto &symbol = bolt_pict(pos_src, pos_dst, typ);
+    print_rel(creature, symbol, pos_dst);
 }
 
 /*!
@@ -360,13 +357,13 @@ void print_bolt_pict(PlayerType *player_ptr, const Pos2D &pos_src, const Pos2D &
  * optimized primarily for the most common cases, that is, for the
  * non-marked floor grids.
  */
-void note_spot(PlayerType *player_ptr, const Pos2D &pos)
+void note_spot(CreatureEntity &creature, const Pos2D &pos)
 {
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *creature.get_floor();
     auto &grid = floor.get_grid(pos);
 
     /* Blind players see nothing */
-    if (player_ptr->effects()->blindness().is_blind()) {
+    if (creature.is_blind()) {
         return;
     }
 
@@ -380,7 +377,7 @@ void note_spot(PlayerType *player_ptr, const Pos2D &pos)
         /* Require "perma-lite" of the grid */
         if ((grid.info & (CAVE_GLOW | CAVE_MNDK)) != CAVE_GLOW) {
             /* Not Ninja */
-            if (!player_ptr->see_nocto) {
+            if (!creature.has_see_nocto()) {
                 return;
             }
         }
@@ -401,7 +398,7 @@ void note_spot(PlayerType *player_ptr, const Pos2D &pos)
         /* Memorize some "boring" grids */
         if (terrain.flags.has_not(TerrainCharacteristics::REMEMBER)) {
             /* Option -- memorize all torch-lit floors */
-            if (view_torch_grids && ((grid.info & (CAVE_LITE | CAVE_MNLT)) || player_ptr->see_nocto)) {
+            if (view_torch_grids && ((grid.info & (CAVE_LITE | CAVE_MNLT)) || creature.has_see_nocto())) {
                 grid.info |= (CAVE_MARK);
             }
 
@@ -422,12 +419,12 @@ void note_spot(PlayerType *player_ptr, const Pos2D &pos)
         }
 
         /* Memorize walls seen by noctovision of Ninja */
-        else if (player_ptr->see_nocto) {
+        else if (creature.has_see_nocto()) {
             grid.info |= (CAVE_MARK);
         }
 
         /* Memorize certain non-torch-lit wall grids */
-        else if (floor.is_illuminated_at(player_ptr->get_position(), pos)) {
+        else if (floor.is_illuminated_at(creature.get_position(), pos)) {
             grid.info |= (CAVE_MARK);
         }
     }
@@ -441,11 +438,11 @@ void note_spot(PlayerType *player_ptr, const Pos2D &pos)
  *
  * This function should only be called on "legal" grids
  */
-void lite_spot(PlayerType *player_ptr, const Pos2D &pos)
+void lite_spot(CreatureEntity &creature, const Pos2D &pos)
 {
-    if (panel_contains(pos) && player_ptr->current_floor_ptr->contains(pos, FloorBoundary::OUTER_WALL_INCLUSIVE)) {
-        auto symbol_pair = map_info(player_ptr, pos);
-        symbol_pair.symbol_foreground.color = get_monochrome_display_color(player_ptr).value_or(symbol_pair.symbol_foreground.color);
+    if (panel_contains(pos) && creature.get_floor()->contains(pos, FloorBoundary::OUTER_WALL_INCLUSIVE)) {
+        auto symbol_pair = map_info(creature, pos);
+        symbol_pair.symbol_foreground.color = get_monochrome_display_color(creature).value_or(symbol_pair.symbol_foreground.color);
 
         term_queue_bigchar(panel_col_of(pos.x), pos.y - panel_row_prt, symbol_pair);
         static constexpr auto flags = {
@@ -568,7 +565,7 @@ void lite_spot(PlayerType *player_ptr, const Pos2D &pos)
  * and should be illuminated by "lite room" and "darkness" spells.
  *
  *
- * A grid may be marked as "CAVE_ICKY" which means it is part of a "vault",
+ * A grid may be marked as "CAVE_NO_TELEPORT_DEST" which means it is part of a "vault",
  * and should be unavailable for "teleportation" destinations.
  *
  *
@@ -683,13 +680,13 @@ static POSITION flow_y = 0;
  * We do not need a priority queue because the cost from grid
  * to grid is always "one" and we process them in order.
  */
-void update_flow(PlayerType *player_ptr)
+void update_flow(CreatureEntity &creature)
 {
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *creature.get_floor();
 
     /* The last way-point is on the map */
     const Pos2D flow(flow_y, flow_x);
-    if (player_ptr->running && floor.contains(flow, FloorBoundary::OUTER_WALL_EXCLUSIVE)) {
+    if (creature.get_running() && floor.contains(flow, FloorBoundary::OUTER_WALL_EXCLUSIVE)) {
         /* The way point is in sight - do not update.  (Speedup) */
         if (floor.get_grid(flow).info & CAVE_VIEW) {
             return;
@@ -704,13 +701,13 @@ void update_flow(PlayerType *player_ptr)
     }
 
     /* Save player position */
-    flow_y = player_ptr->y;
-    flow_x = player_ptr->x;
+    flow_y = creature.y;
+    flow_x = creature.x;
 
     for (const auto gf : GRID_FLOW_RANGE) {
         // 幅優先探索用のキュー。
         std::queue<Pos2D> que;
-        que.emplace(player_ptr->y, player_ptr->x);
+        que.emplace(creature.y, creature.x);
 
         /* Now process the queue */
         while (!que.empty()) {
@@ -725,7 +722,7 @@ void update_flow(PlayerType *player_ptr)
                 const auto pos_neighbor = pos + d.vec();
 
                 /* Ignore player's grid */
-                if (player_ptr->is_located_at(pos_neighbor)) {
+                if (creature.is_located_at(pos_neighbor)) {
                     continue;
                 }
 
@@ -780,10 +777,10 @@ void update_flow(PlayerType *player_ptr)
  * Takes a location and action and changes the feature at that
  * location through applying the given action.
  */
-void cave_alter_feat(PlayerType *player_ptr, POSITION y, POSITION x, TerrainCharacteristics action)
+void cave_alter_feat(CreatureEntity &creature, POSITION y, POSITION x, TerrainCharacteristics action)
 {
     const Pos2D pos(y, x);
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *creature.get_floor();
     const auto old_terrain_id = floor.get_grid(pos).feat;
     const auto &dungeon = floor.get_dungeon_definition();
     const auto new_terrain_id = dungeon.convert_terrain_id(old_terrain_id, action);
@@ -792,7 +789,7 @@ void cave_alter_feat(PlayerType *player_ptr, POSITION y, POSITION x, TerrainChar
     }
 
     /* Set the new feature */
-    set_terrain_id_to_grid(player_ptr, pos, new_terrain_id);
+    set_terrain_id_to_grid(creature, pos, new_terrain_id);
     const auto &terrains = TerrainList::get_instance();
     const auto &world = AngbandWorld::get_instance();
     if (!TerrainType::has(action, TerrainAction::NO_DROP)) {
@@ -802,19 +799,20 @@ void cave_alter_feat(PlayerType *player_ptr, POSITION y, POSITION x, TerrainChar
 
         /* Handle gold */
         if (old_terrain.flags.has(TerrainCharacteristics::HAS_GOLD) && new_terrain.flags.has_not(TerrainCharacteristics::HAS_GOLD)) {
-            /* Place some gold */
-            place_gold(player_ptr, pos);
+            /* Place some gold (財宝地形に DROP_GOLD 指定があればその個数、無ければ従来通り 1 個) */
+            const auto drop_count = old_terrain.gold_drop.is_valid() ? old_terrain.gold_drop.roll() : 1;
+            place_gold(creature, pos, drop_count);
             found = true;
         }
 
         /* Handle item */
         if (old_terrain.flags.has(TerrainCharacteristics::HAS_ITEM) && new_terrain.flags.has_not(TerrainCharacteristics::HAS_ITEM) && evaluate_percent(15 - floor.dun_level / 2)) {
             /* Place object */
-            place_object(player_ptr, pos, 0);
+            place_object(creature, pos, 0);
             found = true;
         }
 
-        if (found && world.character_dungeon && player_can_see_bold(player_ptr, pos.y, pos.x)) {
+        if (found && world.character_dungeon && player_can_see_bold(creature, pos.y, pos.x)) {
             msg_print(_("何かを発見した！", "You have found something!"));
         }
     }
@@ -822,7 +820,7 @@ void cave_alter_feat(PlayerType *player_ptr, POSITION y, POSITION x, TerrainChar
     if (TerrainType::has(action, TerrainAction::CRASH_GLASS)) {
         const auto &old_terrain = terrains.get_terrain(old_terrain_id);
         if (old_terrain.flags.has(TerrainCharacteristics::GLASS) && world.character_dungeon) {
-            project(player_ptr, PROJECT_WHO_GLASS_SHARDS, 1, pos.y, pos.x, std::min(floor.dun_level, 100) / 4, AttributeType::SHARDS,
+            project(creature, PROJECT_WHO_GLASS_SHARDS, 1, pos.y, pos.x, std::min(floor.dun_level, 100) / 4, AttributeType::SHARDS,
                 (PROJECT_GRID | PROJECT_ITEM | PROJECT_KILL | PROJECT_HIDE | PROJECT_JUMP | PROJECT_NO_HANGEKI));
         }
     }
@@ -830,17 +828,17 @@ void cave_alter_feat(PlayerType *player_ptr, POSITION y, POSITION x, TerrainChar
 
 /*!
  * @brief 指定されたマスがモンスターのテレポート可能先かどうかを判定する。
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param m_idx モンスターID
  * @param y 移動先Y座標
  * @param x 移動先X座標
  * @param mode オプション
  * @return テレポート先として妥当ならばtrue
  */
-bool cave_monster_teleportable_bold(PlayerType *player_ptr, MONSTER_IDX m_idx, POSITION y, POSITION x, teleport_flags mode)
+bool cave_monster_teleportable_bold(CreatureEntity &creature, MONSTER_IDX m_idx, POSITION y, POSITION x, teleport_flags mode)
 {
     const Pos2D pos(y, x);
-    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto &grid = floor.get_grid(pos);
     const auto &terrain = grid.get_terrain();
 
@@ -852,7 +850,7 @@ bool cave_monster_teleportable_bold(PlayerType *player_ptr, MONSTER_IDX m_idx, P
     if (grid.has_monster() && (grid.m_idx != m_idx)) {
         return false;
     }
-    if (player_ptr->is_located_at(pos)) {
+    if (creature.is_located_at(pos)) {
         return false;
     }
 
@@ -868,22 +866,22 @@ bool cave_monster_teleportable_bold(PlayerType *player_ptr, MONSTER_IDX m_idx, P
         return true;
     }
 
-    const auto &monster = floor.m_list[m_idx];
-    return monster_can_cross_terrain(player_ptr, grid.feat, monster.get_monrace(), 0);
+    const auto &monster = floor.get_monster(m_idx);
+    return monster_can_cross_terrain(creature, grid.feat, monster.get_monrace(), 0);
 }
 
 /*!
  * @brief 指定されたマスにプレイヤーがテレポート可能かどうかを判定する。
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param y 移動先Y座標
  * @param x 移動先X座標
  * @param mode オプション
  * @return テレポート先として妥当ならばtrue
  */
-bool cave_player_teleportable_bold(PlayerType *player_ptr, POSITION y, POSITION x, teleport_flags mode)
+bool cave_player_teleportable_bold(CreatureEntity &creature, POSITION y, POSITION x, teleport_flags mode)
 {
     const Pos2D pos(y, x);
-    const auto &grid = player_ptr->current_floor_ptr->get_grid(pos);
+    const auto &grid = creature.get_floor()->get_grid(pos);
     const auto &terrain = grid.get_terrain();
 
     /* Require "teleportable" space */
@@ -895,8 +893,8 @@ bool cave_player_teleportable_bold(PlayerType *player_ptr, POSITION y, POSITION 
     if (!(mode & TELEPORT_NONMAGICAL) && grid.is_icky()) {
         return false;
     }
-    const auto &floor = *player_ptr->current_floor_ptr;
-    if (grid.has_monster() && !floor.m_list[grid.m_idx].is_riding()) {
+    const auto &floor = *creature.get_floor();
+    if (grid.has_monster() && !floor.get_monster(grid.m_idx).is_riding()) {
         return false;
     }
 
@@ -909,17 +907,17 @@ bool cave_player_teleportable_bold(PlayerType *player_ptr, POSITION y, POSITION 
         return true;
     }
 
-    if (!player_can_enter(player_ptr, grid.feat, 0)) {
+    if (!player_can_enter(creature, grid.feat, 0)) {
         return false;
     }
 
     if (terrain.flags.has_all_of({ TerrainCharacteristics::WATER, TerrainCharacteristics::DEEP })) {
-        if (!player_ptr->levitation && !player_ptr->can_swim) {
+        if (!creature.has_levitation() && !creature.has_can_swim()) {
             return false;
         }
     }
 
-    if (terrain.flags.has_not(TerrainCharacteristics::LAVA) || has_immune_fire(player_ptr) || is_invuln(player_ptr)) {
+    if (terrain.flags.has_not(TerrainCharacteristics::LAVA) || creature.has_immune_fire() || creature.is_invulnerable()) {
         return true;
     }
 
@@ -929,7 +927,7 @@ bool cave_player_teleportable_bold(PlayerType *player_ptr, POSITION y, POSITION 
     }
 
     /* Forbid shallow lava when the player don't have levitation */
-    return player_ptr->levitation != 0;
+    return creature.has_levitation() != 0;
 }
 
 /*!
@@ -938,12 +936,12 @@ bool cave_player_teleportable_bold(PlayerType *player_ptr, POSITION y, POSITION 
  * @param mode 移動に関するオプションフラグ
  * @return 移動可能ならばTRUEを返す
  */
-bool player_can_enter(PlayerType *player_ptr, FEAT_IDX feature, BIT_FLAGS16 mode)
+bool player_can_enter(CreatureEntity &creature, FEAT_IDX feature, BIT_FLAGS16 mode)
 {
     const auto &terrain = TerrainList::get_instance().get_terrain(feature);
-    if (player_ptr->riding) {
+    if (creature.get_riding()) {
         return monster_can_cross_terrain(
-            player_ptr, feature, player_ptr->current_floor_ptr->m_list[player_ptr->riding].get_monrace(), mode | CEM_RIDING);
+            creature, feature, creature.get_floor()->get_monster(creature.get_riding()).get_monrace(), mode | CEM_RIDING);
     }
 
     if (terrain.flags.has(TerrainCharacteristics::PATTERN)) {
@@ -952,13 +950,13 @@ bool player_can_enter(PlayerType *player_ptr, FEAT_IDX feature, BIT_FLAGS16 mode
         }
     }
 
-    if (terrain.flags.has(TerrainCharacteristics::CAN_FLY) && player_ptr->levitation) {
+    if (terrain.flags.has(TerrainCharacteristics::CAN_FLY) && creature.has_levitation()) {
         return true;
     }
-    if (terrain.flags.has(TerrainCharacteristics::CAN_SWIM) && player_ptr->can_swim) {
+    if (terrain.flags.has(TerrainCharacteristics::CAN_SWIM) && creature.has_can_swim()) {
         return true;
     }
-    if (terrain.flags.has(TerrainCharacteristics::CAN_PASS) && has_pass_wall(player_ptr)) {
+    if (terrain.flags.has(TerrainCharacteristics::CAN_PASS) && creature.has_pass_wall()) {
         return true;
     }
 
@@ -969,9 +967,9 @@ bool player_can_enter(PlayerType *player_ptr, FEAT_IDX feature, BIT_FLAGS16 mode
     return true;
 }
 
-void place_grid(PlayerType *player_ptr, Grid &grid, grid_bold_type gb_type)
+void place_grid(CreatureEntity &creature, Grid &grid, grid_bold_type gb_type)
 {
-    const auto &dungeon = player_ptr->current_floor_ptr->get_generated_dungeon_definition();
+    const auto &dungeon = creature.get_floor()->get_generated_dungeon_definition();
     switch (gb_type) {
     case GB_FLOOR: {
         grid.set_terrain_id(dungeon.select_floor_terrain_id());
@@ -1058,12 +1056,12 @@ void place_grid(PlayerType *player_ptr, Grid &grid, grid_bold_type gb_type)
     }
 
     if (grid.has_monster()) {
-        delete_monster_idx(player_ptr, grid.m_idx);
+        delete_monster_idx(creature, grid.m_idx);
     }
 }
 
-void place_bold(PlayerType *player_ptr, POSITION y, POSITION x, grid_bold_type gb_type)
+void place_bold(CreatureEntity &creature, POSITION y, POSITION x, grid_bold_type gb_type)
 {
-    auto &grid = player_ptr->current_floor_ptr->grid_array[y][x];
-    place_grid(player_ptr, grid, gb_type);
+    auto &grid = creature.get_floor()->grid_array[y][x];
+    place_grid(creature, grid, gb_type);
 }

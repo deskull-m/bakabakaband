@@ -3,8 +3,6 @@
 #include "system/enums/monrace/monrace-id.h"
 #include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
-#include "system/player-type-definition.h"
 #include "term/z-form.h"
 #include "util/string-processor.h"
 #include <functional>
@@ -22,7 +20,7 @@ struct pain_message_type {
 };
 
 /*!
- * @brief MonsterEntity を引数を受け取り文字列 characters の中にそのモンスターのシンボルが含まれていれば true を返す関数オブジェクトを生成する
+ * @brief 文字列 characters の中にそのモンスターのシンボルが含まれていれば true を返す関数オブジェクトを生成する
  *
  * @param characters 文字が含まれるか調べる文字列
  * @return 生成した関数オブジェクト(ラムダ式)

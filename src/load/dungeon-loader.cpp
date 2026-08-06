@@ -1,5 +1,4 @@
 #include "load/dungeon-loader.h"
-#include "dungeon/quest.h"
 #include "floor/floor-save-util.h"
 #include "floor/floor-save.h"
 #include "load/dummy-loader.h"
@@ -7,33 +6,33 @@
 #include "load/load-util.h"
 #include "load/old/load-v1-5-0.h"
 #include "save/floor-writer.h"
+#include "system/dungeon/quest-definition.h"
 #include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/player-type-definition.h"
 #include "util/bit-flags-calculator.h"
 #include "util/enum-range.h"
 #include "world/world.h"
 
 /*!
  * @brief 保存されたフロアを読み込む / Read the dungeon
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return エラーコード
  * @details
  * The monsters/objects must be loaded in the same order
  * that they were stored, since the actual indexes matter.
  */
-static errr rd_dungeon(PlayerType *player_ptr)
+static errr rd_dungeon(CreatureEntity &creature)
 {
     init_saved_floors(false);
     errr err = 0;
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *creature.get_floor();
 
     (void)rd_byte(); // @todo 1byteズレた場所を特定。要修正。
     max_floor_id = rd_s16b();
     floor.set_dungeon_index(i2enum<DungeonId>(rd_byte())); // @todo セーブデータの方を16ビットにするかdungeon_idxの定義を8ビットにした方が良い.
     auto num = rd_byte();
     if (num == 0) {
-        err = rd_saved_floor(player_ptr, nullptr);
+        err = rd_saved_floor(creature, nullptr);
     } else {
         for (int i = 0; i < num; i++) {
             saved_floor_type *sf_ptr = &saved_floors[i];
@@ -58,12 +57,12 @@ static errr rd_dungeon(PlayerType *player_ptr)
                 continue;
             }
 
-            err = rd_saved_floor(player_ptr, sf_ptr);
+            err = rd_saved_floor(creature, sf_ptr);
             if (err) {
                 break;
             }
 
-            if (!save_floor(player_ptr, sf_ptr, SLF_SECOND)) {
+            if (!save_floor(creature, sf_ptr, SLF_SECOND)) {
                 err = 182;
             }
 
@@ -73,7 +72,7 @@ static errr rd_dungeon(PlayerType *player_ptr)
         }
 
         if (err == 0) {
-            if (!load_floor(player_ptr, get_sf_ptr(player_ptr->floor_id), SLF_SECOND)) {
+            if (!load_floor(creature, get_sf_ptr(creature.floor_id), SLF_SECOND)) {
                 err = 183;
             }
         }
@@ -122,9 +121,9 @@ static errr rd_dungeon(PlayerType *player_ptr)
     return err;
 }
 
-errr restore_dungeon(PlayerType *player_ptr)
+errr restore_dungeon(CreatureEntity &creature)
 {
-    if (player_ptr->is_dead()) {
+    if (creature.is_dead()) {
         auto &quests = QuestList::get_instance();
         for (const auto quest_id : RANDOM_QUEST_ID_RANGE) {
             quests.get_quest(quest_id).get_bounty().misc_flags.reset(MonsterMiscType::QUESTOR);
@@ -134,7 +133,7 @@ errr restore_dungeon(PlayerType *player_ptr)
     }
 
     load_note(_("ダンジョン復元中...", "Restoring Dungeon..."));
-    if (rd_dungeon(player_ptr)) {
+    if (rd_dungeon(creature)) {
         load_note(_("ダンジョンデータ読み込み失敗", "Error reading dungeon data"));
         return 34;
     }

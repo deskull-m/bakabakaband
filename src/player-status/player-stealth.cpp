@@ -14,13 +14,13 @@
 #include "player/player-status.h"
 #include "player/race-info-table.h"
 #include "spell-realm/spells-hex.h"
+#include "system/creature-entity.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "util/bit-flags-calculator.h"
 #include "util/enum-converter.h"
 
-PlayerStealth::PlayerStealth(PlayerType *player_ptr)
-    : PlayerStatusBase(player_ptr)
+PlayerStealth::PlayerStealth(CreatureEntity &creature)
+    : PlayerStatusBase(creature)
 {
 }
 
@@ -32,7 +32,7 @@ PlayerStealth::PlayerStealth(PlayerType *player_ptr)
  */
 int16_t PlayerStealth::race_bonus()
 {
-    return PlayerRace(this->player_ptr).get_info()->r_stl;
+    return CreatureRace(&this->creature).get_info()->r_stl;
 }
 
 /*!
@@ -43,7 +43,7 @@ int16_t PlayerStealth::race_bonus()
  */
 int16_t PlayerStealth::personality_bonus()
 {
-    const player_personality *a_ptr = &personality_info[this->player_ptr->ppersonality];
+    const player_personality *a_ptr = &personality_info[this->creature.ppersonality];
     return a_ptr->a_stl;
 }
 
@@ -55,8 +55,8 @@ int16_t PlayerStealth::personality_bonus()
  */
 int16_t PlayerStealth::class_base_bonus()
 {
-    const auto &player_class = class_info.at(this->player_ptr->pclass);
-    return player_class.c_stl + (player_class.x_stl * this->player_ptr->level / 10);
+    const auto &player_class = class_info.at(this->creature.pclass);
+    return player_class.c_stl + (player_class.x_stl * this->creature.get_level() / 10);
 }
 
 /*!
@@ -68,16 +68,16 @@ int16_t PlayerStealth::class_base_bonus()
  */
 int16_t PlayerStealth::class_bonus()
 {
-    PlayerClass pc(this->player_ptr);
+    CreatureClass pc(this->creature);
     if (!pc.equals(PlayerClassType::NINJA)) {
         return 0;
     }
 
     int16_t bonus = 0;
-    if (heavy_armor(this->player_ptr)) {
-        bonus -= (this->player_ptr->level) / 10;
+    if (heavy_armor(this->creature)) {
+        bonus -= (this->creature.get_level()) / 10;
     } else if (pc.has_ninja_speed()) {
-        bonus += (this->player_ptr->level) / 10;
+        bonus += (this->creature.get_level()) / 10;
     }
 
     return bonus;
@@ -93,7 +93,7 @@ int16_t PlayerStealth::class_bonus()
 int16_t PlayerStealth::mutation_bonus()
 {
     int16_t bonus = 0;
-    const auto &muta = this->player_ptr->muta;
+    const auto &muta = this->creature.get_mutations();
     if (muta.has(PlayerMutationType::XTRA_NOIS)) {
         bonus -= 3;
     }
@@ -116,18 +116,18 @@ int16_t PlayerStealth::mutation_bonus()
 int16_t PlayerStealth::time_effect_bonus()
 {
     int16_t bonus = 0;
-    if (PlayerRealm(this->player_ptr).is_realm_hex()) {
-        SpellHex spell_hex(this->player_ptr);
+    if (PlayerRealm(this->creature).is_realm_hex()) {
+        SpellHex spell_hex(this->creature);
         if (spell_hex.is_spelling_any()) {
             bonus -= spell_hex.get_casting_num() + 1;
         }
     }
 
-    if (is_shero(this->player_ptr)) {
+    if (this->creature.is_shero()) {
         bonus -= 7;
     }
 
-    if (is_time_limit_stealth(this->player_ptr)) {
+    if (this->creature.is_time_limit_stealth()) {
         bonus += 999;
     }
 
@@ -136,7 +136,7 @@ int16_t PlayerStealth::time_effect_bonus()
 
 bool PlayerStealth::is_aggravated_s_fairy()
 {
-    return player_aggravate_state(this->player_ptr) == AGGRAVATE_S_FAIRY;
+    return player_aggravate_state(this->creature) == AGGRAVATE_S_FAIRY;
 }
 
 /*!

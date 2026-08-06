@@ -1,10 +1,10 @@
 #include "floor/tunnel-generator.h"
 #include "floor/dungeon-tunnel-util.h"
 #include "grid/grid.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-data-definition.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
-#include "system/player-type-definition.h"
 
 /*!
  * @brief build_tunnel用に通路を掘るための方向をランダムに決める
@@ -43,18 +43,18 @@ static Pos2DVec correct_dir(const Pos2D &pos_start, const Pos2D &pos_end)
 
 /*!
  * @brief 部屋間のトンネルを生成する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param pos_start 始点
  * @param pos_end 終点
  * @return 生成に成功したらTRUEを返す
  */
-bool build_tunnel(PlayerType *player_ptr, DungeonData *dd_ptr, dt_type *dt_ptr, const Pos2D &pos_start, const Pos2D &pos_end)
+bool build_tunnel(CreatureEntity &creature, DungeonData *dd_ptr, dt_type *dt_ptr, const Pos2D &pos_start, const Pos2D &pos_end)
 {
     Pos2D pos_current = pos_start;
     auto main_loop_count = 0;
     auto door_flag = false;
     auto vec = correct_dir(pos_start, pos_end);
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *creature.get_floor();
     while (pos_current != pos_end) {
         if (main_loop_count++ > 2000) {
             return false;
@@ -100,7 +100,7 @@ bool build_tunnel(PlayerType *player_ptr, DungeonData *dd_ptr, dt_type *dt_ptr, 
                 for (auto x = pos_current.x - 1; x <= pos_current.x + 1; x++) {
                     const Pos2D pos_wall(y, x);
                     if (floor.get_grid(pos_wall).is_outer()) {
-                        place_bold(player_ptr, pos_wall.y, pos_wall.x, GB_SOLID_NOPERM);
+                        place_bold(creature, pos_wall.y, pos_wall.x, GB_SOLID_NOPERM);
                     }
                 }
             }
@@ -151,16 +151,16 @@ bool build_tunnel(PlayerType *player_ptr, DungeonData *dd_ptr, dt_type *dt_ptr, 
 
 /*!
  * @brief トンネル生成のための基準点を指定する。
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param x 基準点を指定するX座標の参照ポインタ、適時値が修正される。
  * @param y 基準点を指定するY座標の参照ポインタ、適時値が修正される。
  * @param affectwall (調査中)
  * @todo 特に詳細な処理の意味を調査すべし
  */
-static bool set_tunnel(PlayerType *player_ptr, DungeonData *dd_ptr, POSITION *y, POSITION *x, bool affectwall)
+static bool set_tunnel(CreatureEntity &creature, DungeonData *dd_ptr, POSITION *y, POSITION *x, bool affectwall)
 {
     const Pos2D pos(*y, *x);
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *creature.get_floor();
     auto &grid = floor.get_grid(pos);
     if (!floor.contains(pos, FloorBoundary::OUTER_WALL_EXCLUSIVE) || grid.is_inner()) {
         return true;
@@ -190,13 +190,13 @@ static bool set_tunnel(PlayerType *player_ptr, DungeonData *dd_ptr, POSITION *y,
         for (auto j = *y - 1; j <= *y + 1; j++) {
             for (auto i = *x - 1; i <= *x + 1; i++) {
                 if (floor.get_grid({ j, i }).is_outer()) {
-                    place_bold(player_ptr, j, i, GB_SOLID_NOPERM);
+                    place_bold(creature, j, i, GB_SOLID_NOPERM);
                 }
             }
         }
 
         grid.mimic = 0;
-        place_bold(player_ptr, *y, *x, GB_FLOOR);
+        place_bold(creature, *y, *x, GB_FLOOR);
         return true;
     }
 
@@ -214,7 +214,7 @@ static bool set_tunnel(PlayerType *player_ptr, DungeonData *dd_ptr, POSITION *y,
         }
 
         if (i == 0) {
-            place_grid(player_ptr, grid, GB_OUTER);
+            place_grid(creature, grid, GB_OUTER);
             vec = { 0, 0 };
         }
 
@@ -228,36 +228,36 @@ static bool set_tunnel(PlayerType *player_ptr, DungeonData *dd_ptr, POSITION *y,
 
 /*!
  * @brief 外壁を削って「カタコンベ状」の通路を作成する / This routine creates the catacomb-like tunnels by removing extra rock.
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param x 基準点のX座標
  * @param y 基準点のY座標
  */
-static void create_cata_tunnel(PlayerType *player_ptr, DungeonData *dd_ptr, POSITION x, POSITION y)
+static void create_cata_tunnel(CreatureEntity &creature, DungeonData *dd_ptr, POSITION x, POSITION y)
 {
     auto x1 = x - 1;
     auto y1 = y;
-    set_tunnel(player_ptr, dd_ptr, &y1, &x1, false);
+    set_tunnel(creature, dd_ptr, &y1, &x1, false);
 
     x1 = x + 1;
     y1 = y;
-    set_tunnel(player_ptr, dd_ptr, &y1, &x1, false);
+    set_tunnel(creature, dd_ptr, &y1, &x1, false);
 
     x1 = x;
     y1 = y - 1;
-    set_tunnel(player_ptr, dd_ptr, &y1, &x1, false);
+    set_tunnel(creature, dd_ptr, &y1, &x1, false);
 
     x1 = x;
     y1 = y + 1;
-    set_tunnel(player_ptr, dd_ptr, &y1, &x1, false);
+    set_tunnel(creature, dd_ptr, &y1, &x1, false);
 }
 
 /*!
  * @brief トンネル生成処理（詳細調査中）/ This routine does the bulk of the work in creating the new types of tunnels.
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @todo 詳細用調査
  */
 static void short_seg_hack(
-    PlayerType *player_ptr, DungeonData *dd_ptr, const POSITION x1, const POSITION y1, const POSITION x2, const POSITION y2, int type, int count, bool *fail)
+    CreatureEntity &creature, DungeonData *dd_ptr, const POSITION x1, const POSITION y1, const POSITION x2, const POSITION y2, int type, int count, bool *fail)
 {
     if (!(*fail)) {
         return;
@@ -270,14 +270,14 @@ static void short_seg_hack(
         for (int i = 0; i <= length; i++) {
             x = x1 + i * (x2 - x1) / length;
             y = y1 + i * (y2 - y1) / length;
-            if (!set_tunnel(player_ptr, dd_ptr, &y, &x, true)) {
+            if (!set_tunnel(creature, dd_ptr, &y, &x, true)) {
                 if (count > 50) {
                     *fail = false;
                     return;
                 }
 
-                short_seg_hack(player_ptr, dd_ptr, x, y, x1 + (i - 1) * (x2 - x1) / length, y1 + (i - 1) * (y2 - y1) / length, 1, count, fail);
-                short_seg_hack(player_ptr, dd_ptr, x, y, x1 + (i + 1) * (x2 - x1) / length, y1 + (i + 1) * (y2 - y1) / length, 1, count, fail);
+                short_seg_hack(creature, dd_ptr, x, y, x1 + (i - 1) * (x2 - x1) / length, y1 + (i - 1) * (y2 - y1) / length, 1, count, fail);
+                short_seg_hack(creature, dd_ptr, x, y, x1 + (i + 1) * (x2 - x1) / length, y1 + (i + 1) * (y2 - y1) / length, 1, count, fail);
             }
         }
 
@@ -292,26 +292,26 @@ static void short_seg_hack(
         for (int i = x1; i <= x2; i++) {
             x = i;
             y = y1;
-            if (!set_tunnel(player_ptr, dd_ptr, &y, &x, true)) {
-                short_seg_hack(player_ptr, dd_ptr, x, y, i - 1, y1, 1, count, fail);
-                short_seg_hack(player_ptr, dd_ptr, x, y, i + 1, y1, 1, count, fail);
+            if (!set_tunnel(creature, dd_ptr, &y, &x, true)) {
+                short_seg_hack(creature, dd_ptr, x, y, i - 1, y1, 1, count, fail);
+                short_seg_hack(creature, dd_ptr, x, y, i + 1, y1, 1, count, fail);
             }
 
             if ((type == 3) && ((x + y) % 2)) {
-                create_cata_tunnel(player_ptr, dd_ptr, i, y1);
+                create_cata_tunnel(creature, dd_ptr, i, y1);
             }
         }
     } else {
         for (int i = x2; i <= x1; i++) {
             x = i;
             y = y1;
-            if (!set_tunnel(player_ptr, dd_ptr, &y, &x, true)) {
-                short_seg_hack(player_ptr, dd_ptr, x, y, i - 1, y1, 1, count, fail);
-                short_seg_hack(player_ptr, dd_ptr, x, y, i + 1, y1, 1, count, fail);
+            if (!set_tunnel(creature, dd_ptr, &y, &x, true)) {
+                short_seg_hack(creature, dd_ptr, x, y, i - 1, y1, 1, count, fail);
+                short_seg_hack(creature, dd_ptr, x, y, i + 1, y1, 1, count, fail);
             }
 
             if ((type == 3) && ((x + y) % 2)) {
-                create_cata_tunnel(player_ptr, dd_ptr, i, y1);
+                create_cata_tunnel(creature, dd_ptr, i, y1);
             }
         }
     }
@@ -320,26 +320,26 @@ static void short_seg_hack(
         for (int i = y1; i <= y2; i++) {
             x = x2;
             y = i;
-            if (!set_tunnel(player_ptr, dd_ptr, &y, &x, true)) {
-                short_seg_hack(player_ptr, dd_ptr, x, y, x2, i - 1, 1, count, fail);
-                short_seg_hack(player_ptr, dd_ptr, x, y, x2, i + 1, 1, count, fail);
+            if (!set_tunnel(creature, dd_ptr, &y, &x, true)) {
+                short_seg_hack(creature, dd_ptr, x, y, x2, i - 1, 1, count, fail);
+                short_seg_hack(creature, dd_ptr, x, y, x2, i + 1, 1, count, fail);
             }
 
             if ((type == 3) && ((x + y) % 2)) {
-                create_cata_tunnel(player_ptr, dd_ptr, x2, i);
+                create_cata_tunnel(creature, dd_ptr, x2, i);
             }
         }
     } else {
         for (int i = y2; i <= y1; i++) {
             x = x2;
             y = i;
-            if (!set_tunnel(player_ptr, dd_ptr, &y, &x, true)) {
-                short_seg_hack(player_ptr, dd_ptr, x, y, x2, i - 1, 1, count, fail);
-                short_seg_hack(player_ptr, dd_ptr, x, y, x2, i + 1, 1, count, fail);
+            if (!set_tunnel(creature, dd_ptr, &y, &x, true)) {
+                short_seg_hack(creature, dd_ptr, x, y, x2, i - 1, 1, count, fail);
+                short_seg_hack(creature, dd_ptr, x, y, x2, i + 1, 1, count, fail);
             }
 
             if ((type == 3) && ((x + y) % 2)) {
-                create_cata_tunnel(player_ptr, dd_ptr, x2, i);
+                create_cata_tunnel(creature, dd_ptr, x2, i);
             }
         }
     }
@@ -349,13 +349,13 @@ static void short_seg_hack(
  * @brief 特定の壁(永久壁など)を避けながら部屋間の通路を作成する / This routine maps a path from (x1, y1) to (x2, y2) avoiding SOLID walls.
  * @todo 詳細要調査
  */
-bool build_tunnel2(PlayerType *player_ptr, DungeonData *dd_ptr, const Pos2D &pos_start, const Pos2D &pos_end, int type, int cutoff)
+bool build_tunnel2(CreatureEntity &creature, DungeonData *dd_ptr, const Pos2D &pos_start, const Pos2D &pos_end, int type, int cutoff)
 {
     const auto length = Grid::calc_distance(pos_start, pos_end);
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *creature.get_floor();
     if (length <= cutoff) {
         auto initial_failure = true;
-        short_seg_hack(player_ptr, dd_ptr, pos_start.x, pos_start.y, pos_end.x, pos_end.y, type, 0, &initial_failure);
+        short_seg_hack(creature, dd_ptr, pos_start.x, pos_start.y, pos_end.x, pos_end.y, type, 0, &initial_failure);
         return true;
     }
 
@@ -387,7 +387,7 @@ bool build_tunnel2(PlayerType *player_ptr, DungeonData *dd_ptr, const Pos2D &pos
         }
 
         if (i == 0) {
-            place_bold(player_ptr, pos.y, pos.x, GB_OUTER);
+            place_bold(creature, pos.y, pos.x, GB_OUTER);
             vec = { 0, 0 };
         }
 
@@ -398,9 +398,9 @@ bool build_tunnel2(PlayerType *player_ptr, DungeonData *dd_ptr, const Pos2D &pos
     bool is_tunnel_built;
     bool is_successful;
     if (grid.is_floor()) {
-        if (build_tunnel2(player_ptr, dd_ptr, pos_start, pos, type, cutoff)) {
+        if (build_tunnel2(creature, dd_ptr, pos_start, pos, type, cutoff)) {
             if (floor.get_grid(pos).is_room() || (randint1(100) > 95)) {
-                is_tunnel_built = build_tunnel2(player_ptr, dd_ptr, pos, pos_end, type, cutoff);
+                is_tunnel_built = build_tunnel2(creature, dd_ptr, pos, pos_end, type, cutoff);
             } else {
                 is_tunnel_built = false;
                 if (dd_ptr->door_n >= dd_ptr->doors.size()) {
@@ -417,8 +417,8 @@ bool build_tunnel2(PlayerType *player_ptr, DungeonData *dd_ptr, const Pos2D &pos
             is_successful = false;
         }
     } else {
-        if (build_tunnel2(player_ptr, dd_ptr, pos_start, pos, type, cutoff)) {
-            is_tunnel_built = build_tunnel2(player_ptr, dd_ptr, pos, pos_end, type, cutoff);
+        if (build_tunnel2(creature, dd_ptr, pos_start, pos, type, cutoff)) {
+            is_tunnel_built = build_tunnel2(creature, dd_ptr, pos, pos_end, type, cutoff);
             is_successful = true;
         } else {
             is_tunnel_built = false;
@@ -427,7 +427,7 @@ bool build_tunnel2(PlayerType *player_ptr, DungeonData *dd_ptr, const Pos2D &pos
     }
 
     if (is_successful) {
-        (void)set_tunnel(player_ptr, dd_ptr, &pos.y, &pos.x, true);
+        (void)set_tunnel(creature, dd_ptr, &pos.y, &pos.x, true);
     }
 
     return is_tunnel_built;

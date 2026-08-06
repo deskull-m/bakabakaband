@@ -18,7 +18,7 @@
 #include "player/player-damage.h"
 #include "player/player-status-flags.h"
 #include "player/player-status-resist.h"
-#include "player/player-status.h"
+#include "spell-kind/spells-floor.h"
 #include "spell-kind/spells-launcher.h"
 #include "spell-kind/spells-random.h"
 #include "spell-kind/spells-sight.h"
@@ -27,11 +27,10 @@
 #include "status/bad-status-setter.h"
 #include "status/base-status.h"
 #include "status/element-resistance.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
-#include "system/monster-entity.h"
-#include "system/player-type-definition.h"
 #include "system/terrain/terrain-definition.h"
 #include "target/projection-path-calculator.h"
 #include "view/display-messages.h"
@@ -74,6 +73,7 @@ const std::vector<EnumClassFlagGroup<ChestTrapType>> chest_traps = {
     { ChestTrapType::LOSE_STR },
     { ChestTrapType::LOSE_CON },
     { ChestTrapType::EXPLODE }, /* 25 == best small iron */
+    { ChestTrapType::NUKE },
     {},
     { ChestTrapType::E_SUMMON },
     { ChestTrapType::POISON, ChestTrapType::LOSE_CON },
@@ -84,6 +84,7 @@ const std::vector<EnumClassFlagGroup<ChestTrapType>> chest_traps = {
     { ChestTrapType::E_SUMMON, ChestTrapType::ALARM },
     { ChestTrapType::EXPLODE },
     { ChestTrapType::EXPLODE, ChestTrapType::SUMMON }, /* 35 == best large iron */
+    { ChestTrapType::NUKE },
     {},
     { ChestTrapType::SUMMON, ChestTrapType::ALARM },
     { ChestTrapType::EXPLODE },
@@ -111,27 +112,27 @@ const std::vector<EnumClassFlagGroup<ChestTrapType>> chest_traps = {
     { ChestTrapType::EXPLODE, ChestTrapType::SUMMON },
     { ChestTrapType::EXPLODE, ChestTrapType::SUMMON },
     { ChestTrapType::EXPLODE, ChestTrapType::SUMMON },
-    { ChestTrapType::EXPLODE, ChestTrapType::SUMMON },
+    { ChestTrapType::EXPLODE, ChestTrapType::SUMMON, ChestTrapType::NUKE },
 };
 
 /*!
  * @brief マスに存在する隠しトラップを公開する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param pos 秘匿したいマスの座標
  */
-void disclose_grid(PlayerType *player_ptr, const Pos2D &pos)
+void disclose_grid(CreatureEntity &creature, const Pos2D &pos)
 {
-    auto &grid = player_ptr->current_floor_ptr->get_grid(pos);
+    auto &grid = creature.get_floor()->get_grid(pos);
 
     if (grid.has(TerrainCharacteristics::SECRET)) {
         /* No longer hidden */
-        cave_alter_feat(player_ptr, pos.y, pos.x, TerrainCharacteristics::SECRET);
+        cave_alter_feat(creature, pos.y, pos.x, TerrainCharacteristics::SECRET);
     } else if (grid.mimic) {
         /* No longer hidden */
         grid.mimic = 0;
 
-        note_spot(player_ptr, pos);
-        lite_spot(player_ptr, pos);
+        note_spot(creature, pos);
+        lite_spot(creature, pos);
     }
 }
 
@@ -144,7 +145,7 @@ void disclose_grid(PlayerType *player_ptr, const Pos2D &pos)
  * Always miss 5% of the time, Always hit 5% of the time.
  * Otherwise, match trap power against player armor.
  */
-static int check_hit_from_monster_to_player(PlayerType *player_ptr, int power)
+static int check_hit_from_monster_to_player(CreatureEntity &creature, int power)
 {
     int k;
     ARMOUR_CLASS ac;
@@ -157,7 +158,7 @@ static int check_hit_from_monster_to_player(PlayerType *player_ptr, int power)
         return k < 5;
     }
 
-    if (player_ptr->ppersonality == PERSONALITY_LAZY) {
+    if (creature.ppersonality == PERSONALITY_LAZY) {
         if (one_in_(20)) {
             return true;
         }
@@ -169,7 +170,7 @@ static int check_hit_from_monster_to_player(PlayerType *player_ptr, int power)
     }
 
     /* Total armor */
-    ac = player_ptr->ac + player_ptr->to_a;
+    ac = static_cast<ARMOUR_CLASS>(creature.get_ac());
 
     /* Power competes against Armor */
     if (randint1(power) > ((ac * 3) / 4)) {
@@ -184,7 +185,7 @@ static int check_hit_from_monster_to_player(PlayerType *player_ptr, int power)
  * @brief 落とし穴系トラップの判定とプレイヤーの被害処理
  * @param trap_feat_type トラップの種別ID
  */
-static void hit_trap_pit(PlayerType *player_ptr, TrapType trap_feat_type)
+static void hit_trap_pit(CreatureEntity &creature, TrapType trap_feat_type)
 {
     int dam;
     concptr trap_name = "";
@@ -206,7 +207,7 @@ static void hit_trap_pit(PlayerType *player_ptr, TrapType trap_feat_type)
         return;
     }
 
-    if (player_ptr->levitation) {
+    if (creature.has_levitation()) {
         msg_format(_("%sを飛び越えた。", "You fly over %s."), trap_name);
         return;
     }
@@ -214,42 +215,42 @@ static void hit_trap_pit(PlayerType *player_ptr, TrapType trap_feat_type)
     msg_format(_("%sに落ちてしまった！", "You have fallen into %s!"), trap_name);
     dam = Dice::roll(2, 6);
     if (((trap_feat_type != TrapType::SPIKED_PIT) && (trap_feat_type != TrapType::POISON_PIT)) || one_in_(2)) {
-        take_hit(player_ptr, DAMAGE_NOESCAPE, dam, trap_name);
+        take_hit(creature, DAMAGE_NOESCAPE, dam, trap_name);
         return;
     }
 
     msg_format(_("%sが刺さった！", "You are impaled on %s!"), spike_name);
     dam = dam * 2;
-    BadStatusSetter bss(player_ptr);
+    BadStatusSetter bss(creature);
     (void)bss.mod_cut(randnum1<short>(dam));
     if (trap_feat_type != TrapType::POISON_PIT) {
-        take_hit(player_ptr, DAMAGE_NOESCAPE, dam, trap_name);
+        take_hit(creature, DAMAGE_NOESCAPE, dam, trap_name);
         return;
     }
 
-    if (has_resist_pois(player_ptr) || is_oppose_pois(player_ptr)) {
+    if (creature.has_resist_pois() || is_oppose_pois(creature)) {
         msg_print(_("しかし毒の影響はなかった！", "The poison does not affect you!"));
-        take_hit(player_ptr, DAMAGE_NOESCAPE, dam, trap_name);
+        take_hit(creature, DAMAGE_NOESCAPE, dam, trap_name);
         return;
     }
 
     dam = dam * 2;
     (void)bss.mod_poison(randnum1<short>(dam));
-    take_hit(player_ptr, DAMAGE_NOESCAPE, dam, trap_name);
+    take_hit(creature, DAMAGE_NOESCAPE, dam, trap_name);
 }
 
 /*!
  * @brief ダーツ系トラップ（通常ダメージ）の判定とプレイヤーの被害処理
  * @return ダーツが命中した場合TRUEを返す
  */
-static bool hit_trap_dart(PlayerType *player_ptr)
+static bool hit_trap_dart(CreatureEntity &creature)
 {
     bool hit = false;
 
-    if (check_hit_from_monster_to_player(player_ptr, 125)) {
+    if (check_hit_from_monster_to_player(creature, 125)) {
         msg_print(_("小さなダーツが飛んできて刺さった！", "A small dart hits you!"));
-        take_hit(player_ptr, DAMAGE_ATTACK, Dice::roll(1, 4), _("ダーツの罠", "a dart trap"));
-        if (!check_multishadow(player_ptr)) {
+        take_hit(creature, DAMAGE_ATTACK, Dice::roll(1, 4), _("ダーツの罠", "a dart trap"));
+        if (!check_multishadow(creature)) {
             hit = true;
         }
     } else {
@@ -263,20 +264,20 @@ static bool hit_trap_dart(PlayerType *player_ptr)
  * @brief ダーツ系トラップ（通常ダメージ＋能力値減少）の判定とプレイヤーの被害処理
  * @param stat 低下する能力値ID
  */
-static void hit_trap_lose_stat(PlayerType *player_ptr, int stat)
+static void hit_trap_lose_stat(CreatureEntity &creature, int stat)
 {
-    if (hit_trap_dart(player_ptr)) {
-        do_dec_stat(player_ptr, stat);
+    if (hit_trap_dart(creature)) {
+        do_dec_stat(creature, stat);
     }
 }
 
 /*!
  * @brief ダーツ系トラップ（通常ダメージ＋減速）の判定とプレイヤーの被害処理
  */
-static void hit_trap_slow(PlayerType *player_ptr)
+static void hit_trap_slow(CreatureEntity &creature)
 {
-    if (hit_trap_dart(player_ptr)) {
-        (void)BadStatusSetter(player_ptr).mod_deceleration(randint0(20) + 20, false);
+    if (hit_trap_dart(creature)) {
+        (void)BadStatusSetter(creature).mod_deceleration(randint0(20) + 20, false);
     }
 }
 
@@ -285,33 +286,33 @@ static void hit_trap_slow(PlayerType *player_ptr)
  * @param break_trap 作動後のトラップ破壊が確定しているならばTRUE
  * @todo cmd-save.h への依存あり。コールバックで何とかしたい
  */
-void hit_trap(PlayerType *player_ptr, bool break_trap)
+void hit_trap(CreatureEntity &creature, bool break_trap)
 {
-    auto &floor = *player_ptr->current_floor_ptr;
-    const auto p_pos = player_ptr->get_position();
+    auto &floor = *creature.get_floor();
+    const auto p_pos = creature.get_position();
     const auto &grid = floor.get_grid(p_pos);
     const auto &terrain = grid.get_terrain();
-    TrapType trap_feat_type = terrain.flags.has(TerrainCharacteristics::TRAP) ? i2enum<TrapType>(terrain.subtype) : TrapType::NOT_TRAP;
+    const auto trap_feat_type = terrain.flags.has(TerrainCharacteristics::TRAP) ? terrain.trap_type : TrapType::NOT_TRAP;
 
-    disturb(player_ptr, false, true);
+    disturb(creature, false, true);
 
-    cave_alter_feat(player_ptr, p_pos.y, p_pos.x, TerrainCharacteristics::HIT_TRAP);
-    player_ptr->plus_incident_tree("TRAPPED", 1);
+    cave_alter_feat(creature, p_pos.y, p_pos.x, TerrainCharacteristics::HIT_TRAP);
+    creature.plus_incident_tree("TRAPPED", 1);
 
     /* Analyze */
     switch (trap_feat_type) {
     case TrapType::TRAPDOOR: {
-        if (player_ptr->levitation) {
+        if (creature.has_levitation()) {
             msg_print(_("落とし戸を飛び越えた。", "You fly over a trap door."));
             break;
         }
 
         msg_print(_("落とし戸に落ちた！", "You have fallen through a trap door!"));
-        if (is_echizen(player_ptr)) {
+        if (creature.is_echizen()) {
             msg_print(_("くっそ～！", ""));
-        } else if (is_chargeman(player_ptr)) {
+        } else if (creature.is_chargeman()) {
             msg_print(_("ジュラル星人の仕業に違いない！", ""));
-        } else if (is_tough(player_ptr)) {
+        } else if (creature.is_tough()) {
             msg_print(_("う わ あ あ あ あ あ あ あ あ", ""));
         }
 
@@ -319,32 +320,32 @@ void hit_trap(PlayerType *player_ptr, bool break_trap)
         const auto dam = Dice::roll(2, 8);
         constexpr auto name = _("落とし戸", "a trap door");
 
-        take_hit(player_ptr, DAMAGE_NOESCAPE, dam, name);
+        take_hit(creature, DAMAGE_NOESCAPE, dam, name);
 
         if (floor.is_in_quest()) {
             return;
         }
 
         /* Still alive and autosave enabled */
-        if (autosave_l && (player_ptr->hp >= 0)) {
-            do_cmd_save_game(player_ptr, true);
+        if (autosave_l && (creature.hp >= 0)) {
+            do_cmd_save_game(creature, true);
         }
 
         exe_write_diary(floor, DiaryKind::DESCRIPTION, 0, _("落とし戸に落ちた", "fell through a trap door!"));
         FloorChangeModesStore::get_instace()->set({ FloorChangeMode::SAVE_FLOORS, FloorChangeMode::DOWN, FloorChangeMode::RANDOM_PLACE, FloorChangeMode::RANDOM_CONNECT });
-        player_ptr->leaving = true;
+        creature.set_leaving(true);
         break;
     }
     case TrapType::PIT:
     case TrapType::SPIKED_PIT:
     case TrapType::POISON_PIT:
-        hit_trap_pit(player_ptr, trap_feat_type);
+        hit_trap_pit(creature, trap_feat_type);
         break;
     case TrapType::TY_CURSE: {
         msg_print(_("何かがピカッと光った！", "There is a flash of shimmering light!"));
         const auto num = 2 + randint1(3);
         for (auto i = 0; i < num; i++) {
-            (void)summon_specific(player_ptr, p_pos.y, p_pos.x, floor.dun_level, SUMMON_NONE, (PM_ALLOW_GROUP | PM_ALLOW_UNIQUE | PM_NO_PET));
+            (void)summon_specific(creature, p_pos.y, p_pos.x, floor.dun_level, SUMMON_NONE, (PM_ALLOW_GROUP | PM_ALLOW_UNIQUE | PM_NO_PET));
         }
 
         if (floor.dun_level <= randint1(100)) { /* No nasty effect for low levels */
@@ -354,87 +355,87 @@ void hit_trap(PlayerType *player_ptr, bool break_trap)
         auto stop_ty = false;
         auto count = 0;
         do {
-            stop_ty = activate_ty_curse(player_ptr, stop_ty, &count);
+            stop_ty = activate_ty_curse(creature, stop_ty, &count);
         } while (one_in_(6));
         break;
     }
     case TrapType::TELEPORT:
         msg_print(_("テレポート・トラップにひっかかった！", "You hit a teleport trap!"));
-        teleport_player(player_ptr, 100, TELEPORT_PASSIVE);
+        teleport_player(creature, 100, TELEPORT_PASSIVE);
         break;
     case TrapType::FIRE: {
         msg_print(_("炎に包まれた！", "You are enveloped in flames!"));
         const auto dam = Dice::roll(4, 6);
-        (void)fire_dam(player_ptr, dam, _("炎のトラップ", "a fire trap"), false);
+        (void)fire_dam(creature, dam, _("炎のトラップ", "a fire trap"), false);
         break;
     }
     case TrapType::ACID: {
         msg_print(_("酸が吹きかけられた！", "You are splashed with acid!"));
         const auto dam = Dice::roll(4, 6);
-        (void)acid_dam(player_ptr, dam, _("酸のトラップ", "an acid trap"), false);
+        (void)acid_dam(creature, dam, _("酸のトラップ", "an acid trap"), false);
         break;
     }
     case TrapType::SLOW:
-        hit_trap_slow(player_ptr);
+        hit_trap_slow(creature);
         break;
     case TrapType::LOSE_STR:
-        hit_trap_lose_stat(player_ptr, A_STR);
+        hit_trap_lose_stat(creature, A_STR);
         break;
     case TrapType::LOSE_DEX:
-        hit_trap_lose_stat(player_ptr, A_DEX);
+        hit_trap_lose_stat(creature, A_DEX);
         break;
     case TrapType::LOSE_CON:
-        hit_trap_lose_stat(player_ptr, A_CON);
+        hit_trap_lose_stat(creature, A_CON);
         break;
     case TrapType::BLIND:
         msg_print(_("黒いガスに包み込まれた！", "A black gas surrounds you!"));
-        if (has_resist_blind(player_ptr) == 0) {
-            (void)BadStatusSetter(player_ptr).mod_blindness(randint0(50) + 25);
+        if (creature.has_resist_blind() == 0) {
+            (void)BadStatusSetter(creature).mod_blindness(randint0(50) + 25);
         }
 
         break;
     case TrapType::CONFUSE:
         msg_print(_("きらめくガスに包み込まれた！", "A gas of scintillating colors surrounds you!"));
-        if (has_resist_conf(player_ptr) == 0) {
-            (void)BadStatusSetter(player_ptr).mod_confusion(randint0(20) + 10);
+        if (creature.has_resist_conf() == 0) {
+            (void)BadStatusSetter(creature).mod_confusion(randint0(20) + 10);
         }
 
         break;
     case TrapType::POISON:
         msg_print(_("刺激的な緑色のガスに包み込まれた！", "A pungent green gas surrounds you!"));
-        if (has_resist_pois(player_ptr) == 0) {
-            (void)BadStatusSetter(player_ptr).mod_poison(randint0(20) + 10);
+        if (creature.has_resist_pois() == 0) {
+            (void)BadStatusSetter(creature).mod_poison(randint0(20) + 10);
         }
 
         break;
     case TrapType::SLEEP:
         msg_print(_("奇妙な白い霧に包まれた！", "A strange white mist surrounds you!"));
-        if (player_ptr->free_act) {
+        if (creature.has_free_act()) {
             break;
         }
 
         msg_print(_("あなたは眠りに就いた。", "You fall asleep."));
         if (ironman_nightmare) {
             msg_print(_("身の毛もよだつ光景が頭に浮かんだ。", "A horrible vision enters your mind."));
-            sanity_blast(player_ptr);
+            sanity_blast(creature);
         }
 
-        (void)BadStatusSetter(player_ptr).mod_paralysis(randint0(10) + 5);
+        (void)BadStatusSetter(creature).mod_paralysis(randint0(10) + 5);
         break;
     case TrapType::TRAPS:
         msg_print(_("まばゆい閃光が走った！", "There is a bright flash of light!"));
-        project(player_ptr, 0, 1, p_pos.y, p_pos.x, 0, AttributeType::MAKE_TRAP, PROJECT_HIDE | PROJECT_JUMP | PROJECT_GRID);
+        project(creature, 0, 1, p_pos.y, p_pos.x, 0, AttributeType::MAKE_TRAP, PROJECT_HIDE | PROJECT_JUMP | PROJECT_GRID);
         break;
     case TrapType::ALARM:
         msg_print(_("けたたましい音が鳴り響いた！", "An alarm sounds!"));
-        aggravate_monsters(player_ptr, 0);
+        aggravate_monsters(creature, 0);
         break;
     case TrapType::OPEN:
         msg_print(_("大音響と共にまわりの壁が崩れた！", "Suddenly, surrounding walls are opened!"));
-        (void)project(player_ptr, 0, 3, p_pos.y, p_pos.x, 0, AttributeType::DISINTEGRATE, PROJECT_GRID | PROJECT_HIDE);
-        (void)project(player_ptr, 0, 3, p_pos.y, p_pos.x - 4, 0, AttributeType::DISINTEGRATE, PROJECT_GRID | PROJECT_HIDE);
-        (void)project(player_ptr, 0, 3, p_pos.y, p_pos.x + 4, 0, AttributeType::DISINTEGRATE, PROJECT_GRID | PROJECT_HIDE);
-        aggravate_monsters(player_ptr, 0);
+        (void)project(creature, 0, 3, p_pos.y, p_pos.x, 0, AttributeType::DISINTEGRATE, PROJECT_GRID | PROJECT_HIDE);
+        (void)project(creature, 0, 3, p_pos.y, p_pos.x - 4, 0, AttributeType::DISINTEGRATE, PROJECT_GRID | PROJECT_HIDE);
+        (void)project(creature, 0, 3, p_pos.y, p_pos.x + 4, 0, AttributeType::DISINTEGRATE, PROJECT_GRID | PROJECT_HIDE);
+        aggravate_monsters(creature, 0);
         break;
     case TrapType::ARMAGEDDON: {
         static int levs[10] = { 0, 0, 20, 10, 5, 3, 2, 1, 1, 1 };
@@ -454,22 +455,20 @@ void hit_trap(PlayerType *player_ptr, bool break_trap)
                     continue;
                 }
 
-                if (auto m_idx = summon_specific(player_ptr, pos.y, pos.x, lev, SUMMON_ARMAGE_EVIL, (PM_NO_PET))) {
+                if (auto m_idx = summon_specific(creature, pos.y, pos.x, lev, SUMMON_ARMAGE_EVIL, (PM_NO_PET))) {
                     evil_idx = *m_idx;
                 }
 
-                if (auto m_idx = summon_specific(player_ptr, pos.y, pos.x, lev, SUMMON_ARMAGE_GOOD, (PM_NO_PET))) {
+                if (auto m_idx = summon_specific(creature, pos.y, pos.x, lev, SUMMON_ARMAGE_GOOD, (PM_NO_PET))) {
                     good_idx = *m_idx;
                 }
 
                 /* Let them fight each other */
                 if (evil_idx && good_idx) {
-                    auto &monster_evil = floor.m_list[evil_idx];
-                    auto &monster_good = floor.m_list[good_idx];
-                    monster_evil.target_y = monster_good.y;
-                    monster_evil.target_x = monster_good.x;
-                    monster_good.target_y = monster_evil.y;
-                    monster_good.target_x = monster_evil.x;
+                    auto &monster_evil = floor.get_monster(static_cast<MONSTER_IDX>(evil_idx));
+                    auto &monster_good = floor.get_monster(static_cast<MONSTER_IDX>(good_idx));
+                    monster_evil.set_target(monster_good.get_position());
+                    monster_good.set_target(monster_evil.get_position());
                 }
             }
         }
@@ -480,58 +479,64 @@ void hit_trap(PlayerType *player_ptr, bool break_trap)
         msg_print(_("突然壁から水が溢れ出した！ピラニアがいる！", "Suddenly, the room is filled with water with piranhas!"));
 
         /* Water fills room */
-        fire_ball_hide(player_ptr, AttributeType::WATER_FLOW, Direction::self(), 1, 10);
+        fire_ball_hide(creature, AttributeType::WATER_FLOW, Direction::self(), 1, 10);
 
         /* Summon Piranhas */
-        const auto num = 1 + player_ptr->current_floor_ptr->dun_level / 20;
+        const auto num = 1 + creature.get_floor()->dun_level / 20;
         for (auto i = 0; i < num; i++) {
-            (void)summon_specific(player_ptr, p_pos.y, p_pos.x, player_ptr->current_floor_ptr->dun_level, SUMMON_PIRANHAS, (PM_ALLOW_GROUP | PM_NO_PET));
+            (void)summon_specific(creature, p_pos.y, p_pos.x, creature.get_floor()->dun_level, SUMMON_PIRANHAS, (PM_ALLOW_GROUP | PM_NO_PET));
         }
         break;
     }
 
     case TrapType::LAVA: {
         msg_print(_("突然溶岩が溢れだした！", "Suddenly, the room is filled with lava!"));
-        fire_ball_hide(player_ptr, AttributeType::LAVA_FLOW, Direction::self(), 1, 10);
+        fire_ball_hide(creature, AttributeType::LAVA_FLOW, Direction::self(), 1, 10);
         break;
     }
 
     case TrapType::DUNG_POOL: {
         msg_print(_("突然糞便が溢れだした！ああ＾～たまらねえぜ！", "Suddenly, the room is filled with dung! Ahh^- how marvelous!"));
-        fire_ball_hide(player_ptr, AttributeType::DIRT, Direction::self(), 1, 10);
+        fire_ball_hide(creature, AttributeType::DIRT, Direction::self(), 1, 10);
         break;
     }
 
     case TrapType::FIRE_STORM: {
         msg_print(_("火炎の嵐に包まれた！", "You ware filled with huge fire storm!"));
-        fire_ball(player_ptr, AttributeType::FIRE, Direction::self(), 600, 4);
-        take_hit(player_ptr, DAMAGE_NOESCAPE, (600 + randint1(50)) * calc_fire_damage_rate(player_ptr) / 100, _("火炎嵐の罠", "a Hige Fire Trap"));
+        fire_ball(creature, AttributeType::FIRE, Direction::self(), 600, 4);
+        take_hit(creature, DAMAGE_NOESCAPE, (600 + randint1(50)) * calc_fire_damage_rate(creature) / 100, _("火炎嵐の罠", "a Hige Fire Trap"));
 
         break;
     }
     case TrapType::ICE_STORM: {
         msg_print(_("冷気の嵐に包まれた！", "You ware filled with huge ice storm!"));
-        fire_ball(player_ptr, AttributeType::ICE, Direction::self(), 600, 4);
-        take_hit(player_ptr, DAMAGE_NOESCAPE, (600 + randint1(50)) * calc_cold_damage_rate(player_ptr) / 100, _("極寒嵐の罠", "a Hige Ice Trap"));
+        fire_ball(creature, AttributeType::ICE, Direction::self(), 600, 4);
+        take_hit(creature, DAMAGE_NOESCAPE, (600 + randint1(50)) * calc_cold_damage_rate(creature) / 100, _("極寒嵐の罠", "a Hige Ice Trap"));
         break;
     }
     case TrapType::CHAOS_STORM: {
         msg_print(_("混沌の嵐に包まれた！", "You ware filled with huge chaos storm!"));
-        fire_ball(player_ptr, AttributeType::CHAOS, Direction::self(), 600, 4);
-        take_hit(player_ptr, DAMAGE_NOESCAPE, (600 + randint1(50)) * calc_chaos_damage_rate(player_ptr, CALC_RAND) / 100, _("混沌嵐の罠", "a Hige Chaos Trap"));
+        fire_ball(creature, AttributeType::CHAOS, Direction::self(), 600, 4);
+        take_hit(creature, DAMAGE_NOESCAPE, (600 + randint1(50)) * calc_chaos_damage_rate(creature, CALC_RAND) / 100, _("混沌嵐の罠", "a Hige Chaos Trap"));
         break;
     }
 
     case TrapType::MINE: {
         msg_print(_("地雷を踏んだ！", "You stepped on a land mine!"));
-        fire_ball(player_ptr, AttributeType::MANA, Direction::self(), 200, 4);
-        take_hit(player_ptr, DAMAGE_NOESCAPE, (200 + randint1(50)), _("地雷", "a Land Mine"));
+        fire_ball(creature, AttributeType::MANA, Direction::self(), 200, 4);
+        take_hit(creature, DAMAGE_NOESCAPE, (200 + randint1(50)), _("地雷", "a Land Mine"));
         break;
     }
 
     case TrapType::JUMP_VOID: {
         msg_print(_("なんてこった！あなたは猿空間に送られた！", "What a hell! You were sent to the SARU space!"));
-        jump_floor(player_ptr, DungeonId::VOID_TERRITORY, player_ptr->current_floor_ptr->dun_level);
+        jump_floor(creature, DungeonId::VOID_TERRITORY, creature.get_floor()->dun_level);
+        break;
+    }
+
+    case TrapType::DESTRUCTION: {
+        msg_print(_("罠が発動した！周囲が崩壊していく！", "The trap triggers! The dungeon collapses around you!"));
+        destroy_area(creature, p_pos.y, p_pos.x, 15, false);
         break;
     }
     default:
@@ -539,7 +544,7 @@ void hit_trap(PlayerType *player_ptr, bool break_trap)
     }
 
     if (break_trap && floor.has_trap_at(p_pos)) {
-        cave_alter_feat(player_ptr, p_pos.y, p_pos.x, TerrainCharacteristics::DISARM);
+        cave_alter_feat(creature, p_pos.y, p_pos.x, TerrainCharacteristics::DISARM);
         msg_print(_("トラップを粉砕した。", "You destroyed the trap."));
     }
 }

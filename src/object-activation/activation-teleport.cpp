@@ -7,22 +7,22 @@
 #include "spell-kind/spells-launcher.h"
 #include "spell-kind/spells-teleport.h"
 #include "spell-kind/spells-world.h"
-#include "system/player-type-definition.h"
+#include "system/creature-entity.h"
 #include "target/target-getter.h"
 #include "view/display-messages.h"
 
-bool activate_teleport_away(PlayerType *player_ptr)
+bool activate_teleport_away(CreatureEntity &creature)
 {
-    const auto dir = get_aim_dir(player_ptr);
+    const auto dir = get_aim_dir(creature);
     if (!dir) {
         return false;
     }
 
-    (void)fire_beam(player_ptr, AttributeType::AWAY_ALL, dir, player_ptr->level);
+    (void)fire_beam(creature, AttributeType::AWAY_ALL, dir, creature.get_level());
     return true;
 }
 
-bool activate_escape(PlayerType *player_ptr)
+bool activate_escape(CreatureEntity &creature)
 {
     switch (randint1(13)) {
     case 1:
@@ -30,18 +30,18 @@ bool activate_escape(PlayerType *player_ptr)
     case 3:
     case 4:
     case 5:
-        teleport_player(player_ptr, 10, TELEPORT_SPONTANEOUS);
+        teleport_player(creature, 10, TELEPORT_SPONTANEOUS);
         return true;
     case 6:
     case 7:
     case 8:
     case 9:
     case 10:
-        teleport_player(player_ptr, 222, TELEPORT_SPONTANEOUS);
+        teleport_player(creature, 222, TELEPORT_SPONTANEOUS);
         return true;
     case 11:
     case 12:
-        (void)stair_creation(player_ptr);
+        (void)stair_creation(creature);
         return true;
     default:
         if (!input_check(_("この階を去りますか？", "Leave this level? "))) {
@@ -49,39 +49,39 @@ bool activate_escape(PlayerType *player_ptr)
         }
 
         if (autosave_l) {
-            do_cmd_save_game(player_ptr, true);
+            do_cmd_save_game(creature, true);
         }
 
-        player_ptr->leaving = true;
+        creature.set_leaving(true);
         return true;
     }
 }
 
-bool activate_teleport_level(PlayerType *player_ptr)
+bool activate_teleport_level(CreatureEntity &creature)
 {
     if (!input_check(_("本当に他の階にテレポートしますか？", "Are you sure? (Teleport Level)"))) {
         return false;
     }
 
-    teleport_level(player_ptr, 0);
+    teleport_level(creature, 0);
     return true;
 }
 
-bool activate_dimension_door(PlayerType *player_ptr)
+bool activate_dimension_door(CreatureEntity &creature)
 {
     msg_print(_("次元の扉が開いた。目的地を選んで下さい。", "You open a dimensional gate. Choose a destination."));
-    return dimension_door(player_ptr);
+    return dimension_door(creature);
 }
 
-bool activate_teleport(PlayerType *player_ptr)
+bool activate_teleport(CreatureEntity &creature)
 {
     msg_print(_("周りの空間が歪んでいる...", "It twists space around you..."));
-    teleport_player(player_ptr, 100, TELEPORT_SPONTANEOUS);
+    teleport_player(creature, 100, TELEPORT_SPONTANEOUS);
     return true;
 }
 
-bool activate_phase_door(PlayerType *player_ptr)
+bool activate_phase_door(CreatureEntity &creature)
 {
-    teleport_player(player_ptr, 10, TELEPORT_SPONTANEOUS);
+    teleport_player(creature, 10, TELEPORT_SPONTANEOUS);
     return true;
 }

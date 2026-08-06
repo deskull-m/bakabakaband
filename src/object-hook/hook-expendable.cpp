@@ -12,9 +12,9 @@
 #include "sv-definition/sv-lite-types.h"
 #include "sv-definition/sv-other-types.h"
 #include "system/baseitem/baseitem-key.h"
+#include "system/creature-entity.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "util/string-processor.h"
 
@@ -24,7 +24,7 @@
  * @param o_ptr 判定したいオブジェクトの構造体参照ポインタ
  * @return 食べることが可能ならばTRUEを返す
  */
-bool item_tester_hook_eatable([[maybe_unused]] PlayerType *player_ptr, [[maybe_unused]] const ItemEntity *o_ptr)
+bool item_tester_hook_eatable([[maybe_unused]] CreatureEntity &creature, [[maybe_unused]] const ItemEntity *o_ptr)
 {
     return true;
 }
@@ -35,14 +35,14 @@ bool item_tester_hook_eatable([[maybe_unused]] PlayerType *player_ptr, [[maybe_u
  * @param o_ptr 判定したいオブジェクトの構造体参照ポインタ
  * @return 飲むことが可能ならばTRUEを返す
  */
-bool item_tester_hook_quaff(PlayerType *player_ptr, const ItemEntity *o_ptr)
+bool item_tester_hook_quaff(CreatureEntity &creature, const ItemEntity *o_ptr)
 {
     const auto &bi_key = o_ptr->bi_key;
     if (bi_key.tval() == ItemKindType::POTION) {
         return true;
     }
 
-    return (PlayerRace(player_ptr).food() == PlayerRaceFoodType::OIL) && (bi_key == BaseitemKey(ItemKindType::FLASK, SV_FLASK_OIL));
+    return (CreatureRace(&creature).food() == PlayerRaceFoodType::OIL) && (bi_key == BaseitemKey(ItemKindType::FLASK, SV_FLASK_OIL));
 }
 
 /*!
@@ -70,7 +70,7 @@ bool can_player_destroy_object(ItemEntity *o_ptr)
         }
 
         o_ptr->feeling = feel;
-        o_ptr->ident |= IDENT_SENSE;
+        o_ptr->ident.set(IdentificationFlag::SENSE);
         auto &rfu = RedrawingFlagsUpdater::get_instance();
         rfu.set_flag(StatusRecalculatingFlag::COMBINATION);
         static constexpr auto flags = {

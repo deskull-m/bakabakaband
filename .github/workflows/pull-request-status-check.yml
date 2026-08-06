@@ -7,27 +7,49 @@ on:
   # 手動トリガーを許可
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   check_bom:
     name: Check the BOM of the source files
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
       - run: sh ./.github/scripts/check-bom.sh
 
   check_newline:
     name: Check the newline of files
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
       - run: sh ./.github/scripts/check-newline.sh
 
   check_format:
     name: Check the format of the source files
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v3
-      - run: sh ./.github/scripts/check-format.sh
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Check the format of the cpp source and header files
+        run: sh ./.github/scripts/check-cpp-format.sh
+      - name: Check the format of the json/jsonc files
+        run: sh ./.github/scripts/check-json-format.sh
+
+  check_include_style:
+    name: Check the include directive style
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Check the include directive style ("" vs <>)
+        run: python3 .github/scripts/check-include-style.py
 
   build_test_clang15_libcpp_without_pch:
     name: Build Japanese version with clang 15 -stdlib=libc++ (without using pre-compiled headers)
@@ -72,3 +94,24 @@ jobs:
   build_test_with_msvc:
     name: Build test with MSVC
     uses: ./.github/workflows/build-test-with-msvc.yml
+
+  json_schema_validation:
+    name: JSON Schema Validation (lib/edit + schema)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Setup Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: '3.14'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyjson5 jsonschema
+
+      - name: Execute JSONC schema validation
+        run: python .github/scripts/validate_json.py

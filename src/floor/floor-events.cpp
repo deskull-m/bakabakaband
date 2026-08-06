@@ -26,20 +26,20 @@
 #include "sv-definition/sv-protector-types.h"
 #include "sv-definition/sv-ring-types.h"
 #include "system/angband-system.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
+#include "system/dungeon/quest-definition.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "system/terrain/terrain-definition.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
 #include "world/world.h"
 
-static void update_sun_light(PlayerType *player_ptr)
+static void update_sun_light(CreatureEntity &creature)
 {
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     static constexpr auto flags_srf = {
@@ -53,20 +53,20 @@ static void update_sun_light(PlayerType *player_ptr)
         SubWindowRedrawingFlag::DUNGEON,
     };
     rfu.set_flags(flags);
-    if ((player_ptr->current_floor_ptr->grid_array[player_ptr->y][player_ptr->x].info & CAVE_GLOW) != 0) {
-        set_superstealth(player_ptr, false);
+    if ((creature.get_floor()->grid_array[creature.y][creature.x].info & CAVE_GLOW) != 0) {
+        set_superstealth(creature, false);
     }
 }
 
-void day_break(PlayerType *player_ptr)
+void day_break(CreatureEntity &creature)
 {
     msg_print(_("夜が明けた。", "The sun has risen."));
     if (AngbandWorld::get_instance().is_wild_mode()) {
-        update_sun_light(player_ptr);
+        update_sun_light(creature);
         return;
     }
 
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *creature.get_floor();
     for (const auto &pos : floor.get_area()) {
         auto &grid = floor.get_grid(pos);
         grid.add_info(CAVE_GLOW);
@@ -74,21 +74,21 @@ void day_break(PlayerType *player_ptr)
             grid.add_info(CAVE_MARK);
         }
 
-        note_spot(player_ptr, pos);
+        note_spot(creature, pos);
     }
 
-    update_sun_light(player_ptr);
+    update_sun_light(creature);
 }
 
-void night_falls(PlayerType *player_ptr)
+void night_falls(CreatureEntity &creature)
 {
     msg_print(_("日が沈んだ。", "The sun has fallen."));
     if (AngbandWorld::get_instance().is_wild_mode()) {
-        update_sun_light(player_ptr);
+        update_sun_light(creature);
         return;
     }
 
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *creature.get_floor();
     for (const auto &pos : floor.get_area()) {
         auto &grid = floor.get_grid(pos);
         const auto &terrain = grid.get_terrain(TerrainKind::MIMIC);
@@ -100,13 +100,13 @@ void night_falls(PlayerType *player_ptr)
         grid.info &= ~(CAVE_GLOW);
         if (terrain.flags.has_not(Tc::REMEMBER)) {
             grid.info &= ~(CAVE_MARK);
-            note_spot(player_ptr, pos);
+            note_spot(creature, pos);
         }
     }
 
-    glow_deep_lava_and_bldg(player_ptr);
+    glow_deep_lava_and_bldg(creature);
 
-    update_sun_light(player_ptr);
+    update_sun_light(creature);
 }
 
 /*!
@@ -131,7 +131,7 @@ static int get_dungeon_feeling(const auto &floor)
     const auto base = 10;
     auto rating = 0;
     for (short i = 1; i < floor.m_max; i++) {
-        const auto &monster = floor.m_list[i];
+        const auto &monster = floor.get_monster(i);
         auto delta = 0;
         if (!monster.is_valid() || monster.is_pet()) {
             continue;
@@ -159,7 +159,7 @@ static int get_dungeon_feeling(const auto &floor)
 
     for (const auto &item_ptr : floor.o_list) {
         auto delta = 0;
-        if (!item_ptr->is_valid() || (item_ptr->is_known() && item_ptr->marked.has(OmType::TOUCHED)) || ((item_ptr->ident & IDENT_SENSE) != 0)) {
+        if (!item_ptr->is_valid() || (item_ptr->is_known() && item_ptr->marked.has(OmType::TOUCHED)) || ((item_ptr->ident.has(IdentificationFlag::SENSE)) != 0)) {
             continue;
         }
 
@@ -271,9 +271,9 @@ static int get_dungeon_feeling(const auto &floor)
  * @brief ダンジョンの雰囲気を更新し、変化があった場合メッセージを表示する
  * / Update dungeon feeling, and announce it if changed
  */
-void update_dungeon_feeling(PlayerType *player_ptr)
+void update_dungeon_feeling(CreatureEntity &creature)
 {
-    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     if (!floor.is_underground()) {
         return;
     }
@@ -282,7 +282,7 @@ void update_dungeon_feeling(PlayerType *player_ptr)
         return;
     }
 
-    const auto delay = std::max(10, 150 - player_ptr->skill_fos) * (150 - floor.dun_level) * TURNS_PER_TICK / 100;
+    const auto delay = std::max(10, 150 - creature.get_skill_perception()) * (150 - floor.dun_level) * TURNS_PER_TICK / 100;
     const auto &world = AngbandWorld::get_instance();
     auto &df = DungeonFeeling::get_instance();
     if (world.game_turn < df.get_turns() + delay && !cheat_xtra) {
@@ -309,20 +309,20 @@ void update_dungeon_feeling(PlayerType *player_ptr)
     }
 
     df.set_feeling(new_feeling);
-    do_cmd_feeling(player_ptr);
-    select_floor_music(player_ptr);
+    do_cmd_feeling(creature);
+    select_floor_music(creature);
     RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::DEPTH);
     if (disturb_minor) {
-        disturb(player_ptr, false, false);
+        disturb(creature, false, false);
     }
 }
 
 /*
  * Glow deep lava and building entrances in the floor
  */
-void glow_deep_lava_and_bldg(PlayerType *player_ptr)
+void glow_deep_lava_and_bldg(CreatureEntity &creature)
 {
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *creature.get_floor();
     if (floor.get_dungeon_definition().flags.has(DungeonFeatureType::DARKNESS)) {
         return;
     }

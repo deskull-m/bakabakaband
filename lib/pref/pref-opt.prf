@@ -73,17 +73,19 @@ Y:show_ammo_detail
 X:show_ammo_no_crit
 X:show_ammo_crit_ratio
 Y:show_actual_value
+X:show_lore_summary
 
 ##### Game-Play #####
 
 Y:stack_force_notes
 X:stack_force_costs
 Y:expand_list
-Y:small_levels
-X:always_small_levels
-Y:empty_levels
+Y:allow_smallest_floor
+X:always_small_floor
+Y:allow_arena_floor
 Y:bound_walls_perm
 Y:last_words
+X:monster_tombstones
 X:auto_dump
 Y:send_score
 X:allow_debug_opts
@@ -114,9 +116,9 @@ X:smart_cheat
 X:vanilla_town
 X:lite_town
 X:ironman_shops
-X:ironman_small_levels
+X:ironman_smallest_floor
 X:ironman_downward
-X:ironman_empty_levels
+X:ironman_force_arena_floor
 X:ironman_rooms
 X:ironman_nightmare
 X:left_hander

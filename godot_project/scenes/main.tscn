@@ -1,0 +1,301 @@
+[gd_scene load_steps=8 format=3 uid="uid://hengband_main"]
+
+[ext_resource type="Script" path="res://scripts/main.gd" id="1_main"]
+[ext_resource type="PackedScene" path="res://scenes/status_panel.tscn" id="2_status"]
+
+; --- コンフィグパネル背景: 暗めの赤みがかったグレー + 白縁 ---
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
+bg_color = Color(0.2, 0.1, 0.1, 0.93)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(1, 1, 1, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+content_margin_left = 8.0
+content_margin_top = 8.0
+content_margin_right = 8.0
+content_margin_bottom = 8.0
+
+; --- ボタン通常状態 ---
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_normal"]
+bg_color = Color(0.28, 0.15, 0.15, 1.0)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(1, 1, 1, 0.85)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+
+; --- ボタンホバー状態 ---
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_hover"]
+bg_color = Color(0.4, 0.22, 0.22, 1.0)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(1, 1, 1, 1)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+
+; --- ボタン押下状態 ---
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_pressed"]
+bg_color = Color(0.15, 0.07, 0.07, 1.0)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(1, 1, 1, 0.7)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+
+; --- 下部ツールバー背景: 上端のみ白線 ---
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bar"]
+bg_color = Color(0.16, 0.07, 0.07, 0.95)
+border_width_left = 0
+border_width_top = 1
+border_width_right = 0
+border_width_bottom = 0
+border_color = Color(1, 1, 1, 0.6)
+
+[node name="Main" type="Node"]
+script = ExtResource("1_main")
+
+; HengbandGame は最後の子ノードとして宣言する。
+; Godot は NOTIFICATION_EXIT_TREE をシーン子ノードの逆順に発行するため、
+; 最後 = 最初に終了 = ゲームスレッドがターミナルノード解放前に停止する。
+; (AudioManager / LayoutRoot / ConfigLayer より先に HengbandGame が終了)
+
+[node name="AudioManager" type="GodotAudioManager" parent="."]
+
+; --- ゲームエリア: TerminalPane を動的に追加するルートコンテナ ---
+; MarginContainer にすることで直接の子ノードが自動的にコンテナを埋める
+[node name="LayoutRoot" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_bottom = -45.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 0
+theme_override_constants/margin_top = 0
+theme_override_constants/margin_right = 0
+theme_override_constants/margin_bottom = 0
+
+; --- コンフィグ UI (ゲーム画面上に常時表示) ---
+[node name="ConfigLayer" type="CanvasLayer" parent="."]
+layer = 10
+
+; --- 下部ツールバー (画面下端 45px) ---
+[node name="BottomBar" type="Panel" parent="ConfigLayer"]
+anchor_left = 0.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -45.0
+offset_bottom = 0.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_styles/panel = SubResource("StyleBoxFlat_bar")
+
+[node name="StatusButton" type="Button" parent="ConfigLayer/BottomBar"]
+anchor_left = 1.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -95.0
+offset_top = 4.0
+offset_right = -50.0
+offset_bottom = -4.0
+grow_horizontal = 0
+grow_vertical = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn_normal")
+theme_override_styles/hover = SubResource("StyleBoxFlat_btn_hover")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_btn_pressed")
+text = "S"
+tooltip_text = "ステータスパネル 表示/非表示"
+
+[node name="GearButton" type="Button" parent="ConfigLayer/BottomBar"]
+anchor_left = 1.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -45.0
+offset_top = 4.0
+offset_right = -4.0
+offset_bottom = -4.0
+grow_horizontal = 0
+grow_vertical = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn_normal")
+theme_override_styles/hover = SubResource("StyleBoxFlat_btn_hover")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_btn_pressed")
+text = "⚙"
+tooltip_text = "設定"
+
+[node name="ConfigPanel" type="Panel" parent="ConfigLayer"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -200.0
+offset_top = -210.0
+offset_right = 200.0
+offset_bottom = 210.0
+grow_horizontal = 2
+grow_vertical = 2
+visible = false
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+
+[node name="PanelVBox" type="VBoxContainer" parent="ConfigLayer/ConfigPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 12.0
+offset_top = 12.0
+offset_right = -12.0
+offset_bottom = -12.0
+theme_override_constants/separation = 10
+
+[node name="TitleLabel" type="Label" parent="ConfigLayer/ConfigPanel/PanelVBox"]
+layout_mode = 2
+text = "設定"
+horizontal_alignment = 1
+
+[node name="HSep" type="HSeparator" parent="ConfigLayer/ConfigPanel/PanelVBox"]
+layout_mode = 2
+
+[node name="WindowTabBar" type="TabBar" parent="ConfigLayer/ConfigPanel/PanelVBox"]
+layout_mode = 2
+focus_mode = 0
+tab_close_display_policy = 0
+
+[node name="FontRow" type="HBoxContainer" parent="ConfigLayer/ConfigPanel/PanelVBox"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="FontLabel" type="Label" parent="ConfigLayer/ConfigPanel/PanelVBox/FontRow"]
+layout_mode = 2
+custom_minimum_size = Vector2(80, 0)
+size_flags_horizontal = 0
+text = "フォント"
+
+[node name="FontOption" type="OptionButton" parent="ConfigLayer/ConfigPanel/PanelVBox/FontRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="FontNameRow" type="HBoxContainer" parent="ConfigLayer/ConfigPanel/PanelVBox"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="FontNameLabel" type="Label" parent="ConfigLayer/ConfigPanel/PanelVBox/FontNameRow"]
+layout_mode = 2
+custom_minimum_size = Vector2(80, 0)
+size_flags_horizontal = 0
+text = "フォント名"
+
+[node name="FontNameEdit" type="LineEdit" parent="ConfigLayer/ConfigPanel/PanelVBox/FontNameRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="FontSizeRow" type="HBoxContainer" parent="ConfigLayer/ConfigPanel/PanelVBox"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="FontSizeLabel" type="Label" parent="ConfigLayer/ConfigPanel/PanelVBox/FontSizeRow"]
+layout_mode = 2
+custom_minimum_size = Vector2(80, 0)
+size_flags_horizontal = 0
+text = "サイズ"
+
+[node name="FontSizeSpinBox" type="SpinBox" parent="ConfigLayer/ConfigPanel/PanelVBox/FontSizeRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+min_value = 8.0
+max_value = 48.0
+step = 1.0
+value = 16.0
+
+[node name="TileRow" type="HBoxContainer" parent="ConfigLayer/ConfigPanel/PanelVBox"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="TileLabel" type="Label" parent="ConfigLayer/ConfigPanel/PanelVBox/TileRow"]
+layout_mode = 2
+custom_minimum_size = Vector2(80, 0)
+size_flags_horizontal = 0
+text = "タイル"
+
+[node name="TileOption" type="OptionButton" parent="ConfigLayer/ConfigPanel/PanelVBox/TileRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="BigtileRow" type="HBoxContainer" parent="ConfigLayer/ConfigPanel/PanelVBox"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="BigtileLabel" type="Label" parent="ConfigLayer/ConfigPanel/PanelVBox/BigtileRow"]
+layout_mode = 2
+custom_minimum_size = Vector2(80, 0)
+size_flags_horizontal = 0
+text = "ビッグタイル"
+
+[node name="BigtileCheck" type="CheckBox" parent="ConfigLayer/ConfigPanel/PanelVBox/BigtileRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "2倍幅で表示する"
+
+[node name="ButtonRow" type="HBoxContainer" parent="ConfigLayer/ConfigPanel/PanelVBox"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="ApplyButton" type="Button" parent="ConfigLayer/ConfigPanel/PanelVBox/ButtonRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn_normal")
+theme_override_styles/hover = SubResource("StyleBoxFlat_btn_hover")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_btn_pressed")
+text = "適用"
+
+[node name="CloseButton" type="Button" parent="ConfigLayer/ConfigPanel/PanelVBox/ButtonRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn_normal")
+theme_override_styles/hover = SubResource("StyleBoxFlat_btn_hover")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_btn_pressed")
+text = "閉じる"
+
+; --- ステータスオーバーレイ (ゲーム画面右上に常時表示) ---
+; ConfigLayer より下のレイヤー (5) に配置する。
+[node name="StatusLayer" type="CanvasLayer" parent="."]
+layer = 5
+
+[node name="StatusPanel" parent="StatusLayer" instance=ExtResource("2_status")]
+anchor_left = 1.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 0.0
+offset_left = -200.0
+offset_top = 4.0
+offset_right = -4.0
+offset_bottom = 4.0
+grow_horizontal = 0
+grow_vertical = 1
+
+; HengbandGame を最後の子ノードとして宣言する。
+; Godot は NOTIFICATION_EXIT_TREE をシーン子ノードの逆順に発行するため、
+; 最後 = 最初に終了 = ゲームスレッドがターミナルノード解放前に停止する。
+[node name="HengbandGame" type="HengbandGame" parent="."]
+
+[node name="InputHandler" type="GodotInputHandler" parent="HengbandGame"]

@@ -1,5 +1,5 @@
 #pragma once
 
 class ItemEntity;
-class PlayerType;
-bool item_tester_hook_wear(PlayerType *player_ptr, const ItemEntity *o_ptr);
+class CreatureEntity;
+bool item_tester_hook_wear(CreatureEntity &creature, const ItemEntity *o_ptr);

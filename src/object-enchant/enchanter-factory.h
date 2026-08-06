@@ -2,12 +2,12 @@
 
 #include <memory>
 
+class CreatureEntity;
 class EnchanterBase;
 class ItemEntity;
-class PlayerType;
 class EnchanterFactory {
 public:
-    static std::unique_ptr<EnchanterBase> create_enchanter(PlayerType *player_ptr, ItemEntity *o_ptr, int lev, int power);
+    static std::unique_ptr<EnchanterBase> create_enchanter(CreatureEntity &creature, ItemEntity *o_ptr, int lev, int power);
 
 private:
     EnchanterFactory() = delete;

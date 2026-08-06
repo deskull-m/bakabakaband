@@ -31,24 +31,22 @@
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/monster-entity.h"
-#include "system/player-type-definition.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
 
 /*!
  * @brief ニーベルングの王国アライアンスの印象ポイント計算
- * @param creature_ptr プレイヤー情報
+ * @param creature クリーチャーへの参照
  * @return 印象ポイント
  * @details ドワーフ系種族や鍛冶関連要素を重視する
  */
-int AllianceNibelung::calcImpressionPoint(PlayerType *creature_ptr) const
+int AllianceNibelung::calcImpressionPoint(const CreatureEntity &creature) const
 {
     int point = 0;
     point += calcIronmanHostilityPenalty();
 
     // 種族ボーナス
-    switch (creature_ptr->prace) {
+    switch (creature.prace) {
     case PlayerRaceType::DWARF:
         point += 50; // ドワーフは大幅ボーナス
         break;
@@ -70,7 +68,7 @@ int AllianceNibelung::calcImpressionPoint(PlayerType *creature_ptr) const
     }
 
     // 職業ボーナス
-    switch (creature_ptr->pclass) {
+    switch (creature.pclass) {
     case PlayerClassType::SMITH:
         point += 35; // 鍛冶師は高評価
         break;
@@ -92,27 +90,27 @@ int AllianceNibelung::calcImpressionPoint(PlayerType *creature_ptr) const
     }
 
     // ステータスボーナス
-    point += (creature_ptr->stat_index[A_STR] - 10) * 2; // 筋力重視
-    point += (creature_ptr->stat_index[A_CON] - 10) * 2; // 耐久力重視
-    point += (creature_ptr->stat_index[A_DEX] - 10) * 1; // 器用さも評価
-    point -= (creature_ptr->stat_index[A_CHR] - 10) * 1; // 魅力はそれほど重要視しない
+    point += (creature.get_stat_cur(A_STR) - 10) * 2; // 筋力重視
+    point += (creature.get_stat_cur(A_CON) - 10) * 2; // 耐久力重視
+    point += (creature.get_stat_cur(A_DEX) - 10) * 1; // 器用さも評価
+    point -= (creature.get_stat_cur(A_CHR) - 10) * 1; // 魅力はそれほど重要視しない
 
     // 性格ボーナス
-    if (creature_ptr->ppersonality == PERSONALITY_ORDINARY) {
+    if (creature.ppersonality == PERSONALITY_ORDINARY) {
         point += 10; // 普通の性格は安定感で評価
     }
-    if (creature_ptr->ppersonality == PERSONALITY_SHREWD) {
+    if (creature.ppersonality == PERSONALITY_SHREWD) {
         point += 15; // 抜け目ない性格は商売上手で評価
     }
-    if (creature_ptr->ppersonality == PERSONALITY_PATIENT) {
+    if (creature.ppersonality == PERSONALITY_PATIENT) {
         point += 20; // 我慢強い性格は鍛冶に向く
     }
-    if (creature_ptr->ppersonality == PERSONALITY_MIGHTY) {
+    if (creature.ppersonality == PERSONALITY_MIGHTY) {
         point += 15; // 豪快な性格も評価
     }
 
     // レベルボーナス
-    point += creature_ptr->level / 3;
+    point += creature.get_level() / 3;
 
     // ニーベルング族のメンバーを殺害した場合の減点
     const auto &monrace_list = MonraceList::get_instance();
@@ -137,33 +135,32 @@ int AllianceNibelung::calcImpressionPoint(PlayerType *creature_ptr) const
 
 /*!
  * @brief ニーベルングの王国アライアンスの制裁処理
- * @param player_ptr プレイヤー情報
+ * @param creature クリーチャーへの参照
  * @details 段階的に制裁が厳しくなる
  */
-void AllianceNibelung::panishment([[maybe_unused]] PlayerType &player_ptr)
+void AllianceNibelung::panishment([[maybe_unused]] CreatureEntity &creature)
 {
     /*
-    auto impression = this->calcImpressionPoint(&player_ptr);
+    auto impression = this->calcImpressionPoint(creature);
     if (impression >= -50) {
         // 軽微な制裁：工房の煙で視界を妨害
         msg_print("地下深くから黒い煙が立ち上り、あなたの視界を曇らせた！");
-        (void)BadStatusSetter(&player_ptr).set_blindness(randint1(20) + 20);
+        (void)BadStatusSetter(&creature).set_blindness(randint1(20) + 20);
         return;
     }
 
     if (impression >= -100) {
         // 中程度の制裁：鍛冶の槌音で混乱
         msg_print("遠くから響く無数の槌音があなたの精神を乱した！");
-        (void)BadStatusSetter(&player_ptr).set_confusion(randint1(30) + 30);
+        (void)BadStatusSetter(&creature).set_confusion(randint1(30) + 30);
 
         // ドワーフの戦士を召喚
         for (int i = 0; i < randint1(3) + 1; i++) {
-            MONSTER_IDX m_idx = summon_specific(&player_ptr, 0, player_ptr.y, player_ptr.x,
-                player_ptr.current_floor_ptr->dun_level + 10,
+            MONSTER_IDX m_idx = summon_specific(&creature, 0, creature.y, creature.x,
+                creature.get_floor()->dun_level + 10,
                 SUMMON_DWARF, PM_FORCE_PET | PM_ALLOW_GROUP);
             if (m_idx) {
-                MonsterEntity *m_ptr = &player_ptr.current_floor_ptr->m_list[m_idx];
-                set_monster_hostile(m_ptr);
+                creature.get_floor()->m_list[m_idx].set_hostile();
                 msg_print("ニーベルングの戦士があなたを討伐しにやってきた！");
             }
         }
@@ -177,32 +174,31 @@ void AllianceNibelung::panishment([[maybe_unused]] PlayerType &player_ptr)
         // ランダムな装備品を劣化させる
         for (int i = 0; i < 6; i++) {
             int slot = randint0(INVEN_TOTAL - INVEN_MAIN_HAND) + INVEN_MAIN_HAND;
-            ItemEntity *o_ptr = &player_ptr.inventory_list[slot];
+            ItemEntity *o_ptr = &creature.inventory_list[slot];
 
             if (o_ptr->is_valid() && one_in_(3)) {
                 if (o_ptr->to_h > 0) {
                     o_ptr->to_h--;
-                    player_ptr.update |= PU_BONUS;
+                    creature.update |= PU_BONUS;
                 }
                 if (o_ptr->to_d > 0) {
                     o_ptr->to_d--;
-                    player_ptr.update |= PU_BONUS;
+                    creature.update |= PU_BONUS;
                 }
                 if (o_ptr->to_a > 0) {
                     o_ptr->to_a--;
-                    player_ptr.update |= PU_BONUS;
+                    creature.update |= PU_BONUS;
                 }
             }
         }
 
         // より強力なドワーフ軍団を召喚
         for (int i = 0; i < randint1(4) + 2; i++) {
-            MONSTER_IDX m_idx = summon_specific(&player_ptr, 0, player_ptr.y, player_ptr.x,
-                player_ptr.current_floor_ptr->dun_level + 20,
+            MONSTER_IDX m_idx = summon_specific(&creature, 0, creature.y, creature.x,
+                creature.get_floor()->dun_level + 20,
                 SUMMON_DWARF, PM_FORCE_PET | PM_ALLOW_GROUP);
             if (m_idx) {
-                MonsterEntity *m_ptr = &player_ptr.current_floor_ptr->m_list[m_idx];
-                set_monster_hostile(m_ptr);
+                creature.get_floor()->m_list[m_idx].set_hostile();
             }
         }
         return;
@@ -213,24 +209,23 @@ void AllianceNibelung::panishment([[maybe_unused]] PlayerType &player_ptr)
     msg_print("地下王国の全軍があなたを包囲した！");
 
     // 強力な地属性攻撃
-    project(&player_ptr, 0, 8, player_ptr.y, player_ptr.x,
-        player_ptr.level * 4, AttributeType::SHARDS,
+    project(&creature, 0, 8, creature.y, creature.x,
+        creature.get_level() * 4, AttributeType::SHARDS,
         PROJECT_KILL | PROJECT_ITEM | PROJECT_GRID);
 
     // 大量のドワーフ軍団召喚
     for (int i = 0; i < randint1(6) + 4; i++) {
-        MONSTER_IDX m_idx = summon_specific(&player_ptr, 0, player_ptr.y, player_ptr.x,
-            player_ptr.current_floor_ptr->dun_level + 30,
+        MONSTER_IDX m_idx = summon_specific(&creature, 0, creature.y, creature.x,
+            creature.get_floor()->dun_level + 30,
             SUMMON_DWARF, PM_FORCE_PET | PM_ALLOW_GROUP);
         if (m_idx) {
-            MonsterEntity *m_ptr = &player_ptr.current_floor_ptr->m_list[m_idx];
-            set_monster_hostile(m_ptr);
+            creature.get_floor()->m_list[m_idx].set_hostile();
         }
     }
 
     // 装備品の大幅劣化
     for (int i = INVEN_MAIN_HAND; i < INVEN_TOTAL; i++) {
-        ItemEntity *o_ptr = &player_ptr.inventory_list[i];
+        ItemEntity *o_ptr = &creature.inventory_list[i];
         if (o_ptr->is_valid()) {
             if (o_ptr->to_h > -5)
                 o_ptr->to_h -= randint1(3);
@@ -241,12 +236,12 @@ void AllianceNibelung::panishment([[maybe_unused]] PlayerType &player_ptr)
         }
     }
 
-    player_ptr.update |= PU_BONUS;
-    player_ptr.redraw |= PR_EQUIPPY;
+    creature.update |= PU_BONUS;
+    creature.redraw |= PR_EQUIPPY;
 
     // 状態異常の重ね掛け
-    (void)BadStatusSetter(&player_ptr).set_stun(randint1(50) + 50);
-    (void)BadStatusSetter(&player_ptr).set_cut(randint1(100) + 100);
+    (void)BadStatusSetter(&creature).set_stun(randint1(50) + 50);
+    (void)BadStatusSetter(&creature).set_cut(randint1(100) + 100);
     */
 }
 
@@ -257,5 +252,5 @@ void AllianceNibelung::panishment([[maybe_unused]] PlayerType &player_ptr)
 bool AllianceNibelung::isAnnihilated()
 {
     // ニーベルング族の王『アルベリヒ』が存在しない場合、ニーベルングの王国は壊滅する
-    return MonraceList::get_instance().get_monrace(MonraceId::ALBERICH).mob_num == 0;
+    return all_monraces_extinct({ MonraceId::ALBERICH });
 }

@@ -7,82 +7,73 @@
 #include "player-info/class-info.h"
 #include "player/player-status-table.h"
 #include "room/rooms-builder.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
-#include "system/player-type-definition.h"
 
 /*!
- * @brief モンスター魅了用セービングスロー共通部(汎用系)
- * @param pow 魅了パワー
- * @param m_ptr 対象モンスター
- * @return 魅了に抵抗したらTRUE
+ * @brief モンスター魅了/服従用セービングスロー共通実装 (提案D5)
+ * @param pow 魅了・服従パワー
+ * @param target 対象クリーチャー
+ * @param check_no_conf NO_CONF (混乱耐性) で無条件抵抗させるか (魅了=true / 服従=false)
+ * @return 抵抗したらTRUE
+ * @details charm/control で NO_CONF チェックの有無以外は完全に同一だったため統合。
  */
-bool common_saving_throw_charm(PlayerType *player_ptr, int pow, const MonsterEntity &monster)
+static bool common_saving_throw_impl(CreatureEntity &creature, int pow, const CreatureEntity &target, bool check_no_conf)
 {
-    auto &monrace = monster.get_monrace();
+    auto &monrace = target.get_monrace();
 
-    if (player_ptr->current_floor_ptr->inside_arena) {
+    if (creature.get_floor()->inside_arena) {
         return true;
     }
 
     /* Memorize a flag */
     if (monrace.resistance_flags.has(MonsterResistanceType::RESIST_ALL)) {
-        if (is_original_ap_and_seen(player_ptr, monster)) {
+        if (is_original_ap_and_seen(creature, target)) {
             monrace.r_resistance_flags.set(MonsterResistanceType::RESIST_ALL);
         }
         return true;
     }
 
-    if (monrace.resistance_flags.has(MonsterResistanceType::NO_CONF)) {
-        if (is_original_ap_and_seen(player_ptr, monster)) {
+    if (check_no_conf && monrace.resistance_flags.has(MonsterResistanceType::NO_CONF)) {
+        if (is_original_ap_and_seen(creature, target)) {
             monrace.resistance_flags.set(MonsterResistanceType::NO_CONF);
         }
         return true;
     }
 
-    if (monrace.misc_flags.has(MonsterMiscType::QUESTOR) || monster.mflag2.has(MonsterConstantFlagType::NOPET)) {
+    if (monrace.misc_flags.has(MonsterMiscType::QUESTOR) || target.is_nopet()) {
         return true;
     }
 
-    pow += (adj_chr_chm[player_ptr->stat_index[A_CHR]] - 1);
+    pow += (adj_chr_chm[creature.get_stat_index(A_CHR)] - 1);
     if (monrace.kind_flags.has(MonsterKindType::UNIQUE) || (monrace.population_flags.has(MonsterPopulationType::NAZGUL))) {
         pow = pow * 2 / 3;
     }
-    return (monrace.level > randint1((pow - 10) < 1 ? 1 : (pow - 10)) + 5);
+    // [提案C2第3弾・セーヴ] applies_stat_combat_bonus の対象は WIS セーヴ補正を実効レベルへ加算 (opt-in・既定OFF)
+    return ((monrace.level + target.get_save_stat_bonus()) > randint1((pow - 10) < 1 ? 1 : (pow - 10)) + 5);
+}
+
+/*!
+ * @brief モンスター魅了用セービングスロー共通部(汎用系)
+ * @param pow 魅了パワー
+ * @param target 対象モンスター
+ * @return 魅了に抵抗したらTRUE
+ */
+bool common_saving_throw_charm(CreatureEntity &creature, int pow, const CreatureEntity &target)
+{
+    return common_saving_throw_impl(creature, pow, target, true);
 }
 
 /*!
  * @brief モンスター服従用セービングスロー共通部(部族依存系)
  * @param pow 服従パワー
- * @param m_ptr 対象モンスター
+ * @param target 対象モンスター
  * @return 服従に抵抗したらTRUE
  */
-bool common_saving_throw_control(PlayerType *player_ptr, int pow, const MonsterEntity &monster)
+bool common_saving_throw_control(CreatureEntity &creature, int pow, const CreatureEntity &target)
 {
-    auto &monrace = monster.get_monrace();
-
-    if (player_ptr->current_floor_ptr->inside_arena) {
-        return true;
-    }
-
-    /* Memorize a flag */
-    if (monrace.resistance_flags.has(MonsterResistanceType::RESIST_ALL)) {
-        if (is_original_ap_and_seen(player_ptr, monster)) {
-            monrace.r_resistance_flags.set(MonsterResistanceType::RESIST_ALL);
-        }
-        return true;
-    }
-
-    if (monrace.misc_flags.has(MonsterMiscType::QUESTOR) || monster.mflag2.has(MonsterConstantFlagType::NOPET)) {
-        return true;
-    }
-
-    pow += adj_chr_chm[player_ptr->stat_index[A_CHR]] - 1;
-    if (monrace.kind_flags.has(MonsterKindType::UNIQUE) || (monrace.population_flags.has(MonsterPopulationType::NAZGUL))) {
-        pow = pow * 2 / 3;
-    }
-    return (monrace.level > randint1((pow - 10) < 1 ? 1 : (pow - 10)) + 5);
+    return common_saving_throw_impl(creature, pow, target, false);
 }
 
 /*!
@@ -92,15 +83,15 @@ bool common_saving_throw_control(PlayerType *player_ptr, int pow, const MonsterE
  * ハードコーティングによる実装が行われている。
  * メイジは(レベル)%、ハイメイジ、スペルマスターは(レベル)%、それ以外の職業は(レベル/2)%
  */
-PERCENTAGE beam_chance(PlayerType *player_ptr)
+PERCENTAGE beam_chance(CreatureEntity &creature)
 {
-    PlayerClass pc(player_ptr);
+    CreatureClass pc(creature);
     if (pc.equals(PlayerClassType::MAGE)) {
-        return (PERCENTAGE)(player_ptr->level);
+        return (PERCENTAGE)(creature.get_level());
     }
     if (pc.equals(PlayerClassType::HIGH_MAGE) || pc.equals(PlayerClassType::SORCERER)) {
-        return (PERCENTAGE)(player_ptr->level + 10);
+        return (PERCENTAGE)(creature.get_level() + 10);
     }
 
-    return (PERCENTAGE)(player_ptr->level / 2);
+    return (PERCENTAGE)(creature.get_level() / 2);
 }

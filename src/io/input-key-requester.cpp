@@ -16,9 +16,10 @@
 #include "main/sound-of-music.h"
 #include "player-base/player-class.h"
 #include "save/save.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
+#include "system/redrawing-flags-updater.h"
 #include "term/screen-processor.h" //!< @todo 相互依存している、後で何とかする.
 #include "util/int-char-converter.h"
 #include "util/string-processor.h"
@@ -40,11 +41,20 @@ int16_t command_new; /* Command chaining from inven/equip view */
 
 static char request_command_buffer[256]{}; /*!< Special buffer to hold the action of the current keymap */
 
-InputKeyRequestor::InputKeyRequestor(PlayerType *player_ptr, bool shopping)
-    : player_ptr(player_ptr)
+void set_command_repeat_from_arg()
+{
+    if (command_arg) {
+        command_rep = command_arg - 1;
+        RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::ACTION);
+        command_arg = 0;
+    }
+}
+
+InputKeyRequestor::InputKeyRequestor(CreatureEntity &creature, bool shopping)
+    : creature_ptr(&creature)
     , shopping(shopping)
     , mode(rogue_like_commands ? KeymapMode::ROGUE : KeymapMode::ORIGINAL)
-    , base_y(player_ptr->y - panel_row_min > 10 ? 2 : 13)
+    , base_y(creature_ptr->y - panel_row_min > 10 ? 2 : 13)
 {
 }
 
@@ -135,7 +145,7 @@ char InputKeyRequestor::inkey_from_menu()
         this->max_num = this->get_command_per_menu_num();
         this->is_max_num_odd = (max_num % 2) == 1;
         put_str(_("》", "> "), this->base_y + 1 + this->num / 2, this->base_x + 2 + (this->num % 2) * 24);
-        move_cursor_relative(this->player_ptr->y, this->player_ptr->x);
+        move_cursor_relative(this->creature_ptr->y, this->creature_ptr->x);
         this->sub_cmd = inkey();
         if ((this->sub_cmd == ' ') || (this->sub_cmd == 'x') || (this->sub_cmd == 'X') || (this->sub_cmd == '\r') || (this->sub_cmd == '\n')) {
             if (this->check_continuous_command()) {
@@ -305,8 +315,8 @@ int InputKeyRequestor::get_caret_command() const
 void InputKeyRequestor::sweep_confirmation_equipments()
 {
     auto caret_command = this->get_caret_command();
-    for (auto i = enum2i(INVEN_MAIN_HAND); i < INVEN_TOTAL; i++) {
-        auto &item = *this->player_ptr->inventory[i];
+    for (const auto i_idx : INVEN_WIELDING_SLOTS) {
+        auto &item = *this->creature_ptr->inventory[i_idx];
         if (!item.is_valid() || !item.is_inscribed()) {
             continue;
         }
@@ -354,13 +364,13 @@ std::string InputKeyRequestor::switch_special_menu_condition(const SpecialMenuCo
     case SpecialMenuType::NONE:
         return "";
     case SpecialMenuType::CLASS:
-        if (PlayerClass(this->player_ptr).equals(special_menu.class_condition.value())) {
+        if (CreatureClass(*this->creature_ptr).equals(special_menu.class_condition.value())) {
             return std::string(special_menu.name);
         }
 
         return "";
     case SpecialMenuType::WILD: {
-        const auto &floor = *this->player_ptr->current_floor_ptr;
+        const auto &floor = *this->creature_ptr->get_floor();
         if (floor.is_underground() || floor.inside_arena) {
             return "";
         }

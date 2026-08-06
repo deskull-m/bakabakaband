@@ -13,11 +13,10 @@
 #include "player-status/player-energy.h"
 #include "player/player-status-flags.h"
 #include "player/player-status.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
-#include "system/monster-entity.h"
-#include "system/player-type-definition.h"
 #include "system/terrain/terrain-definition.h"
 #include "view/display-messages.h"
 
@@ -38,14 +37,14 @@ static bool find_breakleft;
 /*!
  * @brief ダッシュ移動処理中、移動先のマスが既知の壁かどうかを判定する /
  * Hack -- Check for a "known wall" (see below)
- * @param player_ptr	プレイヤーへの参照ポインタ
+ * @param creature	クリーチャーへの参照
  * @param dir 想定する移動方向
  * @param pos_orig 移動元の座標
  * @return 移動先が既知の壁ならばTRUE
  */
-static bool see_wall(PlayerType *player_ptr, const Direction &dir, const Pos2D &pos_orig)
+static bool see_wall(CreatureEntity &creature, const Direction &dir, const Pos2D &pos_orig)
 {
-    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto pos = pos_orig + dir.vec();
     if (!floor.contains(pos, FloorBoundary::OUTER_WALL_INCLUSIVE)) {
         return false;
@@ -58,7 +57,7 @@ static bool see_wall(PlayerType *player_ptr, const Direction &dir, const Pos2D &
 
     const auto terrain_id = grid.get_terrain_id(TerrainKind::MIMIC);
     const auto &terrain = grid.get_terrain(TerrainKind::MIMIC);
-    if (!player_can_enter(player_ptr, terrain_id, 0)) {
+    if (!player_can_enter(creature, terrain_id, 0)) {
         return terrain.flags.has_not(TerrainCharacteristics::DOOR);
     }
 
@@ -74,9 +73,57 @@ static bool see_wall(PlayerType *player_ptr, const Direction &dir, const Pos2D &
 }
 
 /*!
+ * @brief ダメージ地形をダッシュ中に無視 (素通り) してよいか判定する
+ * @param creature クリーチャーへの参照
+ * @param terrain 判定対象の地形
+ * @return 無視してよければ true (走行を止めない)
+ */
+static bool can_ignore_damaging_terrain(CreatureEntity &creature, const TerrainType &terrain)
+{
+    if (creature.is_invulnerable()) {
+        return true;
+    }
+
+    const auto &flags = terrain.flags;
+    if (flags.has(TerrainCharacteristics::LAVA) && !creature.has_immune_fire()) {
+        return false;
+    }
+
+    // 虚空 (VOID) は無敵以外では無視不可 (bakabakaband 独自地形)
+    if (flags.has(TerrainCharacteristics::VOID)) {
+        return false;
+    }
+
+    if (flags.has(TerrainCharacteristics::COLD_PUDDLE) && !creature.has_immune_cold()) {
+        return false;
+    }
+
+    if (flags.has(TerrainCharacteristics::ELEC_PUDDLE) && !creature.has_immune_elec()) {
+        return false;
+    }
+
+    if (flags.has(TerrainCharacteristics::ACID_PUDDLE) && !creature.has_immune_acid()) {
+        return false;
+    }
+
+    if (flags.has(TerrainCharacteristics::POISON_PUDDLE)) {
+        return false;
+    }
+
+    if (flags.has_all_of({ TerrainCharacteristics::WATER, TerrainCharacteristics::DEEP })) {
+        const auto can_ignore_water = creature.has_levitation() || creature.has_can_swim() || creature.has_resist_water() || (calc_inventory_weight(creature) <= calc_weight_limit(creature));
+        if (!can_ignore_water) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+/*!
  * @brief ダッシュ処理の導入 /
  * Initialize the running algorithm for a new direction.
- * @param player_ptr	プレイヤーへの参照ポインタ
+ * @param creature	クリーチャーへの参照
  * @param dir 導入の移動先
  * @details
  * Diagonal Corridor -- allow diaginal entry into corridors.\n
@@ -90,35 +137,35 @@ static bool see_wall(PlayerType *player_ptr, const Direction &dir, const Pos2D &
  *       \#x\#                  \@x\#\n
  *       \@\@p.                  p\n
  */
-static void run_init(PlayerType *player_ptr, const Direction &dir)
+static void run_init(CreatureEntity &creature, const Direction &dir)
 {
     find_current = dir;
     find_prevdir = dir;
     find_openarea = true;
     find_breakright = find_breakleft = false;
-    const auto pos = player_ptr->get_position();
-    player_ptr->run_py = pos.y;
-    player_ptr->run_px = pos.x;
-    const auto pos_neighbor = player_ptr->get_neighbor(dir);
-    ignore_avoid_run = player_ptr->current_floor_ptr->has_terrain_characteristics(pos_neighbor, TerrainCharacteristics::AVOID_RUN);
+    const auto pos = creature.get_position();
+    creature.set_run_py(pos.y);
+    creature.set_run_px(pos.x);
+    const auto pos_neighbor = creature.get_neighbor(dir);
+    ignore_avoid_run = creature.get_floor()->has_terrain_characteristics(pos_neighbor, TerrainCharacteristics::AVOID_RUN);
     const auto dir_left45 = dir.rotated_45degree(1);
     const auto dir_right45 = dir.rotated_45degree(-1);
     auto deepleft = false;
     auto shortleft = false;
-    if (see_wall(player_ptr, dir_left45, pos)) {
+    if (see_wall(creature, dir_left45, pos)) {
         find_breakleft = true;
         shortleft = true;
-    } else if (see_wall(player_ptr, dir_left45, pos_neighbor)) {
+    } else if (see_wall(creature, dir_left45, pos_neighbor)) {
         find_breakleft = true;
         deepleft = true;
     }
 
     auto deepright = false;
     auto shortright = false;
-    if (see_wall(player_ptr, dir_right45, pos)) {
+    if (see_wall(creature, dir_right45, pos)) {
         find_breakright = true;
         shortright = true;
-    } else if (see_wall(player_ptr, dir_right45, pos_neighbor)) {
+    } else if (see_wall(creature, dir_right45, pos_neighbor)) {
         find_breakright = true;
         deepright = true;
     }
@@ -138,7 +185,7 @@ static void run_init(PlayerType *player_ptr, const Direction &dir)
         return;
     }
 
-    if (!see_wall(player_ptr, dir, pos_neighbor)) {
+    if (!see_wall(creature, dir, pos_neighbor)) {
         return;
     }
 
@@ -152,15 +199,15 @@ static void run_init(PlayerType *player_ptr, const Direction &dir)
 /*!
  * @brief ダッシュ移動処理中、移動先のマスか未知の地形かどうかを判定する /
  * Hack -- Check for an "unknown corner" (see below)
- * @param player_ptr	プレイヤーへの参照ポインタ
+ * @param creature	クリーチャーへの参照
  * @param dir 想定する移動方向
  * @param pos_orig 移動元の座標
  * @return 移動先が未知の地形ならばTRUE
  */
-static bool see_nothing(PlayerType *player_ptr, const Direction &dir, const Pos2D &pos_orig)
+static bool see_nothing(CreatureEntity &creature, const Direction &dir, const Pos2D &pos_orig)
 {
     const auto pos = pos_orig + dir.vec();
-    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     if (!floor.contains(pos, FloorBoundary::OUTER_WALL_INCLUSIVE)) {
         return true;
     }
@@ -169,7 +216,7 @@ static bool see_nothing(PlayerType *player_ptr, const Direction &dir, const Pos2
         return false;
     }
 
-    if (player_can_see_bold(player_ptr, pos.y, pos.x)) {
+    if (player_can_see_bold(creature, pos.y, pos.x)) {
         return false;
     }
 
@@ -179,19 +226,19 @@ static bool see_nothing(PlayerType *player_ptr, const Direction &dir, const Pos2
 /*!
  * @brief ダッシュ移動が継続できるかどうかの判定 /
  * Update the current "run" path
- * @param player_ptr	プレイヤーへの参照ポインタ
+ * @param creature	クリーチャーへの参照
  * @return 立ち止まるべき条件が満たされたらTRUE
  * ダッシュ移動が継続できるならばTRUEを返す。
  * Return TRUE if the running should be stopped
  */
-static bool run_test(PlayerType *player_ptr)
+static bool run_test(CreatureEntity &creature)
 {
     const auto prev_dir = find_prevdir;
-    const auto &floor = *player_ptr->current_floor_ptr;
-    const auto p_pos = player_ptr->get_position();
+    const auto &floor = *creature.get_floor();
+    const auto p_pos = creature.get_position();
     const auto &p_grid = floor.get_grid(p_pos);
-    if ((disturb_trap_detect || alert_trap_detect) && player_ptr->dtrap && !(p_grid.info & CAVE_IN_DETECT)) {
-        player_ptr->dtrap = false;
+    if ((disturb_trap_detect || alert_trap_detect) && creature.is_dtrap() && !(p_grid.info & CAVE_IN_DETECT)) {
+        creature.set_dtrap(false);
         if (!(p_grid.info & CAVE_UNSAFE)) {
             if (alert_trap_detect) {
                 msg_print(_("* 注意:この先はトラップの感知範囲外です！ *", "*Leaving trap detect region!*"));
@@ -210,11 +257,11 @@ static bool run_test(PlayerType *player_ptr)
     const auto max = prev_dir.is_diagonal() ? 2 : 1;
     for (auto i = -max; i <= max; i++) {
         const auto new_dir = prev_dir.rotated_45degree(i);
-        const auto pos = player_ptr->get_neighbor(new_dir);
+        const auto pos = creature.get_neighbor(new_dir);
         const auto &grid = floor.get_grid(pos);
         if (grid.has_monster()) {
-            const auto &monster = floor.m_list[grid.m_idx];
-            if (monster.ml) {
+            const auto &monster = floor.get_monster(grid.m_idx);
+            if (monster.is_visible_on_map()) {
                 return true;
             }
         }
@@ -229,17 +276,14 @@ static bool run_test(PlayerType *player_ptr)
         auto inv = true;
         if (grid.is_mark()) {
             const auto &terrain = grid.get_terrain(TerrainKind::MIMIC);
-            auto notice = terrain.flags.has(TerrainCharacteristics::NOTICE);
+            const auto is_damaging = terrain.can_damage_player();
+            auto notice = terrain.flags.has(TerrainCharacteristics::NOTICE) || is_damaging;
             if (notice && terrain.flags.has(TerrainCharacteristics::MOVE)) {
                 if (find_ignore_doors && terrain.flags.has_all_of({ TerrainCharacteristics::DOOR, TerrainCharacteristics::CLOSE })) {
                     notice = false;
                 } else if (find_ignore_stairs && terrain.flags.has(TerrainCharacteristics::STAIRS)) {
                     notice = false;
-                } else if (terrain.flags.has(TerrainCharacteristics::LAVA) && (has_immune_fire(player_ptr) || is_invuln(player_ptr))) {
-                    notice = false;
-                } else if (terrain.flags.has(TerrainCharacteristics::VOID) && is_invuln(player_ptr)) {
-                    notice = false;
-                } else if (terrain.flags.has_all_of({ TerrainCharacteristics::WATER, TerrainCharacteristics::DEEP }) && (player_ptr->levitation || player_ptr->can_swim || (calc_inventory_weight(player_ptr) <= calc_weight_limit(player_ptr)))) {
+                } else if (is_damaging && can_ignore_damaging_terrain(creature, terrain)) {
                     notice = false;
                 }
             }
@@ -251,7 +295,7 @@ static bool run_test(PlayerType *player_ptr)
             inv = false;
         }
 
-        if (!inv && see_wall(player_ptr, Direction::self(), pos)) {
+        if (!inv && see_wall(creature, Direction::self(), pos)) {
             if (find_openarea) {
                 if (i < 0) {
                     find_breakright = true;
@@ -293,7 +337,7 @@ static bool run_test(PlayerType *player_ptr)
 
     if (find_openarea) {
         for (int i = -max; i < 0; i++) {
-            if (!see_wall(player_ptr, prev_dir.rotated_45degree(i), p_pos)) {
+            if (!see_wall(creature, prev_dir.rotated_45degree(i), p_pos)) {
                 if (find_breakright) {
                     return true;
                 }
@@ -305,7 +349,7 @@ static bool run_test(PlayerType *player_ptr)
         }
 
         for (int i = max; i > 0; i--) {
-            if (!see_wall(player_ptr, prev_dir.rotated_45degree(i), p_pos)) {
+            if (!see_wall(creature, prev_dir.rotated_45degree(i), p_pos)) {
                 if (find_breakleft) {
                     return true;
                 }
@@ -316,7 +360,7 @@ static bool run_test(PlayerType *player_ptr)
             }
         }
 
-        return see_wall(player_ptr, find_current, p_pos);
+        return see_wall(creature, find_current, p_pos);
     }
 
     if (!option) {
@@ -326,19 +370,19 @@ static bool run_test(PlayerType *player_ptr)
     if (!option2) {
         find_current = option;
         find_prevdir = option;
-        return see_wall(player_ptr, find_current, p_pos);
+        return see_wall(creature, find_current, p_pos);
     } else if (!find_cut) {
         find_current = option;
         find_prevdir = option2;
-        return see_wall(player_ptr, find_current, p_pos);
+        return see_wall(creature, find_current, p_pos);
     }
 
-    const auto pos = player_ptr->get_neighbor(option);
-    if (!see_wall(player_ptr, option, pos) || !see_wall(player_ptr, check_dir, pos)) {
-        if (see_nothing(player_ptr, option, pos) && see_nothing(player_ptr, option2, pos)) {
+    const auto pos = creature.get_neighbor(option);
+    if (!see_wall(creature, option, pos) || !see_wall(creature, check_dir, pos)) {
+        if (see_nothing(creature, option, pos) && see_nothing(creature, option2, pos)) {
             find_current = option;
             find_prevdir = option2;
-            return see_wall(player_ptr, find_current, p_pos);
+            return see_wall(creature, find_current, p_pos);
         }
 
         return true;
@@ -347,48 +391,49 @@ static bool run_test(PlayerType *player_ptr)
     if (find_cut) {
         find_current = option2;
         find_prevdir = option2;
-        return see_wall(player_ptr, find_current, p_pos);
+        return see_wall(creature, find_current, p_pos);
     }
 
     find_current = option;
     find_prevdir = option2;
-    return see_wall(player_ptr, find_current, p_pos);
+    return see_wall(creature, find_current, p_pos);
 }
 
 /*!
  * @brief 継続的なダッシュ処理 /
  * Take one step along the current "run" path
- * @param player_ptr	プレイヤーへの参照ポインタ
+ * @param creature	クリーチャーへの参照
  * @param dir 移動を試みる方向
  */
-void run_step(PlayerType *player_ptr, const Direction &dir)
+void run_step(CreatureEntity &creature, const Direction &dir)
 {
     if (dir) {
         ignore_avoid_run = true;
-        if (see_wall(player_ptr, dir, player_ptr->get_position())) {
+        if (see_wall(creature, dir, creature.get_position())) {
             sound(SoundKind::HITWALL);
             msg_print(_("その方向には走れません。", "You cannot run in that direction."));
-            disturb(player_ptr, false, false);
+            disturb(creature, false, false);
             return;
         }
 
-        run_init(player_ptr, dir);
+        run_init(creature, dir);
     } else {
-        if (run_test(player_ptr)) {
-            disturb(player_ptr, false, false);
+        if (run_test(creature)) {
+            disturb(creature, false, false);
             return;
         }
     }
 
-    if (--player_ptr->running <= 0) {
+    creature.set_running(creature.get_running() - 1);
+    if (creature.get_running() <= 0) {
         return;
     }
 
-    PlayerEnergy(player_ptr).set_player_turn_energy(100);
-    exe_movement(player_ptr, find_current, false, false);
-    if (player_ptr->is_located_at_running_destination()) {
-        player_ptr->run_py = 0;
-        player_ptr->run_px = 0;
-        disturb(player_ptr, false, false);
+    PlayerEnergy(creature).set_player_turn_energy(100);
+    exe_movement(creature, find_current, false, false);
+    if (creature.is_located_at_running_destination()) {
+        creature.set_run_py(0);
+        creature.set_run_px(0);
+        disturb(creature, false, false);
     }
 }

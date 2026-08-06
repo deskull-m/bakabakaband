@@ -12,25 +12,27 @@
 #include "store/store-util.h"
 #include "system/angband-system.h"
 #include "system/angband.h"
+#include "system/inner-game-data.h"
 #include "system/item-entity.h"
 #include "util/enum-converter.h"
 #include "world/world.h"
+#include <array>
 
 /*!
- * @brief セーブデータに店舗情報を書き込む / Write a "store" record
- * @param store_ptr 店舗情報の参照ポインタ
+ * @brief セーブデータに店舗情報を書き込む
+ * @param store_ptr 店舗情報の参照
  */
-void wr_store(Store *store_ptr)
+void wr_store(const Store &store)
 {
-    wr_u32b(store_ptr->store_open);
-    wr_s16b(store_ptr->insult_cur);
-    wr_byte(store_ptr->owner);
-    wr_s16b(store_ptr->stock_num);
-    wr_s16b(store_ptr->good_buy);
-    wr_s16b(store_ptr->bad_buy);
-    wr_s32b(store_ptr->last_visit);
-    for (int j = 0; j < store_ptr->stock_num; j++) {
-        wr_item(*store_ptr->stock[j]);
+    wr_u32b(store.store_open);
+    wr_s16b(store.insult_cur);
+    wr_byte(store.owner);
+    wr_s16b(store.stock_num);
+    wr_s16b(store.good_buy);
+    wr_s16b(store.bad_buy);
+    wr_s32b(store.last_visit);
+    for (int j = 0; j < store.stock_num; j++) {
+        wr_item(*store.stock[j]);
     }
 }
 
@@ -42,7 +44,8 @@ void wr_randomizer(void)
 {
     wr_u16b(0);
     wr_u16b(0);
-    const auto &state = AngbandSystem::get_instance().get_rng().get_state();
+    std::array<uint32_t, xso::rng32::word_count()> state;
+    AngbandSystem::get_instance().get_rng().get_state(state.begin());
     for (const auto s : state) {
         wr_u32b(s);
     }
@@ -187,7 +190,7 @@ void save_quick_start(void)
     }
 
     for (int i = 0; i < PY_MAX_LEVEL; i++) {
-        wr_s16b((int16_t)previous_char.player_hp[i]);
+        wr_s16b((int16_t)previous_char.hp_table[i]);
     }
 
     wr_s16b(previous_char.patron);
@@ -214,7 +217,7 @@ void save_quick_start(void)
 
     /* UNUSED : Was number of random quests */
     wr_byte(0);
-    if (AngbandWorld::get_instance().noscore) {
+    if (InnerGameData::get_instance().is_no_score()) {
         previous_char.quick_ok = false;
     }
 

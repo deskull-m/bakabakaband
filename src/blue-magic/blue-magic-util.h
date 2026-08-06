@@ -20,7 +20,7 @@ struct bmc_type {
     BIT_FLAGS g_mode;
 };
 
-class PlayerType;
-typedef PLAYER_LEVEL (*get_pseudo_monstetr_level_pf)(PlayerType *player_ptr);
+class CreatureEntity;
+typedef PLAYER_LEVEL (*get_pseudo_monstetr_level_pf)(CreatureEntity &creature);
 bmc_type *initialize_blue_magic_type(
-    PlayerType *player_ptr, bmc_type *bmc_ptr, MonsterAbilityType spell, bool success, get_pseudo_monstetr_level_pf get_pseudo_monstetr_level);
+    CreatureEntity &creature, bmc_type *bmc_ptr, MonsterAbilityType spell, bool success, get_pseudo_monstetr_level_pf get_pseudo_monstetr_level);

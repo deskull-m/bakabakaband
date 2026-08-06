@@ -1,10 +1,10 @@
 #include "alliance/alliance-chardros.h"
-#include "system/player-type-definition.h"
+#include "system/creature-entity.h"
 
-int AllianceChardros::calcImpressionPoint(PlayerType *creature_ptr) const
+int AllianceChardros::calcImpressionPoint(const CreatureEntity &creature) const
 {
     int impression = 0;
-    impression += Alliance::calcPlayerPower(*creature_ptr, 14, 26);
+    impression += Alliance::calcPlayerPower(creature, 14, 26);
     impression += calcIronmanHostilityPenalty();
 
     return impression;

@@ -19,17 +19,15 @@
 #include "specific-object/chest.h"
 #include "status/action-setter.h"
 #include "status/experience.h"
+#include "system/creature-entity.h"
 #include "system/enums/grid-count-kind.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
-#include "system/monster-entity.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "system/terrain/terrain-definition.h"
 #include "target/target-getter.h"
 #include "term/screen-processor.h"
-#include "timed-effect/timed-effects.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
 #include "world/world.h"
@@ -44,21 +42,20 @@
  * @details
  * Assume there is no monster blocking the destination
  */
-static bool exe_open_chest(PlayerType *player_ptr, const Pos2D &pos, OBJECT_IDX o_idx)
+static bool exe_open_chest(CreatureEntity &creature, const Pos2D &pos, OBJECT_IDX o_idx)
 {
     auto flag = true;
     auto more = false;
-    auto *o_ptr = player_ptr->current_floor_ptr->o_list[o_idx].get();
-    PlayerEnergy(player_ptr).set_player_turn_energy(100);
+    auto *o_ptr = creature.get_floor()->o_list[o_idx].get();
+    PlayerEnergy(creature).set_player_turn_energy(100);
     if (o_ptr->pval > 0) {
         flag = false;
-        int i = player_ptr->skill_dis;
-        const auto effects = player_ptr->effects();
-        if (effects->blindness().is_blind() || no_lite(player_ptr)) {
+        int i = creature.get_skill_disarm();
+        if (creature.is_blind() || no_lite(creature)) {
             i = i / 10;
         }
 
-        if (effects->confusion().is_confused() || effects->hallucination().is_hallucinated()) {
+        if (creature.is_confused() || creature.is_hallucinated()) {
             i = i / 10;
         }
 
@@ -69,7 +66,7 @@ static bool exe_open_chest(PlayerType *player_ptr, const Pos2D &pos, OBJECT_IDX 
 
         if (evaluate_percent(j)) {
             msg_print(_("鍵をはずした。", "You have picked the lock."));
-            gain_exp(static_cast<CreatureEntity &>(*player_ptr), 1);
+            gain_exp(creature, 1);
             flag = true;
         } else {
             more = true;
@@ -82,7 +79,7 @@ static bool exe_open_chest(PlayerType *player_ptr, const Pos2D &pos, OBJECT_IDX 
     }
 
     if (flag) {
-        Chest chest(player_ptr);
+        Chest chest(creature);
         chest.fire_trap(pos, o_idx);
         chest.open(false, pos, o_idx);
     }
@@ -96,18 +93,18 @@ static bool exe_open_chest(PlayerType *player_ptr, const Pos2D &pos, OBJECT_IDX 
  * @details
  * Unlocking a locked door/chest is worth one experience point.
  */
-void do_cmd_open(PlayerType *player_ptr)
+void do_cmd_open(CreatureEntity &creature)
 {
     auto more = false;
     if (AngbandWorld::get_instance().is_wild_mode()) {
         return;
     }
 
-    PlayerClass(player_ptr).break_samurai_stance({ SamuraiStanceType::MUSOU });
-    auto &floor = *player_ptr->current_floor_ptr;
+    CreatureClass(creature).break_samurai_stance({ SamuraiStanceType::MUSOU });
+    auto &floor = *creature.get_floor();
     if (easy_open) {
-        const auto &[num_doors, dir_door] = floor.count_doors_traps(player_ptr->get_position(), GridCountKind::CLOSED_DOOR, false);
-        const auto &[num_chests, dir_chest] = count_chests(player_ptr, false);
+        const auto &[num_doors, dir_door] = floor.count_doors_traps(creature.get_position(), GridCountKind::CLOSED_DOOR, false);
+        const auto &[num_chests, dir_chest] = count_chests(creature, false);
         if ((num_doors > 0) || (num_chests > 0)) {
             const auto too_many = (num_doors && num_chests) || (num_doors > 1) || (num_chests > 1);
             if (!too_many) {
@@ -116,31 +113,25 @@ void do_cmd_open(PlayerType *player_ptr)
         }
     }
 
-    if (command_arg) {
-        command_rep = command_arg - 1;
-        RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::ACTION);
-        command_arg = 0;
-    }
+    set_command_repeat_from_arg();
 
-    if (const auto dir = get_rep_dir(player_ptr, true)) {
-        const auto pos = player_ptr->get_neighbor(dir);
+    if (const auto dir = get_rep_dir(creature, true)) {
+        const auto pos = creature.get_neighbor(dir);
         const auto &grid = floor.get_grid(pos);
         const auto o_idx = chest_check(floor, pos, false);
         if (grid.get_terrain(TerrainKind::MIMIC).flags.has_not(TerrainCharacteristics::OPEN) && !o_idx) {
             msg_print(_("そこには開けるものが見当たらない。", "You see nothing there to open."));
-        } else if (grid.has_monster() && !floor.m_list[grid.m_idx].is_riding()) {
-            PlayerEnergy(player_ptr).set_player_turn_energy(100);
-            msg_print(_("モンスターが立ちふさがっている！", "There is a monster in the way!"));
-            do_cmd_attack(player_ptr, pos.y, pos.x, HISSATSU_NONE);
+        } else if (grid.has_monster() && !floor.get_monster(grid.m_idx).is_riding()) {
+            attack_monster_in_the_way(creature, pos);
         } else if (o_idx) {
-            more = exe_open_chest(player_ptr, pos, o_idx);
+            more = exe_open_chest(creature, pos, o_idx);
         } else {
-            more = exe_open(player_ptr, pos.y, pos.x);
+            more = exe_open(creature, pos.y, pos.x);
         }
     }
 
     if (!more) {
-        disturb(player_ptr, false, false);
+        disturb(creature, false, false);
     }
 }
 
@@ -150,44 +141,38 @@ void do_cmd_open(PlayerType *player_ptr)
  * @details
  * Unlocking a locked door/chest is worth one experience point.
  */
-void do_cmd_close(PlayerType *player_ptr)
+void do_cmd_close(CreatureEntity &creature)
 {
     if (AngbandWorld::get_instance().is_wild_mode()) {
         return;
     }
 
-    const auto &floor = *player_ptr->current_floor_ptr;
-    PlayerClass(player_ptr).break_samurai_stance({ SamuraiStanceType::MUSOU });
+    const auto &floor = *creature.get_floor();
+    CreatureClass(creature).break_samurai_stance({ SamuraiStanceType::MUSOU });
     if (easy_open) {
-        const auto &[num_doors, dir] = floor.count_doors_traps(player_ptr->get_position(), GridCountKind::OPEN, false);
+        const auto &[num_doors, dir] = floor.count_doors_traps(creature.get_position(), GridCountKind::OPEN, false);
         if (num_doors == 1) {
             command_dir = dir;
         }
     }
 
-    if (command_arg) {
-        command_rep = command_arg - 1;
-        RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::ACTION);
-        command_arg = 0;
-    }
+    set_command_repeat_from_arg();
 
     auto more = false;
-    if (const auto dir = get_rep_dir(player_ptr)) {
-        const auto pos = player_ptr->get_neighbor(dir);
+    if (const auto dir = get_rep_dir(creature)) {
+        const auto pos = creature.get_neighbor(dir);
         const auto &grid = floor.get_grid(pos);
         if (grid.get_terrain(TerrainKind::MIMIC).flags.has_not(TerrainCharacteristics::CLOSE)) {
             msg_print(_("そこには閉じるものが見当たらない。", "You see nothing there to close."));
         } else if (grid.has_monster()) {
-            PlayerEnergy(player_ptr).set_player_turn_energy(100);
-            msg_print(_("モンスターが立ちふさがっている！", "There is a monster in the way!"));
-            do_cmd_attack(player_ptr, pos.y, pos.x, HISSATSU_NONE);
+            attack_monster_in_the_way(creature, pos);
         } else {
-            more = exe_close(player_ptr, pos.y, pos.x);
+            more = exe_close(creature, pos);
         }
     }
 
     if (!more) {
-        disturb(player_ptr, false, false);
+        disturb(creature, false, false);
     }
 }
 
@@ -195,17 +180,17 @@ void do_cmd_close(PlayerType *player_ptr)
  * @brief 箱、床のトラップ解除処理双方の統合メインルーチン /
  * Disarms a trap, or chest
  */
-void do_cmd_disarm(PlayerType *player_ptr)
+void do_cmd_disarm(CreatureEntity &creature)
 {
     if (AngbandWorld::get_instance().is_wild_mode()) {
         return;
     }
 
-    auto &floor = *player_ptr->current_floor_ptr;
-    PlayerClass(player_ptr).break_samurai_stance({ SamuraiStanceType::MUSOU });
+    auto &floor = *creature.get_floor();
+    CreatureClass(creature).break_samurai_stance({ SamuraiStanceType::MUSOU });
     if (easy_disarm) {
-        const auto &[num_traps, dir_trap] = floor.count_doors_traps(player_ptr->get_position(), GridCountKind::TRAP, true);
-        const auto &[num_chests, dir_chest] = count_chests(player_ptr, true);
+        const auto &[num_traps, dir_trap] = floor.count_doors_traps(creature.get_position(), GridCountKind::TRAP, true);
+        const auto &[num_chests, dir_chest] = count_chests(creature, true);
         if ((num_traps > 0) || (num_chests > 0)) {
             const auto too_many = (num_traps && num_chests) || (num_traps > 1) || (num_chests > 1);
             if (!too_many) {
@@ -214,31 +199,27 @@ void do_cmd_disarm(PlayerType *player_ptr)
         }
     }
 
-    if (command_arg) {
-        command_rep = command_arg - 1;
-        RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::ACTION);
-        command_arg = 0;
-    }
+    set_command_repeat_from_arg();
 
     auto more = false;
-    if (const auto dir = get_rep_dir(player_ptr, true)) {
-        const auto pos = player_ptr->get_neighbor(dir);
+    if (const auto dir = get_rep_dir(creature, true)) {
+        const auto pos = creature.get_neighbor(dir);
         const auto &grid = floor.get_grid(pos);
         const auto o_idx = chest_check(floor, pos, true);
         if (!floor.has_trap_at(pos) && !o_idx) {
             msg_print(_("そこには解除するものが見当たらない。", "You see nothing there to disarm."));
-        } else if (grid.has_monster() && !floor.m_list[grid.m_idx].is_riding()) {
+        } else if (grid.has_monster() && !floor.get_monster(grid.m_idx).is_riding()) {
             msg_print(_("モンスターが立ちふさがっている！", "There is a monster in the way!"));
-            do_cmd_attack(player_ptr, pos.y, pos.x, HISSATSU_NONE);
+            do_cmd_attack(creature, pos.y, pos.x, HISSATSU_NONE);
         } else if (o_idx) {
-            more = exe_disarm_chest(player_ptr, pos.y, pos.x, o_idx);
+            more = exe_disarm_chest(creature, pos.y, pos.x, o_idx);
         } else {
-            more = exe_disarm(player_ptr, pos.y, pos.x, dir);
+            more = exe_disarm(creature, pos.y, pos.x, dir);
         }
     }
 
     if (!more) {
-        disturb(player_ptr, false, false);
+        disturb(creature, false, false);
     }
 }
 
@@ -259,36 +240,30 @@ void do_cmd_disarm(PlayerType *player_ptr)
  * Creatures can also open or bash doors, see elsewhere.
  * </pre>
  */
-void do_cmd_bash(PlayerType *player_ptr)
+void do_cmd_bash(CreatureEntity &creature)
 {
     if (AngbandWorld::get_instance().is_wild_mode()) {
         return;
     }
 
-    PlayerClass(player_ptr).break_samurai_stance({ SamuraiStanceType::MUSOU });
-    if (command_arg) {
-        command_rep = command_arg - 1;
-        RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::ACTION);
-        command_arg = 0;
-    }
+    CreatureClass(creature).break_samurai_stance({ SamuraiStanceType::MUSOU });
+    set_command_repeat_from_arg();
 
     auto more = false;
-    if (const auto dir = get_rep_dir(player_ptr)) {
-        const auto pos = player_ptr->get_neighbor(dir);
-        const Grid &grid = player_ptr->current_floor_ptr->get_grid(pos);
+    if (const auto dir = get_rep_dir(creature)) {
+        const auto pos = creature.get_neighbor(dir);
+        const Grid &grid = creature.get_floor()->get_grid(pos);
         if (grid.get_terrain(TerrainKind::MIMIC).flags.has_not(TerrainCharacteristics::BASH)) {
             msg_print(_("そこには体当たりするものが見当たらない。", "You see nothing there to bash."));
         } else if (grid.has_monster()) {
-            PlayerEnergy(player_ptr).set_player_turn_energy(100);
-            msg_print(_("モンスターが立ちふさがっている！", "There is a monster in the way!"));
-            do_cmd_attack(player_ptr, pos.y, pos.x, HISSATSU_NONE);
+            attack_monster_in_the_way(creature, pos);
         } else {
-            more = exe_bash(player_ptr, pos.y, pos.x, dir);
+            more = exe_bash(creature, pos.y, pos.x, dir);
         }
     }
 
     if (!more) {
-        disturb(player_ptr, false, false);
+        disturb(creature, false, false);
     }
 }
 
@@ -302,16 +277,16 @@ void do_cmd_bash(PlayerType *player_ptr)
  * Let user choose a pile of spikes, perhaps?
  * </pre>
  */
-static bool get_spike(PlayerType *player_ptr, INVENTORY_IDX *ip)
+static bool get_spike(CreatureEntity &creature, INVENTORY_IDX *ip)
 {
-    for (INVENTORY_IDX i = 0; i < INVEN_PACK; i++) {
-        auto *o_ptr = player_ptr->inventory[i].get();
+    for (const auto i_idx : INVEN_PACK_SLOTS) {
+        auto *o_ptr = creature.inventory[i_idx].get();
         if (!o_ptr->is_valid()) {
             continue;
         }
 
         if (o_ptr->bi_key.tval() == ItemKindType::SPIKE) {
-            *ip = i;
+            *ip = i_idx;
             return true;
         }
     }
@@ -322,40 +297,38 @@ static bool get_spike(PlayerType *player_ptr, INVENTORY_IDX *ip)
 /*!
  * @brief 「くさびを打つ」動作コマンドのメインルーチン /
  * Jam a closed door with a spike
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @details
  * <pre>
  * This command may NOT be repeated
  * </pre>
  */
-void do_cmd_spike(PlayerType *player_ptr)
+void do_cmd_spike(CreatureEntity &creature)
 {
     if (AngbandWorld::get_instance().is_wild_mode()) {
         return;
     }
 
-    PlayerClass(player_ptr).break_samurai_stance({ SamuraiStanceType::MUSOU });
-    const auto dir = get_rep_dir(player_ptr);
+    CreatureClass(creature).break_samurai_stance({ SamuraiStanceType::MUSOU });
+    const auto dir = get_rep_dir(creature);
     if (!dir) {
         return;
     }
 
-    const auto pos = player_ptr->get_neighbor(dir);
-    const auto &grid = player_ptr->current_floor_ptr->get_grid(pos);
+    const auto pos = creature.get_neighbor(dir);
+    const auto &grid = creature.get_floor()->get_grid(pos);
     const auto &terrain_mimic = grid.get_terrain(TerrainKind::MIMIC);
     INVENTORY_IDX i_idx;
     if (terrain_mimic.flags.has_not(TerrainCharacteristics::SPIKE)) {
         msg_print(_("そこにはくさびを打てるものが見当たらない。", "You see nothing there to spike."));
-    } else if (!get_spike(player_ptr, &i_idx)) {
+    } else if (!get_spike(creature, &i_idx)) {
         msg_print(_("くさびを持っていない！", "You have no spikes!"));
     } else if (grid.has_monster()) {
-        PlayerEnergy(player_ptr).set_player_turn_energy(100);
-        msg_print(_("モンスターが立ちふさがっている！", "There is a monster in the way!"));
-        do_cmd_attack(player_ptr, pos.y, pos.x, HISSATSU_NONE);
+        attack_monster_in_the_way(creature, pos);
     } else {
-        PlayerEnergy(player_ptr).set_player_turn_energy(100);
+        PlayerEnergy(creature).set_player_turn_energy(100);
         msg_format(_("%sにくさびを打ち込んだ。", "You jam the %s with a spike."), terrain_mimic.name.data());
-        cave_alter_feat(player_ptr, pos.y, pos.x, TerrainCharacteristics::SPIKE);
-        vary_item(player_ptr, i_idx, -1);
+        cave_alter_feat(creature, pos.y, pos.x, TerrainCharacteristics::SPIKE);
+        vary_item(creature, i_idx, -1);
     }
 }

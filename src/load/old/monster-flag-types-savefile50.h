@@ -22,4 +22,7 @@ enum class SaveDataMonsterFlagType {
     RACE = 0x00040000,
     CLASS = 0x00080000,
     TRANSFORM = 0x00100000,
+    INVENTORY = 0x00200000,
+    EXTENDED_INVENTORY = 0x00400000, //!< Phase 2: 拡張装備スロット
+    MATERIALS = 0x00800000, //!< 材質 (副種族)
 };

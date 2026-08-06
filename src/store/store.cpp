@@ -25,17 +25,18 @@
 #include "store/store-util.h"
 #include "sv-definition/sv-lite-types.h"
 #include "sv-definition/sv-scroll-types.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/floor/town-info.h"
 #include "system/floor/town-list.h"
 #include "system/inner-game-data.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "term/screen-processor.h"
 #include "term/z-form.h"
 #include "util/int-char-converter.h"
 #include "view/display-messages.h"
 #include "world/world.h"
+#include <tl/optional.hpp>
 
 int store_top = 0;
 int store_bottom = 0;
@@ -221,7 +222,7 @@ tl::optional<short> input_stock(std::string_view fmt, int min, int max, [[maybe_
  * @brief 店のアイテムを調べるコマンドのメインルーチン /
  * Examine an item in a store			   -JDL-
  */
-void store_examine(PlayerType *player_ptr, StoreSaleType store_num)
+void store_examine(CreatureEntity &creature, StoreSaleType store_num)
 {
     if (st_ptr->stock_num <= 0) {
         if (store_num == StoreSaleType::HOME) {
@@ -252,9 +253,9 @@ void store_examine(PlayerType *player_ptr, StoreSaleType store_num)
         return;
     }
 
-    const auto item_name = describe_flavor(player_ptr, item, 0);
+    const auto item_name = describe_flavor(creature, item, 0);
     msg_format(_("%sを調べている...", "Examining %s..."), item_name.data());
-    if (!screen_object(player_ptr, item, SCROBJ_FORCE_DETAIL)) {
+    if (!screen_object(creature, item, SCROBJ_FORCE_DETAIL)) {
         msg_print(_("特に変わったところはないようだ。", "You see nothing special."));
     }
 }
@@ -262,7 +263,7 @@ void store_examine(PlayerType *player_ptr, StoreSaleType store_num)
 /*!
  * @brief 店舗の品揃え変化のためにアイテムを追加する /
  * Creates a random item and gives it to a store
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @details
  * <pre>
  * This algorithm needs to be rethought.  A lot.
@@ -273,7 +274,7 @@ void store_examine(PlayerType *player_ptr, StoreSaleType store_num)
  * Should we check for "permission" to have the given item?
  * </pre>
  */
-static void store_create(PlayerType *player_ptr, short fix_k_idx, StoreSaleType store_num)
+static void store_create(CreatureEntity &creature, short fix_k_idx, StoreSaleType store_num)
 {
     if (st_ptr->stock_num >= st_ptr->stock_size) {
         return;
@@ -287,7 +288,7 @@ static void store_create(PlayerType *player_ptr, short fix_k_idx, StoreSaleType 
         if (store_num == StoreSaleType::BLACK) {
             level = bm_boost + randint0(25);
             level = std::min(128, level);
-            bi_id = player_ptr->current_floor_ptr->select_baseitem_id(level, 0x00000000);
+            bi_id = creature.get_floor()->select_baseitem_id(level, 0x00000000);
             if (bi_id == 0) {
                 continue;
             }
@@ -303,8 +304,8 @@ static void store_create(PlayerType *player_ptr, short fix_k_idx, StoreSaleType 
         ItemEntity *q_ptr;
         q_ptr = &forge;
         q_ptr->generate(bi_id);
-        ItemMagicApplier(player_ptr, q_ptr, level, AM_NO_FIXED_ART).execute();
-        if (!store_will_buy(player_ptr, q_ptr, store_num)) {
+        ItemMagicApplier(creature, q_ptr, level, AM_NO_FIXED_ART).execute();
+        if (!store_will_buy(creature, q_ptr, store_num)) {
             continue;
         }
 
@@ -327,13 +328,13 @@ static void store_create(PlayerType *player_ptr, short fix_k_idx, StoreSaleType 
         }
 
         q_ptr->mark_as_known();
-        q_ptr->ident |= IDENT_STORE;
+        q_ptr->ident.set(IdentificationFlag::STORE);
         if (tval == ItemKindType::CHEST) {
             continue;
         }
 
         if (store_num == StoreSaleType::BLACK) {
-            if (black_market_crap(player_ptr->town_num, *q_ptr) || (q_ptr->calc_price() < 10)) {
+            if (black_market_crap(creature.get_town_num(), *q_ptr) || (q_ptr->calc_price() < 10)) {
                 continue;
             }
         } else {
@@ -351,24 +352,24 @@ static void store_create(PlayerType *player_ptr, short fix_k_idx, StoreSaleType 
 /*!
  * @brief 店の品揃えを変化させる /
  * Maintain the inventory at the stores.
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param town_num 町のID
  * @param store_num 店舗種類のID
  * @param chance 更新商品数
  */
-void store_maintenance(PlayerType *player_ptr, int town_num, StoreSaleType store_num, int chance)
+void store_maintenance(CreatureEntity &creature, int town_num, StoreSaleType store_num, int chance)
 {
     if ((store_num == StoreSaleType::HOME) || (store_num == StoreSaleType::MUSEUM)) {
         return;
     }
 
-    st_ptr = &towns_info[town_num].get_store(store_num);
+    st_ptr = &TownList::get_instance().get_town(town_num).get_store(store_num);
     ot_ptr = &owners.at(store_num)[st_ptr->owner];
     st_ptr->insult_cur = 0;
     if (store_num == StoreSaleType::BLACK) {
         for (INVENTORY_IDX j = st_ptr->stock_num - 1; j >= 0; j--) {
             auto &item = *st_ptr->stock[j];
-            if (black_market_crap(player_ptr->town_num, item)) {
+            if (black_market_crap(creature.get_town_num(), item)) {
                 st_ptr->increase_item(j, 0 - item.number);
                 st_ptr->optimize_item(j);
             }
@@ -376,12 +377,12 @@ void store_maintenance(PlayerType *player_ptr, int town_num, StoreSaleType store
     }
 
     const int level = store_level(store_num);
-    const int store_max_keep = (store_num == StoreSaleType::BLACK) ? STORE_MAX_KEEP * (level + 60) / 20 : STORE_MAX_KEEP;
-    const int store_min_keep = (store_num == StoreSaleType::BLACK) ? STORE_MIN_KEEP * (level + 60) / 20 : STORE_MIN_KEEP;
-    const int store_turnover = (store_num == StoreSaleType::BLACK) ? STORE_TURNOVER * (level + 60) / 20 : STORE_TURNOVER;
+    const short store_max_keep = (store_num == StoreSaleType::BLACK) ? STORE_MAX_KEEP * (level + 60) / 20 : STORE_MAX_KEEP;
+    const short store_min_keep = (store_num == StoreSaleType::BLACK) ? STORE_MIN_KEEP * (level + 60) / 20 : STORE_MIN_KEEP;
+    const short store_turnover = (store_num == StoreSaleType::BLACK) ? STORE_TURNOVER * (level + 60) / 20 : STORE_TURNOVER;
     chance = (store_num == StoreSaleType::BLACK) ? chance * (level + 60) / 20 : chance;
 
-    INVENTORY_IDX j = st_ptr->stock_num;
+    auto j = st_ptr->stock_num;
     int remain = store_turnover + std::max(0, j - store_max_keep);
     int turn_over = 1;
     for (int i = 0; i < chance; i++) {
@@ -422,14 +423,14 @@ void store_maintenance(PlayerType *player_ptr, int town_num, StoreSaleType store
     }
 
     for (size_t k = 0; k < st_ptr->regular.size(); k++) {
-        store_create(player_ptr, st_ptr->regular[k], store_num);
+        store_create(creature, st_ptr->regular[k], store_num);
         if (st_ptr->stock_num >= store_max_keep) {
             break;
         }
     }
 
     while (st_ptr->stock_num < j) {
-        store_create(player_ptr, 0, store_num);
+        store_create(creature, 0, store_num);
     }
 }
 
@@ -442,8 +443,8 @@ void store_maintenance(PlayerType *player_ptr, int town_num, StoreSaleType store
 void store_init(int town_num, StoreSaleType store_num)
 {
     int owner_num = owners.at(store_num).size();
-    st_ptr = &towns_info[town_num].get_store(store_num);
-    const int towns_size = towns_info.size();
+    st_ptr = &TownList::get_instance().get_town(town_num).get_store(store_num);
+    const int towns_size = TownList::get_instance().size();
     while (true) {
         st_ptr->owner = randnum0<uint8_t>(owner_num);
 
@@ -456,7 +457,7 @@ void store_init(int town_num, StoreSaleType store_num)
             if (i == town_num) {
                 continue;
             }
-            if (st_ptr->owner == towns_info[i].get_store(store_num).owner) {
+            if (st_ptr->owner == TownList::get_instance().get_town(i).get_store(store_num).owner) {
                 break;
             }
         }

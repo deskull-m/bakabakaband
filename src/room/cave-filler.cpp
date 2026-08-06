@@ -7,11 +7,11 @@
 #include "room/cave-filler.h"
 #include "grid/grid.h"
 #include "room/lake-types.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/enums/terrain/terrain-tag.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
-#include "system/player-type-definition.h"
 #include "system/terrain/terrain-definition.h"
 #include "system/terrain/terrain-list.h"
 #include <queue>
@@ -92,7 +92,7 @@ void generate_hmap(FloorType &floor, POSITION y0, POSITION x0, POSITION xsiz, PO
     for (POSITION i = 0; i <= xsize; i++) {
         for (POSITION j = 0; j <= ysize; j++) {
             floor.grid_array[(int)(fill_data.ymin + j)][(int)(fill_data.xmin + i)].feat = -1;
-            floor.grid_array[(int)(fill_data.ymin + j)][(int)(fill_data.xmin + i)].info &= ~(CAVE_ICKY);
+            floor.grid_array[(int)(fill_data.ymin + j)][(int)(fill_data.xmin + i)].info &= ~(CAVE_NO_TELEPORT_DEST);
         }
     }
 
@@ -176,15 +176,15 @@ void generate_hmap(FloorType &floor, POSITION y0, POSITION x0, POSITION xsiz, PO
     }
 }
 
-static bool hack_isnt_wall(PlayerType *player_ptr, POSITION y, POSITION x, int c1, int c2, int c3, FEAT_IDX feat1, FEAT_IDX feat2, FEAT_IDX feat3,
+static bool hack_isnt_wall(CreatureEntity &creature, POSITION y, POSITION x, int c1, int c2, int c3, FEAT_IDX feat1, FEAT_IDX feat2, FEAT_IDX feat3,
     BIT_FLAGS info1, BIT_FLAGS info2, BIT_FLAGS info3)
 {
-    auto &floor = *player_ptr->current_floor_ptr;
-    if (floor.grid_array[y][x].info & CAVE_ICKY) {
+    auto &floor = *creature.get_floor();
+    if (floor.grid_array[y][x].info & CAVE_NO_TELEPORT_DEST) {
         return false;
     }
 
-    floor.grid_array[y][x].info |= (CAVE_ICKY);
+    floor.grid_array[y][x].info |= (CAVE_NO_TELEPORT_DEST);
     if (floor.grid_array[y][x].feat <= c1) {
         if (randint1(100) < 75) {
             floor.grid_array[y][x].feat = feat1;
@@ -220,7 +220,7 @@ static bool hack_isnt_wall(PlayerType *player_ptr, POSITION y, POSITION x, int c
         return true;
     }
 
-    place_bold(player_ptr, y, x, GB_OUTER);
+    place_bold(creature, y, x, GB_OUTER);
     return false;
 }
 
@@ -228,9 +228,9 @@ static bool hack_isnt_wall(PlayerType *player_ptr, POSITION y, POSITION x, int c
  * Quick and nasty fill routine used to find the connected region
  * of floor in the middle of the grids
  */
-static void cave_fill(PlayerType *player_ptr, const Pos2D &initial_pos)
+static void cave_fill(CreatureEntity &creature, const Pos2D &initial_pos)
 {
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *creature.get_floor();
 
     // 幅優先探索用のキュー。
     std::queue<Pos2D> que;
@@ -244,16 +244,16 @@ static void cave_fill(PlayerType *player_ptr, const Pos2D &initial_pos)
             const auto pos_to = pos + d.vec();
             auto &grid = floor.get_grid(pos_to);
             if (!floor.contains(pos_to, FloorBoundary::OUTER_WALL_EXCLUSIVE)) {
-                grid.info |= CAVE_ICKY;
+                grid.info |= CAVE_NO_TELEPORT_DEST;
                 continue;
             }
 
             if ((pos_to.x <= fill_data.xmin) || (pos_to.x >= fill_data.xmax) || (pos_to.y <= fill_data.ymin) || (pos_to.y >= fill_data.ymax)) {
-                grid.info |= CAVE_ICKY;
+                grid.info |= CAVE_NO_TELEPORT_DEST;
                 continue;
             }
 
-            if (!hack_isnt_wall(player_ptr, pos_to.y, pos_to.x, fill_data.c1, fill_data.c2, fill_data.c3, fill_data.feat1, fill_data.feat2, fill_data.feat3,
+            if (!hack_isnt_wall(creature, pos_to.y, pos_to.x, fill_data.c1, fill_data.c2, fill_data.c3, fill_data.feat1, fill_data.feat2, fill_data.feat3,
                     fill_data.info1, fill_data.info2, fill_data.info3)) {
                 continue;
             }
@@ -264,9 +264,9 @@ static void cave_fill(PlayerType *player_ptr, const Pos2D &initial_pos)
     }
 }
 
-bool generate_fracave(PlayerType *player_ptr, POSITION y0, POSITION x0, POSITION xsize, POSITION ysize, int cutoff, bool light, bool room)
+bool generate_fracave(CreatureEntity &creature, POSITION y0, POSITION x0, POSITION xsize, POSITION ysize, int cutoff, bool light, bool room)
 {
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *creature.get_floor();
     const auto &dungeon = floor.get_dungeon_definition();
     POSITION xhsize = xsize / 2;
     POSITION yhsize = ysize / 2;
@@ -280,12 +280,12 @@ bool generate_fracave(PlayerType *player_ptr, POSITION y0, POSITION x0, POSITION
     fill_data.info2 = CAVE_FLOOR;
     fill_data.info3 = CAVE_FLOOR;
     fill_data.amount = 0;
-    cave_fill(player_ptr, { y0, x0 });
+    cave_fill(creature, { y0, x0 });
     if (fill_data.amount < 10) {
         for (POSITION x = 0; x <= xsize; ++x) {
             for (POSITION y = 0; y <= ysize; ++y) {
-                place_bold(player_ptr, y0 + y - yhsize, x0 + x - xhsize, GB_EXTRA);
-                floor.grid_array[y0 + y - yhsize][x0 + x - xhsize].info &= ~(CAVE_ICKY | CAVE_ROOM);
+                place_bold(creature, y0 + y - yhsize, x0 + x - xhsize, GB_EXTRA);
+                floor.grid_array[y0 + y - yhsize][x0 + x - xhsize].info &= ~(CAVE_NO_TELEPORT_DEST | CAVE_ROOM);
             }
         }
 
@@ -295,70 +295,70 @@ bool generate_fracave(PlayerType *player_ptr, POSITION y0, POSITION x0, POSITION
     for (int i = 0; i <= xsize; ++i) {
         auto &grid1 = floor.grid_array[y0 - yhsize][i + x0 - xhsize];
         if (grid1.is_icky() && (room)) {
-            place_bold(player_ptr, y0 - yhsize, x0 + i - xhsize, GB_OUTER);
+            place_bold(creature, y0 - yhsize, x0 + i - xhsize, GB_OUTER);
             if (light) {
                 floor.grid_array[y0 - yhsize][x0 + i - xhsize].info |= (CAVE_GLOW);
             }
 
             grid1.info |= (CAVE_ROOM);
-            place_bold(player_ptr, y0 - yhsize, x0 + i - xhsize, GB_OUTER);
+            place_bold(creature, y0 - yhsize, x0 + i - xhsize, GB_OUTER);
         } else {
-            place_bold(player_ptr, y0 - yhsize, x0 + i - xhsize, GB_EXTRA);
+            place_bold(creature, y0 - yhsize, x0 + i - xhsize, GB_EXTRA);
         }
 
         auto &grid2 = floor.grid_array[ysize + y0 - yhsize][i + x0 - xhsize];
         if (grid2.is_icky() && (room)) {
-            place_bold(player_ptr, y0 + ysize - yhsize, x0 + i - xhsize, GB_OUTER);
+            place_bold(creature, y0 + ysize - yhsize, x0 + i - xhsize, GB_OUTER);
             if (light) {
                 grid2.info |= (CAVE_GLOW);
             }
 
             grid2.info |= (CAVE_ROOM);
-            place_bold(player_ptr, y0 + ysize - yhsize, x0 + i - xhsize, GB_OUTER);
+            place_bold(creature, y0 + ysize - yhsize, x0 + i - xhsize, GB_OUTER);
         } else {
-            place_bold(player_ptr, y0 + ysize - yhsize, x0 + i - xhsize, GB_EXTRA);
+            place_bold(creature, y0 + ysize - yhsize, x0 + i - xhsize, GB_EXTRA);
         }
 
-        grid1.info &= ~(CAVE_ICKY);
-        grid2.info &= ~(CAVE_ICKY);
+        grid1.info &= ~(CAVE_NO_TELEPORT_DEST);
+        grid2.info &= ~(CAVE_NO_TELEPORT_DEST);
     }
 
     for (int i = 1; i < ysize; ++i) {
         auto &grid1 = floor.grid_array[i + y0 - yhsize][x0 - xhsize];
         if (grid1.is_icky() && room) {
-            place_bold(player_ptr, y0 + i - yhsize, x0 - xhsize, GB_OUTER);
+            place_bold(creature, y0 + i - yhsize, x0 - xhsize, GB_OUTER);
             if (light) {
                 grid1.info |= (CAVE_GLOW);
             }
 
             grid1.info |= (CAVE_ROOM);
-            place_bold(player_ptr, y0 + i - yhsize, x0 - xhsize, GB_OUTER);
+            place_bold(creature, y0 + i - yhsize, x0 - xhsize, GB_OUTER);
         } else {
-            place_bold(player_ptr, y0 + i - yhsize, x0 - xhsize, GB_EXTRA);
+            place_bold(creature, y0 + i - yhsize, x0 - xhsize, GB_EXTRA);
         }
 
         auto &grid2 = floor.grid_array[i + y0 - yhsize][xsize + x0 - xhsize];
         if (grid2.is_icky() && room) {
-            place_bold(player_ptr, y0 + i - yhsize, x0 + xsize - xhsize, GB_OUTER);
+            place_bold(creature, y0 + i - yhsize, x0 + xsize - xhsize, GB_OUTER);
             if (light) {
                 grid2.info |= (CAVE_GLOW);
             }
 
             grid2.info |= (CAVE_ROOM);
-            place_bold(player_ptr, y0 + i - yhsize, x0 + xsize - xhsize, GB_OUTER);
+            place_bold(creature, y0 + i - yhsize, x0 + xsize - xhsize, GB_OUTER);
         } else {
-            place_bold(player_ptr, y0 + i - yhsize, x0 + xsize - xhsize, GB_EXTRA);
+            place_bold(creature, y0 + i - yhsize, x0 + xsize - xhsize, GB_EXTRA);
         }
 
-        grid1.info &= ~(CAVE_ICKY);
-        grid2.info &= ~(CAVE_ICKY);
+        grid1.info &= ~(CAVE_NO_TELEPORT_DEST);
+        grid2.info &= ~(CAVE_NO_TELEPORT_DEST);
     }
 
     for (POSITION x = 1; x < xsize; ++x) {
         for (POSITION y = 1; y < ysize; ++y) {
             auto &grid1 = floor.grid_array[y0 + y - yhsize][x0 + x - xhsize];
             if (grid1.is_floor() && grid1.is_icky()) {
-                grid1.info &= ~CAVE_ICKY;
+                grid1.info &= ~CAVE_NO_TELEPORT_DEST;
                 if (light) {
                     grid1.info |= (CAVE_GLOW);
                 }
@@ -372,7 +372,7 @@ bool generate_fracave(PlayerType *player_ptr, POSITION y0, POSITION x0, POSITION
 
             auto &grid2 = floor.grid_array[y0 + y - yhsize][x0 + x - xhsize];
             if (grid2.is_outer() && grid2.is_icky()) {
-                grid2.info &= ~(CAVE_ICKY);
+                grid2.info &= ~(CAVE_NO_TELEPORT_DEST);
                 if (light) {
                     grid2.info |= (CAVE_GLOW);
                 }
@@ -380,24 +380,24 @@ bool generate_fracave(PlayerType *player_ptr, POSITION y0, POSITION x0, POSITION
                 if (room) {
                     grid2.info |= (CAVE_ROOM);
                 } else {
-                    place_bold(player_ptr, y0 + y - yhsize, x0 + x - xhsize, GB_EXTRA);
+                    place_bold(creature, y0 + y - yhsize, x0 + x - xhsize, GB_EXTRA);
                     grid2.info &= ~(CAVE_ROOM);
                 }
 
                 continue;
             }
 
-            place_bold(player_ptr, y0 + y - yhsize, x0 + x - xhsize, GB_EXTRA);
-            grid2.info &= ~(CAVE_ICKY | CAVE_ROOM);
+            place_bold(creature, y0 + y - yhsize, x0 + x - xhsize, GB_EXTRA);
+            grid2.info &= ~(CAVE_NO_TELEPORT_DEST | CAVE_ROOM);
         }
     }
 
     return true;
 }
 
-bool generate_lake(PlayerType *player_ptr, POSITION y0, POSITION x0, POSITION xsize, POSITION ysize, int c1, int c2, int c3, int type)
+bool generate_lake(CreatureEntity &creature, POSITION y0, POSITION x0, POSITION xsize, POSITION ysize, int c1, int c2, int c3, int type)
 {
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *creature.get_floor();
     const auto &dungeon = floor.get_dungeon_definition();
     const auto &terrains = TerrainList::get_instance();
     const auto terrain_id_rubble = terrains.get_terrain_id(TerrainTag::RUBBLE);
@@ -462,13 +462,13 @@ bool generate_lake(PlayerType *player_ptr, POSITION y0, POSITION x0, POSITION xs
     fill_data.info3 = 0;
     fill_data.amount = 0;
 
-    cave_fill(player_ptr, { y0, x0 });
+    cave_fill(creature, { y0, x0 });
     if (fill_data.amount < 10) {
         for (auto x = 0; x <= xsize; ++x) {
             for (auto y = 0; y <= ysize; ++y) {
                 const Pos2D pos(y0 + y - yhsize, x0 + x - xhsize);
-                place_bold(player_ptr, pos.y, pos.x, GB_FLOOR);
-                floor.get_grid(pos).info &= ~(CAVE_ICKY);
+                place_bold(creature, pos.y, pos.x, GB_FLOOR);
+                floor.get_grid(pos).info &= ~(CAVE_NO_TELEPORT_DEST);
             }
         }
 
@@ -478,19 +478,19 @@ bool generate_lake(PlayerType *player_ptr, POSITION y0, POSITION x0, POSITION xs
     for (auto i = 0; i <= xsize; ++i) {
         const Pos2D pos(y0 - yhsize, x0 + i - xhsize);
         const Pos2DVec vec(ysize, 0);
-        place_bold(player_ptr, pos.y, pos.x, GB_EXTRA);
-        place_bold(player_ptr, (pos + vec).y, (pos + vec).x, GB_EXTRA);
-        floor.get_grid(pos).info &= ~(CAVE_ICKY);
-        floor.get_grid(pos + vec).info &= ~(CAVE_ICKY);
+        place_bold(creature, pos.y, pos.x, GB_EXTRA);
+        place_bold(creature, (pos + vec).y, (pos + vec).x, GB_EXTRA);
+        floor.get_grid(pos).info &= ~(CAVE_NO_TELEPORT_DEST);
+        floor.get_grid(pos + vec).info &= ~(CAVE_NO_TELEPORT_DEST);
     }
 
     for (auto i = 1; i < ysize; ++i) {
         const Pos2D pos(y0 + i - yhsize, x0 - xhsize);
         const Pos2DVec vec(0, xsize);
-        place_bold(player_ptr, pos.y, pos.x, GB_EXTRA);
-        place_bold(player_ptr, (pos + vec).y, (pos + vec).x, GB_EXTRA);
-        floor.get_grid(pos).info &= ~(CAVE_ICKY);
-        floor.get_grid(pos + vec).info &= ~(CAVE_ICKY);
+        place_bold(creature, pos.y, pos.x, GB_EXTRA);
+        place_bold(creature, (pos + vec).y, (pos + vec).x, GB_EXTRA);
+        floor.get_grid(pos).info &= ~(CAVE_NO_TELEPORT_DEST);
+        floor.get_grid(pos + vec).info &= ~(CAVE_NO_TELEPORT_DEST);
     }
 
     for (auto x = 1; x < xsize; ++x) {
@@ -498,10 +498,10 @@ bool generate_lake(PlayerType *player_ptr, POSITION y0, POSITION x0, POSITION xs
             const Pos2D pos(y0 + y - yhsize, x0 + x - xhsize);
             auto &grid = floor.get_grid(pos);
             if (!grid.is_icky() || grid.is_outer()) {
-                place_bold(player_ptr, pos.y, pos.x, GB_EXTRA);
+                place_bold(creature, pos.y, pos.x, GB_EXTRA);
             }
 
-            grid.info &= ~(CAVE_ICKY | CAVE_ROOM);
+            grid.info &= ~(CAVE_NO_TELEPORT_DEST | CAVE_ROOM);
             if (floor.has_terrain_characteristics(pos, TerrainCharacteristics::LAVA)) {
                 if (floor.get_dungeon_definition().flags.has_not(DungeonFeatureType::DARKNESS)) {
                     grid.info |= CAVE_GLOW;

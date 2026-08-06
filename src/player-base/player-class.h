@@ -1,7 +1,7 @@
 #pragma once
 
 #include "object-enchant/tr-flags.h"
-#include "system/player-type-definition.h"
+#include "system/creature-entity.h"
 #include <initializer_list>
 #include <memory>
 #include <span>
@@ -10,10 +10,22 @@
 enum class SamuraiStanceType : uint8_t;
 enum class MonkStanceType : uint8_t;
 enum class PlayerClassType : short;
-class PlayerClass {
+class CreatureClass {
 public:
-    PlayerClass(PlayerType *player_ptr);
-    virtual ~PlayerClass() = default;
+    CreatureClass(CreatureEntity &creature);
+    /*!
+     * @brief 読み取り専用（const）クリーチャーから構築するためのビュー用コンストラクタ
+     * @details 構え問い合わせ等の const メソッド内から CreatureClass を組み立てるための窓口。
+     * ゲーム状態としての CreatureEntity は実体が const になることが無い（const は
+     * アクセサ修飾子の伝播に過ぎない）ため、内部で 1 箇所に const_cast を局所化する。
+     * これにより呼び出し側（自然回復処理等）から const_cast を排除する。
+     */
+    CreatureClass(const CreatureEntity &creature);
+    CreatureClass(const CreatureClass &) = default;
+    CreatureClass(CreatureClass &&) = default;
+    CreatureClass &operator=(const CreatureClass &) = delete;
+    CreatureClass &operator=(CreatureClass &&) = delete;
+    virtual ~CreatureClass() = default;
 
     bool equals(PlayerClassType type) const;
     TrFlags tr_flags() const;
@@ -43,6 +55,7 @@ public:
     void set_monk_stance(MonkStanceType stance) const;
 
     void init_specific_data();
+    void init_monster_specific_data();
     template <typename T>
     std::shared_ptr<T> get_specific_data() const;
 
@@ -50,7 +63,7 @@ public:
     std::span<const std::string> get_subtitle_candidates() const;
 
 private:
-    PlayerType *player_ptr;
+    CreatureEntity &creature;
 };
 
 /**
@@ -62,11 +75,14 @@ private:
  * プレイヤーが職業固有データTを使用できない職業の場合はなにも所有権を持たない std::shared_ptr<T> を返す。
  */
 template <typename T>
-std::shared_ptr<T> PlayerClass::get_specific_data() const
+std::shared_ptr<T> CreatureClass::get_specific_data() const
 {
-    if (!std::holds_alternative<std::shared_ptr<T>>(this->player_ptr->class_specific_data)) {
+    if (!this->creature.is_player()) {
+        return nullptr;
+    }
+    if (!std::holds_alternative<std::shared_ptr<T>>(this->creature.class_specific_data)) {
         return nullptr;
     }
 
-    return std::get<std::shared_ptr<T>>(this->player_ptr->class_specific_data);
+    return std::get<std::shared_ptr<T>>(this->creature.class_specific_data);
 }

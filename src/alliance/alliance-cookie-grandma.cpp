@@ -1,15 +1,15 @@
 #include "alliance/alliance-cookie-grandma.h"
 #include "alliance/alliance.h"
-#include "system/player-type-definition.h"
+#include "system/creature-entity.h"
 #include "view/display-messages.h"
 
 /*!
  * @brief クッキーババアアライアンスの印象ポイント計算
- * @param creature_ptr プレイヤー情報
+ * @param creature クリーチャーへの参照
  * @return 印象ポイント
  * @details 現在は空実装
  */
-int AllianceCookieGrandma::calcImpressionPoint([[maybe_unused]] PlayerType *creature_ptr) const
+int AllianceCookieGrandma::calcImpressionPoint([[maybe_unused]] const CreatureEntity &creature) const
 {
     int impression = 0;
     impression += calcIronmanHostilityPenalty();
@@ -20,10 +20,10 @@ int AllianceCookieGrandma::calcImpressionPoint([[maybe_unused]] PlayerType *crea
 
 /*!
  * @brief クッキーババアアライアンスの制裁処理
- * @param player_ptr プレイヤー情報
+ * @param creature クリーチャーへの参照
  * @details 現在は空実装
  */
-void AllianceCookieGrandma::panishment([[maybe_unused]] PlayerType &player_ptr)
+void AllianceCookieGrandma::panishment([[maybe_unused]] CreatureEntity &creature)
 {
     // TODO: クッキーババアの制裁システムを実装
     // msg_print("クッキーババアの制裁が発動した！");

@@ -6,9 +6,9 @@
 #include "hpmp/hp-mp-regenerator.h"
 #include "inventory/inventory-slot-types.h"
 #include "object/tval-types.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "util/string-processor.h"
 #include "view/display-messages.h"
@@ -16,10 +16,10 @@
 /*!
  * @brief
  * !!を刻んだ魔道具の時間経過による再充填を知らせる処理 /
- * If player has inscribed the object with "!!", let him know when it's recharged. -LM-
+ * If creature has inscribed the object with "!!", let him know when it's recharged. -LM-
  * @param o_ptr 対象オブジェクトの構造体参照ポインタ
  */
-static void recharged_notice(PlayerType *player_ptr, const ItemEntity &item)
+static void recharged_notice(CreatureEntity &creature, const ItemEntity &item)
 {
     if (!item.is_inscribed()) {
         return;
@@ -28,7 +28,7 @@ static void recharged_notice(PlayerType *player_ptr, const ItemEntity &item)
     auto s = angband_strchr(item.inscription->data(), '!');
     while (s) {
         if (s[1] == '!') {
-            const auto item_name = describe_flavor(player_ptr, item, (OD_OMIT_PREFIX | OD_NAME_ONLY));
+            const auto item_name = describe_flavor(creature, item, (OD_OMIT_PREFIX | OD_NAME_ONLY));
 #ifdef JP
             msg_format("%sは再充填された。", item_name.data());
 #else
@@ -38,7 +38,7 @@ static void recharged_notice(PlayerType *player_ptr, const ItemEntity &item)
                 msg_format("Your %s is recharged.", item_name.data());
             }
 #endif
-            disturb(player_ptr, false, false);
+            disturb(creature, false, false);
             return;
         }
 
@@ -50,13 +50,11 @@ static void recharged_notice(PlayerType *player_ptr, const ItemEntity &item)
  * @brief 10ゲームターンが進行するごとに魔道具の自然充填を行う処理
  * / Handle recharging objects once every 10 game turns
  */
-void recharge_magic_items(PlayerType *player_ptr)
+void recharge_magic_items(CreatureEntity &creature)
 {
-    int i;
-    bool changed;
-
-    for (changed = false, i = INVEN_MAIN_HAND; i < INVEN_TOTAL; i++) {
-        auto &item = *player_ptr->inventory[i];
+    bool changed = false;
+    for (const auto i_idx : INVEN_WIELDING_SLOTS) {
+        auto &item = *creature.inventory[i_idx];
         if (!item.is_valid()) {
             continue;
         }
@@ -64,7 +62,7 @@ void recharge_magic_items(PlayerType *player_ptr)
         if (item.timeout > 0) {
             item.timeout--;
             if (!item.timeout) {
-                recharged_notice(player_ptr, item);
+                recharged_notice(creature, item);
                 changed = true;
             }
         }
@@ -81,8 +79,9 @@ void recharge_magic_items(PlayerType *player_ptr)
      * and each charging rod in a stack decreases the stack's timeout by
      * one per turn. -LM-
      */
-    for (changed = false, i = 0; i < INVEN_PACK; i++) {
-        auto &item = *player_ptr->inventory[i];
+    changed = false;
+    for (const auto i_idx : INVEN_PACK_SLOTS) {
+        auto &item = *creature.inventory[i_idx];
         if (!item.is_valid()) {
             continue;
         }
@@ -103,7 +102,7 @@ void recharge_magic_items(PlayerType *player_ptr)
         }
 
         if (!(item.timeout)) {
-            recharged_notice(player_ptr, item);
+            recharged_notice(creature, item);
             changed = true;
         } else if (item.timeout % base_pval) {
             changed = true;
@@ -115,7 +114,7 @@ void recharge_magic_items(PlayerType *player_ptr)
         wild_regen = 20;
     }
 
-    for (const auto &item_ptr : player_ptr->current_floor_ptr->o_list) {
+    for (const auto &item_ptr : creature.get_floor()->o_list) {
         if (!item_ptr->is_valid()) {
             continue;
         }

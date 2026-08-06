@@ -1,16 +1,15 @@
 #include "mspell/smart-mspell-util.h"
 #include "monster-race/race-ability-flags.h"
 #include "monster/smart-learn-types.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
-#include "system/player-type-definition.h"
 
-msr_type::msr_type(PlayerType *player_ptr, short m_idx, const EnumClassFlagGroup<MonsterAbilityType> &ability_flags)
+msr_type::msr_type(CreatureEntity &creature, short m_idx, const EnumClassFlagGroup<MonsterAbilityType> &ability_flags)
     : ability_flags(ability_flags)
 {
-    const auto &monster = player_ptr->current_floor_ptr->m_list[m_idx];
-    this->r_ptr = &monster.get_monrace();
+    const auto &monster = creature.get_floor()->m_list[m_idx];
+    this->monrace = monster.get_monrace_shared();
 }
 
 /*!

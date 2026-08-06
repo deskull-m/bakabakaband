@@ -1,7 +1,7 @@
 #include "alliance/alliance-naked-knights.h"
-#include "system/player-type-definition.h"
+#include "system/creature-entity.h"
 
-int AllianceNakedKnights::calcImpressionPoint([[maybe_unused]] PlayerType *creature_ptr) const
+int AllianceNakedKnights::calcImpressionPoint([[maybe_unused]] const CreatureEntity &creature) const
 {
     return 0;
 }

@@ -8,14 +8,15 @@
 #include "autopick/autopick-entry.h"
 #include "autopick/autopick-initializer.h"
 #include "autopick/autopick-inserter-killer.h"
+#include "autopick/autopick-menu-data-table.h"
 #include "autopick/autopick-pref-processor.h"
 #include "autopick/autopick-reader-writer.h"
 #include "autopick/autopick-util.h"
 #include "cmd-io/cmd-save.h"
 #include "io/input-key-acceptor.h"
 #include "io/read-pref-file.h"
+#include "system/creature-entity.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "term/screen-processor.h"
 #include "util/bit-flags-calculator.h"
 #include "util/finalizer.h"
@@ -118,9 +119,9 @@ void text_body_type::update_cursor_column_record(int com_id)
 
 /*
  * In-game editor of Object Auto-picker/Destoryer
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
-void do_cmd_edit_autopick(PlayerType *player_ptr)
+void do_cmd_edit_autopick(CreatureEntity &creature)
 {
     static int cx_save = 0;
     static int cy_save = 0;
@@ -144,17 +145,17 @@ void do_cmd_edit_autopick(PlayerType *player_ptr)
     }
 
     if (world.game_turn > old_autosave_turn + 100L) {
-        do_cmd_save_game(player_ptr, true);
+        do_cmd_save_game(creature, true);
         old_autosave_turn = world.game_turn;
     }
 
     init_autopick();
     if (autopick_last_destroyed_object.is_valid()) {
-        autopick_entry_from_object(player_ptr, entry, &autopick_last_destroyed_object);
+        autopick_entry_from_object(creature, entry, &autopick_last_destroyed_object);
         tb->last_destroyed = autopick_line_from_entry(*entry);
     }
 
-    tb->lines_list = read_pickpref_text_lines(player_ptr->base_name, &tb->filename_mode);
+    tb->lines_list = read_pickpref_text_lines(creature.base_name, &tb->filename_mode);
     for (i = 0; i < tb->cy; i++) {
         if (!tb->lines_list[i]) {
             tb->cy = tb->cx = 0;
@@ -168,7 +169,7 @@ void do_cmd_edit_autopick(PlayerType *player_ptr)
     while (quit == APE_QUIT) {
         int com_id = 0;
         tb->adjust_cursor_column();
-        draw_text_editor(player_ptr, tb);
+        draw_text_editor(creature, tb);
         prt(_("(^Q:終了 ^W:セーブして終了, ESC:メニュー, その他:入力)",
                 "(^Q:Quit, ^W:Save&Quit, ESC:Menu, Other:Input text)"),
             0, 0);
@@ -202,24 +203,24 @@ void do_cmd_edit_autopick(PlayerType *player_ptr)
 
             insert_single_letter(tb, key);
         } else {
-            com_id = get_com_id((char)key);
+            com_id = CommandMenuData::get_instance().get_com_id((char)key);
         }
 
         if (com_id) {
-            quit = do_editor_command(player_ptr, tb, com_id);
+            quit = do_editor_command(creature, tb, com_id);
         }
 
         tb->update_cursor_column_record(com_id);
     }
 
     screen_load();
-    const auto filename = pickpref_filename(player_ptr->base_name, tb->filename_mode);
+    const auto filename = pickpref_filename(creature.base_name, tb->filename_mode);
 
     if (quit == APE_QUIT_AND_SAVE) {
         write_text_lines(filename, tb->lines_list);
     }
 
-    process_autopick_file(player_ptr, filename);
+    process_autopick_file(creature, filename);
     cx_save = tb->cx;
     cy_save = tb->cy;
 }

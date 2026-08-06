@@ -5,5 +5,5 @@
  */
 
 struct bmc_type;
-class PlayerType;
-bool cast_blue_magic_spirit_curse(PlayerType *player_ptr, bmc_type *bmc_ptr);
+class CreatureEntity;
+bool cast_blue_magic_spirit_curse(CreatureEntity &creature, bmc_type *bmc_ptr);

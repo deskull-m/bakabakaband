@@ -7,8 +7,8 @@
 #include "object-enchant/trc-types.h"
 #include "object-hook/hook-armor.h"
 #include "object-hook/hook-weapon.h"
+#include "system/creature-entity.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "util/bit-flags-calculator.h"
 #include "util/enum-converter.h"
@@ -59,23 +59,23 @@ CurseTraitType get_curse(int power, ItemEntity *o_ptr)
 
 /*!
  * @brief 装備への呪い付加判定と付加処理
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param chance 呪いの基本確率
  * @param heavy_chance さらに重い呪いとなる確率
  */
-void curse_equipment(PlayerType *player_ptr, PERCENTAGE chance, PERCENTAGE heavy_chance)
+void curse_equipment(CreatureEntity &creature, PERCENTAGE chance, PERCENTAGE heavy_chance)
 {
     if (randint1(100) > chance) {
         return;
     }
 
-    auto &item = *player_ptr->inventory[INVEN_MAIN_HAND + randint0(12)];
+    auto &item = *creature.inventory[INVEN_MAIN_HAND + randint0(12)];
     if (!item.is_valid()) {
         return;
     }
 
     const auto oflags = item.get_flags();
-    const auto item_name = describe_flavor(player_ptr, item, (OD_OMIT_PREFIX | OD_NAME_ONLY));
+    const auto item_name = describe_flavor(creature, item, (OD_OMIT_PREFIX | OD_NAME_ONLY));
 
     /* Extra, biased saving throw for blessed items */
     if (oflags.has(TR_BLESSED)) {

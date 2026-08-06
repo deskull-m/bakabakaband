@@ -3,7 +3,6 @@
 #include "market/arena-entry.h"
 #include "player-info/race-types.h"
 #include "system/monrace/monrace-list.h"
-#include "system/player-type-definition.h"
 #include "term/term-color-types.h"
 #include "term/z-util.h"
 #include "util/bit-flags-calculator.h"
@@ -81,39 +80,6 @@ std::tuple<int, int, int> AngbandWorld::extract_date_time(PlayerRaceType start_r
     return { day, hour, min };
 }
 
-/*!
- * @brief 勝利したクラスを追加する
- */
-void AngbandWorld::add_winner_class(PlayerClassType c)
-{
-    if (!this->noscore) {
-        this->sf_winner.set(c);
-    }
-}
-
-/*!
- * @brief 引退したクラスを追加する
- */
-void AngbandWorld::add_retired_class(PlayerClassType c)
-{
-    if (!this->noscore) {
-        this->sf_retired.set(c);
-    }
-}
-
-term_color_type AngbandWorld::get_birth_class_color(PlayerClassType c) const
-{
-    if (c >= PlayerClassType::MAX) {
-        return TERM_WHITE;
-    }
-
-    if (this->is_retired_class(c)) {
-        return TERM_L_DARK;
-    }
-
-    return this->is_winner_class(c) ? TERM_SLATE : TERM_WHITE;
-}
-
 MonraceDefinition &AngbandWorld::get_today_bounty()
 {
     return MonraceList::get_instance().get_monrace(this->today_mon);
@@ -128,30 +94,6 @@ bool AngbandWorld::is_player_true_winner() const
 {
     const auto &entries = ArenaEntryList::get_instance();
     return (this->total_winner > 0) && (entries.is_player_true_victor());
-}
-
-/*!
- * @brief 勝利したクラスか判定する
- */
-bool AngbandWorld::is_winner_class(PlayerClassType c) const
-{
-    if (c == PlayerClassType::MAX) {
-        return false;
-    }
-
-    return this->sf_winner.has(c);
-}
-
-/*!
- * @brief 引退したクラスか判定する
- */
-bool AngbandWorld::is_retired_class(PlayerClassType c) const
-{
-    if (c == PlayerClassType::MAX) {
-        return false;
-    }
-
-    return this->sf_retired.has(c);
 }
 
 /*!

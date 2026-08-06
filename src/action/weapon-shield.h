@@ -6,5 +6,5 @@
 
 #include "system/angband.h"
 
-class PlayerType;
-void verify_equip_slot(PlayerType *player_ptr, INVENTORY_IDX i_idx);
+class CreatureEntity;
+void verify_equip_slot(CreatureEntity &creature, INVENTORY_IDX i_idx);

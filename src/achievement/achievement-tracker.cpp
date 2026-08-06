@@ -8,7 +8,7 @@
 #include "achievement/achievement-tracker.h"
 #include "achievement/achievement-definitions.h"
 #include "core/stuff-handler.h"
-#include "system/player-type-definition.h"
+#include "system/creature-entity.h"
 #include "term/screen-processor.h"
 #include "view/display-messages.h"
 #include "world/world.h"
@@ -24,7 +24,7 @@ AchievementTracker &AchievementTracker::get_instance()
     return instance;
 }
 
-bool AchievementTracker::unlock_achievement(PlayerType *player_ptr, AchievementType achievement)
+bool AchievementTracker::unlock_achievement(CreatureEntity &creature, AchievementType achievement)
 {
     if (achievement == AchievementType::NONE || achievement >= AchievementType::MAX) {
         return false;
@@ -49,7 +49,7 @@ bool AchievementTracker::unlock_achievement(PlayerType *player_ptr, AchievementT
     }
 
     // 通知を表示
-    show_achievement_notification(player_ptr, achievement);
+    show_achievement_notification(creature, achievement);
 
     return true;
 }
@@ -59,7 +59,7 @@ bool AchievementTracker::is_unlocked(AchievementType achievement) const
     return unlocked_set_.count(achievement) > 0;
 }
 
-void AchievementTracker::update_progress([[maybe_unused]] PlayerType *player_ptr, AchievementType achievement, int32_t value)
+void AchievementTracker::update_progress([[maybe_unused]] CreatureEntity &creature, AchievementType achievement, int32_t value)
 {
     if (achievement == AchievementType::NONE || achievement >= AchievementType::MAX) {
         return;
@@ -97,14 +97,14 @@ void AchievementTracker::reset()
     total_points_ = 0;
 }
 
-bool AchievementTracker::save_achievements([[maybe_unused]] PlayerType *player_ptr)
+bool AchievementTracker::save_achievements([[maybe_unused]] CreatureEntity &creature)
 {
     // TODO: セーブ処理の実装
     // セーブファイルに実績データを書き込む
     return true;
 }
 
-bool AchievementTracker::load_achievements([[maybe_unused]] PlayerType *player_ptr)
+bool AchievementTracker::load_achievements([[maybe_unused]] CreatureEntity &creature)
 {
     // TODO: ロード処理の実装
     // セーブファイルから実績データを読み込む
@@ -116,7 +116,7 @@ const std::set<AchievementType> &AchievementTracker::get_unlocked_achievements()
     return unlocked_set_;
 }
 
-void AchievementTracker::show_achievement_notification([[maybe_unused]] PlayerType *player_ptr, AchievementType achievement)
+void AchievementTracker::show_achievement_notification([[maybe_unused]] CreatureEntity &creature, AchievementType achievement)
 {
     const auto &def = get_achievement_definition(achievement);
     if (!def) {

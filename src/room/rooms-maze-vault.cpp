@@ -3,10 +3,10 @@
 #include "game-option/cheat-types.h"
 #include "grid/grid.h"
 #include "room/treasure-deployment.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
-#include "system/player-type-definition.h"
 #include "wizard/wizard-messages.h"
 
 /*
@@ -27,7 +27,7 @@
  * is the randint0(3) below; it governs the relative density of
  * twists and turns in the labyrinth: smaller number, more twists.
  */
-void r_visit(PlayerType *player_ptr, POSITION y1, POSITION x1, POSITION y2, POSITION x2, int node, DIRECTION dir, int *visited)
+void r_visit(CreatureEntity &creature, POSITION y1, POSITION x1, POSITION y2, POSITION x2, int node, DIRECTION dir, int *visited)
 {
     int adj[4];
     int m = (x2 - x1) / 2 + 1;
@@ -35,7 +35,7 @@ void r_visit(PlayerType *player_ptr, POSITION y1, POSITION x1, POSITION y2, POSI
     visited[node] = 1;
     int x = 2 * (node % m) + x1;
     int y = 2 * (node / m) + y1;
-    place_bold(player_ptr, y, x, GB_FLOOR);
+    place_bold(creature, y, x, GB_FLOOR);
 
     if (one_in_(3)) {
         for (int i = 0; i < 4; i++) {
@@ -69,38 +69,38 @@ void r_visit(PlayerType *player_ptr, POSITION y1, POSITION x1, POSITION y2, POSI
         case 0:
             /* (0,+) - check for bottom boundary */
             if ((node / m < n - 1) && (visited[node + m] == 0)) {
-                place_bold(player_ptr, y + 1, x, GB_FLOOR);
-                r_visit(player_ptr, y1, x1, y2, x2, node + m, dir, visited);
+                place_bold(creature, y + 1, x, GB_FLOOR);
+                r_visit(creature, y1, x1, y2, x2, node + m, dir, visited);
             }
             break;
         case 1:
             /* (0,-) - check for top boundary */
             if ((node / m > 0) && (visited[node - m] == 0)) {
-                place_bold(player_ptr, y - 1, x, GB_FLOOR);
-                r_visit(player_ptr, y1, x1, y2, x2, node - m, dir, visited);
+                place_bold(creature, y - 1, x, GB_FLOOR);
+                r_visit(creature, y1, x1, y2, x2, node - m, dir, visited);
             }
             break;
         case 2:
             /* (+,0) - check for right boundary */
             if ((node % m < m - 1) && (visited[node + 1] == 0)) {
-                place_bold(player_ptr, y, x + 1, GB_FLOOR);
-                r_visit(player_ptr, y1, x1, y2, x2, node + 1, dir, visited);
+                place_bold(creature, y, x + 1, GB_FLOOR);
+                r_visit(creature, y1, x1, y2, x2, node + 1, dir, visited);
             }
             break;
         case 3:
             /* (-,0) - check for left boundary */
             if ((node % m > 0) && (visited[node - 1] == 0)) {
-                place_bold(player_ptr, y, x - 1, GB_FLOOR);
-                r_visit(player_ptr, y1, x1, y2, x2, node - 1, dir, visited);
+                place_bold(creature, y, x - 1, GB_FLOOR);
+                r_visit(creature, y1, x1, y2, x2, node - 1, dir, visited);
             }
         }
     }
 }
 
-void build_maze_vault(PlayerType *player_ptr, const Pos2D &center, const Pos2DVec &vec, bool is_vault)
+void build_maze_vault(CreatureEntity &creature, const Pos2D &center, const Pos2DVec &vec, bool is_vault)
 {
-    msg_print_wizard(player_ptr, CHEAT_DUNGEON, _("迷路ランダムVaultを生成しました。", "Maze Vault."));
-    auto &floor = *player_ptr->current_floor_ptr;
+    msg_print_wizard(creature, CHEAT_DUNGEON, _("迷路ランダムVaultを生成しました。", "Maze Vault."));
+    auto &floor = *creature.get_floor();
     bool light = ((floor.dun_level <= randint1(25)) && is_vault && floor.get_dungeon_definition().flags.has_not(DungeonFeatureType::DARKNESS));
     const auto dy = vec.y / 2 - 1;
     const auto dx = vec.x / 2 - 1;
@@ -113,14 +113,14 @@ void build_maze_vault(PlayerType *player_ptr, const Pos2D &center, const Pos2DVe
             auto &grid = floor.get_grid({ y, x });
             grid.info |= CAVE_ROOM;
             if (is_vault) {
-                grid.info |= CAVE_ICKY;
+                grid.info |= CAVE_NO_TELEPORT_DEST;
             }
             if ((x == x1 - 1) || (x == x2 + 1) || (y == y1 - 1) || (y == y2 + 1)) {
-                place_grid(player_ptr, grid, GB_OUTER);
+                place_grid(creature, grid, GB_OUTER);
             } else if (!is_vault) {
-                place_grid(player_ptr, grid, GB_EXTRA);
+                place_grid(creature, grid, GB_EXTRA);
             } else {
-                place_grid(player_ptr, grid, GB_INNER);
+                place_grid(creature, grid, GB_INNER);
             }
 
             if (light) {
@@ -133,8 +133,8 @@ void build_maze_vault(PlayerType *player_ptr, const Pos2D &center, const Pos2DVe
     const auto n = dy + 1;
     const auto num_vertices = m * n;
     std::vector<int> visited(num_vertices);
-    r_visit(player_ptr, y1, x1, y2, x2, randint0(num_vertices), 0, visited.data());
+    r_visit(creature, y1, x1, y2, x2, randint0(num_vertices), 0, visited.data());
     if (is_vault) {
-        fill_treasure(player_ptr, { y1, x1, y2, x2 }, randint1(5));
+        fill_treasure(creature, { y1, x1, y2, x2 }, randint1(5));
     }
 }

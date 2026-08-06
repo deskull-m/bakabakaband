@@ -1,15 +1,15 @@
 #include "alliance/alliance-valverde.h"
 #include "alliance/alliance.h"
-#include "system/player-type-definition.h"
+#include "system/creature-entity.h"
 #include "view/display-messages.h"
 
 /*!
  * @brief バルベルデ共和国アライアンスの印象ポイント計算
- * @param creature_ptr プレイヤー情報
+ * @param creature クリーチャーへの参照
  * @return 印象ポイント
  * @details 現在は空実装
  */
-int AllianceValVerde::calcImpressionPoint([[maybe_unused]] PlayerType *creature_ptr) const
+int AllianceValVerde::calcImpressionPoint([[maybe_unused]] const CreatureEntity &creature) const
 {
     int impression = 0;
     impression += calcIronmanHostilityPenalty();
@@ -20,10 +20,10 @@ int AllianceValVerde::calcImpressionPoint([[maybe_unused]] PlayerType *creature_
 
 /*!
  * @brief バルベルデ共和国アライアンスの制裁処理
- * @param player_ptr プレイヤー情報
+ * @param creature クリーチャーへの参照
  * @details 現在は空実装
  */
-void AllianceValVerde::panishment([[maybe_unused]] PlayerType &player_ptr)
+void AllianceValVerde::panishment([[maybe_unused]] CreatureEntity &creature)
 {
     // TODO: バルベルデ共和国の制裁システムを実装
     // msg_print("バルベルデ共和国の制裁が発動した！");

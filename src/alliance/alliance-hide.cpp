@@ -1,15 +1,15 @@
 #include "alliance/alliance-hide.h"
 #include "alliance/alliance.h"
-#include "system/player-type-definition.h"
+#include "system/creature-entity.h"
 #include "view/display-messages.h"
 
 /*!
  * @brief ひでアライアンスの印象ポイント計算
- * @param creature_ptr プレイヤー情報
+ * @param creature クリーチャーへの参照
  * @return 印象ポイント
  * @details 現在は空実装
  */
-int AllianceHide::calcImpressionPoint([[maybe_unused]] PlayerType *creature_ptr) const
+int AllianceHide::calcImpressionPoint([[maybe_unused]] const CreatureEntity &creature) const
 {
     int impression = 0;
     impression += calcIronmanHostilityPenalty();
@@ -20,10 +20,10 @@ int AllianceHide::calcImpressionPoint([[maybe_unused]] PlayerType *creature_ptr)
 
 /*!
  * @brief ひでアライアンスの制裁処理
- * @param player_ptr プレイヤー情報
+ * @param creature クリーチャーへの参照
  * @details 現在は空実装
  */
-void AllianceHide::panishment([[maybe_unused]] PlayerType &player_ptr)
+void AllianceHide::panishment([[maybe_unused]] CreatureEntity &creature)
 {
     // TODO: ひでの制裁システムを実装
     // msg_print("ひでの制裁が発動した！");

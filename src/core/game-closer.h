@@ -7,5 +7,5 @@
  * @date 2020/03/09
  */
 
-class PlayerType;
-void close_game(PlayerType *player_ptr);
+class CreatureEntity;
+void close_game(CreatureEntity &creature);

@@ -20,14 +20,12 @@
 #include "player/player-status-table.h"
 #include "player/player-status.h"
 #include "sv-definition/sv-bow-types.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/inner-game-data.h"
 #include "system/item-entity.h"
-#include "system/monster-entity.h"
-#include "system/player-type-definition.h"
 #include "term/term-color-types.h"
 #include "term/z-form.h"
-#include "timed-effect/timed-effects.h"
 #include "view/display-util.h"
 #include "view/status-first-page.h"
 #include "world/world-collapsion.h"
@@ -35,15 +33,15 @@
 
 /*!
  * @brief プレイヤーの打撃能力修正を表示する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param hand 武器の装備部位ID
  * @param hand_entry 項目ID
  */
-static void display_player_melee_bonus(PlayerType *player_ptr, int hand, int hand_entry)
+static void display_player_melee_bonus(CreatureEntity &creature, int hand, int hand_entry)
 {
-    HIT_PROB show_tohit = player_ptr->dis_to_h[hand];
-    int show_todam = player_ptr->dis_to_d[hand];
-    auto *o_ptr = player_ptr->inventory[INVEN_MAIN_HAND + hand].get();
+    HIT_PROB show_tohit = creature.get_dis_to_h(hand);
+    int show_todam = creature.get_dis_to_d(hand);
+    auto *o_ptr = creature.inventory[INVEN_MAIN_HAND + hand].get();
 
     if (o_ptr->is_known()) {
         show_tohit += o_ptr->to_h;
@@ -52,12 +50,12 @@ static void display_player_melee_bonus(PlayerType *player_ptr, int hand, int han
         show_todam += o_ptr->to_d;
     }
 
-    show_tohit += player_ptr->skill_thn / BTH_PLUS_ADJ;
+    show_tohit += creature.get_skill_to_hit_melee() / BTH_PLUS_ADJ;
 
     const auto buf = format("(%+d,%+d)", (int)show_tohit, (int)show_todam);
-    if (!has_melee_weapon(player_ptr, INVEN_MAIN_HAND) && !has_melee_weapon(player_ptr, INVEN_SUB_HAND)) {
+    if (!has_melee_weapon(creature, INVEN_MAIN_HAND) && !has_melee_weapon(creature, INVEN_SUB_HAND)) {
         display_player_one_line(ENTRY_BARE_HAND, buf, TERM_L_BLUE);
-    } else if (has_two_handed_weapons(player_ptr)) {
+    } else if (creature.has_two_handed_weapons()) {
         display_player_one_line(ENTRY_TWO_HANDS, buf, TERM_L_BLUE);
     } else {
         display_player_one_line(hand_entry, buf, TERM_L_BLUE);
@@ -66,17 +64,17 @@ static void display_player_melee_bonus(PlayerType *player_ptr, int hand, int han
 
 /*!
  * @brief 右手に比べて左手の表示ルーチンが複雑なので分離
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
-static void display_sub_hand(PlayerType *player_ptr)
+static void display_sub_hand(CreatureEntity &creature)
 {
-    if (can_attack_with_sub_hand(player_ptr)) {
-        display_player_melee_bonus(player_ptr, 1, left_hander ? ENTRY_RIGHT_HAND2 : ENTRY_LEFT_HAND2);
+    if (can_attack_with_sub_hand(creature)) {
+        display_player_melee_bonus(creature, 1, left_hander ? ENTRY_RIGHT_HAND2 : ENTRY_LEFT_HAND2);
         return;
     }
 
-    PlayerClass pc(player_ptr);
-    if (!pc.equals(PlayerClassType::MONK) || ((empty_hands(player_ptr, true) & EMPTY_HAND_MAIN) == 0)) {
+    CreatureClass pc(creature);
+    if (!pc.equals(PlayerClassType::MONK) || ((empty_hands(creature, true) & EMPTY_HAND_MAIN) == 0)) {
         return;
     }
 
@@ -94,12 +92,12 @@ static void display_sub_hand(PlayerType *player_ptr)
 
 /*!
  * @brief 弓による命中率とダメージの補正を表示する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
-static void display_bow_hit_damage(PlayerType *player_ptr)
+static void display_bow_hit_damage(CreatureEntity &creature)
 {
-    const auto &item = *player_ptr->inventory[INVEN_BOW];
-    auto show_tohit = player_ptr->dis_to_h_b;
+    const auto &item = *creature.inventory[INVEN_BOW];
+    auto show_tohit = creature.get_dis_to_h_b();
     auto show_todam = 0;
     if (item.is_known()) {
         show_tohit += item.to_h;
@@ -108,7 +106,7 @@ static void display_bow_hit_damage(PlayerType *player_ptr)
 
     const auto tval = item.bi_key.tval();
     const auto median_skill_exp = PlayerSkill::weapon_exp_at(PlayerSkillRank::MASTER) / 2;
-    const auto &weapon_exps = player_ptr->weapon_exp[tval];
+    const auto &weapon_exps = creature.weapon_exp[tval];
     constexpr auto bow_magnification = 200;
     constexpr auto xbow_magnification = 400;
     if (tval == ItemKindType::NONE) {
@@ -123,24 +121,24 @@ static void display_bow_hit_damage(PlayerType *player_ptr)
         }
     }
 
-    show_tohit += player_ptr->skill_thb / BTH_PLUS_ADJ;
+    show_tohit += creature.get_skill_to_hit_bow() / BTH_PLUS_ADJ;
     display_player_one_line(ENTRY_SHOOT_HIT_DAM, format("(%+d,%+d)", show_tohit, show_todam), TERM_L_BLUE);
 }
 
 /*!
  * @brief 射撃武器倍率を表示する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
-static void display_shoot_magnification(PlayerType *player_ptr)
+static void display_shoot_magnification(CreatureEntity &creature)
 {
     int tmul = 0;
-    if (player_ptr->inventory[INVEN_BOW]->is_valid()) {
-        tmul = player_ptr->inventory[INVEN_BOW]->get_arrow_magnification();
-        if (player_ptr->xtra_might) {
+    if (creature.inventory[INVEN_BOW]->is_valid()) {
+        tmul = creature.inventory[INVEN_BOW]->get_arrow_magnification();
+        if (creature.has_xtra_might()) {
             tmul++;
         }
 
-        tmul = tmul * (100 + (int)(adj_str_td[player_ptr->stat_index[A_STR]]) - 128);
+        tmul = tmul * (100 + (int)(adj_str_td[creature.get_stat_index(A_STR)]) - 128);
     }
 
     display_player_one_line(ENTRY_SHOOT_POWER, format("x%d.%02d", tmul / 100, tmul % 100), TERM_L_BLUE);
@@ -148,26 +146,26 @@ static void display_shoot_magnification(PlayerType *player_ptr)
 
 /*!
  * @brief プレイヤーの速度から表示色を決める
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param base_speed プレイヤーの速度
  */
-static TERM_COLOR decide_speed_color(PlayerType *player_ptr, const int base_speed)
+static TERM_COLOR decide_speed_color(CreatureEntity &creature, const int base_speed)
 {
     TERM_COLOR attr;
     if (base_speed > 0) {
-        if (!player_ptr->riding) {
+        if (!creature.get_riding()) {
             attr = TERM_L_GREEN;
         } else {
             attr = TERM_GREEN;
         }
     } else if (base_speed == 0) {
-        if (!player_ptr->riding) {
+        if (!creature.get_riding()) {
             attr = TERM_L_BLUE;
         } else {
             attr = TERM_GREEN;
         }
     } else {
-        if (!player_ptr->riding) {
+        if (!creature.get_riding()) {
             attr = TERM_L_UMBER;
         } else {
             attr = TERM_RED;
@@ -179,29 +177,29 @@ static TERM_COLOR decide_speed_color(PlayerType *player_ptr, const int base_spee
 
 /*!
  * @brief 何らかの効果による一時的な速度変化を計算する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return プレイヤーの速度
  */
-static int calc_temporary_speed(PlayerType *player_ptr)
+static int calc_temporary_speed(CreatureEntity &creature)
 {
-    if (!player_ptr->is_player()) {
+    if (!creature.is_player()) {
         return 0;
     }
     int tmp_speed = 0;
-    if (!player_ptr->riding) {
-        if (is_fast(player_ptr)) {
+    if (!creature.get_riding()) {
+        if (creature.is_fast()) {
             tmp_speed += 10;
         }
 
-        if (player_ptr->effects()->deceleration().is_slow()) {
+        if (creature.is_decelerated()) {
             tmp_speed -= 10;
         }
 
-        if (player_ptr->lightspeed) {
+        if (creature.get_timed_effect(CreatureTimedEffect::LIGHTSPEED)) {
             tmp_speed = 99;
         }
     } else {
-        const auto &m_ref = player_ptr->current_floor_ptr->m_list[player_ptr->riding];
+        const auto &m_ref = creature.get_floor()->get_monster(creature.get_riding());
         if (m_ref.is_accelerated()) {
             tmp_speed += 10;
         }
@@ -216,17 +214,17 @@ static int calc_temporary_speed(PlayerType *player_ptr)
 
 /*!
  * @brief プレイヤーの最終的な速度を表示する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param attr 表示色
  * @param base_speed プレイヤーの素の速度
  * @param tmp_speed アイテム等で一時的に変化した速度量
  */
-static void display_player_speed(PlayerType *player_ptr, TERM_COLOR attr, int base_speed, int tmp_speed)
+static void display_player_speed(CreatureEntity &creature, TERM_COLOR attr, int base_speed, int tmp_speed)
 {
     char buf[160];
     if (tmp_speed) {
-        if (!player_ptr->riding) {
-            if (player_ptr->lightspeed) {
+        if (!creature.get_riding()) {
+            if (creature.get_timed_effect(CreatureTimedEffect::LIGHTSPEED)) {
                 sprintf(buf, _("光速化 (+99)", "Lightspeed (+99)"));
             } else {
                 sprintf(buf, "(%+d%+d)", base_speed - tmp_speed, tmp_speed);
@@ -241,7 +239,7 @@ static void display_player_speed(PlayerType *player_ptr, TERM_COLOR attr, int ba
             attr = TERM_VIOLET;
         }
     } else {
-        if (!player_ptr->riding) {
+        if (!creature.get_riding()) {
             sprintf(buf, "(%+d)", base_speed);
         } else {
             sprintf(buf, _("乗馬中 (%+d)", "Riding (%+d)"), base_speed);
@@ -249,44 +247,52 @@ static void display_player_speed(PlayerType *player_ptr, TERM_COLOR attr, int ba
     }
 
     display_player_one_line(ENTRY_SPEED, buf, attr);
-    display_player_one_line(ENTRY_LEVEL, format("%d", player_ptr->level), TERM_L_GREEN);
+    display_player_one_line(ENTRY_LEVEL, format("%d", creature.get_level()), TERM_L_GREEN);
 }
 
 /*!
  * @brief プレイヤーの現在経験値・最大経験値・次のレベルまでに必要な経験値を表示する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
+ * @details モンスターは経験値テーブルを持たないため、次レベル経験値は表示しない
+ * (level == 0 のとき player_exp[level - 1] が配列範囲外となるのを防ぐ)。
  */
-static void display_player_exp(PlayerType *player_ptr)
+static void display_player_exp(CreatureEntity &creature)
 {
-    PlayerRace pr(player_ptr);
+    CreatureRace pr(&creature);
     int e = pr.equals(PlayerRaceType::ANDROID) ? ENTRY_EXP_ANDR : ENTRY_CUR_EXP;
-    if (player_ptr->exp >= player_ptr->max_exp) {
-        display_player_one_line(e, format("%ld", player_ptr->exp), TERM_L_GREEN);
+    if (creature.get_exp() >= creature.get_max_exp()) {
+        display_player_one_line(e, format("%ld", creature.get_exp()), TERM_L_GREEN);
     } else {
-        display_player_one_line(e, format("%ld", player_ptr->exp), TERM_YELLOW);
+        display_player_one_line(e, format("%ld", creature.get_exp()), TERM_YELLOW);
     }
 
     if (!pr.equals(PlayerRaceType::ANDROID)) {
-        display_player_one_line(ENTRY_MAX_EXP, format("%ld", player_ptr->max_exp), TERM_L_GREEN);
+        display_player_one_line(ENTRY_MAX_EXP, format("%ld", creature.get_max_exp()), TERM_L_GREEN);
     }
 
     e = pr.equals(PlayerRaceType::ANDROID) ? ENTRY_EXP_TO_ADV_ANDR : ENTRY_EXP_TO_ADV;
 
-    if (player_ptr->level >= PY_MAX_LEVEL) {
+    if (!creature.is_player() || creature.get_level() <= 0) {
+        // モンスター (または無効レベル) は player_exp テーブルを参照できない
+        display_player_one_line(e, "-----", TERM_L_GREEN);
+        return;
+    }
+
+    if (creature.get_level() >= PY_MAX_LEVEL) {
         display_player_one_line(e, "*****", TERM_L_GREEN);
     } else if (pr.equals(PlayerRaceType::ANDROID)) {
-        display_player_one_line(e, format("%ld", (int32_t)(player_exp_a[player_ptr->level - 1] * player_ptr->expfact / 100L)), TERM_L_GREEN);
+        display_player_one_line(e, format("%ld", (int32_t)(player_exp_a[creature.get_level() - 1] * creature.expfact / 100L)), TERM_L_GREEN);
     } else {
-        display_player_one_line(e, format("%ld", (int32_t)(player_exp[player_ptr->level - 1] * player_ptr->expfact / 100L)), TERM_L_GREEN);
+        display_player_one_line(e, format("%ld", (int32_t)(player_exp[creature.get_level() - 1] * creature.expfact / 100L)), TERM_L_GREEN);
     }
 }
 
 /*!
  * @brief ゲーム内の経過時間を表示する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @details fmt をstring で受けているのはClang対策
  */
-static void display_playtime_in_game(PlayerType *player_ptr)
+static void display_playtime_in_game(CreatureEntity &creature)
 {
     const auto &[day, hour, min] = AngbandWorld::get_instance().extract_date_time(InnerGameData::get_instance().get_start_race());
     const auto is_days_countable = day < MAX_DAYS;
@@ -295,51 +301,55 @@ static void display_playtime_in_game(PlayerType *player_ptr)
     display_player_one_line(ENTRY_DAY, mes, TERM_L_GREEN);
     display_player_one_line(ENTRY_WORLD_COLLAPSE, format("%3d.%06d%%", wc_ptr->collapse_degree / 1000000, wc_ptr->collapse_degree % 1000000), TERM_L_GREEN);
 
-    if (player_ptr->hp >= player_ptr->maxhp) {
-        display_player_one_line(ENTRY_HP, format("%4d/%4d", player_ptr->hp, player_ptr->maxhp), TERM_L_GREEN);
-    } else if (player_ptr->hp > (player_ptr->maxhp * hitpoint_warn) / 10) {
-        display_player_one_line(ENTRY_HP, format("%4d/%4d", player_ptr->hp, player_ptr->maxhp), TERM_YELLOW);
+    if (creature.hp >= creature.maxhp) {
+        display_player_one_line(ENTRY_HP, format("%4d/%4d", creature.hp, creature.maxhp), TERM_L_GREEN);
+    } else if (creature.hp > (creature.maxhp * hitpoint_warn) / 10) {
+        display_player_one_line(ENTRY_HP, format("%4d/%4d", creature.hp, creature.maxhp), TERM_YELLOW);
     } else {
-        display_player_one_line(ENTRY_HP, format("%4d/%4d", player_ptr->hp, player_ptr->maxhp), TERM_RED);
+        display_player_one_line(ENTRY_HP, format("%4d/%4d", creature.hp, creature.maxhp), TERM_RED);
     }
 
-    if (player_ptr->csp >= player_ptr->msp) {
-        display_player_one_line(ENTRY_SP, format("%4d/%4d", player_ptr->csp, player_ptr->msp), TERM_L_GREEN);
-    } else if (player_ptr->csp > (player_ptr->msp * mana_warn) / 10) {
-        display_player_one_line(ENTRY_SP, format("%4d/%4d", player_ptr->csp, player_ptr->msp), TERM_YELLOW);
+    // SP は常に表示する。max_mp <= 0 のクリーチャー（多くのモンスター等）は
+    // 生成時に max_mp/current_mp とも 0 で初期化済みのため 0/0 と表示する。
+    if (creature.get_max_mp() <= 0) {
+        display_player_one_line(ENTRY_SP, format("%4d/%4d", creature.get_current_mp(), creature.get_max_mp()), TERM_SLATE);
+    } else if (creature.get_current_mp() >= creature.get_max_mp()) {
+        display_player_one_line(ENTRY_SP, format("%4d/%4d", creature.get_current_mp(), creature.get_max_mp()), TERM_L_GREEN);
+    } else if (creature.get_current_mp() > (creature.get_max_mp() * mana_warn) / 10) {
+        display_player_one_line(ENTRY_SP, format("%4d/%4d", creature.get_current_mp(), creature.get_max_mp()), TERM_YELLOW);
     } else {
-        display_player_one_line(ENTRY_SP, format("%4d/%4d", player_ptr->csp, player_ptr->msp), TERM_RED);
+        display_player_one_line(ENTRY_SP, format("%4d/%4d", creature.get_current_mp(), creature.get_max_mp()), TERM_RED);
     }
 }
 
 /*!
  * @brief プレイヤーステータス表示の中央部分を表示するサブルーチン
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * Prints the following information on the screen.
  */
-void display_player_middle(PlayerType *player_ptr)
+void display_player_middle(CreatureEntity &creature)
 {
-    if (player_ptr->is_player()) {
-        if (can_attack_with_main_hand(player_ptr)) {
-            display_player_melee_bonus(player_ptr, 0, left_hander ? ENTRY_LEFT_HAND1 : ENTRY_RIGHT_HAND1);
+    if (creature.is_player()) {
+        if (can_attack_with_main_hand(creature)) {
+            display_player_melee_bonus(creature, 0, left_hander ? ENTRY_LEFT_HAND1 : ENTRY_RIGHT_HAND1);
         }
 
-        display_sub_hand(player_ptr);
-        display_bow_hit_damage(player_ptr);
-        display_shoot_magnification(player_ptr);
+        display_sub_hand(creature);
+        display_bow_hit_damage(creature);
+        display_shoot_magnification(creature);
     }
-    display_player_one_line(ENTRY_BASE_AC, format("[%d,%+d]", player_ptr->dis_ac, player_ptr->dis_to_a), TERM_L_BLUE);
+    display_player_one_line(ENTRY_BASE_AC, format("[%d,%+d]", creature.get_dis_ac(), creature.get_dis_to_a()), TERM_L_BLUE);
 
-    int base_speed = static_cast<CreatureEntity &>(*player_ptr).get_speed() - 110;
-    if (player_ptr->action == ACTION_SEARCH) {
+    int base_speed = creature.get_speed() - 110;
+    if (creature.get_action() == ACTION_SEARCH) {
         base_speed += 10;
     }
 
-    TERM_COLOR attr = decide_speed_color(player_ptr, base_speed);
-    int tmp_speed = calc_temporary_speed(player_ptr);
-    display_player_speed(player_ptr, attr, base_speed, tmp_speed);
-    display_player_exp(player_ptr);
-    display_player_one_line(ENTRY_GOLD, format("%ld", player_ptr->au), TERM_L_GREEN);
-    display_playtime_in_game(player_ptr);
+    TERM_COLOR attr = decide_speed_color(creature, base_speed);
+    int tmp_speed = calc_temporary_speed(creature);
+    display_player_speed(creature, attr, base_speed, tmp_speed);
+    display_player_exp(creature);
+    display_player_one_line(ENTRY_GOLD, format("%ld", creature.get_au()), TERM_L_GREEN);
+    display_playtime_in_game(creature);
     display_player_one_line(ENTRY_PLAY_TIME, AngbandWorld::get_instance().format_real_playtime(), TERM_L_GREEN);
 }

@@ -1,4 +1,4 @@
 #pragma once
 
-class PlayerType;
-bool import_magic_device(PlayerType *player_ptr);
+class CreatureEntity;
+bool import_magic_device(CreatureEntity &creature);

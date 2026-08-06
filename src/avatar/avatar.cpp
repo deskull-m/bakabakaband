@@ -17,7 +17,7 @@
 #include "player-info/class-info.h"
 #include "player-info/race-types.h"
 #include "player/player-realm.h"
-#include "system/player-type-definition.h"
+#include "system/creature-entity.h"
 #include "system/redrawing-flags-updater.h"
 #include "util/enum-converter.h"
 #include "util/probability-table.h"
@@ -75,9 +75,9 @@ int virtue_number(CreatureEntity &creature, Virtue virtue)
 
 /*!
  * @brief プレイヤーの職業や種族に依存しないランダムな徳を取得する / Aux function
- * @param which 確認したい徳のID
+ * @param creature クリーチャーへの参照
  */
-static void get_random_virtue(PlayerType *player_ptr)
+static void get_random_virtue(CreatureEntity &creature)
 {
     ProbabilityTable<Virtue> pt;
     pt.entry_item(Virtue::SACRIFICE, 3);
@@ -92,8 +92,8 @@ static void get_random_virtue(PlayerType *player_ptr)
 
     while (true) {
         const auto type = pt.pick_one_at_random();
-        if (player_ptr->virtues.find(type) == player_ptr->virtues.end()) {
-            player_ptr->virtues[type] = 0;
+        if (creature.virtues.find(type) == creature.virtues.end()) {
+            creature.virtues[type] = 0;
             return;
         }
     }
@@ -104,29 +104,29 @@ static void get_random_virtue(PlayerType *player_ptr)
  * @param realm 魔法領域のID
  * @return 対応する徳のID
  */
-static enum Virtue get_realm_virtues(PlayerType *player_ptr, RealmType realm)
+static enum Virtue get_realm_virtues(CreatureEntity &creature, RealmType realm)
 {
     switch (realm) {
     case RealmType::LIFE:
-        if (virtue_number(static_cast<CreatureEntity &>(*player_ptr), Virtue::VITALITY)) {
+        if (virtue_number(creature, Virtue::VITALITY)) {
             return Virtue::TEMPERANCE;
         } else {
             return Virtue::VITALITY;
         }
     case RealmType::SORCERY:
-        if (virtue_number(static_cast<CreatureEntity &>(*player_ptr), Virtue::KNOWLEDGE)) {
+        if (virtue_number(creature, Virtue::KNOWLEDGE)) {
             return Virtue::ENCHANT;
         } else {
             return Virtue::KNOWLEDGE;
         }
     case RealmType::NATURE:
-        if (virtue_number(static_cast<CreatureEntity &>(*player_ptr), Virtue::NATURE)) {
+        if (virtue_number(creature, Virtue::NATURE)) {
             return Virtue::HARMONY;
         } else {
             return Virtue::NATURE;
         }
     case RealmType::CHAOS:
-        if (virtue_number(static_cast<CreatureEntity &>(*player_ptr), Virtue::CHANCE)) {
+        if (virtue_number(creature, Virtue::CHANCE)) {
             return Virtue::INDIVIDUALISM;
         } else {
             return Virtue::CHANCE;
@@ -138,25 +138,25 @@ static enum Virtue get_realm_virtues(PlayerType *player_ptr, RealmType realm)
     case RealmType::ARCANE:
         return Virtue::NONE;
     case RealmType::CRAFT:
-        if (virtue_number(static_cast<CreatureEntity &>(*player_ptr), Virtue::ENCHANT)) {
+        if (virtue_number(creature, Virtue::ENCHANT)) {
             return Virtue::INDIVIDUALISM;
         } else {
             return Virtue::ENCHANT;
         }
     case RealmType::DAEMON:
-        if (virtue_number(static_cast<CreatureEntity &>(*player_ptr), Virtue::JUSTICE)) {
+        if (virtue_number(creature, Virtue::JUSTICE)) {
             return Virtue::FAITH;
         } else {
             return Virtue::JUSTICE;
         }
     case RealmType::CRUSADE:
-        if (virtue_number(static_cast<CreatureEntity &>(*player_ptr), Virtue::JUSTICE)) {
+        if (virtue_number(creature, Virtue::JUSTICE)) {
             return Virtue::HONOUR;
         } else {
             return Virtue::JUSTICE;
         }
     case RealmType::HEX:
-        if (virtue_number(static_cast<CreatureEntity &>(*player_ptr), Virtue::COMPASSION)) {
+        if (virtue_number(creature, Virtue::COMPASSION)) {
             return Virtue::JUSTICE;
         } else {
             return Virtue::COMPASSION;
@@ -174,8 +174,7 @@ void initialize_virtues(CreatureEntity &creature)
 {
     creature.virtues.clear();
 
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
-    if (!player_ptr) {
+    if (!creature.is_player()) {
         return;
     }
 
@@ -186,7 +185,7 @@ void initialize_virtues(CreatureEntity &creature)
     };
 
     /* Get pre-defined types based on class */
-    switch (player_ptr->pclass) {
+    switch (creature.pclass) {
     case PlayerClassType::WARRIOR:
     case PlayerClassType::SAMURAI:
         add_virtue(Virtue::VALOUR);
@@ -293,7 +292,7 @@ void initialize_virtues(CreatureEntity &creature)
     };
 
     /* Get one virtue based on race */
-    switch (player_ptr->prace) {
+    switch (creature.prace) {
     case PlayerRaceType::HUMAN:
     case PlayerRaceType::HALF_ELF:
     case PlayerRaceType::DUNADAN:
@@ -371,20 +370,20 @@ void initialize_virtues(CreatureEntity &creature)
     }
 
     /* Get virtues for realms */
-    PlayerRealm pr(player_ptr);
+    PlayerRealm pr(creature);
     if (pr.realm1().is_available()) {
-        auto tmp_vir = get_realm_virtues(player_ptr, pr.realm1().to_enum());
+        auto tmp_vir = get_realm_virtues(creature, pr.realm1().to_enum());
         add_virtue(tmp_vir);
     }
 
     if (pr.realm2().is_available()) {
-        auto tmp_vir = get_realm_virtues(player_ptr, pr.realm2().to_enum());
+        auto tmp_vir = get_realm_virtues(creature, pr.realm2().to_enum());
         add_virtue(tmp_vir);
     }
 
     /* Fill up to 8 virtues with random ones */
     while (creature.virtues.size() < 8) {
-        get_random_virtue(player_ptr);
+        get_random_virtue(creature);
     }
 }
 

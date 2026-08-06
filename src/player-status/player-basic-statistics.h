@@ -3,15 +3,20 @@
 #include "player-ability/player-ability-types.h"
 #include "player-status/player-status-base.h"
 
-class PlayerType;
+class CreatureEntity;
 class PlayerBasicStatistics : public PlayerStatusBase {
 public:
+    PlayerBasicStatistics(const PlayerBasicStatistics &) = default;
+    PlayerBasicStatistics(PlayerBasicStatistics &&) = default;
+    PlayerBasicStatistics &operator=(const PlayerBasicStatistics &) = delete;
+    PlayerBasicStatistics &operator=(PlayerBasicStatistics &&) = delete;
+
     void update_value();
     int16_t modification_value();
     int16_t get_value() override;
 
 protected:
-    PlayerBasicStatistics(PlayerType *player_ptr);
+    PlayerBasicStatistics(CreatureEntity &creature);
 
     player_ability_type ability_type{};
     int16_t race_bonus() override;

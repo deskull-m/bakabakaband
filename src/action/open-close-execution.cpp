@@ -23,6 +23,7 @@
 #include "status/experience.h"
 #include "system/baseitem/baseitem-definition.h"
 #include "system/baseitem/baseitem-list.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
@@ -30,46 +31,45 @@
 #include "system/terrain/terrain-definition.h"
 #include "system/terrain/terrain-list.h"
 #include "term/screen-processor.h"
-#include "timed-effect/timed-effects.h"
 #include "view/display-messages.h"
 
 /*!
  * @brief 「開ける」動作コマンドのサブルーチン /
  * Perform the basic "open" command on doors
+ * @param creature クリーチャーへの参照
  * @param y 対象を行うマスのY座標
  * @param x 対象を行うマスのX座標
  * @return 連続でコマンドを実行する時のみTRUE、1回きりの時はFALSE
  */
-bool exe_open(PlayerType *player_ptr, POSITION y, POSITION x)
+bool exe_open(CreatureEntity &creature, POSITION y, POSITION x)
 {
     const Pos2D pos(y, x);
-    const auto &grid = player_ptr->current_floor_ptr->get_grid(pos);
+    const auto &grid = creature.get_floor()->get_grid(pos);
     auto &terrain = grid.get_terrain();
-    PlayerEnergy(player_ptr).set_player_turn_energy(100);
+    PlayerEnergy(creature).set_player_turn_energy(100);
     if (terrain.flags.has_not(TerrainCharacteristics::OPEN)) {
         constexpr auto fmt = _("%sはがっちりと閉じられているようだ。", "The %s appears to be stuck.");
         msg_format(fmt, grid.get_terrain(TerrainKind::MIMIC).name.data());
         return false;
     }
 
-    if (!terrain.power) {
-        cave_alter_feat(player_ptr, y, x, TerrainCharacteristics::OPEN);
+    if (!terrain.door_power) {
+        cave_alter_feat(creature, y, x, TerrainCharacteristics::OPEN);
         sound(SoundKind::OPENDOOR);
-        player_ptr->plus_incident_tree("OPEN_DOOR", 1);
+        creature.plus_incident_tree("OPEN_DOOR", 1);
         return false;
     }
 
-    int i = player_ptr->skill_dis;
-    const auto effects = player_ptr->effects();
-    if (effects->blindness().is_blind() || no_lite(player_ptr)) {
+    int i = creature.get_skill_disarm();
+    if (creature.is_blind() || no_lite(creature)) {
         i = i / 10;
     }
 
-    if (effects->confusion().is_confused() || effects->hallucination().is_hallucinated()) {
+    if (creature.is_confused() || creature.is_hallucinated()) {
         i = i / 10;
     }
 
-    int j = terrain.power;
+    int j = terrain.door_power;
     j = i - (j * 4);
     if (j < 2) {
         j = 2;
@@ -85,10 +85,10 @@ bool exe_open(PlayerType *player_ptr, POSITION y, POSITION x)
     }
 
     msg_print(_("鍵をはずした。", "You have picked the lock."));
-    cave_alter_feat(player_ptr, y, x, TerrainCharacteristics::OPEN);
+    cave_alter_feat(creature, y, x, TerrainCharacteristics::OPEN);
     sound(SoundKind::OPENDOOR);
-    player_ptr->plus_incident_tree("OPEN_DOOR", 1);
-    gain_exp(static_cast<CreatureEntity &>(*player_ptr), 1);
+    creature.plus_incident_tree("OPEN_DOOR", 1);
+    gain_exp(creature, 1);
     return false;
 }
 
@@ -104,14 +104,13 @@ bool exe_open(PlayerType *player_ptr, POSITION y, POSITION x)
  * Returns TRUE if repeated commands may continue
  * @todo 常にFALSEを返している
  */
-bool exe_close(PlayerType *player_ptr, POSITION y, POSITION x)
+bool exe_close(CreatureEntity &creature, const Pos2D &pos)
 {
-    const Pos2D pos(y, x);
-    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto &grid = floor.get_grid(pos);
     const auto terrain_id = grid.feat;
     auto more = false;
-    PlayerEnergy(player_ptr).set_player_turn_energy(100);
+    PlayerEnergy(creature).set_player_turn_energy(100);
     if (grid.get_terrain().flags.has_not(TerrainCharacteristics::CLOSE)) {
         return more;
     }
@@ -125,12 +124,12 @@ bool exe_close(PlayerType *player_ptr, POSITION y, POSITION x)
         return more;
     }
 
-    cave_alter_feat(player_ptr, y, x, TerrainCharacteristics::CLOSE);
+    cave_alter_feat(creature, pos.y, pos.x, TerrainCharacteristics::CLOSE);
     if (terrain_id == grid.feat) {
         msg_print(_("ドアは壊れてしまっている。", "The door appears to be broken."));
     } else {
         sound(SoundKind::SHUTDOOR);
-        player_ptr->plus_incident_tree("CLOSE_DOOR", 1);
+        creature.plus_incident_tree("CLOSE_DOOR", 1);
     }
 
     return more;
@@ -150,10 +149,9 @@ bool exe_close(PlayerType *player_ptr, POSITION y, POSITION x)
  *	do_cmd_open_test() and exe_open().
  * </pre>
  */
-bool easy_open_door(PlayerType *player_ptr, POSITION y, POSITION x)
+bool easy_open_door(CreatureEntity &creature, const Pos2D &pos)
 {
-    const Pos2D pos(y, x);
-    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     if (!floor.has_closed_door_at(pos)) {
         return false;
     }
@@ -163,18 +161,17 @@ bool easy_open_door(PlayerType *player_ptr, POSITION y, POSITION x)
     if (terrain.flags.has_not(TerrainCharacteristics::OPEN)) {
         constexpr auto fmt = _("%sはがっちりと閉じられているようだ。", "The %s appears to be stuck.");
         msg_format(fmt, grid.get_terrain(TerrainKind::MIMIC).name.data());
-    } else if (terrain.power) {
-        auto power_disarm = player_ptr->skill_dis;
-        const auto effects = player_ptr->effects();
-        if (effects->blindness().is_blind() || no_lite(player_ptr)) {
+    } else if (terrain.door_power) {
+        auto power_disarm = creature.get_skill_disarm();
+        if (creature.is_blind() || no_lite(creature)) {
             power_disarm = power_disarm / 10;
         }
 
-        if (effects->confusion().is_confused() || effects->hallucination().is_hallucinated()) {
+        if (creature.is_confused() || creature.is_hallucinated()) {
             power_disarm = power_disarm / 10;
         }
 
-        auto power_terrain = terrain.power;
+        int power_terrain = terrain.door_power;
         power_terrain = power_disarm - (power_terrain * 4);
         if (power_terrain < 2) {
             power_terrain = 2;
@@ -182,9 +179,9 @@ bool easy_open_door(PlayerType *player_ptr, POSITION y, POSITION x)
 
         if (evaluate_percent(power_terrain)) {
             msg_print(_("鍵をはずした。", "You have picked the lock."));
-            cave_alter_feat(player_ptr, y, x, TerrainCharacteristics::OPEN);
+            cave_alter_feat(creature, pos.y, pos.x, TerrainCharacteristics::OPEN);
             sound(SoundKind::OPENDOOR);
-            gain_exp(static_cast<CreatureEntity &>(*player_ptr), 1);
+            gain_exp(creature, 1);
         } else {
             if (flush_failure) {
                 flush();
@@ -193,7 +190,7 @@ bool easy_open_door(PlayerType *player_ptr, POSITION y, POSITION x)
             msg_print(_("鍵をはずせなかった。", "You failed to pick the lock."));
         }
     } else {
-        cave_alter_feat(player_ptr, y, x, TerrainCharacteristics::OPEN);
+        cave_alter_feat(creature, pos.y, pos.x, TerrainCharacteristics::OPEN);
         sound(SoundKind::OPENDOOR);
     }
 
@@ -214,18 +211,17 @@ bool easy_open_door(PlayerType *player_ptr, POSITION y, POSITION x)
  * Returns TRUE if repeated commands may continue
  * </pre>
  */
-bool exe_disarm_chest(PlayerType *player_ptr, POSITION y, POSITION x, OBJECT_IDX o_idx)
+bool exe_disarm_chest(CreatureEntity &creature, POSITION y, POSITION x, OBJECT_IDX o_idx)
 {
     const Pos2D pos(y, x);
-    auto *o_ptr = player_ptr->current_floor_ptr->o_list[o_idx].get();
-    PlayerEnergy(player_ptr).set_player_turn_energy(100);
-    int i = player_ptr->skill_dis;
-    const auto effects = player_ptr->effects();
-    if (effects->blindness().is_blind() || no_lite(player_ptr)) {
+    auto *o_ptr = creature.get_floor()->o_list[o_idx].get();
+    PlayerEnergy(creature).set_player_turn_energy(100);
+    int i = creature.get_skill_disarm();
+    if (creature.is_blind() || no_lite(creature)) {
         i = i / 10;
     }
 
-    if (effects->confusion().is_confused() || effects->hallucination().is_hallucinated()) {
+    if (creature.is_confused() || creature.is_hallucinated()) {
         i = i / 10;
     }
 
@@ -243,7 +239,7 @@ bool exe_disarm_chest(PlayerType *player_ptr, POSITION y, POSITION x, OBJECT_IDX
         msg_print(_("箱にはトラップが仕掛けられていない。", "The chest is not trapped."));
     } else if (evaluate_percent(j)) {
         msg_print(_("箱に仕掛けられていたトラップを解除した。", "You have disarmed the chest."));
-        gain_exp(static_cast<CreatureEntity &>(*player_ptr), o_ptr->pval);
+        gain_exp(creature, o_ptr->pval);
         o_ptr->pval = (0 - o_ptr->pval);
     } else if ((i > 5) && (randint1(i) > 5)) {
         more = true;
@@ -255,7 +251,7 @@ bool exe_disarm_chest(PlayerType *player_ptr, POSITION y, POSITION x, OBJECT_IDX
     } else {
         msg_print(_("トラップを作動させてしまった！", "You set off a trap!"));
         sound(SoundKind::FAIL);
-        Chest(player_ptr).fire_trap(pos, o_idx);
+        Chest(creature).fire_trap(pos, o_idx);
     }
 
     return more;
@@ -276,22 +272,21 @@ bool exe_disarm_chest(PlayerType *player_ptr, POSITION y, POSITION x, OBJECT_IDX
  * </pre>
  */
 
-bool exe_disarm(PlayerType *player_ptr, POSITION y, POSITION x, const Direction &dir)
+bool exe_disarm(CreatureEntity &creature, POSITION y, POSITION x, const Direction &dir)
 {
     const auto &baseitems = BaseitemList::get_instance();
     const Pos2D pos(y, x);
-    const auto &grid = player_ptr->current_floor_ptr->get_grid(pos);
+    const auto &grid = creature.get_floor()->get_grid(pos);
     const auto &terrain = grid.get_terrain();
     const auto &name = terrain.name;
-    int power = terrain.power;
-    int i = player_ptr->skill_dis;
-    PlayerEnergy(player_ptr).set_player_turn_energy(100);
-    auto effects = player_ptr->effects();
-    if (effects->blindness().is_blind() || no_lite(player_ptr)) {
+    int power = terrain.trap_power;
+    int i = creature.get_skill_disarm();
+    PlayerEnergy(creature).set_player_turn_energy(100);
+    if (creature.is_blind() || no_lite(creature)) {
         i = i / 10;
     }
 
-    if (effects->confusion().is_confused() || effects->hallucination().is_hallucinated()) {
+    if (creature.is_confused() || creature.is_hallucinated()) {
         i = i / 10;
     }
 
@@ -306,11 +301,11 @@ bool exe_disarm(PlayerType *player_ptr, POSITION y, POSITION x, const Direction 
         item.generate(baseitems.lookup_baseitem_id({ ItemKindType::TRAP, 0 }));
         item.pval = grid.feat;
         msg_format(_("%sを解除した。", "You have disarmed the %s."), name.data());
-        gain_exp(static_cast<CreatureEntity &>(*player_ptr), power);
-        cave_alter_feat(player_ptr, y, x, TerrainCharacteristics::DISARM);
-        exe_movement(player_ptr, dir, easy_disarm, false);
+        gain_exp(creature, power);
+        cave_alter_feat(creature, y, x, TerrainCharacteristics::DISARM);
+        exe_movement(creature, dir, easy_disarm, false);
 
-        (void)drop_near(player_ptr, item, pos);
+        (void)drop_near(creature, item, pos);
 
     } else if ((i > 5) && (randint1(i) > 5)) {
         if (flush_failure) {
@@ -321,7 +316,7 @@ bool exe_disarm(PlayerType *player_ptr, POSITION y, POSITION x, const Direction 
         more = true;
     } else {
         msg_format(_("%sを作動させてしまった！", "You set off the %s!"), name.data());
-        exe_movement(player_ptr, dir, easy_disarm, false);
+        exe_movement(creature, dir, easy_disarm, false);
     }
 
     return more;
@@ -341,19 +336,19 @@ bool exe_disarm(PlayerType *player_ptr, POSITION y, POSITION x, const Direction 
  * Returns TRUE if repeated commands may continue
  * </pre>
  */
-bool exe_bash(PlayerType *player_ptr, POSITION y, POSITION x, const Direction &dir)
+bool exe_bash(CreatureEntity &creature, POSITION y, POSITION x, const Direction &dir)
 {
-    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const Pos2D pos(y, x);
     const auto &grid = floor.get_grid(pos);
     const auto &terrain = grid.get_terrain();
-    int bash = adj_str_blow[player_ptr->stat_index[A_STR]];
-    int power = terrain.power;
+    int bash = adj_str_blow[creature.get_stat_index(A_STR)];
+    int power = terrain.door_power;
     const auto &name = grid.get_terrain(TerrainKind::MIMIC).name;
-    PlayerEnergy(player_ptr).set_player_turn_energy(100);
+    PlayerEnergy(creature).set_player_turn_energy(100);
     msg_format(_("%sに体当たりをした！", "You smash into the %s!"), name.data());
     power = (bash - (power * 10));
-    if (PlayerClass(player_ptr).equals(PlayerClassType::BERSERKER)) {
+    if (CreatureClass(creature).equals(PlayerClassType::BERSERKER)) {
         power *= 2;
     }
 
@@ -367,18 +362,18 @@ bool exe_bash(PlayerType *player_ptr, POSITION y, POSITION x, const Direction &d
         sound(terrain.flags.has(TerrainCharacteristics::GLASS) ? SoundKind::GLASS : SoundKind::OPENDOOR);
         const auto &dungeon = floor.get_dungeon_definition();
         if (one_in_(2) || (dungeon.convert_terrain_id(grid.feat, TerrainCharacteristics::OPEN) == grid.feat) || terrain.flags.has(TerrainCharacteristics::GLASS)) {
-            cave_alter_feat(player_ptr, y, x, TerrainCharacteristics::BASH);
+            cave_alter_feat(creature, y, x, TerrainCharacteristics::BASH);
         } else {
-            cave_alter_feat(player_ptr, y, x, TerrainCharacteristics::OPEN);
+            cave_alter_feat(creature, y, x, TerrainCharacteristics::OPEN);
         }
 
-        exe_movement(player_ptr, dir, false, false);
-    } else if (evaluate_percent(adj_dex_safe[player_ptr->stat_index[A_DEX]] + player_ptr->level)) {
+        exe_movement(creature, dir, false, false);
+    } else if (evaluate_percent(adj_dex_safe[creature.get_stat_index(A_DEX)] + creature.get_level())) {
         msg_format(_("この%sは頑丈だ。", "The %s holds firm."), name.data());
         more = true;
     } else {
         msg_print(_("体のバランスをくずしてしまった。", "You are off-balance."));
-        (void)BadStatusSetter(player_ptr).mod_paralysis(2 + randint0(2));
+        (void)BadStatusSetter(creature).mod_paralysis(2 + randint0(2));
     }
 
     return more;

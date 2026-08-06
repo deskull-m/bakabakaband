@@ -19,9 +19,7 @@
 #include "spell-realm/spells-hex.h"
 #include "status/action-setter.h"
 #include "status/bad-status-setter.h"
-#include "system/player-type-definition.h"
-#include "timed-effect/player-confusion.h"
-#include "timed-effect/timed-effects.h"
+#include "system/creature-entity.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
 #include "world/world.h"
@@ -30,46 +28,45 @@
  * @brief 薬を飲むコマンドのメインルーチン /
  * Quaff some potion (from the pack or floor)
  */
-void do_cmd_quaff_potion(PlayerType *player_ptr)
+void do_cmd_quaff_potion(CreatureEntity &creature)
 {
     if (AngbandWorld::get_instance().is_wild_mode()) {
         return;
     }
 
-    if (!SpellHex(player_ptr).is_spelling_specific(HEX_INHALE) && cmd_limit_arena(player_ptr)) {
+    if (!SpellHex(creature).is_spelling_specific(HEX_INHALE) && cmd_limit_arena(creature)) {
         return;
     }
 
-    PlayerClass(player_ptr).break_samurai_stance({ SamuraiStanceType::MUSOU, SamuraiStanceType::KOUKIJIN });
+    CreatureClass(creature).break_samurai_stance({ SamuraiStanceType::MUSOU, SamuraiStanceType::KOUKIJIN });
 
     constexpr auto q = _("どの薬を飲みますか? ", "Quaff which potion? ");
     constexpr auto s = _("飲める薬がない。", "You have no potions to quaff.");
-
-    short i_idx;
-    if (!choose_object(player_ptr, &i_idx, q, s, (USE_INVEN | USE_FLOOR), FuncItemTester(item_tester_hook_quaff, player_ptr))) {
+    const auto &[item, i_idx] = choose_item(creature, q, s, (USE_INVEN | USE_FLOOR), FuncItemTester(item_tester_hook_quaff, creature));
+    if (!item) {
         return;
     }
 
-    ObjectQuaffEntity(player_ptr).execute(i_idx);
+    ObjectQuaffEntity(creature).execute(i_idx);
 }
 
-/*!
+/*
  * @brief 薬を直腸吸収するコマンドのメインルーチン /
  * Absorb some potion through rectal route (from the pack or floor)
  */
-void do_cmd_rectal_absorption(PlayerType *player_ptr)
+void do_cmd_rectal_absorption(CreatureEntity &creature)
 {
     if (AngbandWorld::get_instance().is_wild_mode()) {
         return;
     }
 
-    PlayerClass(player_ptr).break_samurai_stance({ SamuraiStanceType::MUSOU, SamuraiStanceType::KOUKIJIN });
+    CreatureClass(creature).break_samurai_stance({ SamuraiStanceType::MUSOU, SamuraiStanceType::KOUKIJIN });
 
     constexpr auto q = _("どの薬を直腸吸収しますか? ", "Which potion do you want to absorb rectally? ");
     constexpr auto s = _("直腸吸収できる薬がない。", "You have no potions for rectal absorption.");
 
-    short i_idx;
-    if (!choose_object(player_ptr, &i_idx, q, s, (USE_INVEN | USE_FLOOR), FuncItemTester(item_tester_hook_quaff, player_ptr))) {
+    const auto &[item_chosen, i_idx] = choose_item(creature, q, s, (USE_INVEN | USE_FLOOR), FuncItemTester(item_tester_hook_quaff, creature));
+    if (!item_chosen) {
         return;
     }
 
@@ -83,7 +80,7 @@ void do_cmd_rectal_absorption(PlayerType *player_ptr)
     }
 
     // 通常の薬効果を発動（ただし効果は若干異なる可能性）
-    ObjectQuaffEntity(player_ptr).execute(i_idx, true);
+    ObjectQuaffEntity(creature).execute(i_idx, true);
 
     // 変態行為による追加効果
     msg_print(_("あなたは異常な快感を感じている...", "You feel abnormal pleasure..."));
@@ -91,6 +88,6 @@ void do_cmd_rectal_absorption(PlayerType *player_ptr)
     // 混乱状態になる可能性
     if (one_in_(3)) {
         msg_print(_("変態行為により精神が混乱した！", "Your mind is confused by the perverted act!"));
-        (void)BadStatusSetter(player_ptr).set_confusion(randint1(30) + 30);
+        (void)BadStatusSetter(creature).set_confusion(randint1(30) + 30);
     }
 }

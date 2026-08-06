@@ -1,6 +1,6 @@
 #pragma once
 
-class PlayerType;
+class CreatureEntity;
 struct rc_type;
-void set_mimic_racial_command(PlayerType *player_ptr, rc_type *rc_ptr);
-void set_race_racial_command(PlayerType *player_ptr, rc_type *rc_ptr);
+void set_mimic_racial_command(CreatureEntity &creature, rc_type *rc_ptr);
+void set_race_racial_command(CreatureEntity &creature, rc_type *rc_ptr);

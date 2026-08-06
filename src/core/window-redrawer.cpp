@@ -10,6 +10,7 @@
 #include "object/item-tester-hooker.h"
 #include "player-base/player-class.h"
 #include "player-info/race-info.h"
+#include "system/creature-entity.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "term/gameterm.h"
@@ -38,33 +39,38 @@ void redraw_window()
     }
 
     RedrawingFlagsUpdater::get_instance().fill_up_sub_flags();
-    handle_stuff(p_ptr);
+    handle_stuff(PlayerType::get_instance());
     term_redraw();
 }
 
 /*!
  * @brief 現在のマップ名を描画する / Print dungeon
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
-static void print_dungeon(PlayerType *player_ptr)
+static void print_dungeon(CreatureEntity &creature)
 {
+#ifdef GODOT_RICH_UI
+    (void)creature;
+    return; // Godot StatusPanel に表示するため terminal 描画をスキップ
+#else
     const auto &[wid, hgt] = term_get_size();
 
     c_put_str(TERM_WHITE, "             ", hgt + ROW_DUNGEON, COL_DUNGEON);
-    const auto dungeon_name = map_name(player_ptr);
+    const auto dungeon_name = map_name(creature);
     TERM_LEN col = COL_DUNGEON + 6 - dungeon_name.length() / 2;
     if (col < 0) {
         col = 0;
     }
 
     c_put_str(TERM_L_UMBER, dungeon_name, hgt + ROW_DUNGEON, col);
+#endif // GODOT_RICH_UI
 }
 
 /*!
  * @brief redraw のフラグに応じた更新をまとめて行う / Handle "redraw"
  * @details 更新処理の対象はゲーム中の全描画処理
  */
-void redraw_stuff(PlayerType *player_ptr)
+void redraw_stuff(CreatureEntity &creature)
 {
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     if (!rfu.any_main()) {
@@ -88,7 +94,7 @@ void redraw_stuff(PlayerType *player_ptr)
 
     if (rfu.has(MainWindowRedrawingFlag::MAP)) {
         rfu.reset_flag(MainWindowRedrawingFlag::MAP);
-        print_map(player_ptr);
+        print_map(creature);
     }
 
     if (rfu.has(MainWindowRedrawingFlag::BASIC)) {
@@ -107,81 +113,81 @@ void redraw_stuff(PlayerType *player_ptr)
             MainWindowRedrawingFlag::UHEALTH,
         };
         rfu.reset_flags(flags);
-        print_frame_basic(player_ptr);
-        WorldTurnProcessor(player_ptr).print_time();
-        WorldTurnProcessor(player_ptr).print_world_collapse();
-        WorldTurnProcessor(player_ptr).print_cheat_position();
-        print_dungeon(player_ptr);
+        print_frame_basic(creature);
+        WorldTurnProcessor(creature).print_time();
+        WorldTurnProcessor(creature).print_world_collapse();
+        WorldTurnProcessor(creature).print_cheat_position();
+        print_dungeon(creature);
     }
 
     if (rfu.has(MainWindowRedrawingFlag::EQUIPPY)) {
         rfu.reset_flag(MainWindowRedrawingFlag::EQUIPPY);
-        display_player_equippy(player_ptr, ROW_EQUIPPY, COL_EQUIPPY, 0);
+        display_player_equippy(creature, ROW_EQUIPPY, COL_EQUIPPY, 0);
     }
 
     if (rfu.has(MainWindowRedrawingFlag::TITLE)) {
         rfu.reset_flag(MainWindowRedrawingFlag::TITLE);
-        print_title(player_ptr);
+        print_title(creature);
     }
 
     if (rfu.has(MainWindowRedrawingFlag::LEVEL)) {
         rfu.reset_flag(MainWindowRedrawingFlag::LEVEL);
-        print_level(player_ptr);
+        print_level(creature);
     }
 
     if (rfu.has(MainWindowRedrawingFlag::EXP)) {
         rfu.reset_flag(MainWindowRedrawingFlag::EXP);
-        print_exp(player_ptr);
+        print_exp(creature);
     }
 
     if (rfu.has(MainWindowRedrawingFlag::ABILITY_SCORE)) {
         rfu.reset_flag(MainWindowRedrawingFlag::ABILITY_SCORE);
-        print_stat(player_ptr, A_STR);
-        print_stat(player_ptr, A_INT);
-        print_stat(player_ptr, A_WIS);
-        print_stat(player_ptr, A_DEX);
-        print_stat(player_ptr, A_CON);
-        print_stat(player_ptr, A_CHR);
+        print_stat(creature, A_STR);
+        print_stat(creature, A_INT);
+        print_stat(creature, A_WIS);
+        print_stat(creature, A_DEX);
+        print_stat(creature, A_CON);
+        print_stat(creature, A_CHR);
     }
 
     if (rfu.has(MainWindowRedrawingFlag::TIMED_EFFECT)) {
         rfu.reset_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
-        print_status(player_ptr);
+        print_status(creature);
     }
 
     if (rfu.has(MainWindowRedrawingFlag::AC)) {
         rfu.reset_flag(MainWindowRedrawingFlag::AC);
-        print_ac(player_ptr);
+        print_ac(creature);
     }
 
     if (rfu.has(MainWindowRedrawingFlag::HP)) {
         rfu.reset_flag(MainWindowRedrawingFlag::HP);
-        print_hp(player_ptr);
+        print_hp(creature);
     }
 
     if (rfu.has(MainWindowRedrawingFlag::MP)) {
         rfu.reset_flag(MainWindowRedrawingFlag::MP);
-        print_sp(player_ptr);
+        print_sp(creature);
     }
 
     if (rfu.has(MainWindowRedrawingFlag::GOLD)) {
         rfu.reset_flag(MainWindowRedrawingFlag::GOLD);
-        print_gold(player_ptr);
+        print_gold(creature);
     }
 
     if (rfu.has(MainWindowRedrawingFlag::DEPTH)) {
         rfu.reset_flag(MainWindowRedrawingFlag::DEPTH);
-        print_depth(player_ptr);
+        print_depth(creature);
     }
 
     if (rfu.has(MainWindowRedrawingFlag::UHEALTH)) {
         rfu.reset_flag(MainWindowRedrawingFlag::UHEALTH);
-        print_health(player_ptr, true);
+        print_health(creature, true);
     }
 
     if (rfu.has(MainWindowRedrawingFlag::HEALTH)) {
         rfu.reset_flag(MainWindowRedrawingFlag::HEALTH);
-        print_health(player_ptr, false);
+        print_health(creature, false);
     }
 
     if (rfu.has(MainWindowRedrawingFlag::EXTRA)) {
@@ -197,38 +203,38 @@ void redraw_stuff(PlayerType *player_ptr)
             MainWindowRedrawingFlag::TIMED_EFFECT,
         };
         rfu.reset_flags(flags);
-        print_frame_extra(player_ptr);
+        print_frame_extra(creature);
     }
 
     if (rfu.has(MainWindowRedrawingFlag::CUT)) {
         rfu.reset_flag(MainWindowRedrawingFlag::CUT);
-        print_cut(player_ptr);
+        print_cut(creature);
     }
 
     if (rfu.has(MainWindowRedrawingFlag::STUN)) {
         rfu.reset_flag(MainWindowRedrawingFlag::STUN);
-        print_stun(player_ptr);
+        print_stun(creature);
     }
 
     if (rfu.has(MainWindowRedrawingFlag::HUNGER)) {
         rfu.reset_flag(MainWindowRedrawingFlag::HUNGER);
-        print_hunger(player_ptr);
+        print_hunger(creature);
     }
 
     if (rfu.has(MainWindowRedrawingFlag::ACTION)) {
         rfu.reset_flag(MainWindowRedrawingFlag::ACTION);
-        print_state(player_ptr);
+        print_state(creature);
     }
 
     if (rfu.has(MainWindowRedrawingFlag::SPEED)) {
         rfu.reset_flag(MainWindowRedrawingFlag::SPEED);
-        print_speed(player_ptr);
+        print_speed(creature);
     }
 
-    if (PlayerClass(player_ptr).equals(PlayerClassType::IMITATOR)) {
+    if (CreatureClass(creature).equals(PlayerClassType::IMITATOR)) {
         if (rfu.has(MainWindowRedrawingFlag::IMITATION)) {
             rfu.reset_flag(MainWindowRedrawingFlag::IMITATION);
-            print_imitation(player_ptr);
+            print_imitation(creature);
         }
 
         return;
@@ -236,16 +242,16 @@ void redraw_stuff(PlayerType *player_ptr)
 
     if (rfu.has(MainWindowRedrawingFlag::STUDY)) {
         rfu.reset_flag(MainWindowRedrawingFlag::STUDY);
-        print_study(player_ptr);
+        print_study(creature);
     }
 }
 
 /*!
  * @brief SubWindowRedrawingFlag のフラグに応じた更新をまとめて行う
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @details 更新処理の対象はサブウィンドウ全て
  */
-void window_stuff(PlayerType *player_ptr)
+void window_stuff(CreatureEntity &creature)
 {
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     if (!rfu.any_sub()) {
@@ -264,33 +270,33 @@ void window_stuff(PlayerType *player_ptr)
     const auto &window_flags = rfu.get_sub_intersection(target_flags);
     if (window_flags.has(SubWindowRedrawingFlag::INVENTORY)) {
         rfu.reset_flag(SubWindowRedrawingFlag::INVENTORY);
-        fix_inventory(player_ptr);
+        fix_inventory(creature);
     }
 
     if (window_flags.has(SubWindowRedrawingFlag::EQUIPMENT)) {
         rfu.reset_flag(SubWindowRedrawingFlag::EQUIPMENT);
-        fix_equip(player_ptr);
+        fix_equip(creature);
     }
 
     if (window_flags.has(SubWindowRedrawingFlag::SPELL)) {
         rfu.reset_flag(SubWindowRedrawingFlag::SPELL);
-        fix_spell(player_ptr);
+        fix_spell(creature);
     }
 
     if (window_flags.has(SubWindowRedrawingFlag::PLAYER)) {
         rfu.reset_flag(SubWindowRedrawingFlag::PLAYER);
-        fix_player(player_ptr);
+        fix_player(creature);
     }
 
     // モンスターBGM対応のため、視界内モンスター表示のサブウインドウなし時も処理を行う
     if (rfu.has(SubWindowRedrawingFlag::SIGHT_MONSTERS)) {
         rfu.reset_flag(SubWindowRedrawingFlag::SIGHT_MONSTERS);
-        fix_monster_list(player_ptr);
+        fix_monster_list(creature);
     }
 
     if (window_flags.has(SubWindowRedrawingFlag::PETS)) {
         rfu.reset_flag(SubWindowRedrawingFlag::PETS);
-        fix_pet_list(player_ptr);
+        fix_pet_list(creature);
     }
 
     if (window_flags.has(SubWindowRedrawingFlag::MESSAGE)) {
@@ -300,32 +306,32 @@ void window_stuff(PlayerType *player_ptr)
 
     if (window_flags.has(SubWindowRedrawingFlag::OVERHEAD)) {
         rfu.reset_flag(SubWindowRedrawingFlag::OVERHEAD);
-        fix_overhead(player_ptr);
+        fix_overhead(creature);
     }
 
     if (window_flags.has(SubWindowRedrawingFlag::DUNGEON)) {
         rfu.reset_flag(SubWindowRedrawingFlag::DUNGEON);
-        fix_dungeon(player_ptr);
+        fix_dungeon(creature);
     }
 
     if (window_flags.has(SubWindowRedrawingFlag::MONSTER_LORE)) {
         rfu.reset_flag(SubWindowRedrawingFlag::MONSTER_LORE);
-        fix_monster(player_ptr);
+        fix_monster(creature);
     }
 
     if (window_flags.has(SubWindowRedrawingFlag::ITEM_KNOWLEDGE)) {
         rfu.reset_flag(SubWindowRedrawingFlag::ITEM_KNOWLEDGE);
-        fix_object(player_ptr);
+        fix_object(creature);
     }
 
     if (window_flags.has(SubWindowRedrawingFlag::FLOOR_ITEMS)) {
         rfu.reset_flag(SubWindowRedrawingFlag::FLOOR_ITEMS);
         // ウィンドウサイズ変更に対応できず。カーソル位置を取る必要がある。
-        fix_floor_item_list(player_ptr, player_ptr->get_position());
+        fix_floor_item_list(creature, creature.get_position());
     }
 
     if (window_flags.has(SubWindowRedrawingFlag::FOUND_ITEMS)) {
         rfu.reset_flag(SubWindowRedrawingFlag::FOUND_ITEMS);
-        fix_found_item_list(player_ptr);
+        fix_found_item_list(creature);
     }
 }

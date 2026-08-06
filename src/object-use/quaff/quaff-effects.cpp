@@ -36,16 +36,15 @@
 #include "status/sight-setter.h"
 #include "sv-definition/sv-potion-types.h"
 #include "system/angband.h"
+#include "system/creature-entity.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
-#include "timed-effect/timed-effects.h"
 #include "util/bit-flags-calculator.h"
 #include "util/dice.h"
 #include "view/display-messages.h"
 
-QuaffEffects::QuaffEffects(PlayerType *player_ptr)
-    : player_ptr(player_ptr)
+QuaffEffects::QuaffEffects(CreatureEntity &creature)
+    : creature(creature)
 {
 }
 
@@ -78,7 +77,7 @@ bool QuaffEffects::influence(const ItemEntity &item, const bool is_rectal)
         }
         return false;
     case SV_POTION_SLOWNESS:
-        return BadStatusSetter(this->player_ptr).set_deceleration(randint1(25) + 15, false);
+        return BadStatusSetter(this->creature).set_deceleration(randint1(25) + 15, false);
     case SV_POTION_SALT_WATER:
         if (!is_rectal) {
             return this->salt_water();
@@ -99,83 +98,83 @@ bool QuaffEffects::influence(const ItemEntity &item, const bool is_rectal)
     case SV_POTION_RUINATION:
         return this->ruination();
     case SV_POTION_DEC_STR:
-        return do_dec_stat(this->player_ptr, A_STR);
+        return do_dec_stat(this->creature, A_STR);
     case SV_POTION_DEC_INT:
-        return do_dec_stat(this->player_ptr, A_INT);
+        return do_dec_stat(this->creature, A_INT);
     case SV_POTION_DEC_WIS:
-        return do_dec_stat(this->player_ptr, A_WIS);
+        return do_dec_stat(this->creature, A_WIS);
     case SV_POTION_DEC_DEX:
-        return do_dec_stat(this->player_ptr, A_DEX);
+        return do_dec_stat(this->creature, A_DEX);
     case SV_POTION_DEC_CON:
-        return do_dec_stat(this->player_ptr, A_CON);
+        return do_dec_stat(this->creature, A_CON);
     case SV_POTION_DEC_CHR:
-        return do_dec_stat(this->player_ptr, A_CHR);
+        return do_dec_stat(this->creature, A_CHR);
     case SV_POTION_DETONATIONS:
         return this->detonation();
     case SV_POTION_DEATH:
         return this->death();
     case SV_POTION_INFRAVISION:
-        return set_tim_infra(this->player_ptr, this->player_ptr->tim_infra + 100 + randint1(100), false);
+        return set_tim_infra(this->creature, this->creature.get_timed_effect(CreatureTimedEffect::TIM_INFRA) + 100 + randint1(100), false);
     case SV_POTION_DETECT_INVIS:
-        return set_tim_invis(this->player_ptr, this->player_ptr->tim_invis + 12 + randint1(12), false);
+        return set_tim_invis(this->creature, this->creature.get_timed_effect(CreatureTimedEffect::TIM_INVIS) + 12 + randint1(12), false);
     case SV_POTION_SLOW_POISON:
-        return BadStatusSetter(this->player_ptr).set_poison(this->player_ptr->effects()->poison().current() / 2);
+        return BadStatusSetter(this->creature).set_poison(this->creature.get_remaining_poison() / 2);
     case SV_POTION_CURE_POISON:
-        return BadStatusSetter(this->player_ptr).set_poison(0);
+        return BadStatusSetter(this->creature).set_poison(0);
     case SV_POTION_BOLDNESS:
-        return BadStatusSetter(this->player_ptr).set_fear(0);
+        return BadStatusSetter(this->creature).set_fear(0);
     case SV_POTION_SPEED:
         return this->speed();
     case SV_POTION_RESIST_HEAT:
-        return set_oppose_fire(this->player_ptr, this->player_ptr->oppose_fire + randint1(10) + 10, false);
+        return set_oppose_fire(this->creature, this->creature.get_timed_effect(CreatureTimedEffect::OPPOSE_FIRE) + randint1(10) + 10, false);
     case SV_POTION_RESIST_COLD:
-        return set_oppose_cold(this->player_ptr, this->player_ptr->oppose_cold + randint1(10) + 10, false);
+        return set_oppose_cold(this->creature, this->creature.get_timed_effect(CreatureTimedEffect::OPPOSE_COLD) + randint1(10) + 10, false);
     case SV_POTION_HEROISM:
-        return heroism(this->player_ptr, 25);
+        return heroism(this->creature, 25);
     case SV_POTION_BESERK_STRENGTH:
-        return berserk(this->player_ptr, randint1(25) + 25);
+        return berserk(this->creature, randint1(25) + 25);
     case SV_POTION_CURE_LIGHT:
-        return cure_light_wounds(this->player_ptr, Dice::roll(2, 8));
+        return cure_light_wounds(this->creature, Dice::roll(2, 8));
     case SV_POTION_CURE_SERIOUS:
-        return cure_serious_wounds(this->player_ptr, Dice::roll(4, 8));
+        return cure_serious_wounds(this->creature, Dice::roll(4, 8));
     case SV_POTION_CURE_CRITICAL:
-        return cure_critical_wounds(this->player_ptr, Dice::roll(6, 8));
+        return cure_critical_wounds(this->creature, Dice::roll(6, 8));
     case SV_POTION_HEALING:
-        return cure_critical_wounds(this->player_ptr, 300);
+        return cure_critical_wounds(this->creature, 300);
     case SV_POTION_STAR_HEALING:
-        return cure_critical_wounds(this->player_ptr, 1200);
+        return cure_critical_wounds(this->creature, 1200);
     case SV_POTION_LIFE:
-        return life_stream(this->player_ptr, true, true);
+        return life_stream(this->creature, true, true);
     case SV_POTION_RESTORE_MANA:
-        return restore_mana(this->player_ptr, true);
+        return restore_mana(this->creature, true);
     case SV_POTION_RESTORE_EXP:
-        return restore_level(static_cast<CreatureEntity &>(*this->player_ptr));
+        return restore_level(this->creature);
     case SV_POTION_RES_STR:
-        return do_res_stat(this->player_ptr, A_STR);
+        return do_res_stat(this->creature, A_STR);
     case SV_POTION_RES_INT:
-        return do_res_stat(this->player_ptr, A_INT);
+        return do_res_stat(this->creature, A_INT);
     case SV_POTION_RES_WIS:
-        return do_res_stat(this->player_ptr, A_WIS);
+        return do_res_stat(this->creature, A_WIS);
     case SV_POTION_RES_DEX:
-        return do_res_stat(this->player_ptr, A_DEX);
+        return do_res_stat(this->creature, A_DEX);
     case SV_POTION_RES_CON:
-        return do_res_stat(this->player_ptr, A_CON);
+        return do_res_stat(this->creature, A_CON);
     case SV_POTION_RES_CHR:
-        return do_res_stat(this->player_ptr, A_CHR);
+        return do_res_stat(this->creature, A_CHR);
     case SV_POTION_INC_STR:
-        return do_inc_stat(this->player_ptr, A_STR);
+        return do_inc_stat(this->creature, A_STR);
     case SV_POTION_INC_INT:
-        return do_inc_stat(this->player_ptr, A_INT);
+        return do_inc_stat(this->creature, A_INT);
     case SV_POTION_INC_WIS:
-        return do_inc_stat(this->player_ptr, A_WIS);
+        return do_inc_stat(this->creature, A_WIS);
     case SV_POTION_INC_DEX:
-        return do_inc_stat(this->player_ptr, A_DEX);
+        return do_inc_stat(this->creature, A_DEX);
     case SV_POTION_INC_CON:
-        return do_inc_stat(this->player_ptr, A_CON);
+        return do_inc_stat(this->creature, A_CON);
     case SV_POTION_INC_CHR:
-        return do_inc_stat(this->player_ptr, A_CHR);
+        return do_inc_stat(this->creature, A_CHR);
     case SV_POTION_POLY_SELF:
-        do_poly_self(this->player_ptr);
+        do_poly_self(this->creature);
         return true;
     case SV_POTION_AUGMENTATION:
         return this->augmentation();
@@ -186,16 +185,16 @@ bool QuaffEffects::influence(const ItemEntity &item, const bool is_rectal)
     case SV_POTION_SELF_KNOWLEDGE:
         msg_print(_("自分自身のことが少しは分かった気がする...", "You begin to know yourself a little better..."));
         msg_erase();
-        self_knowledge(this->player_ptr);
+        self_knowledge(this->creature);
         return true;
     case SV_POTION_EXPERIENCE:
         return this->experience();
     case SV_POTION_RESISTANCE:
         return this->resistance();
     case SV_POTION_CURING:
-        return true_healing(this->player_ptr, 50);
+        return true_healing(this->creature, 50);
     case SV_POTION_INVULNERABILITY:
-        (void)set_invuln(this->player_ptr, this->player_ptr->invuln + randint1(4) + 4, false);
+        (void)set_invuln(this->creature, this->creature.get_timed_effect(CreatureTimedEffect::INVULNERABILITY) + randint1(4) + 4, false);
         return true;
     case SV_POTION_NEW_LIFE:
         return this->new_life();
@@ -205,10 +204,10 @@ bool QuaffEffects::influence(const ItemEntity &item, const bool is_rectal)
     case SV_POTION_NEO_TSUYOSHI:
         msg_print(_("「新・オクレ兄さん！」", "NEW Brother OKURE!"));
         msg_erase();
-        player_ptr->tsuyoshi = 1;
-        (void)set_tsuyoshi(player_ptr, 0, true);
-        if (!has_resist_chaos(player_ptr)) {
-            (void)BadStatusSetter(player_ptr).mod_hallucination(50 + randint1(100));
+        this->creature.set_timed_effect(CreatureTimedEffect::TSUYOSHI, 1);
+        (void)set_tsuyoshi(this->creature, 0, true);
+        if (!this->creature.has_resist_chaos()) {
+            (void)BadStatusSetter(this->creature).mod_hallucination(50 + randint1(100));
         }
         return true;
 
@@ -220,21 +219,21 @@ bool QuaffEffects::influence(const ItemEntity &item, const bool is_rectal)
 
     case SV_POTION_ICHIZIKU_ENEMA:
         if (is_rectal) {
-            player_defecate(player_ptr);
+            player_defecate(this->creature);
             return true;
         } else {
             msg_print(_("うぇ！思わず吐いてしまった。", "The potion makes you vomit!"));
-            switch (PlayerRace(this->player_ptr).food()) {
+            switch (CreatureRace(&this->creature).food()) {
             case PlayerRaceFoodType::RATION:
             case PlayerRaceFoodType::WATER:
             case PlayerRaceFoodType::BLOOD:
-                (void)set_food(player_ptr, PY_FOOD_STARVE - 1);
+                (void)set_food(this->creature, PY_FOOD_STARVE - 1);
                 break;
             default:
                 break;
             }
-            (void)BadStatusSetter(player_ptr).set_poison(0);
-            BadStatusSetter(player_ptr).mod_paralysis(4);
+            (void)BadStatusSetter(this->creature).set_poison(0);
+            BadStatusSetter(this->creature).mod_paralysis(4);
             msg_print(_("この薬は直腸に注入するものらしい。", "The potion seems to be injected into the rectum"));
             return true;
         }
@@ -253,17 +252,17 @@ bool QuaffEffects::influence(const ItemEntity &item, const bool is_rectal)
 bool QuaffEffects::salt_water()
 {
     msg_print(_("うぇ！思わず吐いてしまった。", "The potion makes you vomit!"));
-    switch (PlayerRace(this->player_ptr).food()) {
+    switch (CreatureRace(&this->creature).food()) {
     case PlayerRaceFoodType::RATION:
     case PlayerRaceFoodType::WATER:
     case PlayerRaceFoodType::BLOOD:
-        (void)set_food(this->player_ptr, PY_FOOD_STARVE - 1);
+        (void)set_food(this->creature, PY_FOOD_STARVE - 1);
         break;
     default:
         break;
     }
 
-    BadStatusSetter bss(this->player_ptr);
+    BadStatusSetter bss(this->creature);
     (void)bss.set_poison(0);
     (void)bss.mod_paralysis(4);
     return true;
@@ -275,11 +274,11 @@ bool QuaffEffects::salt_water()
  */
 bool QuaffEffects::poison()
 {
-    if (has_resist_pois(this->player_ptr) || is_oppose_pois(this->player_ptr)) {
+    if (this->creature.has_resist_pois() || is_oppose_pois(this->creature)) {
         return false;
     }
 
-    return BadStatusSetter(this->player_ptr).mod_poison(randint0(15) + 10);
+    return BadStatusSetter(this->creature).mod_poison(randint0(15) + 10);
 }
 
 /*!
@@ -288,11 +287,11 @@ bool QuaffEffects::poison()
  */
 bool QuaffEffects::blindness()
 {
-    if (has_resist_blind(this->player_ptr)) {
+    if (this->creature.has_resist_blind()) {
         return false;
     }
 
-    return BadStatusSetter(this->player_ptr).mod_blindness(randint0(100) + 100);
+    return BadStatusSetter(this->creature).mod_blindness(randint0(100) + 100);
 }
 
 /*!
@@ -302,19 +301,19 @@ bool QuaffEffects::blindness()
 bool QuaffEffects::booze()
 {
     auto ident = false;
-    auto is_monk = PlayerClass(this->player_ptr).equals(PlayerClassType::MONK);
+    auto is_monk = CreatureClass(this->creature).equals(PlayerClassType::MONK);
     if (!is_monk) {
-        chg_virtue(static_cast<CreatureEntity &>(*this->player_ptr), Virtue::HARMONY, -1);
-    } else if (!has_resist_conf(this->player_ptr)) {
-        set_bits(this->player_ptr->special_attack, ATTACK_SUIKEN);
+        chg_virtue(this->creature, Virtue::HARMONY, -1);
+    } else if (!this->creature.has_resist_conf()) {
+        this->creature.add_special_attack(ATTACK_SUIKEN);
     }
 
-    BadStatusSetter bss(this->player_ptr);
-    if (!has_resist_conf(this->player_ptr) && bss.set_confusion(randint0(20) + 15)) {
+    BadStatusSetter bss(this->creature);
+    if (!this->creature.has_resist_conf() && bss.set_confusion(randint0(20) + 15)) {
         ident = true;
     }
 
-    if (has_resist_chaos(this->player_ptr)) {
+    if (this->creature.has_resist_chaos()) {
         return ident;
     }
 
@@ -328,13 +327,13 @@ bool QuaffEffects::booze()
 
     ident = true;
     if (one_in_(3)) {
-        lose_all_info(this->player_ptr);
+        lose_all_info(this->creature);
     } else {
-        wiz_dark(this->player_ptr);
+        wiz_dark(this->creature);
     }
 
-    (void)teleport_player_aux(this->player_ptr, 100, false, i2enum<teleport_flags>(TELEPORT_NONMAGICAL | TELEPORT_PASSIVE));
-    wiz_dark(this->player_ptr);
+    (void)teleport_player_aux(this->creature, 100, false, i2enum<teleport_flags>(TELEPORT_NONMAGICAL | TELEPORT_PASSIVE));
+    wiz_dark(this->creature);
     msg_print(_("知らない場所で目が醒めた。頭痛がする。", "You wake up somewhere with a sore head..."));
     msg_print(_("何も思い出せない。どうやってここへ来たのかも分からない！", "You can't remember a thing or how you got here!"));
     return ident;
@@ -346,17 +345,17 @@ bool QuaffEffects::booze()
  */
 bool QuaffEffects::sleep()
 {
-    if (this->player_ptr->free_act) {
+    if (this->creature.has_free_act()) {
         return false;
     }
 
     msg_print(_("あなたは眠ってしまった。", "You fall asleep."));
     if (ironman_nightmare) {
         msg_print(_("恐ろしい光景が頭に浮かんできた。", "A horrible vision enters your mind."));
-        sanity_blast(this->player_ptr);
+        sanity_blast(this->creature);
     }
 
-    return BadStatusSetter(this->player_ptr).mod_paralysis(randint0(4) + 4);
+    return BadStatusSetter(this->creature).mod_paralysis(randint0(4) + 4);
 }
 
 /*!
@@ -365,13 +364,13 @@ bool QuaffEffects::sleep()
  */
 bool QuaffEffects::lose_memories()
 {
-    if (this->player_ptr->hold_exp || (this->player_ptr->exp <= 0)) {
+    if (this->creature.has_hold_exp() || (this->creature.get_exp() <= 0)) {
         return false;
     }
 
     msg_print(_("過去の記憶が薄れていく気がする。", "You feel your memories fade."));
-    chg_virtue(static_cast<CreatureEntity &>(*this->player_ptr), Virtue::KNOWLEDGE, -5);
-    lose_exp(static_cast<CreatureEntity &>(*this->player_ptr), this->player_ptr->exp / 4);
+    chg_virtue(this->creature, Virtue::KNOWLEDGE, -5);
+    lose_exp(this->creature, this->creature.get_exp() / 4);
     return true;
 }
 
@@ -382,13 +381,13 @@ bool QuaffEffects::lose_memories()
 bool QuaffEffects::ruination()
 {
     msg_print(_("身も心も弱ってきて、精気が抜けていくようだ。", "Your nerves and muscles feel weak and lifeless!"));
-    take_hit(this->player_ptr, DAMAGE_LOSELIFE, Dice::roll(10, 10), _("破滅の薬", "a potion of Ruination"));
-    (void)dec_stat(this->player_ptr, A_DEX, 25, true);
-    (void)dec_stat(this->player_ptr, A_WIS, 25, true);
-    (void)dec_stat(this->player_ptr, A_CON, 25, true);
-    (void)dec_stat(this->player_ptr, A_STR, 25, true);
-    (void)dec_stat(this->player_ptr, A_CHR, 25, true);
-    (void)dec_stat(this->player_ptr, A_INT, 25, true);
+    take_hit(this->creature, DAMAGE_LOSELIFE, Dice::roll(10, 10), _("破滅の薬", "a potion of Ruination"));
+    (void)dec_stat(this->creature, A_DEX, 25, true);
+    (void)dec_stat(this->creature, A_WIS, 25, true);
+    (void)dec_stat(this->creature, A_CON, 25, true);
+    (void)dec_stat(this->creature, A_STR, 25, true);
+    (void)dec_stat(this->creature, A_CHR, 25, true);
+    (void)dec_stat(this->creature, A_INT, 25, true);
     return true;
 }
 
@@ -399,8 +398,8 @@ bool QuaffEffects::ruination()
 bool QuaffEffects::detonation()
 {
     msg_print(_("体の中で激しい爆発が起きた！", "Massive explosions rupture your body!"));
-    take_hit(this->player_ptr, DAMAGE_NOESCAPE, Dice::roll(50, 20), _("爆発の薬", "a potion of Detonation"));
-    BadStatusSetter bss(this->player_ptr);
+    take_hit(this->creature, DAMAGE_NOESCAPE, Dice::roll(50, 20), _("爆発の薬", "a potion of Detonation"));
+    BadStatusSetter bss(this->creature);
     (void)bss.mod_stun(75);
     (void)bss.mod_cut(5000);
     return true;
@@ -412,10 +411,10 @@ bool QuaffEffects::detonation()
  */
 bool QuaffEffects::death()
 {
-    chg_virtue(static_cast<CreatureEntity &>(*this->player_ptr), Virtue::VITALITY, -1);
-    chg_virtue(static_cast<CreatureEntity &>(*this->player_ptr), Virtue::UNLIFE, 5);
+    chg_virtue(this->creature, Virtue::VITALITY, -1);
+    chg_virtue(this->creature, Virtue::UNLIFE, 5);
     msg_print(_("死の予感が体中を駆けめぐった。", "A feeling of Death flows through your body."));
-    take_hit(this->player_ptr, DAMAGE_LOSELIFE, 5000, _("死の薬", "a potion of Death"));
+    take_hit(this->creature, DAMAGE_LOSELIFE, 5000, _("死の薬", "a potion of Death"));
     return true;
 }
 
@@ -425,12 +424,12 @@ bool QuaffEffects::death()
  */
 bool QuaffEffects::speed()
 {
-    if (this->player_ptr->effects()->acceleration().is_fast()) {
-        (void)mod_acceleration(this->player_ptr, 5, false);
+    if (this->creature.is_accelerated()) {
+        (void)mod_acceleration(this->creature, 5, false);
         return false;
     }
 
-    return set_acceleration(this->player_ptr, randint1(25) + 15, false);
+    return set_acceleration(this->creature, randint1(25) + 15, false);
 }
 
 /*!
@@ -440,27 +439,27 @@ bool QuaffEffects::speed()
 bool QuaffEffects::augmentation()
 {
     auto ident = false;
-    if (do_inc_stat(this->player_ptr, A_STR)) {
+    if (do_inc_stat(this->creature, A_STR)) {
         ident = true;
     }
 
-    if (do_inc_stat(this->player_ptr, A_INT)) {
+    if (do_inc_stat(this->creature, A_INT)) {
         ident = true;
     }
 
-    if (do_inc_stat(this->player_ptr, A_WIS)) {
+    if (do_inc_stat(this->creature, A_WIS)) {
         ident = true;
     }
 
-    if (do_inc_stat(this->player_ptr, A_DEX)) {
+    if (do_inc_stat(this->creature, A_DEX)) {
         ident = true;
     }
 
-    if (do_inc_stat(this->player_ptr, A_CON)) {
+    if (do_inc_stat(this->creature, A_CON)) {
         ident = true;
     }
 
-    if (do_inc_stat(this->player_ptr, A_CHR)) {
+    if (do_inc_stat(this->creature, A_CHR)) {
         ident = true;
     }
 
@@ -474,9 +473,9 @@ bool QuaffEffects::augmentation()
 bool QuaffEffects::enlightenment()
 {
     msg_print(_("自分の置かれている状況が脳裏に浮かんできた...", "An image of your surroundings forms in your mind..."));
-    chg_virtue(static_cast<CreatureEntity &>(*this->player_ptr), Virtue::KNOWLEDGE, 1);
-    chg_virtue(static_cast<CreatureEntity &>(*this->player_ptr), Virtue::ENLIGHTEN, 1);
-    wiz_lite(this->player_ptr, false);
+    chg_virtue(this->creature, Virtue::KNOWLEDGE, 1);
+    chg_virtue(this->creature, Virtue::ENLIGHTEN, 1);
+    wiz_lite(this->creature, false);
     return true;
 }
 
@@ -487,20 +486,20 @@ bool QuaffEffects::enlightenment()
 bool QuaffEffects::star_enlightenment()
 {
     msg_print(_("更なる啓蒙を感じた...", "You begin to feel more enlightened..."));
-    chg_virtue(static_cast<CreatureEntity &>(*this->player_ptr), Virtue::KNOWLEDGE, 1);
-    chg_virtue(static_cast<CreatureEntity &>(*this->player_ptr), Virtue::ENLIGHTEN, 2);
+    chg_virtue(this->creature, Virtue::KNOWLEDGE, 1);
+    chg_virtue(this->creature, Virtue::ENLIGHTEN, 2);
     msg_erase();
-    wiz_lite(this->player_ptr, false);
-    (void)do_inc_stat(this->player_ptr, A_INT);
-    (void)do_inc_stat(this->player_ptr, A_WIS);
-    (void)detect_traps(this->player_ptr, DETECT_RAD_DEFAULT, true);
-    (void)detect_doors(this->player_ptr, DETECT_RAD_DEFAULT);
-    (void)detect_stairs(this->player_ptr, DETECT_RAD_DEFAULT);
-    (void)detect_treasure(this->player_ptr, DETECT_RAD_DEFAULT);
-    (void)detect_objects_gold(this->player_ptr, DETECT_RAD_DEFAULT);
-    (void)detect_objects_normal(this->player_ptr, DETECT_RAD_DEFAULT);
-    identify_pack(this->player_ptr);
-    self_knowledge(this->player_ptr);
+    wiz_lite(this->creature, false);
+    (void)do_inc_stat(this->creature, A_INT);
+    (void)do_inc_stat(this->creature, A_WIS);
+    (void)detect_traps(this->creature, DETECT_RAD_DEFAULT, true);
+    (void)detect_doors(this->creature, DETECT_RAD_DEFAULT);
+    (void)detect_stairs(this->creature, DETECT_RAD_DEFAULT);
+    (void)detect_treasure(this->creature, DETECT_RAD_DEFAULT);
+    (void)detect_objects_gold(this->creature, DETECT_RAD_DEFAULT);
+    (void)detect_objects_normal(this->creature, DETECT_RAD_DEFAULT);
+    identify_pack(this->creature);
+    self_knowledge(this->creature);
     return true;
 }
 
@@ -510,23 +509,23 @@ bool QuaffEffects::star_enlightenment()
  */
 bool QuaffEffects::experience()
 {
-    if (PlayerRace(this->player_ptr).equals(PlayerRaceType::ANDROID)) {
+    if (CreatureRace(&this->creature).equals(PlayerRaceType::ANDROID)) {
         return false;
     }
 
-    chg_virtue(static_cast<CreatureEntity &>(*this->player_ptr), Virtue::ENLIGHTEN, 1);
-    if (this->player_ptr->exp >= PY_MAX_EXP) {
+    chg_virtue(this->creature, Virtue::ENLIGHTEN, 1);
+    if (this->creature.get_exp() >= PY_MAX_EXP) {
         return false;
     }
 
-    auto ee = (this->player_ptr->exp / 2) + 10;
+    auto ee = (this->creature.get_exp() / 2) + 10;
     constexpr int max_exp = 100000;
     if (ee > max_exp) {
         ee = max_exp;
     }
 
     msg_print(_("更に経験を積んだような気がする。", "You feel more experienced."));
-    gain_exp(static_cast<CreatureEntity &>(*this->player_ptr), ee);
+    gain_exp(this->creature, ee);
     return true;
 }
 
@@ -536,11 +535,11 @@ bool QuaffEffects::experience()
  */
 bool QuaffEffects::resistance()
 {
-    (void)set_oppose_acid(this->player_ptr, this->player_ptr->oppose_acid + randint1(20) + 20, false);
-    (void)set_oppose_elec(this->player_ptr, this->player_ptr->oppose_elec + randint1(20) + 20, false);
-    (void)set_oppose_fire(this->player_ptr, this->player_ptr->oppose_fire + randint1(20) + 20, false);
-    (void)set_oppose_cold(this->player_ptr, this->player_ptr->oppose_cold + randint1(20) + 20, false);
-    (void)set_oppose_pois(this->player_ptr, this->player_ptr->oppose_pois + randint1(20) + 20, false);
+    (void)set_oppose_acid(this->creature, this->creature.get_timed_effect(CreatureTimedEffect::OPPOSE_ACID) + randint1(20) + 20, false);
+    (void)set_oppose_elec(this->creature, this->creature.get_timed_effect(CreatureTimedEffect::OPPOSE_ELEC) + randint1(20) + 20, false);
+    (void)set_oppose_fire(this->creature, this->creature.get_timed_effect(CreatureTimedEffect::OPPOSE_FIRE) + randint1(20) + 20, false);
+    (void)set_oppose_cold(this->creature, this->creature.get_timed_effect(CreatureTimedEffect::OPPOSE_COLD) + randint1(20) + 20, false);
+    (void)set_oppose_pois(this->creature, this->creature.get_timed_effect(CreatureTimedEffect::OPPOSE_POIS) + randint1(20) + 20, false);
     return true;
 }
 
@@ -550,10 +549,10 @@ bool QuaffEffects::resistance()
  */
 bool QuaffEffects::new_life()
 {
-    roll_hitdice(this->player_ptr, SPOP_NONE);
-    get_max_stats(this->player_ptr);
+    roll_hitdice(this->creature, SPOP_NONE);
+    get_max_stats(this->creature);
     RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
-    lose_all_mutations(*this->player_ptr);
+    lose_all_mutations(this->creature);
     return true;
 }
 
@@ -563,8 +562,8 @@ bool QuaffEffects::new_life()
  */
 bool QuaffEffects::neo_tsuyoshi()
 {
-    (void)BadStatusSetter(this->player_ptr).hallucination(0);
-    (void)set_tsuyoshi(this->player_ptr, this->player_ptr->tsuyoshi + randint1(100) + 100, false);
+    (void)BadStatusSetter(this->creature).hallucination(0);
+    (void)set_tsuyoshi(this->creature, this->creature.get_timed_effect(CreatureTimedEffect::TSUYOSHI) + randint1(100) + 100, false);
     return true;
 }
 
@@ -576,10 +575,10 @@ bool QuaffEffects::tsuyoshi()
 {
     msg_print(_("「オクレ兄さん！」", "Brother OKURE!"));
     msg_erase();
-    this->player_ptr->tsuyoshi = 1;
-    (void)set_tsuyoshi(this->player_ptr, 0, true);
-    if (!has_resist_chaos(this->player_ptr)) {
-        (void)BadStatusSetter(this->player_ptr).hallucination(50 + randint1(50));
+    this->creature.set_timed_effect(CreatureTimedEffect::TSUYOSHI, 1);
+    (void)set_tsuyoshi(this->creature, 0, true);
+    if (!this->creature.has_resist_chaos()) {
+        (void)BadStatusSetter(this->creature).hallucination(50 + randint1(50));
     }
 
     return true;
@@ -591,18 +590,18 @@ bool QuaffEffects::tsuyoshi()
  */
 bool QuaffEffects::polymorph()
 {
-    if (this->player_ptr->muta.any() && one_in_(23)) {
-        lose_all_mutations(*this->player_ptr);
+    if (this->creature.get_mutations().any() && one_in_(23)) {
+        lose_all_mutations(this->creature);
         return false;
     }
 
     auto ident = false;
     do {
         if (one_in_(2)) {
-            if (gain_mutation(*this->player_ptr, 0)) {
+            if (gain_mutation(this->creature, 0)) {
                 ident = true;
             }
-        } else if (lose_mutation(*this->player_ptr, 0)) {
+        } else if (lose_mutation(this->creature, 0)) {
             ident = true;
         }
     } while (!ident || one_in_(2));
@@ -622,13 +621,13 @@ bool QuaffEffects::mesudachi()
     for (int i = 0; i < 10; i++) {
         skill_gain += randint1(10);
     }
-    this->player_ptr->skill_exp[PlayerSkillKindType::ASSHOLE] += skill_gain;
+    this->creature.add_skill_exp(PlayerSkillKindType::ASSHOLE, static_cast<SUB_EXP>(skill_gain));
     msg_format(_("尻の穴技能が%d向上した！", "Your asshole skill increased by %d!"), skill_gain);
 
     // 1/36の確率で性別が女になる（両性の場合は無効）
-    if (this->player_ptr->psex != SEX_BISEXUAL && one_in_(36)) {
-        this->player_ptr->psex = SEX_FEMALE;
-        sp_ptr = &sex_info[this->player_ptr->psex];
+    if (this->creature.psex != SEX_BISEXUAL && one_in_(36)) {
+        this->creature.psex = SEX_FEMALE;
+        sp_ptr = &sex_info[this->creature.psex];
         msg_print(_("あなたは本当に女の子になってしまった！", "You have really become a girl!"));
 
         static constexpr auto flags = { StatusRecalculatingFlag::BONUS, StatusRecalculatingFlag::HP, StatusRecalculatingFlag::MP, StatusRecalculatingFlag::SPELLS };

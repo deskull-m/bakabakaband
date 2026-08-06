@@ -1,11 +1,12 @@
 #include "info-reader/general-parser.h"
 #include "artifact/fixed-art-types.h"
 #include "dungeon/quest.h"
+#include "info-reader/definition-hash-data.h"
 #include "info-reader/info-reader-util.h"
 #include "info-reader/parse-error-types.h"
 #include "info-reader/random-grid-effect-types.h"
 #include "io/tokenizer.h"
-#include "main/angband-headers.h"
+#include "locale/character-encoding.h"
 #include "object-enchant/trg-types.h"
 #include "player-info/class-types.h"
 #include "player-info/race-types.h"
@@ -15,6 +16,7 @@
 #include "system/baseitem/baseitem-definition.h"
 #include "system/baseitem/baseitem-list.h"
 #include "system/building-type-definition.h"
+#include "system/dungeon/quest-definition.h"
 #include "system/enums/terrain/terrain-tag.h"
 #include "system/floor/floor-info.h"
 #include "system/system-variables.h"
@@ -40,54 +42,44 @@ void dungeon_grid::set_trap_id(TerrainTag tag)
  * @brief パース関数に基づいてデータファイルからデータを読み取る /
  * Initialize an "*_info" array, by parsing an ascii "template" file
  * @param fp 読み取りに使うファイルポインタ
- * @param buf 読み取りに使うバッファ領域
- * @param head ヘッダ構造体
  * @param parse_info_txt_line パース関数
- * @return エラーコード, エラー行番号
+ * @return エラーコード, エラー行番号, エラーが起きた行の内容
  */
-std::tuple<errr, int> init_info_txt(FILE *fp, char *buf, angband_header *head, Parser parse_info_txt_line)
+std::tuple<errr, int, std::string> init_info_txt(std::ifstream &ifs, DefinitionHashDataType dhdt, Parser parse_info_txt_line)
 {
     error_idx = -1;
     auto error_line = 0;
 
     util::SHA256 sha256;
-
-    while (true) {
-        // init_info_txtの呼び出し側のbufは1024バイト
-        const auto line_str = angband_fgets(fp, 1024);
-        if (!line_str) {
-            break;
-        }
+    std::string line;
+    while (std::getline(ifs, line)) {
+        line = utf8_to_local(line);
+        const std::string_view sv = line;
         error_line++;
-        const auto len = line_str->copy(buf, 1024 - 1);
-        buf[len] = '\0';
-        const std::string_view line = buf;
-        if (line.empty() || line.starts_with('#')) {
+        if (sv.empty() || sv.starts_with('#')) {
             continue;
         }
 
-        if (!line.substr(1).starts_with(':')) {
-            return { PARSE_ERROR_GENERIC, error_line };
+        if (!sv.substr(1).starts_with(':')) {
+            return { PARSE_ERROR_GENERIC, error_line, line };
         }
 
-        if (line.starts_with('V')) {
+        if (sv.starts_with('V')) {
             continue;
         }
 
-        // 文字コードの差異を吸収するため、日本語が含まれる可能性のある
-        // 「N:」「D:」「J:」はハッシュ計算から除外する
-        if (!line.starts_with('N') && !line.starts_with('D') && !line.starts_with('J')) {
-            sha256.update(line);
+        // N/D/J行はハッシュから除外（日本語対応）
+        if (!sv.starts_with('N') && !sv.starts_with('D') && !sv.starts_with('J')) {
+            sha256.update(sv);
         }
 
-        if (auto err = parse_info_txt_line(line, head); err != 0) {
-            return { err, error_line };
+        if (auto err = parse_info_txt_line(sv); err != 0) {
+            return { err, error_line, line };
         }
     }
 
-    head->digest = sha256.digest();
-
-    return { PARSE_ERROR_NONE, error_line };
+    DefinitionHashData::get_instance().set_digest(dhdt, sha256.digest());
+    return { PARSE_ERROR_NONE, error_line, "" };
 }
 
 /*!
@@ -96,14 +88,13 @@ std::tuple<errr, int> init_info_txt(FILE *fp, char *buf, angband_header *head, P
  * @param buf 解析文字列
  * @return エラーコード
  */
-parse_error_type parse_line_alliance(FloorType *floor_ptr, char *buf)
+parse_error_type parse_line_alliance(FloorType *floor_ptr, std::string_view buf)
 {
-    char *zz[1];
-    int num = tokenize(buf + 2, 6, zz, 0);
-    if (num != 1) {
+    const auto tokens = tokenize(buf.substr(2), 6);
+    if (tokens.size() != 1) {
         return PARSE_ERROR_GENERIC;
     }
-    floor_ptr->allianceID = static_cast<AllianceType>(atoi(zz[0]));
+    floor_ptr->allianceID = static_cast<AllianceType>(std::stoi(tokens.at(0)));
     return PARSE_ERROR_NONE;
 }
 
@@ -114,21 +105,20 @@ parse_error_type parse_line_alliance(FloorType *floor_ptr, char *buf)
  * @param buf 解析文字列
  * @return エラーコード
  */
-parse_error_type parse_line_vault(FloorType *floor_ptr, char *buf)
+parse_error_type parse_line_vault(FloorType *floor_ptr, std::string_view buf)
 {
-    char *zz[6];
-    town_vault tv;
-    int num = tokenize(buf + 2, 6, zz, 0);
-    if (num != 6) {
+    const auto tokens = tokenize(buf.substr(2), 6);
+    if (tokens.size() != 6) {
         return PARSE_ERROR_GENERIC;
     }
 
-    tv.id = static_cast<VaultTypeId>(atoi(zz[0]));
-    tv.y = atoi(zz[1]);
-    tv.x = atoi(zz[2]);
-    tv.yoffset = atoi(zz[3]);
-    tv.xoffset = atoi(zz[4]);
-    tv.transno = atoi(zz[5]);
+    town_vault tv;
+    tv.id = static_cast<VaultTypeId>(std::stoi(tokens.at(0)));
+    tv.y = std::stoi(tokens.at(1));
+    tv.x = std::stoi(tokens.at(2));
+    tv.yoffset = std::stoi(tokens.at(3));
+    tv.xoffset = std::stoi(tokens.at(4));
+    tv.transno = std::stoi(tokens.at(5));
     floor_ptr->vault_list.push_back(tv);
     return PARSE_ERROR_NONE;
 }
@@ -140,132 +130,147 @@ parse_error_type parse_line_vault(FloorType *floor_ptr, char *buf)
  * @param buf 解析文字列
  * @return エラーコード
  */
-parse_error_type parse_line_feature(const FloorType &floor, char *buf)
+parse_error_type parse_line_feature(const FloorType &floor, std::string_view buf)
 {
     if (init_flags & INIT_ONLY_BUILDINGS) {
         return PARSE_ERROR_NONE;
     }
 
-    char *zz[9];
-    int num = tokenize(buf + 2, 9, zz, 0);
-    if (num <= 1) {
+    const auto tokens = tokenize(buf.substr(2), 9);
+    const auto tokens_size = tokens.size();
+    if (tokens_size <= 1) {
         return PARSE_ERROR_GENERIC;
     }
 
     const auto &terrains = TerrainList::get_instance();
-    int index = zz[0][0];
-    letter[index].set_terrain_id(TerrainTag::NONE);
-    letter[index].monster = 0;
-    letter[index].object = 0;
-    letter[index].ego = EgoType::NONE;
-    letter[index].artifact = FixedArtifactId::NONE;
-    letter[index].set_trap_id(TerrainTag::NONE);
-    letter[index].cave_info = 0;
-    letter[index].special = 0;
-    letter[index].random = RANDOM_NONE;
-    letter[index].force_monster_place = true;
+    const int index = tokens.at(0).at(0);
+    auto &one_letter = letter[index];
+    one_letter.set_terrain_id(TerrainTag::NONE);
+    one_letter.monster = 0;
+    one_letter.object = 0;
+    one_letter.ego = EgoType::NONE;
+    one_letter.artifact = FixedArtifactId::NONE;
+    one_letter.set_trap_id(TerrainTag::NONE);
+    one_letter.cave_info = 0;
+    one_letter.special = 0;
+    one_letter.random = RANDOM_NONE;
+    one_letter.force_monster_place = true;
 
-    if (num >= 2) {
-        if (strcmp(zz[1], "FIXED_MONSTER_PLACE") == 0) {
-            letter[index].monster = (MONSTER_IDX)atoi(zz[4]);
-            letter[index].cave_info = atoi(zz[3]);
-            letter[index].force_monster_place = false;
-            letter[index].feature = terrains.get_terrain_id(zz[2]);
+    if (tokens_size >= 2) {
+        if (tokens.at(1) == "FIXED_MONSTER_PLACE") {
+            one_letter.monster = static_cast<MONSTER_IDX>(std::stoi(tokens.at(4)));
+            one_letter.cave_info = std::stoi(tokens.at(3));
+            one_letter.force_monster_place = false;
+            one_letter.feature = terrains.get_terrain_id(tokens.at(2));
             return PARSE_ERROR_NONE;
         }
     }
 
-    switch (num) {
+    switch (tokens_size) {
     case 9:
-        letter[index].special = (int16_t)atoi(zz[8]);
+        one_letter.special = static_cast<short>(std::stoi(tokens.at(8)));
         [[fallthrough]];
-    case 8:
-        if ((zz[7][0] == '*') && !zz[7][1]) {
-            letter[index].random |= RANDOM_TRAP;
+    case 8: {
+        const auto &token = tokens.at(7);
+        if (token == "*") {
+            one_letter.random |= RANDOM_TRAP;
         } else {
             try {
-                letter[index].trap = terrains.get_terrain_id(zz[7]);
+                one_letter.trap = terrains.get_terrain_id(token);
             } catch (const std::exception &) {
                 return PARSE_ERROR_UNDEFINED_TERRAIN_TAG;
             }
         }
+    }
         [[fallthrough]];
-    case 7:
-        if (zz[6][0] == '*') {
-            letter[index].random |= RANDOM_ARTIFACT;
-            if (zz[6][1]) {
-                letter[index].artifact = i2enum<FixedArtifactId>(atoi(zz[6] + 1));
+    case 7: {
+        const auto &token = tokens.at(6);
+        if (token.starts_with('*')) {
+            one_letter.random |= RANDOM_ARTIFACT;
+            if (token.length() > 1) {
+                one_letter.artifact = i2enum<FixedArtifactId>(std::stoi(token.substr(1)));
             }
-        } else if (zz[6][0] == '!') {
+        } else if (token.starts_with('!')) {
             if (floor.is_in_quest()) {
-                const auto &quests = QuestList::get_instance();
-                letter[index].artifact = quests.get_quest(floor.quest_number).reward_fa_id;
+                const auto &quest = QuestList::get_instance().get_quest(floor.quest_number);
+                one_letter.artifact = quest.get_reward().value_or(FixedArtifactId::NONE);
             }
         } else {
-            letter[index].artifact = i2enum<FixedArtifactId>(atoi(zz[6]));
+            one_letter.artifact = i2enum<FixedArtifactId>(std::stoi(token));
         }
+    }
         [[fallthrough]];
-    case 6:
-        if (zz[5][0] == '*') {
-            letter[index].random |= RANDOM_EGO;
-            if (zz[5][1]) {
-                letter[index].ego = i2enum<EgoType>(atoi(zz[5] + 1));
+    case 6: {
+        const auto &token = tokens.at(5);
+        if (token.starts_with('*')) {
+            one_letter.random |= RANDOM_EGO;
+            if (token.length() > 1) {
+                one_letter.ego = i2enum<EgoType>(std::stoi(token.substr(1)));
             }
         } else {
-            letter[index].ego = i2enum<EgoType>(atoi(zz[5]));
+            one_letter.ego = i2enum<EgoType>(std::stoi(token));
         }
+    }
         [[fallthrough]];
-    case 5:
-        if (zz[4][0] == '*') {
-            letter[index].random |= RANDOM_OBJECT;
-            if (zz[4][1]) {
-                letter[index].object = (OBJECT_IDX)atoi(zz[4] + 1);
+    case 5: {
+        const auto &token = tokens.at(4);
+        if (token.starts_with('*')) {
+            one_letter.random |= RANDOM_OBJECT;
+            if (token.length() > 1) {
+                one_letter.object = static_cast<short>(std::stoi(token.substr(1)));
             }
-        } else if (zz[4][0] == '!') {
+        } else if (token.starts_with('!')) {
             if (floor.is_in_quest()) {
                 const auto &quests = QuestList::get_instance();
                 const auto &quest = quests.get_quest(floor.quest_number);
                 if (quest.has_reward()) {
-                    const auto &artifact = quest.get_reward();
+                    const auto &artifact = quest.get_reward_artifact();
                     if (artifact.gen_flags.has_not(ItemGenerationTraitType::INSTA_ART)) {
-                        letter[index].object = BaseitemList::get_instance().lookup_baseitem_id(artifact.bi_key);
+                        one_letter.object = BaseitemList::get_instance().lookup_baseitem_id(artifact.bi_key);
                     }
                 }
             }
         } else {
-            letter[index].object = (OBJECT_IDX)atoi(zz[4]);
+            one_letter.object = static_cast<short>(std::stoi(token));
         }
+    }
         [[fallthrough]];
-    case 4:
-        if (zz[3][0] == '*') {
-            letter[index].random |= RANDOM_MONSTER;
-            if (zz[3][1]) {
-                letter[index].monster = (MONSTER_IDX)atoi(zz[3] + 1);
+    case 4: {
+        const auto &token = tokens.at(3);
+        if (token.starts_with('*')) {
+            one_letter.random |= RANDOM_MONSTER;
+            if (token.length() > 1) {
+                one_letter.monster = static_cast<short>(std::stoi(token.substr(1)));
             }
-        } else if (zz[3][0] == 'c') {
-            if (!zz[3][1]) {
+        } else if (token.starts_with('c')) {
+            if (token.length() < 2) {
                 return PARSE_ERROR_GENERIC;
             }
-            letter[index].monster = -atoi(zz[3] + 1);
+            one_letter.monster = -std::stoi(token.substr(1));
         } else {
-            letter[index].monster = (MONSTER_IDX)atoi(zz[3]);
+            one_letter.monster = static_cast<short>(std::stoi(token));
         }
+    }
         [[fallthrough]];
-    case 3:
-        letter[index].cave_info = atoi(zz[2]);
+    case 3: {
+        const auto &token = tokens.at(2);
+        one_letter.cave_info = static_cast<uint32_t>(std::stoi(token));
+    }
         [[fallthrough]];
-    case 2:
-        if ((zz[1][0] == '*') && !zz[1][1]) {
-            letter[index].random |= RANDOM_FEATURE;
-        } else {
-            try {
-                letter[index].feature = terrains.get_terrain_id(zz[1]);
-            } catch (const std::exception &) {
-                return PARSE_ERROR_UNDEFINED_TERRAIN_TAG;
-            }
+    case 2: {
+        const auto &token = tokens.at(1);
+        if (token == "*") {
+            one_letter.random |= RANDOM_FEATURE;
+            break;
         }
 
-        break;
+        try {
+            one_letter.feature = terrains.get_terrain_id(token);
+            break;
+        } catch (const std::exception &) {
+            return PARSE_ERROR_UNDEFINED_TERRAIN_TAG;
+        }
+    }
     }
 
     return PARSE_ERROR_NONE;
@@ -277,80 +282,77 @@ parse_error_type parse_line_feature(const FloorType &floor, char *buf)
  * @param buf 解析文字列
  * @return エラーコード
  */
-parse_error_type parse_line_building(char *buf)
+parse_error_type parse_line_building(std::string_view buf)
 {
-    char *zz[1000];
-    char *s;
-
 #ifdef JP
     if (buf[2] == '$') {
         return PARSE_ERROR_NONE;
     }
-    s = buf + 2;
+    auto s = buf.substr(2);
 #else
     if (buf[2] != '$') {
         return PARSE_ERROR_NONE;
     }
-    s = buf + 3;
+    auto s = buf.substr(3);
 #endif
-    int index = atoi(s);
-    s = angband_strchr(s, ':');
-    if (!s) {
+    const auto index = std::stoi(std::string(s));
+    const auto colon_pos = s.find(':');
+    if (colon_pos == std::string_view::npos) {
         return PARSE_ERROR_GENERIC;
     }
-
-    *s++ = '\0';
-    if (!*s) {
+    s.remove_prefix(colon_pos + 1);
+    if (s.empty()) {
         return PARSE_ERROR_GENERIC;
     }
-
     switch (s[0]) {
     case 'N': {
-        if (tokenize(s + 2, 3, zz, 0) == 3) {
-            strcpy(buildings[index].name, zz[0]);
-            strcpy(buildings[index].owner_name, zz[1]);
-            strcpy(buildings[index].owner_race, zz[2]);
+        const auto tokens = tokenize(s.substr(2), 3);
+        if (tokens.size() == 3) {
+            auto &building = buildings[index];
+            angband_strcpy(building.name, tokens[0], sizeof(building.name));
+            angband_strcpy(building.owner_name, tokens[1], sizeof(building.owner_name));
+            angband_strcpy(building.owner_race, tokens[2], sizeof(building.owner_race));
             break;
         }
 
         return PARSE_ERROR_TOO_FEW_ARGUMENTS;
     }
     case 'A': {
-        if (tokenize(s + 2, 8, zz, 0) >= 7) {
-            int action_index = atoi(zz[0]);
-            strcpy(buildings[index].act_names[action_index], zz[1]);
-            buildings[index].member_costs[action_index] = (PRICE)atoi(zz[2]);
-            buildings[index].other_costs[action_index] = (PRICE)atoi(zz[3]);
-            buildings[index].letters[action_index] = zz[4][0];
-            buildings[index].actions[action_index] = static_cast<int16_t>(atoi(zz[5]));
-            buildings[index].action_restr[action_index] = static_cast<int16_t>(atoi(zz[6]));
+        const auto tokens = tokenize(s.substr(2), 7);
+        if (tokens.size() >= 7) {
+            const auto action_index = std::stoi(tokens[0]);
+            auto &building = buildings[index];
+            angband_strcpy(building.act_names[action_index], tokens[1], sizeof(building.act_names[action_index]));
+            building.member_costs[action_index] = std::stoi(tokens[2]);
+            building.other_costs[action_index] = std::stoi(tokens[3]);
+            building.letters[action_index] = tokens[4][0];
+            building.actions[action_index] = static_cast<int16_t>(std::stoi(tokens[5]));
+            building.action_restr[action_index] = static_cast<int16_t>(std::stoi(tokens[6]));
             break;
         }
 
         return PARSE_ERROR_TOO_FEW_ARGUMENTS;
     }
     case 'C': {
-        auto pct_max = PLAYER_CLASS_TYPE_MAX;
-        auto n = tokenize(s + 2, pct_max, zz, 0);
-        for (auto i = 0; i < pct_max; i++) {
-            buildings[index].member_class[i] = (i < n) ? atoi(zz[i]) : 1;
+        const auto tokens = tokenize(s.substr(2), PLAYER_CLASS_TYPE_MAX);
+        for (size_t i = 0; i < PLAYER_CLASS_TYPE_MAX; i++) {
+            buildings[index].member_class[i] = (i < tokens.size()) ? std::stoi(tokens[i]) : 1;
         }
 
         break;
     }
     case 'R': {
-        auto n = tokenize(s + 2, MAX_RACES, zz, 0);
-        for (int i = 0; i < MAX_RACES; i++) {
-            buildings[index].member_race[i] = (i < n) ? atoi(zz[i]) : 1;
+        const auto tokens = tokenize(s.substr(2), MAX_RACES);
+        for (size_t i = 0; i < MAX_RACES; i++) {
+            buildings[index].member_race[i] = (i < tokens.size()) ? std::stoi(tokens[i]) : 1;
         }
 
         break;
     }
     case 'M': {
-        int n;
-        n = tokenize(s + 2, MAX_MAGIC, zz, 0);
-        for (int i = 0; i < MAX_MAGIC; i++) {
-            buildings[index].member_realm[i + 1] = ((i < n) ? static_cast<int16_t>(atoi(zz[i])) : 1);
+        const auto tokens = tokenize(s.substr(2), MAX_MAGIC);
+        for (size_t i = 0; i < MAX_MAGIC; i++) {
+            buildings[index].member_realm[i + 1] = ((i < tokens.size()) ? static_cast<int16_t>(std::stoi(tokens[i])) : 1);
         }
 
         break;

@@ -3,13 +3,13 @@
 #include "object-enchant/tr-types.h"
 #include "player-info/self-info-util.h"
 #include "player/player-status-flags.h"
-#include "system/player-type-definition.h"
+#include "system/creature-entity.h"
 #include "util/bit-flags-calculator.h"
 
-void set_equipment_influence(PlayerType *player_ptr, self_info_type *self_ptr)
+void set_equipment_influence(CreatureEntity &creature, self_info_type *self_ptr)
 {
-    for (int k = INVEN_MAIN_HAND; k < INVEN_TOTAL; k++) {
-        auto *o_ptr = player_ptr->inventory[k].get();
+    for (const auto i_idx : INVEN_WIELDING_SLOTS) {
+        auto *o_ptr = creature.inventory[i_idx].get();
         if (!o_ptr->is_valid()) {
             continue;
         }
@@ -67,24 +67,24 @@ void set_equipment_influence(PlayerType *player_ptr, self_info_type *self_ptr)
     }
 }
 
-void set_status_sustain_info(PlayerType *player_ptr, self_info_type *self_ptr)
+void set_status_sustain_info(CreatureEntity &creature, self_info_type *self_ptr)
 {
-    if (has_sustain_str(player_ptr)) {
+    if (has_sustain_str(creature)) {
         self_ptr->info_list.emplace_back(_("あなたの腕力は維持されている。", "Your strength is sustained."));
     }
-    if (has_sustain_int(player_ptr)) {
+    if (has_sustain_int(creature)) {
         self_ptr->info_list.emplace_back(_("あなたの知能は維持されている。", "Your intelligence is sustained."));
     }
-    if (has_sustain_wis(player_ptr)) {
+    if (has_sustain_wis(creature)) {
         self_ptr->info_list.emplace_back(_("あなたの賢さは維持されている。", "Your wisdom is sustained."));
     }
-    if (has_sustain_con(player_ptr)) {
+    if (has_sustain_con(creature)) {
         self_ptr->info_list.emplace_back(_("あなたの耐久力は維持されている。", "Your constitution is sustained."));
     }
-    if (has_sustain_dex(player_ptr)) {
+    if (has_sustain_dex(creature)) {
         self_ptr->info_list.emplace_back(_("あなたの器用さは維持されている。", "Your dexterity is sustained."));
     }
-    if (has_sustain_chr(player_ptr)) {
+    if (has_sustain_chr(creature)) {
         self_ptr->info_list.emplace_back(_("あなたの魅力は維持されている。", "Your charisma is sustained."));
     }
 }

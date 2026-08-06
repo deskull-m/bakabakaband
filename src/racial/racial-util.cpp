@@ -1,14 +1,14 @@
 #include "racial/racial-util.h"
 #include "io/input-key-requester.h"
 #include "player-base/player-class.h"
-#include "system/player-type-definition.h"
+#include "system/creature-entity.h"
 #include "util/enum-converter.h"
 
-rc_type::rc_type(PlayerType *player_ptr)
+rc_type::rc_type(CreatureEntity &creature)
 {
     this->ask = true;
-    this->lvl = player_ptr->level;
-    PlayerClass pc(player_ptr);
+    this->lvl = creature.get_level();
+    CreatureClass pc(creature);
     this->is_warrior = pc.equals(PlayerClassType::WARRIOR) || pc.equals(PlayerClassType::BERSERKER);
 }
 

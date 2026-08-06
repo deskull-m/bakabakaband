@@ -22,11 +22,11 @@
 #include "spell-realm/spells-crusade.h"
 #include "spell-realm/spells-hex.h"
 #include "spell/spells-util.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
+#include "system/player-type-definition.h"
 #include "target/projection-path-calculator.h"
-#include "timed-effect/timed-effects.h"
 #include "view/display-messages.h"
 #include <string>
 
@@ -49,7 +49,7 @@ EffectPlayerType::EffectPlayerType(const FloorType &floor, short src_idx, int da
     , attribute(attribute)
     , flag(flag)
 {
-    this->src_ptr = this->is_monster() ? &floor.m_list[src_idx] : nullptr;
+    this->src_ptr = this->is_monster() ? &floor.get_monster(src_idx) : nullptr;
 }
 
 bool EffectPlayerType::is_player() const
@@ -64,13 +64,13 @@ bool EffectPlayerType::is_monster() const
 
 /*!
  * @brief ボルト魔法を反射する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param ep_ptr プレイヤー効果構造体への参照ポインタ
  * @return 当たったらFALSE、反射したらTRUE
  */
-static bool process_bolt_reflection(PlayerType *player_ptr, EffectPlayerType *ep_ptr, project_func project)
+static bool process_bolt_reflection(CreatureEntity &creature, EffectPlayerType *ep_ptr, project_func project)
 {
-    auto can_reflect = (has_reflect(player_ptr) != 0);
+    auto can_reflect = (creature.has_reflect()) != 0;
     can_reflect &= any_bits(ep_ptr->flag, PROJECT_REFLECTABLE);
     can_reflect &= !one_in_(10);
     if (!can_reflect) {
@@ -81,20 +81,20 @@ static bool process_bolt_reflection(PlayerType *player_ptr, EffectPlayerType *ep
     sound(SoundKind::REFLECT);
 
     std::string mes;
-    if (player_ptr->effects()->blindness().is_blind()) {
+    if (creature.is_blind()) {
         mes = _("何かが跳ね返った！", "Something bounces!");
-    } else if (PlayerClass(player_ptr).samurai_stance_is(SamuraiStanceType::FUUJIN)) {
+    } else if (CreatureClass(creature).samurai_stance_is(SamuraiStanceType::FUUJIN)) {
         mes = _("風の如く武器を振るって弾き返した！", "The attack bounces!");
     } else {
         mes = _("攻撃が跳ね返った！", "The attack bounces!");
     }
 
     msg_print(mes);
-    const auto p_pos = player_ptr->get_position();
+    const auto p_pos = creature.get_position();
     Pos2D pos(0, 0);
     if (ep_ptr->is_monster()) {
-        const auto &floor = *player_ptr->current_floor_ptr;
-        const auto &monster = floor.m_list[ep_ptr->src_idx];
+        const auto &floor = *creature.get_floor();
+        const auto &monster = floor.get_monster(ep_ptr->src_idx);
         do {
             const Pos2DVec vec(randint1(3) - 1, randint1(3) - 1);
             pos = monster.get_position() + vec;
@@ -109,30 +109,30 @@ static bool process_bolt_reflection(PlayerType *player_ptr, EffectPlayerType *ep
         pos = p_pos + vec;
     }
 
-    (*project)(player_ptr, 0, 0, pos.y, pos.x, ep_ptr->dam, ep_ptr->attribute, (PROJECT_STOP | PROJECT_KILL | PROJECT_REFLECTABLE), tl::nullopt);
-    disturb(player_ptr, true, true);
+    (*project)(creature, 0, 0, pos.y, pos.x, ep_ptr->dam, ep_ptr->attribute, (PROJECT_STOP | PROJECT_KILL | PROJECT_REFLECTABLE), tl::nullopt);
+    disturb(creature, true, true);
     return true;
 }
 
 /*!
  * @brief 反射・忍者の変わり身などでそもそも当たらない状況を判定する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param ep_ptr プレイヤー効果構造体への参照ポインタ
  * @param y 目標Y座標
  * @param x 目標X座標
  * @return 当たらなかったらFALSE、反射したらTRUE、当たったらCONTINUE
  */
-static ProcessResult check_continue_player_effect(PlayerType *player_ptr, EffectPlayerType *ep_ptr, const Pos2D &pos, project_func project)
+static ProcessResult check_continue_player_effect(CreatureEntity &creature, EffectPlayerType *ep_ptr, const Pos2D &pos, project_func project)
 {
-    if (!player_ptr->is_located_at(pos)) {
+    if (!creature.is_located_at(pos)) {
         return ProcessResult::PROCESS_FALSE;
     }
 
     auto is_effective = ep_ptr->dam > 0;
-    is_effective &= randint0(55) < (player_ptr->level * 3 / 5 + 20);
+    is_effective &= randint0(55) < (creature.get_level() * 3 / 5 + 20);
     is_effective &= ep_ptr->is_monster();
     is_effective &= !ep_ptr->src_ptr || !ep_ptr->src_ptr->is_riding();
-    if (is_effective && kawarimi(player_ptr, true)) {
+    if (is_effective && kawarimi(creature, true)) {
         return ProcessResult::PROCESS_FALSE;
     }
 
@@ -140,7 +140,7 @@ static ProcessResult check_continue_player_effect(PlayerType *player_ptr, Effect
         return ProcessResult::PROCESS_FALSE;
     }
 
-    if (process_bolt_reflection(player_ptr, ep_ptr, project)) {
+    if (process_bolt_reflection(creature, ep_ptr, project)) {
         return ProcessResult::PROCESS_TRUE;
     }
 
@@ -149,16 +149,16 @@ static ProcessResult check_continue_player_effect(PlayerType *player_ptr, Effect
 
 /*!
  * @brief 魔法を発したモンスター名を記述する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param ep_ptr プレイヤー効果構造体への参照ポインタ
  * @param src_name モンスター名
  */
-static void describe_effect_source(PlayerType *player_ptr, EffectPlayerType *ep_ptr, concptr src_name)
+static void describe_effect_source(CreatureEntity &creature, EffectPlayerType *ep_ptr, concptr src_name)
 {
     if (ep_ptr->is_monster()) {
-        ep_ptr->m_ptr = &player_ptr->current_floor_ptr->m_list[ep_ptr->src_idx];
+        ep_ptr->m_ptr = &creature.get_floor()->get_monster(ep_ptr->src_idx);
         ep_ptr->rlev = ep_ptr->m_ptr->get_monrace().level >= 1 ? ep_ptr->m_ptr->get_monrace().level : 1;
-        ep_ptr->m_name = monster_desc(player_ptr, *ep_ptr->m_ptr, 0);
+        ep_ptr->m_name = monster_desc(creature, *ep_ptr->m_ptr, 0);
         ep_ptr->killer = src_name;
         return;
     }
@@ -191,12 +191,12 @@ static void describe_effect_source(PlayerType *player_ptr, EffectPlayerType *ep_
  * @param monspell 効果元のモンスター魔法ID
  * @return 何か一つでも効力があればTRUEを返す / TRUE if any "effects" of the projection were observed, else FALSE
  */
-bool affect_player(MONSTER_IDX src_idx, PlayerType *player_ptr, concptr src_name, int r, POSITION y, POSITION x, int dam, AttributeType attribute,
+bool affect_player(MONSTER_IDX src_idx, CreatureEntity &creature, concptr src_name, int r, POSITION y, POSITION x, int dam, AttributeType attribute,
     BIT_FLAGS flag, FallOffHorseEffect &fall_off_horse_effect, project_func project)
 {
-    EffectPlayerType tmp_effect(*player_ptr->current_floor_ptr, src_idx, dam, attribute, flag);
+    EffectPlayerType tmp_effect(*creature.get_floor(), src_idx, dam, attribute, flag);
     auto *ep_ptr = &tmp_effect;
-    auto check_result = check_continue_player_effect(player_ptr, ep_ptr, { y, x }, project);
+    auto check_result = check_continue_player_effect(creature, ep_ptr, { y, x }, project);
     if (check_result != ProcessResult::PROCESS_CONTINUE) {
         return check_result == ProcessResult::PROCESS_TRUE;
     }
@@ -206,26 +206,26 @@ bool affect_player(MONSTER_IDX src_idx, PlayerType *player_ptr, concptr src_name
     }
 
     ep_ptr->dam = (ep_ptr->dam + r) / (r + 1);
-    describe_effect_source(player_ptr, ep_ptr, src_name);
-    switch_effects_player(player_ptr, ep_ptr);
+    describe_effect_source(creature, ep_ptr, src_name);
+    switch_effects_player(creature, ep_ptr);
 
-    SpellHex(player_ptr).store_vengeful_damage(ep_ptr->get_damage);
-    if ((player_ptr->tim_eyeeye || SpellHex(player_ptr).is_spelling_specific(HEX_EYE_FOR_EYE)) && (ep_ptr->get_damage > 0) && !player_ptr->is_dead() && ep_ptr->is_monster()) {
-        const auto m_name_self = monster_desc(player_ptr, *ep_ptr->m_ptr, MD_PRON_VISIBLE | MD_POSSESSIVE | MD_OBJECTIVE);
+    SpellHex(creature).store_vengeful_damage(ep_ptr->get_damage);
+    if ((creature.get_timed_effect(CreatureTimedEffect::TIM_EYEEYE) || SpellHex(creature).is_spelling_specific(HEX_EYE_FOR_EYE)) && (ep_ptr->get_damage > 0) && !creature.is_dead() && ep_ptr->is_monster()) {
+        const auto m_name_self = monster_desc(creature, *ep_ptr->m_ptr, MD_PRON_VISIBLE | MD_POSSESSIVE | MD_OBJECTIVE);
         msg_print(_(format("攻撃が%s自身を傷つけた！", ep_ptr->m_name.data()), format("The attack of %s has wounded %s!", ep_ptr->m_name.data(), m_name_self.data())));
-        (*project)(player_ptr, 0, 0, ep_ptr->m_ptr->y, ep_ptr->m_ptr->x, ep_ptr->get_damage, AttributeType::MISSILE, PROJECT_KILL, tl::nullopt);
-        if (player_ptr->tim_eyeeye) {
-            set_tim_eyeeye(player_ptr, player_ptr->tim_eyeeye - 5, true);
+        (*project)(creature, 0, 0, ep_ptr->m_ptr->y, ep_ptr->m_ptr->x, ep_ptr->get_damage, AttributeType::MISSILE, PROJECT_KILL, tl::nullopt);
+        if (creature.get_timed_effect(CreatureTimedEffect::TIM_EYEEYE)) {
+            set_tim_eyeeye(creature, creature.get_timed_effect(CreatureTimedEffect::TIM_EYEEYE) - 5, true);
         }
     }
 
-    if (player_ptr->riding) {
+    if (creature.get_riding()) {
         fall_off_horse_effect.set_fall_off(ep_ptr->dam);
     }
 
-    disturb(player_ptr, true, true);
+    disturb(creature, true, true);
     if (ep_ptr->dam && ep_ptr->is_monster() && (!ep_ptr->src_ptr || !ep_ptr->src_ptr->is_riding())) {
-        (void)kawarimi(player_ptr, false);
+        (void)kawarimi(creature, false);
     }
 
     return true;

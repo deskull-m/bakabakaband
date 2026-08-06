@@ -4,6 +4,7 @@
 #include "grid/grid.h"
 #include "room/door-definition.h"
 #include "system/enums/monrace/monrace-id.h"
+#include "system/enums/terrain/terrain-conversion-type.h"
 #include "system/enums/terrain/terrain-tag.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
@@ -11,16 +12,7 @@
 #include "system/terrain/terrain-list.h"
 #include "term/z-form.h"
 #include "term/z-rand.h"
-
-enum conversion_type {
-    CONVERT_TYPE_FLOOR = 0,
-    CONVERT_TYPE_WALL = 1,
-    CONVERT_TYPE_INNER = 2,
-    CONVERT_TYPE_OUTER = 3,
-    CONVERT_TYPE_SOLID = 4,
-    CONVERT_TYPE_STREAM1 = 5,
-    CONVERT_TYPE_STREAM2 = 6,
-};
+#include <algorithm>
 
 bool DungeonDefinition::has_river_flag() const
 {
@@ -67,24 +59,38 @@ short DungeonDefinition::convert_terrain_id(short terrain_id) const
         return terrain_id;
     }
 
-    switch (terrain.subtype) {
-    case CONVERT_TYPE_FLOOR:
+    switch (terrain.conversion_type) {
+    case TerrainConversionType::FLOOR:
         return this->select_floor_terrain_id();
-    case CONVERT_TYPE_WALL:
+    case TerrainConversionType::WALL:
         return this->select_wall_terrain_id();
-    case CONVERT_TYPE_INNER:
+    case TerrainConversionType::INNER:
         return this->inner_wall;
-    case CONVERT_TYPE_OUTER:
+    case TerrainConversionType::OUTER:
         return this->outer_wall;
-    case CONVERT_TYPE_SOLID:
+    case TerrainConversionType::SOLID:
         return this->outer_wall;
-    case CONVERT_TYPE_STREAM1:
-        return this->stream1;
-    case CONVERT_TYPE_STREAM2:
-        return this->stream2;
+    case TerrainConversionType::STREAM:
+        return this->select_stream_terrain_id(terrain_id, terrain.stream_index);
     default:
         return terrain_id;
     }
+}
+
+void DungeonDefinition::sort_streams_by_priority()
+{
+    std::stable_sort(this->streams.begin(), this->streams.end(), [](const auto &lhs, const auto &rhs) {
+        return lhs.priority < rhs.priority;
+    });
+}
+
+short DungeonDefinition::select_stream_terrain_id(short terrain_id, int stream_index) const
+{
+    if ((stream_index < 0) || (static_cast<size_t>(stream_index) >= this->streams.size())) {
+        return terrain_id;
+    }
+    const auto stream_terrain_id = this->streams[stream_index].terrain_id;
+    return stream_terrain_id > 0 ? stream_terrain_id : terrain_id;
 }
 
 /*!
@@ -209,6 +215,16 @@ void DungeonDefinition::set_guardian_flag()
     if (this->has_guardian()) {
         auto &monrace = this->get_guardian();
         monrace.misc_flags.set(MonsterMiscType::GUARDIAN);
+    }
+}
+
+/*!
+ * @brief 最小面積が保証されるダンジョンには VAULT を生成しないフラグをセットする。
+ */
+void DungeonDefinition::set_no_vault_flag_if_smallest()
+{
+    if (this->flags.has(DungeonFeatureType::SMALLEST)) {
+        this->flags.set(DungeonFeatureType::NO_VAULT);
     }
 }
 

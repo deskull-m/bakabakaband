@@ -12,20 +12,20 @@
 #include "player/player-move.h"
 #include "save/save.h"
 #include "system/angband-system.h"
-#include "system/player-type-definition.h"
+#include "system/creature-entity.h"
 #include "term/screen-processor.h"
 #include "view/display-messages.h"
 #include "world/world.h"
 
 /*!
  * @brief Handle abrupt death of the visual system
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return なし
  * @details
  * This routine is called only in very rare situations, and only
  * by certain visual systems, when they experience fatal errors.
  */
-void exit_game_panic(PlayerType *player_ptr)
+void exit_game_panic(CreatureEntity &creature)
 {
     auto &world = AngbandWorld::get_instance();
     if (!world.character_generated || world.character_saved) {
@@ -34,15 +34,15 @@ void exit_game_panic(PlayerType *player_ptr)
     msg_flag = false;
 
     prt("", 0, 0);
-    disturb(player_ptr, true, true);
-    if (player_ptr->hp < 0) {
-        player_ptr->is_dead_ = false;
+    disturb(creature, true, true);
+    if (creature.hp < 0) {
+        creature.is_dead_ = false;
     }
 
     AngbandSystem::get_instance().set_panic_save(true);
     signals_ignore_tstp();
-    player_ptr->died_from = _("(緊急セーブ)", "(panic save)");
-    if (!save_player(player_ptr, SaveType::CLOSE_GAME)) {
+    creature.died_from = _("(緊急セーブ)", "(panic save)");
+    if (!save_player(creature, SaveType::CLOSE_GAME)) {
         quit(_("緊急セーブ失敗！", "panic save failed!"));
     }
     quit(_("緊急セーブ成功！", "panic save succeeded!"));

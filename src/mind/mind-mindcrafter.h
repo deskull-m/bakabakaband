@@ -1,7 +1,7 @@
 #pragma once
 
-class PlayerType;
-bool psychometry(PlayerType *player_ptr);
+class CreatureEntity;
+bool psychometry(CreatureEntity &creature);
 
 enum class MindMindcrafterType : int;
-bool cast_mindcrafter_spell(PlayerType *player_ptr, MindMindcrafterType spell);
+bool cast_mindcrafter_spell(CreatureEntity &creature, MindMindcrafterType spell);

@@ -20,12 +20,12 @@
 #include "player/player-realm.h"
 #include "player/player-status.h"
 #include "system/angband-system.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/dungeon/dungeon-record.h"
 #include "system/enums/dungeon/dungeon-id.h"
 #include "system/floor/floor-info.h"
 #include "system/inner-game-data.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "system/system-variables.h"
 #include "term/gameterm.h"
@@ -68,11 +68,11 @@ size_t read_callback(char *buffer, size_t size, size_t nitems, void *userdata)
 
 /*!
  * @brief キャラクタダンプを引数で指定した出力ストリームに書き込む
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param stream 書き込む出力ストリーム
  * @return エラーコード
  */
-static errr make_dump(PlayerType *player_ptr, std::ostream &stream)
+static errr make_dump(CreatureEntity &creature, std::ostream &stream)
 {
     FILE *fff;
     GAME_TEXT file_name[1024];
@@ -90,7 +90,7 @@ static errr make_dump(PlayerType *player_ptr, std::ostream &stream)
     }
 
     /* 一旦一時ファイルを作る。通常のダンプ出力と共通化するため。 */
-    make_character_dump(player_ptr, fff);
+    make_character_dump(creature, fff);
     angband_fclose(fff);
 
     // 一時ファイルを削除する前に閉じるためブロックにする
@@ -109,7 +109,7 @@ static errr make_dump(PlayerType *player_ptr, std::ostream &stream)
  * @brief スクリーンダンプを作成する/ Make screen dump to buffer
  * @return 作成したスクリーンダンプの参照ポインタ
  */
-std::string make_screen_dump(PlayerType *player_ptr)
+std::string make_screen_dump(CreatureEntity &creature)
 {
     constexpr auto html_head =
         "<html>\n<body text=\"#ffffff\" bgcolor=\"#000000\">\n"
@@ -128,7 +128,7 @@ std::string make_screen_dump(PlayerType *player_ptr)
         msg_erase();
 
         use_graphics = false;
-        reset_visuals(player_ptr);
+        reset_visuals(creature);
 
         static constexpr auto flags = {
             MainWindowRedrawingFlag::WIPE,
@@ -138,7 +138,7 @@ std::string make_screen_dump(PlayerType *player_ptr)
             MainWindowRedrawingFlag::EQUIPPY,
         };
         rfu.set_flags(flags);
-        handle_stuff(player_ptr);
+        handle_stuff(creature);
     }
 
     screen_ss << html_head;
@@ -216,7 +216,7 @@ std::string make_screen_dump(PlayerType *player_ptr)
     }
 
     use_graphics = true;
-    reset_visuals(player_ptr);
+    reset_visuals(creature);
     static constexpr auto flags = {
         MainWindowRedrawingFlag::WIPE,
         MainWindowRedrawingFlag::BASIC,
@@ -225,43 +225,43 @@ std::string make_screen_dump(PlayerType *player_ptr)
         MainWindowRedrawingFlag::EQUIPPY,
     };
     rfu.set_flags(flags);
-    handle_stuff(player_ptr);
+    handle_stuff(creature);
     return ret;
 }
 
 /*!
  * @brief スコア転送処理のメインルーチン
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return 正常にスコアを送信できたらtrue、失敗時に送信を中止したらfalse
  */
-bool report_score(PlayerType *player_ptr)
+bool report_score(CreatureEntity &creature)
 {
     std::stringstream score_ss;
-    std::string personality_desc = (*player_ptr->personality).title.string();
-    personality_desc.append(_((*player_ptr->personality).no ? "の" : "", " "));
+    std::string personality_desc = (*creature.get_personality_info()).title.string();
+    personality_desc.append(_((*creature.get_personality_info()).no ? "の" : "", " "));
 
-    PlayerRealm pr(player_ptr);
-    const auto &realm1_name = PlayerClass(player_ptr).equals(PlayerClassType::ELEMENTALIST) ? get_element_title(player_ptr->element_realm) : pr.realm1().get_name().string();
-    score_ss << fmt::format("name: {}\n", player_ptr->name)
+    PlayerRealm pr(creature);
+    const auto &realm1_name = CreatureClass(creature).equals(PlayerClassType::ELEMENTALIST) ? get_element_title(creature.get_element_realm()) : pr.realm1().get_name().string();
+    score_ss << fmt::format("name: {}\n", creature.name)
              << fmt::format("version: {}\n", AngbandSystem::get_instance().build_version_expression(VersionExpression::FULL))
-             << fmt::format("score: {}\n", calc_score(player_ptr))
-             << fmt::format("level: {}\n", player_ptr->level)
-             << fmt::format("depth: {}\n", player_ptr->current_floor_ptr->dun_level)
-             << fmt::format("maxlv: {}\n", player_ptr->max_plv)
+             << fmt::format("score: {}\n", calc_score(creature))
+             << fmt::format("level: {}\n", creature.get_level())
+             << fmt::format("depth: {}\n", creature.get_floor()->dun_level)
+             << fmt::format("maxlv: {}\n", creature.get_max_plv())
              << fmt::format("maxdp: {}\n", DungeonRecords::get_instance().get_record(DungeonId::ANGBAND).get_max_level())
-             << fmt::format("au: {}\n", player_ptr->au);
+             << fmt::format("au: {}\n", creature.get_au());
     const auto &igd = InnerGameData::get_instance();
     score_ss << fmt::format("turns: {}\n", igd.get_real_turns(AngbandWorld::get_instance().game_turn))
-             << fmt::format("sex: {}\n", enum2i(player_ptr->psex))
-             << fmt::format("race: {}\n", player_ptr->race->title)
-             << fmt::format("class: {}\n", (*player_ptr->pclass_ref).title)
+             << fmt::format("sex: {}\n", enum2i(creature.psex))
+             << fmt::format("race: {}\n", creature.get_race_info()->title)
+             << fmt::format("class: {}\n", (*creature.get_class_info()).title)
              << fmt::format("seikaku: {}\n", personality_desc)
              << fmt::format("realm1: {}\n", realm1_name)
              << fmt::format("realm2: {}\n", pr.realm2().get_name())
-             << fmt::format("killer: {}\n", player_ptr->died_from)
+             << fmt::format("killer: {}\n", creature.died_from)
              << "-----charcter dump-----\n";
 
-    make_dump(player_ptr, score_ss);
+    make_dump(creature, score_ss);
     if (!screen_dump.empty()) {
         score_ss << "-----screen shot-----\n"
                  << screen_dump;
@@ -275,7 +275,7 @@ bool report_score(PlayerType *player_ptr)
 
         prt(_("スコア・サーバへの送信に失敗しました。", "Failed to send to the score server."), 0, 0);
         (void)inkey();
-        if (input_check_strict(player_ptr, _("もう一度接続を試みますか? ", "Try again? "), UserCheck::NO_HISTORY)) {
+        if (input_check_strict(creature, _("もう一度接続を試みますか? ", "Try again? "), UserCheck::NO_HISTORY)) {
             continue;
         }
 

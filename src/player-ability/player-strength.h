@@ -2,10 +2,14 @@
 
 #include "player-status/player-basic-statistics.h"
 
-class PlayerType;
+class CreatureEntity;
 class PlayerStrength : public PlayerBasicStatistics {
 public:
-    PlayerStrength(PlayerType *player_ptr);
+    PlayerStrength(CreatureEntity &creature);
+    PlayerStrength(const PlayerStrength &) = default;
+    PlayerStrength(PlayerStrength &&) = default;
+    PlayerStrength &operator=(const PlayerStrength &) = delete;
+    PlayerStrength &operator=(PlayerStrength &&) = delete;
 
 protected:
     void set_locals() override;

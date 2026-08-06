@@ -8,8 +8,10 @@
 #include "system/artifact-type-definition.h"
 #include "system/baseitem/baseitem-allocation.h"
 #include "system/baseitem/baseitem-definition.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/dungeon/dungeon-list.h"
+#include "system/dungeon/quest-definition.h"
 #include "system/enums/dungeon/dungeon-id.h"
 #include "system/enums/grid-count-kind.h"
 #include "system/enums/monrace/monrace-hook-types.h"
@@ -21,7 +23,6 @@
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/monster-entity.h"
 #include "system/services/dungeon-monrace-service.h"
 #include "system/terrain/terrain-definition.h"
 #include "system/terrain/terrain-list.h"
@@ -39,7 +40,11 @@ FloorType::FloorType()
 {
     ranges::generate(this->o_list, [] { return std::make_shared<ItemEntity>(); });
 
-    for (const auto mte : MONSTER_TIMED_EFFECT_RANGE) {
+    for (auto &monster : this->m_list) {
+        monster.init_monster_profile();
+    }
+
+    for (const auto mte : MONSTER_TIMED_EFFECT_LIST) {
         this->mproc_list[mte] = std::vector<short>(MAX_FLOOR_MONSTERS, {});
         this->mproc_max[mte] = 0;
     }
@@ -48,6 +53,16 @@ FloorType::FloorType()
 int FloorType::get_level() const
 {
     return this->dun_level;
+}
+
+CreatureEntity &FloorType::get_monster(MONSTER_IDX m_idx)
+{
+    return this->m_list[m_idx];
+}
+
+const CreatureEntity &FloorType::get_monster(MONSTER_IDX m_idx) const
+{
+    return this->m_list[m_idx];
 }
 
 Grid &FloorType::get_grid(const Pos2D &pos)
@@ -465,12 +480,12 @@ TerrainTag FloorType::select_random_trap() const
         const auto tag = terrains.select_normal_trap();
         const auto &terrain = terrains.get_terrain(tag);
 
-        // POWER値による階層制限チェック
-        if (terrain.power > 0 && this->dun_level < terrain.power) {
+        // 罠の強度による階層制限チェック
+        if (terrain.trap_power > 0 && this->dun_level < terrain.trap_power) {
             continue;
         }
 
-        if (terrain.flags.has_not(TerrainCharacteristics::MORE)) {
+        if (terrain.flags.has_not(TerrainCharacteristics::DOWN_STAIRS)) {
             return tag;
         }
 
@@ -531,13 +546,13 @@ void FloorType::reset_mproc()
 {
     this->reset_mproc_max();
     for (short i = this->m_max - 1; i >= 1; i--) {
-        const auto &monster = this->m_list[i];
+        const auto &monster = this->get_monster(i);
         if (!monster.is_valid()) {
             continue;
         }
 
-        for (const auto mte : MONSTER_TIMED_EFFECT_RANGE) {
-            if (monster.mtimed.at(mte) > 0) {
+        for (const auto mte : MONSTER_TIMED_EFFECT_LIST) {
+            if (monster.get_timed_effect(mte) > 0) {
                 this->add_mproc(i, mte);
             }
         }
@@ -546,7 +561,7 @@ void FloorType::reset_mproc()
 
 void FloorType::reset_mproc_max()
 {
-    for (const auto mte : MONSTER_TIMED_EFFECT_RANGE) {
+    for (const auto mte : MONSTER_TIMED_EFFECT_LIST) {
         this->mproc_max[mte] = 0;
     }
 }
@@ -557,7 +572,7 @@ void FloorType::reset_mproc_max()
  * @param mte モンスターの時限ステータスID
  * @return 残りターン値
  */
-tl::optional<int> FloorType::get_mproc_index(short m_idx, MonsterTimedEffect mte)
+tl::optional<int> FloorType::get_mproc_index(short m_idx, CreatureTimedEffect mte)
 {
     const auto &cur_mproc_list = this->mproc_list[mte];
     for (auto i = this->mproc_max[mte] - 1; i >= 0; i--) {
@@ -574,7 +589,7 @@ tl::optional<int> FloorType::get_mproc_index(short m_idx, MonsterTimedEffect mte
  * @param m_idx モンスターの参照ID
  * @return mte 追加したいモンスターの時限ステータスID
  */
-void FloorType::add_mproc(short m_idx, MonsterTimedEffect mte)
+void FloorType::add_mproc(short m_idx, CreatureTimedEffect mte)
 {
     if (this->mproc_max[mte] < MAX_FLOOR_MONSTERS) {
         this->mproc_list[mte][this->mproc_max[mte]++] = m_idx;
@@ -586,12 +601,35 @@ void FloorType::add_mproc(short m_idx, MonsterTimedEffect mte)
  * @return m_idx モンスターの参照ID
  * @return mte 削除したいモンスターの時限ステータスID
  */
-void FloorType::remove_mproc(short m_idx, MonsterTimedEffect mte)
+void FloorType::remove_mproc(short m_idx, CreatureTimedEffect mte)
 {
     const auto mproc_idx = this->get_mproc_index(m_idx, mte);
     if (mproc_idx >= 0) {
         this->mproc_list[mte][*mproc_idx] = this->mproc_list[mte][--this->mproc_max[mte]];
     }
+}
+
+/*!
+ * @brief モンスターに時限効果を設定する (値クランプ + 変化有無の返却)
+ * @param m_idx 対象モンスターのインデックス
+ * @param mte 設定する時限効果
+ * @param v 効果値 (0 で解除)。[0, max_value] にクランプされる
+ * @param max_value 効果値の上限
+ * @return 効果の有無が変化した (新規付与または完全解除された) 場合 true
+ * @details mproc キュー (毎ターン処理対象) の保守は CreatureEntity::set_timed_effect()
+ *          内に集約済み (提案 B1 後続段)。本メソッドは各 set_monster_* 系が共通で
+ *          必要とする「値クランプ + 変化有無 (notice) の算出」を担う。
+ */
+bool FloorType::set_monster_timed_effect(short m_idx, CreatureTimedEffect mte, int v, int max_value)
+{
+    auto &monster = this->get_monster(m_idx);
+    v = (v < 0) ? 0 : ((v > max_value) ? max_value : v);
+    const auto had_effect = monster.get_timed_effect(mte) > 0;
+    const auto will_have_effect = v > 0;
+
+    // 値設定に伴う mproc 保守は set_timed_effect() が内部で行う。
+    monster.set_timed_effect(mte, static_cast<int16_t>(v));
+    return had_effect != will_have_effect;
 }
 
 /*!
@@ -610,7 +648,7 @@ short FloorType::pop_empty_index_monster()
 
     /* Recycle dead monsters */
     for (short i = 1; i < this->m_max; i++) {
-        const auto &monster = this->m_list[i];
+        const auto &monster = this->get_monster(i);
         if (monster.is_valid()) {
             continue;
         }

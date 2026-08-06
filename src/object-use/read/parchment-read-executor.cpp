@@ -10,15 +10,15 @@
 #include "flavor/object-flavor-types.h"
 #include "io/files-util.h"
 #include "system/angband.h"
+#include "system/creature-entity.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "term/screen-processor.h"
 #include "util/angband-files.h"
 #include <iomanip>
 #include <sstream>
 
-ParchmentReadExecutor::ParchmentReadExecutor(PlayerType *player_ptr, ItemEntity *o_ptr)
-    : player_ptr(player_ptr)
+ParchmentReadExecutor::ParchmentReadExecutor(CreatureEntity &creature, ItemEntity *o_ptr)
+    : creature(creature)
     , o_ptr(o_ptr)
 {
 }
@@ -34,11 +34,11 @@ bool ParchmentReadExecutor::read()
     std::stringstream ss;
     ss << "book-" << std::setfill('0') << std::right << std::setw(3) << *this->o_ptr->bi_key.sval();
     ss << "_" << _("jp", "en") << ".txt";
-    const auto item_name = describe_flavor(this->player_ptr, *this->o_ptr, OD_NAME_ONLY);
+    const auto item_name = describe_flavor(this->creature, *this->o_ptr, OD_NAME_ONLY);
     auto path = path_build(ANGBAND_DIR_FILE, "books");
     path.append(ss.str());
     const auto &filename = path.string();
-    FileDisplayer(this->player_ptr->name).display(true, filename, 0, 0, item_name);
+    FileDisplayer(this->creature.name).display(true, filename, 0, 0, item_name);
     screen_load();
     return false;
 }

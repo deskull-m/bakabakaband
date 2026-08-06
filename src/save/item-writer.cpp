@@ -4,6 +4,8 @@
 #include "save/save-util.h"
 #include "system/baseitem/baseitem-definition.h"
 #include "system/baseitem/baseitem-list.h"
+#include "system/baseitem/baseitem-record.h"
+#include "system/baseitem/baseitem-records.h"
 #include "system/item-entity.h"
 #include "util/bit-flags-calculator.h"
 #include "util/enum-converter.h"
@@ -59,7 +61,7 @@ static BIT_FLAGS write_item_flags(const ItemEntity &item)
         set_bits(flags, SaveDataItemFlagType::DS);
     }
 
-    if (item.ident) {
+    if (item.ident.any()) {
         set_bits(flags, SaveDataItemFlagType::IDENT);
     }
 
@@ -171,7 +173,14 @@ static void write_item_info(const ItemEntity &item, const BIT_FLAGS flags)
     }
 
     if (any_bits(flags, SaveDataItemFlagType::IDENT)) {
-        wr_byte(item.ident);
+        // 旧 byte ident とビット互換のバイトに変換して保存する (セーブ形式不変)
+        uint8_t ident_byte = 0;
+        for (auto i = 0; i < enum2i(IdentificationFlag::MAX); i++) {
+            if (item.ident.has(i2enum<IdentificationFlag>(i))) {
+                ident_byte |= static_cast<uint8_t>(1U << i);
+            }
+        }
+        wr_byte(ident_byte);
     }
 
     if (any_bits(flags, SaveDataItemFlagType::MARKED)) {
@@ -207,11 +216,11 @@ static void write_item_info(const ItemEntity &item, const BIT_FLAGS flags)
     }
 
     if (any_bits(flags, SaveDataItemFlagType::CAPTURED_MONSTER_CURRENT_HP)) {
-        wr_s16b(item.captured_monster_current_hp);
+        wr_s32b(item.captured_monster_current_hp);
     }
 
     if (any_bits(flags, SaveDataItemFlagType::XTRA5)) {
-        wr_s16b(item.captured_monster_max_hp);
+        wr_s16b(static_cast<int16_t>(item.captured_monster_max_hp));
     }
 
     if (any_bits(flags, SaveDataItemFlagType::FEELING)) {
@@ -283,12 +292,12 @@ void wr_item(const ItemEntity &item)
 void wr_perception(short bi_id)
 {
     byte tmp8u = 0;
-    const auto &baseitem = BaseitemList::get_instance().get_baseitem(bi_id);
-    if (baseitem.aware) {
+    const auto &baseitem_record = BaseitemRecords::get_instance().get_record(bi_id);
+    if (baseitem_record.is_aware()) {
         tmp8u |= 0x01;
     }
 
-    if (baseitem.tried) {
+    if (baseitem_record.is_tried()) {
         tmp8u |= 0x02;
     }
 

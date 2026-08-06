@@ -5,5 +5,5 @@
 #include <tl/optional.hpp>
 
 class Direction;
-class PlayerType;
-tl::optional<MonsterMovementDirectionList> decide_monster_movement_direction(PlayerType *player_ptr, MONSTER_IDX m_idx, bool aware);
+class CreatureEntity;
+tl::optional<MonsterMovementDirectionList> decide_monster_movement_direction(CreatureEntity &creature, MONSTER_IDX m_idx, bool aware);

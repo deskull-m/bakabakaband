@@ -1,7 +1,6 @@
 #include "info-reader/info-reader-util.h"
 #include "artifact/random-art-effects.h"
 #include "info-reader/parse-error-types.h"
-#include "main/angband-headers.h"
 #include "object-enchant/activation-info-table.h"
 #include "util/enum-converter.h"
 #include "util/string-processor.h"
@@ -9,7 +8,6 @@
 
 /* Help give useful error messages */
 int error_idx; /*!< データ読み込み/初期化時に汎用的にエラーコードを保存するグローバル変数 */
-int error_line; /*!< データ読み込み/初期化時に汎用的にエラー行数を保存するグローバル変数 */
 
 /*!
  * @brief テキストトークンを走査してフラグを一つ得る(発動能力用) /

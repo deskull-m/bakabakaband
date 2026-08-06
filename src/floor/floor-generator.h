@@ -1,7 +1,8 @@
 #pragma once
 
+class CreatureEntity;
 class FloorType;
-class PlayerType;
 void wipe_generate_random_floor_flags(FloorType &floor);
-void clear_cave(PlayerType *player_ptr);
-void generate_floor(PlayerType *player_ptr);
+void apply_terrain_generation_changes(FloorType &floor);
+void clear_cave(CreatureEntity &creature);
+void generate_floor(CreatureEntity &creature);

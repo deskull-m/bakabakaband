@@ -4,31 +4,31 @@
 #include "monster/monster-info.h"
 #include "monster/monster-list.h"
 #include "monster/monster-util.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/player-type-definition.h"
 #include "util/enum-converter.h"
 #include "util/probability-table.h"
 
-void nest_pit_type::prepare_filter(PlayerType *player_ptr) const
+void nest_pit_type::prepare_filter(CreatureEntity &creature) const
 {
     auto &filter = PitNestFilter::get_instance();
     switch (this->pn_hook) {
     case PitNestHook::NONE:
         break;
     case PitNestHook::CLONE: {
-        get_mon_num_prep_enum(player_ptr, MonraceHook::VAULT);
-        const auto monrace_id = get_mon_num(player_ptr, 0, player_ptr->current_floor_ptr->dun_level + 10, PM_NONE);
+        get_mon_num_prep_enum(creature, MonraceHook::VAULT);
+        const auto monrace_id = get_mon_num(creature, 0, creature.get_floor()->dun_level + 10, PM_NONE);
         filter.set_monrace_id(monrace_id);
-        get_mon_num_prep_enum(player_ptr);
+        get_mon_num_prep_enum(creature);
         break;
     }
     case PitNestHook::SYMBOL: {
-        get_mon_num_prep_enum(player_ptr, MonraceHook::VAULT);
-        const auto monrace_id = get_mon_num(player_ptr, 0, player_ptr->current_floor_ptr->dun_level + 10, PM_NONE);
-        get_mon_num_prep_enum(player_ptr);
+        get_mon_num_prep_enum(creature, MonraceHook::VAULT);
+        const auto monrace_id = get_mon_num(creature, 0, creature.get_floor()->dun_level + 10, PM_NONE);
+        get_mon_num_prep_enum(creature);
         const auto symbol = MonraceList::get_instance().get_monrace(monrace_id).symbol_definition.character;
         filter.set_monrace_symbol(symbol);
         break;
@@ -55,7 +55,7 @@ tl::optional<NestKind> pick_nest_type(const FloorType &floor, const std::map<Nes
             continue;
         }
 
-        if (none_bits(floor.get_dungeon_definition().nest, (1UL << enum2i(nest_kind)))) {
+        if (floor.get_dungeon_definition().nest.has_not(nest_kind)) {
             continue;
         }
 
@@ -83,7 +83,7 @@ tl::optional<PitKind> pick_pit_type(const FloorType &floor, const std::map<PitKi
             continue;
         }
 
-        if (none_bits(floor.get_dungeon_definition().pit, (1UL << enum2i(pit_kind)))) {
+        if (floor.get_dungeon_definition().pit.has_not(pit_kind)) {
             continue;
         }
 
@@ -99,20 +99,20 @@ tl::optional<PitKind> pick_pit_type(const FloorType &floor, const std::map<PitKi
 
 /*!
  * @brief Pit/Nestに格納するモンスターを選択する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param align アライメントが中立に設定されたモンスター実体 (その他の中身は空)
  * @param boost 選択基準となるフロアの増分
  * @return モンスター種族ID (見つからなかったらnullopt)
  * @details Nestにはそのフロアの通常レベルより11高いモンスターを中心に選ぶ
  */
-tl::optional<MonraceId> select_pit_nest_monrace_id(PlayerType *player_ptr, MonsterEntity &align, int boost)
+tl::optional<MonraceId> select_pit_nest_monrace_id(CreatureEntity &creature, uint8_t &sub_align, int boost)
 {
-    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto &monraces = MonraceList::get_instance();
     for (auto attempts = 100; attempts > 0; attempts--) {
-        const auto monrace_id = get_mon_num(player_ptr, 0, floor.dun_level + boost, PM_NONE);
+        const auto monrace_id = get_mon_num(creature, 0, floor.dun_level + boost, PM_NONE);
         const auto &monrace = monraces.get_monrace(monrace_id);
-        if (monster_has_hostile_to_other_monster(align, monrace)) {
+        if (monster_has_hostile_sub_align(sub_align, monrace)) {
             continue;
         }
 

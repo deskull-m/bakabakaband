@@ -4,8 +4,6 @@
 #include <string_view>
 #include <tl/optional.hpp>
 
-class PlayerType;
-class MonsterEntity;
 enum class MonraceId : int16_t;
 
 class MonsterPainDescriber {

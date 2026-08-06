@@ -6,6 +6,7 @@
 #include "object-enchant/tr-flags.h"
 #include "system/angband.h"
 #include "system/system-variables.h"
+#include <memory>
 
 /*!
  * @brief カオス効果種別
@@ -35,10 +36,10 @@ enum class MagicalBrandEffectType { NONE = 0,
  * @todo fear とmdeath はポインタである必要はないはず
  */
 enum class MonraceId : short;
+class CreatureEntity;
 class Grid;
 class FloorType;
 class MonraceDefinition;
-class MonsterEntity;
 struct player_attack_type {
     player_attack_type(FloorType &floor, POSITION y, POSITION x, int16_t hand, combat_options mode, bool *fear, bool *mdeath);
 
@@ -65,12 +66,12 @@ struct player_attack_type {
     MagicalBrandEffectType magical_effect; //!< 魔術効果
 
     MONSTER_IDX m_idx; //!< モンスターID
-    MonsterEntity *m_ptr; //!< モンスター情報(参照ポインタ)
+    CreatureEntity *m_ptr; //!< モンスター情報(参照ポインタ)
     MonraceId r_idx; //!< モンスター種族ID
-    MonraceDefinition *r_ptr; //!< モンスター種族情報(参照ポインタ)
+    std::shared_ptr<MonraceDefinition> monrace; //!< モンスター種族情報
     const martial_arts *ma_ptr; //!< マーシャルアーツ種別
 };
 
-class PlayerType;
-void exe_player_attack_to_monster(PlayerType *player_ptr, POSITION y, POSITION x, bool *fear, bool *mdeath, int16_t hand, combat_options mode);
-void massacre(PlayerType *player_ptr);
+class CreatureEntity;
+void exe_player_attack_to_monster(CreatureEntity &creature, POSITION y, POSITION x, bool *fear, bool *mdeath, int16_t hand, combat_options mode);
+void massacre(CreatureEntity &creature);

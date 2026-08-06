@@ -5,47 +5,46 @@
 #include "player/eldritch-horror.h"
 #include "status/bad-status-setter.h"
 #include "status/buff-setter.h"
+#include "system/creature-entity.h"
 #include "system/enums/monrace/monrace-id.h"
-#include "system/player-type-definition.h"
-#include "timed-effect/timed-effects.h"
 #include "view/display-messages.h"
 
-void effect_player_old_heal(PlayerType *player_ptr, EffectPlayerType *ep_ptr)
+void effect_player_old_heal(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 {
-    if (player_ptr->effects()->blindness().is_blind()) {
+    if (creature.is_blind()) {
         msg_print(_("何らかの攻撃によって気分がよくなった。", "You are hit by something invigorating!"));
     }
 
-    (void)hp_player(player_ptr, ep_ptr->dam);
+    (void)hp_player(creature, ep_ptr->dam);
     ep_ptr->dam = 0;
 }
 
-void effect_player_old_speed(PlayerType *player_ptr, EffectPlayerType *ep_ptr)
+void effect_player_old_speed(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 {
-    if (player_ptr->effects()->blindness().is_blind()) {
+    if (creature.is_blind()) {
         msg_print(_("何かで攻撃された！", "You are hit by something!"));
     }
 
-    (void)mod_acceleration(player_ptr, randnum1<short>(5), false);
+    (void)mod_acceleration(creature, randnum1<short>(5), false);
     ep_ptr->dam = 0;
 }
 
-void effect_player_old_slow(PlayerType *player_ptr)
+void effect_player_old_slow(CreatureEntity &creature)
 {
-    if (player_ptr->effects()->blindness().is_blind()) {
+    if (creature.is_blind()) {
         msg_print(_("何か遅いもので攻撃された！", "You are hit by something slow!"));
     }
 
-    (void)BadStatusSetter(player_ptr).mod_deceleration(randint0(4) + 4, false);
+    (void)BadStatusSetter(creature).mod_deceleration(randint0(4) + 4, false);
 }
 
-void effect_player_old_sleep(PlayerType *player_ptr, EffectPlayerType *ep_ptr)
+void effect_player_old_sleep(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 {
-    if (player_ptr->free_act) {
+    if (creature.has_free_act()) {
         return;
     }
 
-    if (player_ptr->effects()->blindness().is_blind()) {
+    if (creature.is_blind()) {
         msg_print(_("眠ってしまった！", "You fall asleep!"));
     }
 
@@ -53,9 +52,9 @@ void effect_player_old_sleep(PlayerType *player_ptr, EffectPlayerType *ep_ptr)
         msg_print(_("恐ろしい光景が頭に浮かんできた。", "A horrible vision enters your mind."));
 
         /* Have some nightmares */
-        sanity_blast(player_ptr);
+        sanity_blast(creature);
     }
 
-    (void)BadStatusSetter(player_ptr).mod_paralysis(static_cast<TIME_EFFECT>(ep_ptr->dam));
+    (void)BadStatusSetter(creature).mod_paralysis(static_cast<TIME_EFFECT>(ep_ptr->dam));
     ep_ptr->dam = 0;
 }

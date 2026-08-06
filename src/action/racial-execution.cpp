@@ -14,39 +14,39 @@
 #include "player-status/player-energy.h"
 #include "racial/racial-switcher.h"
 #include "racial/racial-util.h"
+#include "system/creature-entity.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "term/screen-processor.h"
-#include "timed-effect/timed-effects.h"
 #include "view/display-messages.h"
 
 /*!
  * @brief レイシャル・パワー発動処理
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param command 発動するレイシャルのID
  * @return 処理を実際に実行した場合はTRUE、キャンセルした場合FALSEを返す。
  */
-bool exe_racial_power(PlayerType *player_ptr, const int32_t command)
+bool exe_racial_power(CreatureEntity &creature, const int32_t command)
 {
     if (command <= -3) {
-        return switch_class_racial_execution(player_ptr, command);
+        return switch_class_racial_execution(creature, command);
     }
 
-    if (player_ptr->mimic_form != MimicKindType::NONE) {
-        return switch_mimic_racial_execution(player_ptr);
+    if (creature.get_mimic_form() != MimicKindType::NONE) {
+        return switch_mimic_racial_execution(creature);
     }
 
-    return switch_race_racial_execution(player_ptr, command);
+    return switch_race_racial_execution(creature, command);
 }
 
 /*!
  * @brief レイシャル・パワーの発動成功率を計算する / Returns the chance to activate a racial power/mutation
+ * @param creature クリーチャーへの参照
  * @param rpi_ptr 発動したいレイシャル・パワー情報の構造体参照ポインタ
  * @return 成功率(%)を返す
  */
-PERCENTAGE racial_chance(PlayerType *player_ptr, rpi_type *rpi_ptr)
+PERCENTAGE racial_chance(CreatureEntity &creature, rpi_type *rpi_ptr)
 {
-    if ((player_ptr->level < rpi_ptr->min_level) || player_ptr->effects()->confusion().is_confused()) {
+    if ((creature.get_level() < rpi_ptr->min_level) || creature.is_confused()) {
         return 0;
     }
 
@@ -55,11 +55,10 @@ PERCENTAGE racial_chance(PlayerType *player_ptr, rpi_type *rpi_ptr)
         return 100;
     }
 
-    const auto &player_stun = player_ptr->effects()->stun();
-    if (player_stun.is_stunned()) {
-        difficulty += player_stun.current();
-    } else if (player_ptr->level > rpi_ptr->min_level) {
-        PERCENTAGE lev_adj = (PERCENTAGE)((player_ptr->level - rpi_ptr->min_level) / 3);
+    if (creature.is_stunned()) {
+        difficulty += creature.get_remaining_stun();
+    } else if (creature.get_level() > rpi_ptr->min_level) {
+        PERCENTAGE lev_adj = (PERCENTAGE)((creature.get_level() - rpi_ptr->min_level) / 3);
         if (lev_adj > 10) {
             lev_adj = 10;
         }
@@ -67,8 +66,8 @@ PERCENTAGE racial_chance(PlayerType *player_ptr, rpi_type *rpi_ptr)
         difficulty -= lev_adj;
     }
 
-    auto special_easy = PlayerClass(player_ptr).equals(PlayerClassType::IMITATOR);
-    special_easy &= player_ptr->is_wielding(FixedArtifactId::GOGO_PENDANT);
+    auto special_easy = CreatureClass(creature).equals(PlayerClassType::IMITATOR);
+    special_easy &= creature.is_wielding(FixedArtifactId::GOGO_PENDANT);
     special_easy &= rpi_ptr->racial_name == _("倍返し", "Double Revenge");
     if (special_easy) {
         difficulty -= 12;
@@ -79,7 +78,7 @@ PERCENTAGE racial_chance(PlayerType *player_ptr, rpi_type *rpi_ptr)
     }
 
     difficulty = difficulty / 2;
-    const auto stat = player_ptr->stat_cur[rpi_ptr->stat];
+    const auto stat = creature.get_stat_cur(rpi_ptr->stat);
     auto sum = 0;
     for (auto i = 1; i <= stat; i++) {
         int val = i - difficulty;
@@ -88,24 +87,19 @@ PERCENTAGE racial_chance(PlayerType *player_ptr, rpi_type *rpi_ptr)
         }
     }
 
-    if (difficulty == 0) {
-        return 100;
-    } else {
-        return ((sum * 100) / difficulty) / stat;
-    }
+    return ((sum * 100) / difficulty) / stat;
 }
 
-static void adjust_racial_power_difficulty(PlayerType *player_ptr, rpi_type *rpi_ptr, int *difficulty)
+static void adjust_racial_power_difficulty(CreatureEntity &creature, rpi_type *rpi_ptr, int *difficulty)
 {
     if (*difficulty == 0) {
         return;
     }
 
-    const auto &player_stun = player_ptr->effects()->stun();
-    if (player_stun.is_stunned()) {
-        *difficulty += player_stun.current();
-    } else if (player_ptr->level > rpi_ptr->min_level) {
-        int lev_adj = ((player_ptr->level - rpi_ptr->min_level) / 3);
+    if (creature.is_stunned()) {
+        *difficulty += creature.get_remaining_stun();
+    } else if (creature.get_level() > rpi_ptr->min_level) {
+        int lev_adj = ((creature.get_level() - rpi_ptr->min_level) / 3);
         if (lev_adj > 10) {
             lev_adj = 10;
         }
@@ -119,40 +113,39 @@ static void adjust_racial_power_difficulty(PlayerType *player_ptr, rpi_type *rpi
 
 /*!
  * @brief レイシャル・パワーの発動の判定処理
+ * @param creature クリーチャーへの参照
  * @param rpi_ptr 発動したいレイシャル・パワー情報の構造体参照ポインタ
  * @return racial_level_check_result
  */
-racial_level_check_result check_racial_level(PlayerType *player_ptr, rpi_type *rpi_ptr)
+racial_level_check_result check_racial_level(CreatureEntity &creature, rpi_type *rpi_ptr)
 {
-    PLAYER_LEVEL min_level = rpi_ptr->min_level;
-    int use_stat = rpi_ptr->stat;
+    const PLAYER_LEVEL min_level = rpi_ptr->min_level;
     int difficulty = rpi_ptr->fail;
-    int use_hp = 0;
     rpi_ptr->racial_cost = rpi_ptr->cost;
-    if (player_ptr->csp < rpi_ptr->racial_cost) {
-        use_hp = rpi_ptr->racial_cost - player_ptr->csp;
-    }
+    const int use_hp = creature.get_current_mp() < rpi_ptr->racial_cost ? rpi_ptr->racial_cost - creature.get_current_mp() : 0;
 
-    PlayerEnergy energy(player_ptr);
-    if (player_ptr->level < min_level) {
+    PlayerEnergy energy(creature);
+    if (creature.get_level() < min_level) {
         msg_format(_("この能力を使用するにはレベル %d に達していなければなりません。", "You need to attain level %d to use this power."), min_level);
         energy.reset_player_turn();
         return RACIAL_CANCEL;
     }
 
-    if (cmd_limit_confused(player_ptr)) {
+    if (cmd_limit_confused(creature)) {
         energy.reset_player_turn();
         return RACIAL_CANCEL;
-    } else if (player_ptr->hp < use_hp) {
+    }
+
+    if (creature.hp < use_hp) {
         if (!input_check(_("本当に今の衰弱した状態でこの能力を使いますか？", "Really use the power in your weakened state? "))) {
             energy.reset_player_turn();
             return RACIAL_CANCEL;
         }
     }
 
-    adjust_racial_power_difficulty(player_ptr, rpi_ptr, &difficulty);
+    adjust_racial_power_difficulty(creature, rpi_ptr, &difficulty);
     energy.set_player_turn_energy(100);
-    if (randint1(player_ptr->stat_cur[use_stat]) >= ((difficulty / 2) + randint1(difficulty / 2))) {
+    if (randint1(creature.get_stat_cur(rpi_ptr->stat)) >= ((difficulty / 2) + randint1(difficulty / 2))) {
         return RACIAL_SUCCESS;
     }
 

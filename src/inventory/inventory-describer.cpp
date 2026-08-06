@@ -3,17 +3,17 @@
 #include "inventory/inventory-slot-types.h"
 #include "player/player-status-flags.h"
 #include "player/player-status-table.h"
+#include "system/creature-entity.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 
 /*!
  * @brief 所持/装備オブジェクトIDの部位表現を返す /
  * Return a string mentioning how a given item is carried
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param i 部位表現を求めるプレイヤーの所持/装備オブジェクトID
  * @return 部位表現の文字列ポインタ
  */
-concptr mention_use(PlayerType *player_ptr, int i)
+concptr mention_use(CreatureEntity &creature, int i)
 {
     concptr p;
 
@@ -21,30 +21,30 @@ concptr mention_use(PlayerType *player_ptr, int i)
     switch (i) {
 #ifdef JP
     case INVEN_MAIN_HAND:
-        p = player_ptr->heavy_wield[0]
+        p = creature.is_heavy_wield(0)
                 ? "運搬中"
-                : ((has_two_handed_weapons(player_ptr) && can_attack_with_main_hand(player_ptr)) ? " 両手" : (left_hander ? " 左手" : " 右手"));
+                : ((creature.has_two_handed_weapons() && can_attack_with_main_hand(creature)) ? " 両手" : (left_hander ? " 左手" : " 右手"));
         break;
 #else
     case INVEN_MAIN_HAND:
-        p = player_ptr->heavy_wield[0] ? "Just lifting" : (can_attack_with_main_hand(player_ptr) ? "Wielding" : "On arm");
+        p = creature.is_heavy_wield(0) ? "Just lifting" : (can_attack_with_main_hand(creature) ? "Wielding" : "On arm");
         break;
 #endif
 
 #ifdef JP
     case INVEN_SUB_HAND:
-        p = player_ptr->heavy_wield[1]
+        p = creature.is_heavy_wield(1)
                 ? "運搬中"
-                : ((has_two_handed_weapons(player_ptr) && can_attack_with_sub_hand(player_ptr)) ? " 両手" : (left_hander ? " 右手" : " 左手"));
+                : ((creature.has_two_handed_weapons() && can_attack_with_sub_hand(creature)) ? " 両手" : (left_hander ? " 右手" : " 左手"));
         break;
 #else
     case INVEN_SUB_HAND:
-        p = player_ptr->heavy_wield[1] ? "Just lifting" : (can_attack_with_sub_hand(player_ptr) ? "Wielding" : "On arm");
+        p = creature.is_heavy_wield(1) ? "Just lifting" : (can_attack_with_sub_hand(creature) ? "Wielding" : "On arm");
         break;
 #endif
 
     case INVEN_BOW:
-        p = (adj_str_hold[player_ptr->stat_index[A_STR]] < player_ptr->inventory[i]->weight / 10) ? _("運搬中", "Just holding") : _("射撃用", "Shooting");
+        p = (adj_str_hold[creature.get_stat_index(A_STR)] < creature.inventory[i]->weight / 10) ? _("運搬中", "Just holding") : _("射撃用", "Shooting");
         break;
     case INVEN_MAIN_RING:
         p = (left_hander ? _("左手指", "On left hand") : _("右手指", "On right hand"));
@@ -92,39 +92,39 @@ concptr mention_use(PlayerType *player_ptr, int i)
  * @details
  * Currently, only used for items in the equipment, inventory.
  */
-concptr describe_use(PlayerType *player_ptr, int i)
+concptr describe_use(CreatureEntity &creature, int i)
 {
     concptr p;
     switch (i) {
 #ifdef JP
     case INVEN_MAIN_HAND:
-        p = player_ptr->heavy_wield[0]
+        p = creature.is_heavy_wield(0)
                 ? "運搬中の"
-                : ((has_two_handed_weapons(player_ptr) && can_attack_with_main_hand(player_ptr)) ? "両手に装備している"
-                                                                                                 : (left_hander ? "左手に装備している" : "右手に装備している"));
+                : ((creature.has_two_handed_weapons() && can_attack_with_main_hand(creature)) ? "両手に装備している"
+                                                                                              : (left_hander ? "左手に装備している" : "右手に装備している"));
         break;
 #else
     case INVEN_MAIN_HAND:
-        p = player_ptr->heavy_wield[0] ? "just lifting" : (can_attack_with_main_hand(player_ptr) ? "attacking monsters with" : "wearing on your arm");
+        p = creature.is_heavy_wield(0) ? "just lifting" : (can_attack_with_main_hand(creature) ? "attacking monsters with" : "wearing on your arm");
         break;
 #endif
 
 #ifdef JP
     case INVEN_SUB_HAND:
-        p = player_ptr->heavy_wield[1]
+        p = creature.is_heavy_wield(1)
                 ? "運搬中の"
-                : ((has_two_handed_weapons(player_ptr) && can_attack_with_sub_hand(player_ptr)) ? "両手に装備している"
-                                                                                                : (left_hander ? "右手に装備している" : "左手に装備している"));
+                : ((creature.has_two_handed_weapons() && can_attack_with_sub_hand(creature)) ? "両手に装備している"
+                                                                                             : (left_hander ? "右手に装備している" : "左手に装備している"));
         break;
 #else
     case INVEN_SUB_HAND:
-        p = player_ptr->heavy_wield[1] ? "just lifting" : (can_attack_with_sub_hand(player_ptr) ? "attacking monsters with" : "wearing on your arm");
+        p = creature.is_heavy_wield(1) ? "just lifting" : (can_attack_with_sub_hand(creature) ? "attacking monsters with" : "wearing on your arm");
         break;
 #endif
 
     case INVEN_BOW:
-        p = (adj_str_hold[player_ptr->stat_index[A_STR]] < player_ptr->inventory[i]->weight / 10) ? _("持つだけで精一杯の", "just holding")
-                                                                                                  : _("射撃用に装備している", "shooting missiles with");
+        p = (adj_str_hold[creature.get_stat_index(A_STR)] < creature.inventory[i]->weight / 10) ? _("持つだけで精一杯の", "just holding")
+                                                                                                : _("射撃用に装備している", "shooting missiles with");
         break;
     case INVEN_MAIN_RING:
         p = (left_hander ? _("左手の指にはめている", "wearing on your left hand") : _("右手の指にはめている", "wearing on your right hand"));

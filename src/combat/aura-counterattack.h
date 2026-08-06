@@ -1,5 +1,5 @@
 #pragma once
 
 class MonsterAttackPlayer;
-class PlayerType;
-void process_aura_counterattack(PlayerType *player_ptr, MonsterAttackPlayer *monap_ptr);
+class CreatureEntity;
+void process_aura_counterattack(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr);

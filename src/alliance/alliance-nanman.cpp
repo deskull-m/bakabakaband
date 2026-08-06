@@ -1,15 +1,15 @@
 #include "alliance/alliance-nanman.h"
 #include "alliance/alliance.h"
-#include "system/player-type-definition.h"
+#include "system/creature-entity.h"
 #include "view/display-messages.h"
 
 /*!
  * @brief 南蛮アライアンスの印象ポイント計算
- * @param creature_ptr プレイヤー情報
+ * @param creature クリーチャーへの参照
  * @return 印象ポイント
  * @details 現在は空実装
  */
-int AllianceNanman::calcImpressionPoint([[maybe_unused]] PlayerType *creature_ptr) const
+int AllianceNanman::calcImpressionPoint([[maybe_unused]] const CreatureEntity &creature) const
 {
     // TODO: 南蛮の価値観に基づく印象ポイント計算を実装
     return 0;
@@ -17,10 +17,10 @@ int AllianceNanman::calcImpressionPoint([[maybe_unused]] PlayerType *creature_pt
 
 /*!
  * @brief 南蛮アライアンスの制裁処理
- * @param player_ptr プレイヤー情報
+ * @param creature クリーチャーへの参照
  * @details 現在は空実装
  */
-void AllianceNanman::panishment([[maybe_unused]] PlayerType &player_ptr)
+void AllianceNanman::panishment([[maybe_unused]] CreatureEntity &creature)
 {
     // TODO: 南蛮の制裁システムを実装
     // msg_print("南蛮の制裁が発動した！");

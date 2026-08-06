@@ -2,7 +2,7 @@
 #include "player-base/player-class.h"
 #include "player/player-realm.h"
 #include "system/building-type-definition.h"
-#include "system/player-type-definition.h"
+#include "system/creature-entity.h"
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
 #include "util/enum-converter.h"
@@ -11,22 +11,22 @@
  * @brief 施設毎に設定された種族、職業、魔法領域フラグがプレイヤーと一致するかを判定する。
  * @details 各種ギルドや寺院など、特定の職業ならば優遇措置を得られる施設、
  * あるいは食堂など特定の種族では利用できない施設の判定処理を行う。
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param bldg 施設構造体の参照ポインタ
  * @return 種族、職業、魔法領域のいずれかが一致しているかの是非。
  */
-bool is_owner(PlayerType *player_ptr, const building_type &bldg)
+bool is_owner(CreatureEntity &creature, const building_type &bldg)
 {
     constexpr auto building_owner = 2;
-    if (bldg.member_class[enum2i(player_ptr->pclass)] == building_owner) {
+    if (bldg.member_class[enum2i(creature.pclass)] == building_owner) {
         return true;
     }
 
-    if (bldg.member_race[enum2i(player_ptr->prace)] == building_owner) {
+    if (bldg.member_race[enum2i(creature.prace)] == building_owner) {
         return true;
     }
 
-    PlayerRealm pr(player_ptr);
+    PlayerRealm pr(creature);
     const auto realm1 = pr.realm1().to_enum();
     const auto realm2 = pr.realm2().to_enum();
     if ((PlayerRealm::is_magic(realm1) && (bldg.member_realm[enum2i(realm1)] == building_owner)) || (PlayerRealm::is_magic(realm2) && (bldg.member_realm[enum2i(realm2)] == building_owner))) {
@@ -41,29 +41,29 @@ bool is_owner(PlayerType *player_ptr, const building_type &bldg)
  （スペルマスターの特別判定つき）
  * @details 各種ギルドや寺院など、特定の職業ならば優遇措置を得られる施設、
  * あるいは食堂など特定の種族では利用できない施設の判定処理を行う。
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param bldg 施設構造体の参照ポインタ
  * @return 種族、職業、魔法領域のいずれかが一致しているかの是非。
  * @todo is_owner()との実質的な多重実装なので、リファクタリングを行うべきである。
  */
-bool is_member(PlayerType *player_ptr, const building_type &bldg)
+bool is_member(CreatureEntity &creature, const building_type &bldg)
 {
-    if (static_cast<bool>(bldg.member_class[enum2i(player_ptr->pclass)])) {
+    if (static_cast<bool>(bldg.member_class[enum2i(creature.pclass)])) {
         return true;
     }
 
-    if (static_cast<bool>(bldg.member_race[enum2i(player_ptr->prace)])) {
+    if (static_cast<bool>(bldg.member_race[enum2i(creature.prace)])) {
         return true;
     }
 
-    PlayerRealm pr(player_ptr);
+    PlayerRealm pr(creature);
     const auto realm1 = pr.realm1().to_enum();
     const auto realm2 = pr.realm2().to_enum();
     if ((PlayerRealm::is_magic(realm1) && bldg.member_realm[enum2i(realm1)]) || (PlayerRealm::is_magic(realm2) && bldg.member_realm[enum2i(realm2)])) {
         return true;
     }
 
-    if (!PlayerClass(player_ptr).equals(PlayerClassType::SORCERER)) {
+    if (!CreatureClass(creature).equals(PlayerClassType::SORCERER)) {
         return false;
     }
 
@@ -78,10 +78,10 @@ bool is_member(PlayerType *player_ptr, const building_type &bldg)
 
 /*!
  * @brief 施設のサービス一覧を表示する / Display a building.
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param bldg 施設構造体の参照ポインタ
  */
-void display_building_service(PlayerType *player_ptr, const building_type &bldg)
+void display_building_service(CreatureEntity &creature, const building_type &bldg)
 {
     byte action_color;
 
@@ -95,10 +95,10 @@ void display_building_service(PlayerType *player_ptr, const building_type &bldg)
 
         std::string buff;
         if (bldg.action_restr[i] == 0) {
-            if ((is_owner(player_ptr, bldg) && (bldg.member_costs[i] == 0)) || (!is_owner(player_ptr, bldg) && (bldg.other_costs[i] == 0))) {
+            if ((is_owner(creature, bldg) && (bldg.member_costs[i] == 0)) || (!is_owner(creature, bldg) && (bldg.other_costs[i] == 0))) {
                 action_color = TERM_WHITE;
                 buff[0] = '\0';
-            } else if (is_owner(player_ptr, bldg)) {
+            } else if (is_owner(creature, bldg)) {
                 action_color = TERM_YELLOW;
                 buff = format(_("($%d)", "(%dgp)"), bldg.member_costs[i]);
             } else {
@@ -111,13 +111,13 @@ void display_building_service(PlayerType *player_ptr, const building_type &bldg)
         }
 
         if (bldg.action_restr[i] == 1) {
-            if (!is_member(player_ptr, bldg)) {
+            if (!is_member(creature, bldg)) {
                 action_color = TERM_L_DARK;
                 buff = _("(閉店)", "(closed)");
-            } else if ((is_owner(player_ptr, bldg) && (bldg.member_costs[i] == 0)) || (is_member(player_ptr, bldg) && (bldg.other_costs[i] == 0))) {
+            } else if ((is_owner(creature, bldg) && (bldg.member_costs[i] == 0)) || (is_member(creature, bldg) && (bldg.other_costs[i] == 0))) {
                 action_color = TERM_WHITE;
                 buff[0] = '\0';
-            } else if (is_owner(player_ptr, bldg)) {
+            } else if (is_owner(creature, bldg)) {
                 action_color = TERM_YELLOW;
                 buff = format(_("($%d)", "(%dgp)"), bldg.member_costs[i]);
             } else {
@@ -129,7 +129,7 @@ void display_building_service(PlayerType *player_ptr, const building_type &bldg)
             continue;
         }
 
-        if (!is_owner(player_ptr, bldg)) {
+        if (!is_owner(creature, bldg)) {
             action_color = TERM_L_DARK;
             buff = _("(閉店)", "(closed)");
         } else if (bldg.member_costs[i] != 0) {

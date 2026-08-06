@@ -2,5 +2,5 @@
 
 #include "system/angband.h"
 
-class PlayerType;
-void do_cmd_fire(PlayerType *player_ptr, SPELL_IDX snipe_type);
+class CreatureEntity;
+void do_cmd_fire(CreatureEntity &creature, SPELL_IDX snipe_type);

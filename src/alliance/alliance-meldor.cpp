@@ -1,19 +1,18 @@
 #include "alliance/alliance-meldor.h"
+#include "system/creature-entity.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/player-type-definition.h"
-int AllianceMeldor::calcImpressionPoint([[maybe_unused]] PlayerType *creature_ptr) const
+int AllianceMeldor::calcImpressionPoint([[maybe_unused]] const CreatureEntity &creature) const
 {
     int impression = 0;
     impression += calcIronmanHostilityPenalty();
 
-    impression += Alliance::calcPlayerPower(*creature_ptr, 13, 28);
+    impression += Alliance::calcPlayerPower(creature, 13, 28);
     return impression;
 }
 
 bool AllianceMeldor::isAnnihilated()
 {
-    const auto &monrace_list = MonraceList::get_instance();
-    return monrace_list.get_monrace(MonraceId::ANNATAR).mob_num == 0;
+    return all_monraces_extinct({ MonraceId::ANNATAR });
 }

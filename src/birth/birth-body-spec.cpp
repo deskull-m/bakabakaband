@@ -6,53 +6,30 @@
 #include "player/player-personality-types.h"
 #include "player/player-sex.h"
 #include "system/creature-entity.h"
-#include "system/player-type-definition.h"
 
 /*!
- * @brief プレイヤーの身長体重を決める / Get character's height and weight
+ * @brief クリーチャーの身長体重を決める / Get creature's height and weight
+ * @param creature クリーチャーへの参照
+ * @details 種族情報に基づいて身長・体重を設定する。PlayerTypeもCreatureEntityを継承しているため、プレイヤーにも使用可能。
  */
-void get_height_weight(PlayerType *player_ptr)
-{
-    int deviation;
-    switch (player_ptr->psex) {
-    case SEX_MALE:
-        player_ptr->ht = randnor(player_ptr->race->m_b_ht, player_ptr->race->m_m_ht);
-        deviation = (int)(player_ptr->ht) * 100 / (int)(player_ptr->race->m_b_ht);
-        player_ptr->wt = randnor((int)(player_ptr->race->m_b_wt) * deviation / 100, (int)(player_ptr->race->m_m_wt) * deviation / 300);
-        return;
-    case SEX_FEMALE:
-        player_ptr->ht = randnor(player_ptr->race->f_b_ht, player_ptr->race->f_m_ht);
-        deviation = (int)(player_ptr->ht) * 100 / (int)(player_ptr->race->f_b_ht);
-        player_ptr->wt = randnor((int)(player_ptr->race->f_b_wt) * deviation / 100, (int)(player_ptr->race->f_m_wt) * deviation / 300);
-        return;
-    default:
-        return;
-    }
-}
-
-/*!
- * @brief クリーチャーの身長体重を決める（種族情報に基づいて）
- * @param creature_ptr クリーチャーへの参照ポインタ
- * @details 種族が指定されている場合、その種族の身長・体重範囲で設定する
- */
-void get_height_weight_for_creature(CreatureEntity *creature_ptr)
+void get_height_weight(CreatureEntity &creature)
 {
     // 種族情報が設定されていない場合は何もしない
-    if (creature_ptr->race == nullptr) {
+    if (creature.race == nullptr) {
         return;
     }
 
     int deviation;
-    switch (creature_ptr->psex) {
+    switch (creature.psex) {
     case SEX_MALE:
-        creature_ptr->ht = randnor(creature_ptr->race->m_b_ht, creature_ptr->race->m_m_ht);
-        deviation = (int)(creature_ptr->ht) * 100 / (int)(creature_ptr->race->m_b_ht);
-        creature_ptr->wt = randnor((int)(creature_ptr->race->m_b_wt) * deviation / 100, (int)(creature_ptr->race->m_m_wt) * deviation / 300);
+        creature.set_ht(randnor(creature.get_race_info()->m_b_ht, creature.get_race_info()->m_m_ht));
+        deviation = (int)(creature.get_ht()) * 100 / (int)(creature.get_race_info()->m_b_ht);
+        creature.set_wt(randnor((int)(creature.get_race_info()->m_b_wt) * deviation / 100, (int)(creature.get_race_info()->m_m_wt) * deviation / 300));
         return;
     case SEX_FEMALE:
-        creature_ptr->ht = randnor(creature_ptr->race->f_b_ht, creature_ptr->race->f_m_ht);
-        deviation = (int)(creature_ptr->ht) * 100 / (int)(creature_ptr->race->f_b_ht);
-        creature_ptr->wt = randnor((int)(creature_ptr->race->f_b_wt) * deviation / 100, (int)(creature_ptr->race->f_m_wt) * deviation / 300);
+        creature.set_ht(randnor(creature.get_race_info()->f_b_ht, creature.get_race_info()->f_m_ht));
+        deviation = (int)(creature.get_ht()) * 100 / (int)(creature.get_race_info()->f_b_ht);
+        creature.set_wt(randnor((int)(creature.get_race_info()->f_b_wt) * deviation / 100, (int)(creature.get_race_info()->f_m_wt) * deviation / 300));
         return;
     default:
         return;
@@ -63,33 +40,33 @@ void get_height_weight_for_creature(CreatureEntity *creature_ptr)
  * @brief プレイヤーの年齢を決める。 / Computes character's age, height, and weight by henkma
  * @details 内部でget_height_weight()も呼び出している。
  */
-void get_ahw(PlayerType *player_ptr)
+void get_ahw(CreatureEntity &creature)
 {
-    player_ptr->age = player_ptr->race->b_age + randint1(player_ptr->race->m_age);
-    get_height_weight(player_ptr);
+    creature.set_age(creature.get_race_info()->b_age + randint1(creature.get_race_info()->m_age));
+    get_height_weight(creature);
 }
 
 /*!
  * @brief プレイヤーの初期所持金を決める。 / Get the player's starting money
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
-void get_money(PlayerType *player_ptr)
+void get_money(CreatureEntity &creature)
 {
-    int gold = (player_ptr->prestige * 6) + randint1(100) + 300;
-    if (PlayerClass(player_ptr).equals(PlayerClassType::TOURIST)) {
+    int gold = (creature.get_prestige() * 6) + randint1(100) + 300;
+    if (CreatureClass(creature).equals(PlayerClassType::TOURIST)) {
         gold += 2000;
     }
 
     for (int i = 0; i < A_MAX; i++) {
         // 新形式: 180+50*10=680, 180+20*10=380, 180
-        if (player_ptr->stat_max[i] >= 680) { // 旧18/50 -> 新68.0以上
+        if (creature.get_stat_max(i) >= 680) { // 旧18/50 -> 新68.0以上
             gold -= 300;
-        } else if (player_ptr->stat_max[i] >= 380) { // 旧18/20 -> 新38.0以上
+        } else if (creature.get_stat_max(i) >= 380) { // 旧18/20 -> 新38.0以上
             gold -= 200;
-        } else if (player_ptr->stat_max[i] > 180) { // 旧18超 -> 新18.0超
+        } else if (creature.get_stat_max(i) > 180) { // 旧18超 -> 新18.0超
             gold -= 150;
         } else {
-            gold -= (player_ptr->stat_max[i] / 10 - 8) * 10; // 新形式での計算
+            gold -= (creature.get_stat_max(i) / 10 - 8) * 10; // 新形式での計算
         }
     }
 
@@ -98,14 +75,14 @@ void get_money(PlayerType *player_ptr)
         gold = minimum_deposit;
     }
 
-    if (player_ptr->ppersonality == PERSONALITY_LAZY) {
+    if (creature.ppersonality == PERSONALITY_LAZY) {
         gold /= 2;
-    } else if (player_ptr->ppersonality == PERSONALITY_MUNCHKIN) {
+    } else if (creature.ppersonality == PERSONALITY_MUNCHKIN) {
         gold = 10000000;
     }
-    if (PlayerRace(player_ptr).equals(PlayerRaceType::ANDROID)) {
+    if (CreatureRace(&creature).equals(PlayerRaceType::ANDROID)) {
         gold /= 5;
     }
 
-    player_ptr->au = gold;
+    creature.set_au(gold);
 }

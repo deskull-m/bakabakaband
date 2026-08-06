@@ -5,7 +5,26 @@
 
 #include "util/png-displayer.h"
 
-#ifdef WINDOWS
+#if defined(WINDOWS) && defined(USE_GODOT)
+
+// Godot (GDExtension) ビルドではネイティブ Windows ウィンドウ (HWND) を持たず、
+// main-win.cpp (get_main_window_hwnd 等) もリンクから除外されるため、GDI+ による
+// 直接描画は提供できない。タイトル等の画像表示は Godot 側のシーンが担うので、
+// ここでは no-op スタブを提供してリンクエラーを回避する。
+bool register_png_image(const std::string &, PngVAlign, PngHAlign, int, int)
+{
+    return false;
+}
+
+void unregister_png_image(const std::string &)
+{
+}
+
+void redraw_png_images()
+{
+}
+
+#elif defined(WINDOWS)
 #include "main-win/main-win-utils.h"
 #include <gdiplus.h>
 #include <iostream>

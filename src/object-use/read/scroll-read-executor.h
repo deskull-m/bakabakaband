@@ -2,16 +2,20 @@
 
 #include "object-use/read/read-executor-base.h"
 
-class PlayerType;
+class CreatureEntity;
 class ItemEntity;
 class ScrollReadExecutor : public ReadExecutorBase {
 public:
-    ScrollReadExecutor(PlayerType *player_ptr, ItemEntity *o_ptr, bool known);
+    ScrollReadExecutor(CreatureEntity &creature, ItemEntity *o_ptr, bool known);
+    ScrollReadExecutor(const ScrollReadExecutor &) = default;
+    ScrollReadExecutor(ScrollReadExecutor &&) = default;
+    ScrollReadExecutor &operator=(const ScrollReadExecutor &) = delete;
+    ScrollReadExecutor &operator=(ScrollReadExecutor &&) = delete;
     bool is_identified() const override;
     bool read() override;
 
 private:
-    PlayerType *player_ptr;
+    CreatureEntity &creature;
     ItemEntity *o_ptr;
     bool known;
     bool ident = false;

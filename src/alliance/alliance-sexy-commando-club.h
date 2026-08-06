@@ -7,8 +7,8 @@ public:
     using Alliance::Alliance;
     AllianceSexyCommandoClub() = delete;
     EnumClassFlagGroup<alliance_flags> alliFlags; //!< 陣営特性フラグ
-    int calcImpressionPoint(PlayerType *creature_ptr) const override;
-    void panishment(PlayerType &player_ptr) override;
+    int calcImpressionPoint(const CreatureEntity &creature) const override;
+    void panishment(CreatureEntity &creature) override;
     bool isAnnihilated() override;
     virtual ~AllianceSexyCommandoClub() = default;
 };

@@ -6,107 +6,110 @@
 #include "core/stuff-handler.h"
 #include "core/window-redrawer.h"
 #include "game-option/disturbance-options.h"
+#include "main/sound-definitions-table.h"
+#include "main/sound-of-music.h"
 #include "monster/monster-status-setter.h"
 #include "player-base/player-class.h"
 #include "player-info/class-info.h"
 #include "player-info/race-info.h"
 #include "player/attack-defense-types.h"
-#include "player/player-status.h"
 #include "realm/realm-song-numbers.h"
 #include "spell-realm/spells-song.h"
 #include "status/base-status.h"
 #include "status/buff-setter.h"
 #include "status/element-resistance.h"
-#include "system/player-type-definition.h"
+#include "status/status-change-notice.h"
+#include "system/creature-entity.h"
+#include "system/creature-timed-effect-types.h"
 #include "system/redrawing-flags-updater.h"
-#include "timed-effect/timed-effects.h"
 #include "view/display-messages.h"
 
 /*!
  * @brief プレイヤーの全ての時限効果をリセットする。 / reset timed flags
  */
-void reset_tim_flags(PlayerType *player_ptr)
+void reset_tim_flags(CreatureEntity &creature)
 {
-    auto effects = player_ptr->effects();
-    effects->acceleration().reset();
-    player_ptr->lightspeed = 0;
-    effects->deceleration().reset();
-    effects->blindness().reset();
-    effects->paralysis().reset();
-    effects->confusion().reset();
-    effects->fear().reset();
-    effects->hallucination().reset();
-    effects->poison().reset();
-    effects->cut().reset();
-    effects->stun().reset();
-    effects->protection().reset();
+    creature.set_timed_effect(CreatureTimedEffect::ACCELERATION, 0);
+    creature.set_timed_effect(CreatureTimedEffect::DECELERATION, 0);
+    creature.set_timed_effect(CreatureTimedEffect::BLINDNESS, 0);
+    creature.set_timed_effect(CreatureTimedEffect::PARALYSIS, 0);
+    creature.set_timed_effect(CreatureTimedEffect::CONFUSION, 0);
+    creature.set_timed_effect(CreatureTimedEffect::FEAR, 0);
+    creature.set_timed_effect(CreatureTimedEffect::HALLUCINATION, 0);
+    creature.set_timed_effect(CreatureTimedEffect::POISON, 0);
+    creature.set_timed_effect(CreatureTimedEffect::CUT, 0);
+    creature.set_timed_effect(CreatureTimedEffect::STUN, 0);
+    creature.set_timed_effect(CreatureTimedEffect::PROTECTION, 0);
 
-    player_ptr->invuln = 0; /* Timed -- Invulnerable */
-    player_ptr->ult_res = 0;
-    player_ptr->hero = 0; /* Timed -- Heroism */
-    player_ptr->berserk = 0; /* Timed -- Super Heroism */
-    player_ptr->shield = 0; /* Timed -- Shield Spell */
-    player_ptr->blessed = 0; /* Timed -- Blessed */
-    player_ptr->tim_invis = 0; /* Timed -- Invisibility */
-    player_ptr->tim_infra = 0; /* Timed -- Infra Vision */
-    player_ptr->tim_regen = 0; /* Timed -- Regeneration */
-    player_ptr->tim_stealth = 0; /* Timed -- Stealth */
-    player_ptr->tim_esp = 0;
-    player_ptr->wraith_form = 0; /* Timed -- Wraith Form */
-    player_ptr->tim_levitation = 0;
-    player_ptr->tim_sh_touki = 0;
-    player_ptr->tim_sh_fire = 0;
-    player_ptr->tim_sh_holy = 0;
-    player_ptr->tim_eyeeye = 0;
-    player_ptr->magicdef = 0;
-    player_ptr->resist_magic = 0;
-    player_ptr->tsuyoshi = 0;
-    player_ptr->tim_pass_wall = 0;
-    player_ptr->tim_res_nether = 0;
-    player_ptr->tim_res_lite = 0;
-    player_ptr->tim_res_dark = 0;
-    player_ptr->tim_res_fear = 0;
-    player_ptr->tim_res_time = 0;
-    player_ptr->tim_mimic = 0;
-    player_ptr->mimic_form = MimicKindType::NONE;
-    player_ptr->tim_reflect = 0;
-    player_ptr->multishadow = 0;
-    player_ptr->dustrobe = 0;
-    player_ptr->tim_emission = 0;
-    player_ptr->tim_exorcism = 0;
-    player_ptr->tim_imm_dark = 0;
-    player_ptr->action = ACTION_NONE;
+    creature.set_timed_effect(CreatureTimedEffect::INVULNERABILITY, 0);
+    creature.set_timed_effect(CreatureTimedEffect::ULTIMATE_RESISTANCE, 0);
+    creature.set_timed_effect(CreatureTimedEffect::HERO, 0);
+    creature.set_timed_effect(CreatureTimedEffect::BERSERK, 0);
+    creature.set_timed_effect(CreatureTimedEffect::SHIELD, 0);
+    creature.set_timed_effect(CreatureTimedEffect::BLESSED, 0);
+    creature.set_timed_effect(CreatureTimedEffect::TIM_INVIS, 0);
+    creature.set_timed_effect(CreatureTimedEffect::TIM_INFRA, 0);
+    creature.set_timed_effect(CreatureTimedEffect::TIM_REGEN, 0);
+    creature.set_timed_effect(CreatureTimedEffect::TIM_STEALTH, 0);
+    creature.set_timed_effect(CreatureTimedEffect::TIM_ESP, 0);
+    creature.set_timed_effect(CreatureTimedEffect::WRAITH_FORM, 0);
+    creature.set_timed_effect(CreatureTimedEffect::TIM_LEVITATION, 0);
+    creature.set_timed_effect(CreatureTimedEffect::TIM_SH_TOUKI, 0);
+    creature.set_timed_effect(CreatureTimedEffect::TIM_SH_FIRE, 0);
+    creature.set_timed_effect(CreatureTimedEffect::TIM_SH_HOLY, 0);
+    creature.set_timed_effect(CreatureTimedEffect::TIM_EYEEYE, 0);
+    creature.set_timed_effect(CreatureTimedEffect::MAGICDEF, 0);
+    creature.set_timed_effect(CreatureTimedEffect::RESIST_MAGIC, 0);
+    creature.set_timed_effect(CreatureTimedEffect::TSUYOSHI, 0);
+    creature.set_timed_effect(CreatureTimedEffect::TIM_PASS_WALL, 0);
+    creature.set_timed_effect(CreatureTimedEffect::TIM_RES_NETHER, 0);
+    creature.set_timed_effect(CreatureTimedEffect::TIM_RES_LITE, 0);
+    creature.set_timed_effect(CreatureTimedEffect::TIM_RES_DARK, 0);
+    creature.set_timed_effect(CreatureTimedEffect::TIM_RES_FEAR, 0);
+    creature.set_timed_effect(CreatureTimedEffect::TIM_RES_TIME, 0);
+    creature.set_timed_effect(CreatureTimedEffect::TIM_MIMIC, 0);
+    creature.set_mimic_form(MimicKindType::NONE);
+    creature.set_timed_effect(CreatureTimedEffect::TIM_REFLECT, 0);
+    creature.set_timed_effect(CreatureTimedEffect::MULTISHADOW, 0);
+    creature.set_timed_effect(CreatureTimedEffect::DUSTROBE, 0);
+    creature.set_timed_effect(CreatureTimedEffect::TIM_EMISSION, 0);
+    creature.set_timed_effect(CreatureTimedEffect::TIM_EXORCISM, 0);
+    creature.set_timed_effect(CreatureTimedEffect::TIM_IMM_DARK, 0);
+    creature.set_timed_effect(CreatureTimedEffect::LIGHTSPEED, 0);
+    creature.set_timed_effect(CreatureTimedEffect::ELE_ATTACK, 0);
+    creature.set_timed_effect(CreatureTimedEffect::ELE_IMMUNE, 0);
+    creature.set_action(ACTION_NONE);
 
-    player_ptr->oppose_acid = 0; /* Timed -- oppose acid */
-    player_ptr->oppose_elec = 0; /* Timed -- oppose lightning */
-    player_ptr->oppose_fire = 0; /* Timed -- oppose heat */
-    player_ptr->oppose_cold = 0; /* Timed -- oppose cold */
-    player_ptr->oppose_pois = 0; /* Timed -- oppose poison */
+    creature.set_timed_effect(CreatureTimedEffect::OPPOSE_ACID, 0);
+    creature.set_timed_effect(CreatureTimedEffect::OPPOSE_ELEC, 0);
+    creature.set_timed_effect(CreatureTimedEffect::OPPOSE_FIRE, 0);
+    creature.set_timed_effect(CreatureTimedEffect::OPPOSE_COLD, 0);
+    creature.set_timed_effect(CreatureTimedEffect::OPPOSE_POIS, 0);
 
-    player_ptr->word_recall = 0;
-    player_ptr->alter_reality = 0;
-    player_ptr->sutemi = false;
-    player_ptr->counter = false;
-    player_ptr->ele_attack = 0;
-    player_ptr->ele_immune = 0;
-    player_ptr->special_attack = 0L;
-    player_ptr->special_defense = 0L;
+    creature.set_timed_effect(CreatureTimedEffect::WORD_RECALL, 0);
+    creature.set_timed_effect(CreatureTimedEffect::ALTER_REALITY, 0);
 
-    while (static_cast<CreatureEntity &>(*player_ptr).get_energy_need() < 0) {
-        static_cast<CreatureEntity &>(*player_ptr).set_energy_need(static_cast<CreatureEntity &>(*player_ptr).get_energy_need() + ENERGY_NEED());
+    // 非 CreatureTimedEffect のリセット
+    creature.set_sutemi(false);
+    creature.set_counter(false);
+    creature.set_special_attack_flags(0L);
+    creature.set_special_defense_flags(0L);
+
+    while (creature.get_energy_need() < 0) {
+        creature.set_energy_need(creature.get_energy_need() + ENERGY_NEED());
     }
 
-    player_ptr->timewalk = false;
+    creature.set_timewalking(false);
 
-    if (player_ptr->riding) {
-        (void)set_monster_fast(player_ptr, player_ptr->riding, 0);
-        (void)set_monster_slow(player_ptr, player_ptr->riding, 0);
-        (void)set_monster_invulner(player_ptr, player_ptr->riding, 0, false);
+    if (creature.get_riding()) {
+        (void)set_monster_fast(*creature.get_floor(), creature.get_riding(), 0);
+        (void)set_monster_slow(*creature.get_floor(), creature.get_riding(), 0);
+        (void)set_monster_invulner(*creature.get_floor(), creature.get_riding(), 0, false);
     }
 
-    if (PlayerClass(player_ptr).equals(PlayerClassType::BARD)) {
-        set_singing_song_effect(player_ptr, MUSIC_NONE);
-        set_singing_song_id(player_ptr, 0);
+    if (CreatureClass(creature).equals(PlayerClassType::BARD)) {
+        set_singing_song_effect(creature, MUSIC_NONE);
+        set_singing_song_id(creature, 0);
     }
 }
 
@@ -116,55 +119,57 @@ void reset_tim_flags(PlayerType *player_ptr)
  * @param do_dec 現在の継続時間より長い値のみ上書きする
  * @return ステータスに影響を及ぼす変化があった場合TRUEを返す。
  */
-bool set_acceleration(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
+bool set_acceleration(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
 {
     bool notice = false;
     v = (v > 10000) ? 10000 : (v < 0) ? 0
                                       : v;
 
-    if (player_ptr->is_dead()) {
+    if (creature.is_dead()) {
         return false;
     }
 
-    auto &acceleration = player_ptr->effects()->acceleration();
+    const auto acceleration = creature.get_timed_effect(CreatureTimedEffect::ACCELERATION);
+    const auto is_fast = creature.is_fast();
     if (v) {
-        if (acceleration.is_fast() && !do_dec) {
-            if (acceleration.current() > v) {
+        if ((acceleration > 0) && !do_dec) {
+            if (acceleration > v) {
                 return false;
             }
-        } else if (!is_fast(player_ptr) && !player_ptr->lightspeed) {
-            msg_print(_("素早く動けるようになった！", "You feel yourself moving much faster!"));
+        } else if (!is_fast && !creature.get_timed_effect(CreatureTimedEffect::LIGHTSPEED)) {
+            creature.notify_self(_("素早く動けるようになった！", "You feel yourself moving much faster!"));
             notice = true;
-            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::PATIENCE, -1);
-            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::DILIGENCE, 1);
+            chg_virtue(creature, Virtue::PATIENCE, -1);
+            chg_virtue(creature, Virtue::DILIGENCE, 1);
         }
     } else {
-        if (acceleration.is_fast() && !player_ptr->lightspeed) {
-            auto is_singing = music_singing(player_ptr, MUSIC_SPEED);
-            is_singing |= music_singing(player_ptr, MUSIC_SHERO);
+        if ((acceleration > 0) && !creature.get_timed_effect(CreatureTimedEffect::LIGHTSPEED)) {
+            auto is_singing = music_singing(creature, MUSIC_SPEED);
+            is_singing |= music_singing(creature, MUSIC_SHERO);
             if (!is_singing) {
-                msg_print(_("動きの素早さがなくなったようだ。", "You feel yourself slow down."));
+                creature.notify_self(_("動きの素早さがなくなったようだ。", "You feel yourself slow down."));
+                sound(SoundKind::BUFF_EXPIRE);
                 notice = true;
             }
         }
     }
 
-    acceleration.set(v);
+    creature.set_timed_effect(CreatureTimedEffect::ACCELERATION, v);
     if (!notice) {
         return false;
     }
 
     if (disturb_state || Travel::get_instance().is_ongoing()) {
-        disturb(player_ptr, false, true);
+        disturb(creature, false, true);
     }
     RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
-    handle_stuff(player_ptr);
+    handle_stuff(creature);
     return true;
 }
 
-bool mod_acceleration(PlayerType *player_ptr, const TIME_EFFECT v, const bool do_dec)
+bool mod_acceleration(CreatureEntity &creature, const TIME_EFFECT v, const bool do_dec)
 {
-    return set_acceleration(player_ptr, player_ptr->effects()->acceleration().current() + v, do_dec);
+    return set_acceleration(creature, creature.get_timed_effect(CreatureTimedEffect::ACCELERATION) + v, do_dec);
 }
 
 /*!
@@ -173,46 +178,35 @@ bool mod_acceleration(PlayerType *player_ptr, const TIME_EFFECT v, const bool do
  * @param do_dec 現在の継続時間より長い値のみ上書きする
  * @return ステータスに影響を及ぼす変化があった場合TRUEを返す。
  */
-bool set_shield(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
+bool set_shield(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
 {
     bool notice = false;
     v = (v > 10000) ? 10000 : (v < 0) ? 0
                                       : v;
 
-    if (player_ptr->is_dead()) {
+    if (creature.is_dead()) {
         return false;
     }
 
     if (v) {
-        if (player_ptr->shield && !do_dec) {
-            if (player_ptr->shield > v) {
+        if (creature.get_timed_effect(CreatureTimedEffect::SHIELD) && !do_dec) {
+            if (creature.get_timed_effect(CreatureTimedEffect::SHIELD) > v) {
                 return false;
             }
-        } else if (!player_ptr->shield) {
-            msg_print(_("肌が石になった。", "Your skin turns to stone."));
+        } else if (!creature.get_timed_effect(CreatureTimedEffect::SHIELD)) {
+            creature.notify_self(_("肌が石になった。", "Your skin turns to stone."));
             notice = true;
         }
     } else {
-        if (player_ptr->shield) {
-            msg_print(_("肌が元に戻った。", "Your skin returns to normal."));
+        if (creature.get_timed_effect(CreatureTimedEffect::SHIELD)) {
+            creature.notify_self(_("肌が元に戻った。", "Your skin returns to normal."));
+            sound(SoundKind::BUFF_EXPIRE);
             notice = true;
         }
     }
 
-    player_ptr->shield = v;
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
-    if (!notice) {
-        return false;
-    }
-
-    if (disturb_state || Travel::get_instance().is_ongoing()) {
-        disturb(player_ptr, false, true);
-    }
-
-    rfu.set_flag(StatusRecalculatingFlag::BONUS);
-    handle_stuff(player_ptr);
-    return true;
+    creature.set_timed_effect(CreatureTimedEffect::SHIELD, v);
+    return notice_bonus_status_change(creature, notice);
 }
 
 /*!
@@ -221,46 +215,35 @@ bool set_shield(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
  * @param do_dec 現在の継続時間より長い値のみ上書きする
  * @return ステータスに影響を及ぼす変化があった場合TRUEを返す。
  */
-bool set_magicdef(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
+bool set_magicdef(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
 {
     bool notice = false;
     v = (v > 10000) ? 10000 : (v < 0) ? 0
                                       : v;
 
-    if (player_ptr->is_dead()) {
+    if (creature.is_dead()) {
         return false;
     }
 
     if (v) {
-        if (player_ptr->magicdef && !do_dec) {
-            if (player_ptr->magicdef > v) {
+        if (creature.get_timed_effect(CreatureTimedEffect::MAGICDEF) && !do_dec) {
+            if (creature.get_timed_effect(CreatureTimedEffect::MAGICDEF) > v) {
                 return false;
             }
-        } else if (!player_ptr->magicdef) {
-            msg_print(_("魔法の防御力が増したような気がする。", "You feel more resistant to magic."));
+        } else if (!creature.get_timed_effect(CreatureTimedEffect::MAGICDEF)) {
+            creature.notify_self(_("魔法の防御力が増したような気がする。", "You feel more resistant to magic."));
             notice = true;
         }
     } else {
-        if (player_ptr->magicdef) {
-            msg_print(_("魔法の防御力が元に戻った。", "You feel less resistant to magic."));
+        if (creature.get_timed_effect(CreatureTimedEffect::MAGICDEF)) {
+            creature.notify_self(_("魔法の防御力が元に戻った。", "You feel less resistant to magic."));
+            sound(SoundKind::BUFF_EXPIRE);
             notice = true;
         }
     }
 
-    player_ptr->magicdef = v;
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
-    if (!notice) {
-        return false;
-    }
-
-    if (disturb_state || Travel::get_instance().is_ongoing()) {
-        disturb(player_ptr, false, true);
-    }
-
-    rfu.set_flag(StatusRecalculatingFlag::BONUS);
-    handle_stuff(player_ptr);
-    return true;
+    creature.set_timed_effect(CreatureTimedEffect::MAGICDEF, v);
+    return notice_bonus_status_change(creature, notice);
 }
 
 /*!
@@ -269,46 +252,35 @@ bool set_magicdef(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
  * @param do_dec 現在の継続時間より長い値のみ上書きする
  * @return ステータスに影響を及ぼす変化があった場合TRUEを返す。
  */
-bool set_blessed(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
+bool set_blessed(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
 {
     bool notice = false;
     v = (v > 10000) ? 10000 : (v < 0) ? 0
                                       : v;
 
-    if (player_ptr->is_dead()) {
+    if (creature.is_dead()) {
         return false;
     }
 
     if (v) {
-        if (player_ptr->blessed && !do_dec) {
-            if (player_ptr->blessed > v) {
+        if (creature.get_timed_effect(CreatureTimedEffect::BLESSED) && !do_dec) {
+            if (creature.get_timed_effect(CreatureTimedEffect::BLESSED) > v) {
                 return false;
             }
-        } else if (!is_blessed(player_ptr)) {
-            msg_print(_("高潔な気分になった！", "You feel righteous!"));
+        } else if (!creature.is_blessed()) {
+            creature.notify_self(_("高潔な気分になった！", "You feel righteous!"));
             notice = true;
         }
     } else {
-        if (player_ptr->blessed && !music_singing(player_ptr, MUSIC_BLESS)) {
-            msg_print(_("高潔な気分が消え失せた。", "The prayer has expired."));
+        if (creature.get_timed_effect(CreatureTimedEffect::BLESSED) && !music_singing(creature, MUSIC_BLESS)) {
+            creature.notify_self(_("高潔な気分が消え失せた。", "The prayer has expired."));
+            sound(SoundKind::BUFF_EXPIRE);
             notice = true;
         }
     }
 
-    player_ptr->blessed = v;
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
-    if (!notice) {
-        return false;
-    }
-
-    if (disturb_state || Travel::get_instance().is_ongoing()) {
-        disturb(player_ptr, false, true);
-    }
-
-    rfu.set_flag(StatusRecalculatingFlag::BONUS);
-    handle_stuff(player_ptr);
-    return true;
+    creature.set_timed_effect(CreatureTimedEffect::BLESSED, v);
+    return notice_bonus_status_change(creature, notice);
 }
 
 /*!
@@ -317,33 +289,34 @@ bool set_blessed(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
  * @param do_dec 現在の継続時間より長い値のみ上書きする
  * @return ステータスに影響を及ぼす変化があった場合TRUEを返す。
  */
-bool set_hero(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
+bool set_hero(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
 {
     bool notice = false;
     v = (v > 10000) ? 10000 : (v < 0) ? 0
                                       : v;
 
-    if (player_ptr->is_dead()) {
+    if (creature.is_dead()) {
         return false;
     }
 
     if (v) {
-        if (player_ptr->hero && !do_dec) {
-            if (player_ptr->hero > v) {
+        if (creature.get_timed_effect(CreatureTimedEffect::HERO) && !do_dec) {
+            if (creature.get_timed_effect(CreatureTimedEffect::HERO) > v) {
                 return false;
             }
-        } else if (!is_hero(player_ptr)) {
-            msg_print(_("ヒーローになった気がする！", "You feel like a hero!"));
+        } else if (!creature.is_hero()) {
+            creature.notify_self(_("ヒーローになった気がする！", "You feel like a hero!"));
             notice = true;
         }
     } else {
-        if (player_ptr->hero && !music_singing(player_ptr, MUSIC_HERO) && !music_singing(player_ptr, MUSIC_SHERO)) {
-            msg_print(_("ヒーローの気分が消え失せた。", "The heroism wears off."));
+        if (creature.get_timed_effect(CreatureTimedEffect::HERO) && !music_singing(creature, MUSIC_HERO) && !music_singing(creature, MUSIC_SHERO)) {
+            creature.notify_self(_("ヒーローの気分が消え失せた。", "The heroism wears off."));
+            sound(SoundKind::BUFF_EXPIRE);
             notice = true;
         }
     }
 
-    player_ptr->hero = v;
+    creature.set_timed_effect(CreatureTimedEffect::HERO, v);
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
     if (!notice) {
@@ -351,7 +324,7 @@ bool set_hero(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
     }
 
     if (disturb_state || Travel::get_instance().is_ongoing()) {
-        disturb(player_ptr, false, true);
+        disturb(creature, false, true);
     }
 
     static constexpr auto flags = {
@@ -359,7 +332,7 @@ bool set_hero(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
         StatusRecalculatingFlag::HP,
     };
     RedrawingFlagsUpdater::get_instance().set_flags(flags);
-    handle_stuff(player_ptr);
+    handle_stuff(creature);
     return true;
 }
 
@@ -370,47 +343,48 @@ bool set_hero(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
  * @param do_dec 現在の継続時間より長い値のみ上書きする
  * @return ステータスに影響を及ぼす変化があった場合TRUEを返す。
  */
-bool set_mimic(PlayerType *player_ptr, TIME_EFFECT v, MimicKindType mimic_race_idx, bool do_dec)
+bool set_mimic(CreatureEntity &creature, TIME_EFFECT v, MimicKindType mimic_race_idx, bool do_dec)
 {
     bool notice = false;
     v = (v > 10000) ? 10000 : (v < 0) ? 0
                                       : v;
 
-    if (player_ptr->is_dead()) {
+    if (creature.is_dead()) {
         return false;
     }
 
     if (v) {
-        if (player_ptr->tim_mimic && (player_ptr->mimic_form == mimic_race_idx) && !do_dec) {
-            if (player_ptr->tim_mimic > v) {
+        if (creature.get_timed_effect(CreatureTimedEffect::TIM_MIMIC) && (creature.get_mimic_form() == mimic_race_idx) && !do_dec) {
+            if (creature.get_timed_effect(CreatureTimedEffect::TIM_MIMIC) > v) {
                 return false;
             }
-        } else if ((!player_ptr->tim_mimic) || (player_ptr->mimic_form != mimic_race_idx)) {
-            msg_print(_("自分の体が変わってゆくのを感じた。", "You feel that your body changes."));
-            player_ptr->mimic_form = mimic_race_idx;
+        } else if ((!creature.get_timed_effect(CreatureTimedEffect::TIM_MIMIC)) || (creature.get_mimic_form() != mimic_race_idx)) {
+            creature.notify_self(_("自分の体が変わってゆくのを感じた。", "You feel that your body changes."));
+            creature.set_mimic_form(mimic_race_idx);
             notice = true;
         }
     }
 
     else {
-        if (player_ptr->tim_mimic) {
-            msg_print(_("変身が解けた。", "You are no longer transformed."));
-            if (player_ptr->mimic_form == MimicKindType::DEMON) {
-                set_oppose_fire(player_ptr, 0, true);
+        if (creature.get_timed_effect(CreatureTimedEffect::TIM_MIMIC)) {
+            creature.notify_self(_("変身が解けた。", "You are no longer transformed."));
+            sound(SoundKind::BUFF_EXPIRE);
+            if (creature.get_mimic_form() == MimicKindType::DEMON) {
+                set_oppose_fire(creature, 0, true);
             }
-            player_ptr->mimic_form = MimicKindType::NONE;
+            creature.set_mimic_form(MimicKindType::NONE);
             notice = true;
             mimic_race_idx = MimicKindType::NONE;
         }
     }
 
-    player_ptr->tim_mimic = v;
+    creature.set_timed_effect(CreatureTimedEffect::TIM_MIMIC, v);
     if (!notice) {
         return false;
     }
 
     if (disturb_state || Travel::get_instance().is_ongoing()) {
-        disturb(player_ptr, false, true);
+        disturb(creature, false, true);
     }
 
     auto &rfu = RedrawingFlagsUpdater::get_instance();
@@ -424,7 +398,7 @@ bool set_mimic(PlayerType *player_ptr, TIME_EFFECT v, MimicKindType mimic_race_i
         StatusRecalculatingFlag::HP,
     };
     rfu.set_flags(flags_srf);
-    handle_stuff(player_ptr);
+    handle_stuff(creature);
     return true;
 }
 
@@ -434,38 +408,39 @@ bool set_mimic(PlayerType *player_ptr, TIME_EFFECT v, MimicKindType mimic_race_i
  * @param do_dec FALSEの場合現在の継続時間より長い値のみ上書きする
  * @return ステータスに影響を及ぼす変化があった場合TRUEを返す。
  */
-bool set_berserk(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
+bool set_berserk(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
 {
     bool notice = false;
     v = (v > 10000) ? 10000 : (v < 0) ? 0
                                       : v;
 
-    if (player_ptr->is_dead()) {
+    if (creature.is_dead()) {
         return false;
     }
 
-    if (PlayerClass(player_ptr).equals(PlayerClassType::BERSERKER)) {
+    if (CreatureClass(creature).equals(PlayerClassType::BERSERKER)) {
         v = 1;
         return false;
     }
 
     if (v) {
-        if (player_ptr->berserk && !do_dec) {
-            if (player_ptr->berserk > v) {
+        if (creature.get_timed_effect(CreatureTimedEffect::BERSERK) && !do_dec) {
+            if (creature.get_timed_effect(CreatureTimedEffect::BERSERK) > v) {
                 return false;
             }
-        } else if (!player_ptr->berserk) {
-            msg_print(_("殺戮マシーンになった気がする！", "You feel like a killing machine!"));
+        } else if (!creature.get_timed_effect(CreatureTimedEffect::BERSERK)) {
+            creature.notify_self(_("殺戮マシーンになった気がする！", "You feel like a killing machine!"));
             notice = true;
         }
     } else {
-        if (player_ptr->berserk) {
-            msg_print(_("野蛮な気持ちが消え失せた。", "You feel less berserk."));
+        if (creature.get_timed_effect(CreatureTimedEffect::BERSERK)) {
+            sound(SoundKind::BUFF_EXPIRE);
+            creature.notify_self(_("野蛮な気持ちが消え失せた。", "You feel less berserk."));
             notice = true;
         }
     }
 
-    player_ptr->berserk = v;
+    creature.set_timed_effect(CreatureTimedEffect::BERSERK, v);
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
     if (!notice) {
@@ -473,7 +448,7 @@ bool set_berserk(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
     }
 
     if (disturb_state || Travel::get_instance().is_ongoing()) {
-        disturb(player_ptr, false, true);
+        disturb(creature, false, true);
     }
 
     static constexpr auto flags = {
@@ -481,7 +456,7 @@ bool set_berserk(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
         StatusRecalculatingFlag::HP,
     };
     RedrawingFlagsUpdater::get_instance().set_flags(flags);
-    handle_stuff(player_ptr);
+    handle_stuff(creature);
     return true;
 }
 
@@ -491,13 +466,13 @@ bool set_berserk(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
  * @param do_dec 現在の継続時間より長い値のみ上書きする
  * @return ステータスに影響を及ぼす変化があった場合TRUEを返す。
  */
-bool set_wraith_form(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
+bool set_wraith_form(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
 {
     bool notice = false;
     v = (v > 10000) ? 10000 : (v < 0) ? 0
                                       : v;
 
-    if (player_ptr->is_dead()) {
+    if (creature.is_dead()) {
         return false;
     }
 
@@ -507,24 +482,25 @@ bool set_wraith_form(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
         SubWindowRedrawingFlag::DUNGEON,
     };
     if (v) {
-        if (player_ptr->wraith_form && !do_dec) {
-            if (player_ptr->wraith_form > v) {
+        if (creature.get_timed_effect(CreatureTimedEffect::WRAITH_FORM) && !do_dec) {
+            if (creature.get_timed_effect(CreatureTimedEffect::WRAITH_FORM) > v) {
                 return false;
             }
-        } else if (!player_ptr->wraith_form) {
-            msg_print(_("物質界を離れて幽鬼のような存在になった！", "You leave the physical world and turn into a wraith-being!"));
+        } else if (!creature.get_timed_effect(CreatureTimedEffect::WRAITH_FORM)) {
+            creature.notify_self(_("物質界を離れて幽鬼のような存在になった！", "You leave the physical world and turn into a wraith-being!"));
             notice = true;
-            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::UNLIFE, 3);
-            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::HONOUR, -2);
-            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::SACRIFICE, -2);
-            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::VALOUR, -5);
+            chg_virtue(creature, Virtue::UNLIFE, 3);
+            chg_virtue(creature, Virtue::HONOUR, -2);
+            chg_virtue(creature, Virtue::SACRIFICE, -2);
+            chg_virtue(creature, Virtue::VALOUR, -5);
             rfu.set_flag(MainWindowRedrawingFlag::MAP);
             rfu.set_flag(StatusRecalculatingFlag::MONSTER_STATUSES);
             rfu.set_flags(flags_swrf);
         }
     } else {
-        if (player_ptr->wraith_form) {
-            msg_print(_("不透明になった感じがする。", "You feel opaque."));
+        if (creature.get_timed_effect(CreatureTimedEffect::WRAITH_FORM)) {
+            creature.notify_self(_("不透明になった感じがする。", "You feel opaque."));
+            sound(SoundKind::BUFF_EXPIRE);
             notice = true;
             rfu.set_flag(MainWindowRedrawingFlag::MAP);
             rfu.set_flag(StatusRecalculatingFlag::MONSTER_STATUSES);
@@ -532,18 +508,18 @@ bool set_wraith_form(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
         }
     }
 
-    player_ptr->wraith_form = v;
+    creature.set_timed_effect(CreatureTimedEffect::WRAITH_FORM, v);
     rfu.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
     if (!notice) {
         return false;
     }
 
     if (disturb_state || Travel::get_instance().is_ongoing()) {
-        disturb(player_ptr, false, true);
+        disturb(creature, false, true);
     }
 
     rfu.set_flag(StatusRecalculatingFlag::BONUS);
-    handle_stuff(player_ptr);
+    handle_stuff(creature);
     return true;
 }
 
@@ -553,39 +529,40 @@ bool set_wraith_form(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
  * @param do_dec 現在の継続時間より長い値のみ上書きする
  * @return ステータスに影響を及ぼす変化があった場合TRUEを返す。
  */
-bool set_tsuyoshi(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
+bool set_tsuyoshi(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
 {
     bool notice = false;
     v = (v > 10000) ? 10000 : (v < 0) ? 0
                                       : v;
 
-    if (player_ptr->is_dead()) {
+    if (creature.is_dead()) {
         return false;
     }
 
     if (v) {
-        if (player_ptr->tsuyoshi && !do_dec) {
-            if (player_ptr->tsuyoshi > v) {
+        if (creature.get_timed_effect(CreatureTimedEffect::TSUYOSHI) && !do_dec) {
+            if (creature.get_timed_effect(CreatureTimedEffect::TSUYOSHI) > v) {
                 return false;
             }
-        } else if (!player_ptr->tsuyoshi) {
-            msg_print(_("「オクレ兄さん！」", "Brother OKURE!"));
+        } else if (!creature.get_timed_effect(CreatureTimedEffect::TSUYOSHI)) {
+            creature.notify_self(_("「オクレ兄さん！」", "Brother OKURE!"));
             notice = true;
-            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::VITALITY, 2);
+            chg_virtue(creature, Virtue::VITALITY, 2);
         }
     } else {
-        if (player_ptr->tsuyoshi) {
-            msg_print(_("肉体が急速にしぼんでいった。", "Your body has quickly shriveled."));
+        if (creature.get_timed_effect(CreatureTimedEffect::TSUYOSHI)) {
+            sound(SoundKind::BUFF_EXPIRE);
+            creature.notify_self(_("肉体が急速にしぼんでいった。", "Your body has quickly shriveled."));
 
-            (void)dec_stat(player_ptr, A_CON, 20, true);
-            (void)dec_stat(player_ptr, A_STR, 20, true);
+            (void)dec_stat(creature, A_CON, 20, true);
+            (void)dec_stat(creature, A_STR, 20, true);
 
             notice = true;
-            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::VITALITY, -3);
+            chg_virtue(creature, Virtue::VITALITY, -3);
         }
     }
 
-    player_ptr->tsuyoshi = v;
+    creature.set_timed_effect(CreatureTimedEffect::TSUYOSHI, v);
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
     if (!notice) {
@@ -593,7 +570,7 @@ bool set_tsuyoshi(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
     }
 
     if (disturb_state || Travel::get_instance().is_ongoing()) {
-        disturb(player_ptr, false, true);
+        disturb(creature, false, true);
     }
 
     static constexpr auto flags = {
@@ -601,6 +578,6 @@ bool set_tsuyoshi(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
         StatusRecalculatingFlag::HP,
     };
     rfu.set_flags(flags);
-    handle_stuff(player_ptr);
+    handle_stuff(creature);
     return true;
 }

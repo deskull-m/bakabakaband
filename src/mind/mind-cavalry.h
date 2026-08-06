@@ -1,4 +1,4 @@
 #pragma once
 
-class PlayerType;
-bool rodeo(PlayerType *player_ptr);
+class CreatureEntity;
+bool rodeo(CreatureEntity &creature);

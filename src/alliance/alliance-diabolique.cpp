@@ -7,22 +7,21 @@
 #include "monster-floor/one-monster-placer.h"
 #include "monster-floor/place-monster-types.h"
 #include "spell/summon-types.h"
+#include "system/creature-entity.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/player-type-definition.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
 
-int AllianceDiabolique::calcImpressionPoint(PlayerType *creature_ptr) const
+int AllianceDiabolique::calcImpressionPoint(const CreatureEntity &creature) const
 {
     int impression = 0;
     impression += calcIronmanHostilityPenalty();
 
     // プレイヤーレベルによる基本印象値
-    impression += creature_ptr->level * 10;
-
+    impression += creature.get_level() * 10;
     // デアボリカのロードたちを殺害した場合の大幅減点（レベル×10）
     const auto &monrace_list = MonraceList::get_instance();
     if (monrace_list.get_monrace(MonraceId::DIABOLIQUE_GOLDO).r_pkills > 0) {
@@ -52,27 +51,12 @@ int AllianceDiabolique::calcImpressionPoint(PlayerType *creature_ptr) const
 
 bool AllianceDiabolique::isAnnihilated()
 {
-    if (MonraceList::get_instance().get_monrace(MonraceId::DIABOLIQUE_GOLDO).mob_num != 0) {
-        return false;
-    }
-    if (MonraceList::get_instance().get_monrace(MonraceId::DIABOLIQUE_KAENOH).mob_num != 0) {
-        return false;
-    }
-    if (MonraceList::get_instance().get_monrace(MonraceId::DIABOLIQUE_AZURITE).mob_num != 0) {
-        return false;
-    }
-    if (MonraceList::get_instance().get_monrace(MonraceId::DIABOLIQUE_FATRAS).mob_num != 0) {
-        return false;
-    }
-    if (MonraceList::get_instance().get_monrace(MonraceId::DIABOLIQUE_PENGZU).mob_num != 0) {
-        return false;
-    }
-    return true;
+    return all_monraces_extinct({ MonraceId::DIABOLIQUE_GOLDO, MonraceId::DIABOLIQUE_KAENOH, MonraceId::DIABOLIQUE_AZURITE, MonraceId::DIABOLIQUE_FATRAS, MonraceId::DIABOLIQUE_PENGZU });
 }
 
-void AllianceDiabolique::panishment(PlayerType &player_ptr)
+void AllianceDiabolique::panishment(CreatureEntity &creature)
 {
-    auto impression = calcImpressionPoint(&player_ptr);
+    auto impression = calcImpressionPoint(creature);
     if (isAnnihilated() || impression > -40) {
         return;
     }
@@ -81,8 +65,8 @@ void AllianceDiabolique::panishment(PlayerType &player_ptr)
     if (one_in_(25)) {
 
         /*
-        auto m_pos = player_ptr.get_position();
-        m_pos = scatter(&player_ptr, m_pos, 10, PROJECT_NONE);
+        auto m_pos = creature.get_position();
+        m_pos = scatter(*creature.get_floor(), m_pos, 10, PROJECT_NONE);
         MonraceId avenger_id;
         if (impression < -400) {
             // 極度に嫌われている場合：強力なデーモン
@@ -101,15 +85,15 @@ void AllianceDiabolique::panishment(PlayerType &player_ptr)
                 "\"In the name of Diabolique!\" An Imp appears to attack you!"));
         }
 
-        const auto m_idx = place_monster_one(&player_ptr, m_pos.y, m_pos.x, avenger_id, PM_ALLOW_GROUP);
+        const auto m_idx = place_monster_one(creature, m_pos.y, m_pos.x, avenger_id, PM_ALLOW_GROUP);
         if (m_idx) {
             msg_print(_("デアボリカの復讐者があなたを狙っている！", "Diabolique's avenger is targeting you!"));
-            disturb(&player_ptr, true, true);
+            disturb(creature, true, true);
 
             // 復讐者の仲間を呼ぶ（低確率）
             for (int k = 0; k < 2; k++) {
-                summon_specific(&player_ptr, m_pos.y, m_pos.x,
-                    std::max(player_ptr.current_floor_ptr->monster_level, 3),
+                summon_specific(&creature, m_pos.y, m_pos.x,
+                    std::max(creature.get_floor()->monster_level, 3),
                     SUMMON_DEMON, PM_ALLOW_GROUP, m_idx);
             }
         }

@@ -1,22 +1,23 @@
 #include "racial/racial-draconian.h"
 #include "effect/attribute-types.h"
 #include "mind/mind-elementalist.h"
+#include "player-info/race-info.h"
 #include "player/player-status.h"
 #include "spell-kind/spells-launcher.h"
-#include "system/player-type-definition.h"
+#include "system/creature-entity.h"
 #include "target/target-getter.h"
 #include "view/display-messages.h"
 #include <string>
 #include <tl/optional.hpp>
 #include <utility>
 
-static tl::optional<std::pair<AttributeType, std::string>> decide_breath_kind(PlayerType *player_ptr)
+static tl::optional<std::pair<AttributeType, std::string>> decide_breath_kind(CreatureEntity &creature)
 {
-    if (randint1(100) >= player_ptr->level) {
+    if (randint1(100) >= creature.get_level()) {
         return tl::nullopt;
     }
 
-    switch (player_ptr->pclass) {
+    switch (creature.pclass) {
     case PlayerClassType::WARRIOR:
     case PlayerClassType::BERSERKER:
     case PlayerClassType::RANGER:
@@ -83,8 +84,8 @@ static tl::optional<std::pair<AttributeType, std::string>> decide_breath_kind(Pl
 
         return std::pair(AttributeType::SOUND, _("轟音", "sound"));
     case PlayerClassType::ELEMENTALIST: {
-        const auto type = get_element_type(player_ptr->element_realm, 0);
-        const std::string name(get_element_name(player_ptr->element_realm, 0));
+        const auto type = get_element_type(creature.get_element_realm(), 0);
+        const std::string name(get_element_name(creature.get_element_realm(), 0));
         return std::pair(type, name);
     }
     default:
@@ -92,23 +93,23 @@ static tl::optional<std::pair<AttributeType, std::string>> decide_breath_kind(Pl
     }
 }
 
-bool draconian_breath(PlayerType *player_ptr)
+bool draconian_breath(CreatureEntity &creature)
 {
     auto breath_type = one_in_(3) ? AttributeType::COLD : AttributeType::FIRE;
     std::string breath_type_description((breath_type == AttributeType::COLD) ? _("冷気", "cold") : _("炎", "fire"));
-    const auto dir = get_aim_dir(player_ptr);
+    const auto dir = get_aim_dir(creature);
     if (!dir) {
         return false;
     }
 
-    const auto special_breath = decide_breath_kind(player_ptr);
+    const auto special_breath = decide_breath_kind(creature);
     if (special_breath) {
         breath_type = special_breath->first;
         breath_type_description = special_breath->second;
     }
 
-    stop_mouth(player_ptr);
-    msg_format(_("あなたは%sのブレスを吐いた。", "You breathe %s."), breath_type_description.data());
-    fire_breath(player_ptr, breath_type, dir, player_ptr->level * 2, (player_ptr->level / 15) + 1);
+    stop_mouth(creature);
+    msg_format(_("あなたは%sのブレスを吶いた。", "You breathe %s."), breath_type_description.data());
+    fire_breath(creature, breath_type, dir, creature.get_level() * 2, (creature.get_level() / 15) + 1);
     return true;
 }

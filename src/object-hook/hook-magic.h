@@ -1,7 +1,7 @@
 #pragma once
 
 class ItemEntity;
-class PlayerType;
+class CreatureEntity;
 bool object_is_activatable(const ItemEntity *o_ptr);
-bool item_tester_hook_use(PlayerType *player_ptr, const ItemEntity *o_ptr);
-bool item_tester_learn_spell(PlayerType *player_ptr, const ItemEntity *o_ptr);
+bool item_tester_hook_use(CreatureEntity &creature, const ItemEntity *o_ptr);
+bool item_tester_learn_spell(CreatureEntity &creature, const ItemEntity *o_ptr);

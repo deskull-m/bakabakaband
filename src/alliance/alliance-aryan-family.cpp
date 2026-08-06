@@ -1,21 +1,21 @@
 #include "alliance/alliance-aryan-family.h"
 #include "alliance/alliance.h"
+#include "system/creature-entity.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/player-type-definition.h"
 
-int AllianceAryanFamily::calcImpressionPoint(PlayerType *creature_ptr) const
+int AllianceAryanFamily::calcImpressionPoint(const CreatureEntity &creature) const
 {
     int impression = 0;
-    impression += Alliance::calcPlayerPower(*creature_ptr, 14, 22);
+    impression += Alliance::calcPlayerPower(creature, 14, 22);
     impression += calcIronmanHostilityPenalty();
 
     // アーリアン・ファミリーのアライアンス所属モンスター撃破による印象値減少
     const std::string aryan_family_tag = get_alliance_type_tag(AllianceType::ARYAN_FAMILY);
     const std::string alliance_kill_key = "KILL/ALLIANCE/" + aryan_family_tag;
-    if (creature_ptr->incident_tree.count(alliance_kill_key)) {
-        impression -= creature_ptr->incident_tree.at(alliance_kill_key) * 15; // 1体につき-15
+    if (creature.incident_tree.count(alliance_kill_key)) {
+        impression -= creature.incident_tree.at(alliance_kill_key) * 15; // 1体につき-15
     }
 
     // 個別モンスター撃破による追加印象値減少
@@ -46,5 +46,5 @@ int AllianceAryanFamily::calcImpressionPoint(PlayerType *creature_ptr) const
 bool AllianceAryanFamily::isAnnihilated()
 {
     // アーリアン・ファミリーのボス『ビッグ・アイ』が存在しない場合、アーリアンファミリーは壊滅する
-    return MonraceList::get_instance().get_monrace(MonraceId::BIG_EYE).mob_num == 0;
+    return all_monraces_extinct({ MonraceId::BIG_EYE });
 }

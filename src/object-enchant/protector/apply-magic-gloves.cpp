@@ -11,18 +11,19 @@
 #include "object-enchant/object-boost.h"
 #include "object-enchant/object-ego.h"
 #include "sv-definition/sv-protector-types.h"
+#include "system/creature-entity.h"
 #include "system/item-entity.h"
 
 /*
  * @brief コンストラクタ
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param o_ptr 強化を与えたいオブジェクトの構造体参照ポインタ
  * @param level 生成基準階
  * @param power 生成ランク
  */
-GlovesEnchanter::GlovesEnchanter(PlayerType *player_ptr, ItemEntity *o_ptr, DEPTH level, int power)
+GlovesEnchanter::GlovesEnchanter(CreatureEntity &creature, ItemEntity *o_ptr, DEPTH level, int power)
     : AbstractProtectorEnchanter{ o_ptr, level, power }
-    , player_ptr(player_ptr)
+    , creature(creature)
 {
 }
 
@@ -40,7 +41,7 @@ void GlovesEnchanter::apply_magic()
 
     if (this->power > 1) {
         if ((this->power > 2) || one_in_(20)) {
-            become_random_artifact(this->player_ptr, this->o_ptr, false);
+            become_random_artifact(this->creature, this->o_ptr, false);
             return;
         }
 

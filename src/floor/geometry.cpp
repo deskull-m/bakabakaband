@@ -1,12 +1,10 @@
 #include "floor/geometry.h"
 #include "game-option/text-display-options.h"
 #include "system/angband-system.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
-#include "system/monster-entity.h"
-#include "system/player-type-definition.h"
 #include "target/projection-path-calculator.h"
-#include "timed-effect/timed-effects.h"
 #include "util/bit-flags-calculator.h"
 
 /*!
@@ -44,15 +42,15 @@
  * "glowing" grid.  This prevents the player from being able to "see" the\n
  * walls of illuminated rooms from a corridor outside the room.\n
  */
-bool player_can_see_bold(PlayerType *player_ptr, POSITION y, POSITION x)
+bool player_can_see_bold(CreatureEntity &creature, POSITION y, POSITION x)
 {
     /* Blind players see nothing */
-    if (player_ptr->effects()->blindness().is_blind()) {
+    if (creature.is_blind()) {
         return false;
     }
 
     const Pos2D pos(y, x);
-    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto &grid = floor.get_grid(pos);
 
     /* Note that "torch-lite" yields "illumination" */
@@ -66,7 +64,7 @@ bool player_can_see_bold(PlayerType *player_ptr, POSITION y, POSITION x)
     }
 
     /* Noctovision of Ninja */
-    if (player_ptr->see_nocto) {
+    if (creature.has_see_nocto()) {
         return true;
     }
 
@@ -82,7 +80,7 @@ bool player_can_see_bold(PlayerType *player_ptr, POSITION y, POSITION x)
     }
 
     /* Check for "local" illumination */
-    return floor.is_illuminated_at(player_ptr->get_position(), pos);
+    return floor.is_illuminated_at(creature.get_position(), pos);
 }
 
 /*
@@ -130,17 +128,17 @@ Pos2D mmove2(const Pos2D &pos_orig, const Pos2D &pos1, const Pos2D &pos2)
 
 /*!
  * @brief Is the monster seen by the player?
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param m_ptr 個々のモンスターへの参照ポインタ
  * @return 個々のモンスターがプレイヤーが見えたらTRUE
  * @todo is_seen() の関数マクロをバラそうとしたがインクルード関係のコンパイルエラーで失敗
  */
-bool is_seen(PlayerType *player_ptr, const MonsterEntity &monster)
+bool is_seen(CreatureEntity &creature, const CreatureEntity &target)
 {
     auto is_inside_view = !ignore_unview;
     is_inside_view |= AngbandSystem::get_instance().is_phase_out();
-    const auto p_pos = player_ptr->get_position();
-    const auto m_pos = monster.get_position();
-    is_inside_view |= player_can_see_bold(player_ptr, m_pos.y, m_pos.x) && projectable(*player_ptr->current_floor_ptr, p_pos, m_pos);
-    return monster.ml && is_inside_view;
+    const auto p_pos = creature.get_position();
+    const auto t_pos = target.get_position();
+    is_inside_view |= player_can_see_bold(creature, t_pos.y, t_pos.x) && projectable(*creature.get_floor(), p_pos, t_pos);
+    return target.is_visible_on_map() && is_inside_view;
 }

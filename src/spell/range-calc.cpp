@@ -7,15 +7,15 @@
 #include "spell/range-calc.h"
 #include "effect/attribute-types.h"
 #include "floor/line-of-sight.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
-#include "system/player-type-definition.h"
 #include "target/projection-path-calculator.h"
 
 namespace {
-bool is_prevent_blast(PlayerType *player_ptr, const Pos2D &center, const Pos2D &pos, AttributeType type)
+bool is_prevent_blast(CreatureEntity &creature, const Pos2D &center, const Pos2D &pos, AttributeType type)
 {
-    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     switch (type) {
     case AttributeType::LITE:
     case AttributeType::LITE_WEAK:
@@ -212,14 +212,14 @@ bool in_disintegration_range(const FloorType &floor, const Pos2D &pos_from, cons
  *   ********
  *       ***
  */
-std::vector<std::pair<int, Pos2D>> breath_shape(PlayerType *player_ptr, const ProjectionPath &path, int dist, int rad, const Pos2D &pos_source, const Pos2D &pos_target, AttributeType typ)
+std::vector<std::pair<int, Pos2D>> breath_shape(CreatureEntity &creature, const ProjectionPath &path, int dist, int rad, const Pos2D &pos_source, const Pos2D &pos_target, AttributeType typ)
 {
     const auto brev = rad * rad / dist;
     auto by = pos_source.y;
     auto bx = pos_source.x;
     auto path_n = 0;
     const auto mdis = Grid::calc_distance(pos_source, pos_target) + rad;
-    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     std::vector<std::pair<int, Pos2D>> positions;
 
     for (auto bdis = 0; bdis <= mdis; ++bdis) {
@@ -251,7 +251,7 @@ std::vector<std::pair<int, Pos2D>> breath_shape(PlayerType *player_ptr, const Pr
                     if (Grid::calc_distance(pos_breath, pos) != cdis) {
                         continue;
                     }
-                    if (is_prevent_blast(player_ptr, pos_breath, pos, typ)) {
+                    if (is_prevent_blast(creature, pos_breath, pos, typ)) {
                         continue;
                     }
 
@@ -264,10 +264,10 @@ std::vector<std::pair<int, Pos2D>> breath_shape(PlayerType *player_ptr, const Pr
     return positions;
 }
 
-std::vector<std::pair<int, Pos2D>> ball_shape(PlayerType *player_ptr, const Pos2D &center, int rad, AttributeType typ)
+std::vector<std::pair<int, Pos2D>> ball_shape(CreatureEntity &creature, const Pos2D &center, int rad, AttributeType typ)
 {
     std::vector<std::pair<int, Pos2D>> positions;
-    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     for (auto dist = 0; dist <= rad; dist++) {
         for (auto y = center.y - dist; y <= center.y + dist; y++) {
             for (auto x = center.x - dist; x <= center.x + dist; x++) {
@@ -278,7 +278,7 @@ std::vector<std::pair<int, Pos2D>> ball_shape(PlayerType *player_ptr, const Pos2
                 if (Grid::calc_distance(center, pos) != dist) {
                     continue;
                 }
-                if (is_prevent_blast(player_ptr, center, pos, typ)) {
+                if (is_prevent_blast(creature, center, pos, typ)) {
                     continue;
                 }
 

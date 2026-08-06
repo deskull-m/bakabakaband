@@ -8,17 +8,17 @@
 #include "lore/lore-calculator.h" //!< @todo 少し違和感.
 #include "monster-race/race-ability-flags.h"
 #include "mspell/mspell-damage-calculator.h"
-#include "system/player-type-definition.h"
+#include "system/creature-entity.h"
 #include "term/z-form.h"
 
 /*!
  * @brief モンスター魔法をプレイヤーが使用する場合の換算レベル
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param 換算レベル
  */
-PLAYER_LEVEL get_pseudo_monstetr_level(PlayerType *player_ptr)
+PLAYER_LEVEL get_pseudo_monstetr_level(CreatureEntity &creature)
 {
-    PLAYER_LEVEL monster_level = player_ptr->level + 40;
+    PLAYER_LEVEL monster_level = creature.get_level() + 40;
     return (monster_level * monster_level - 1550) / 130;
 }
 
@@ -29,32 +29,32 @@ PLAYER_LEVEL get_pseudo_monstetr_level(PlayerType *player_ptr)
  * @param msg 表示する文字列
  * @return std::string 潜在的な損傷の説明
  */
-static std::string set_bluemage_damage(PlayerType *player_ptr, MonsterAbilityType ms_type, PLAYER_LEVEL plev, concptr msg)
+static std::string set_bluemage_damage(CreatureEntity &creature, MonsterAbilityType ms_type, PLAYER_LEVEL plev, concptr msg)
 {
-    int base_damage = monspell_bluemage_damage(player_ptr, ms_type, plev, BASE_DAM);
-    int dice_num = monspell_bluemage_damage(player_ptr, ms_type, plev, DICE_NUM);
-    int dice_side = monspell_bluemage_damage(player_ptr, ms_type, plev, DICE_SIDE);
-    int dice_mult = monspell_bluemage_damage(player_ptr, ms_type, plev, DICE_MULT);
-    int dice_div = monspell_bluemage_damage(player_ptr, ms_type, plev, DICE_DIV);
+    int base_damage = monspell_bluemage_damage(creature, ms_type, plev, BASE_DAM);
+    int dice_num = monspell_bluemage_damage(creature, ms_type, plev, DICE_NUM);
+    int dice_side = monspell_bluemage_damage(creature, ms_type, plev, DICE_SIDE);
+    int dice_mult = monspell_bluemage_damage(creature, ms_type, plev, DICE_MULT);
+    int dice_div = monspell_bluemage_damage(creature, ms_type, plev, DICE_DIV);
     return format(" %s %s", msg, dice_to_string(base_damage, dice_num, dice_side, dice_mult, dice_div).data());
 }
 
 /*!
  * @brief 受け取ったモンスター魔法のIDに応じて青魔法の効果情報をまとめたフォーマットを返す
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param power モンスター魔法のID
  * @return std::string パワーについてのコメント
  */
-std::string learnt_info(PlayerType *player_ptr, MonsterAbilityType power)
+std::string learnt_info(CreatureEntity &creature, MonsterAbilityType power)
 {
-    PLAYER_LEVEL plev = get_pseudo_monstetr_level(player_ptr);
+    PLAYER_LEVEL plev = get_pseudo_monstetr_level(creature);
 
     switch (power) {
     case MonsterAbilityType::BA_MANA:
     case MonsterAbilityType::BA_DARK:
     case MonsterAbilityType::BA_LITE:
     case MonsterAbilityType::BA_GRAVITY:
-        return set_bluemage_damage(player_ptr, power, plev, KWD_DAM);
+        return set_bluemage_damage(creature, power, plev, KWD_DAM);
     case MonsterAbilityType::ROCKET:
     case MonsterAbilityType::SHOOT:
     case MonsterAbilityType::BR_ACID:
@@ -95,9 +95,9 @@ std::string learnt_info(PlayerType *player_ptr, MonsterAbilityType power)
     case MonsterAbilityType::BA_VOID:
     case MonsterAbilityType::BA_ABYSS:
     case MonsterAbilityType::BA_METEOR:
-        return set_bluemage_damage(player_ptr, power, plev, KWD_DAM);
+        return set_bluemage_damage(creature, power, plev, KWD_DAM);
     case MonsterAbilityType::DRAIN_MANA:
-        return set_bluemage_damage(player_ptr, power, plev, KWD_HEAL);
+        return set_bluemage_damage(creature, power, plev, KWD_HEAL);
     case MonsterAbilityType::MIND_BLAST:
     case MonsterAbilityType::BRAIN_SMASH:
     case MonsterAbilityType::CAUSE_1:
@@ -118,11 +118,11 @@ std::string learnt_info(PlayerType *player_ptr, MonsterAbilityType power)
     case MonsterAbilityType::BO_METEOR:
     case MonsterAbilityType::BO_LITE:
     case MonsterAbilityType::MISSILE:
-        return set_bluemage_damage(player_ptr, power, plev, KWD_DAM);
+        return set_bluemage_damage(creature, power, plev, KWD_DAM);
     case MonsterAbilityType::HASTE:
         return format(" %sd%d+%d", KWD_DURATION, 20 + plev, plev);
     case MonsterAbilityType::HEAL:
-        return set_bluemage_damage(player_ptr, power, plev, KWD_HEAL);
+        return set_bluemage_damage(creature, power, plev, KWD_HEAL);
     case MonsterAbilityType::INVULNER:
         return format(" %sd7+7", KWD_DURATION);
     case MonsterAbilityType::BLINK:
@@ -130,7 +130,7 @@ std::string learnt_info(PlayerType *player_ptr, MonsterAbilityType power)
     case MonsterAbilityType::TPORT:
         return format(" %s%d", KWD_SPHERE, plev * 5);
     case MonsterAbilityType::PSY_SPEAR:
-        return set_bluemage_damage(player_ptr, power, plev, KWD_DAM);
+        return set_bluemage_damage(creature, power, plev, KWD_DAM);
     case MonsterAbilityType::RAISE_DEAD:
         return format(" %s5", KWD_SPHERE);
     default:

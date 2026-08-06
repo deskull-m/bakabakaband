@@ -3,7 +3,7 @@
 #include <cstdint>
 
 class AngbandWorld;
-class PlayerType;
+class CreatureEntity;
 
 class WorldCollapsion {
 private:
@@ -11,7 +11,7 @@ private:
 
 public:
     WorldCollapsion();
-    void plus_timed_world_collapsion(AngbandWorld *w_ptr, PlayerType *player_ptr, int multi);
+    void plus_timed_world_collapsion(AngbandWorld *w_ptr, CreatureEntity &creature, int multi);
     void plus_collapsion(int value);
     void plus_perm_collapsion(int permyriad);
     int get_collapsion_parcentage() const;

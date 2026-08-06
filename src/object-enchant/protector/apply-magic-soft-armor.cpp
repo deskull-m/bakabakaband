@@ -11,18 +11,18 @@
 #include "sv-definition/sv-armor-types.h"
 #include "system/baseitem/baseitem-definition.h"
 #include "system/baseitem/baseitem-list.h"
+#include "system/creature-entity.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 
 /*
  * @brief コンストラクタ
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param o_ptr 強化を与えたいオブジェクトの構造体参照ポインタ
  * @param level 生成基準階
  * @param power 生成ランク
  */
-SoftArmorEnchanter::SoftArmorEnchanter(PlayerType *player_ptr, ItemEntity *o_ptr, DEPTH level, int power)
-    : ArmorEnchanter{ player_ptr, o_ptr, level, power }
+SoftArmorEnchanter::SoftArmorEnchanter(CreatureEntity &creature, ItemEntity *o_ptr, DEPTH level, int power)
+    : ArmorEnchanter{ creature, o_ptr, level, power }
 {
 }
 
@@ -59,7 +59,7 @@ void SoftArmorEnchanter::sval_enchant()
         this->o_ptr->pval = randnum1<short>(4);
         return;
     case SV_ABUNAI_MIZUGI:
-        if (this->player_ptr->ppersonality != PERSONALITY_SEXY) {
+        if (this->creature.ppersonality != PERSONALITY_SEXY) {
             return;
         }
 

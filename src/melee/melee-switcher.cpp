@@ -6,7 +6,6 @@
 
 #include "melee/melee-switcher.h"
 #include "core/disturbance.h"
-#include "dungeon/quest.h"
 #include "effect/attribute-types.h"
 #include "melee/melee-util.h"
 #include "monster-attack/monster-attack-effect.h"
@@ -20,33 +19,37 @@
 #include "spell-kind/spells-polymorph.h"
 #include "spell-kind/spells-teleport.h"
 #include "spell/spells-util.h"
+#include "system/creature-entity.h"
+#include "system/dungeon/quest-definition.h"
 #include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
-#include "system/player-type-definition.h"
 #include "view/display-messages.h"
 
 /*!
  * @brief モンスターがカオス属性へ耐性を示すかどうか
  */
-static bool monster_has_chaos_resist(PlayerType *player_ptr, const MonsterEntity &monster)
+static bool monster_has_chaos_resist(CreatureEntity &creature, const CreatureEntity &monster)
 {
     auto &monrace = monster.get_monrace();
     if (monrace.resistance_flags.has(MonsterResistanceType::RESIST_CHAOS)) {
-        if (is_original_ap_and_seen(player_ptr, monster)) {
-            monrace.r_resistance_flags.set(MonsterResistanceType::RESIST_CHAOS);
+        if (creature.is_player()) {
+            if (is_original_ap_and_seen(creature, monster)) {
+                monrace.r_resistance_flags.set(MonsterResistanceType::RESIST_CHAOS);
+            }
         }
         return true;
     } else if (monrace.kind_flags.has(MonsterKindType::DEMON) && one_in_(3)) {
-        if (is_original_ap_and_seen(player_ptr, monster)) {
-            monrace.r_kind_flags.set(MonsterKindType::DEMON);
+        if (creature.is_player()) {
+            if (is_original_ap_and_seen(creature, monster)) {
+                monrace.r_kind_flags.set(MonsterKindType::DEMON);
+            }
         }
         return true;
     }
     return false;
 }
 
-void describe_melee_method(PlayerType *player_ptr, mam_type *mam_ptr)
+void describe_melee_method(mam_type *mam_ptr)
 {
     switch (mam_ptr->method) {
     case RaceBlowMethodType::HIT: {
@@ -124,10 +127,6 @@ void describe_melee_method(PlayerType *player_ptr, mam_type *mam_ptr)
         break;
     }
     case RaceBlowMethodType::EXPLODE: {
-        if (mam_ptr->see_either) {
-            disturb(player_ptr, true, true);
-        }
-
         mam_ptr->act = _("爆発した。", "explodes.");
         mam_ptr->explode = true;
         mam_ptr->touched = false;
@@ -214,7 +213,7 @@ void describe_melee_method(PlayerType *player_ptr, mam_type *mam_ptr)
     }
 }
 
-void decide_monster_attack_effect(PlayerType *player_ptr, mam_type *mam_ptr)
+void decide_monster_attack_effect(CreatureEntity &creature, mam_type *mam_ptr)
 {
     switch (mam_ptr->effect) {
     case RaceBlowEffectType::NONE:
@@ -282,10 +281,6 @@ void decide_monster_attack_effect(PlayerType *player_ptr, mam_type *mam_ptr)
         break;
     case RaceBlowEffectType::SHATTER:
         mam_ptr->damage -= (mam_ptr->damage * ((mam_ptr->ac < 150) ? mam_ptr->ac : 150) / 250);
-        if (mam_ptr->damage > 23) {
-            earthquake(player_ptr, mam_ptr->m_ptr->get_position(), 8, mam_ptr->m_idx);
-        }
-
         break;
     case RaceBlowEffectType::EXP_10:
     case RaceBlowEffectType::EXP_20:
@@ -310,7 +305,7 @@ void decide_monster_attack_effect(PlayerType *player_ptr, mam_type *mam_ptr)
         mam_ptr->pt = AttributeType::HUNGRY;
         break;
     case RaceBlowEffectType::CHAOS: {
-        const auto has_resist = monster_has_chaos_resist(player_ptr, *mam_ptr->t_ptr);
+        const auto has_resist = monster_has_chaos_resist(creature, *mam_ptr->t_ptr);
         if (has_resist) {
             mam_ptr->damage *= 3;
             mam_ptr->damage /= randint1(6) + 6;
@@ -321,15 +316,6 @@ void decide_monster_attack_effect(PlayerType *player_ptr, mam_type *mam_ptr)
             mam_ptr->attribute = BlowEffectType::HEAL;
             break;
         }
-        if (one_in_(250)) {
-            const auto &floor = *player_ptr->current_floor_ptr;
-            if (floor.is_underground() && (!floor.is_in_quest() || !QuestType::is_fixed(floor.quest_number))) {
-                if (mam_ptr->damage > 23) {
-                    msg_print(_("カオスの力でダンジョンが崩れ始める！", "The dungeon tumbles by the chaotic power!"));
-                    earthquake(player_ptr, mam_ptr->m_ptr->get_position(), 8, mam_ptr->m_idx);
-                }
-            }
-        }
         if (!one_in_(10)) {
             if (!has_resist) {
                 mam_ptr->pt = AttributeType::CONFUSION;
@@ -337,15 +323,8 @@ void decide_monster_attack_effect(PlayerType *player_ptr, mam_type *mam_ptr)
             break;
         }
 
-        if (!has_resist) {
-            if (one_in_(2)) {
-                msg_format(_(("%s^はどこかへ消えていった！"), ("%s^ disappears!")), mam_ptr->t_name);
-                teleport_away(player_ptr, mam_ptr->t_idx, 50, TELEPORT_PASSIVE);
-            } else {
-                if (polymorph_monster(player_ptr, mam_ptr->t_ptr->y, mam_ptr->t_ptr->x)) {
-                    msg_format(_("%s^は変化した！", "%s^ changes!"), mam_ptr->t_name);
-                }
-            }
+        if (!has_resist && one_in_(2)) {
+            msg_format(_("%s^は変化した！", "%s^ changes!"), mam_ptr->t_name);
         }
     } break;
     case RaceBlowEffectType::FLAVOR:
@@ -358,7 +337,7 @@ void decide_monster_attack_effect(PlayerType *player_ptr, mam_type *mam_ptr)
     }
 }
 
-void describe_monster_missed_monster(PlayerType *player_ptr, mam_type *mam_ptr)
+void describe_monster_missed_monster(FloorType &floor, mam_type *mam_ptr)
 {
     switch (mam_ptr->method) {
     case RaceBlowMethodType::HIT:
@@ -378,7 +357,7 @@ void describe_monster_missed_monster(PlayerType *player_ptr, mam_type *mam_ptr)
     case RaceBlowMethodType::STAMP:
     case RaceBlowMethodType::BIND:
     case RaceBlowMethodType::FECES: {
-        (void)set_monster_csleep(player_ptr, mam_ptr->t_idx, 0);
+        (void)set_monster_csleep(floor, mam_ptr->t_idx, 0);
         if (mam_ptr->see_m) {
 #ifdef JP
             msg_format("%sは%s^の攻撃をかわした。", mam_ptr->t_name, mam_ptr->m_name);

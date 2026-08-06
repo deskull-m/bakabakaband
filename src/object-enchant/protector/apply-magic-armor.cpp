@@ -9,19 +9,20 @@
 #include "artifact/random-art-generator.h"
 #include "inventory/inventory-slot-types.h"
 #include "object/tval-types.h"
+#include "system/creature-entity.h"
 #include "system/item-entity.h"
 #include "view/display-messages.h"
 
 /*
  * @brief コンストラクタ
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param o_ptr 強化を与えたいオブジェクトの構造体参照ポインタ
  * @param level 生成基準階
  * @param power 生成ランク
  */
-ArmorEnchanter::ArmorEnchanter(PlayerType *player_ptr, ItemEntity *o_ptr, DEPTH level, int power)
+ArmorEnchanter::ArmorEnchanter(CreatureEntity &creature, ItemEntity *o_ptr, DEPTH level, int power)
     : AbstractProtectorEnchanter{ o_ptr, level, power }
-    , player_ptr(player_ptr)
+    , creature(creature)
 {
 }
 
@@ -32,7 +33,7 @@ ArmorEnchanter::ArmorEnchanter(PlayerType *player_ptr, ItemEntity *o_ptr, DEPTH 
 void ArmorEnchanter::give_ego_index()
 {
     if ((this->power > 2) || one_in_(20)) {
-        become_random_artifact(this->player_ptr, this->o_ptr, false);
+        become_random_artifact(this->creature, this->o_ptr, false);
         return;
     }
 

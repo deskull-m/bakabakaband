@@ -5,5 +5,5 @@
 
 #include "system/angband.h"
 
-class PlayerType;
-void exit_game_panic(PlayerType *player_ptr);
+class CreatureEntity;
+void exit_game_panic(CreatureEntity &creature);

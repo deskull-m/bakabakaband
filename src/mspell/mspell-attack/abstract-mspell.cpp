@@ -2,10 +2,10 @@
 #include "monster/monster-update.h"
 #include "mspell/mspell-damage-calculator.h"
 #include "mspell/mspell-util.h"
-#include "system/player-type-definition.h"
+#include "system/creature-entity.h"
 
-AbstractMSpellAttack::AbstractMSpellAttack(PlayerType *player_ptr, MONSTER_IDX m_idx, MonsterAbilityType ability, MSpellData data, int target_type, std::function<ProjectResult(POSITION, POSITION, int, AttributeType)> fire)
-    : player_ptr(player_ptr)
+AbstractMSpellAttack::AbstractMSpellAttack(CreatureEntity &creature, MONSTER_IDX m_idx, MonsterAbilityType ability, MSpellData data, int target_type, std::function<ProjectResult(POSITION, POSITION, int, AttributeType)> fire)
+    : creature_ptr(&creature)
     , m_idx(m_idx)
     , t_idx(0)
     , ability(ability)
@@ -15,8 +15,8 @@ AbstractMSpellAttack::AbstractMSpellAttack(PlayerType *player_ptr, MONSTER_IDX m
 {
 }
 
-AbstractMSpellAttack::AbstractMSpellAttack(PlayerType *player_ptr, MONSTER_IDX m_idx, MONSTER_IDX t_idx, MonsterAbilityType ability, MSpellData data, int target_type, std::function<ProjectResult(POSITION, POSITION, int, AttributeType)> fire)
-    : player_ptr(player_ptr)
+AbstractMSpellAttack::AbstractMSpellAttack(CreatureEntity &creature, MONSTER_IDX m_idx, MONSTER_IDX t_idx, MonsterAbilityType ability, MSpellData data, int target_type, std::function<ProjectResult(POSITION, POSITION, int, AttributeType)> fire)
+    : creature_ptr(&creature)
     , m_idx(m_idx)
     , t_idx(t_idx)
     , ability(ability)
@@ -32,16 +32,13 @@ MonsterSpellResult AbstractMSpellAttack::shoot(POSITION y, POSITION x)
         return MonsterSpellResult::make_invalid();
     }
 
-    this->data.msg.output(this->player_ptr, this->m_idx, this->t_idx, this->target_type);
+    this->data.msg.output(*this->creature_ptr, this->m_idx, this->t_idx, this->target_type);
 
-    const auto dam = monspell_damage(this->player_ptr, this->ability, this->m_idx, DAM_ROLL);
+    const auto dam = monspell_damage(*this->creature_ptr, this->ability, this->m_idx, DAM_ROLL);
     const auto proj_res = fire(y, x, dam, data.type);
     if (this->target_type == MONSTER_TO_PLAYER) {
-        this->data.drs.execute(this->player_ptr, this->m_idx);
+        this->data.drs.execute(*this->creature_ptr, this->m_idx);
     }
 
-    auto res = MonsterSpellResult::make_valid(dam);
-    res.learnable = proj_res.affected_player;
-
-    return res;
+    return MonsterSpellResult::make_learnable(proj_res.affected_player, dam);
 }

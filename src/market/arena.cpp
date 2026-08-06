@@ -14,6 +14,7 @@
 #include "market/building-util.h"
 #include "player-base/player-class.h"
 #include "status/buff-setter.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"
 #include "term/screen-processor.h"
@@ -26,7 +27,7 @@
 
 /*!
  * @brief 優勝時のメッセージを表示し、賞金を与える
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return まだ優勝していないか、挑戦者モンスターとの戦いではFALSE
  */
 static tl::optional<int> process_ostensible_arena_victory()
@@ -49,7 +50,7 @@ static tl::optional<int> process_ostensible_arena_victory()
     return 1000000;
 }
 
-static bool check_battle_metal_babble(PlayerType *player_ptr)
+static bool check_battle_metal_babble(CreatureEntity &creature)
 {
     msg_print(_("最強の挑戦者が君に決闘を申し込んできた。", "The strongest challenger throws down the gauntlet to your feet."));
     msg_erase();
@@ -62,23 +63,23 @@ static bool check_battle_metal_babble(PlayerType *player_ptr)
     msg_erase();
 
     AngbandWorld::get_instance().set_arena(false);
-    reset_tim_flags(player_ptr);
+    reset_tim_flags(creature);
     FloorChangeModesStore::get_instace()->set(FloorChangeMode::SAVE_FLOORS);
-    player_ptr->current_floor_ptr->inside_arena = true;
-    player_ptr->leaving = true;
+    creature.get_floor()->inside_arena = true;
+    creature.set_leaving(true);
     return true;
 }
 
 /*!
  * @brief アリーナへの入場処理
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return アリーナへ入場するか否か
  */
-static bool go_to_arena(PlayerType *player_ptr)
+static bool go_to_arena(CreatureEntity &creature)
 {
     const auto prize_money = process_ostensible_arena_victory();
     if (prize_money) {
-        player_ptr->au += *prize_money;
+        creature.add_au(*prize_money);
         return false;
     }
 
@@ -89,34 +90,34 @@ static bool go_to_arena(PlayerType *player_ptr)
         return false;
     }
 
-    if ((arena_record == ArenaRecord::POWER_WYRM) && !check_battle_metal_babble(player_ptr)) {
+    if ((arena_record == ArenaRecord::POWER_WYRM) && !check_battle_metal_babble(creature)) {
         return false;
     }
 
-    if (player_ptr->riding && !PlayerClass(player_ptr).is_tamer()) {
+    if (creature.get_riding() && !CreatureClass(creature).is_tamer()) {
         msg_print(_("ペットに乗ったままではアリーナへ入れさせてもらえなかった。", "You don't have permission to enter with pet."));
         msg_erase();
         return false;
     }
 
     AngbandWorld::get_instance().set_arena(false);
-    reset_tim_flags(player_ptr);
+    reset_tim_flags(creature);
     FloorChangeModesStore::get_instace()->set(FloorChangeMode::SAVE_FLOORS);
-    player_ptr->current_floor_ptr->inside_arena = true;
-    player_ptr->leaving = true;
+    creature.get_floor()->inside_arena = true;
+    creature.set_leaving(true);
     return true;
 }
 
 /*!
  * @brief アリーナ受付のコマンド処理
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param cmd アリーナ処理のID
  */
-bool arena_comm(PlayerType *player_ptr, int cmd)
+bool arena_comm(CreatureEntity &creature, int cmd)
 {
     switch (cmd) {
     case BACT_ARENA:
-        return go_to_arena(player_ptr);
+        return go_to_arena(creature);
     case BACT_POSTER: {
         const auto &entries = ArenaEntryList::get_instance();
         msg_print(entries.get_poster_message());
@@ -126,12 +127,12 @@ bool arena_comm(PlayerType *player_ptr, int cmd)
 
         const auto &monrace = entries.get_monrace();
         LoreTracker::get_instance().set_trackee(monrace.idx);
-        handle_stuff(player_ptr);
+        handle_stuff(creature);
         return false;
     }
     case BACT_ARENA_RULES:
         screen_save();
-        FileDisplayer(player_ptr->name).display(true, _("arena_j.txt", "arena.txt"), 0, 0);
+        FileDisplayer(creature.name).display(true, _("arena_j.txt", "arena.txt"), 0, 0);
         screen_load();
         return false;
     default:

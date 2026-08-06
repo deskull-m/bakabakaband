@@ -2,5 +2,5 @@
 
 #include "system/angband.h"
 
-class PlayerType;
-void dump_mutations(PlayerType *player_ptr, FILE *out_file);
+class CreatureEntity;
+void dump_mutations(CreatureEntity &creature, FILE *out_file);

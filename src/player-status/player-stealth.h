@@ -1,9 +1,14 @@
 #pragma once
 #include "player-status/player-status-base.h"
 
+class CreatureEntity;
 class PlayerStealth : public PlayerStatusBase {
 public:
-    PlayerStealth(PlayerType *player_ptr);
+    PlayerStealth(CreatureEntity &creature);
+    PlayerStealth(const PlayerStealth &) = default;
+    PlayerStealth(PlayerStealth &&) = default;
+    PlayerStealth &operator=(const PlayerStealth &) = delete;
+    PlayerStealth &operator=(PlayerStealth &&) = delete;
 
     BIT_FLAGS get_bad_flags() override;
 

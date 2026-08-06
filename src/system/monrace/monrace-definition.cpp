@@ -1,5 +1,4 @@
 #include "system/monrace/monrace-definition.h"
-#include "game-option/cheat-options.h"
 #include "monster-attack/monster-attack-table.h"
 #include "monster-race/race-ability-mask.h"
 #include "monster-race/race-resistance-mask.h"
@@ -231,6 +230,11 @@ std::string MonraceDefinition::get_pronoun_of_summoned_kin() const
 const MonraceDefinition &MonraceDefinition::get_next() const
 {
     return MonraceList::get_instance().get_monrace(this->next_r_idx);
+}
+
+std::shared_ptr<const MonraceDefinition> MonraceDefinition::get_next_shared() const
+{
+    return MonraceList::get_instance().get_monrace_shared(this->next_r_idx);
 }
 
 /*!
@@ -878,15 +882,11 @@ bool MonraceDefinition::has_entity() const
  * @brief モンスターリストを走査し、生きているか死んでいるユニークだけを抽出する
  * @param is_alive 生きているユニークのリストならばTRUE、撃破したユニークのリストならばFALSE
  * @return is_aliveの条件に見合うユニークがいたらTRUE、それ以外はFALSE
- * @details 闘技場のモンスターとは再戦できないので、生きているなら表示から外す
+ * @details 闘技場のモンスターとは再戦できないので、生きているなら表示から外す.
  */
 bool MonraceDefinition::should_display(bool is_alive) const
 {
     if (this->kind_flags.has_not(MonsterKindType::UNIQUE)) {
-        return false;
-    }
-
-    if (!cheat_know && !this->r_sights) {
         return false;
     }
 
@@ -1028,9 +1028,9 @@ void MonraceDefinition::decrement_mob_numbers()
     }
 }
 
-void MonraceDefinition::emplace_final_summon(MonraceId id, int probability, int min_num, int max_num, int radius)
+void MonraceDefinition::emplace_final_summon(MonraceId id, int probability, int min_summon_num, int max_summon_num, int radius)
 {
-    this->final_summons.emplace_back(MonsterSummon(id, probability, min_num, max_num, radius));
+    this->final_summons.emplace_back(MonsterSummon(id, probability, min_summon_num, max_summon_num, radius));
 }
 
 const std::vector<MonsterSummon> &MonraceDefinition::get_final_summons() const

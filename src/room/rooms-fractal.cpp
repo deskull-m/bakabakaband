@@ -4,34 +4,34 @@
 #include "room/cave-filler.h"
 #include "room/rooms-normal.h"
 #include "room/space-finder.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
-#include "system/player-type-definition.h"
 
 /*!
  * @brief タイプ9の部屋…フラクタルカーブによる洞窟生成 / Type 9 -- Driver routine to create fractal grid
  * @return なし
  */
-bool build_type9(PlayerType *player_ptr, DungeonData *dd_ptr)
+bool build_type9(CreatureEntity &creature, DungeonData *dd_ptr)
 {
     /* get size: note 'Evenness'*/
     auto width = randint1(22) * 2 + 6;
     auto height = randint1(15) * 2 + 6;
 
-    auto &floor = *player_ptr->current_floor_ptr;
-    auto center = find_space(player_ptr, dd_ptr, height + 1, width + 1);
+    auto &floor = *creature.get_floor();
+    auto center = find_space(creature, dd_ptr, height + 1, width + 1);
     if (!center) {
         /* Limit to the minimum room size, and retry */
         width = 8;
         height = 8;
-        center = find_space(player_ptr, dd_ptr, height + 1, width + 1);
+        center = find_space(creature, dd_ptr, height + 1, width + 1);
         if (!center) {
             /*
              * Still no space?!
              * Try normal room
              */
-            return build_type1(player_ptr, dd_ptr);
+            return build_type1(creature, dd_ptr);
         }
     }
 
@@ -54,7 +54,7 @@ bool build_type9(PlayerType *player_ptr, DungeonData *dd_ptr)
         generate_hmap(floor, center->y, center->x, width, height, grd, roug, cutoff);
 
         /* Convert to normal format + clean up */
-        if (generate_fracave(player_ptr, center->y, center->x, width, height, cutoff, should_brighten, true)) {
+        if (generate_fracave(creature, center->y, center->x, width, height, cutoff, should_brighten, true)) {
             break;
         }
     }

@@ -18,7 +18,14 @@
 #include "monster-race/race-special-flags.h"
 #include "monster-race/race-visual-flags.h"
 #include "monster-race/race-wilderness-flags.h"
+#include "mutation/mutation-flag-types.h"
+#include "player-info/class-types.h"
+#include "player-info/race-types.h"
+#include "player/player-personality-types.h"
+#include "realm/realm-types.h"
 #include "system/angband.h"
+#include "system/monrace/body-structure-types.h"
+#include "system/monrace/extended-slot.h"
 
 #include <string_view>
 #include <unordered_map>
@@ -42,6 +49,7 @@ enum class MonsterVisualType;
 enum class MonsterWildernessType;
 enum class RaceBlowEffectType;
 enum class RaceBlowMethodType;
+enum class CreatureMaterialType : int;
 
 extern const std::unordered_map<std::string_view, MonsterFeedType> r_info_meat_feed;
 extern const std::unordered_map<std::string_view, RaceBlowMethodType> r_info_blow_method;
@@ -62,4 +70,12 @@ extern const std::unordered_map<std::string_view, MonsterMessageType> r_info_mes
 extern const std::unordered_map<std::string_view, MonsterBrightnessType> r_info_brightness_flags;
 extern const std::unordered_map<std::string_view, MonsterSpecialType> r_info_special_flags;
 extern const std::unordered_map<std::string_view, MonsterSex> r_info_sex;
+extern const std::unordered_map<std::string_view, player_personality_type> r_info_personality;
 extern const std::unordered_map<std::string_view, MonsterMiscType> r_info_misc_flags;
+extern const std::unordered_map<std::string_view, BodyStructureType> r_info_body_structure;
+extern const std::unordered_map<std::string_view, ExtendedSlotType> r_info_extended_slot;
+extern const std::unordered_map<std::string_view, CreatureMaterialType> r_info_materials;
+extern const std::unordered_map<std::string_view, PlayerRaceType> r_info_player_race;
+extern const std::unordered_map<std::string_view, PlayerClassType> r_info_player_class;
+extern const std::unordered_map<std::string_view, PlayerMutationType> r_info_mutation;
+extern const std::unordered_map<std::string_view, RealmType> r_info_realm;

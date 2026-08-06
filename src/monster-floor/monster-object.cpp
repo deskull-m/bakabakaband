@@ -9,6 +9,8 @@
 #include "flavor/flavor-describer.h"
 #include "floor/floor-object.h"
 #include "floor/geometry.h"
+#include "inventory/inventory-object.h"
+#include "inventory/inventory-slot-types.h"
 #include "monster-race/race-flags-resistance.h"
 #include "monster-race/race-resistance-mask.h"
 #include "monster/monster-describer.h"
@@ -17,13 +19,14 @@
 #include "monster/monster-processor-util.h"
 #include "monster/smart-learn-types.h"
 #include "object-enchant/tr-types.h"
+#include "object/object-info.h"
 #include "object/object-mark-types.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
+#include "system/monrace/extended-slot.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
@@ -115,7 +118,7 @@ static void update_object_flags(const TrFlags &flags, EnumClassFlagGroup<Monster
 
 /*!
  * @brief モンスターがアイテムを拾うか壊す処理
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param turn_flags_ptr ターン経過処理フラグへの参照ポインタ
  * @param m_idx モンスターID
  * @param o_ptr オブジェクトへの参照ポインタ
@@ -126,16 +129,16 @@ static void update_object_flags(const TrFlags &flags, EnumClassFlagGroup<Monster
  * @param o_name アイテム名
  * @param this_o_idx モンスターが乗ったオブジェクトID
  */
-static void monster_pickup_object(PlayerType *player_ptr, turn_flags *turn_flags_ptr, const MONSTER_IDX m_idx, ItemEntity *o_ptr, const bool is_unpickable_object,
+static void monster_pickup_object(CreatureEntity &creature, turn_flags *turn_flags_ptr, const MONSTER_IDX m_idx, ItemEntity *o_ptr, const bool is_unpickable_object,
     const POSITION ny, const POSITION nx, std::string_view m_name, std::string_view o_name, const OBJECT_IDX this_o_idx)
 {
-    auto &floor = *player_ptr->current_floor_ptr;
-    auto &monster = floor.m_list[m_idx];
+    auto &floor = *creature.get_floor();
+    auto &monster = floor.get_monster(m_idx);
     const auto &monrace = monster.get_monrace();
     if (is_unpickable_object) {
         if (turn_flags_ptr->do_take && monrace.behavior_flags.has(MonsterBehaviorType::STUPID)) {
             turn_flags_ptr->did_take_item = true;
-            if (monster.ml && player_can_see_bold(player_ptr, ny, nx)) {
+            if (monster.is_visible_on_map() && player_can_see_bold(creature, ny, nx)) {
                 msg_format(_("%s^は%sを拾おうとしたが、だめだった。", "%s^ tries to pick up %s, but fails."), m_name.data(), o_name.data());
             }
         }
@@ -145,16 +148,43 @@ static void monster_pickup_object(PlayerType *player_ptr, turn_flags *turn_flags
 
     if (turn_flags_ptr->do_take) {
         turn_flags_ptr->did_take_item = true;
-        if (player_can_see_bold(player_ptr, ny, nx)) {
+        if (player_can_see_bold(creature, ny, nx)) {
             msg_format(_("%s^が%sを拾った。", "%s^ picks up %s."), m_name.data(), o_name.data());
         }
 
-        excise_object_idx(*player_ptr->current_floor_ptr, this_o_idx);
-        // 意図としては OmType::TOUCHED を維持しつつ OmType::FOUND を消す事と思われるが一応元のロジックを維持しておく
-        o_ptr->marked &= { OmType::TOUCHED };
-        o_ptr->iy = o_ptr->ix = 0;
-        o_ptr->held_m_idx = m_idx;
-        monster.hold_o_idx_list.add(*player_ptr->current_floor_ptr, this_o_idx);
+        // [フェーズ A-5] inventory[] に格納し、floor.o_list 側のエントリは
+        // delete_object_idx で破棄する (旧 hold_o_idx_list / held_m_idx 経路は廃止)
+        auto picked = o_ptr->clone();
+        picked.marked.clear().set(OmType::TOUCHED);
+        picked.iy = picked.ix = 0;
+        picked.held_m_idx = 0;
+        delete_object_idx(creature, this_o_idx);
+
+        // [フェーズ B-1 / C-2] 装備可能なら自動装備、不可ならパック
+        const auto acquired_slot = monster.acquire_item(picked);
+        if ((acquired_slot >= INVEN_MAIN_HAND) && (acquired_slot < INVEN_TOTAL) && player_can_see_bold(creature, ny, nx)) {
+            const auto eq_name = describe_flavor(creature, *monster.inventory[acquired_slot], 0);
+            msg_format(_("%s^は%sを装備した。", "%s^ wields %s."), m_name.data(), eq_name.data());
+        }
+        // [Phase 2.5] 拡張装備スロットへの装備メッセージ
+        if (acquired_slot >= INVEN_EXTENDED_BASE && player_can_see_bold(creature, ny, nx)) {
+            const auto ext_idx = static_cast<size_t>(acquired_slot - INVEN_EXTENDED_BASE);
+            if (ext_idx < monster.get_extended_inventory_size() && monster.get_extended_item(ext_idx)) {
+                const auto eq_name = describe_flavor(creature, *monster.get_extended_item(ext_idx), 0);
+                const auto slot_name = get_extended_slot_name(monster.get_extended_slot_type(ext_idx));
+                msg_format(_("%s^は%sに%sを装着した。", "%s^ attaches %s to its %s."),
+                    m_name.data(),
+#ifdef JP
+                    slot_name.empty() ? "拡張部位" : std::string(slot_name).c_str(),
+                    eq_name.data()
+#else
+                    eq_name.data(),
+                    slot_name.empty() ? "extended slot" : std::string(slot_name).c_str()
+#endif
+                );
+            }
+        }
+
         RedrawingFlagsUpdater::get_instance().set_flag(SubWindowRedrawingFlag::FOUND_ITEMS);
         return;
     }
@@ -168,28 +198,28 @@ static void monster_pickup_object(PlayerType *player_ptr, turn_flags *turn_flags
         msg_format(_("%s^が%sを破壊した。", "%s^ destroys %s."), m_name.data(), o_name.data());
     }
 
-    delete_object_idx(player_ptr, this_o_idx);
+    delete_object_idx(creature, this_o_idx);
 }
 
 /*!
  * @brief モンスターの移動に伴うオブジェクト処理 (アイテム破壊等)
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param turn_flags_ptr ターン経過処理フラグへの参照ポインタ
  * @param m_idx モンスターID
  * @param ny 移動後の、モンスターのY座標
  * @param nx 移動後の、モンスターのX座標
  */
-void update_object_by_monster_movement(PlayerType *player_ptr, turn_flags *turn_flags_ptr, MONSTER_IDX m_idx, POSITION ny, POSITION nx)
+void update_object_by_monster_movement(CreatureEntity &creature, turn_flags *turn_flags_ptr, MONSTER_IDX m_idx, POSITION ny, POSITION nx)
 {
-    const auto &monster = player_ptr->current_floor_ptr->m_list[m_idx];
+    const auto &monster = creature.get_floor()->get_monster(m_idx);
     const auto &monrace = monster.get_monrace();
-    const auto &grid = player_ptr->current_floor_ptr->grid_array[ny][nx];
+    const auto &grid = creature.get_floor()->grid_array[ny][nx];
     turn_flags_ptr->do_take = monrace.behavior_flags.has(MonsterBehaviorType::TAKE_ITEM);
     for (auto it = grid.o_idx_list.begin(); it != grid.o_idx_list.end();) {
         EnumClassFlagGroup<MonsterKindType> flg_monster_kind;
         EnumClassFlagGroup<MonsterResistanceType> flgr;
         OBJECT_IDX this_o_idx = *it++;
-        auto &item = *player_ptr->current_floor_ptr->o_list[this_o_idx];
+        auto &item = *creature.get_floor()->o_list[this_o_idx];
         if (turn_flags_ptr->do_take) {
             const auto tval = item.bi_key.tval();
             if (tval == ItemKindType::GOLD || (tval == ItemKindType::MONSTER_REMAINS) || (tval == ItemKindType::STATUE)) {
@@ -198,31 +228,13 @@ void update_object_by_monster_movement(PlayerType *player_ptr, turn_flags *turn_
         }
 
         const auto flags = item.get_flags();
-        const auto item_name = describe_flavor(player_ptr, item, 0);
-        const auto m_name = monster_desc(player_ptr, monster, MD_INDEF_HIDDEN);
+        const auto item_name = describe_flavor(creature, item, 0);
+        const auto m_name = monster_desc(creature, monster, MD_INDEF_HIDDEN);
         update_object_flags(flags, flg_monster_kind, flgr);
 
         auto is_unpickable_object = item.is_fixed_or_random_artifact();
         is_unpickable_object |= monrace.kind_flags.has_any_of(flg_monster_kind);
         is_unpickable_object |= !monrace.resistance_flags.has_all_of(flgr) && monrace.resistance_flags.has_not(MonsterResistanceType::RESIST_ALL);
-        monster_pickup_object(player_ptr, turn_flags_ptr, m_idx, &item, is_unpickable_object, ny, nx, m_name, item_name, this_o_idx);
+        monster_pickup_object(creature, turn_flags_ptr, m_idx, &item, is_unpickable_object, ny, nx, m_name, item_name, this_o_idx);
     }
-}
-
-/*!
- * @brief モンスターが盗みや拾いで確保していたアイテムを全てドロップさせる / Drop all items carried by a monster
- * @param player_ptr プレイヤーへの参照ポインタ
- * @param m_ptr モンスター参照ポインタ
- */
-void monster_drop_carried_objects(PlayerType *player_ptr, MonsterEntity &monster)
-{
-    for (auto it = monster.hold_o_idx_list.begin(); it != monster.hold_o_idx_list.end();) {
-        const auto this_o_idx = *it++;
-        auto drop_item = player_ptr->current_floor_ptr->o_list[this_o_idx]->clone();
-        drop_item.held_m_idx = 0;
-        delete_object_idx(player_ptr, this_o_idx);
-        (void)drop_near(player_ptr, drop_item, monster.get_position());
-    }
-
-    monster.hold_o_idx_list.clear();
 }

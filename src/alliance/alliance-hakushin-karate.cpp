@@ -1,7 +1,7 @@
 #include "alliance/alliance-hakushin-karate.h"
-#include "system/player-type-definition.h"
+#include "system/creature-entity.h"
 
-int AllianceHakushinKarate::calcImpressionPoint([[maybe_unused]] PlayerType *creature_ptr) const
+int AllianceHakushinKarate::calcImpressionPoint([[maybe_unused]] const CreatureEntity &creature) const
 {
     return 0;
 }

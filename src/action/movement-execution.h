@@ -5,5 +5,5 @@
  */
 
 class Direction;
-class PlayerType;
-void exe_movement(PlayerType *player_ptr, const Direction &dir, bool do_pickup, bool break_trap);
+class CreatureEntity;
+void exe_movement(CreatureEntity &creature, const Direction &dir, bool do_pickup, bool break_trap);

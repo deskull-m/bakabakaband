@@ -25,198 +25,197 @@
 #include "player-info/weapon-effect-info.h"
 #include "player/attack-defense-types.h"
 #include "player/player-status-flags.h"
-#include "player/player-status.h"
-#include "system/player-type-definition.h"
+#include "system/creature-entity.h"
+#include "system/creature-timed-effect-types.h"
 #include "term/gameterm.h"
 #include "term/screen-processor.h"
 #include "term/z-form.h"
-#include "timed-effect/timed-effects.h"
 #include "view/display-self-info.h"
 
-static void set_bad_status_info(const TimedEffects &effects, self_info_type *self_ptr)
+static void set_bad_status_info(const CreatureEntity &subject, self_info_type *self_ptr)
 {
-    if (effects.blindness().is_blind()) {
+    if (subject.is_blind()) {
         self_ptr->info_list.emplace_back(_("あなたは目が見えない。", "You cannot see."));
     }
 
-    if (effects.confusion().is_confused()) {
+    if (subject.is_confused()) {
         self_ptr->info_list.emplace_back(_("あなたは混乱している。", "You are confused."));
     }
 
-    if (effects.fear().is_fearful()) {
+    if (subject.is_fearful()) {
         self_ptr->info_list.emplace_back(_("あなたは恐怖に侵されている。", "You are terrified."));
     }
 
-    if (effects.cut().is_cut()) {
+    if (subject.is_cut()) {
         self_ptr->info_list.emplace_back(_("あなたは出血している。", "You are bleeding."));
     }
 
-    if (effects.stun().is_stunned()) {
+    if (subject.is_stunned()) {
         self_ptr->info_list.emplace_back(_("あなたはもうろうとしている。", "You are stunned."));
     }
 
-    if (effects.poison().is_poisoned()) {
+    if (subject.is_poisoned()) {
         self_ptr->info_list.emplace_back(_("あなたは毒に侵されている。", "You are poisoned."));
     }
 
-    if (effects.hallucination().is_hallucinated()) {
+    if (subject.is_hallucinated()) {
         self_ptr->info_list.emplace_back(_("あなたは幻覚を見ている。", "You are hallucinating."));
     }
 }
 
-static void set_curse_info(PlayerType *player_ptr, self_info_type *self_ptr)
+static void set_curse_info(CreatureEntity &subject, self_info_type *self_ptr)
 {
-    if (player_ptr->cursed.has(CurseTraitType::TY_CURSE)) {
+    if (subject.get_cursed_flags().has(CurseTraitType::TY_CURSE)) {
         self_ptr->info_list.emplace_back(_("あなたは邪悪な怨念に包まれている。", "You carry an ancient foul curse."));
     }
 
-    if (has_aggravate(player_ptr)) {
+    if (has_aggravate(subject)) {
         self_ptr->info_list.emplace_back(_("あなたはモンスターを怒らせている。", "You aggravate monsters."));
     }
 
-    if (player_ptr->cursed.has(CurseTraitType::DRAIN_EXP)) {
+    if (subject.get_cursed_flags().has(CurseTraitType::DRAIN_EXP)) {
         self_ptr->info_list.emplace_back(_("あなたは経験値を吸われている。", "You occasionally lose experience for no reason."));
     }
 
-    if (player_ptr->cursed.has(CurseTraitType::SLOW_REGEN)) {
+    if (subject.get_cursed_flags().has(CurseTraitType::SLOW_REGEN)) {
         self_ptr->info_list.emplace_back(_("あなたの回復力は非常に遅い。", "You regenerate slowly."));
     }
 
-    if (player_ptr->cursed.has(CurseTraitType::ADD_L_CURSE)) {
+    if (subject.get_cursed_flags().has(CurseTraitType::ADD_L_CURSE)) {
         self_ptr->info_list.emplace_back(_("あなたの弱い呪いは増える。", "Your weak curses multiply."));
     } /* 暫定的 -- henkma */
 
-    if (player_ptr->cursed.has(CurseTraitType::ADD_H_CURSE)) {
+    if (subject.get_cursed_flags().has(CurseTraitType::ADD_H_CURSE)) {
         self_ptr->info_list.emplace_back(_("あなたの強い呪いは増える。", "Your heavy curses multiply."));
     } /* 暫定的 -- henkma */
 
-    if (player_ptr->cursed.has(CurseTraitType::CALL_ANIMAL)) {
+    if (subject.get_cursed_flags().has(CurseTraitType::CALL_ANIMAL)) {
         self_ptr->info_list.emplace_back(_("あなたは動物に狙われている。", "You attract animals."));
     }
 
-    if (player_ptr->cursed.has(CurseTraitType::CALL_DEMON)) {
+    if (subject.get_cursed_flags().has(CurseTraitType::CALL_DEMON)) {
         self_ptr->info_list.emplace_back(_("あなたは悪魔に狙われている。", "You attract demons."));
     }
 
-    if (player_ptr->cursed.has(CurseTraitType::CALL_DRAGON)) {
+    if (subject.get_cursed_flags().has(CurseTraitType::CALL_DRAGON)) {
         self_ptr->info_list.emplace_back(_("あなたはドラゴンに狙われている。", "You attract dragons."));
     }
 
-    if (player_ptr->cursed.has(CurseTraitType::COWARDICE)) {
+    if (subject.get_cursed_flags().has(CurseTraitType::COWARDICE)) {
         self_ptr->info_list.emplace_back(_("あなたは時々臆病になる。", "You are subject to cowardice."));
     }
 
-    if (player_ptr->cursed.has(CurseTraitType::BERS_RAGE)) {
+    if (subject.get_cursed_flags().has(CurseTraitType::BERS_RAGE)) {
         self_ptr->info_list.emplace_back(_("あなたは狂戦士化の発作を起こす。", "You are subject to berserker fits."));
     }
 
-    if (player_ptr->cursed.has(CurseTraitType::TELEPORT)) {
+    if (subject.get_cursed_flags().has(CurseTraitType::TELEPORT)) {
         self_ptr->info_list.emplace_back(_("あなたの位置はひじょうに不安定だ。", "Your position is very uncertain."));
     }
 
-    if (player_ptr->cursed.has(CurseTraitType::LOW_MELEE)) {
+    if (subject.get_cursed_flags().has(CurseTraitType::LOW_MELEE)) {
         self_ptr->info_list.emplace_back(_("あなたの武器は攻撃を外しやすい。", "Your weapon causes you to miss blows."));
     }
 
-    if (player_ptr->cursed.has(CurseTraitType::LOW_AC)) {
+    if (subject.get_cursed_flags().has(CurseTraitType::LOW_AC)) {
         self_ptr->info_list.emplace_back(_("あなたは攻撃を受けやすい。", "You are subject to be hit."));
     }
 
-    if (player_ptr->cursed.has(CurseTraitType::HARD_SPELL)) {
+    if (subject.get_cursed_flags().has(CurseTraitType::HARD_SPELL)) {
         self_ptr->info_list.emplace_back(_("あなたは魔法を失敗しやすい。", "Your spells fail more frequently."));
     }
 
-    if (player_ptr->cursed.has(CurseTraitType::FAST_DIGEST)) {
+    if (subject.get_cursed_flags().has(CurseTraitType::FAST_DIGEST)) {
         self_ptr->info_list.emplace_back(_("あなたはすぐお腹がへる。", "You have a good appetite."));
     }
 
-    if (player_ptr->cursed.has(CurseTraitType::DRAIN_HP)) {
+    if (subject.get_cursed_flags().has(CurseTraitType::DRAIN_HP)) {
         self_ptr->info_list.emplace_back(_("あなたは体力を吸われている。", "You occasionally lose hit points for no reason."));
     }
 
-    if (player_ptr->cursed.has(CurseTraitType::DRAIN_MANA)) {
+    if (subject.get_cursed_flags().has(CurseTraitType::DRAIN_MANA)) {
         self_ptr->info_list.emplace_back(_("あなたは魔力を吸われている。", "You occasionally lose spell points for no reason."));
     }
 }
 
-static void set_special_attack_info(PlayerType *player_ptr, self_info_type *self_ptr)
+static void set_special_attack_info(CreatureEntity &subject, self_info_type *self_ptr)
 {
-    if (player_ptr->special_attack & ATTACK_CONFUSE) {
+    if (subject.has_special_attack(ATTACK_CONFUSE)) {
         self_ptr->info_list.emplace_back(_("あなたの手は赤く輝いている。", "Your hands are glowing dull red."));
     }
 
-    if (player_ptr->special_attack & ATTACK_FIRE) {
+    if (subject.has_special_attack(ATTACK_FIRE)) {
         self_ptr->info_list.emplace_back(_("あなたの手は火炎に覆われている。", "You can strike the enemy with flame."));
     }
 
-    if (player_ptr->special_attack & ATTACK_COLD) {
+    if (subject.has_special_attack(ATTACK_COLD)) {
         self_ptr->info_list.emplace_back(_("あなたの手は冷気に覆われている。", "You can strike the enemy with cold."));
     }
 
-    if (player_ptr->special_attack & ATTACK_ACID) {
+    if (subject.has_special_attack(ATTACK_ACID)) {
         self_ptr->info_list.emplace_back(_("あなたの手は酸に覆われている。", "You can strike the enemy with acid."));
     }
 
-    if (player_ptr->special_attack & ATTACK_ELEC) {
+    if (subject.has_special_attack(ATTACK_ELEC)) {
         self_ptr->info_list.emplace_back(_("あなたの手は電撃に覆われている。", "You can strike the enemy with electoric shock."));
     }
 
-    if (player_ptr->special_attack & ATTACK_POIS) {
+    if (subject.has_special_attack(ATTACK_POIS)) {
         self_ptr->info_list.emplace_back(_("あなたの手は毒に覆われている。", "You can strike the enemy with poison."));
     }
 }
 
-static void set_esp_info(PlayerType *player_ptr, self_info_type *self_ptr)
+static void set_esp_info(CreatureEntity &subject, self_info_type *self_ptr)
 {
-    if (player_ptr->telepathy) {
+    if (subject.has_telepathy()) {
         self_ptr->info_list.emplace_back(_("あなたはテレパシー能力を持っている。", "You have ESP."));
     }
 
-    if (player_ptr->esp_animal) {
+    if (subject.has_esp_animal()) {
         self_ptr->info_list.emplace_back(_("あなたは自然界の生物の存在を感じる能力を持っている。", "You sense natural creatures."));
     }
 
-    if (player_ptr->esp_undead) {
+    if (subject.has_esp_undead()) {
         self_ptr->info_list.emplace_back(_("あなたはアンデッドの存在を感じる能力を持っている。", "You sense undead."));
     }
 
-    if (player_ptr->esp_demon) {
+    if (subject.has_esp_demon()) {
         self_ptr->info_list.emplace_back(_("あなたは悪魔の存在を感じる能力を持っている。", "You sense demons."));
     }
 
-    if (player_ptr->esp_orc) {
+    if (subject.has_esp_orc()) {
         self_ptr->info_list.emplace_back(_("あなたはオークの存在を感じる能力を持っている。", "You sense orcs."));
     }
 
-    if (player_ptr->esp_troll) {
+    if (subject.has_esp_troll()) {
         self_ptr->info_list.emplace_back(_("あなたはトロルの存在を感じる能力を持っている。", "You sense trolls."));
     }
 
-    if (player_ptr->esp_giant) {
+    if (subject.has_esp_giant()) {
         self_ptr->info_list.emplace_back(_("あなたは巨人の存在を感じる能力を持っている。", "You sense giants."));
     }
 
-    if (player_ptr->esp_dragon) {
+    if (subject.has_esp_dragon()) {
         self_ptr->info_list.emplace_back(_("あなたはドラゴンの存在を感じる能力を持っている。", "You sense dragons."));
     }
 
-    if (player_ptr->esp_human) {
+    if (subject.has_esp_human()) {
         self_ptr->info_list.emplace_back(_("あなたは人間の存在を感じる能力を持っている。", "You sense humans."));
     }
 
-    if (player_ptr->esp_evil) {
+    if (subject.has_esp_evil()) {
         self_ptr->info_list.emplace_back(_("あなたは邪悪な生き物の存在を感じる能力を持っている。", "You sense evil creatures."));
     }
 
-    if (player_ptr->esp_good) {
+    if (subject.has_esp_good()) {
         self_ptr->info_list.emplace_back(_("あなたは善良な生き物の存在を感じる能力を持っている。", "You sense good creatures."));
     }
 
-    if (player_ptr->esp_nonliving) {
+    if (subject.has_esp_nonliving()) {
         self_ptr->info_list.emplace_back(_("あなたは活動する無生物体の存在を感じる能力を持っている。", "You sense non-living creatures."));
     }
 
-    if (player_ptr->esp_unique) {
+    if (subject.has_esp_unique()) {
         self_ptr->info_list.emplace_back(_("あなたは特別な強敵の存在を感じる能力を持っている。", "You sense unique monsters."));
     }
 }
@@ -238,44 +237,44 @@ static void set_esp_info(PlayerType *player_ptr, self_info_type *self_ptr)
  * Use the "show_file()" method, perhaps.
  * </pre>
  */
-void self_knowledge(PlayerType *player_ptr)
+void self_knowledge(CreatureEntity &subject)
 {
     self_info_type tmp_si;
     self_info_type *self_ptr = &tmp_si;
-    display_life_rating(player_ptr, self_ptr);
-    chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::KNOWLEDGE, 1);
-    chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::ENLIGHTEN, 1);
-    display_max_base_status(player_ptr, self_ptr);
-    display_virtue(player_ptr, self_ptr);
+    display_life_rating(subject, self_ptr);
+    chg_virtue(subject, Virtue::KNOWLEDGE, 1);
+    chg_virtue(subject, Virtue::ENLIGHTEN, 1);
+    display_max_base_status(subject, self_ptr);
+    display_virtue(subject, self_ptr);
     self_ptr->info_list.emplace_back("");
-    if (player_ptr->mimic_form != MimicKindType::NONE) {
-        display_mimic_race_ability(player_ptr, self_ptr);
+    if (subject.get_mimic_form() != MimicKindType::NONE) {
+        display_mimic_race_ability(subject, self_ptr);
     } else {
-        set_race_ability_info(player_ptr, self_ptr);
+        set_race_ability_info(subject, self_ptr);
     }
 
-    set_class_ability_info(player_ptr, self_ptr);
-    set_mutation_info(player_ptr, self_ptr);
-    set_bad_status_info(*player_ptr->effects(), self_ptr);
-    set_curse_info(player_ptr, self_ptr);
-    set_body_improvement_info_1(player_ptr, self_ptr);
-    set_special_attack_info(player_ptr, self_ptr);
-    switch (player_ptr->action) {
+    set_class_ability_info(subject, self_ptr);
+    set_mutation_info(subject, self_ptr);
+    set_bad_status_info(subject, self_ptr);
+    set_curse_info(subject, self_ptr);
+    set_body_improvement_info_1(subject, self_ptr);
+    set_special_attack_info(subject, self_ptr);
+    switch (subject.get_action()) {
     case ACTION_SEARCH:
         self_ptr->info_list.emplace_back(_("あなたはひじょうに注意深く周囲を見渡している。", "You are looking around very carefully."));
         break;
     }
 
-    set_body_improvement_info_2(player_ptr, self_ptr);
-    set_esp_info(player_ptr, self_ptr);
-    set_body_improvement_info_3(player_ptr, self_ptr);
-    set_element_resistance_info(player_ptr, self_ptr);
-    set_high_resistance_info(player_ptr, self_ptr);
-    set_body_improvement_info_4(player_ptr, self_ptr);
-    set_status_sustain_info(player_ptr, self_ptr);
-    set_equipment_influence(player_ptr, self_ptr);
-    set_weapon_effect_info(player_ptr, self_ptr);
-    set_body_improvement_info_5(player_ptr, self_ptr);
+    set_body_improvement_info_2(subject, self_ptr);
+    set_esp_info(subject, self_ptr);
+    set_body_improvement_info_3(subject, self_ptr);
+    set_element_resistance_info(subject, self_ptr);
+    set_high_resistance_info(subject, self_ptr);
+    set_body_improvement_info_4(subject, self_ptr);
+    set_status_sustain_info(subject, self_ptr);
+    set_equipment_influence(subject, self_ptr);
+    set_weapon_effect_info(subject, self_ptr);
+    set_body_improvement_info_5(subject, self_ptr);
     display_self_info(self_ptr);
 }
 
@@ -310,112 +309,105 @@ static const std::vector<std::string> report_magic_durations = { _("ごく短い
 /*!
  * @brief 現在の一時的効果一覧を返す / Report all currently active magical effects.
  */
-void report_magics(PlayerType *player_ptr)
+void report_magics(CreatureEntity &subject)
 {
     std::vector<std::pair<int, std::string>> info;
-    const auto effects = player_ptr->effects();
-    const auto &blindness = effects->blindness();
-    if (blindness.is_blind()) {
-        info.emplace_back(report_magics_aux(blindness.current()),
+    if (subject.is_blind()) {
+        info.emplace_back(report_magics_aux(subject.get_timed_effect(CreatureTimedEffect::BLINDNESS)),
             _("あなたは目が見えない", "You cannot see"));
     }
 
-    const auto &confusion = effects->confusion();
-    if (confusion.is_confused()) {
-        info.emplace_back(report_magics_aux(confusion.current()),
+    if (subject.is_confused()) {
+        info.emplace_back(report_magics_aux(subject.get_timed_effect(CreatureTimedEffect::CONFUSION)),
             _("あなたは混乱している", "You are confused"));
     }
 
-    const auto &fear = effects->fear();
-    if (fear.is_fearful()) {
-        info.emplace_back(report_magics_aux(fear.current()),
+    if (subject.is_fearful()) {
+        info.emplace_back(report_magics_aux(subject.get_timed_effect(CreatureTimedEffect::FEAR)),
             _("あなたは恐怖に侵されている", "You are terrified"));
     }
 
-    const auto &player_poison = effects->poison();
-    if (player_poison.is_poisoned()) {
-        info.emplace_back(report_magics_aux(player_poison.current()),
+    if (subject.is_poisoned()) {
+        info.emplace_back(report_magics_aux(subject.get_timed_effect(CreatureTimedEffect::POISON)),
             _("あなたは毒に侵されている", "You are poisoned"));
     }
 
-    const auto &hallucination = effects->hallucination();
-    if (hallucination.is_hallucinated()) {
-        info.emplace_back(report_magics_aux(hallucination.current()),
+    if (subject.is_hallucinated()) {
+        info.emplace_back(report_magics_aux(subject.get_timed_effect(CreatureTimedEffect::HALLUCINATION)),
             _("あなたは幻覚を見ている", "You are hallucinating"));
     }
 
-    if (player_ptr->blessed) {
-        info.emplace_back(report_magics_aux(player_ptr->blessed),
+    if (subject.get_timed_effect(CreatureTimedEffect::BLESSED)) {
+        info.emplace_back(report_magics_aux(subject.get_timed_effect(CreatureTimedEffect::BLESSED)),
             _("あなたは高潔さを感じている", "You feel rightous"));
     }
 
-    if (player_ptr->hero) {
-        info.emplace_back(report_magics_aux(player_ptr->hero),
+    if (subject.get_timed_effect(CreatureTimedEffect::HERO)) {
+        info.emplace_back(report_magics_aux(subject.get_timed_effect(CreatureTimedEffect::HERO)),
             _("あなたはヒーロー気分だ", "You feel heroic"));
     }
 
-    if (is_shero(player_ptr)) {
-        info.emplace_back(report_magics_aux(player_ptr->berserk),
+    if (subject.is_shero()) {
+        info.emplace_back(report_magics_aux(subject.get_timed_effect(CreatureTimedEffect::BERSERK)),
             _("あなたは戦闘狂だ", "You are in a battle rage"));
     }
 
-    const auto &protection = effects->protection();
-    if (protection.is_protected()) {
-        info.emplace_back(report_magics_aux(protection.current()),
+    if (subject.is_protected_from_evil()) {
+        info.emplace_back(report_magics_aux(subject.get_timed_effect(CreatureTimedEffect::PROTECTION)),
             _("あなたは邪悪なる存在から守られている", "You are protected from evil"));
     }
 
-    if (player_ptr->shield) {
-        info.emplace_back(report_magics_aux(player_ptr->shield),
+    if (subject.get_timed_effect(CreatureTimedEffect::SHIELD)) {
+        info.emplace_back(report_magics_aux(subject.get_timed_effect(CreatureTimedEffect::SHIELD)),
             _("あなたは神秘のシールドで守られている", "You are protected by a mystic shield"));
     }
 
-    if (player_ptr->invuln) {
-        info.emplace_back(report_magics_aux(player_ptr->invuln),
+    if (subject.get_timed_effect(CreatureTimedEffect::INVULNERABILITY)) {
+        info.emplace_back(report_magics_aux(subject.get_timed_effect(CreatureTimedEffect::INVULNERABILITY)),
             _("あなたは無敵だ", "You are invulnerable"));
     }
 
-    if (player_ptr->wraith_form) {
-        info.emplace_back(report_magics_aux(player_ptr->wraith_form),
+    if (subject.get_timed_effect(CreatureTimedEffect::WRAITH_FORM)) {
+        info.emplace_back(report_magics_aux(subject.get_timed_effect(CreatureTimedEffect::WRAITH_FORM)),
             _("あなたは幽体化している", "You are incorporeal"));
     }
 
-    if (player_ptr->special_attack & ATTACK_CONFUSE) {
+    if (subject.has_special_attack(ATTACK_CONFUSE)) {
         info.emplace_back(7, _("あなたの手は赤く輝いている", "Your hands are glowing dull red."));
     }
 
-    if (player_ptr->word_recall) {
-        info.emplace_back(report_magics_aux(player_ptr->word_recall),
+    if (const auto recall = subject.get_timed_effect(CreatureTimedEffect::WORD_RECALL); recall != 0) {
+        info.emplace_back(report_magics_aux(recall),
             _("この後帰還の詔が発動する", "You are waiting to be recalled"));
     }
 
-    if (player_ptr->alter_reality) {
-        info.emplace_back(report_magics_aux(player_ptr->alter_reality),
+    if (const auto alter = subject.get_timed_effect(CreatureTimedEffect::ALTER_REALITY); alter != 0) {
+        info.emplace_back(report_magics_aux(alter),
             _("この後現実変容が発動する", "You waiting to be altered"));
     }
 
-    if (player_ptr->oppose_acid) {
-        info.emplace_back(report_magics_aux(player_ptr->oppose_acid),
+    if (subject.get_timed_effect(CreatureTimedEffect::OPPOSE_ACID)) {
+        info.emplace_back(report_magics_aux(subject.get_timed_effect(CreatureTimedEffect::OPPOSE_ACID)),
             _("あなたは酸への耐性を持っている", "You are resistant to acid"));
     }
 
-    if (player_ptr->oppose_elec) {
-        info.emplace_back(report_magics_aux(player_ptr->oppose_elec),
+    if (subject.get_timed_effect(CreatureTimedEffect::OPPOSE_ELEC)) {
+        info.emplace_back(report_magics_aux(subject.get_timed_effect(CreatureTimedEffect::OPPOSE_ELEC)),
             _("あなたは電撃への耐性を持っている", "You are resistant to lightning"));
     }
 
-    if (player_ptr->oppose_fire) {
-        info.emplace_back(report_magics_aux(player_ptr->oppose_fire),
+    if (subject.get_timed_effect(CreatureTimedEffect::OPPOSE_FIRE)) {
+        info.emplace_back(report_magics_aux(subject.get_timed_effect(CreatureTimedEffect::OPPOSE_FIRE)),
             _("あなたは火への耐性を持っている", "You are resistant to fire"));
     }
 
-    if (player_ptr->oppose_cold) {
-        info.emplace_back(report_magics_aux(player_ptr->oppose_cold),
+    if (subject.get_timed_effect(CreatureTimedEffect::OPPOSE_COLD)) {
+        info.emplace_back(report_magics_aux(subject.get_timed_effect(CreatureTimedEffect::OPPOSE_COLD)),
             _("あなたは冷気への耐性を持っている", "You are resistant to cold"));
     }
 
-    if (player_ptr->oppose_pois) {
-        info.emplace_back(report_magics_aux(player_ptr->oppose_pois),
+    if (subject.get_timed_effect(CreatureTimedEffect::OPPOSE_POIS)) {
+        info.emplace_back(report_magics_aux(subject.get_timed_effect(CreatureTimedEffect::OPPOSE_POIS)),
             _("あなたは毒への耐性を持っている", "You are resistant to poison"));
     }
 

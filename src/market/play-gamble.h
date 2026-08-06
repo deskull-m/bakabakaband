@@ -1,4 +1,4 @@
 #pragma once
 
-class PlayerType;
-void gamble_comm(PlayerType *player_ptr, int cmd);
+class CreatureEntity;
+void gamble_comm(CreatureEntity &creature, int cmd);

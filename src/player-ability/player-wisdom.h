@@ -2,10 +2,14 @@
 
 #include "player-status/player-basic-statistics.h"
 
-class PlayerType;
+class CreatureEntity;
 class PlayerWisdom : public PlayerBasicStatistics {
 public:
-    PlayerWisdom(PlayerType *player_ptr);
+    PlayerWisdom(CreatureEntity &creature);
+    PlayerWisdom(const PlayerWisdom &) = default;
+    PlayerWisdom(PlayerWisdom &&) = default;
+    PlayerWisdom &operator=(const PlayerWisdom &) = delete;
+    PlayerWisdom &operator=(PlayerWisdom &&) = delete;
 
 protected:
     void set_locals() override;

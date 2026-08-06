@@ -10,12 +10,13 @@
 #include "io/input-key-requester.h"
 #include "player-info/self-info.h"
 #include "system/building-type-definition.h"
+#include "system/creature-entity.h"
+#include "system/dungeon/quest-definition.h"
 #include "system/enums/dungeon/dungeon-id.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/player-type-definition.h"
 #include "system/system-variables.h"
 #include "term/screen-processor.h"
 #include "util/bit-flags-calculator.h"
@@ -28,8 +29,8 @@
 #include <tuple>
 #include <vector>
 
-void wiz_enter_quest(PlayerType *player_ptr);
-void wiz_complete_quest(PlayerType *player_ptr);
+void wiz_enter_quest(CreatureEntity &creature);
+void wiz_complete_quest(CreatureEntity &creature);
 void wiz_restore_monster_max_num(MonraceId r_idx);
 
 /*!
@@ -63,9 +64,9 @@ static void display_wizard_game_modifier_menu()
 
 /*!
  * @brief ゲーム設定コマンドの入力を受け付ける
- * @param player_ptr プレイヤーの情報へのポインタ
+ * @param creature クリーチャーへの参照
  */
-void wizard_game_modifier(PlayerType *player_ptr)
+void wizard_game_modifier(CreatureEntity &creature)
 {
     screen_save();
     display_wizard_game_modifier_menu();
@@ -82,14 +83,14 @@ void wizard_game_modifier(PlayerType *player_ptr)
         break;
     case 'g': {
         auto &melee_arena = MeleeArena::get_instance();
-        melee_arena.update_gladiators(player_ptr);
+        melee_arena.update_gladiators(creature);
         break;
     }
     case 'q':
-        wiz_complete_quest(player_ptr);
+        wiz_complete_quest(creature);
         break;
     case 'Q':
-        wiz_enter_quest(player_ptr);
+        wiz_enter_quest(creature);
         break;
     case 'u':
         wiz_restore_monster_max_num(i2enum<MonraceId>(command_arg));
@@ -102,9 +103,9 @@ void wizard_game_modifier(PlayerType *player_ptr)
 
 /*!
  * @brief 指定したクエストに突入する
- * @param プレイヤーの情報へのポインタ
+ * @param creature クリーチャーへの参照
  */
-void wiz_enter_quest(PlayerType *player_ptr)
+void wiz_enter_quest(CreatureEntity &creature)
 {
     auto &quests = QuestList::get_instance();
     const auto quest_max = enum2i(quests.rbegin()->first);
@@ -114,22 +115,22 @@ void wiz_enter_quest(PlayerType *player_ptr)
     }
 
     init_flags = i2enum<init_flags_type>(INIT_SHOW_TEXT | INIT_ASSIGN);
-    player_ptr->current_floor_ptr->quest_number = *quest_id;
-    parse_fixed_map(player_ptr, QUEST_DEFINITION_LIST, 0, 0, 0, 0);
+    creature.get_floor()->quest_number = *quest_id;
+    parse_fixed_map(creature, QUEST_DEFINITION_LIST, 0, 0, 0, 0);
     auto &quest = quests.get_quest(*quest_id);
     quest.status = QuestStatusType::TAKEN;
     if (quest.dungeon == DungeonId::WILDERNESS) {
-        exe_enter_quest(player_ptr, *quest_id);
+        exe_enter_quest(creature, *quest_id);
     }
 }
 
 /*!
  * @brief 指定したクエストを完了させる
- * @param プレイヤーの情報へのポインタ
+ * @param creature クリーチャーへの参照
  */
-void wiz_complete_quest(PlayerType *player_ptr)
+void wiz_complete_quest(CreatureEntity &creature)
 {
-    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     if (!floor.is_in_quest()) {
         msg_print("No current quest");
         msg_erase();
@@ -138,7 +139,7 @@ void wiz_complete_quest(PlayerType *player_ptr)
 
     const auto &quests = QuestList::get_instance();
     if (quests.get_quest(floor.quest_number).status == QuestStatusType::TAKEN) {
-        complete_quest(player_ptr, floor.quest_number);
+        complete_quest(creature, floor.quest_number);
     }
 }
 

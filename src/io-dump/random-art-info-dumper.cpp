@@ -3,10 +3,10 @@
 #include "io/files-util.h"
 #include "perception/object-perception.h"
 #include "store/store-util.h"
+#include "system/creature-entity.h"
 #include "system/floor/town-info.h"
 #include "system/floor/town-list.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "util/angband-files.h"
 #include "util/finalizer.h"
 #include "view/display-messages.h"
@@ -52,25 +52,25 @@ static void spoiler_print_randart(const ItemEntity &item, const ArtifactsDumpInf
 
 /*!
  * @brief ランダムアーティファクト内容をスポイラー出力するサブルーチン /
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param item ランダムアーティファクトのオブジェクト構造体参照ポインタ
  * @param tval 出力したいランダムアーティファクトの種類
  */
-static void spoil_random_artifact_aux(PlayerType *player_ptr, const ItemEntity &item, ItemKindType tval, std::ofstream &ofs)
+static void spoil_random_artifact_aux(CreatureEntity &creature, const ItemEntity &item, ItemKindType tval, std::ofstream &ofs)
 {
     if (!item.is_known() || !item.is_random_artifact() || (item.bi_key.tval() != tval)) {
         return;
     }
 
-    const auto artifacts_list = random_artifact_analyze(player_ptr, item);
+    const auto artifacts_list = random_artifact_analyze(creature, item);
     spoiler_print_randart(item, &artifacts_list, ofs);
 }
 
 /*!
  * @brief ランダムアーティファクト内容をスポイラー出力するメインルーチン
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
-void spoil_random_artifact(PlayerType *player_ptr)
+void spoil_random_artifact(CreatureEntity &creature)
 {
     const auto path = path_build(ANGBAND_DIR_USER, "randifact.txt");
     std::ofstream ofs(path);
@@ -82,26 +82,26 @@ void spoil_random_artifact(PlayerType *player_ptr)
     spoiler_underline("Random artifacts list.\r", ofs);
     for (const auto &[tval_list, name] : group_artifact_list) {
         for (auto tval : tval_list) {
-            for (int i = INVEN_MAIN_HAND; i < INVEN_TOTAL; i++) {
-                auto &item = *player_ptr->inventory[i];
-                spoil_random_artifact_aux(player_ptr, item, tval, ofs);
+            for (const auto i_idx : INVEN_WIELDING_SLOTS) {
+                auto &item = *creature.inventory[i_idx];
+                spoil_random_artifact_aux(creature, item, tval, ofs);
             }
 
-            for (int i = 0; i < INVEN_PACK; i++) {
-                auto &item = *player_ptr->inventory[i];
-                spoil_random_artifact_aux(player_ptr, item, tval, ofs);
+            for (const auto i_idx : INVEN_PACK_SLOTS) {
+                auto &item = *creature.inventory[i_idx];
+                spoil_random_artifact_aux(creature, item, tval, ofs);
             }
 
-            const auto &home = towns_info[1].get_store(StoreSaleType::HOME);
+            const auto &home = TownList::get_instance().get_town(1).get_store(StoreSaleType::HOME);
             for (int i = 0; i < home.stock_num; i++) {
                 auto &item = *home.stock[i];
-                spoil_random_artifact_aux(player_ptr, item, tval, ofs);
+                spoil_random_artifact_aux(creature, item, tval, ofs);
             }
 
-            const auto &museum = towns_info[1].get_store(StoreSaleType::MUSEUM);
+            const auto &museum = TownList::get_instance().get_town(1).get_store(StoreSaleType::MUSEUM);
             for (int i = 0; i < museum.stock_num; i++) {
                 auto &item = *museum.stock[i];
-                spoil_random_artifact_aux(player_ptr, item, tval, ofs);
+                spoil_random_artifact_aux(creature, item, tval, ofs);
             }
         }
     }

@@ -1,4 +1,4 @@
 #pragma once
 
-class PlayerType;
-bool inn_comm(PlayerType *player_ptr, int cmd);
+class CreatureEntity;
+bool inn_comm(CreatureEntity &creature, int cmd, int cost);

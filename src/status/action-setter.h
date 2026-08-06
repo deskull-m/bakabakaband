@@ -2,5 +2,5 @@
 
 #include <cstdint>
 
-class PlayerType;
-void set_action(PlayerType *player_ptr, uint8_t typ);
+class CreatureEntity;
+void set_action(CreatureEntity &creature, uint8_t typ);

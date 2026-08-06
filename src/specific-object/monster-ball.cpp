@@ -10,11 +10,10 @@
 #include "pet/pet-util.h"
 #include "racial/racial-android.h"
 #include "spell-kind/spells-launcher.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
-#include "system/player-type-definition.h"
 #include "target/target-getter.h"
 #include "util/flag-group.h"
 #include "util/string-processor.h"
@@ -42,11 +41,11 @@ static void inscribe_nickname(ItemEntity &item, const CapturedMonsterType &cap_m
     insc->append(nickname.str());
 }
 
-static bool capture_monster(PlayerType *player_ptr, ItemEntity &item)
+static bool capture_monster(CreatureEntity &creature, ItemEntity &item)
 {
     const auto old_target_pet = target_pet;
     target_pet = true;
-    const auto dir = get_aim_dir(player_ptr);
+    const auto dir = get_aim_dir(creature);
     if (!dir) {
         target_pet = old_target_pet;
         return false;
@@ -54,7 +53,7 @@ static bool capture_monster(PlayerType *player_ptr, ItemEntity &item)
 
     target_pet = old_target_pet;
     CapturedMonsterType cap_mon;
-    if (!fire_ball(player_ptr, AttributeType::CAPTURE, dir, 0, 0, &cap_mon)) {
+    if (!fire_ball(creature, AttributeType::CAPTURE, dir, 0, 0, &cap_mon)) {
         return true;
     }
 
@@ -67,7 +66,7 @@ static bool capture_monster(PlayerType *player_ptr, ItemEntity &item)
     return true;
 }
 
-static void restore_monster_nickname(MonsterEntity &monster, ItemEntity &item)
+static void restore_monster_nickname(CreatureEntity &monster, ItemEntity &item)
 {
     if (!item.is_inscribed()) {
         return;
@@ -93,20 +92,20 @@ static void restore_monster_nickname(MonsterEntity &monster, ItemEntity &item)
     insc->erase(s - insc->data());
 }
 
-static bool release_monster(PlayerType *player_ptr, ItemEntity &item, const Direction &dir)
+static bool release_monster(CreatureEntity &creature, ItemEntity &item, const Direction &dir)
 {
     const auto &monrace = item.get_monrace();
-    const auto pos = player_ptr->get_neighbor(dir);
-    if (!monster_can_enter(player_ptr, pos.y, pos.x, monrace, 0)) {
+    const auto pos = creature.get_neighbor(dir);
+    if (!monster_can_enter(creature, pos.y, pos.x, monrace, 0)) {
         return false;
     }
 
-    const auto m_idx = place_specific_monster(player_ptr, pos.y, pos.x, monrace.idx, PM_FORCE_PET | PM_NO_KAGE);
+    const auto m_idx = place_specific_monster(creature, pos.y, pos.x, monrace.idx, PM_FORCE_PET | PM_NO_KAGE);
     if (!m_idx) {
         return false;
     }
 
-    auto &monster = player_ptr->current_floor_ptr->m_list[*m_idx];
+    auto &monster = creature.get_floor()->get_monster(*m_idx);
     if (item.captured_monster_speed > 0) {
         monster.speed = item.captured_monster_speed;
     }
@@ -118,7 +117,7 @@ static bool release_monster(PlayerType *player_ptr, ItemEntity &item, const Dire
     if (item.captured_monster_current_hp > 0) {
         monster.hp = item.captured_monster_current_hp;
     }
-    monster.mflag2 = item.captured_monster_mflag2;
+    monster.set_all_constant_flags(item.captured_monster_mflag2);
 
     monster.maxhp = monster.max_maxhp;
     restore_monster_nickname(monster, item);
@@ -129,31 +128,31 @@ static bool release_monster(PlayerType *player_ptr, ItemEntity &item, const Dire
     return true;
 }
 
-bool exe_monster_capture(PlayerType *player_ptr, ItemEntity &item)
+bool exe_monster_capture(CreatureEntity &creature, ItemEntity &item)
 {
     if (item.bi_key.tval() != ItemKindType::CAPTURE) {
         return false;
     }
 
     if (item.pval == 0) {
-        if (!capture_monster(player_ptr, item)) {
+        if (!capture_monster(creature, item)) {
             return true;
         }
 
-        calc_android_exp(player_ptr);
+        calc_android_exp(creature);
         return true;
     }
 
-    const auto dir = get_direction(player_ptr);
+    const auto dir = get_direction(creature);
     if (!dir) {
         return true;
     }
 
-    if (!release_monster(player_ptr, item, dir)) {
+    if (!release_monster(creature, item, dir)) {
         msg_print(_("おっと、解放に失敗した。", "Oops.  You failed to release your pet."));
     }
 
-    calculate_upkeep(player_ptr);
-    calc_android_exp(player_ptr);
+    calculate_upkeep(creature);
+    calc_android_exp(creature);
     return true;
 }

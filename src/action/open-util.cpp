@@ -8,10 +8,10 @@
 #include "grid/trap.h"
 #include "object/tval-types.h"
 #include "perception/object-perception.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 
 /*!
  * @brief 該当のマスに存在している箱のオブジェクトIDを返す。
@@ -40,18 +40,18 @@ short chest_check(const FloorType &floor, const Pos2D &pos, bool trapped)
  * @param trapped TRUEならばトラップの存在が判明している箱のみ対象にする
  * @return 該当する地形の数と、該当するマスの中から1つの方向
  */
-std::pair<int, Direction> count_chests(PlayerType *player_ptr, bool trapped)
+std::pair<int, Direction> count_chests(CreatureEntity &creature, bool trapped)
 {
     auto dir = Direction::none();
     auto count = 0;
     for (const auto &d : Direction::directions()) {
-        const auto pos_neighbor = player_ptr->get_neighbor(d);
-        const auto o_idx = chest_check(*player_ptr->current_floor_ptr, pos_neighbor, false);
+        const auto pos_neighbor = creature.get_neighbor(d);
+        const auto o_idx = chest_check(*creature.get_floor(), pos_neighbor, false);
         if (o_idx == 0) {
             continue;
         }
 
-        const auto &item = *player_ptr->current_floor_ptr->o_list[o_idx];
+        const auto &item = *creature.get_floor()->o_list[o_idx];
         if (item.pval == 0) {
             continue;
         }

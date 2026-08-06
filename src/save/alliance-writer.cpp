@@ -14,7 +14,7 @@ void wr_alliance_base_power()
 
     // 各アライアンスのIDとbase_power、natural_recoveryを書き込む
     for (const auto &[alliance_type, alliance_ptr] : alliance_list) {
-        wr_s16b(enum2i(alliance_type));
+        wr_s16b(static_cast<int16_t>(enum2i(alliance_type)));
         wr_s64b(alliance_ptr->base_power);
         wr_s64b(alliance_ptr->natural_recovery);
     }

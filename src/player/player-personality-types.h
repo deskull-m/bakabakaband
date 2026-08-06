@@ -1,6 +1,7 @@
 #pragma once
 
 enum player_personality_type {
+    PERSONALITY_NONE = -1,
     PERSONALITY_ORDINARY = 0,
     PERSONALITY_MIGHTY = 1,
     PERSONALITY_SHREWD = 2,
@@ -17,5 +18,7 @@ enum player_personality_type {
     PERSONALITY_TOUGH = 13,
     PERSONALITY_SUSHI_EATER = 14,
     PERSONALITY_MESUGAKI = 15,
-    MAX_PERSONALITIES = 16,
+    PERSONALITY_EMPTY = 16, //!< 無心。プレイヤーは選択不能。EMPTY_MIND モンスター専用
+    MAX_SELECTABLE_PERSONALITIES = 16, //!< プレイヤーが選択可能な性格数 (PERSONALITY_EMPTY を除く)
+    MAX_PERSONALITIES = 17,
 };

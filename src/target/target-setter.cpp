@@ -11,9 +11,9 @@
 #include "io/input-key-requester.h"
 #include "io/screen-util.h"
 #include "main/sound-of-music.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "target/projection-path-calculator.h"
 #include "target/target-checker.h"
@@ -33,7 +33,11 @@
 
 class TargetSetter {
 public:
-    TargetSetter(PlayerType *player_ptr, target_type mode);
+    TargetSetter(CreatureEntity &creature, target_type mode);
+    TargetSetter(const TargetSetter &) = default;
+    TargetSetter(TargetSetter &&) = default;
+    TargetSetter &operator=(const TargetSetter &) = delete;
+    TargetSetter &operator=(TargetSetter &&) = delete;
     void sweep_target_grids();
     const Target &get_target() const
     {
@@ -53,7 +57,7 @@ private:
     tl::optional<std::pair<Direction, bool>> switch_next_grid_command();
     void decide_change_panel(const Direction &dir, bool move_fast);
 
-    PlayerType *player_ptr;
+    CreatureEntity &player;
     target_type mode;
     Pos2D pos_target;
     bool done = false;
@@ -62,27 +66,27 @@ private:
     Target target = Target::none();
 };
 
-TargetSetter::TargetSetter(PlayerType *player_ptr, target_type mode)
-    : player_ptr(player_ptr)
+TargetSetter::TargetSetter(CreatureEntity &creature, target_type mode)
+    : player(creature)
     , mode(mode)
-    , pos_target(player_ptr->get_position())
-    , pos_interests(target_set_prepare(player_ptr, mode))
+    , pos_target(creature.get_position())
+    , pos_interests(target_set_prepare(creature, mode))
 {
 }
 
-static bool set_travel_goal(PlayerType *player_ptr, const Pos2D &pos)
+static bool set_travel_goal(CreatureEntity &creature, const Pos2D &pos)
 {
-    if (player_ptr->is_located_at(pos) || !Travel::can_travel_to(*player_ptr->current_floor_ptr, pos)) {
+    if (creature.is_located_at(pos) || !Travel::can_travel_to(*creature.get_floor(), pos)) {
         return false;
     }
 
-    Travel::get_instance().set_goal(player_ptr, pos);
+    Travel::get_instance().set_goal(creature, pos);
     return true;
 }
 
 /*!
  * @brief フォーカスを当てるべきマップ描画の基準座標を指定する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param pos 変更先のフロア座標
  * @details
  * Handle a request to change the current panel
@@ -90,7 +94,7 @@ static bool set_travel_goal(PlayerType *player_ptr, const Pos2D &pos)
  * Also used in do_cmd_locate
  * @return 実際に再描画が必要だった場合TRUEを返す
  */
-static bool change_panel_xy(PlayerType *player_ptr, const Pos2D &pos)
+static bool change_panel_xy(CreatureEntity &creature, const Pos2D &pos)
 {
     auto dy = 0;
     auto dx = 0;
@@ -115,7 +119,7 @@ static bool change_panel_xy(PlayerType *player_ptr, const Pos2D &pos)
         return false;
     }
 
-    return change_panel(player_ptr, dy, dx);
+    return change_panel(creature, dy, dx);
 }
 
 /*!
@@ -184,15 +188,15 @@ tl::optional<int> TargetSetter::pick_nearest_interest_target(const Pos2D &pos, c
 
 std::string TargetSetter::describe_projectablity() const
 {
-    change_panel_xy(this->player_ptr, this->pos_target);
+    change_panel_xy(this->player, this->pos_target);
     if ((this->mode & TARGET_LOOK) == 0) {
-        print_path(this->player_ptr, this->pos_target.y, this->pos_target.x);
+        print_path(this->player, this->pos_target.y, this->pos_target.x);
     }
 
-    const auto &floor = *this->player_ptr->current_floor_ptr;
+    const auto &floor = *this->player.get_floor();
     std::string info;
     const auto &grid = floor.get_grid(this->pos_target);
-    if (target_able(this->player_ptr, grid.m_idx)) {
+    if (target_able(this->player, grid.m_idx)) {
         info = _("q止 t決 p自 o現 +次 -前", "q,t,p,o,+,-,<dir>");
     } else {
         info = _("q止 p自 o現 +次 -前", "q,p,o,+,-,<dir>");
@@ -206,10 +210,10 @@ std::string TargetSetter::describe_projectablity() const
         return info;
     }
 
-    const auto p_pos = this->player_ptr->get_position();
+    const auto p_pos = this->player.get_position();
     const auto cheatinfo = format(" X:%d Y:%d LOS:%d LOP:%d",
         this->pos_target.x, this->pos_target.y,
-        los(*this->player_ptr->current_floor_ptr, p_pos, this->pos_target),
+        los(*this->player.get_floor(), p_pos, this->pos_target),
         projectable(floor, p_pos, this->pos_target));
     return info.append(cheatinfo);
 }
@@ -218,7 +222,7 @@ char TargetSetter::examine_target_grid(std::string_view info, tl::optional<targe
 {
     const auto target_mode = append_mode ? i2enum<target_type>(this->mode | *append_mode) : this->mode;
     while (true) {
-        const auto query = examine_grid(this->player_ptr, this->pos_target.y, this->pos_target.x, target_mode, info.data());
+        const auto query = examine_grid(this->player, this->pos_target.y, this->pos_target.x, target_mode, info.data());
         if (query != '\0') {
             return (use_menu && (query == '\r')) ? 't' : query;
         }
@@ -258,14 +262,14 @@ Direction TargetSetter::switch_target_input()
     case '.':
     case '5':
     case '0': {
-        const auto &grid = this->player_ptr->current_floor_ptr->get_grid(this->pos_target);
-        if (!target_able(this->player_ptr, grid.m_idx)) {
+        const auto &grid = this->player.get_floor()->get_grid(this->pos_target);
+        if (!target_able(this->player, grid.m_idx)) {
             bell();
             return Direction::none();
         }
 
-        health_track(this->player_ptr, grid.m_idx);
-        this->target = Target::create_monster_target(this->player_ptr, grid.m_idx);
+        health_track(this->player, grid.m_idx);
+        this->target = Target::create_monster_target(this->player, grid.m_idx);
         this->done = true;
         return Direction::none();
     }
@@ -278,14 +282,14 @@ Direction TargetSetter::switch_target_input()
         this->change_interest_index(-1);
         return Direction::none();
     case 'p': {
-        verify_panel(this->player_ptr);
+        verify_panel(this->player);
         auto &rfu = RedrawingFlagsUpdater::get_instance();
         rfu.set_flag(StatusRecalculatingFlag::MONSTER_STATUSES);
         rfu.set_flag(MainWindowRedrawingFlag::MAP);
         rfu.set_flag(SubWindowRedrawingFlag::OVERHEAD);
-        handle_stuff(this->player_ptr);
-        this->pos_interests = target_set_prepare(this->player_ptr, this->mode);
-        this->pos_target = this->player_ptr->get_position();
+        handle_stuff(this->player);
+        this->pos_interests = target_set_prepare(this->player, this->mode);
+        this->pos_target = this->player.get_position();
     }
         [[fallthrough]];
     case 'o':
@@ -294,7 +298,7 @@ Direction TargetSetter::switch_target_input()
     case 'm':
         return Direction::none();
     case 'g':
-        this->done = set_travel_goal(this->player_ptr, this->pos_target);
+        this->done = set_travel_goal(this->player, this->pos_target);
         return Direction::none();
     default: {
         const char queried_command = rogue_like_commands ? 'x' : 'l';
@@ -326,7 +330,7 @@ tl::optional<int> TargetSetter::check_panel_changed(const Direction &dir)
     const auto pos = is_point_interest ? this->pos_interests[*this->interest_index] : this->pos_target;
 
     // 新たな描画範囲を用いて "interesting" 座標リストを更新。
-    this->pos_interests = target_set_prepare(this->player_ptr, this->mode);
+    this->pos_interests = target_set_prepare(this->player, this->mode);
 
     // 新たな "interesting" 座標一覧からターゲットを探す。
     return pick_nearest_interest_target(pos, dir);
@@ -340,7 +344,7 @@ tl::optional<int> TargetSetter::check_panel_changed(const Direction &dir)
 tl::optional<int> TargetSetter::sweep_targets(const Direction &dir, int panel_row_min_initial, int panel_col_min_initial)
 {
     auto [dy, dx] = dir.vec();
-    while (change_panel(this->player_ptr, dy, dx)) {
+    while (change_panel(this->player, dy, dx)) {
         // カーソル移動に伴い、必要なだけ描画範囲を更新。
         // "interesting" 座標リストおよび現在のターゲットも更新。
         const auto target_index = this->check_panel_changed(dir);
@@ -357,9 +361,9 @@ tl::optional<int> TargetSetter::sweep_targets(const Direction &dir, int panel_ro
     rfu.set_flag(StatusRecalculatingFlag::MONSTER_STATUSES);
     rfu.set_flag(MainWindowRedrawingFlag::MAP);
     rfu.set_flag(SubWindowRedrawingFlag::OVERHEAD);
-    handle_stuff(this->player_ptr);
+    handle_stuff(this->player);
 
-    this->pos_interests = target_set_prepare(this->player_ptr, this->mode);
+    this->pos_interests = target_set_prepare(this->player, this->mode);
 
     auto &[y, x] = this->pos_target;
     x += dx;
@@ -374,12 +378,12 @@ tl::optional<int> TargetSetter::sweep_targets(const Direction &dir, int panel_ro
     }
 
     if ((y >= panel_row_min + hgt) || (y < panel_row_min) || (x >= panel_col_min + wid) || (x < panel_col_min)) {
-        if (change_panel(this->player_ptr, dy, dx)) {
-            this->pos_interests = target_set_prepare(this->player_ptr, this->mode);
+        if (change_panel(this->player, dy, dx)) {
+            this->pos_interests = target_set_prepare(this->player, this->mode);
         }
     }
 
-    const auto &floor = *this->player_ptr->current_floor_ptr;
+    const auto &floor = *this->player.get_floor();
     x = std::clamp(x, 1, floor.width - 2);
     y = std::clamp(y, 1, floor.height - 2);
     return tl::nullopt;
@@ -393,7 +397,7 @@ bool TargetSetter::set_target_grid()
 
     this->pos_target = this->pos_interests[*this->interest_index];
 
-    fix_floor_item_list(this->player_ptr, this->pos_target);
+    fix_floor_item_list(this->player, this->pos_target);
 
     const auto dir = this->switch_target_input();
     if (!dir) {
@@ -414,10 +418,10 @@ std::string TargetSetter::describe_grid_wizard() const
         return "";
     }
 
-    const auto &floor = *this->player_ptr->current_floor_ptr;
+    const auto &floor = *this->player.get_floor();
     const auto &grid = floor.get_grid(this->pos_target);
     constexpr auto fmt = " X:%d Y:%d LOS:%d LOP:%d SPECIAL:%d";
-    const auto p_pos = this->player_ptr->get_position();
+    const auto p_pos = this->player.get_position();
     const auto is_los = los(floor, p_pos, this->pos_target);
     const auto is_projectable = projectable(floor, p_pos, this->pos_target);
     const auto cheatinfo = format(fmt, this->pos_target.x, this->pos_target.y, is_los, is_projectable, grid.special);
@@ -446,18 +450,18 @@ tl::optional<std::pair<Direction, bool>> TargetSetter::switch_next_grid_command(
     case '.':
     case '5':
     case '0':
-        this->target = Target::create_grid_target(this->player_ptr, this->pos_target);
+        this->target = Target::create_grid_target(this->player, this->pos_target);
         this->done = true;
         return tl::nullopt;
     case 'p': {
-        verify_panel(this->player_ptr);
+        verify_panel(this->player);
         auto &rfu = RedrawingFlagsUpdater::get_instance();
         rfu.set_flag(StatusRecalculatingFlag::MONSTER_STATUSES);
         rfu.set_flag(MainWindowRedrawingFlag::MAP);
         rfu.set_flag(SubWindowRedrawingFlag::OVERHEAD);
-        handle_stuff(this->player_ptr);
-        this->pos_interests = target_set_prepare(this->player_ptr, this->mode);
-        this->pos_target = this->player_ptr->get_position();
+        handle_stuff(this->player);
+        this->pos_interests = target_set_prepare(this->player, this->mode);
+        this->pos_target = this->player.get_position();
         return tl::nullopt;
     }
     case 'o':
@@ -483,7 +487,7 @@ tl::optional<std::pair<Direction, bool>> TargetSetter::switch_next_grid_command(
         return tl::nullopt;
     }
     case 'g':
-        this->done = set_travel_goal(this->player_ptr, this->pos_target);
+        this->done = set_travel_goal(this->player, this->pos_target);
         return tl::nullopt;
     default:
         const auto dir = get_keymap_dir(query);
@@ -518,11 +522,11 @@ void TargetSetter::decide_change_panel(const Direction &dir, bool move_fast)
     should_change_panel |= y < panel_row_min;
     should_change_panel |= x >= panel_col_min + wid;
     should_change_panel |= x < panel_col_min;
-    if (should_change_panel && change_panel(this->player_ptr, dy, dx)) {
-        this->pos_interests = target_set_prepare(this->player_ptr, this->mode);
+    if (should_change_panel && change_panel(this->player, dy, dx)) {
+        this->pos_interests = target_set_prepare(this->player, this->mode);
     }
 
-    const auto &floor = *this->player_ptr->current_floor_ptr;
+    const auto &floor = *this->player.get_floor();
     x = std::clamp(x, 1, floor.width - 2);
     y = std::clamp(y, 1, floor.height - 2);
 }
@@ -535,10 +539,10 @@ void TargetSetter::sweep_target_grids()
         }
 
         if ((this->mode & TARGET_LOOK) == 0) {
-            print_path(this->player_ptr, this->pos_target.y, this->pos_target.x);
+            print_path(this->player, this->pos_target.y, this->pos_target.x);
         }
 
-        fix_floor_item_list(this->player_ptr, this->pos_target);
+        fix_floor_item_list(this->player, this->pos_target);
 
         if (auto dir_and_velocity = this->switch_next_grid_command(); dir_and_velocity) {
             const auto &[dir, move_fast] = *dir_and_velocity;
@@ -550,12 +554,12 @@ void TargetSetter::sweep_target_grids()
 /*
  * Handle "target" and "look".
  */
-Target target_set(PlayerType *player_ptr, target_type mode)
+Target target_set(CreatureEntity &creature, target_type mode)
 {
-    TargetSetter ts(player_ptr, mode);
+    TargetSetter ts(creature, mode);
     ts.sweep_target_grids();
     prt("", 0, 0);
-    verify_panel(player_ptr);
+    verify_panel(creature);
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(StatusRecalculatingFlag::MONSTER_STATUSES);
     rfu.set_flag(MainWindowRedrawingFlag::MAP);
@@ -564,7 +568,7 @@ Target target_set(PlayerType *player_ptr, target_type mode)
         SubWindowRedrawingFlag::FLOOR_ITEMS,
     };
     rfu.set_flags(flags);
-    handle_stuff(player_ptr);
+    handle_stuff(creature);
     Target::set_last_target(ts.get_target());
     return ts.get_target();
 }

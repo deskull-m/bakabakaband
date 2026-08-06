@@ -41,175 +41,177 @@
 #include "status/sight-setter.h"
 #include "system/baseitem/baseitem-definition.h"
 #include "system/baseitem/baseitem-list.h"
+#include "system/creature-entity.h"
 #include "system/enums/terrain/terrain-characteristics.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
-#include "system/monster-entity.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "target/target-getter.h"
-#include "timed-effect/timed-effects.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
 
 /*!
  * @brief モンスター回復処理
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param dir 方向(5ならばグローバル変数 target_col/target_row の座標を目標にする)
  * @param dam 威力
  * @return 作用が実際にあった場合TRUEを返す
  */
-bool heal_monster(PlayerType *player_ptr, const Direction &dir, int dam)
+bool heal_monster(CreatureEntity &creature, const Direction &dir, int dam)
 {
     BIT_FLAGS flg = PROJECT_STOP | PROJECT_KILL | PROJECT_REFLECTABLE;
-    return project_hook(player_ptr, AttributeType::OLD_HEAL, dir, dam, flg);
+    return project_hook(creature, AttributeType::OLD_HEAL, dir, dam, flg);
 }
 
 /*!
  * @brief モンスター加速処理
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param dir 方向(5ならばグローバル変数 target_col/target_row の座標を目標にする)
  * @param power 効力
  * @return 作用が実際にあった場合TRUEを返す
  */
-bool speed_monster(PlayerType *player_ptr, const Direction &dir, int power)
+bool speed_monster(CreatureEntity &creature, const Direction &dir, int power)
 {
     BIT_FLAGS flg = PROJECT_STOP | PROJECT_KILL | PROJECT_REFLECTABLE;
-    return project_hook(player_ptr, AttributeType::OLD_SPEED, dir, power, flg);
+    return project_hook(creature, AttributeType::OLD_SPEED, dir, power, flg);
 }
 
 /*!
  * @brief モンスター減速処理
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param dir 方向(5ならばグローバル変数 target_col/target_row の座標を目標にする)
  * @param power 効力
  * @return 作用が実際にあった場合TRUEを返す
  */
-bool slow_monster(PlayerType *player_ptr, const Direction &dir, int power)
+bool slow_monster(CreatureEntity &creature, const Direction &dir, int power)
 {
     BIT_FLAGS flg = PROJECT_STOP | PROJECT_KILL | PROJECT_REFLECTABLE;
-    return project_hook(player_ptr, AttributeType::OLD_SLOW, dir, power, flg);
+    return project_hook(creature, AttributeType::OLD_SLOW, dir, power, flg);
 }
 
 /*!
  * @brief モンスター催眠処理
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param dir 方向(5ならばグローバル変数 target_col/target_row の座標を目標にする)
  * @param power 効力
  * @return 作用が実際にあった場合TRUEを返す
  */
-bool sleep_monster(PlayerType *player_ptr, const Direction &dir, int power)
+bool sleep_monster(CreatureEntity &creature, const Direction &dir, int power)
 {
     BIT_FLAGS flg = PROJECT_STOP | PROJECT_KILL | PROJECT_REFLECTABLE;
-    return project_hook(player_ptr, AttributeType::OLD_SLEEP, dir, power, flg);
+    return project_hook(creature, AttributeType::OLD_SLEEP, dir, power, flg);
 }
 
 /*!
  * @brief モンスター拘束(STASIS)処理
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param dir 方向(5ならばグローバル変数 target_col/target_row の座標を目標にする)
  * @return 作用が実際にあった場合TRUEを返す
  * @details 威力はプレイヤーレベル*2に固定
  */
-bool stasis_monster(PlayerType *player_ptr, const Direction &dir)
+bool stasis_monster(CreatureEntity &creature, const Direction &dir)
 {
-    return fire_ball_hide(player_ptr, AttributeType::STASIS, dir, player_ptr->level * 2, 0);
+    return fire_ball_hide(creature, AttributeType::STASIS, dir, creature.get_level() * 2, 0);
 }
 
 /*!
  * @brief 邪悪なモンスター拘束(STASIS)処理
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param dir 方向(5ならばグローバル変数 target_col/target_row の座標を目標にする)
  * @return 作用が実際にあった場合TRUEを返す
  * @details 威力はプレイヤーレベル*2に固定
  */
-bool stasis_evil(PlayerType *player_ptr, const Direction &dir)
+bool stasis_evil(CreatureEntity &creature, const Direction &dir)
 {
-    return fire_ball_hide(player_ptr, AttributeType::STASIS_EVIL, dir, player_ptr->level * 2, 0);
+    return fire_ball_hide(creature, AttributeType::STASIS_EVIL, dir, creature.get_level() * 2, 0);
 }
 
 /*!
  * @brief モンスター混乱処理
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param dir 方向(5ならばグローバル変数 target_col/target_row の座標を目標にする)
  * @param plev プレイヤーレベル(=効力)
  * @return 作用が実際にあった場合TRUEを返す
  */
-bool confuse_monster(PlayerType *player_ptr, const Direction &dir, PLAYER_LEVEL plev)
+bool confuse_monster(CreatureEntity &creature, const Direction &dir, PLAYER_LEVEL plev)
 {
     BIT_FLAGS flg = PROJECT_STOP | PROJECT_KILL | PROJECT_REFLECTABLE;
-    return project_hook(player_ptr, AttributeType::OLD_CONF, dir, plev, flg);
+    return project_hook(creature, AttributeType::OLD_CONF, dir, plev, flg);
 }
 
 /*!
  * @brief モンスター朦朧処理
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param dir 方向(5ならばグローバル変数 target_col/target_row の座標を目標にする)
  * @param plev プレイヤーレベル(=効力)
  * @return 作用が実際にあった場合TRUEを返す
  */
-bool stun_monster(PlayerType *player_ptr, const Direction &dir, PLAYER_LEVEL plev)
+bool stun_monster(CreatureEntity &creature, const Direction &dir, PLAYER_LEVEL plev)
 {
     BIT_FLAGS flg = PROJECT_STOP | PROJECT_KILL | PROJECT_REFLECTABLE;
-    return project_hook(player_ptr, AttributeType::STUN, dir, plev, flg);
+    return project_hook(creature, AttributeType::STUN, dir, plev, flg);
 }
 
 /*!
  * @brief チェンジモンスター処理
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param dir 方向(5ならばグローバル変数 target_col/target_row の座標を目標にする)
  * @param power 効力
  * @return 作用が実際にあった場合TRUEを返す
  */
-bool poly_monster(PlayerType *player_ptr, const Direction &dir, int power)
+bool poly_monster(CreatureEntity &creature, const Direction &dir, int power)
 {
     BIT_FLAGS flg = PROJECT_STOP | PROJECT_KILL | PROJECT_REFLECTABLE;
-    bool tester = (project_hook(player_ptr, AttributeType::OLD_POLY, dir, power, flg));
+    bool tester = (project_hook(creature, AttributeType::OLD_POLY, dir, power, flg));
     if (tester) {
-        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::CHANCE, 1);
+        chg_virtue(creature, Virtue::CHANCE, 1);
     }
     return tester;
 }
 
 /*!
  * @brief クローンモンスター処理
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param dir 方向(5ならばグローバル変数 target_col/target_row の座標を目標にする)
  * @return 作用が実際にあった場合TRUEを返す
  */
-bool clone_monster(PlayerType *player_ptr, const Direction &dir)
+bool clone_monster(CreatureEntity &creature, const Direction &dir)
 {
     BIT_FLAGS flg = PROJECT_STOP | PROJECT_KILL | PROJECT_REFLECTABLE;
-    return project_hook(player_ptr, AttributeType::OLD_CLONE, dir, 0, flg);
+    return project_hook(creature, AttributeType::OLD_CLONE, dir, 0, flg);
 }
 
 /*!
  * @brief モンスター恐慌処理
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param dir 方向(5ならばグローバル変数 target_col/target_row の座標を目標にする)
  * @param plev プレイヤーレベル(=効力)
  * @return 作用が実際にあった場合TRUEを返す
  */
-bool fear_monster(PlayerType *player_ptr, const Direction &dir, PLAYER_LEVEL plev)
+bool fear_monster(CreatureEntity &creature, const Direction &dir, PLAYER_LEVEL plev)
 {
     BIT_FLAGS flg = PROJECT_STOP | PROJECT_KILL | PROJECT_REFLECTABLE;
-    return project_hook(player_ptr, AttributeType::TURN_ALL, dir, plev, flg);
+    return project_hook(creature, AttributeType::TURN_ALL, dir, plev, flg);
 }
 
-bool time_walk(PlayerType *player_ptr)
+bool time_walk(CreatureEntity &creature)
 {
-    if (player_ptr->timewalk) {
+    if (!creature.is_player()) {
+        return false;
+    }
+
+    if (creature.is_timewalking()) {
         msg_print(_("既に時は止まっている。", "Time is already stopped."));
         return false;
     }
 
-    player_ptr->timewalk = true;
+    creature.set_timewalking(true);
     msg_print(_("「時よ！」", "You yell 'Time!'"));
     //	msg_print(_("「『ザ・ワールド』！時は止まった！」", "You yell 'The World! Time has stopped!'"));
     msg_erase();
 
-    player_ptr->energy_need -= 1000 + (100 + player_ptr->csp - 50) * TURNS_PER_TICK / 10;
+    creature.sub_energy_need(1000 + (100 + creature.get_current_mp() - 50) * TURNS_PER_TICK / 10);
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(MainWindowRedrawingFlag::MAP);
     rfu.set_flag(StatusRecalculatingFlag::MONSTER_STATUSES);
@@ -218,50 +220,32 @@ bool time_walk(PlayerType *player_ptr)
         SubWindowRedrawingFlag::DUNGEON,
     };
     rfu.set_flags(flags);
-    handle_stuff(player_ptr);
+    handle_stuff(creature);
     return true;
 }
 
 /*!
  * @brief プレイヤーのヒットダイスを振る / Role Hitpoints
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param options スペル共通オプション
  */
-void roll_hitdice(PlayerType *player_ptr, spell_operation options)
+void roll_hitdice(CreatureEntity &creature, spell_operation options)
 {
-    constexpr auto roll_num = 3 + PY_MAX_LEVEL - 1;
-    const auto expected_hp = player_ptr->hit_dice.maxroll() + player_ptr->hit_dice.floored_expected_value_multiplied_by(roll_num);
-    const auto min_value = expected_hp * 3 / 4;
-    const auto max_value = expected_hp * 5 / 4;
-
-    /* Rerate */
-    while (true) {
-        /* Pre-calculate level 1 hitdice */
-        player_ptr->player_hp[0] = player_ptr->hit_dice.maxroll();
-
-        for (int i = 1; i < 4; i++) {
-            player_ptr->player_hp[0] += player_ptr->hit_dice.roll();
-        }
-
-        /* Roll the hitpoint values */
-        for (int i = 1; i < PY_MAX_LEVEL; i++) {
-            player_ptr->player_hp[i] = player_ptr->player_hp[i - 1] + player_ptr->hit_dice.roll();
-        }
-
-        /* Require "valid" hitpoints at highest level */
-        if ((player_ptr->player_hp[PY_MAX_LEVEL - 1] >= min_value) && (player_ptr->player_hp[PY_MAX_LEVEL - 1] <= max_value)) {
-            break;
-        }
+    if (!creature.is_player()) {
+        return;
     }
 
-    player_ptr->knowledge &= ~(KNOW_HPRATE);
+    // hp_table[] のロールはプレイヤー・モンスター共通の処理に集約。
+    creature.roll_hp_table();
+
+    creature.remove_knowledge(KNOW_HPRATE);
 
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(StatusRecalculatingFlag::HP);
     rfu.set_flag(MainWindowRedrawingFlag::HP);
     rfu.set_flag(SubWindowRedrawingFlag::PLAYER);
     if (!(options & SPOP_NO_UPDATE)) {
-        handle_stuff(player_ptr);
+        handle_stuff(creature);
     }
 
     if (!(options & SPOP_DISPLAY_MES)) {
@@ -269,27 +253,30 @@ void roll_hitdice(PlayerType *player_ptr, spell_operation options)
     }
 
     if (options & SPOP_DEBUG) {
-        msg_format(_("現在の体力ランクは %d/100 です。", "Your life rate is %d/100 now."), player_ptr->calc_life_rating());
-        player_ptr->knowledge |= KNOW_HPRATE;
+        msg_format(_("現在の体力ランクは %d/100 です。", "Your life rate is %d/100 now."), creature.calc_life_rating());
+        creature.add_knowledge(KNOW_HPRATE);
         return;
     }
 
     msg_print(_("体力ランクが変わった。", "Life rate has changed."));
 }
 
-bool life_stream(PlayerType *player_ptr, bool message, bool virtue_change)
+bool life_stream(CreatureEntity &creature, bool message, bool virtue_change)
 {
     if (virtue_change) {
-        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::VITALITY, 1);
-        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::UNLIFE, -5);
+        chg_virtue(creature, Virtue::VITALITY, 1);
+        chg_virtue(creature, Virtue::UNLIFE, -5);
     }
 
     if (message) {
-        msg_print(_("体中に生命力が満ちあふれてきた！", "You feel life flow through your body!"));
+        creature.notify_self(_("体中に生命力が満ちあふれてきた！", "You feel life flow through your body!"));
     }
 
-    restore_level(static_cast<CreatureEntity &>(*player_ptr));
-    BadStatusSetter bss(player_ptr);
+    restore_level(creature);
+
+    // [提案D2] 以降の治療系は setter/do_res_stat 側でメッセージがプレイヤー限定に
+    // なるため、モンスターにも安全。ガード撤去。
+    BadStatusSetter bss(creature);
     (void)bss.set_poison(0);
     (void)bss.set_blindness(0);
     (void)bss.set_confusion(0);
@@ -297,58 +284,62 @@ bool life_stream(PlayerType *player_ptr, bool message, bool virtue_change)
     (void)bss.set_stun(0);
     (void)bss.set_cut(0);
     (void)bss.set_paralysis(0);
-    (void)restore_all_status(player_ptr);
-    (void)set_berserk(player_ptr, 0, true);
-    handle_stuff(player_ptr);
-    hp_player(player_ptr, 5000);
+    (void)restore_all_status(creature);
+    (void)set_berserk(creature, 0, true);
+    handle_stuff(creature);
+    hp_player(creature, 5000);
 
     return true;
 }
 
-bool heroism(PlayerType *player_ptr, int base)
+bool heroism(CreatureEntity &creature, int base)
 {
+    // [提案D2] メッセージは setter 内の notify_self seam でプレイヤーのみ表示される。
+    // モンスターにも安全に適用できるため is_player ガードを撤去。
     auto ident = false;
-    if (BadStatusSetter(player_ptr).set_fear(0)) {
+    if (BadStatusSetter(creature).set_fear(0)) {
         ident = true;
     }
 
-    if (set_hero(player_ptr, player_ptr->hero + randint1(base) + base, false)) {
+    if (set_hero(creature, creature.get_timed_effect(CreatureTimedEffect::HERO) + randint1(base) + base, false)) {
         ident = true;
     }
 
-    if (hp_player(player_ptr, 10)) {
+    if (hp_player(creature, 10)) {
         ident = true;
     }
 
     return ident;
 }
 
-bool berserk(PlayerType *player_ptr, int base)
+bool berserk(CreatureEntity &creature, int base)
 {
+    // [提案D2] is_player ガード撤去 (メッセージは notify_self seam でプレイヤーのみ)。
     auto ident = false;
-    if (BadStatusSetter(player_ptr).set_fear(0)) {
+    if (BadStatusSetter(creature).set_fear(0)) {
         ident = true;
     }
 
-    if (set_berserk(player_ptr, player_ptr->berserk + randint1(base) + base, false)) {
+    if (set_berserk(creature, creature.get_timed_effect(CreatureTimedEffect::BERSERK) + randint1(base) + base, false)) {
         ident = true;
     }
 
-    if (hp_player(player_ptr, 30)) {
+    if (hp_player(creature, 30)) {
         ident = true;
     }
 
     return ident;
 }
 
-bool cure_light_wounds(PlayerType *player_ptr, int pow)
+bool cure_light_wounds(CreatureEntity &creature, int pow)
 {
+    // [提案D2] is_player ガード撤去 (メッセージは notify_self seam でプレイヤーのみ)。
     auto ident = false;
-    if (hp_player(player_ptr, pow)) {
+    if (hp_player(creature, pow)) {
         ident = true;
     }
 
-    BadStatusSetter bss(player_ptr);
+    BadStatusSetter bss(creature);
     if (bss.set_blindness(0)) {
         ident = true;
     }
@@ -357,21 +348,22 @@ bool cure_light_wounds(PlayerType *player_ptr, int pow)
         ident = true;
     }
 
-    if (set_berserk(player_ptr, 0, true)) {
+    if (set_berserk(creature, 0, true)) {
         ident = true;
     }
 
     return ident;
 }
 
-bool cure_serious_wounds(PlayerType *player_ptr, int pow)
+bool cure_serious_wounds(CreatureEntity &creature, int pow)
 {
+    // [提案D2] is_player ガード撤去 (メッセージは notify_self seam でプレイヤーのみ)。
     auto ident = false;
-    if (hp_player(player_ptr, pow)) {
+    if (hp_player(creature, pow)) {
         ident = true;
     }
 
-    BadStatusSetter bss(player_ptr);
+    BadStatusSetter bss(creature);
     if (bss.set_blindness(0)) {
         ident = true;
     }
@@ -380,25 +372,26 @@ bool cure_serious_wounds(PlayerType *player_ptr, int pow)
         ident = true;
     }
 
-    if (bss.set_cut((player_ptr->effects()->cut().current() / 2) - 50)) {
+    if (bss.set_cut((creature.get_remaining_cut() / 2) - 50)) {
         ident = true;
     }
 
-    if (set_berserk(player_ptr, 0, true)) {
+    if (set_berserk(creature, 0, true)) {
         ident = true;
     }
 
     return ident;
 }
 
-bool cure_critical_wounds(PlayerType *player_ptr, int pow)
+bool cure_critical_wounds(CreatureEntity &creature, int pow)
 {
+    // [提案D2] is_player ガード撤去 (メッセージは notify_self seam でプレイヤーのみ)。
     auto ident = false;
-    if (hp_player(player_ptr, pow)) {
+    if (hp_player(creature, pow)) {
         ident = true;
     }
 
-    BadStatusSetter bss(player_ptr);
+    BadStatusSetter bss(creature);
     if (bss.set_blindness(0)) {
         ident = true;
     }
@@ -419,21 +412,22 @@ bool cure_critical_wounds(PlayerType *player_ptr, int pow)
         ident = true;
     }
 
-    if (set_berserk(player_ptr, 0, true)) {
+    if (set_berserk(creature, 0, true)) {
         ident = true;
     }
 
     return ident;
 }
 
-bool true_healing(PlayerType *player_ptr, int pow)
+bool true_healing(CreatureEntity &creature, int pow)
 {
+    // [提案D2] is_player ガード撤去 (メッセージは notify_self seam でプレイヤーのみ)。
     auto ident = false;
-    if (hp_player(player_ptr, pow)) {
+    if (hp_player(creature, pow)) {
         ident = true;
     }
 
-    BadStatusSetter bss(player_ptr);
+    BadStatusSetter bss(creature);
     if (bss.set_blindness(0)) {
         ident = true;
     }
@@ -461,14 +455,18 @@ bool true_healing(PlayerType *player_ptr, int pow)
     return ident;
 }
 
-bool restore_mana(PlayerType *player_ptr, bool magic_eater)
+bool restore_mana(CreatureEntity &creature, bool magic_eater)
 {
+    if (!creature.is_player()) {
+        return false;
+    }
+
     auto &rfu = RedrawingFlagsUpdater::get_instance();
-    if (PlayerClass(player_ptr).equals(PlayerClassType::MAGIC_EATER) && magic_eater) {
+    if (CreatureClass(creature).equals(PlayerClassType::MAGIC_EATER) && magic_eater) {
         // 魔力復活による、魔道具術師の取り込んだ魔法の回復量
         // 取り込み数が10回未満: 3 回分回復
         // 取り込み数が10回以上: 取り込み回数/3 回分回復
-        auto magic_eater_data = PlayerClass(player_ptr).get_specific_data<MagicEaterDataList>();
+        auto magic_eater_data = CreatureClass(creature).get_specific_data<MagicEaterDataList>();
         for (auto tval : { ItemKindType::STAFF, ItemKindType::WAND }) {
             for (auto &item : magic_eater_data->get_item_group(tval)) {
                 item.charge += (item.count < 10) ? EATER_CHARGE * 3 : item.count * EATER_CHARGE / 3;
@@ -490,12 +488,12 @@ bool restore_mana(PlayerType *player_ptr, bool magic_eater)
         return true;
     }
 
-    if (player_ptr->csp >= player_ptr->msp) {
+    if (creature.get_current_mp() >= creature.get_max_mp()) {
         return false;
     }
 
-    player_ptr->csp = player_ptr->msp;
-    player_ptr->csp_frac = 0;
+    creature.set_current_mp(creature.get_max_mp());
+    creature.current_mp_frac = 0;
     msg_print(_("頭がハッキリとした。", "You feel your head clear."));
     rfu.set_flag(MainWindowRedrawingFlag::MP);
     static constexpr auto flags_swrf = {
@@ -506,40 +504,45 @@ bool restore_mana(PlayerType *player_ptr, bool magic_eater)
     return true;
 }
 
-bool restore_all_status(PlayerType *player_ptr)
+bool restore_all_status(CreatureEntity &creature)
 {
+    // [提案D2] メッセージは do_res_stat 側でプレイヤーのみ表示されるためガード撤去。
     bool ident = false;
-    if (do_res_stat(player_ptr, A_STR)) {
+    if (do_res_stat(creature, A_STR)) {
         ident = true;
     }
-    if (do_res_stat(player_ptr, A_INT)) {
+    if (do_res_stat(creature, A_INT)) {
         ident = true;
     }
-    if (do_res_stat(player_ptr, A_WIS)) {
+    if (do_res_stat(creature, A_WIS)) {
         ident = true;
     }
-    if (do_res_stat(player_ptr, A_DEX)) {
+    if (do_res_stat(creature, A_DEX)) {
         ident = true;
     }
-    if (do_res_stat(player_ptr, A_CON)) {
+    if (do_res_stat(creature, A_CON)) {
         ident = true;
     }
-    if (do_res_stat(player_ptr, A_CHR)) {
+    if (do_res_stat(creature, A_CHR)) {
         ident = true;
     }
     return ident;
 }
 
-bool fishing(PlayerType *player_ptr)
+bool fishing(CreatureEntity &creature)
 {
-    const auto dir = get_direction(player_ptr);
+    if (!creature.is_player()) {
+        return false;
+    }
+
+    const auto dir = get_direction(creature);
     if (!dir) {
         return false;
     }
 
-    const auto pos = player_ptr->get_neighbor(dir);
-    player_ptr->fishing_dir = dir.dir();
-    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto pos = creature.get_neighbor(dir);
+    creature.set_fishing_dir(dir.dir());
+    const auto &floor = *creature.get_floor();
     if (!floor.has_terrain_characteristics(pos, TerrainCharacteristics::WATER)) {
         msg_print(_("そこは水辺ではない。", "You can't fish here."));
         return false;
@@ -547,110 +550,114 @@ bool fishing(PlayerType *player_ptr)
 
     const auto &grid = floor.get_grid(pos);
     if (grid.has_monster()) {
-        const auto m_name = monster_desc(player_ptr, floor.m_list[grid.m_idx], 0);
+        const auto m_name = monster_desc(creature, floor.get_monster(grid.m_idx), 0);
         msg_format(_("%sが邪魔だ！", "%s^ is standing in your way."), m_name.data());
-        PlayerEnergy(player_ptr).reset_player_turn();
+        PlayerEnergy(creature).reset_player_turn();
         return false;
     }
 
-    set_action(player_ptr, ACTION_FISH);
+    set_action(creature, ACTION_FISH);
     RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::ACTION);
     return true;
 }
 
 /*!
  * @brief 装備を脱ぎ捨てて小宇宙を燃やす
- * @param player_ptr プレイヤー情報への参照ポインタ
- * @param o_ptr_ptr 脱ぐ装備品への参照ポインタのポインタ
- * @return 脱いだらTRUE、脱がなかったらFALSE
- * @details
- * 脱いで落とした装備にtimeoutを設定するために装備品のアドレスを返す。
+ * @param creature クリーチャーへの参照
+ * @param item_casting 脱ぐ装備品への参照
+ * @return 脱いだら脱いだ後のアイテムへの shared_ptr、脱がなかったら nullptr
+ * @details 脱いで落とした装備に timeout を設定するために装備品のアドレスを返す。
  */
-bool cosmic_cast_off(PlayerType *player_ptr, ItemEntity **o_ptr_ptr)
+std::shared_ptr<ItemEntity> cosmic_cast_off(CreatureEntity &creature, const ItemEntity &item_casting)
 {
-    auto *o_ptr = *o_ptr_ptr;
+    if (!creature.is_player()) {
+        return nullptr;
+    }
 
     /* Cast off activated item */
     INVENTORY_IDX slot;
     for (slot = INVEN_MAIN_HAND; slot <= INVEN_FEET; slot++) {
-        if (o_ptr == player_ptr->inventory[slot].get()) {
+        if (&item_casting == creature.inventory[slot].get()) {
             break;
         }
     }
 
     if (slot > INVEN_FEET) {
-        return false;
+        return nullptr;
     }
 
-    auto item = o_ptr->clone();
-    inven_item_increase(player_ptr, slot, (0 - o_ptr->number));
-    inven_item_optimize(player_ptr, slot);
+    auto item = item_casting.clone();
+    inven_item_increase(creature, slot, -item.number);
+    inven_item_optimize(creature, slot);
 
-    const auto old_o_idx = drop_near(player_ptr, item, player_ptr->get_position());
-    *o_ptr_ptr = player_ptr->current_floor_ptr->o_list[old_o_idx].get();
-
-    const auto item_name = describe_flavor(player_ptr, item, OD_NAME_ONLY);
+    const auto old_o_idx = drop_near(creature, item, creature.get_position());
+    const auto item_name = describe_flavor(creature, item, OD_NAME_ONLY);
     msg_format(_("%sを脱ぎ捨てた。", "You cast off %s."), item_name.data());
     sound(SoundKind::TAKE_OFF);
 
     /* Get effects */
     msg_print(_("「燃え上がれ俺の小宇宙！」", "You say, 'Burn up my cosmo!"));
     TIME_EFFECT t = 20 + randint1(20);
-    BadStatusSetter bss(player_ptr);
+    BadStatusSetter bss(creature);
     (void)bss.mod_blindness(t);
     (void)bss.set_fear(0);
-    (void)set_tim_esp(player_ptr, player_ptr->tim_esp + t, false);
-    (void)set_tim_regen(player_ptr, player_ptr->tim_regen + t, false);
-    (void)set_hero(player_ptr, player_ptr->hero + t, false);
-    (void)set_blessed(player_ptr, player_ptr->blessed + t, false);
-    (void)mod_acceleration(player_ptr, t, false);
-    (void)set_berserk(player_ptr, player_ptr->berserk + t, false);
-    if (PlayerClass(player_ptr).equals(PlayerClassType::FORCETRAINER)) {
-        set_current_ki(player_ptr, true, player_ptr->level * 5 + 190);
+    (void)set_tim_esp(creature, creature.get_timed_effect(CreatureTimedEffect::TIM_ESP) + t, false);
+    (void)set_tim_regen(creature, creature.get_timed_effect(CreatureTimedEffect::TIM_REGEN) + t, false);
+    (void)set_hero(creature, creature.get_timed_effect(CreatureTimedEffect::HERO) + t, false);
+    (void)set_blessed(creature, creature.get_timed_effect(CreatureTimedEffect::BLESSED) + t, false);
+    (void)mod_acceleration(creature, t, false);
+    (void)set_berserk(creature, creature.get_timed_effect(CreatureTimedEffect::BERSERK) + t, false);
+    if (CreatureClass(creature).equals(PlayerClassType::FORCETRAINER)) {
+        set_current_ki(creature, true, creature.get_level() * 5 + 190);
         msg_print(_("気が爆発寸前になった。", "Your force absorbs the explosion."));
     }
 
-    return true;
+    return old_o_idx > 0 ? creature.get_floor()->o_list[old_o_idx] : nullptr;
 }
 
 /*!
  * @brief プレイヤーの因果混乱処理 / Apply Nexus
- * @param m_ptr 因果混乱をプレイヤーに与えたモンスターの情報参照ポインタ
+ * @param monster 因果混乱をプレイヤーに与えたモンスターの情報参照
+ * @param creature クリーチャーへの参照
  */
-void apply_nexus(const MonsterEntity &monster, PlayerType *player_ptr)
+void apply_nexus(const CreatureEntity &attacker, CreatureEntity &creature)
 {
+    if (!creature.is_player()) {
+        return;
+    }
+
     switch (randint1(7)) {
     case 1:
     case 2:
     case 3: {
-        teleport_player(player_ptr, 200, TELEPORT_PASSIVE);
+        teleport_player(creature, 200, TELEPORT_PASSIVE);
         break;
     }
 
     case 4:
     case 5: {
-        teleport_player_to(player_ptr, monster.y, monster.x, TELEPORT_PASSIVE);
+        teleport_player_to(creature, attacker.y, attacker.x, TELEPORT_PASSIVE);
         break;
     }
 
     case 6: {
-        if (evaluate_percent(player_ptr->skill_sav)) {
+        if (evaluate_percent(creature.get_skill_save())) {
             msg_print(_("しかし効力を跳ね返した！", "You resist the effects!"));
             break;
         }
 
-        teleport_level(player_ptr, 0);
+        teleport_level(creature, 0);
         break;
     }
 
     case 7: {
-        if (evaluate_percent(player_ptr->skill_sav)) {
+        if (evaluate_percent(creature.get_skill_save())) {
             msg_print(_("しかし効力を跳ね返した！", "You resist the effects!"));
             break;
         }
 
         msg_print(_("体がねじれ始めた...", "Your body starts to scramble..."));
-        status_shuffle(player_ptr);
+        status_shuffle(creature);
         break;
     }
     }
@@ -658,10 +665,11 @@ void apply_nexus(const MonsterEntity &monster, PlayerType *player_ptr)
 
 /*!
  * @brief プレイヤーのステータスシャッフル処理
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
-void status_shuffle(PlayerType *player_ptr)
+void status_shuffle(CreatureEntity &creature)
 {
+    // [提案D2] メッセージ無しの純粋な能力値入替のためモンスターにも安全。ガード撤去。
     /* Pick a pair of stats */
     int i = randint0(A_MAX);
     int j;
@@ -671,22 +679,22 @@ void status_shuffle(PlayerType *player_ptr)
         ;
     }
 
-    const auto max1 = player_ptr->stat_max[i];
-    const auto cur1 = player_ptr->stat_cur[i];
-    const auto max2 = player_ptr->stat_max[j];
-    const auto cur2 = player_ptr->stat_cur[j];
+    const auto max1 = creature.get_stat_max(i);
+    const auto cur1 = creature.get_stat_cur(i);
+    const auto max2 = creature.get_stat_max(j);
+    const auto cur2 = creature.get_stat_cur(j);
 
-    player_ptr->stat_max[i] = max2;
-    player_ptr->stat_cur[i] = cur2;
-    player_ptr->stat_max[j] = max1;
-    player_ptr->stat_cur[j] = cur1;
+    creature.set_stat_max(i, max2);
+    creature.set_stat_cur(i, cur2);
+    creature.set_stat_max(j, max1);
+    creature.set_stat_cur(j, cur1);
 
     for (int k = 0; k < A_MAX; k++) {
-        if (player_ptr->stat_max[k] > player_ptr->stat_max_max[k]) {
-            player_ptr->stat_max[k] = player_ptr->stat_max_max[k];
+        if (creature.get_stat_max(k) > creature.get_stat_max_max(k)) {
+            creature.set_stat_max(k, creature.get_stat_max_max(k));
         }
-        if (player_ptr->stat_cur[k] > player_ptr->stat_max_max[k]) {
-            player_ptr->stat_cur[k] = player_ptr->stat_max_max[k];
+        if (creature.get_stat_cur(k) > creature.get_stat_max_max(k)) {
+            creature.set_stat_cur(k, creature.get_stat_max_max(k));
         }
     }
 

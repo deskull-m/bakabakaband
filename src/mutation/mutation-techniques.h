@@ -1,4 +1,4 @@
 #pragma once
 
-class PlayerType;
-bool eat_rock(PlayerType *player_ptr);
+class CreatureEntity;
+bool eat_rock(CreatureEntity &creature);

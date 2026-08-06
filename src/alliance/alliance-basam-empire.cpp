@@ -1,13 +1,13 @@
 #include "alliance/alliance-basam-empire.h"
+#include "system/creature-entity.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/player-type-definition.h"
 
-int AllianceBasamEmpire::calcImpressionPoint(PlayerType *creature_ptr) const
+int AllianceBasamEmpire::calcImpressionPoint(const CreatureEntity &creature) const
 {
     int impression = 0;
-    impression += Alliance::calcPlayerPower(*creature_ptr, 13, 24);
+    impression += Alliance::calcPlayerPower(creature, 13, 24);
     impression += calcIronmanHostilityPenalty();
 
     return impression;
@@ -21,5 +21,5 @@ int AllianceBasamEmpire::calcImpressionPoint(PlayerType *creature_ptr) const
 bool AllianceBasamEmpire::isAnnihilated()
 {
     // 『オゴレス王』が存在しない場合、バサム帝国は壊滅する
-    return MonraceList::get_instance().get_monrace(MonraceId::OGRES_KING).mob_num == 0;
+    return all_monraces_extinct({ MonraceId::OGRES_KING });
 }

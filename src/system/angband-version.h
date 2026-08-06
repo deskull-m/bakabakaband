@@ -15,13 +15,24 @@ constexpr std::string_view VARIANT_NAME("Bakabaka");
  */
 #define H_VER_MAJOR 0 //!< ゲームのバージョン定義(メジャー番号)
 #define H_VER_MINOR 0 //!< ゲームのバージョン定義(マイナー番号)
-#define H_VER_PATCH 1 //!< ゲームのバージョン定義(パッチ番号)
-#define H_VER_EXTRA 4 //!< ゲームのバージョン定義(エクストラ番号)
+#define H_VER_PATCH 2 //!< ゲームのバージョン定義(パッチ番号)
+#define H_VER_EXTRA 0 //!< ゲームのバージョン定義(エクストラ番号)
 
 /*!
  * @brief セーブファイルのバージョン(3.0.0から導入)
+ * @details
+ * 47: XOR 鎖チェックサム修復 (hengband#1372 相当)。本バージョン以降は
+ * verify_checksum() / verify_encoded_checksum() の失敗をエラーとして扱う。
+ * 48: モンスタープレイヤーの種族 ID (r_idx / ap_r_idx) を保存。
+ * 49: 最大プレイヤーレベルを 50 → 60 に拡張。クイックスタート情報の
+ *     player_hp 配列が PY_MAX_LEVEL (件数非保持) で保存されるため、
+ *     旧バージョン (<49) は 50 件として読む差分処理が必要。
+ * 54: prace / pclass を CreatureEntity 共通ブロック (wr_creature_common) へ集約。
+ *     従来プレイヤー writer (byte) / モンスター writer (s16b) で個別保存していた
+ *     ものを統一 (s16b)。旧バージョンは各固有経路で読む (rd_creature_common /
+ *     rd_base_info / rd_monster_v50 に older_than(54) ガード)。
  */
-constexpr uint32_t SAVEFILE_VERSION = 44;
+constexpr uint32_t SAVEFILE_VERSION = 54;
 
 /*!
  * @brief バージョンが開発版が安定版かを返す(廃止予定)

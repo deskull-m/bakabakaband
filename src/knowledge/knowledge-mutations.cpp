@@ -8,13 +8,13 @@
 #include "core/show-file.h"
 #include "io-dump/dump-util.h"
 #include "io/mutations-dump.h"
-#include "system/player-type-definition.h"
+#include "system/creature-entity.h"
 #include "util/angband-files.h"
 
 /*!
  * @brief 突然変異表示コマンドの実装 / List mutations we have...
  */
-void do_cmd_knowledge_mutations(PlayerType *player_ptr)
+void do_cmd_knowledge_mutations(CreatureEntity &creature)
 {
     FILE *fff = nullptr;
     GAME_TEXT file_name[FILE_NAME_SIZE];
@@ -22,9 +22,9 @@ void do_cmd_knowledge_mutations(PlayerType *player_ptr)
         return;
     }
 
-    dump_mutations(player_ptr, fff);
+    dump_mutations(creature, fff);
     angband_fclose(fff);
 
-    FileDisplayer(player_ptr->name).display(true, file_name, 0, 0, _("突然変異", "Mutations"));
+    FileDisplayer(creature.name).display(true, file_name, 0, 0, _("突然変異", "Mutations"));
     fd_kill(file_name);
 }

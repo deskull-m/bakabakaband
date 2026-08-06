@@ -18,33 +18,32 @@
 #include "player/attack-defense-types.h"
 #include "player/special-defense-types.h"
 #include "status/action-setter.h"
+#include "system/creature-entity.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "world/world.h"
 
 /*!
  * @brief 読むコマンドのメインルーチン /
  * Eat some food (from the pack or floor)
  */
-void do_cmd_read_scroll(PlayerType *player_ptr)
+void do_cmd_read_scroll(CreatureEntity &creature)
 {
-    if (AngbandWorld::get_instance().is_wild_mode() || cmd_limit_arena(player_ptr)) {
+    if (AngbandWorld::get_instance().is_wild_mode() || cmd_limit_arena(creature)) {
         return;
     }
 
-    PlayerClass(player_ptr).break_samurai_stance({ SamuraiStanceType::MUSOU, SamuraiStanceType::KOUKIJIN });
+    CreatureClass(creature).break_samurai_stance({ SamuraiStanceType::MUSOU, SamuraiStanceType::KOUKIJIN });
 
-    if (cmd_limit_blind(player_ptr) || cmd_limit_confused(player_ptr)) {
+    if (cmd_limit_blind(creature) || cmd_limit_confused(creature)) {
         return;
     }
 
     constexpr auto q = _("どの巻物を読みますか? ", "Read which scroll? ");
     constexpr auto s = _("読める巻物がない。", "You have no scrolls to read.");
-    short i_idx;
-    const auto *o_ptr = choose_object(player_ptr, &i_idx, q, s, USE_INVEN | USE_FLOOR, FuncItemTester(&ItemEntity::is_readable));
-    if (!o_ptr) {
+    const auto &[item, i_idx] = choose_item(creature, q, s, USE_INVEN | USE_FLOOR, FuncItemTester(&ItemEntity::is_readable));
+    if (!item) {
         return;
     }
 
-    ObjectReadEntity(player_ptr, i_idx).execute(o_ptr->is_aware());
+    ObjectReadEntity(creature, i_idx).execute(item->is_aware());
 }

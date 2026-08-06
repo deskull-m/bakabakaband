@@ -2,23 +2,22 @@
 
 #include "dungeon/quest.h"
 #include "system/angband.h"
+#include "system/creature-entity.h"
 #include "util/point-2d.h"
 #include <tuple>
 
-class MonsterEntity;
 class ItemEntity;
-class PlayerType;
 class QuestType;
 class QuestCompletionChecker {
 public:
-    QuestCompletionChecker(PlayerType *player_ptr, const MonsterEntity &monster);
+    QuestCompletionChecker(CreatureEntity &creature, const CreatureEntity &monster);
     virtual ~QuestCompletionChecker() = default;
 
     void complete();
 
 private:
-    PlayerType *player_ptr;
-    const MonsterEntity *m_ptr;
+    CreatureEntity *creature_ptr;
+    const CreatureEntity *m_ptr;
     QuestId quest_idx;
     QuestType *q_ptr = nullptr;
 

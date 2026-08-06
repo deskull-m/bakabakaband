@@ -6,10 +6,10 @@
 #include "object/object-value.h"
 #include "object/tval-types.h"
 #include "store/store-util.h"
+#include "system/creature-entity.h"
 #include "system/floor/town-info.h"
 #include "system/floor/town-list.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "util/object-sort.h"
 #include <algorithm>
 
@@ -26,7 +26,7 @@
  * known, the player may have to pick stuff up and drop it again.
  * </pre>
  */
-int home_carry(PlayerType *player_ptr, ItemEntity *o_ptr, StoreSaleType store_num)
+int home_carry(CreatureEntity &creature, ItemEntity *o_ptr, StoreSaleType store_num)
 {
     bool old_stack_force_notes = stack_force_notes;
     bool old_stack_force_costs = stack_force_costs;
@@ -71,15 +71,15 @@ int home_carry(PlayerType *player_ptr, ItemEntity *o_ptr, StoreSaleType store_nu
     const auto first = st_ptr->stock.begin();
     const auto last = st_ptr->stock.begin() + st_ptr->stock_num;
     const auto slot_it = std::find_if(first, last,
-        [&](const auto &item) { return object_sort_comp(player_ptr, *o_ptr, *item); });
+        [&](const auto &item) { return object_sort_comp(creature, *o_ptr, *item); });
     const int slot = std::distance(first, slot_it);
 
     std::rotate(first + slot, last, last + 1);
 
     st_ptr->stock_num++;
     *st_ptr->stock[slot] = o_ptr->clone();
-    chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::SACRIFICE, -1);
-    (void)combine_and_reorder_home(player_ptr, store_num);
+    chg_virtue(creature, Virtue::SACRIFICE, -1);
+    (void)combine_and_reorder_home(creature, store_num);
     return slot;
 }
 
@@ -131,10 +131,10 @@ static void sweep_reorder_store_item(ItemEntity &item, const int i, bool *combin
     }
 }
 
-static bool exe_reorder_store_item(PlayerType *player_ptr)
+static bool exe_reorder_store_item(CreatureEntity &creature)
 {
-    const auto comp = [player_ptr](const auto &item1, const auto &item2) {
-        return object_sort_comp(player_ptr, *item1, *item2);
+    const auto comp = [&creature](const auto &item1, const auto &item2) {
+        return object_sort_comp(creature, *item1, *item2);
     };
 
     const auto first = st_ptr->stock.begin();
@@ -154,12 +154,12 @@ static bool exe_reorder_store_item(PlayerType *player_ptr)
  * @param store_num 店舗ID
  * @return 実際に整理が行われたならばTRUEを返す。
  */
-bool combine_and_reorder_home(PlayerType *player_ptr, const StoreSaleType store_num)
+bool combine_and_reorder_home(CreatureEntity &creature, const StoreSaleType store_num)
 {
     auto old_stack_force_notes = stack_force_notes;
     auto old_stack_force_costs = stack_force_costs;
     auto *old_st_ptr = st_ptr;
-    st_ptr = &towns_info[1].get_store(store_num);
+    st_ptr = &TownList::get_instance().get_town(1).get_store(store_num);
     auto flag = false;
     if (store_num != StoreSaleType::HOME) {
         stack_force_notes = false;
@@ -181,7 +181,7 @@ bool combine_and_reorder_home(PlayerType *player_ptr, const StoreSaleType store_
         flag |= combined;
     }
 
-    flag |= exe_reorder_store_item(player_ptr);
+    flag |= exe_reorder_store_item(creature);
 
     st_ptr = old_st_ptr;
     if (store_num != StoreSaleType::HOME) {

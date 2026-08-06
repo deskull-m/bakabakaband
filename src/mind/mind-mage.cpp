@@ -15,30 +15,29 @@
 #include "object/item-tester-hooker.h"
 #include "object/item-use-flags.h"
 #include "player-base/player-class.h"
+#include "system/creature-entity.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "view/display-messages.h"
 
 /*!
  * @brief 魔力食い処理
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param power 基本効力
  * @return ターンを消費した場合TRUEを返す
  */
-bool eat_magic(PlayerType *player_ptr, int power)
+bool eat_magic(CreatureEntity &creature, int power)
 {
     byte fail_type = 1;
     constexpr auto q = _("どのアイテムから魔力を吸収しますか？", "Drain which item? ");
     constexpr auto s = _("魔力を吸収できるアイテムがありません。", "You have nothing to drain.");
-    short i_idx;
-    auto *o_ptr = choose_object(player_ptr, &i_idx, q, s, (USE_INVEN | USE_FLOOR), FuncItemTester(&ItemEntity::can_recharge));
-    if (o_ptr == nullptr) {
+    auto [item, i_idx] = choose_item(creature, q, s, (USE_INVEN | USE_FLOOR), FuncItemTester(&ItemEntity::can_recharge));
+    if (!item) {
         return false;
     }
 
-    const auto base_pval = o_ptr->get_baseitem_pval();
-    const auto item_level = o_ptr->get_baseitem_level();
-    const auto tval = o_ptr->bi_key.tval();
+    const auto base_pval = item->get_baseitem_pval();
+    const auto item_level = item->get_baseitem_level();
+    const auto tval = item->bi_key.tval();
     auto recharge_strength = 0;
     auto is_eating_successful = true;
     if (tval == ItemKindType::ROD) {
@@ -46,11 +45,11 @@ bool eat_magic(PlayerType *player_ptr, int power)
         if (one_in_(recharge_strength)) {
             is_eating_successful = false;
         } else {
-            if (o_ptr->timeout > (o_ptr->number - 1) * base_pval) {
+            if (item->timeout > (item->number - 1) * base_pval) {
                 msg_print(_("充填中のロッドから魔力を吸収することはできません。", "You can't absorb energy from a discharged rod."));
             } else {
-                player_ptr->csp += item_level;
-                o_ptr->timeout += base_pval;
+                creature.add_current_mp(item_level);
+                item->timeout += base_pval;
             }
         }
     } else {
@@ -62,17 +61,17 @@ bool eat_magic(PlayerType *player_ptr, int power)
         if (one_in_(recharge_strength)) {
             is_eating_successful = false;
         } else {
-            if (o_ptr->pval > 0) {
-                player_ptr->csp += item_level / 2;
-                o_ptr->pval--;
+            if (item->pval > 0) {
+                creature.add_current_mp(item_level / 2);
+                item->pval--;
 
-                if ((tval == ItemKindType::STAFF) && (i_idx >= 0) && (o_ptr->number > 1)) {
-                    auto eat_item = o_ptr->clone();
+                if ((tval == ItemKindType::STAFF) && (i_idx >= 0) && (item->number > 1)) {
+                    auto eat_item = item->clone();
 
                     eat_item.number = 1;
-                    o_ptr->pval++;
-                    o_ptr->number--;
-                    i_idx = store_item_to_inventory(player_ptr, &eat_item);
+                    item->pval++;
+                    item->number--;
+                    i_idx = creature.store_item(eat_item);
 
                     msg_print(_("杖をまとめなおした。", "You unstack your staff."));
                 }
@@ -80,32 +79,32 @@ bool eat_magic(PlayerType *player_ptr, int power)
                 msg_print(_("吸収できる魔力がありません！", "There's no energy there to absorb!"));
             }
 
-            if (!o_ptr->pval) {
-                o_ptr->ident |= IDENT_EMPTY;
+            if (!item->pval) {
+                item->ident.set(IdentificationFlag::EMPTY);
             }
         }
     }
 
     if (is_eating_successful) {
-        return redraw_player(player_ptr);
+        return redraw_player(creature);
     }
 
-    if (o_ptr->is_fixed_artifact()) {
-        const auto item_name = describe_flavor(player_ptr, *o_ptr, OD_NAME_ONLY);
+    if (item->is_fixed_artifact()) {
+        const auto item_name = describe_flavor(creature, *item, OD_NAME_ONLY);
         msg_format(_("魔力が逆流した！%sは完全に魔力を失った。", "The recharging backfires - %s is completely drained!"), item_name.data());
         if (tval == ItemKindType::ROD) {
-            o_ptr->timeout = base_pval * o_ptr->number;
-        } else if (o_ptr->is_wand_staff()) {
-            o_ptr->pval = 0;
+            item->timeout = base_pval * item->number;
+        } else if (item->is_wand_staff()) {
+            item->pval = 0;
         }
 
-        return redraw_player(player_ptr);
+        return redraw_player(creature);
     }
 
-    const auto item_name = describe_flavor(player_ptr, *o_ptr, (OD_OMIT_PREFIX | OD_NAME_ONLY));
+    const auto item_name = describe_flavor(creature, *item, (OD_OMIT_PREFIX | OD_NAME_ONLY));
 
     /* Mages recharge objects more safely. */
-    if (PlayerClass(player_ptr).is_wizard()) {
+    if (CreatureClass(creature).is_wizard()) {
         /* 10% chance to blow up one rod, otherwise draining. */
         if (tval == ItemKindType::ROD) {
             if (one_in_(10)) {
@@ -159,39 +158,39 @@ bool eat_magic(PlayerType *player_ptr, int power)
     if (fail_type == 1) {
         if (tval == ItemKindType::ROD) {
             msg_print(_("ロッドは破損を免れたが、魔力は全て失なわれた。", "You save your rod from destruction, but all charges are lost."));
-            o_ptr->timeout = base_pval * o_ptr->number;
+            item->timeout = base_pval * item->number;
         } else if (tval == ItemKindType::WAND) {
             constexpr auto mes = _("%sは破損を免れたが、魔力が全て失われた。", "You save your %s from destruction, but all charges are lost.");
             msg_format(mes, item_name.data());
-            o_ptr->pval = 0;
+            item->pval = 0;
         }
     }
 
     if (fail_type == 2) {
-        if (o_ptr->number > 1) {
+        if (item->number > 1) {
             msg_format(_("乱暴な魔法のために%sが一本壊れた！", "Wild magic consumes one of your %s!"), item_name.data());
             /* Reduce rod stack maximum timeout, drain wands. */
             if (tval == ItemKindType::ROD) {
-                o_ptr->timeout = std::min<short>(o_ptr->timeout, base_pval * (o_ptr->number - 1));
+                item->timeout = std::min<short>(item->timeout, base_pval * (item->number - 1));
             } else if (tval == ItemKindType::WAND) {
-                o_ptr->pval = o_ptr->pval * (o_ptr->number - 1) / o_ptr->number;
+                item->pval = item->pval * (item->number - 1) / item->number;
             }
         } else {
             msg_format(_("乱暴な魔法のために%sが壊れた！", "Wild magic consumes your %s!"), item_name.data());
         }
 
-        vary_item(player_ptr, i_idx, -1);
+        vary_item(creature, i_idx, -1);
     }
 
     if (fail_type == 3) {
-        if (o_ptr->number > 1) {
+        if (item->number > 1) {
             msg_format(_("乱暴な魔法のために%sが全て壊れた！", "Wild magic consumes all your %s!"), item_name.data());
         } else {
             msg_format(_("乱暴な魔法のために%sが壊れた！", "Wild magic consumes your %s!"), item_name.data());
         }
 
-        vary_item(player_ptr, i_idx, -999);
+        vary_item(creature, i_idx, -999);
     }
 
-    return redraw_player(player_ptr);
+    return redraw_player(creature);
 }

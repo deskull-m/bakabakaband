@@ -11,11 +11,11 @@
 #include "player/special-defense-types.h"
 #include "realm/realm-hex-numbers.h"
 #include "spell-realm/spells-hex.h"
-#include "system/player-type-definition.h"
+#include "system/creature-entity.h"
 #include "util/bit-flags-calculator.h"
 
-PlayerConstitution::PlayerConstitution(PlayerType *player_ptr)
-    : PlayerBasicStatistics(player_ptr)
+PlayerConstitution::PlayerConstitution(CreatureEntity &creature)
+    : PlayerBasicStatistics(creature)
 {
 }
 
@@ -36,7 +36,7 @@ int16_t PlayerConstitution::race_bonus()
 {
     int16_t result = PlayerBasicStatistics::race_bonus();
 
-    result += PlayerRace(this->player_ptr).additional_constitution();
+    result += CreatureRace(&this->creature).additional_constitution();
 
     return result;
 }
@@ -52,8 +52,8 @@ int16_t PlayerConstitution::time_effect_bonus()
 {
     int16_t result = 0;
 
-    if (PlayerRealm(this->player_ptr).is_realm_hex()) {
-        if (SpellHex(this->player_ptr).is_spelling_specific(HEX_BUILDING)) {
+    if (PlayerRealm(this->creature).is_realm_hex()) {
+        if (SpellHex(this->creature).is_spelling_specific(HEX_BUILDING)) {
             result += 4;
         }
     }
@@ -76,7 +76,7 @@ int16_t PlayerConstitution::stance_bonus()
 {
     int16_t result = 0;
 
-    PlayerClass pc(player_ptr);
+    CreatureClass pc(this->creature);
     if (pc.samurai_stance_is(SamuraiStanceType::KOUKIJIN)) {
         result += 5;
     }
@@ -88,7 +88,7 @@ int16_t PlayerConstitution::stance_bonus()
     } else if (pc.monk_stance_is(MonkStanceType::SUZAKU)) {
         result -= 2;
     }
-    if (this->player_ptr->tsuyoshi) {
+    if (this->creature.get_timed_effect(CreatureTimedEffect::TSUYOSHI)) {
         result += 4;
     }
 
@@ -109,20 +109,20 @@ int16_t PlayerConstitution::mutation_bonus()
 {
     int16_t result = 0;
 
-    if (this->player_ptr->muta.any()) {
-        if (this->player_ptr->muta.has(PlayerMutationType::RESILIENT)) {
+    if (this->creature.get_mutations().any()) {
+        if (this->creature.get_mutations().has(PlayerMutationType::RESILIENT)) {
             result += 4;
         }
 
-        if (this->player_ptr->muta.has(PlayerMutationType::ALBINO)) {
+        if (this->creature.get_mutations().has(PlayerMutationType::ALBINO)) {
             result -= 4;
         }
 
-        if (this->player_ptr->muta.has(PlayerMutationType::XTRA_FAT)) {
+        if (this->creature.get_mutations().has(PlayerMutationType::XTRA_FAT)) {
             result += 2;
         }
 
-        if (this->player_ptr->muta.has(PlayerMutationType::FLESH_ROT)) {
+        if (this->creature.get_mutations().has(PlayerMutationType::FLESH_ROT)) {
             result -= 2;
         }
     }

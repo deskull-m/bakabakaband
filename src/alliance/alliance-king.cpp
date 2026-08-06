@@ -1,14 +1,14 @@
 #include "alliance/alliance-king.h"
+#include "system/creature-entity.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/player-type-definition.h"
-int AllianceKING::calcImpressionPoint([[maybe_unused]] PlayerType *creature_ptr) const
+int AllianceKING::calcImpressionPoint([[maybe_unused]] const CreatureEntity &creature) const
 {
     int impression = 0;
     impression += calcIronmanHostilityPenalty();
 
-    impression += Alliance::calcPlayerPower(*creature_ptr, 15, 15);
+    impression += Alliance::calcPlayerPower(creature, 15, 15);
 
     // KINGアライアンスのモンスター撃破による印象値低下
     impression -= MonraceList::get_instance().get_monrace(MonraceId::KING_SOLDIER).r_akills * 5;
@@ -27,5 +27,5 @@ int AllianceKING::calcImpressionPoint([[maybe_unused]] PlayerType *creature_ptr)
 
 bool AllianceKING::isAnnihilated()
 {
-    return MonraceList::get_instance().get_monrace(MonraceId::KING_SHIN).mob_num == 0;
+    return all_monraces_extinct({ MonraceId::KING_SHIN });
 }

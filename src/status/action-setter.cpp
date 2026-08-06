@@ -21,7 +21,7 @@
 #include "player/special-defense-types.h"
 #include "spell-realm/spells-hex.h"
 #include "spell-realm/spells-song.h"
-#include "system/player-type-definition.h"
+#include "system/creature-entity.h"
 #include "system/redrawing-flags-updater.h"
 #include "view/display-messages.h"
 
@@ -31,9 +31,9 @@
  * NONE / SEARCH / REST / LEARN / FISH / MONK_STANCE / SAMURAI_STANCE / SING / HAYAGAKE / SPELL
  * から選択。
  */
-void set_action(PlayerType *player_ptr, uint8_t typ)
+void set_action(CreatureEntity &creature, uint8_t typ)
 {
-    auto prev_typ = player_ptr->action;
+    auto prev_typ = creature.get_action();
     if (typ == prev_typ) {
         return;
     }
@@ -45,21 +45,21 @@ void set_action(PlayerType *player_ptr, uint8_t typ)
         rfu.set_flag(MainWindowRedrawingFlag::SPEED);
         break;
     case ACTION_REST:
-        player_ptr->resting = 0;
+        creature.set_resting(0);
         break;
     case ACTION_LEARN: {
         msg_print(_("学習をやめた。", "You stop learning."));
-        auto bluemage_data = PlayerClass(player_ptr).get_specific_data<bluemage_data_type>();
+        auto bluemage_data = CreatureClass(creature).get_specific_data<bluemage_data_type>();
         bluemage_data->new_magic_learned = false;
         break;
     }
     case ACTION_MONK_STANCE:
         msg_print(_("構えをといた。", "You stop assuming the special stance."));
-        PlayerClass(player_ptr).set_monk_stance(MonkStanceType::NONE);
+        CreatureClass(creature).set_monk_stance(MonkStanceType::NONE);
         break;
     case ACTION_SAMURAI_STANCE:
         msg_print(_("型を崩した。", "You stop assuming the special stance."));
-        PlayerClass(player_ptr).set_samurai_stance(SamuraiStanceType::NONE);
+        CreatureClass(creature).set_samurai_stance(SamuraiStanceType::NONE);
         rfu.set_flag(StatusRecalculatingFlag::MONSTER_STATUSES);
         rfu.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
         break;
@@ -68,28 +68,28 @@ void set_action(PlayerType *player_ptr, uint8_t typ)
         break;
     case ACTION_HAYAGAKE:
         msg_print(_("足が重くなった。", "You are no longer walking extremely fast."));
-        PlayerEnergy(player_ptr).set_player_turn_energy(100);
+        PlayerEnergy(creature).set_player_turn_energy(100);
         break;
     case ACTION_SPELL:
         msg_print(_("呪文の詠唱を中断した。", "You stopped casting."));
         break;
     }
 
-    player_ptr->action = typ;
+    creature.set_action(typ);
 
     /* If we are requested other action, stop singing */
     if (prev_typ == ACTION_SING) {
-        stop_singing(player_ptr);
+        stop_singing(creature);
     }
 
     if (prev_typ == ACTION_SPELL) {
-        SpellHex spell_hex(player_ptr);
+        SpellHex spell_hex(creature);
         if (spell_hex.is_spelling_any()) {
             spell_hex.stop_all_spells();
         }
     }
 
-    switch (player_ptr->action) {
+    switch (creature.get_action()) {
     case ACTION_SEARCH:
         msg_print(_("注意深く歩き始めた。", "You begin to walk carefully."));
         rfu.set_flag(MainWindowRedrawingFlag::SPEED);

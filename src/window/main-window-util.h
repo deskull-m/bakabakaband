@@ -19,9 +19,9 @@ extern int match_autopick;
 extern int feat_priority;
 
 class DisplaySymbol;
-class PlayerType;
+class CreatureEntity;
 void print_field(std::string_view info, TERM_LEN row, TERM_LEN col);
-void print_map(PlayerType *player_ptr);
-void display_map(PlayerType *player_ptr, int *cy, int *cx);
-DisplaySymbol set_term_color(PlayerType *player_ptr, const Pos2D &pos, const DisplaySymbol &symbol_orig);
+void print_map(CreatureEntity &creature);
+void display_map(CreatureEntity &creature, int *cy, int *cx);
+DisplaySymbol set_term_color(CreatureEntity &creature, const Pos2D &pos, const DisplaySymbol &symbol_orig);
 int panel_col_of(int col);

@@ -6,7 +6,7 @@
 #include <string>
 
 enum class MonraceId : int16_t;
-class PlayerType;
+class CreatureEntity;
 
 class CapturedMonsterType {
 public:
@@ -22,7 +22,7 @@ public:
 
 class FallOffHorseEffect {
 public:
-    FallOffHorseEffect(PlayerType *player_ptr);
+    FallOffHorseEffect(CreatureEntity &creature);
     void set_shake_off(int damage);
     void set_fall_off(int damage);
     void apply() const;
@@ -30,7 +30,7 @@ public:
 private:
     constexpr static int FALL_OFF_DAMAGE_MAX = 200;
 
-    PlayerType *player_ptr;
+    CreatureEntity *creature_ptr;
     int shake_off_damage = 0; /*!< 振り落とされた際のダメージ量 */
     int fall_off_damage = 0; /*!< 落馬した際のダメージ量 */
 };

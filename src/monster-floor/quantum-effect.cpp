@@ -10,36 +10,35 @@
 #include "mspell/assign-monster-spell.h"
 #include "mspell/mspell-result.h"
 #include "spell-kind/spells-teleport.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
-#include "system/player-type-definition.h"
 #include "view/display-messages.h"
 
 /*!
  * @brief ユニークでない量子生物を消滅させる
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param m_idx モンスターID
  * @param see_m モンスターが視界内にいたらTRUE
  */
-static void vanish_nonunique(PlayerType *player_ptr, MONSTER_IDX m_idx, bool see_m)
+static void vanish_nonunique(CreatureEntity &creature, MONSTER_IDX m_idx, bool see_m)
 {
-    const auto &monster = player_ptr->current_floor_ptr->m_list[m_idx];
+    const auto &monster = creature.get_floor()->get_monster(m_idx);
     if (see_m) {
-        const auto m_name = monster_desc(player_ptr, monster, 0);
+        const auto m_name = monster_desc(creature, monster, 0);
         msg_format(_("%sは消え去った！", "%s^ disappears!"), m_name.data());
     }
 
-    monster_death(player_ptr, m_idx, false, AttributeType::QUANTUM_VANISH);
-    delete_monster_idx(player_ptr, m_idx);
-    if (monster.is_pet() && !(monster.ml)) {
+    monster_death(creature, m_idx, false, AttributeType::QUANTUM_VANISH);
+    delete_monster_idx(creature, m_idx);
+    if (monster.is_pet() && !(monster.is_visible_on_map())) {
         msg_print(_("少しの間悲しい気分になった。", "You feel sad for a moment."));
     }
 }
 
 /*!
  * @brief 量子生物ユニークの量子的効果 (ショート・テレポートまたは距離10のテレポート・アウェイ)を実行する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param m_idx モンスターID
  * @param see_m モンスターが視界内にいたらTRUE
  * @details
@@ -49,17 +48,17 @@ static void vanish_nonunique(PlayerType *player_ptr, MONSTER_IDX m_idx, bool see
  * パターンは収縮どころか拡散しているが、この際気にしてはいけない
  * @todo ユニークとプレイヤーとの間でしか効果が発生しない。ユニークとその他のモンスター間では何もしなくてよい？
  */
-static void produce_quantum_effect(PlayerType *player_ptr, MONSTER_IDX m_idx, bool see_m)
+static void produce_quantum_effect(CreatureEntity &creature, MONSTER_IDX m_idx, bool see_m)
 {
-    const auto &floor = *player_ptr->current_floor_ptr;
-    const auto &monster = floor.m_list[m_idx];
-    const auto coherent = los(floor, monster.get_position(), player_ptr->get_position());
+    const auto &floor = *creature.get_floor();
+    const auto &monster = floor.get_monster(m_idx);
+    const auto coherent = los(floor, monster.get_position(), creature.get_position());
     if (!see_m && !coherent) {
         return;
     }
 
     if (see_m) {
-        const auto m_name = monster_desc(player_ptr, monster, MD_NONE);
+        const auto m_name = monster_desc(creature, monster, MD_NONE);
         msg_format(_("%sは量子的効果を起こした！", "%s^ produced a decoherence!"), m_name.data());
     } else {
         msg_print(_("量子的効果が起こった！", "A decoherence was produced!"));
@@ -67,22 +66,22 @@ static void produce_quantum_effect(PlayerType *player_ptr, MONSTER_IDX m_idx, bo
 
     bool target = one_in_(2);
     if (target) {
-        (void)monspell_to_monster(player_ptr, MonsterAbilityType::BLINK, monster.y, monster.x, m_idx, m_idx, true);
+        (void)monspell_to_monster(creature, MonsterAbilityType::BLINK, monster.y, monster.x, m_idx, m_idx, true);
     } else {
-        teleport_player_away(m_idx, player_ptr, 10, true);
+        teleport_player_away(m_idx, creature, 10, true);
     }
 }
 
 /*!
  * @brief 量子生物の量子的効果を実行する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param m_idx モンスターID
  * @param see_m モンスターが視界内にいたらTRUE
  * @return モンスターが量子的効果により消滅したらTRUE
  */
-bool process_quantum_effect(PlayerType *player_ptr, MONSTER_IDX m_idx, bool see_m)
+bool process_quantum_effect(CreatureEntity &creature, MONSTER_IDX m_idx, bool see_m)
 {
-    const auto &monster = player_ptr->current_floor_ptr->m_list[m_idx];
+    const auto &monster = creature.get_floor()->get_monster(m_idx);
     const auto &monrace = monster.get_monrace();
     if (monrace.kind_flags.has_not(MonsterKindType::QUANTUM) && monrace.kind_flags.has_not(MonsterKindType::MONKEY_SPACE)) {
         return false;
@@ -97,10 +96,10 @@ bool process_quantum_effect(PlayerType *player_ptr, MONSTER_IDX m_idx, bool see_
     bool can_disappear = monrace.kind_flags.has_not(MonsterKindType::UNIQUE);
     can_disappear &= monrace.misc_flags.has_not(MonsterMiscType::QUESTOR);
     if (can_disappear) {
-        vanish_nonunique(player_ptr, m_idx, see_m);
+        vanish_nonunique(creature, m_idx, see_m);
         return true;
     }
 
-    produce_quantum_effect(player_ptr, m_idx, see_m);
+    produce_quantum_effect(creature, m_idx, see_m);
     return false;
 }

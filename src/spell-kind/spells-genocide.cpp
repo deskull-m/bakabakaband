@@ -20,10 +20,10 @@
 #include "monster/monster-status.h"
 #include "player/player-damage.h"
 #include "system/angband-system.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
+#include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
@@ -39,10 +39,10 @@
  * @details 抹殺したモンスターのレベルに応じて時空崩壊度が進行。
  * @return 効力があった場合TRUEを返す
  */
-bool genocide_aux(PlayerType *player_ptr, MONSTER_IDX m_idx, int power, bool player_cast, int dam_side, concptr spell_name)
+bool genocide_aux(CreatureEntity &creature, MONSTER_IDX m_idx, int power, bool player_cast, int dam_side, concptr spell_name)
 {
-    auto &floor = *player_ptr->current_floor_ptr;
-    auto &monster = floor.m_list[m_idx];
+    auto &floor = *creature.get_floor();
+    auto &monster = floor.get_monster(m_idx);
     auto &monrace = monster.get_monrace();
     if (monster.is_pet() && !player_cast) {
         return false;
@@ -60,28 +60,28 @@ bool genocide_aux(PlayerType *player_ptr, MONSTER_IDX m_idx, int power, bool pla
         resist = true;
     } else if (player_cast && (monrace.level > randint0(power))) {
         resist = true;
-    } else if (player_cast && monster.mflag2.has(MonsterConstantFlagType::NOGENO)) {
+    } else if (player_cast && monster.is_nogeno()) {
         resist = true;
     } else {
         if (record_named_pet && monster.is_named_pet()) {
-            const auto m_name = monster_desc(player_ptr, monster, MD_INDEF_VISIBLE);
+            const auto m_name = monster_desc(creature, monster, MD_INDEF_VISIBLE);
             exe_write_diary(floor, DiaryKind::NAMED_PET, RECORD_NAMED_PET_GENOCIDE, m_name);
         }
 
         wc_ptr->plus_collapsion(10 + monrace.level * 5);
-        delete_monster_idx(player_ptr, m_idx);
+        delete_monster_idx(creature, m_idx);
     }
 
     if (resist && player_cast) {
-        const auto see_m = is_seen(player_ptr, monster);
-        const auto m_name = monster_desc(player_ptr, monster, 0);
+        const auto see_m = is_seen(creature, monster);
+        const auto m_name = monster_desc(creature, monster, 0);
         if (see_m) {
             msg_format(_("%s^には効果がなかった。", "%s^ is unaffected."), m_name.data());
         }
 
         if (monster.is_asleep()) {
-            (void)set_monster_csleep(player_ptr, m_idx, 0);
-            if (monster.ml) {
+            (void)set_monster_csleep(*creature.get_floor(), m_idx, 0);
+            if (monster.is_visible_on_map()) {
                 msg_format(_("%s^が目を覚ました。", "%s^ wakes up."), m_name.data());
             }
         }
@@ -95,19 +95,19 @@ bool genocide_aux(PlayerType *player_ptr, MONSTER_IDX m_idx, int power, bool pla
         }
 
         if (one_in_(13)) {
-            monster.mflag2.set(MonsterConstantFlagType::NOGENO);
+            monster.set_constant_flag(MonsterConstantFlagType::NOGENO);
         }
     }
 
     if (player_cast) {
-        take_hit(player_ptr, DAMAGE_GENO, randint1(dam_side), format(_("%s^の呪文を唱えた疲労", "the strain of casting %s^"), spell_name));
+        take_hit(creature, DAMAGE_GENO, randint1(dam_side), format(_("%s^の呪文を唱えた疲労", "the strain of casting %s^"), spell_name));
     }
 
-    move_cursor_relative(player_ptr->y, player_ptr->x);
+    move_cursor_relative(creature.y, creature.x);
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(MainWindowRedrawingFlag::HP);
     rfu.set_flag(SubWindowRedrawingFlag::PLAYER);
-    handle_stuff(player_ptr);
+    handle_stuff(creature);
     term_fresh();
     term_xtra(TERM_XTRA_DELAY, delay_factor);
     return !resist;
@@ -119,9 +119,9 @@ bool genocide_aux(PlayerType *player_ptr, MONSTER_IDX m_idx, int power, bool pla
  * @param player_cast プレイヤーの魔法によるものならば TRUE
  * @return 効力があった場合TRUEを返す
  */
-bool symbol_genocide(PlayerType *player_ptr, int power, bool player_cast)
+bool symbol_genocide(CreatureEntity &creature, int power, bool player_cast)
 {
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *creature.get_floor();
     bool is_special_floor = floor.is_in_quest() && !inside_quest(floor.get_random_quest_id());
     is_special_floor |= floor.inside_arena;
     is_special_floor |= AngbandSystem::get_instance().is_phase_out();
@@ -142,21 +142,21 @@ bool symbol_genocide(PlayerType *player_ptr, int power, bool player_cast)
 
     auto result = false;
     for (short i = 1; i < floor.m_max; i++) {
-        const auto &monster = floor.m_list[i];
+        const auto &monster = floor.get_monster(i);
         const auto &monrace = monster.get_monrace();
         if (!monster.is_valid() || (monrace.symbol_definition.character != symbol)) {
             continue;
         }
 
-        result |= genocide_aux(player_ptr, i, power, player_cast, 4, _("抹殺", "Genocide"));
+        result |= genocide_aux(creature, i, power, player_cast, 4, _("抹殺", "Genocide"));
     }
 
     if (!result) {
         return false;
     }
 
-    chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::VITALITY, -2);
-    chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::CHANCE, -1);
+    chg_virtue(creature, Virtue::VITALITY, -2);
+    chg_virtue(creature, Virtue::CHANCE, -1);
     return true;
 }
 
@@ -166,9 +166,9 @@ bool symbol_genocide(PlayerType *player_ptr, int power, bool player_cast)
  * @param player_cast プレイヤーの魔法によるものならば TRUE
  * @return 効力があった場合TRUEを返す
  */
-bool mass_genocide(PlayerType *player_ptr, int power, bool player_cast)
+bool mass_genocide(CreatureEntity &creature, int power, bool player_cast)
 {
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *creature.get_floor();
     bool is_special_floor = floor.is_in_quest() && !inside_quest(floor.get_random_quest_id());
     is_special_floor |= floor.inside_arena;
     is_special_floor |= AngbandSystem::get_instance().is_phase_out();
@@ -177,21 +177,18 @@ bool mass_genocide(PlayerType *player_ptr, int power, bool player_cast)
     }
 
     bool result = false;
-    for (MONSTER_IDX i = 1; i < floor.m_max; i++) {
-        const auto &monster = floor.m_list[i];
-        if (!monster.is_valid()) {
-            continue;
-        }
-        if (monster.cdis > MAX_PLAYER_SIGHT) {
-            continue;
-        }
-
-        result |= genocide_aux(player_ptr, i, power, player_cast, 3, _("周辺抹殺", "Mass Genocide"));
+    // [提案 14b]
+    const auto p_pos = creature.get_position();
+    const auto targets = creature.collect_creatures([&](const CreatureEntity &mon) {
+        return Grid::calc_distance(p_pos, mon.get_position()) <= MAX_PLAYER_SIGHT;
+    });
+    for (auto i : targets) {
+        result |= genocide_aux(creature, i, power, player_cast, 3, _("周辺抹殺", "Mass Genocide"));
     }
 
     if (result) {
-        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::VITALITY, -2);
-        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::CHANCE, -1);
+        chg_virtue(creature, Virtue::VITALITY, -2);
+        chg_virtue(creature, Virtue::CHANCE, -1);
     }
 
     return result;
@@ -203,9 +200,9 @@ bool mass_genocide(PlayerType *player_ptr, int power, bool player_cast)
  * @param player_cast プレイヤーの魔法によるものならば TRUE
  * @return 効力があった場合TRUEを返す
  */
-bool mass_genocide_undead(PlayerType *player_ptr, int power, bool player_cast)
+bool mass_genocide_undead(CreatureEntity &creature, int power, bool player_cast)
 {
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *creature.get_floor();
     bool is_special_floor = floor.is_in_quest() && !inside_quest(floor.get_random_quest_id());
     is_special_floor |= floor.inside_arena;
     is_special_floor |= AngbandSystem::get_instance().is_phase_out();
@@ -214,24 +211,21 @@ bool mass_genocide_undead(PlayerType *player_ptr, int power, bool player_cast)
     }
 
     bool result = false;
-    for (MONSTER_IDX i = 1; i < floor.m_max; i++) {
-        const auto &monster = floor.m_list[i];
-        if (!monster.is_valid()) {
-            continue;
+    // [提案 14b]
+    const auto p_pos = creature.get_position();
+    const auto targets = creature.collect_creatures([&](const CreatureEntity &mon) {
+        if (!mon.has_undead_flag()) {
+            return false;
         }
-        if (!monster.has_undead_flag()) {
-            continue;
-        }
-        if (monster.cdis > MAX_PLAYER_SIGHT) {
-            continue;
-        }
-
-        result |= genocide_aux(player_ptr, i, power, player_cast, 3, _("アンデッド消滅", "Annihilate Undead"));
+        return Grid::calc_distance(p_pos, mon.get_position()) <= MAX_PLAYER_SIGHT;
+    });
+    for (auto i : targets) {
+        result |= genocide_aux(creature, i, power, player_cast, 3, _("アンデッド消滅", "Annihilate Undead"));
     }
 
     if (result) {
-        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::UNLIFE, -2);
-        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::CHANCE, -1);
+        chg_virtue(creature, Virtue::UNLIFE, -2);
+        chg_virtue(creature, Virtue::CHANCE, -1);
     }
 
     return result;

@@ -25,24 +25,24 @@
 #include "status/shape-changer.h"
 #include "status/sight-setter.h"
 #include "status/temporary-resistance.h"
-#include "system/player-type-definition.h"
+#include "system/creature-entity.h"
 #include "target/target-getter.h"
 #include "util/dice.h"
 #include "view/display-messages.h"
 
 /*!
  * @brief 悪魔領域魔法の各処理を行う
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param spell 魔法ID
  * @param mode 処理内容 (SpellProcessType::NAME / SPELL_DESC / SpellProcessType::INFO / SpellProcessType::CAST)
  * @return SpellProcessType::NAME / SPELL_DESC / SpellProcessType::INFO 時には文字列を返す。SpellProcessType::CAST時は tl::nullopt を返す。
  */
-tl::optional<std::string> do_daemon_spell(PlayerType *player_ptr, SPELL_IDX spell, SpellProcessType mode)
+tl::optional<std::string> do_daemon_spell(CreatureEntity &creature, SPELL_IDX spell, SpellProcessType mode)
 {
     bool info = mode == SpellProcessType::INFO;
     bool cast = mode == SpellProcessType::CAST;
 
-    PLAYER_LEVEL plev = player_ptr->level;
+    PLAYER_LEVEL plev = creature.get_level();
 
     switch (spell) {
     case 0: {
@@ -53,12 +53,12 @@ tl::optional<std::string> do_daemon_spell(PlayerType *player_ptr, SPELL_IDX spel
         }
 
         if (cast) {
-            const auto dir = get_aim_dir(player_ptr);
+            const auto dir = get_aim_dir(creature);
             if (!dir) {
                 return tl::nullopt;
             }
 
-            fire_bolt_or_beam(player_ptr, beam_chance(player_ptr) - 10, AttributeType::MISSILE, dir, dice.roll());
+            fire_bolt_or_beam(creature, beam_chance(creature) - 10, AttributeType::MISSILE, dir, dice.roll());
         }
     } break;
 
@@ -70,7 +70,7 @@ tl::optional<std::string> do_daemon_spell(PlayerType *player_ptr, SPELL_IDX spel
         }
 
         if (cast) {
-            detect_monsters_nonliving(player_ptr, rad);
+            detect_monsters_nonliving(creature, rad);
         }
     } break;
 
@@ -83,7 +83,7 @@ tl::optional<std::string> do_daemon_spell(PlayerType *player_ptr, SPELL_IDX spel
         }
 
         if (cast) {
-            set_blessed(player_ptr, dice.roll() + base, false);
+            set_blessed(creature, dice.roll() + base, false);
         }
     } break;
 
@@ -96,7 +96,7 @@ tl::optional<std::string> do_daemon_spell(PlayerType *player_ptr, SPELL_IDX spel
         }
 
         if (cast) {
-            set_oppose_fire(player_ptr, dice.roll() + base, false);
+            set_oppose_fire(creature, dice.roll() + base, false);
         }
     } break;
 
@@ -108,18 +108,18 @@ tl::optional<std::string> do_daemon_spell(PlayerType *player_ptr, SPELL_IDX spel
         }
 
         if (cast) {
-            const auto dir = get_aim_dir(player_ptr);
+            const auto dir = get_aim_dir(creature);
             if (!dir) {
                 return tl::nullopt;
             }
 
-            fire_bolt_or_beam(player_ptr, beam_chance(player_ptr), AttributeType::FIRE, dir, dice.roll());
+            fire_bolt_or_beam(creature, beam_chance(creature), AttributeType::FIRE, dir, dice.roll());
         }
     } break;
 
     case 5: {
         if (cast) {
-            if (!summon_specific(player_ptr, player_ptr->y, player_ptr->x, (plev * 3) / 2, SUMMON_MANES, (PM_ALLOW_GROUP | PM_FORCE_PET))) {
+            if (!summon_specific(creature, creature.y, creature.x, (plev * 3) / 2, SUMMON_MANES, (PM_ALLOW_GROUP | PM_FORCE_PET))) {
                 msg_print(_("古代の死霊は現れなかった。", "No Manes arrive."));
             }
         }
@@ -130,7 +130,7 @@ tl::optional<std::string> do_daemon_spell(PlayerType *player_ptr, SPELL_IDX spel
         POSITION rad = (plev < 30) ? 2 : 3;
         int base;
 
-        if (PlayerClass(player_ptr).is_wizard()) {
+        if (CreatureClass(creature).is_wizard()) {
             base = plev * 3;
         } else {
             base = plev * 2 + plev / 2;
@@ -141,12 +141,12 @@ tl::optional<std::string> do_daemon_spell(PlayerType *player_ptr, SPELL_IDX spel
         }
 
         if (cast) {
-            const auto dir = get_aim_dir(player_ptr);
+            const auto dir = get_aim_dir(creature);
             if (!dir) {
                 return tl::nullopt;
             }
 
-            fire_ball(player_ptr, AttributeType::NETHER, dir, dice.roll() + base, rad);
+            fire_ball(creature, AttributeType::NETHER, dir, dice.roll() + base, rad);
         }
     } break;
 
@@ -157,7 +157,7 @@ tl::optional<std::string> do_daemon_spell(PlayerType *player_ptr, SPELL_IDX spel
             return info_duration(base, dice);
         }
         if (cast) {
-            heroism(player_ptr, dice.roll() + base);
+            heroism(creature, dice.roll() + base);
         }
     } break;
 
@@ -169,7 +169,7 @@ tl::optional<std::string> do_daemon_spell(PlayerType *player_ptr, SPELL_IDX spel
         }
 
         if (cast) {
-            map_area(player_ptr, rad);
+            map_area(creature, rad);
         }
     } break;
 
@@ -182,7 +182,7 @@ tl::optional<std::string> do_daemon_spell(PlayerType *player_ptr, SPELL_IDX spel
         }
 
         if (cast) {
-            set_tim_res_nether(player_ptr, dice.roll() + base, false);
+            set_tim_res_nether(creature, dice.roll() + base, false);
         }
     } break;
 
@@ -194,12 +194,12 @@ tl::optional<std::string> do_daemon_spell(PlayerType *player_ptr, SPELL_IDX spel
         }
 
         if (cast) {
-            const auto dir = get_aim_dir(player_ptr);
+            const auto dir = get_aim_dir(creature);
             if (!dir) {
                 return tl::nullopt;
             }
 
-            fire_bolt_or_beam(player_ptr, beam_chance(player_ptr), AttributeType::PLASMA, dir, dice.roll());
+            fire_bolt_or_beam(creature, beam_chance(creature), AttributeType::PLASMA, dir, dice.roll());
         }
     } break;
 
@@ -212,18 +212,18 @@ tl::optional<std::string> do_daemon_spell(PlayerType *player_ptr, SPELL_IDX spel
         }
 
         if (cast) {
-            const auto dir = get_aim_dir(player_ptr);
+            const auto dir = get_aim_dir(creature);
             if (!dir) {
                 return tl::nullopt;
             }
 
-            fire_ball(player_ptr, AttributeType::FIRE, dir, dam, rad);
+            fire_ball(creature, AttributeType::FIRE, dir, dam, rad);
         }
     } break;
 
     case 12: {
         if (cast) {
-            brand_weapon(player_ptr, 1);
+            brand_weapon(creature, 1);
         }
     } break;
 
@@ -236,8 +236,8 @@ tl::optional<std::string> do_daemon_spell(PlayerType *player_ptr, SPELL_IDX spel
         }
 
         if (cast) {
-            dispel_monsters(player_ptr, randint1(sides1));
-            dispel_good(player_ptr, randint1(sides2));
+            dispel_monsters(creature, randint1(sides1));
+            dispel_good(creature, randint1(sides2));
         }
     } break;
 
@@ -249,17 +249,17 @@ tl::optional<std::string> do_daemon_spell(PlayerType *player_ptr, SPELL_IDX spel
         }
 
         if (cast) {
-            const auto dir = get_aim_dir(player_ptr);
+            const auto dir = get_aim_dir(creature);
             if (!dir) {
                 return tl::nullopt;
             }
-            fire_bolt(player_ptr, AttributeType::ABYSS, dir, dam);
+            fire_bolt(creature, AttributeType::ABYSS, dir, dam);
         }
     } break;
 
     case 15: {
         if (cast) {
-            cast_summon_demon(player_ptr, plev * 2 / 3 + randint1(plev / 2));
+            cast_summon_demon(creature, plev * 2 / 3 + randint1(plev / 2));
         }
     } break;
 
@@ -272,7 +272,7 @@ tl::optional<std::string> do_daemon_spell(PlayerType *player_ptr, SPELL_IDX spel
         }
 
         if (cast) {
-            set_tim_esp(player_ptr, dice.roll() + base, false);
+            set_tim_esp(creature, dice.roll() + base, false);
         }
     } break;
 
@@ -285,10 +285,10 @@ tl::optional<std::string> do_daemon_spell(PlayerType *player_ptr, SPELL_IDX spel
 
         if (cast) {
             const auto dur = static_cast<TIME_EFFECT>(dice.roll() + base);
-            set_oppose_fire(player_ptr, dur, false);
-            set_oppose_cold(player_ptr, dur, false);
-            set_tim_sh_fire(player_ptr, dur, false);
-            (void)BadStatusSetter(player_ptr).set_fear(0);
+            set_oppose_fire(creature, dur, false);
+            set_oppose_cold(creature, dur, false);
+            set_tim_sh_fire(creature, dur, false);
+            (void)BadStatusSetter(creature).set_fear(0);
             break;
         }
 
@@ -303,8 +303,8 @@ tl::optional<std::string> do_daemon_spell(PlayerType *player_ptr, SPELL_IDX spel
         }
 
         if (cast) {
-            fire_ball(player_ptr, AttributeType::FIRE, Direction::self(), dam, rad);
-            fire_ball_hide(player_ptr, AttributeType::LAVA_FLOW, Direction::self(), 2 + randint1(2), rad);
+            fire_ball(creature, AttributeType::FIRE, Direction::self(), dam, rad);
+            fire_ball_hide(creature, AttributeType::LAVA_FLOW, Direction::self(), 2 + randint1(2), rad);
         }
     } break;
 
@@ -317,12 +317,12 @@ tl::optional<std::string> do_daemon_spell(PlayerType *player_ptr, SPELL_IDX spel
         }
 
         if (cast) {
-            const auto dir = get_aim_dir(player_ptr);
+            const auto dir = get_aim_dir(creature);
             if (!dir) {
                 return tl::nullopt;
             }
 
-            fire_ball(player_ptr, AttributeType::PLASMA, dir, dam, rad);
+            fire_ball(creature, AttributeType::PLASMA, dir, dam, rad);
         }
     } break;
 
@@ -335,7 +335,7 @@ tl::optional<std::string> do_daemon_spell(PlayerType *player_ptr, SPELL_IDX spel
         }
 
         if (cast) {
-            set_mimic(player_ptr, base + dice.roll(), MimicKindType::DEMON, false);
+            set_mimic(creature, base + dice.roll(), MimicKindType::DEMON, false);
         }
     } break;
 
@@ -348,11 +348,11 @@ tl::optional<std::string> do_daemon_spell(PlayerType *player_ptr, SPELL_IDX spel
         }
 
         if (cast) {
-            const auto dir = get_aim_dir(player_ptr);
+            const auto dir = get_aim_dir(creature);
             if (!dir) {
                 return tl::nullopt;
             }
-            fire_ball(player_ptr, AttributeType::FIRE, dir, dam, rad);
+            fire_ball(creature, AttributeType::FIRE, dir, dam, rad);
         }
     } break;
 
@@ -365,24 +365,24 @@ tl::optional<std::string> do_daemon_spell(PlayerType *player_ptr, SPELL_IDX spel
         }
 
         if (cast) {
-            const auto dir = get_aim_dir(player_ptr);
+            const auto dir = get_aim_dir(creature);
             if (!dir) {
                 return tl::nullopt;
             }
-            fire_ball(player_ptr, AttributeType::NEXUS, dir, dam, rad);
+            fire_ball(creature, AttributeType::NEXUS, dir, dam, rad);
         }
     } break;
 
     case 23: {
         if (cast) {
-            const auto dir = get_aim_dir(player_ptr);
+            const auto dir = get_aim_dir(creature);
             if (!dir) {
                 return tl::nullopt;
             } else {
                 msg_print(_("<破滅の手>を放った！", "You invoke the Hand of Doom!"));
             }
 
-            fire_ball_hide(player_ptr, AttributeType::HAND_DOOM, dir, plev * 2, 0);
+            fire_ball_hide(creature, AttributeType::HAND_DOOM, dir, plev * 2, 0);
         }
     } break;
 
@@ -395,7 +395,7 @@ tl::optional<std::string> do_daemon_spell(PlayerType *player_ptr, SPELL_IDX spel
         }
 
         if (cast) {
-            set_tim_res_time(player_ptr, dice.roll() + base, false);
+            set_tim_res_time(creature, dice.roll() + base, false);
         }
     } break;
 
@@ -409,21 +409,21 @@ tl::optional<std::string> do_daemon_spell(PlayerType *player_ptr, SPELL_IDX spel
         }
 
         if (cast) {
-            fire_ball(player_ptr, AttributeType::CHAOS, Direction::self(), dam, rad);
-            fire_ball(player_ptr, AttributeType::CONFUSION, Direction::self(), dam, rad);
-            fire_ball(player_ptr, AttributeType::CHARM, Direction::self(), power, rad);
+            fire_ball(creature, AttributeType::CHAOS, Direction::self(), dam, rad);
+            fire_ball(creature, AttributeType::CONFUSION, Direction::self(), dam, rad);
+            fire_ball(creature, AttributeType::CHARM, Direction::self(), power, rad);
         }
     } break;
 
     case 26: {
         if (cast) {
-            discharge_minion(player_ptr);
+            discharge_minion(creature);
         }
     } break;
 
     case 27: {
         if (cast) {
-            if (!cast_summon_greater_demon(player_ptr)) {
+            if (!cast_summon_greater_demon(creature)) {
                 return tl::nullopt;
             }
         }
@@ -438,12 +438,12 @@ tl::optional<std::string> do_daemon_spell(PlayerType *player_ptr, SPELL_IDX spel
         }
 
         if (cast) {
-            const auto dir = get_aim_dir(player_ptr);
+            const auto dir = get_aim_dir(creature);
             if (!dir) {
                 return tl::nullopt;
             }
 
-            fire_ball(player_ptr, AttributeType::FIRE, dir, dam, rad);
+            fire_ball(creature, AttributeType::FIRE, dir, dam, rad);
         }
     } break;
 
@@ -456,12 +456,12 @@ tl::optional<std::string> do_daemon_spell(PlayerType *player_ptr, SPELL_IDX spel
         }
 
         if (cast) {
-            const auto dir = get_aim_dir(player_ptr);
+            const auto dir = get_aim_dir(creature);
             if (!dir) {
                 return tl::nullopt;
             }
 
-            fire_ball(player_ptr, AttributeType::NETHER, dir, dam, rad);
+            fire_ball(creature, AttributeType::NETHER, dir, dam, rad);
         }
     } break;
 
@@ -474,12 +474,12 @@ tl::optional<std::string> do_daemon_spell(PlayerType *player_ptr, SPELL_IDX spel
         }
 
         if (cast) {
-            const auto dir = get_aim_dir(player_ptr);
+            const auto dir = get_aim_dir(creature);
             if (!dir) {
                 return tl::nullopt;
             }
 
-            fire_ball_hide(player_ptr, AttributeType::ABYSS, dir, dam, rad);
+            fire_ball_hide(creature, AttributeType::ABYSS, dir, dam, rad);
         }
     } break;
 
@@ -492,7 +492,7 @@ tl::optional<std::string> do_daemon_spell(PlayerType *player_ptr, SPELL_IDX spel
         }
 
         if (cast) {
-            set_mimic(player_ptr, base + dice.roll(), MimicKindType::DEMON_LORD, false);
+            set_mimic(creature, base + dice.roll(), MimicKindType::DEMON_LORD, false);
         }
     } break;
     }

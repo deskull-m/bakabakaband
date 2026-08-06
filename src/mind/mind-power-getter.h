@@ -6,10 +6,10 @@
 
 struct mind_power;
 struct mind_type;
-class PlayerType;
+class CreatureEntity;
 class MindPowerGetter {
 public:
-    MindPowerGetter(PlayerType *player_ptr);
+    MindPowerGetter(CreatureEntity &creature);
     virtual ~MindPowerGetter() = default;
     bool get_mind_power(SPELL_IDX *sn, bool only_browse);
 
@@ -28,7 +28,7 @@ private:
     PERCENTAGE chance = 0;
     int mana_cost = 0;
 
-    PlayerType *player_ptr;
+    CreatureEntity *creature_ptr;
     MindKindType use_mind;
     int menu_line;
 

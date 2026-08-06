@@ -3,18 +3,22 @@
 #include "object-enchant/weapon/abstract-weapon-enchanter.h"
 #include "system/angband.h"
 
+class CreatureEntity;
 class ItemEntity;
-class PlayerType;
 class MeleeWeaponEnchanter : public AbstractWeaponEnchanter {
 public:
+    MeleeWeaponEnchanter(const MeleeWeaponEnchanter &) = default;
+    MeleeWeaponEnchanter(MeleeWeaponEnchanter &&) = default;
+    MeleeWeaponEnchanter &operator=(const MeleeWeaponEnchanter &) = delete;
+    MeleeWeaponEnchanter &operator=(MeleeWeaponEnchanter &&) = delete;
     virtual ~MeleeWeaponEnchanter() = default;
 
     void apply_magic() override;
 
 protected:
-    MeleeWeaponEnchanter(PlayerType *player_ptr, ItemEntity *o_ptr, DEPTH level, int power);
+    MeleeWeaponEnchanter(CreatureEntity &creature, ItemEntity *o_ptr, DEPTH level, int power);
 
-    PlayerType *player_ptr;
+    CreatureEntity &creature;
 
     void prepare_magic_application();
 

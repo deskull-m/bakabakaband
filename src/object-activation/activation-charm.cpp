@@ -1,50 +1,46 @@
 #include "object-activation/activation-charm.h"
 #include "spell-kind/spells-charm.h"
 #include "spell-kind/spells-sight.h"
-#include "system/player-type-definition.h"
+#include "system/creature-entity.h"
 #include "target/target-getter.h"
 
-bool activate_charm_animal(PlayerType *player_ptr)
+namespace {
+template <typename SpellFunc>
+bool activate_charm_directional(CreatureEntity &creature, SpellFunc spell, int power)
 {
-    const auto dir = get_aim_dir(player_ptr);
+    const auto dir = get_aim_dir(creature);
     if (!dir) {
         return false;
     }
 
-    (void)charm_animal(player_ptr, dir, player_ptr->level);
+    (void)spell(creature, dir, static_cast<PLAYER_LEVEL>(power));
+    return true;
+}
+}
+
+bool activate_charm_animal(CreatureEntity &creature)
+{
+    return activate_charm_directional(creature, charm_animal, creature.get_level());
+}
+
+bool activate_charm_undead(CreatureEntity &creature)
+{
+    return activate_charm_directional(creature, control_one_undead, creature.get_level());
+}
+
+bool activate_charm_other(CreatureEntity &creature)
+{
+    return activate_charm_directional(creature, charm_monster, creature.get_level() * 2);
+}
+
+bool activate_charm_animals(CreatureEntity &creature)
+{
+    (void)charm_animals(creature, creature.get_level() * 2);
     return true;
 }
 
-bool activate_charm_undead(PlayerType *player_ptr)
+bool activate_charm_others(CreatureEntity &creature)
 {
-    const auto dir = get_aim_dir(player_ptr);
-    if (!dir) {
-        return false;
-    }
-
-    (void)control_one_undead(player_ptr, dir, player_ptr->level);
-    return true;
-}
-
-bool activate_charm_other(PlayerType *player_ptr)
-{
-    const auto dir = get_aim_dir(player_ptr);
-    if (!dir) {
-        return false;
-    }
-
-    (void)charm_monster(player_ptr, dir, player_ptr->level * 2);
-    return true;
-}
-
-bool activate_charm_animals(PlayerType *player_ptr)
-{
-    (void)charm_animals(player_ptr, player_ptr->level * 2);
-    return true;
-}
-
-bool activate_charm_others(PlayerType *player_ptr)
-{
-    (void)charm_monsters(player_ptr, player_ptr->level * 2);
+    (void)charm_monsters(creature, creature.get_level() * 2);
     return true;
 }

@@ -14,16 +14,15 @@
 #include "player-info/class-info.h"
 #include "player-info/equipment-info.h"
 #include "player/player-status-table.h"
-#include "system/player-type-definition.h"
+#include "system/creature-entity.h"
 #include "system/redrawing-flags-updater.h"
 #include "term/screen-processor.h"
 #include "term/z-form.h"
-#include "timed-effect/timed-effects.h"
 #include "util/enum-converter.h"
 #include "util/int-char-converter.h"
 
-MindPowerGetter::MindPowerGetter(PlayerType *player_ptr)
-    : player_ptr(player_ptr)
+MindPowerGetter::MindPowerGetter(CreatureEntity &creature)
+    : creature_ptr(&creature)
     , use_mind(MindKindType::MINDCRAFTER)
     , menu_line(use_menu ? 1 : 0)
 {
@@ -55,7 +54,7 @@ bool MindPowerGetter::get_mind_power(SPELL_IDX *sn, bool only_browse)
     }
 
     for (this->index = 0; this->index < std::ssize(this->mind_ptr->info); this->index++) {
-        if (mind_ptr->info[this->index].min_lev <= this->player_ptr->level) {
+        if (mind_ptr->info[this->index].min_lev <= this->creature_ptr->get_level()) {
             this->num++;
         }
     }
@@ -80,7 +79,7 @@ bool MindPowerGetter::get_mind_power(SPELL_IDX *sn, bool only_browse)
     }
 
     RedrawingFlagsUpdater::get_instance().set_flag(SubWindowRedrawingFlag::SPELL);
-    handle_stuff(this->player_ptr);
+    handle_stuff(*this->creature_ptr);
     if (!this->flag) {
         return false;
     }
@@ -95,7 +94,7 @@ bool MindPowerGetter::get_mind_power(SPELL_IDX *sn, bool only_browse)
  */
 void MindPowerGetter::select_mind_description()
 {
-    switch (this->player_ptr->pclass)
+    switch (this->creature_ptr->pclass)
     case PlayerClassType::MINDCRAFTER: {
         this->use_mind = MindKindType::MINDCRAFTER;
         this->mind_description = _("超能力", "mindcraft");
@@ -140,7 +139,7 @@ bool MindPowerGetter::select_spell_index(SPELL_IDX *sn)
         }
     }
 
-    return mind_ptr->info[*sn].min_lev <= this->player_ptr->level;
+    return mind_ptr->info[*sn].min_lev <= this->creature_ptr->get_level();
 }
 
 bool MindPowerGetter::decide_mind_choice(std::string_view prompt, const bool only_browse)
@@ -253,16 +252,16 @@ bool MindPowerGetter::display_minds_chance(const bool only_browse)
 
 void MindPowerGetter::display_each_mind_chance()
 {
-    const auto has_weapon_main = has_melee_weapon(this->player_ptr, INVEN_MAIN_HAND);
-    const auto has_weapon_sub = has_melee_weapon(this->player_ptr, INVEN_SUB_HAND);
+    const auto has_weapon_main = has_melee_weapon(*this->creature_ptr, INVEN_MAIN_HAND);
+    const auto has_weapon_sub = has_melee_weapon(*this->creature_ptr, INVEN_SUB_HAND);
     for (this->index = 0; this->index < std::ssize(mind_ptr->info); this->index++) {
         this->spell = &mind_ptr->info[this->index];
-        if (this->spell->min_lev > this->player_ptr->level) {
+        if (this->spell->min_lev > this->creature_ptr->get_level()) {
             break;
         }
 
         calculate_mind_chance(has_weapon_main, has_weapon_sub);
-        const auto comment = mindcraft_info(this->player_ptr, this->use_mind, this->index);
+        const auto comment = mindcraft_info(*this->creature_ptr, this->use_mind, this->index);
         std::string psi_desc;
         if (use_menu) {
             if (this->index == (this->menu_line - 1)) {
@@ -288,20 +287,20 @@ void MindPowerGetter::calculate_mind_chance(bool has_weapon_main, bool has_weapo
         return;
     }
 
-    this->chance -= 3 * (this->player_ptr->level - this->spell->min_lev);
-    this->chance -= 3 * (adj_mag_stat[this->player_ptr->stat_index[mp_ptr->spell_stat]] - 1);
+    this->chance -= 3 * (this->creature_ptr->get_level() - this->spell->min_lev);
+    this->chance -= 3 * (adj_mag_stat[this->creature_ptr->get_stat_index(mp_ptr->spell_stat)] - 1);
     calculate_ki_chance(has_weapon_main, has_weapon_sub);
-    if ((this->use_mind != MindKindType::BERSERKER) && (this->use_mind != MindKindType::NINJUTSU) && (this->mana_cost > this->player_ptr->csp)) {
-        this->chance += 5 * (this->mana_cost - this->player_ptr->csp);
+    if ((this->use_mind != MindKindType::BERSERKER) && (this->use_mind != MindKindType::NINJUTSU) && (this->mana_cost > this->creature_ptr->get_current_mp())) {
+        this->chance += 5 * (this->mana_cost - this->creature_ptr->get_current_mp());
     }
 
-    this->chance += this->player_ptr->to_m_chance;
-    PERCENTAGE minfail = adj_mag_fail[this->player_ptr->stat_index[mp_ptr->spell_stat]];
+    this->chance += this->creature_ptr->get_to_m_chance();
+    PERCENTAGE minfail = adj_mag_fail[this->creature_ptr->get_stat_index(mp_ptr->spell_stat)];
     if (this->chance < minfail) {
         this->chance = minfail;
     }
 
-    this->chance += this->player_ptr->effects()->stun().get_magic_chance_penalty();
+    this->chance += this->creature_ptr->get_stun_magic_chance_penalty();
     add_ki_chance();
     if (this->chance > 95) {
         this->chance = 95;
@@ -314,24 +313,24 @@ void MindPowerGetter::calculate_ki_chance(bool has_weapon_main, bool has_weapon_
         return;
     }
 
-    if (heavy_armor(this->player_ptr)) {
+    if (heavy_armor(*this->creature_ptr)) {
         this->chance += 20;
     }
 
-    if (this->player_ptr->is_icky_wield[0]) {
+    if (this->creature_ptr->is_icky_wield(0)) {
         this->chance += 20;
     } else if (has_weapon_main) {
         this->chance += 10;
     }
 
-    if (this->player_ptr->is_icky_wield[1]) {
+    if (this->creature_ptr->is_icky_wield(1)) {
         chance += 20;
     } else if (has_weapon_sub) {
         this->chance += 10;
     }
 
     if (this->index == 5) {
-        for (auto j = 0; j < get_current_ki(this->player_ptr) / 50; j++) {
+        for (auto j = 0; j < get_current_ki(*this->creature_ptr) / 50; j++) {
             this->mana_cost += (j + 1) * 3 / 2;
         }
     }
@@ -343,15 +342,15 @@ void MindPowerGetter::add_ki_chance()
         return;
     }
 
-    if (heavy_armor(this->player_ptr)) {
+    if (heavy_armor(*this->creature_ptr)) {
         this->chance += 5;
     }
 
-    if (this->player_ptr->is_icky_wield[0]) {
+    if (this->creature_ptr->is_icky_wield(0)) {
         this->chance += 5;
     }
 
-    if (this->player_ptr->is_icky_wield[1]) {
+    if (this->creature_ptr->is_icky_wield(1)) {
         this->chance += 5;
     }
 }

@@ -3,7 +3,9 @@
 #include "core/disturbance.h"
 #include "core/stuff-handler.h"
 #include "game-option/disturbance-options.h"
-#include "system/player-type-definition.h"
+#include "main/sound-definitions-table.h"
+#include "main/sound-of-music.h"
+#include "system/creature-entity.h"
 #include "system/redrawing-flags-updater.h"
 #include "view/display-messages.h"
 
@@ -13,33 +15,34 @@
  * @param do_dec 現在の継続時間より長い値のみ上書きする
  * @return ステータスに影響を及ぼす変化があった場合TRUEを返す。
  */
-bool set_tim_sh_fire(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
+bool set_tim_sh_fire(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
 {
     bool notice = false;
     v = (v > 10000) ? 10000 : (v < 0) ? 0
                                       : v;
 
-    if (player_ptr->is_dead()) {
+    if (creature.is_dead()) {
         return false;
     }
 
     if (v) {
-        if (player_ptr->tim_sh_fire && !do_dec) {
-            if (player_ptr->tim_sh_fire > v) {
+        if (creature.get_timed_effect(CreatureTimedEffect::TIM_SH_FIRE) && !do_dec) {
+            if (creature.get_timed_effect(CreatureTimedEffect::TIM_SH_FIRE) > v) {
                 return false;
             }
-        } else if (!player_ptr->tim_sh_fire) {
+        } else if (!creature.get_timed_effect(CreatureTimedEffect::TIM_SH_FIRE)) {
             msg_print(_("体が炎のオーラで覆われた。", "You are enveloped by a fiery aura!"));
             notice = true;
         }
     } else {
-        if (player_ptr->tim_sh_fire) {
+        if (creature.get_timed_effect(CreatureTimedEffect::TIM_SH_FIRE)) {
             msg_print(_("炎のオーラが消えた。", "The fiery aura disappeared."));
+            sound(SoundKind::BUFF_EXPIRE);
             notice = true;
         }
     }
 
-    player_ptr->tim_sh_fire = v;
+    creature.set_timed_effect(CreatureTimedEffect::TIM_SH_FIRE, v);
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
 
@@ -48,10 +51,10 @@ bool set_tim_sh_fire(PlayerType *player_ptr, TIME_EFFECT v, bool do_dec)
     }
 
     if (disturb_state || Travel::get_instance().is_ongoing()) {
-        disturb(player_ptr, false, true);
+        disturb(creature, false, true);
     }
 
     rfu.set_flag(StatusRecalculatingFlag::BONUS);
-    handle_stuff(player_ptr);
+    handle_stuff(creature);
     return true;
 }

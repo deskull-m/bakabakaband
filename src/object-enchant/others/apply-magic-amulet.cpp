@@ -12,19 +12,19 @@
 #include "object-enchant/trc-types.h"
 #include "sv-definition/sv-amulet-types.h"
 #include "system/baseitem/baseitem-definition.h"
+#include "system/creature-entity.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "util/bit-flags-calculator.h"
 
 /*
  * @brief コンストラクタ
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param o_ptr 強化を与えたいオブジェクトの構造体参照ポインタ
  * @param level 生成基準階
  * @param power 生成ランク
  */
-AmuletEnchanter::AmuletEnchanter(PlayerType *player_ptr, ItemEntity *o_ptr, DEPTH level, int power)
-    : player_ptr(player_ptr)
+AmuletEnchanter::AmuletEnchanter(CreatureEntity &creature, ItemEntity *o_ptr, DEPTH level, int power)
+    : creature(creature)
     , o_ptr(o_ptr)
     , level(level)
     , power(power)
@@ -34,7 +34,7 @@ AmuletEnchanter::AmuletEnchanter(PlayerType *player_ptr, ItemEntity *o_ptr, DEPT
 /*!
  * @brief アミュレットに生成ランクごとの強化を与える
  * Apply magic to an item known to be a "ring" or "amulet"
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param o_ptr 強化を与えたいオブジェクトの構造体参照ポインタ
  * @param level 生成基準階
  * @param power 生成ランク
@@ -50,7 +50,7 @@ void AmuletEnchanter::apply_magic()
     this->sval_enchant();
     if ((this->power > 2) || (one_in_(150) && (this->power > 0) && !this->o_ptr->is_cursed() && (this->level > 79))) {
         this->o_ptr->pval = std::min<short>(this->o_ptr->pval, 4);
-        become_random_artifact(player_ptr, this->o_ptr, false);
+        become_random_artifact(this->creature, this->o_ptr, false);
         return;
     }
 
@@ -79,7 +79,7 @@ void AmuletEnchanter::sval_enchant()
     case SV_AMULET_CHARISMA:
         this->o_ptr->pval = 1 + (PARAMETER_VALUE)m_bonus(5, this->level);
         if (this->power < 0) {
-            set_bits(this->o_ptr->ident, IDENT_BROKEN);
+            this->o_ptr->ident.set(IdentificationFlag::BROKEN);
             this->o_ptr->curse_flags.set(CurseTraitType::CURSED);
             this->o_ptr->pval = 0 - this->o_ptr->pval;
         }
@@ -92,7 +92,7 @@ void AmuletEnchanter::sval_enchant()
         }
 
         if (this->power < 0) {
-            set_bits(this->o_ptr->ident, IDENT_BROKEN);
+            this->o_ptr->ident.set(IdentificationFlag::BROKEN);
             this->o_ptr->curse_flags.set(CurseTraitType::CURSED);
             this->o_ptr->pval = 0 - this->o_ptr->pval;
         }
@@ -122,7 +122,7 @@ void AmuletEnchanter::sval_enchant()
             break;
         }
 
-        set_bits(this->o_ptr->ident, IDENT_BROKEN);
+        this->o_ptr->ident.set(IdentificationFlag::BROKEN);
         this->o_ptr->curse_flags.set(CurseTraitType::CURSED);
         this->o_ptr->pval = 0 - (this->o_ptr->pval);
         break;
@@ -132,7 +132,7 @@ void AmuletEnchanter::sval_enchant()
         add_esp_weak(this->o_ptr, false);
         break;
     case SV_AMULET_DOOM:
-        set_bits(this->o_ptr->ident, IDENT_BROKEN);
+        this->o_ptr->ident.set(IdentificationFlag::BROKEN);
         this->o_ptr->curse_flags.set(CurseTraitType::CURSED);
         this->o_ptr->pval = 0 - (randint1(5) + (PARAMETER_VALUE)m_bonus(5, this->level));
         this->o_ptr->to_a = 0 - (randint1(5) + (ARMOUR_CLASS)m_bonus(5, this->level));
@@ -147,7 +147,7 @@ void AmuletEnchanter::sval_enchant()
             break;
         }
 
-        set_bits(this->o_ptr->ident, IDENT_BROKEN);
+        this->o_ptr->ident.set(IdentificationFlag::BROKEN);
         this->o_ptr->curse_flags.set(CurseTraitType::CURSED);
         this->o_ptr->pval = 0 - this->o_ptr->pval;
         break;
@@ -383,6 +383,6 @@ void AmuletEnchanter::give_cursed()
         }
     }
 
-    set_bits(this->o_ptr->ident, IDENT_BROKEN);
+    this->o_ptr->ident.set(IdentificationFlag::BROKEN);
     this->o_ptr->curse_flags.set({ CurseTraitType::CURSED, CurseTraitType::HEAVY_CURSE });
 }

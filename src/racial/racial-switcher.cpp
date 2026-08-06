@@ -77,24 +77,23 @@
 #include "status/bad-status-setter.h"
 #include "status/buff-setter.h"
 #include "status/experience.h"
-#include "system/player-type-definition.h"
+#include "system/creature-entity.h"
 #include "system/redrawing-flags-updater.h"
 #include "target/target-getter.h"
-#include "timed-effect/timed-effects.h"
 #include "util/bit-flags-calculator.h"
 #include "util/int-char-converter.h"
 #include "view/display-messages.h"
 
-bool switch_class_racial_execution(PlayerType *player_ptr, const int32_t command)
+bool switch_class_racial_execution(CreatureEntity &creature, const int32_t command)
 {
-    switch (player_ptr->pclass) {
+    switch (creature.pclass) {
     case PlayerClassType::WARRIOR:
-        return sword_dancing(player_ptr);
+        return sword_dancing(creature);
     case PlayerClassType::HIGH_MAGE:
-        if (PlayerRealm(player_ptr).is_realm_hex()) {
-            const auto retval = SpellHex(player_ptr).stop_spells_with_selection();
+        if (PlayerRealm(creature).is_realm_hex()) {
+            const auto retval = SpellHex(creature).stop_spells_with_selection();
             if (retval) {
-                PlayerEnergy(player_ptr).set_player_turn_energy(10);
+                PlayerEnergy(creature).set_player_turn_energy(10);
             }
 
             return retval;
@@ -103,55 +102,55 @@ bool switch_class_racial_execution(PlayerType *player_ptr, const int32_t command
         [[fallthrough]];
     case PlayerClassType::MAGE:
     case PlayerClassType::SORCERER:
-        return eat_magic(player_ptr, player_ptr->level * 2);
+        return eat_magic(creature, creature.get_level() * 2);
     case PlayerClassType::PRIEST:
-        if (!PlayerRealm(player_ptr).realm1().is_good_attribute()) {
-            (void)dispel_monsters(player_ptr, player_ptr->level * 4);
-            turn_monsters(player_ptr, player_ptr->level * 4);
-            banish_monsters(player_ptr, player_ptr->level * 4);
+        if (!PlayerRealm(creature).realm1().is_good_attribute()) {
+            (void)dispel_monsters(creature, creature.get_level() * 4);
+            turn_monsters(creature, creature.get_level() * 4);
+            banish_monsters(creature, creature.get_level() * 4);
             return true;
         }
 
-        return bless_weapon(player_ptr);
+        return bless_weapon(creature);
     case PlayerClassType::ROGUE:
-        return hit_and_away(player_ptr);
+        return hit_and_away(creature);
     case PlayerClassType::RANGER:
     case PlayerClassType::SNIPER:
         msg_print(_("敵を調査した...", "You examine your foes..."));
-        probing(player_ptr);
+        probing(creature);
         return true;
     case PlayerClassType::PALADIN: {
-        const auto dir = get_aim_dir(player_ptr);
+        const auto dir = get_aim_dir(creature);
         if (!dir) {
             return false;
         }
 
-        fire_beam(player_ptr, PlayerRealm(player_ptr).realm1().is_good_attribute() ? AttributeType::HOLY_FIRE : AttributeType::HELL_FIRE, dir, player_ptr->level * 3);
+        fire_beam(creature, PlayerRealm(creature).realm1().is_good_attribute() ? AttributeType::HOLY_FIRE : AttributeType::HELL_FIRE, dir, creature.get_level() * 3);
         return true;
     }
     case PlayerClassType::WARRIOR_MAGE:
         if (command == -3) {
-            return comvert_hp_to_mp(player_ptr);
+            return comvert_hp_to_mp(creature);
         } else if (command == -4) {
-            return comvert_mp_to_hp(player_ptr);
+            return comvert_mp_to_hp(creature);
         }
 
         return true;
     case PlayerClassType::CHAOS_WARRIOR:
-        return confusing_light(player_ptr);
+        return confusing_light(creature);
     case PlayerClassType::MONK:
-        if (none_bits(empty_hands(player_ptr, true), EMPTY_HAND_MAIN)) {
+        if (none_bits(empty_hands(creature, true), EMPTY_HAND_MAIN)) {
             msg_print(_("素手じゃないとできません。", "You need to be barehanded."));
             return false;
         }
 
-        if (player_ptr->riding) {
+        if (creature.get_riding()) {
             msg_print(_("乗馬中はできません。", "You need to get off a pet."));
             return false;
         }
 
         if (command == -3) {
-            if (!choose_monk_stance(player_ptr)) {
+            if (!choose_monk_stance(creature)) {
                 return false;
             }
 
@@ -160,80 +159,80 @@ bool switch_class_racial_execution(PlayerType *player_ptr, const int32_t command
         }
 
         if (command == -4) {
-            return double_attack(player_ptr);
+            return double_attack(creature);
         }
 
         return true;
     case PlayerClassType::MINDCRAFTER:
     case PlayerClassType::FORCETRAINER:
-        return clear_mind(player_ptr);
+        return clear_mind(creature);
     case PlayerClassType::TOURIST:
         if (command == -3) {
-            const auto dir = get_aim_dir(player_ptr);
+            const auto dir = get_aim_dir(creature);
             if (!dir) {
                 return false;
             }
 
             project_length = 1;
-            fire_beam(player_ptr, AttributeType::PHOTO, dir, 1);
+            fire_beam(creature, AttributeType::PHOTO, dir, 1);
             return true;
         }
 
-        return (command != -4) || identify_fully(player_ptr, false);
+        return (command != -4) || identify_fully(creature, false);
     case PlayerClassType::IMITATOR:
-        handle_stuff(player_ptr);
-        return do_cmd_mane(player_ptr, true);
+        handle_stuff(creature);
+        return do_cmd_mane(creature, true);
     case PlayerClassType::BEASTMASTER:
         if (command == -3) {
-            const auto dir = get_aim_dir(player_ptr);
+            const auto dir = get_aim_dir(creature);
             if (!dir) {
                 return false;
             }
 
-            (void)fire_ball_hide(player_ptr, AttributeType::CHARM_LIVING, dir, player_ptr->level, 0);
+            (void)fire_ball_hide(creature, AttributeType::CHARM_LIVING, dir, creature.get_level(), 0);
             return true;
         }
 
         if (command == -4) {
-            project_all_los(player_ptr, AttributeType::CHARM_LIVING, player_ptr->level);
+            project_all_los(creature, AttributeType::CHARM_LIVING, creature.get_level());
         }
 
         return true;
     case PlayerClassType::ARCHER:
-        return create_ammo(player_ptr);
+        return create_ammo(creature);
     case PlayerClassType::MAGIC_EATER:
         if (command == -3) {
-            return import_magic_device(player_ptr);
+            return import_magic_device(creature);
         }
 
-        return (command != -4) || (!cmd_limit_cast(player_ptr) && do_cmd_magic_eater(player_ptr, false, true));
+        return (command != -4) || (!cmd_limit_cast(creature) && do_cmd_magic_eater(creature, false, true));
     case PlayerClassType::BARD:
-        if ((get_singing_song_effect(player_ptr) == 0) && (get_interrupting_song_effect(player_ptr) == 0)) {
+        if ((get_singing_song_effect(creature) == 0) && (get_interrupting_song_effect(creature) == 0)) {
             return false;
         }
 
-        stop_singing(player_ptr);
-        PlayerEnergy(player_ptr).set_player_turn_energy(10);
+        stop_singing(creature);
+        PlayerEnergy(creature).set_player_turn_energy(10);
         return true;
     case PlayerClassType::RED_MAGE:
-        if (cmd_limit_cast(player_ptr)) {
+        if (cmd_limit_cast(creature)) {
             return false;
         }
 
-        handle_stuff(player_ptr);
-        if (!do_cmd_cast(player_ptr)) {
+        handle_stuff(creature);
+        if (!do_cmd_cast(creature)) {
             return false;
         }
 
-        if (!player_ptr->effects()->paralysis().is_paralyzed() && !cmd_limit_cast(player_ptr)) {
-            handle_stuff(player_ptr);
+        if (!creature.is_paralyzed() && !cmd_limit_cast(creature)) {
+            handle_stuff(creature);
             command_dir = Direction::none();
-            (void)do_cmd_cast(player_ptr);
+            (void)do_cmd_cast(creature);
         }
         return true;
     case PlayerClassType::SAMURAI:
         if (command == -3) {
-            concentration(player_ptr);
+            concentration(creature);
             return true;
         }
 
@@ -241,33 +240,33 @@ bool switch_class_racial_execution(PlayerType *player_ptr, const int32_t command
             return true;
         }
 
-        if (!has_melee_weapon(player_ptr, INVEN_MAIN_HAND) && !has_melee_weapon(player_ptr, INVEN_SUB_HAND)) {
-            msg_print(_("武器を持たないといけません。", "You need to wield a weapon."));
+        if (!has_melee_weapon(creature, INVEN_MAIN_HAND) && !has_melee_weapon(creature, INVEN_SUB_HAND)) {
+            msg_print(_("\u6b66\u5668\u3092\u6301\u305f\u306a\u3044\u3068\u3044\u3051\u307e\u305b\u3093\u3002", "You need to wield a weapon."));
             return false;
         }
 
-        if (!choose_samurai_stance(player_ptr)) {
+        if (!choose_samurai_stance(creature)) {
             return false;
         }
 
         RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
         return true;
     case PlayerClassType::BLUE_MAGE:
-        set_action(player_ptr, player_ptr->action == ACTION_LEARN ? ACTION_NONE : ACTION_LEARN);
-        PlayerEnergy(player_ptr).reset_player_turn();
+        set_action(creature, creature.get_action() == ACTION_LEARN ? ACTION_NONE : ACTION_LEARN);
+        PlayerEnergy(creature).reset_player_turn();
         return true;
     case PlayerClassType::CAVALRY:
-        return rodeo(player_ptr);
+        return rodeo(creature);
     case PlayerClassType::BERSERKER:
-        return recall_player(player_ptr, randint0(21) + 15);
+        return recall_player(creature, randint0(21) + 15);
     case PlayerClassType::SMITH:
-        if (player_ptr->level <= 29) {
-            return ident_spell(player_ptr, true);
+        if (creature.get_level() <= 29) {
+            return ident_spell(creature, true);
         }
 
-        return identify_fully(player_ptr, true);
+        return identify_fully(creature, true);
     case PlayerClassType::MIRROR_MASTER: {
-        SpellsMirrorMaster smm(player_ptr);
+        SpellsMirrorMaster smm(creature);
         if (command == -3) {
             smm.remove_all_mirrors(true);
             return true;
@@ -280,13 +279,13 @@ bool switch_class_racial_execution(PlayerType *player_ptr, const int32_t command
         return true;
     }
     case PlayerClassType::NINJA:
-        return hayagake(player_ptr);
+        return hayagake(creature);
     case PlayerClassType::ELEMENTALIST:
         if (command == -3) {
-            return clear_mind(player_ptr);
+            return clear_mind(creature);
         }
         if (command == -4) {
-            return switch_element_execution(player_ptr);
+            return switch_element_execution(creature);
         }
         return true;
     default:
@@ -294,59 +293,59 @@ bool switch_class_racial_execution(PlayerType *player_ptr, const int32_t command
     }
 }
 
-bool switch_mimic_racial_execution(PlayerType *player_ptr)
+bool switch_mimic_racial_execution(CreatureEntity &creature)
 {
-    switch (player_ptr->mimic_form) {
+    switch (creature.get_mimic_form()) {
     case MimicKindType::DEMON:
     case MimicKindType::DEMON_LORD: {
-        return demonic_breath(player_ptr);
+        return demonic_breath(creature);
     }
     case MimicKindType::VAMPIRE:
-        vampirism(player_ptr);
+        vampirism(creature);
         return true;
     default:
         return true;
     }
 }
 
-bool switch_race_racial_execution(PlayerType *player_ptr, const int32_t command)
+bool switch_race_racial_execution(CreatureEntity &creature, const int32_t command)
 {
     // 性格ベースのレイシャル能力をチェック
-    if (player_ptr->ppersonality == PERSONALITY_MESUGAKI) {
-        const auto dir = get_aim_dir(player_ptr);
+    if (creature.ppersonality == PERSONALITY_MESUGAKI) {
+        const auto dir = get_aim_dir(creature);
         if (!dir) {
             return false;
         }
         msg_print(_("社会的抹殺ボルトを放った！", "You fire a social genocide bolt!"));
-        fire_bolt(player_ptr, AttributeType::SOCIAL_GENOCIDE, dir, player_ptr->level * 2);
+        fire_bolt(creature, AttributeType::SOCIAL_GENOCIDE, dir, creature.get_level() * 2);
         return true;
     }
 
-    switch (player_ptr->prace) {
+    switch (creature.prace) {
     case PlayerRaceType::DWARF:
         msg_print(_("周囲を調べた。", "You examine your surroundings."));
-        (void)detect_traps(player_ptr, DETECT_RAD_DEFAULT, true);
-        (void)detect_doors(player_ptr, DETECT_RAD_DEFAULT);
-        (void)detect_stairs(player_ptr, DETECT_RAD_DEFAULT);
+        (void)detect_traps(creature, DETECT_RAD_DEFAULT, true);
+        (void)detect_doors(creature, DETECT_RAD_DEFAULT);
+        (void)detect_stairs(creature, DETECT_RAD_DEFAULT);
         return true;
     case PlayerRaceType::HOBBIT:
-        return create_ration(player_ptr);
+        return create_ration(creature);
     case PlayerRaceType::GNOME:
         msg_print(_("パッ！", "Blink!"));
-        teleport_player(player_ptr, 10, TELEPORT_SPONTANEOUS);
+        teleport_player(creature, 10, TELEPORT_SPONTANEOUS);
         return true;
     case PlayerRaceType::HALF_ORC:
         msg_print(_("勇気を出した。", "You play tough."));
-        (void)BadStatusSetter(player_ptr).set_fear(0);
+        (void)BadStatusSetter(creature).set_fear(0);
         return true;
     case PlayerRaceType::HALF_TROLL:
         msg_print(_("うがぁぁ！", "RAAAGH!"));
-        (void)berserk(player_ptr, 10 + randint1(player_ptr->level));
+        (void)berserk(creature, 10 + randint1(creature.get_level()));
         return true;
     case PlayerRaceType::AMBERITE:
         if (command == -1) {
             msg_print(_("あなたは歩き周り始めた。", "You start walking around. "));
-            reserve_alter_reality(player_ptr, randint0(21) + 15);
+            reserve_alter_reality(creature, randint0(21) + 15);
             return true;
         }
 
@@ -355,168 +354,168 @@ bool switch_race_racial_execution(PlayerType *player_ptr, const int32_t command)
         }
 
         msg_print(_("あなたは「パターン」を心に描いてその上を歩いた...", "You picture the Pattern in your mind and walk it..."));
-        (void)true_healing(player_ptr, 0);
-        (void)restore_all_status(player_ptr);
-        (void)restore_level(static_cast<CreatureEntity &>(*player_ptr));
+        (void)true_healing(creature, 0);
+        (void)restore_all_status(creature);
+        (void)restore_level(creature);
         return true;
     case PlayerRaceType::BARBARIAN:
         msg_print(_("うぉぉおお！", "Raaagh!"));
-        (void)berserk(player_ptr, 10 + randint1(player_ptr->level));
+        (void)berserk(creature, 10 + randint1(creature.get_level()));
         return true;
     case PlayerRaceType::HALF_OGRE:
         msg_print(_("爆発のルーンを慎重に仕掛けた...", "You carefully set an explosive rune..."));
-        (void)create_rune_explosion(player_ptr, player_ptr->y, player_ptr->x);
+        (void)create_rune_explosion(creature, creature.y, creature.x);
         return true;
     case PlayerRaceType::HALF_GIANT: {
-        const auto dir = get_aim_dir(player_ptr);
+        const auto dir = get_aim_dir(creature);
         if (!dir) {
             return false;
         }
 
-        (void)wall_to_mud(player_ptr, dir, 20 + randint1(30));
+        (void)wall_to_mud(creature, dir, 20 + randint1(30));
         return true;
     }
     case PlayerRaceType::HALF_TITAN:
         msg_print(_("敵を調査した...", "You examine your foes..."));
-        (void)probing(player_ptr);
+        (void)probing(creature);
         return true;
     case PlayerRaceType::CYCLOPS: {
-        const auto dir = get_aim_dir(player_ptr);
+        const auto dir = get_aim_dir(creature);
         if (!dir) {
             return false;
         }
 
         msg_print(_("巨大な岩を投げた。", "You throw a huge boulder."));
-        (void)fire_bolt(player_ptr, AttributeType::MISSILE, dir, (3 * player_ptr->level) / 2);
+        (void)fire_bolt(creature, AttributeType::MISSILE, dir, (3 * creature.get_level()) / 2);
         return true;
     }
     case PlayerRaceType::YEEK: {
-        const auto dir = get_aim_dir(player_ptr);
+        const auto dir = get_aim_dir(creature);
         if (!dir) {
             return false;
         }
 
-        stop_mouth(player_ptr);
+        stop_mouth(creature);
         msg_print(_("身の毛もよだつ叫び声を上げた！", "You make a horrible scream!"));
-        (void)fear_monster(player_ptr, dir, player_ptr->level);
+        (void)fear_monster(creature, dir, creature.get_level());
         return true;
     }
     case PlayerRaceType::KLACKON: {
-        const auto dir = get_aim_dir(player_ptr);
+        const auto dir = get_aim_dir(creature);
         if (!dir) {
             return false;
         }
 
-        stop_mouth(player_ptr);
+        stop_mouth(creature);
         msg_print(_("酸を吐いた。", "You spit acid."));
-        if (player_ptr->level < 25) {
-            (void)fire_bolt(player_ptr, AttributeType::ACID, dir, player_ptr->level);
+        if (creature.get_level() < 25) {
+            (void)fire_bolt(creature, AttributeType::ACID, dir, creature.get_level());
         } else {
-            (void)fire_ball(player_ptr, AttributeType::ACID, dir, player_ptr->level, 2);
+            (void)fire_ball(creature, AttributeType::ACID, dir, creature.get_level(), 2);
         }
 
         return true;
     }
     case PlayerRaceType::KOBOLD: {
-        const auto dir = get_aim_dir(player_ptr);
+        const auto dir = get_aim_dir(creature);
         if (!dir) {
             return false;
         }
 
         msg_print(_("毒のダーツを投げた。", "You throw a poisoned dart."));
-        (void)fire_bolt(player_ptr, AttributeType::POIS, dir, player_ptr->level);
+        (void)fire_bolt(creature, AttributeType::POIS, dir, creature.get_level());
         return true;
     }
     case PlayerRaceType::NIBELUNG:
         msg_print(_("周囲を調査した。", "You examine your surroundings."));
-        (void)detect_traps(player_ptr, DETECT_RAD_DEFAULT, true);
-        (void)detect_doors(player_ptr, DETECT_RAD_DEFAULT);
-        (void)detect_stairs(player_ptr, DETECT_RAD_DEFAULT);
+        (void)detect_traps(creature, DETECT_RAD_DEFAULT, true);
+        (void)detect_doors(creature, DETECT_RAD_DEFAULT);
+        (void)detect_stairs(creature, DETECT_RAD_DEFAULT);
         return true;
     case PlayerRaceType::DARK_ELF: {
-        const auto dir = get_aim_dir(player_ptr);
+        const auto dir = get_aim_dir(creature);
         if (!dir) {
             return false;
         }
 
         msg_print(_("マジック・ミサイルを放った。", "You cast a magic missile."));
-        (void)fire_bolt_or_beam(player_ptr, 10, AttributeType::MISSILE, dir, Dice::roll(3 + ((player_ptr->level - 1) / 5), 4));
+        (void)fire_bolt_or_beam(creature, 10, AttributeType::MISSILE, dir, Dice::roll(3 + ((creature.get_level() - 1) / 5), 4));
         return true;
     }
     case PlayerRaceType::DRACONIAN:
-        return draconian_breath(player_ptr);
+        return draconian_breath(creature);
     case PlayerRaceType::MIND_FLAYER: {
-        const auto dir = get_aim_dir(player_ptr);
+        const auto dir = get_aim_dir(creature);
         if (!dir) {
             return false;
         }
 
         msg_print(_("あなたは集中し、目が赤く輝いた...", "You concentrate and your eyes glow red..."));
-        (void)fire_bolt(player_ptr, AttributeType::PSI, dir, player_ptr->level);
+        (void)fire_bolt(creature, AttributeType::PSI, dir, creature.get_level());
         return true;
     }
     case PlayerRaceType::IMP: {
-        const auto dir = get_aim_dir(player_ptr);
+        const auto dir = get_aim_dir(creature);
         if (!dir) {
             return false;
         }
 
-        if (player_ptr->level >= 30) {
+        if (creature.get_level() >= 30) {
             msg_print(_("ファイア・ボールを放った。", "You cast a ball of fire."));
-            (void)fire_ball(player_ptr, AttributeType::FIRE, dir, player_ptr->level, 2);
+            (void)fire_ball(creature, AttributeType::FIRE, dir, creature.get_level(), 2);
         } else {
             msg_print(_("ファイア・ボルトを放った。", "You cast a bolt of fire."));
-            (void)fire_bolt(player_ptr, AttributeType::FIRE, dir, player_ptr->level);
+            (void)fire_bolt(creature, AttributeType::FIRE, dir, creature.get_level());
         }
 
         return true;
     }
     case PlayerRaceType::GOLEM:
-        (void)set_shield(player_ptr, randint1(20) + 30, false);
+        (void)set_shield(creature, randint1(20) + 30, false);
         return true;
     case PlayerRaceType::SKELETON:
     case PlayerRaceType::ZOMBIE:
         msg_print(_("あなたは失ったエネルギーを取り戻そうと試みた。", "You attempt to restore your lost energies."));
-        (void)restore_level(static_cast<CreatureEntity &>(*player_ptr));
+        (void)restore_level(creature);
         return true;
     case PlayerRaceType::VAMPIRE:
-        (void)vampirism(player_ptr);
+        (void)vampirism(creature);
         return true;
     case PlayerRaceType::SPECTRE: {
-        const auto dir = get_aim_dir(player_ptr);
+        const auto dir = get_aim_dir(creature);
         if (!dir) {
             return false;
         }
 
-        stop_mouth(player_ptr);
+        stop_mouth(creature);
         msg_print(_("あなたはおどろおどろしい叫び声をあげた！", "You emit an eldritch howl!"));
-        (void)fear_monster(player_ptr, dir, player_ptr->level);
+        (void)fear_monster(creature, dir, creature.get_level());
         return true;
     }
     case PlayerRaceType::SPRITE:
         msg_print(_("あなたは魔法の粉を投げつけた...", "You throw some magic dust..."));
-        if (player_ptr->level < 25) {
-            (void)sleep_monsters_touch(player_ptr);
+        if (creature.get_level() < 25) {
+            (void)sleep_monsters_touch(creature);
         } else {
-            (void)sleep_monsters(player_ptr, player_ptr->level);
+            (void)sleep_monsters(creature, creature.get_level());
         }
 
         return true;
     case PlayerRaceType::BALROG:
-        return demonic_breath(player_ptr);
+        return demonic_breath(creature);
     case PlayerRaceType::KUTAR:
-        (void)set_leveling(player_ptr, randint1(20) + 30, false);
+        (void)set_leveling(creature, randint1(20) + 30, false);
         return true;
     case PlayerRaceType::ANDROID:
-        return android_inside_weapon(player_ptr);
+        return android_inside_weapon(creature);
     case PlayerRaceType::MERFOLK: {
         msg_print(_("あなたは水流を呼び寄せた！", "You have summoned a stream of water!"));
-        fire_ball_hide(player_ptr, AttributeType::WATER_FLOW, Direction::self(), 3, 5);
+        fire_ball_hide(creature, AttributeType::WATER_FLOW, Direction::self(), 3, 5);
         return true;
     }
     default:
         msg_print(_("この種族は特殊な能力を持っていません。", "This race has no bonus power."));
-        PlayerEnergy(player_ptr).reset_player_turn();
+        PlayerEnergy(creature).reset_player_turn();
         return true;
     }
 }

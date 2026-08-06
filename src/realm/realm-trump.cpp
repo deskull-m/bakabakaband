@@ -22,7 +22,7 @@
 #include "spell/spells-summon.h"
 #include "spell/summon-types.h"
 #include "status/sight-setter.h"
-#include "system/player-type-definition.h"
+#include "system/creature-entity.h"
 #include "target/target-checker.h"
 #include "target/target-getter.h"
 #include "target/target-setter.h"
@@ -31,18 +31,18 @@
 
 /*!
  * @brief トランプ領域魔法の各処理を行う
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param spell 魔法ID
  * @param mode 処理内容 (SpellProcessType::NAME / SPELL_DESC / SpellProcessType::INFO / SpellProcessType::CAST)
  * @return SpellProcessType::NAME / SPELL_DESC / SpellProcessType::INFO 時には文字列を返す。SpellProcessType::CAST時は tl::nullopt を返す。
  */
-tl::optional<std::string> do_trump_spell(PlayerType *player_ptr, SPELL_IDX spell, SpellProcessType mode)
+tl::optional<std::string> do_trump_spell(CreatureEntity &creature, SPELL_IDX spell, SpellProcessType mode)
 {
     bool info = mode == SpellProcessType::INFO;
     bool cast = mode == SpellProcessType::CAST;
     bool fail = mode == SpellProcessType::FAIL;
 
-    PLAYER_LEVEL plev = player_ptr->level;
+    PLAYER_LEVEL plev = creature.get_level();
 
     switch (spell) {
     case 0: {
@@ -53,14 +53,14 @@ tl::optional<std::string> do_trump_spell(PlayerType *player_ptr, SPELL_IDX spell
         }
 
         if (cast) {
-            teleport_player(player_ptr, range, TELEPORT_SPONTANEOUS);
+            teleport_player(creature, range, TELEPORT_SPONTANEOUS);
         }
     } break;
 
     case 1: {
         if (cast || fail) {
             msg_print(_("あなたは蜘蛛のカードに集中する...", "You concentrate on the trump of a spider..."));
-            if (trump_summoning(player_ptr, 1, !fail, player_ptr->y, player_ptr->x, 0, SUMMON_SPIDER, PM_ALLOW_GROUP)) {
+            if (trump_summoning(creature, 1, !fail, creature.y, creature.x, 0, SUMMON_SPIDER, PM_ALLOW_GROUP)) {
                 if (fail) {
                     msg_print(_("召喚された蜘蛛は怒っている！", "The summoned spiders get angry!"));
                 }
@@ -74,13 +74,13 @@ tl::optional<std::string> do_trump_spell(PlayerType *player_ptr, SPELL_IDX spell
         }
 
         if (cast) {
-            cast_shuffle(player_ptr);
+            cast_shuffle(creature);
         }
     } break;
 
     case 3: {
         if (cast) {
-            if (!reset_recall(player_ptr)) {
+            if (!reset_recall(creature)) {
                 return tl::nullopt;
             }
         }
@@ -94,7 +94,7 @@ tl::optional<std::string> do_trump_spell(PlayerType *player_ptr, SPELL_IDX spell
         }
 
         if (cast) {
-            teleport_player(player_ptr, range, TELEPORT_SPONTANEOUS);
+            teleport_player(creature, range, TELEPORT_SPONTANEOUS);
         }
     } break;
 
@@ -107,7 +107,7 @@ tl::optional<std::string> do_trump_spell(PlayerType *player_ptr, SPELL_IDX spell
         }
 
         if (cast) {
-            set_tim_esp(player_ptr, dice.roll() + base, false);
+            set_tim_esp(creature, dice.roll() + base, false);
         }
     } break;
 
@@ -119,12 +119,12 @@ tl::optional<std::string> do_trump_spell(PlayerType *player_ptr, SPELL_IDX spell
         }
 
         if (cast) {
-            const auto dir = get_aim_dir(player_ptr);
+            const auto dir = get_aim_dir(creature);
             if (!dir) {
                 return tl::nullopt;
             }
 
-            fire_beam(player_ptr, AttributeType::AWAY_ALL, dir, power);
+            fire_beam(creature, AttributeType::AWAY_ALL, dir, power);
         }
     } break;
 
@@ -132,7 +132,7 @@ tl::optional<std::string> do_trump_spell(PlayerType *player_ptr, SPELL_IDX spell
         if (cast || fail) {
             summon_type type = (!fail ? SUMMON_ANIMAL_RANGER : SUMMON_ANIMAL);
             msg_print(_("あなたは動物のカードに集中する...", "You concentrate on the trump of an animal..."));
-            if (trump_summoning(player_ptr, 1, !fail, player_ptr->y, player_ptr->x, 0, type, 0L)) {
+            if (trump_summoning(creature, 1, !fail, creature.y, creature.x, 0, type, 0L)) {
                 if (fail) {
                     msg_print(_("召喚された動物は怒っている！", "The summoned animal gets angry!"));
                 }
@@ -148,12 +148,12 @@ tl::optional<std::string> do_trump_spell(PlayerType *player_ptr, SPELL_IDX spell
         }
 
         if (cast) {
-            const auto dir = get_aim_dir(player_ptr);
+            const auto dir = get_aim_dir(creature);
             if (!dir) {
                 return tl::nullopt;
             }
 
-            fetch_item(player_ptr, dir, weight, false);
+            fetch_item(creature, dir, weight, false);
         }
     } break;
 
@@ -163,7 +163,7 @@ tl::optional<std::string> do_trump_spell(PlayerType *player_ptr, SPELL_IDX spell
             summon_type type;
 
             if (cast) {
-                const auto pos = target_set(player_ptr, TARGET_KILL).get_position();
+                const auto pos = target_set(creature, TARGET_KILL).get_position();
                 if (!pos) {
                     return tl::nullopt;
                 }
@@ -171,18 +171,18 @@ tl::optional<std::string> do_trump_spell(PlayerType *player_ptr, SPELL_IDX spell
                 y = pos->y;
             } else {
                 /* Summons near player when failed */
-                x = player_ptr->x;
-                y = player_ptr->y;
+                x = creature.x;
+                y = creature.y;
             }
 
-            if (PlayerClass(player_ptr).equals(PlayerClassType::BEASTMASTER)) {
+            if (CreatureClass(creature).equals(PlayerClassType::BEASTMASTER)) {
                 type = SUMMON_KAMIKAZE_LIVING;
             } else {
                 type = SUMMON_KAMIKAZE;
             }
 
             msg_print(_("あなたはカミカゼのカードに集中する...", "You concentrate on several trumps at once..."));
-            if (trump_summoning(player_ptr, 2 + randint0(plev / 7), !fail, y, x, 0, type, 0L)) {
+            if (trump_summoning(creature, 2 + randint0(plev / 7), !fail, y, x, 0, type, 0L)) {
                 if (fail) {
                     msg_print(_("召喚されたモンスターは怒っている！", "The summoned creatures get angry!"));
                 }
@@ -195,7 +195,7 @@ tl::optional<std::string> do_trump_spell(PlayerType *player_ptr, SPELL_IDX spell
         if (cast) {
             int summon_lev = plev * 2 / 3 + randint1(plev / 2);
 
-            if (trump_summoning(player_ptr, 1, !fail, player_ptr->y, player_ptr->x, (summon_lev * 3 / 2), SUMMON_PHANTOM, 0L)) {
+            if (trump_summoning(creature, 1, !fail, creature.y, creature.x, (summon_lev * 3 / 2), SUMMON_PHANTOM, 0L)) {
                 msg_print(_("御用でございますか、御主人様？", "'Your wish, master?'"));
             }
         }
@@ -207,7 +207,7 @@ tl::optional<std::string> do_trump_spell(PlayerType *player_ptr, SPELL_IDX spell
             bool old_target_pet = target_pet;
             target_pet = true;
 
-            const auto dir = get_aim_dir(player_ptr);
+            const auto dir = get_aim_dir(creature);
 
             /* Restore target_pet option */
             target_pet = old_target_pet;
@@ -216,7 +216,7 @@ tl::optional<std::string> do_trump_spell(PlayerType *player_ptr, SPELL_IDX spell
                 return tl::nullopt;
             }
 
-            speed_monster(player_ptr, dir, plev);
+            speed_monster(creature, dir, plev);
         }
     } break;
 
@@ -225,7 +225,7 @@ tl::optional<std::string> do_trump_spell(PlayerType *player_ptr, SPELL_IDX spell
             if (!input_check(_("本当に他の階にテレポートしますか？", "Are you sure? (Teleport Level)"))) {
                 return tl::nullopt;
             }
-            teleport_level(player_ptr, 0);
+            teleport_level(creature, 0);
         }
     } break;
 
@@ -238,7 +238,7 @@ tl::optional<std::string> do_trump_spell(PlayerType *player_ptr, SPELL_IDX spell
 
         if (cast) {
             msg_print(_("次元の扉が開いた。目的地を選んで下さい。", "You open a dimensional gate. Choose a destination."));
-            if (!dimension_door(player_ptr)) {
+            if (!dimension_door(creature)) {
                 return tl::nullopt;
             }
         }
@@ -253,7 +253,7 @@ tl::optional<std::string> do_trump_spell(PlayerType *player_ptr, SPELL_IDX spell
         }
 
         if (cast) {
-            if (!recall_player(player_ptr, dice.roll() + base)) {
+            if (!recall_player(creature, dice.roll() + base)) {
                 return tl::nullopt;
             }
         }
@@ -267,7 +267,7 @@ tl::optional<std::string> do_trump_spell(PlayerType *player_ptr, SPELL_IDX spell
         }
 
         if (cast) {
-            banish_monsters(player_ptr, power);
+            banish_monsters(creature, power);
         }
     } break;
 
@@ -276,7 +276,7 @@ tl::optional<std::string> do_trump_spell(PlayerType *player_ptr, SPELL_IDX spell
             /* HACK -- No range limit */
             project_length = -1;
 
-            const auto dir = get_aim_dir(player_ptr);
+            const auto dir = get_aim_dir(creature);
 
             /* Restore range to default */
             project_length = 0;
@@ -285,14 +285,14 @@ tl::optional<std::string> do_trump_spell(PlayerType *player_ptr, SPELL_IDX spell
                 return tl::nullopt;
             }
 
-            teleport_swap(player_ptr, dir);
+            teleport_swap(creature, dir);
         }
     } break;
 
     case 17: {
         if (cast || fail) {
             msg_print(_("あなたはアンデッドのカードに集中する...", "You concentrate on the trump of an undead creature..."));
-            if (trump_summoning(player_ptr, 1, !fail, player_ptr->y, player_ptr->x, 0, SUMMON_UNDEAD, 0L)) {
+            if (trump_summoning(creature, 1, !fail, creature.y, creature.x, 0, SUMMON_UNDEAD, 0L)) {
                 if (fail) {
                     msg_print(_("召喚されたアンデッドは怒っている！", "The summoned undead creature gets angry!"));
                 }
@@ -303,7 +303,7 @@ tl::optional<std::string> do_trump_spell(PlayerType *player_ptr, SPELL_IDX spell
     case 18: {
         if (cast || fail) {
             msg_print(_("あなたは爬虫類のカードに集中する...", "You concentrate on the trump of a reptile..."));
-            if (trump_summoning(player_ptr, 1, !fail, player_ptr->y, player_ptr->x, 0, SUMMON_HYDRA, 0L)) {
+            if (trump_summoning(creature, 1, !fail, creature.y, creature.x, 0, SUMMON_HYDRA, 0L)) {
                 if (fail) {
                     msg_print(_("召喚された爬虫類は怒っている！", "The summoned reptile gets angry!"));
                 }
@@ -315,13 +315,13 @@ tl::optional<std::string> do_trump_spell(PlayerType *player_ptr, SPELL_IDX spell
         if (cast || fail) {
             summon_type type;
             msg_print(_("あなたはモンスターのカードに集中する...", "You concentrate on several trumps at once..."));
-            if (PlayerClass(player_ptr).equals(PlayerClassType::BEASTMASTER)) {
+            if (CreatureClass(creature).equals(PlayerClassType::BEASTMASTER)) {
                 type = SUMMON_LIVING;
             } else {
                 type = SUMMON_NONE;
             }
 
-            if (trump_summoning(player_ptr, (1 + (plev - 15) / 10), !fail, player_ptr->y, player_ptr->x, 0, type, 0L)) {
+            if (trump_summoning(creature, (1 + (plev - 15) / 10), !fail, creature.y, creature.x, 0, type, 0L)) {
                 if (fail) {
                     msg_print(_("召喚されたモンスターは怒っている！", "The summoned creatures get angry!"));
                 }
@@ -332,7 +332,7 @@ tl::optional<std::string> do_trump_spell(PlayerType *player_ptr, SPELL_IDX spell
     case 20: {
         if (cast || fail) {
             msg_print(_("あなたはハウンドのカードに集中する...", "You concentrate on the trump of a hound..."));
-            if (trump_summoning(player_ptr, 1, !fail, player_ptr->y, player_ptr->x, 0, SUMMON_HOUND, PM_ALLOW_GROUP)) {
+            if (trump_summoning(creature, 1, !fail, creature.y, creature.x, 0, SUMMON_HOUND, PM_ALLOW_GROUP)) {
                 if (fail) {
                     msg_print(_("召喚されたハウンドは怒っている！", "The summoned hounds get angry!"));
                 }
@@ -342,20 +342,20 @@ tl::optional<std::string> do_trump_spell(PlayerType *player_ptr, SPELL_IDX spell
 
     case 21: {
         if (cast) {
-            brand_weapon(player_ptr, 5);
+            brand_weapon(creature, 5);
         }
     } break;
 
     case 22:
         if (cast) {
-            become_living_trump(player_ptr);
+            become_living_trump(creature);
         }
         break;
 
     case 23: {
         if (cast || fail) {
             msg_print(_("あなたはサイバーデーモンのカードに集中する...", "You concentrate on the trump of a Cyberdemon..."));
-            if (trump_summoning(player_ptr, 1, !fail, player_ptr->y, player_ptr->x, 0, SUMMON_CYBER, 0L)) {
+            if (trump_summoning(creature, 1, !fail, creature.y, creature.x, 0, SUMMON_CYBER, 0L)) {
                 if (fail) {
                     msg_print(_("召喚されたサイバーデーモンは怒っている！", "The summoned Cyberdemon gets angry!"));
                 }
@@ -371,13 +371,13 @@ tl::optional<std::string> do_trump_spell(PlayerType *player_ptr, SPELL_IDX spell
         }
 
         if (cast) {
-            detect_all(player_ptr, rad);
+            detect_all(creature, rad);
         }
     } break;
 
     case 25: {
         if (cast) {
-            if (!identify_fully(player_ptr, false)) {
+            if (!identify_fully(creature, false)) {
                 return tl::nullopt;
             }
         }
@@ -395,7 +395,7 @@ tl::optional<std::string> do_trump_spell(PlayerType *player_ptr, SPELL_IDX spell
             bool old_target_pet = target_pet;
             target_pet = true;
 
-            const auto dir = get_aim_dir(player_ptr);
+            const auto dir = get_aim_dir(creature);
 
             /* Restore target_pet option */
             target_pet = old_target_pet;
@@ -404,14 +404,14 @@ tl::optional<std::string> do_trump_spell(PlayerType *player_ptr, SPELL_IDX spell
                 return tl::nullopt;
             }
 
-            heal_monster(player_ptr, dir, heal);
+            heal_monster(creature, dir, heal);
         }
     } break;
 
     case 27: {
         if (cast || fail) {
             msg_print(_("あなたはドラゴンのカードに集中する...", "You concentrate on the trump of a dragon..."));
-            if (trump_summoning(player_ptr, 1, !fail, player_ptr->y, player_ptr->x, 0, SUMMON_DRAGON, 0L)) {
+            if (trump_summoning(creature, 1, !fail, creature.y, creature.x, 0, SUMMON_DRAGON, 0L)) {
                 if (fail) {
                     msg_print(_("召喚されたドラゴンは怒っている！", "The summoned dragon gets angry!"));
                 }
@@ -428,14 +428,14 @@ tl::optional<std::string> do_trump_spell(PlayerType *player_ptr, SPELL_IDX spell
         }
 
         if (cast) {
-            cast_meteor(player_ptr, dam, rad);
+            cast_meteor(creature, dam, rad);
         }
     } break;
 
     case 29: {
         if (cast || fail) {
             msg_print(_("あなたはデーモンのカードに集中する...", "You concentrate on the trump of a demon..."));
-            if (trump_summoning(player_ptr, 1, !fail, player_ptr->y, player_ptr->x, 0, SUMMON_DEMON, 0L)) {
+            if (trump_summoning(creature, 1, !fail, creature.y, creature.x, 0, SUMMON_DEMON, 0L)) {
                 if (fail) {
                     msg_print(_("召喚されたデーモンは怒っている！", "The summoned demon gets angry!"));
                 }
@@ -447,7 +447,7 @@ tl::optional<std::string> do_trump_spell(PlayerType *player_ptr, SPELL_IDX spell
         if (cast || fail) {
             msg_print(_("あなたは強力なアンデッドのカードに集中する...", "You concentrate on the trump of a greater undead being..."));
             /* May allow unique depend on level and dice roll */
-            if (trump_summoning(player_ptr, 1, !fail, player_ptr->y, player_ptr->x, 0, SUMMON_HI_UNDEAD, PM_ALLOW_UNIQUE)) {
+            if (trump_summoning(creature, 1, !fail, creature.y, creature.x, 0, SUMMON_HI_UNDEAD, PM_ALLOW_UNIQUE)) {
                 if (fail) {
                     msg_print(_("召喚された上級アンデッドは怒っている！", "The summoned greater undead creature gets angry!"));
                 }
@@ -459,7 +459,7 @@ tl::optional<std::string> do_trump_spell(PlayerType *player_ptr, SPELL_IDX spell
         if (cast) {
             summon_type type;
 
-            if (PlayerClass(player_ptr).equals(PlayerClassType::BEASTMASTER)) {
+            if (CreatureClass(creature).equals(PlayerClassType::BEASTMASTER)) {
                 type = SUMMON_HI_DRAGON_LIVING;
             } else {
                 type = SUMMON_HI_DRAGON;
@@ -467,7 +467,7 @@ tl::optional<std::string> do_trump_spell(PlayerType *player_ptr, SPELL_IDX spell
 
             msg_print(_("あなたは古代ドラゴンのカードに集中する...", "You concentrate on the trump of an ancient dragon..."));
             /* May allow unique depend on level and dice roll */
-            if (trump_summoning(player_ptr, 1, !fail, player_ptr->y, player_ptr->x, 0, type, PM_ALLOW_UNIQUE)) {
+            if (trump_summoning(creature, 1, !fail, creature.y, creature.x, 0, type, PM_ALLOW_UNIQUE)) {
                 if (fail) {
                     msg_print(_("召喚された古代ドラゴンは怒っている！", "The summoned ancient dragon gets angry!"));
                 }

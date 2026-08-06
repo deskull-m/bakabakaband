@@ -4,10 +4,10 @@
 #include "system/angband.h"
 
 class ItemEntity;
-class PlayerType;
+class CreatureEntity;
 
-bool potion_smash_effect(PlayerType *player_ptr, MONSTER_IDX src_idx, POSITION y, POSITION x, short bi_id);
-PERCENTAGE breakage_chance(PlayerType *player_ptr, ItemEntity *o_ptr, bool has_archer_bonus, SPELL_IDX snipe_type);
+bool potion_smash_effect(CreatureEntity &creature, MONSTER_IDX src_idx, POSITION y, POSITION x, short bi_id);
+PERCENTAGE breakage_chance(CreatureEntity &creature, ItemEntity *o_ptr, bool has_archer_bonus, SPELL_IDX snipe_type);
 
 class ObjectBreaker {
 protected:

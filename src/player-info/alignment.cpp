@@ -8,19 +8,18 @@
 #include "player-info/equipment-info.h"
 #include "player-info/race-info.h"
 #include "system/angband-exceptions.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
-#include "system/player-type-definition.h"
 #include "util/bit-flags-calculator.h"
 #include <array>
 #include <fmt/format.h>
 #include <vector>
 
-PlayerAlignment::PlayerAlignment(PlayerType *player_ptr)
+PlayerAlignment::PlayerAlignment(CreatureEntity &creature)
 {
-    this->player_ptr = player_ptr;
+    this->creature_ptr = &creature;
 }
 
 /*!
@@ -32,7 +31,7 @@ std::string PlayerAlignment::get_alignment_description(bool with_value)
 {
     const auto s = this->alignment_label();
     if (with_value || show_actual_value) {
-        return fmt::format(_("{}({})", "{} ({})"), s, this->player_ptr->alignment);
+        return fmt::format(_("{}({})", "{} ({})"), s, this->creature_ptr->alignment);
     }
 
     return s;
@@ -45,9 +44,9 @@ std::string PlayerAlignment::get_alignment_description(bool with_value)
 void PlayerAlignment::update_alignment()
 {
     this->reset_alignment();
-    const auto &floor = *this->player_ptr->current_floor_ptr;
+    const auto &floor = *this->creature_ptr->get_floor();
     for (MONSTER_IDX m_idx = floor.m_max - 1; m_idx >= 1; m_idx--) {
-        const auto &monster = floor.m_list[m_idx];
+        const auto &monster = floor.get_monster(m_idx);
         if (!monster.is_valid()) {
             continue;
         }
@@ -66,9 +65,9 @@ void PlayerAlignment::update_alignment()
         }
     }
 
-    switch (this->player_ptr->mimic_form) {
+    switch (this->creature_ptr->get_mimic_form()) {
     case MimicKindType::NONE:
-        switch (this->player_ptr->prace) {
+        switch (this->creature_ptr->prace) {
         case PlayerRaceType::ARCHON:
             this->bias_good_alignment(200);
             break;
@@ -98,12 +97,12 @@ void PlayerAlignment::update_alignment()
         THROW_EXCEPTION(std::logic_error, "Invalid MimicKindType was specified!");
     }
 
-    if (this->player_ptr->is_wielding(FixedArtifactId::IRON_BALL)) {
+    if (this->creature_ptr->is_wielding(FixedArtifactId::IRON_BALL)) {
         this->bias_evil_alignment(1000);
     }
 
     std::vector<Virtue> neutral_virtues;
-    for (const auto &[virtue_type, value] : this->player_ptr->virtues) {
+    for (const auto &[virtue_type, value] : this->creature_ptr->virtues) {
         switch (virtue_type) {
         case Virtue::JUSTICE:
             this->bias_good_alignment(value * 2);
@@ -124,19 +123,19 @@ void PlayerAlignment::update_alignment()
     }
 
     for (const auto &vir_type : neutral_virtues) {
-        auto it = this->player_ptr->virtues.find(vir_type);
-        if (it == this->player_ptr->virtues.end()) {
+        auto it = this->creature_ptr->virtues.find(vir_type);
+        if (it == this->creature_ptr->virtues.end()) {
             continue;
         }
 
-        if (this->player_ptr->alignment > 0) {
+        if (this->creature_ptr->alignment > 0) {
             this->bias_evil_alignment(it->second / 2);
-            if (this->player_ptr->alignment < 0) {
+            if (this->creature_ptr->alignment < 0) {
                 this->reset_alignment();
             }
-        } else if (this->player_ptr->alignment < 0) {
+        } else if (this->creature_ptr->alignment < 0) {
             this->bias_good_alignment(it->second / 2);
-            if (this->player_ptr->alignment > 0) {
+            if (this->creature_ptr->alignment > 0) {
                 this->reset_alignment();
             }
         }
@@ -145,37 +144,37 @@ void PlayerAlignment::update_alignment()
 
 void PlayerAlignment::bias_good_alignment(int value)
 {
-    this->player_ptr->alignment += value;
+    this->creature_ptr->alignment += value;
 }
 
 void PlayerAlignment::bias_evil_alignment(int value)
 {
-    this->player_ptr->alignment -= value;
+    this->creature_ptr->alignment -= value;
 }
 
 void PlayerAlignment::reset_alignment()
 {
-    this->player_ptr->alignment = 0;
+    this->creature_ptr->alignment = 0;
 }
 
 /*!
  * @brief プレイヤーの抽象的善悪アライメントの表記名のみを返す。 / Return only alignment title
- * @param player_ptr プレイヤーへの参照ポインタ。
+ * @param creature クリーチャーへの参照。
  * @return アライメントの表記名
  */
 std::string PlayerAlignment::alignment_label() const
 {
-    if (this->player_ptr->alignment > 150) {
+    if (this->creature_ptr->alignment > 150) {
         return _("大善", "Lawful");
-    } else if (this->player_ptr->alignment > 50) {
+    } else if (this->creature_ptr->alignment > 50) {
         return _("中善", "Good");
-    } else if (this->player_ptr->alignment > 10) {
+    } else if (this->creature_ptr->alignment > 10) {
         return _("小善", "Neutral Good");
-    } else if (this->player_ptr->alignment > -11) {
+    } else if (this->creature_ptr->alignment > -11) {
         return _("中立", "Neutral");
-    } else if (this->player_ptr->alignment > -51) {
+    } else if (this->creature_ptr->alignment > -51) {
         return _("小悪", "Neutral Evil");
-    } else if (this->player_ptr->alignment > -151) {
+    } else if (this->creature_ptr->alignment > -151) {
         return _("中悪", "Evil");
     } else {
         return _("大悪", "Chaotic");

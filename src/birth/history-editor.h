@@ -1,4 +1,5 @@
 #pragma once
 
+class CreatureEntity;
 class PlayerType;
-void edit_history(PlayerType *player_ptr);
+void edit_history(CreatureEntity &creature);

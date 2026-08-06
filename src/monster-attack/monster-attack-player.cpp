@@ -12,8 +12,11 @@
 #include "combat/aura-counterattack.h"
 #include "combat/combat-options-type.h"
 #include "combat/hallucination-attacks-table.h"
+#include "combat/slaying.h"
 #include "core/disturbance.h"
 #include "dungeon/dungeon-flag-types.h"
+#include "flavor/flavor-describer.h"
+#include "flavor/object-flavor-types.h"
 #include "inventory/inventory-slot-types.h"
 #include "main/sound-definitions-table.h"
 #include "main/sound-of-music.h"
@@ -46,56 +49,58 @@
 #include "status/action-setter.h"
 #include "status/bad-status-setter.h"
 #include "system/angband.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
-#include "timed-effect/timed-effects.h"
+#include "timed-effect/player-cut.h"
+#include "timed-effect/player-stun.h"
 #include "util/bit-flags-calculator.h"
 #include "util/string-processor.h"
 #include "view/display-messages.h"
 
 /*!
  * @brief コンストラクタ
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param m_idx 打撃を行うモンスターのID
  */
-MonsterAttackPlayer::MonsterAttackPlayer(PlayerType *player_ptr, short m_idx)
+MonsterAttackPlayer::MonsterAttackPlayer(CreatureEntity &creature, short m_idx)
     : m_idx(m_idx)
-    , m_ptr(&player_ptr->current_floor_ptr->m_list[m_idx])
+    , m_ptr(&creature.get_floor()->get_monster(m_idx))
     , method(RaceBlowMethodType::NONE)
     , effect(RaceBlowEffectType::NONE)
-    , do_silly_attack(one_in_(2) && player_ptr->effects()->hallucination().is_hallucinated())
-    , player_ptr(player_ptr)
+    , do_silly_attack(one_in_(2) && creature.is_hallucinated())
+    , creature_ptr(&creature)
 {
 }
 
 /*!
- * @brief モンスターからプレイヤーへの打撃処理 / Attack the player via physical attacks.
+ * @brief モンスターからプレイヤーへの打撃処理 / Attack the creature via physical attacks.
  */
 void MonsterAttackPlayer::make_attack_normal()
 {
+    auto &creature = *this->creature_ptr;
     if (!this->check_no_blow()) {
         return;
     }
 
     const auto &monrace = this->m_ptr->get_monrace();
-    this->rlev = ((monrace.level >= 1) ? monrace.level : 1);
-    angband_strcpy(this->m_name, monster_desc(this->player_ptr, *this->m_ptr, 0), sizeof(this->m_name));
-    angband_strcpy(this->ddesc, monster_desc(this->player_ptr, *this->m_ptr, MD_WRONGDOER_NAME), sizeof(this->ddesc));
-    if (PlayerClass(this->player_ptr).samurai_stance_is(SamuraiStanceType::IAI)) {
+    // [提案C2第2弾] 戦闘習熟(レベル成長分)を近接命中へ加算 (grows_melee_proficiency・既定OFF)。
+    this->rlev = ((monrace.level >= 1) ? monrace.level : 1) + this->m_ptr->get_melee_proficiency_bonus();
+    angband_strcpy(this->m_name, monster_desc(creature, *this->m_ptr, 0), sizeof(this->m_name));
+    angband_strcpy(this->ddesc, monster_desc(creature, *this->m_ptr, MD_WRONGDOER_NAME), sizeof(this->ddesc));
+    if (CreatureClass(creature).samurai_stance_is(SamuraiStanceType::IAI)) {
         msg_format(_("相手が襲いかかる前に素早く武器を振るった。", "You took sen, drew and cut in one motion before %s moved."), this->m_name);
-        if (do_cmd_attack(this->player_ptr, this->m_ptr->y, this->m_ptr->x, HISSATSU_IAI)) {
+        if (do_cmd_attack(creature, this->m_ptr->y, this->m_ptr->x, HISSATSU_IAI)) {
             return;
         }
     }
 
-    auto can_activate_kawarimi = randint0(55) < (this->player_ptr->level * 3 / 5 + 20);
-    if (can_activate_kawarimi && kawarimi(this->player_ptr, true)) {
+    auto can_activate_kawarimi = randint0(55) < (creature.get_level() * 3 / 5 + 20);
+    if (can_activate_kawarimi && kawarimi(creature, true)) {
         return;
     }
 
@@ -124,12 +129,13 @@ int MonsterAttackPlayer::stat_value(const int raw)
 
 bool MonsterAttackPlayer::check_no_blow()
 {
+    auto &creature = *this->creature_ptr;
     const auto &monrace = this->m_ptr->get_monrace();
     if (monrace.behavior_flags.has(MonsterBehaviorType::NEVER_BLOW)) {
         return false;
     }
 
-    if (this->player_ptr->current_floor_ptr->get_dungeon_definition().flags.has(DungeonFeatureType::NO_MELEE)) {
+    if (creature.get_floor()->get_dungeon_definition().flags.has(DungeonFeatureType::NO_MELEE)) {
         return false;
     }
 
@@ -142,6 +148,7 @@ bool MonsterAttackPlayer::check_no_blow()
  */
 bool MonsterAttackPlayer::process_monster_blows()
 {
+    auto &creature = *this->creature_ptr;
     const auto &monrace = this->m_ptr->get_monrace();
     const auto blow_count = static_cast<int>(monrace.blows.size());
     for (auto ap_cnt = 0; ap_cnt < blow_count; ap_cnt++) {
@@ -165,13 +172,24 @@ bool MonsterAttackPlayer::process_monster_blows()
         }
 
         // フレーバーの打撃は必中扱い。それ以外は通常の命中判定を行う。
-        this->ac = this->player_ptr->ac + this->player_ptr->to_a;
+        this->ac = static_cast<ARMOUR_CLASS>(creature.get_ac());
+
+        // [フェーズ B-2 二刀流対応 / 提案 B4] 物理打撃で使う武器スロットを決定。
+        // (CreatureEntity::select_melee_weapon_slot に集約。対モンスター経路と共用)
+        this->weapon_slot_for_blow = this->m_ptr->select_melee_weapon_slot(ap_cnt, this->method);
+
         bool hit;
         if (this->effect == RaceBlowEffectType::FLAVOR) {
             hit = true;
         } else {
-            const int power = mbe_info[enum2i(this->effect)].power;
-            hit = check_hit_from_monster_to_player(this->player_ptr, power, this->rlev, this->m_ptr->get_remaining_stun());
+            int power = mbe_info[enum2i(this->effect)].power;
+            // [フェーズ B-2c / 二刀流対応] 武器による命中ボーナス
+            if (this->weapon_slot_for_blow >= 0) {
+                power += this->m_ptr->inventory[this->weapon_slot_for_blow]->to_h;
+            }
+            // [提案C2第3弾] 能力値(STR/DEX)を近接命中へ反映 (applies_stat_combat_bonus・既定OFF)。
+            power += this->m_ptr->get_melee_stat_hit_bonus();
+            hit = check_hit_from_monster_to_player(creature, power, this->rlev, this->m_ptr->get_remaining_stun());
         }
 
         if (hit) {
@@ -186,23 +204,23 @@ bool MonsterAttackPlayer::process_monster_blows()
             }
 
             // モンスターの打撃を受けた回数を記録
-            this->player_ptr->plus_incident_tree("HIT_BY_MONSTER", 1);
+            creature.plus_incident_tree("HIT_BY_MONSTER", 1);
 
             // 打撃手段ごとの記録
             const std::string method_tag = get_blow_method_tag(this->method);
             const std::string method_key = "HIT_BY_MONSTER/METHOD/" + method_tag;
-            this->player_ptr->plus_incident_tree(method_key, 1);
+            creature.plus_incident_tree(method_key, 1);
 
             // 打撃効果ごとの記録
             const std::string effect_tag = get_blow_effect_tag(this->effect);
             const std::string effect_key = "HIT_BY_MONSTER/EFFECT/" + effect_tag;
-            this->player_ptr->plus_incident_tree(effect_key, 1);
+            creature.plus_incident_tree(effect_key, 1);
 
             // 撃退失敗時は落馬処理、変わり身のテレポート処理を行う。
-            check_fall_off_horse(this->player_ptr, this);
+            check_fall_off_horse(creature, this);
 
             // 変わり身のテレポートが成功したら攻撃を打ち切り、プレイヤーが離脱した旨を返す。
-            if (kawarimi(this->player_ptr, false)) {
+            if (kawarimi(creature, false)) {
                 return true;
             }
         } else {
@@ -222,6 +240,7 @@ bool MonsterAttackPlayer::process_monster_blows()
  */
 bool MonsterAttackPlayer::check_monster_continuous_attack()
 {
+    auto &creature = *this->creature_ptr;
     if (!this->m_ptr->is_valid() || (this->method == RaceBlowMethodType::NONE)) {
         return false;
     }
@@ -232,20 +251,21 @@ bool MonsterAttackPlayer::check_monster_continuous_attack()
         this->damage_dice.num /= 10;
     }
 
-    const auto is_neighbor = Grid::calc_distance(this->player_ptr->get_position(), this->m_ptr->get_position()) <= 1;
-    return this->player_ptr->playing && !this->player_ptr->is_dead() && is_neighbor && !this->player_ptr->leaving;
+    const auto is_neighbor = Grid::calc_distance(creature.get_position(), this->m_ptr->get_position()) <= 1;
+    return creature.is_playing() && !creature.is_dead() && is_neighbor && !creature.is_leaving();
 }
 
 /*!
  * @brief モンスターから直接攻撃を1回受けた時の処理
  * @return 対邪悪結界により攻撃が当たらなかったらFALSE、それ以外はTRUE
- * @param this->player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param monap_ptr モンスターからプレイヤーへの直接攻撃構造体への参照ポインタ
  * @details 最大4 回/モンスター/ターン、このルーチンを通る
  */
 bool MonsterAttackPlayer::process_monster_attack_hit()
 {
-    disturb(this->player_ptr, true, true);
+    auto &creature = *this->creature_ptr;
+    disturb(creature, true, true);
     if (this->effect_protecion_from_evil()) {
         return false;
     }
@@ -254,19 +274,38 @@ bool MonsterAttackPlayer::process_monster_attack_hit()
     this->do_stun = 0;
     describe_monster_attack_method(this);
     this->describe_silly_attacks();
+    this->describe_weapon_attack();
     this->obvious = true;
     this->damage = this->damage_dice.roll();
     if (this->explode) {
         this->damage = 0;
     }
 
-    switch_monster_blow_to_player(this->player_ptr, this);
+    // [提案C2第3弾] 能力値(STR)を近接ダメージへ反映 (applies_stat_combat_bonus・既定OFF)。
+    if (!this->explode) {
+        this->damage += this->m_ptr->get_melee_stat_damage_bonus();
+        if (this->damage < 0) {
+            this->damage = 0;
+        }
+    }
+
+    // [フェーズ B-2b / 二刀流対応] 装備武器によるダメージボーナス
+    // weapon_slot_for_blow は process_monster_blows() で設定され、
+    // 物理打撃 (HIT/PUNCH/SLASH/STING) かつ武器装備時のみ有効
+    // スレイ・ブランド等はプレイヤーと共通の calc_attack_damage_with_slay() を再利用する。
+    if (!this->explode && this->weapon_slot_for_blow >= 0) {
+        auto &weapon = *this->m_ptr->inventory[this->weapon_slot_for_blow];
+        const auto base_dam = weapon.damage_dice.roll();
+        this->damage += calc_attack_damage_with_slay(*this->m_ptr, &weapon, base_dam, creature, HISSATSU_NONE, false) + weapon.to_d;
+    }
+
+    switch_monster_blow_to_player(creature, this);
     this->select_cut_stun();
     this->calc_player_cut();
     this->process_player_stun();
     this->monster_explode();
     this->process_sadist_reaction();
-    process_aura_counterattack(this->player_ptr, this);
+    process_aura_counterattack(creature, this);
     return true;
 }
 
@@ -276,15 +315,16 @@ bool MonsterAttackPlayer::process_monster_attack_hit()
  */
 bool MonsterAttackPlayer::effect_protecion_from_evil()
 {
+    auto &creature = *this->creature_ptr;
     auto &monrace = this->m_ptr->get_monrace();
-    auto is_protected = this->player_ptr->effects()->protection().is_protected();
+    auto is_protected = creature.is_protected_from_evil();
     is_protected &= monrace.kind_flags.has(MonsterKindType::EVIL);
-    is_protected &= (randint0(100) + this->player_ptr->level - this->rlev) > 50;
+    is_protected &= (randint0(100) + creature.get_level() - this->rlev) > 50;
     if (!is_protected) {
         return false;
     }
 
-    if (is_original_ap_and_seen(this->player_ptr, *this->m_ptr)) {
+    if (is_original_ap_and_seen(creature, *this->m_ptr)) {
         monrace.r_kind_flags.set(MonsterKindType::EVIL);
     }
 
@@ -328,6 +368,25 @@ void MonsterAttackPlayer::describe_silly_attacks()
 }
 
 /*!
+ * @brief 武器を装備したモンスターの打撃に「〜で攻撃された」という追加メッセージを表示する
+ * @details weapon_slot_for_blow が有効 (物理打撃かつ武器装備時) の場合のみ表示する。
+ */
+void MonsterAttackPlayer::describe_weapon_attack()
+{
+    if (this->weapon_slot_for_blow < 0) {
+        return;
+    }
+
+    const auto &weapon = *this->m_ptr->inventory[this->weapon_slot_for_blow];
+    if (!weapon.is_valid()) {
+        return;
+    }
+
+    const auto weapon_name = describe_flavor(*this->creature_ptr, weapon, OD_NAME_ONLY | OD_OMIT_PREFIX | OD_NO_PLURAL);
+    msg_format(_("%s^は%sで攻撃してきた。", "%s^ attacks you with %s."), this->m_name, weapon_name.data());
+}
+
+/*!
  * @brief 切り傷と朦朧が同時に発生した時、片方を無効にする
  */
 void MonsterAttackPlayer::select_cut_stun()
@@ -345,19 +404,20 @@ void MonsterAttackPlayer::select_cut_stun()
 
 void MonsterAttackPlayer::calc_player_cut()
 {
+    auto &creature = *this->creature_ptr;
     if (this->do_cut == 0) {
         return;
     }
 
     auto cut_plus = PlayerCut::get_accumulation(this->damage_dice.maxroll(), this->damage);
     if (cut_plus > 0) {
-        (void)BadStatusSetter(this->player_ptr).mod_cut(cut_plus);
+        (void)BadStatusSetter(creature).mod_cut(cut_plus);
     }
 }
 
 /*!
  * @brief 朦朧を蓄積させる
- * @param this->player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param monap_ptr モンスター打撃への参照ポインタ
  * @details
  * 痛恨の一撃ならば朦朧蓄積ランクを1上げる.
@@ -366,6 +426,7 @@ void MonsterAttackPlayer::calc_player_cut()
  */
 void MonsterAttackPlayer::process_player_stun()
 {
+    auto &creature = *this->creature_ptr;
     if (this->do_stun == 0) {
         return;
     }
@@ -384,9 +445,9 @@ void MonsterAttackPlayer::process_player_stun()
         accumulation_rank++;
     }
 
-    auto str = this->stat_value(this->player_ptr->stat_cur[A_STR]);
-    auto dex = this->stat_value(this->player_ptr->stat_cur[A_DEX]);
-    auto con = this->stat_value(this->player_ptr->stat_cur[A_CON]);
+    auto str = this->stat_value(creature.get_stat_cur(A_STR));
+    auto dex = this->stat_value(creature.get_stat_cur(A_DEX));
+    auto con = this->stat_value(creature.get_stat_cur(A_CON));
     auto is_powerful_body = str + dex + con > 80;
     if (is_powerful_body) {
         accumulation_rank--;
@@ -394,18 +455,19 @@ void MonsterAttackPlayer::process_player_stun()
 
     auto stun_plus = PlayerStun::get_accumulation(accumulation_rank);
     if (stun_plus > 0) {
-        (void)BadStatusSetter(this->player_ptr).mod_stun(stun_plus);
+        (void)BadStatusSetter(creature).mod_stun(stun_plus);
     }
 }
 
 void MonsterAttackPlayer::monster_explode()
 {
+    auto &creature = *this->creature_ptr;
     if (!this->explode) {
         return;
     }
 
     sound(SoundKind::EXPLODE);
-    MonsterDamageProcessor mdp(this->player_ptr, this->m_idx, this->m_ptr->hp + 1, &this->fear, AttributeType::NONE);
+    MonsterDamageProcessor mdp(creature, this->m_idx, this->m_ptr->hp + 1, &this->fear, AttributeType::NONE);
     if (mdp.mon_take_hit("")) {
         this->blinked = false;
         this->alive = false;
@@ -414,7 +476,7 @@ void MonsterAttackPlayer::monster_explode()
 
 /*!
  * @brief 一部の打撃種別の場合のみ、避けた旨のメッセージ表示と盾技能スキル向上を行う
- * @param this->player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param monap_ptr モンスターからプレイヤーへの直接攻撃構造体への参照ポインタ
  */
 void MonsterAttackPlayer::process_monster_attack_evasion()
@@ -444,13 +506,14 @@ void MonsterAttackPlayer::process_monster_attack_evasion()
 
 void MonsterAttackPlayer::describe_attack_evasion()
 {
-    if (!this->m_ptr->ml) {
+    auto &creature = *this->creature_ptr;
+    if (!this->m_ptr->is_visible_on_map()) {
         return;
     }
 
-    disturb(this->player_ptr, true, true);
+    disturb(creature, true, true);
 #ifdef JP
-    auto is_suiken = any_bits(this->player_ptr->special_attack, ATTACK_SUIKEN);
+    auto is_suiken = creature.has_special_attack(ATTACK_SUIKEN);
     if (this->abbreviate) {
         msg_format("%sかわした。", is_suiken ? "奇妙な動きで" : "");
     } else {
@@ -465,14 +528,15 @@ void MonsterAttackPlayer::describe_attack_evasion()
 
 void MonsterAttackPlayer::gain_armor_exp()
 {
-    const auto o_ptr_mh = this->player_ptr->inventory[INVEN_MAIN_HAND].get();
-    const auto o_ptr_sh = this->player_ptr->inventory[INVEN_SUB_HAND].get();
+    auto &creature = *this->creature_ptr;
+    const auto o_ptr_mh = creature.inventory[INVEN_MAIN_HAND].get();
+    const auto o_ptr_sh = creature.inventory[INVEN_SUB_HAND].get();
     if (!o_ptr_mh->is_protector() && !o_ptr_sh->is_protector()) {
         return;
     }
 
-    auto cur = this->player_ptr->skill_exp[PlayerSkillKindType::SHIELD];
-    auto max = class_skills_info[enum2i(this->player_ptr->pclass)].s_max[PlayerSkillKindType::SHIELD];
+    auto cur = creature.get_skill_exp(PlayerSkillKindType::SHIELD);
+    auto max = class_skills_info[enum2i(creature.pclass)].s_max[PlayerSkillKindType::SHIELD];
     if (cur >= max) {
         return;
     }
@@ -485,25 +549,26 @@ void MonsterAttackPlayer::gain_armor_exp()
         increment += 1 + addition;
     }
 
-    this->player_ptr->skill_exp[PlayerSkillKindType::SHIELD] = std::min<short>(max, cur + increment);
+    creature.set_skill_exp(PlayerSkillKindType::SHIELD, std::min<short>(max, cur + increment));
     RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
 }
 
 void MonsterAttackPlayer::gain_evasion_exp()
 {
+    auto &creature = *this->creature_ptr;
     // 装備重量が軽い（300ポンド以下）時のみ回避技能の経験値を獲得
     auto equipment_weight = 0;
-    equipment_weight += this->player_ptr->inventory[INVEN_BODY]->weight;
-    equipment_weight += this->player_ptr->inventory[INVEN_HEAD]->weight;
-    equipment_weight += this->player_ptr->inventory[INVEN_OUTER]->weight;
-    equipment_weight += this->player_ptr->inventory[INVEN_ARMS]->weight;
-    equipment_weight += this->player_ptr->inventory[INVEN_FEET]->weight;
+    equipment_weight += creature.inventory[INVEN_BODY]->weight;
+    equipment_weight += creature.inventory[INVEN_HEAD]->weight;
+    equipment_weight += creature.inventory[INVEN_OUTER]->weight;
+    equipment_weight += creature.inventory[INVEN_ARMS]->weight;
+    equipment_weight += creature.inventory[INVEN_FEET]->weight;
 
     if (equipment_weight > 300) {
         return;
     }
 
-    PlayerSkill(this->player_ptr).gain_evasion_skill_exp();
+    PlayerSkill(creature).gain_evasion_skill_exp();
 }
 
 /*!
@@ -515,7 +580,8 @@ void MonsterAttackPlayer::gain_evasion_exp()
  */
 void MonsterAttackPlayer::increase_blow_type_seen(const int ap_cnt)
 {
-    if (!is_original_ap_and_seen(this->player_ptr, *this->m_ptr) || this->do_silly_attack) {
+    auto &creature = *this->creature_ptr;
+    if (!is_original_ap_and_seen(creature, *this->m_ptr) || this->do_silly_attack) {
         return;
     }
 
@@ -535,27 +601,29 @@ void MonsterAttackPlayer::increase_blow_type_seen(const int ap_cnt)
 
 void MonsterAttackPlayer::postprocess_monster_blows()
 {
-    SpellHex spell_hex(this->player_ptr);
+    auto &creature = *this->creature_ptr;
+    SpellHex spell_hex(*this->creature_ptr);
     spell_hex.store_vengeful_damage(this->get_damage);
     spell_hex.eyes_on_eyes(this->m_idx, this->get_damage);
-    musou_counterattack(this->player_ptr, this);
+    musou_counterattack(creature, this);
     this->process_thief_teleport(spell_hex);
     auto &monrace = this->m_ptr->get_monrace();
-    if (this->player_ptr->is_dead() && (monrace.r_deaths < MAX_SHORT) && !this->player_ptr->current_floor_ptr->inside_arena) {
+    if (creature.is_dead() && (monrace.r_deaths < MAX_SHORT) && !creature.get_floor()->inside_arena) {
         monrace.r_deaths++;
     }
 
-    if (this->m_ptr->ml && this->fear && this->alive && !this->player_ptr->is_dead()) {
+    if (this->m_ptr->is_visible_on_map() && this->fear && this->alive && !creature.is_dead()) {
         sound(SoundKind::FLEE);
         msg_format(_("%s^は恐怖で逃げ出した！", "%s^ flees in terror!"), this->m_name);
     }
 
-    PlayerClass(this->player_ptr).break_samurai_stance({ SamuraiStanceType::IAI });
+    CreatureClass(creature).break_samurai_stance({ SamuraiStanceType::IAI });
 }
 
 void MonsterAttackPlayer::process_thief_teleport(const SpellHex &spell_hex)
 {
-    if (!this->blinked || !this->alive || this->player_ptr->is_dead()) {
+    auto &creature = *this->creature_ptr;
+    if (!this->blinked || !this->alive || creature.is_dead()) {
         return;
     }
 
@@ -563,7 +631,7 @@ void MonsterAttackPlayer::process_thief_teleport(const SpellHex &spell_hex)
         msg_print(_("泥棒は笑って逃げ...ようとしたがバリアに防がれた。", "The thief flees laughing...? But a magic barrier obstructs it."));
     } else {
         msg_print(_("泥棒は笑って逃げた！", "The thief flees laughing!"));
-        teleport_away(this->player_ptr, this->m_idx, MAX_PLAYER_SIGHT * 2 + 5, TELEPORT_SPONTANEOUS);
+        teleport_away(creature, this->m_idx, MAX_PLAYER_SIGHT * 2 + 5, TELEPORT_SPONTANEOUS);
     }
 }
 
@@ -573,6 +641,7 @@ void MonsterAttackPlayer::process_thief_teleport(const SpellHex &spell_hex)
  */
 void MonsterAttackPlayer::process_sadist_reaction()
 {
+    auto &creature = *this->creature_ptr;
     const auto &monrace = this->m_ptr->get_monrace();
 
     if (!monrace.misc_flags.has(MonsterMiscType::SADIST)) {
@@ -581,12 +650,12 @@ void MonsterAttackPlayer::process_sadist_reaction()
 
     // プレイヤーにダメージを与えた場合の興奮状態
     if (this->damage > 0 && one_in_(4)) {
-        (void)set_monster_monfear(this->player_ptr, this->m_idx, 0);
+        (void)set_monster_monfear(*creature.get_floor(), this->m_idx, 0);
 
         // 一時的な攻撃力上昇（怒り状態付与）
-        this->m_ptr->mflag2.set(MonsterConstantFlagType::ANGER);
+        this->m_ptr->set_constant_flag(MonsterConstantFlagType::ANGER);
 
-        if (this->m_ptr->ml) {
+        if (this->m_ptr->is_visible_on_map()) {
             msg_format(_("%s^は他者の苦痛に興奮している！", "%s^ gets excited by others' pain!"), this->m_name);
         }
     }

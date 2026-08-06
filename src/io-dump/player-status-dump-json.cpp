@@ -1,6 +1,5 @@
 #include "io-dump/player-status-dump-json.h"
-#include "external-lib/include-json.h"
-#include "locale/japanese.h"
+#include "locale/character-encoding.h"
 #include "locale/localized-string.h"
 #include "player-base/player-class.h"
 #include "player-base/player-race.h"
@@ -14,9 +13,10 @@
 #include "system/dungeon/dungeon-record.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/floor/floor-info.h"
-#include "system/player-type-definition.h"
+#include "system/monrace/monrace-definition.h"
 #include "util/enum-converter.h"
 #include "world/world.h"
+#include <nlohmann/json.hpp>
 #include <sstream>
 
 /*!
@@ -45,48 +45,56 @@ static std::string localized_to_utf8_safe(const LocalizedString &ls)
 }
 
 /*!
- * @brief プレイヤーの基本情報をJSONに追加
+ * @brief クリーチャーの基本情報を JSON に追加
  * @param j JSON オブジェクト
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
-static void add_basic_info_to_json(nlohmann::json &j, PlayerType *player_ptr)
+static void add_basic_info_to_json(nlohmann::json &j, CreatureEntity &creature)
 {
-    j["basic"]["name"] = to_utf8_safe(player_ptr->name);
-    j["basic"]["sex"] = localized_to_utf8_safe(sex_info[player_ptr->psex].title);
-    j["basic"]["race"] = localized_to_utf8_safe(player_ptr->race->title);
-    j["basic"]["class"] = localized_to_utf8_safe(class_info.at(player_ptr->pclass).title);
-    j["basic"]["level"] = player_ptr->level;
-    j["basic"]["experience"] = player_ptr->exp;
-    j["basic"]["max_experience"] = player_ptr->max_exp;
+    j["basic"]["name"] = to_utf8_safe(creature.name);
+    j["basic"]["level"] = creature.get_level();
+    j["basic"]["experience"] = creature.get_exp();
+    j["basic"]["max_experience"] = creature.get_max_exp();
+    j["basic"]["age"] = creature.get_age();
+    j["basic"]["height"] = creature.get_ht();
+    j["basic"]["weight"] = creature.get_wt();
+    j["basic"]["prestige"] = creature.get_prestige();
 
-    if (player_ptr->mimic_form != MimicKindType::NONE) {
-        j["basic"]["mimic_form"] = localized_to_utf8_safe(mimic_info.at(player_ptr->mimic_form).title);
+    if (creature.race != nullptr) {
+        j["basic"]["race"] = localized_to_utf8_safe(creature.get_race_info()->title);
+    }
+    if (creature.pclass_ref != nullptr) {
+        j["basic"]["class"] = localized_to_utf8_safe(creature.get_class_info()->title);
     }
 
-    // 性格
-    j["basic"]["personality"] = localized_to_utf8_safe(personality_info[player_ptr->ppersonality].title);
-
-    // 領域
-    if (player_ptr->realm1 != RealmType::NONE) {
-        j["basic"]["realm1"] = localized_to_utf8_safe(PlayerRealm::get_name(player_ptr->realm1));
-    }
-    if (player_ptr->realm2 != RealmType::NONE) {
-        j["basic"]["realm2"] = localized_to_utf8_safe(PlayerRealm::get_name(player_ptr->realm2));
+    // モンスターはプレイヤー固有の性別・性格・魔法領域・変身形態を持たない
+    if (!creature.is_player()) {
+        const auto &monrace = creature.get_monrace();
+        j["basic"]["monrace"] = localized_to_utf8_safe(monrace.name);
+        return;
     }
 
-    // 年齢、身長、体重
-    j["basic"]["age"] = player_ptr->age;
-    j["basic"]["height"] = player_ptr->ht;
-    j["basic"]["weight"] = player_ptr->wt;
-    j["basic"]["prestige"] = player_ptr->prestige;
+    j["basic"]["sex"] = localized_to_utf8_safe(creature.get_sex_info().title);
+    j["basic"]["personality"] = localized_to_utf8_safe(personality_info[creature.ppersonality].title);
+
+    if (creature.get_mimic_form() != MimicKindType::NONE) {
+        j["basic"]["mimic_form"] = localized_to_utf8_safe(mimic_info.at(creature.get_mimic_form()).title);
+    }
+
+    if (creature.get_realm1() != RealmType::NONE) {
+        j["basic"]["realm1"] = localized_to_utf8_safe(PlayerRealm::get_name(creature.get_realm1()));
+    }
+    if (creature.get_realm2() != RealmType::NONE) {
+        j["basic"]["realm2"] = localized_to_utf8_safe(PlayerRealm::get_name(creature.get_realm2()));
+    }
 }
 
 /*!
- * @brief プレイヤーの能力値をJSONに追加
+ * @brief クリーチャーの能力値を JSON に追加
  * @param j JSON オブジェクト
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
-static void add_stats_to_json(nlohmann::json &j, PlayerType *player_ptr)
+static void add_stats_to_json(nlohmann::json &j, CreatureEntity &creature)
 {
     nlohmann::json stats = nlohmann::json::array();
 
@@ -94,10 +102,10 @@ static void add_stats_to_json(nlohmann::json &j, PlayerType *player_ptr)
     for (int i = 0; i < A_MAX; i++) {
         nlohmann::json stat;
         stat["name"] = stat_names[i];
-        stat["current"] = player_ptr->stat_cur[i];
-        stat["max"] = player_ptr->stat_max[i];
-        stat["use"] = player_ptr->stat_use[i];
-        stat["top"] = player_ptr->stat_top[i];
+        stat["current"] = creature.get_stat_cur(i);
+        stat["max"] = creature.get_stat_max(i);
+        stat["use"] = creature.get_stat_use(i);
+        stat["top"] = creature.get_stat_top(i);
         stats.push_back(stat);
     }
 
@@ -105,25 +113,25 @@ static void add_stats_to_json(nlohmann::json &j, PlayerType *player_ptr)
 }
 
 /*!
- * @brief プレイヤーの状態をJSONに追加
+ * @brief クリーチャーの状態を JSON に追加
  * @param j JSON オブジェクト
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
-static void add_status_to_json(nlohmann::json &j, PlayerType *player_ptr)
+static void add_status_to_json(nlohmann::json &j, CreatureEntity &creature)
 {
-    j["status"]["hitpoints"] = player_ptr->hp;
-    j["status"]["max_hitpoints"] = player_ptr->maxhp;
-    j["status"]["mana"] = player_ptr->csp;
-    j["status"]["max_mana"] = player_ptr->msp;
-    j["status"]["armor_class"] = player_ptr->ac;
-    j["status"]["display_armor_class"] = player_ptr->dis_ac;
+    j["status"]["hitpoints"] = creature.hp;
+    j["status"]["max_hitpoints"] = creature.maxhp;
+    j["status"]["mana"] = creature.get_current_mp();
+    j["status"]["max_mana"] = creature.get_max_mp();
+    j["status"]["armor_class"] = creature.ac;
+    j["status"]["display_armor_class"] = creature.get_dis_ac();
 
     // 所持金とアイテム
-    j["status"]["gold"] = player_ptr->au;
+    j["status"]["gold"] = creature.get_au();
 
     // ダンジョン情報
-    j["status"]["dungeon_level"] = player_ptr->current_floor_ptr->dun_level;
-    const auto &dungeon_record = DungeonRecords::get_instance().get_record(player_ptr->recall_dungeon);
+    j["status"]["dungeon_level"] = creature.get_floor()->dun_level;
+    const auto &dungeon_record = DungeonRecords::get_instance().get_record(creature.get_recall_dungeon());
     j["status"]["max_dungeon_level"] = dungeon_record.get_max_level();
 
     // ターン数
@@ -132,127 +140,129 @@ static void add_status_to_json(nlohmann::json &j, PlayerType *player_ptr)
 }
 
 /*!
- * @brief プレイヤーの戦闘能力をJSONに追加
+ * @brief クリーチャーの戦闘能力を JSON に追加
  * @param j JSON オブジェクト
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
-static void add_combat_to_json(nlohmann::json &j, PlayerType *player_ptr)
+static void add_combat_to_json(nlohmann::json &j, CreatureEntity &creature)
 {
-    j["combat"]["base_to_hit"] = player_ptr->to_h_b;
-    j["combat"]["melee_to_hit"] = player_ptr->to_h_m;
-    j["combat"]["melee_to_damage"] = player_ptr->to_d_m;
-    j["combat"]["ranged_to_hit"] = player_ptr->to_h_b;
+    j["combat"]["base_to_hit"] = creature.get_to_h_b();
+    j["combat"]["melee_to_hit"] = creature.get_to_h_m();
+    j["combat"]["melee_to_damage"] = creature.get_to_d_m();
+    j["combat"]["ranged_to_hit"] = creature.get_to_h_b();
 
     // 攻撃回数
-    j["combat"]["num_blow"] = player_ptr->num_blow[0];
-    j["combat"]["num_fire"] = player_ptr->num_fire;
+    j["combat"]["num_blow"] = creature.get_num_blow(0);
+    j["combat"]["num_fire"] = creature.get_num_fire();
 }
 
 /*!
- * @brief プレイヤーのスキルをJSONに追加
+ * @brief クリーチャーのスキルを JSON に追加
  * @param j JSON オブジェクト
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
-static void add_skills_to_json(nlohmann::json &j, PlayerType *player_ptr)
+static void add_skills_to_json(nlohmann::json &j, CreatureEntity &creature)
 {
-    j["skills"]["fighting"] = player_ptr->skill_thn;
-    j["skills"]["shooting"] = player_ptr->skill_thb;
-    j["skills"]["saving_throw"] = player_ptr->skill_sav;
-    j["skills"]["stealth"] = player_ptr->skill_stl;
-    j["skills"]["perception"] = player_ptr->skill_fos;
-    j["skills"]["searching"] = player_ptr->skill_srh;
-    j["skills"]["disarming"] = player_ptr->skill_dis;
-    j["skills"]["magic_device"] = player_ptr->skill_dev;
-    j["skills"]["infravision"] = player_ptr->see_infra;
-    j["skills"]["speed"] = player_ptr->speed - 110;
+    j["skills"]["fighting"] = creature.get_skill_to_hit_melee();
+    j["skills"]["shooting"] = creature.get_skill_to_hit_bow();
+    j["skills"]["saving_throw"] = creature.get_skill_save();
+    j["skills"]["stealth"] = creature.get_skill_stealth();
+    j["skills"]["perception"] = creature.get_skill_perception();
+    j["skills"]["searching"] = creature.get_skill_search();
+    j["skills"]["disarming"] = creature.get_skill_disarm();
+    j["skills"]["magic_device"] = creature.get_skill_device();
+    j["skills"]["infravision"] = creature.get_infravision();
+    j["skills"]["speed"] = creature.speed - 110;
 }
 
 /*!
- * @brief プレイヤーの死亡/勝利情報をJSONに追加
+ * @brief クリーチャーの死亡/勝利情報を JSON に追加
  * @param j JSON オブジェクト
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
-static void add_death_info_to_json(nlohmann::json &j, PlayerType *player_ptr)
+static void add_death_info_to_json(nlohmann::json &j, CreatureEntity &creature)
 {
-    if (player_ptr->is_dead()) {
+    if (creature.is_dead()) {
         j["death"]["is_dead"] = true;
-        j["death"]["cause"] = to_utf8_safe(player_ptr->died_from);
-        if (player_ptr->killer_monrace_id != MonraceId::PLAYER) {
-            j["death"]["killer_id"] = enum2i(player_ptr->killer_monrace_id);
+        j["death"]["cause"] = to_utf8_safe(creature.died_from);
+        if (creature.killer_monrace_id != MonraceId::PLAYER) {
+            j["death"]["killer_id"] = enum2i(creature.killer_monrace_id);
         }
-        if (!player_ptr->last_message.empty()) {
-            j["death"]["last_message"] = to_utf8_safe(player_ptr->last_message);
+        if (!creature.last_message.empty()) {
+            j["death"]["last_message"] = to_utf8_safe(creature.last_message);
         }
     }
 
-    if (player_ptr->is_true_winner()) {
+    if (creature.is_true_winner()) {
         j["death"]["is_winner"] = true;
     }
 }
 
 /*!
- * @brief プレイヤーの履歴をJSONに追加
+ * @brief クリーチャーの履歴を JSON に追加
  * @param j JSON オブジェクト
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
-static void add_history_to_json(nlohmann::json &j, PlayerType *player_ptr)
+static void add_history_to_json(nlohmann::json &j, CreatureEntity &creature)
 {
     nlohmann::json history = nlohmann::json::array();
     for (int i = 0; i < 4; i++) {
-        if (player_ptr->history[i][0] != '\0') {
-            history.push_back(to_utf8_safe(player_ptr->history[i]));
+        if (creature.history[i][0] != '\0') {
+            history.push_back(to_utf8_safe(creature.history[i]));
         }
     }
     j["history"] = history;
 }
 
 /*!
- * @brief プレイヤーのステータス情報をJSON形式で出力する
- * @param player_ptr プレイヤーへの参照ポインタ
- * @return JSON文字列
+ * @brief クリーチャー（プレイヤー・モンスター）のステータス情報を JSON 形式で出力する
+ * @param creature クリーチャーへの参照
+ * @return JSON 文字列
+ * @details モンスターは性別・種族等一部のフィールドのみ出力し、プレイヤー専用のセクション
+ * (sex/personality/realm/mimic_form) はスキップする。
  */
-std::string dump_player_status_json(PlayerType *player_ptr)
+std::string dump_player_status_json(CreatureEntity &creature)
 {
     nlohmann::json j;
 
     // バージョン情報
     j["version"] = {
-        { "format", "bakabakaband-player-status" },
+        { "format", "bakabakaband-creature-status" },
         { "version", 1 }
     };
 
     // 基本情報
-    add_basic_info_to_json(j, player_ptr);
+    add_basic_info_to_json(j, creature);
 
     // 能力値
-    add_stats_to_json(j, player_ptr);
+    add_stats_to_json(j, creature);
 
     // 状態
-    add_status_to_json(j, player_ptr);
+    add_status_to_json(j, creature);
 
     // 戦闘能力
-    add_combat_to_json(j, player_ptr);
+    add_combat_to_json(j, creature);
 
     // スキル
-    add_skills_to_json(j, player_ptr);
+    add_skills_to_json(j, creature);
 
     // 死亡/勝利情報
-    add_death_info_to_json(j, player_ptr);
+    add_death_info_to_json(j, creature);
 
     // 履歴
-    add_history_to_json(j, player_ptr);
+    add_history_to_json(j, creature);
 
     // 整形して返す
     return j.dump(2);
 }
 
 /*!
- * @brief プレイヤーのステータス情報をJSON形式でファイルに出力する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @brief クリーチャー（プレイヤー・モンスター）のステータス情報を JSON 形式でファイルに出力する
+ * @param creature クリーチャーへの参照
  * @param fff ファイルポインタ
  */
-void dump_player_status_json_to_file(PlayerType *player_ptr, FILE *fff)
+void dump_player_status_json_to_file(CreatureEntity &creature, FILE *fff)
 {
-    auto json_str = dump_player_status_json(player_ptr);
+    auto json_str = dump_player_status_json(creature);
     fprintf(fff, "%s\n", json_str.c_str());
 }

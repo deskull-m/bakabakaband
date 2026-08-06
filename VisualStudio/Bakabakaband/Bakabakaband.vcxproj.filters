@@ -134,6 +134,9 @@
     <ClCompile Include="..\..\src\autopick\autopick-entry.cpp">
       <Filter>autopick</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\autopick\autopick-keys-table.cpp">
+      <Filter>autopick</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\src\autopick\autopick-initializer.cpp">
       <Filter>autopick</Filter>
     </ClCompile>
@@ -144,6 +147,9 @@
       <Filter>autopick</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\io\signal-handlers.cpp">
+      <Filter>io</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\io\temp-file.cpp">
       <Filter>io</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\io\uid-checker.cpp">
@@ -425,6 +431,9 @@
     <ClCompile Include="..\..\src\locale\japanese.cpp">
       <Filter>locale</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\locale\character-encoding.cpp">
+      <Filter>locale</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\src\locale\localized-string.cpp">
       <Filter>locale</Filter>
     </ClCompile>
@@ -554,6 +563,9 @@
     <ClCompile Include="..\..\src\birth\character-builder.cpp">
       <Filter>birth</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\birth\monster-birth.cpp">
+      <Filter>birth</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\src\io\files-util.cpp">
       <Filter>io</Filter>
     </ClCompile>
@@ -595,6 +607,15 @@
     </ClCompile>
     <ClCompile Include="..\..\src\store\rumor.cpp">
       <Filter>store</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\rumor\rumor-definition.cpp">
+      <Filter>rumor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\rumor\rumor-list.cpp">
+      <Filter>rumor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\rumor\rumor-service.cpp">
+      <Filter>rumor</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\store\say-comments.cpp">
       <Filter>store</Filter>
@@ -974,6 +995,9 @@
     <ClCompile Include="..\..\src\info-reader\spell-reader.cpp">
       <Filter>info-reader</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\info-reader\terrain-reader.cpp">
+      <Filter>info-reader</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\src\info-reader\magic-reader.cpp">
       <Filter>info-reader</Filter>
     </ClCompile>
@@ -1113,6 +1137,9 @@
       <Filter>monster-floor</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\monster-floor\one-monster-placer.cpp">
+      <Filter>monster-floor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\monster-floor\monster-drop-generator.cpp">
       <Filter>monster-floor</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\monster-floor\monster-summon.cpp">
@@ -1289,6 +1316,9 @@
     <ClCompile Include="..\..\src\status\sight-setter.cpp">
       <Filter>status</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\status\status-change-notice.cpp">
+      <Filter>status</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\src\status\buff-setter.cpp">
       <Filter>status</Filter>
     </ClCompile>
@@ -1335,9 +1365,6 @@
       <Filter>inventory</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\inventory\floor-item-getter.cpp">
-      <Filter>inventory</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\inventory\item-getter.cpp">
       <Filter>inventory</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\floor\object-scanner.cpp">
@@ -1541,6 +1568,9 @@
     <ClCompile Include="..\..\src\system\artifact-type-definition.cpp">
       <Filter>system</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\system\artifact\artifact-record.cpp">
+      <Filter>system\artifact</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\src\view\display-store.cpp">
       <Filter>view</Filter>
     </ClCompile>
@@ -1614,6 +1644,9 @@
       <Filter>blue-magic</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\mind\mind-blue-mage.cpp">
+      <Filter>mind</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\mind\monster-ability-caster.cpp">
       <Filter>mind</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\blue-magic\blue-magic-checker.cpp">
@@ -1943,8 +1976,8 @@
     <ClCompile Include="..\..\src\main\info-initializer.cpp">
       <Filter>main</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\main\angband-headers.cpp">
-      <Filter>main</Filter>
+    <ClCompile Include="..\..\src\info-reader\definition-hash-data.cpp">
+      <Filter>info-reader</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\main\init-error-messages-table.cpp">
       <Filter>main</Filter>
@@ -2029,9 +2062,6 @@
     </ClCompile>
     <ClCompile Include="..\..\src\system\angband-version.cpp">
       <Filter>system</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\locale\utf-8.cpp">
-      <Filter>locale</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\wizard\wizard-game-modifier.cpp">
       <Filter>wizard</Filter>
@@ -2175,6 +2205,9 @@
     <ClCompile Include="..\..\src\avatar\avatar-changer.cpp">
       <Filter>avatar</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\bot\bot-json-output.cpp">
+      <Filter>bot</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\src\avatar\avatar.cpp">
       <Filter>avatar</Filter>
     </ClCompile>
@@ -2189,9 +2222,6 @@
     </ClCompile>
     <ClCompile Include="..\..\src\player-base\player-class.cpp">
       <Filter>player-base</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\timed-effect\timed-effects.cpp">
-      <Filter>timed-effect</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\timed-effect\player-stun.cpp">
       <Filter>timed-effect</Filter>
@@ -2228,9 +2258,6 @@
     </ClCompile>
     <ClCompile Include="..\..\src\knowledge\knowledge-alliance.cpp">
       <Filter>knowledge</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\util\rng-xoshiro.cpp">
-      <Filter>util</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\world\world-collapsion.cpp">
       <Filter>world</Filter>
@@ -2313,18 +2340,6 @@
     <ClCompile Include="..\..\src\monster-race\race-resistance-mask.cpp">
       <Filter>monster-race</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\timed-effect\player-confusion.cpp">
-      <Filter>timed-effect</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\timed-effect\player-hallucination.cpp">
-      <Filter>timed-effect</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\timed-effect\player-paralysis.cpp">
-      <Filter>timed-effect</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\timed-effect\player-fear.cpp">
-      <Filter>timed-effect</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\object-use\read\read-execution.cpp">
       <Filter>object-use\read</Filter>
     </ClCompile>
@@ -2386,21 +2401,6 @@
       <Filter>mspell</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\knowledge\knowledge-incident.cpp" />
-    <ClCompile Include="..\..\src\timed-effect\player-acceleration.cpp">
-      <Filter>timed-effect</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\timed-effect\player-deceleration.cpp">
-      <Filter>timed-effect</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\timed-effect\player-poison.cpp">
-      <Filter>timed-effect</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\timed-effect\player-blindness.cpp">
-      <Filter>timed-effect</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\system\monster-entity.cpp">
-      <Filter>system</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\system\spell-info-list.cpp">
       <Filter>system</Filter>
     </ClCompile>
@@ -2409,9 +2409,6 @@
     </ClCompile>
     <ClCompile Include="..\..\src\monster\monster-pain-describer.cpp">
       <Filter>monster</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\item-info\flavor-initializer.cpp">
-      <Filter>item-info</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\system\redrawing-flags-updater.cpp">
       <Filter>system</Filter>
@@ -2468,13 +2465,28 @@
     <ClCompile Include="..\..\src\monster\monster-timed-effects.cpp">
       <Filter>monster</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\save\monster-entity-writer.cpp">
+    <ClCompile Include="..\..\src\save\monster-writer.cpp">
       <Filter>save</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\timed-effect\player-protection.cpp">
-      <Filter>timed-effect</Filter>
+    <ClCompile Include="..\..\src\save\creature-common-writer.cpp">
+      <Filter>save</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\system\baseitem\baseitem-definition.cpp">
+      <Filter>system\baseitem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\system\baseitem\baseitem-config.cpp">
+      <Filter>system\baseitem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\system\baseitem\baseitem-configs.cpp">
+      <Filter>system\baseitem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\system\baseitem\baseitem-record.cpp">
+      <Filter>system\baseitem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\system\baseitem\baseitem-records.cpp">
+      <Filter>system\baseitem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\system\baseitem\baseitem-service.cpp">
       <Filter>system\baseitem</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\system\baseitem\baseitem-key.cpp">
@@ -2487,6 +2499,9 @@
       <Filter>system\services</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\system\dungeon\dungeon-definition.cpp">
+      <Filter>system\dungeon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\system\dungeon\quest-definition.cpp">
       <Filter>system\dungeon</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\system\dungeon\dungeon-data-definition.cpp">
@@ -2513,6 +2528,15 @@
     <ClCompile Include="..\..\src\system\monrace\monrace-message.cpp">
       <Filter>system\monrace</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\system\monrace\monrace-record.cpp">
+      <Filter>system\monrace</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\system\monrace\monrace-records.cpp">
+      <Filter>system\monrace</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\system\monrace\monrace-service.cpp">
+      <Filter>system\monrace</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\src\system\floor\floor-info.cpp">
       <Filter>system\floor</Filter>
     </ClCompile>
@@ -2523,6 +2547,9 @@
       <Filter>system\floor</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\system\floor\town-list.cpp">
+      <Filter>system\floor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\system\floor\town-records.cpp">
       <Filter>system\floor</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\system\terrain\terrain-definition.cpp">
@@ -2690,6 +2717,9 @@
     <ClCompile Include="..\..\src\alliance\alliance-dokachans.cpp">
       <Filter>alliance</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\alliance\alliance-eagle-clan.cpp">
+      <Filter>alliance</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\src\alliance\alliance-gaichi.cpp">
       <Filter>alliance</Filter>
     </ClCompile>
@@ -2776,6 +2806,9 @@
     <ClCompile Include="..\..\src\load\alliance-loader.cpp">
       <Filter>load</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\load\creature-common-loader.cpp">
+      <Filter>load</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\src\save\alliance-writer.cpp">
       <Filter>save</Filter>
     </ClCompile>
@@ -2806,6 +2839,19 @@
     <ClCompile Include="..\..\src\io-dump\score-sender.cpp">
       <Filter>io-dump</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\util\png-displayer.cpp" />
+    <ClCompile Include="..\..\src\system\creature-party\creature-party-definition.cpp">
+      <Filter>system\creature-party</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\system\creature-party\creature-party-list.cpp">
+      <Filter>system\creature-party</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\info-reader\party-reader.cpp">
+      <Filter>info-reader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\monster-floor\party-generator.cpp" />
+    <ClCompile Include="..\..\src\system\creature-entity.cpp" />
+    <ClCompile Include="..\..\src\floor\party-monsters.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\combat\shoot.h">
@@ -2946,9 +2992,6 @@
     <ClInclude Include="..\..\src\autopick\autopick-dirty-flags.h">
       <Filter>autopick</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\autopick\autopick-key-flag-process.h">
-      <Filter>autopick</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\autopick\autopick-util.h">
       <Filter>autopick</Filter>
     </ClInclude>
@@ -2971,6 +3014,9 @@
       <Filter>autopick</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\io\signal-handlers.h">
+      <Filter>io</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\io\temp-file.h">
       <Filter>io</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\io\uid-checker.h">
@@ -3393,6 +3439,9 @@
     <ClInclude Include="..\..\src\birth\character-builder.h">
       <Filter>birth</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\birth\monster-birth.h">
+      <Filter>birth</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\src\birth\history.h">
       <Filter>birth</Filter>
     </ClInclude>
@@ -3452,6 +3501,18 @@
     </ClInclude>
     <ClInclude Include="..\..\src\store\rumor.h">
       <Filter>store</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\rumor\rumor-definition.h">
+      <Filter>rumor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\rumor\rumor-list.h">
+      <Filter>rumor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\rumor\rumor-rarity.h">
+      <Filter>rumor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\rumor\rumor-service.h">
+      <Filter>rumor</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\store\store-util.h">
       <Filter>store</Filter>
@@ -3909,6 +3970,9 @@
     <ClInclude Include="..\..\src\info-reader\skill-reader.h">
       <Filter>info-reader</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\info-reader\terrain-reader.h">
+      <Filter>info-reader</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\src\info-reader\spell-reader.h">
       <Filter>info-reader</Filter>
     </ClInclude>
@@ -3977,9 +4041,6 @@
     </ClInclude>
     <ClInclude Include="..\..\src\player\eldritch-horror.h">
       <Filter>player</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\system\monster-entity.h">
-      <Filter>system</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\monster\monster-processor-util.h">
       <Filter>monster</Filter>
@@ -4090,6 +4151,9 @@
       <Filter>monster-floor</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\monster-floor\one-monster-placer.h">
+      <Filter>monster-floor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\monster-floor\monster-drop-generator.h">
       <Filter>monster-floor</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\monster-floor\monster-summon.h">
@@ -4212,6 +4276,9 @@
     <ClInclude Include="..\..\src\mind\mind-blue-mage.h">
       <Filter>mind</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\mind\monster-ability-caster.h">
+      <Filter>mind</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\src\mspell\monster-power-table.h">
       <Filter>mspell</Filter>
     </ClInclude>
@@ -4302,6 +4369,9 @@
     <ClInclude Include="..\..\src\status\sight-setter.h">
       <Filter>status</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\status\status-change-notice.h">
+      <Filter>status</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\src\status\buff-setter.h">
       <Filter>status</Filter>
     </ClInclude>
@@ -4348,9 +4418,6 @@
       <Filter>inventory</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\inventory\floor-item-getter.h">
-      <Filter>inventory</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\inventory\item-getter.h">
       <Filter>inventory</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\floor\object-scanner.h">
@@ -4575,6 +4642,9 @@
     <ClInclude Include="..\..\src\system\artifact-type-definition.h">
       <Filter>system</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\system\artifact\artifact-record.h">
+      <Filter>system\artifact</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\src\view\display-store.h">
       <Filter>view</Filter>
     </ClInclude>
@@ -4724,9 +4794,6 @@
     </ClInclude>
     <ClInclude Include="..\..\src\player\player-status-flags.h">
       <Filter>player</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\room\room-types.h">
-      <Filter>room</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\room\lake-types.h">
       <Filter>room</Filter>
@@ -5004,8 +5071,8 @@
     <ClInclude Include="..\..\src\main\info-initializer.h">
       <Filter>main</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\main\angband-headers.h">
-      <Filter>main</Filter>
+    <ClInclude Include="..\..\src\info-reader\definition-hash-data.h">
+      <Filter>info-reader</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\main\init-error-messages-table.h">
       <Filter>main</Filter>
@@ -5093,9 +5160,6 @@
     </ClInclude>
     <ClInclude Include="..\..\src\artifact\random-art-effects.h">
       <Filter>artifact</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\locale\utf-8.h">
-      <Filter>locale</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\wizard\wizard-game-modifier.h">
       <Filter>wizard</Filter>
@@ -5260,6 +5324,9 @@
     <ClInclude Include="..\..\src\avatar\avatar-changer.h">
       <Filter>avatar</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\bot\bot-json-output.h">
+      <Filter>bot</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\src\avatar\avatar.h">
       <Filter>avatar</Filter>
     </ClInclude>
@@ -5289,9 +5356,6 @@
     </ClInclude>
     <ClInclude Include="..\..\src\player-base\player-class.h">
       <Filter>player-base</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\timed-effect\timed-effects.h">
-      <Filter>timed-effect</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\timed-effect\player-stun.h">
       <Filter>timed-effect</Filter>
@@ -5361,9 +5425,6 @@
     </ClInclude>
     <ClInclude Include="..\..\src\knowledge\knowledge-alliance.h">
       <Filter>knowledge</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\util\rng-xoshiro.h">
-      <Filter>util</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\world\world-collapsion.h">
       <Filter>world</Filter>
@@ -5485,18 +5546,6 @@
     <ClInclude Include="..\..\src\monster-race\race-resistance-mask.h">
       <Filter>monster-race</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\timed-effect\player-confusion.h">
-      <Filter>timed-effect</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\timed-effect\player-hallucination.h">
-      <Filter>timed-effect</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\timed-effect\player-paralysis.h">
-      <Filter>timed-effect</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\timed-effect\player-fear.h">
-      <Filter>timed-effect</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\market\bounty-type-definition.h">
       <Filter>market</Filter>
     </ClInclude>
@@ -5573,23 +5622,11 @@
     <ClInclude Include="..\..\src\monster-race\race-feature-flags.h">
       <Filter>monster-race</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\timed-effect\player-acceleration.h">
-      <Filter>timed-effect</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\monster-race\race-population-flags.h">
       <Filter>monster-race</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\monster-race\race-speak-flags.h">
       <Filter>monster-race</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\timed-effect\player-deceleration.h">
-      <Filter>timed-effect</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\timed-effect\player-poison.h">
-      <Filter>timed-effect</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\timed-effect\player-blindness.h">
-      <Filter>timed-effect</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\system\spell-info-list.h">
       <Filter>system</Filter>
@@ -5639,13 +5676,9 @@
     <ClInclude Include="..\..\src\util\stack-trace.h">
       <Filter>util</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\external-lib\include-json.h">
-      <Filter>external-lib</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\system\angband-system.h">
       <Filter>system</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\item-info\flavor-initializer.h" />
     <ClInclude Include="..\..\src\mspell\mspell-attack\abstract-mspell.h" />
     <ClInclude Include="..\..\src\load\angband-version-comparer.h" />
     <ClInclude Include="..\..\src\mspell\mspell-attack\mspell-particularity.h" />
@@ -5681,14 +5714,17 @@
     <ClInclude Include="..\..\src\market\melee-arena.h">
       <Filter>market</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\save\monster-entity-writer.h">
+    <ClInclude Include="..\..\src\save\monster-writer.h">
+      <Filter>save</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\save\creature-common-writer.h">
       <Filter>save</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\system\enums\grid-flow.h">
       <Filter>system\enums</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\timed-effect\player-protection.h">
-      <Filter>timed-effect</Filter>
+    <ClInclude Include="..\..\src\system\enums\store-sale-type.h">
+      <Filter>system\enums</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\system\enums\monrace\monrace-id.h">
       <Filter>system\enums\monrace</Filter>
@@ -5697,6 +5733,21 @@
       <Filter>system\enums</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\system\baseitem\baseitem-definition.h">
+      <Filter>system\baseitem</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\system\baseitem\baseitem-config.h">
+      <Filter>system\baseitem</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\system\baseitem\baseitem-configs.h">
+      <Filter>system\baseitem</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\system\baseitem\baseitem-record.h">
+      <Filter>system\baseitem</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\system\baseitem\baseitem-records.h">
+      <Filter>system\baseitem</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\system\baseitem\baseitem-service.h">
       <Filter>system\baseitem</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\system\baseitem\baseitem-key.h">
@@ -5709,6 +5760,9 @@
       <Filter>system\services</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\system\dungeon\dungeon-definition.h">
+      <Filter>system\dungeon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\system\dungeon\quest-definition.h">
       <Filter>system\dungeon</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\system\dungeon\dungeon-data-definition.h">
@@ -5735,6 +5789,15 @@
     <ClInclude Include="..\..\src\system\monrace\monrace-message.h">
       <Filter>system\monrace</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\system\monrace\monrace-record.h">
+      <Filter>system\monrace</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\system\monrace\monrace-records.h">
+      <Filter>system\monrace</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\system\monrace\monrace-service.h">
+      <Filter>system\monrace</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\src\system\floor\floor-info.h">
       <Filter>system\floor</Filter>
     </ClInclude>
@@ -5745,6 +5808,9 @@
       <Filter>system\floor</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\system\floor\town-list.h">
+      <Filter>system\floor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\system\floor\town-records.h">
       <Filter>system\floor</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\system\enums\terrain\terrain-tag.h">
@@ -5781,6 +5847,18 @@
       <Filter>util</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\system\enums\terrain\terrain-kind.h">
+      <Filter>system\enums\terrain</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\system\enums\terrain\building-type.h">
+      <Filter>system\enums\terrain</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\system\enums\terrain\pattern-tile-type.h">
+      <Filter>system\enums\terrain</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\system\enums\terrain\terrain-conversion-type.h">
+      <Filter>system\enums\terrain</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\system\enums\terrain\trap.h">
       <Filter>system\enums\terrain</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\system\enums\terrain\wilderness-terrain.h">
@@ -5932,6 +6010,9 @@
     <ClInclude Include="..\..\src\alliance\alliance-dokachans.h">
       <Filter>alliance</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\alliance\alliance-eagle-clan.h">
+      <Filter>alliance</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\src\alliance\alliance-gaichi.h">
       <Filter>alliance</Filter>
     </ClInclude>
@@ -5954,9 +6035,6 @@
       <Filter>alliance</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\alliance\alliance-meldor.h">
-      <Filter>alliance</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\alliance\alliance-new.h">
       <Filter>alliance</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\alliance\alliance-none.h">
@@ -6018,6 +6096,9 @@
     <ClInclude Include="..\..\src\load\alliance-loader.h">
       <Filter>load</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\load\creature-common-loader.h">
+      <Filter>load</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\src\save\alliance-writer.h">
       <Filter>save</Filter>
     </ClInclude>
@@ -6060,6 +6141,18 @@
     <ClInclude Include="..\..\src\io-dump\score-sender.h">
       <Filter>io-dump</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\util\png-displayer.h" />
+    <ClInclude Include="..\..\src\system\creature-party\creature-party-definition.h">
+      <Filter>system\creature-party</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\system\creature-party\creature-party-list.h">
+      <Filter>system\creature-party</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\info-reader\party-reader.h">
+      <Filter>info-reader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\monster-floor\party-generator.h" />
+    <ClInclude Include="..\..\src\floor\party-monsters.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\src\wall.bmp" />
@@ -6107,6 +6200,9 @@
     </Filter>
     <Filter Include="room">
       <UniqueIdentifier>{318835ed-a803-4459-921e-f6afc5411baa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="rumor">
+      <UniqueIdentifier>{3b6c7d8e-9f1a-4b2c-8d3e-4f5a6b7c8d9e}</UniqueIdentifier>
     </Filter>
     <Filter Include="effect">
       <UniqueIdentifier>{ed8a9f97-b54e-4204-9076-f32f646f3762}</UniqueIdentifier>
@@ -6276,6 +6372,9 @@
     <Filter Include="avatar">
       <UniqueIdentifier>{953acb44-db6d-4bd8-bb0b-5692524bad93}</UniqueIdentifier>
     </Filter>
+    <Filter Include="bot">
+      <UniqueIdentifier>{b07a1a11-0b07-4b07-8b07-0b07b07b07b0}</UniqueIdentifier>
+    </Filter>
     <Filter Include="player-base">
       <UniqueIdentifier>{0bd4660d-028e-44be-a5fe-c7cc7d3d00c2}</UniqueIdentifier>
     </Filter>
@@ -6342,6 +6441,9 @@
     <Filter Include="system\dungeon">
       <UniqueIdentifier>{1894220d-5f9a-4d37-b853-abc0076e56bc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="system\artifact">
+      <UniqueIdentifier>{2a5b7c3e-4d8f-4a1b-9c6d-7e8f9a0b1c2d}</UniqueIdentifier>
+    </Filter>
     <Filter Include="system\monrace">
       <UniqueIdentifier>{aeee8301-7122-495a-938a-9425333f0414}</UniqueIdentifier>
     </Filter>
@@ -6362,6 +6464,9 @@
     </Filter>
     <Filter Include="achivement">
       <UniqueIdentifier>{6d1aa13b-cb5f-4aa3-828a-bd4d0018fc21}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="system\creature-party">
+      <UniqueIdentifier>{6246be9f-4a6a-418a-a1e4-65eba10a8f58}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

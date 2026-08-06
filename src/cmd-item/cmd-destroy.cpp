@@ -31,8 +31,8 @@
 #include "status/action-setter.h"
 #include "status/experience.h"
 #include "system/baseitem/baseitem-key.h"
+#include "system/creature-entity.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "term/screen-processor.h"
 #include "term/z-form.h"
@@ -41,21 +41,21 @@
 #include <tuple>
 
 /// 破壊するアイテムの選択結果: アイテム、インベントリもしくは床上アイテムのインデックス、個数
-using SelectionResult = std::tuple<ItemEntity *, short, int>;
+using SelectionResult = std::tuple<std::shared_ptr<ItemEntity>, short, int>;
 
-static bool check_destory_item(PlayerType *player_ptr, const ItemEntity &destroying_item, short i_idx)
+static bool check_destory_item(CreatureEntity &creature, const ItemEntity &destroying_item, short i_idx)
 {
     if (!confirm_destroy && (destroying_item.calc_price() <= 0)) {
         return true;
     }
 
-    const auto item_name = describe_flavor(player_ptr, destroying_item, OD_OMIT_PREFIX);
+    const auto item_name = describe_flavor(creature, destroying_item, OD_OMIT_PREFIX);
     constexpr auto fmt = _("本当に%sを壊しますか? [y/n/Auto]", "Really destroy %s? [y/n/Auto]");
     const auto msg = format(fmt, item_name.data());
     msg_erase();
     message_add(msg);
     RedrawingFlagsUpdater::get_instance().set_flag(SubWindowRedrawingFlag::MESSAGE);
-    window_stuff(player_ptr);
+    window_stuff(creature);
     while (true) {
         prt(msg, 0, 0);
         char i = inkey();
@@ -72,53 +72,52 @@ static bool check_destory_item(PlayerType *player_ptr, const ItemEntity &destroy
             continue;
         }
 
-        if (autopick_autoregister(player_ptr, &destroying_item)) {
-            autopick_alter_item(player_ptr, i_idx, true);
+        if (autopick_autoregister(creature, &destroying_item)) {
+            autopick_alter_item(creature, i_idx, true);
         }
 
         return false;
     }
 }
 
-static tl::optional<SelectionResult> select_destroying_item(PlayerType *player_ptr, bool force_destroy)
+static tl::optional<SelectionResult> select_destroying_item(CreatureEntity &creature, bool force_destroy)
 {
-    short i_idx;
     constexpr auto q = _("どのアイテムを壊しますか? ", "Destroy which item? ");
     constexpr auto s = _("壊せるアイテムを持っていない。", "You have nothing to destroy.");
-    auto *o_ptr = choose_object(player_ptr, &i_idx, q, s, USE_INVEN | USE_FLOOR);
-    if (o_ptr == nullptr) {
+    const auto &[item, i_idx] = choose_item(creature, q, s, USE_INVEN | USE_FLOOR);
+    if (!item) {
         return tl::nullopt;
     }
 
-    if (!force_destroy && !check_destory_item(player_ptr, *o_ptr, i_idx)) {
+    if (!force_destroy && !check_destory_item(creature, *item, i_idx)) {
         return tl::nullopt;
     }
 
-    if (o_ptr->number <= 1) {
-        return tl::make_optional<SelectionResult>(o_ptr, i_idx, 1);
+    if (item->number <= 1) {
+        return tl::make_optional<SelectionResult>(item, i_idx, 1);
     }
 
-    const auto amt = input_quantity(o_ptr->number);
+    const auto amt = input_quantity(item->number);
     if (amt <= 0) {
         return tl::nullopt;
     }
 
-    return tl::make_optional<SelectionResult>(o_ptr, i_idx, amt);
+    return tl::make_optional<SelectionResult>(item, i_idx, amt);
 }
 
 /*!
  * @brief 一部職業で高位魔法書の破壊による経験値上昇の判定
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param destoryed_item 破壊したアイテム
  * return 魔法書の破壊によって経験値が入るならばTRUE
  */
-static bool decide_magic_book_exp(PlayerType *player_ptr, const ItemEntity &destroyed_item)
+static bool decide_magic_book_exp(CreatureEntity &creature, const ItemEntity &destroyed_item)
 {
-    if (PlayerRace(player_ptr).equals(PlayerRaceType::ANDROID)) {
+    if (CreatureRace(&creature).equals(PlayerRaceType::ANDROID)) {
         return false;
     }
 
-    PlayerClass pc(player_ptr);
+    CreatureClass pc(creature);
     const auto tval = destroyed_item.bi_key.tval();
     if (pc.equals(PlayerClassType::WARRIOR) || pc.equals(PlayerClassType::BERSERKER)) {
         return tval != ItemKindType::HISSATSU_BOOK;
@@ -129,21 +128,21 @@ static bool decide_magic_book_exp(PlayerType *player_ptr, const ItemEntity &dest
     }
 
     auto is_good_magic_realm = (tval == ItemKindType::LIFE_BOOK) || (tval == ItemKindType::CRUSADE_BOOK);
-    if (PlayerRealm(player_ptr).realm1().is_good_attribute()) {
+    if (PlayerRealm(creature).realm1().is_good_attribute()) {
         return !is_good_magic_realm;
     } else {
         return is_good_magic_realm;
     }
 }
 
-static void gain_exp_by_destroying_magic_book(PlayerType *player_ptr, const ItemEntity &destroyed_item)
+static void gain_exp_by_destroying_magic_book(CreatureEntity &creature, const ItemEntity &destroyed_item)
 {
-    const auto gain_expr = decide_magic_book_exp(player_ptr, destroyed_item);
-    if (!gain_expr || (player_ptr->exp >= PY_MAX_EXP)) {
+    const auto gain_expr = decide_magic_book_exp(creature, destroyed_item);
+    if (!gain_expr || (creature.get_exp() >= PY_MAX_EXP)) {
         return;
     }
 
-    auto tester_exp = player_ptr->max_exp / 20;
+    auto tester_exp = creature.get_max_exp() / 20;
     if (tester_exp > 10000) {
         tester_exp = 10000;
     }
@@ -157,10 +156,10 @@ static void gain_exp_by_destroying_magic_book(PlayerType *player_ptr, const Item
     }
 
     msg_print(_("更に経験を積んだような気がする。", "You feel more experienced."));
-    gain_exp(static_cast<CreatureEntity &>(*player_ptr), tester_exp * destroyed_item.number);
+    gain_exp(creature, tester_exp * destroyed_item.number);
 }
 
-static void process_destroy_magic_book(PlayerType *player_ptr, const ItemEntity &destroyed_item)
+static void process_destroy_magic_book(CreatureEntity &creature, const ItemEntity &destroyed_item)
 {
     const BaseitemKey &bi_key = destroyed_item.bi_key;
     if (!bi_key.is_high_level_book()) {
@@ -168,67 +167,67 @@ static void process_destroy_magic_book(PlayerType *player_ptr, const ItemEntity 
     }
 
     const auto tval = bi_key.tval();
-    gain_exp_by_destroying_magic_book(player_ptr, destroyed_item);
+    gain_exp_by_destroying_magic_book(creature, destroyed_item);
     if (tval == ItemKindType::LIFE_BOOK) {
-        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::UNLIFE, 1);
-        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::VITALITY, -1);
+        chg_virtue(creature, Virtue::UNLIFE, 1);
+        chg_virtue(creature, Virtue::VITALITY, -1);
     } else if (tval == ItemKindType::DEATH_BOOK) {
-        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::UNLIFE, -1);
-        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::VITALITY, 1);
+        chg_virtue(creature, Virtue::UNLIFE, -1);
+        chg_virtue(creature, Virtue::VITALITY, 1);
     }
 
     if ((destroyed_item.to_a != 0) || (destroyed_item.to_h != 0) || (destroyed_item.to_d != 0)) {
-        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::ENCHANT, -1);
+        chg_virtue(creature, Virtue::ENCHANT, -1);
     }
 
     if (object_value_real(&destroyed_item) > 30000) {
-        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::SACRIFICE, 2);
+        chg_virtue(creature, Virtue::SACRIFICE, 2);
     } else if (object_value_real(&destroyed_item) > 10000) {
-        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::SACRIFICE, 1);
+        chg_virtue(creature, Virtue::SACRIFICE, 1);
     }
 }
 
-static void exe_destroy_item(PlayerType *player_ptr, ItemEntity &destroying_item, short i_idx, int amount)
+static void exe_destroy_item(CreatureEntity &creature, ItemEntity &destroying_item, short i_idx, int amount)
 {
     auto destroyed_item = destroying_item.clone();
     destroyed_item.number = amount;
-    const auto item_name = describe_flavor(player_ptr, destroyed_item, 0);
+    const auto item_name = describe_flavor(creature, destroyed_item, 0);
     msg_format(_("%sを壊した。", "You destroy %s."), item_name.data());
     sound(SoundKind::DESTITEM);
     reduce_charges(&destroying_item, amount);
-    vary_item(player_ptr, i_idx, -amount);
-    process_destroy_magic_book(player_ptr, destroyed_item);
+    vary_item(creature, i_idx, -amount);
+    process_destroy_magic_book(creature, destroyed_item);
     if ((destroyed_item.to_a != 0) || (destroyed_item.to_d != 0) || (destroyed_item.to_h != 0)) {
-        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::HARMONY, 1);
+        chg_virtue(creature, Virtue::HARMONY, 1);
     }
 
     if (i_idx >= INVEN_MAIN_HAND) {
-        calc_android_exp(player_ptr);
+        calc_android_exp(creature);
     }
 }
 
 /*!
  * @brief アイテムを破壊するコマンドのメインルーチン / Destroy an item
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
-void do_cmd_destroy(PlayerType *player_ptr)
+void do_cmd_destroy(CreatureEntity &creature)
 {
-    PlayerClass(player_ptr).break_samurai_stance({ SamuraiStanceType::MUSOU });
+    CreatureClass(creature).break_samurai_stance({ SamuraiStanceType::MUSOU });
 
-    const auto selection_result = select_destroying_item(player_ptr, (command_arg > 0));
+    const auto selection_result = select_destroying_item(creature, (command_arg > 0));
     if (!selection_result) {
         return;
     }
 
-    const auto &[o_ptr, i_idx, amt] = *selection_result;
-    PlayerEnergy energy(player_ptr);
+    const auto &[item, i_idx, amt] = *selection_result;
+    PlayerEnergy energy(creature);
     energy.set_player_turn_energy(100);
-    if (!can_player_destroy_object(o_ptr)) {
+    if (!can_player_destroy_object(item.get())) {
         energy.reset_player_turn();
-        const auto item_name = describe_flavor(player_ptr, *o_ptr, 0);
+        const auto item_name = describe_flavor(creature, *item, 0);
         msg_format(_("%sは破壊不可能だ。", "You cannot destroy %s."), item_name.data());
         return;
     }
 
-    exe_destroy_item(player_ptr, *o_ptr, i_idx, amt);
+    exe_destroy_item(creature, *item, i_idx, amt);
 }

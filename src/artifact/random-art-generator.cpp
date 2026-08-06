@@ -30,8 +30,8 @@
 #include "perception/object-perception.h"
 #include "sv-definition/sv-weapon-types.h"
 #include "system/baseitem/baseitem-definition.h"
+#include "system/creature-entity.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
@@ -71,54 +71,47 @@ static bool weakening_artifact(ItemEntity *o_ptr)
     return false;
 }
 
-static void set_artifact_bias(PlayerType *player_ptr, ItemEntity *o_ptr, int *warrior_artifact_bias)
+static void set_artifact_bias(CreatureEntity &creature, ItemEntity *o_ptr, int *warrior_artifact_bias)
 {
-    switch (player_ptr->pclass) {
-    case PlayerClassType::WARRIOR:
-    case PlayerClassType::BERSERKER:
-    case PlayerClassType::ARCHER:
-    case PlayerClassType::SAMURAI:
-    case PlayerClassType::CAVALRY:
-    case PlayerClassType::SMITH:
-        o_ptr->artifact_bias = RandomArtifactBias::WARRIOR;
-        break;
-    case PlayerClassType::MAGE:
-    case PlayerClassType::HIGH_MAGE:
-    case PlayerClassType::SORCERER:
-    case PlayerClassType::MAGIC_EATER:
-    case PlayerClassType::BLUE_MAGE:
-        o_ptr->artifact_bias = RandomArtifactBias::MAGE;
-        break;
-    case PlayerClassType::PRIEST:
-        o_ptr->artifact_bias = RandomArtifactBias::PRIESTLY;
-        break;
-    case PlayerClassType::ROGUE:
-    case PlayerClassType::NINJA:
-        o_ptr->artifact_bias = RandomArtifactBias::ROGUE;
-        *warrior_artifact_bias = 25;
-        break;
-    case PlayerClassType::RANGER:
-    case PlayerClassType::SNIPER:
-        o_ptr->artifact_bias = RandomArtifactBias::RANGER;
-        *warrior_artifact_bias = 30;
-        break;
-    case PlayerClassType::PALADIN:
-        o_ptr->artifact_bias = RandomArtifactBias::PRIESTLY;
-        *warrior_artifact_bias = 40;
-        break;
-    case PlayerClassType::WARRIOR_MAGE:
-    case PlayerClassType::RED_MAGE:
-        o_ptr->artifact_bias = RandomArtifactBias::MAGE;
-        *warrior_artifact_bias = 40;
-        break;
-    case PlayerClassType::CHAOS_WARRIOR:
-        o_ptr->artifact_bias = RandomArtifactBias::CHAOS;
-        *warrior_artifact_bias = 40;
-        break;
-    case PlayerClassType::MONK:
-    case PlayerClassType::FORCETRAINER:
-        o_ptr->artifact_bias = RandomArtifactBias::PRIESTLY;
-        break;
+    struct BiasConfig {
+        RandomArtifactBias bias;
+        int warrior_bonus;
+    };
+
+    const std::unordered_map<PlayerClassType, BiasConfig> class_bias_map = {
+        { PlayerClassType::WARRIOR, { RandomArtifactBias::WARRIOR, 0 } },
+        { PlayerClassType::BERSERKER, { RandomArtifactBias::WARRIOR, 0 } },
+        { PlayerClassType::ARCHER, { RandomArtifactBias::WARRIOR, 0 } },
+        { PlayerClassType::SAMURAI, { RandomArtifactBias::WARRIOR, 0 } },
+        { PlayerClassType::CAVALRY, { RandomArtifactBias::WARRIOR, 0 } },
+        { PlayerClassType::SMITH, { RandomArtifactBias::WARRIOR, 0 } },
+        { PlayerClassType::MAGE, { RandomArtifactBias::MAGE, 0 } },
+        { PlayerClassType::HIGH_MAGE, { RandomArtifactBias::MAGE, 0 } },
+        { PlayerClassType::SORCERER, { RandomArtifactBias::MAGE, 0 } },
+        { PlayerClassType::MAGIC_EATER, { RandomArtifactBias::MAGE, 0 } },
+        { PlayerClassType::BLUE_MAGE, { RandomArtifactBias::MAGE, 0 } },
+        { PlayerClassType::PRIEST, { RandomArtifactBias::PRIESTLY, 0 } },
+        { PlayerClassType::ROGUE, { RandomArtifactBias::ROGUE, 25 } },
+        { PlayerClassType::NINJA, { RandomArtifactBias::ROGUE, 25 } },
+        { PlayerClassType::RANGER, { RandomArtifactBias::RANGER, 30 } },
+        { PlayerClassType::SNIPER, { RandomArtifactBias::RANGER, 30 } },
+        { PlayerClassType::PALADIN, { RandomArtifactBias::PRIESTLY, 40 } },
+        { PlayerClassType::WARRIOR_MAGE, { RandomArtifactBias::MAGE, 40 } },
+        { PlayerClassType::RED_MAGE, { RandomArtifactBias::MAGE, 40 } },
+        { PlayerClassType::CHAOS_WARRIOR, { RandomArtifactBias::CHAOS, 40 } },
+        { PlayerClassType::MONK, { RandomArtifactBias::PRIESTLY, 0 } },
+        { PlayerClassType::FORCETRAINER, { RandomArtifactBias::PRIESTLY, 0 } },
+        { PlayerClassType::BEASTMASTER, { RandomArtifactBias::CHR, 50 } },
+    };
+
+    auto it = class_bias_map.find(creature.pclass);
+    if (it != class_bias_map.end()) {
+        o_ptr->artifact_bias = it->second.bias;
+        *warrior_artifact_bias = it->second.warrior_bonus;
+        return;
+    }
+
+    switch (creature.pclass) {
     case PlayerClassType::MINDCRAFTER:
     case PlayerClassType::BARD:
         if (randint1(5) > 2) {
@@ -135,31 +128,22 @@ static void set_artifact_bias(PlayerType *player_ptr, ItemEntity *o_ptr, int *wa
             o_ptr->artifact_bias = RandomArtifactBias::RANGER;
         }
         break;
-    case PlayerClassType::BEASTMASTER:
-        o_ptr->artifact_bias = RandomArtifactBias::CHR;
-        *warrior_artifact_bias = 50;
-        break;
     case PlayerClassType::MIRROR_MASTER:
-        if (randint1(4) > 1) {
-            o_ptr->artifact_bias = RandomArtifactBias::MAGE;
-        } else {
-            o_ptr->artifact_bias = RandomArtifactBias::ROGUE;
-        }
+        o_ptr->artifact_bias = (randint1(4) > 1) ? RandomArtifactBias::MAGE : RandomArtifactBias::ROGUE;
         break;
     case PlayerClassType::ELEMENTALIST:
         o_ptr->artifact_bias = one_in_(2) ? RandomArtifactBias::MAGE : RandomArtifactBias::INT;
         break;
-
     default:
         break;
     }
 }
 
-static void decide_warrior_bias(PlayerType *player_ptr, ItemEntity *o_ptr, const bool a_scroll)
+static void decide_warrior_bias(CreatureEntity &creature, ItemEntity *o_ptr, const bool a_scroll)
 {
     int warrior_artifact_bias = 0;
     if (a_scroll && one_in_(4)) {
-        set_artifact_bias(player_ptr, o_ptr, &warrior_artifact_bias);
+        set_artifact_bias(creature, o_ptr, &warrior_artifact_bias);
     }
 
     if (a_scroll && (randint1(100) <= warrior_artifact_bias)) {
@@ -200,7 +184,7 @@ static int decide_random_art_power(const bool a_cursed)
     return powers;
 }
 
-static void invest_powers(PlayerType *player_ptr, ItemEntity *o_ptr, int *powers, bool *has_pval, const bool a_cursed)
+static void invest_powers(ItemEntity *o_ptr, int *powers, bool *has_pval, const bool a_cursed)
 {
     const auto &world = AngbandWorld::get_instance();
     const auto max_type = o_ptr->is_weapon_ammo() ? 7 : 5;
@@ -233,7 +217,7 @@ static void invest_powers(PlayerType *player_ptr, ItemEntity *o_ptr, int *powers
 
             break;
         case 5:
-            random_misc(player_ptr, o_ptr);
+            random_misc(o_ptr);
             break;
         case 6:
         case 7:
@@ -269,7 +253,6 @@ static void strengthen_pval(ItemEntity *o_ptr)
 
 /*!
  * @brief 防具ならばAC修正、武具なら殺戮修正を付与する
- * @param player_ptr プレイヤーへの参照ポインタ
  * @param o_ptr ランダムアーティファクトを示すアイテムへの参照ポインタ
  */
 static void invest_positive_modified_value(ItemEntity *o_ptr)
@@ -292,7 +275,6 @@ static void invest_positive_modified_value(ItemEntity *o_ptr)
 
 /*!
  * @brief 防具のAC修正が高すぎた場合に弱化させる
- * @param player_ptr プレイヤーへの参照ポインタ
  * @param o_ptr ランダムアーティファクトを示すアイテムへの参照ポインタ
  */
 static void invest_negative_modified_value(ItemEntity *o_ptr)
@@ -381,18 +363,18 @@ static int decide_random_art_power_level(ItemEntity *o_ptr, const bool a_cursed,
     return 3;
 }
 
-static std::string name_unnatural_random_artifact(PlayerType *player_ptr, ItemEntity *o_ptr, const bool a_scroll, const int power_level)
+static std::string name_unnatural_random_artifact(CreatureEntity &creature, ItemEntity *o_ptr, const bool a_scroll, const int power_level)
 {
     if (!a_scroll) {
         return get_random_name(*o_ptr, o_ptr->is_protector(), power_level);
     }
 
     constexpr auto prompt = _("このアーティファクトを何と名付けますか？", "What do you want to call the artifact? ");
-    object_aware(player_ptr, *o_ptr);
+    object_aware(creature, *o_ptr);
     o_ptr->mark_as_known();
-    o_ptr->ident |= IDENT_FULL_KNOWN;
+    o_ptr->ident.set(IdentificationFlag::FULL_KNOWN);
     o_ptr->randart_name.reset();
-    (void)screen_object(player_ptr, *o_ptr, 0L);
+    (void)screen_object(creature, *o_ptr, 0L);
 
     auto wrap_name = [](const auto &name) {
         std::stringstream ss;
@@ -412,10 +394,10 @@ static std::string name_unnatural_random_artifact(PlayerType *player_ptr, ItemEn
 }
 
 static void generate_unnatural_random_artifact(
-    PlayerType *player_ptr, ItemEntity *o_ptr, const bool a_scroll, const int power_level, const int max_powers, const int total_flags)
+    CreatureEntity &creature, ItemEntity *o_ptr, const bool a_scroll, const int power_level, const int max_powers, const int total_flags)
 {
-    o_ptr->randart_name = name_unnatural_random_artifact(player_ptr, o_ptr, a_scroll, power_level);
-    msg_format_wizard(player_ptr, CHEAT_OBJECT,
+    o_ptr->randart_name = name_unnatural_random_artifact(creature, o_ptr, a_scroll, power_level);
+    msg_format_wizard(creature, CHEAT_OBJECT,
         _("パワー %d で 価値 %d のランダムアーティファクト生成 バイアスは「%s」", "Random artifact generated - Power:%d Value:%d Bias:%s."), max_powers,
         total_flags, ARTIFACT_BIAS_NAMES.at(o_ptr->artifact_bias).data());
     static constexpr auto flags = {
@@ -430,12 +412,12 @@ static void generate_unnatural_random_artifact(
 /*!
  * @brief ランダムアーティファクト生成のメインルーチン
  * @details 既に生成が済んでいるオブジェクトの構造体を、アーティファクトとして強化する。
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param o_ptr 対象のオブジェクト構造体ポインタ
  * @param a_scroll アーティファクト生成の巻物上の処理。呪いのアーティファクトが生成対象外となる。
  * @return 常にTRUE(1)を返す
  */
-bool become_random_artifact(PlayerType *player_ptr, ItemEntity *o_ptr, bool a_scroll)
+bool become_random_artifact(CreatureEntity &creature, ItemEntity *o_ptr, bool a_scroll)
 {
     o_ptr->artifact_bias = RandomArtifactBias::NONE;
     o_ptr->fa_id = FixedArtifactId::NONE;
@@ -443,12 +425,12 @@ bool become_random_artifact(PlayerType *player_ptr, ItemEntity *o_ptr, bool a_sc
     o_ptr->art_flags |= o_ptr->get_baseitem().flags;
 
     bool has_pval = o_ptr->pval != 0;
-    decide_warrior_bias(player_ptr, o_ptr, a_scroll);
+    decide_warrior_bias(creature, o_ptr, a_scroll);
 
     bool a_cursed = decide_random_art_cursed(a_scroll, o_ptr);
     int powers = decide_random_art_power(a_cursed);
     int max_powers = powers;
-    invest_powers(player_ptr, o_ptr, &powers, &has_pval, a_cursed);
+    invest_powers(o_ptr, &powers, &has_pval, a_cursed);
     if (has_pval) {
         strengthen_pval(o_ptr);
     }
@@ -461,7 +443,7 @@ bool become_random_artifact(PlayerType *player_ptr, ItemEntity *o_ptr, bool a_sc
 
     int32_t total_flags = flag_cost(o_ptr, o_ptr->pval);
     if (a_cursed) {
-        curse_artifact(player_ptr, o_ptr);
+        curse_artifact(creature, o_ptr);
     }
 
     constexpr auto activation_chance = 3;
@@ -478,15 +460,15 @@ bool become_random_artifact(PlayerType *player_ptr, ItemEntity *o_ptr, bool a_sc
     reset_flags_poison_needle(o_ptr);
     int power_level = decide_random_art_power_level(o_ptr, a_cursed, total_flags);
     constexpr auto chance_avoid_weakening = 6;
-    while (has_extreme_damage_rate(player_ptr, o_ptr) && !one_in_(chance_avoid_weakening)) {
+    while (has_extreme_damage_rate(creature, o_ptr) && !one_in_(chance_avoid_weakening)) {
         weakening_artifact(o_ptr);
     }
 
-    generate_unnatural_random_artifact(player_ptr, o_ptr, a_scroll, power_level, max_powers, total_flags);
+    generate_unnatural_random_artifact(creature, o_ptr, a_scroll, power_level, max_powers, total_flags);
 
     if (a_scroll) {
-        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::INDIVIDUALISM, 2);
-        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::ENCHANT, 5);
+        chg_virtue(creature, Virtue::INDIVIDUALISM, 2);
+        chg_virtue(creature, Virtue::ENCHANT, 5);
     }
 
     return true;

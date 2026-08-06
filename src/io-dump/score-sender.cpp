@@ -1,8 +1,12 @@
 #include "io-dump/score-sender.h"
 #include "io-dump/player-status-dump-json.h"
-#include "system/player-type-definition.h"
+#include "system/creature-entity.h"
 #include "term/screen-processor.h"
 #include "view/display-messages.h"
+
+#include <string>
+
+#ifdef WORLD_SCORE
 
 // libcurl static library definition for Windows
 #ifdef WINDOWS
@@ -12,9 +16,6 @@
 #endif
 
 #include <curl/curl.h>
-#include <string>
-
-#ifdef WORLD_SCORE
 
 // デフォルトのスコアサーバーURL
 static std::string score_server_url = "http://localhost:3000/submit";
@@ -53,16 +54,16 @@ void set_score_server_url(const std::string &url)
 
 /*!
  * @brief スコアをワールドスコアサーバーに送信する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return 成功した場合true、失敗した場合false
  * @details
  * libcurlを使用してHTTP POSTリクエストでJSONデータをスコアサーバーに送信する。
  * サーバーへの送信に失敗してもゲームは続行される（エラーメッセージのみ表示）。
  */
-bool send_score_json(PlayerType *player_ptr)
+bool send_score_json(CreatureEntity &creature)
 {
     // JSON文字列を生成
-    std::string json_data = dump_player_status_json(player_ptr);
+    std::string json_data = dump_player_status_json(creature);
 
     // curlの初期化
     CURL *curl = curl_easy_init();

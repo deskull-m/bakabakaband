@@ -2,3 +2,4 @@
 
 struct lore_type;
 void display_monster_blows(lore_type *lore_ptr);
+void display_monster_melee_summary_line(lore_type *lore_ptr);

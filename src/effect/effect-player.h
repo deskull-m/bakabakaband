@@ -4,16 +4,16 @@
 #include "system/angband.h"
 #include <tl/optional.hpp>
 
-class MonsterEntity;
+class CreatureEntity;
 class FallOffHorseEffect;
 class FloorType;
 class EffectPlayerType {
 public:
     EffectPlayerType(const FloorType &floor, short src_idx, int dam, AttributeType attribute, BIT_FLAGS flag);
     DEPTH rlev; // モンスターのレベル (但し0のモンスターは1になる).
-    MonsterEntity *m_ptr;
+    CreatureEntity *m_ptr;
     short src_idx;
-    const MonsterEntity *src_ptr;
+    const CreatureEntity *src_ptr;
     std::string killer;
     std::string m_name;
     int get_damage;
@@ -28,9 +28,8 @@ public:
 
 struct ProjectResult;
 class CapturedMonsterType;
-class PlayerType;
 using project_func = ProjectResult (*)(
-    PlayerType *player_ptr, MONSTER_IDX src_idx, POSITION rad, POSITION y, POSITION x, int dam, AttributeType typ, BIT_FLAGS flag, tl::optional<CapturedMonsterType *> cap_mon_ptr);
+    CreatureEntity &creature, MONSTER_IDX src_idx, POSITION rad, POSITION y, POSITION x, int dam, AttributeType typ, BIT_FLAGS flag, tl::optional<CapturedMonsterType *> cap_mon_ptr);
 
-bool affect_player(MONSTER_IDX src_idx, PlayerType *player_ptr, concptr src_name, int r, POSITION y, POSITION x, int dam, AttributeType typ, BIT_FLAGS flag,
+bool affect_player(MONSTER_IDX src_idx, CreatureEntity &creature, concptr src_name, int r, POSITION y, POSITION x, int dam, AttributeType typ, BIT_FLAGS flag,
     FallOffHorseEffect &fall_off_horse_effect, project_func project);

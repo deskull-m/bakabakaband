@@ -19,28 +19,26 @@
 #include "monster/monster-status.h"
 #include "monster/smart-learn-types.h"
 #include "player/player-status-flags.h"
+#include "system/creature-entity.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
-#include "system/player-type-definition.h"
 #include "system/terrain/terrain-definition.h"
 #include "system/terrain/terrain-list.h"
-#include "timed-effect/timed-effects.h"
 #include "util/bit-flags-calculator.h"
 #include "util/string-processor.h"
 
 /*!
  * @brief モンスターが地形を踏破できるかどうかを返す
  * Check if monster can cross terrain
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature_ptr クリーチャーへの参照ポインタ
  * @param feat 地形ID
  * @param r_ptr モンスター種族構造体の参照ポインタ
  * @param mode オプション
  * @return 踏破可能ならばTRUEを返す
  */
-bool monster_can_cross_terrain(PlayerType *player_ptr, FEAT_IDX feat, const MonraceDefinition &monrace, BIT_FLAGS16 mode)
+bool monster_can_cross_terrain(CreatureEntity &creature, FEAT_IDX feat, const MonraceDefinition &monrace, BIT_FLAGS16 mode)
 {
     const auto &terrain = TerrainList::get_instance().get_terrain(feat);
     if (terrain.flags.has(TerrainCharacteristics::PATTERN)) {
@@ -62,7 +60,7 @@ bool monster_can_cross_terrain(PlayerType *player_ptr, FEAT_IDX feat, const Monr
         return true;
     }
     if (terrain.flags.has(TerrainCharacteristics::CAN_PASS)) {
-        if (monrace.feature_flags.has(MonsterFeatureType::PASS_WALL) && (!(mode & CEM_RIDING) || has_pass_wall(player_ptr))) {
+        if (monrace.feature_flags.has(MonsterFeatureType::PASS_WALL) && (!(mode & CEM_RIDING) || creature.has_pass_wall())) {
             return true;
         }
     }
@@ -148,25 +146,25 @@ bool monster_can_cross_terrain(PlayerType *player_ptr, FEAT_IDX feat, const Monr
 /*!
  * @brief 指定された座標の地形をモンスターが踏破できるかどうかを返す
  * Strictly check if monster can enter the grid
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature_ptr クリーチャーへの参照ポインタ
  * @param y 地形のY座標
  * @param x 地形のX座標
  * @param r_ptr モンスター種族構造体の参照ポインタ
  * @param mode オプション
  * @return 踏破可能ならばTRUEを返す
  */
-bool monster_can_enter(PlayerType *player_ptr, POSITION y, POSITION x, const MonraceDefinition &monrace, BIT_FLAGS16 mode)
+bool monster_can_enter(CreatureEntity &creature, POSITION y, POSITION x, const MonraceDefinition &monrace, BIT_FLAGS16 mode)
 {
     const Pos2D pos(y, x);
-    auto &grid = player_ptr->current_floor_ptr->get_grid(pos);
-    if (player_ptr->is_located_at(pos)) {
+    auto &grid = creature.get_floor()->get_grid(pos);
+    if (creature.is_located_at(pos)) {
         return false;
     }
     if (grid.has_monster()) {
         return false;
     }
 
-    return monster_can_cross_terrain(player_ptr, grid.feat, monrace, mode);
+    return monster_can_cross_terrain(creature, grid.feat, monrace, mode);
 }
 
 static uint8_t get_recial_sub_align(const MonraceDefinition &monrace)
@@ -183,24 +181,24 @@ static uint8_t get_recial_sub_align(const MonraceDefinition &monrace)
 
 /*!
  * @brief モンスターがプレイヤーに対して敵意を抱くかどうかを返す
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param pa_good プレイヤーの善傾向値
  * @param pa_evil プレイヤーの悪傾向値
  * @param monrace モンスター種族情報の参照
  * @return プレイヤーに敵意を持つならばtrueを返す
  */
-bool monster_has_hostile_to_player(PlayerType *player_ptr, int pa_good, int pa_evil, const MonraceDefinition &monrace)
+bool monster_has_hostile_to_player(CreatureEntity &creature, int pa_good, int pa_evil, const MonraceDefinition &monrace)
 {
     byte sub_align1 = SUB_ALIGN_NEUTRAL;
-    if (player_ptr->alignment >= pa_good) {
+    if (creature.alignment >= pa_good) {
         sub_align1 |= SUB_ALIGN_GOOD;
     }
-    if (player_ptr->alignment <= pa_evil) {
+    if (creature.alignment <= pa_evil) {
         sub_align1 |= SUB_ALIGN_EVIL;
     }
 
     const auto sub_align2 = get_recial_sub_align(monrace);
-    return MonsterEntity::check_sub_alignments(sub_align1, sub_align2);
+    return CreatureEntity::check_sub_alignments(sub_align1, sub_align2);
 }
 
 /*!
@@ -210,37 +208,55 @@ bool monster_has_hostile_to_player(PlayerType *player_ptr, int pa_good, int pa_e
  * @return monster_other で指定したモンスターに敵意を持つならばtrueを返す
  * @details アライアンス未所属（NONE）として判定する
  */
-bool monster_has_hostile_to_other_monster(const MonsterEntity &monster_other, const MonraceDefinition &monrace)
+bool monster_has_hostile_to_other_monster(const CreatureEntity &creature_other, const MonraceDefinition &monrace)
 {
-    return monster_has_hostile_to_other_monster(monster_other, monrace, AllianceType::NONE);
+    return monster_has_hostile_to_other_monster(creature_other, monrace, AllianceType::NONE);
 }
 
 /*!
  * @brief モンスターが他のモンスターに対して敵意を抱くかどうかを返す（アライアンス指定版）
- * @param monster_other 敵意を抱くか調べる他のモンスターの参照
+ * @param creature_other 敵意を抱くか調べる他のクリーチャーの参照
  * @param monrace モンスター種族情報の参照
  * @param alliance_id アライアンスID
- * @return monster_other で指定したモンスターに敵意を持つならばtrueを返す
+ * @return creature_other で指定したクリーチャーに敵意を持つならばtrueを返す
  */
-bool monster_has_hostile_to_other_monster(const MonsterEntity &monster_other, const MonraceDefinition &monrace, AllianceType alliance_id)
+bool monster_has_hostile_to_other_monster(const CreatureEntity &creature_other, const MonraceDefinition &monrace, AllianceType alliance_id)
 {
     const auto &alliance = alliance_list.at(alliance_id);
-    return alliance->is_hostile_to(monster_other, monrace);
+    return alliance->is_hostile_to(creature_other, monrace);
 }
 
-bool is_original_ap_and_seen(PlayerType *player_ptr, const MonsterEntity &monster)
+/*!
+ * @brief サブアライメント値と種族定義に基づく敵意判定
+ * @param sub_align 確認対象のサブアライメント値
+ * @param monrace モンスター種族情報の参照
+ * @return sub_align のクリーチャーが monrace に対して敵意を持つならtrue
+ */
+bool monster_has_hostile_sub_align(uint8_t sub_align, const MonraceDefinition &monrace)
 {
-    return monster.ml && !player_ptr->effects()->hallucination().is_hallucinated() && monster.is_original_ap();
+    uint8_t sub_align2 = SUB_ALIGN_NEUTRAL;
+    if (monrace.kind_flags.has(MonsterKindType::EVIL)) {
+        sub_align2 |= SUB_ALIGN_EVIL;
+    }
+    if (monrace.kind_flags.has(MonsterKindType::GOOD)) {
+        sub_align2 |= SUB_ALIGN_GOOD;
+    }
+    return CreatureEntity::check_sub_alignments(sub_align, sub_align2);
+}
+
+bool is_original_ap_and_seen(CreatureEntity &subject, const CreatureEntity &creature)
+{
+    return creature.is_visible_on_map() && !subject.is_hallucinated() && creature.is_original_ap();
 }
 
 /*!
  * @brief モンスターIDを取り、モンスター名をm_nameに代入する /
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param m_idx モンスターID
  * @return std::string モンスター名
  */
-std::string monster_name(PlayerType *player_ptr, MONSTER_IDX m_idx)
+std::string monster_name(CreatureEntity &creature, MONSTER_IDX m_idx)
 {
-    const auto &monster = player_ptr->current_floor_ptr->m_list[m_idx];
-    return monster_desc(player_ptr, monster, 0x00);
+    const auto &monster = creature.get_floor()->get_monster(m_idx);
+    return monster_desc(creature, monster, 0x00);
 }

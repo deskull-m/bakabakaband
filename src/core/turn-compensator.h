@@ -2,5 +2,5 @@
 
 #include "system/angband.h"
 
-class PlayerType;
-void prevent_turn_overflow(PlayerType *player_ptr);
+class CreatureEntity;
+void prevent_turn_overflow(CreatureEntity &creature);

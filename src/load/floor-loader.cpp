@@ -25,13 +25,12 @@
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/player-type-definition.h"
 #include "util/angband-files.h"
 #include "util/finalizer.h"
 
 /*!
  * @brief 保存されたフロアを読み込む / Read the saved floor
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param sf_ptr 最後に保存されたフロアへの参照ポインタ
  * @return info読み込みエラーコード
  * @details
@@ -45,11 +44,11 @@
  * The monsters/objects must be loaded in the same order
  * that they were stored, since the actual indexes matter.
  */
-errr rd_saved_floor(PlayerType *player_ptr, saved_floor_type *sf_ptr)
+errr rd_saved_floor(CreatureEntity &creature, saved_floor_type *sf_ptr)
 {
-    auto &floor = *player_ptr->current_floor_ptr;
-    clear_cave(player_ptr);
-    player_ptr->x = player_ptr->y = 0;
+    auto &floor = *creature.get_floor();
+    clear_cave(creature);
+    creature.x = creature.y = 0;
 
     if (!sf_ptr) {
         floor.dun_level = rd_s16b();
@@ -89,8 +88,8 @@ errr rd_saved_floor(PlayerType *player_ptr, saved_floor_type *sf_ptr)
     floor.base_level = rd_s16b();
     floor.num_repro = rd_s16b();
 
-    player_ptr->y = rd_u16b();
-    player_ptr->x = rd_u16b();
+    creature.y = rd_u16b();
+    creature.x = rd_u16b();
 
     floor.height = rd_s16b();
     floor.width = rd_s16b();
@@ -165,6 +164,14 @@ errr rd_saved_floor(PlayerType *player_ptr, saved_floor_type *sf_ptr)
 
         auto &item = *floor.o_list[item_idx];
         item_loader->rd_item(&item);
+        // [フェーズ A-4b] held_m_idx 付きアイテムは旧 hold_o_idx_list 経路の遺物。
+        // フェーズ A-4b 以降はモンスター所持アイテムは monster.inventory[] に
+        // 一本化されているため、ここで読み込まれた floor.o_list 上の重複は
+        // wipe して破棄する (pre-A-1 の本物に対応する場合は失われるが許容)
+        if (item.held_m_idx != 0) {
+            item.wipe();
+            continue;
+        }
         auto &list = get_o_idx_list_contains(floor, item_idx);
         list.add(floor, item_idx, item.stack_idx);
     }
@@ -183,7 +190,7 @@ errr rd_saved_floor(PlayerType *player_ptr, saved_floor_type *sf_ptr)
 
         auto &monster = floor.m_list[m_idx];
         monster_loader->rd_monster(monster);
-        monster.current_floor_ptr = player_ptr->current_floor_ptr;
+        monster.set_floor(creature.get_floor());
         auto &grid = floor.get_grid(monster.get_position());
         grid.m_idx = m_idx;
         monster.get_real_monrace().increment_current_numbers();
@@ -194,11 +201,11 @@ errr rd_saved_floor(PlayerType *player_ptr, saved_floor_type *sf_ptr)
 
 /*!
  * @brief 保存フロア読み込みのサブ関数 / Actually load and verify a floor save data
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param sf_ptr 保存フロア読み込み先
  * @return 成功したらtrue
  */
-static bool load_floor_aux(PlayerType *player_ptr, saved_floor_type *sf_ptr)
+static bool load_floor_aux(CreatureEntity &creature, saved_floor_type *sf_ptr)
 {
     load_xor_byte = 0;
     strip_bytes(1);
@@ -214,7 +221,7 @@ static bool load_floor_aux(PlayerType *player_ptr, saved_floor_type *sf_ptr)
         return false;
     }
 
-    if (rd_saved_floor(player_ptr, sf_ptr)) {
+    if (rd_saved_floor(creature, sf_ptr)) {
         return false;
     }
     auto n_v_check = v_check;
@@ -229,12 +236,12 @@ static bool load_floor_aux(PlayerType *player_ptr, saved_floor_type *sf_ptr)
 
 /*!
  * @brief 一時保存フロア情報を読み込む / Attempt to load the temporarily saved-floor data
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param sf_ptr 保存フロア読み込み先
  * @param mode オプション
  * @return 成功したらtrue
  */
-bool load_floor(PlayerType *player_ptr, saved_floor_type *sf_ptr, BIT_FLAGS mode)
+bool load_floor(CreatureEntity &creature, saved_floor_type *sf_ptr, BIT_FLAGS mode)
 {
     const auto finalizer = util::make_finalizer([backup = loading_character_encoding]() {
         loading_character_encoding = backup;
@@ -285,7 +292,7 @@ bool load_floor(PlayerType *player_ptr, saved_floor_type *sf_ptr, BIT_FLAGS mode
     }
 
     if (is_save_successful) {
-        is_save_successful = load_floor_aux(player_ptr, sf_ptr);
+        is_save_successful = load_floor_aux(creature, sf_ptr);
         if (ferror(loading_savefile)) {
             is_save_successful = false;
         }

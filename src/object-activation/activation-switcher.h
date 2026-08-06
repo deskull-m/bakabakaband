@@ -1,8 +1,11 @@
 #pragma once
 
+#include <memory>
 #include <string_view>
+#include <utility>
 
 enum class RandomArtActType : short;
+class CreatureEntity;
 class ItemEntity;
 class PlayerType;
-bool switch_activation(PlayerType *player_ptr, ItemEntity **o_ptr_ptr, const RandomArtActType index, std::string_view name);
+std::pair<bool, std::shared_ptr<ItemEntity>> switch_activation(CreatureEntity &creature, ItemEntity &item, const RandomArtActType index, std::string_view name);

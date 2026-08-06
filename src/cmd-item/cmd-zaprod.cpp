@@ -30,42 +30,42 @@
 #include "status/experience.h"
 #include "status/shape-changer.h"
 #include "sv-definition/sv-rod-types.h"
+#include "system/creature-entity.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "view/display-messages.h"
 #include "world/world.h"
 
 /*!
  * @brief ロッドの効果を発動する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param sval オブジェクトのsval
  * @param dir 発動目標の方向ID
  * @param use_charge チャージを消費したかどうかを返す参照ポインタ
  * @param powerful 強力発動上の処理ならばTRUE
  * @return 発動により効果内容が確定したならばTRUEを返す
  */
-int rod_effect(PlayerType *player_ptr, int sval, const Direction &dir, bool *use_charge, bool powerful)
+int rod_effect(CreatureEntity &creature, int sval, const Direction &dir, bool *use_charge, bool powerful)
 {
     int ident = false;
-    PLAYER_LEVEL lev = powerful ? player_ptr->level * 2 : player_ptr->level;
+    PLAYER_LEVEL lev = powerful ? creature.get_level() * 2 : creature.get_level();
     POSITION detect_rad = powerful ? DETECT_RAD_DEFAULT * 3 / 2 : DETECT_RAD_DEFAULT;
     POSITION rad = powerful ? 3 : 2;
 
-    player_ptr->plus_incident_tree("ZAP_ROD", 1);
+    creature.plus_incident_tree("ZAP_ROD", 1);
 
     switch (sval) {
     case SV_ROD_DETECT_TRAP: {
-        if (detect_traps(player_ptr, detect_rad, !dir)) {
+        if (detect_traps(creature, detect_rad, !dir)) {
             ident = true;
         }
         break;
     }
 
     case SV_ROD_DETECT_DOOR: {
-        if (detect_doors(player_ptr, detect_rad)) {
+        if (detect_doors(creature, detect_rad)) {
             ident = true;
         }
-        if (detect_stairs(player_ptr, detect_rad)) {
+        if (detect_stairs(creature, detect_rad)) {
             ident = true;
         }
         break;
@@ -73,11 +73,11 @@ int rod_effect(PlayerType *player_ptr, int sval, const Direction &dir, bool *use
 
     case SV_ROD_IDENTIFY: {
         if (powerful) {
-            if (!identify_fully(player_ptr, false)) {
+            if (!identify_fully(creature, false)) {
                 *use_charge = false;
             }
         } else {
-            if (!ident_spell(player_ptr, false)) {
+            if (!ident_spell(creature, false)) {
                 *use_charge = false;
             }
         }
@@ -86,7 +86,7 @@ int rod_effect(PlayerType *player_ptr, int sval, const Direction &dir, bool *use
     }
 
     case SV_ROD_RECALL: {
-        if (!recall_player(player_ptr, randint0(21) + 15)) {
+        if (!recall_player(creature, randint0(21) + 15)) {
             *use_charge = false;
         }
         ident = true;
@@ -94,66 +94,66 @@ int rod_effect(PlayerType *player_ptr, int sval, const Direction &dir, bool *use
     }
 
     case SV_ROD_ILLUMINATION: {
-        if (lite_area(player_ptr, Dice::roll(2, 8), (powerful ? 4 : 2))) {
+        if (lite_area(creature, Dice::roll(2, 8), (powerful ? 4 : 2))) {
             ident = true;
         }
         break;
     }
 
     case SV_ROD_MAPPING: {
-        map_area(player_ptr, powerful ? DETECT_RAD_MAP * 3 / 2 : DETECT_RAD_MAP);
+        map_area(creature, powerful ? DETECT_RAD_MAP * 3 / 2 : DETECT_RAD_MAP);
         ident = true;
         break;
     }
 
     case SV_ROD_DETECTION: {
-        detect_all(player_ptr, detect_rad);
+        detect_all(creature, detect_rad);
         ident = true;
         break;
     }
 
     case SV_ROD_PROBING: {
-        probing(player_ptr);
+        probing(creature);
         ident = true;
         break;
     }
 
     case SV_ROD_CURING: {
-        if (true_healing(player_ptr, 0)) {
+        if (true_healing(creature, 0)) {
             ident = true;
         }
-        if (set_berserk(player_ptr, 0, true)) {
+        if (set_berserk(creature, 0, true)) {
             ident = true;
         }
         break;
     }
 
     case SV_ROD_HEALING: {
-        if (cure_critical_wounds(player_ptr, powerful ? 750 : 500)) {
+        if (cure_critical_wounds(creature, powerful ? 750 : 500)) {
             ident = true;
         }
         break;
     }
 
     case SV_ROD_RESTORATION: {
-        if (restore_level(static_cast<CreatureEntity &>(*player_ptr))) {
+        if (restore_level(creature)) {
             ident = true;
         }
-        if (restore_all_status(player_ptr)) {
+        if (restore_all_status(creature)) {
             ident = true;
         }
         break;
     }
 
     case SV_ROD_SPEED: {
-        if (set_acceleration(player_ptr, randint1(30) + (powerful ? 30 : 15), false)) {
+        if (set_acceleration(creature, randint1(30) + (powerful ? 30 : 15), false)) {
             ident = true;
         }
         break;
     }
 
     case SV_ROD_PESTICIDE: {
-        if (dispel_monsters(player_ptr, powerful ? 8 : 4)) {
+        if (dispel_monsters(creature, powerful ? 8 : 4)) {
             ident = true;
         }
         break;
@@ -161,17 +161,17 @@ int rod_effect(PlayerType *player_ptr, int sval, const Direction &dir, bool *use
 
     case SV_ROD_TELEPORT_AWAY: {
         int distance = MAX_PLAYER_SIGHT * (powerful ? 8 : 5);
-        if (teleport_monster(player_ptr, dir, distance)) {
+        if (teleport_monster(creature, dir, distance)) {
             ident = true;
         }
         break;
     }
 
     case SV_ROD_DISARMING: {
-        if (disarm_trap(player_ptr, dir)) {
+        if (disarm_trap(creature, dir)) {
             ident = true;
         }
-        if (powerful && disarm_traps_touch(player_ptr)) {
+        if (powerful && disarm_traps_touch(creature)) {
             ident = true;
         }
         break;
@@ -180,103 +180,103 @@ int rod_effect(PlayerType *player_ptr, int sval, const Direction &dir, bool *use
     case SV_ROD_LITE: {
         int dam = Dice::roll((powerful ? 12 : 6), 8);
         msg_print(_("青く輝く光線が放たれた。", "A line of blue shimmering light appears."));
-        (void)lite_line(player_ptr, dir, dam);
+        (void)lite_line(creature, dir, dam);
         ident = true;
         break;
     }
 
     case SV_ROD_SLEEP_MONSTER: {
-        if (sleep_monster(player_ptr, dir, lev)) {
+        if (sleep_monster(creature, dir, lev)) {
             ident = true;
         }
         break;
     }
 
     case SV_ROD_SLOW_MONSTER: {
-        if (slow_monster(player_ptr, dir, lev)) {
+        if (slow_monster(creature, dir, lev)) {
             ident = true;
         }
         break;
     }
 
     case SV_ROD_HYPODYNAMIA: {
-        if (hypodynamic_bolt(player_ptr, dir, 70 + 3 * lev / 2)) {
+        if (hypodynamic_bolt(creature, dir, 70 + 3 * lev / 2)) {
             ident = true;
         }
         break;
     }
 
     case SV_ROD_POLYMORPH: {
-        if (poly_monster(player_ptr, dir, lev)) {
+        if (poly_monster(creature, dir, lev)) {
             ident = true;
         }
         break;
     }
 
     case SV_ROD_ACID_BOLT: {
-        fire_bolt_or_beam(player_ptr, 10, AttributeType::ACID, dir, Dice::roll(6 + lev / 7, 8));
+        fire_bolt_or_beam(creature, 10, AttributeType::ACID, dir, Dice::roll(6 + lev / 7, 8));
         ident = true;
         break;
     }
 
     case SV_ROD_ELEC_BOLT: {
-        fire_bolt_or_beam(player_ptr, 10, AttributeType::ELEC, dir, Dice::roll(4 + lev / 9, 8));
+        fire_bolt_or_beam(creature, 10, AttributeType::ELEC, dir, Dice::roll(4 + lev / 9, 8));
         ident = true;
         break;
     }
 
     case SV_ROD_FIRE_BOLT: {
-        fire_bolt_or_beam(player_ptr, 10, AttributeType::FIRE, dir, Dice::roll(7 + lev / 6, 8));
+        fire_bolt_or_beam(creature, 10, AttributeType::FIRE, dir, Dice::roll(7 + lev / 6, 8));
         ident = true;
         break;
     }
 
     case SV_ROD_COLD_BOLT: {
-        fire_bolt_or_beam(player_ptr, 10, AttributeType::COLD, dir, Dice::roll(5 + lev / 8, 8));
+        fire_bolt_or_beam(creature, 10, AttributeType::COLD, dir, Dice::roll(5 + lev / 8, 8));
         ident = true;
         break;
     }
 
     case SV_ROD_ACID_BALL: {
-        fire_ball(player_ptr, AttributeType::ACID, dir, 60 + lev, rad);
+        fire_ball(creature, AttributeType::ACID, dir, 60 + lev, rad);
         ident = true;
         break;
     }
 
     case SV_ROD_ELEC_BALL: {
-        fire_ball(player_ptr, AttributeType::ELEC, dir, 40 + lev, rad);
+        fire_ball(creature, AttributeType::ELEC, dir, 40 + lev, rad);
         ident = true;
         break;
     }
 
     case SV_ROD_FIRE_BALL: {
-        fire_ball(player_ptr, AttributeType::FIRE, dir, 70 + lev, rad);
+        fire_ball(creature, AttributeType::FIRE, dir, 70 + lev, rad);
         ident = true;
         break;
     }
 
     case SV_ROD_COLD_BALL: {
-        fire_ball(player_ptr, AttributeType::COLD, dir, 50 + lev, rad);
+        fire_ball(creature, AttributeType::COLD, dir, 50 + lev, rad);
         ident = true;
         break;
     }
 
     case SV_ROD_HAVOC: {
-        call_chaos(player_ptr);
+        call_chaos(creature);
         ident = true;
         break;
     }
 
     case SV_ROD_STONE_TO_MUD: {
         int dam = powerful ? 40 + randint1(60) : 20 + randint1(30);
-        if (wall_to_mud(player_ptr, dir, dam)) {
+        if (wall_to_mud(creature, dir, dam)) {
             ident = true;
         }
         break;
     }
 
     case SV_ROD_AGGRAVATE: {
-        aggravate_monsters(player_ptr, 0);
+        aggravate_monsters(creature, 0);
         ident = true;
         break;
     }
@@ -286,26 +286,26 @@ int rod_effect(PlayerType *player_ptr, int sval, const Direction &dir, bool *use
 
 /*!
  * @brief ロッドを使うコマンドのメインルーチン /
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
-void do_cmd_zap_rod(PlayerType *player_ptr)
+void do_cmd_zap_rod(CreatureEntity &creature)
 {
     if (AngbandWorld::get_instance().is_wild_mode()) {
         return;
     }
 
-    if (cmd_limit_arena(player_ptr)) {
+    if (cmd_limit_arena(creature)) {
         return;
     }
 
-    PlayerClass(player_ptr).break_samurai_stance({ SamuraiStanceType::MUSOU, SamuraiStanceType::KOUKIJIN });
+    CreatureClass(creature).break_samurai_stance({ SamuraiStanceType::MUSOU, SamuraiStanceType::KOUKIJIN });
 
     constexpr auto q = _("どのロッドを振りますか? ", "Zap which rod? ");
     constexpr auto s = _("使えるロッドがない。", "You have no rod to zap.");
-    short i_idx;
-    if (!choose_object(player_ptr, &i_idx, q, s, (USE_INVEN | USE_FLOOR), TvalItemTester(ItemKindType::ROD))) {
+    const auto &[item, i_idx] = choose_item(creature, q, s, (USE_INVEN | USE_FLOOR), TvalItemTester(ItemKindType::ROD));
+    if (!item) {
         return;
     }
 
-    ObjectZapRodEntity(player_ptr).execute(i_idx);
+    ObjectZapRodEntity(creature).execute(i_idx);
 }

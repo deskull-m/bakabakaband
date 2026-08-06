@@ -41,17 +41,17 @@
 #include "room/cave-filler.h"
 #include "room/door-definition.h"
 #include "room/lake-types.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/enums/terrain/terrain-tag.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
-#include "system/player-type-definition.h"
 #include "system/terrain/terrain-definition.h"
 #include "view/display-messages.h"
 
 /*!
  * @brief 1マスだけの部屋を作成し、上下左右いずれか一つに隠しドアを配置する。
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param y0 配置したい中心のY座標
  * @param x0 配置したい中心のX座標
  * @details
@@ -61,34 +61,34 @@
  * Note - this should be used only on allocated regions
  * within another room.
  */
-void build_small_room(PlayerType *player_ptr, POSITION x0, POSITION y0)
+void build_small_room(CreatureEntity &creature, POSITION x0, POSITION y0)
 {
     const Pos2D pos(y0, x0);
     for (auto y = y0 - 1; y <= y0 + 1; y++) {
-        place_bold(player_ptr, y, pos.x - 1, GB_INNER);
-        place_bold(player_ptr, y, pos.x + 1, GB_INNER);
+        place_bold(creature, y, pos.x - 1, GB_INNER);
+        place_bold(creature, y, pos.x + 1, GB_INNER);
     }
 
     for (auto x = x0 - 1; x <= x0 + 1; x++) {
-        place_bold(player_ptr, pos.y - 1, x, GB_INNER);
-        place_bold(player_ptr, pos.y + 1, x, GB_INNER);
+        place_bold(creature, pos.y - 1, x, GB_INNER);
+        place_bold(creature, pos.y + 1, x, GB_INNER);
     }
 
     const auto d = rand_choice(Direction::directions_4());
-    place_secret_door(player_ptr, pos + d.vec());
+    place_secret_door(creature, pos + d.vec());
 
-    player_ptr->current_floor_ptr->set_terrain_id_at(pos, TerrainTag::NONE, TerrainKind::MIMIC);
-    place_bold(player_ptr, pos.y, pos.x, GB_FLOOR);
+    creature.get_floor()->set_terrain_id_at(pos, TerrainTag::NONE, TerrainKind::MIMIC);
+    place_bold(creature, pos.y, pos.x, GB_FLOOR);
 }
 
 /*
  * Builds a cave system in the center of the dungeon.
  */
-void build_cavern(PlayerType *player_ptr)
+void build_cavern(CreatureEntity &creature)
 {
     bool light = false;
     bool done = false;
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *creature.get_floor();
     if ((floor.dun_level <= randint1(50)) && floor.get_dungeon_definition().flags.has_not(DungeonFeatureType::DARKNESS)) {
         light = true;
     }
@@ -105,21 +105,21 @@ void build_cavern(PlayerType *player_ptr)
         int roug = randint1(8) * randint1(4);
         int cutoff = xsize / 2;
         generate_hmap(floor, y0 + 1, x0 + 1, xsize, ysize, grd, roug, cutoff);
-        done = generate_fracave(player_ptr, y0 + 1, x0 + 1, xsize, ysize, cutoff, light, false);
+        done = generate_fracave(creature, y0 + 1, x0 + 1, xsize, ysize, cutoff, light, false);
     }
 }
 
 /*
  * makes a lake/collapsed floor in the center of the dungeon
  */
-void build_lake(PlayerType *player_ptr, int type)
+void build_lake(CreatureEntity &creature, int type)
 {
     if ((type < LAKE_T_LAVA) || (type > LAKE_T_FIRE_VAULT)) {
         msg_format("Invalid lake type (%d)", type);
         return;
     }
 
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *creature.get_floor();
     int xsize = floor.width - 1;
     int ysize = floor.height - 1;
     int x0 = xsize / 2;
@@ -134,7 +134,7 @@ void build_lake(PlayerType *player_ptr, int type)
         int c1 = randint0(c3 / 2) + randint0(c3 / 2) - 5;
         int c2 = (c1 + c3) / 2;
         generate_hmap(floor, y0 + 1, x0 + 1, xsize, ysize, grd, roug, c3);
-        done = generate_lake(player_ptr, y0 + 1, x0 + 1, xsize, ysize, c1, c2, c3, type);
+        done = generate_lake(creature, y0 + 1, x0 + 1, xsize, ysize, c1, c2, c3, type);
     }
 }
 
@@ -144,7 +144,7 @@ void build_lake(PlayerType *player_ptr, int type)
  * The area inside the walls is not touched:
  * only granite is removed- normal walls stay
  */
-void build_room(PlayerType *player_ptr, POSITION x1, POSITION x2, POSITION y1, POSITION y2)
+void build_room(CreatureEntity &creature, POSITION x1, POSITION x2, POSITION y1, POSITION y2)
 {
     int temp;
     if ((x1 == x2) || (y1 == y2)) {
@@ -165,29 +165,29 @@ void build_room(PlayerType *player_ptr, POSITION x1, POSITION x2, POSITION y1, P
 
     POSITION xsize = x2 - x1;
     POSITION ysize = y2 - y1;
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *creature.get_floor();
     for (int i = 0; i <= xsize; i++) {
-        place_bold(player_ptr, y1, x1 + i, GB_OUTER_NOPERM);
-        floor.grid_array[y1][x1 + i].info |= (CAVE_ROOM | CAVE_ICKY);
-        place_bold(player_ptr, y2, x1 + i, GB_OUTER_NOPERM);
-        floor.grid_array[y2][x1 + i].info |= (CAVE_ROOM | CAVE_ICKY);
+        place_bold(creature, y1, x1 + i, GB_OUTER_NOPERM);
+        floor.grid_array[y1][x1 + i].info |= (CAVE_ROOM | CAVE_NO_TELEPORT_DEST);
+        place_bold(creature, y2, x1 + i, GB_OUTER_NOPERM);
+        floor.grid_array[y2][x1 + i].info |= (CAVE_ROOM | CAVE_NO_TELEPORT_DEST);
     }
 
     for (int i = 1; i < ysize; i++) {
-        place_bold(player_ptr, y1 + i, x1, GB_OUTER_NOPERM);
-        floor.grid_array[y1 + i][x1].info |= (CAVE_ROOM | CAVE_ICKY);
-        place_bold(player_ptr, y1 + i, x2, GB_OUTER_NOPERM);
-        floor.grid_array[y1 + i][x2].info |= (CAVE_ROOM | CAVE_ICKY);
+        place_bold(creature, y1 + i, x1, GB_OUTER_NOPERM);
+        floor.grid_array[y1 + i][x1].info |= (CAVE_ROOM | CAVE_NO_TELEPORT_DEST);
+        place_bold(creature, y1 + i, x2, GB_OUTER_NOPERM);
+        floor.grid_array[y1 + i][x2].info |= (CAVE_ROOM | CAVE_NO_TELEPORT_DEST);
     }
 
     for (POSITION x = 1; x < xsize; x++) {
         for (POSITION y = 1; y < ysize; y++) {
             auto &grid = floor.grid_array[y1 + y][x1 + x];
             if (grid.is_extra()) {
-                place_bold(player_ptr, y1 + y, x1 + x, GB_FLOOR);
-                grid.info |= (CAVE_ROOM | CAVE_ICKY);
+                place_bold(creature, y1 + y, x1 + x, GB_FLOOR);
+                grid.info |= (CAVE_ROOM | CAVE_NO_TELEPORT_DEST);
             } else {
-                grid.info |= (CAVE_ROOM | CAVE_ICKY);
+                grid.info |= (CAVE_ROOM | CAVE_NO_TELEPORT_DEST);
             }
         }
     }
@@ -201,7 +201,7 @@ void build_room(PlayerType *player_ptr, POSITION x1, POSITION x2, POSITION y1, P
  * The power variable is a measure of how well defended a region is.
  * This alters the possible choices.
  */
-void build_recursive_room(PlayerType *player_ptr, POSITION x1, POSITION y1, POSITION x2, POSITION y2, int power)
+void build_recursive_room(CreatureEntity &creature, POSITION x1, POSITION y1, POSITION x2, POSITION y2, int power)
 {
     POSITION xsize = x2 - x1;
     POSITION ysize = y2 - y1;
@@ -227,23 +227,23 @@ void build_recursive_room(PlayerType *player_ptr, POSITION x1, POSITION y1, POSI
         int x;
         int y;
         for (x = x1; x <= x2; x++) {
-            place_bold(player_ptr, y1, x, GB_OUTER);
-            place_bold(player_ptr, y2, x, GB_OUTER);
+            place_bold(creature, y1, x, GB_OUTER);
+            place_bold(creature, y2, x, GB_OUTER);
         }
 
         for (y = y1 + 1; y < y2; y++) {
-            place_bold(player_ptr, y, x1, GB_OUTER);
-            place_bold(player_ptr, y, x2, GB_OUTER);
+            place_bold(creature, y, x1, GB_OUTER);
+            place_bold(creature, y, x2, GB_OUTER);
         }
 
         if (one_in_(2)) {
             y = randint1(ysize) + y1;
-            place_bold(player_ptr, y, x1, GB_FLOOR);
-            place_bold(player_ptr, y, x2, GB_FLOOR);
+            place_bold(creature, y, x1, GB_FLOOR);
+            place_bold(creature, y, x2, GB_FLOOR);
         } else {
             x = randint1(xsize) + x1;
-            place_bold(player_ptr, y1, x, GB_FLOOR);
-            place_bold(player_ptr, y2, x, GB_FLOOR);
+            place_bold(creature, y1, x, GB_FLOOR);
+            place_bold(creature, y2, x, GB_FLOOR);
         }
 
         int t1 = randint1(ysize / 3) + y1;
@@ -252,10 +252,10 @@ void build_recursive_room(PlayerType *player_ptr, POSITION x1, POSITION y1, POSI
         int t4 = x2 - randint1(xsize / 3);
 
         /* Do outside areas */
-        build_recursive_room(player_ptr, x1 + 1, y1 + 1, x2 - 1, t1, power + 1);
-        build_recursive_room(player_ptr, x1 + 1, t2, x2 - 1, y2, power + 1);
-        build_recursive_room(player_ptr, x1 + 1, t1 + 1, t3, t2 - 1, power + 3);
-        build_recursive_room(player_ptr, t4, t1 + 1, x2 - 1, t2 - 1, power + 3);
+        build_recursive_room(creature, x1 + 1, y1 + 1, x2 - 1, t1, power + 1);
+        build_recursive_room(creature, x1 + 1, t2, x2 - 1, y2, power + 1);
+        build_recursive_room(creature, x1 + 1, t1 + 1, t3, t2 - 1, power + 3);
+        build_recursive_room(creature, t4, t1 + 1, x2 - 1, t2 - 1, power + 3);
 
         x1 = t3;
         x2 = t4;
@@ -271,7 +271,7 @@ void build_recursive_room(PlayerType *player_ptr, POSITION x1, POSITION y1, POSI
         if ((xsize < 3) || (ysize < 3)) {
             for (int y = y1; y < y2; y++) {
                 for (int x = x1; x < x2; x++) {
-                    place_bold(player_ptr, y, x, GB_INNER);
+                    place_bold(creature, y, x, GB_INNER);
                 }
             }
 
@@ -279,25 +279,25 @@ void build_recursive_room(PlayerType *player_ptr, POSITION x1, POSITION y1, POSI
         }
 
         for (int x = x1 + 1; x <= x2 - 1; x++) {
-            place_bold(player_ptr, y1 + 1, x, GB_INNER);
-            place_bold(player_ptr, y2 - 1, x, GB_INNER);
+            place_bold(creature, y1 + 1, x, GB_INNER);
+            place_bold(creature, y2 - 1, x, GB_INNER);
         }
 
         for (int y = y1 + 1; y <= y2 - 1; y++) {
-            place_bold(player_ptr, y, x1 + 1, GB_INNER);
-            place_bold(player_ptr, y, x2 - 1, GB_INNER);
+            place_bold(creature, y, x1 + 1, GB_INNER);
+            place_bold(creature, y, x2 - 1, GB_INNER);
         }
 
         int y = randint1(ysize - 3) + y1 + 1;
         if (one_in_(2)) {
             /* left */
-            place_bold(player_ptr, y, x1 + 1, GB_FLOOR);
+            place_bold(creature, y, x1 + 1, GB_FLOOR);
         } else {
             /* right */
-            place_bold(player_ptr, y, x2 - 1, GB_FLOOR);
+            place_bold(creature, y, x2 - 1, GB_FLOOR);
         }
 
-        build_recursive_room(player_ptr, x1 + 2, y1 + 2, x2 - 2, y2 - 2, power + 3);
+        build_recursive_room(creature, x1 + 2, y1 + 2, x2 - 2, y2 - 2, power + 3);
         break;
     }
     case 2: {
@@ -305,15 +305,15 @@ void build_recursive_room(PlayerType *player_ptr, POSITION x1, POSITION y1, POSI
         if (xsize < 3) {
             for (int y = y1; y < y2; y++) {
                 for (int x = x1; x < x2; x++) {
-                    place_bold(player_ptr, y, x, GB_INNER);
+                    place_bold(creature, y, x, GB_INNER);
                 }
             }
             return;
         }
 
         int t1 = randint1(xsize - 2) + x1 + 1;
-        build_recursive_room(player_ptr, x1, y1, t1, y2, power - 2);
-        build_recursive_room(player_ptr, t1 + 1, y1, x2, y2, power - 2);
+        build_recursive_room(creature, x1, y1, t1, y2, power - 2);
+        build_recursive_room(creature, t1 + 1, y1, x2, y2, power - 2);
         break;
     }
     case 3: {
@@ -321,7 +321,7 @@ void build_recursive_room(PlayerType *player_ptr, POSITION x1, POSITION y1, POSI
         if (ysize < 3) {
             for (int y = y1; y < y2; y++) {
                 for (int x = x1; x < x2; x++) {
-                    place_bold(player_ptr, y, x, GB_INNER);
+                    place_bold(creature, y, x, GB_INNER);
                 }
             }
 
@@ -329,8 +329,8 @@ void build_recursive_room(PlayerType *player_ptr, POSITION x1, POSITION y1, POSI
         }
 
         int t1 = randint1(ysize - 2) + y1 + 1;
-        build_recursive_room(player_ptr, x1, y1, x2, t1, power - 2);
-        build_recursive_room(player_ptr, x1, t1 + 1, x2, y2, power - 2);
+        build_recursive_room(creature, x1, y1, x2, t1, power - 2);
+        build_recursive_room(creature, x1, t1 + 1, x2, y2, power - 2);
         break;
     }
     }
@@ -341,9 +341,9 @@ void build_recursive_room(PlayerType *player_ptr, POSITION x1, POSITION y1, POSI
  * Note: no range checking is done so must be inside dungeon
  * This routine also stomps on doors
  */
-void add_outer_wall(PlayerType *player_ptr, POSITION x, POSITION y, int light, POSITION x1, POSITION y1, POSITION x2, POSITION y2)
+void add_outer_wall(CreatureEntity &creature, POSITION x, POSITION y, int light, POSITION x1, POSITION y1, POSITION x2, POSITION y2)
 {
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *creature.get_floor();
     const Pos2D pos(y, x);
     if (!floor.contains(pos, FloorBoundary::OUTER_WALL_EXCLUSIVE)) {
         return;
@@ -361,7 +361,7 @@ void add_outer_wall(PlayerType *player_ptr, POSITION x, POSITION y, int light, P
             for (auto j = -1; j <= 1; j++) {
                 const Pos2D pos_sweep(pos.y + j, pos.x + i);
                 if ((pos_sweep.x >= x1) && (pos_sweep.x <= x2) && (pos_sweep.y >= y1) && (pos_sweep.y <= y2)) {
-                    add_outer_wall(player_ptr, pos_sweep.x, pos_sweep.y, light, x1, y1, x2, y2);
+                    add_outer_wall(creature, pos_sweep.x, pos_sweep.y, light, x1, y1, x2, y2);
                     if (light) {
                         grid.info |= CAVE_GLOW;
                     }
@@ -373,7 +373,7 @@ void add_outer_wall(PlayerType *player_ptr, POSITION x, POSITION y, int light, P
     }
 
     if (grid.is_extra()) {
-        place_bold(player_ptr, pos.y, pos.x, GB_OUTER);
+        place_bold(creature, pos.y, pos.x, GB_OUTER);
         if (light) {
             grid.info |= CAVE_GLOW;
         }

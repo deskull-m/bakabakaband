@@ -1,14 +1,14 @@
 #include "alliance/alliance-silvan-elf.h"
+#include "system/creature-entity.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/player-type-definition.h"
-int AllianceSilvanElf::calcImpressionPoint(PlayerType *creature_ptr) const
+int AllianceSilvanElf::calcImpressionPoint(const CreatureEntity &creature) const
 {
     int impression = 0;
     impression += calcIronmanHostilityPenalty();
 
-    impression += Alliance::calcPlayerPower(*creature_ptr, 12, 25);
+    impression += Alliance::calcPlayerPower(creature, 12, 25);
 
     // シルヴァンエルフの指導者を殺害した場合の大幅減点
     const auto &monrace_list = MonraceList::get_instance();
@@ -22,9 +22,9 @@ int AllianceSilvanElf::calcImpressionPoint(PlayerType *creature_ptr) const
     return impression;
 }
 
-void AllianceSilvanElf::panishment(PlayerType &player_ptr)
+void AllianceSilvanElf::panishment(CreatureEntity &creature)
 {
-    auto impression = calcImpressionPoint(&player_ptr);
+    auto impression = calcImpressionPoint(creature);
     if (isAnnihilated() || impression > -40) {
         return;
     }
@@ -33,6 +33,5 @@ void AllianceSilvanElf::panishment(PlayerType &player_ptr)
 bool AllianceSilvanElf::isAnnihilated()
 {
     // 森エルフの王『スランドゥイル』と緑葉の『レゴラス』が両方とも存在しない場合、シルヴァンエルフは壊滅する
-    const auto &monrace_list = MonraceList::get_instance();
-    return monrace_list.get_monrace(MonraceId::THRANDUIL).mob_num == 0 && monrace_list.get_monrace(MonraceId::LEGOLAS).mob_num == 0;
+    return all_monraces_extinct({ MonraceId::THRANDUIL, MonraceId::LEGOLAS });
 }

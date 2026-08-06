@@ -13,7 +13,7 @@
 #include <set>
 #include <string>
 
-class PlayerType;
+class CreatureEntity;
 
 /*!
  * @brief 実績の進捗データ
@@ -44,11 +44,11 @@ public:
 
     /*!
      * @brief 実績を解除する
-     * @param player_ptr プレイヤー情報への参照ポインタ
+     * @param creature クリーチャーへの参照
      * @param achievement 実績ID
      * @return 新規解除された場合true
      */
-    bool unlock_achievement(PlayerType *player_ptr, AchievementType achievement);
+    bool unlock_achievement(CreatureEntity &creature, AchievementType achievement);
 
     /*!
      * @brief 実績が解除済みか確認
@@ -59,11 +59,11 @@ public:
 
     /*!
      * @brief 実績の進捗を更新
-     * @param player_ptr プレイヤー情報への参照ポインタ
+     * @param creature クリーチャーへの参照
      * @param achievement 実績ID
      * @param value 進捗値
      */
-    void update_progress(PlayerType *player_ptr, AchievementType achievement, int32_t value);
+    void update_progress(CreatureEntity &creature, AchievementType achievement, int32_t value);
 
     /*!
      * @brief 実績の進捗を取得
@@ -91,17 +91,17 @@ public:
 
     /*!
      * @brief データをセーブ
-     * @param player_ptr プレイヤー情報への参照ポインタ
+     * @param creature クリーチャーへの参照
      * @return 成功したらtrue
      */
-    bool save_achievements(PlayerType *player_ptr);
+    bool save_achievements(CreatureEntity &creature);
 
     /*!
      * @brief データをロード
-     * @param player_ptr プレイヤー情報への参照ポインタ
+     * @param creature クリーチャーへの参照
      * @return 成功したらtrue
      */
-    bool load_achievements(PlayerType *player_ptr);
+    bool load_achievements(CreatureEntity &creature);
 
     /*!
      * @brief 解除済み実績のセットを取得
@@ -116,8 +116,8 @@ private:
 
     /*!
      * @brief 実績解除通知を表示
-     * @param player_ptr プレイヤー情報への参照ポインタ
+     * @param creature クリーチャーへの参照
      * @param achievement 実績ID
      */
-    void show_achievement_notification(PlayerType *player_ptr, AchievementType achievement);
+    void show_achievement_notification(CreatureEntity &creature, AchievementType achievement);
 };

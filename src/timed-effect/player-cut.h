@@ -17,27 +17,16 @@ enum class PlayerCutRank {
 
 class PlayerCut {
 public:
-    PlayerCut() = default;
-    ~PlayerCut() = default;
-    PlayerCut(const PlayerCut &) = delete;
-    PlayerCut(PlayerCut &&) = delete;
-    PlayerCut &operator=(const PlayerCut &) = delete;
-    PlayerCut &operator=(PlayerCut &&) = delete;
+    PlayerCut() = delete;
 
     static PlayerCutRank get_rank(short value);
     static std::string get_cut_mes(PlayerCutRank stun_rank);
     static short get_accumulation(int total, int damage);
 
-    short current() const;
-    PlayerCutRank get_rank() const;
-    bool is_cut() const;
-    std::tuple<term_color_type, std::string> get_expr() const;
-    int get_damage() const;
-    void set(short value);
-    void reset();
+    static bool is_cut(short value);
+    static std::tuple<term_color_type, std::string> get_expr(short value);
+    static int get_damage(short value);
 
 private:
-    short cut = 0;
-
     static int get_accumulation_rank(int total, int damage);
 };

@@ -1,4 +1,34 @@
 #include "combat/attack-power-table.h"
+#include "player-ability/player-ability-types.h"
+#include <algorithm>
+#include <initializer_list>
+#include <vector>
+
+namespace {
+/*!
+ * @brief 攻撃回数算定テーブルを STAT_TABLE_SIZE (表示 200.0) まで線形外挿で拡張する。
+ * @details 表示 40.0 超は末尾 2 エントリの傾きを継続する暫定実装。byte [0,255] にクランプ。
+ */
+std::array<byte, STAT_TABLE_SIZE> extend_blow_table(std::initializer_list<int> base)
+{
+    const std::vector<int> values(base);
+    const auto n = values.size();
+    std::array<byte, STAT_TABLE_SIZE> result{};
+    for (std::size_t i = 0; i < STAT_TABLE_SIZE; ++i) {
+        int v;
+        if (i < n) {
+            v = values[i];
+        } else if (n >= 2) {
+            const int slope = values[n - 1] - values[n - 2];
+            v = values[n - 1] + slope * static_cast<int>(i - (n - 1));
+        } else {
+            v = n >= 1 ? values[n - 1] : 0;
+        }
+        result[i] = static_cast<byte>(std::clamp(v, 0, 255));
+    }
+    return result;
+}
+}
 
 /*!
  * @brief 修行僧のターンダメージ算出テーブル
@@ -55,13 +85,24 @@ const int monk_ave_damage[PY_MAX_LEVEL + 1][3] = {
     { 4141, 5532, 1652 },
     { 4442, 5581, 1679 },
     { 4486, 5636, 1702 },
+    // [Lv51-60 拡張] 既存 Lv1-50 の平均増分 (col0≒+87 / col1≒+110 / col2≒+30) を継続した暫定値
+    { 4573, 5746, 1732 },
+    { 4660, 5856, 1762 },
+    { 4747, 5966, 1792 },
+    { 4834, 6076, 1822 },
+    { 4921, 6186, 1852 },
+    { 5008, 6296, 1882 },
+    { 5095, 6406, 1912 },
+    { 5182, 6516, 1942 },
+    { 5269, 6626, 1972 },
+    { 5356, 6736, 2002 },
 };
 
 /*!
  * 腕力による攻撃回数算定値テーブル
  * Stat Table (STR) -- help index into the "blow" table
  */
-const byte adj_str_blow[MAX_ADJ_STR] = {
+const std::array<byte, STAT_TABLE_SIZE> adj_str_blow = extend_blow_table({
     3 /* 3 */,
     4 /* 4 */,
     5 /* 5 */,
@@ -100,13 +141,13 @@ const byte adj_str_blow[MAX_ADJ_STR] = {
     220 /* 18/200-18/209 */,
     230 /* 18/210-18/219 */,
     240 /* 18/220+ */
-};
+});
 
 /*!
  * 器用さによる攻撃回数インデックステーブル
  * Stat Table (DEX) -- index into the "blow" table
  */
-const byte adj_dex_blow[MAX_ADJ_DEX] = {
+const std::array<byte, STAT_TABLE_SIZE> adj_dex_blow = extend_blow_table({
     0 /* 3 */,
     0 /* 4 */,
     0 /* 5 */,
@@ -145,7 +186,7 @@ const byte adj_dex_blow[MAX_ADJ_DEX] = {
     12 /* 18/200-18/209 */,
     12 /* 18/210-18/219 */,
     13 /* 18/220+ */
-};
+});
 
 /*!
  * @brief

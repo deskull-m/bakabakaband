@@ -6,11 +6,12 @@
 
 struct MonsterSpellResult;
 
+class PlayerType;
 class MSpellData;
 class MSpellBall : public AbstractMSpellAttack {
 public:
-    MSpellBall(PlayerType *player_ptr, MONSTER_IDX m_idx, MonsterAbilityType ability, POSITION rad, int target_type);
-    MSpellBall(PlayerType *player_ptr, MONSTER_IDX m_idx, MONSTER_IDX t_idx, MonsterAbilityType ability, POSITION rad, int target_type);
+    MSpellBall(CreatureEntity &creature, MONSTER_IDX m_idx, MonsterAbilityType ability, POSITION rad, int target_type);
+    MSpellBall(CreatureEntity &creature, MONSTER_IDX m_idx, MONSTER_IDX t_idx, MonsterAbilityType ability, POSITION rad, int target_type);
     ~MSpellBall() = default;
     MSpellBall(const MSpellBall &) = delete;
     MSpellBall(MSpellBall &&) = default;
@@ -18,4 +19,4 @@ public:
     MSpellBall &operator=(MSpellBall &&) = default;
 };
 
-class PlayerType;
+class CreatureEntity;

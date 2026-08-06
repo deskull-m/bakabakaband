@@ -1,4 +1,4 @@
 #pragma once
 
-class PlayerType;
-void disturb(PlayerType *player_ptr, bool stop_search, bool stop_travel);
+class CreatureEntity;
+void disturb(CreatureEntity &creature, bool stop_search, bool stop_travel);

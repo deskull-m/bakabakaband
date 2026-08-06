@@ -1,4 +1,5 @@
 #include "cmd-io/cmd-knowledge.h"
+#include "bot/bot-json-output.h"
 #include "cmd-visual/cmd-draw.h"
 #include "game-option/birth-options.h"
 #include "io/input-key-acceptor.h"
@@ -15,7 +16,7 @@
 #include "knowledge/knowledge-self.h"
 #include "knowledge/knowledge-uniques.h"
 #include "main/sound-of-music.h"
-#include "system/player-type-definition.h"
+#include "system/creature-entity.h"
 #include "system/terrain/terrain-definition.h"
 #include "term/gameterm.h"
 #include "term/screen-processor.h"
@@ -25,7 +26,7 @@
 /*
  * Interact with "knowledge"
  */
-void do_cmd_knowledge(PlayerType *player_ptr)
+void do_cmd_knowledge(CreatureEntity &creature)
 {
     int i, p = 0;
     bool need_redraw = false;
@@ -81,82 +82,100 @@ void do_cmd_knowledge(PlayerType *player_ptr)
             p = (p >= 2) ? 0 : p + 1;
             break;
         case '1': /* Artifacts */
-            do_cmd_knowledge_artifacts(player_ptr);
+            output_bot_json_knowledge_snapshot(creature, BotKnowledgeCategory::ARTIFACTS_KNOWN);
+            do_cmd_knowledge_artifacts(creature);
             break;
         case '2': /* Objects */
-            do_cmd_knowledge_objects(player_ptr, &need_redraw, false, -1);
+            output_bot_json_knowledge_snapshot(creature, BotKnowledgeCategory::OBJECTS_KNOWN);
+            do_cmd_knowledge_objects(creature, &need_redraw, false, -1);
             break;
         case '3': /* Uniques */
-            do_cmd_knowledge_uniques(player_ptr, true);
+            output_bot_json_knowledge_snapshot(creature, BotKnowledgeCategory::UNIQUES_ALIVE);
+            do_cmd_knowledge_uniques(creature, true);
             break;
         case '4': /* Uniques */
-            do_cmd_knowledge_uniques(player_ptr, false);
+            output_bot_json_knowledge_snapshot(creature, BotKnowledgeCategory::UNIQUES_DEAD);
+            do_cmd_knowledge_uniques(creature, false);
             break;
         case '5': /* Monsters */
-            do_cmd_knowledge_monsters(player_ptr, &need_redraw, false);
+            do_cmd_knowledge_monsters(creature, &need_redraw, false);
             break;
         case '6': /* Kill count  */
-            do_cmd_knowledge_kill_count(player_ptr);
+            do_cmd_knowledge_kill_count(creature);
             break;
         case '7': /* wanted */
             if (!vanilla_town) {
-                do_cmd_knowledge_bounty(player_ptr->name);
+                output_bot_json_knowledge_snapshot(creature, BotKnowledgeCategory::BOUNTY);
+                do_cmd_knowledge_bounty(creature.name);
             }
             break;
         case '8': /* Pets */
-            do_cmd_knowledge_pets(player_ptr);
+            output_bot_json_knowledge_snapshot(creature, BotKnowledgeCategory::PETS);
+            do_cmd_knowledge_pets(creature);
             break;
         case '9': /* Home */
-            do_cmd_knowledge_home(player_ptr);
+            output_bot_json_knowledge_snapshot(creature, BotKnowledgeCategory::HOME);
+            do_cmd_knowledge_home(creature);
             break;
         case '0': /* Resist list */
-            do_cmd_knowledge_inventory(player_ptr);
+            output_bot_json_knowledge_snapshot(creature, BotKnowledgeCategory::EQUIP_RESISTANCES);
+            do_cmd_knowledge_inventory(creature);
             break;
         /* Next page */
         case 'a': /* Feature list */
         {
             IDX lighting_level = F_LIT_STANDARD;
+            output_bot_json_knowledge_snapshot(creature, BotKnowledgeCategory::FEATURES);
             do_cmd_knowledge_features(&need_redraw, false, -1, &lighting_level);
             break;
         }
         case 'b': /* Max stat */
-            do_cmd_knowledge_stat(player_ptr);
+            output_bot_json_knowledge_snapshot(creature, BotKnowledgeCategory::SELF_INFO);
+            do_cmd_knowledge_stat(creature);
             break;
         case 'c': /* Mutations */
-            do_cmd_knowledge_mutations(player_ptr);
+            output_bot_json_knowledge_snapshot(creature, BotKnowledgeCategory::MUTATIONS);
+            do_cmd_knowledge_mutations(creature);
             break;
         case 'd': /* weapon-exp */
-            do_cmd_knowledge_weapon_exp(player_ptr);
+            output_bot_json_knowledge_snapshot(creature, BotKnowledgeCategory::WEAPON_EXP);
+            do_cmd_knowledge_weapon_exp(creature);
             break;
         case 'e': /* spell-exp */
-            do_cmd_knowledge_spell_exp(player_ptr);
+            output_bot_json_knowledge_snapshot(creature, BotKnowledgeCategory::SPELL_EXP);
+            do_cmd_knowledge_spell_exp(creature);
             break;
         case 'f': /* skill-exp */
-            do_cmd_knowledge_skill_exp(player_ptr);
+            output_bot_json_knowledge_snapshot(creature, BotKnowledgeCategory::SKILL_EXP);
+            do_cmd_knowledge_skill_exp(creature);
             break;
         case 'g': /* Virtues */
-            do_cmd_knowledge_virtues(player_ptr);
+            output_bot_json_knowledge_snapshot(creature, BotKnowledgeCategory::VIRTUES);
+            do_cmd_knowledge_virtues(creature);
             break;
         case 'h': /* Dungeon */
-            do_cmd_knowledge_dungeon(player_ptr);
+            output_bot_json_knowledge_snapshot(creature, BotKnowledgeCategory::DUNGEONS);
+            do_cmd_knowledge_dungeon(creature);
             break;
         case 'i': /* Quests */
-            do_cmd_knowledge_quests(player_ptr);
+            output_bot_json_knowledge_snapshot(creature, BotKnowledgeCategory::QUESTS);
+            do_cmd_knowledge_quests(creature);
             break;
         case 'k': /* Autopick */
-            do_cmd_knowledge_autopick(player_ptr);
+            output_bot_json_knowledge_snapshot(creature, BotKnowledgeCategory::AUTOPICK);
+            do_cmd_knowledge_autopick(creature);
             break;
         case 'l': /* Incident */
-            do_cmd_knowledge_incident(player_ptr);
+            do_cmd_knowledge_incident(creature);
             break;
         case 'm': /* Alliance */
-            do_cmd_knowledge_alliance(player_ptr, true);
+            do_cmd_knowledge_alliance(creature, true);
             break;
         case 'n': /* Alliance */
-            do_cmd_knowledge_alliance(player_ptr, false);
+            do_cmd_knowledge_alliance(creature, false);
             break;
         case 'o': /* Death history */
-            do_cmd_knowledge_death_history(player_ptr);
+            do_cmd_knowledge_death_history(creature);
             break;
         default: /* Unknown option */
             bell();
@@ -167,6 +186,6 @@ void do_cmd_knowledge(PlayerType *player_ptr)
 
     screen_load();
     if (need_redraw) {
-        do_cmd_redraw(player_ptr);
+        do_cmd_redraw(creature);
     }
 }

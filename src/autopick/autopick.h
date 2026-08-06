@@ -2,8 +2,8 @@
 
 #include "system/angband.h"
 
+class CreatureEntity;
 class Grid;
-class PlayerType;
-void autopick_alter_item(PlayerType *player_ptr, INVENTORY_IDX i_idx, bool destroy);
-void autopick_delayed_alter(PlayerType *player_ptr);
-void autopick_pickup_items(PlayerType *player_ptr, const Grid &grid);
+void autopick_alter_item(CreatureEntity &creature, INVENTORY_IDX i_idx, bool destroy);
+void autopick_delayed_alter(CreatureEntity &creature);
+void autopick_pickup_items(CreatureEntity &creature, const Grid &grid);

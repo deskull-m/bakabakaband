@@ -1,11 +1,11 @@
 #pragma once
-#include "alliance.h"
+#include "alliance/alliance.h"
 
 class AllianceValinor : public Alliance {
 public:
     using Alliance::Alliance;
     AllianceValinor() = delete;
     EnumClassFlagGroup<alliance_flags> alliFlags; //!< 陣営特性フラグ
-    int calcImpressionPoint(PlayerType *creature_ptr) const override;
+    int calcImpressionPoint(const CreatureEntity &creature) const override;
     virtual ~AllianceValinor() = default;
 };

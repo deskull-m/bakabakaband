@@ -2,7 +2,8 @@
 
 #include "system/angband.h"
 
+class CreatureEntity;
 class PlayerType;
-void call_the_void(PlayerType *player_ptr);
-bool vanish_dungeon(PlayerType *player_ptr);
-void cast_meteor(PlayerType *player_ptr, int dam, POSITION rad);
+void call_the_void(CreatureEntity &creature);
+bool vanish_dungeon(CreatureEntity &creature);
+void cast_meteor(CreatureEntity &creature, int dam, POSITION rad);

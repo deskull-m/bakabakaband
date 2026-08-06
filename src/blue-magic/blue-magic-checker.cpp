@@ -20,41 +20,39 @@
 #include "player/attack-defense-types.h"
 #include "status/experience.h"
 #include "system/angband.h"
-#include "system/player-type-definition.h"
+#include "system/creature-entity.h"
 #include "system/redrawing-flags-updater.h"
-#include "timed-effect/timed-effects.h"
 #include "view/display-messages.h"
 
 /*!
  * @brief 青魔法のラーニング判定と成功した場合のラーニング処理
  * @param monspell ラーニングを試みるモンスター攻撃のID
  */
-void learn_spell(PlayerType *player_ptr, MonsterAbilityType monspell)
+void learn_spell(CreatureEntity &creature, MonsterAbilityType monspell)
 {
-    if (player_ptr->action != ACTION_LEARN) {
+    if (creature.get_action() != ACTION_LEARN) {
         return;
     }
 
-    auto bluemage_data = PlayerClass(player_ptr).get_specific_data<bluemage_data_type>();
+    auto bluemage_data = CreatureClass(creature).get_specific_data<bluemage_data_type>();
     if (!bluemage_data || bluemage_data->learnt_blue_magics.has(monspell)) {
         return;
     }
 
-    const auto effects = player_ptr->effects();
-    const auto is_confused = effects->confusion().is_confused();
-    const auto is_blind = effects->blindness().is_blind();
-    const auto is_stunned = effects->stun().is_stunned();
-    const auto is_hallucinated = effects->hallucination().is_hallucinated();
-    const auto is_paralyzed = effects->paralysis().is_paralyzed();
+    const auto is_confused = creature.is_confused();
+    const auto is_blind = creature.is_blind();
+    const auto is_stunned = creature.is_stunned();
+    const auto is_hallucinated = creature.is_hallucinated();
+    const auto is_paralyzed = creature.is_paralyzed();
     if (is_confused || is_blind || is_hallucinated || is_stunned || is_paralyzed) {
         return;
     }
 
     const auto &monster_power = monster_powers.at(monspell);
-    if (randint1(player_ptr->level + 70) > monster_power.level + 40) {
+    if (randint1(creature.get_level() + 70) > monster_power.level + 40) {
         bluemage_data->learnt_blue_magics.set(monspell);
         msg_format(_("%sを学習した！", "You have learned %s!"), monster_power.name);
-        gain_exp(static_cast<CreatureEntity &>(*player_ptr), monster_power.level * monster_power.smana);
+        gain_exp(creature, monster_power.level * monster_power.smana);
         sound(SoundKind::STUDY);
         bluemage_data->new_magic_learned = true;
         RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::ACTION);

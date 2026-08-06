@@ -32,8 +32,8 @@
 #include "status/bad-status-setter.h"
 #include "status/base-status.h"
 #include "status/experience.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
-#include "system/player-type-definition.h"
 #include "target/target-getter.h"
 #include "view/display-messages.h"
 
@@ -41,7 +41,7 @@
  * @brief 混沌招来処理
  * @return 作用が実際にあった場合TRUEを返す
  */
-void call_chaos(PlayerType *player_ptr)
+void call_chaos(CreatureEntity &creature)
 {
     constexpr static auto hurt_types = { AttributeType::ELEC, AttributeType::POIS, AttributeType::ACID, AttributeType::COLD, AttributeType::FIRE,
         AttributeType::MISSILE, AttributeType::PLASMA, AttributeType::HOLY_FIRE, AttributeType::WATER, AttributeType::LITE,
@@ -59,9 +59,9 @@ void call_chaos(PlayerType *player_ptr)
     if (one_in_(6)) {
         for (const auto &dir : Direction::directions_8()) {
             if (line_chaos) {
-                fire_beam(player_ptr, chaos_type, dir, 150);
+                fire_beam(creature, chaos_type, dir, 150);
             } else {
-                fire_ball(player_ptr, chaos_type, dir, 150, 2);
+                fire_ball(creature, chaos_type, dir, 150, 2);
             }
         }
 
@@ -69,38 +69,38 @@ void call_chaos(PlayerType *player_ptr)
     }
 
     if (one_in_(3)) {
-        fire_ball(player_ptr, chaos_type, Direction::self(), 500, 8);
+        fire_ball(creature, chaos_type, Direction::self(), 500, 8);
         return;
     }
 
-    const auto dir = get_aim_dir(player_ptr);
+    const auto dir = get_aim_dir(creature);
     if (!dir) {
         return;
     }
     if (line_chaos) {
-        fire_beam(player_ptr, chaos_type, dir, 250);
+        fire_beam(creature, chaos_type, dir, 250);
     } else {
-        fire_ball(player_ptr, chaos_type, dir, 250, 3 + (player_ptr->level / 35));
+        fire_ball(creature, chaos_type, dir, 250, 3 + (creature.get_level() / 35));
     }
 }
 
 /*!
  * @brief TY_CURSE処理発動 / Activate the evil Topi Ylinen curse
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param stop_ty 再帰処理停止フラグ
  * @param count 発動回数
  * @return 作用が実際にあった場合TRUEを返す
  * @details
  * <pre>
  * rr9: Stop the nasty things when a Cyberdemon is summoned
- * or the player gets paralyzed.
+ * or the creature gets paralyzed.
  * </pre>
  */
-bool activate_ty_curse(PlayerType *player_ptr, bool stop_ty, int *count)
+bool activate_ty_curse(CreatureEntity &creature, bool stop_ty, int *count)
 {
     BIT_FLAGS flg = (PROJECT_GRID | PROJECT_ITEM | PROJECT_KILL | PROJECT_JUMP);
     bool is_first_curse = true;
-    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     while (is_first_curse || (one_in_(3) && !stop_ty)) {
         is_first_curse = false;
         switch (randint1(34)) {
@@ -108,7 +108,7 @@ bool activate_ty_curse(PlayerType *player_ptr, bool stop_ty, int *count)
         case 29:
             if (!(*count)) {
                 msg_print(_("地面が揺れた...", "The ground trembles..."));
-                earthquake(player_ptr, player_ptr->get_position(), 5 + randint0(10));
+                earthquake(creature, creature.get_position(), 5 + randint0(10));
                 if (!one_in_(6)) {
                     break;
                 }
@@ -119,8 +119,8 @@ bool activate_ty_curse(PlayerType *player_ptr, bool stop_ty, int *count)
             if (!(*count)) {
                 int dam = Dice::roll(10, 10);
                 msg_print(_("純粋な魔力の次元への扉が開いた！", "A portal opens to a plane of raw mana!"));
-                project(player_ptr, 0, 8, player_ptr->y, player_ptr->x, dam, AttributeType::MANA, flg);
-                take_hit(player_ptr, DAMAGE_NOESCAPE, dam, _("純粋な魔力の解放", "released pure mana"));
+                project(creature, 0, 8, creature.y, creature.x, dam, AttributeType::MANA, flg);
+                take_hit(creature, DAMAGE_NOESCAPE, dam, _("純粋な魔力の解放", "released pure mana"));
                 if (!one_in_(6)) {
                     break;
                 }
@@ -130,9 +130,9 @@ bool activate_ty_curse(PlayerType *player_ptr, bool stop_ty, int *count)
         case 33:
             if (!(*count)) {
                 msg_print(_("周囲の空間が歪んだ！", "Space warps about you!"));
-                teleport_player(player_ptr, Dice::roll(10, 10), TELEPORT_PASSIVE);
+                teleport_player(creature, Dice::roll(10, 10), TELEPORT_PASSIVE);
                 if (randint0(13)) {
-                    (*count) += activate_hi_summon(player_ptr, player_ptr->y, player_ptr->x, false);
+                    (*count) += activate_hi_summon(creature, creature.y, creature.x, false);
                 }
                 if (!one_in_(6)) {
                     break;
@@ -141,10 +141,10 @@ bool activate_ty_curse(PlayerType *player_ptr, bool stop_ty, int *count)
             [[fallthrough]];
         case 34:
             msg_print(_("エネルギーのうねりを感じた！", "You feel a surge of energy!"));
-            wall_breaker(player_ptr);
+            wall_breaker(creature);
             if (!randint0(7)) {
-                project(player_ptr, 0, 7, player_ptr->y, player_ptr->x, 50, AttributeType::KILL_WALL, flg);
-                take_hit(player_ptr, DAMAGE_NOESCAPE, 50, _("エネルギーのうねり", "surge of energy"));
+                project(creature, 0, 7, creature.y, creature.x, 50, AttributeType::KILL_WALL, flg);
+                take_hit(creature, DAMAGE_NOESCAPE, 50, _("エネルギーのうねり", "surge of energy"));
             }
 
             if (!one_in_(6)) {
@@ -156,7 +156,7 @@ bool activate_ty_curse(PlayerType *player_ptr, bool stop_ty, int *count)
         case 3:
         case 16:
         case 17:
-            aggravate_monsters(player_ptr, 0);
+            aggravate_monsters(creature, 0);
             if (!one_in_(6)) {
                 break;
             }
@@ -164,7 +164,7 @@ bool activate_ty_curse(PlayerType *player_ptr, bool stop_ty, int *count)
         case 4:
         case 5:
         case 6:
-            (*count) += activate_hi_summon(player_ptr, player_ptr->y, player_ptr->x, false);
+            (*count) += activate_hi_summon(creature, creature.y, creature.x, false);
             if (!one_in_(6)) {
                 break;
             }
@@ -173,7 +173,7 @@ bool activate_ty_curse(PlayerType *player_ptr, bool stop_ty, int *count)
         case 8:
         case 9:
         case 18:
-            (*count) += summon_specific(player_ptr, player_ptr->y, player_ptr->x, floor.dun_level, SUMMON_NONE, (PM_ALLOW_GROUP | PM_ALLOW_UNIQUE | PM_NO_PET)) ? 1 : 0;
+            (*count) += summon_specific(creature, creature.y, creature.x, floor.dun_level, SUMMON_NONE, (PM_ALLOW_GROUP | PM_ALLOW_UNIQUE | PM_NO_PET)) ? 1 : 0;
             if (!one_in_(6)) {
                 break;
             }
@@ -182,7 +182,7 @@ bool activate_ty_curse(PlayerType *player_ptr, bool stop_ty, int *count)
         case 11:
         case 12:
             msg_print(_("経験値が体から吸い取られた気がする！", "You feel your experience draining away..."));
-            lose_exp(static_cast<CreatureEntity &>(*player_ptr), player_ptr->exp / 16);
+            lose_exp(creature, creature.get_exp() / 16);
             if (!one_in_(6)) {
                 break;
             }
@@ -193,12 +193,12 @@ bool activate_ty_curse(PlayerType *player_ptr, bool stop_ty, int *count)
         case 19:
         case 20: {
             auto is_statue = stop_ty;
-            is_statue |= player_ptr->free_act && (randint1(125) < player_ptr->skill_sav);
-            is_statue |= PlayerClass(player_ptr).equals(PlayerClassType::BERSERKER);
+            is_statue |= creature.has_free_act() && (randint1(125) < creature.get_skill_save());
+            is_statue |= CreatureClass(creature).equals(PlayerClassType::BERSERKER);
             if (!is_statue) {
                 msg_print(_("彫像になった気分だ！", "You feel like a statue!"));
-                TIME_EFFECT turns = player_ptr->free_act ? randint1(3) : randint1(13);
-                (void)BadStatusSetter(player_ptr).mod_paralysis(turns);
+                TIME_EFFECT turns = creature.has_free_act() ? randint1(3) : randint1(13);
+                (void)BadStatusSetter(creature).mod_paralysis(turns);
                 stop_ty = true;
             }
 
@@ -210,21 +210,21 @@ bool activate_ty_curse(PlayerType *player_ptr, bool stop_ty, int *count)
         case 21:
         case 22:
         case 23:
-            (void)do_dec_stat(player_ptr, randint0(6));
+            (void)do_dec_stat(creature, randint0(6));
             if (!one_in_(6)) {
                 break;
             }
             [[fallthrough]];
         case 24:
             msg_print(_("ほえ？私は誰？ここで何してる？", "Huh? Who am I? What am I doing here?"));
-            lose_all_info(player_ptr);
+            lose_all_info(creature);
             if (!one_in_(6)) {
                 break;
             }
             [[fallthrough]];
         case 25:
             if ((floor.dun_level > 65) && !stop_ty) {
-                (*count) += summon_cyber(player_ptr, player_ptr->y, player_ptr->x);
+                (*count) += summon_cyber(creature, creature.y, creature.x);
                 stop_ty = true;
                 break;
             }
@@ -236,7 +236,7 @@ bool activate_ty_curse(PlayerType *player_ptr, bool stop_ty, int *count)
         default:
             for (int i = 0; i < A_MAX; i++) {
                 do {
-                    (void)do_dec_stat(player_ptr, i);
+                    (void)do_dec_stat(creature, i);
                 } while (one_in_(2));
             }
         }
@@ -247,10 +247,10 @@ bool activate_ty_curse(PlayerType *player_ptr, bool stop_ty, int *count)
 
 /*!
  * @brief 運命の輪、並びにカオス的な効果の発動
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param spell ランダムな効果を選択するための基準ID
  */
-void wild_magic(PlayerType *player_ptr, int spell)
+void wild_magic(CreatureEntity &creature, int spell)
 {
     int type = SUMMON_MOLD + randint0(6);
     if (type < SUMMON_MOLD) {
@@ -259,93 +259,93 @@ void wild_magic(PlayerType *player_ptr, int spell)
         type = SUMMON_MIMIC;
     }
 
-    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     switch (randint1(spell) + randint1(8) + 1) {
     case 1:
     case 2:
     case 3:
-        teleport_player(player_ptr, 10, TELEPORT_PASSIVE);
+        teleport_player(creature, 10, TELEPORT_PASSIVE);
         break;
     case 4:
     case 5:
     case 6:
-        teleport_player(player_ptr, 100, TELEPORT_PASSIVE);
+        teleport_player(creature, 100, TELEPORT_PASSIVE);
         break;
     case 7:
     case 8:
-        teleport_player(player_ptr, 200, TELEPORT_PASSIVE);
+        teleport_player(creature, 200, TELEPORT_PASSIVE);
         break;
     case 9:
     case 10:
     case 11:
-        unlite_area(player_ptr, 10, 3);
+        unlite_area(creature, 10, 3);
         break;
     case 12:
     case 13:
     case 14:
-        lite_area(player_ptr, Dice::roll(2, 3), 2);
+        lite_area(creature, Dice::roll(2, 3), 2);
         break;
     case 15:
-        destroy_doors_touch(player_ptr);
+        destroy_doors_touch(creature);
         break;
     case 16:
     case 17:
-        wall_breaker(player_ptr);
+        wall_breaker(creature);
         break;
     case 18:
-        sleep_monsters_touch(player_ptr);
+        sleep_monsters_touch(creature);
         break;
     case 19:
     case 20:
-        trap_creation(player_ptr, player_ptr->y, player_ptr->x);
+        trap_creation(creature, creature.y, creature.x);
         break;
     case 21:
     case 22:
-        door_creation(player_ptr, player_ptr->y, player_ptr->x);
+        door_creation(creature, creature.y, creature.x);
         break;
     case 23:
     case 24:
     case 25:
-        aggravate_monsters(player_ptr, 0);
+        aggravate_monsters(creature, 0);
         break;
     case 26:
-        earthquake(player_ptr, player_ptr->get_position(), 5);
+        earthquake(creature, creature.get_position(), 5);
         break;
     case 27:
     case 28:
-        (void)gain_mutation(*player_ptr, 0);
+        (void)gain_mutation(creature, 0);
         break;
     case 29:
     case 30:
-        apply_disenchant(player_ptr, 1);
+        apply_disenchant(creature, 1);
         break;
     case 31:
-        lose_all_info(player_ptr);
+        lose_all_info(creature);
         break;
     case 32:
-        fire_ball(player_ptr, AttributeType::CHAOS, Direction::self(), spell + 5, 1 + (spell / 10));
+        fire_ball(creature, AttributeType::CHAOS, Direction::self(), spell + 5, 1 + (spell / 10));
         break;
     case 33:
-        wall_stone(player_ptr);
+        wall_stone(creature);
         break;
     case 34:
     case 35:
         for (int counter = 0; counter < 8; counter++) {
             (void)summon_specific(
-                player_ptr, player_ptr->y, player_ptr->x, (floor.dun_level * 3) / 2, i2enum<summon_type>(type), (PM_ALLOW_GROUP | PM_NO_PET));
+                creature, creature.y, creature.x, (floor.dun_level * 3) / 2, i2enum<summon_type>(type), (PM_ALLOW_GROUP | PM_NO_PET));
         }
 
         break;
     case 36:
     case 37:
-        activate_hi_summon(player_ptr, player_ptr->y, player_ptr->x, false);
+        activate_hi_summon(creature, creature.y, creature.x, false);
         break;
     case 38:
-        (void)summon_cyber(player_ptr, player_ptr->y, player_ptr->x);
+        (void)summon_cyber(creature, creature.y, creature.x);
         break;
     default: {
         int count = 0;
-        (void)activate_ty_curse(player_ptr, false, &count);
+        (void)activate_ty_curse(creature, false, &count);
         break;
     }
     }
@@ -353,23 +353,23 @@ void wild_magic(PlayerType *player_ptr, int spell)
 
 /*!
  * @brief 「ワンダー」のランダムな効果を決定して処理する。
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param dir 方向ID
  * @details
  * This spell should become more useful (more controlled) as the\n
- * player gains experience levels.  Thus, add 1/5 of the player's\n
+ * creature gains experience levels.  Thus, add 1/5 of the creature's\n
  * level to the die roll.  This eliminates the worst effects later on,\n
  * while keeping the results quite random.  It also allows some potent\n
  * effects only at high level.
  */
-void cast_wonder(PlayerType *player_ptr, const Direction &dir)
+void cast_wonder(CreatureEntity &creature, const Direction &dir)
 {
-    PLAYER_LEVEL plev = player_ptr->level;
+    PLAYER_LEVEL plev = creature.get_level();
     int die = randint1(100) + plev / 5;
-    int vir = virtue_number(static_cast<CreatureEntity &>(*player_ptr), Virtue::CHANCE);
+    int vir = virtue_number(creature, Virtue::CHANCE);
     if (vir) {
-        auto it = player_ptr->virtues.find(Virtue::CHANCE);
-        if (it != player_ptr->virtues.end()) {
+        auto it = creature.virtues.find(Virtue::CHANCE);
+        if (it != creature.virtues.end()) {
             if (it->second > 0) {
                 while (randint1(400) < it->second) {
                     die++;
@@ -383,7 +383,7 @@ void cast_wonder(PlayerType *player_ptr, const Direction &dir)
     }
 
     if (die < 26) {
-        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::CHANCE, 1);
+        chg_virtue(creature, Virtue::CHANCE, 1);
     }
 
     if (die > 100) {
@@ -391,117 +391,117 @@ void cast_wonder(PlayerType *player_ptr, const Direction &dir)
     }
 
     if (die < 8) {
-        clone_monster(player_ptr, dir);
+        clone_monster(creature, dir);
         return;
     }
 
     if (die < 14) {
-        speed_monster(player_ptr, dir, plev);
+        speed_monster(creature, dir, plev);
         return;
     }
 
     if (die < 26) {
-        heal_monster(player_ptr, dir, Dice::roll(4, 6));
+        heal_monster(creature, dir, Dice::roll(4, 6));
         return;
     }
 
     if (die < 31) {
-        poly_monster(player_ptr, dir, plev);
+        poly_monster(creature, dir, plev);
         return;
     }
 
     if (die < 36) {
-        fire_bolt_or_beam(player_ptr, beam_chance(player_ptr) - 10, AttributeType::MISSILE, dir, Dice::roll(3 + ((plev - 1) / 5), 4));
+        fire_bolt_or_beam(creature, beam_chance(creature) - 10, AttributeType::MISSILE, dir, Dice::roll(3 + ((plev - 1) / 5), 4));
         return;
     }
 
     if (die < 41) {
-        confuse_monster(player_ptr, dir, plev);
+        confuse_monster(creature, dir, plev);
         return;
     }
 
     if (die < 46) {
-        fire_ball(player_ptr, AttributeType::POIS, dir, 20 + (plev / 2), 3);
+        fire_ball(creature, AttributeType::POIS, dir, 20 + (plev / 2), 3);
         return;
     }
 
     if (die < 51) {
-        (void)lite_line(player_ptr, dir, Dice::roll(6, 8));
+        (void)lite_line(creature, dir, Dice::roll(6, 8));
         return;
     }
 
     if (die < 56) {
-        fire_bolt_or_beam(player_ptr, beam_chance(player_ptr) - 10, AttributeType::ELEC, dir, Dice::roll(3 + ((plev - 5) / 4), 8));
+        fire_bolt_or_beam(creature, beam_chance(creature) - 10, AttributeType::ELEC, dir, Dice::roll(3 + ((plev - 5) / 4), 8));
         return;
     }
 
     if (die < 61) {
-        fire_bolt_or_beam(player_ptr, beam_chance(player_ptr) - 10, AttributeType::COLD, dir, Dice::roll(5 + ((plev - 5) / 4), 8));
+        fire_bolt_or_beam(creature, beam_chance(creature) - 10, AttributeType::COLD, dir, Dice::roll(5 + ((plev - 5) / 4), 8));
         return;
     }
 
     if (die < 66) {
-        fire_bolt_or_beam(player_ptr, beam_chance(player_ptr), AttributeType::ACID, dir, Dice::roll(6 + ((plev - 5) / 4), 8));
+        fire_bolt_or_beam(creature, beam_chance(creature), AttributeType::ACID, dir, Dice::roll(6 + ((plev - 5) / 4), 8));
         return;
     }
 
     if (die < 71) {
-        fire_bolt_or_beam(player_ptr, beam_chance(player_ptr), AttributeType::FIRE, dir, Dice::roll(8 + ((plev - 5) / 4), 8));
+        fire_bolt_or_beam(creature, beam_chance(creature), AttributeType::FIRE, dir, Dice::roll(8 + ((plev - 5) / 4), 8));
         return;
     }
 
     if (die < 76) {
-        hypodynamic_bolt(player_ptr, dir, 75);
+        hypodynamic_bolt(creature, dir, 75);
         return;
     }
 
     if (die < 81) {
-        fire_ball(player_ptr, AttributeType::ELEC, dir, 30 + plev / 2, 2);
+        fire_ball(creature, AttributeType::ELEC, dir, 30 + plev / 2, 2);
         return;
     }
 
     if (die < 86) {
-        fire_ball(player_ptr, AttributeType::ACID, dir, 40 + plev, 2);
+        fire_ball(creature, AttributeType::ACID, dir, 40 + plev, 2);
         return;
     }
 
     if (die < 91) {
-        fire_ball(player_ptr, AttributeType::ICE, dir, 70 + plev, 3);
+        fire_ball(creature, AttributeType::ICE, dir, 70 + plev, 3);
         return;
     }
 
     if (die < 96) {
-        fire_ball(player_ptr, AttributeType::FIRE, dir, 80 + plev, 3);
+        fire_ball(creature, AttributeType::FIRE, dir, 80 + plev, 3);
         return;
     }
 
     if (die < 101) {
-        hypodynamic_bolt(player_ptr, dir, 100 + plev);
+        hypodynamic_bolt(creature, dir, 100 + plev);
         return;
     }
 
     if (die < 104) {
-        earthquake(player_ptr, player_ptr->get_position(), 12);
+        earthquake(creature, creature.get_position(), 12);
         return;
     }
 
     if (die < 106) {
-        (void)destroy_area(player_ptr, player_ptr->y, player_ptr->x, 13 + randint0(5), false);
+        (void)destroy_area(creature, creature.y, creature.x, 13 + randint0(5), false);
         return;
     }
 
     if (die < 108) {
-        symbol_genocide(player_ptr, plev + 50, true);
+        symbol_genocide(creature, plev + 50, true);
         return;
     }
 
     if (die < 110) {
-        dispel_monsters(player_ptr, 120);
+        dispel_monsters(creature, 120);
         return;
     }
 
-    dispel_monsters(player_ptr, 150);
-    slow_monsters(player_ptr, plev);
-    sleep_monsters(player_ptr, plev);
-    hp_player(player_ptr, 300);
+    dispel_monsters(creature, 150);
+    slow_monsters(creature, plev);
+    sleep_monsters(creature, plev);
+    hp_player(creature, 300);
 }

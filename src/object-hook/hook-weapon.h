@@ -1,5 +1,5 @@
 #pragma once
 
+class CreatureEntity;
 class ItemEntity;
-class PlayerType;
-bool object_is_favorite(PlayerType *player_ptr, const ItemEntity *o_ptr);
+bool object_is_favorite(CreatureEntity &creature, const ItemEntity *o_ptr);

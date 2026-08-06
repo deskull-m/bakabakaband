@@ -4,11 +4,11 @@
 #include "room/space-finder.h"
 #include "store/store.h"
 #include "system/angband-exceptions.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/floor/town-list.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "system/terrain/terrain-definition.h"
 #include "system/terrain/terrain-list.h"
 #include "wizard/wizard-messages.h"
@@ -64,7 +64,7 @@ tl::optional<std::vector<UndergroundBuilding>> precalc_ugarcade(int town_hgt, in
 }
 
 /* Create a new floor room with optional light */
-void generate_room_floor(PlayerType *player_ptr, const Rect2D &rectangle, int light)
+void generate_room_floor(CreatureEntity &creature, const Rect2D &rectangle, int light)
 {
     auto info = CAVE_ROOM;
     if (light) {
@@ -72,48 +72,48 @@ void generate_room_floor(PlayerType *player_ptr, const Rect2D &rectangle, int li
     }
 
     for (const auto &pos : rectangle) {
-        auto &grid = player_ptr->current_floor_ptr->get_grid(pos);
-        place_grid(player_ptr, grid, GB_FLOOR);
+        auto &grid = creature.get_floor()->get_grid(pos);
+        place_grid(creature, grid, GB_FLOOR);
         grid.add_info(info);
     }
 }
 
-void generate_fill_perm_bold(PlayerType *player_ptr, const Rect2D &rectangle)
+void generate_fill_perm_bold(CreatureEntity &creature, const Rect2D &rectangle)
 {
     for (const auto &pos : rectangle) {
-        place_bold(player_ptr, pos.y, pos.x, GB_INNER_PERM);
+        place_bold(creature, pos.y, pos.x, GB_INNER_PERM);
     }
 }
 
 /*!
  * @brief タイプ16の部屋…地下都市生成のサブルーチン / Actually create buildings
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param pos_ug 地下都市エリアの左上座標
  * @param underground_buildings 生成する店舗のリスト
  */
-void build_stores(PlayerType *player_ptr, const Pos2D &pos_ug, const std::vector<UndergroundBuilding> &underground_buildings)
+void build_stores(CreatureEntity &creature, const Pos2D &pos_ug, const std::vector<UndergroundBuilding> &underground_buildings)
 {
     for (const auto &ug_building : underground_buildings) {
         const auto &rectangle = ug_building.get_outer_room(pos_ug);
-        generate_room_floor(player_ptr, rectangle, false);
+        generate_room_floor(creature, rectangle, false);
     }
 
     for (auto i = 0; i < std::ssize(underground_buildings); i++) {
         const auto &ug_building = underground_buildings[i];
         const auto &rectangle = ug_building.get_inner_room(pos_ug);
-        generate_fill_perm_bold(player_ptr, rectangle);
+        generate_fill_perm_bold(creature, rectangle);
         const auto vec = ug_building.pick_door_direction();
         const auto &terrains = TerrainList::get_instance();
         const auto end = terrains.end();
         const auto it = std::find_if(terrains.begin(), end,
-            [subtype = stores[i]](const TerrainType &terrain) {
-                return terrain.flags.has(TerrainCharacteristics::STORE) && (i2enum<StoreSaleType>(static_cast<int>(terrain.subtype)) == subtype);
+            [store_sale_type = stores[i]](const TerrainType &terrain) {
+                return terrain.flags.has(TerrainCharacteristics::STORE) && (terrain.store_sale_type == store_sale_type);
             });
         if (it == end) {
             continue;
         }
 
-        set_terrain_id_to_grid(player_ptr, pos_ug + vec, it->idx);
+        set_terrain_id_to_grid(creature, pos_ug + vec, it->idx);
         store_init(VALID_TOWNS, stores[i]);
     }
 }
@@ -211,7 +211,7 @@ Rect2D UndergroundBuilding::get_inner_room(const Pos2D &pos_ug) const
  * This function does NOT do anything about the owners of the stores,\n
  * nor the contents thereof.  It only handles the physical layout.\n
  */
-bool build_type16(PlayerType *player_ptr, DungeonData *dd_ptr)
+bool build_type16(CreatureEntity &creature, DungeonData *dd_ptr)
 {
     const auto town_hgt = rand_range(MIN_TOWN_HGT, MAX_TOWN_HGT);
     const auto town_wid = rand_range(MIN_TOWN_WID, MAX_TOWN_WID);
@@ -220,7 +220,7 @@ bool build_type16(PlayerType *player_ptr, DungeonData *dd_ptr)
         return false;
     }
 
-    const auto center = find_space(player_ptr, dd_ptr, town_hgt + 10, town_wid + 10);
+    const auto center = find_space(creature, dd_ptr, town_hgt + 10, town_wid + 10);
     if (!center) {
         return false;
     }
@@ -230,8 +230,8 @@ bool build_type16(PlayerType *player_ptr, DungeonData *dd_ptr)
     const auto top_left = pos + vec_top_left;
     const Pos2DVec vec_bottom_right(town_hgt * 2 / 3, town_wid * 2 / 3);
     const auto bottom_right = pos + vec_bottom_right;
-    generate_room_floor(player_ptr, { top_left, bottom_right }, false);
-    build_stores(player_ptr, pos, *underground_buildings);
-    msg_print_wizard(player_ptr, CHEAT_DUNGEON, _("地下街を生成しました", "Underground arcade was generated."));
+    generate_room_floor(creature, { top_left, bottom_right }, false);
+    build_stores(creature, pos, *underground_buildings);
+    msg_print_wizard(creature, CHEAT_DUNGEON, _("地下街を生成しました", "Underground arcade was generated."));
     return true;
 }

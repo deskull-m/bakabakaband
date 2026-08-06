@@ -12,7 +12,6 @@
 #include "mspell/mspell-util.h"
 #include "player-info/race-info.h"
 #include "player/attack-defense-types.h"
-#include "player/player-status.h"
 #include "realm/realm-song-numbers.h"
 #include "spell-realm/spells-craft.h"
 #include "spell-realm/spells-crusade.h"
@@ -26,83 +25,82 @@
 #include "status/shape-changer.h"
 #include "status/sight-setter.h"
 #include "status/temporary-resistance.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
-#include "system/monster-entity.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "view/display-messages.h"
 
 /*!
  * @brief プレイヤーに魔力消去効果を与える。
  */
-static void dispel_player(PlayerType *player_ptr)
+static void dispel_player(CreatureEntity &creature)
 {
-    (void)set_acceleration(player_ptr, 0, true);
-    set_lightspeed(player_ptr, 0, true);
-    (void)BadStatusSetter(player_ptr).set_deceleration(0, true);
-    (void)set_shield(player_ptr, 0, true);
-    (void)set_blessed(player_ptr, 0, true);
-    (void)set_tsuyoshi(player_ptr, 0, true);
-    (void)set_hero(player_ptr, 0, true);
-    (void)set_berserk(player_ptr, 0, true);
-    BodyImprovement(player_ptr).set_protection(0, true);
-    (void)set_invuln(player_ptr, 0, true);
-    (void)set_wraith_form(player_ptr, 0, true);
-    (void)set_pass_wall(player_ptr, 0, true);
-    (void)set_tim_res_nether(player_ptr, 0, true);
-    (void)set_tim_res_time(player_ptr, 0, true);
-    (void)set_tim_res_lite(player_ptr, 0, true);
-    (void)set_tim_res_dark(player_ptr, 0, true);
-    (void)set_tim_res_fear(player_ptr, 0, true);
-    (void)set_tim_reflect(player_ptr, 0, true);
-    (void)set_multishadow(player_ptr, 0, true);
-    (void)set_dustrobe(player_ptr, 0, true);
+    (void)set_acceleration(creature, 0, true);
+    set_lightspeed(creature, 0, true);
+    (void)BadStatusSetter(creature).set_deceleration(0, true);
+    (void)set_shield(creature, 0, true);
+    (void)set_blessed(creature, 0, true);
+    (void)set_tsuyoshi(creature, 0, true);
+    (void)set_hero(creature, 0, true);
+    (void)set_berserk(creature, 0, true);
+    BodyImprovement(creature).set_protection(0, true);
+    (void)set_invuln(creature, 0, true);
+    (void)set_wraith_form(creature, 0, true);
+    (void)set_pass_wall(creature, 0, true);
+    (void)set_tim_res_nether(creature, 0, true);
+    (void)set_tim_res_time(creature, 0, true);
+    (void)set_tim_res_lite(creature, 0, true);
+    (void)set_tim_res_dark(creature, 0, true);
+    (void)set_tim_res_fear(creature, 0, true);
+    (void)set_tim_reflect(creature, 0, true);
+    (void)set_multishadow(creature, 0, true);
+    (void)set_dustrobe(creature, 0, true);
 
-    (void)set_tim_invis(player_ptr, 0, true);
-    (void)set_tim_infra(player_ptr, 0, true);
-    (void)set_tim_esp(player_ptr, 0, true);
-    (void)set_tim_regen(player_ptr, 0, true);
-    (void)set_tim_stealth(player_ptr, 0, true);
-    (void)set_tim_levitation(player_ptr, 0, true);
-    (void)set_tim_sh_force(player_ptr, 0, true);
-    (void)set_tim_sh_fire(player_ptr, 0, true);
-    (void)set_tim_sh_holy(player_ptr, 0, true);
-    (void)set_tim_eyeeye(player_ptr, 0, true);
-    (void)set_magicdef(player_ptr, 0, true);
-    (void)set_resist_magic(player_ptr, 0, true);
-    (void)set_oppose_acid(player_ptr, 0, true);
-    (void)set_oppose_elec(player_ptr, 0, true);
-    (void)set_oppose_fire(player_ptr, 0, true);
-    (void)set_oppose_cold(player_ptr, 0, true);
-    (void)set_oppose_pois(player_ptr, 0, true);
-    (void)set_ultimate_res(player_ptr, 0, true);
-    (void)set_mimic(player_ptr, 0, MimicKindType::NONE, true);
-    (void)set_ele_attack(player_ptr, 0, 0);
-    (void)set_ele_immune(player_ptr, 0, 0);
-    (void)set_tim_emission(player_ptr, 0, true);
-    (void)set_tim_exorcism(player_ptr, 0, true);
-    (void)set_tim_imm_dark(player_ptr, 0, true);
+    (void)set_tim_invis(creature, 0, true);
+    (void)set_tim_infra(creature, 0, true);
+    (void)set_tim_esp(creature, 0, true);
+    (void)set_tim_regen(creature, 0, true);
+    (void)set_tim_stealth(creature, 0, true);
+    (void)set_tim_levitation(creature, 0, true);
+    (void)set_tim_sh_force(creature, 0, true);
+    (void)set_tim_sh_fire(creature, 0, true);
+    (void)set_tim_sh_holy(creature, 0, true);
+    (void)set_tim_eyeeye(creature, 0, true);
+    (void)set_magicdef(creature, 0, true);
+    (void)set_resist_magic(creature, 0, true);
+    (void)set_oppose_acid(creature, 0, true);
+    (void)set_oppose_elec(creature, 0, true);
+    (void)set_oppose_fire(creature, 0, true);
+    (void)set_oppose_cold(creature, 0, true);
+    (void)set_oppose_pois(creature, 0, true);
+    (void)set_ultimate_res(creature, 0, true);
+    (void)set_mimic(creature, 0, MimicKindType::NONE, true);
+    (void)set_ele_attack(creature, 0, 0);
+    (void)set_ele_immune(creature, 0, 0);
+    (void)set_tim_emission(creature, 0, true);
+    (void)set_tim_exorcism(creature, 0, true);
+    (void)set_tim_imm_dark(creature, 0, true);
 
-    if (player_ptr->special_attack & ATTACK_CONFUSE) {
-        player_ptr->special_attack &= ~(ATTACK_CONFUSE);
+    if (creature.has_special_attack(ATTACK_CONFUSE)) {
+        creature.remove_special_attack(ATTACK_CONFUSE);
         msg_print(_("手の輝きがなくなった。", "Your hands stop glowing."));
     }
 
-    auto song_interruption = music_singing_any(player_ptr);
-    auto spellhex_interruption = SpellHex(player_ptr).is_spelling_any();
+    auto song_interruption = music_singing_any(creature);
+    auto spellhex_interruption = SpellHex(creature).is_spelling_any();
 
     if (song_interruption || spellhex_interruption) {
         if (song_interruption) {
-            set_interrupting_song_effect(player_ptr, get_singing_song_effect(player_ptr));
-            set_singing_song_effect(player_ptr, MUSIC_NONE);
+            set_interrupting_song_effect(creature, get_singing_song_effect(creature));
+            set_singing_song_effect(creature, MUSIC_NONE);
             msg_print(_("歌が途切れた。", "Your singing is interrupted."));
         }
         if (spellhex_interruption) {
-            SpellHex(player_ptr).interrupt_spelling();
+            SpellHex(creature).interrupt_spelling();
             msg_print(_("呪文が途切れた。", "Your casting is interrupted."));
         }
 
-        player_ptr->action = ACTION_NONE;
+        creature.set_action(ACTION_NONE);
         auto &rfu = RedrawingFlagsUpdater::get_instance();
         static constexpr auto flags_srf = {
             StatusRecalculatingFlag::BONUS,
@@ -121,20 +119,20 @@ static void dispel_player(PlayerType *player_ptr)
             SubWindowRedrawingFlag::DUNGEON,
         };
         rfu.set_flags(flags_swrf);
-        player_ptr->energy_need += ENERGY_NEED();
+        creature.add_energy_need(ENERGY_NEED());
     }
 }
 
 /*!
  * @brief RF4_DISPELの処理。魔力消去。 /
  * @param m_idx 呪文を唱えるモンスターID
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param t_idx 呪文を受けるモンスターID。プレイヤーの場合はdummyで0とする。
  * @param target_type プレイヤーを対象とする場合MONSTER_TO_PLAYER、モンスターを対象とする場合MONSTER_TO_MONSTER
  *
  * プレイヤーが対象ならラーニング可。
  */
-MonsterSpellResult spell_RF4_DISPEL(MONSTER_IDX m_idx, PlayerType *player_ptr, MONSTER_IDX t_idx, int target_type)
+MonsterSpellResult spell_RF4_DISPEL(MONSTER_IDX m_idx, CreatureEntity &creature, MONSTER_IDX t_idx, int target_type)
 {
     auto res = MonsterSpellResult::make_valid();
     res.learnable = target_type == MONSTER_TO_PLAYER;
@@ -142,36 +140,36 @@ MonsterSpellResult spell_RF4_DISPEL(MONSTER_IDX m_idx, PlayerType *player_ptr, M
     mspell_cast_msg_blind msg(_("%s^が何かを力強くつぶやいた。", "%s^ mumbles powerfully."),
         _("%s^が魔力消去の呪文を念じた。", "%s^ invokes a dispel magic."), _("%s^が%sに対して魔力消去の呪文を念じた。", "%s^ invokes a dispel magic at %s."));
 
-    monspell_message(player_ptr, m_idx, t_idx, msg, target_type);
+    monspell_message(creature, m_idx, t_idx, msg, target_type);
 
     if (target_type == MONSTER_TO_PLAYER) {
-        dispel_player(player_ptr);
-        if (player_ptr->riding) {
-            dispel_monster_status(player_ptr, player_ptr->riding);
+        dispel_player(creature);
+        if (creature.get_riding()) {
+            dispel_monster_status(creature, creature.get_riding());
         }
 
-        if (is_echizen(player_ptr)) {
+        if (creature.is_echizen()) {
             msg_print(_("やりやがったな！", ""));
-        } else if (is_chargeman(player_ptr)) {
+        } else if (creature.is_chargeman()) {
             if (randint0(2) == 0) {
                 msg_print(_("ジュラル星人め！", ""));
             } else {
                 msg_print(_("弱い者いじめは止めるんだ！", ""));
             }
-        } else if (is_tough(player_ptr)) {
+        } else if (creature.is_tough()) {
             msg_print(_("う わ あ あ あ あ あ あ あ あ", ""));
         }
 
         return res;
     }
-    const auto &floor = *player_ptr->current_floor_ptr;
-    const auto &target = floor.m_list[t_idx];
+    const auto &floor = *creature.get_floor();
+    const auto &target = floor.get_monster(t_idx);
     if (target_type == MONSTER_TO_MONSTER) {
         if (target.is_riding()) {
-            dispel_player(player_ptr);
+            dispel_player(creature);
         }
 
-        dispel_monster_status(player_ptr, t_idx);
+        dispel_monster_status(creature, t_idx);
     }
 
     return res;

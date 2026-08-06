@@ -1,16 +1,16 @@
 #pragma once
 
-#include "system/angband.h"
-
-enum class WishResultType { FAIL = -1,
+enum class WishResultType {
+    FAIL = -1,
     NOTHING = 0,
     NORMAL = 1,
     EGO = 2,
     ARTIFACT = 3,
-    MAX };
+    MAX
+};
 
-class PlayerType;
-void wizard_item_modifier(PlayerType *player_ptr);
-void wiz_modify_item(PlayerType *player_ptr);
-WishResultType do_cmd_wishing(PlayerType *player_ptr, int prob, bool art_ok, bool ego_ok, bool confirm);
-void wiz_identify_full_inventory(PlayerType *player_ptr);
+class CreatureEntity;
+void wizard_item_modifier(CreatureEntity &creature);
+void wiz_modify_item(CreatureEntity &creature);
+WishResultType do_cmd_wishing(CreatureEntity &creature, int prob, bool art_ok, bool ego_ok, bool confirm);
+void wiz_identify_full_inventory(CreatureEntity &creature);

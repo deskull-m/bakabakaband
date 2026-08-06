@@ -9,7 +9,7 @@
 
 #include "system/angband.h"
 
-class PlayerType;
+class CreatureEntity;
 enum class MonraceId : int16_t;
 
 /*!
@@ -19,48 +19,48 @@ namespace AchievementChecker {
 
 /*!
  * @brief ダンジョン進入時の実績チェック
- * @param player_ptr プレイヤー情報への参照ポインタ
+ * @param creature クリーチャーへの参照
  */
-void check_dungeon_entry(PlayerType *player_ptr);
+void check_dungeon_entry(CreatureEntity &creature);
 
 /*!
  * @brief 階層到達時の実績チェック
- * @param player_ptr プレイヤー情報への参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param depth 現在の階層
  */
-void check_depth_reached(PlayerType *player_ptr, DEPTH depth);
+void check_depth_reached(CreatureEntity &creature, DEPTH depth);
 
 /*!
  * @brief モンスター撃破時の実績チェック
- * @param player_ptr プレイヤー情報への参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param monrace_id 撃破したモンスターの種族ID
  */
-void check_monster_kill(PlayerType *player_ptr, MonraceId monrace_id);
+void check_monster_kill(CreatureEntity &creature, MonraceId monrace_id);
 
 /*!
  * @brief レベルアップ時の実績チェック
- * @param player_ptr プレイヤー情報への参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param new_level 新しいレベル
  */
-void check_level_up(PlayerType *player_ptr, PLAYER_LEVEL new_level);
+void check_level_up(CreatureEntity &creature, PLAYER_LEVEL new_level);
 
 /*!
  * @brief アイテム入手時の実績チェック
- * @param player_ptr プレイヤー情報への参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param is_artifact ★かどうか
  */
-void check_item_acquisition(PlayerType *player_ptr, bool is_artifact);
+void check_item_acquisition(CreatureEntity &creature, bool is_artifact);
 
 /*!
  * @brief 死亡時の実績チェック
- * @param player_ptr プレイヤー情報への参照ポインタ
+ * @param creature クリーチャーへの参照
  */
-void check_death(PlayerType *player_ptr);
+void check_death(CreatureEntity &creature);
 
 /*!
  * @brief ゲームクリア時の実績チェック
- * @param player_ptr プレイヤー情報への参照ポインタ
+ * @param creature クリーチャーへの参照
  */
-void check_game_win(PlayerType *player_ptr);
+void check_game_win(CreatureEntity &creature);
 
 } // namespace AchievementChecker

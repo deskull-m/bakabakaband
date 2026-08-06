@@ -3,12 +3,12 @@
 #include "player-info/race-info.h"
 #include "player/player-personality-types.h"
 #include "racial/racial-util.h"
-#include "system/player-type-definition.h"
+#include "system/creature-entity.h"
 
-void set_mimic_racial_command(PlayerType *player_ptr, rc_type *rc_ptr)
+void set_mimic_racial_command(CreatureEntity &creature, rc_type *rc_ptr)
 {
     rpi_type rpi;
-    switch (player_ptr->mimic_form) {
+    switch (creature.get_mimic_form()) {
     case MimicKindType::NONE:
         return;
     case MimicKindType::DEMON:
@@ -42,10 +42,10 @@ void set_mimic_racial_command(PlayerType *player_ptr, rc_type *rc_ptr)
     }
 }
 
-void set_race_racial_command(PlayerType *player_ptr, rc_type *rc_ptr)
+void set_race_racial_command(CreatureEntity &creature, rc_type *rc_ptr)
 {
     rpi_type rpi;
-    switch (player_ptr->prace) {
+    switch (creature.prace) {
     case PlayerRaceType::DWARF:
         rpi = rpi_type(_("ドアと罠 感知", "Detect Doors+Traps"));
         rpi.text = _("近くの全ての扉と罠、階段を感知する。", "Detects traps, doors, and stairs in your vicinity.");
@@ -317,28 +317,28 @@ void set_race_racial_command(PlayerType *player_ptr, rc_type *rc_ptr)
         rc_ptr->add_power(rpi, RC_IDX_RACE_0);
         break;
     case PlayerRaceType::ANDROID:
-        if (player_ptr->level < 10) {
+        if (creature.get_level() < 10) {
             rpi = rpi_type(_("レイガン", "Ray Gun"));
             rpi.info = format("%s%d", KWD_DAM, (rc_ptr->lvl + 1) / 2);
             rpi.text = _("弱い魔法の矢を放つ。", "Fires a weak bolt of magic.");
             rpi.min_level = 1;
             rpi.cost = 7;
             rpi.fail = 8;
-        } else if (player_ptr->level < 25) {
+        } else if (creature.get_level() < 25) {
             rpi = rpi_type(_("ブラスター", "Blaster"));
             rpi.info = format("%s%d", KWD_DAM, rc_ptr->lvl);
             rpi.text = _("弱い魔法の矢を放つ。", "Fires a weak bolt of magic.");
             rpi.min_level = 10;
             rpi.cost = 13;
             rpi.fail = 10;
-        } else if (player_ptr->level < 35) {
+        } else if (creature.get_level() < 35) {
             rpi = rpi_type(_("バズーカ", "Bazooka"));
             rpi.info = format("%s%d", KWD_DAM, rc_ptr->lvl * 2);
             rpi.text = _("弱い魔法のボールを放つ。", "Fires a weak ball of magic.");
             rpi.min_level = 25;
             rpi.cost = 26;
             rpi.fail = 12;
-        } else if (player_ptr->level < 45) {
+        } else if (creature.get_level() < 45) {
             rpi = rpi_type(_("ビームキャノン", "Beam Cannon"));
             rpi.info = format("%s%d", KWD_DAM, rc_ptr->lvl * 2);
             rpi.text = _("弱い魔法のビームを放つ。", "Fires a beam of magic.");
@@ -371,14 +371,14 @@ void set_race_racial_command(PlayerType *player_ptr, rc_type *rc_ptr)
     }
 
     // 性格ベースのレイシャル能力
-    if (player_ptr->ppersonality == PERSONALITY_MESUGAKI) {
-        rpi_type rpi(_("社会的抹殺", "Social Genocide"));
-        rpi.info = format("%s%d", KWD_DAM, rc_ptr->lvl * 2 + 30);
-        rpi.text = _("男性の人間モンスターを社会的に抹殺するボルトを放つ。", "Fires a bolt that socially eliminates male human monsters.");
-        rpi.min_level = 1;
-        rpi.cost = 10;
-        rpi.stat = A_CHR;
-        rpi.fail = 5;
-        rc_ptr->add_power(rpi, RC_IDX_RACE_1);
+    if (creature.ppersonality == PERSONALITY_MESUGAKI) {
+        rpi_type rpi_personality(_("社会的抹殺", "Social Genocide"));
+        rpi_personality.info = format("%s%d", KWD_DAM, rc_ptr->lvl * 2 + 30);
+        rpi_personality.text = _("男性の人間モンスターを社会的に抹殺するボルトを放つ。", "Fires a bolt that socially eliminates male human monsters.");
+        rpi_personality.min_level = 1;
+        rpi_personality.cost = 10;
+        rpi_personality.stat = A_CHR;
+        rpi_personality.fail = 5;
+        rc_ptr->add_power(rpi_personality, RC_IDX_RACE_1);
     }
 }

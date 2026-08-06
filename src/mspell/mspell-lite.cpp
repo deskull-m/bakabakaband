@@ -14,12 +14,11 @@
 #include "player-base/player-class.h"
 #include "spell/range-calc.h"
 #include "system/angband-system.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
-#include "system/player-type-definition.h"
 #include "system/terrain/terrain-definition.h"
 #include "target/projection-path-calculator.h"
 #include "util/bit-flags-calculator.h"
@@ -28,14 +27,14 @@
 
 /*!
  * @brief モンスターがプレイヤーにダメージを与えるための最適な座標を算出する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param monster 技能を使用するモンスターへの参照
  * @param pos 最適な目標地点座標の座標
  * @param tc 射線に入れるのを避ける地形の所持フラグ
  * @param checker 射線判定の振り分け
  * @return 有効な座標があった場合はその座標、なかったらnullopt
  */
-static tl::optional<Pos2D> adjacent_grid_check(PlayerType *player_ptr, const MonsterEntity &monster, const Pos2D &pos, TerrainCharacteristics tc)
+static tl::optional<Pos2D> adjacent_grid_check(CreatureEntity &creature, const CreatureEntity &monster, const Pos2D &pos, TerrainCharacteristics tc)
 {
     constexpr std::array<std::array<int, 8>, 4> directions = {
         {
@@ -47,17 +46,17 @@ static tl::optional<Pos2D> adjacent_grid_check(PlayerType *player_ptr, const Mon
     };
 
     int next;
-    if (monster.y < player_ptr->y && monster.x < player_ptr->x) {
+    if (monster.y < creature.y && monster.x < creature.x) {
         next = 0;
-    } else if (monster.y < player_ptr->y) {
+    } else if (monster.y < creature.y) {
         next = 1;
-    } else if (monster.x < player_ptr->x) {
+    } else if (monster.x < creature.x) {
         next = 2;
     } else {
         next = 3;
     }
 
-    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto m_pos = monster.get_position();
     for (const auto direction : directions.at(next)) {
         const auto pos_next = pos + Direction(direction).vec();
@@ -85,7 +84,7 @@ static tl::optional<Pos2D> adjacent_grid_check(PlayerType *player_ptr, const Mon
     return tl::nullopt;
 }
 
-void decide_lite_range(PlayerType *player_ptr, msa_type *msa_ptr)
+void decide_lite_range(CreatureEntity &creature, msa_type *msa_ptr)
 {
     if (msa_ptr->ability_flags.has_not(MonsterAbilityType::BR_LITE)) {
         return;
@@ -93,7 +92,7 @@ void decide_lite_range(PlayerType *player_ptr, msa_type *msa_ptr)
 
     msa_ptr->y_br_lite = msa_ptr->y;
     msa_ptr->x_br_lite = msa_ptr->x;
-    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto pos_lite = msa_ptr->get_position_lite();
     if (los(floor, msa_ptr->m_ptr->get_position(), pos_lite)) {
         const auto &terrain = floor.get_grid(pos_lite).get_terrain();
@@ -101,7 +100,7 @@ void decide_lite_range(PlayerType *player_ptr, msa_type *msa_ptr)
             msa_ptr->ability_flags.reset(MonsterAbilityType::BR_LITE);
         }
     } else {
-        const auto pos = adjacent_grid_check(player_ptr, *msa_ptr->m_ptr, pos_lite, TerrainCharacteristics::LOS);
+        const auto pos = adjacent_grid_check(creature, *msa_ptr->m_ptr, pos_lite, TerrainCharacteristics::LOS);
         if (pos) {
             msa_ptr->set_position_lite(*pos);
         } else {
@@ -125,7 +124,7 @@ static void feature_projection(const FloorType &floor, msa_type *msa_ptr)
         return;
     }
 
-    if (msa_ptr->ability_flags.has(MonsterAbilityType::BR_DISI) && terrain.flags.has(TerrainCharacteristics::HURT_DISI) && one_in_(2)) {
+    if (msa_ptr->ability_flags.has(MonsterAbilityType::BR_DISI) && terrain.flags.has(TerrainCharacteristics::CAN_DISINTEGRATE) && one_in_(2)) {
         msa_ptr->do_spell = DO_SPELL_BR_DISI;
         return;
     }
@@ -135,15 +134,16 @@ static void feature_projection(const FloorType &floor, msa_type *msa_ptr)
     }
 }
 
-static void check_lite_area_by_mspell(PlayerType *player_ptr, msa_type *msa_ptr)
+static void check_lite_area_by_mspell(CreatureEntity &creature, msa_type *msa_ptr)
 {
     const auto &system = AngbandSystem::get_instance();
     auto light_by_disintegration = msa_ptr->ability_flags.has(MonsterAbilityType::BR_DISI);
-    light_by_disintegration &= msa_ptr->m_ptr->cdis < system.get_max_range() / 2;
     const auto pos = msa_ptr->get_position();
-    const auto p_pos = player_ptr->get_position();
+    const auto p_pos = creature.get_position();
     const auto m_pos = msa_ptr->m_ptr->get_position();
-    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto cdis = Grid::calc_distance(p_pos, m_pos);
+    light_by_disintegration &= cdis < system.get_max_range() / 2;
+    const auto &floor = *creature.get_floor();
     light_by_disintegration &= in_disintegration_range(floor, m_pos, pos);
     light_by_disintegration &= one_in_(10) || (projectable(floor, pos, m_pos) && one_in_(2));
     if (light_by_disintegration) {
@@ -153,7 +153,7 @@ static void check_lite_area_by_mspell(PlayerType *player_ptr, msa_type *msa_ptr)
     }
 
     auto light_by_lite = msa_ptr->ability_flags.has(MonsterAbilityType::BR_LITE);
-    light_by_lite &= msa_ptr->m_ptr->cdis < system.get_max_range() / 2;
+    light_by_lite &= cdis < system.get_max_range() / 2;
     light_by_lite &= los(floor, m_pos, pos);
     light_by_lite &= one_in_(5);
     if (light_by_lite) {
@@ -162,7 +162,7 @@ static void check_lite_area_by_mspell(PlayerType *player_ptr, msa_type *msa_ptr)
         return;
     }
 
-    if (msa_ptr->ability_flags.has_not(MonsterAbilityType::BA_LITE) || (msa_ptr->m_ptr->cdis > system.get_max_range())) {
+    if (msa_ptr->ability_flags.has_not(MonsterAbilityType::BA_LITE) || (cdis > system.get_max_range())) {
         return;
     }
 
@@ -173,22 +173,23 @@ static void check_lite_area_by_mspell(PlayerType *player_ptr, msa_type *msa_ptr)
     }
 }
 
-static void decide_lite_breath(msa_type *msa_ptr)
+static void decide_lite_breath(CreatureEntity &creature, msa_type *msa_ptr)
 {
     if (msa_ptr->success) {
         return;
     }
 
-    if (msa_ptr->m_ptr->target_y && msa_ptr->m_ptr->target_x) {
-        msa_ptr->y = msa_ptr->m_ptr->target_y;
-        msa_ptr->x = msa_ptr->m_ptr->target_x;
+    const auto target_pos = msa_ptr->m_ptr->get_target_position();
+    if (target_pos.y && target_pos.x) {
+        msa_ptr->y = target_pos.y;
+        msa_ptr->x = target_pos.x;
         msa_ptr->ability_flags &= RF_ABILITY_INDIRECT_MASK;
         msa_ptr->success = true;
     }
 
     auto should_set = msa_ptr->y_br_lite == 0;
     should_set |= msa_ptr->x_br_lite == 0;
-    should_set |= msa_ptr->m_ptr->cdis > AngbandSystem::get_instance().get_max_range() / 2;
+    should_set |= Grid::calc_distance(creature.get_position(), msa_ptr->m_ptr->get_position()) > AngbandSystem::get_instance().get_max_range() / 2;
     should_set |= !one_in_(5);
     if (should_set) {
         return;
@@ -205,45 +206,45 @@ static void decide_lite_breath(msa_type *msa_ptr)
     msa_ptr->success = true;
 }
 
-bool decide_lite_projection(PlayerType *player_ptr, msa_type *msa_ptr)
+bool decide_lite_projection(CreatureEntity &creature, msa_type *msa_ptr)
 {
-    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     if (projectable(floor, msa_ptr->m_ptr->get_position(), msa_ptr->get_position())) {
         feature_projection(floor, msa_ptr);
         return true;
     }
 
     msa_ptr->success = false;
-    check_lite_area_by_mspell(player_ptr, msa_ptr);
+    check_lite_area_by_mspell(creature, msa_ptr);
     if (!msa_ptr->success) {
-        const auto pos = adjacent_grid_check(player_ptr, *msa_ptr->m_ptr, msa_ptr->get_position(), TerrainCharacteristics::PROJECTION);
+        const auto pos = adjacent_grid_check(creature, *msa_ptr->m_ptr, msa_ptr->get_position(), TerrainCharacteristics::PROJECTION);
         msa_ptr->success = pos.has_value();
         if (pos) {
             msa_ptr->set_position(*pos);
         }
     }
 
-    decide_lite_breath(msa_ptr);
+    decide_lite_breath(creature, msa_ptr);
     return msa_ptr->success;
 }
 
-void decide_lite_area(PlayerType *player_ptr, msa_type *msa_ptr)
+void decide_lite_area(CreatureEntity &creature, msa_type *msa_ptr)
 {
     if (msa_ptr->ability_flags.has_not(MonsterAbilityType::DARKNESS)) {
         return;
     }
 
-    PlayerClass pc(player_ptr);
+    CreatureClass pc(creature);
     auto can_use_lite_area = pc.equals(PlayerClassType::NINJA);
-    can_use_lite_area &= !msa_ptr->m_ptr->has_undead_flag();
-    can_use_lite_area &= msa_ptr->r_ptr->resistance_flags.has_not(MonsterResistanceType::HURT_LITE);
-    can_use_lite_area &= (msa_ptr->r_ptr->brightness_flags.has_none_of(dark_mask));
+    can_use_lite_area &= msa_ptr->monrace->kind_flags.has_not(MonsterKindType::UNDEAD);
+    can_use_lite_area &= msa_ptr->monrace->resistance_flags.has_not(MonsterResistanceType::HURT_LITE);
+    can_use_lite_area &= (msa_ptr->monrace->brightness_flags.has_none_of(dark_mask));
 
-    if (msa_ptr->r_ptr->behavior_flags.has(MonsterBehaviorType::STUPID)) {
+    if (msa_ptr->monrace->behavior_flags.has(MonsterBehaviorType::STUPID)) {
         return;
     }
 
-    if (player_ptr->current_floor_ptr->get_dungeon_definition().flags.has(DungeonFeatureType::DARKNESS)) {
+    if (creature.get_floor()->get_dungeon_definition().flags.has(DungeonFeatureType::DARKNESS)) {
         msa_ptr->ability_flags.reset(MonsterAbilityType::DARKNESS);
         return;
     }

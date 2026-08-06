@@ -14,6 +14,7 @@
 #include "object/object-mark-types.h"
 #include "system/angband.h"
 #include "system/baseitem/baseitem-key.h"
+#include "system/item/identification-flags.h"
 #include "system/system-variables.h"
 #include "util/dice.h"
 #include "util/flag-group.h"
@@ -32,6 +33,7 @@ enum class SmithEffectType : short;
 class ActivationType;
 class ArtifactType;
 class BaseitemDefinition;
+class BaseitemRecord;
 class DisplaySymbol;
 class EgoItemDefinition;
 class MonraceDefinition;
@@ -60,8 +62,8 @@ public:
     RandomArtActType activation_id{}; /*!< エゴ/アーティファクトの発動ID / Extra info activation index */
     byte chest_level = 0; /*!< 箱の中身レベル */
     uint8_t captured_monster_speed = 0; /*!< 捕らえたモンスターの速度 */
-    short captured_monster_current_hp = 0; /*!< 捕らえたモンスターの現HP */
-    short captured_monster_max_hp = 0; /*!< 捕らえたモンスターの最大HP */
+    int32_t captured_monster_current_hp = 0; /*!< 捕らえたモンスターの現HP */
+    int32_t captured_monster_max_hp = 0; /*!< 捕らえたモンスターの最大HP */
     EnumClassFlagGroup<MonsterConstantFlagType> captured_monster_mflag2{}; /*!< 捕らえたモンスターのフラグ */
     ushort fuel = 0; /*!< 光源の残り寿命 / Extra info fuel or captured monster's current HP */
 
@@ -77,7 +79,7 @@ public:
 
     Dice damage_dice{}; /*!< Damage dice */
     TIME_EFFECT timeout{}; /*!< Timeout Counter */
-    byte ident{}; /*!< Special flags  */
+    EnumClassFlagGroup<IdentificationFlag> ident{}; /*!< 鑑定状態フラグ (旧 byte ident) */
     EnumClassFlagGroup<OmType> marked{}; /*!< Object is marked */
     tl::optional<std::string> inscription{}; /*!< Inscription */
     tl::optional<std::string> randart_name{}; /*!< Artifact name (random artifacts) */
@@ -85,7 +87,10 @@ public:
 
     TrFlags art_flags{}; /*!< Extra Flags for ego and artifacts */
     EnumClassFlagGroup<CurseTraitType> curse_flags{}; /*!< Flags for curse */
-    MONSTER_IDX held_m_idx{}; /*!< アイテムを所持しているモンスターID (いないなら 0) / Monster holding us (if any) */
+    MONSTER_IDX held_m_idx{}; /*!< [非推奨/移行中] アイテムを所持しているモンスターID (いないなら 0) / Monster holding us (if any).
+                               * フェーズ A-1〜A-3 でモンスター所持は inventory[] (CreatureEntity::inventory) に統合済み。
+                               * 本フィールドは旧 hold_o_idx_list 経路 (floor.o_list 上に held_m_idx を立てて保持を表現)
+                               * の併走用一時データであり、フェーズ A-4 で hold_o_idx_list と共に削除予定。 */
     RandomArtifactBias artifact_bias{}; /*!< ランダムアーティファクト生成時のバイアスID */
 
     void wipe();
@@ -159,10 +164,12 @@ public:
     bool has_bias() const;
     bool is_bounty() const;
     bool is_target_of(QuestId quest_id) const;
-    BaseitemDefinition &get_baseitem() const;
+    const BaseitemDefinition &get_baseitem() const;
+    BaseitemRecord &get_baseitem_record() const;
     EgoItemDefinition &get_ego() const;
     ArtifactType &get_fixed_artifact();
     const ArtifactType &get_fixed_artifact() const;
+    std::string get_fixed_artifact_name() const;
     TrFlags get_flags() const;
     TrFlags get_flags_known() const;
     std::string explain_activation() const;

@@ -12,42 +12,40 @@
 #include "player-info/monk-data-type.h"
 #include "player-info/samurai-data-type.h"
 #include "player/player-damage.h"
-#include "player/player-status.h"
 #include "player/special-defense-types.h"
 #include "status/bad-status-setter.h"
 #include "system/angband-system.h"
-#include "system/player-type-definition.h"
+#include "system/creature-entity.h"
 #include "system/redrawing-flags-updater.h"
-#include "timed-effect/timed-effects.h"
 #include "view/display-messages.h"
 #include "world/world.h"
 
 /*!
  * @brief 10ゲームターンが進行するごとにプレイヤーの腹を減らす
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
-void starve_player(PlayerType *player_ptr)
+void starve_player(CreatureEntity &creature)
 {
     if (AngbandSystem::get_instance().is_phase_out()) {
         return;
     }
 
-    if (player_ptr->food >= PY_FOOD_MAX) {
-        (void)set_food(player_ptr, player_ptr->food - 100);
+    if (creature.get_food() >= PY_FOOD_MAX) {
+        (void)set_food(creature, creature.get_food() - 100);
     } else if (AngbandWorld::get_instance().game_turn % (TURNS_PER_TICK * 5) == 0) {
-        int digestion = speed_to_energy(static_cast<CreatureEntity &>(*player_ptr).get_speed());
-        if (player_ptr->regenerate) {
+        int digestion = speed_to_energy(static_cast<byte>(creature.get_speed()));
+        if (creature.has_regen_flag()) {
             digestion += 20;
         }
-        PlayerClass pc(player_ptr);
+        CreatureClass pc(creature);
         if (!pc.monk_stance_is(MonkStanceType::NONE) || !pc.samurai_stance_is(SamuraiStanceType::NONE)) {
             digestion += 20;
         }
-        if (player_ptr->cursed.has(CurseTraitType::FAST_DIGEST)) {
+        if (creature.get_cursed_flags().has(CurseTraitType::FAST_DIGEST)) {
             digestion += 30;
         }
 
-        if (player_ptr->slow_digest) {
+        if (creature.has_slow_digest_flag()) {
             digestion -= 5;
         }
 
@@ -58,27 +56,27 @@ void starve_player(PlayerType *player_ptr)
             digestion = 100;
         }
 
-        if (is_sushi_eater(player_ptr)) {
+        if (creature.is_sushi_eater()) {
             digestion *= 100;
         }
 
-        (void)set_food(player_ptr, player_ptr->food - digestion);
+        (void)set_food(creature, creature.get_food() - digestion);
     }
 
-    if ((player_ptr->food >= PY_FOOD_FAINT)) {
+    if ((creature.get_food() >= PY_FOOD_FAINT)) {
         return;
     }
 
-    if (!is_sushi_eater(player_ptr) && !player_ptr->effects()->paralysis().is_paralyzed() && one_in_(10)) {
+    if (!creature.is_sushi_eater() && !creature.is_paralyzed() && one_in_(10)) {
         msg_print(_("あまりにも空腹で気絶してしまった。", "You faint from the lack of food."));
-        disturb(player_ptr, true, true);
-        (void)BadStatusSetter(player_ptr).mod_paralysis(1 + randint0(5));
+        disturb(creature, true, true);
+        (void)BadStatusSetter(creature).mod_paralysis(1 + randint0(5));
     }
 
-    if (player_ptr->food < PY_FOOD_STARVE) {
-        int dam = (PY_FOOD_STARVE - player_ptr->food) / 10;
-        if (!is_invuln(player_ptr)) {
-            take_hit(player_ptr, DAMAGE_LOSELIFE, dam, _("空腹", "starvation"));
+    if (creature.get_food() < PY_FOOD_STARVE) {
+        int dam = (PY_FOOD_STARVE - creature.get_food()) / 10;
+        if (!creature.is_invulnerable()) {
+            take_hit(creature, DAMAGE_LOSELIFE, dam, _("空腹", "starvation"));
         }
     }
 }
@@ -94,37 +92,41 @@ void starve_player(PlayerType *player_ptr)
  * addition of the most "filling" item, Elvish Waybread, which adds
  * 7500 food units, without overflowing the 32767 maximum limit.\n
  *\n
- * Perhaps we should disturb the player with various messages,
+ * Perhaps we should disturb the creature with various messages,
  * especially messages about hunger status changes.  \n
  *\n
  * Digestion of food is handled in "dungeon.c", in which, normally,
- * the player digests about 20 food units per 100 game turns, more
+ * the creature digests about 20 food units per 100 game turns, more
  * when "fast", more when "regenerating", less with "slow digestion",
- * but when the player is "gorged", he digests 100 food units per 10
+ * but when the creature is "gorged", he digests 100 food units per 10
  * game turns, or a full 1000 food units per 100 game turns.\n
  *\n
- * Note that the player's speed is reduced by 10 units while gorged,
- * so if the player eats a single food ration (5000 food units) when
+ * Note that the creature's speed is reduced by 10 units while gorged,
+ * so if the creature eats a single food ration (5000 food units) when
  * full (15000 food units), he will be gorged for (5000/100)*10 = 500
- * game turns, or 500/(100/5) = 25 player turns (if nothing else is
- * affecting the player speed).\n
+ * game turns, or 500/(100/5) = 25 creature turns (if nothing else is
+ * affecting the creature speed).\n
  */
-bool set_food(PlayerType *player_ptr, TIME_EFFECT v)
+bool set_food(CreatureEntity &creature, TIME_EFFECT v)
 {
+    if (!creature.is_player()) {
+        return false;
+    }
+
     int old_aux, new_aux;
 
     bool notice = false;
     v = (v > 20000) ? 20000 : (v < 0) ? 0
                                       : v;
-    if (player_ptr->food < PY_FOOD_FAINT) {
+    if (creature.get_food() < PY_FOOD_FAINT) {
         old_aux = 0;
-    } else if (player_ptr->food < PY_FOOD_WEAK) {
+    } else if (creature.get_food() < PY_FOOD_WEAK) {
         old_aux = 1;
-    } else if (player_ptr->food < PY_FOOD_ALERT) {
+    } else if (creature.get_food() < PY_FOOD_ALERT) {
         old_aux = 2;
-    } else if (player_ptr->food < PY_FOOD_FULL) {
+    } else if (creature.get_food() < PY_FOOD_FULL) {
         old_aux = 3;
-    } else if (player_ptr->food < PY_FOOD_MAX) {
+    } else if (creature.get_food() < PY_FOOD_MAX) {
         old_aux = 4;
     } else {
         old_aux = 5;
@@ -145,15 +147,15 @@ bool set_food(PlayerType *player_ptr, TIME_EFFECT v)
     }
 
     if (old_aux < 1 && new_aux > 0) {
-        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::PATIENCE, 2);
+        chg_virtue(creature, Virtue::PATIENCE, 2);
     } else if (old_aux < 3 && (old_aux != new_aux)) {
-        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::PATIENCE, 1);
+        chg_virtue(creature, Virtue::PATIENCE, 1);
     }
     if (old_aux == 2) {
-        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::TEMPERANCE, 1);
+        chg_virtue(creature, Virtue::TEMPERANCE, 1);
     }
     if (old_aux == 0) {
-        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::TEMPERANCE, -1);
+        chg_virtue(creature, Virtue::TEMPERANCE, -1);
     }
 
     if (new_aux > old_aux) {
@@ -173,9 +175,9 @@ bool set_food(PlayerType *player_ptr, TIME_EFFECT v)
 
         case 5:
             msg_print(_("食べ過ぎだ！", "You have gorged yourself!"));
-            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::HARMONY, -1);
-            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::PATIENCE, -1);
-            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::TEMPERANCE, -2);
+            chg_virtue(creature, Virtue::HARMONY, -1);
+            chg_virtue(creature, Virtue::PATIENCE, -1);
+            chg_virtue(creature, Virtue::TEMPERANCE, -2);
             break;
         }
 
@@ -184,7 +186,7 @@ bool set_food(PlayerType *player_ptr, TIME_EFFECT v)
         switch (new_aux) {
         case 0:
             sound(SoundKind::FAINT);
-            if (is_sushi_eater(player_ptr)) {
+            if (creature.is_sushi_eater()) {
                 msg_print(_("そろそろ寿司を食べないと死ぬぜ！", "'I'm gonna die if I don't eat sushi soon!'"));
             } else {
                 msg_print(_("あまりにも空腹で気を失ってしまった！", "You are getting faint from hunger!"));
@@ -207,25 +209,25 @@ bool set_food(PlayerType *player_ptr, TIME_EFFECT v)
         }
 
         if (AngbandWorld::get_instance().is_wild_mode() && (new_aux < 2)) {
-            change_wild_mode(player_ptr, false);
+            change_wild_mode(creature, false);
         }
 
         notice = true;
     }
 
-    player_ptr->food = v;
+    creature.set_food(v);
     if (!notice) {
         return false;
     }
 
     if (disturb_state) {
-        disturb(player_ptr, false, false);
+        disturb(creature, false, false);
     }
 
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(StatusRecalculatingFlag::BONUS);
     rfu.set_flag(MainWindowRedrawingFlag::HUNGER);
-    handle_stuff(player_ptr);
+    handle_stuff(creature);
 
     return true;
 }

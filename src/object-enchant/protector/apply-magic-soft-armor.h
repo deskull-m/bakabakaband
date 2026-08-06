@@ -3,11 +3,15 @@
 #include "object-enchant/protector/apply-magic-armor.h"
 #include "system/angband.h"
 
+class CreatureEntity;
 class ItemEntity;
-class PlayerType;
 class SoftArmorEnchanter : public ArmorEnchanter {
 public:
-    SoftArmorEnchanter(PlayerType *player_ptr, ItemEntity *o_ptr, DEPTH level, int power);
+    SoftArmorEnchanter(CreatureEntity &creature, ItemEntity *o_ptr, DEPTH level, int power);
+    SoftArmorEnchanter(const SoftArmorEnchanter &) = default;
+    SoftArmorEnchanter(SoftArmorEnchanter &&) = default;
+    SoftArmorEnchanter &operator=(const SoftArmorEnchanter &) = delete;
+    SoftArmorEnchanter &operator=(SoftArmorEnchanter &&) = delete;
     void apply_magic() override;
 
 protected:

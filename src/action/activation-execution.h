@@ -6,5 +6,5 @@
 
 #include "system/angband.h"
 
-class PlayerType;
-void exe_activate(PlayerType *player_ptr, INVENTORY_IDX i_idx);
+class CreatureEntity;
+void exe_activate(CreatureEntity &creature, INVENTORY_IDX i_idx);

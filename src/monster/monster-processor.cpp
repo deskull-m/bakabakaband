@@ -20,6 +20,8 @@
 #include "effect/attribute-types.h"
 #include "effect/effect-characteristics.h"
 #include "effect/effect-processor.h"
+#include "flavor/flavor-describer.h"
+#include "flavor/object-flavor-types.h"
 #include "floor/floor-object.h"
 #include "floor/geometry.h"
 #include "game-option/birth-options.h"
@@ -62,21 +64,28 @@
 #include "player/player-skill.h"
 #include "player/player-status-flags.h"
 #include "player/special-defense-types.h"
+#include "spell-kind/spells-floor.h"
 #include "spell-kind/spells-teleport.h"
+#include "spell-kind/spells-world.h"
 #include "spell-realm/spells-hex.h"
+#include "spell/spells-util.h"
 #include "spell/summon-types.h"
 #include "sv-definition/sv-junk-types.h"
+#include "sv-definition/sv-potion-types.h"
+#include "sv-definition/sv-rod-types.h"
+#include "sv-definition/sv-scroll-types.h"
+#include "sv-definition/sv-wand-types.h"
 #include "system/angband-system.h"
 #include "system/baseitem/baseitem-definition.h"
+#include "system/baseitem/baseitem-key.h"
 #include "system/baseitem/baseitem-list.h"
+#include "system/creature-entity.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/monster-entity.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "system/terrain/terrain-definition.h"
 #include "system/terrain/terrain-list.h"
@@ -84,37 +93,740 @@
 #include "tracking/lore-tracker.h"
 #include "view/display-messages.h"
 #include "world/world.h"
+#include <algorithm>
+#include <tl/optional.hpp>
 
-void decide_drop_from_monster(PlayerType *player_ptr, MONSTER_IDX m_idx, bool is_riding_mon);
-bool process_stealth(PlayerType *player_ptr, MONSTER_IDX m_idx);
-bool vanish_summoned_children(PlayerType *player_ptr, MONSTER_IDX m_idx, bool see_m);
-bool awake_monster(PlayerType *player_ptr, MONSTER_IDX m_idx);
-void process_angar(PlayerType *player_ptr, MONSTER_IDX m_idx, bool see_m);
-bool explode_grenade(PlayerType *player_ptr, MONSTER_IDX m_idx);
-bool decide_monster_multiplication(PlayerType *player_ptr, MONSTER_IDX m_idx, POSITION oy, POSITION ox);
-void process_monster_change_feat(PlayerType *player_ptr, MONSTER_IDX m_idx);
-bool process_monster_spawn_monster(PlayerType *player_ptr, MONSTER_IDX m_idx, POSITION oy, POSITION ox);
-void process_monster_spawn_item(PlayerType *player_ptr, MONSTER_IDX m_idx);
-void process_monster_spawn_zanki(PlayerType *player_ptr, MONSTER_IDX m_idx);
-void process_special(PlayerType *player_ptr, MONSTER_IDX m_idx);
-bool cast_spell(PlayerType *player_ptr, MONSTER_IDX m_idx, bool aware);
+void decide_drop_from_monster(CreatureEntity &creature, MONSTER_IDX m_idx, bool is_riding_mon);
+bool process_stealth(CreatureEntity &creature, MONSTER_IDX m_idx);
+bool vanish_summoned_children(CreatureEntity &creature, MONSTER_IDX m_idx, bool see_m);
+bool awake_monster(CreatureEntity &creature, MONSTER_IDX m_idx);
+void process_angar(CreatureEntity &creature, MONSTER_IDX m_idx, bool see_m);
+bool explode_grenade(CreatureEntity &creature, MONSTER_IDX m_idx);
+bool decide_monster_multiplication(CreatureEntity &creature, MONSTER_IDX m_idx, POSITION oy, POSITION ox);
+void process_monster_change_feat(CreatureEntity &creature, MONSTER_IDX m_idx);
+bool process_monster_spawn_monster(CreatureEntity &creature, MONSTER_IDX m_idx, POSITION oy, POSITION ox);
+void process_monster_spawn_item(CreatureEntity &creature, MONSTER_IDX m_idx);
+void process_monster_spawn_zanki(CreatureEntity &creature, MONSTER_IDX m_idx);
+void process_special(CreatureEntity &creature, MONSTER_IDX m_idx);
+bool cast_spell(CreatureEntity &creature, MONSTER_IDX m_idx, bool aware);
 
-bool process_monster_fear(PlayerType *player_ptr, turn_flags *turn_flags_ptr, MONSTER_IDX m_idx);
+bool process_monster_fear(CreatureEntity &creature, turn_flags *turn_flags_ptr, MONSTER_IDX m_idx);
 
-void sweep_monster_process(PlayerType *player_ptr);
-bool decide_process_continue(PlayerType *player_ptr, MonsterEntity &monster);
-bool process_stalking(PlayerType *player_ptr, MONSTER_IDX m_idx);
+void sweep_monster_process(CreatureEntity &creature);
+bool decide_process_continue(CreatureEntity &creature, CreatureEntity &monster);
+bool process_stalking(CreatureEntity &creature, MONSTER_IDX m_idx);
 
 constexpr auto STALKER_CHANCE_DENOMINATOR = 32; //!< モンスターが背後に忍び寄る確率分母
 constexpr auto STALKER_DISTANCE_THRESHOLD = 20; //!< モンスターが背後に忍び寄る距離の閾値
 
 /*!
+ * @brief モンスター AI が「戦闘中」と見做せる状況かを判定 (フェーズ C-1 拡張)
+ * @param creature 視点クリーチャー (プレイヤー)
+ * @param monster 判定対象モンスター
+ * @return 敵対モンスターはプレイヤー視認時、ペットは hostile monster 視認時に true
+ * @details モンスターのバフ系/攻撃系アイテム使用判定で共有される判定。
+ *          ペットでも hostile monster が近くにいれば fighting_context = true として
+ *          バフ・攻撃用アイテムを発動できるようにする。
+ */
+static bool ai_is_in_fighting_context(const CreatureEntity &creature, const CreatureEntity &monster)
+{
+    (void)creature;
+    if (!monster.is_visible_on_map()) {
+        return false;
+    }
+    if (monster.is_hostile()) {
+        return true;
+    }
+    if (monster.is_pet()) {
+        return monster.has_visible_creature(
+            [](const CreatureEntity &c) { return c.is_hostile() && c.is_visible_on_map(); });
+    }
+    return false;
+}
+
+/*!
+ * @brief モンスターがポーションを飲んで状況に応じた効果を得る (フェーズ C-1 拡張)
+ * @param creature 視点クリーチャー (メッセージ表示用)
+ * @param monster ポーションを飲むモンスター
+ * @return 飲んだら true
+ * @details
+ * 状況判定の優先度:
+ *  1. HP 25%未満 で Star Healing/Life で大回復
+ *  2. HP 50%未満 で Healing/Cure系 で中回復
+ *  3. HP 25%未満 で Invulnerability で無敵化
+ *  4. 強毒 (POISON > 100) で Cure Poison で解毒
+ *  5. 恐怖時 で Boldness/Heroism/Berserk で恐怖解除 + バフ
+ *  6. 戦闘想定で 加速なし & Speed なら加速
+ *  7. 戦闘想定で 元素耐性なし & Resistance で 5 元素耐性
+ *  8. 戦闘想定で バフなし & Heroism/Berserk でバフ
+ *
+ * quaff/zap effect path 全体のリファクタは大規模なため、各効果は
+ * monster の HP 加算 / set_timed_effect() の直接呼出で簡易実装する。
+ * プレイヤー固有の virtue 変動・gain_exp 等は適用しない。
+ */
+static bool monster_quaff_potion(CreatureEntity &creature, CreatureEntity &monster)
+{
+    // ポーションを 1 個も持たないモンスターは何も飲めない。毎ターン全モンスターに対して
+    // 呼ばれるため、状態判定やインベントリ走査に入る前に早期に打ち切る (振る舞い不変)。
+    const auto has_potion = std::any_of(monster.inventory.begin(), monster.inventory.end(), [](const auto &item_ptr) {
+        const auto &item = *item_ptr;
+        return item.is_valid() && (item.bi_key.tval() == ItemKindType::POTION);
+    });
+    if (!has_potion) {
+        return false;
+    }
+
+    const bool low_hp_severe = monster.get_current_hp() < monster.get_max_hp() / 4;
+    const bool low_hp_mid = monster.get_current_hp() < monster.get_max_hp() / 2;
+    const bool poisoned_heavy = monster.get_timed_effect(CreatureTimedEffect::POISON) > 100;
+    const bool fearful = monster.is_fearful();
+    const bool not_fast = monster.get_timed_effect(CreatureTimedEffect::ACCELERATION) == 0;
+    const bool not_resistant = monster.get_timed_effect(CreatureTimedEffect::OPPOSE_FIRE) == 0 && monster.get_timed_effect(CreatureTimedEffect::OPPOSE_COLD) == 0;
+    const bool not_buffed = monster.get_timed_effect(CreatureTimedEffect::HERO) == 0 && monster.get_timed_effect(CreatureTimedEffect::BERSERK) == 0;
+
+    // ai_is_in_fighting_context() はペットの場合 has_visible_creature() による
+    // O(N) の m_list 全走査を伴い、毎ターン全モンスターに対して呼ばれると O(N^2) に
+    // なる。戦闘想定を要する強化アイテム (加速/耐性/英雄化/狂戦士化) を実際に所持し
+    // 選択判定に達したときだけ 1 回評価するよう遅延・メモ化する。
+    tl::optional<bool> fighting_context_cache;
+    auto fighting_context = [&]() -> bool {
+        if (!fighting_context_cache) {
+            fighting_context_cache = ai_is_in_fighting_context(creature, monster);
+        }
+        return *fighting_context_cache;
+    };
+
+    INVENTORY_IDX potion_slot = -1;
+    int priority = -1; // 0=最優先 ... 大=後回し
+    auto select_if = [&](INVENTORY_IDX slot, int p) {
+        if (priority < 0 || p < priority) {
+            potion_slot = slot;
+            priority = p;
+        }
+    };
+    for (size_t i = 0; i < monster.inventory.size(); i++) {
+        const auto &item = *monster.inventory[i];
+        if (!item.is_valid() || item.bi_key.tval() != ItemKindType::POTION) {
+            continue;
+        }
+        const auto sval = item.bi_key.sval().value_or(0);
+        const auto idx = static_cast<INVENTORY_IDX>(i);
+        switch (sval) {
+        case SV_POTION_STAR_HEALING:
+        case SV_POTION_LIFE:
+            if (low_hp_severe) {
+                select_if(idx, 0);
+            }
+            break;
+        case SV_POTION_HEALING:
+            if (low_hp_severe) {
+                select_if(idx, 1);
+            }
+            break;
+        case SV_POTION_INVULNERABILITY:
+            if (low_hp_severe) {
+                select_if(idx, 2);
+            }
+            break;
+        case SV_POTION_CURE_CRITICAL:
+            if (low_hp_mid) {
+                select_if(idx, 3);
+            }
+            break;
+        case SV_POTION_CURE_SERIOUS:
+            if (low_hp_mid) {
+                select_if(idx, 4);
+            }
+            break;
+        case SV_POTION_CURE_LIGHT:
+            if (low_hp_mid) {
+                select_if(idx, 5);
+            }
+            break;
+        case SV_POTION_CURE_POISON:
+            if (poisoned_heavy) {
+                select_if(idx, 6);
+            }
+            break;
+        case SV_POTION_BOLDNESS:
+            if (fearful) {
+                select_if(idx, 7);
+            }
+            break;
+        case SV_POTION_BESERK_STRENGTH:
+            if (fearful || (not_buffed && fighting_context())) {
+                select_if(idx, 8);
+            }
+            break;
+        case SV_POTION_HEROISM:
+            if (fearful || (not_buffed && fighting_context())) {
+                select_if(idx, 9);
+            }
+            break;
+        case SV_POTION_SPEED:
+            if (not_fast && fighting_context()) {
+                select_if(idx, 10);
+            }
+            break;
+        case SV_POTION_RESISTANCE:
+            if (not_resistant && fighting_context()) {
+                select_if(idx, 11);
+            }
+            break;
+        default:
+            break;
+        }
+    }
+    if (potion_slot < 0) {
+        return false;
+    }
+
+    auto &potion = *monster.inventory[potion_slot];
+    const auto sval = potion.bi_key.sval().value_or(0);
+    const auto potion_name = describe_flavor(creature, potion, OD_OMIT_PREFIX);
+    const auto m_name = monster_desc(creature, monster, MD_INDEF_VISIBLE);
+    if (is_seen(creature, monster)) {
+        msg_format(_("%s^は%sを飲んだ。", "%s^ quaffs %s."), m_name.data(), potion_name.data());
+    }
+
+    auto heal = [&](int amount) {
+        monster.heal_hp(amount);
+    };
+    auto add_timed = [&](CreatureTimedEffect effect, int duration) {
+        const auto current = monster.get_timed_effect(effect);
+        monster.set_timed_effect(effect, static_cast<short>(std::min<int>(MAX_SHORT, current + duration)));
+    };
+
+    switch (sval) {
+    case SV_POTION_CURE_LIGHT:
+        heal(Dice::roll(2, 8));
+        monster.set_timed_effect(CreatureTimedEffect::CUT, static_cast<short>(std::max<int>(0, monster.get_timed_effect(CreatureTimedEffect::CUT) - 10)));
+        break;
+    case SV_POTION_CURE_SERIOUS:
+        heal(Dice::roll(4, 8));
+        monster.set_timed_effect(CreatureTimedEffect::CUT, static_cast<short>(std::max<int>(0, monster.get_timed_effect(CreatureTimedEffect::CUT) / 2 - 50)));
+        break;
+    case SV_POTION_CURE_CRITICAL:
+        heal(Dice::roll(6, 8));
+        monster.set_timed_effect(CreatureTimedEffect::CUT, 0);
+        monster.set_timed_effect(CreatureTimedEffect::STUN, 0);
+        monster.set_timed_effect(CreatureTimedEffect::POISON, 0);
+        break;
+    case SV_POTION_HEALING:
+        heal(300);
+        monster.set_timed_effect(CreatureTimedEffect::CUT, 0);
+        monster.set_timed_effect(CreatureTimedEffect::STUN, 0);
+        monster.set_timed_effect(CreatureTimedEffect::POISON, 0);
+        break;
+    case SV_POTION_STAR_HEALING:
+    case SV_POTION_LIFE:
+        heal(1200);
+        monster.set_timed_effect(CreatureTimedEffect::CUT, 0);
+        monster.set_timed_effect(CreatureTimedEffect::STUN, 0);
+        monster.set_timed_effect(CreatureTimedEffect::POISON, 0);
+        monster.set_timed_effect(CreatureTimedEffect::FEAR, 0);
+        break;
+    case SV_POTION_INVULNERABILITY:
+        add_timed(CreatureTimedEffect::INVULNERABILITY, randint1(8) + 8);
+        break;
+    case SV_POTION_CURE_POISON:
+        monster.set_timed_effect(CreatureTimedEffect::POISON, 0);
+        break;
+    case SV_POTION_BOLDNESS:
+        monster.set_timed_effect(CreatureTimedEffect::FEAR, 0);
+        break;
+    case SV_POTION_HEROISM:
+        monster.set_timed_effect(CreatureTimedEffect::FEAR, 0);
+        add_timed(CreatureTimedEffect::HERO, randint1(25) + 25);
+        heal(10);
+        break;
+    case SV_POTION_BESERK_STRENGTH:
+        monster.set_timed_effect(CreatureTimedEffect::FEAR, 0);
+        monster.set_timed_effect(CreatureTimedEffect::STUN, 0);
+        add_timed(CreatureTimedEffect::BERSERK, randint1(25) + 25);
+        heal(30);
+        break;
+    case SV_POTION_SPEED:
+        if (monster.get_timed_effect(CreatureTimedEffect::ACCELERATION) == 0) {
+            monster.set_timed_effect(CreatureTimedEffect::ACCELERATION, randint1(25) + 15);
+        } else {
+            add_timed(CreatureTimedEffect::ACCELERATION, 5);
+        }
+        break;
+    case SV_POTION_RESISTANCE: {
+        const int dur = randint1(20) + 20;
+        add_timed(CreatureTimedEffect::OPPOSE_ACID, dur);
+        add_timed(CreatureTimedEffect::OPPOSE_ELEC, dur);
+        add_timed(CreatureTimedEffect::OPPOSE_FIRE, dur);
+        add_timed(CreatureTimedEffect::OPPOSE_COLD, dur);
+        add_timed(CreatureTimedEffect::OPPOSE_POIS, dur);
+        break;
+    }
+    default:
+        break;
+    }
+
+    // ポーションを 1 個消費
+    if (potion.number > 1) {
+        potion.number--;
+    } else {
+        potion.wipe();
+    }
+    return true;
+}
+
+/*!
+ * @brief モンスターが巻物を読んで状況に応じた効果を得る (フェーズ C-1 拡張)
+ * @param creature 視点クリーチャー (メッセージ表示用)
+ * @param monster 巻物を読むモンスター
+ * @param m_idx モンスターの floor インデックス
+ * @return 読んだら true
+ * @details
+ * 状況判定:
+ *  - HP 25%未満 で SCROLL_TELEPORT/PHASE_DOOR で離脱
+ *  - HP 25%未満 で SCROLL_HOLY_PRAYER (即時 HP 回復用) — 未対応 (player only)
+ */
+static bool monster_read_scroll(CreatureEntity &creature, CreatureEntity &monster, MONSTER_IDX m_idx)
+{
+    const bool low_hp_severe = monster.hp < monster.maxhp / 4;
+    const bool fighting_context = monster.is_hostile() && monster.is_visible_on_map();
+
+    enum class ScrollAction { TELEPORT,
+        TELEPORT_LEVEL,
+        PHASE_DOOR,
+        SUMMON,
+        DESTRUCTION };
+    INVENTORY_IDX scroll_slot = -1;
+    int priority = -1; // 小=優先
+    int teleport_dist = 0;
+    ScrollAction action = ScrollAction::TELEPORT;
+    summon_type summon_kind = SUMMON_NONE;
+    int destruction_radius = 0;
+    auto select_if = [&](INVENTORY_IDX slot, int p, ScrollAction act, int dist = 0, summon_type st = SUMMON_NONE, int radius = 0) {
+        if (priority < 0 || p < priority) {
+            scroll_slot = slot;
+            priority = p;
+            action = act;
+            teleport_dist = dist;
+            summon_kind = st;
+            destruction_radius = radius;
+        }
+    };
+    for (size_t i = 0; i < monster.inventory.size(); i++) {
+        const auto &item = *monster.inventory[i];
+        if (!item.is_valid() || item.bi_key.tval() != ItemKindType::SCROLL) {
+            continue;
+        }
+        const auto sval = item.bi_key.sval().value_or(0);
+        const auto idx = static_cast<INVENTORY_IDX>(i);
+        switch (sval) {
+        // 脱出系 (HP 危機時のみ)
+        case SV_SCROLL_TELEPORT_LEVEL:
+            if (low_hp_severe) {
+                select_if(idx, 0, ScrollAction::TELEPORT_LEVEL);
+            }
+            break;
+        case SV_SCROLL_TELEPORT:
+            if (low_hp_severe) {
+                select_if(idx, 1, ScrollAction::TELEPORT, 200);
+            }
+            break;
+        case SV_SCROLL_PHASE_DOOR:
+            if (low_hp_severe) {
+                select_if(idx, 2, ScrollAction::PHASE_DOOR, 10);
+            }
+            break;
+        // 召喚系 (戦闘中なら使用)
+        case SV_SCROLL_SUMMON_MONSTER:
+            if (fighting_context) {
+                select_if(idx, 8, ScrollAction::SUMMON, 0, SUMMON_NONE);
+            }
+            break;
+        case SV_SCROLL_SUMMON_UNDEAD:
+            if (fighting_context) {
+                select_if(idx, 8, ScrollAction::SUMMON, 0, SUMMON_UNDEAD);
+            }
+            break;
+        case SV_SCROLL_SUMMON_KIN:
+            if (fighting_context) {
+                select_if(idx, 7, ScrollAction::SUMMON, 0, SUMMON_KIN);
+            }
+            break;
+        // 破壊系 (HP 危機 + 戦闘中で発動、自身の周囲を破壊して脱出)
+        case SV_SCROLL_STAR_DESTRUCTION:
+            if (low_hp_severe && fighting_context) {
+                select_if(idx, 4, ScrollAction::DESTRUCTION, 0, SUMMON_NONE, 24);
+            }
+            break;
+        default:
+            break;
+        }
+    }
+    if (scroll_slot < 0) {
+        return false;
+    }
+
+    auto &scroll = *monster.inventory[scroll_slot];
+    const auto scroll_name = describe_flavor(creature, scroll, OD_OMIT_PREFIX);
+    const auto m_name = monster_desc(creature, monster, MD_INDEF_VISIBLE);
+    if (is_seen(creature, monster)) {
+        msg_format(_("%s^は%sを読んだ。", "%s^ reads %s."), m_name.data(), scroll_name.data());
+    }
+
+    switch (action) {
+    case ScrollAction::TELEPORT_LEVEL:
+        teleport_level(creature, m_idx);
+        break;
+    case ScrollAction::TELEPORT:
+    case ScrollAction::PHASE_DOOR:
+        teleport_away(creature, m_idx, teleport_dist, TELEPORT_SPONTANEOUS);
+        break;
+    case ScrollAction::SUMMON:
+        // モンスター位置から自身のレベル相当で召喚 (3 体まで試行)
+        for (int n = 0; n < 3; n++) {
+            (void)summon_specific(creature, monster.y, monster.x, monster.get_monrace().level, summon_kind, PM_NONE, m_idx);
+        }
+        break;
+    case ScrollAction::DESTRUCTION:
+        // 周囲一帯を破壊 (壁・モンスター・アイテム消滅)
+        // 自分自身も巻き込まれるため、HP 危機時の最終手段として使用
+        (void)destroy_area(creature, monster.y, monster.x, destruction_radius, false);
+        break;
+    }
+
+    // 巻物を 1 個消費
+    if (scroll.number > 1) {
+        scroll.number--;
+    } else {
+        scroll.wipe();
+    }
+    return true;
+}
+
+/*!
+ * @brief モンスターが杖/ロッドを起動して状況に応じた効果を得る (フェーズ C-1 拡張)
+ * @param creature 視点クリーチャー
+ * @param monster 起動するモンスター
+ * @return 起動したら true
+ * @details
+ *  対応 wand (sval / 発動条件 / 効果):
+ *   - HEAL_MONSTER : HP < 50% / HP+(20) クランプ
+ *   - HASTE_MONSTER: 戦闘&未加速 / ACCELERATION 加算
+ *  対応 rod:
+ *   - HEALING : HP < 50% / HP+500
+ *   - SPEED   : 戦闘&未加速 / ACCELERATION 加算
+ *   - CURING  : 状態異常時 / FEAR/CONFUSION/STUN/POISON リセット
+ *  消費:
+ *   - 杖: pval-- (charges 1 消費)
+ *   - ロッド: timeout += base_pval (再充填時間設定)
+ */
+static bool monster_use_wand_or_rod(CreatureEntity &creature, CreatureEntity &monster, MONSTER_IDX m_idx)
+{
+    // 杖/ロッドを 1 個も持たないモンスターは、以降の攻撃標的探索
+    // (ペットは find_nearest_creature() による O(N) の m_list 全走査 + 視線判定) を
+    // 行っても device_slot が確定せず必ず false を返す。毎ターン全モンスターに対して
+    // 呼ばれるため、ここで早期に打ち切って O(N^2) の無駄な探索を避ける (振る舞い不変)。
+    const auto has_usable_device = std::any_of(monster.inventory.begin(), monster.inventory.end(), [](const auto &item_ptr) {
+        const auto &item = *item_ptr;
+        return item.is_valid() && ((item.bi_key.tval() == ItemKindType::WAND) || (item.bi_key.tval() == ItemKindType::ROD));
+    });
+    if (!has_usable_device) {
+        return false;
+    }
+
+    const bool low_hp_mid = monster.hp < monster.maxhp / 2;
+    const bool not_fast = monster.get_timed_effect(CreatureTimedEffect::ACCELERATION) == 0;
+    const bool has_status = monster.is_fearful() || monster.is_confused() || monster.is_stunned() || monster.get_timed_effect(CreatureTimedEffect::POISON) > 0;
+
+    // [ペット AI 拡張] モンスターの場合: target = プレイヤー
+    //                  ペットの場合: target = 最寄りの hostile monster (projectable)
+    // [提案 14] AI ターゲット選定共通化
+    auto &floor = *creature.get_floor();
+    POSITION attack_target_y = creature.y;
+    POSITION attack_target_x = creature.x;
+    bool can_attack_target = false;
+    const bool fighting_context = ai_is_in_fighting_context(creature, monster);
+    if (monster.is_pet()) {
+        const auto target_idx = monster.find_nearest_creature(
+            [](const CreatureEntity &c) { return c.is_hostile() && c.is_visible_on_map(); }, true);
+        if (target_idx > 0) {
+            const auto &target_mon = floor.get_monster(target_idx);
+            attack_target_y = target_mon.y;
+            attack_target_x = target_mon.x;
+            can_attack_target = true;
+        }
+    } else {
+        can_attack_target = fighting_context && projectable(floor, monster.get_position(), creature.get_position());
+    }
+    // 旧来名 can_target_player を残してコード互換性を保つ (実際には pet の場合 hostile monster)
+    const bool can_target_player = can_attack_target;
+
+    INVENTORY_IDX device_slot = -1;
+    int priority = -1;
+    auto select_if = [&](INVENTORY_IDX slot, int p) {
+        if (priority < 0 || p < priority) {
+            device_slot = slot;
+            priority = p;
+        }
+    };
+    for (size_t i = 0; i < monster.inventory.size(); i++) {
+        const auto &item = *monster.inventory[i];
+        if (!item.is_valid()) {
+            continue;
+        }
+        const auto idx = static_cast<INVENTORY_IDX>(i);
+        const auto sval = item.bi_key.sval().value_or(0);
+        if (item.bi_key.tval() == ItemKindType::WAND) {
+            // 杖: pval > 0 で残充填あり
+            if (item.pval <= 0) {
+                continue;
+            }
+            switch (sval) {
+            case SV_WAND_HEAL_MONSTER:
+                if (low_hp_mid) {
+                    select_if(idx, 1);
+                }
+                break;
+            case SV_WAND_HASTE_MONSTER:
+                if (fighting_context && not_fast) {
+                    select_if(idx, 5);
+                }
+                break;
+            // [攻撃用 wand] プレイヤー標的、可視 & 直射可能な敵対モンスターのみ
+            case SV_WAND_MAGIC_MISSILE:
+            case SV_WAND_ACID_BOLT:
+            case SV_WAND_FIRE_BOLT:
+            case SV_WAND_COLD_BOLT:
+            case SV_WAND_HYPODYNAMIA:
+            case SV_WAND_STINKING_CLOUD:
+            case SV_WAND_ACID_BALL:
+            case SV_WAND_ELEC_BALL:
+            case SV_WAND_FIRE_BALL:
+            case SV_WAND_COLD_BALL:
+            case SV_WAND_DRAGON_FIRE:
+            case SV_WAND_DRAGON_COLD:
+            case SV_WAND_DRAGON_BREATH:
+                if (can_target_player) {
+                    select_if(idx, 10);
+                }
+                break;
+            // [防衛用 wand] プレイヤーをテレポートで離す (HP 危機時)
+            case SV_WAND_TELEPORT_AWAY:
+                if (can_target_player && low_hp_mid) {
+                    select_if(idx, 3);
+                }
+                break;
+            // [自己分裂 wand] 自分の分身を作成 (戦闘中、ニッチだが強力)
+            case SV_WAND_CLONE_MONSTER:
+                if (fighting_context) {
+                    select_if(idx, 9);
+                }
+                break;
+            default:
+                break;
+            }
+        } else if (item.bi_key.tval() == ItemKindType::ROD) {
+            // ロッド: timeout が base_pval * (number-1) 以下で 1 個以上使用可能
+            const auto base_pval = item.get_baseitem_pval();
+            if (item.number == 1 && item.timeout > 0) {
+                continue;
+            }
+            if (item.number > 1 && item.timeout > base_pval * (item.number - 1)) {
+                continue;
+            }
+            switch (sval) {
+            case SV_ROD_HEALING:
+                if (low_hp_mid) {
+                    select_if(idx, 0);
+                }
+                break;
+            case SV_ROD_SPEED:
+                if (fighting_context && not_fast) {
+                    select_if(idx, 4);
+                }
+                break;
+            case SV_ROD_CURING:
+                if (has_status) {
+                    select_if(idx, 6);
+                }
+                break;
+            // [攻撃用 rod] プレイヤー標的、可視 & 直射可能な敵対モンスターのみ
+            case SV_ROD_ACID_BOLT:
+            case SV_ROD_ELEC_BOLT:
+            case SV_ROD_FIRE_BOLT:
+            case SV_ROD_COLD_BOLT:
+            case SV_ROD_HYPODYNAMIA:
+            case SV_ROD_ACID_BALL:
+            case SV_ROD_ELEC_BALL:
+            case SV_ROD_FIRE_BALL:
+            case SV_ROD_COLD_BALL:
+                if (can_target_player) {
+                    select_if(idx, 11);
+                }
+                break;
+            default:
+                break;
+            }
+        }
+    }
+    if (device_slot < 0) {
+        return false;
+    }
+
+    auto &device = *monster.inventory[device_slot];
+    const auto sval = device.bi_key.sval().value_or(0);
+    const auto device_name = describe_flavor(creature, device, OD_OMIT_PREFIX);
+    const auto m_name = monster_desc(creature, monster, MD_INDEF_VISIBLE);
+    const bool is_wand = device.bi_key.tval() == ItemKindType::WAND;
+    if (is_seen(creature, monster)) {
+        if (is_wand) {
+            msg_format(_("%s^は%sを振った。", "%s^ aims %s."), m_name.data(), device_name.data());
+        } else {
+            msg_format(_("%s^は%sを振った。", "%s^ zaps %s."), m_name.data(), device_name.data());
+        }
+    }
+
+    auto heal = [&](int amount) {
+        monster.heal_hp(amount);
+    };
+    auto add_timed = [&](CreatureTimedEffect effect, int duration) {
+        const auto current = monster.get_timed_effect(effect);
+        monster.set_timed_effect(effect, static_cast<short>(std::min<int>(MAX_SHORT, current + duration)));
+    };
+
+    // 攻撃系の標的座標 (敵対モンスターはプレイヤー、ペットは hostile monster)
+    const auto target_y = attack_target_y;
+    const auto target_x = attack_target_x;
+    constexpr BIT_FLAGS flg_bolt = PROJECT_STOP | PROJECT_KILL | PROJECT_REFLECTABLE;
+    constexpr BIT_FLAGS flg_ball = PROJECT_STOP | PROJECT_KILL | PROJECT_GRID | PROJECT_ITEM;
+    auto fire_bolt_at_player = [&](AttributeType typ, int dam) {
+        project(creature, m_idx, 0, target_y, target_x, dam, typ, flg_bolt);
+    };
+    auto fire_ball_at_player = [&](AttributeType typ, int dam, int rad) {
+        project(creature, m_idx, rad, target_y, target_x, dam, typ, flg_ball);
+    };
+
+    if (is_wand) {
+        switch (sval) {
+        case SV_WAND_HEAL_MONSTER:
+            heal(20);
+            break;
+        case SV_WAND_HASTE_MONSTER:
+            add_timed(CreatureTimedEffect::ACCELERATION, 100 + randint1(100));
+            break;
+        case SV_WAND_MAGIC_MISSILE:
+            fire_bolt_at_player(AttributeType::MISSILE, Dice::roll(3, 4));
+            break;
+        case SV_WAND_ACID_BOLT:
+            fire_bolt_at_player(AttributeType::ACID, Dice::roll(10, 8));
+            break;
+        case SV_WAND_FIRE_BOLT:
+            fire_bolt_at_player(AttributeType::FIRE, Dice::roll(9, 8));
+            break;
+        case SV_WAND_COLD_BOLT:
+            fire_bolt_at_player(AttributeType::COLD, Dice::roll(6, 8));
+            break;
+        case SV_WAND_HYPODYNAMIA:
+            fire_bolt_at_player(AttributeType::HYPODYNAMIA, 80);
+            break;
+        case SV_WAND_STINKING_CLOUD:
+            fire_ball_at_player(AttributeType::POIS, 12, 2);
+            break;
+        case SV_WAND_ACID_BALL:
+            fire_ball_at_player(AttributeType::ACID, 60, 2);
+            break;
+        case SV_WAND_ELEC_BALL:
+            fire_ball_at_player(AttributeType::ELEC, 32, 2);
+            break;
+        case SV_WAND_FIRE_BALL:
+            fire_ball_at_player(AttributeType::FIRE, 72, 2);
+            break;
+        case SV_WAND_COLD_BALL:
+            fire_ball_at_player(AttributeType::COLD, 48, 2);
+            break;
+        case SV_WAND_DRAGON_FIRE:
+            fire_ball_at_player(AttributeType::FIRE, 200, 3);
+            break;
+        case SV_WAND_DRAGON_COLD:
+            fire_ball_at_player(AttributeType::COLD, 180, 3);
+            break;
+        case SV_WAND_DRAGON_BREATH: {
+            // 5 属性からランダム選択 (player 版 cmd-zapwand.cpp と整合)
+            constexpr std::array<std::pair<int, AttributeType>, 5> candidates = { {
+                { 240, AttributeType::ACID },
+                { 210, AttributeType::ELEC },
+                { 240, AttributeType::FIRE },
+                { 210, AttributeType::COLD },
+                { 180, AttributeType::POIS },
+            } };
+            const auto [dam, type] = rand_choice(candidates);
+            fire_ball_at_player(type, dam, 3);
+            break;
+        }
+        case SV_WAND_TELEPORT_AWAY:
+            fire_bolt_at_player(AttributeType::AWAY_ALL, 100);
+            break;
+        case SV_WAND_CLONE_MONSTER:
+            // モンスター自身の分身を生成 (PM_NO_PET で勝手に味方にならないよう)
+            (void)multiply_monster(creature, m_idx, monster.get_r_idx(), true, PM_NO_PET);
+            break;
+        }
+        device.pval--;
+    } else {
+        // ロッド
+        switch (sval) {
+        case SV_ROD_HEALING:
+            heal(500);
+            break;
+        case SV_ROD_SPEED:
+            add_timed(CreatureTimedEffect::ACCELERATION, 15 + randint1(25));
+            break;
+        case SV_ROD_CURING:
+            monster.set_timed_effect(CreatureTimedEffect::FEAR, 0);
+            monster.set_timed_effect(CreatureTimedEffect::CONFUSION, 0);
+            monster.set_timed_effect(CreatureTimedEffect::STUN, 0);
+            monster.set_timed_effect(CreatureTimedEffect::POISON, 0);
+            break;
+        case SV_ROD_ACID_BOLT:
+            fire_bolt_at_player(AttributeType::ACID, Dice::roll(12, 8));
+            break;
+        case SV_ROD_ELEC_BOLT:
+            fire_bolt_at_player(AttributeType::ELEC, Dice::roll(6, 6));
+            break;
+        case SV_ROD_FIRE_BOLT:
+            fire_bolt_at_player(AttributeType::FIRE, Dice::roll(16, 8));
+            break;
+        case SV_ROD_COLD_BOLT:
+            fire_bolt_at_player(AttributeType::COLD, Dice::roll(10, 8));
+            break;
+        case SV_ROD_HYPODYNAMIA:
+            fire_bolt_at_player(AttributeType::HYPODYNAMIA, 75);
+            break;
+        case SV_ROD_ACID_BALL:
+            fire_ball_at_player(AttributeType::ACID, 60, 2);
+            break;
+        case SV_ROD_ELEC_BALL:
+            fire_ball_at_player(AttributeType::ELEC, 32, 2);
+            break;
+        case SV_ROD_FIRE_BALL:
+            fire_ball_at_player(AttributeType::FIRE, 72, 2);
+            break;
+        case SV_ROD_COLD_BALL:
+            fire_ball_at_player(AttributeType::COLD, 48, 2);
+            break;
+        }
+        device.timeout += device.get_baseitem_pval();
+    }
+    return true;
+}
+
+/*!
  * @brief モンスター単体の1ターン行動処理メインルーチン /
  * Process a monster
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param m_idx 行動モンスターの参照ID
  * @details
- * The monster is known to be within 100 grids of the player\n
+ * The monster is known to be within 100 grids of the creature\n
  *\n
  * In several cases, we directly update the monster lore\n
  *\n
@@ -137,23 +849,24 @@ constexpr auto STALKER_DISTANCE_THRESHOLD = 20; //!< モンスターが背後に
  *\n
  * A "direction" of "5" means "pick a random direction".\n
  */
-void process_monster(PlayerType *player_ptr, MONSTER_IDX m_idx)
+void process_monster(CreatureEntity &creature, MONSTER_IDX m_idx)
 {
-    auto &monster = player_ptr->current_floor_ptr->m_list[m_idx];
+
+    auto &monster = creature.get_floor()->get_monster(m_idx);
     turn_flags tmp_flags;
     turn_flags *turn_flags_ptr = init_turn_flags(monster.is_riding(), &tmp_flags);
-    turn_flags_ptr->see_m = is_seen(player_ptr, monster);
+    turn_flags_ptr->see_m = is_seen(creature, monster);
 
-    decide_drop_from_monster(player_ptr, m_idx, turn_flags_ptr->is_riding_mon);
-    if (monster.mflag2.has(MonsterConstantFlagType::CHAMELEON) && one_in_(13) && !monster.is_asleep()) {
-        const auto &floor = *player_ptr->current_floor_ptr;
-        const auto old_m_name = monster_desc(player_ptr, monster, 0);
+    decide_drop_from_monster(creature, m_idx, turn_flags_ptr->is_riding_mon);
+    if (monster.is_chameleon() && one_in_(13) && !monster.is_asleep()) {
+        const auto &floor = *creature.get_floor();
+        const auto old_m_name = monster_desc(creature, monster, 0);
         const auto &monrace = monster.get_monrace();
         const auto m_pos = monster.get_position();
         const auto &grid = floor.get_grid(m_pos);
-        choose_chameleon_polymorph(player_ptr, m_idx, grid.get_terrain_id());
-        update_monster(player_ptr, m_idx, false);
-        lite_spot(player_ptr, m_pos);
+        choose_chameleon_polymorph(creature, m_idx, grid.get_terrain_id());
+        update_monster(creature, m_idx, false);
+        lite_spot(creature, m_pos);
         const auto &new_monrace = monster.get_monrace();
 
         if (new_monrace.brightness_flags.has_any_of(ld_mask) || monrace.brightness_flags.has_any_of(ld_mask)) {
@@ -163,8 +876,8 @@ void process_monster(PlayerType *player_ptr, MONSTER_IDX m_idx)
         if (turn_flags_ptr->is_riding_mon) {
             msg_format(_("突然%sが変身した。", "Suddenly, %s transforms!"), old_m_name.data());
             if (new_monrace.misc_flags.has_not(MonsterMiscType::RIDING)) {
-                if (process_fall_off_horse(player_ptr, 0, true)) {
-                    const auto m_name = monster_desc(player_ptr, monster, 0);
+                if (process_fall_off_horse(creature, 0, true)) {
+                    const auto m_name = monster_desc(creature, monster, 0);
                     msg_print(_("地面に落とされた。", format("You have fallen from %s.", m_name.data())));
                 }
             }
@@ -189,35 +902,35 @@ void process_monster(PlayerType *player_ptr, MONSTER_IDX m_idx)
             monster.maxhp = 1;
         }
         monster.hp = monster.hp * monster.max_maxhp / old_maxhp;
-        monster.dealt_damage = 0;
+        monster.set_dealt_damage(0);
     }
 
     auto &monrace = monster.get_monrace();
 
-    mark_monsters_present(player_ptr);
+    mark_monsters_present(creature);
 
-    turn_flags_ptr->aware = process_stealth(player_ptr, m_idx);
-    if (monrace.behavior_flags.has(MonsterBehaviorType::FRIENDLY_STANDBY) && monster.mflag2.has(MonsterConstantFlagType::FRIENDLY)) {
+    turn_flags_ptr->aware = process_stealth(creature, m_idx);
+    if (monrace.behavior_flags.has(MonsterBehaviorType::FRIENDLY_STANDBY) && monster.is_friendly()) {
         return;
     }
 
-    if (vanish_summoned_children(player_ptr, m_idx, turn_flags_ptr->see_m)) {
+    if (vanish_summoned_children(creature, m_idx, turn_flags_ptr->see_m)) {
         return;
     }
 
-    if (process_quantum_effect(player_ptr, m_idx, turn_flags_ptr->see_m)) {
+    if (process_quantum_effect(creature, m_idx, turn_flags_ptr->see_m)) {
         return;
     }
 
-    if (explode_grenade(player_ptr, m_idx)) {
+    if (explode_grenade(creature, m_idx)) {
         return;
     }
 
-    if (runaway_monster(player_ptr, turn_flags_ptr, m_idx)) {
+    if (runaway_monster(creature, turn_flags_ptr, m_idx)) {
         return;
     }
 
-    if (!awake_monster(player_ptr, m_idx)) {
+    if (!awake_monster(creature, m_idx)) {
         return;
     }
 
@@ -225,7 +938,24 @@ void process_monster(PlayerType *player_ptr, MONSTER_IDX m_idx)
         return;
     }
 
-    if (process_stalking(player_ptr, m_idx)) {
+    // [フェーズ C-1] ポーション自己使用 (回復/解毒/バフ等)
+    if (monster_quaff_potion(creature, monster)) {
+        // ポーション使用でターンを消費。次のターン処理は通常通り続行する
+        // (move energy は別途 turn 管理で扱う)
+    }
+
+    // [フェーズ C-1 拡張] 巻物使用 (テレポートで離脱)
+    if (monster_read_scroll(creature, monster, m_idx)) {
+        // テレポートが成功すると monster はもう近くにいない可能性があるが、
+        // 後続のチェックは monster へのポインタ経由なので継続可能
+    }
+
+    // [フェーズ C-1 拡張] 杖/ロッド使用 (自己回復/自己加速/状態回復/プレイヤー攻撃)
+    if (monster_use_wand_or_rod(creature, monster, m_idx)) {
+        // 同上、ターン消費とは別に副次行動として処理
+    }
+
+    if (process_stalking(creature, m_idx)) {
         return;
     }
 
@@ -233,46 +963,46 @@ void process_monster(PlayerType *player_ptr, MONSTER_IDX m_idx)
         RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
     }
 
-    process_angar(player_ptr, m_idx, turn_flags_ptr->see_m);
+    process_angar(creature, m_idx, turn_flags_ptr->see_m);
 
     POSITION oy = monster.y;
     POSITION ox = monster.x;
-    if (decide_monster_multiplication(player_ptr, m_idx, oy, ox)) {
+    if (decide_monster_multiplication(creature, m_idx, oy, ox)) {
         return;
     }
 
-    if (process_monster_spawn_monster(player_ptr, m_idx, oy, ox)) {
+    if (process_monster_spawn_monster(creature, m_idx, oy, ox)) {
         return;
     }
 
-    process_monster_spawn_item(player_ptr, m_idx);
-    process_monster_spawn_zanki(player_ptr, m_idx);
-    process_monster_change_feat(player_ptr, m_idx);
-    process_special(player_ptr, m_idx);
-    process_sound(player_ptr, m_idx);
-    process_speak(player_ptr, m_idx, oy, ox, turn_flags_ptr->aware);
+    process_monster_spawn_item(creature, m_idx);
+    process_monster_spawn_zanki(creature, m_idx);
+    process_monster_change_feat(creature, m_idx);
+    process_special(creature, m_idx);
+    process_sound(creature, m_idx);
+    process_speak(creature, m_idx, oy, ox, turn_flags_ptr->aware);
 
     // 狂乱状態のモンスターは魔法を使わず、プレイヤーに隣接していれば攻撃のみを行う
-    if (monster.mflag2.has(MonsterConstantFlagType::FRENZY)) {
-        const auto dy = std::abs(monster.y - player_ptr->y);
-        const auto dx = std::abs(monster.x - player_ptr->x);
+    if (monster.is_frenzied()) {
+        const auto dy = std::abs(monster.y - creature.y);
+        const auto dx = std::abs(monster.x - creature.x);
         if (dy <= 1 && dx <= 1 && turn_flags_ptr->aware) {
-            MonsterAttackPlayer(player_ptr, m_idx).make_attack_normal();
+            MonsterAttackPlayer(creature, m_idx).make_attack_normal();
         }
         return;
     }
 
-    if (cast_spell(player_ptr, m_idx, turn_flags_ptr->aware)) {
+    if (cast_spell(creature, m_idx, turn_flags_ptr->aware)) {
         return;
     }
 
-    const auto mmdl = decide_monster_movement_direction(player_ptr, m_idx, turn_flags_ptr->aware);
+    const auto mmdl = decide_monster_movement_direction(creature, m_idx, turn_flags_ptr->aware);
     if (!mmdl) {
         return;
     }
 
     int count = 0;
-    if (!process_monster_movement(player_ptr, turn_flags_ptr, *mmdl, { oy, ox }, &count)) {
+    if (!process_monster_movement(creature, turn_flags_ptr, *mmdl, { oy, ox }, &count)) {
         return;
     }
 
@@ -280,13 +1010,13 @@ void process_monster(PlayerType *player_ptr, MONSTER_IDX m_idx)
      *  Forward movements failed, but now received LOS attack!
      *  Try to flow by smell.
      */
-    if (player_ptr->no_flowed && count > 2 && monster.target_y) {
-        monster.mflag2.reset(MonsterConstantFlagType::NOFLOW);
+    if (creature.is_no_flowed() && count > 2 && monster.get_target_position().y) {
+        monster.reset_constant_flag(MonsterConstantFlagType::NOFLOW);
     }
 
     if (!turn_flags_ptr->do_turn && !turn_flags_ptr->do_move && !monster.is_fearful() && !turn_flags_ptr->is_riding_mon && turn_flags_ptr->aware) {
         if (monrace.freq_spell && randint1(100) <= monrace.freq_spell) {
-            if (make_attack_spell(player_ptr, m_idx)) {
+            if (make_attack_spell(creature, m_idx)) {
                 return;
             }
         }
@@ -294,42 +1024,47 @@ void process_monster(PlayerType *player_ptr, MONSTER_IDX m_idx)
 
     update_map_flags(turn_flags_ptr);
     update_lite_flags(turn_flags_ptr, monrace);
-    update_monster_race_flags(player_ptr, turn_flags_ptr, monster);
+    update_monster_race_flags(creature, turn_flags_ptr, monster);
 
-    if (!process_monster_fear(player_ptr, turn_flags_ptr, m_idx)) {
+    if (!process_monster_fear(creature, turn_flags_ptr, m_idx)) {
         return;
     }
 
-    if (monster.ml) {
-        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::COMPASSION, -1);
+    if (monster.is_visible_on_map()) {
+        chg_virtue(creature, Virtue::COMPASSION, -1);
     }
 }
 
 /*!
  * @brief 超隠密処理
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param m_idx モンスターID
  * @return モンスターがプレイヤーに気付いているならばTRUE、超隠密状態ならばFALSE
  */
-bool process_stealth(PlayerType *player_ptr, MONSTER_IDX m_idx)
+bool process_stealth(CreatureEntity &creature, MONSTER_IDX m_idx)
 {
-    auto ninja_data = PlayerClass(player_ptr).get_specific_data<ninja_data_type>();
+    // [提案C3第1弾] テレパシーを持つモンスターは忍者の超隠密を無視して常に気付く (opt-in・既定OFF)。
+    if (creature.get_floor()->get_monster(m_idx).has_race_granted_telepathy()) {
+        return true;
+    }
+
+    auto ninja_data = CreatureClass(creature).get_specific_data<ninja_data_type>();
     if (!ninja_data || !ninja_data->s_stealth) {
         return true;
     }
 
-    const auto &monster = player_ptr->current_floor_ptr->m_list[m_idx];
+    const auto &monster = creature.get_floor()->get_monster(m_idx);
     const auto &monrace = monster.get_monrace();
-    int tmp = player_ptr->level * 6 + (player_ptr->skill_stl + 10) * 4;
-    if (player_ptr->monlite) {
+    int tmp = creature.get_level() * 6 + (creature.get_skill_stealth() + 10) * 4;
+    if (creature.is_monlite()) {
         tmp /= 3;
     }
 
-    if (has_aggravate(player_ptr)) {
+    if (has_aggravate(creature)) {
         tmp /= 2;
     }
 
-    if (monrace.level > (player_ptr->level * player_ptr->level / 20 + 10)) {
+    if (monrace.level > (creature.get_level() * creature.get_level() / 20 + 10)) {
         tmp /= 3;
     }
 
@@ -338,23 +1073,24 @@ bool process_stealth(PlayerType *player_ptr, MONSTER_IDX m_idx)
 
 /*!
  * @brief 死亡したモンスターが乗馬中のモンスターだった場合に落馬処理を行う
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param m_idx モンスターID
  * @param is_riding_mon 騎乗中であればTRUE
  */
-void decide_drop_from_monster(PlayerType *player_ptr, MONSTER_IDX m_idx, bool is_riding_mon)
+void decide_drop_from_monster(CreatureEntity &creature, MONSTER_IDX m_idx, bool is_riding_mon)
 {
-    const auto &monster = player_ptr->current_floor_ptr->m_list[m_idx];
+
+    const auto &monster = creature.get_floor()->get_monster(m_idx);
     const auto &monrace = monster.get_monrace();
     if (!is_riding_mon || monrace.misc_flags.has(MonsterMiscType::RIDING)) {
         return;
     }
 
-    if (process_fall_off_horse(player_ptr, 0, true)) {
+    if (process_fall_off_horse(creature, 0, true)) {
 #ifdef JP
         msg_print("地面に落とされた。");
 #else
-        const auto m_name = monster_desc(player_ptr, player_ptr->current_floor_ptr->m_list[player_ptr->riding], 0);
+        const auto m_name = monster_desc(creature, creature.get_floor()->get_monster(creature.get_riding()), 0);
         msg_format("You have fallen from %s.", m_name.data());
 #endif
     }
@@ -362,15 +1098,16 @@ void decide_drop_from_monster(PlayerType *player_ptr, MONSTER_IDX m_idx, bool is
 
 /*!
  * @brief 召喚の親元が消滅した時、子供も消滅させる
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param m_idx モンスターID
  * @param see_m モンスターが視界内にいたらTRUE
  * @return 召喚モンスターが消滅したらTRUE
  */
-bool vanish_summoned_children(PlayerType *player_ptr, MONSTER_IDX m_idx, bool see_m)
+bool vanish_summoned_children(CreatureEntity &creature, MONSTER_IDX m_idx, bool see_m)
 {
-    const auto &floor = *player_ptr->current_floor_ptr;
-    const auto &monster = floor.m_list[m_idx];
+
+    const auto &floor = *creature.get_floor();
+    const auto &monster = floor.get_monster(m_idx);
     const auto &monrace = monster.get_monrace();
 
     if (!monster.has_parent()) {
@@ -378,12 +1115,12 @@ bool vanish_summoned_children(PlayerType *player_ptr, MONSTER_IDX m_idx, bool se
     }
 
     // parent_m_idxが自分自身を指している場合は召喚主は消滅している
-    if (monster.parent_m_idx != m_idx && floor.m_list[monster.parent_m_idx].is_valid()) {
+    if (monster.get_parent_m_idx() != m_idx && floor.get_monster(monster.get_parent_m_idx()).is_valid()) {
         return false;
     }
 
-    const auto m_name = monster_desc(player_ptr, monster, 0);
-    if (monster.mflag2.has(MonsterConstantFlagType::QUYLTHLUG_BORN)) {
+    const auto m_name = monster_desc(creature, monster, 0);
+    if (monster.is_quylthlug_born()) {
         if (see_m) {
             msg_format(_("%sは崩壊して朽ち果てた。", "%s^ crumbles into dust."), m_name.data());
         }
@@ -391,7 +1128,7 @@ bool vanish_summoned_children(PlayerType *player_ptr, MONSTER_IDX m_idx, bool se
         if (see_m) {
             msg_format(_("%sは主を失い消え去った。", "%s^ disappears without a master."), m_name.data());
         }
-    } else if (monster.mflag2.has(MonsterConstantFlagType::PET)) {
+    } else if (monster.is_pet()) {
         if (see_m) {
             msg_format(_("%sは消え去った。", "%s^ disappears."), m_name.data());
         }
@@ -400,44 +1137,44 @@ bool vanish_summoned_children(PlayerType *player_ptr, MONSTER_IDX m_idx, bool se
     }
 
     if (record_named_pet && monster.is_named_pet()) {
-        const auto m_name = monster_desc(player_ptr, monster, MD_INDEF_VISIBLE);
-        exe_write_diary(floor, DiaryKind::NAMED_PET, RECORD_NAMED_PET_LOSE_PARENT, m_name);
+        const auto pet_name = monster_desc(creature, monster, MD_INDEF_VISIBLE);
+        exe_write_diary(floor, DiaryKind::NAMED_PET, RECORD_NAMED_PET_LOSE_PARENT, pet_name);
     }
 
-    delete_monster_idx(player_ptr, m_idx);
+    delete_monster_idx(creature, m_idx);
     return true;
 }
 
 /*!
  * @brief 寝ているモンスターの起床を判定する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param m_idx モンスターID
  * @return 寝たままならFALSE、起きているor起きたらTRUE
  * @note 馬鹿馬鹿独自仕様あり
  */
-bool awake_monster(PlayerType *player_ptr, MONSTER_IDX m_idx)
+bool awake_monster(CreatureEntity &creature, MONSTER_IDX m_idx)
 {
-    const auto &monster = player_ptr->current_floor_ptr->m_list[m_idx];
+    const auto &monster = creature.get_floor()->get_monster(m_idx);
     auto &monrace = monster.get_monrace();
     if (!monster.is_asleep()) {
         return true;
     }
 
     bool awaken = false;
-    awaken |= has_aggravate(player_ptr);
-    awaken |= has_aggravate_nasty(player_ptr) && monrace.kind_flags.has(MonsterKindType::NASTY);
+    awaken |= has_aggravate(creature);
+    awaken |= has_aggravate_nasty(creature) && monrace.kind_flags.has(MonsterKindType::NASTY);
 
     if (!awaken) {
         return false;
     }
 
-    (void)set_monster_csleep(player_ptr, m_idx, 0);
-    if (monster.ml) {
-        const auto m_name = monster_desc(player_ptr, monster, 0);
+    (void)set_monster_csleep(*creature.get_floor(), m_idx, 0);
+    if (monster.is_visible_on_map()) {
+        const auto m_name = monster_desc(creature, monster, 0);
         msg_format(_("%s^が目を覚ました。", "%s^ wakes up."), m_name.data());
     }
 
-    if (is_original_ap_and_seen(player_ptr, monster) && (monrace.r_wake < MAX_UCHAR)) {
+    if (is_original_ap_and_seen(creature, monster) && (monrace.r_wake < MAX_UCHAR)) {
         monrace.r_wake++;
     }
 
@@ -446,18 +1183,19 @@ bool awake_monster(PlayerType *player_ptr, MONSTER_IDX m_idx)
 
 /*!
  * @brief モンスターの怒り状態を判定する (怒っていたら敵に回す)
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param m_idx モンスターID
  * @param see_m モンスターが視界内にいたらTRUE
  */
-void process_angar(PlayerType *player_ptr, MONSTER_IDX m_idx, bool see_m)
+void process_angar(CreatureEntity &creature, MONSTER_IDX m_idx, bool see_m)
 {
-    auto &monster = player_ptr->current_floor_ptr->m_list[m_idx];
+
+    auto &monster = creature.get_floor()->get_monster(m_idx);
     const auto &monrace = monster.get_monrace();
-    auto gets_angry = monster.is_friendly() && has_aggravate(player_ptr);
+    auto gets_angry = monster.is_friendly() && has_aggravate(creature);
     const auto should_aggravate = monster.is_pet();
     auto has_hostile = monrace.kind_flags.has(MonsterKindType::UNIQUE) || (monrace.population_flags.has(MonsterPopulationType::NAZGUL));
-    has_hostile &= monster_has_hostile_to_player(player_ptr, 10, -10, monrace);
+    has_hostile &= monster_has_hostile_to_player(creature, 10, -10, monrace);
     const auto has_resist_all = monrace.resistance_flags.has(MonsterResistanceType::RESIST_ALL);
     if (should_aggravate && (has_hostile || has_resist_all)) {
         gets_angry = true;
@@ -467,16 +1205,16 @@ void process_angar(PlayerType *player_ptr, MONSTER_IDX m_idx, bool see_m)
         return;
     }
 
-    const auto m_name = monster_desc(player_ptr, monster, monster.is_pet() ? MD_ASSUME_VISIBLE : 0);
+    const auto m_name = monster_desc(creature, monster, monster.is_pet() ? MD_ASSUME_VISIBLE : 0);
 
     /* When riding a hostile alignment pet */
     if (monster.is_riding()) {
-        if (abs(player_ptr->alignment / 10) < randint0(player_ptr->skill_exp[PlayerSkillKindType::RIDING])) {
+        if (abs(creature.alignment / 10) < randint0(creature.get_skill_exp(PlayerSkillKindType::RIDING))) {
             return;
         }
 
         msg_format(_("%s^が突然暴れだした！", "%s^ suddenly begins unruly!"), m_name.data());
-        if (!process_fall_off_horse(player_ptr, 1, true)) {
+        if (!process_fall_off_horse(creature, 1, true)) {
             return;
         }
 
@@ -492,50 +1230,52 @@ void process_angar(PlayerType *player_ptr, MONSTER_IDX m_idx, bool see_m)
 
 /*!
  * @brief 手榴弾の爆発処理
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param m_idx モンスターID
  * @return 爆死したらTRUE
  */
-bool explode_grenade(PlayerType *player_ptr, MONSTER_IDX m_idx)
+bool explode_grenade(CreatureEntity &creature, MONSTER_IDX m_idx)
 {
-    const auto &monster = player_ptr->current_floor_ptr->m_list[m_idx];
-    if (monster.r_idx != MonraceId::GRENADE) {
+
+    const auto &monster = creature.get_floor()->get_monster(m_idx);
+    if (monster.get_r_idx() != MonraceId::GRENADE) {
         return false;
     }
 
     bool fear, dead;
-    mon_take_hit_mon(player_ptr, m_idx, 1, &dead, &fear, _("は爆発して粉々になった。", " explodes into tiny shreds."), m_idx);
+    mon_take_hit_mon(creature, m_idx, 1, &dead, &fear, _("は爆発して粉々になった。", " explodes into tiny shreds."), m_idx);
     return dead;
 }
 
 /*!
  * @brief モンスター依存の特別な行動を取らせる
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param m_idx モンスターID
  */
-void process_special(PlayerType *player_ptr, MONSTER_IDX m_idx)
+void process_special(CreatureEntity &creature, MONSTER_IDX m_idx)
 {
-    const auto &monster = player_ptr->current_floor_ptr->m_list[m_idx];
+
+    const auto &monster = creature.get_floor()->get_monster(m_idx);
     auto &monrace = monster.get_monrace();
     auto can_do_special = monrace.ability_flags.has(MonsterAbilityType::SPECIAL);
-    can_do_special &= monster.r_idx == MonraceId::OHMU;
-    can_do_special &= !player_ptr->current_floor_ptr->inside_arena;
+    can_do_special &= monster.get_r_idx() == MonraceId::OHMU;
+    can_do_special &= !creature.get_floor()->inside_arena;
     can_do_special &= !AngbandSystem::get_instance().is_phase_out();
     can_do_special &= monrace.freq_spell != 0;
     can_do_special &= randint1(100) <= monrace.freq_spell;
 
     // 違法改造モンスターの自滅処理
-    if (monster.mflag2.has(MonsterConstantFlagType::ILLEGAL_MODIFIED) && one_in_(50)) {
-        const auto m_name = monster_desc(player_ptr, monster, 0);
+    if (monster.is_illegal_modified() && one_in_(50)) {
+        const auto m_name = monster_desc(creature, monster, 0);
         const auto pos = monster.get_position();
         msg_format(_("%sが突然機能停止し、爆発した！", "%s suddenly malfunctions and explodes!"), m_name.data());
 
         // 破片のボール攻撃
-        project(player_ptr, m_idx, 2, pos.y, pos.x, monrace.level + randint1(monrace.level), AttributeType::SHARDS,
+        project(creature, m_idx, 2, pos.y, pos.x, monrace.level + randint1(monrace.level), AttributeType::SHARDS,
             PROJECT_GRID | PROJECT_ITEM | PROJECT_KILL);
 
         // モンスターを削除
-        delete_monster_idx(player_ptr, m_idx);
+        delete_monster_idx(creature, m_idx);
         return;
     }
 
@@ -548,30 +1288,31 @@ void process_special(PlayerType *player_ptr, MONSTER_IDX m_idx)
     BIT_FLAGS p_mode = monster.is_pet() ? PM_FORCE_PET : PM_NONE;
 
     for (int k = 0; k < A_MAX; k++) {
-        if (auto summoned_m_idx = summon_specific(player_ptr, monster.y, monster.x, rlev, SUMMON_MOLD, (PM_ALLOW_GROUP | p_mode), m_idx)) {
-            if (player_ptr->current_floor_ptr->m_list[*summoned_m_idx].ml) {
+        if (auto summoned_m_idx = summon_specific(creature, monster.y, monster.x, rlev, SUMMON_MOLD, (PM_ALLOW_GROUP | p_mode), m_idx)) {
+            if (creature.get_floor()->get_monster(*summoned_m_idx).is_visible_on_map()) {
                 count++;
             }
         }
     }
 
-    if (count && is_original_ap_and_seen(player_ptr, monster)) {
+    if (count && is_original_ap_and_seen(creature, monster)) {
         monrace.r_ability_flags.set(MonsterAbilityType::SPECIAL);
     }
 }
 
 /*!
  * @brief モンスターを分裂させるかどうかを決定する (分裂もさせる)
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param m_idx モンスターID
  * @param oy 分裂元モンスターのY座標
  * @param ox 分裂元モンスターのX座標
  * @return 実際に分裂したらTRUEを返す
  */
-bool decide_monster_multiplication(PlayerType *player_ptr, MONSTER_IDX m_idx, POSITION oy, POSITION ox)
+bool decide_monster_multiplication(CreatureEntity &creature, MONSTER_IDX m_idx, POSITION oy, POSITION ox)
 {
-    const auto &floor = *player_ptr->current_floor_ptr;
-    const auto &monster = floor.m_list[m_idx];
+
+    const auto &floor = *creature.get_floor();
+    const auto &monster = floor.get_monster(m_idx);
     auto &monrace = monster.get_monrace();
     if (monrace.misc_flags.has_not(MonsterMiscType::MULTIPLY) || (floor.num_repro >= MAX_REPRODUCTION)) {
         return false;
@@ -591,17 +1332,17 @@ bool decide_monster_multiplication(PlayerType *player_ptr, MONSTER_IDX m_idx, PO
         }
     }
 
-    if (SpellHex(player_ptr).check_hex_barrier(m_idx, HEX_ANTI_MULTI)) {
+    if (SpellHex(creature).check_hex_barrier(m_idx, HEX_ANTI_MULTI)) {
         k = 8;
     }
 
     constexpr auto chance_reproduction = 8;
     if ((k < 4) && (!k || !randint0(k * chance_reproduction))) {
-        if (auto multiplied_m_idx = multiply_monster(player_ptr, m_idx, monrace.idx, false, (monster.is_pet() ? PM_FORCE_PET : 0))) {
-            if (player_ptr->current_floor_ptr->m_list[*multiplied_m_idx].ml && is_original_ap_and_seen(player_ptr, monster)) {
+        if (auto multiplied_m_idx = multiply_monster(creature, m_idx, monrace.idx, false, (monster.is_pet() ? PM_FORCE_PET : 0))) {
+            if (creature.get_floor()->get_monster(*multiplied_m_idx).is_visible_on_map() && is_original_ap_and_seen(creature, monster)) {
                 monrace.r_misc_flags.set(MonsterMiscType::MULTIPLY);
             }
-            if (floor.m_list[*multiplied_m_idx].ml && is_original_ap_and_seen(player_ptr, monster)) {
+            if (floor.get_monster(*multiplied_m_idx).is_visible_on_map() && is_original_ap_and_seen(creature, monster)) {
                 monrace.r_misc_flags.set(MonsterMiscType::MULTIPLY);
             }
             return true;
@@ -613,10 +1354,10 @@ bool decide_monster_multiplication(PlayerType *player_ptr, MONSTER_IDX m_idx, PO
 /*!
  * @brief モンスターのアイテム自然生成処理
  */
-void process_monster_spawn_item(PlayerType *player_ptr, MONSTER_IDX m_idx)
+void process_monster_spawn_item(CreatureEntity &creature, MONSTER_IDX m_idx)
 {
-    MonsterEntity *m_ptr = &player_ptr->current_floor_ptr->m_list[m_idx];
-    MonraceDefinition &monrace = MonraceList::get_instance().get_monrace(m_ptr->r_idx);
+    CreatureEntity *m_ptr = &creature.get_floor()->get_monster(m_idx);
+    MonraceDefinition &monrace = MonraceList::get_instance().get_monrace(m_ptr->get_r_idx());
     for (const auto &spawn_info : monrace.spawn_items) {
         auto num = std::get<0>(spawn_info);
         auto deno = std::get<1>(spawn_info);
@@ -625,7 +1366,7 @@ void process_monster_spawn_item(PlayerType *player_ptr, MONSTER_IDX m_idx)
             ItemEntity item;
             item.generate(kind);
             item.number = 1;
-            (void)drop_near(player_ptr, item, m_ptr->get_position());
+            (void)drop_near(creature, item, m_ptr->get_position());
         }
     }
 }
@@ -634,10 +1375,10 @@ void process_monster_spawn_item(PlayerType *player_ptr, MONSTER_IDX m_idx)
  * @brief モンスターの残気自然生成処理
  * @note 馬鹿馬鹿の固有実装
  */
-void process_monster_spawn_zanki(PlayerType *player_ptr, MONSTER_IDX m_idx)
+void process_monster_spawn_zanki(CreatureEntity &creature, MONSTER_IDX m_idx)
 {
-    MonsterEntity *m_ptr = &player_ptr->current_floor_ptr->m_list[m_idx];
-    MonraceDefinition *r_ptr = &MonraceList::get_instance().get_monrace(m_ptr->r_idx);
+    CreatureEntity *m_ptr = &creature.get_floor()->get_monster(m_idx);
+    MonraceDefinition *r_ptr = &MonraceList::get_instance().get_monrace(m_ptr->get_r_idx());
     if (r_ptr->level < 30 || !r_ptr->kind_flags.has(MonsterKindType::UNIQUE) || r_ptr->r_misc_flags.has(MonsterMiscType::EMPTY_MIND)) {
         return;
     }
@@ -650,47 +1391,48 @@ void process_monster_spawn_zanki(PlayerType *player_ptr, MONSTER_IDX m_idx)
     ItemEntity item;
     item.generate(684);
     item.number = 1;
-    item.pval = enum2i(m_ptr->ap_r_idx);
-    (void)drop_near(player_ptr, item, m_ptr->get_position());
+    item.pval = enum2i(m_ptr->get_ap_r_idx());
+    (void)drop_near(creature, item, m_ptr->get_position());
 }
 
 /*!
  * @brief モンスターによる地形変化処理
  * @note 馬鹿馬鹿の固有実装
  */
-void process_monster_change_feat(PlayerType *player_ptr, MONSTER_IDX m_idx)
+void process_monster_change_feat(CreatureEntity &creature, MONSTER_IDX m_idx)
 {
-    auto *m_ptr = &player_ptr->current_floor_ptr->m_list[m_idx];
-    auto *r_ptr = &MonraceList::get_instance().get_monrace(m_ptr->r_idx);
+    auto *m_ptr = &creature.get_floor()->get_monster(m_idx);
+    auto *r_ptr = &MonraceList::get_instance().get_monrace(m_ptr->get_r_idx());
     for (const auto &spawn_info : r_ptr->change_feats) {
         auto num = std::get<0>(spawn_info);
         auto deno = std::get<1>(spawn_info);
         auto feat = std::get<2>(spawn_info);
         if (randint1(deno) <= num && feat) {
-            set_terrain_id_to_grid(player_ptr, m_ptr->get_position(), feat);
+            set_terrain_id_to_grid(creature, m_ptr->get_position(), feat);
         }
     }
 }
 
 /*!
  * @brief モンスターの落とし子生成処理
- * @param player_ptr プレーヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param m_idx モンスターID
  * @param oy 分裂元モンスターのY座標
  * @param ox 分裂元モンスターのX座標
  * @return 実際に分裂したらTRUEを返す
  */
-bool process_monster_spawn_monster(PlayerType *player_ptr, MONSTER_IDX m_idx, POSITION oy, POSITION ox)
+bool process_monster_spawn_monster(CreatureEntity &creature, MONSTER_IDX m_idx, POSITION oy, POSITION ox)
 {
-    MonsterEntity *m_ptr = &player_ptr->current_floor_ptr->m_list[m_idx];
-    MonraceDefinition *r_ptr = &MonraceList::get_instance().get_monrace(m_ptr->r_idx);
-    if ((r_ptr->spawn_monsters.size() == 0) || (player_ptr->current_floor_ptr->num_repro >= MAX_REPRODUCTION)) {
+
+    CreatureEntity *m_ptr = &creature.get_floor()->get_monster(m_idx);
+    MonraceDefinition *r_ptr = &MonraceList::get_instance().get_monrace(m_ptr->get_r_idx());
+    if ((r_ptr->spawn_monsters.size() == 0) || (creature.get_floor()->num_repro >= MAX_REPRODUCTION)) {
         return false;
     }
 
     int k = 0;
 
-    if (SpellHex(player_ptr).check_hex_barrier(m_idx, HEX_ANTI_MULTI)) {
+    if (SpellHex(creature).check_hex_barrier(m_idx, HEX_ANTI_MULTI)) {
         return false;
     }
 
@@ -698,11 +1440,11 @@ bool process_monster_spawn_monster(PlayerType *player_ptr, MONSTER_IDX m_idx, PO
 
         for (POSITION y = oy - 1; y <= oy + 1; y++) {
             for (POSITION x = ox - 1; x <= ox + 1; x++) {
-                if (!player_ptr->current_floor_ptr->contains(Pos2D(y, x), FloorBoundary::OUTER_WALL_INCLUSIVE)) {
+                if (!creature.get_floor()->contains(Pos2D(y, x), FloorBoundary::OUTER_WALL_INCLUSIVE)) {
                     continue;
                 }
 
-                if (player_ptr->current_floor_ptr->grid_array[y][x].m_idx) {
+                if (creature.get_floor()->grid_array[y][x].m_idx) {
                     k++;
                 }
             }
@@ -716,9 +1458,9 @@ bool process_monster_spawn_monster(PlayerType *player_ptr, MONSTER_IDX m_idx, PO
         auto deno = std::get<1>(spawn_info);
         auto idx = std::get<2>(spawn_info);
         if (randint1(deno) <= num) {
-            if (multiply_monster(player_ptr, m_idx, idx, false, (m_ptr->is_pet() ? PM_FORCE_PET : 0))) {
-                auto &monster = player_ptr->current_floor_ptr->m_list[m_idx];
-                if (monster.ml && is_original_ap_and_seen(player_ptr, *m_ptr)) {
+            if (multiply_monster(creature, m_idx, idx, false, (m_ptr->is_pet() ? PM_FORCE_PET : 0))) {
+                auto &monster = creature.get_floor()->get_monster(m_idx);
+                if (monster.is_visible_on_map() && is_original_ap_and_seen(creature, *m_ptr)) {
                     r_ptr->misc_flags.set(MonsterMiscType::MULTIPLY);
                 }
                 return true;
@@ -731,19 +1473,20 @@ bool process_monster_spawn_monster(PlayerType *player_ptr, MONSTER_IDX m_idx, PO
 
 /*!
  * @brief モンスターに魔法を試行させる
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param m_idx モンスターID
  * @param aware モンスターがプレイヤーに気付いているならばTRUE、超隠密状態ならばFALSE
  * @return 魔法を唱えられなければ強制的にFALSE、その後モンスターが実際に魔法を唱えればTRUE
  */
-bool cast_spell(PlayerType *player_ptr, MONSTER_IDX m_idx, bool aware)
+bool cast_spell(CreatureEntity &creature, MONSTER_IDX m_idx, bool aware)
 {
-    const auto &floor = *player_ptr->current_floor_ptr;
-    const auto &monster_from = floor.m_list[m_idx];
+
+    const auto &floor = *creature.get_floor();
+    const auto &monster_from = floor.get_monster(m_idx);
     const auto &monrace = monster_from.get_monrace();
 
     // 狂乱状態のモンスターは魔法を使わない
-    if (monster_from.mflag2.has(MonsterConstantFlagType::FRENZY)) {
+    if (monster_from.is_frenzied()) {
         return false;
     }
 
@@ -752,10 +1495,10 @@ bool cast_spell(PlayerType *player_ptr, MONSTER_IDX m_idx, bool aware)
     }
 
     auto counter_attack = false;
-    if (monster_from.target_y) {
+    if (monster_from.get_target_position().y) {
         const auto pos_to = monster_from.get_target_position();
         const auto t_m_idx = floor.get_grid(pos_to).m_idx;
-        const auto &monster_to = floor.m_list[t_m_idx];
+        const auto &monster_to = floor.get_monster(t_m_idx);
         const auto pos_from = monster_from.get_position();
         const auto is_projectable = projectable(floor, pos_from, pos_to);
         if (t_m_idx && monster_from.is_hostile_to_melee(monster_to) && is_projectable) {
@@ -764,11 +1507,11 @@ bool cast_spell(PlayerType *player_ptr, MONSTER_IDX m_idx, bool aware)
     }
 
     if (counter_attack) {
-        if (monst_spell_monst(player_ptr, m_idx) || (aware && make_attack_spell(player_ptr, m_idx))) {
+        if (monst_spell_monst(creature, m_idx) || (aware && make_attack_spell(creature, m_idx))) {
             return true;
         }
     } else {
-        if ((aware && make_attack_spell(player_ptr, m_idx)) || monst_spell_monst(player_ptr, m_idx)) {
+        if ((aware && make_attack_spell(creature, m_idx)) || monst_spell_monst(creature, m_idx)) {
             return true;
         }
     }
@@ -778,46 +1521,42 @@ bool cast_spell(PlayerType *player_ptr, MONSTER_IDX m_idx, bool aware)
 
 /*!
  * @brief モンスターの恐怖状態を処理する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param turn_flags_ptr ターン経過処理フラグへの参照ポインタ
  * @param m_idx モンスターID
  * @param aware モンスターがプレイヤーに気付いているならばTRUE、超隠密状態ならばFALSE
  * @return モンスターが戦いを決意したらTRUE
  */
-bool process_monster_fear(PlayerType *player_ptr, turn_flags *turn_flags_ptr, MONSTER_IDX m_idx)
+bool process_monster_fear(CreatureEntity &creature, turn_flags *turn_flags_ptr, MONSTER_IDX m_idx)
 {
     const auto &baseitems = BaseitemList::get_instance();
-    auto *m_ptr = &player_ptr->current_floor_ptr->m_list[m_idx];
-    const auto m_name = monster_desc(player_ptr, *m_ptr, 0);
+    auto *m_ptr = &creature.get_floor()->get_monster(m_idx);
+    const auto m_name = monster_desc(creature, *m_ptr, 0);
     const auto &monrace = m_ptr->get_monrace();
 
-    if (monrace.resistance_flags.has_not(MonsterResistanceType::NO_DEFECATE) &&
-        m_ptr->mflag2.has_not(MonsterConstantFlagType::DEFECATED) &&
-        m_ptr->is_fearful() && one_in_(20)) {
+    if (monrace.resistance_flags.has_not(MonsterResistanceType::NO_DEFECATE) && !m_ptr->is_defecated() && m_ptr->is_fearful() && one_in_(20)) {
         msg_format(_("%s^は恐怖のあまり脱糞した！", "%s^ was defecated because of fear!"), m_name.data());
         ItemEntity item;
         item.generate(baseitems.lookup_baseitem_id({ ItemKindType::JUNK, SV_JUNK_FECES }));
-        (void)drop_near(player_ptr, item, m_ptr->get_position());
-        m_ptr->mflag2.set(MonsterConstantFlagType::DEFECATED);
+        (void)drop_near(creature, item, m_ptr->get_position());
+        m_ptr->set_constant_flag(MonsterConstantFlagType::DEFECATED);
     }
 
-    if (monrace.resistance_flags.has_not(MonsterResistanceType::NO_VOMIT) &&
-        m_ptr->mflag2.has_not(MonsterConstantFlagType::VOMITED) &&
-        m_ptr->is_fearful() && one_in_(20)) {
+    if (monrace.resistance_flags.has_not(MonsterResistanceType::NO_VOMIT) && !m_ptr->is_vomited() && m_ptr->is_fearful() && one_in_(20)) {
         msg_format(_("%s^は恐怖のあまり嘔吐した！", "%s^ vomited in fear!"), m_name.data());
         ItemEntity item;
         item.generate(baseitems.lookup_baseitem_id({ ItemKindType::JUNK, SV_JUNK_VOMITTING }));
-        (void)drop_near(player_ptr, item, m_ptr->get_position());
-        m_ptr->mflag2.set(MonsterConstantFlagType::VOMITED);
+        (void)drop_near(creature, item, m_ptr->get_position());
+        m_ptr->set_constant_flag(MonsterConstantFlagType::VOMITED);
     }
 
-    const auto &monster = player_ptr->current_floor_ptr->m_list[m_idx];
+    const auto &monster = creature.get_floor()->get_monster(m_idx);
     bool is_battle_determined = !turn_flags_ptr->do_turn && !turn_flags_ptr->do_move && monster.is_fearful() && turn_flags_ptr->aware;
     if (!is_battle_determined) {
         return false;
     }
 
-    (void)set_monster_monfear(player_ptr, m_idx, 0);
+    (void)set_monster_monfear(*creature.get_floor(), m_idx, 0);
     if (!turn_flags_ptr->see_m) {
         return true;
     }
@@ -838,34 +1577,34 @@ bool process_monster_fear(PlayerType *player_ptr, turn_flags *turn_flags_ptr, MO
  * "compact_monsters()" function is called by "dungeon()" or "save_player()").\n
  *\n
  * This function is responsible for at least half of the processor time\n
- * on a normal system with a "normal" amount of monsters and a player doing\n
+ * on a normal system with a "normal" amount of monsters and a creature doing\n
  * normal things.\n
  *\n
- * When the player is resting, virtually 90% of the processor time is spent\n
+ * When the creature is resting, virtually 90% of the processor time is spent\n
  * in this function, and its children, "process_monster()" and "make_move()".\n
  *\n
  * Most of the rest of the time is spent in "update_view()" and "lite_spot()",\n
- * especially when the player is running.\n
+ * especially when the creature is running.\n
  *\n
  * Note the special "PRESENT_AT_TURN_START" flag.  Monsters without that flag\n
  * are "fresh" and are still being "born".  A monster is "fresh" only\n
  * during the game turn in which it is created, and we use the "hack_m_idx" to\n
  * determine if the monster is yet to be processed during the game turn.\n
  *\n
- * Note the special "PREVENT_MAGIC" flag, which allows the player to get one\n
+ * Note the special "PREVENT_MAGIC" flag, which allows the creature to get one\n
  * move before any "nasty" monsters get to use their spell attacks.\n
  *\n
  * Note that when the "knowledge" about the currently tracked monster\n
  * changes (flags, attacks, spells), we induce a redraw of the monster\n
  * recall window.\n
  */
-void process_monsters(PlayerType *player_ptr)
+void process_monsters(CreatureEntity &creature)
 {
     const auto &tracker = LoreTracker::get_instance();
     const auto old_monrace_id = tracker.get_trackee();
     OldRaceFlags flags(old_monrace_id);
-    player_ptr->current_floor_ptr->monster_noise = false;
-    sweep_monster_process(player_ptr);
+    creature.get_floor()->monster_noise = false;
+    sweep_monster_process(creature);
     if (!tracker.is_tracking() || !tracker.is_tracking(old_monrace_id)) {
         return;
     }
@@ -875,25 +1614,26 @@ void process_monsters(PlayerType *player_ptr)
 
 /*!
  * @brief フロア内のモンスターについてターン終了時の処理を繰り返す
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
-void sweep_monster_process(PlayerType *player_ptr)
+void sweep_monster_process(CreatureEntity &creature)
 {
-    auto &floor = *player_ptr->current_floor_ptr;
+
+    auto &floor = *creature.get_floor();
 
     // 処理中の召喚などで生成されたモンスターが即座に行動しないようにするため、
     // 先に現在存在するモンスターをリストアップしておく
     std::vector<MONSTER_IDX> valid_m_idx_list;
     for (MONSTER_IDX m_idx = floor.m_max - 1; m_idx >= 1; m_idx--) {
-        if (floor.m_list[m_idx].is_valid()) {
+        if (floor.get_monster(m_idx).is_valid()) {
             valid_m_idx_list.push_back(m_idx);
         }
     }
 
     for (const auto m_idx : valid_m_idx_list) {
-        auto &monster = floor.m_list[m_idx];
+        auto &monster = floor.get_monster(m_idx);
 
-        if (player_ptr->leaving) {
+        if (creature.is_leaving()) {
             return;
         }
 
@@ -901,30 +1641,29 @@ void sweep_monster_process(PlayerType *player_ptr)
             continue;
         }
 
-        if ((monster.cdis >= MAX_MONSTER_SENSING) || !decide_process_continue(player_ptr, monster)) {
+        if ((Grid::calc_distance(creature.get_position(), monster.get_position()) >= MAX_MONSTER_SENSING) || !decide_process_continue(creature, monster)) {
             continue;
         }
 
-        byte speed = monster.is_riding() ? static_cast<CreatureEntity &>(*player_ptr).get_speed() : monster.get_temporary_speed();
-        monster.energy_need -= speed_to_energy(speed);
-        if (monster.energy_need > 0) {
+        byte speed = monster.is_riding() ? creature.get_speed() : monster.get_temporary_speed();
+        monster.consume_energy_by_speed(speed);
+        if (monster.get_energy_need() > 0) {
             continue;
         }
 
-        monster.energy_need += ENERGY_NEED();
-        auto m_name = monster_desc(player_ptr, monster, 0);
+        monster.add_energy_need(ENERGY_NEED());
+        auto m_name = monster_desc(creature, monster, 0);
 
-        if (monster.death_count > 0) {
-            monster.death_count--;
-            if (monster.death_count == 0) {
+        if (monster.get_death_count() > 0) {
+            if (monster.decrement_death_count() == 0) {
                 bool fear;
                 monster.max_maxhp = monster.maxhp = monster.hp = -1;
-                MonsterDamageProcessor mdp(player_ptr, m_idx, 0, &fear, AttributeType::ATTACK);
+                MonsterDamageProcessor mdp(creature, m_idx, 0, &fear, AttributeType::ATTACK);
                 mdp.mon_take_hit(_("は爆発した。", " explodes."));
             }
         }
 
-        auto g_ptr = &player_ptr->current_floor_ptr->grid_array[monster.y][monster.x];
+        auto g_ptr = &creature.get_floor()->grid_array[monster.y][monster.x];
         auto &f_ptr = TerrainList::get_instance().get_terrain(g_ptr->feat);
         if (f_ptr.flags.has(TerrainCharacteristics::TENTACLE)) {
             int pow = 30;
@@ -939,23 +1678,23 @@ void sweep_monster_process(PlayerType *player_ptr)
                 pow *= 3;
             }
             if (r_ptr.level < randint0(pow)) {
-                if (monster.ml) {
+                if (monster.is_visible_on_map()) {
                     msg_format(_("%sは%sに絡めとられて動けなかった！", "%s wes entangled in the %s and could not move!"), m_name.data(), f_ptr.name.data());
                 }
                 if (r_ptr.kind_flags.has(MonsterKindType::HENTAI)) {
                     switch (randint1(3)) {
                     case 1:
                         msg_format(_("%s「んほぉ！」", "%s 'Nnhor!'"), m_name.data());
-                        (void)set_monster_stunned(player_ptr, 0, monster.get_remaining_stun() + 10 + randint0(player_ptr->level) / 5);
+                        (void)set_monster_stunned(*creature.get_floor(), 0, monster.get_remaining_stun() + 10 + randint0(creature.get_level()) / 5);
                         break;
                     case 2:
                         msg_format(_("%s「アへぇ！」", "%s 'Aherr!'"), m_name.data());
-                        (void)set_monster_slow(player_ptr, 0, monster.get_remaining_deceleration() + 10 + randint0(player_ptr->level) / 5);
+                        (void)set_monster_slow(*creature.get_floor(), 0, monster.get_remaining_deceleration() + 10 + randint0(creature.get_level()) / 5);
                         break;
                     case 3: {
                         bool fear = false;
                         msg_format(_("%s「イグゥ！」", "%s 'Igur!'"), m_name.data());
-                        MonsterDamageProcessor mdp(player_ptr, m_idx, Dice::roll(1, 4), &fear, AttributeType::ATTACK);
+                        MonsterDamageProcessor mdp(creature, m_idx, Dice::roll(1, 4), &fear, AttributeType::ATTACK);
 
                         if (fear) {
                             msg_format(_("%s「イッジャイましゅうう！」", "%s'I’m commingrrr!'"), m_name.data());
@@ -969,13 +1708,13 @@ void sweep_monster_process(PlayerType *player_ptr)
             }
         }
 
-        process_monster(player_ptr, m_idx);
+        process_monster(creature, m_idx);
         monster.reset_target();
-        if (player_ptr->no_flowed && one_in_(3)) {
-            monster.mflag2.set(MonsterConstantFlagType::NOFLOW);
+        if (creature.is_no_flowed() && one_in_(3)) {
+            monster.set_constant_flag(MonsterConstantFlagType::NOFLOW);
         }
 
-        if (!player_ptr->playing || player_ptr->is_dead() || player_ptr->leaving) {
+        if (!creature.is_playing() || creature.is_dead() || creature.is_leaving()) {
             return;
         }
     }
@@ -983,37 +1722,40 @@ void sweep_monster_process(PlayerType *player_ptr)
 
 /*!
  * @brief 後続のモンスター処理が必要かどうか判定する (要調査)
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param m_ptr モンスターへの参照ポインタ
  * @return 後続処理が必要ならTRUE
  */
-bool decide_process_continue(PlayerType *player_ptr, MonsterEntity &monster)
+bool decide_process_continue(CreatureEntity &creature, CreatureEntity &monster)
 {
     const auto &monrace = monster.get_monrace();
-    if (!player_ptr->no_flowed) {
-        monster.mflag2.reset(MonsterConstantFlagType::NOFLOW);
+
+    if (!creature.is_no_flowed()) {
+        monster.reset_constant_flag(MonsterConstantFlagType::NOFLOW);
     }
 
-    if (monster.cdis <= (monster.is_pet() ? (monrace.aaf > MAX_PLAYER_SIGHT ? MAX_PLAYER_SIGHT : monrace.aaf) : monrace.aaf)) {
+    const auto cdis = Grid::calc_distance(creature.get_position(), monster.get_position());
+    if (cdis <= (monster.is_pet() ? (monrace.aaf > MAX_PLAYER_SIGHT ? MAX_PLAYER_SIGHT : monrace.aaf) : monrace.aaf)) {
         return true;
     }
 
-    auto should_continue = (monster.cdis <= MAX_PLAYER_SIGHT) || AngbandSystem::get_instance().is_phase_out();
-    should_continue &= player_ptr->current_floor_ptr->has_los_at({ monster.y, monster.x }) || has_aggravate(player_ptr);
+    auto should_continue = (cdis <= MAX_PLAYER_SIGHT) || AngbandSystem::get_instance().is_phase_out();
+    should_continue &= creature.get_floor()->has_los_at({ monster.y, monster.x }) || has_aggravate(creature);
     if (should_continue) {
         return true;
     }
 
-    if (monster.target_y) {
+    if (monster.get_target_position().y) {
         return true;
     }
 
     return false;
 }
 
-bool process_stalking(PlayerType *player_ptr, MONSTER_IDX m_idx)
+bool process_stalking(CreatureEntity &creature, MONSTER_IDX m_idx)
 {
-    auto &monster = player_ptr->current_floor_ptr->m_list[m_idx];
+
+    auto &monster = creature.get_floor()->get_monster(m_idx);
     const auto &monrace = monster.get_monrace();
 
     // モンスターが背後に忍び寄るフラグを持っていないなら何もしない
@@ -1022,7 +1764,7 @@ bool process_stalking(PlayerType *player_ptr, MONSTER_IDX m_idx)
     }
 
     // モンスターからプレイヤーの距離が空いているなら何もしない
-    if (monster.cdis > STALKER_DISTANCE_THRESHOLD) {
+    if (Grid::calc_distance(creature.get_position(), monster.get_position()) > STALKER_DISTANCE_THRESHOLD) {
         return false;
     }
 
@@ -1036,21 +1778,21 @@ bool process_stalking(PlayerType *player_ptr, MONSTER_IDX m_idx)
         return false;
     }
 
-    const auto m_name = monster_name(player_ptr, m_idx);
+    const auto m_name = monster_name(creature, m_idx);
 
     // 呪術魔法によりテレポートが阻害されているならば寄ってこない
-    if (SpellHex(player_ptr).check_hex_barrier(m_idx, HEX_ANTI_TELE)) {
-        if (see_monster(player_ptr, m_idx)) {
+    if (SpellHex(creature).check_hex_barrier(m_idx, HEX_ANTI_TELE)) {
+        if (see_monster(creature, m_idx)) {
             msg_format(_("魔法のバリアが%s^のテレポートを邪魔した。", "Magic barrier obstructs teleporting of %s^."), m_name.data());
         }
         return false;
     }
 
-    teleport_monster_to(player_ptr, m_idx, player_ptr->y, player_ptr->x, 100, TELEPORT_SPONTANEOUS);
+    teleport_monster_to(creature, m_idx, creature.y, creature.x, 100, TELEPORT_SPONTANEOUS);
 
-    disturb(player_ptr, true, true);
+    disturb(creature, true, true);
 
-    if (see_monster(player_ptr, m_idx)) {
+    if (see_monster(creature, m_idx)) {
         const auto message_stalker = monrace.get_message(m_name, MonsterMessageType::MESSAGE_STALKER);
         if (message_stalker) {
             msg_print(*message_stalker);

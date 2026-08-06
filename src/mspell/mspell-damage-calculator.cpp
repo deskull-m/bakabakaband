@@ -4,12 +4,11 @@
 #include "monster-race/race-ability-flags.h"
 #include "monster/monster-status.h"
 #include "player-info/equipment-info.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/monster-entity.h"
-#include "system/player-type-definition.h"
 #include "util/bit-flags-calculator.h"
 
 /*!
@@ -53,7 +52,7 @@ static int monspell_damage_roll(int dam, const Dice &dice, int mult, int div, in
 
 /*!
  * @brief モンスターの使う呪文の威力を返す /
- * @param player_ptr プレイヤーへの参照ポインタ (破滅の手用)
+ * @param creature クリーチャーへの参照 (破滅の手用)
  * @param SPELL_NUM 呪文番号
  * @param hp 呪文を唱えるモンスターの体力
  * @param rlev 呪文を唱えるモンスターのレベル
@@ -64,7 +63,7 @@ static int monspell_damage_roll(int dam, const Dice &dice, int mult, int div, in
  * @return 攻撃呪文のダメージを返す。攻撃呪文以外は-1を返す。
  */
 static int monspell_damage_base(
-    PlayerType *player_ptr, MonsterAbilityType ms_type, int hp, int rlev, bool powerful, const Dice &shoot_dice, int shoot_base, int TYPE)
+    CreatureEntity &creature, MonsterAbilityType ms_type, int hp, int rlev, bool powerful, const Dice &shoot_dice, int shoot_base, int TYPE)
 {
     int dam = 0, mult = 1, div = 1;
     Dice dice{};
@@ -339,7 +338,7 @@ static int monspell_damage_base(
         return -1;
 
     case MonsterAbilityType::HAND_DOOM:
-        mult = player_ptr->hp;
+        mult = creature.get_current_hp();
         div = 100;
         dam = 40 * (mult / div);
         dice = Dice(1, 20);
@@ -438,61 +437,61 @@ static int monspell_damage_base(
 
 /*!
  * @brief モンスターの使う呪文の威力を返す /
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param ms_type 呪文番号
  * @param m_idx 呪文を唱えるモンスターID
  * @param TYPE  DAM_MAXで最大値を返し、DAM_MINで最小値を返す。DAM_ROLLはダイスを振って値を決定する。
  * @return 攻撃呪文のダメージを返す。攻撃呪文以外は-1を返す。
  */
-int monspell_damage(PlayerType *player_ptr, MonsterAbilityType ms_type, MONSTER_IDX m_idx, int TYPE)
+int monspell_damage(CreatureEntity &creature, MonsterAbilityType ms_type, MONSTER_IDX m_idx, int TYPE)
 {
-    const auto &floor = *player_ptr->current_floor_ptr;
-    const auto &monster = floor.m_list[m_idx];
+    const auto &floor = *creature.get_floor();
+    const auto &monster = floor.get_monster(m_idx);
     const auto &monrace = monster.get_monrace();
     DEPTH rlev = monster_level_idx(floor, m_idx);
     int hp = (TYPE == DAM_ROLL) ? monster.hp : monster.max_maxhp;
 
-    return monspell_damage_base(player_ptr, ms_type, hp, rlev, monster_is_powerful(floor, m_idx), monrace.shoot_damage_dice, 0, TYPE);
+    return monspell_damage_base(creature, ms_type, hp, rlev, monster_is_powerful(floor, m_idx), monrace.shoot_damage_dice, 0, TYPE);
 }
 
 /*!
  * @brief モンスターの使う所属としての呪文の威力を返す /
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param ms_type 呪文番号
  * @param r_idx 呪文を唱えるモンスターの種族ID
  * @param TYPE  DAM_MAXで最大値を返し、DAM_MINで最小値を返す。DAM_ROLLはダイスを振って値を決定する。
  * @return 攻撃呪文のダメージを返す。攻撃呪文以外は-1を返す。
  */
-int monspell_race_damage(PlayerType *player_ptr, MonsterAbilityType ms_type, MonraceId r_idx, int TYPE)
+int monspell_race_damage(CreatureEntity &creature, MonsterAbilityType ms_type, MonraceId r_idx, int TYPE)
 {
     auto *r_ptr = &MonraceList::get_instance().get_monrace(r_idx);
     DEPTH rlev = ((r_ptr->level >= 1) ? r_ptr->level : 1);
     bool powerful = r_ptr->misc_flags.has(MonsterMiscType::POWERFUL);
     int hp = r_ptr->hit_dice.maxroll() * (ironman_nightmare ? 2 : 1);
 
-    return monspell_damage_base(player_ptr, ms_type, std::min(MONSTER_MAXHP, hp), rlev, powerful, r_ptr->shoot_damage_dice, 0, TYPE);
+    return monspell_damage_base(creature, ms_type, std::min(MONSTER_MAXHP, hp), rlev, powerful, r_ptr->shoot_damage_dice, 0, TYPE);
 }
 
 /*!
  * @brief 青魔導師の使う呪文の威力を返す /
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param SPELL_NUM 呪文番号
  * @param plev 使用するレベル。2倍して扱う。
  * @param TYPE  DAM_MAXで最大値を返し、DAM_MINで最小値を返す。DAM_ROLLはダイスを振って値を決定する。
  * @return 攻撃呪文のダメージを返す。攻撃呪文以外は-1を返す。
  */
-int monspell_bluemage_damage(PlayerType *player_ptr, MonsterAbilityType ms_type, PLAYER_LEVEL plev, int TYPE)
+int monspell_bluemage_damage(CreatureEntity &creature, MonsterAbilityType ms_type, PLAYER_LEVEL plev, int TYPE)
 {
-    ItemEntity *o_ptr = nullptr;
+    ItemEntity *weapon_ptr = nullptr;
 
-    if (has_melee_weapon(player_ptr, INVEN_MAIN_HAND)) {
-        o_ptr = player_ptr->inventory[INVEN_MAIN_HAND].get();
-    } else if (has_melee_weapon(player_ptr, INVEN_SUB_HAND)) {
-        o_ptr = player_ptr->inventory[INVEN_SUB_HAND].get();
+    if (has_melee_weapon(creature, INVEN_MAIN_HAND)) {
+        weapon_ptr = creature.inventory[INVEN_MAIN_HAND].get();
+    } else if (has_melee_weapon(creature, INVEN_SUB_HAND)) {
+        weapon_ptr = creature.inventory[INVEN_SUB_HAND].get();
     }
 
-    const auto shoot_base = o_ptr ? o_ptr->to_d : 0;
-    const auto shoot_dice = o_ptr ? o_ptr->damage_dice : Dice(1, 1);
+    const auto shoot_base = weapon_ptr ? weapon_ptr->to_d : 0;
+    const auto shoot_dice = weapon_ptr ? weapon_ptr->damage_dice : Dice(1, 1);
 
-    return monspell_damage_base(player_ptr, ms_type, player_ptr->hp, plev * 2, false, shoot_dice, shoot_base, TYPE);
+    return monspell_damage_base(creature, ms_type, creature.get_current_hp(), plev * 2, false, shoot_dice, shoot_base, TYPE);
 }

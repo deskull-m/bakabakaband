@@ -4,14 +4,18 @@
 #include <tuple>
 
 class ItemEntity;
-class PlayerType;
+class CreatureEntity;
 class ItemMagicApplier {
 public:
-    ItemMagicApplier(PlayerType *player_ptr, ItemEntity *o_ptr, DEPTH lev, BIT_FLAGS mode);
+    ItemMagicApplier(CreatureEntity &creature, ItemEntity *o_ptr, DEPTH lev, BIT_FLAGS mode);
+    ItemMagicApplier(const ItemMagicApplier &) = default;
+    ItemMagicApplier(ItemMagicApplier &&) = default;
+    ItemMagicApplier &operator=(const ItemMagicApplier &) = delete;
+    ItemMagicApplier &operator=(ItemMagicApplier &&) = delete;
     void execute();
 
 private:
-    PlayerType *player_ptr;
+    CreatureEntity &creature;
     ItemEntity *o_ptr;
     DEPTH lev;
     BIT_FLAGS mode;

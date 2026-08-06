@@ -4,15 +4,14 @@
 
 enum class MonraceId : int16_t;
 class FloorType;
-class PlayerType;
-class MonsterEntity;
+class CreatureEntity;
 bool monster_is_powerful(const FloorType &floor, MONSTER_IDX m_idx);
 DEPTH monster_level_idx(const FloorType &floor, MONSTER_IDX m_idx);
 
-int mon_damage_mod(PlayerType *player_ptr, const MonsterEntity &monster, int dam, bool is_psy_spear);
+int mon_damage_mod(CreatureEntity &creature, const CreatureEntity &target, int dam, bool is_psy_spear);
 
-void dispel_monster_status(PlayerType *player_ptr, MONSTER_IDX m_idx);
-void monster_gain_exp(PlayerType *player_ptr, MONSTER_IDX m_idx, MonraceId s_idx);
+void dispel_monster_status(CreatureEntity &creature, MONSTER_IDX m_idx);
+void monster_gain_exp(CreatureEntity &creature, MONSTER_IDX m_idx, MonraceId s_idx);
 
-enum class MonsterTimedEffect : int;
-void process_monsters_mtimed(PlayerType *player_ptr, MonsterTimedEffect mte);
+enum class CreatureTimedEffect;
+void process_monsters_timed_effect(CreatureEntity &creature, CreatureTimedEffect mte);

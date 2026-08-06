@@ -7,7 +7,7 @@
 #include "game-option/disturbance-options.h"
 #include "game-option/special-options.h"
 #include "main/scene-table.h"
-#include "system/player-type-definition.h"
+#include "system/creature-entity.h"
 #include "term/screen-processor.h"
 #include "util/enum-converter.h"
 
@@ -55,30 +55,30 @@ void play_music(int type, int val)
 
 /*!
  * @brief シチュエーションに合ったBGM選曲
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @details 設定がない場合はミュートする。
  */
-void select_floor_music(PlayerType *player_ptr)
+void select_floor_music(CreatureEntity &creature)
 {
     if (!use_music) {
         return;
     }
 
-    refresh_scene_table(player_ptr);
+    refresh_scene_table(creature);
     term_xtra(TERM_XTRA_SCENE, 0);
 }
 
 /*!
  * @brief モンスターBGM選曲
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param monster_list モンスターリスト
  */
-void select_monster_music(PlayerType *player_ptr, const std::vector<short> &monster_list)
+void select_monster_music(CreatureEntity &creature, const std::vector<short> &monster_list)
 {
     if (!use_music) {
         return;
     }
 
-    refresh_scene_table(player_ptr, monster_list);
+    refresh_scene_table(creature, monster_list);
     term_xtra(TERM_XTRA_SCENE, 0);
 }

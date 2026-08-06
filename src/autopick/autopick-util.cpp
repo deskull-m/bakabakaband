@@ -6,7 +6,6 @@
 #include "object-enchant/item-feeling.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "util/bit-flags-calculator.h"
 
@@ -36,20 +35,6 @@ void autopick_type::add(int flag)
 void autopick_type::remove(int flag)
 {
     reset_bits(this->flags[flag / 32], 1UL << (flag % 32));
-}
-
-/*!
- * @brief Find a command by 'key'.
- */
-int get_com_id(char key)
-{
-    for (int i = 0; menu_data[i].name; i++) {
-        if (menu_data[i].key == key) {
-            return menu_data[i].com_id;
-        }
-    }
-
-    return 0;
 }
 
 /*!

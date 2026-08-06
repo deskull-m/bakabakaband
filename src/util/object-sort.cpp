@@ -9,9 +9,9 @@
 #include "object/tval-types.h"
 #include "perception/object-perception.h"
 #include "player/player-realm.h"
+#include "system/creature-entity.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/player-type-definition.h"
 
 static int get_item_sort_rank(const ItemEntity &item)
 {
@@ -37,7 +37,7 @@ static int get_item_sort_rank(const ItemEntity &item)
  * @param item2 比較対象アイテムへの参照
  * @return item1の方が上位ならばTRUEを返す。
  */
-bool object_sort_comp(PlayerType *player_ptr, const ItemEntity &item1, const ItemEntity &item2)
+bool object_sort_comp(CreatureEntity &creature, const ItemEntity &item1, const ItemEntity &item2)
 {
     if (!item2.is_valid()) {
         return true;
@@ -45,7 +45,7 @@ bool object_sort_comp(PlayerType *player_ptr, const ItemEntity &item1, const Ite
 
     const auto item1_tval = item1.bi_key.tval();
     const auto item2_tval = item2.bi_key.tval();
-    PlayerRealm pr(player_ptr);
+    PlayerRealm pr(creature);
     const auto realm1_book = pr.realm1().get_book();
     const auto realm2_book = pr.realm2().get_book();
     if ((item1_tval == realm1_book) && (item2_tval != realm1_book)) {

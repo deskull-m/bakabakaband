@@ -5,8 +5,8 @@
  */
 
 #include "object/item-tester-hooker.h"
+#include "system/creature-entity.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "target/target-describer.h"
 
 /**
@@ -25,7 +25,7 @@ TvalItemTester::TvalItemTester(ItemKindType tval)
  * @param test_func そのオブジェクトが条件に合うならtrueを返すメンバ関数を指定する
  */
 FuncItemTester::FuncItemTester(TestMemberFunctionPtr test_func)
-    : test_func([f = test_func](PlayerType *, const ItemEntity *o_ptr) { return (o_ptr->*f)(); })
+    : test_func([f = test_func](CreatureEntity *, const ItemEntity *o_ptr) { return (o_ptr->*f)(); })
 {
 }
 
@@ -35,19 +35,7 @@ FuncItemTester::FuncItemTester(TestMemberFunctionPtr test_func)
  * @param test_func 引数に ItemEntity へのポインタを取り、そのオブジェクトが条件に合うならtrueを返す関数を指定する
  */
 FuncItemTester::FuncItemTester(std::function<bool(const ItemEntity *)> test_func)
-    : test_func([f = std::move(test_func)](PlayerType *, const ItemEntity *o_ptr) { return f(o_ptr); })
-{
-}
-
-/*!
- * @brief Construct a new Func Item Tester:: Func Item Tester object
- *
- * @param test_func 引数に PlayerType へのポインタと ItemEntity へのポインタを取り、そのオブジェクトが条件に合うならtrueを返す関数を指定する
- * @param player_ptr test_func の PlayerType へのポインタの引数に対して渡すポインタを指定する
- */
-FuncItemTester::FuncItemTester(std::function<bool(PlayerType *, const ItemEntity *)> test_func, PlayerType *player_ptr)
-    : test_func(std::move(test_func))
-    , player_ptr(player_ptr)
+    : test_func([f = std::move(test_func)](CreatureEntity *, const ItemEntity *o_ptr) { return f(o_ptr); })
 {
 }
 
@@ -55,11 +43,22 @@ FuncItemTester::FuncItemTester(std::function<bool(PlayerType *, const ItemEntity
  * @brief Construct a new Func Item Tester:: Func Item Tester object
  *
  * @param test_func 引数に PlayerType へのポインタと ItemEntity へのポインタと StoreSaleType を取り、そのオブジェクトが条件に合うならtrueを返す関数を指定する
- * @param player_ptr test_func の PlayerType へのポインタの引数に対して渡すポインタを指定する
+ * @param creature test_func の CreatureEntity への参照の引数に対して渡す参照を指定する
  */
-FuncItemTester::FuncItemTester(std::function<bool(PlayerType *, const ItemEntity *, StoreSaleType)> test_func, PlayerType *player_ptr, StoreSaleType store_num)
-    : test_func([test_func = std::move(test_func), store_num](PlayerType *player_ptr, const ItemEntity *o_ptr) { return test_func(player_ptr, o_ptr, store_num); })
-    , player_ptr(player_ptr)
+FuncItemTester::FuncItemTester(std::function<bool(CreatureEntity *, const ItemEntity *, StoreSaleType)> test_func, CreatureEntity &creature, StoreSaleType store_num)
+    : test_func([test_func = std::move(test_func), store_num](CreatureEntity *creature_ptr, const ItemEntity *o_ptr) { return test_func(creature_ptr, o_ptr, store_num); })
+    , creature_ptr(&creature)
+{
+}
+
+/*!
+ * @brief Construct a new Func Item Tester:: Func Item Tester object
+ *
+ * @param test_func 引数に CreatureEntity への参照と ItemEntity へのポインタを取り、そのオブジェクトが条件に合うならtrueを返す関数を指定する
+ * @param creature test_func の CreatureEntity への参照の引数に対して渡す参照を指定する
+ */
+FuncItemTester::FuncItemTester(std::function<bool(CreatureEntity &, const ItemEntity *)> test_func, CreatureEntity &creature)
+    : test_func([f = std::move(test_func), &creature](CreatureEntity *, const ItemEntity *o_ptr) { return f(creature, o_ptr); })
 {
 }
 
@@ -92,5 +91,5 @@ bool TvalItemTester::okay_impl(const ItemEntity *o_ptr) const
 
 bool FuncItemTester::okay_impl(const ItemEntity *o_ptr) const
 {
-    return this->test_func(this->player_ptr, o_ptr);
+    return this->test_func(this->creature_ptr, o_ptr);
 }

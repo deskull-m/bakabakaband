@@ -324,9 +324,8 @@ constexpr std::span<const Direction> Direction::directions_8_reverse()
     return Direction::directions_reverse().subspan(1, 8);
 }
 
-class PlayerType;
+class CreatureEntity;
 Pos2D mmove2(const Pos2D &pos_orig, const Pos2D &pos1, const Pos2D &pos2);
-bool player_can_see_bold(PlayerType *player_ptr, POSITION y, POSITION x);
+bool player_can_see_bold(CreatureEntity &creature, POSITION y, POSITION x);
 
-class MonsterEntity;
-bool is_seen(PlayerType *player_ptr, const MonsterEntity &monster);
+bool is_seen(CreatureEntity &creature, const CreatureEntity &target);

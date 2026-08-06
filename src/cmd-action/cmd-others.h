@@ -1,7 +1,7 @@
 #pragma once
 
-class PlayerType;
-void do_cmd_search(PlayerType *player_ptr);
-void do_cmd_alter(PlayerType *player_ptr);
-void do_cmd_suicide(PlayerType *player_ptr);
-void do_cmd_inscribe_terrain(PlayerType *player_ptr);
+class CreatureEntity;
+void do_cmd_search(CreatureEntity &creature);
+void do_cmd_alter(CreatureEntity &creature);
+void do_cmd_suicide(CreatureEntity &creature);
+void do_cmd_inscribe_terrain(CreatureEntity &creature);

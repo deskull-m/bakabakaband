@@ -4,12 +4,12 @@
 #include "load/load-util.h"
 #include "load/old/item-loader-savefile50.h"
 #include "object/object-mark-types.h"
+#include "system/creature-entity.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 
 /*!
  * @brief プレイヤーの所持品情報を読み込む / Read the player inventory
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @details
  * Note that the inventory changed in Angband 2.7.4.  Two extra
  * pack slots were added and the equipment was rearranged.  Note
@@ -19,10 +19,8 @@
  *
  * Note that the inventory is "re-sorted" later by "dungeon()".
  */
-static errr rd_inventory(PlayerType *player_ptr)
+static errr rd_inventory(CreatureEntity &creature)
 {
-    player_ptr->inven_cnt = 0;
-    player_ptr->equip_cnt = 0;
 
     int slot = 0;
     auto item_loader = ItemLoaderFactory::create_loader();
@@ -41,34 +39,32 @@ static errr rd_inventory(PlayerType *player_ptr)
 
         if (n >= INVEN_MAIN_HAND) {
             item.marked.set(OmType::TOUCHED);
-            *player_ptr->inventory[n] = std::move(item);
-            player_ptr->equip_cnt++;
+            *creature.inventory[n] = std::move(item);
             continue;
         }
 
-        if (player_ptr->inven_cnt == INVEN_PACK) {
+        if (creature.get_inven_cnt() == INVEN_PACK) {
             load_note(_("持ち物の中のアイテムが多すぎる！", "Too many items in the inventory"));
             return 54;
         }
 
         n = slot++;
         item.marked.set(OmType::TOUCHED);
-        *player_ptr->inventory[n] = std::move(item);
-        player_ptr->inven_cnt++;
+        *creature.inventory[n] = std::move(item);
     }
 
     return 0;
 }
 
-errr load_inventory(PlayerType *player_ptr)
+errr load_inventory(CreatureEntity &creature)
 {
     for (auto i = 0; i < 64; i++) {
         if (const auto spell_id = rd_byte(); spell_id < 64) {
-            player_ptr->spell_order_learned.push_back(spell_id);
+            creature.spell_order_learned.push_back(spell_id);
         }
     }
 
-    int errr = rd_inventory(player_ptr);
+    int errr = rd_inventory(creature);
     if (!errr) {
         return 0;
     }

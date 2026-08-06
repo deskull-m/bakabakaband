@@ -20,10 +20,10 @@
 #include "sv-definition/sv-armor-types.h"
 #include "sv-definition/sv-protector-types.h"
 #include "sv-definition/sv-ring-types.h"
+#include "system/creature-entity.h"
 #include "system/floor/town-info.h"
 #include "system/floor/town-list.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "util/angband-files.h"
 #include "util/bit-flags-calculator.h"
 #include "util/string-processor.h"
@@ -107,17 +107,17 @@ static void display_identified_resistances_flag(const ItemEntity &item, FILE *ff
 
 /*!
  * @brief アイテム1つ当たりの耐性を表示する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param fff 一時ファイルへの参照ポインタ
  * @param item アイテムへの参照
  * @param where アイテムの場所 (手持ち、家等) を示す文字列への参照ポインタ
  * @details 28文字ちょうどになるまで右側をスペースでパディングする
  */
-static void do_cmd_knowledge_inventory_aux(PlayerType *player_ptr, FILE *fff, const ItemEntity &item, std::string_view where)
+static void do_cmd_knowledge_inventory_aux(CreatureEntity &creature, FILE *fff, const ItemEntity &item, std::string_view where)
 {
     constexpr auto max_item_length = 26;
     std::stringstream ss;
-    ss << describe_flavor(player_ptr, item, OD_NAME_ONLY, max_item_length);
+    ss << describe_flavor(creature, item, OD_NAME_ONLY, max_item_length);
     const int item_length = ss.tellp();
     constexpr auto max_display_length = 28;
     for (auto i = item_length; i < max_display_length; i++) {
@@ -168,22 +168,22 @@ static void pad_and_print_header(int label_number, FILE *fff)
 
 /*!
  * 装備中のアイテムについて、耐性を表示する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param tval アイテム主分類番号
  * @param label_number 現在の行数
  * @param fff ファイルへの参照ポインタ
  * @return 画面表示後の行数
  */
-static int show_wearing_equipment_resistances(PlayerType *player_ptr, ItemKindType tval, int label_number_initial, FILE *fff)
+static int show_wearing_equipment_resistances(CreatureEntity &creature, ItemKindType tval, int label_number_initial, FILE *fff)
 {
     auto label_number = label_number_initial;
-    for (short i = INVEN_MAIN_HAND; i < INVEN_TOTAL; i++) {
-        const auto &item = *player_ptr->inventory[i];
+    for (const auto i_idx : INVEN_WIELDING_SLOTS) {
+        const auto &item = *creature.inventory[i_idx];
         if (!item.has_knowledge(tval)) {
             continue;
         }
 
-        do_cmd_knowledge_inventory_aux(player_ptr, fff, item, _("装", "E "));
+        do_cmd_knowledge_inventory_aux(creature, fff, item, _("装", "E "));
         label_number = add_res_label(label_number, fff);
     }
 
@@ -192,22 +192,22 @@ static int show_wearing_equipment_resistances(PlayerType *player_ptr, ItemKindTy
 
 /*!
  * 手持ち中のアイテムについて、耐性を表示する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param tval アイテム主分類番号
  * @param label_number 現在の行数
  * @param fff ファイルへの参照ポインタ
  * @return 画面表示後の行数
  */
-static int show_holding_equipment_resistances(PlayerType *player_ptr, ItemKindType tval, int label_number_initial, FILE *fff)
+static int show_holding_equipment_resistances(CreatureEntity &creature, ItemKindType tval, int label_number_initial, FILE *fff)
 {
     auto label_number = label_number_initial;
-    for (short i = 0; i < INVEN_PACK; i++) {
-        const auto &item = *player_ptr->inventory[i];
+    for (const auto i_idx : INVEN_PACK_SLOTS) {
+        const auto &item = *creature.inventory[i_idx];
         if (!item.has_knowledge(tval)) {
             continue;
         }
 
-        do_cmd_knowledge_inventory_aux(player_ptr, fff, item, _("持", "I "));
+        do_cmd_knowledge_inventory_aux(creature, fff, item, _("持", "I "));
         label_number = add_res_label(label_number, fff);
     }
 
@@ -216,23 +216,23 @@ static int show_holding_equipment_resistances(PlayerType *player_ptr, ItemKindTy
 
 /*!
  * 我が家のアイテムについて、耐性を表示する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param tval アイテム主分類番号
  * @param label_number 現在の行数
  * @param fff ファイルへの参照ポインタ
  * @return 画面表示後の行数
  */
-static int show_home_equipment_resistances(PlayerType *player_ptr, ItemKindType tval, int label_number_initial, FILE *fff)
+static int show_home_equipment_resistances(CreatureEntity &creature, ItemKindType tval, int label_number_initial, FILE *fff)
 {
     auto label_number = label_number_initial;
-    const auto &store = towns_info[1].get_store(StoreSaleType::HOME);
+    const auto &store = TownList::get_instance().get_town(1).get_store(StoreSaleType::HOME);
     for (short i = 0; i < store.stock_num; i++) {
         const auto &item = *store.stock[i];
         if (!item.has_knowledge(tval)) {
             continue;
         }
 
-        do_cmd_knowledge_inventory_aux(player_ptr, fff, item, _("家", "H "));
+        do_cmd_knowledge_inventory_aux(creature, fff, item, _("家", "H "));
         label_number = add_res_label(label_number, fff);
     }
 
@@ -241,9 +241,9 @@ static int show_home_equipment_resistances(PlayerType *player_ptr, ItemKindType 
 
 /*
  * @brief Display *ID* ed weapons/armors's resistances
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
-void do_cmd_knowledge_inventory(PlayerType *player_ptr)
+void do_cmd_knowledge_inventory(CreatureEntity &creature)
 {
     FILE *fff = nullptr;
     GAME_TEXT file_name[FILE_NAME_SIZE];
@@ -255,12 +255,12 @@ void do_cmd_knowledge_inventory(PlayerType *player_ptr)
     auto label_number = 0;
     for (auto tval : TV_WEARABLE_RANGE) {
         pad_and_print_header(label_number, fff);
-        label_number = show_wearing_equipment_resistances(player_ptr, tval, 0, fff);
-        label_number = show_holding_equipment_resistances(player_ptr, tval, label_number, fff);
-        label_number = show_home_equipment_resistances(player_ptr, tval, label_number, fff);
+        label_number = show_wearing_equipment_resistances(creature, tval, 0, fff);
+        label_number = show_holding_equipment_resistances(creature, tval, label_number, fff);
+        label_number = show_home_equipment_resistances(creature, tval, label_number, fff);
     }
 
     angband_fclose(fff);
-    FileDisplayer(player_ptr->name).display(true, file_name, 0, 0, _("*鑑定*済み武器/防具の耐性リスト", "Resistances of *identified* equipment"));
+    FileDisplayer(creature.name).display(true, file_name, 0, 0, _("*id鑑定*済み武器/防具の耐性リスト", "Resistances of *identified* equipment"));
     fd_kill(file_name);
 }

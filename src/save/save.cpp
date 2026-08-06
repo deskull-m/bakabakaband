@@ -13,8 +13,8 @@
 
 #include "save/save.h"
 #include "alliance/alliance.h"
+#include "artifact/fixed-art-types.h"
 #include "core/object-compressor.h"
-#include "dungeon/quest.h"
 #include "inventory/inventory-slot-types.h"
 #include "io/files-util.h"
 #include "io/report.h"
@@ -30,12 +30,14 @@
 #include "save/player-writer.h"
 #include "save/save-util.h"
 #include "system/artifact-type-definition.h"
+#include "system/artifact/artifact-record.h"
+#include "system/creature-entity.h"
+#include "system/dungeon/quest-definition.h"
 #include "system/floor/floor-info.h"
-#include "system/floor/town-info.h"
 #include "system/floor/town-list.h"
 #include "system/floor/wilderness-grid.h"
+#include "system/inner-game-data.h"
 #include "system/monrace/monrace-list.h"
-#include "system/player-type-definition.h"
 #include "util/angband-files.h"
 #include "view/display-messages.h"
 #include "world/world-collapsion.h"
@@ -49,18 +51,14 @@
 /*!
  * @brief セーブデータの書き込み /
  * Actually write a save-file
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return 成功すればtrue
  */
-static bool wr_savefile_new(PlayerType *player_ptr)
+static bool wr_savefile_new(CreatureEntity &creature)
 {
-    compact_monsters(player_ptr, 0);
+    compact_monsters(creature, 0);
 
-    uint32_t now = (uint32_t)time((time_t *)0);
     auto &world = AngbandWorld::get_instance();
-    world.sf_system = 0L;
-    world.sf_when = now;
-    world.sf_saves++;
 
     save_xor_byte = 0;
     auto variant_length = VARIANT_NAME.length();
@@ -81,10 +79,13 @@ static bool wr_savefile_new(PlayerType *player_ptr)
     v_stamp = 0L;
     x_stamp = 0L;
 
-    wr_u32b(world.sf_system);
-    wr_u32b(world.sf_when);
-    wr_u16b(world.sf_lives);
-    wr_u16b(world.sf_saves);
+    // 旧 sf_system / sf_when / sf_lives / sf_saves の領域 (計 12 バイト)。
+    // 上流 hengband#5402 で未使用フィールドとして廃止されたが、セーブフォーマット
+    // 互換性維持のため予約領域として書き出す (Godot 用 save-file-scanner も同オフセット依存)。
+    wr_u32b(0);
+    wr_u32b(static_cast<uint32_t>(time((time_t *)0)));
+    wr_u16b(0);
+    wr_u16b(0);
 
     wr_u32b(SAVEFILE_VERSION);
     wr_u16b(0);
@@ -117,7 +118,9 @@ static bool wr_savefile_new(PlayerType *player_ptr)
         wr_perception(bi_id);
     }
 
-    tmp16u = static_cast<uint16_t>(towns_info.size());
+    const auto &towns = TownList::get_instance();
+    const auto towns_size = static_cast<uint16_t>(towns.size());
+    tmp16u = towns_size;
     wr_u16b(tmp16u);
 
     const auto &quests = QuestList::get_instance();
@@ -145,7 +148,7 @@ static bool wr_savefile_new(PlayerType *player_ptr)
         wr_s16b((int16_t)quest.max_num);
         wr_s16b(enum2i(quest.type));
         wr_s16b(enum2i(quest.r_idx));
-        wr_s16b(enum2i(quest.reward_fa_id));
+        wr_s16b(enum2i(quest.get_reward().value_or(FixedArtifactId::NONE)));
         wr_byte((byte)quest.flags);
         wr_byte((byte)quest.dungeon);
     }
@@ -155,7 +158,7 @@ static bool wr_savefile_new(PlayerType *player_ptr)
     wr_s32b(pos.x);
     wr_s32b(pos.y);
     wr_bool(world.is_wild_mode());
-    wr_bool(player_ptr->ambush_flag);
+    wr_bool(creature.get_ambush_flag());
     const auto &area = wilderness.get_area();
     wr_s32b(area.width());
     wr_s32b(area.height());
@@ -171,70 +174,70 @@ static bool wr_savefile_new(PlayerType *player_ptr)
     wr_u16b(tmp16u);
     for (auto i = 0U; i < tmp16u; i++) {
         const auto a_idx = i2enum<FixedArtifactId>(i);
-        const auto &artifact = artifacts.get_artifact(a_idx);
-        wr_bool(artifact.is_generated);
-        wr_s16b(artifact.floor_id);
+        const auto &records = ArtifactRecords::get_instance();
+        wr_bool(records.get_generated(a_idx));
+        wr_s16b(records.get_floor_id(a_idx));
     }
 
-    wr_u32b(world.sf_play_time);
+    const auto &igd = InnerGameData::get_instance();
+    wr_u32b(igd.get_total_play_time());
     wr_s32b(wc_ptr->collapse_degree);
-    wr_FlagGroup(world.sf_winner, wr_byte);
-    wr_FlagGroup(world.sf_retired, wr_byte);
+    wr_FlagGroup(igd.get_won_classes(), wr_byte);
+    wr_FlagGroup(igd.get_retired_classes(), wr_byte);
 
     wr_alliance_base_power();
 
-    wr_player(player_ptr);
+    wr_player(creature);
     tmp16u = PY_MAX_LEVEL;
     wr_u16b(tmp16u);
     for (int i = 0; i < tmp16u; i++) {
-        wr_s16b((int16_t)player_ptr->player_hp[i]);
+        wr_s16b((int16_t)creature.get_hp_table(i));
     }
 
-    wr_u32b(player_ptr->spell_learned1);
-    wr_u32b(player_ptr->spell_learned2);
-    wr_u32b(player_ptr->spell_worked1);
-    wr_u32b(player_ptr->spell_worked2);
-    wr_u32b(player_ptr->spell_forgotten1);
-    wr_u32b(player_ptr->spell_forgotten2);
-    wr_s16b(player_ptr->learned_spells);
-    wr_s16b(player_ptr->add_spells);
+    wr_u32b(creature.get_spell_learned_flags(0));
+    wr_u32b(creature.get_spell_learned_flags(1));
+    wr_u32b(creature.get_spell_worked_flags(0));
+    wr_u32b(creature.get_spell_worked_flags(1));
+    wr_u32b(creature.get_spell_forgotten_flags(0));
+    wr_u32b(creature.get_spell_forgotten_flags(1));
+    wr_s16b(creature.get_learned_spells());
+    wr_s16b(creature.get_add_spells());
     for (auto i = 0; i < 64; i++) {
-        const auto spell_id = (i < std::ssize(player_ptr->spell_order_learned)) ? player_ptr->spell_order_learned[i] : 255;
+        const auto spell_id = (i < std::ssize(creature.spell_order_learned)) ? creature.spell_order_learned[i] : 255;
         wr_byte(static_cast<byte>(spell_id));
     }
 
-    for (int i = 0; i < INVEN_TOTAL; i++) {
-        const auto &item = *player_ptr->inventory[i];
+    for (const auto i_idx : INVEN_ALL_SLOTS) {
+        const auto &item = *creature.inventory[i_idx];
         if (!item.is_valid()) {
             continue;
         }
 
-        wr_u16b((uint16_t)i);
+        wr_u16b((uint16_t)i_idx);
         wr_item(item);
     }
 
     wr_u16b(0xFFFF);
-    tmp16u = static_cast<uint16_t>(towns_info.size());
-    wr_u16b(tmp16u);
+    wr_u16b(towns_size);
 
     tmp16u = MAX_STORES;
     wr_u16b(tmp16u);
-    for (size_t i = 1; i < towns_info.size(); i++) {
+    for (uint16_t i = 1; i < towns_size; i++) {
         for (auto sst : STORE_SALE_TYPE_LIST) {
-            wr_store(&towns_info[i].get_store(sst));
+            wr_store(towns.get_town(i).get_store(sst));
         }
     }
 
-    wr_s16b(player_ptr->pet_follow_distance);
-    wr_s16b(player_ptr->pet_extra_flags);
-    if (AngbandSystem::get_instance().is_awaiting_report_status() || !player_ptr->is_dead()) {
+    wr_s16b(creature.get_pet_follow_distance());
+    wr_s16b(creature.get_pet_extra_flags());
+    if (AngbandSystem::get_instance().is_awaiting_report_status() || !creature.is_dead()) {
         wr_string(screen_dump);
     } else {
         wr_string("");
     }
 
-    if (!player_ptr->is_dead()) {
-        if (!wr_dungeon(player_ptr)) {
+    if (!creature.is_dead()) {
+        if (!wr_dungeon(creature)) {
             return false;
         }
 
@@ -249,12 +252,12 @@ static bool wr_savefile_new(PlayerType *player_ptr)
 
 /*!
  * @brief セーブデータ書き込みのサブルーチン
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param path セーブデータのフルパス
  * @param type セーブ後の処理種別
  * @return セーブの成功可否
  */
-static bool save_player_aux(PlayerType *player_ptr, const std::filesystem::path &path)
+static bool save_player_aux(CreatureEntity &creature, const std::filesystem::path &path)
 {
     safe_setuid_grab();
     auto fd = fd_make(path);
@@ -268,7 +271,7 @@ static bool save_player_aux(PlayerType *player_ptr, const std::filesystem::path 
         saving_savefile = angband_fopen(path, FileOpenMode::WRITE, true);
         safe_setuid_drop();
         if (saving_savefile) {
-            if (wr_savefile_new(player_ptr)) {
+            if (wr_savefile_new(creature)) {
                 is_save_successful = true;
             }
 
@@ -290,14 +293,14 @@ static bool save_player_aux(PlayerType *player_ptr, const std::filesystem::path 
     }
 
     auto &world = AngbandWorld::get_instance();
-    counts_write(player_ptr, 0, world.play_time.elapsed_sec());
+    counts_write(creature, 0, world.play_time.elapsed_sec());
     world.character_saved = true;
     return true;
 }
 
 /*!
  * @brief セーブデータ書き込みのメインルーチン
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return 成功すればtrue
  * @details 以下の順番で書き込みを実行する.
  * 1. hoge.new にセーブデータを書き込む
@@ -305,7 +308,7 @@ static bool save_player_aux(PlayerType *player_ptr, const std::filesystem::path 
  * 3. hoge.new をhoge にリネームする
  * 4. hoge.old を削除する
  */
-bool save_player(PlayerType *player_ptr, SaveType type)
+bool save_player(CreatureEntity &creature, SaveType type)
 {
     std::stringstream ss_new;
     ss_new << savefile.string() << ".new";
@@ -317,7 +320,7 @@ bool save_player(PlayerType *player_ptr, SaveType type)
     auto &world = AngbandWorld::get_instance();
     world.play_time.update();
     auto result = false;
-    if (save_player_aux(player_ptr, savefile_new.data())) {
+    if (save_player_aux(creature, savefile_new.data())) {
         std::stringstream ss_old;
         ss_old << savefile.string() << ".old";
         auto savefile_old = ss_old.str();
@@ -333,8 +336,8 @@ bool save_player(PlayerType *player_ptr, SaveType type)
 
     if (type != SaveType::CLOSE_GAME) {
         world.is_loading_now = false;
-        update_creature(player_ptr);
-        player_ptr->current_floor_ptr->reset_mproc();
+        update_creature(creature);
+        creature.get_floor()->reset_mproc();
         world.is_loading_now = true;
     }
 

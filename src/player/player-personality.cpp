@@ -87,6 +87,11 @@ const player_personality personality_info[MAX_PERSONALITIES] = {
         8, 3, -2, 2, 6, 4, -5, 5,
         0, 1, 1 },
 
+    { { "なし", "None" },
+        { 0, 0, 0, 0, 0, 0 },
+        0, 0, 0, 0, 0, 0, 0, 0,
+        0, 1, 0 },
+
 };
 
 // ap_ptr is now a member named 'personality' in PlayerType

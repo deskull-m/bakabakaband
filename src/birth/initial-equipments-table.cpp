@@ -221,4 +221,88 @@ std::vector<std::vector<std::tuple<ItemKindType, byte>>> player_init = {
         std::make_tuple(ItemKindType::RING, static_cast<byte>(SV_RING_SUSTAIN_WIS)),
         std::make_tuple(ItemKindType::SWORD, static_cast<byte>(SV_DAGGER)),
     },
+    {
+        /* Soldier */
+        std::make_tuple(ItemKindType::SOFT_ARMOR, static_cast<byte>(SV_SOFT_LEATHER_ARMOR)),
+        std::make_tuple(ItemKindType::SWORD, static_cast<byte>(SV_DAGGER)),
+        std::make_tuple(ItemKindType::FOOD, static_cast<byte>(SV_FOOD_RATION)),
+    },
+
+    {
+        /* Peasant */
+        std::make_tuple(ItemKindType::SOFT_ARMOR, static_cast<byte>(SV_SOFT_LEATHER_ARMOR)),
+        std::make_tuple(ItemKindType::SWORD, static_cast<byte>(SV_DAGGER)),
+        std::make_tuple(ItemKindType::FOOD, static_cast<byte>(SV_FOOD_RATION)),
+    },
+
+    {
+        /* Noble */
+        std::make_tuple(ItemKindType::SOFT_ARMOR, static_cast<byte>(SV_SOFT_LEATHER_ARMOR)),
+        std::make_tuple(ItemKindType::SWORD, static_cast<byte>(SV_DAGGER)),
+        std::make_tuple(ItemKindType::FOOD, static_cast<byte>(SV_FOOD_RATION)),
+    },
+
+    {
+        /* Citizen */
+        std::make_tuple(ItemKindType::SOFT_ARMOR, static_cast<byte>(SV_SOFT_LEATHER_ARMOR)),
+        std::make_tuple(ItemKindType::SWORD, static_cast<byte>(SV_DAGGER)),
+        std::make_tuple(ItemKindType::FOOD, static_cast<byte>(SV_FOOD_RATION)),
+    },
+
+    {
+        /* Rabble */
+        std::make_tuple(ItemKindType::SOFT_ARMOR, static_cast<byte>(SV_SOFT_LEATHER_ARMOR)),
+        std::make_tuple(ItemKindType::SWORD, static_cast<byte>(SV_DAGGER)),
+        std::make_tuple(ItemKindType::FOOD, static_cast<byte>(SV_FOOD_RATION)),
+    },
+
+    {
+        /* Yakuza */
+        std::make_tuple(ItemKindType::SOFT_ARMOR, static_cast<byte>(SV_SOFT_LEATHER_ARMOR)),
+        std::make_tuple(ItemKindType::SWORD, static_cast<byte>(SV_DAGGER)),
+        std::make_tuple(ItemKindType::FOOD, static_cast<byte>(SV_FOOD_RATION)),
+    },
+
+    {
+        /* Sumo Wrestler */
+        std::make_tuple(ItemKindType::SOFT_ARMOR, static_cast<byte>(SV_SOFT_LEATHER_ARMOR)),
+        std::make_tuple(ItemKindType::SWORD, static_cast<byte>(SV_DAGGER)),
+        std::make_tuple(ItemKindType::FOOD, static_cast<byte>(SV_FOOD_RATION)),
+    },
+
+    {
+        /* Gunner */
+        std::make_tuple(ItemKindType::SOFT_ARMOR, static_cast<byte>(SV_SOFT_LEATHER_ARMOR)),
+        std::make_tuple(ItemKindType::SWORD, static_cast<byte>(SV_DAGGER)),
+        std::make_tuple(ItemKindType::FOOD, static_cast<byte>(SV_FOOD_RATION)),
+    },
+
+    {
+        /* Berserker */
+        std::make_tuple(ItemKindType::SOFT_ARMOR, static_cast<byte>(SV_SOFT_LEATHER_ARMOR)),
+        std::make_tuple(ItemKindType::SWORD, static_cast<byte>(SV_DAGGER)),
+        std::make_tuple(ItemKindType::FOOD, static_cast<byte>(SV_FOOD_RATION)),
+    },
+
+    {
+        /* Tank */
+        std::make_tuple(ItemKindType::SOFT_ARMOR, static_cast<byte>(SV_SOFT_LEATHER_ARMOR)),
+        std::make_tuple(ItemKindType::SWORD, static_cast<byte>(SV_DAGGER)),
+        std::make_tuple(ItemKindType::FOOD, static_cast<byte>(SV_FOOD_RATION)),
+    },
+
+    {
+        /* Magical Girl */
+        std::make_tuple(ItemKindType::SOFT_ARMOR, static_cast<byte>(SV_SOFT_LEATHER_ARMOR)),
+        std::make_tuple(ItemKindType::SWORD, static_cast<byte>(SV_DAGGER)),
+        std::make_tuple(ItemKindType::FOOD, static_cast<byte>(SV_FOOD_RATION)),
+    },
+
+    {
+        /* Grandma */
+        std::make_tuple(ItemKindType::SOFT_ARMOR, static_cast<byte>(SV_SOFT_LEATHER_ARMOR)),
+        std::make_tuple(ItemKindType::SWORD, static_cast<byte>(SV_DAGGER)),
+        std::make_tuple(ItemKindType::FOOD, static_cast<byte>(SV_FOOD_RATION)),
+    },
+
 };

@@ -6,6 +6,6 @@
  * This seems like a pretty standard "typedef"
  */
 class ItemEntity;
-class PlayerType;
+class CreatureEntity;
 
-void inventory_damage(PlayerType *player_ptr, const ObjectBreaker &breaker, int perc);
+void inventory_damage(CreatureEntity &creature, const ObjectBreaker &breaker, int perc);

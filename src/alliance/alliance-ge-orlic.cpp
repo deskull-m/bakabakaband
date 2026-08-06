@@ -1,13 +1,13 @@
 #include "alliance/alliance-ge-orlic.h"
+#include "system/creature-entity.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/player-type-definition.h"
 
-int AllianceGEOrlic::calcImpressionPoint([[maybe_unused]] PlayerType *creature_ptr) const
+int AllianceGEOrlic::calcImpressionPoint([[maybe_unused]] const CreatureEntity &creature) const
 {
     int impression = 0;
-    impression += Alliance::calcPlayerPower(*creature_ptr, 10, 30);
+    impression += Alliance::calcPlayerPower(creature, 10, 30);
     impression += calcIronmanHostilityPenalty();
 
     return impression;
@@ -21,5 +21,5 @@ int AllianceGEOrlic::calcImpressionPoint([[maybe_unused]] PlayerType *creature_p
 bool AllianceGEOrlic::isAnnihilated()
 {
     // 銀河皇帝『カル・ダームIII世』が存在しない場合、オーリック朝銀河帝国は壊滅する
-    return MonraceList::get_instance().get_monrace(MonraceId::CALDARM).mob_num == 0;
+    return all_monraces_extinct({ MonraceId::CALDARM });
 }

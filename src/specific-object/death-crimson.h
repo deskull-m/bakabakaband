@@ -1,5 +1,5 @@
 #pragma once
 
+class CreatureEntity;
 class ItemEntity;
-class PlayerType;
-bool activate_crimson(PlayerType *player_ptr, ItemEntity *o_ptr);
+bool activate_crimson(CreatureEntity &creature, ItemEntity &item);

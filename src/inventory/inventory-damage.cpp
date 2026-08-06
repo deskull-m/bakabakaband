@@ -9,15 +9,16 @@
 #include "object/object-info.h"
 #include "object/object-stack.h"
 #include "player/player-status.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "view/display-messages.h"
+#include <range/v3/view.hpp>
 
 /*!
  * @brief 手持ちのアイテムを指定確率で破損させる /
  * Destroys a type of item on a given percent chance
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param typ 破損判定関数ポインタ
  * @param perc 基本確率
  * @details
@@ -25,16 +26,16 @@
  * Destruction taken from "melee.c" code for "stealing".
  * New-style wands and rods handled correctly. -LM-
  */
-void inventory_damage(PlayerType *player_ptr, const ObjectBreaker &breaker, int perc)
+void inventory_damage(CreatureEntity &creature, const ObjectBreaker &breaker, int perc)
 {
     int j, amt;
-    if (check_multishadow(player_ptr) || player_ptr->current_floor_ptr->inside_arena) {
+    if (check_multishadow(creature) || creature.get_floor()->inside_arena) {
         return;
     }
 
     /* Scan through the slots backwards */
-    for (short i = 0; i < INVEN_PACK; i++) {
-        auto &item = *player_ptr->inventory[i];
+    for (const auto i_idx : INVEN_PACK_SLOTS | ranges::views::reverse) {
+        auto &item = *creature.inventory[i_idx];
         if (!item.is_valid()) {
             continue;
         }
@@ -61,26 +62,26 @@ void inventory_damage(PlayerType *player_ptr, const ObjectBreaker &breaker, int 
             continue;
         }
 
-        const auto item_name = describe_flavor(player_ptr, item, OD_OMIT_PREFIX);
+        const auto item_name = describe_flavor(creature, item, OD_OMIT_PREFIX);
 
         msg_format(_("%s(%c)が%s壊れてしまった！", "%sour %s (%c) %s destroyed!"),
 #ifdef JP
-            item_name.data(), index_to_label(i), ((item.number > 1) ? ((amt == item.number) ? "全部" : (amt > 1 ? "何個か" : "一個")) : ""));
+            item_name.data(), index_to_label(i_idx), ((item.number > 1) ? ((amt == item.number) ? "全部" : (amt > 1 ? "何個か" : "一個")) : ""));
 #else
-            ((item.number > 1) ? ((amt == item.number) ? "All of y" : (amt > 1 ? "Some of y" : "One of y")) : "Y"), item_name.data(), index_to_label(i),
+            ((item.number > 1) ? ((amt == item.number) ? "All of y" : (amt > 1 ? "Some of y" : "One of y")) : "Y"), item_name.data(), index_to_label(i_idx),
             ((amt > 1) ? "were" : "was"));
 #endif
 
 #ifdef JP
-        if (is_echizen(player_ptr)) {
+        if (creature.is_echizen()) {
             msg_print("やりやがったな！");
-        } else if (is_chargeman(player_ptr)) {
+        } else if (creature.is_chargeman()) {
             if (randint0(2) == 0) {
                 msg_print(_("ジュラル星人め！", ""));
             } else {
                 msg_print(_("弱い者いじめは止めるんだ！", ""));
             }
-        } else if (is_tough(player_ptr)) {
+        } else if (creature.is_tough()) {
             msg_print(_("う わ あ あ あ あ あ あ あ あ", ""));
         }
 
@@ -88,14 +89,15 @@ void inventory_damage(PlayerType *player_ptr, const ObjectBreaker &breaker, int 
 
         /* Potions smash open */
         if (item.is_potion()) {
-            (void)potion_smash_effect(player_ptr, 0, player_ptr->y, player_ptr->x, item.bi_id);
+            (void)potion_smash_effect(creature, 0, creature.y, creature.x, item.bi_id);
         }
 
         /* Reduce the charges of rods/wands */
         reduce_charges(&item, amt);
 
         /* Destroy "amt" items */
-        inven_item_increase(player_ptr, i, -amt);
-        inven_item_optimize(player_ptr, i);
+
+        inven_item_increase(creature, i_idx, -amt);
+        inven_item_optimize(creature, i_idx);
     }
 }

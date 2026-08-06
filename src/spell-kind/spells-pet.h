@@ -1,4 +1,5 @@
 #pragma once
 
 class PlayerType;
-void discharge_minion(PlayerType *player_ptr);
+class CreatureEntity;
+void discharge_minion(CreatureEntity &creature);

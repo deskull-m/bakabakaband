@@ -1,7 +1,8 @@
 #pragma once
 
-#include "system/angband.h"
+#include <cstdint>
+#include <string>
+#include <string_view>
+#include <vector>
 
-#define TOKENIZE_CHECKQUOTE 0x01 /* Special handling of single quotes */
-
-int16_t tokenize(char *buf, int16_t num, char **tokens, BIT_FLAGS mode);
+std::vector<std::string> tokenize(std::string_view buf, size_t num);

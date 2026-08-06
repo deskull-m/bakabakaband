@@ -1,4 +1,4 @@
 #pragma once
 
-class PlayerType;
-void do_cmd_kaji(PlayerType *player_ptr, bool only_browse);
+class CreatureEntity;
+void do_cmd_kaji(CreatureEntity &creature, bool only_browse);

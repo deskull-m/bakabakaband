@@ -1,4 +1,4 @@
 #pragma once
 
-class PlayerType;
-void do_cmd_macros(PlayerType *player_ptr);
+class CreatureEntity;
+void do_cmd_macros(CreatureEntity &creature);

@@ -1,14 +1,14 @@
 #pragma once
 
-class PlayerType;
+class CreatureEntity;
 
 class PlayerSpellStatus {
 public:
-    PlayerSpellStatus(PlayerType *player_ptr);
+    PlayerSpellStatus(CreatureEntity &creature);
 
     class Realm {
     public:
-        Realm(PlayerType *player_ptr, bool is_realm1);
+        Realm(CreatureEntity &creature, bool is_realm1);
 
         void initialize();
         bool is_nothing_learned() const;
@@ -20,7 +20,7 @@ public:
         void set_forgotten(int spell_id, bool value = true);
 
     private:
-        PlayerType *player_ptr;
+        CreatureEntity *creature_ptr;
         bool is_realm1;
     };
 
@@ -28,5 +28,5 @@ public:
     Realm realm2() const;
 
 private:
-    PlayerType *player_ptr;
+    CreatureEntity *creature_ptr;
 };

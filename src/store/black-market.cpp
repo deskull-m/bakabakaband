@@ -1,14 +1,13 @@
 #include "store/black-market.h"
 #include "store/store-owners.h"
 #include "store/store-util.h"
-#include "system/floor/town-info.h"
 #include "system/floor/town-list.h"
 #include "system/item-entity.h"
 
 /*!
  * @brief ブラックマーケット用の無価値品の排除判定 /
  * This function will keep 'crap' out of the black market.
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param o_ptr 判定したいオブジェクトの構造体参照ポインタ
  * @return ブラックマーケットにとって無価値な品ならばTRUEを返す
  * @details
@@ -35,7 +34,7 @@ bool black_market_crap(int town_num, const ItemEntity &item)
         return false;
     }
 
-    const auto &town = towns_info[town_num];
+    const auto &town = TownList::get_instance().get_town(town_num);
     for (auto sst : STORE_SALE_TYPE_LIST) {
         if ((sst == StoreSaleType::HOME) || (sst == StoreSaleType::MUSEUM)) {
             continue;

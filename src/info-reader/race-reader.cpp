@@ -5,8 +5,7 @@
 #include "info-reader/json-reader-util.h"
 #include "info-reader/parse-error-types.h"
 #include "info-reader/race-info-tokens-table.h"
-#include "locale/japanese.h"
-#include "main/angband-headers.h"
+#include "locale/character-encoding.h"
 #include "player-ability/player-ability-types.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
@@ -15,6 +14,7 @@
 #include "util/enum-converter.h"
 #include "util/string-processor.h"
 #include "view/display-messages.h"
+#include <algorithm>
 #include <string>
 
 /*!
@@ -24,7 +24,7 @@
  * @param what 参照元の文字列ポインタ
  * @return 見つけたらtrue
  */
-static bool grab_one_basic_flag(MonraceDefinition &monrace, std::string_view what)
+bool RaceReader::grab_one_basic_flag(MonraceDefinition &monrace, std::string_view what)
 {
     if (EnumClassFlagGroup<MonsterFeedType>::grab_one_flag(monrace.meat_feed_flags, r_info_meat_feed, what)) {
         return true;
@@ -84,7 +84,7 @@ static bool grab_one_basic_flag(MonraceDefinition &monrace, std::string_view wha
     if (EnumClassFlagGroup<MonsterMiscType>::grab_one_flag(monrace.misc_flags, r_info_misc_flags, what)) {
         return true;
     }
-    msg_format(_("モンスターフラグ読込失敗'%d'。", "Failed to load monster flag data.'%d'."), what);
+    msg_format(_("モンスターフラグ読込失敗'%s'。", "Failed to load monster flag data.'%s'."), what.data());
     return false;
 }
 
@@ -95,7 +95,7 @@ static bool grab_one_basic_flag(MonraceDefinition &monrace, std::string_view wha
  * @param what 参照元の文字列ポインタ
  * @return 見つけたらtrue
  */
-static bool grab_one_spell_flag(MonraceDefinition &monrace, std::string_view what)
+bool RaceReader::grab_one_spell_flag(MonraceDefinition &monrace, std::string_view what)
 {
     if (EnumClassFlagGroup<MonsterAbilityType>::grab_one_flag(monrace.ability_flags, r_info_ability_flags, what)) {
         return true;
@@ -111,7 +111,7 @@ static bool grab_one_spell_flag(MonraceDefinition &monrace, std::string_view wha
  * @param monrace 保管先のモンスター種族構造体
  * @return エラーコード
  */
-static errr set_mon_name(const nlohmann::json &name_data, MonraceDefinition &monrace)
+errr RaceReader::set_mon_name(const nlohmann::json &name_data, MonraceDefinition &monrace)
 {
     if (name_data.is_null()) {
         return PARSE_ERROR_TOO_FEW_ARGUMENTS;
@@ -152,7 +152,7 @@ static errr set_mon_name(const nlohmann::json &name_data, MonraceDefinition &mon
  * @param monrace 保管先のモンスター種族構造体
  * @return エラーコード
  */
-static errr set_mon_symbol(const nlohmann::json &symbol_data, MonraceDefinition &monrace)
+errr RaceReader::set_mon_symbol(const nlohmann::json &symbol_data, MonraceDefinition &monrace)
 {
     if (symbol_data.is_null()) {
         return PARSE_ERROR_TOO_FEW_ARGUMENTS;
@@ -186,7 +186,7 @@ static errr set_mon_symbol(const nlohmann::json &symbol_data, MonraceDefinition 
  * @param monrace 保管先のモンスター種族構造体
  * @return エラーコード
  */
-static errr set_mon_speed(const nlohmann::json &speed_data, MonraceDefinition &monrace)
+errr RaceReader::set_mon_speed(const nlohmann::json &speed_data, MonraceDefinition &monrace)
 {
     int speed;
     if (auto err = info_set_integer(speed_data, speed, true, Range(-50, 99))) {
@@ -197,12 +197,56 @@ static errr set_mon_speed(const nlohmann::json &speed_data, MonraceDefinition &m
 }
 
 /*!
+ * @brief JSON Objectからモンスターの能力値補正をセットする
+ * @param stat_data 能力値補正情報の格納された JSON Object
+ * @param monrace 保管先のモンスター種族構造体
+ * @return エラーコード
+ * @details
+ * "stat_modifiers": { "STR": 5, "INT": -2, "WIS": 0, "DEX": 3, "CON": 4, "CHR": -1 }
+ * 各値は表示単位 (1 = 内部 10 単位 = +1.0) で記述する。
+ * 指定されていないキーは tl::nullopt のままとなり、生成時に補正されない。
+ */
+errr RaceReader::set_mon_stat_modifiers(const nlohmann::json &stat_data, MonraceDefinition &monrace)
+{
+    if (stat_data.is_null()) {
+        return PARSE_ERROR_NONE;
+    }
+    if (!stat_data.is_object()) {
+        return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+    }
+
+    constexpr std::array<std::pair<std::string_view, int>, A_MAX> stat_keys = { {
+        { "STR", A_STR },
+        { "INT", A_INT },
+        { "WIS", A_WIS },
+        { "DEX", A_DEX },
+        { "CON", A_CON },
+        { "CHR", A_CHR },
+    } };
+
+    for (const auto &[key, idx] : stat_keys) {
+        const auto key_str = std::string(key);
+        if (!stat_data.contains(key_str)) {
+            continue;
+        }
+        int modifier = 0;
+        if (auto err = info_set_integer(stat_data[key_str], modifier, true, Range(-40, 40))) {
+            return err;
+        }
+        // 表示単位 (1.0) → 内部 10 単位
+        monrace.stat_modifiers[idx] = modifier * 10;
+    }
+
+    return PARSE_ERROR_NONE;
+}
+
+/*!
  * @brief JSON Objectからモンスターの進化をセットする
  * @param evolve_data 進化情報の格納されたJSON Object
  * @param monrace 保管先のモンスター種族構造体
  * @return エラーコード
  */
-static errr set_mon_evolve(nlohmann::json &evolve_data, MonraceDefinition &monrace)
+errr RaceReader::set_mon_evolve(nlohmann::json &evolve_data, MonraceDefinition &monrace)
 {
     if (evolve_data.is_null()) {
         return PARSE_ERROR_NONE;
@@ -224,7 +268,7 @@ static errr set_mon_evolve(nlohmann::json &evolve_data, MonraceDefinition &monra
  * @param monrace 保管先のモンスター種族構造体
  * @return エラーコード
  */
-static errr set_mon_transform(nlohmann::json &transform_data, MonraceDefinition &monrace)
+errr RaceReader::set_mon_transform(nlohmann::json &transform_data, MonraceDefinition &monrace)
 {
     if (transform_data.is_null()) {
         return PARSE_ERROR_NONE;
@@ -246,7 +290,7 @@ static errr set_mon_transform(nlohmann::json &transform_data, MonraceDefinition 
  * @param monrace 保管先のモンスター種族構造体
  * @return エラーコード
  */
-static errr set_mon_sex(const nlohmann::json &sex_data, MonraceDefinition &monrace)
+errr RaceReader::set_mon_sex(const nlohmann::json &sex_data, MonraceDefinition &monrace)
 {
     if (sex_data.is_null()) {
         return PARSE_ERROR_NONE;
@@ -264,12 +308,237 @@ static errr set_mon_sex(const nlohmann::json &sex_data, MonraceDefinition &monra
 }
 
 /*!
+ * @brief JSON Objectからモンスターの性格をセットする
+ * @param personality_data 性格情報の格納されたJSON Object
+ * @param monrace 保管先のモンスター種族構造体
+ * @return エラーコード
+ * @details 未指定 (null) の場合は PERSONALITY_NONE のまま (生成時ランダム)。
+ *          指定された場合はその性格が常に適用される。
+ */
+errr RaceReader::set_mon_personality(const nlohmann::json &personality_data, MonraceDefinition &monrace)
+{
+    if (personality_data.is_null()) {
+        return PARSE_ERROR_NONE;
+    }
+    if (!personality_data.is_string()) {
+        return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+    }
+
+    uint32_t personality;
+    if (!info_grab_one_const(personality, r_info_personality, personality_data.get<std::string>())) {
+        return PARSE_ERROR_INVALID_FLAG;
+    }
+    monrace.personality = static_cast<player_personality_type>(personality);
+    return PARSE_ERROR_NONE;
+}
+
+/*!
+ * @brief JSON Objectからモンスターのプレイヤー種族固定指定をセットする (提案C1)
+ * @param race_data 種族情報の格納されたJSON Object
+ * @param monrace 保管先のモンスター種族構造体
+ * @return エラーコード
+ * @details 未指定 (null) なら PlayerRaceType::NONE のまま (prace 未付与)。
+ *          指定時は生成モンスターの prace に付与する (現状 効果は未反映)。
+ */
+errr RaceReader::set_mon_player_race(const nlohmann::json &race_data, MonraceDefinition &monrace)
+{
+    if (race_data.is_null()) {
+        return PARSE_ERROR_NONE;
+    }
+    if (!race_data.is_string()) {
+        return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+    }
+
+    uint32_t player_race;
+    if (!info_grab_one_const(player_race, r_info_player_race, race_data.get<std::string>())) {
+        return PARSE_ERROR_INVALID_FLAG;
+    }
+    monrace.player_race = static_cast<PlayerRaceType>(player_race);
+    return PARSE_ERROR_NONE;
+}
+
+/*!
+ * @brief JSON Objectからモンスターのプレイヤー職業固定指定をセットする (提案C1)
+ * @param class_data 職業情報の格納されたJSON Object
+ * @param monrace 保管先のモンスター種族構造体
+ * @return エラーコード
+ * @details 未指定 (null) なら PlayerClassType::NONE のまま (pclass 未付与)。
+ *          指定時は生成モンスターの pclass に付与する (現状 効果は未反映)。
+ */
+errr RaceReader::set_mon_player_class(const nlohmann::json &class_data, MonraceDefinition &monrace)
+{
+    if (class_data.is_null()) {
+        return PARSE_ERROR_NONE;
+    }
+    if (!class_data.is_string()) {
+        return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+    }
+
+    uint32_t player_class;
+    if (!info_grab_one_const(player_class, r_info_player_class, class_data.get<std::string>())) {
+        return PARSE_ERROR_INVALID_FLAG;
+    }
+    monrace.player_class = static_cast<PlayerClassType>(player_class);
+    return PARSE_ERROR_NONE;
+}
+
+/*!
+ * @brief JSON Objectからモンスターの詠唱魔法領域を設定する (提案C6)
+ * @param realm_data 魔法領域情報の格納されたJSON Object (文字列)
+ * @param monrace 保管先のモンスター種族構造体
+ * @return エラーコード
+ * @details 未指定 (null) なら RealmType::NONE のまま。指定時は詠唱 (mspell) 実行時に
+ *          その realm 由来の MonsterAbilityType 群が能力に追加される (効果反映)。
+ *          トークンは r_info_realm を参照。
+ */
+errr RaceReader::set_mon_realm_abilities(const nlohmann::json &realm_data, MonraceDefinition &monrace)
+{
+    if (realm_data.is_null()) {
+        return PARSE_ERROR_NONE;
+    }
+    if (!realm_data.is_string()) {
+        return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+    }
+
+    uint32_t realm;
+    if (!info_grab_one_const(realm, r_info_realm, realm_data.get<std::string>())) {
+        return PARSE_ERROR_INVALID_FLAG;
+    }
+    monrace.realm_abilities = static_cast<RealmType>(realm);
+    return PARSE_ERROR_NONE;
+}
+
+/*!
+ * @brief JSON Objectからモンスターに付与する突然変異をセットする (提案C5)
+ * @param mutations_data 突然変異情報の格納されたJSON Array (文字列の配列)
+ * @param monrace 保管先のモンスター種族構造体
+ * @return エラーコード
+ * @details "mutations": [ "BERSERK", "REGEN" ] のように突然変異トークンの配列で指定。
+ *          未指定 (null) なら空 (突然変異なし)。トークンは r_info_mutation を参照。
+ */
+errr RaceReader::set_mon_mutations(const nlohmann::json &mutations_data, MonraceDefinition &monrace)
+{
+    if (mutations_data.is_null()) {
+        return PARSE_ERROR_NONE;
+    }
+    if (!mutations_data.is_array()) {
+        return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+    }
+
+    for (const auto &element : mutations_data) {
+        if (!element.is_string()) {
+            return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+        }
+        uint32_t mutation;
+        if (!info_grab_one_const(mutation, r_info_mutation, element.get<std::string>())) {
+            return PARSE_ERROR_INVALID_FLAG;
+        }
+        monrace.mutations.set(static_cast<PlayerMutationType>(mutation));
+    }
+    return PARSE_ERROR_NONE;
+}
+
+/*!
+ * @brief JSON Objectからモンスターの材質 (副種族) をセットする
+ * @param materials_data 材質情報の格納されたJSON Array (文字列の配列)
+ * @param monrace 保管先のモンスター種族構造体
+ * @return エラーコード
+ * @details "materials": [ "IRON", "GOLD" ] のように材質トークンの配列で指定する。
+ *          未指定 (null) の場合は材質なし。複数指定でき、能力値修正と AC 修正が累積する。
+ */
+errr RaceReader::set_mon_materials(const nlohmann::json &materials_data, MonraceDefinition &monrace)
+{
+    if (materials_data.is_null()) {
+        return PARSE_ERROR_NONE;
+    }
+    if (!materials_data.is_array()) {
+        return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+    }
+
+    for (const auto &element : materials_data) {
+        if (!element.is_string()) {
+            return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+        }
+        uint32_t material;
+        if (!info_grab_one_const(material, r_info_materials, element.get<std::string>())) {
+            return PARSE_ERROR_INVALID_FLAG;
+        }
+        const auto material_type = static_cast<CreatureMaterialType>(material);
+        if (std::find(monrace.materials.begin(), monrace.materials.end(), material_type) == monrace.materials.end()) {
+            monrace.materials.push_back(material_type);
+        }
+    }
+    return PARSE_ERROR_NONE;
+}
+
+/*!
+ * @brief JSON Object からモンスターの体構造をセットする
+ * @param body_data 体構造情報の格納された JSON Object (string)
+ * @param monrace 保管先のモンスター種族構造体
+ * @return エラーコード
+ * @details
+ * "body_structure": "HUMANOID" 等の文字列で指定する。
+ * 未指定の場合はデフォルトの HUMANOID が維持される。
+ * 詳細は docs/monster-body-structure-equipment-slots.md 参照。
+ */
+errr RaceReader::set_mon_body_structure(const nlohmann::json &body_data, MonraceDefinition &monrace)
+{
+    if (body_data.is_null()) {
+        return PARSE_ERROR_NONE;
+    }
+    if (!body_data.is_string()) {
+        return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+    }
+
+    const auto key = body_data.get<std::string>();
+    const auto it = r_info_body_structure.find(key);
+    if (it == r_info_body_structure.end()) {
+        return PARSE_ERROR_INVALID_FLAG;
+    }
+    monrace.body_structure = it->second;
+    return PARSE_ERROR_NONE;
+}
+
+/*!
+ * @brief JSON Object からモンスターの拡張装備スロット個別指定を読み込む (Phase 2.7)
+ * @param slots_data 拡張スロット名の配列 (例: ["TAIL_RING", "SECOND_NECK"])
+ * @param monrace 保管先
+ * @return エラーコード
+ * @details
+ * 指定があれば body_structure のデフォルト拡張スロットを上書き。
+ * 空配列または未指定の場合は body_structure 既定値を使用。
+ */
+errr RaceReader::set_mon_extended_slots(const nlohmann::json &slots_data, MonraceDefinition &monrace)
+{
+    if (slots_data.is_null()) {
+        return PARSE_ERROR_NONE;
+    }
+    if (!slots_data.is_array()) {
+        return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+    }
+
+    monrace.extended_slots_override.clear();
+    for (const auto &item : slots_data) {
+        if (!item.is_string()) {
+            return PARSE_ERROR_INVALID_FLAG;
+        }
+        const auto key = item.get<std::string>();
+        const auto it = r_info_extended_slot.find(key);
+        if (it == r_info_extended_slot.end()) {
+            return PARSE_ERROR_INVALID_FLAG;
+        }
+        monrace.extended_slots_override.push_back(it->second);
+    }
+    return PARSE_ERROR_NONE;
+}
+
+/*!
  * @brief JSON Objectからモンスターの固定アーティファクトドロップ情報をセットする
  * @param artifact_data 固定アーティファクトドロップ情報の格納されたJSON Object
  * @param monrace 保管先のモンスター種族構造体
  * @return エラーコード
  */
-static errr set_mon_artifacts(nlohmann::json &artifact_data, MonraceDefinition &monrace)
+errr RaceReader::set_mon_artifacts(nlohmann::json &artifact_data, MonraceDefinition &monrace)
 {
     if (artifact_data.is_null()) {
         return PARSE_ERROR_NONE;
@@ -278,13 +547,13 @@ static errr set_mon_artifacts(nlohmann::json &artifact_data, MonraceDefinition &
         return PARSE_ERROR_TOO_FEW_ARGUMENTS;
     }
 
-    for (auto &artifact : artifact_data.items()) {
+    for (const auto &artifact : artifact_data) {
         FixedArtifactId fa_id;
-        if (auto err = info_set_integer(artifact.value()["drop_artifact_id"], fa_id, true, Range(0, 1024))) {
+        if (auto err = info_set_integer(artifact["drop_artifact_id"], fa_id, true, Range(0, 1024))) {
             return err;
         }
         int prob;
-        if (auto err = info_set_integer(artifact.value()["drop_probability"], prob, true, Range(1, 100))) {
+        if (auto err = info_set_integer(artifact["drop_probability"], prob, true, Range(1, 100))) {
             return err;
         }
 
@@ -299,7 +568,7 @@ static errr set_mon_artifacts(nlohmann::json &artifact_data, MonraceDefinition &
  * @param monrace 保管先のモンスター種族構造体
  * @return エラーコード
  */
-static errr set_mon_escorts(nlohmann::json &escort_data, MonraceDefinition &monrace)
+errr RaceReader::set_mon_escorts(nlohmann::json &escort_data, MonraceDefinition &monrace)
 {
     if (escort_data.is_null()) {
         return PARSE_ERROR_NONE;
@@ -308,14 +577,14 @@ static errr set_mon_escorts(nlohmann::json &escort_data, MonraceDefinition &monr
         return PARSE_ERROR_TOO_FEW_ARGUMENTS;
     }
 
-    for (const auto &escort : escort_data.items()) {
+    for (const auto &escort : escort_data) {
         MonraceId monrace_id;
-        if (auto err = info_set_integer(escort.value()["escorts_id"], monrace_id, true, Range(0, 8192))) {
+        if (auto err = info_set_integer(escort["escorts_id"], monrace_id, true, Range(0, 8192))) {
             return err;
         }
 
         Dice dice;
-        if (auto err = info_set_dice(escort.value()["escort_num"], dice, true)) {
+        if (auto err = info_set_dice(escort["escort_num"], dice, true)) {
             return err;
         }
 
@@ -330,7 +599,7 @@ static errr set_mon_escorts(nlohmann::json &escort_data, MonraceDefinition &monr
  * @param monrace 保管先のモンスター種族構造体
  * @return エラーコード
  */
-static errr set_mon_blows(nlohmann::json &blow_data, MonraceDefinition &monrace)
+errr RaceReader::set_mon_blows(nlohmann::json &blow_data, MonraceDefinition &monrace)
 {
     if (blow_data.is_null()) {
         monrace.behavior_flags.set(MonsterBehaviorType::NEVER_BLOW);
@@ -340,9 +609,9 @@ static errr set_mon_blows(nlohmann::json &blow_data, MonraceDefinition &monrace)
         return PARSE_ERROR_TOO_FEW_ARGUMENTS;
     }
 
-    for (auto &blow : blow_data.items()) {
-        const auto &blow_method = blow.value()["method"];
-        const auto &blow_effect = blow.value()["effect"];
+    for (const auto &blow : blow_data) {
+        const auto &blow_method = get_json_value(blow, "method");
+        const auto &blow_effect = get_json_value(blow, "effect");
         if (blow_method.is_null() || blow_effect.is_null()) {
             return PARSE_ERROR_TOO_FEW_ARGUMENTS;
         }
@@ -361,7 +630,7 @@ static errr set_mon_blows(nlohmann::json &blow_data, MonraceDefinition &monrace)
         mon_blow.method = rbm->second;
         mon_blow.effect = rbe->second;
 
-        if (auto err = info_set_dice(blow.value()["damage_dice"], mon_blow.damage_dice, false)) {
+        if (auto err = info_set_dice(get_json_value(blow, "damage_dice"), mon_blow.damage_dice, false)) {
             return err;
         }
 
@@ -376,7 +645,7 @@ static errr set_mon_blows(nlohmann::json &blow_data, MonraceDefinition &monrace)
  * @param monrace 保管先のモンスター種族構造体
  * @return エラーコード
  */
-static errr set_mon_flags(const nlohmann::json &flag_data, MonraceDefinition &monrace)
+errr RaceReader::set_mon_flags(const nlohmann::json &flag_data, MonraceDefinition &monrace)
 {
     if (flag_data.is_null()) {
         return PARSE_ERROR_NONE;
@@ -400,7 +669,7 @@ static errr set_mon_flags(const nlohmann::json &flag_data, MonraceDefinition &mo
                 if (s_tokens.size() == 2 && s_tokens[0] == "ALLIANCE") {
                     for (auto a : alliance_list) {
                         if (a.second->tag == s_tokens[1]) {
-                            r_ptr->alliance_idx = static_cast<AllianceType>(a.second->id);
+                            r_ptr->get_monster_profile().alliance_idx = static_cast<AllianceType>(a.second->id);
                         }
                     }
                     continue;
@@ -634,8 +903,8 @@ static errr set_mon_flags(const nlohmann::json &flag_data, MonraceDefinition &mo
             if (tokens.size() < 2) {
                 return PARSE_ERROR_TOO_FEW_ARGUMENTS;
     */
-    for (auto &flag : flag_data.items()) {
-        if (!grab_one_basic_flag(monrace, flag.value().get<std::string>())) {
+    for (const auto &flag : flag_data) {
+        if (!grab_one_basic_flag(monrace, flag.get<std::string>())) {
             return PARSE_ERROR_INVALID_FLAG;
         }
     }
@@ -648,7 +917,7 @@ static errr set_mon_flags(const nlohmann::json &flag_data, MonraceDefinition &mo
  * @param monrace 保管先のモンスター種族構造体
  * @return エラーコード
  */
-static errr set_mon_skills(const nlohmann::json &skill_data, MonraceDefinition &monrace)
+errr RaceReader::set_mon_skills(const nlohmann::json &skill_data, MonraceDefinition &monrace)
 {
     if (skill_data.is_null()) {
         return PARSE_ERROR_NONE;
@@ -703,14 +972,18 @@ static errr set_mon_skills(const nlohmann::json &skill_data, MonraceDefinition &
  * @param monrace 保管先のモンスター種族構造体
  * @return エラーコード
  */
-static errr set_mon_alliance(const nlohmann::json &alliance_data, MonraceDefinition &monrace)
+errr RaceReader::set_mon_alliance(const nlohmann::json &alliance_data, MonraceDefinition &monrace)
 {
     if (alliance_data.is_null()) {
         return PARSE_ERROR_NONE;
     }
+    if (!alliance_data.is_string()) {
+        return PARSE_ERROR_INVALID_FLAG;
+    }
 
+    const auto alliance_tag = alliance_data.get<std::string>();
     for (auto a : alliance_list) {
-        if (a.second->tag == alliance_data.get<std::string>()) {
+        if (a.second->tag == alliance_tag) {
             monrace.alliance_idx = static_cast<AllianceType>(a.second->id);
             return PARSE_ERROR_NONE;
         }
@@ -724,7 +997,7 @@ static errr set_mon_alliance(const nlohmann::json &alliance_data, MonraceDefinit
  * @param monrace 保管先のモンスター種族構造体
  * @return エラーコード
  */
-static errr set_mon_final_summons(const nlohmann::json &summon_data, MonraceDefinition &monrace)
+errr RaceReader::set_mon_final_summons(const nlohmann::json &summon_data, MonraceDefinition &monrace)
 {
     if (summon_data.is_null()) {
         return PARSE_ERROR_NONE;
@@ -764,7 +1037,7 @@ static errr set_mon_final_summons(const nlohmann::json &summon_data, MonraceDefi
  * @param monrace 保管先のモンスター種族構造体
  * @return エラーコード
  */
-static errr set_mon_message(const nlohmann::json &message_data, MonraceDefinition &monrace)
+errr RaceReader::set_mon_message(const nlohmann::json &message_data, MonraceDefinition &monrace)
 {
     if (message_data.is_null()) {
         return PARSE_ERROR_NONE;
@@ -773,8 +1046,8 @@ static errr set_mon_message(const nlohmann::json &message_data, MonraceDefinitio
         return PARSE_ERROR_TOO_FEW_ARGUMENTS;
     }
 
-    for (auto &message : message_data.items()) {
-        const auto &action_str = message.value()["action"];
+    for (const auto &message : message_data) {
+        const auto &action_str = message["action"];
         if (action_str.is_null()) {
             return PARSE_ERROR_TOO_FEW_ARGUMENTS;
         }
@@ -784,13 +1057,13 @@ static errr set_mon_message(const nlohmann::json &message_data, MonraceDefinitio
         }
 
         int chance;
-        if (auto err = info_set_integer(message.value()["chance"], chance, true, Range(1, 100))) {
+        if (auto err = info_set_integer(message["chance"], chance, true, Range(1, 100))) {
             return err;
         }
 
         bool use_name = true;
-        const auto use_name_iter = message.value().find("use_name");
-        if (use_name_iter != message.value().end()) {
+        const auto use_name_iter = message.find("use_name");
+        if (use_name_iter != message.end()) {
             const auto &use_name_data = use_name_iter.value();
             if (auto err = info_set_bool(use_name_data, use_name, false)) {
                 return err;
@@ -798,7 +1071,7 @@ static errr set_mon_message(const nlohmann::json &message_data, MonraceDefinitio
         }
 
         std::string str;
-        if (auto err = info_set_string(message.value()["message"], str, false)) {
+        if (auto err = info_set_string(message["message"], str, false)) {
             return err;
         }
 
@@ -813,7 +1086,7 @@ static errr set_mon_message(const nlohmann::json &message_data, MonraceDefinitio
  * @param monrace 保管先のモンスター種族構造体
  * @return エラーコード
  */
-static errr set_mon_terrain_feature(const nlohmann::json &terrain_data, MonraceDefinition &monrace)
+errr RaceReader::set_mon_terrain_feature(const nlohmann::json &terrain_data, MonraceDefinition &monrace)
 {
     if (terrain_data.is_null()) {
         return PARSE_ERROR_NONE;
@@ -869,7 +1142,7 @@ static errr set_mon_terrain_feature(const nlohmann::json &terrain_data, MonraceD
  * @param monrace 保管先のモンスター種族構造体
  * @return エラーコード
  */
-static errr set_mon_spawn_creature(const nlohmann::json &spawn_data, MonraceDefinition &monrace)
+errr RaceReader::set_mon_spawn_creature(const nlohmann::json &spawn_data, MonraceDefinition &monrace)
 {
     if (spawn_data.is_null()) {
         return PARSE_ERROR_NONE;
@@ -925,7 +1198,7 @@ static errr set_mon_spawn_creature(const nlohmann::json &spawn_data, MonraceDefi
  * @param monrace 保管先のモンスター種族構造体
  * @return エラーコード
  */
-static errr set_mon_spawn_item(const nlohmann::json &spawn_data, MonraceDefinition &monrace)
+errr RaceReader::set_mon_spawn_item(const nlohmann::json &spawn_data, MonraceDefinition &monrace)
 {
     if (spawn_data.is_null()) {
         return PARSE_ERROR_NONE;
@@ -981,7 +1254,7 @@ static errr set_mon_spawn_item(const nlohmann::json &spawn_data, MonraceDefiniti
  * @param monrace 保管先のモンスター種族構造体
  * @return エラーコード
  */
-static errr set_mon_drop_kinds(const nlohmann::json &drop_data, MonraceDefinition &monrace)
+errr RaceReader::set_mon_drop_kinds(const nlohmann::json &drop_data, MonraceDefinition &monrace)
 {
     if (drop_data.is_null()) {
         return PARSE_ERROR_NONE;
@@ -1064,7 +1337,7 @@ static errr set_mon_drop_kinds(const nlohmann::json &drop_data, MonraceDefinitio
  * @param monrace 保管先のモンスター種族構造体
  * @return エラーコード
  */
-static errr set_mon_dead_spawns(const nlohmann::json &dead_spawn_data, MonraceDefinition &monrace)
+errr RaceReader::set_mon_dead_spawns(const nlohmann::json &dead_spawn_data, MonraceDefinition &monrace)
 {
     if (dead_spawn_data.is_null()) {
         return PARSE_ERROR_NONE;
@@ -1139,11 +1412,17 @@ static errr set_mon_dead_spawns(const nlohmann::json &dead_spawn_data, MonraceDe
 /*!
  * @brief モンスター種族情報(JSON Object)のパース関数
  * @param mon_data モンスターデータの格納されたJSON Object
- * @param head ヘッダ構造体
  * @return エラーコード
  */
-errr parse_monraces_info(nlohmann::json &mon_data, angband_header *)
+RaceReader::RaceReader(nlohmann::json &monrace_data)
+    : monrace_data(monrace_data)
 {
+}
+
+errr RaceReader::read()
+{
+    auto &mon_data = this->monrace_data;
+
     if (!mon_data["id"].is_number_integer()) {
         return PARSE_ERROR_TOO_FEW_ARGUMENTS;
     }
@@ -1178,6 +1457,12 @@ errr parse_monraces_info(nlohmann::json &mon_data, angband_header *)
     err = info_set_dice(mon_data["hit_point"], monrace.hit_dice, true);
     if (err) {
         msg_format(_("モンスターHP読込失敗。ID: '%d'。", "Failed to load monster HP. ID: '%d'."), error_idx);
+        return err;
+    }
+    // レベル別HPテーブル用の1レベルあたりHPダイス (任意指定)。未指定なら hit_dice から既定値を算出する。
+    err = info_set_dice(mon_data["hit_point_per_level"], monrace.hit_dice_per_level, false);
+    if (err) {
+        msg_format(_("モンスターレベル別HP読込失敗。ID: '%d'。", "Failed to load monster HP per level. ID: '%d'."), error_idx);
         return err;
     }
     err = info_set_integer(mon_data["vision"], monrace.aaf, true, Range(0, 999));
@@ -1230,6 +1515,82 @@ errr parse_monraces_info(nlohmann::json &mon_data, angband_header *)
         msg_format(_("モンスター性別読込失敗。ID: '%d'。", "Failed to load monster sex. ID: '%d'."), error_idx);
         return err;
     }
+
+    err = set_mon_personality(mon_data["personality"], monrace);
+    if (err) {
+        msg_format(_("モンスター性格読込失敗。ID: '%d'。", "Failed to load monster personality. ID: '%d'."), error_idx);
+        return err;
+    }
+    err = set_mon_player_race(mon_data["player_race"], monrace);
+    if (err) {
+        msg_format(_("モンスター種族読込失敗。ID: '%d'。", "Failed to load monster player_race. ID: '%d'."), error_idx);
+        return err;
+    }
+    err = set_mon_player_class(mon_data["player_class"], monrace);
+    if (err) {
+        msg_format(_("モンスター職業読込失敗。ID: '%d'。", "Failed to load monster player_class. ID: '%d'."), error_idx);
+        return err;
+    }
+    err = info_set_bool(mon_data["grows_stats"], monrace.grows_stats, false);
+    if (err) {
+        msg_format(_("モンスター能力成長フラグ読込失敗。ID: '%d'。", "Failed to load monster grows_stats. ID: '%d'."), error_idx);
+        return err;
+    }
+    err = info_set_bool(mon_data["consumes_mp"], monrace.consumes_mp, false);
+    if (err) {
+        msg_format(_("モンスターMP消費フラグ読込失敗。ID: '%d'。", "Failed to load monster consumes_mp. ID: '%d'."), error_idx);
+        return err;
+    }
+    err = set_mon_mutations(mon_data["mutations"], monrace);
+    if (err) {
+        msg_format(_("モンスター突然変異読込失敗。ID: '%d'。", "Failed to load monster mutations. ID: '%d'."), error_idx);
+        return err;
+    }
+    err = set_mon_realm_abilities(mon_data["realm_abilities"], monrace);
+    if (err) {
+        msg_format(_("モンスター魔法領域読込失敗。ID: '%d'。", "Failed to load monster realm_abilities. ID: '%d'."), error_idx);
+        return err;
+    }
+    err = info_set_bool(mon_data["suffers_poison_dot"], monrace.suffers_poison_dot, false);
+    if (err) {
+        msg_format(_("モンスター継続毒フラグ読込失敗。ID: '%d'。", "Failed to load monster suffers_poison_dot. ID: '%d'."), error_idx);
+        return err;
+    }
+    err = info_set_bool(mon_data["applies_player_race_resistances"], monrace.applies_player_race_resistances, false);
+    if (err) {
+        msg_format(_("モンスター種族耐性反映フラグ読込失敗。ID: '%d'。", "Failed to load monster applies_player_race_resistances. ID: '%d'."), error_idx);
+        return err;
+    }
+    err = info_set_bool(mon_data["applies_player_race_reflection"], monrace.applies_player_race_reflection, false);
+    if (err) {
+        msg_format(_("モンスター種族反射反映フラグ読込失敗。ID: '%d'。", "Failed to load monster applies_player_race_reflection. ID: '%d'."), error_idx);
+        return err;
+    }
+    err = info_set_bool(mon_data["applies_player_race_regeneration"], monrace.applies_player_race_regeneration, false);
+    if (err) {
+        msg_format(_("モンスター種族再生反映フラグ読込失敗。ID: '%d'。", "Failed to load monster applies_player_race_regeneration. ID: '%d'."), error_idx);
+        return err;
+    }
+    err = info_set_bool(mon_data["applies_player_race_speed"], monrace.applies_player_race_speed, false);
+    if (err) {
+        msg_format(_("モンスター種族加速反映フラグ読込失敗。ID: '%d'。", "Failed to load monster applies_player_race_speed. ID: '%d'."), error_idx);
+        return err;
+    }
+    err = info_set_bool(mon_data["applies_player_race_telepathy"], monrace.applies_player_race_telepathy, false);
+    if (err) {
+        msg_format(_("モンスター種族テレパシー反映フラグ読込失敗。ID: '%d'。", "Failed to load monster applies_player_race_telepathy. ID: '%d'."), error_idx);
+        return err;
+    }
+    err = info_set_bool(mon_data["grows_melee_proficiency"], monrace.grows_melee_proficiency, false);
+    if (err) {
+        msg_format(_("モンスター戦闘習熟フラグ読込失敗。ID: '%d'。", "Failed to load monster grows_melee_proficiency. ID: '%d'."), error_idx);
+        return err;
+    }
+    err = info_set_bool(mon_data["applies_stat_combat_bonus"], monrace.applies_stat_combat_bonus, false);
+    if (err) {
+        msg_format(_("モンスター能力値戦闘反映フラグ読込失敗。ID: '%d'。", "Failed to load monster applies_stat_combat_bonus. ID: '%d'."), error_idx);
+        return err;
+    }
     err = info_set_integer(mon_data["odds_correction_ratio"], monrace.arena_ratio, false, Range(1, 9999));
     if (err) {
         msg_format(_("モンスター賭け倍率読込失敗。ID: '%d'。", "Failed to load monster odds for arena. ID: '%d'."), error_idx);
@@ -1238,6 +1599,26 @@ errr parse_monraces_info(nlohmann::json &mon_data, angband_header *)
     err = info_set_integer(mon_data["start_hp_percentage"], monrace.cur_hp_per, false, Range(0, 99));
     if (err) {
         msg_format(_("モンスター初期体力読込失敗。ID: '%d'。", "Failed to load monster starting HP. ID: '%d'."), error_idx);
+        return err;
+    }
+    err = set_mon_stat_modifiers(mon_data["stat_modifiers"], monrace);
+    if (err) {
+        msg_format(_("モンスター能力値補正読込失敗。ID: '%d'。", "Failed to load monster stat modifiers. ID: '%d'."), error_idx);
+        return err;
+    }
+    err = set_mon_materials(mon_data["materials"], monrace);
+    if (err) {
+        msg_format(_("モンスター材質読込失敗。ID: '%d'。", "Failed to load monster materials. ID: '%d'."), error_idx);
+        return err;
+    }
+    err = set_mon_body_structure(mon_data["body_structure"], monrace);
+    if (err) {
+        msg_format(_("モンスター体構造読込失敗。ID: '%d'。", "Failed to load monster body structure. ID: '%d'."), error_idx);
+        return err;
+    }
+    err = set_mon_extended_slots(mon_data["extended_equipment_slots"], monrace);
+    if (err) {
+        msg_format(_("モンスター拡張装備スロット読込失敗。ID: '%d'。", "Failed to load monster extended equipment slots. ID: '%d'."), error_idx);
         return err;
     }
     err = info_set_integer(mon_data["mob"], monrace.mob_num, false, Range(0, 9999999));
@@ -1285,6 +1666,7 @@ errr parse_monraces_info(nlohmann::json &mon_data, angband_header *)
     err = set_mon_alliance(mon_data["alliance"], monrace);
     if (err) {
         msg_format(_("モンスターアライアンス情報読込失敗。ID: '%d'。", "Failed to load monster alliance: '%d'."), error_idx);
+        return err;
     }
     err = set_mon_message(mon_data["message"], monrace);
     if (err) {

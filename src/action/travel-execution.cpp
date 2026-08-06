@@ -12,12 +12,10 @@
 #include "player-status/player-energy.h"
 #include "player/player-move.h"
 #include "player/player-status-flags.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
-#include "system/monster-entity.h"
-#include "system/player-type-definition.h"
 #include "system/terrain/terrain-definition.h"
-#include "timed-effect/timed-effects.h"
 #include "view/display-messages.h"
 #include <queue>
 #include <vector>
@@ -27,30 +25,30 @@ constexpr auto TRAVEL_UNABLE = 9999;
 
 /*!
  * @brief トラベル処理中に地形に応じた移動コスト基準を返す
- * @param player_ptr	プレイヤーへの参照ポインタ
+ * @param creature	クリーチャーへの参照
  * @param pos 該当地点の座標
  * @return コスト値
  */
-int travel_flow_cost(PlayerType *player_ptr, const Pos2D &pos)
+int travel_flow_cost(CreatureEntity &creature, const Pos2D &pos)
 {
     int cost = 1;
-    const auto &grid = player_ptr->current_floor_ptr->get_grid(pos);
+    const auto &grid = creature.get_floor()->get_grid(pos);
     const auto &terrain = grid.get_terrain();
     if (terrain.flags.has(TerrainCharacteristics::AVOID_RUN)) {
         cost += 1;
     }
 
-    if (terrain.flags.has_all_of({ TerrainCharacteristics::WATER, TerrainCharacteristics::DEEP }) && !player_ptr->levitation) {
+    if (terrain.flags.has_all_of({ TerrainCharacteristics::WATER, TerrainCharacteristics::DEEP }) && !creature.has_levitation()) {
         cost += 5;
     }
 
     if (terrain.flags.has(TerrainCharacteristics::LAVA)) {
         int lava = 2;
-        if (!has_resist_fire(player_ptr)) {
+        if (!creature.has_resist_fire()) {
             lava *= 2;
         }
 
-        if (!player_ptr->levitation) {
+        if (!creature.has_levitation()) {
             lava *= 2;
         }
 
@@ -76,15 +74,15 @@ int travel_flow_cost(PlayerType *player_ptr, const Pos2D &pos)
 
 /*!
  * @brief 隣接するマスのコストを計算する
- * @param player_ptr	プレイヤーへの参照ポインタ
+ * @param creature	クリーチャーへの参照
  * @param pos 隣接するマスの座標
  * @param current_cost 現在のマスのコスト
  * @param wall プレイヤーが壁の中にいるならばTRUE
  * @return 隣接するマスのコスト。移動不可ならばtl::nullopt
  */
-tl::optional<int> travel_flow_aux(PlayerType *player_ptr, const Pos2D pos, int current_cost, bool wall)
+tl::optional<int> travel_flow_aux(CreatureEntity &creature, const Pos2D pos, int current_cost, bool wall)
 {
-    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto &grid = floor.get_grid(pos);
     const auto &terrain = grid.get_terrain();
     if (!floor.contains(pos, FloorBoundary::OUTER_WALL_EXCLUSIVE)) {
@@ -100,7 +98,7 @@ tl::optional<int> travel_flow_aux(PlayerType *player_ptr, const Pos2D pos, int c
     is_wall |= terrain.flags.has(TerrainCharacteristics::DOOR) && (grid.mimic > 0);
     auto can_move = terrain.flags.has_not(TerrainCharacteristics::MOVE);
     can_move &= terrain.flags.has(TerrainCharacteristics::CAN_FLY);
-    can_move &= !player_ptr->levitation;
+    can_move &= !creature.has_levitation();
 
     auto add_cost = 1;
     if (is_wall || can_move) {
@@ -110,7 +108,7 @@ tl::optional<int> travel_flow_aux(PlayerType *player_ptr, const Pos2D pos, int c
 
         add_cost += TRAVEL_UNABLE;
     } else {
-        add_cost = travel_flow_cost(player_ptr, pos);
+        add_cost = travel_flow_cost(creature, pos);
     }
 
     const auto base_cost = (current_cost % TRAVEL_UNABLE);
@@ -119,35 +117,36 @@ tl::optional<int> travel_flow_aux(PlayerType *player_ptr, const Pos2D pos, int c
 
 /*!
  * @brief トラベルの次の移動方向を決定する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param prev_dir 前回移動を行った方向
  * @param costs トラベルの目標到達地点までの行程
  * @return 次の方向
  */
-Direction decide_travel_step_dir(PlayerType *player_ptr, const Direction &prev_dir, std::span<const std::array<int, MAX_WID>, MAX_HGT> costs)
+Direction decide_travel_step_dir(CreatureEntity &creature, const Direction &prev_dir, std::span<const std::array<int, MAX_WID>, MAX_HGT> costs)
 {
     if (!prev_dir) {
         return Direction::none();
     }
 
-    const auto &blindness = player_ptr->effects()->blindness();
-    if (blindness.is_blind() || no_lite(player_ptr)) {
+    if (creature.is_blind() || no_lite(creature)) {
         msg_print(_("目が見えない！", "You cannot see!"));
         return Direction::none();
     }
 
-    const auto p_pos = player_ptr->get_position();
-    auto &floor = *player_ptr->current_floor_ptr;
+    const auto p_pos = creature.get_position();
+    auto &floor = *creature.get_floor();
     const auto &p_grid = floor.get_grid(p_pos);
-    if ((disturb_trap_detect || alert_trap_detect) && player_ptr->dtrap && none_bits(p_grid.info, CAVE_IN_DETECT)) {
-        player_ptr->dtrap = false;
-        if (none_bits(p_grid.info, CAVE_UNSAFE)) {
-            if (alert_trap_detect) {
-                msg_print(_("* 注意:この先はトラップの感知範囲外です！ *", "*Leaving trap detect region!*"));
-            }
+    if (creature.is_player()) {
+        if ((disturb_trap_detect || alert_trap_detect) && creature.is_dtrap() && none_bits(p_grid.info, CAVE_IN_DETECT)) {
+            creature.set_dtrap(false);
+            if (none_bits(p_grid.info, CAVE_UNSAFE)) {
+                if (alert_trap_detect) {
+                    msg_print(_("* 注意:この先はトラップの感知範囲外です！ *", "*Leaving trap detect region!*"));
+                }
 
-            if (disturb_trap_detect) {
-                return Direction::none();
+                if (disturb_trap_detect) {
+                    return Direction::none();
+                }
             }
         }
     }
@@ -155,11 +154,11 @@ Direction decide_travel_step_dir(PlayerType *player_ptr, const Direction &prev_d
     const auto max = prev_dir.is_diagonal() ? 2 : 1;
     for (auto i = -max; i <= max; i++) {
         const auto dir = prev_dir.rotated_45degree(i);
-        const auto pos = player_ptr->get_neighbor(dir);
+        const auto pos = creature.get_neighbor(dir);
         const auto &grid = floor.get_grid(pos);
         if (grid.has_monster()) {
-            const auto &monster = floor.m_list[grid.m_idx];
-            if (monster.ml) {
+            const auto &monster = floor.get_monster(grid.m_idx);
+            if (monster.is_visible_on_map()) {
                 return Direction::none();
             }
         }
@@ -186,7 +185,7 @@ Direction decide_travel_step_dir(PlayerType *player_ptr, const Direction &prev_d
     }
 
     const auto &grid_new = floor.get_grid(pos_new);
-    if (!grid_new.mimic && !trap_can_be_ignored(player_ptr, grid_new.feat)) {
+    if (!grid_new.mimic && !trap_can_be_ignored(creature, grid_new.feat)) {
         return Direction::none();
     }
 
@@ -216,12 +215,12 @@ const tl::optional<Pos2D> &Travel::get_goal() const
     return this->pos_goal;
 }
 
-void Travel::set_goal(PlayerType *player_ptr, const Pos2D &pos)
+void Travel::set_goal(CreatureEntity &creature, const Pos2D &pos)
 {
     this->pos_goal = pos;
 
     this->dir = Direction::none();
-    const auto p_pos = player_ptr->get_position();
+    const auto p_pos = creature.get_position();
     auto dx = std::abs(p_pos.x - pos.x);
     auto dy = std::abs(p_pos.y - pos.y);
     auto sx = ((pos.x == p_pos.x) || (dx < dy)) ? 0 : ((pos.x > p_pos.x) ? 1 : -1);
@@ -233,7 +232,7 @@ void Travel::set_goal(PlayerType *player_ptr, const Pos2D &pos)
     }
 
     this->forget_flow();
-    this->update_flow(player_ptr);
+    this->update_flow(creature);
     this->state = TravelState::STANDBY_TO_EXECUTE;
 }
 
@@ -262,45 +261,46 @@ int Travel::get_cost(const Pos2D &pos) const
 /*!
  * @brief トラベル機能の実装 /
  * Travel command
- * @param player_ptr	プレイヤーへの参照ポインタ
+ * @param creature	クリーチャーへの参照
  */
-void Travel::step(PlayerType *player_ptr)
+void Travel::step(CreatureEntity &creature)
 {
-
-    this->dir = decide_travel_step_dir(player_ptr, this->dir, this->costs);
+    this->dir = decide_travel_step_dir(creature, this->dir, this->costs);
     if (!this->dir) {
         if (this->state != TravelState::EXECUTING) {
             msg_print(_("道筋が見つかりません！", "No route is found!"));
             this->reset_goal();
         }
 
-        disturb(player_ptr, false, true);
+        disturb(creature, false, true);
         return;
     }
 
-    PlayerEnergy(player_ptr).set_player_turn_energy(100);
-    exe_movement(player_ptr, this->dir, always_pickup, false);
+    PlayerEnergy(creature).set_player_turn_energy(100);
+    exe_movement(creature, this->dir, always_pickup, false);
+
+    if (creature.get_position() == this->get_goal()) {
+        this->reset_goal();
+    }
+
     if (this->state == TravelState::STOP) {
         return;
     }
-    if (player_ptr->get_position() == this->get_goal()) {
-        this->reset_goal();
-    } else {
-        this->state = TravelState::EXECUTING;
-    }
+
+    this->state = TravelState::EXECUTING;
 }
 
 /*!
  * @brief トラベルの目標到達地点までの行程を得る
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
-void Travel::update_flow(PlayerType *player_ptr)
+void Travel::update_flow(CreatureEntity &creature)
 {
     if (!this->pos_goal) {
         return;
     }
 
-    const auto &terrain = player_ptr->current_floor_ptr->get_grid(player_ptr->get_position()).get_terrain();
+    const auto &terrain = creature.get_floor()->get_grid(creature.get_position()).get_terrain();
     const auto wall = terrain.flags.has(TerrainCharacteristics::MOVE);
 
     using CostAndPos = std::pair<int, Pos2D>;
@@ -319,7 +319,7 @@ void Travel::update_flow(PlayerType *player_ptr)
         for (const auto &d : Direction::directions_8()) {
             const auto pos_neighbor = pos + d.vec();
             auto &cost_neighbor = this->costs[pos_neighbor.y][pos_neighbor.x];
-            const auto new_cost = travel_flow_aux(player_ptr, pos_neighbor, cost, wall);
+            const auto new_cost = travel_flow_aux(creature, pos_neighbor, cost, wall);
             if (new_cost && *new_cost < cost_neighbor) {
                 cost_neighbor = *new_cost;
                 pq.emplace(cost_neighbor, pos_neighbor);
@@ -330,7 +330,6 @@ void Travel::update_flow(PlayerType *player_ptr)
 
 /*!
  * @brief トラベル処理の記憶配列を初期化する Hack: forget the "flow" information
- * @param player_ptr	プレイヤーへの参照ポインタ
  */
 void Travel::forget_flow()
 {

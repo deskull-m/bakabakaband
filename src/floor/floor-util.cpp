@@ -4,20 +4,20 @@
  * @author deskull
  */
 #include "floor/floor-util.h"
-#include "dungeon/quest.h"
 #include "effect/effect-characteristics.h"
 #include "floor/floor-object.h"
 #include "floor/line-of-sight.h"
 #include "game-option/birth-options.h"
 #include "system/artifact-type-definition.h"
+#include "system/artifact/artifact-record.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
+#include "system/dungeon/quest-definition.h"
 #include "system/floor/floor-info.h"
 #include "system/floor/town-info.h"
 #include "system/floor/town-list.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
-#include "system/monster-entity.h"
-#include "system/player-type-definition.h"
 #include "system/terrain/terrain-definition.h"
 #include "target/projection-path-calculator.h"
 #include "world/world.h"
@@ -122,7 +122,7 @@ void wipe_o_list(FloorType &floor)
 
         if (!AngbandWorld::get_instance().character_dungeon || preserve_mode) {
             if (item_ptr->is_fixed_artifact() && !item_ptr->is_known()) {
-                item_ptr->get_fixed_artifact().is_generated = false;
+                ArtifactRecords::get_instance().set_generated(item_ptr->fa_id, false);
             }
         }
 
@@ -145,9 +145,8 @@ void wipe_o_list(FloorType &floor)
  *
  * Currently the "m" parameter is unused.
  */
-Pos2D scatter(PlayerType *player_ptr, const Pos2D &pos, int d, uint32_t mode)
+Pos2D scatter(const FloorType &floor, const Pos2D &pos, int d, uint32_t mode)
 {
-    const auto &floor = *player_ptr->current_floor_ptr;
     while (true) {
         const auto ny = rand_spread(pos.y, d);
         const auto nx = rand_spread(pos.x, d);
@@ -174,12 +173,12 @@ Pos2D scatter(PlayerType *player_ptr, const Pos2D &pos, int d, uint32_t mode)
 
 /*!
  * @brief 現在のマップ名を返す /
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return マップ名の文字列参照ポインタ
  */
-std::string map_name(PlayerType *player_ptr)
+std::string map_name(CreatureEntity &creature)
 {
-    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto &quests = QuestList::get_instance();
     auto is_fixed_quest = floor.is_in_quest();
     is_fixed_quest &= QuestType::is_fixed(floor.quest_number);
@@ -192,8 +191,8 @@ std::string map_name(PlayerType *player_ptr)
         return _("アリーナ", "Arena");
     } else if (AngbandSystem::get_instance().is_phase_out()) {
         return _("闘技場", "Monster Arena");
-    } else if (!floor.is_underground() && player_ptr->town_num) {
-        return towns_info[player_ptr->town_num].name;
+    } else if (!floor.is_underground() && creature.get_town_num()) {
+        return TownList::get_instance().get_town(creature.get_town_num()).get_name();
     } else {
         return floor.get_dungeon_definition().name;
     }

@@ -3,8 +3,8 @@
 #include "object/tval-types.h"
 #include "smith/smith-types.h"
 #include "sv-definition/sv-weapon-types.h"
+#include "system/creature-entity.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 
 ISmithInfo::ISmithInfo(SmithEffectType effect, concptr name, SmithCategoryType category,
     std::vector<SmithEssenceType> need_essences, int consumption)
@@ -28,7 +28,7 @@ BasicSmithInfo::BasicSmithInfo(SmithEffectType effect, concptr name, SmithCatego
 {
 }
 
-bool BasicSmithInfo::add_essence(PlayerType *, ItemEntity *o_ptr, int) const
+bool BasicSmithInfo::add_essence(CreatureEntity &, ItemEntity *o_ptr, int) const
 {
     o_ptr->smith_effect = effect;
 
@@ -95,7 +95,7 @@ ActivationSmithInfo::ActivationSmithInfo(SmithEffectType effect, concptr name, S
 {
 }
 
-bool ActivationSmithInfo::add_essence(PlayerType *, ItemEntity *o_ptr, int) const
+bool ActivationSmithInfo::add_essence(CreatureEntity &, ItemEntity *o_ptr, int) const
 {
     o_ptr->smith_act_idx = this->act_idx;
 
@@ -122,9 +122,9 @@ EnchantWeaponSmithInfo::EnchantWeaponSmithInfo(SmithEffectType effect, concptr n
 {
 }
 
-bool EnchantWeaponSmithInfo::add_essence(PlayerType *player_ptr, ItemEntity *o_ptr, int) const
+bool EnchantWeaponSmithInfo::add_essence(CreatureEntity &creature, ItemEntity *o_ptr, int) const
 {
-    const auto max_val = player_ptr->level / 5 + 5;
+    const auto max_val = creature.get_level() / 5 + 5;
     if ((o_ptr->to_h >= max_val) && (o_ptr->to_d >= max_val)) {
         return false;
     }
@@ -150,9 +150,9 @@ EnchantArmourSmithInfo::EnchantArmourSmithInfo(SmithEffectType effect, concptr n
 {
 }
 
-bool EnchantArmourSmithInfo::add_essence(PlayerType *player_ptr, ItemEntity *o_ptr, int) const
+bool EnchantArmourSmithInfo::add_essence(CreatureEntity &creature, ItemEntity *o_ptr, int) const
 {
-    const auto max_val = player_ptr->level / 5 + 5;
+    const auto max_val = creature.get_level() / 5 + 5;
     if (o_ptr->to_a >= max_val) {
         return false;
     }
@@ -173,7 +173,7 @@ SustainSmithInfo::SustainSmithInfo(SmithEffectType effect, concptr name, SmithCa
 {
 }
 
-bool SustainSmithInfo::add_essence(PlayerType *, ItemEntity *o_ptr, int) const
+bool SustainSmithInfo::add_essence(CreatureEntity &, ItemEntity *o_ptr, int) const
 {
     o_ptr->art_flags.set(TR_IGNORE_ACID);
     o_ptr->art_flags.set(TR_IGNORE_ELEC);
@@ -194,9 +194,9 @@ SlayingGlovesSmithInfo::SlayingGlovesSmithInfo(SmithEffectType effect, concptr n
 {
 }
 
-bool SlayingGlovesSmithInfo::add_essence(PlayerType *player_ptr, ItemEntity *o_ptr, int number) const
+bool SlayingGlovesSmithInfo::add_essence(CreatureEntity &creature, ItemEntity *o_ptr, int number) const
 {
-    BasicSmithInfo::add_essence(player_ptr, o_ptr, number);
+    BasicSmithInfo::add_essence(creature, o_ptr, number);
 
     byte get_to_h = (number + 1) / 2 + randint0(number / 2 + 1);
     byte get_to_d = (number + 1) / 2 + randint0(number / 2 + 1);

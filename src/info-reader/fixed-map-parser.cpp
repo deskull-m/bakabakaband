@@ -13,14 +13,16 @@
 #include "game-option/runtime-arguments.h"
 #include "info-reader/parse-error-types.h"
 #include "io/files-util.h"
+#include "locale/character-encoding.h"
 #include "main/init-error-messages-table.h"
 #include "player-info/class-info.h"
 #include "player-info/race-info.h"
 #include "player/player-realm.h"
 #include "system/angband-exceptions.h"
 #include "system/angband-system.h"
+#include "system/creature-entity.h"
+#include "system/dungeon/quest-definition.h"
 #include "system/floor/floor-info.h"
-#include "system/player-type-definition.h"
 #include "util/angband-files.h"
 #include "util/string-processor.h"
 #include "view/display-messages.h"
@@ -35,12 +37,12 @@ static concptr variant = "ZANGBAND";
 /*!
  * @brief 固定マップ (クエスト＆街＆広域マップ)生成時の分岐処理
  * Helper function for "parse_fixed_map()"
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param sp
  * @param fp
  * @return エラーコード
  */
-static std::string parse_fixed_map_expression(PlayerType *player_ptr, char **sp, char *fp)
+static std::string parse_fixed_map_expression(CreatureEntity &creature, char **sp, char *fp)
 {
     constexpr char b1 = '[';
     constexpr char b2 = ']';
@@ -58,13 +60,13 @@ static std::string parse_fixed_map_expression(PlayerType *player_ptr, char **sp,
     if (*s == b1) {
         std::string t;
         s++;
-        t = parse_fixed_map_expression(player_ptr, &s, &f);
+        t = parse_fixed_map_expression(creature, &s, &f);
         if (t.empty()) {
             /* Nothing */
         } else if (t == "IOR") {
             v = "0";
             while (*s && (f != b2)) {
-                t = parse_fixed_map_expression(player_ptr, &s, &f);
+                t = parse_fixed_map_expression(creature, &s, &f);
                 if (!t.empty() && t != "0") {
                     v = "1";
                 }
@@ -72,7 +74,7 @@ static std::string parse_fixed_map_expression(PlayerType *player_ptr, char **sp,
         } else if (t == "AND") {
             v = "1";
             while (*s && (f != b2)) {
-                t = parse_fixed_map_expression(player_ptr, &s, &f);
+                t = parse_fixed_map_expression(creature, &s, &f);
                 if (!t.empty() && t == "0") {
                     v = "0";
                 }
@@ -80,7 +82,7 @@ static std::string parse_fixed_map_expression(PlayerType *player_ptr, char **sp,
         } else if (t == "NOT") {
             v = "1";
             while (*s && (f != b2)) {
-                t = parse_fixed_map_expression(player_ptr, &s, &f);
+                t = parse_fixed_map_expression(creature, &s, &f);
                 if (!t.empty() && t == "1") {
                     v = "0";
                 }
@@ -88,11 +90,11 @@ static std::string parse_fixed_map_expression(PlayerType *player_ptr, char **sp,
         } else if (t == "EQU") {
             v = "0";
             if (*s && (f != b2)) {
-                t = parse_fixed_map_expression(player_ptr, &s, &f);
+                t = parse_fixed_map_expression(creature, &s, &f);
             }
 
             while (*s && (f != b2)) {
-                auto p = parse_fixed_map_expression(player_ptr, &s, &f);
+                auto p = parse_fixed_map_expression(creature, &s, &f);
                 if (t == p) {
                     v = "1";
                 }
@@ -100,11 +102,11 @@ static std::string parse_fixed_map_expression(PlayerType *player_ptr, char **sp,
         } else if (t == "LEQ") {
             v = "1";
             if (*s && (f != b2)) {
-                t = parse_fixed_map_expression(player_ptr, &s, &f);
+                t = parse_fixed_map_expression(creature, &s, &f);
             }
 
             while (*s && (f != b2)) {
-                auto p = parse_fixed_map_expression(player_ptr, &s, &f);
+                auto p = parse_fixed_map_expression(creature, &s, &f);
                 if (!p.empty() && atoi(t.data()) > atoi(p.data())) {
                     v = "0";
                 }
@@ -112,18 +114,18 @@ static std::string parse_fixed_map_expression(PlayerType *player_ptr, char **sp,
         } else if (t == "GEQ") {
             v = "1";
             if (*s && (f != b2)) {
-                t = parse_fixed_map_expression(player_ptr, &s, &f);
+                t = parse_fixed_map_expression(creature, &s, &f);
             }
 
             while (*s && (f != b2)) {
-                auto p = parse_fixed_map_expression(player_ptr, &s, &f);
+                auto p = parse_fixed_map_expression(creature, &s, &f);
                 if (!p.empty() && atoi(t.data()) < atoi(p.data())) {
                     v = "0";
                 }
             }
         } else {
             while (*s && (f != b2)) {
-                t = parse_fixed_map_expression(player_ptr, &s, &f);
+                t = parse_fixed_map_expression(creature, &s, &f);
             }
         }
 
@@ -173,16 +175,16 @@ static std::string parse_fixed_map_expression(PlayerType *player_ptr, char **sp,
             v = "OFF";
         }
     } else if (streq(b + 1, "RACE")) {
-        v = player_ptr->race->title.en_string();
+        v = creature.get_race_info()->title.en_string();
     } else if (streq(b + 1, "CLASS")) {
-        v = (*player_ptr->pclass_ref).title.en_string();
+        v = (*creature.get_class_info()).title.en_string();
     } else if (streq(b + 1, "REALM1")) {
-        v = PlayerRealm(player_ptr).realm1().get_name().en_string();
+        v = PlayerRealm(creature).realm1().get_name().en_string();
     } else if (streq(b + 1, "REALM2")) {
-        v = PlayerRealm(player_ptr).realm2().get_name().en_string();
+        v = PlayerRealm(creature).realm2().get_name().en_string();
     } else if (streq(b + 1, "PLAYER")) {
         char tmp_player_name[64]{};
-        const char *pn = player_ptr->name.c_str();
+        const char *pn = creature.name.c_str();
         char *tpn = tmp_player_name;
         for (; *pn; pn++, tpn++) {
 #ifdef JP
@@ -198,11 +200,11 @@ static std::string parse_fixed_map_expression(PlayerType *player_ptr, char **sp,
         *tpn = '\0';
         v = tmp_player_name;
     } else if (streq(b + 1, "TOWN")) {
-        v = std::to_string(player_ptr->town_num);
+        v = std::to_string(creature.get_town_num());
     } else if (streq(b + 1, "LEVEL")) {
-        v = std::to_string(player_ptr->level);
+        v = std::to_string(creature.get_level());
     } else if (streq(b + 1, "QUEST_NUMBER")) {
-        v = std::to_string(enum2i(player_ptr->current_floor_ptr->quest_number));
+        v = std::to_string(enum2i(creature.get_floor()->quest_number));
     } else if (streq(b + 1, "LEAVING_QUEST")) {
         v = std::to_string(enum2i(leaving_quest));
     } else if (prefix(b + 1, "QUEST_TYPE")) {
@@ -238,7 +240,7 @@ static std::string parse_fixed_map_expression(PlayerType *player_ptr, char **sp,
 
 /*!
  * @brief 固定マップ (クエスト＆街＆広域マップ)をq_info、t_info、w_infoから読み込んでパースする
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param name ファイル名
  * @param ymin 詳細不明
  * @param xmin 詳細不明
@@ -246,7 +248,7 @@ static std::string parse_fixed_map_expression(PlayerType *player_ptr, char **sp,
  * @param xmax 詳細不明
  * @return エラーコード
  */
-parse_error_type parse_fixed_map(PlayerType *player_ptr, std::string_view name, int ymin, int xmin, int ymax, int xmax)
+parse_error_type parse_fixed_map(CreatureEntity &creature, std::string_view name, int ymin, int xmin, int ymax, int xmax)
 {
     const auto path = path_build(ANGBAND_DIR_EDIT, name);
     auto *fp = angband_fopen(path, FileOpenMode::READ);
@@ -274,7 +276,7 @@ parse_error_type parse_fixed_map(PlayerType *player_ptr, std::string_view name, 
         if (line_str->starts_with("?:")) {
             char f;
             auto *s = line_str->data() + 2;
-            auto v = parse_fixed_map_expression(player_ptr, &s, &f);
+            auto v = parse_fixed_map_expression(creature, &s, &f);
             bypass = v == "0";
             continue;
         }
@@ -284,7 +286,7 @@ parse_error_type parse_fixed_map(PlayerType *player_ptr, std::string_view name, 
         }
 
         qg_ptr->buf = line_str->data();
-        err = generate_fixed_map_floor(player_ptr, qg_ptr, parse_fixed_map);
+        err = generate_fixed_map_floor(creature, qg_ptr, parse_fixed_map);
         if (err != PARSE_ERROR_NONE) {
             concptr oops = (((err > 0) && (err < PARSE_ERROR_MAX)) ? err_str[err] : "unknown");
             msg_format("Error %d (%s) at line %d of '%s'.", err, oops, num, name.data());
@@ -319,7 +321,7 @@ static QuestId parse_quest_number(const std::vector<std::string> &token)
 
 /*!
  * @brief クエスト番号をファイルから読み込んでパースする
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param file_name ファイル名
  * @param key_list キーになるQuestIdの配列
  */
@@ -377,7 +379,7 @@ static void parse_quest_info_aux(std::string_view file_name, std::set<QuestId> &
 
 /*!
  * @brief ファイルからパースして作成したクエスト番号配列を返す
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param file_name ファイル名
  * @return クエスト番号の配列
  */

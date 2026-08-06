@@ -1,7 +1,8 @@
 #pragma once
 
+class CreatureEntity;
 class ItemEntity;
 class PlayerType;
-bool activate_dragon_breath(PlayerType *player_ptr, ItemEntity *o_ptr);
-bool activate_breath_fire(PlayerType *player_ptr, ItemEntity *o_ptr);
-bool activate_breath_cold(PlayerType *player_ptr, ItemEntity *o_ptr);
+bool activate_dragon_breath(CreatureEntity &creature, const ItemEntity &item);
+bool activate_breath_fire(CreatureEntity &creature, const ItemEntity &item);
+bool activate_breath_cold(CreatureEntity &creature, const ItemEntity &item);

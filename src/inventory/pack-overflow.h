@@ -1,4 +1,4 @@
 #pragma once
 
-class PlayerType;
-void pack_overflow(PlayerType *player_ptr);
+class CreatureEntity;
+void pack_overflow(CreatureEntity &creature);

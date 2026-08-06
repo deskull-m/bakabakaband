@@ -2,10 +2,14 @@
 
 #include "player-status/player-basic-statistics.h"
 
-class PlayerType;
+class CreatureEntity;
 class PlayerConstitution : public PlayerBasicStatistics {
 public:
-    PlayerConstitution(PlayerType *player_ptr);
+    PlayerConstitution(CreatureEntity &creature);
+    PlayerConstitution(const PlayerConstitution &) = default;
+    PlayerConstitution(PlayerConstitution &&) = default;
+    PlayerConstitution &operator=(const PlayerConstitution &) = delete;
+    PlayerConstitution &operator=(PlayerConstitution &&) = delete;
 
 protected:
     void set_locals() override;

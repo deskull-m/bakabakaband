@@ -20,19 +20,19 @@
 #include "spell-realm/spells-hex.h"
 #include "spell-realm/spells-song.h"
 #include "status/experience.h"
+#include "system/creature-entity.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
 
 /*!
  * @brief コンストラクタ
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param i_idx 読むアイテムのインベントリID
  */
-ObjectReadEntity::ObjectReadEntity(PlayerType *player_ptr, INVENTORY_IDX i_idx)
-    : player_ptr(player_ptr)
+ObjectReadEntity::ObjectReadEntity(CreatureEntity &creature, INVENTORY_IDX i_idx)
+    : creature(creature)
     , i_idx(i_idx)
 {
 }
@@ -43,22 +43,22 @@ ObjectReadEntity::ObjectReadEntity(PlayerType *player_ptr, INVENTORY_IDX i_idx)
  */
 void ObjectReadEntity::execute(bool known)
 {
-    auto *o_ptr = ref_item(this->player_ptr, this->i_idx);
-    PlayerEnergy(this->player_ptr).set_player_turn_energy(100);
+    auto item = ref_item(this->creature, this->i_idx);
+    PlayerEnergy(this->creature).set_player_turn_energy(100);
     if (!this->can_read()) {
         return;
     }
 
-    if (music_singing_any(this->player_ptr)) {
-        stop_singing(this->player_ptr);
+    if (music_singing_any(this->creature)) {
+        stop_singing(this->creature);
     }
 
-    SpellHex spell_hex(this->player_ptr);
-    if (spell_hex.is_spelling_any() && ((this->player_ptr->level < 35) || spell_hex.is_casting_full_capacity())) {
-        (void)SpellHex(this->player_ptr).stop_all_spells();
+    SpellHex spell_hex(this->creature);
+    if (spell_hex.is_spelling_any() && ((this->creature.get_level() < 35) || spell_hex.is_casting_full_capacity())) {
+        (void)SpellHex(this->creature).stop_all_spells();
     }
 
-    auto executor = ReadExecutorFactory::create(player_ptr, o_ptr, known);
+    auto executor = ReadExecutorFactory::create(this->creature, item.get(), known);
     auto used_up = executor->read();
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     using Srf = StatusRecalculatingFlag;
@@ -68,9 +68,9 @@ void ObjectReadEntity::execute(bool known)
     }
 
     rfu.reset_flags(flags_srf);
-    this->change_virtue_as_read(*o_ptr);
-    o_ptr->mark_as_tried();
-    this->gain_exp_from_item_use(o_ptr, executor->is_identified());
+    this->change_virtue_as_read(*item);
+    item->mark_as_tried();
+    this->gain_exp_from_item_use(item.get(), executor->is_identified());
     static constexpr auto flags_swrf = {
         SubWindowRedrawingFlag::INVENTORY,
         SubWindowRedrawingFlag::EQUIPMENT,
@@ -83,22 +83,22 @@ void ObjectReadEntity::execute(bool known)
     }
 
     sound(SoundKind::SCROLL);
-    this->player_ptr->plus_incident_tree("READ_SCROLL", 1);
-    vary_item(this->player_ptr, this->i_idx, -1);
+    this->creature.plus_incident_tree("READ_SCROLL", 1);
+    vary_item(this->creature, this->i_idx, -1);
 }
 
 bool ObjectReadEntity::can_read() const
 {
-    if (cmd_limit_time_walk(this->player_ptr)) {
+    if (cmd_limit_time_walk(this->creature)) {
         return false;
     }
 
-    if (PlayerClass(this->player_ptr).equals(PlayerClassType::BERSERKER)) {
+    if (CreatureClass(this->creature).equals(PlayerClassType::BERSERKER)) {
         msg_print(_("巻物なんて読めない。", "You cannot read."));
         return false;
     }
 
-    return ItemUseChecker(this->player_ptr).check_stun(_("朦朧としていて読めなかった！", "You too stunned to read it!"));
+    return ItemUseChecker(this->creature).check_stun(_("朦々としていて読めなかった！", "You too stunned to read it!"));
 }
 
 void ObjectReadEntity::change_virtue_as_read(ItemEntity &o_ref)
@@ -107,9 +107,9 @@ void ObjectReadEntity::change_virtue_as_read(ItemEntity &o_ref)
         return;
     }
 
-    chg_virtue(static_cast<CreatureEntity &>(*this->player_ptr), Virtue::PATIENCE, -1);
-    chg_virtue(static_cast<CreatureEntity &>(*this->player_ptr), Virtue::CHANCE, 1);
-    chg_virtue(static_cast<CreatureEntity &>(*this->player_ptr), Virtue::KNOWLEDGE, -1);
+    chg_virtue(this->creature, Virtue::PATIENCE, -1);
+    chg_virtue(this->creature, Virtue::CHANCE, 1);
+    chg_virtue(this->creature, Virtue::KNOWLEDGE, -1);
 }
 
 void ObjectReadEntity::gain_exp_from_item_use(ItemEntity *o_ptr, bool is_identified)
@@ -118,7 +118,7 @@ void ObjectReadEntity::gain_exp_from_item_use(ItemEntity *o_ptr, bool is_identif
         return;
     }
 
-    object_aware(this->player_ptr, *o_ptr);
+    object_aware(this->creature, *o_ptr);
     const auto item_level = o_ptr->get_baseitem_level();
-    gain_exp(static_cast<CreatureEntity &>(*this->player_ptr), (item_level + (this->player_ptr->level >> 1)) / this->player_ptr->level);
+    gain_exp(this->creature, (item_level + (this->creature.get_level() >> 1)) / this->creature.get_level());
 }

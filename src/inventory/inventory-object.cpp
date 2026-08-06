@@ -11,37 +11,39 @@
 #include "object/object-value.h"
 #include "player-info/equipment-info.h"
 #include "spell-realm/spells-craft.h"
+#include "system/creature-entity.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
+#include "util/enum-converter.h"
 #include "util/object-sort.h"
 #include "view/display-messages.h"
 #include "view/object-describer.h"
 #include <algorithm>
+#include <range/v3/algorithm.hpp>
 
-void vary_item(PlayerType *player_ptr, INVENTORY_IDX i_idx, ITEM_NUMBER num)
+void vary_item(CreatureEntity &creature, INVENTORY_IDX i_idx, ITEM_NUMBER num)
 {
     if (i_idx >= 0) {
-        inven_item_increase(player_ptr, i_idx, num);
-        inven_item_describe(player_ptr, i_idx);
-        inven_item_optimize(player_ptr, i_idx);
+        inven_item_increase(creature, i_idx, num);
+        inven_item_describe(creature, i_idx);
+        inven_item_optimize(creature, i_idx);
         return;
     }
 
-    floor_item_increase(player_ptr, 0 - i_idx, num);
-    floor_item_describe(player_ptr, 0 - i_idx);
-    floor_item_optimize(player_ptr, 0 - i_idx);
+    floor_item_increase(creature, 0 - i_idx, num);
+    floor_item_describe(creature, 0 - i_idx);
+    floor_item_optimize(creature, 0 - i_idx);
 }
 
 /*!
  * @brief アイテムを増減させ残り所持数メッセージを表示する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param i_idx 所持数を増やしたいプレイヤーのアイテム所持スロット
  * @param num 増やしたい量
  */
-void inven_item_increase(PlayerType *player_ptr, INVENTORY_IDX i_idx, ITEM_NUMBER num)
+void inven_item_increase(CreatureEntity &creature, INVENTORY_IDX i_idx, ITEM_NUMBER num)
 {
-    auto *o_ptr = player_ptr->inventory[i_idx].get();
+    auto *o_ptr = creature.inventory[i_idx].get();
     num += o_ptr->number;
     if (num > 255) {
         num = 255;
@@ -67,7 +69,7 @@ void inven_item_increase(PlayerType *player_ptr, INVENTORY_IDX i_idx, ITEM_NUMBE
         SubWindowRedrawingFlag::EQUIPMENT,
     };
     rfu.set_flags(flags_swrf);
-    if (o_ptr->number || !player_ptr->ele_attack) {
+    if (o_ptr->number || !creature.get_timed_effect(CreatureTimedEffect::ELE_ATTACK)) {
         return;
     }
 
@@ -76,21 +78,21 @@ void inven_item_increase(PlayerType *player_ptr, INVENTORY_IDX i_idx, ITEM_NUMBE
     }
 
     const auto opposite_hand = (i_idx == INVEN_MAIN_HAND) ? INVEN_SUB_HAND : INVEN_MAIN_HAND;
-    if (has_melee_weapon(player_ptr, enum2i(opposite_hand))) {
+    if (has_melee_weapon(creature, enum2i(opposite_hand))) {
         return;
     }
 
-    set_ele_attack(player_ptr, 0, 0);
+    set_ele_attack(creature, 0, 0);
 }
 
 /*!
  * @brief 所持アイテムスロットから所持数のなくなったアイテムを消去する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param i_idx 消去したいプレイヤーのアイテム所持スロット
  */
-void inven_item_optimize(PlayerType *player_ptr, INVENTORY_IDX i_idx)
+void inven_item_optimize(CreatureEntity &creature, INVENTORY_IDX i_idx)
 {
-    auto *o_ptr = player_ptr->inventory[i_idx].get();
+    auto *o_ptr = creature.inventory[i_idx].get();
     if (!o_ptr->is_valid()) {
         return;
     }
@@ -100,8 +102,7 @@ void inven_item_optimize(PlayerType *player_ptr, INVENTORY_IDX i_idx)
 
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     if (i_idx >= INVEN_MAIN_HAND) {
-        player_ptr->equip_cnt--;
-        player_ptr->inventory[i_idx]->wipe();
+        creature.inventory[i_idx]->wipe();
         static constexpr auto flags_srf = {
             StatusRecalculatingFlag::BONUS,
             StatusRecalculatingFlag::TORCH,
@@ -116,10 +117,8 @@ void inven_item_optimize(PlayerType *player_ptr, INVENTORY_IDX i_idx)
         return;
     }
 
-    player_ptr->inven_cnt--;
-
-    auto first = player_ptr->inventory.begin() + i_idx;
-    auto last = player_ptr->inventory.begin() + INVEN_PACK;
+    auto first = creature.inventory.begin() + i_idx;
+    auto last = creature.inventory.begin() + INVEN_PACK;
     std::rotate(first, first + 1, last + 1);
     (*last)->wipe();
 
@@ -132,13 +131,13 @@ void inven_item_optimize(PlayerType *player_ptr, INVENTORY_IDX i_idx)
 
 /*!
  * @brief 所持スロットから床下にオブジェクトを落とすメインルーチン
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param i_idx 所持テーブルのID
  * @param amt 落としたい個数
  */
-void drop_from_inventory(PlayerType *player_ptr, INVENTORY_IDX i_idx, ITEM_NUMBER amt)
+void drop_from_inventory(CreatureEntity &creature, INVENTORY_IDX i_idx, ITEM_NUMBER amt)
 {
-    auto *o_ptr = player_ptr->inventory[i_idx].get();
+    auto *o_ptr = creature.inventory[i_idx].get();
     if (amt <= 0) {
         return;
     }
@@ -148,18 +147,18 @@ void drop_from_inventory(PlayerType *player_ptr, INVENTORY_IDX i_idx, ITEM_NUMBE
     }
 
     if (i_idx >= INVEN_MAIN_HAND) {
-        i_idx = inven_takeoff(player_ptr, i_idx, amt);
-        o_ptr = player_ptr->inventory[i_idx].get();
+        i_idx = inven_takeoff(creature, i_idx, amt);
+        o_ptr = creature.inventory[i_idx].get();
     }
 
     auto item = o_ptr->clone();
     distribute_charges(o_ptr, &item, amt);
 
     item.number = amt;
-    const auto item_name = describe_flavor(player_ptr, item, 0);
+    const auto item_name = describe_flavor(creature, item, 0);
     msg_format(_("%s(%c)を落とした。", "You drop %s (%c)."), item_name.data(), index_to_label(i_idx));
-    (void)drop_near(player_ptr, item, player_ptr->get_position(), false);
-    vary_item(player_ptr, i_idx, -amt);
+    (void)drop_near(creature, item, creature.get_position(), false);
+    vary_item(creature, i_idx, -amt);
 }
 
 /*!
@@ -168,7 +167,7 @@ void drop_from_inventory(PlayerType *player_ptr, INVENTORY_IDX i_idx, ITEM_NUMBE
  * @details
  * Note special handling of the "overflow" slot
  */
-void combine_pack(PlayerType *player_ptr)
+void combine_pack(CreatureEntity &creature)
 {
     bool flag = false;
     bool is_first_combination = true;
@@ -178,13 +177,13 @@ void combine_pack(PlayerType *player_ptr)
         combined = false;
 
         for (auto i = enum2i(INVEN_PACK); i > 0; i--) {
-            auto &item1 = *player_ptr->inventory[i];
+            auto &item1 = *creature.inventory[i];
             if (!item1.is_valid()) {
                 continue;
             }
 
             for (short j = 0; j < i; j++) {
-                auto &item2 = *player_ptr->inventory[j];
+                auto &item2 = *creature.inventory[j];
                 if (!item2.is_valid()) {
                     continue;
                 }
@@ -198,9 +197,8 @@ void combine_pack(PlayerType *player_ptr)
                 if (item1.number + item2.number <= max_num) {
                     flag = true;
                     item2.absorb(item1);
-                    player_ptr->inven_cnt--;
-                    auto first = player_ptr->inventory.begin() + i;
-                    auto last = player_ptr->inventory.begin() + INVEN_PACK;
+                    auto first = creature.inventory.begin() + i;
+                    auto last = creature.inventory.begin() + INVEN_PACK;
                     std::rotate(first, first + 1, last + 1);
                     (*last)->wipe();
                 } else {
@@ -234,20 +232,20 @@ void combine_pack(PlayerType *player_ptr)
 /*!
  * @brief プレイヤーの所持スロットに存在するオブジェクトを並び替える /
  * Reorder items in the pack
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @details
  * Note special handling of the "overflow" slot
  */
-void reorder_pack(PlayerType *player_ptr)
+void reorder_pack(CreatureEntity &creature)
 {
-    const auto comp = [player_ptr](const auto &item1, const auto &item2) {
-        return object_sort_comp(player_ptr, *item1, *item2);
+    const auto comp = [&creature](const auto &item1, const auto &item2) {
+        return object_sort_comp(creature, *item1, *item2);
     };
 
-    const auto sort_count = std::min(enum2i(INVEN_PACK), player_ptr->inven_cnt);
+    const auto sort_count = std::min(enum2i(INVEN_PACK), creature.get_inven_cnt());
 
-    auto first = player_ptr->inventory.begin();
-    auto last = player_ptr->inventory.begin() + sort_count;
+    auto first = creature.inventory.begin();
+    auto last = creature.inventory.begin() + sort_count;
 
     if (std::is_sorted(first, last, comp)) {
         return;
@@ -261,13 +259,13 @@ void reorder_pack(PlayerType *player_ptr)
 
 /*!
  * @brief オブジェクトをプレイヤーが拾って所持スロットに納めるメインルーチン
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param o_ptr 拾うオブジェクトの構造体参照ポインタ
  * @return 収められた所持スロットのID、拾うことができなかった場合-1を返す。
  */
-int16_t store_item_to_inventory(PlayerType *player_ptr, ItemEntity *o_ptr)
+int16_t store_item_to_inventory(CreatureEntity &creature, ItemEntity *o_ptr)
 {
-    INVENTORY_IDX i, j;
+    INVENTORY_IDX i;
     INVENTORY_IDX n = -1;
 
     ItemEntity *j_ptr;
@@ -276,27 +274,28 @@ int16_t store_item_to_inventory(PlayerType *player_ptr, ItemEntity *o_ptr)
         SubWindowRedrawingFlag::INVENTORY,
         SubWindowRedrawingFlag::PLAYER,
     };
-    for (j = 0; j < INVEN_PACK; j++) {
-        j_ptr = player_ptr->inventory[j].get();
+    for (const auto i_idx : INVEN_PACK_SLOTS) {
+        j_ptr = creature.inventory[i_idx].get();
         if (!j_ptr->is_valid()) {
             continue;
         }
 
-        n = j;
+        n = enum2i(i_idx);
         if (j_ptr->is_similar(*o_ptr)) {
             j_ptr->absorb(*o_ptr);
             rfu.set_flag(StatusRecalculatingFlag::BONUS);
             rfu.set_flags(flags_swrf);
-            return j;
+            return enum2i(i_idx);
         }
     }
 
-    if (player_ptr->inven_cnt > INVEN_PACK) {
+    if (creature.get_inven_cnt() > INVEN_PACK) {
         return -1;
     }
 
+    INVENTORY_IDX j;
     for (j = 0; j <= INVEN_PACK; j++) {
-        j_ptr = player_ptr->inventory[j].get();
+        j_ptr = creature.inventory[j].get();
         if (!j_ptr->is_valid()) {
             break;
         }
@@ -304,24 +303,20 @@ int16_t store_item_to_inventory(PlayerType *player_ptr, ItemEntity *o_ptr)
 
     i = j;
     if (i < INVEN_PACK && n >= 0) {
-        for (j = 0; j < INVEN_PACK; j++) {
-            if (object_sort_comp(player_ptr, *o_ptr, *player_ptr->inventory[j])) {
-                break;
-            }
-        }
-
-        i = j;
-        auto begin = player_ptr->inventory.begin();
+        const auto sort_it = ranges::find_if(INVEN_PACK_SLOTS, [&](const auto s) {
+            return object_sort_comp(creature, *o_ptr, *creature.inventory[s]);
+        });
+        i = enum2i(sort_it != INVEN_PACK_SLOTS.end() ? *sort_it : INVEN_PACK);
+        auto begin = creature.inventory.begin();
         std::rotate(begin + i, begin + n + 1, begin + n + 2);
     }
 
-    *player_ptr->inventory[i] = o_ptr->clone();
-    j_ptr = player_ptr->inventory[i].get();
+    *creature.inventory[i] = o_ptr->clone();
+    j_ptr = creature.inventory[i].get();
     j_ptr->held_m_idx = 0;
     j_ptr->iy = j_ptr->ix = 0;
     j_ptr->marked.clear().set(OmType::TOUCHED);
 
-    player_ptr->inven_cnt++;
     static constexpr auto flags_srf = {
         StatusRecalculatingFlag::BONUS,
         StatusRecalculatingFlag::COMBINATION,
@@ -344,18 +339,18 @@ bool check_get_item(ItemEntity *o_ptr)
 /*!
  * @brief アイテムを拾う際にザックから溢れずに済むかを判定する /
  * Check if we have space for an item in the pack without overflow
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param o_ptr 拾いたいオブジェクトの構造体参照ポインタ
  * @return 溢れずに済むならTRUEを返す
  */
-bool check_store_item_to_inventory(PlayerType *player_ptr, const ItemEntity *o_ptr)
+bool check_store_item_to_inventory(const CreatureEntity &creature, const ItemEntity *o_ptr)
 {
-    if (player_ptr->inven_cnt < INVEN_PACK) {
+    if (creature.get_inven_cnt() < INVEN_PACK) {
         return true;
     }
 
-    for (int j = 0; j < INVEN_PACK; j++) {
-        auto *j_ptr = player_ptr->inventory[j].get();
+    for (const auto i_idx : INVEN_PACK_SLOTS) {
+        const auto *j_ptr = creature.inventory[i_idx].get();
         if (!j_ptr->is_valid()) {
             continue;
         }
@@ -370,14 +365,14 @@ bool check_store_item_to_inventory(PlayerType *player_ptr, const ItemEntity *o_p
 
 /*!
  * @brief 装備スロットから装備を外すメインルーチン
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param i_idx 装備を外したいインベントリのID
  * @param amt 外したい個数
  * @return 収められた所持スロットのID、拾うことができなかった場合-1を返す。
  */
-INVENTORY_IDX inven_takeoff(PlayerType *player_ptr, INVENTORY_IDX i_idx, ITEM_NUMBER amt)
+INVENTORY_IDX inven_takeoff(CreatureEntity &creature, INVENTORY_IDX i_idx, ITEM_NUMBER amt)
 {
-    const auto &item_inventory = *player_ptr->inventory[i_idx];
+    const auto &item_inventory = *creature.inventory[i_idx];
     if (amt <= 0) {
         return -1;
     }
@@ -388,7 +383,7 @@ INVENTORY_IDX inven_takeoff(PlayerType *player_ptr, INVENTORY_IDX i_idx, ITEM_NU
 
     auto item = item_inventory.clone();
     item.number = amt;
-    const auto item_name = describe_flavor(player_ptr, item, 0);
+    const auto item_name = describe_flavor(creature, item, 0);
     std::string act;
     if (((i_idx == INVEN_MAIN_HAND) || (i_idx == INVEN_SUB_HAND)) && item_inventory.is_melee_weapon()) {
         act = _("を装備からはずした", "You were wielding");
@@ -400,10 +395,10 @@ INVENTORY_IDX inven_takeoff(PlayerType *player_ptr, INVENTORY_IDX i_idx, ITEM_NU
         act = _("を装備からはずした", "You were wearing");
     }
 
-    inven_item_increase(player_ptr, i_idx, -amt);
-    inven_item_optimize(player_ptr, i_idx);
+    inven_item_increase(creature, i_idx, -amt);
+    inven_item_optimize(creature, i_idx);
 
-    const auto slot = store_item_to_inventory(player_ptr, &item);
+    const auto slot = store_item_to_inventory(creature, &item);
 #ifdef JP
     msg_format("%s(%c)%s。", item_name.data(), index_to_label(slot), act.data());
 #else

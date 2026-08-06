@@ -1,10 +1,10 @@
 #include "alliance/alliance-dokachans.h"
+#include "system/creature-entity.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/player-type-definition.h"
 
-int AllianceDokachans::calcImpressionPoint([[maybe_unused]] PlayerType *creature_ptr) const
+int AllianceDokachans::calcImpressionPoint([[maybe_unused]] const CreatureEntity &creature) const
 {
     auto impression = 0;
     impression += calcIronmanHostilityPenalty();
@@ -23,5 +23,5 @@ int AllianceDokachans::calcImpressionPoint([[maybe_unused]] PlayerType *creature
 
 bool AllianceDokachans::isAnnihilated()
 {
-    return MonraceList::get_instance().get_monrace(MonraceId::DOKACHAN).mob_num == 0;
+    return all_monraces_extinct({ MonraceId::DOKACHAN });
 }

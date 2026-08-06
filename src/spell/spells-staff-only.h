@@ -1,5 +1,5 @@
 #pragma once
 
-class PlayerType;
-bool cleansing_nova(PlayerType *player_ptr, bool magic, bool powerful);
-bool unleash_mana_storm(PlayerType *player_ptr, bool powerful);
+class CreatureEntity;
+bool cleansing_nova(CreatureEntity &creature, bool magic, bool powerful);
+bool unleash_mana_storm(CreatureEntity &creature, bool powerful);

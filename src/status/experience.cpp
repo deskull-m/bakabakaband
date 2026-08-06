@@ -1,26 +1,26 @@
 #include "status/experience.h"
 #include "player-base/player-race.h"
+#include "player-info/race-types.h"
 #include "player/player-status.h"
-#include "system/player-type-definition.h"
+#include "system/creature-entity.h"
 #include "view/display-messages.h"
 
 /*
  * Gain experience
  */
-void gain_exp_64(PlayerType *player_ptr, int32_t amount, uint32_t amount_frac)
+void gain_exp_64(CreatureEntity &creature, int32_t amount, uint32_t amount_frac)
 {
-    if (player_ptr->is_dead()) {
+    if (creature.is_dead()) {
         return;
     }
-    if (PlayerRace(player_ptr).equals(PlayerRaceType::ANDROID)) {
+    if (CreatureRace(&creature).equals(PlayerRaceType::ANDROID)) {
         return;
     }
 
-    auto &creature = static_cast<CreatureEntity &>(*player_ptr);
-    s64b_add(&(creature.exp), &(creature.exp_frac), amount, amount_frac);
+    creature.add_exp_with_frac(amount, amount_frac);
 
-    if (creature.exp < creature.max_exp) {
-        creature.max_exp += amount / 5;
+    if (creature.get_exp() < creature.get_max_exp()) {
+        creature.add_max_exp(amount / 5);
     }
 
     check_experience(creature);
@@ -31,11 +31,7 @@ void gain_exp_64(PlayerType *player_ptr, int32_t amount, uint32_t amount_frac)
  */
 void gain_exp(CreatureEntity &creature, int32_t amount)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
-    if (!player_ptr) {
-        return;
-    }
-    gain_exp_64(player_ptr, amount, 0L);
+    gain_exp_64(creature, amount, 0L);
 }
 
 /*
@@ -43,18 +39,14 @@ void gain_exp(CreatureEntity &creature, int32_t amount)
  */
 void lose_exp(CreatureEntity &creature, int32_t amount)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
-    if (!player_ptr) {
+    if (CreatureRace(&creature).equals(PlayerRaceType::ANDROID)) {
         return;
     }
-    if (PlayerRace(player_ptr).equals(PlayerRaceType::ANDROID)) {
-        return;
-    }
-    if (amount > creature.exp) {
-        amount = creature.exp;
+    if (amount > creature.get_exp()) {
+        amount = creature.get_exp();
     }
 
-    creature.exp -= amount;
+    creature.sub_exp(amount);
 
     check_experience(creature);
 }
@@ -64,9 +56,9 @@ void lose_exp(CreatureEntity &creature, int32_t amount)
  */
 bool restore_level(CreatureEntity &creature)
 {
-    if (creature.exp < creature.max_exp) {
+    if (creature.get_exp() < creature.get_max_exp()) {
         msg_print(_("経験値が戻ってきた気がする。", "You feel your experience returning."));
-        creature.exp = creature.max_exp;
+        creature.set_exp(creature.get_max_exp());
         check_experience(creature);
         return true;
     }
@@ -78,23 +70,23 @@ bool restore_level(CreatureEntity &creature)
  * Drain experience
  * If resisted to draining, return false
  */
-bool drain_exp(PlayerType *player_ptr, int32_t drain, int32_t slip, int hold_exp_prob)
+bool drain_exp(CreatureEntity &creature, int32_t drain, int32_t slip, int hold_exp_prob)
 {
-    if (PlayerRace(player_ptr).equals(PlayerRaceType::ANDROID)) {
+    if (CreatureRace(&creature).equals(PlayerRaceType::ANDROID)) {
         return false;
     }
 
-    if (player_ptr->hold_exp && evaluate_percent(hold_exp_prob)) {
+    if (creature.has_hold_exp() && evaluate_percent(hold_exp_prob)) {
         msg_print(_("しかし自己の経験値を守りきった！", "You keep hold of your experience!"));
         return false;
     }
 
-    if (player_ptr->hold_exp) {
+    if (creature.has_hold_exp()) {
         msg_print(_("経験値を少し吸い取られた気がする！", "You feel your experience slipping away!"));
-        lose_exp(static_cast<CreatureEntity &>(*player_ptr), slip);
+        lose_exp(creature, slip);
     } else {
         msg_print(_("経験値が体から吸い取られた気がする！", "You feel your experience draining away!"));
-        lose_exp(static_cast<CreatureEntity &>(*player_ptr), drain);
+        lose_exp(creature, drain);
     }
 
     return true;

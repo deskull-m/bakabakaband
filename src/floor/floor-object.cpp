@@ -12,8 +12,8 @@
 #include "game-option/cheat-options.h"
 #include "game-option/cheat-types.h"
 #include "grid/grid.h"
+#include "inventory/floor-item-getter.h"
 #include "inventory/inventory-slot-types.h"
-#include "inventory/item-getter.h"
 #include "main/sound-definitions-table.h"
 #include "main/sound-of-music.h"
 #include "object-enchant/item-apply-magic.h"
@@ -24,14 +24,13 @@
 #include "object/object-info.h"
 #include "object/object-kind-hook.h"
 #include "perception/object-perception.h"
-#include "range/v3/range/conversion.hpp"
 #include "system/artifact-type-definition.h"
+#include "system/artifact/artifact-record.h"
 #include "system/baseitem/baseitem-allocation.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
-#include "system/monster-entity.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "target/projection-path-calculator.h"
 #include "util/finalizer.h"
@@ -41,20 +40,25 @@
 #include "world/world.h"
 #include <range/v3/algorithm.hpp>
 #include <range/v3/functional.hpp>
+#include <range/v3/range/conversion.hpp>
 #include <range/v3/view.hpp>
 
 /*!
  * @brief デバッグ時にアイテム生成情報をメッセージに出力する / Cheat -- describe a created object for the user
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param o_ptr デバッグ出力するオブジェクトの構造体参照ポインタ
  */
-static void object_mention(PlayerType *player_ptr, ItemEntity &item)
+static void object_mention(CreatureEntity &creature, ItemEntity &item)
 {
-    object_aware(player_ptr, item);
+    if (!creature.is_player()) {
+        return;
+    }
+
+    object_aware(creature, item);
     item.mark_as_known();
-    item.ident |= (IDENT_FULL_KNOWN);
-    const auto item_name = describe_flavor(player_ptr, item, 0);
-    msg_format_wizard(player_ptr, CHEAT_OBJECT, _("%sを生成しました。", "%s was generated."), item_name.data());
+    item.ident.set(IdentificationFlag::FULL_KNOWN);
+    const auto item_name = describe_flavor(creature, item, 0);
+    msg_format_wizard(creature, CHEAT_OBJECT, _("%sを生成しました。", "%s was generated."), item_name.data());
 }
 
 static int get_base_floor(const FloorType &floor, BIT_FLAGS mode, tl::optional<int> rq_mon_level)
@@ -93,13 +97,13 @@ static void set_ammo_quantity(ItemEntity *j_ptr)
  * アイテムが消失した旨のメッセージを表示し、それが未知のアーティファクトで
  * 保存モードが有効な場合はアーティファクトの生成済みフラグを解除する。
  *
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param disappearing_item 消失するアイテム
  * @param reason 消失理由の文字列
  */
-static void handle_item_disappearance(PlayerType *player_ptr, ItemEntity &disappearing_item, std::string_view reason)
+static void handle_item_disappearance(CreatureEntity &creature, ItemEntity &disappearing_item, std::string_view reason)
 {
-    const auto item_name = describe_flavor(player_ptr, disappearing_item, (OD_OMIT_PREFIX | OD_NAME_ONLY));
+    const auto item_name = describe_flavor(creature, disappearing_item, (OD_OMIT_PREFIX | OD_NAME_ONLY));
 #ifdef JP
     msg_print("{}は消えた。", item_name);
 #else
@@ -112,30 +116,29 @@ static void handle_item_disappearance(PlayerType *player_ptr, ItemEntity &disapp
     }
 
     if (disappearing_item.is_fixed_artifact() && !disappearing_item.is_known() && preserve_mode) {
-        auto &artifact = disappearing_item.get_fixed_artifact();
-        artifact.is_generated = false;
+        ArtifactRecords::get_instance().set_generated(disappearing_item.fa_id, false);
     }
 }
 
 /*!
  * @brief 生成階に応じたベースアイテムの生成を行う。
  * Attempt to make an object (normal or good/great)
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param subject クリーチャーへの参照
  * @param mode オプションフラグ
  * @param restrict ベースアイテム制約関数。see BaseitemAllocationTable::set_restriction()
  * @param rq_mon_level ランダムクエスト討伐対象のレベル。ランダムクエスト以外の生成であれば無効値
  * @return 生成したアイテム。ベースアイテム制約やアイテム生成レベルなどの要因で生成に失敗した場合はtl::nullopt。
  */
-tl::optional<ItemEntity> make_object(PlayerType *player_ptr, BIT_FLAGS mode, BaseitemRestrict restrict, tl::optional<int> rq_mon_level)
+tl::optional<ItemEntity> make_object(CreatureEntity &subject, BIT_FLAGS mode, BaseitemRestrict restrict, tl::optional<int> rq_mon_level)
 {
-    const auto apply_magic_to = [player_ptr, mode](ItemEntity &item) {
-        ItemMagicApplier(player_ptr, &item, player_ptr->current_floor_ptr->object_level, mode).execute();
+    const auto apply_magic_to = [&subject, mode](ItemEntity &item) {
+        ItemMagicApplier(subject, &item, subject.get_floor()->object_level, mode).execute();
         set_ammo_quantity(&item);
         if (cheat_peek) {
-            object_mention(player_ptr, item);
+            object_mention(subject, item);
         }
     };
-    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &floor = *subject.get_floor();
     const auto prob = any_bits(mode, AM_GOOD) ? 10 : 1000;
     const auto base = get_base_floor(floor, mode, rq_mon_level);
     if (!restrict && one_in_(prob)) {
@@ -177,32 +180,32 @@ tl::optional<ItemEntity> make_object(PlayerType *player_ptr, BIT_FLAGS mode, Bas
 
 /*!
  * @brief フロア中のアイテムを全て削除する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param pos 削除したフロアマスの座標
  */
-void delete_all_items_from_floor(PlayerType *player_ptr, const Pos2D &pos)
+void delete_all_items_from_floor(CreatureEntity &creature, const Pos2D &pos)
 {
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *creature.get_floor();
     if (!floor.contains(pos, FloorBoundary::OUTER_WALL_EXCLUSIVE)) {
         return;
     }
 
     auto &grid = floor.get_grid(pos);
-    delete_items(player_ptr, grid.o_idx_list);
+    delete_items(creature, grid.o_idx_list);
 
-    lite_spot(player_ptr, pos);
+    lite_spot(creature, pos);
 }
 
 /*!
  * @brief 床上のアイテムの数を増やす /
  * Increase the "number" of an item on the floor
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param i_idx 増やしたいアイテムの所持スロット
  * @param num 増やしたいアイテムの数
  */
-void floor_item_increase(PlayerType *player_ptr, INVENTORY_IDX i_idx, ITEM_NUMBER num)
+void floor_item_increase(CreatureEntity &creature, INVENTORY_IDX i_idx, ITEM_NUMBER num)
 {
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *creature.get_floor();
 
     auto *o_ptr = floor.o_list[i_idx].get();
     num += o_ptr->number;
@@ -224,12 +227,12 @@ void floor_item_increase(PlayerType *player_ptr, INVENTORY_IDX i_idx, ITEM_NUMBE
 /*!
  * @brief 床上の数の無くなったアイテムスロットを消去する /
  * Optimize an item on the floor (destroy "empty" items)
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param i_idx 消去したいアイテムの所持スロット
  */
-void floor_item_optimize(PlayerType *player_ptr, INVENTORY_IDX i_idx)
+void floor_item_optimize(CreatureEntity &creature, INVENTORY_IDX i_idx)
 {
-    auto *o_ptr = player_ptr->current_floor_ptr->o_list[i_idx].get();
+    auto *o_ptr = creature.get_floor()->o_list[i_idx].get();
     if (!o_ptr->is_valid()) {
         return;
     }
@@ -237,7 +240,7 @@ void floor_item_optimize(PlayerType *player_ptr, INVENTORY_IDX i_idx)
         return;
     }
 
-    delete_object_idx(player_ptr, i_idx);
+    delete_object_idx(creature, i_idx);
     static constexpr auto flags = {
         SubWindowRedrawingFlag::FLOOR_ITEMS,
         SubWindowRedrawingFlag::FOUND_ITEMS,
@@ -248,18 +251,18 @@ void floor_item_optimize(PlayerType *player_ptr, INVENTORY_IDX i_idx)
 /*!
  * @brief オブジェクトを削除する /
  * Delete a dungeon object
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param o_idx 削除対象のオブジェクト構造体ポインタ
  * @details
  * Handle "stacks" of objects correctly.
  */
-void delete_object_idx(PlayerType *player_ptr, OBJECT_IDX o_idx)
+void delete_object_idx(CreatureEntity &creature, OBJECT_IDX o_idx)
 {
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *creature.get_floor();
     excise_object_idx(floor, o_idx);
     auto &item_ptr = floor.o_list[o_idx];
     if (!item_ptr->is_held_by_monster()) {
-        lite_spot(player_ptr, item_ptr->get_position());
+        lite_spot(creature, item_ptr->get_position());
     }
 
     // 最後尾のアイテムを削除対象の要素に移動することで配列を詰める
@@ -294,12 +297,12 @@ void excise_object_idx(FloorType &floor, OBJECT_IDX o_idx)
  * @details 処理中に削除対象のインデックスが変わらないようにするため、削除対象のインデックスは降順にソートして処理される
  * @param delete_i_idx_list 削除するアイテムの参照IDのリスト
  */
-void delete_items(PlayerType *player_ptr, std::vector<OBJECT_IDX> delete_i_idx_list)
+void delete_items(CreatureEntity &creature, std::vector<OBJECT_IDX> delete_i_idx_list)
 {
     ranges::sort(delete_i_idx_list, ranges::greater{});
 
     for (const auto delete_i_idx : delete_i_idx_list) {
-        delete_object_idx(player_ptr, delete_i_idx);
+        delete_object_idx(creature, delete_i_idx);
     }
 }
 
@@ -308,45 +311,41 @@ void delete_items(PlayerType *player_ptr, std::vector<OBJECT_IDX> delete_i_idx_l
  * @param o_idx_list 管理しているアイテムをすべて削除するObjectIndexListオブジェクト
  * @details 結果としてo_idx_listは空になるので、あえて引数は非const参照としている
  */
-void delete_items(PlayerType *player_ptr, ObjectIndexList &o_idx_list)
+void delete_items(CreatureEntity &creature, ObjectIndexList &o_idx_list)
 {
     auto delete_i_idx_list = o_idx_list | ranges::to_vector;
-    delete_items(player_ptr, std::move(delete_i_idx_list));
+    delete_items(creature, std::move(delete_i_idx_list));
 }
 
 /*!
- * @brief 指定したOBJECT_IDXを含むリスト(モンスター所持リスト or 床上スタックリスト)への参照を得る
- * @param floo_ptr 現在フロアへの参照ポインタ
- * @param o_idx 参照を得るリストに含まれるOBJECT_IDX
- * @return o_idxを含む ObjectIndexList への参照
+ * @brief 指定した OBJECT_IDX を含む床上スタックリストへの参照を得る
+ * @param floor 現在フロアへの参照
+ * @param o_idx 参照を得るリストに含まれる OBJECT_IDX
+ * @return o_idx を含む ObjectIndexList への参照
+ * @details [フェーズ A-4b] モンスター所持アイテムは monster.inventory[] に
+ * 一本化したため、本関数は床上スタック (Grid::o_idx_list) のみを返す。
  */
 ObjectIndexList &get_o_idx_list_contains(FloorType &floor, OBJECT_IDX o_idx)
 {
     auto *o_ptr = floor.o_list[o_idx].get();
-
-    if (o_ptr->is_held_by_monster()) {
-        return floor.m_list[o_ptr->held_m_idx].hold_o_idx_list;
-    } else {
-        return floor.grid_array[o_ptr->iy][o_ptr->ix].o_idx_list;
-    }
+    return floor.grid_array[o_ptr->iy][o_ptr->ix].o_idx_list;
 }
 
 /*!
  * @brief アイテムを所定の位置に落とす。
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param subject クリーチャーへの参照
  * @param drop_item 落としたいアイテムへの参照
  * @param pos 配置したい座標
  * @param show_drop_message 足下に転がってきたアイテムのメッセージを表示するかどうか (デフォルトは表示する)
  */
-short drop_near(PlayerType *player_ptr, ItemEntity &drop_item, const Pos2D &pos, bool show_drop_message)
+short drop_near(CreatureEntity &subject, ItemEntity &drop_item, const Pos2D &pos, bool show_drop_message)
 {
     const auto &world = AngbandWorld::get_instance();
-    const auto item_name = describe_flavor(player_ptr, drop_item, (OD_OMIT_PREFIX | OD_NAME_ONLY));
 
     Pos2D pos_drop = pos; //!< @details 実際に落ちる座標.
     auto bs = -1;
     auto bn = 0;
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *subject.get_floor();
     auto has_floor_space = false;
     for (auto dy = -3; dy <= 3; dy++) {
         for (auto dx = -3; dx <= 3; dx++) {
@@ -408,7 +407,7 @@ short drop_near(PlayerType *player_ptr, ItemEntity &drop_item, const Pos2D &pos,
     }
 
     if (!has_floor_space && !drop_item.is_fixed_or_random_artifact()) {
-        handle_item_disappearance(player_ptr, drop_item, _("床スペースがない", "no floor space"));
+        handle_item_disappearance(subject, drop_item, _("床スペースがない", "no floor space"));
         return 0;
     }
 
@@ -433,7 +432,7 @@ short drop_near(PlayerType *player_ptr, ItemEntity &drop_item, const Pos2D &pos,
         const auto pos_drop_candidates = floor.get_area(FloorBoundary::OUTER_WALL_EXCLUSIVE) | ranges::views::filter(can_drop) | ranges::to_vector;
 
         if (pos_drop_candidates.empty()) {
-            handle_item_disappearance(player_ptr, drop_item, _("床スペースがない", "no floor space"));
+            handle_item_disappearance(subject, drop_item, _("床スペースがない", "no floor space"));
             return 0;
         }
 
@@ -453,7 +452,7 @@ short drop_near(PlayerType *player_ptr, ItemEntity &drop_item, const Pos2D &pos,
 
     short item_idx = is_absorbed ? 0 : floor.pop_empty_index_item();
     if (!is_absorbed && (item_idx == 0)) {
-        handle_item_disappearance(player_ptr, drop_item, _("アイテムが多過ぎる", "too many items"));
+        handle_item_disappearance(subject, drop_item, _("アイテムが多過ぎる", "too many items"));
         return 0;
     }
 
@@ -465,16 +464,15 @@ short drop_near(PlayerType *player_ptr, ItemEntity &drop_item, const Pos2D &pos,
         grid.o_idx_list.add(floor, item_idx);
     }
 
-    if (drop_item.is_fixed_artifact() && world.character_dungeon) {
-        auto &artifact = drop_item.get_fixed_artifact();
-        artifact.floor_id = player_ptr->floor_id;
+    if (drop_item.is_fixed_artifact() && world.character_dungeon && subject.is_player()) {
+        ArtifactRecords::get_instance().set_floor_id(drop_item.fa_id, subject.floor_id);
     }
 
-    note_spot(player_ptr, pos_drop);
-    lite_spot(player_ptr, pos_drop);
+    note_spot(subject, pos_drop);
+    lite_spot(subject, pos_drop);
     sound(SoundKind::DROP);
 
-    const auto is_located = player_ptr->is_located_at(pos_drop);
+    const auto is_located = subject.is_located_at(pos_drop);
     if (is_located) {
         static constexpr auto flags = {
             SubWindowRedrawingFlag::FLOOR_ITEMS,
@@ -492,19 +490,19 @@ short drop_near(PlayerType *player_ptr, ItemEntity &drop_item, const Pos2D &pos,
 
 /*!
  * @brief 矢弾アイテムを所定の位置に落とす。(指定した確率で壊れて消滅する)
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param drop_item 落としたいアイテムへの参照
  * @param pos 配置したい座標
  * @param destruction_chance 消滅率(%)
  */
-void drop_ammo_near(PlayerType *player_ptr, ItemEntity &drop_item, const Pos2D &pos, int destruction_chance)
+void drop_ammo_near(CreatureEntity &creature, ItemEntity &drop_item, const Pos2D &pos, int destruction_chance)
 {
     if (!drop_item.is_fixed_or_random_artifact() && evaluate_percent(destruction_chance)) {
-        handle_item_disappearance(player_ptr, drop_item, _("破損", "breakage"));
+        handle_item_disappearance(creature, drop_item, _("破損", "breakage"));
         return;
     }
 
-    (void)drop_near(player_ptr, drop_item, pos, true);
+    (void)drop_near(creature, drop_item, pos, true);
 }
 
 /*!
@@ -537,13 +535,13 @@ void floor_item_charges(const FloorType &floor, INVENTORY_IDX i_idx)
 /*!
  * @brief 床上のアイテムの残り数メッセージを表示する /
  * Describe the charges on an item on the floor.
- * @param floo_ptr 現在フロアへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param i_idx メッセージの対象にしたいアイテム所持スロット
  */
-void floor_item_describe(PlayerType *player_ptr, INVENTORY_IDX i_idx)
+void floor_item_describe(CreatureEntity &creature, INVENTORY_IDX i_idx)
 {
-    const auto &item = *player_ptr->current_floor_ptr->o_list[i_idx];
-    const auto item_name = describe_flavor(player_ptr, item, 0);
+    const auto &item = *creature.get_floor()->o_list[i_idx];
+    const auto item_name = describe_flavor(creature, item, 0);
 #ifdef JP
     if (item.number <= 0) {
         msg_format("床上には、もう%sはない。", item_name.data());
@@ -559,27 +557,19 @@ void floor_item_describe(PlayerType *player_ptr, INVENTORY_IDX i_idx)
  * @brief Choose an item and get auto-picker entry from it.
  * @todo initial_i_idx をポインタではなく値に変え、戻り値をstd::pairに変える
  */
-ItemEntity *choose_object(PlayerType *player_ptr, short *initial_i_idx, concptr q, concptr s, BIT_FLAGS option, const ItemTester &item_tester)
+std::pair<std::shared_ptr<ItemEntity>, short> choose_item(CreatureEntity &creature, std::string_view q, std::string_view s, BIT_FLAGS option, const ItemTester &item_tester)
 {
-    if (initial_i_idx) {
-        *initial_i_idx = INVEN_NONE;
-    }
-
-    const auto enable_repeat = util::make_finalizer([&] { player_ptr->current_floor_ptr->prevent_repeat_floor_item_idx = false; });
+    const auto enable_repeat = util::make_finalizer([&] { creature.get_floor()->prevent_repeat_floor_item_idx = false; });
 
     FixItemTesterSetter setter(item_tester);
-    short i_idx;
-    if (!get_item(player_ptr, &i_idx, q, s, option, item_tester)) {
-        return nullptr;
+    const auto i_idx = get_item_floor(creature, q, s, option, item_tester);
+    if (!i_idx) {
+        return { nullptr, INVEN_NONE };
     }
 
-    if (initial_i_idx) {
-        *initial_i_idx = i_idx;
+    if (*i_idx == INVEN_FORCE) {
+        return { nullptr, INVEN_FORCE };
     }
 
-    if (i_idx == INVEN_FORCE) {
-        return nullptr;
-    }
-
-    return ref_item(player_ptr, i_idx);
+    return { ref_item(creature, *i_idx), *i_idx };
 }

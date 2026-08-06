@@ -5,18 +5,17 @@
 
 enum class RaceBlowEffectType;
 enum class RaceBlowMethodType;
-class PlayerType;
+class CreatureEntity;
 class SpellHex;
-class MonsterEntity;
 class ItemEntity;
 class MonsterAttackPlayer {
 public:
-    MonsterAttackPlayer(PlayerType *player_ptr, short m_idx);
+    MonsterAttackPlayer(CreatureEntity &creature, short m_idx);
 #ifdef JP
     int abbreviate = 0; // 2回目以降の省略表現フラグ.
 #endif
     short m_idx;
-    MonsterEntity *m_ptr;
+    CreatureEntity *m_ptr;
     RaceBlowMethodType method;
     RaceBlowEffectType effect;
     bool do_silly_attack;
@@ -37,11 +36,12 @@ public:
     ARMOUR_CLASS ac = 0;
     bool alive = true;
     bool fear = false;
+    short weapon_slot_for_blow = -1; //!< [フェーズ B-2 二刀流] 当該打撃で使用する武器スロット (-1 = 武器なし)
 
     void make_attack_normal();
 
 private:
-    PlayerType *player_ptr;
+    CreatureEntity *creature_ptr;
 
     static int stat_value(const int raw);
     bool check_no_blow();
@@ -50,6 +50,7 @@ private:
     bool process_monster_attack_hit();
     bool effect_protecion_from_evil();
     void describe_silly_attacks();
+    void describe_weapon_attack();
     void select_cut_stun();
     void calc_player_cut();
     void process_player_stun();

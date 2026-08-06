@@ -1,4 +1,4 @@
 #pragma once
 
-class PlayerType;
-void museum_remove_object(PlayerType *player_ptr);
+class CreatureEntity;
+void museum_remove_object(CreatureEntity &creature);

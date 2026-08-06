@@ -1,4 +1,4 @@
 #pragma once
 
-class PlayerType;
-bool alchemy(PlayerType *player_ptr);
+class CreatureEntity;
+bool alchemy(CreatureEntity &creature);

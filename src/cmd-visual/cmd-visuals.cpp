@@ -13,18 +13,23 @@
 #include "knowledge/knowledge-monsters.h"
 #include "knowledge/lighting-level-table.h"
 #include "main/sound-of-music.h"
+#include "system/baseitem/baseitem-config.h"
+#include "system/baseitem/baseitem-configs.h"
 #include "system/baseitem/baseitem-definition.h"
 #include "system/baseitem/baseitem-list.h"
+#include "system/baseitem/baseitem-record.h"
+#include "system/baseitem/baseitem-records.h"
+#include "system/creature-entity.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/player-type-definition.h"
 #include "system/terrain/terrain-definition.h"
 #include "system/terrain/terrain-list.h"
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
 #include "term/z-form.h"
 #include "util/angband-files.h"
+#include "util/enum-converter.h"
 #include "util/int-char-converter.h"
 #include "view/display-messages.h"
 #include <tl/optional.hpp>
@@ -79,7 +84,7 @@ static void print_visuals_menu(concptr choice_msg)
 /*
  * Interact with "visuals"
  */
-void do_cmd_visuals(PlayerType *player_ptr)
+void do_cmd_visuals(CreatureEntity &creature)
 {
     FILE *auto_dump_stream;
     bool need_redraw = false;
@@ -89,7 +94,7 @@ void do_cmd_visuals(PlayerType *player_ptr)
     }
 
     screen_save();
-    const auto initial_filename = format("%s.prf", player_ptr->base_name.data());
+    const auto initial_filename = format("%s.prf", creature.base_name.data());
     while (true) {
         term_clear();
         print_visuals_menu(nullptr);
@@ -107,7 +112,7 @@ void do_cmd_visuals(PlayerType *player_ptr)
                 continue;
             }
 
-            (void)process_pref_file(player_ptr, *ask_result, true);
+            (void)process_pref_file(creature, *ask_result, true);
             need_redraw = true;
             break;
         }
@@ -127,8 +132,8 @@ void do_cmd_visuals(PlayerType *player_ptr)
 
             auto_dump_printf(auto_dump_stream, _("\n# モンスターの[色/文字]の設定\n\n", "\n# Monster attr/char definitions\n\n"));
             for (const auto &[monrace_id, monrace] : MonraceList::get_instance()) {
-                auto_dump_printf(auto_dump_stream, "# %s\n", monrace.name.data());
-                const auto &symbol_config = monrace.symbol_config;
+                auto_dump_printf(auto_dump_stream, "# %s\n", monrace->name.data());
+                const auto &symbol_config = monrace->symbol_config;
                 auto_dump_printf(auto_dump_stream, "R:%d:0x%02X/0x%02X\n\n", enum2i(monrace_id), symbol_config.color, static_cast<uint8_t>(symbol_config.character));
             }
 
@@ -151,22 +156,22 @@ void do_cmd_visuals(PlayerType *player_ptr)
             }
 
             auto_dump_printf(auto_dump_stream, _("\n# アイテムの[色/文字]の設定\n\n", "\n# Object attr/char definitions\n\n"));
-            for (const auto &baseitem : BaseitemList::get_instance()) {
-                if (!baseitem.is_valid()) {
-                    continue;
-                }
-
+            const auto &baseitems = BaseitemList::get_instance();
+            const auto &baseitem_configs = BaseitemConfigs::get_instance();
+            const auto &baseitem_records = BaseitemRecords::get_instance();
+            for (short bi_id : baseitems.collect_valid_bi_ids()) {
+                const auto &baseitem_record = baseitem_records.get_record(bi_id);
                 std::string item_name;
-                if (baseitem.flavor == 0) {
-                    item_name = baseitem.stripped_name();
+                if (!baseitem_record.is_apparent()) {
+                    item_name = baseitems.get_baseitem(bi_id).stripped_name();
                 } else {
-                    ItemEntity dummy(baseitem.idx);
-                    item_name = describe_flavor(player_ptr, dummy, OD_FORCE_FLAVOR);
+                    ItemEntity dummy(bi_id);
+                    item_name = describe_flavor(creature, dummy, OD_FORCE_FLAVOR);
                 }
 
+                const auto &baseitem_config = baseitem_configs.get_config(bi_id);
                 auto_dump_printf(auto_dump_stream, "# %s\n", item_name.data());
-                const auto &symbol_config = baseitem.symbol_config;
-                auto_dump_printf(auto_dump_stream, "K:%d:0x%02X/0x%02X\n\n", (int)baseitem.idx, symbol_config.color, static_cast<uint8_t>(symbol_config.character));
+                auto_dump_printf(auto_dump_stream, "K:%d:0x%02X/0x%02X\n\n", bi_id, baseitem_config.get_color(), static_cast<uint8_t>(baseitem_config.get_character()));
             }
 
             close_auto_dump(&auto_dump_stream, mark);
@@ -213,7 +218,7 @@ void do_cmd_visuals(PlayerType *player_ptr)
             short num = 0;
             auto &monraces = MonraceList::get_instance();
             static auto choice_msg = _("モンスターの[色/文字]を変更します", "Change monster attr/chars");
-            static auto monrace_id = monraces.begin()->second.idx;
+            static auto monrace_id = monraces.begin()->second->idx;
             prt(format(_("コマンド: %s", "Command: %s"), choice_msg), 15, 0);
             while (true) {
                 auto &monrace = monraces.get_monrace(monrace_id);
@@ -274,7 +279,7 @@ void do_cmd_visuals(PlayerType *player_ptr)
                     break;
                 }
                 case 'v':
-                    do_cmd_knowledge_monsters(player_ptr, &need_redraw, true, monrace_id);
+                    do_cmd_knowledge_monsters(creature, &need_redraw, true, monrace_id);
                     term_clear();
                     print_visuals_menu(choice_msg);
                     break;
@@ -287,21 +292,25 @@ void do_cmd_visuals(PlayerType *player_ptr)
             static auto choice_msg = _("アイテムの[色/文字]を変更します", "Change object attr/chars");
             static short bi_id = 0;
             prt(format(_("コマンド: %s", "Command: %s"), choice_msg), 15, 0);
-            auto &baseitems = BaseitemList::get_instance();
+            const auto &baseitems = BaseitemList::get_instance();
+            const auto &baseitem_records = BaseitemRecords::get_instance();
+            auto &baseitem_configs = BaseitemConfigs::get_instance();
             while (true) {
                 auto &baseitem = baseitems.get_baseitem(bi_id);
                 int c;
-                const auto &symbol_definition = baseitem.symbol_definition;
-                auto &symbol_config = baseitem.symbol_config;
-                term_putstr(5, 17, -1, TERM_WHITE,
-                    format(
-                        _("アイテム = %d, 名前 = %-40.40s", "Object = %d, Name = %-40.40s"), bi_id, (!baseitem.flavor ? baseitem.name : baseitem.flavor_name).data()));
+                const auto &symbol_definition = baseitem.get_symbol();
+                auto &baseitem_record = baseitem_records.get_record(bi_id);
+                auto &baseitem_config = baseitem_configs.get_config(bi_id);
+                constexpr auto fmt_title = _("アイテム = %d, 名前 = %-40.40s", "Object = %d, Name = %-40.40s");
+                const auto &baseitem_name = baseitem_record.is_apparent() ? baseitem.flavor_name : baseitem.name;
+                const auto title = format(fmt_title, bi_id, baseitem_name.data());
+                term_putstr(5, 17, -1, TERM_WHITE, title);
                 term_putstr(10, 19, -1, TERM_WHITE, format(_("初期値  色 / 文字 = %3d / %3d", "Default attr/char = %3d / %3d"), symbol_definition.color, symbol_definition.character));
                 term_putstr(40, 19, -1, TERM_WHITE, empty_symbol);
                 term_queue_bigchar(43, 19, { symbol_definition, {} });
-                term_putstr(10, 20, -1, TERM_WHITE, format(_("現在値  色 / 文字 = %3d / %3d", "Current attr/char = %3d / %3d"), symbol_config.color, symbol_config.character));
+                term_putstr(10, 20, -1, TERM_WHITE, format(_("現在値  色 / 文字 = %3d / %3d", "Current attr/char = %3d / %3d"), baseitem_config.get_color(), baseitem_config.get_character()));
                 term_putstr(40, 20, -1, TERM_WHITE, empty_symbol);
-                term_queue_bigchar(43, 20, { symbol_config, {} });
+                term_queue_bigchar(43, 20, { baseitem_config.get_symbol(), {} });
                 term_putstr(0, 22, -1, TERM_WHITE, _("コマンド (n/N/^N/a/A/^A/c/C/^C/v/V/^V): ", "Command (n/N/^N/a/A/^A/c/C/^C/v/V/^V): "));
 
                 const auto ch = inkey();
@@ -337,27 +346,27 @@ void do_cmd_visuals(PlayerType *player_ptr)
                     break;
                 }
                 case 'a': {
-                    const auto visual_id = input_new_visual_id(ch, symbol_config.color, 256);
+                    const auto visual_id = input_new_visual_id(ch, baseitem_config.get_color(), 256);
                     if (!visual_id) {
                         break;
                     }
 
-                    baseitem.symbol_config.color = *visual_id;
+                    baseitem_config.update_color(*visual_id);
                     need_redraw = true;
                     break;
                 }
                 case 'c': {
-                    const auto visual_id = input_new_visual_id(ch, symbol_config.character, 256);
+                    const auto visual_id = input_new_visual_id(ch, baseitem_config.get_character(), 256);
                     if (!visual_id) {
                         break;
                     }
 
-                    baseitem.symbol_config.character = *visual_id;
+                    baseitem_config.update_character(*visual_id);
                     need_redraw = true;
                     break;
                 }
                 case 'v':
-                    do_cmd_knowledge_objects(player_ptr, &need_redraw, true, bi_id);
+                    do_cmd_knowledge_objects(creature, &need_redraw, true, bi_id);
                     term_clear();
                     print_visuals_menu(choice_msg);
                     break;
@@ -469,10 +478,10 @@ void do_cmd_visuals(PlayerType *player_ptr)
             break;
         }
         case '7':
-            do_cmd_knowledge_monsters(player_ptr, &need_redraw, true);
+            do_cmd_knowledge_monsters(creature, &need_redraw, true);
             break;
         case '8':
-            do_cmd_knowledge_objects(player_ptr, &need_redraw, true, -1);
+            do_cmd_knowledge_objects(creature, &need_redraw, true, -1);
             break;
         case '9': {
             short lighting_level = F_LIT_STANDARD;
@@ -481,7 +490,7 @@ void do_cmd_visuals(PlayerType *player_ptr)
         }
         case 'r':
         case 'R':
-            reset_visuals(player_ptr);
+            reset_visuals(creature);
             msg_print(_("画面上の[色/文字]を初期値にリセットしました。", "Visual attr/char tables reset."));
             need_redraw = true;
             break;
@@ -495,6 +504,6 @@ void do_cmd_visuals(PlayerType *player_ptr)
 
     screen_load();
     if (need_redraw) {
-        do_cmd_redraw(player_ptr);
+        do_cmd_redraw(creature);
     }
 }

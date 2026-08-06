@@ -9,11 +9,11 @@
 #include "player/special-defense-types.h"
 #include "realm/realm-hex-numbers.h"
 #include "spell-realm/spells-hex.h"
-#include "system/player-type-definition.h"
+#include "system/creature-entity.h"
 #include "util/bit-flags-calculator.h"
 
-PlayerCharisma::PlayerCharisma(PlayerType *player_ptr)
-    : PlayerBasicStatistics(player_ptr)
+PlayerCharisma::PlayerCharisma(CreatureEntity &creature)
+    : PlayerBasicStatistics(creature)
 {
 }
 
@@ -37,7 +37,7 @@ int16_t PlayerCharisma::stance_bonus()
 {
     int16_t result = 0;
 
-    if (PlayerClass(player_ptr).samurai_stance_is(SamuraiStanceType::KOUKIJIN)) {
+    if (CreatureClass(this->creature).samurai_stance_is(SamuraiStanceType::KOUKIJIN)) {
         result += 5;
     }
 
@@ -59,20 +59,20 @@ int16_t PlayerCharisma::mutation_bonus()
 {
     int16_t result = 0;
 
-    if (this->player_ptr->muta.any()) {
-        if (this->player_ptr->muta.has(PlayerMutationType::FLESH_ROT)) {
+    if (this->creature.get_mutations().any()) {
+        if (this->creature.get_mutations().has(PlayerMutationType::FLESH_ROT)) {
             result -= 1;
         }
-        if (this->player_ptr->muta.has(PlayerMutationType::SILLY_VOI)) {
+        if (this->creature.get_mutations().has(PlayerMutationType::SILLY_VOI)) {
             result -= 4;
         }
-        if (this->player_ptr->muta.has(PlayerMutationType::BLANK_FAC)) {
+        if (this->creature.get_mutations().has(PlayerMutationType::BLANK_FAC)) {
             result -= 1;
         }
-        if (this->player_ptr->muta.has(PlayerMutationType::WART_SKIN)) {
+        if (this->creature.get_mutations().has(PlayerMutationType::WART_SKIN)) {
             result -= 2;
         }
-        if (this->player_ptr->muta.has(PlayerMutationType::SCALES)) {
+        if (this->creature.get_mutations().has(PlayerMutationType::SCALES)) {
             result -= 1;
         }
     }
@@ -84,7 +84,7 @@ int16_t PlayerCharisma::set_exception_bonus(int16_t value)
 {
     int16_t result = value;
 
-    if (this->player_ptr->muta.has(PlayerMutationType::ILL_NORM)) {
+    if (this->creature.get_mutations().has(PlayerMutationType::ILL_NORM)) {
         result = 0;
     }
 
@@ -95,7 +95,7 @@ BIT_FLAGS PlayerCharisma::get_all_flags()
 {
     BIT_FLAGS flags = PlayerStatusBase::get_all_flags();
 
-    if (this->player_ptr->muta.has(PlayerMutationType::ILL_NORM)) {
+    if (this->creature.get_mutations().has(PlayerMutationType::ILL_NORM)) {
         set_bits(flags, FLAG_CAUSE_MUTATION);
     }
 
@@ -106,7 +106,7 @@ BIT_FLAGS PlayerCharisma::get_bad_flags()
 {
     BIT_FLAGS flags = PlayerStatusBase::get_bad_flags();
 
-    if (this->player_ptr->muta.has(PlayerMutationType::ILL_NORM)) {
+    if (this->creature.get_mutations().has(PlayerMutationType::ILL_NORM)) {
         set_bits(flags, FLAG_CAUSE_MUTATION);
     }
 
@@ -123,10 +123,10 @@ BIT_FLAGS PlayerCharisma::get_bad_flags()
  */
 int16_t PlayerCharisma::set_exception_use_status(int16_t value)
 {
-    if (this->player_ptr->muta.has(PlayerMutationType::ILL_NORM)) {
+    if (this->creature.get_mutations().has(PlayerMutationType::ILL_NORM)) {
         /* 10.0 to 27.0 charisma, guaranteed, based on level */
-        if (value < 80 + 20 * this->player_ptr->level) {
-            value = 80 + 20 * this->player_ptr->level;
+        if (value < 80 + 20 * this->creature.get_level()) {
+            value = 80 + 20 * this->creature.get_level();
         }
     }
     return value;

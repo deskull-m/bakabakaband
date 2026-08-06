@@ -2,15 +2,16 @@
 
 #include "object-enchant/tr-flags.h"
 
+class CreatureEntity;
 enum class PlayerRaceType;
 enum class PlayerRaceLifeType;
 enum class PlayerRaceFoodType;
 class PlayerType;
 struct player_race_info;
-class PlayerRace {
+class CreatureRace {
 public:
-    PlayerRace(PlayerType *player_ptr, bool base_race = false);
-    virtual ~PlayerRace() = default;
+    CreatureRace(CreatureEntity *creature_ptr, bool base_race = false);
+    virtual ~CreatureRace() = default;
 
     TrFlags tr_flags() const;
     const player_race_info *get_info() const;
@@ -29,6 +30,6 @@ public:
     char get_summon_symbol() const;
 
 private:
-    PlayerType *player_ptr;
+    CreatureEntity *creature_ptr;
     bool base_race;
 };

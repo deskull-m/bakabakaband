@@ -1,4 +1,4 @@
 #pragma once
 
-class PlayerType;
-void process_dungeon(PlayerType *player_ptr, bool load_game);
+class CreatureEntity;
+void process_dungeon(CreatureEntity &creature, bool load_game);

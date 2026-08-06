@@ -2,7 +2,6 @@
 #include "info-reader/info-reader-util.h"
 #include "info-reader/parse-error-types.h"
 #include "info-reader/vault-info-tokens-table.h"
-#include "main/angband-headers.h"
 #include "room/rooms-vault.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
@@ -12,10 +11,9 @@
 /*!
  * @brief Vault定義 (VaultDefinitions)のパース関数
  * @param buf テキスト列
- * @param head ヘッダ構造体
  * @return エラーコード
  */
-errr parse_vaults_info(std::string_view buf, angband_header *)
+errr parse_vaults_info(std::string_view buf)
 {
     static vault_type *v_ptr = nullptr;
     const auto &tokens = str_split(buf, ':', false, 5);
@@ -87,14 +85,14 @@ errr parse_vaults_info(std::string_view buf, angband_header *)
                 if (s_tokens.size() == 2 && s_tokens[0] == "MONSTER") {
                     const auto &monraces = MonraceList::get_instance();
                     for (const auto &[r_idx, r_ref] : monraces) {
-                        if (s_tokens[1] == r_ref.tag) {
+                        if (s_tokens[1] == r_ref->tag) {
                             v_ptr->place_monster_list[c] = r_idx;
                             break;
                         }
                     }
                     if (v_ptr->place_monster_list.count(c) == 0) {
                         try {
-                            std::stoi(s_tokens[1]);
+                            (void)std::stoi(s_tokens[1]);
                             info_set_value(v_ptr->place_monster_list[c], s_tokens[1]);
                             break;
                         } catch (const std::invalid_argument &) {

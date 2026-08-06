@@ -6,35 +6,41 @@
 #include "player-info/samurai-data-type.h"
 #include "player/attack-defense-types.h"
 #include "player/special-defense-types.h"
-#include "system/player-type-definition.h"
+#include "system/creature-entity.h"
 
-void rd_special_attack(PlayerType *player_ptr)
+void rd_special_attack(CreatureEntity &creature)
 {
-    player_ptr->ele_attack = rd_s16b();
-    player_ptr->special_attack = rd_u32b();
+    // ELE_ATTACK は v53 以降 rd_creature_common() の全時限ダンプで読込済み
+    if (loading_savefile_version_is_older_than(53)) {
+        creature.set_timed_effect(CreatureTimedEffect::ELE_ATTACK, rd_s16b());
+    }
+    creature.set_special_attack_flags(rd_u32b());
 }
 
-void rd_special_action(PlayerType *player_ptr)
+void rd_special_action(CreatureEntity &creature)
 {
-    if (!PlayerClass(player_ptr).monk_stance_is(MonkStanceType::NONE)) {
-        player_ptr->action = ACTION_MONK_STANCE;
+    if (!CreatureClass(creature).monk_stance_is(MonkStanceType::NONE)) {
+        creature.set_action(ACTION_MONK_STANCE);
         return;
     }
 
-    if (!PlayerClass(player_ptr).samurai_stance_is(SamuraiStanceType::NONE)) {
-        player_ptr->action = ACTION_SAMURAI_STANCE;
+    if (!CreatureClass(creature).samurai_stance_is(SamuraiStanceType::NONE)) {
+        creature.set_action(ACTION_SAMURAI_STANCE);
     }
 }
 
-void rd_special_defense(PlayerType *player_ptr)
+void rd_special_defense(CreatureEntity &creature)
 {
-    player_ptr->ele_immune = rd_s16b();
-    player_ptr->special_defense = rd_u32b();
+    // ELE_IMMUNE は v53 以降 rd_creature_common() の全時限ダンプで読込済み
+    if (loading_savefile_version_is_older_than(53)) {
+        creature.set_timed_effect(CreatureTimedEffect::ELE_IMMUNE, rd_s16b());
+    }
+    creature.set_special_defense_flags(rd_u32b());
 }
 
-void rd_action(PlayerType *player_ptr)
+void rd_action(CreatureEntity &creature)
 {
     strip_bytes(1);
-    player_ptr->action = rd_byte();
-    set_zangband_action(player_ptr);
+    creature.set_action(rd_byte());
+    set_zangband_action(creature);
 }

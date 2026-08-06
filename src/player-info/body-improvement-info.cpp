@@ -1,189 +1,186 @@
 #include "player-info/body-improvement-info.h"
 #include "player-info/self-info-util.h"
 #include "player/player-status-flags.h"
-#include "player/player-status.h"
 #include "spell-realm/spells-crusade.h"
-#include "system/player-type-definition.h"
-#include "timed-effect/timed-effects.h"
+#include "system/creature-entity.h"
 
 /*!< @todo 並び順の都合で連番を付ける。まとめても良いならまとめてしまう予定 */
-void set_body_improvement_info_1(PlayerType *player_ptr, self_info_type *self_ptr)
+void set_body_improvement_info_1(CreatureEntity &creature, self_info_type *self_ptr)
 {
-    const auto effects = player_ptr->effects();
-    if (is_blessed(player_ptr)) {
+    if (creature.is_blessed()) {
         self_ptr->info_list.emplace_back(_("あなたは高潔さを感じている。", "You feel rightous."));
     }
 
-    if (is_hero(player_ptr)) {
+    if (creature.is_hero()) {
         self_ptr->info_list.emplace_back(_("あなたはヒーロー気分だ。", "You feel heroic."));
     }
 
-    if (is_shero(player_ptr)) {
+    if (creature.is_shero()) {
         self_ptr->info_list.emplace_back(_("あなたは戦闘狂だ。", "You are in a battle rage."));
     }
 
-    if (effects->protection().is_protected()) {
+    if (creature.is_protected_from_evil()) {
         self_ptr->info_list.emplace_back(_("あなたは邪悪なる存在から守られている。", "You are protected from evil."));
     }
 
-    if (player_ptr->shield) {
+    if (creature.get_timed_effect(CreatureTimedEffect::SHIELD)) {
         self_ptr->info_list.emplace_back(_("あなたは神秘のシールドで守られている。", "You are protected by a mystic shield."));
     }
 
-    if (is_invuln(player_ptr)) {
+    if (creature.is_invulnerable()) {
         self_ptr->info_list.emplace_back(_("あなたは現在傷つかない。", "You are temporarily invulnerable."));
     }
 
-    if (player_ptr->wraith_form) {
+    if (creature.get_timed_effect(CreatureTimedEffect::WRAITH_FORM)) {
         self_ptr->info_list.emplace_back(_("あなたは一時的に幽体化している。", "You are temporarily incorporeal."));
     }
 }
 
 /*!< @todo 並び順の都合で連番を付ける。まとめても良いならまとめてしまう予定 */
-void set_body_improvement_info_2(PlayerType *player_ptr, self_info_type *self_ptr)
+void set_body_improvement_info_2(CreatureEntity &creature, self_info_type *self_ptr)
 {
-    if (player_ptr->new_spells) {
+    if (creature.new_spells) {
         self_ptr->info_list.emplace_back(_("あなたは呪文や祈りを学ぶことができる。", "You can learn some spells/prayers."));
     }
 
-    if (player_ptr->word_recall) {
+    if (creature.get_timed_effect(CreatureTimedEffect::WORD_RECALL)) {
         self_ptr->info_list.emplace_back(_("あなたはすぐに帰還するだろう。", "You will soon be recalled."));
     }
 
-    if (player_ptr->alter_reality) {
+    if (creature.get_timed_effect(CreatureTimedEffect::ALTER_REALITY)) {
         self_ptr->info_list.emplace_back(_("あなたはすぐにこの世界を離れるだろう。", "You will soon be altered."));
     }
 
-    if (player_ptr->see_infra) {
+    if (creature.get_infravision()) {
         self_ptr->info_list.emplace_back(_("あなたの瞳は赤外線に敏感である。", "Your eyes are sensitive to infrared light."));
     }
 
-    if (player_ptr->see_inv) {
+    if (creature.can_see_invisible()) {
         self_ptr->info_list.emplace_back(_("あなたは透明なモンスターを見ることができる。", "You can see invisible creatures."));
     }
 
-    if (player_ptr->levitation) {
+    if (creature.has_levitation()) {
         self_ptr->info_list.emplace_back(_("あなたは飛ぶことができる。", "You can fly."));
     }
 
-    if (player_ptr->free_act) {
+    if (creature.has_free_act()) {
         self_ptr->info_list.emplace_back(_("あなたは麻痺知らずの効果を持っている。", "You have free action."));
     }
 
-    if (player_ptr->regenerate) {
+    if (creature.has_regen_flag()) {
         self_ptr->info_list.emplace_back(_("あなたは素早く体力を回復する。", "You regenerate quickly."));
     }
 
-    if (player_ptr->slow_digest) {
+    if (creature.has_slow_digest_flag()) {
         self_ptr->info_list.emplace_back(_("あなたは食欲が少ない。", "Your appetite is small."));
     }
 }
 
 /*!< @todo 並び順の都合で連番を付ける。まとめても良いならまとめてしまう予定 */
-void set_body_improvement_info_3(PlayerType *player_ptr, self_info_type *self_ptr)
+void set_body_improvement_info_3(CreatureEntity &creature, self_info_type *self_ptr)
 {
-    if (player_ptr->hold_exp) {
+    if (creature.has_hold_exp()) {
         self_ptr->info_list.emplace_back(_("あなたは自己の経験値をしっかりと維持する。", "You have a firm hold on your experience."));
     }
 
-    if (has_reflect(player_ptr)) {
+    if (creature.has_reflect()) {
         self_ptr->info_list.emplace_back(_("あなたは矢の呪文を反射する。", "You reflect bolt spells."));
     }
 
-    if (has_resist_curse(player_ptr)) {
+    if (creature.has_resist_curse()) {
         self_ptr->info_list.emplace_back(_("あなたはより強く呪いに抵抗できる。", "You can resist curses powerfully."));
     }
 
-    if (has_sh_fire(player_ptr)) {
+    if (creature.has_sh_fire()) {
         self_ptr->info_list.emplace_back(_("あなたは炎のオーラに包まれている。", "You are surrounded with a fiery aura."));
     }
 
-    if (get_player_flags(player_ptr, TR_SELF_FIRE)) {
+    if (get_player_flags(creature, TR_SELF_FIRE)) {
         self_ptr->info_list.emplace_back(_("あなたは身を焼く炎に包まれている。", "You are being damaged with fire."));
     }
 
-    if (has_sh_elec(player_ptr)) {
+    if (creature.has_sh_elec()) {
         self_ptr->info_list.emplace_back(_("あなたは電気のオーラに包まれている。", "You are surrounded with an electricity aura."));
     }
 
-    if (get_player_flags(player_ptr, TR_SELF_ELEC)) {
+    if (get_player_flags(creature, TR_SELF_ELEC)) {
         self_ptr->info_list.emplace_back(_("あなたは身を焦がす電撃に包まれている。", "You are being damaged with electricity."));
     }
 
-    if (has_sh_cold(player_ptr)) {
+    if (creature.has_sh_cold()) {
         self_ptr->info_list.emplace_back(_("あなたは冷気のオーラに包まれている。", "You are surrounded with an aura of coldness."));
     }
 
-    if (get_player_flags(player_ptr, TR_SELF_COLD)) {
+    if (get_player_flags(creature, TR_SELF_COLD)) {
         self_ptr->info_list.emplace_back(_("あなたは身も凍る冷気に包まれている。", "You are being damaged with coldness."));
     }
 
-    if (player_ptr->tim_sh_holy) {
+    if (creature.get_timed_effect(CreatureTimedEffect::TIM_SH_HOLY)) {
         self_ptr->info_list.emplace_back(_("あなたは聖なるオーラに包まれている。", "You are surrounded with a holy aura."));
     }
 
-    if (player_ptr->tim_sh_touki) {
+    if (creature.get_timed_effect(CreatureTimedEffect::TIM_SH_TOUKI)) {
         self_ptr->info_list.emplace_back(_("あなたは闘気のオーラに包まれている。", "You are surrounded with an energy aura."));
     }
 
-    if (player_ptr->anti_magic) {
+    if (creature.has_anti_magic()) {
         self_ptr->info_list.emplace_back(_("あなたは反魔法シールドに包まれている。", "You are surrounded by an anti-magic shell."));
     }
 
-    if (player_ptr->anti_tele) {
+    if (creature.has_anti_tele()) {
         self_ptr->info_list.emplace_back(_("あなたはテレポートできない。", "You cannot teleport."));
     }
 
-    if (player_ptr->lite) {
+    if (creature.has_lite_flag()) {
         self_ptr->info_list.emplace_back(_("あなたの身体は光っている。", "You are carrying a permanent light."));
     }
 
-    if (player_ptr->warning) {
+    if (creature.has_warning_flag()) {
         self_ptr->info_list.emplace_back(_("あなたは行動の前に危険を察知することができる。", "You will be warned before dangerous actions."));
     }
 
-    if (player_ptr->dec_mana) {
+    if (creature.has_dec_mana()) {
         self_ptr->info_list.emplace_back(_("あなたは少ない消費魔力で魔法を唱えることができる。", "You can cast spells with fewer mana points."));
     }
 
-    if (player_ptr->easy_spell) {
+    if (creature.has_easy_spell()) {
         self_ptr->info_list.emplace_back(_("あなたは低い失敗率で魔法を唱えることができる。", "Your magic fails less often."));
     }
 
-    if (player_ptr->mighty_throw) {
+    if (creature.has_mighty_throw()) {
         self_ptr->info_list.emplace_back(_("あなたは強く物を投げる。", "You can throw objects powerfully."));
     }
 }
 
 /*!< @todo 並び順の都合で連番を付ける。まとめても良いならまとめてしまう予定 */
-void set_body_improvement_info_4(PlayerType *player_ptr, self_info_type *self_ptr)
+void set_body_improvement_info_4(CreatureEntity &creature, self_info_type *self_ptr)
 {
-    if (has_resist_fear(player_ptr)) {
+    if (creature.has_resist_fear()) {
         self_ptr->info_list.emplace_back(_("あなたは全く恐怖を感じない。", "You are completely fearless."));
     }
 
-    if (has_resist_blind(player_ptr)) {
+    if (creature.has_resist_blind()) {
         self_ptr->info_list.emplace_back(_("あなたの目は盲目への耐性を持っている。", "Your eyes are resistant to blindness."));
     }
 
-    if (has_resist_time(player_ptr)) {
+    if (creature.has_resist_time()) {
         self_ptr->info_list.emplace_back(_("あなたは時間逆転への耐性を持っている。", "You are resistant to time."));
     }
 }
 
 /*!< @todo 並び順の都合で連番を付ける。 */
-void set_body_improvement_info_5(PlayerType *player_ptr, self_info_type *self_ptr)
+void set_body_improvement_info_5(CreatureEntity &creature, self_info_type *self_ptr)
 {
-    if (player_ptr->tim_exorcism > 0) {
-        if (has_kill_demon_from_exorcism(player_ptr)) {
+    if (creature.get_timed_effect(CreatureTimedEffect::TIM_EXORCISM) > 0) {
+        if (has_kill_demon_from_exorcism(creature)) {
             self_ptr->info_list.emplace_back(_("あなたはデーモンの天敵である。", "You are a great bane of demons."));
-        } else if (has_slay_demon_from_exorcism(player_ptr)) {
+        } else if (has_slay_demon_from_exorcism(creature)) {
             self_ptr->info_list.emplace_back(_("あなたはデーモンに対して神聖なる力を発揮する。", "You strikes at demons with holy wrath."));
         }
         self_ptr->info_list.emplace_back(_("あなたはデーモンのエネルギーを吸い取る。", "You drain energy from demons."));
-        if (has_kill_undead_from_exorcism(player_ptr)) {
+        if (has_kill_undead_from_exorcism(creature)) {
             self_ptr->info_list.emplace_back(_("あなたはアンデッドの天敵である。", "You are a great bane of undeads."));
-        } else if (has_slay_undead_from_exorcism(player_ptr)) {
+        } else if (has_slay_undead_from_exorcism(creature)) {
             self_ptr->info_list.emplace_back(_("あなたはアンデッドに対して神聖なる力を発揮する。", "You strikes at undead with holy wrath."));
         }
         self_ptr->info_list.emplace_back(_("あなたはアンデッドのエネルギーを吸い取る。", "You drain energy from undead."));

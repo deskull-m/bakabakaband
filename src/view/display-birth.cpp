@@ -6,15 +6,15 @@
 #include "player-info/race-info.h"
 #include "player/player-personality.h"
 #include "player/player-status.h"
-#include "system/player-type-definition.h"
+#include "system/creature-entity.h"
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
 
 /*!
  * @brief オートロール中のステータスを表示する / Display stat values, subset of "put_stats()"
- * @details See 'display_player(p_ptr, )' for screen layout constraints.
+ * @details See 'display_player(creature, )' for screen layout constraints.
  */
-void birth_put_stats(PlayerType *player_ptr)
+void birth_put_stats(CreatureEntity &creature)
 {
     if (!autoroller) {
         return;
@@ -22,8 +22,8 @@ void birth_put_stats(PlayerType *player_ptr)
 
     const int col = 22;
     for (int i = 0; i < A_MAX; i++) {
-        int j = player_ptr->race->r_adj[i] + (*player_ptr->pclass_ref).c_adj[i] + (*player_ptr->personality).a_adj[i];
-        int m = adjust_stat(player_ptr->stat_max[i], j);
+        int j = creature.get_race_info()->r_adj[i] + (*creature.get_class_info()).c_adj[i] + (*creature.get_personality_info()).a_adj[i];
+        int m = adjust_stat(creature.get_stat_max(i), j);
         c_put_str(TERM_L_GREEN, cnv_stat(m), 3 + i, col + 24);
     }
 }

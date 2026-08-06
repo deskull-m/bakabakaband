@@ -3,7 +3,7 @@
 #include "core/show-file.h"
 #include "game-option/game-option-page.h"
 #include "main/sound-of-music.h"
-#include "system/player-type-definition.h"
+#include "system/creature-entity.h"
 #include "term/screen-processor.h"
 #include <string>
 
@@ -17,17 +17,17 @@ void birth_quit(void)
 
 /*!
  * @brief 指定されたヘルプファイルを表示する / Show specific help file
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param helpfile ファイル名
  */
-void show_help(PlayerType *player_ptr, std::string_view helpfile)
+void show_help(CreatureEntity &creature, std::string_view helpfile)
 {
     screen_save();
-    FileDisplayer(player_ptr->name).display(true, helpfile, 0, 0);
+    FileDisplayer(creature.name).display(true, helpfile, 0, 0);
     screen_load();
 }
 
-void birth_help_option(PlayerType *player_ptr, char c, BirthKind bk)
+void birth_help_option(CreatureEntity &creature, char c, BirthKind bk)
 {
     std::string help_file;
     switch (bk) {
@@ -55,10 +55,10 @@ void birth_help_option(PlayerType *player_ptr, char c, BirthKind bk)
     }
 
     if (c == '?') {
-        show_help(player_ptr, help_file);
+        show_help(creature, help_file);
     } else if (c == '=') {
         screen_save();
-        do_cmd_options_aux(player_ptr, GameOptionPage::BIRTH, _("初期オプション((*)はスコアに影響)", "Birth Options ((*)) affect score"));
+        do_cmd_options_aux(creature, GameOptionPage::BIRTH, _("初期オプション((*)はスコアに影響)", "Birth Options ((*)) affect score"));
         screen_load();
     } else if (c != '2' && c != '4' && c != '6' && c != '8') {
         bell();

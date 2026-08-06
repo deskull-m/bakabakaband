@@ -13,7 +13,7 @@ enum racial_level_check_result {
 };
 
 struct rpi_type;
-class PlayerType;
-PERCENTAGE racial_chance(PlayerType *player_ptr, rpi_type *rpi_ptr);
-racial_level_check_result check_racial_level(PlayerType *player_ptr, rpi_type *rpi_ptr);
-bool exe_racial_power(PlayerType *player_ptr, const int32_t command);
+class CreatureEntity;
+PERCENTAGE racial_chance(CreatureEntity &creature, rpi_type *rpi_ptr);
+racial_level_check_result check_racial_level(CreatureEntity &creature, rpi_type *rpi_ptr);
+bool exe_racial_power(CreatureEntity &creature, const int32_t command);

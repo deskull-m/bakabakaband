@@ -1,4 +1,4 @@
 #pragma once
 
-class PlayerType;
-void do_cmd_knowledge_inventory(PlayerType *player_ptr);
+class CreatureEntity;
+void do_cmd_knowledge_inventory(CreatureEntity &creature);

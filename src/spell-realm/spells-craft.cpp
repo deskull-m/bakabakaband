@@ -9,6 +9,8 @@
 #include "game-option/disturbance-options.h"
 #include "inventory/inventory-slot-types.h"
 #include "io/input-key-acceptor.h"
+#include "main/sound-definitions-table.h"
+#include "main/sound-of-music.h"
 #include "object-enchant/object-ego.h"
 #include "object/item-use-flags.h"
 #include "player-info/equipment-info.h"
@@ -17,8 +19,8 @@
 #include "racial/racial-android.h"
 #include "spell/spells-object.h"
 #include "sv-definition/sv-protector-types.h"
+#include "system/creature-entity.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
@@ -26,43 +28,49 @@
 
 /*!
  * @brief 一時的元素スレイの継続時間をセットする / Set a temporary elemental brand. Clear all other brands. Print status messages. -LM-
+ * @param creature クリーチャーエンティティの参照
  * @param attack_type スレイのタイプID
  * @param v 継続時間
  * @return ステータスに影響を及ぼす変化があった場合TRUEを返す。
  */
-bool set_ele_attack(PlayerType *player_ptr, uint32_t attack_type, TIME_EFFECT v)
+bool set_ele_attack(CreatureEntity &creature, uint32_t attack_type, TIME_EFFECT v)
 {
     v = (v > 10000) ? 10000 : (v < 0) ? 0
                                       : v;
 
-    if ((player_ptr->special_attack & (ATTACK_ACID)) && (attack_type != ATTACK_ACID)) {
-        player_ptr->special_attack &= ~(ATTACK_ACID);
+    if ((creature.has_special_attack(ATTACK_ACID)) && (attack_type != ATTACK_ACID)) {
+        creature.remove_special_attack(ATTACK_ACID);
         msg_print(_("酸で攻撃できなくなった。", "Your temporary acidic brand fades away."));
+        sound(SoundKind::BUFF_EXPIRE);
     }
 
-    if ((player_ptr->special_attack & (ATTACK_ELEC)) && (attack_type != ATTACK_ELEC)) {
-        player_ptr->special_attack &= ~(ATTACK_ELEC);
+    if ((creature.has_special_attack(ATTACK_ELEC)) && (attack_type != ATTACK_ELEC)) {
+        creature.remove_special_attack(ATTACK_ELEC);
         msg_print(_("電撃で攻撃できなくなった。", "Your temporary electrical brand fades away."));
+        sound(SoundKind::BUFF_EXPIRE);
     }
 
-    if ((player_ptr->special_attack & (ATTACK_FIRE)) && (attack_type != ATTACK_FIRE)) {
-        player_ptr->special_attack &= ~(ATTACK_FIRE);
+    if ((creature.has_special_attack(ATTACK_FIRE)) && (attack_type != ATTACK_FIRE)) {
+        creature.remove_special_attack(ATTACK_FIRE);
         msg_print(_("火炎で攻撃できなくなった。", "Your temporary fiery brand fades away."));
+        sound(SoundKind::BUFF_EXPIRE);
     }
 
-    if ((player_ptr->special_attack & (ATTACK_COLD)) && (attack_type != ATTACK_COLD)) {
-        player_ptr->special_attack &= ~(ATTACK_COLD);
+    if ((creature.has_special_attack(ATTACK_COLD)) && (attack_type != ATTACK_COLD)) {
+        creature.remove_special_attack(ATTACK_COLD);
         msg_print(_("冷気で攻撃できなくなった。", "Your temporary frost brand fades away."));
+        sound(SoundKind::BUFF_EXPIRE);
     }
 
-    if ((player_ptr->special_attack & (ATTACK_POIS)) && (attack_type != ATTACK_POIS)) {
-        player_ptr->special_attack &= ~(ATTACK_POIS);
+    if ((creature.has_special_attack(ATTACK_POIS)) && (attack_type != ATTACK_POIS)) {
+        creature.remove_special_attack(ATTACK_POIS);
         msg_print(_("毒で攻撃できなくなった。", "Your temporary poison brand fades away."));
+        sound(SoundKind::BUFF_EXPIRE);
     }
 
     if ((v) && (attack_type)) {
-        player_ptr->special_attack |= (attack_type);
-        player_ptr->ele_attack = v;
+        creature.add_special_attack(attack_type);
+        creature.set_timed_effect(CreatureTimedEffect::ELE_ATTACK, v);
         std::string element;
         switch (attack_type) {
         case ATTACK_ACID:
@@ -90,56 +98,62 @@ bool set_ele_attack(PlayerType *player_ptr, uint32_t attack_type, TIME_EFFECT v)
     }
 
     if (disturb_state || Travel::get_instance().is_ongoing()) {
-        disturb(player_ptr, false, false);
+        disturb(creature, false, false);
     }
 
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
     rfu.set_flag(StatusRecalculatingFlag::BONUS);
-    handle_stuff(player_ptr);
+    handle_stuff(creature);
 
     return true;
 }
 
 /*!
  * @brief 一時的元素免疫の継続時間をセットする / Set a temporary elemental brand.  Clear all other brands.  Print status messages. -LM-
+ * @param creature クリーチャーエンティティの参照
  * @param immune_type 免疫のタイプID
  * @param v 継続時間
  * @return ステータスに影響を及ぼす変化があった場合TRUEを返す。
  */
-bool set_ele_immune(PlayerType *player_ptr, uint32_t immune_type, TIME_EFFECT v)
+bool set_ele_immune(CreatureEntity &creature, uint32_t immune_type, TIME_EFFECT v)
 {
     v = (v > 10000) ? 10000 : (v < 0) ? 0
                                       : v;
 
-    if ((player_ptr->special_defense & (DEFENSE_ACID)) && (immune_type != DEFENSE_ACID)) {
-        player_ptr->special_defense &= ~(DEFENSE_ACID);
-        msg_print(_("酸の攻撃で傷つけられるようになった。。", "You are no longer immune to acid."));
+    if ((creature.has_special_defense(DEFENSE_ACID)) && (immune_type != DEFENSE_ACID)) {
+        creature.remove_special_defense(DEFENSE_ACID);
+        msg_print(_("酸の攻撃で傷つけられるようになった。", "You are no longer immune to acid."));
+        sound(SoundKind::BUFF_EXPIRE);
     }
 
-    if ((player_ptr->special_defense & (DEFENSE_ELEC)) && (immune_type != DEFENSE_ELEC)) {
-        player_ptr->special_defense &= ~(DEFENSE_ELEC);
-        msg_print(_("電撃の攻撃で傷つけられるようになった。。", "You are no longer immune to electricity."));
+    if ((creature.has_special_defense(DEFENSE_ELEC)) && (immune_type != DEFENSE_ELEC)) {
+        creature.remove_special_defense(DEFENSE_ELEC);
+        msg_print(_("電撃の攻撃で傷つけられるようになった。", "You are no longer immune to electricity."));
+        sound(SoundKind::BUFF_EXPIRE);
     }
 
-    if ((player_ptr->special_defense & (DEFENSE_FIRE)) && (immune_type != DEFENSE_FIRE)) {
-        player_ptr->special_defense &= ~(DEFENSE_FIRE);
-        msg_print(_("火炎の攻撃で傷つけられるようになった。。", "You are no longer immune to fire."));
+    if ((creature.has_special_defense(DEFENSE_FIRE)) && (immune_type != DEFENSE_FIRE)) {
+        creature.remove_special_defense(DEFENSE_FIRE);
+        msg_print(_("火炎の攻撃で傷つけられるようになった。", "You are no longer immune to fire."));
+        sound(SoundKind::BUFF_EXPIRE);
     }
 
-    if ((player_ptr->special_defense & (DEFENSE_COLD)) && (immune_type != DEFENSE_COLD)) {
-        player_ptr->special_defense &= ~(DEFENSE_COLD);
-        msg_print(_("冷気の攻撃で傷つけられるようになった。。", "You are no longer immune to cold."));
+    if ((creature.has_special_defense(DEFENSE_COLD)) && (immune_type != DEFENSE_COLD)) {
+        creature.remove_special_defense(DEFENSE_COLD);
+        msg_print(_("冷気の攻撃で傷つけられるようになった。", "You are no longer immune to cold."));
+        sound(SoundKind::BUFF_EXPIRE);
     }
 
-    if ((player_ptr->special_defense & (DEFENSE_POIS)) && (immune_type != DEFENSE_POIS)) {
-        player_ptr->special_defense &= ~(DEFENSE_POIS);
-        msg_print(_("毒の攻撃で傷つけられるようになった。。", "You are no longer immune to poison."));
+    if ((creature.has_special_defense(DEFENSE_POIS)) && (immune_type != DEFENSE_POIS)) {
+        creature.remove_special_defense(DEFENSE_POIS);
+        msg_print(_("毒の攻撃で傷つけられるようになった。", "You are no longer immune to poison."));
+        sound(SoundKind::BUFF_EXPIRE);
     }
 
     if ((v) && (immune_type)) {
-        player_ptr->special_defense |= (immune_type);
-        player_ptr->ele_immune = v;
+        creature.add_special_defense(immune_type);
+        creature.set_timed_effect(CreatureTimedEffect::ELE_IMMUNE, v);
         std::string element;
         switch (immune_type) {
         case DEFENSE_ACID:
@@ -166,13 +180,13 @@ bool set_ele_immune(PlayerType *player_ptr, uint32_t immune_type, TIME_EFFECT v)
     }
 
     if (disturb_state || Travel::get_instance().is_ongoing()) {
-        disturb(player_ptr, false, true);
+        disturb(creature, false, true);
     }
 
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
     rfu.set_flag(StatusRecalculatingFlag::BONUS);
-    handle_stuff(player_ptr);
+    handle_stuff(creature);
 
     return true;
 }
@@ -180,15 +194,15 @@ bool set_ele_immune(PlayerType *player_ptr, uint32_t immune_type, TIME_EFFECT v)
 /*
  * Choose a warrior-mage elemental attack. -LM-
  */
-bool choose_ele_attack(PlayerType *player_ptr, TIME_EFFECT turn)
+bool choose_ele_attack(CreatureEntity &creature, TIME_EFFECT turn)
 {
-    if (!has_melee_weapon(player_ptr, INVEN_MAIN_HAND) && !has_melee_weapon(player_ptr, INVEN_SUB_HAND)) {
+    if (!has_melee_weapon(creature, INVEN_MAIN_HAND) && !has_melee_weapon(creature, INVEN_SUB_HAND)) {
         msg_format(_("武器を持たないと魔法剣は使えない。", "You cannot use temporary branding with no weapon."));
         return false;
     }
 
     screen_save();
-    int num = (player_ptr->level - 20) / 5;
+    int num = (creature.get_level() - 20) / 5;
     c_prt(TERM_RED, _("        a) 焼棄", "        a) Fire Brand"), 2, 14);
 
     if (num >= 2) {
@@ -225,15 +239,15 @@ bool choose_ele_attack(PlayerType *player_ptr, TIME_EFFECT turn)
     char choice = inkey();
 
     if ((choice == 'a') || (choice == 'A')) {
-        set_ele_attack(player_ptr, ATTACK_FIRE, turn);
+        set_ele_attack(creature, ATTACK_FIRE, turn);
     } else if (((choice == 'b') || (choice == 'B')) && (num >= 2)) {
-        set_ele_attack(player_ptr, ATTACK_COLD, turn);
+        set_ele_attack(creature, ATTACK_COLD, turn);
     } else if (((choice == 'c') || (choice == 'C')) && (num >= 3)) {
-        set_ele_attack(player_ptr, ATTACK_POIS, turn);
+        set_ele_attack(creature, ATTACK_POIS, turn);
     } else if (((choice == 'd') || (choice == 'D')) && (num >= 4)) {
-        set_ele_attack(player_ptr, ATTACK_ACID, turn);
+        set_ele_attack(creature, ATTACK_ACID, turn);
     } else if (((choice == 'e') || (choice == 'E')) && (num >= 5)) {
-        set_ele_attack(player_ptr, ATTACK_ELEC, turn);
+        set_ele_attack(creature, ATTACK_ELEC, turn);
     } else {
         msg_print(_("魔法剣を使うのをやめた。", "You cancel the temporary branding."));
         screen_load();
@@ -246,7 +260,7 @@ bool choose_ele_attack(PlayerType *player_ptr, TIME_EFFECT turn)
 /*
  * Choose a elemental immune. -LM-
  */
-bool choose_ele_immune(PlayerType *player_ptr, TIME_EFFECT immune_turn)
+bool choose_ele_immune(CreatureEntity &creature, TIME_EFFECT immune_turn)
 {
     screen_save();
 
@@ -266,13 +280,13 @@ bool choose_ele_immune(PlayerType *player_ptr, TIME_EFFECT immune_turn)
     char choice = inkey();
 
     if ((choice == 'a') || (choice == 'A')) {
-        set_ele_immune(player_ptr, DEFENSE_FIRE, immune_turn);
+        set_ele_immune(creature, DEFENSE_FIRE, immune_turn);
     } else if ((choice == 'b') || (choice == 'B')) {
-        set_ele_immune(player_ptr, DEFENSE_COLD, immune_turn);
+        set_ele_immune(creature, DEFENSE_COLD, immune_turn);
     } else if ((choice == 'c') || (choice == 'C')) {
-        set_ele_immune(player_ptr, DEFENSE_ACID, immune_turn);
+        set_ele_immune(creature, DEFENSE_ACID, immune_turn);
     } else if ((choice == 'd') || (choice == 'D')) {
-        set_ele_immune(player_ptr, DEFENSE_ELEC, immune_turn);
+        set_ele_immune(creature, DEFENSE_ELEC, immune_turn);
     } else {
         msg_print(_("免疫を付けるのをやめた。", "You cancel the temporary immunity."));
         screen_load();
@@ -286,33 +300,33 @@ bool choose_ele_immune(PlayerType *player_ptr, TIME_EFFECT immune_turn)
 /*!
  * @brief 盾磨き処理 /
  * pulish shield
+ * @param creature クリーチャーエンティティの参照
  * @return ターン消費を要する処理を行ったならばTRUEを返す
  */
-bool pulish_shield(PlayerType *player_ptr)
+bool pulish_shield(CreatureEntity &creature)
 {
     constexpr auto q = _("どの盾を磨きますか？", "Polish which shield? ");
     constexpr auto s = _("磨く盾がありません。", "You have no shield to polish.");
     const auto options = USE_EQUIP | USE_INVEN | USE_FLOOR | IGNORE_BOTHHAND_SLOT;
-    short i_idx;
-    auto *o_ptr = choose_object(player_ptr, &i_idx, q, s, options, TvalItemTester(ItemKindType::SHIELD));
-    if (o_ptr == nullptr) {
+    const auto &[item, i_idx] = choose_item(creature, q, s, options, TvalItemTester(ItemKindType::SHIELD));
+    if (!item) {
         return false;
     }
 
-    const auto item_name = describe_flavor(player_ptr, *o_ptr, OD_OMIT_PREFIX | OD_NAME_ONLY);
-    auto is_pulish_successful = o_ptr->is_valid() && !o_ptr->is_fixed_or_random_artifact() && !o_ptr->is_ego();
-    is_pulish_successful &= !o_ptr->is_cursed();
-    is_pulish_successful &= (o_ptr->bi_key.sval() != SV_MIRROR_SHIELD);
+    const auto item_name = describe_flavor(creature, *item, OD_OMIT_PREFIX | OD_NAME_ONLY);
+    auto is_pulish_successful = item->is_valid() && !item->is_fixed_or_random_artifact() && !item->is_ego();
+    is_pulish_successful &= !item->is_cursed();
+    is_pulish_successful &= (item->bi_key.sval() != SV_MIRROR_SHIELD);
     if (is_pulish_successful) {
 #ifdef JP
         msg_format("%sは輝いた！", item_name.data());
 #else
-        msg_format("%s %s shine%s!", ((i_idx >= 0) ? "Your" : "The"), item_name.data(), ((o_ptr->number > 1) ? "" : "s"));
+        msg_format("%s %s shine%s!", ((i_idx >= 0) ? "Your" : "The"), item_name.data(), ((item->number > 1) ? "" : "s"));
 #endif
-        o_ptr->ego_idx = EgoType::REFLECTION;
-        enchant_equipment(o_ptr, randint0(3) + 4, ENCH_TOAC);
-        o_ptr->discount = 99;
-        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::ENCHANT, 2);
+        item->ego_idx = EgoType::REFLECTION;
+        enchant_equipment(*item, randint0(3) + 4, ENCH_TOAC);
+        item->discount = 99;
+        chg_virtue(creature, Virtue::ENCHANT, 2);
         return true;
     }
 
@@ -321,7 +335,7 @@ bool pulish_shield(PlayerType *player_ptr)
     }
 
     msg_print(_("失敗した。", "Failed."));
-    chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::ENCHANT, -2);
-    calc_android_exp(player_ptr);
+    chg_virtue(creature, Virtue::ENCHANT, -2);
+    calc_android_exp(creature);
     return false;
 }

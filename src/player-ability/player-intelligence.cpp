@@ -10,11 +10,11 @@
 #include "player/special-defense-types.h"
 #include "realm/realm-hex-numbers.h"
 #include "spell-realm/spells-hex.h"
-#include "system/player-type-definition.h"
+#include "system/creature-entity.h"
 #include "util/bit-flags-calculator.h"
 
-PlayerIntelligence::PlayerIntelligence(PlayerType *player_ptr)
-    : PlayerBasicStatistics(player_ptr)
+PlayerIntelligence::PlayerIntelligence(CreatureEntity &creature)
+    : PlayerBasicStatistics(creature)
 {
 }
 
@@ -40,7 +40,7 @@ int16_t PlayerIntelligence::stance_bonus()
 {
     int16_t result = 0;
 
-    PlayerClass pc(player_ptr);
+    CreatureClass pc(this->creature);
     if (pc.samurai_stance_is(SamuraiStanceType::KOUKIJIN)) {
         result += 5;
     }
@@ -65,12 +65,12 @@ int16_t PlayerIntelligence::stance_bonus()
 int16_t PlayerIntelligence::mutation_bonus()
 {
     int16_t result = 0;
-    if (this->player_ptr->muta.any()) {
-        if (this->player_ptr->muta.has(PlayerMutationType::HYPER_INT)) {
+    if (this->creature.get_mutations().any()) {
+        if (this->creature.get_mutations().has(PlayerMutationType::HYPER_INT)) {
             result += 4;
         }
 
-        if (this->player_ptr->muta.has(PlayerMutationType::MORONIC)) {
+        if (this->creature.get_mutations().has(PlayerMutationType::MORONIC)) {
             result -= 4;
         }
     }

@@ -16,18 +16,17 @@
 #include "player-status/player-energy.h"
 #include "status/experience.h"
 #include "sv-definition/sv-wand-types.h"
+#include "system/creature-entity.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "target/target-getter.h"
 #include "term/screen-processor.h"
-#include "timed-effect/timed-effects.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
 #include "view/object-describer.h"
 
-ObjectZapWandEntity::ObjectZapWandEntity(PlayerType *player_ptr)
-    : player_ptr(player_ptr)
+ObjectZapWandEntity::ObjectZapWandEntity(CreatureEntity &creature)
+    : creature(creature)
 {
 }
 
@@ -38,36 +37,36 @@ ObjectZapWandEntity::ObjectZapWandEntity(PlayerType *player_ptr)
 void ObjectZapWandEntity::execute(INVENTORY_IDX i_idx)
 {
     auto old_target_pet = target_pet;
-    auto *o_ptr = ref_item(this->player_ptr, i_idx);
-    if ((i_idx < 0) && (o_ptr->number > 1)) {
+    auto item = ref_item(this->creature, i_idx);
+    if ((i_idx < 0) && (item->number > 1)) {
         msg_print(_("まずは魔法棒を拾わなければ。", "You must first pick up the wands."));
         return;
     }
 
-    const auto sval = o_ptr->bi_key.sval();
-    if (o_ptr->is_aware() && (sval == SV_WAND_HEAL_MONSTER || sval == SV_WAND_HASTE_MONSTER)) {
+    const auto sval = item->bi_key.sval();
+    if (item->is_aware() && (sval == SV_WAND_HEAL_MONSTER || sval == SV_WAND_HASTE_MONSTER)) {
         target_pet = true;
     }
 
-    const auto dir = get_aim_dir(this->player_ptr);
+    const auto dir = get_aim_dir(this->creature);
     if (!dir) {
         target_pet = old_target_pet;
         return;
     }
 
     target_pet = old_target_pet;
-    PlayerEnergy(this->player_ptr).set_player_turn_energy(100);
+    PlayerEnergy(this->creature).set_player_turn_energy(100);
     if (!this->check_can_zap()) {
         return;
     }
 
-    auto item_level = o_ptr->get_baseitem_level();
+    auto item_level = item->get_baseitem_level();
     if (item_level > 50) {
         item_level = 50 + (item_level - 50) / 2;
     }
 
-    auto chance = this->player_ptr->skill_dev;
-    if (this->player_ptr->effects()->confusion().is_confused()) {
+    auto chance = this->creature.get_skill_device();
+    if (this->creature.is_confused()) {
         chance = chance / 2;
     }
 
@@ -76,7 +75,7 @@ void ObjectZapWandEntity::execute(INVENTORY_IDX i_idx)
         chance = USE_DEVICE;
     }
 
-    if ((chance < USE_DEVICE) || (randint1(chance) < USE_DEVICE) || PlayerClass(this->player_ptr).equals(PlayerClassType::BERSERKER)) {
+    if ((chance < USE_DEVICE) || (randint1(chance) < USE_DEVICE) || CreatureClass(this->creature).equals(PlayerClassType::BERSERKER)) {
         if (flush_failure) {
             flush();
         }
@@ -87,13 +86,13 @@ void ObjectZapWandEntity::execute(INVENTORY_IDX i_idx)
     }
 
     auto &rfu = RedrawingFlagsUpdater::get_instance();
-    if (o_ptr->pval <= 0) {
+    if (item->pval <= 0) {
         if (flush_failure) {
             flush();
         }
 
         msg_print(_("この魔法棒にはもう魔力が残っていない。", "The wand has no charges left."));
-        o_ptr->ident |= IDENT_EMPTY;
+        item->ident.set(IdentificationFlag::EMPTY);
         static constexpr auto flags = {
             StatusRecalculatingFlag::COMBINATION,
             StatusRecalculatingFlag::REORDER,
@@ -104,7 +103,7 @@ void ObjectZapWandEntity::execute(INVENTORY_IDX i_idx)
     }
 
     sound(SoundKind::ZAP);
-    auto ident = wand_effect(this->player_ptr, *sval, dir, false, false);
+    auto ident = wand_effect(this->creature, *sval, dir, false, false);
     using Srf = StatusRecalculatingFlag;
     EnumClassFlagGroup<Srf> flags_srf = { Srf::COMBINATION, Srf::REORDER };
     if (rfu.has(Srf::AUTO_DESTRUCTION)) {
@@ -112,41 +111,34 @@ void ObjectZapWandEntity::execute(INVENTORY_IDX i_idx)
     }
 
     rfu.reset_flags(flags_srf);
-    if (!o_ptr->is_aware()) {
-        chg_virtue(static_cast<CreatureEntity &>(*this->player_ptr), Virtue::PATIENCE, -1);
-        chg_virtue(static_cast<CreatureEntity &>(*this->player_ptr), Virtue::CHANCE, 1);
-        chg_virtue(static_cast<CreatureEntity &>(*this->player_ptr), Virtue::KNOWLEDGE, -1);
+    if (!item->is_aware()) {
+        chg_virtue(this->creature, Virtue::PATIENCE, -1);
+        chg_virtue(this->creature, Virtue::CHANCE, 1);
+        chg_virtue(this->creature, Virtue::KNOWLEDGE, -1);
     }
 
-    o_ptr->mark_as_tried();
-    if (ident && !o_ptr->is_aware()) {
-        object_aware(this->player_ptr, *o_ptr);
-        gain_exp(static_cast<CreatureEntity &>(*this->player_ptr), (item_level + (this->player_ptr->level >> 1)) / this->player_ptr->level);
+    item->mark_as_tried();
+    if (ident && !item->is_aware()) {
+        object_aware(this->creature, *item);
+        gain_exp(this->creature, (item_level + (this->creature.get_level() >> 1)) / this->creature.get_level());
     }
 
-    static constexpr auto flags_swrf = {
-        SubWindowRedrawingFlag::INVENTORY,
-        SubWindowRedrawingFlag::EQUIPMENT,
-        SubWindowRedrawingFlag::PLAYER,
-        SubWindowRedrawingFlag::FLOOR_ITEMS,
-        SubWindowRedrawingFlag::FOUND_ITEMS,
-    };
-    rfu.set_flags(flags_swrf);
+    rfu.set_item_related_sub_window_flags();
     rfu.set_flags(flags_srf);
-    o_ptr->pval--;
+    item->pval--;
     if (i_idx >= 0) {
-        inven_item_charges(*this->player_ptr->inventory[i_idx]);
+        inven_item_charges(*this->creature.inventory[i_idx]);
         return;
     }
 
-    floor_item_charges(*this->player_ptr->current_floor_ptr, 0 - i_idx);
+    floor_item_charges(*this->creature.get_floor(), 0 - i_idx);
 }
 
 bool ObjectZapWandEntity::check_can_zap() const
 {
-    if (cmd_limit_time_walk(this->player_ptr)) {
+    if (cmd_limit_time_walk(this->creature)) {
         return false;
     }
 
-    return ItemUseChecker(this->player_ptr).check_stun(_("朦朧としていて魔法棒を振れなかった！", "You are too stunned to zap it!"));
+    return ItemUseChecker(this->creature).check_stun(_("朦朧としていて魔法棒を振れなかった！", "You are too stunned to zap it!"));
 }

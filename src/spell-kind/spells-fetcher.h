@@ -2,7 +2,7 @@
 
 #include "system/angband.h"
 
-class PlayerType;
+class CreatureEntity;
 class Direction;
-void fetch_item(PlayerType *player_ptr, const Direction &dir, WEIGHT wgt, bool require_los);
-bool fetch_monster(PlayerType *player_ptr);
+void fetch_item(CreatureEntity &creature, const Direction &dir, WEIGHT wgt, bool require_los);
+bool fetch_monster(CreatureEntity &creature);

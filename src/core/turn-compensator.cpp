@@ -4,21 +4,20 @@
 #include "store/store-owners.h"
 #include "store/store-util.h"
 #include "store/store.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
-#include "system/floor/town-info.h"
 #include "system/floor/town-list.h"
 #include "system/inner-game-data.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "world/world.h"
 
 /*!
  * @brief ターンのオーバーフローに対する対処
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @details ターン及びターンを記録する変数をターンの限界の1日前まで巻き戻す.
  * @return 修正をかけた後のゲームターン
  */
-void prevent_turn_overflow(PlayerType *player_ptr)
+void prevent_turn_overflow(CreatureEntity &creature)
 {
     const auto &igd = InnerGameData::get_instance();
     const auto game_turn_limit = igd.get_game_turn_limit();
@@ -35,7 +34,7 @@ void prevent_turn_overflow(PlayerType *player_ptr)
     } else {
         world.game_turn = 1;
     }
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *creature.get_floor();
     if (floor.generated_turn > rollback_turns) {
         floor.generated_turn -= rollback_turns;
     } else {
@@ -54,9 +53,10 @@ void prevent_turn_overflow(PlayerType *player_ptr)
         df.set_turns(1);
     }
 
-    for (size_t i = 1; i < towns_info.size(); i++) {
+    auto &towns = TownList::get_instance();
+    for (size_t i = 1; i < towns.size(); i++) {
         for (auto sst : STORE_SALE_TYPE_LIST) {
-            auto &store = towns_info[i].get_store(sst);
+            auto &store = towns.get_town(i).get_store(sst);
             if (store.last_visit > -10L * TURNS_PER_TICK * STORE_TICKS) {
                 store.last_visit -= rollback_turns;
                 if (store.last_visit < -10L * TURNS_PER_TICK * STORE_TICKS) {

@@ -36,13 +36,11 @@
 #include "spell-realm/spells-hex.h"
 #include "spell-realm/spells-song.h"
 #include "sv-definition/sv-weapon-types.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
-#include "system/player-type-definition.h"
-#include "timed-effect/timed-effects.h"
 #include "util/bit-flags-calculator.h"
 #include "util/string-processor.h"
 
@@ -54,19 +52,19 @@ namespace {
  * @param tr_flag 特性フラグ
  * @return tr_flag が得られる要因となるフラグの集合
  */
-BIT_FLAGS common_cause_flags(PlayerType *player_ptr, tr_type tr_flag)
+BIT_FLAGS common_cause_flags(CreatureEntity &creature, tr_type tr_flag)
 {
-    BIT_FLAGS result = check_equipment_flags(player_ptr, tr_flag);
+    BIT_FLAGS result = check_equipment_flags(creature, tr_flag);
 
-    if (PlayerRace(player_ptr).tr_flags().has(tr_flag)) {
+    if (CreatureRace(&creature).tr_flags().has(tr_flag)) {
         set_bits(result, FLAG_CAUSE_RACE);
     }
 
-    if (PlayerClass(player_ptr).tr_flags().has(tr_flag)) {
+    if (CreatureClass(creature).tr_flags().has(tr_flag)) {
         set_bits(result, FLAG_CAUSE_CLASS);
     }
 
-    if (PlayerClass(player_ptr).stance_tr_flags().has(tr_flag)) {
+    if (CreatureClass(creature).stance_tr_flags().has(tr_flag)) {
         set_bits(result, FLAG_CAUSE_STANCE);
     }
 
@@ -105,6 +103,8 @@ BIT_FLAGS convert_inventory_slot_type_to_flag_cause(inventory_slot_type inventor
         return FLAG_CAUSE_INVEN_ARMS;
     case INVEN_FEET:
         return FLAG_CAUSE_INVEN_FEET;
+    case INVEN_ASSHOLE:
+        return FLAG_CAUSE_INVEN_ASSHOLE;
 
     default:
         return 0;
@@ -114,12 +114,12 @@ BIT_FLAGS convert_inventory_slot_type_to_flag_cause(inventory_slot_type inventor
 /*!
  * @brief 装備による所定の特性フラグを得ているかを一括して取得する関数。
  */
-BIT_FLAGS check_equipment_flags(PlayerType *player_ptr, tr_type tr_flag)
+BIT_FLAGS check_equipment_flags(CreatureEntity &creature, tr_type tr_flag)
 {
     ItemEntity *o_ptr;
     BIT_FLAGS result = 0L;
-    for (int i = INVEN_MAIN_HAND; i < INVEN_TOTAL; i++) {
-        o_ptr = player_ptr->inventory[i].get();
+    for (const auto i_idx : INVEN_WIELDING_SLOTS) {
+        o_ptr = creature.inventory[i_idx].get();
         if (!o_ptr->is_valid()) {
             continue;
         }
@@ -127,61 +127,71 @@ BIT_FLAGS check_equipment_flags(PlayerType *player_ptr, tr_type tr_flag)
         const auto flags = o_ptr->get_flags();
 
         if (flags.has(tr_flag)) {
-            set_bits(result, convert_inventory_slot_type_to_flag_cause(i2enum<inventory_slot_type>(i)));
+            set_bits(result, convert_inventory_slot_type_to_flag_cause(i_idx));
+        }
+    }
+
+    // [Phase 2.6] 拡張装備スロット (モンスターのみ) も集計対象に含める
+    for (const auto &item_ptr : creature.get_extended_inventory()) {
+        if (!item_ptr || !item_ptr->is_valid()) {
+            continue;
+        }
+        if (item_ptr->get_flags().has(tr_flag)) {
+            set_bits(result, FLAG_CAUSE_INVEN_EXTENDED);
         }
     }
     return result;
 }
 
-BIT_FLAGS player_flags_brand_pois(PlayerType *player_ptr)
+BIT_FLAGS player_flags_brand_pois(CreatureEntity &creature)
 {
-    BIT_FLAGS result = common_cause_flags(player_ptr, TR_BRAND_POIS);
+    BIT_FLAGS result = common_cause_flags(creature, TR_BRAND_POIS);
 
-    if (player_ptr->special_attack & ATTACK_POIS) {
+    if (creature.has_special_attack(ATTACK_POIS)) {
         set_bits(result, FLAG_CAUSE_MAGIC_TIME_EFFECT);
     }
 
     return result;
 }
 
-BIT_FLAGS player_flags_brand_acid(PlayerType *player_ptr)
+BIT_FLAGS player_flags_brand_acid(CreatureEntity &creature)
 {
-    BIT_FLAGS result = common_cause_flags(player_ptr, TR_BRAND_ACID);
+    BIT_FLAGS result = common_cause_flags(creature, TR_BRAND_ACID);
 
-    if (player_ptr->special_attack & ATTACK_ACID) {
+    if (creature.has_special_attack(ATTACK_ACID)) {
         set_bits(result, FLAG_CAUSE_MAGIC_TIME_EFFECT);
     }
 
     return result;
 }
 
-BIT_FLAGS player_flags_brand_elec(PlayerType *player_ptr)
+BIT_FLAGS player_flags_brand_elec(CreatureEntity &creature)
 {
-    BIT_FLAGS result = common_cause_flags(player_ptr, TR_BRAND_ELEC);
+    BIT_FLAGS result = common_cause_flags(creature, TR_BRAND_ELEC);
 
-    if (player_ptr->special_attack & ATTACK_ELEC) {
+    if (creature.has_special_attack(ATTACK_ELEC)) {
         set_bits(result, FLAG_CAUSE_MAGIC_TIME_EFFECT);
     }
 
     return result;
 }
 
-BIT_FLAGS player_flags_brand_fire(PlayerType *player_ptr)
+BIT_FLAGS player_flags_brand_fire(CreatureEntity &creature)
 {
-    BIT_FLAGS result = common_cause_flags(player_ptr, TR_BRAND_FIRE);
+    BIT_FLAGS result = common_cause_flags(creature, TR_BRAND_FIRE);
 
-    if (player_ptr->special_attack & ATTACK_FIRE) {
+    if (creature.has_special_attack(ATTACK_FIRE)) {
         set_bits(result, FLAG_CAUSE_MAGIC_TIME_EFFECT);
     }
 
     return result;
 }
 
-BIT_FLAGS player_flags_brand_cold(PlayerType *player_ptr)
+BIT_FLAGS player_flags_brand_cold(CreatureEntity &creature)
 {
-    BIT_FLAGS result = common_cause_flags(player_ptr, TR_BRAND_COLD);
+    BIT_FLAGS result = common_cause_flags(creature, TR_BRAND_COLD);
 
-    if (player_ptr->special_attack & ATTACK_COLD) {
+    if (creature.has_special_attack(ATTACK_COLD)) {
         set_bits(result, FLAG_CAUSE_MAGIC_TIME_EFFECT);
     }
 
@@ -190,38 +200,38 @@ BIT_FLAGS player_flags_brand_cold(PlayerType *player_ptr)
 
 /*!
  * @brief プレイヤーの所持するフラグのうち、tr_flagに対応するものを返す
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param tr_flag 要求する装備フラグ
  */
-BIT_FLAGS get_player_flags(PlayerType *player_ptr, tr_type tr_flag)
+BIT_FLAGS get_player_flags(CreatureEntity &creature, tr_type tr_flag)
 {
     switch (tr_flag) {
     case TR_STR:
-        return PlayerStrength(player_ptr).get_all_flags();
+        return PlayerStrength(creature).get_all_flags();
     case TR_INT:
-        return PlayerIntelligence(player_ptr).get_all_flags();
+        return PlayerIntelligence(creature).get_all_flags();
     case TR_WIS:
-        return PlayerWisdom(player_ptr).get_all_flags();
+        return PlayerWisdom(creature).get_all_flags();
     case TR_DEX:
-        return PlayerDexterity(player_ptr).get_all_flags();
+        return PlayerDexterity(creature).get_all_flags();
     case TR_CON:
-        return PlayerConstitution(player_ptr).get_all_flags();
+        return PlayerConstitution(creature).get_all_flags();
     case TR_CHR:
-        return PlayerCharisma(player_ptr).get_all_flags();
+        return PlayerCharisma(creature).get_all_flags();
     case TR_MAGIC_MASTERY:
-        return has_magic_mastery(player_ptr);
+        return has_magic_mastery(creature);
     case TR_FORCE_WEAPON:
-        return check_equipment_flags(player_ptr, tr_flag);
+        return check_equipment_flags(creature, tr_flag);
     case TR_STEALTH:
-        return PlayerStealth(player_ptr).get_all_flags();
+        return PlayerStealth(creature).get_all_flags();
     case TR_SEARCH:
         return 0;
     case TR_INFRA:
-        return PlayerInfravision(player_ptr).get_all_flags();
+        return PlayerInfravision(creature).get_all_flags();
     case TR_TUNNEL:
         return 0;
     case TR_SPEED:
-        return PlayerSpeed(player_ptr).get_all_flags();
+        return PlayerSpeed(creature).get_all_flags();
     case TR_BLOWS:
         return 0;
     case TR_CHAOTIC:
@@ -240,127 +250,127 @@ BIT_FLAGS get_player_flags(PlayerType *player_ptr, tr_type tr_flag)
     case TR_KILL_MALE:
     case TR_KILL_FEMALE:
     case TR_VORPAL:
-        return check_equipment_flags(player_ptr, tr_flag);
+        return check_equipment_flags(creature, tr_flag);
     case TR_EARTHQUAKE:
-        return has_earthquake(player_ptr);
+        return has_earthquake(creature);
     case TR_BRAND_POIS:
-        return player_flags_brand_pois(player_ptr);
+        return player_flags_brand_pois(creature);
     case TR_BRAND_ACID:
-        return player_flags_brand_acid(player_ptr);
+        return player_flags_brand_acid(creature);
     case TR_BRAND_ELEC:
-        return player_flags_brand_elec(player_ptr);
+        return player_flags_brand_elec(creature);
     case TR_BRAND_FIRE:
-        return player_flags_brand_fire(player_ptr);
+        return player_flags_brand_fire(creature);
     case TR_BRAND_COLD:
-        return player_flags_brand_cold(player_ptr);
+        return player_flags_brand_cold(creature);
 
     case TR_SUST_STR:
-        return has_sustain_str(player_ptr);
+        return has_sustain_str(creature);
     case TR_SUST_INT:
-        return has_sustain_int(player_ptr);
+        return has_sustain_int(creature);
     case TR_SUST_WIS:
-        return has_sustain_wis(player_ptr);
+        return has_sustain_wis(creature);
     case TR_SUST_DEX:
-        return has_sustain_dex(player_ptr);
+        return has_sustain_dex(creature);
     case TR_SUST_CON:
-        return has_sustain_con(player_ptr);
+        return has_sustain_con(creature);
     case TR_SUST_CHR:
-        return has_sustain_chr(player_ptr);
+        return has_sustain_chr(creature);
     case TR_RIDING:
-        return check_equipment_flags(player_ptr, tr_flag);
+        return check_equipment_flags(creature, tr_flag);
     case TR_EASY_SPELL:
-        return has_easy_spell(player_ptr);
+        return has_easy_spell(creature);
     case TR_IM_ACID:
-        return has_immune_acid(player_ptr);
+        return has_immune_acid(creature);
     case TR_IM_ELEC:
-        return has_immune_elec(player_ptr);
+        return has_immune_elec(creature);
     case TR_IM_FIRE:
-        return has_immune_fire(player_ptr);
+        return has_immune_fire(creature);
     case TR_IM_COLD:
-        return has_immune_cold(player_ptr);
+        return has_immune_cold(creature);
     case TR_THROW:
-        return check_equipment_flags(player_ptr, tr_flag);
+        return check_equipment_flags(creature, tr_flag);
     case TR_REFLECT:
-        return has_reflect(player_ptr);
+        return has_reflect(creature);
     case TR_FREE_ACT:
-        return has_free_act(player_ptr);
+        return has_free_act(creature);
     case TR_HOLD_EXP:
-        return has_hold_exp(player_ptr);
+        return has_hold_exp(creature);
     case TR_RES_ACID:
-        return has_resist_acid(player_ptr);
+        return has_resist_acid(creature);
     case TR_RES_ELEC:
-        return has_resist_elec(player_ptr);
+        return has_resist_elec(creature);
     case TR_RES_FIRE:
-        return has_resist_fire(player_ptr);
+        return has_resist_fire(creature);
     case TR_RES_COLD:
-        return has_resist_cold(player_ptr);
+        return has_resist_cold(creature);
     case TR_RES_POIS:
-        return has_resist_pois(player_ptr);
+        return has_resist_pois(creature);
     case TR_RES_FEAR:
-        return has_resist_fear(player_ptr);
+        return has_resist_fear(creature);
     case TR_RES_LITE:
-        return has_resist_lite(player_ptr);
+        return has_resist_lite(creature);
     case TR_RES_DARK:
-        return has_resist_dark(player_ptr);
+        return has_resist_dark(creature);
     case TR_RES_BLIND:
-        return has_resist_blind(player_ptr);
+        return has_resist_blind(creature);
     case TR_RES_CONF:
-        return has_resist_conf(player_ptr);
+        return has_resist_conf(creature);
     case TR_RES_SOUND:
-        return has_resist_sound(player_ptr);
+        return has_resist_sound(creature);
     case TR_RES_SHARDS:
-        return has_resist_shard(player_ptr);
+        return has_resist_shard(creature);
     case TR_RES_NETHER:
-        return has_resist_neth(player_ptr);
+        return has_resist_neth(creature);
     case TR_RES_NEXUS:
-        return has_resist_nexus(player_ptr);
+        return has_resist_nexus(creature);
     case TR_RES_CHAOS:
-        return has_resist_chaos(player_ptr);
+        return has_resist_chaos(creature);
     case TR_RES_DISEN:
-        return has_resist_disen(player_ptr);
+        return has_resist_disen(creature);
     case TR_RES_TIME:
-        return has_resist_time(player_ptr);
+        return has_resist_time(creature);
     case TR_RES_WATER:
-        return has_resist_water(player_ptr);
+        return has_resist_water(creature);
     case TR_RES_CURSE:
-        return has_resist_curse(player_ptr);
+        return has_resist_curse(creature);
 
     case TR_SH_FIRE:
-        return has_sh_fire(player_ptr);
+        return has_sh_fire(creature);
     case TR_SH_ELEC:
-        return has_sh_elec(player_ptr);
+        return has_sh_elec(creature);
     case TR_SLAY_HUMAN:
-        return check_equipment_flags(player_ptr, tr_flag);
+        return check_equipment_flags(creature, tr_flag);
     case TR_SH_COLD:
-        return has_sh_cold(player_ptr);
+        return has_sh_cold(creature);
     case TR_NO_TELE:
-        return has_anti_tele(player_ptr);
+        return has_anti_tele(creature);
     case TR_NO_MAGIC:
-        return has_anti_magic(player_ptr);
+        return has_anti_magic(creature);
     case TR_DEC_MANA:
-        return has_dec_mana(player_ptr);
+        return has_dec_mana(creature);
     case TR_TY_CURSE:
-        return check_equipment_flags(player_ptr, tr_flag);
+        return check_equipment_flags(creature, tr_flag);
     case TR_WARNING:
-        return has_warning(player_ptr);
+        return has_warning(creature);
     case TR_HIDE_TYPE:
     case TR_SHOW_MODS:
     case TR_SLAY_GOOD:
-        return check_equipment_flags(player_ptr, tr_flag);
+        return check_equipment_flags(creature, tr_flag);
     case TR_LEVITATION:
-        return has_levitation(player_ptr);
+        return has_levitation(creature);
     case TR_LITE_1:
-        return has_lite(player_ptr);
+        return has_lite(creature);
     case TR_SEE_INVIS:
-        return has_see_inv(player_ptr);
+        return has_see_inv(creature);
     case TR_TELEPATHY:
-        return has_esp_telepathy(player_ptr);
+        return has_esp_telepathy(creature);
     case TR_SLOW_DIGEST:
-        return has_slow_digest(player_ptr);
+        return has_slow_digest(creature);
     case TR_REGEN:
-        return has_regenerate(player_ptr);
+        return has_regenerate(creature);
     case TR_XTRA_MIGHT:
-        return has_xtra_might(player_ptr);
+        return has_xtra_might(creature);
     case TR_XTRA_SHOTS:
     case TR_IGNORE_ACID:
     case TR_IGNORE_ELEC:
@@ -369,12 +379,12 @@ BIT_FLAGS get_player_flags(PlayerType *player_ptr, tr_type tr_flag)
     case TR_ACTIVATE:
     case TR_DRAIN_EXP:
     case TR_TELEPORT:
-        return check_equipment_flags(player_ptr, tr_flag);
+        return check_equipment_flags(creature, tr_flag);
     case TR_AGGRAVATE:
     case TR_NASTY_AGGRAVATE:
         return 0;
     case TR_BLESSED:
-        return has_bless_blade(player_ptr);
+        return has_bless_blade(creature);
     case TR_XXX_94:
     case TR_KILL_GOOD:
     case TR_KILL_ANIMAL:
@@ -385,35 +395,35 @@ BIT_FLAGS get_player_flags(PlayerType *player_ptr, tr_type tr_flag)
     case TR_KILL_TROLL:
     case TR_KILL_GIANT:
     case TR_KILL_HUMAN:
-        return check_equipment_flags(player_ptr, tr_flag);
+        return check_equipment_flags(creature, tr_flag);
     case TR_ESP_ANIMAL:
-        return has_esp_animal(player_ptr);
+        return has_esp_animal(creature);
     case TR_ESP_NASTY:
-        return has_esp_nasty(player_ptr);
+        return has_esp_nasty(creature);
     case TR_ESP_HOMO:
-        return has_esp_homo(player_ptr);
+        return has_esp_homo(creature);
     case TR_ESP_UNDEAD:
-        return has_esp_undead(player_ptr);
+        return has_esp_undead(creature);
     case TR_ESP_DEMON:
-        return has_esp_demon(player_ptr);
+        return has_esp_demon(creature);
     case TR_ESP_ORC:
-        return has_esp_orc(player_ptr);
+        return has_esp_orc(creature);
     case TR_ESP_TROLL:
-        return has_esp_troll(player_ptr);
+        return has_esp_troll(creature);
     case TR_ESP_GIANT:
-        return has_esp_giant(player_ptr);
+        return has_esp_giant(creature);
     case TR_ESP_DRAGON:
-        return has_esp_dragon(player_ptr);
+        return has_esp_dragon(creature);
     case TR_ESP_HUMAN:
-        return has_esp_human(player_ptr);
+        return has_esp_human(creature);
     case TR_ESP_EVIL:
-        return has_esp_evil(player_ptr);
+        return has_esp_evil(creature);
     case TR_ESP_GOOD:
-        return has_esp_good(player_ptr);
+        return has_esp_good(creature);
     case TR_ESP_NONLIVING:
-        return has_esp_nonliving(player_ptr);
+        return has_esp_nonliving(creature);
     case TR_ESP_UNIQUE:
-        return has_esp_unique(player_ptr);
+        return has_esp_unique(creature);
     case TR_FULL_NAME:
     case TR_FIXED_FLAVOR:
     case TR_ADD_L_CURSE:
@@ -433,43 +443,43 @@ BIT_FLAGS get_player_flags(PlayerType *player_ptr, tr_type tr_flag)
     case TR_COWARDICE:
     case TR_LOW_MELEE:
     case TR_LOW_AC:
-        return check_equipment_flags(player_ptr, tr_flag);
+        return check_equipment_flags(creature, tr_flag);
     case TR_HARD_SPELL:
-        return has_hard_spell(player_ptr);
+        return has_hard_spell(creature);
     case TR_FAST_DIGEST:
     case TR_SLOW_REGEN:
-        return check_equipment_flags(player_ptr, tr_flag);
+        return check_equipment_flags(creature, tr_flag);
     case TR_MIGHTY_THROW:
-        return has_mighty_throw(player_ptr);
+        return has_mighty_throw(creature);
     case TR_EASY2_WEAPON:
-        return has_easy2_weapon(player_ptr);
+        return has_easy2_weapon(creature);
     case TR_DOWN_SAVING:
-        return has_down_saving(player_ptr);
+        return has_down_saving(creature);
     case TR_NO_AC:
-        return has_no_ac(player_ptr);
+        return has_no_ac(creature);
     case TR_XXX_142:
-        return check_equipment_flags(player_ptr, tr_flag);
+        return check_equipment_flags(creature, tr_flag);
     case TR_INVULN_ARROW:
-        return has_invuln_arrow(player_ptr);
+        return has_invuln_arrow(creature);
     case TR_DARK_SOURCE:
     case TR_SUPPORTIVE:
     case TR_BERS_RAGE:
     case TR_BRAND_MAGIC:
-        return check_equipment_flags(player_ptr, tr_flag);
+        return check_equipment_flags(creature, tr_flag);
     case TR_IMPACT:
-        return has_impact(player_ptr);
+        return has_impact(creature);
     case TR_VUL_ACID:
-        return has_vuln_acid(player_ptr);
+        return has_vuln_acid(creature);
     case TR_VUL_COLD:
-        return has_vuln_cold(player_ptr);
+        return has_vuln_cold(creature);
     case TR_VUL_ELEC:
-        return has_vuln_elec(player_ptr);
+        return has_vuln_elec(creature);
     case TR_VUL_FIRE:
-        return has_vuln_fire(player_ptr);
+        return has_vuln_fire(creature);
     case TR_VUL_LITE:
-        return has_vuln_lite(player_ptr);
+        return has_vuln_lite(creature);
     case TR_IM_DARK:
-        return has_immune_dark(player_ptr);
+        return has_immune_dark(creature);
     case TR_NASTY:
     case TR_INDESTRUCTIBLE:
     case TR_NEVER_MOVE:
@@ -481,14 +491,14 @@ BIT_FLAGS get_player_flags(PlayerType *player_ptr, tr_type tr_flag)
     case TR_WORLD_END:
     case TR_PERSISTENT_CURSE:
     case TR_MEGATON_COIN:
-        return check_equipment_flags(player_ptr, tr_flag);
+        return check_equipment_flags(creature, tr_flag);
     case TR_VUL_CURSE:
-        return has_vuln_curse(player_ptr);
+        return has_vuln_curse(creature);
     case TR_SUSHI:
     case TR_STANDARDIZED:
         break;
     case TR_IM_LITE:
-        return has_immune_lite(player_ptr);
+        return has_immune_lite(creature);
 
     case TR_FLAG_MAX:
         break;
@@ -499,62 +509,62 @@ BIT_FLAGS get_player_flags(PlayerType *player_ptr, tr_type tr_flag)
 /*!
  * @brief プレイヤーが壁破壊進行を持っているかを返す。
  */
-bool has_kill_wall(PlayerType *player_ptr)
+bool has_kill_wall(CreatureEntity &creature)
 {
-    if (player_ptr->mimic_form == MimicKindType::DEMON_LORD || music_singing(player_ptr, MUSIC_WALL)) {
+    if (creature.get_mimic_form() == MimicKindType::DEMON_LORD || music_singing(creature, MUSIC_WALL)) {
         return true;
     }
 
-    if (player_ptr->riding == 0) {
+    if (creature.get_riding() == 0) {
         return false;
     }
 
-    const auto &riding_monster = player_ptr->current_floor_ptr->m_list[player_ptr->riding];
+    const auto &riding_monster = creature.get_floor()->get_monster(creature.get_riding());
     const auto &riding_monrace = riding_monster.get_monrace();
     return riding_monrace.feature_flags.has(MonsterFeatureType::KILL_WALL);
 }
 
 /*!
  * @brief プレイヤーが壁通過を持っているかを返す。
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return 持っていたらTRUE
  * @details 騎乗状態でなければ、時限または種族特性で壁抜けできるか否か.
  * 騎乗状態ならば、そのモンスターとプレイヤーが両方壁抜けできるか否か.
  */
-bool has_pass_wall(PlayerType *player_ptr)
+bool has_pass_wall(CreatureEntity &creature)
 {
-    auto can_player_pass_wall = player_ptr->wraith_form > 0;
-    can_player_pass_wall |= player_ptr->tim_pass_wall > 0;
-    can_player_pass_wall |= PlayerRace(player_ptr).equals(PlayerRaceType::SPECTRE);
-    if (player_ptr->riding == 0) {
+    auto can_player_pass_wall = creature.get_timed_effect(CreatureTimedEffect::WRAITH_FORM) > 0;
+    can_player_pass_wall |= creature.get_timed_effect(CreatureTimedEffect::TIM_PASS_WALL) > 0;
+    can_player_pass_wall |= CreatureRace(&creature).equals(PlayerRaceType::SPECTRE);
+    if (creature.get_riding() == 0) {
         return can_player_pass_wall;
     }
 
-    const auto &monster = player_ptr->current_floor_ptr->m_list[player_ptr->riding];
+    const auto &monster = creature.get_floor()->get_monster(creature.get_riding());
     const auto &monrace = monster.get_monrace();
     return can_player_pass_wall && monrace.feature_flags.has(MonsterFeatureType::PASS_WALL);
 }
 
 /*!
  * @brief プレイヤーが強力射を持っているかを返す。
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return 持っていたら所持前提ビットフラグを返す。
  */
-BIT_FLAGS has_xtra_might(PlayerType *player_ptr)
+BIT_FLAGS has_xtra_might(CreatureEntity &creature)
 {
-    return common_cause_flags(player_ptr, TR_XTRA_MIGHT);
+    return common_cause_flags(creature, TR_XTRA_MIGHT);
 }
 
 /*!
  * @brief プレイヤーが邪悪感知を持っているかを返す。
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return 持っていたら所持前提ビットフラグを返す。
  */
-BIT_FLAGS has_esp_evil(PlayerType *player_ptr)
+BIT_FLAGS has_esp_evil(CreatureEntity &creature)
 {
-    BIT_FLAGS result = common_cause_flags(player_ptr, TR_ESP_EVIL);
-    if (PlayerRealm(player_ptr).is_realm_hex()) {
-        if (SpellHex(player_ptr).is_spelling_specific(HEX_DETECT_EVIL)) {
+    BIT_FLAGS result = common_cause_flags(creature, TR_ESP_EVIL);
+    if (PlayerRealm(creature).is_realm_hex()) {
+        if (SpellHex(creature).is_spelling_specific(HEX_DETECT_EVIL)) {
             result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
         }
     }
@@ -563,203 +573,203 @@ BIT_FLAGS has_esp_evil(PlayerType *player_ptr)
 
 /*!
  * @brief プレイヤーが自然界の動物感知を持っているかを返す。
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return 持っていたら所持前提ビットフラグを返す。
  */
-BIT_FLAGS has_esp_animal(PlayerType *player_ptr)
+BIT_FLAGS has_esp_animal(CreatureEntity &creature)
 {
-    return common_cause_flags(player_ptr, TR_ESP_ANIMAL);
+    return common_cause_flags(creature, TR_ESP_ANIMAL);
 }
 
 /*!
  * @brief プレイヤーがクッソ汚い奴らの感知を持っているかを返す。
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return 持っていたら所持前提ビットフラグを返す。
  */
-BIT_FLAGS has_esp_nasty(PlayerType *player_ptr)
+BIT_FLAGS has_esp_nasty(CreatureEntity &creature)
 {
-    return common_cause_flags(player_ptr, TR_ESP_NASTY);
+    return common_cause_flags(creature, TR_ESP_NASTY);
 }
 
 /*!
  * @brief プレイヤーがホモ（レズ）感知を持っているかを返す。
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return 持っていたら所持前提ビットフラグを返す。
  */
-BIT_FLAGS has_esp_homo(PlayerType *player_ptr)
+BIT_FLAGS has_esp_homo(CreatureEntity &creature)
 {
-    return common_cause_flags(player_ptr, TR_ESP_HOMO);
+    return common_cause_flags(creature, TR_ESP_HOMO);
 }
 
 /*!
  * @brief プレイヤーがアンデッド感知を持っているかを返す。
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return 持っていたら所持前提ビットフラグを返す。
  */
-BIT_FLAGS has_esp_undead(PlayerType *player_ptr)
+BIT_FLAGS has_esp_undead(CreatureEntity &creature)
 {
-    return common_cause_flags(player_ptr, TR_ESP_UNDEAD);
+    return common_cause_flags(creature, TR_ESP_UNDEAD);
 }
 
 /*!
  * @brief プレイヤーが悪魔感知を持っているかを返す。
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return 持っていたら所持前提ビットフラグを返す。
  */
-BIT_FLAGS has_esp_demon(PlayerType *player_ptr)
+BIT_FLAGS has_esp_demon(CreatureEntity &creature)
 {
-    return common_cause_flags(player_ptr, TR_ESP_DEMON);
+    return common_cause_flags(creature, TR_ESP_DEMON);
 }
 
 /*!
  * @brief プレイヤーがオーク感知を持っているかを返す。
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return 持っていたら所持前提ビットフラグを返す。
  */
-BIT_FLAGS has_esp_orc(PlayerType *player_ptr)
+BIT_FLAGS has_esp_orc(CreatureEntity &creature)
 {
-    return common_cause_flags(player_ptr, TR_ESP_ORC);
+    return common_cause_flags(creature, TR_ESP_ORC);
 }
 
 /*!
  * @brief プレイヤーがトロル感知を持っているかを返す。
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return 持っていたら所持前提ビットフラグを返す。
  */
-BIT_FLAGS has_esp_troll(PlayerType *player_ptr)
+BIT_FLAGS has_esp_troll(CreatureEntity &creature)
 {
-    return common_cause_flags(player_ptr, TR_ESP_TROLL);
+    return common_cause_flags(creature, TR_ESP_TROLL);
 }
 
 /*!
  * @brief プレイヤーが巨人感知を持っているかを返す。
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return 持っていたら所持前提ビットフラグを返す。
  */
-BIT_FLAGS has_esp_giant(PlayerType *player_ptr)
+BIT_FLAGS has_esp_giant(CreatureEntity &creature)
 {
-    return common_cause_flags(player_ptr, TR_ESP_GIANT);
+    return common_cause_flags(creature, TR_ESP_GIANT);
 }
 
 /*!
  * @brief プレイヤーがドラゴン感知を持っているかを返す。
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return 持っていたら所持前提ビットフラグを返す。
  */
-BIT_FLAGS has_esp_dragon(PlayerType *player_ptr)
+BIT_FLAGS has_esp_dragon(CreatureEntity &creature)
 {
-    return common_cause_flags(player_ptr, TR_ESP_DRAGON);
+    return common_cause_flags(creature, TR_ESP_DRAGON);
 }
 
 /*!
  * @brief プレイヤーが人間感知を持っているかを返す。
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return 持っていたら所持前提ビットフラグを返す。
  */
-BIT_FLAGS has_esp_human(PlayerType *player_ptr)
+BIT_FLAGS has_esp_human(CreatureEntity &creature)
 {
-    return common_cause_flags(player_ptr, TR_ESP_HUMAN);
+    return common_cause_flags(creature, TR_ESP_HUMAN);
 }
 
 /*!
  * @brief プレイヤーが善良感知を持っているかを返す。
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return 持っていたら所持前提ビットフラグを返す。
  */
-BIT_FLAGS has_esp_good(PlayerType *player_ptr)
+BIT_FLAGS has_esp_good(CreatureEntity &creature)
 {
-    return common_cause_flags(player_ptr, TR_ESP_GOOD);
+    return common_cause_flags(creature, TR_ESP_GOOD);
 }
 
 /*!
  * @brief プレイヤーが無生物感知を持っているかを返す。
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return 持っていたら所持前提ビットフラグを返す。
  */
-BIT_FLAGS has_esp_nonliving(PlayerType *player_ptr)
+BIT_FLAGS has_esp_nonliving(CreatureEntity &creature)
 {
-    return common_cause_flags(player_ptr, TR_ESP_NONLIVING);
+    return common_cause_flags(creature, TR_ESP_NONLIVING);
 }
 
 /*!
  * @brief プレイヤーがユニーク感知を持っているかを返す。
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return 持っていたら所持前提ビットフラグを返す。
  */
-BIT_FLAGS has_esp_unique(PlayerType *player_ptr)
+BIT_FLAGS has_esp_unique(CreatureEntity &creature)
 {
-    return common_cause_flags(player_ptr, TR_ESP_UNIQUE);
+    return common_cause_flags(creature, TR_ESP_UNIQUE);
 }
 
 /*!
  * @brief プレイヤーがテレパシーを持っているかを返す。
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return 持っていたら所持前提ビットフラグを返す。
  */
-BIT_FLAGS has_esp_telepathy(PlayerType *player_ptr)
+BIT_FLAGS has_esp_telepathy(CreatureEntity &creature)
 {
-    BIT_FLAGS result = common_cause_flags(player_ptr, TR_TELEPATHY);
+    BIT_FLAGS result = common_cause_flags(creature, TR_TELEPATHY);
 
-    if (is_time_limit_esp(player_ptr) || player_ptr->ult_res) {
+    if (creature.is_time_limit_esp() || creature.get_timed_effect(CreatureTimedEffect::ULTIMATE_RESISTANCE)) {
         result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
     }
 
-    if (player_ptr->muta.has(PlayerMutationType::ESP)) {
+    if (creature.get_mutations().has(PlayerMutationType::ESP)) {
         result |= FLAG_CAUSE_MUTATION;
     }
 
     return result;
 }
 
-BIT_FLAGS has_bless_blade(PlayerType *player_ptr)
+BIT_FLAGS has_bless_blade(CreatureEntity &creature)
 {
-    return common_cause_flags(player_ptr, TR_BLESSED);
+    return common_cause_flags(creature, TR_BLESSED);
 }
 
-BIT_FLAGS has_easy2_weapon(PlayerType *player_ptr)
+BIT_FLAGS has_easy2_weapon(CreatureEntity &creature)
 {
-    return common_cause_flags(player_ptr, TR_EASY2_WEAPON);
+    return common_cause_flags(creature, TR_EASY2_WEAPON);
 }
 
-BIT_FLAGS has_down_saving(PlayerType *player_ptr)
+BIT_FLAGS has_down_saving(CreatureEntity &creature)
 {
-    return common_cause_flags(player_ptr, TR_DOWN_SAVING);
+    return common_cause_flags(creature, TR_DOWN_SAVING);
 }
 
-BIT_FLAGS has_no_ac(PlayerType *player_ptr)
+BIT_FLAGS has_no_ac(CreatureEntity &creature)
 {
-    return common_cause_flags(player_ptr, TR_NO_AC);
+    return common_cause_flags(creature, TR_NO_AC);
 }
 
-BIT_FLAGS has_invuln_arrow(PlayerType *player_ptr)
+BIT_FLAGS has_invuln_arrow(CreatureEntity &creature)
 {
-    if (player_ptr->effects()->blindness().is_blind()) {
+    if (creature.is_blind()) {
         return 0;
     }
 
-    return common_cause_flags(player_ptr, TR_INVULN_ARROW);
+    return common_cause_flags(creature, TR_INVULN_ARROW);
 }
 
-void check_no_flowed(PlayerType *player_ptr)
+void check_no_flowed(CreatureEntity &creature)
 {
     ItemEntity *o_ptr;
     bool has_sw = false, has_kabe = false;
 
-    player_ptr->no_flowed = false;
+    creature.set_no_flowed(false);
 
-    if (has_pass_wall(player_ptr) && !has_kill_wall(player_ptr)) {
-        player_ptr->no_flowed = true;
+    if (has_pass_wall(creature) && !has_kill_wall(creature)) {
+        creature.set_no_flowed(true);
         return;
     }
 
-    PlayerRealm pr(player_ptr);
+    PlayerRealm pr(creature);
     if (!pr.realm1().is_available()) {
-        player_ptr->no_flowed = false;
+        creature.set_no_flowed(false);
         return;
     }
 
-    for (int i = 0; i < INVEN_PACK; i++) {
-        const auto &bi_key = player_ptr->inventory[i]->bi_key;
+    for (const auto i_idx : INVEN_PACK_SLOTS) {
+        const auto &bi_key = creature.inventory[i_idx]->bi_key;
         if (bi_key == BaseitemKey(ItemKindType::NATURE_BOOK, 2)) {
             has_sw = true;
         }
@@ -769,8 +779,8 @@ void check_no_flowed(PlayerType *player_ptr)
         }
     }
 
-    for (const auto this_o_idx : player_ptr->current_floor_ptr->grid_array[player_ptr->y][player_ptr->x].o_idx_list) {
-        o_ptr = player_ptr->current_floor_ptr->o_list[this_o_idx].get();
+    for (const auto this_o_idx : creature.get_floor()->grid_array[creature.y][creature.x].o_idx_list) {
+        o_ptr = creature.get_floor()->o_list[this_o_idx].get();
 
         if (o_ptr->bi_key == BaseitemKey(ItemKindType::NATURE_BOOK, 2)) {
             has_sw = true;
@@ -780,55 +790,55 @@ void check_no_flowed(PlayerType *player_ptr)
         }
     }
 
-    PlayerClass pc(player_ptr);
+    CreatureClass pc(creature);
     if (has_sw && (pr.realm1().equals(RealmType::NATURE) || pr.realm2().equals(RealmType::NATURE) || pc.equals(PlayerClassType::SORCERER))) {
         const auto &spell = PlayerRealm::get_spell_info(RealmType::NATURE, SPELL_SW);
-        if (player_ptr->level >= spell.slevel) {
-            player_ptr->no_flowed = true;
+        if (creature.get_level() >= spell.slevel) {
+            creature.set_no_flowed(true);
         }
     }
 
     if (has_kabe && (pr.realm1().equals(RealmType::CRAFT) || pr.realm2().equals(RealmType::CRAFT) || pc.equals(PlayerClassType::SORCERER))) {
         const auto &spell = PlayerRealm::get_spell_info(RealmType::CRAFT, SPELL_WALL);
-        if (player_ptr->level >= spell.slevel) {
-            player_ptr->no_flowed = true;
+        if (creature.get_level() >= spell.slevel) {
+            creature.set_no_flowed(true);
         }
     }
 }
 
-BIT_FLAGS has_mighty_throw(PlayerType *player_ptr)
+BIT_FLAGS has_mighty_throw(CreatureEntity &creature)
 {
-    return common_cause_flags(player_ptr, TR_MIGHTY_THROW);
+    return common_cause_flags(creature, TR_MIGHTY_THROW);
 }
 
-BIT_FLAGS has_dec_mana(PlayerType *player_ptr)
+BIT_FLAGS has_dec_mana(CreatureEntity &creature)
 {
-    return common_cause_flags(player_ptr, TR_DEC_MANA);
+    return common_cause_flags(creature, TR_DEC_MANA);
 }
 
-BIT_FLAGS has_reflect(PlayerType *player_ptr)
+BIT_FLAGS has_reflect(CreatureEntity &creature)
 {
-    BIT_FLAGS result = common_cause_flags(player_ptr, TR_REFLECT);
+    BIT_FLAGS result = common_cause_flags(creature, TR_REFLECT);
 
-    if (player_ptr->ult_res || player_ptr->wraith_form || player_ptr->magicdef || player_ptr->tim_reflect) {
+    if (creature.get_timed_effect(CreatureTimedEffect::ULTIMATE_RESISTANCE) || creature.get_timed_effect(CreatureTimedEffect::WRAITH_FORM) || creature.get_timed_effect(CreatureTimedEffect::MAGICDEF) || creature.get_timed_effect(CreatureTimedEffect::TIM_REFLECT)) {
         result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
     }
 
     return result;
 }
 
-BIT_FLAGS has_see_nocto(PlayerType *player_ptr)
+BIT_FLAGS has_see_nocto(CreatureEntity &creature)
 {
-    return PlayerClass(player_ptr).equals(PlayerClassType::NINJA) ? FLAG_CAUSE_CLASS : FLAG_CAUSE_NONE;
+    return CreatureClass(creature).equals(PlayerClassType::NINJA) ? FLAG_CAUSE_CLASS : FLAG_CAUSE_NONE;
 }
 
-BIT_FLAGS has_warning(PlayerType *player_ptr)
+BIT_FLAGS has_warning(CreatureEntity &creature)
 {
     BIT_FLAGS result = 0L;
     ItemEntity *o_ptr;
 
-    for (int i = INVEN_MAIN_HAND; i < INVEN_TOTAL; i++) {
-        o_ptr = player_ptr->inventory[i].get();
+    for (const auto i_idx : INVEN_WIELDING_SLOTS) {
+        o_ptr = creature.inventory[i_idx].get();
         if (!o_ptr->is_valid()) {
             continue;
         }
@@ -837,651 +847,656 @@ BIT_FLAGS has_warning(PlayerType *player_ptr)
 
         if (flags.has(TR_WARNING)) {
             if (!o_ptr->is_inscribed() || !angband_strchr(o_ptr->inscription->data(), '$')) {
-                set_bits(result, convert_inventory_slot_type_to_flag_cause(i2enum<inventory_slot_type>(i)));
+                set_bits(result, convert_inventory_slot_type_to_flag_cause(i_idx));
             }
         }
     }
     return result;
 }
 
-BIT_FLAGS has_anti_magic(PlayerType *player_ptr)
+BIT_FLAGS has_anti_magic(CreatureEntity &creature)
 {
-    return common_cause_flags(player_ptr, TR_NO_MAGIC);
+    return common_cause_flags(creature, TR_NO_MAGIC);
 }
 
-BIT_FLAGS has_anti_tele(PlayerType *player_ptr)
+BIT_FLAGS has_anti_tele(CreatureEntity &creature)
 {
-    return common_cause_flags(player_ptr, TR_NO_TELE);
+    return common_cause_flags(creature, TR_NO_TELE);
 }
 
-BIT_FLAGS has_sh_fire(PlayerType *player_ptr)
+BIT_FLAGS has_sh_fire(CreatureEntity &creature)
 {
-    BIT_FLAGS result = common_cause_flags(player_ptr, TR_SH_FIRE);
+    BIT_FLAGS result = common_cause_flags(creature, TR_SH_FIRE);
 
-    if (player_ptr->muta.has(PlayerMutationType::FIRE_BODY)) {
+    if (creature.get_mutations().has(PlayerMutationType::FIRE_BODY)) {
         result |= FLAG_CAUSE_MUTATION;
     }
 
-    if (SpellHex(player_ptr).is_spelling_specific(HEX_DEMON_AURA) || player_ptr->ult_res || player_ptr->tim_sh_fire) {
+    if (SpellHex(creature).is_spelling_specific(HEX_DEMON_AURA) || creature.get_timed_effect(CreatureTimedEffect::ULTIMATE_RESISTANCE) || creature.get_timed_effect(CreatureTimedEffect::TIM_SH_FIRE)) {
         result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
     }
 
     return result;
 }
 
-BIT_FLAGS has_sh_elec(PlayerType *player_ptr)
+BIT_FLAGS has_sh_elec(CreatureEntity &creature)
 {
-    BIT_FLAGS result = common_cause_flags(player_ptr, TR_SH_ELEC);
+    BIT_FLAGS result = common_cause_flags(creature, TR_SH_ELEC);
 
-    if (player_ptr->muta.has(PlayerMutationType::ELEC_TOUC)) {
+    if (creature.get_mutations().has(PlayerMutationType::ELEC_TOUC)) {
         result |= FLAG_CAUSE_MUTATION;
     }
 
-    if (SpellHex(player_ptr).is_spelling_specific(HEX_SHOCK_CLOAK) || player_ptr->ult_res) {
+    if (SpellHex(creature).is_spelling_specific(HEX_SHOCK_CLOAK) || creature.get_timed_effect(CreatureTimedEffect::ULTIMATE_RESISTANCE)) {
         result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
     }
 
     return result;
 }
 
-BIT_FLAGS has_sh_cold(PlayerType *player_ptr)
+BIT_FLAGS has_sh_cold(CreatureEntity &creature)
 {
-    BIT_FLAGS result = common_cause_flags(player_ptr, TR_SH_COLD);
+    BIT_FLAGS result = common_cause_flags(creature, TR_SH_COLD);
 
-    if (player_ptr->ult_res || SpellHex(player_ptr).is_spelling_specific(HEX_ICE_ARMOR)) {
+    if (creature.get_timed_effect(CreatureTimedEffect::ULTIMATE_RESISTANCE) || SpellHex(creature).is_spelling_specific(HEX_ICE_ARMOR)) {
         result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
     }
 
     return result;
 }
 
-BIT_FLAGS has_easy_spell(PlayerType *player_ptr)
+BIT_FLAGS has_easy_spell(CreatureEntity &creature)
 {
-    return common_cause_flags(player_ptr, TR_EASY_SPELL);
+    return common_cause_flags(creature, TR_EASY_SPELL);
 }
 
-BIT_FLAGS has_hard_spell(PlayerType *player_ptr)
+BIT_FLAGS has_hard_spell(CreatureEntity &creature)
 {
-    return common_cause_flags(player_ptr, TR_HARD_SPELL);
+    return common_cause_flags(creature, TR_HARD_SPELL);
 }
 
-BIT_FLAGS has_hold_exp(PlayerType *player_ptr)
+BIT_FLAGS has_hold_exp(CreatureEntity &creature)
 {
-    BIT_FLAGS result = common_cause_flags(player_ptr, TR_HOLD_EXP);
+    BIT_FLAGS result = common_cause_flags(creature, TR_HOLD_EXP);
 
-    if (player_ptr->ppersonality == PERSONALITY_MUNCHKIN) {
+    if (creature.ppersonality == PERSONALITY_MUNCHKIN) {
         result |= FLAG_CAUSE_PERSONALITY;
     }
 
-    if (player_ptr->ult_res) {
+    if (creature.get_timed_effect(CreatureTimedEffect::ULTIMATE_RESISTANCE)) {
         result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
     }
 
     return result;
 }
 
-BIT_FLAGS has_see_inv(PlayerType *player_ptr)
+BIT_FLAGS has_see_inv(CreatureEntity &creature)
 {
-    BIT_FLAGS result = common_cause_flags(player_ptr, TR_SEE_INVIS);
+    BIT_FLAGS result = common_cause_flags(creature, TR_SEE_INVIS);
 
-    if (player_ptr->ult_res || player_ptr->tim_invis) {
+    if (creature.get_timed_effect(CreatureTimedEffect::ULTIMATE_RESISTANCE) || creature.get_timed_effect(CreatureTimedEffect::TIM_INVIS)) {
         result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
     }
 
     return result;
 }
 
-BIT_FLAGS has_magic_mastery(PlayerType *player_ptr)
+BIT_FLAGS has_magic_mastery(CreatureEntity &creature)
 {
-    return common_cause_flags(player_ptr, TR_MAGIC_MASTERY);
+    return common_cause_flags(creature, TR_MAGIC_MASTERY);
 }
 
-BIT_FLAGS has_free_act(PlayerType *player_ptr)
+BIT_FLAGS has_free_act(CreatureEntity &creature)
 {
-    BIT_FLAGS result = common_cause_flags(player_ptr, TR_FREE_ACT);
+    BIT_FLAGS result = common_cause_flags(creature, TR_FREE_ACT);
 
-    if (player_ptr->muta.has(PlayerMutationType::MOTION)) {
+    if (creature.get_mutations().has(PlayerMutationType::MOTION)) {
         result |= FLAG_CAUSE_MUTATION;
     }
 
-    if (player_ptr->ult_res || player_ptr->magicdef) {
+    if (creature.get_timed_effect(CreatureTimedEffect::ULTIMATE_RESISTANCE) || creature.get_timed_effect(CreatureTimedEffect::MAGICDEF)) {
         result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
     }
 
     return result;
 }
 
-BIT_FLAGS has_sustain_str(PlayerType *player_ptr)
+BIT_FLAGS has_sustain_str(CreatureEntity &creature)
 {
-    BIT_FLAGS result = common_cause_flags(player_ptr, TR_SUST_STR);
+    BIT_FLAGS result = common_cause_flags(creature, TR_SUST_STR);
 
-    if (player_ptr->ult_res) {
+    if (creature.get_timed_effect(CreatureTimedEffect::ULTIMATE_RESISTANCE)) {
         result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
     }
 
     return result;
 }
 
-BIT_FLAGS has_sustain_int(PlayerType *player_ptr)
+BIT_FLAGS has_sustain_int(CreatureEntity &creature)
 {
-    BIT_FLAGS result = common_cause_flags(player_ptr, TR_SUST_INT);
+    BIT_FLAGS result = common_cause_flags(creature, TR_SUST_INT);
 
-    if (player_ptr->ult_res) {
+    if (creature.get_timed_effect(CreatureTimedEffect::ULTIMATE_RESISTANCE)) {
         result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
     }
 
     return result;
 }
 
-BIT_FLAGS has_sustain_wis(PlayerType *player_ptr)
+BIT_FLAGS has_sustain_wis(CreatureEntity &creature)
 {
-    BIT_FLAGS result = common_cause_flags(player_ptr, TR_SUST_WIS);
+    BIT_FLAGS result = common_cause_flags(creature, TR_SUST_WIS);
 
-    if (player_ptr->ult_res) {
+    if (creature.get_timed_effect(CreatureTimedEffect::ULTIMATE_RESISTANCE)) {
         result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
     }
 
     return result;
 }
 
-BIT_FLAGS has_sustain_dex(PlayerType *player_ptr)
+BIT_FLAGS has_sustain_dex(CreatureEntity &creature)
 {
-    BIT_FLAGS result = common_cause_flags(player_ptr, TR_SUST_DEX);
+    BIT_FLAGS result = common_cause_flags(creature, TR_SUST_DEX);
 
-    if (player_ptr->ult_res) {
+    if (creature.get_timed_effect(CreatureTimedEffect::ULTIMATE_RESISTANCE)) {
         result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
     }
 
     return result;
 }
 
-BIT_FLAGS has_sustain_con(PlayerType *player_ptr)
+BIT_FLAGS has_sustain_con(CreatureEntity &creature)
 {
-    BIT_FLAGS result = common_cause_flags(player_ptr, TR_SUST_CON);
+    BIT_FLAGS result = common_cause_flags(creature, TR_SUST_CON);
 
-    if (player_ptr->ult_res) {
+    if (creature.get_timed_effect(CreatureTimedEffect::ULTIMATE_RESISTANCE)) {
         result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
     }
 
     return result;
 }
 
-BIT_FLAGS has_sustain_chr(PlayerType *player_ptr)
+BIT_FLAGS has_sustain_chr(CreatureEntity &creature)
 {
-    BIT_FLAGS result = common_cause_flags(player_ptr, TR_SUST_CHR);
+    BIT_FLAGS result = common_cause_flags(creature, TR_SUST_CHR);
 
-    if (player_ptr->ult_res) {
+    if (creature.get_timed_effect(CreatureTimedEffect::ULTIMATE_RESISTANCE)) {
         result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
     }
 
     return result;
 }
 
-BIT_FLAGS has_levitation(PlayerType *player_ptr)
+BIT_FLAGS has_levitation(CreatureEntity &creature)
 {
-    BIT_FLAGS result = common_cause_flags(player_ptr, TR_LEVITATION);
+    BIT_FLAGS result = common_cause_flags(creature, TR_LEVITATION);
 
-    if (player_ptr->muta.has(PlayerMutationType::WINGS)) {
+    if (creature.get_mutations().has(PlayerMutationType::WINGS)) {
         result |= FLAG_CAUSE_MUTATION;
     }
 
-    if (player_ptr->ult_res || player_ptr->magicdef) {
+    if (creature.get_timed_effect(CreatureTimedEffect::ULTIMATE_RESISTANCE) || creature.get_timed_effect(CreatureTimedEffect::MAGICDEF)) {
         result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
     }
 
-    if (player_ptr->tim_levitation) {
+    if (creature.get_timed_effect(CreatureTimedEffect::TIM_LEVITATION)) {
         result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
     }
 
     // 乗馬中は実際に浮遊するかどうかは乗馬中のモンスターに依存する
-    if (player_ptr->riding == 0) {
+    if (creature.get_riding() == 0) {
         return result;
     }
 
-    const auto &monster = player_ptr->current_floor_ptr->m_list[player_ptr->riding];
+    const auto &monster = creature.get_floor()->get_monster(creature.get_riding());
     const auto &monrace = monster.get_monrace();
     return monrace.feature_flags.has(MonsterFeatureType::CAN_FLY) ? FLAG_CAUSE_RIDING : FLAG_CAUSE_NONE;
 }
 
-bool has_can_swim(PlayerType *player_ptr)
+bool has_can_swim(CreatureEntity &creature)
 {
-    if (player_ptr->riding == 0) {
+    if (creature.get_riding() == 0) {
         return false;
     }
 
-    const auto &monster = player_ptr->current_floor_ptr->m_list[player_ptr->riding];
+    if (!creature.is_player()) {
+        return false;
+    }
+
+    const auto &monster = creature.get_floor()->get_monster(creature.get_riding());
     const auto &monrace = monster.get_monrace();
     return monrace.feature_flags.has_any_of({ MonsterFeatureType::CAN_SWIM, MonsterFeatureType::AQUATIC });
 }
 
-BIT_FLAGS has_slow_digest(PlayerType *player_ptr)
+BIT_FLAGS has_slow_digest(CreatureEntity &creature)
 {
-    BIT_FLAGS result = common_cause_flags(player_ptr, TR_SLOW_DIGEST);
+    BIT_FLAGS result = common_cause_flags(creature, TR_SLOW_DIGEST);
 
-    if (player_ptr->ult_res) {
+    if (creature.get_timed_effect(CreatureTimedEffect::ULTIMATE_RESISTANCE)) {
         result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
     }
 
     return result;
 }
 
-BIT_FLAGS has_regenerate(PlayerType *player_ptr)
+BIT_FLAGS has_regenerate(CreatureEntity &creature)
 {
-    BIT_FLAGS result = common_cause_flags(player_ptr, TR_REGEN);
+    BIT_FLAGS result = common_cause_flags(creature, TR_REGEN);
 
-    if (player_ptr->muta.has(PlayerMutationType::REGEN)) {
+    if (creature.get_mutations().has(PlayerMutationType::REGEN)) {
         result |= FLAG_CAUSE_MUTATION;
     }
 
-    if (SpellHex(player_ptr).is_spelling_specific(HEX_DEMON_AURA) || player_ptr->ult_res || player_ptr->tim_regen) {
+    if (SpellHex(creature).is_spelling_specific(HEX_DEMON_AURA) || creature.get_timed_effect(CreatureTimedEffect::ULTIMATE_RESISTANCE) || creature.get_timed_effect(CreatureTimedEffect::TIM_REGEN)) {
         result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
     }
 
-    if (player_ptr->muta.has(PlayerMutationType::FLESH_ROT)) {
+    if (creature.get_mutations().has(PlayerMutationType::FLESH_ROT)) {
         result = 0L;
     }
 
     return result;
 }
 
-void update_curses(PlayerType *player_ptr)
+void update_curses(CreatureEntity &creature)
 {
     ItemEntity *o_ptr;
-    player_ptr->cursed.clear();
-    player_ptr->cursed_special.clear();
+    creature.clear_curses();
+    creature.clear_curses_special();
 
-    if (player_ptr->ppersonality == PERSONALITY_SEXY) {
-        player_ptr->cursed.set(CurseTraitType::AGGRAVATE);
+    if (creature.ppersonality == PERSONALITY_SEXY) {
+        creature.add_curse(CurseTraitType::AGGRAVATE);
     }
-    if (player_ptr->ppersonality == PERSONALITY_MESUGAKI) {
-        player_ptr->cursed.set(CurseTraitType::AGGRAVATE);
+    if (creature.ppersonality == PERSONALITY_MESUGAKI) {
+        creature.add_curse(CurseTraitType::AGGRAVATE);
     }
 
-    for (int i = INVEN_MAIN_HAND; i < INVEN_TOTAL; i++) {
-        o_ptr = player_ptr->inventory[i].get();
+    for (const auto i_idx : INVEN_WIELDING_SLOTS) {
+        o_ptr = creature.inventory[i_idx].get();
         if (!o_ptr->is_valid()) {
             continue;
         }
         const auto flags = o_ptr->get_flags();
         if (flags.has(TR_AGGRAVATE)) {
-            player_ptr->cursed.set(CurseTraitType::AGGRAVATE);
+            creature.add_curse(CurseTraitType::AGGRAVATE);
         }
         if (flags.has(TR_NASTY_AGGRAVATE)) {
-            player_ptr->cursed.set(CurseTraitType::NASTY_AGGRAVATE);
+            creature.add_curse(CurseTraitType::NASTY_AGGRAVATE);
         }
         if (flags.has(TR_DRAIN_EXP)) {
-            player_ptr->cursed.set(CurseTraitType::DRAIN_EXP);
+            creature.add_curse(CurseTraitType::DRAIN_EXP);
         }
         if (flags.has(TR_TY_CURSE)) {
-            player_ptr->cursed.set(CurseTraitType::TY_CURSE);
+            creature.add_curse(CurseTraitType::TY_CURSE);
         }
         if (flags.has(TR_ADD_L_CURSE)) {
-            player_ptr->cursed.set(CurseTraitType::ADD_L_CURSE);
+            creature.add_curse(CurseTraitType::ADD_L_CURSE);
         }
         if (flags.has(TR_ADD_H_CURSE)) {
-            player_ptr->cursed.set(CurseTraitType::ADD_H_CURSE);
+            creature.add_curse(CurseTraitType::ADD_H_CURSE);
         }
         if (flags.has(TR_DRAIN_HP)) {
-            player_ptr->cursed.set(CurseTraitType::DRAIN_HP);
+            creature.add_curse(CurseTraitType::DRAIN_HP);
         }
         if (flags.has(TR_DRAIN_MANA)) {
-            player_ptr->cursed.set(CurseTraitType::DRAIN_MANA);
+            creature.add_curse(CurseTraitType::DRAIN_MANA);
         }
         if (flags.has(TR_CALL_ANIMAL)) {
-            player_ptr->cursed.set(CurseTraitType::CALL_ANIMAL);
+            creature.add_curse(CurseTraitType::CALL_ANIMAL);
         }
         if (flags.has(TR_CALL_DEMON)) {
-            player_ptr->cursed.set(CurseTraitType::CALL_DEMON);
+            creature.add_curse(CurseTraitType::CALL_DEMON);
         }
         if (flags.has(TR_CALL_DRAGON)) {
-            player_ptr->cursed.set(CurseTraitType::CALL_DRAGON);
+            creature.add_curse(CurseTraitType::CALL_DRAGON);
         }
         if (flags.has(TR_CALL_UNDEAD)) {
-            player_ptr->cursed.set(CurseTraitType::CALL_UNDEAD);
+            creature.add_curse(CurseTraitType::CALL_UNDEAD);
         }
         if (flags.has(TR_COWARDICE)) {
-            player_ptr->cursed.set(CurseTraitType::COWARDICE);
+            creature.add_curse(CurseTraitType::COWARDICE);
         }
         if (flags.has(TR_LOW_MELEE)) {
-            player_ptr->cursed.set(CurseTraitType::LOW_MELEE);
+            creature.add_curse(CurseTraitType::LOW_MELEE);
         }
         if (flags.has(TR_LOW_AC)) {
-            player_ptr->cursed.set(CurseTraitType::LOW_AC);
+            creature.add_curse(CurseTraitType::LOW_AC);
         }
         if (flags.has(TR_HARD_SPELL)) {
-            player_ptr->cursed.set(CurseTraitType::HARD_SPELL);
+            creature.add_curse(CurseTraitType::HARD_SPELL);
         }
         if (flags.has(TR_FAST_DIGEST)) {
-            player_ptr->cursed.set(CurseTraitType::FAST_DIGEST);
+            creature.add_curse(CurseTraitType::FAST_DIGEST);
         }
         if (flags.has(TR_SLOW_REGEN)) {
-            player_ptr->cursed.set(CurseTraitType::SLOW_REGEN);
+            creature.add_curse(CurseTraitType::SLOW_REGEN);
         }
         if (flags.has(TR_BERS_RAGE)) {
-            player_ptr->cursed.set(CurseTraitType::BERS_RAGE);
+            creature.add_curse(CurseTraitType::BERS_RAGE);
         }
         if (flags.has(TR_PERSISTENT_CURSE)) {
-            player_ptr->cursed.set(CurseTraitType::PERSISTENT_CURSE);
+            creature.add_curse(CurseTraitType::PERSISTENT_CURSE);
         }
         if (flags.has(TR_VUL_CURSE)) {
-            player_ptr->cursed.set(CurseTraitType::VUL_CURSE);
+            creature.add_curse(CurseTraitType::VUL_CURSE);
         }
 
         auto obj_curse_flags = o_ptr->curse_flags;
         obj_curse_flags.reset({ CurseTraitType::CURSED, CurseTraitType::HEAVY_CURSE, CurseTraitType::PERMA_CURSE });
-        player_ptr->cursed.set(obj_curse_flags);
+        creature.add_curses(obj_curse_flags);
         if (o_ptr->is_specific_artifact(FixedArtifactId::CHAINSWORD)) {
-            player_ptr->cursed_special.set(CurseSpecialTraitType::CHAINSWORD);
+            creature.add_curse_special(CurseSpecialTraitType::CHAINSWORD);
         }
 
         if (flags.has(TR_TELEPORT)) {
             if (o_ptr->is_cursed()) {
-                player_ptr->cursed.set(CurseTraitType::TELEPORT);
+                creature.add_curse(CurseTraitType::TELEPORT);
             } else {
                 /* {.} will stop random teleportation. */
                 if (o_ptr->is_inscribed() && angband_strchr(o_ptr->inscription->data(), '.')) {
                 } else {
-                    player_ptr->cursed_special.set(CurseSpecialTraitType::TELEPORT_SELF);
+                    creature.add_curse_special(CurseSpecialTraitType::TELEPORT_SELF);
                 }
             }
         }
     }
 
-    if (player_ptr->cursed.has(CurseTraitType::TELEPORT)) {
-        player_ptr->cursed_special.reset(CurseSpecialTraitType::TELEPORT_SELF);
+    if (creature.get_cursed_flags().has(CurseTraitType::TELEPORT)) {
+        creature.remove_curse_special(CurseSpecialTraitType::TELEPORT_SELF);
     }
 }
 
-BIT_FLAGS has_impact(PlayerType *player_ptr)
+BIT_FLAGS has_impact(CreatureEntity &creature)
 {
-    return common_cause_flags(player_ptr, TR_IMPACT);
+    return common_cause_flags(creature, TR_IMPACT);
 }
 
-BIT_FLAGS has_earthquake(PlayerType *player_ptr)
+BIT_FLAGS has_earthquake(CreatureEntity &creature)
 {
-    return common_cause_flags(player_ptr, TR_EARTHQUAKE);
+    return common_cause_flags(creature, TR_EARTHQUAKE);
 }
 
-void update_extra_blows(PlayerType *player_ptr)
+void update_extra_blows(CreatureEntity &creature)
 {
     ItemEntity *o_ptr;
-    player_ptr->extra_blows[0] = player_ptr->extra_blows[1] = 0;
+    creature.set_extra_blows(0, 0);
+    creature.set_extra_blows(1, 0);
 
-    const melee_type melee_type = player_melee_type(player_ptr);
+    const melee_type melee_type = player_melee_type(creature);
     const bool two_handed = (melee_type == MELEE_TYPE_WEAPON_TWOHAND || melee_type == MELEE_TYPE_BAREHAND_TWO);
 
-    for (int i = INVEN_MAIN_HAND; i < INVEN_TOTAL; i++) {
-        o_ptr = player_ptr->inventory[i].get();
+    for (const auto i_idx : INVEN_WIELDING_SLOTS) {
+        o_ptr = creature.inventory[i_idx].get();
         if (!o_ptr->is_valid()) {
             continue;
         }
 
         const auto flags = o_ptr->get_flags();
         if (flags.has(TR_BLOWS)) {
-            if ((i == INVEN_MAIN_HAND || i == INVEN_MAIN_RING) && !two_handed) {
-                player_ptr->extra_blows[0] += o_ptr->pval;
-            } else if ((i == INVEN_SUB_HAND || i == INVEN_SUB_RING) && !two_handed) {
-                player_ptr->extra_blows[1] += o_ptr->pval;
+            if ((i_idx == INVEN_MAIN_HAND || i_idx == INVEN_MAIN_RING) && !two_handed) {
+                creature.add_extra_blows(0, o_ptr->pval);
+            } else if ((i_idx == INVEN_SUB_HAND || i_idx == INVEN_SUB_RING) && !two_handed) {
+                creature.add_extra_blows(1, o_ptr->pval);
             } else {
-                player_ptr->extra_blows[0] += o_ptr->pval;
-                player_ptr->extra_blows[1] += o_ptr->pval;
+                creature.add_extra_blows(0, o_ptr->pval);
+                creature.add_extra_blows(1, o_ptr->pval);
             }
         }
     }
 }
 
-BIT_FLAGS has_resist_acid(PlayerType *player_ptr)
+BIT_FLAGS has_resist_acid(CreatureEntity &creature)
 {
-    BIT_FLAGS result = common_cause_flags(player_ptr, TR_RES_ACID);
+    BIT_FLAGS result = common_cause_flags(creature, TR_RES_ACID);
 
-    if (player_ptr->ult_res) {
+    if (creature.get_timed_effect(CreatureTimedEffect::ULTIMATE_RESISTANCE)) {
         result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
     }
 
-    result |= has_immune_acid(player_ptr);
+    result |= has_immune_acid(creature);
 
     return result;
 }
 
-BIT_FLAGS has_vuln_acid(PlayerType *player_ptr)
+BIT_FLAGS has_vuln_acid(CreatureEntity &creature)
 {
-    BIT_FLAGS result = common_cause_flags(player_ptr, TR_VUL_ACID);
+    BIT_FLAGS result = common_cause_flags(creature, TR_VUL_ACID);
 
-    if (player_ptr->muta.has(PlayerMutationType::VULN_ELEM)) {
+    if (creature.get_mutations().has(PlayerMutationType::VULN_ELEM)) {
         result |= FLAG_CAUSE_MUTATION;
     }
 
     return result;
 }
 
-BIT_FLAGS has_resist_elec(PlayerType *player_ptr)
+BIT_FLAGS has_resist_elec(CreatureEntity &creature)
 {
-    BIT_FLAGS result = common_cause_flags(player_ptr, TR_RES_ELEC);
+    BIT_FLAGS result = common_cause_flags(creature, TR_RES_ELEC);
 
-    if (player_ptr->ult_res) {
+    if (creature.get_timed_effect(CreatureTimedEffect::ULTIMATE_RESISTANCE)) {
         result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
     }
 
-    result |= has_immune_elec(player_ptr);
+    result |= has_immune_elec(creature);
 
     return result;
 }
 
-BIT_FLAGS has_vuln_elec(PlayerType *player_ptr)
+BIT_FLAGS has_vuln_elec(CreatureEntity &creature)
 {
-    BIT_FLAGS result = common_cause_flags(player_ptr, TR_VUL_ELEC);
+    BIT_FLAGS result = common_cause_flags(creature, TR_VUL_ELEC);
 
-    if (player_ptr->muta.has(PlayerMutationType::VULN_ELEM)) {
+    if (creature.get_mutations().has(PlayerMutationType::VULN_ELEM)) {
         result |= FLAG_CAUSE_MUTATION;
     }
 
     return result;
 }
 
-BIT_FLAGS has_resist_fire(PlayerType *player_ptr)
+BIT_FLAGS has_resist_fire(CreatureEntity &creature)
 {
-    BIT_FLAGS result = common_cause_flags(player_ptr, TR_RES_FIRE);
+    BIT_FLAGS result = common_cause_flags(creature, TR_RES_FIRE);
 
-    if (player_ptr->ult_res) {
+    if (creature.get_timed_effect(CreatureTimedEffect::ULTIMATE_RESISTANCE)) {
         result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
     }
 
-    result |= has_immune_fire(player_ptr);
+    result |= has_immune_fire(creature);
 
     return result;
 }
 
-BIT_FLAGS has_vuln_fire(PlayerType *player_ptr)
+BIT_FLAGS has_vuln_fire(CreatureEntity &creature)
 {
-    BIT_FLAGS result = common_cause_flags(player_ptr, TR_VUL_FIRE);
+    BIT_FLAGS result = common_cause_flags(creature, TR_VUL_FIRE);
 
-    if (player_ptr->muta.has(PlayerMutationType::VULN_ELEM)) {
+    if (creature.get_mutations().has(PlayerMutationType::VULN_ELEM)) {
         result |= FLAG_CAUSE_MUTATION;
     }
 
     return result;
 }
 
-BIT_FLAGS has_resist_cold(PlayerType *player_ptr)
+BIT_FLAGS has_resist_cold(CreatureEntity &creature)
 {
-    BIT_FLAGS result = common_cause_flags(player_ptr, TR_RES_COLD);
+    BIT_FLAGS result = common_cause_flags(creature, TR_RES_COLD);
 
-    if (player_ptr->ult_res) {
+    if (creature.get_timed_effect(CreatureTimedEffect::ULTIMATE_RESISTANCE)) {
         result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
     }
 
-    result |= has_immune_cold(player_ptr);
+    result |= has_immune_cold(creature);
 
     return result;
 }
 
-BIT_FLAGS has_vuln_cold(PlayerType *player_ptr)
+BIT_FLAGS has_vuln_cold(CreatureEntity &creature)
 {
-    BIT_FLAGS result = common_cause_flags(player_ptr, TR_VUL_COLD);
+    BIT_FLAGS result = common_cause_flags(creature, TR_VUL_COLD);
 
-    if (player_ptr->muta.has(PlayerMutationType::VULN_ELEM)) {
+    if (creature.get_mutations().has(PlayerMutationType::VULN_ELEM)) {
         result |= FLAG_CAUSE_MUTATION;
     }
 
     return result;
 }
 
-BIT_FLAGS has_resist_pois(PlayerType *player_ptr)
+BIT_FLAGS has_resist_pois(CreatureEntity &creature)
 {
-    BIT_FLAGS result = common_cause_flags(player_ptr, TR_RES_POIS);
+    BIT_FLAGS result = common_cause_flags(creature, TR_RES_POIS);
 
-    if (player_ptr->ult_res) {
+    if (creature.get_timed_effect(CreatureTimedEffect::ULTIMATE_RESISTANCE)) {
         result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
     }
 
     return result;
 }
 
-BIT_FLAGS has_resist_conf(PlayerType *player_ptr)
+BIT_FLAGS has_resist_conf(CreatureEntity &creature)
 {
-    BIT_FLAGS result = common_cause_flags(player_ptr, TR_RES_CONF);
+    BIT_FLAGS result = common_cause_flags(creature, TR_RES_CONF);
 
-    if (player_ptr->ppersonality == PERSONALITY_CHARGEMAN || player_ptr->ppersonality == PERSONALITY_MUNCHKIN) {
+    if (creature.ppersonality == PERSONALITY_CHARGEMAN || creature.ppersonality == PERSONALITY_MUNCHKIN) {
         result |= FLAG_CAUSE_PERSONALITY;
     }
 
-    if (player_ptr->ult_res || player_ptr->magicdef) {
+    if (creature.get_timed_effect(CreatureTimedEffect::ULTIMATE_RESISTANCE) || creature.get_timed_effect(CreatureTimedEffect::MAGICDEF)) {
         result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
     }
 
     return result;
 }
 
-BIT_FLAGS has_resist_sound(PlayerType *player_ptr)
+BIT_FLAGS has_resist_sound(CreatureEntity &creature)
 {
-    BIT_FLAGS result = common_cause_flags(player_ptr, TR_RES_SOUND);
+    BIT_FLAGS result = common_cause_flags(creature, TR_RES_SOUND);
 
-    if (player_ptr->ult_res) {
+    if (creature.get_timed_effect(CreatureTimedEffect::ULTIMATE_RESISTANCE)) {
         result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
     }
 
     return result;
 }
 
-BIT_FLAGS has_resist_lite(PlayerType *player_ptr)
+BIT_FLAGS has_resist_lite(CreatureEntity &creature)
 {
-    BIT_FLAGS result = common_cause_flags(player_ptr, TR_RES_LITE) | common_cause_flags(player_ptr, TR_IM_LITE);
+    BIT_FLAGS result = common_cause_flags(creature, TR_RES_LITE) | common_cause_flags(creature, TR_IM_LITE);
 
-    if (player_ptr->ult_res || player_ptr->tim_res_lite || player_ptr->mimic_form == MimicKindType::DEMIGOD) {
+    if (creature.get_timed_effect(CreatureTimedEffect::ULTIMATE_RESISTANCE) || creature.get_timed_effect(CreatureTimedEffect::TIM_RES_LITE) || creature.get_mimic_form() == MimicKindType::DEMIGOD) {
         result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
     }
 
     return result;
 }
 
-BIT_FLAGS has_vuln_lite(PlayerType *player_ptr)
+BIT_FLAGS has_vuln_lite(CreatureEntity &creature)
 {
-    BIT_FLAGS result = common_cause_flags(player_ptr, TR_VUL_LITE);
+    BIT_FLAGS result = common_cause_flags(creature, TR_VUL_LITE);
 
-    if (player_ptr->wraith_form) {
+    if (creature.get_timed_effect(CreatureTimedEffect::WRAITH_FORM)) {
         result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
     }
 
     return result;
 }
 
-BIT_FLAGS has_resist_dark(PlayerType *player_ptr)
+BIT_FLAGS has_resist_dark(CreatureEntity &creature)
 {
-    BIT_FLAGS result = common_cause_flags(player_ptr, TR_RES_DARK) | common_cause_flags(player_ptr, TR_IM_DARK);
+    BIT_FLAGS result = common_cause_flags(creature, TR_RES_DARK) | common_cause_flags(creature, TR_IM_DARK);
 
-    if (player_ptr->ult_res || player_ptr->tim_res_dark || player_ptr->tim_imm_dark) {
+    if (creature.get_timed_effect(CreatureTimedEffect::ULTIMATE_RESISTANCE) || creature.get_timed_effect(CreatureTimedEffect::TIM_RES_DARK) || creature.get_timed_effect(CreatureTimedEffect::TIM_IMM_DARK)) {
         result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
     }
 
     return result;
 }
 
-BIT_FLAGS has_resist_chaos(PlayerType *player_ptr)
+BIT_FLAGS has_resist_chaos(CreatureEntity &creature)
 {
-    BIT_FLAGS result = common_cause_flags(player_ptr, TR_RES_CHAOS);
+    BIT_FLAGS result = common_cause_flags(creature, TR_RES_CHAOS);
 
-    if (player_ptr->ult_res) {
+    if (creature.get_timed_effect(CreatureTimedEffect::ULTIMATE_RESISTANCE)) {
         result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
     }
 
     return result;
 }
 
-BIT_FLAGS has_resist_disen(PlayerType *player_ptr)
+BIT_FLAGS has_resist_disen(CreatureEntity &creature)
 {
-    BIT_FLAGS result = common_cause_flags(player_ptr, TR_RES_DISEN);
+    BIT_FLAGS result = common_cause_flags(creature, TR_RES_DISEN);
 
-    if (player_ptr->ult_res) {
+    if (creature.get_timed_effect(CreatureTimedEffect::ULTIMATE_RESISTANCE)) {
         result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
     }
 
     return result;
 }
 
-BIT_FLAGS has_resist_shard(PlayerType *player_ptr)
+BIT_FLAGS has_resist_shard(CreatureEntity &creature)
 {
-    BIT_FLAGS result = common_cause_flags(player_ptr, TR_RES_SHARDS);
+    BIT_FLAGS result = common_cause_flags(creature, TR_RES_SHARDS);
 
-    if (player_ptr->ult_res) {
+    if (creature.get_timed_effect(CreatureTimedEffect::ULTIMATE_RESISTANCE)) {
         result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
     }
 
     return result;
 }
 
-BIT_FLAGS has_resist_nexus(PlayerType *player_ptr)
+BIT_FLAGS has_resist_nexus(CreatureEntity &creature)
 {
-    BIT_FLAGS result = common_cause_flags(player_ptr, TR_RES_NEXUS);
+    BIT_FLAGS result = common_cause_flags(creature, TR_RES_NEXUS);
 
-    if (player_ptr->ult_res) {
+    if (creature.get_timed_effect(CreatureTimedEffect::ULTIMATE_RESISTANCE)) {
         result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
     }
 
     return result;
 }
 
-BIT_FLAGS has_resist_blind(PlayerType *player_ptr)
+BIT_FLAGS has_resist_blind(CreatureEntity &creature)
 {
-    BIT_FLAGS result = common_cause_flags(player_ptr, TR_RES_BLIND);
+    BIT_FLAGS result = common_cause_flags(creature, TR_RES_BLIND);
 
-    if (player_ptr->ppersonality == PERSONALITY_MUNCHKIN) {
+    if (creature.ppersonality == PERSONALITY_MUNCHKIN) {
         result |= FLAG_CAUSE_PERSONALITY;
     }
 
-    if (player_ptr->ult_res || player_ptr->magicdef) {
+    if (creature.get_timed_effect(CreatureTimedEffect::ULTIMATE_RESISTANCE) || creature.get_timed_effect(CreatureTimedEffect::MAGICDEF)) {
         result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
     }
 
     return result;
 }
 
-BIT_FLAGS has_resist_neth(PlayerType *player_ptr)
+BIT_FLAGS has_resist_neth(CreatureEntity &creature)
 {
-    BIT_FLAGS result = common_cause_flags(player_ptr, TR_RES_NETHER);
+    BIT_FLAGS result = common_cause_flags(creature, TR_RES_NETHER);
 
-    if (player_ptr->ult_res || player_ptr->tim_res_nether) {
+    if (creature.get_timed_effect(CreatureTimedEffect::ULTIMATE_RESISTANCE) || creature.get_timed_effect(CreatureTimedEffect::TIM_RES_NETHER)) {
         result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
     }
 
     return result;
 }
 
-BIT_FLAGS has_resist_time(PlayerType *player_ptr)
+BIT_FLAGS has_resist_time(CreatureEntity &creature)
 {
-    BIT_FLAGS result = common_cause_flags(player_ptr, TR_RES_TIME);
+    BIT_FLAGS result = common_cause_flags(creature, TR_RES_TIME);
 
-    if (player_ptr->ult_res || player_ptr->tim_res_time) {
+    if (creature.get_timed_effect(CreatureTimedEffect::ULTIMATE_RESISTANCE) || creature.get_timed_effect(CreatureTimedEffect::TIM_RES_TIME)) {
         result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
     }
 
     return result;
 }
 
-BIT_FLAGS has_resist_water(PlayerType *player_ptr)
+BIT_FLAGS has_resist_water(CreatureEntity &creature)
 {
-    BIT_FLAGS result = common_cause_flags(player_ptr, TR_RES_WATER);
+    BIT_FLAGS result = common_cause_flags(creature, TR_RES_WATER);
 
-    if (player_ptr->ult_res) {
+    if (creature.get_timed_effect(CreatureTimedEffect::ULTIMATE_RESISTANCE)) {
         result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
     }
 
@@ -1490,14 +1505,14 @@ BIT_FLAGS has_resist_water(PlayerType *player_ptr)
 
 /*!
  * @brief 呪力耐性を所持しているかどうか
- * @param プレイヤー情報への参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return 呪力耐性を所持していればTRUE、なければFALSE
  */
-BIT_FLAGS has_resist_curse(PlayerType *player_ptr)
+BIT_FLAGS has_resist_curse(CreatureEntity &creature)
 {
-    BIT_FLAGS result = common_cause_flags(player_ptr, TR_RES_CURSE);
+    BIT_FLAGS result = common_cause_flags(creature, TR_RES_CURSE);
 
-    if (player_ptr->ult_res) {
+    if (creature.get_timed_effect(CreatureTimedEffect::ULTIMATE_RESISTANCE)) {
         result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
     }
 
@@ -1506,15 +1521,15 @@ BIT_FLAGS has_resist_curse(PlayerType *player_ptr)
 
 /*!
  * @brief 呪力弱点を所持しているかどうか
- * @param プレイヤー情報への参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return 呪力弱点を所持していればTRUE、なければFALSE
  */
-BIT_FLAGS has_vuln_curse(PlayerType *player_ptr)
+BIT_FLAGS has_vuln_curse(CreatureEntity &creature)
 {
     ItemEntity *o_ptr;
     BIT_FLAGS result = 0L;
-    for (int i = INVEN_MAIN_HAND; i < INVEN_TOTAL; i++) {
-        o_ptr = player_ptr->inventory[i].get();
+    for (const auto i_idx : INVEN_WIELDING_SLOTS) {
+        o_ptr = creature.inventory[i_idx].get();
         if (!o_ptr->is_valid()) {
             continue;
         }
@@ -1522,7 +1537,7 @@ BIT_FLAGS has_vuln_curse(PlayerType *player_ptr)
         const auto flags = o_ptr->get_flags();
 
         if (flags.has(TR_VUL_CURSE) || o_ptr->curse_flags.has(CurseTraitType::VUL_CURSE)) {
-            set_bits(result, convert_inventory_slot_type_to_flag_cause(i2enum<inventory_slot_type>(i)));
+            set_bits(result, convert_inventory_slot_type_to_flag_cause(i_idx));
         }
     }
 
@@ -1531,15 +1546,15 @@ BIT_FLAGS has_vuln_curse(PlayerType *player_ptr)
 
 /*!
  * @brief 呪力弱点かつ重く呪われている装備の有無
- * @param プレイヤー情報への参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return 呪力弱点かつ重く呪われている装備があればTRUE、なければFALSE
  */
-BIT_FLAGS has_heavy_vuln_curse(PlayerType *player_ptr)
+BIT_FLAGS has_heavy_vuln_curse(CreatureEntity &creature)
 {
     ItemEntity *o_ptr;
     BIT_FLAGS result = 0L;
-    for (int i = INVEN_MAIN_HAND; i < INVEN_TOTAL; i++) {
-        o_ptr = player_ptr->inventory[i].get();
+    for (const auto i_idx : INVEN_WIELDING_SLOTS) {
+        o_ptr = creature.inventory[i_idx].get();
         if (!o_ptr->is_valid()) {
             continue;
         }
@@ -1547,34 +1562,34 @@ BIT_FLAGS has_heavy_vuln_curse(PlayerType *player_ptr)
         const auto flags = o_ptr->get_flags();
 
         if ((flags.has(TR_VUL_CURSE) || o_ptr->curse_flags.has(CurseTraitType::VUL_CURSE)) && o_ptr->curse_flags.has(CurseTraitType::HEAVY_CURSE)) {
-            set_bits(result, convert_inventory_slot_type_to_flag_cause(i2enum<inventory_slot_type>(i)));
+            set_bits(result, convert_inventory_slot_type_to_flag_cause(i_idx));
         }
     }
 
     return result;
 }
 
-BIT_FLAGS has_resist_fear(PlayerType *player_ptr)
+BIT_FLAGS has_resist_fear(CreatureEntity &creature)
 {
-    BIT_FLAGS result = common_cause_flags(player_ptr, TR_RES_FEAR);
+    BIT_FLAGS result = common_cause_flags(creature, TR_RES_FEAR);
 
-    if (player_ptr->muta.has(PlayerMutationType::FEARLESS)) {
+    if (creature.get_mutations().has(PlayerMutationType::FEARLESS)) {
         result |= FLAG_CAUSE_MUTATION;
     }
 
-    if (is_hero(player_ptr) || is_shero(player_ptr) || player_ptr->ult_res || player_ptr->tim_res_fear) {
+    if (creature.is_hero() || creature.is_shero() || creature.get_timed_effect(CreatureTimedEffect::ULTIMATE_RESISTANCE) || creature.get_timed_effect(CreatureTimedEffect::TIM_RES_FEAR)) {
         result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
     }
 
     return result;
 }
 
-BIT_FLAGS has_immune_acid(PlayerType *player_ptr)
+BIT_FLAGS has_immune_acid(CreatureEntity &creature)
 {
-    BIT_FLAGS result = common_cause_flags(player_ptr, TR_IM_ACID);
+    BIT_FLAGS result = common_cause_flags(creature, TR_IM_ACID);
 
-    if (player_ptr->ele_immune) {
-        if (player_ptr->special_defense & DEFENSE_ACID) {
+    if (creature.get_timed_effect(CreatureTimedEffect::ELE_IMMUNE)) {
+        if (creature.has_special_defense(DEFENSE_ACID)) {
             result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
         }
     }
@@ -1582,12 +1597,12 @@ BIT_FLAGS has_immune_acid(PlayerType *player_ptr)
     return result;
 }
 
-BIT_FLAGS has_immune_elec(PlayerType *player_ptr)
+BIT_FLAGS has_immune_elec(CreatureEntity &creature)
 {
-    BIT_FLAGS result = common_cause_flags(player_ptr, TR_IM_ELEC);
+    BIT_FLAGS result = common_cause_flags(creature, TR_IM_ELEC);
 
-    if (player_ptr->ele_immune) {
-        if (player_ptr->special_defense & DEFENSE_ELEC) {
+    if (creature.get_timed_effect(CreatureTimedEffect::ELE_IMMUNE)) {
+        if (creature.has_special_defense(DEFENSE_ELEC)) {
             result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
         }
     }
@@ -1595,12 +1610,12 @@ BIT_FLAGS has_immune_elec(PlayerType *player_ptr)
     return result;
 }
 
-BIT_FLAGS has_immune_fire(PlayerType *player_ptr)
+BIT_FLAGS has_immune_fire(CreatureEntity &creature)
 {
-    BIT_FLAGS result = common_cause_flags(player_ptr, TR_IM_FIRE);
+    BIT_FLAGS result = common_cause_flags(creature, TR_IM_FIRE);
 
-    if (player_ptr->ele_immune) {
-        if (player_ptr->special_defense & DEFENSE_FIRE) {
+    if (creature.get_timed_effect(CreatureTimedEffect::ELE_IMMUNE)) {
+        if (creature.has_special_defense(DEFENSE_FIRE)) {
             result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
         }
     }
@@ -1608,12 +1623,12 @@ BIT_FLAGS has_immune_fire(PlayerType *player_ptr)
     return result;
 }
 
-BIT_FLAGS has_immune_cold(PlayerType *player_ptr)
+BIT_FLAGS has_immune_cold(CreatureEntity &creature)
 {
-    BIT_FLAGS result = common_cause_flags(player_ptr, TR_IM_COLD);
+    BIT_FLAGS result = common_cause_flags(creature, TR_IM_COLD);
 
-    if (player_ptr->ele_immune) {
-        if (player_ptr->special_defense & DEFENSE_COLD) {
+    if (creature.get_timed_effect(CreatureTimedEffect::ELE_IMMUNE)) {
+        if (creature.has_special_defense(DEFENSE_COLD)) {
             result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
         }
     }
@@ -1621,52 +1636,52 @@ BIT_FLAGS has_immune_cold(PlayerType *player_ptr)
     return result;
 }
 
-BIT_FLAGS has_immune_dark(PlayerType *player_ptr)
+BIT_FLAGS has_immune_dark(CreatureEntity &creature)
 {
-    BIT_FLAGS result = common_cause_flags(player_ptr, TR_IM_DARK);
+    BIT_FLAGS result = common_cause_flags(creature, TR_IM_DARK);
 
-    if (player_ptr->wraith_form || player_ptr->tim_imm_dark) {
+    if (creature.get_timed_effect(CreatureTimedEffect::WRAITH_FORM) || creature.get_timed_effect(CreatureTimedEffect::TIM_IMM_DARK)) {
         result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
     }
 
     return result;
 }
 
-BIT_FLAGS has_immune_lite(PlayerType *player_ptr)
+BIT_FLAGS has_immune_lite(CreatureEntity &creature)
 {
-    BIT_FLAGS result = common_cause_flags(player_ptr, TR_IM_LITE);
-    if (player_ptr->mimic_form == MimicKindType::DEMIGOD) {
+    BIT_FLAGS result = common_cause_flags(creature, TR_IM_LITE);
+    if (creature.get_mimic_form() == MimicKindType::DEMIGOD) {
         result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
     }
     return result;
 }
 
-melee_type player_melee_type(PlayerType *player_ptr)
+melee_type player_melee_type(CreatureEntity &creature)
 {
-    if (has_two_handed_weapons(player_ptr)) {
+    if (has_two_handed_weapons(creature)) {
         return MELEE_TYPE_WEAPON_TWOHAND;
     }
 
-    if (has_melee_weapon(player_ptr, INVEN_MAIN_HAND)) {
-        if (has_melee_weapon(player_ptr, INVEN_SUB_HAND)) {
+    if (has_melee_weapon(creature, INVEN_MAIN_HAND)) {
+        if (has_melee_weapon(creature, INVEN_SUB_HAND)) {
             return MELEE_TYPE_WEAPON_DOUBLE;
         }
         return MELEE_TYPE_WEAPON_MAIN;
     }
 
-    if (has_melee_weapon(player_ptr, INVEN_SUB_HAND)) {
+    if (has_melee_weapon(creature, INVEN_SUB_HAND)) {
         return MELEE_TYPE_WEAPON_SUB;
     }
 
-    if (empty_hands(player_ptr, false) == (EMPTY_HAND_MAIN | EMPTY_HAND_SUB)) {
+    if (empty_hands(creature, false) == (EMPTY_HAND_MAIN | EMPTY_HAND_SUB)) {
         return MELEE_TYPE_BAREHAND_TWO;
     }
 
-    if (empty_hands(player_ptr, false) == EMPTY_HAND_MAIN) {
+    if (empty_hands(creature, false) == EMPTY_HAND_MAIN) {
         return MELEE_TYPE_BAREHAND_MAIN;
     }
 
-    if (empty_hands(player_ptr, false) == EMPTY_HAND_SUB) {
+    if (empty_hands(creature, false) == EMPTY_HAND_SUB) {
         return MELEE_TYPE_BAREHAND_SUB;
     }
 
@@ -1679,13 +1694,13 @@ melee_type player_melee_type(PlayerType *player_ptr)
  *        利き手が素手かつ左手も素手もしくは盾を装備している事を意味する。
  * @details Includes martial arts and hand combats as weapons.
  */
-bool can_attack_with_main_hand(PlayerType *player_ptr)
+bool can_attack_with_main_hand(CreatureEntity &creature)
 {
-    if (has_melee_weapon(player_ptr, INVEN_MAIN_HAND)) {
+    if (has_melee_weapon(creature, INVEN_MAIN_HAND)) {
         return true;
     }
 
-    if ((empty_hands(player_ptr, true) & EMPTY_HAND_MAIN) && !can_attack_with_sub_hand(player_ptr)) {
+    if ((empty_hands(creature, true) & EMPTY_HAND_MAIN) && !can_attack_with_sub_hand(creature)) {
         return true;
     }
 
@@ -1697,46 +1712,46 @@ bool can_attack_with_main_hand(PlayerType *player_ptr)
  *        非利き手で攻撃可能とは、非利き手に武器を持っている事に等しい
  * @details Exclude martial arts and hand combats from weapons.
  */
-bool can_attack_with_sub_hand(PlayerType *player_ptr)
+bool can_attack_with_sub_hand(CreatureEntity &creature)
 {
-    return has_melee_weapon(player_ptr, INVEN_SUB_HAND);
+    return has_melee_weapon(creature, INVEN_SUB_HAND);
 }
 
 /*
  * @brief 両手持ち状態かどうかを判定する
  */
-bool has_two_handed_weapons(PlayerType *player_ptr)
+bool has_two_handed_weapons(CreatureEntity &creature)
 {
-    if (can_two_hands_wielding(player_ptr)) {
-        if (can_attack_with_main_hand(player_ptr) && (empty_hands(player_ptr, false) == EMPTY_HAND_SUB) && player_ptr->inventory[INVEN_MAIN_HAND]->allow_two_hands_wielding()) {
+    if (can_two_hands_wielding(creature)) {
+        if (can_attack_with_main_hand(creature) && (empty_hands(creature, false) == EMPTY_HAND_SUB) && creature.inventory[INVEN_MAIN_HAND]->allow_two_hands_wielding()) {
             return true;
-        } else if (can_attack_with_sub_hand(player_ptr) && (empty_hands(player_ptr, false) == EMPTY_HAND_MAIN) && player_ptr->inventory[INVEN_SUB_HAND]->allow_two_hands_wielding()) {
+        } else if (can_attack_with_sub_hand(creature) && (empty_hands(creature, false) == EMPTY_HAND_MAIN) && creature.inventory[INVEN_SUB_HAND]->allow_two_hands_wielding()) {
             return true;
         }
     }
     return false;
 }
 
-BIT_FLAGS has_lite(PlayerType *player_ptr)
+BIT_FLAGS has_lite(CreatureEntity &creature)
 {
     BIT_FLAGS result = 0L;
-    if (PlayerClass(player_ptr).equals(PlayerClassType::NINJA)) {
+    if (CreatureClass(creature).equals(PlayerClassType::NINJA)) {
         return 0L;
     }
 
-    if (player_ptr->ppersonality == PERSONALITY_MUNCHKIN) {
+    if (creature.ppersonality == PERSONALITY_MUNCHKIN) {
         result |= FLAG_CAUSE_PERSONALITY;
     }
 
-    if (PlayerRace(player_ptr).tr_flags().has(TR_LITE_1)) {
+    if (CreatureRace(&creature).tr_flags().has(TR_LITE_1)) {
         result |= FLAG_CAUSE_RACE;
     }
 
-    if (player_ptr->ult_res) {
+    if (creature.get_timed_effect(CreatureTimedEffect::ULTIMATE_RESISTANCE)) {
         result |= FLAG_CAUSE_MAGIC_TIME_EFFECT;
     }
 
-    result |= has_sh_fire(player_ptr);
+    result |= has_sh_fire(creature);
 
     return result;
 }
@@ -1747,11 +1762,11 @@ BIT_FLAGS has_lite(PlayerType *player_ptr)
  *  Only can get hit bonuses when wieids an enough light weapon which is lighter than 5 times of weight limit.
  *  If its weight is 10 times heavier or more than weight limit, gets hit penalty in calc_to_hit().
  */
-bool has_disable_two_handed_bonus(PlayerType *player_ptr, int i)
+bool has_disable_two_handed_bonus(CreatureEntity &creature, int i)
 {
-    if (has_melee_weapon(player_ptr, INVEN_MAIN_HAND + i) && has_two_handed_weapons(player_ptr)) {
-        auto *o_ptr = player_ptr->inventory[INVEN_MAIN_HAND + i].get();
-        int limit = calc_weapon_weight_limit(player_ptr);
+    if (has_melee_weapon(creature, INVEN_MAIN_HAND + i) && has_two_handed_weapons(creature)) {
+        auto *o_ptr = creature.inventory[INVEN_MAIN_HAND + i].get();
+        int limit = calc_weapon_weight_limit(creature);
 
         /* Enable when two hand wields an enough light weapon */
         if (limit >= o_ptr->weight / 5) {
@@ -1767,14 +1782,14 @@ bool has_disable_two_handed_bonus(PlayerType *player_ptr, int i)
  * @brief ふさわしくない武器を持っているかどうかを返す。
  * @todo 相応しい時にFALSEで相応しくない時にTRUEという負論理は良くない、後で修正する
  */
-bool is_wielding_icky_weapon(PlayerType *player_ptr, int i)
+bool is_wielding_icky_weapon(CreatureEntity &creature, int i)
 {
-    const auto *o_ptr = player_ptr->inventory[INVEN_MAIN_HAND + i].get();
+    const auto *o_ptr = creature.inventory[INVEN_MAIN_HAND + i].get();
     const auto flags = o_ptr->get_flags();
 
     const auto tval = o_ptr->bi_key.tval();
     const auto has_no_weapon = (tval == ItemKindType::NONE) || (tval == ItemKindType::SHIELD);
-    PlayerClass pc(player_ptr);
+    CreatureClass pc(creature);
     if (pc.equals(PlayerClassType::PRIEST)) {
         auto is_suitable_weapon = flags.has(TR_BLESSED);
         is_suitable_weapon |= (tval != ItemKindType::SWORD) && (tval != ItemKindType::POLEARM);
@@ -1787,79 +1802,78 @@ bool is_wielding_icky_weapon(PlayerType *player_ptr, int i)
         return !has_no_weapon && !is_suitable_weapon;
     }
 
-    return has_not_monk_weapon(player_ptr, i) || has_not_ninja_weapon(player_ptr, i);
+    return has_not_monk_weapon(creature, i) || has_not_ninja_weapon(creature, i);
 }
 
 /*!
  * @brief 乗馬にふさわしくない武器を持って乗馬しているかどうかを返す.
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param i 武器を持っている手。0ならば利き手、1ならば反対の手
  */
 bool is_wielding_icky_riding_weapon(CreatureEntity &creature, int i)
 {
-    auto *player_ptr = dynamic_cast<PlayerType *>(&creature);
-    if (!player_ptr) {
+    if (!creature.is_player()) {
         return false;
     }
 
-    const auto *o_ptr = player_ptr->inventory[INVEN_MAIN_HAND + i].get();
+    const auto *o_ptr = creature.inventory[INVEN_MAIN_HAND + i].get();
     const auto flags = o_ptr->get_flags();
     const auto tval = o_ptr->bi_key.tval();
     const auto has_no_weapon = (tval == ItemKindType::NONE) || (tval == ItemKindType::SHIELD);
     const auto is_suitable = o_ptr->is_lance() || flags.has(TR_RIDING);
-    return (creature.riding > 0) && !has_no_weapon && !is_suitable;
+    return (creature.get_riding() > 0) && !has_no_weapon && !is_suitable;
 }
 
-bool has_not_ninja_weapon(PlayerType *player_ptr, int i)
+bool has_not_ninja_weapon(CreatureEntity &creature, int i)
 {
-    if (!has_melee_weapon(player_ptr, INVEN_MAIN_HAND + i)) {
+    if (!has_melee_weapon(creature, INVEN_MAIN_HAND + i)) {
         return false;
     }
 
-    const auto &item = *player_ptr->inventory[INVEN_MAIN_HAND + i];
+    const auto &item = *creature.inventory[INVEN_MAIN_HAND + i];
     const auto tval = item.bi_key.tval();
     const auto sval = *item.bi_key.sval();
-    return PlayerClass(player_ptr).equals(PlayerClassType::NINJA) &&
-           !((player_ptr->weapon_exp_max[tval][sval] > PlayerSkill::weapon_exp_at(PlayerSkillRank::BEGINNER)) &&
-               (player_ptr->inventory[INVEN_SUB_HAND - i]->bi_key.tval() != ItemKindType::SHIELD));
+    return CreatureClass(creature).equals(PlayerClassType::NINJA) &&
+           !((creature.weapon_exp_max[tval][sval] > PlayerSkill::weapon_exp_at(PlayerSkillRank::BEGINNER)) &&
+               (creature.inventory[INVEN_SUB_HAND - i]->bi_key.tval() != ItemKindType::SHIELD));
 }
 
-bool has_not_monk_weapon(PlayerType *player_ptr, int i)
+bool has_not_monk_weapon(CreatureEntity &creature, int i)
 {
-    if (!has_melee_weapon(player_ptr, INVEN_MAIN_HAND + i)) {
+    if (!has_melee_weapon(creature, INVEN_MAIN_HAND + i)) {
         return false;
     }
 
-    const auto &item = *player_ptr->inventory[INVEN_MAIN_HAND + i];
+    const auto &item = *creature.inventory[INVEN_MAIN_HAND + i];
     const auto tval = item.bi_key.tval();
     const auto sval = *item.bi_key.sval();
-    PlayerClass pc(player_ptr);
-    return pc.is_martial_arts_pro() && (player_ptr->weapon_exp_max[tval][sval] == PlayerSkill::weapon_exp_at(PlayerSkillRank::UNSKILLED));
+    CreatureClass pc(creature);
+    return pc.is_martial_arts_pro() && (creature.weapon_exp_max[tval][sval] == PlayerSkill::weapon_exp_at(PlayerSkillRank::UNSKILLED));
 }
 
-bool has_good_luck(PlayerType *player_ptr)
+bool has_good_luck(CreatureEntity &creature)
 {
-    return (player_ptr->ppersonality == PERSONALITY_LUCKY) || (player_ptr->muta.has(PlayerMutationType::GOOD_LUCK));
+    return (creature.ppersonality == PERSONALITY_LUCKY) || (creature.get_mutations().has(PlayerMutationType::GOOD_LUCK));
 }
 
-bool has_pervert_attraction(PlayerType *player_ptr)
+bool has_pervert_attraction(CreatureEntity &creature)
 {
-    return (player_ptr->ppersonality == PERSONALITY_MESUGAKI) || (player_ptr->muta.has(PlayerMutationType::ATT_PERVERT));
+    return (creature.ppersonality == PERSONALITY_MESUGAKI) || (creature.get_mutations().has(PlayerMutationType::ATT_PERVERT));
 }
 
 /**
  * @brief プレイヤーが怒りを買う呪いを持っているかどうかを返す。
  * @note 馬鹿馬鹿独自仕様
  */
-BIT_FLAGS player_aggravate_state(PlayerType *player_ptr)
+BIT_FLAGS player_aggravate_state(CreatureEntity &creature)
 {
     auto flags = 0L;
-    if (player_ptr->cursed.has(CurseTraitType::NASTY_AGGRAVATE)) {
+    if (creature.get_cursed_flags().has(CurseTraitType::NASTY_AGGRAVATE)) {
         flags |= NASTY_AGGRAVATE;
     }
 
-    if (player_ptr->cursed.has(CurseTraitType::AGGRAVATE)) {
-        if ((PlayerRace(player_ptr).equals(PlayerRaceType::S_FAIRY)) && (player_ptr->ppersonality != PERSONALITY_SEXY)) {
+    if (creature.get_cursed_flags().has(CurseTraitType::AGGRAVATE)) {
+        if ((CreatureRace(&creature).equals(PlayerRaceType::S_FAIRY)) && (creature.ppersonality != PERSONALITY_SEXY)) {
             return flags | AGGRAVATE_S_FAIRY;
         }
         return flags | AGGRAVATE_NORMAL;
@@ -1868,12 +1882,12 @@ BIT_FLAGS player_aggravate_state(PlayerType *player_ptr)
     return flags;
 }
 
-bool has_aggravate(PlayerType *player_ptr)
+bool has_aggravate(CreatureEntity &creature)
 {
-    return player_aggravate_state(player_ptr) & AGGRAVATE_NORMAL;
+    return player_aggravate_state(creature) & AGGRAVATE_NORMAL;
 }
 
-bool has_aggravate_nasty(PlayerType *player_ptr)
+bool has_aggravate_nasty(CreatureEntity &creature)
 {
-    return player_aggravate_state(player_ptr) & NASTY_AGGRAVATE;
+    return player_aggravate_state(creature) & NASTY_AGGRAVATE;
 }

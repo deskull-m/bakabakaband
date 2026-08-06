@@ -2,6 +2,6 @@
 
 #include "system/angband.h"
 
-class PlayerType;
-bool polymorph_monster(PlayerType *player_ptr, POSITION y, POSITION x);
-bool trans_sex(PlayerType *player_ptr);
+class CreatureEntity;
+bool polymorph_monster(CreatureEntity &creature, POSITION y, POSITION x);
+bool trans_sex(CreatureEntity &creature);

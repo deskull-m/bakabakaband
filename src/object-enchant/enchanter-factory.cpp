@@ -26,50 +26,51 @@
 #include "object-enchant/weapon/apply-magic-polearm.h"
 #include "object-enchant/weapon/apply-magic-sword.h"
 #include "object/tval-types.h"
+#include "system/creature-entity.h"
 #include "system/item-entity.h"
 
-std::unique_ptr<EnchanterBase> EnchanterFactory::create_enchanter(PlayerType *player_ptr, ItemEntity *o_ptr, int lev, int power)
+std::unique_ptr<EnchanterBase> EnchanterFactory::create_enchanter(CreatureEntity &creature, ItemEntity *o_ptr, int lev, int power)
 {
     switch (o_ptr->bi_key.tval()) {
     case ItemKindType::SHOT:
     case ItemKindType::ARROW:
     case ItemKindType::BOLT:
-        return std::make_unique<ArrowEnchanter>(player_ptr, o_ptr, lev, power);
+        return std::make_unique<ArrowEnchanter>(creature, o_ptr, lev, power);
     case ItemKindType::BOW:
-        return std::make_unique<BowEnchanter>(player_ptr, o_ptr, lev, power);
+        return std::make_unique<BowEnchanter>(creature, o_ptr, lev, power);
     case ItemKindType::DIGGING:
-        return std::make_unique<DiggingEnchanter>(player_ptr, o_ptr, lev, power);
+        return std::make_unique<DiggingEnchanter>(creature, o_ptr, lev, power);
     case ItemKindType::HAFTED:
-        return std::make_unique<HaftedEnchanter>(player_ptr, o_ptr, lev, power);
+        return std::make_unique<HaftedEnchanter>(creature, o_ptr, lev, power);
     case ItemKindType::POLEARM:
-        return std::make_unique<PolearmEnchanter>(player_ptr, o_ptr, lev, power);
+        return std::make_unique<PolearmEnchanter>(creature, o_ptr, lev, power);
     case ItemKindType::SWORD:
-        return std::make_unique<SwordEnchanter>(player_ptr, o_ptr, lev, power);
+        return std::make_unique<SwordEnchanter>(creature, o_ptr, lev, power);
     case ItemKindType::BOOTS:
-        return std::make_unique<BootsEnchanter>(player_ptr, o_ptr, lev, power);
+        return std::make_unique<BootsEnchanter>(creature, o_ptr, lev, power);
     case ItemKindType::GLOVES:
-        return std::make_unique<GlovesEnchanter>(player_ptr, o_ptr, lev, power);
+        return std::make_unique<GlovesEnchanter>(creature, o_ptr, lev, power);
     case ItemKindType::HELM:
-        return std::make_unique<HelmEnchanter>(player_ptr, o_ptr, lev, power);
+        return std::make_unique<HelmEnchanter>(creature, o_ptr, lev, power);
     case ItemKindType::CROWN:
-        return std::make_unique<CrownEnchanter>(player_ptr, o_ptr, lev, power);
+        return std::make_unique<CrownEnchanter>(creature, o_ptr, lev, power);
     case ItemKindType::SHIELD:
-        return std::make_unique<ShieldEnchanter>(player_ptr, o_ptr, lev, power);
+        return std::make_unique<ShieldEnchanter>(creature, o_ptr, lev, power);
     case ItemKindType::CLOAK:
-        return std::make_unique<CloakEnchanter>(player_ptr, o_ptr, lev, power);
+        return std::make_unique<CloakEnchanter>(creature, o_ptr, lev, power);
     case ItemKindType::SOFT_ARMOR:
-        return std::make_unique<SoftArmorEnchanter>(player_ptr, o_ptr, lev, power);
+        return std::make_unique<SoftArmorEnchanter>(creature, o_ptr, lev, power);
     case ItemKindType::HARD_ARMOR:
-        return std::make_unique<HardArmorEnchanter>(player_ptr, o_ptr, lev, power);
+        return std::make_unique<HardArmorEnchanter>(creature, o_ptr, lev, power);
     case ItemKindType::DRAG_ARMOR:
-        return std::make_unique<DragonArmorEnchanter>(player_ptr, o_ptr, lev, power);
+        return std::make_unique<DragonArmorEnchanter>(creature, o_ptr, lev, power);
     case ItemKindType::LITE:
-        return std::make_unique<LiteEnchanter>(player_ptr, o_ptr, power);
+        return std::make_unique<LiteEnchanter>(creature, o_ptr, power);
     case ItemKindType::AMULET:
-        return std::make_unique<AmuletEnchanter>(player_ptr, o_ptr, lev, power);
+        return std::make_unique<AmuletEnchanter>(creature, o_ptr, lev, power);
     case ItemKindType::RING:
-        return std::make_unique<RingEnchanter>(player_ptr, o_ptr, lev, power);
+        return std::make_unique<RingEnchanter>(creature, o_ptr, lev, power);
     default:
-        return std::make_unique<OtherItemsEnchanter>(player_ptr, o_ptr);
+        return std::make_unique<OtherItemsEnchanter>(creature, o_ptr);
     }
 }

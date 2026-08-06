@@ -33,6 +33,7 @@ std::set<int> str_find_all_multibyte_chars(std::string_view str);
 tl::optional<int> str_to_int(std::string_view str, int base = 10);
 tl::optional<std::string_view> extract_suffix(std::string_view str, char find);
 tl::optional<std::string_view> extract_suffix(std::string_view str, std::string_view find);
+int count_digits(int value, int base = 10);
 char hexify_upper(uint8_t value);
 char hexify_lower(uint8_t value);
 char octify(uint8_t i);

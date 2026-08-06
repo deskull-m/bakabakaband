@@ -5,8 +5,8 @@
 #include "store/store-owners.h"
 #include "store/store-util.h"
 #include "store/store.h"
+#include "system/creature-entity.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "util/enum-converter.h"
 
 /*!
@@ -31,15 +31,15 @@
  * "greed" value is always something (?).
  * </pre>
  */
-int price_item(PlayerType *player_ptr, const ItemEntity *o_ptr, int greed, bool flip, StoreSaleType store_num)
+int price_item(CreatureEntity &creature, const ItemEntity *o_ptr, int greed, bool flip, StoreSaleType store_num)
 {
     auto price = o_ptr->calc_price();
     if (price <= 0) {
         return 0L;
     }
 
-    int factor = rgold_adj[enum2i(ot_ptr->owner_race)][enum2i(player_ptr->prace)] - std::min(player_ptr->prestige / 10, 30);
-    factor += adj_chr_gold[player_ptr->stat_index[A_CHR]];
+    int factor = rgold_adj[enum2i(ot_ptr->owner_race)][enum2i(creature.prace)] - std::min(creature.get_prestige() / 10, 30);
+    factor += adj_chr_gold[creature.get_stat_index(A_CHR)];
     int adjust;
     if (flip) {
         adjust = 100 + (300 - (greed + factor));

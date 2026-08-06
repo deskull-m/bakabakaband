@@ -6,48 +6,43 @@
  */
 
 #include "player-status/player-energy.h"
-#include "system/player-type-definition.h"
+#include "system/creature-entity.h"
 
-PlayerEnergy::PlayerEnergy(PlayerType *player_ptr)
+PlayerEnergy::PlayerEnergy(CreatureEntity &creature)
 {
-    this->player_ptr = player_ptr;
+    this->creature_ptr = &creature;
 }
 
 /*
  * @brief プレイヤーの行動エネルギーを更新する
- * @param player_ptr プレイヤーの参照ポインタ
  * @param need_cost 行動エネルギー
  * @param ut_type 現在値に対する演算方法
  */
 void PlayerEnergy::set_player_turn_energy(ENERGY need_cost)
 {
-    this->player_ptr->energy_use = need_cost;
+    this->creature_ptr->set_energy_use(need_cost);
 }
 
 void PlayerEnergy::add_player_turn_energy(ENERGY need_cost)
 {
-    this->player_ptr->energy_use += need_cost;
+    this->creature_ptr->add_energy_use(need_cost);
 }
 
 void PlayerEnergy::sub_player_turn_energy(ENERGY need_cost)
 {
-    this->player_ptr->energy_use -= need_cost;
+    this->creature_ptr->sub_energy_use(need_cost);
 }
 
 void PlayerEnergy::mul_player_turn_energy(ENERGY need_cost)
 {
-    this->player_ptr->energy_use *= need_cost;
+    this->creature_ptr->mul_energy_use(need_cost);
 }
 
 void PlayerEnergy::div_player_turn_energy(ENERGY need_cost)
 {
-    this->player_ptr->energy_use /= need_cost;
+    this->creature_ptr->div_energy_use(need_cost);
 }
 
-/*
- * @brief ターン消費をなくす (主にコマンド実行に失敗した場合)
- * @param PlayerType プレイヤーへの参照ポインタ
- */
 void PlayerEnergy::reset_player_turn()
 {
     set_player_turn_energy(0);

@@ -5,15 +5,15 @@
 #include "util/point-2d.h"
 
 class Direction;
-class PlayerType;
-bool teleport_monster(PlayerType *player_ptr, const Direction &dir, int distance);
-bool teleport_swap(PlayerType *player_ptr, const Direction &dir);
-bool teleport_away(PlayerType *player_ptr, MONSTER_IDX m_idx, POSITION dis, teleport_flags mode);
-void teleport_monster_to(PlayerType *player_ptr, MONSTER_IDX m_idx, POSITION ty, POSITION tx, int power, teleport_flags mode);
-bool teleport_player_aux(PlayerType *player_ptr, POSITION dis, bool is_quantum_effect, teleport_flags mode);
-void teleport_player(PlayerType *player_ptr, POSITION dis, BIT_FLAGS mode);
-void teleport_player_away(MONSTER_IDX m_idx, PlayerType *player_ptr, POSITION dis, bool is_quantum_effect);
-void teleport_player_to(PlayerType *player_ptr, POSITION ny, POSITION nx, teleport_flags mode);
-void teleport_away_followable(PlayerType *player_ptr, MONSTER_IDX m_idx);
-bool dimension_door(PlayerType *player_ptr);
-bool exe_dimension_door(PlayerType *player_ptr, const Pos2D &pos);
+class CreatureEntity;
+bool teleport_monster(CreatureEntity &creature, const Direction &dir, int distance);
+bool teleport_swap(CreatureEntity &creature, const Direction &dir);
+bool teleport_away(CreatureEntity &creature, MONSTER_IDX m_idx, POSITION dis, teleport_flags mode);
+void teleport_monster_to(CreatureEntity &creature, MONSTER_IDX m_idx, POSITION ty, POSITION tx, int power, teleport_flags mode);
+bool teleport_player_aux(CreatureEntity &creature, POSITION dis, bool is_quantum_effect, teleport_flags mode);
+void teleport_player(CreatureEntity &creature, POSITION dis, BIT_FLAGS mode);
+void teleport_player_away(MONSTER_IDX m_idx, CreatureEntity &creature, POSITION dis, bool is_quantum_effect);
+void teleport_player_to(CreatureEntity &creature, POSITION ny, POSITION nx, teleport_flags mode);
+void teleport_away_followable(CreatureEntity &creature, MONSTER_IDX m_idx);
+bool dimension_door(CreatureEntity &creature);
+bool exe_dimension_door(CreatureEntity &creature, const Pos2D &pos);

@@ -1,4 +1,5 @@
 #include "cmd-visual/cmd-draw.h"
+#include "bot/bot-json-output.h"
 #include "core/asking-player.h"
 #include "core/stuff-handler.h"
 #include "core/window-redrawer.h"
@@ -8,15 +9,10 @@
 #include "locale/japanese.h"
 #include "main/sound-of-music.h"
 #include "player-base/player-race.h"
-#include "player-info/class-info.h"
-#include "player-info/race-info.h"
 #include "player-info/race-types.h"
-#include "player/player-status-table.h"
-#include "player/player-status.h"
 #include "player/process-name.h"
 #include "racial/racial-android.h"
-#include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
+#include "system/creature-entity.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "term/gameterm.h"
@@ -35,7 +31,7 @@
 /*!
  * @brief 画面を再描画するコマンドのメインルーチン
  * Hack -- redraw the screen
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @details
  * <pre>
  * This command performs various low level updates, clears all the "extra"
@@ -47,7 +43,7 @@
  * the "TERM_XTRA_REACT" hook before redrawing the windows.
  * </pre>
  */
-void do_cmd_redraw(PlayerType *player_ptr)
+void do_cmd_redraw(CreatureEntity &creature)
 {
     term_xtra(TERM_XTRA_REACT, 0);
 
@@ -89,9 +85,9 @@ void do_cmd_redraw(PlayerType *player_ptr)
     };
     rfu.set_flags(flags_swrf);
     AngbandWorld::get_instance().play_time.update();
-    handle_stuff(player_ptr);
-    if (PlayerRace(player_ptr).equals(PlayerRaceType::ANDROID)) {
-        calc_android_exp(player_ptr);
+    handle_stuff(creature);
+    if (CreatureRace(&creature).equals(PlayerRaceType::ANDROID)) {
+        calc_android_exp(creature);
     }
 
     term_type *old = game_term;
@@ -107,16 +103,21 @@ void do_cmd_redraw(PlayerType *player_ptr)
     }
 }
 
-static tl::optional<int> input_status_command(PlayerType *player_ptr, int page)
+static tl::optional<int> input_status_command(CreatureEntity &creature, int page)
 {
     auto c = inkey();
     switch (c) {
     case 'c':
-        get_name(player_ptr);
-        process_player_name(player_ptr);
+        // 名前変更はプレイヤー専用（モンスターにはグローバル sp_ptr 等に依存する描画処理が不可）
+        if (!creature.is_player()) {
+            bell();
+            return page;
+        }
+        get_name(creature);
+        process_player_name(creature);
         return page;
     case 'f': {
-        const auto initial_filename = format("%s.txt", player_ptr->base_name.data());
+        const auto initial_filename = format("%s.txt", creature.base_name.data());
         const auto input_filename = input_string(_("ファイル名: ", "File name: "), 80, initial_filename);
         if (!input_filename.has_value()) {
             return page;
@@ -125,13 +126,13 @@ static tl::optional<int> input_status_command(PlayerType *player_ptr, int page)
         const auto &filename = str_ltrim(input_filename.value());
         if (!filename.empty()) {
             AngbandWorld::get_instance().play_time.update();
-            file_character(player_ptr, filename);
+            file_character(creature, filename);
         }
 
         return page;
     }
     case 'g': {
-        const auto initial_filename = format("%s.json", player_ptr->base_name.data());
+        const auto initial_filename = format("%s.json", creature.base_name.data());
         const auto input_filename = input_string(_("JSON ファイル名: ", "JSON File name: "), 80, initial_filename);
         if (!input_filename.has_value()) {
             return page;
@@ -143,7 +144,7 @@ static tl::optional<int> input_status_command(PlayerType *player_ptr, int page)
             const auto path = path_build(ANGBAND_DIR_USER, filename);
             FILE *fff = angband_fopen(path, FileOpenMode::WRITE);
             if (fff) {
-                dump_player_status_json_to_file(player_ptr, fff);
+                dump_player_status_json_to_file(creature, fff);
                 angband_fclose(fff);
                 msg_format(_("ステータスを %s に書き出しました。", "Character status dumped to %s."), filename.data());
             } else {
@@ -164,126 +165,30 @@ static tl::optional<int> input_status_command(PlayerType *player_ptr, int page)
 }
 
 /*!
- * @brief モンスターのステータスを簡易表示する（プレイヤー表示フォーマットを流用）
- * @param monster_ptr モンスターへの参照ポインタ
+ * @brief プレイヤー／モンスターのステータス表示
  */
-static void display_monster_status(MonsterEntity *monster_ptr)
+void do_cmd_player_status(CreatureEntity &creature)
 {
-    term_clear();
-
-    // モンスター名とレベルを表示
-    const auto &monrace = monster_ptr->get_monrace();
-    c_put_str(TERM_L_BLUE, monrace.name, 1, 1);
-
-    // 名前を表示（名前がない場合はグレーアウトで「名無し」）
-    if (monster_ptr->is_named()) {
-        c_put_str(TERM_YELLOW, format(_("名前: %s", "Name: %s"), monster_ptr->name.data()), 2, 1);
-    } else {
-        c_put_str(TERM_SLATE, _("名前: 名無し", "Name: No Name"), 2, 1);
-    }
-
-    put_str(format(_("レベル: %d", "Level: %d"), monster_ptr->get_level()), 1, 40);
-    put_str(format(_("HP: %d/%d", "HP: %d/%d"), monster_ptr->hp, monster_ptr->maxhp), 3, 40);
-
-    // 種族情報を表示
-    int row_offset = 1;
-    if (monster_ptr->race != nullptr) {
-        put_str(format(_("種族: %s", "Race: %s"), monster_ptr->race->title.data()), 3 + row_offset, 1);
-    }
-
-    // 職業情報を表示
-    if (monster_ptr->pclass_ref != nullptr) {
-        put_str(format(_("職業: %s", "Class: %s"), monster_ptr->pclass_ref->title.data()), 3 + row_offset, 40);
-    }
-
-    // 経験値を表示
-    put_str(format(_("経験値: %ld", "Exp: %ld"), (long)monster_ptr->exp), 4 + row_offset, 1);
-
-    // 所持金を表示
-    put_str(format(_("所持金: %ld", "Gold: %ld"), (long)monster_ptr->au), 4 + row_offset, 40);
-
-    // 身長・体重を表示（種族が設定されている場合のみ）
-    if (monster_ptr->race != nullptr && monster_ptr->ht > 0) {
-#ifdef JP
-        put_str(format("身長: %dcm  体重: %dkg", inch_to_cm(monster_ptr->ht), lb_to_kg(monster_ptr->wt)), 5 + row_offset, 1);
-#else
-        put_str(format("Height: %d  Weight: %d", monster_ptr->ht, monster_ptr->wt), 5 + row_offset, 1);
-#endif
-    }
-
-    // 能力値表示（プレイヤーと同じフォーマット）
-    int stat_col = 22;
-    int row = 6 + row_offset;
-
-    // ヘッダー行
-    c_put_str(TERM_WHITE, _("能力", "Stat"), row, stat_col + 1);
-    c_put_str(TERM_BLUE, _("  基本", "  Base"), row, stat_col + 7);
-    c_put_str(TERM_L_GREEN, _("合計", "Total"), row, stat_col + _(21, 19));
-    c_put_str(TERM_YELLOW, _("現在", "Current"), row, stat_col + _(28, 26));
-
-    // 各能力値
-    for (int i = 0; i < A_MAX; i++) {
-        // 能力値名
-        if (monster_ptr->stat_cur[i] < monster_ptr->stat_max[i]) {
-            c_put_str(TERM_WHITE, stat_names_reduced[i], row + i + 1, stat_col + 1);
-        } else {
-            c_put_str(TERM_WHITE, stat_names[i], row + i + 1, stat_col + 1);
-        }
-
-        // 最大値マーク
-        if (monster_ptr->stat_max[i] == monster_ptr->stat_max_max[i]) {
-            c_put_str(TERM_WHITE, "!", row + i + 1, _(stat_col + 6, stat_col + 4));
-        }
-
-        // 基本値（stat_max）
-        const auto stat_str = cnv_stat(monster_ptr->stat_max[i]);
-        c_put_str(TERM_BLUE, stat_str, row + i + 1, stat_col + 13 - stat_str.length());
-
-        // 合計値
-        c_put_str(TERM_L_GREEN, cnv_stat(monster_ptr->stat_max[i]), row + i + 1, stat_col + _(21, 19));
-
-        // 現在値（一時的減少がある場合）
-        if (monster_ptr->stat_cur[i] < monster_ptr->stat_max[i]) {
-            c_put_str(TERM_YELLOW, cnv_stat(monster_ptr->stat_cur[i]), row + i + 1, stat_col + _(28, 26));
-        }
-    }
-
-    // 終了メッセージ
-    put_str(_("[ESCで終了]", "[Press ESC to exit]"), 23, 25);
-}
-
-/*!
- * @brief プレイヤーのステータス表示
- */
-void do_cmd_player_status(CreatureEntity *creature_ptr)
-{
-    // モンスターの場合は専用の表示
-    if (!creature_ptr->is_player()) {
-        auto *monster_ptr = static_cast<MonsterEntity *>(creature_ptr);
-        screen_save();
-        display_monster_status(monster_ptr);
-        inkey();
-        screen_load();
-        return;
-    }
-
-    auto *player_ptr = static_cast<PlayerType *>(creature_ptr);
+    output_bot_json_character_snapshot(creature);
     auto page = 0;
     screen_save();
-    constexpr auto prompt = _("['c'で名前変更, 'f'でファイルへ書出, 'g'でJSON書出, 'h'でモード変更, ESCで終了]", "['c' to change name, 'f' to file, 'g' to JSON, 'h' to change mode, or ESC]");
+    constexpr auto player_prompt = _("['c'で名前変更, 'f'でファイルへ書出, 'g'でJSON書出, 'h'でモード変更, ESCで終了]", "['c' to change name, 'f' to file, 'g' to JSON, 'h' to change mode, or ESC]");
+    constexpr auto monster_prompt = _("['f'でファイルへ書出, 'g'でJSON書出, 'h'でモード変更, ESCで終了]", "['f' to file, 'g' to JSON, 'h' to change mode, or ESC]");
+    const auto prompt = creature.is_player() ? player_prompt : monster_prompt;
     auto &world = AngbandWorld::get_instance();
     while (true) {
         TermCenteredOffsetSetter tcos(MAIN_TERM_MIN_COLS, MAIN_TERM_MIN_ROWS);
 
         world.play_time.update();
-        (void)display_player(player_ptr, page);
-        if (page == 5) {
+        (void)display_player(creature, page);
+        // 突然変異ページ (page == 6) はモーダル表示のため、終了後 page 0 へ戻す。
+        if (page == 6) {
             page = 0;
-            (void)display_player(player_ptr, page);
+            (void)display_player(creature, page);
         }
 
         term_putstr(2, 23, -1, TERM_WHITE, prompt);
-        auto next_page = input_status_command(player_ptr, page);
+        auto next_page = input_status_command(creature, page);
         if (!next_page.has_value()) {
             break;
         }
@@ -302,7 +207,10 @@ void do_cmd_player_status(CreatureEntity *creature_ptr)
         MainWindowRedrawingFlag::MAP,
     };
     rfu.set_flags(flags_mwrf);
-    handle_stuff(player_ptr);
+    // ステータス画面はモンスターの inspect にも使われる (target-describer の 'c')。
+    // 終了後のメインウィンドウ (画面左のパラメータ表示等) は常にプレイヤーで復元し、
+    // inspect したモンスターの値が左枠に残らないようにする。
+    handle_stuff(PlayerType::get_instance());
 }
 
 /*!

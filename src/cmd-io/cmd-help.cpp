@@ -1,17 +1,17 @@
 #include "cmd-io/cmd-help.h"
 #include "core/show-file.h"
-#include "system/player-type-definition.h"
+#include "system/creature-entity.h"
 #include "term/screen-processor.h"
 
 /*!
  * @brief ヘルプを表示するコマンドのメインルーチン
  * Peruse the On-Line-Help
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @details
  */
-void do_cmd_help(PlayerType *player_ptr)
+void do_cmd_help(CreatureEntity &creature)
 {
     screen_save();
-    FileDisplayer(player_ptr->name).display(true, _("jhelp.hlp", "help.hlp"), 0, 0);
+    FileDisplayer(creature.name).display(true, _("jhelp.hlp", "help.hlp"), 0, 0);
     screen_load();
 }

@@ -9,28 +9,27 @@
 #include "monster/monster-info.h"
 #include "monster/monster-processor-util.h"
 #include "mspell/mspell-checker.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
-#include "system/player-type-definition.h"
 #include "target/projection-path-calculator.h"
 #include <span>
 
 /*!
  * @brief モンスターが逃げ込める地点を走査する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param m_idx モンスターID
  * @param offsets モンスターがいる地点から逃げ込もうとする地点へのオフセットの候補リスト
  * @param d モンスターがいる地点からの距離
  * @return 逃げ込める地点の候補地
  */
-static coordinate_candidate sweep_safe_coordinate(PlayerType *player_ptr, MONSTER_IDX m_idx, std::span<const Pos2DVec> offsets, int d)
+static coordinate_candidate sweep_safe_coordinate(CreatureEntity &creature, MONSTER_IDX m_idx, std::span<const Pos2DVec> offsets, int d)
 {
     coordinate_candidate candidate;
-    const auto &floor = *player_ptr->current_floor_ptr;
-    const auto &monster = player_ptr->current_floor_ptr->m_list[m_idx];
-    const auto p_pos = player_ptr->get_position();
+    const auto &floor = *creature.get_floor();
+    const auto &monster = creature.get_floor()->get_monster(m_idx);
+    const auto p_pos = creature.get_position();
     const auto m_pos = monster.get_position();
     for (const auto &vec : offsets) {
         const auto pos = m_pos + vec;
@@ -41,11 +40,11 @@ static coordinate_candidate sweep_safe_coordinate(PlayerType *player_ptr, MONSTE
         const auto &monrace = monster.get_monrace();
         const auto &grid = floor.get_grid(pos);
         BIT_FLAGS16 riding_mode = monster.is_riding() ? CEM_RIDING : 0;
-        if (!monster_can_cross_terrain(player_ptr, grid.feat, monrace, riding_mode)) {
+        if (!monster_can_cross_terrain(creature, grid.feat, monrace, riding_mode)) {
             continue;
         }
 
-        if (monster.mflag2.has_not(MonsterConstantFlagType::NOFLOW)) {
+        if (!monster.has_noflow()) {
             const auto dist = grid.get_distance(monrace.get_grid_flow_type());
             if (dist == 0) {
                 continue;
@@ -74,7 +73,7 @@ static coordinate_candidate sweep_safe_coordinate(PlayerType *player_ptr, MONSTE
 /*!
  * @brief モンスターが逃げ込める安全な地点を返す /
  * Choose a "safe" location near a monster for it to run toward.
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param m_idx モンスターの参照ID
  * @param yp 移動先のマスのY座標を返す参照ポインタ
  * @param xp 移動先のマスのX座標を返す参照ポインタ
@@ -90,10 +89,10 @@ static coordinate_candidate sweep_safe_coordinate(PlayerType *player_ptr, MONSTE
  *\n
  * Return TRUE if a safe location is available.\n
  */
-tl::optional<Pos2D> find_safety(PlayerType *player_ptr, short m_idx)
+tl::optional<Pos2D> find_safety(CreatureEntity &creature, short m_idx)
 {
     for (auto d = 1; d < 10; d++) {
-        const auto candidate = sweep_safe_coordinate(player_ptr, m_idx, DIST_OFFSETS[d], d);
+        const auto candidate = sweep_safe_coordinate(creature, m_idx, DIST_OFFSETS[d], d);
         if (candidate.gdis <= 0) {
             continue;
         }
@@ -106,27 +105,27 @@ tl::optional<Pos2D> find_safety(PlayerType *player_ptr, short m_idx)
 
 /*!
  * @brief モンスターが隠れられる地点を走査する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param m_idx モンスターID
  * @param offsets モンスターがいる地点から隠れようとする地点へのオフセットの候補リスト
  * @param candidate 隠れられる地点の候補地
  */
 static void sweep_hiding_candidate(
-    PlayerType *player_ptr, const MonsterEntity &monster, std::span<const Pos2DVec> offsets, coordinate_candidate &candidate)
+    CreatureEntity &creature, const CreatureEntity &monster, std::span<const Pos2DVec> offsets, coordinate_candidate &candidate)
 {
-    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto &monrace = monster.get_monrace();
-    const auto p_pos = player_ptr->get_position();
+    const auto p_pos = creature.get_position();
     const auto m_pos = monster.get_position();
     for (const auto &vec : offsets) {
         const auto pos = m_pos + vec;
         if (!floor.contains(pos, FloorBoundary::OUTER_WALL_EXCLUSIVE)) {
             continue;
         }
-        if (!monster_can_enter(player_ptr, pos.y, pos.x, monrace, 0)) {
+        if (!monster_can_enter(creature, pos.y, pos.x, monrace, 0)) {
             continue;
         }
-        if (projectable(floor, p_pos, pos) || !clean_shot(player_ptr, monster.y, monster.x, pos.y, pos.x, false)) {
+        if (projectable(floor, p_pos, pos) || !clean_shot(creature, monster.y, monster.x, pos.y, pos.x, false)) {
             continue;
         }
 
@@ -140,17 +139,17 @@ static void sweep_hiding_candidate(
 
 /*!
  * @brief モンスターが隠れ潜める地点を返す
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param m_idx モンスターの参照ID
  * @return 有効なマスがあった場合、その座標。なかったらnullopt
  */
-tl::optional<Pos2D> find_hiding(PlayerType *player_ptr, short m_idx)
+tl::optional<Pos2D> find_hiding(CreatureEntity &creature, short m_idx)
 {
-    const auto &monster = player_ptr->current_floor_ptr->m_list[m_idx];
+    const auto &monster = creature.get_floor()->get_monster(m_idx);
     coordinate_candidate candidate;
     candidate.gdis = 999;
     for (auto d = 1; d < 10; d++) {
-        sweep_hiding_candidate(player_ptr, monster, DIST_OFFSETS[d], candidate);
+        sweep_hiding_candidate(creature, monster, DIST_OFFSETS[d], candidate);
         if (candidate.gdis >= 999) {
             continue;
         }

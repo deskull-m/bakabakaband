@@ -1,9 +1,13 @@
 #pragma once
 
-class PlayerType;
+class CreatureEntity;
 class WorldTurnProcessor {
 public:
-    WorldTurnProcessor(PlayerType *player_ptr);
+    WorldTurnProcessor(CreatureEntity &creature);
+    WorldTurnProcessor(const WorldTurnProcessor &) = default;
+    WorldTurnProcessor(WorldTurnProcessor &&) = default;
+    WorldTurnProcessor &operator=(const WorldTurnProcessor &) = delete;
+    WorldTurnProcessor &operator=(WorldTurnProcessor &&) = delete;
     virtual ~WorldTurnProcessor() = default;
     void process_world();
     void print_time();
@@ -11,7 +15,7 @@ public:
     void print_cheat_position();
 
 private:
-    PlayerType *player_ptr;
+    CreatureEntity &creature;
     int hour = 0;
     int min = 0;
 

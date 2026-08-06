@@ -30,7 +30,7 @@ std::string info_power_dice(const Dice &dice);
 std::string info_radius(POSITION rad);
 std::string info_weight(WEIGHT weight);
 
-class PlayerType;
-void do_cmd_browse(PlayerType *player_ptr);
-void do_cmd_study(PlayerType *player_ptr);
-bool do_cmd_cast(PlayerType *player_ptr);
+class CreatureEntity;
+void do_cmd_browse(CreatureEntity &creature);
+void do_cmd_study(CreatureEntity &creature);
+bool do_cmd_cast(CreatureEntity &creature);

@@ -30,16 +30,14 @@
 #include "player/special-defense-types.h"
 #include "status/bad-status-setter.h"
 #include "status/element-resistance.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "system/terrain/terrain-definition.h"
-#include "timed-effect/timed-effects.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
 #include "world/world.h"
@@ -48,7 +46,7 @@
 
 /*!
  * @brief 地形によるダメージを与える / Deal damage from feature.
- * @param player_ptr プレイヤー情報への参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param grid 現在の床の情報への参照
  * @param msg_levitation 浮遊時にダメージを受けた場合に表示するメッセージ
  * @param msg_normal 通常時にダメージを受けた場合に表示するメッセージの述部
@@ -58,8 +56,8 @@
  * @details
  * ダメージを受けた場合、自然回復できない。
  */
-static bool deal_damege_by_feat(PlayerType *player_ptr, const Grid &grid, concptr msg_levitation, concptr msg_normal,
-    std::function<PERCENTAGE(PlayerType *)> damage_rate, std::function<void(PlayerType *, int)> additional_effect)
+static bool deal_damege_by_feat(CreatureEntity &creature, const Grid &grid, concptr msg_levitation, concptr msg_normal,
+    std::function<PERCENTAGE(CreatureEntity &)> damage_rate, std::function<void(CreatureEntity &, int)> additional_effect)
 {
     const auto &terrain = grid.get_terrain();
     auto damage = 0;
@@ -69,13 +67,13 @@ static bool deal_damege_by_feat(PlayerType *player_ptr, const Grid &grid, concpt
         damage = 18000 + randint0(12000);
     } else if (terrain.flags.has(TerrainCharacteristics::DEEP)) {
         damage = 6000 + randint0(4000);
-    } else if (!player_ptr->levitation) {
+    } else if (!creature.has_levitation()) {
         damage = 3000 + randint0(2000);
     }
 
-    damage *= damage_rate(player_ptr);
+    damage *= damage_rate(creature);
     damage /= 100;
-    if (player_ptr->levitation) {
+    if (creature.has_levitation()) {
         damage /= 5;
     }
 
@@ -85,22 +83,22 @@ static bool deal_damege_by_feat(PlayerType *player_ptr, const Grid &grid, concpt
         return false;
     }
 
-    if (player_ptr->levitation) {
+    if (creature.has_levitation()) {
         msg_print(msg_levitation);
-        constexpr auto mes = _("%sの上に浮遊したダメージ", "flying over %s");
-        take_hit(player_ptr, DAMAGE_NOESCAPE, damage, format(mes, grid.get_terrain(TerrainKind::MIMIC).name.data()));
+        constexpr auto mes = _("%%s\u306e\u4e0a\u306b\u6d6e\u904a\u3057\u305f\u30c0\u30e1\u30fc\u30b8", "flying over %%s");
+        take_hit(creature, DAMAGE_NOESCAPE, damage, format(mes, grid.get_terrain(TerrainKind::MIMIC).name.data()));
 
         if (additional_effect != nullptr) {
-            additional_effect(player_ptr, damage);
+            additional_effect(creature, damage);
         }
     } else {
-        const auto p_pos = player_ptr->get_position();
-        const auto &name = player_ptr->current_floor_ptr->get_grid(p_pos).get_terrain(TerrainKind::MIMIC).name;
-        msg_format(_("%s%s！", "The %s %s!"), name.data(), msg_normal);
-        take_hit(player_ptr, DAMAGE_NOESCAPE, damage, name);
+        const auto p_pos = creature.get_position();
+        const auto &name = creature.get_floor()->get_grid(p_pos).get_terrain(TerrainKind::MIMIC).name;
+        msg_format(_("%%s%%s\uff01", "The %%s %%s!"), name.data(), msg_normal);
+        take_hit(creature, DAMAGE_NOESCAPE, damage, name);
 
         if (additional_effect != nullptr) {
-            additional_effect(player_ptr, damage);
+            additional_effect(creature, damage);
         }
     }
 
@@ -111,102 +109,99 @@ static bool deal_damege_by_feat(PlayerType *player_ptr, const Grid &grid, concpt
  * @brief 10ゲームターンが進行するごとにプレイヤーのHPとMPの増減処理を行う。
  *  / Handle timed damage and regeneration every 10 game turns
  */
-void process_player_hp_mp(PlayerType *player_ptr)
+void process_player_hp_mp(CreatureEntity &creature)
 {
-    const auto &floor = *player_ptr->current_floor_ptr;
-    const auto &grid = floor.get_grid(player_ptr->get_position());
+    const auto &floor = *creature.get_floor();
+    const auto &grid = floor.get_grid(creature.get_position());
     const auto &terrain = grid.get_terrain();
     bool cave_no_regen = false;
     int upkeep_factor = 0;
-    int regen_amount = PY_REGEN_NORMAL;
-    const auto effects = player_ptr->effects();
+    int regen_amount = 0; // compute_regen_amount() で後段に確定
     if (terrain.flags.has(TerrainCharacteristics::RUNE_HEALING)) {
-        hp_player(player_ptr, 2 + player_ptr->level / 6);
+        hp_player(creature, 2 + creature.get_level() / 6);
     }
 
-    const auto &player_poison = effects->poison();
-    if (player_poison.is_poisoned() && !is_invuln(player_ptr)) {
-        if (take_hit(player_ptr, DAMAGE_NOESCAPE, 1, _("毒", "poison")) > 0) {
+    if (creature.is_poisoned() && !creature.is_invulnerable()) {
+        if (take_hit(creature, DAMAGE_NOESCAPE, 1, _("毒", "poison")) > 0) {
             sound(SoundKind::DAMAGE_OVER_TIME);
         }
     }
 
-    const auto &player_cut = effects->cut();
-    if (player_cut.is_cut() && !is_invuln(player_ptr)) {
-        const auto dam = player_cut.get_damage();
-        if (take_hit(player_ptr, DAMAGE_NOESCAPE, dam, _("致命傷", "a mortal wound")) > 0) {
+    if (creature.is_cut() && !creature.is_invulnerable()) {
+        const auto dam = creature.get_cut_damage_per_turn();
+        if (take_hit(creature, DAMAGE_NOESCAPE, dam, _("致命傷", "a mortal wound")) > 0) {
             sound(SoundKind::DAMAGE_OVER_TIME);
         }
     }
 
-    const PlayerRace race(player_ptr);
+    const CreatureRace race(&creature);
     if (race.life() == PlayerRaceLifeType::UNDEAD && race.tr_flags().has(TR_VUL_LITE)) {
-        if (!floor.is_underground() && !has_resist_lite(player_ptr) && !is_invuln(player_ptr) && AngbandWorld::get_instance().is_daytime()) {
-            if ((floor.grid_array[player_ptr->y][player_ptr->x].info & (CAVE_GLOW | CAVE_MNDK)) == CAVE_GLOW) {
+        if (!floor.is_underground() && !creature.has_resist_lite() && !creature.is_invulnerable() && AngbandWorld::get_instance().is_daytime()) {
+            if ((floor.grid_array[creature.y][creature.x].info & (CAVE_GLOW | CAVE_MNDK)) == CAVE_GLOW) {
                 msg_print(_("日光があなたのアンデッドの肉体を焼き焦がした！", "The sun's rays scorch your undead flesh!"));
-                take_hit(player_ptr, DAMAGE_NOESCAPE, 1, _("日光", "sunlight"));
+                take_hit(creature, DAMAGE_NOESCAPE, 1, _("日光", "sunlight"));
                 cave_no_regen = true;
             }
         }
 
-        const auto &item = *player_ptr->inventory[INVEN_LITE];
+        const auto &item = *creature.inventory[INVEN_LITE];
         const auto flags = item.get_flags();
-        if ((player_ptr->inventory[INVEN_LITE]->bi_key.tval() != ItemKindType::NONE) && flags.has_not(TR_DARK_SOURCE) && !has_resist_lite(player_ptr)) {
-            const auto item_name = describe_flavor(player_ptr, item, (OD_OMIT_PREFIX | OD_NAME_ONLY));
+        if ((creature.inventory[INVEN_LITE]->bi_key.tval() != ItemKindType::NONE) && flags.has_not(TR_DARK_SOURCE) && !creature.has_resist_lite()) {
+            const auto item_name = describe_flavor(creature, item, (OD_OMIT_PREFIX | OD_NAME_ONLY));
             msg_format(_("%sがあなたのアンデッドの肉体を焼き焦がした！", "The %s scorches your undead flesh!"), item_name.data());
             cave_no_regen = true;
-            if (!is_invuln(player_ptr)) {
-                const auto wielding_item_name = describe_flavor(player_ptr, item, OD_NAME_ONLY);
+            if (!creature.is_invulnerable()) {
+                const auto wielding_item_name = describe_flavor(creature, item, OD_NAME_ONLY);
                 std::stringstream ss;
                 ss << _(wielding_item_name, "wielding ") << _("を装備したダメージ", wielding_item_name);
-                take_hit(player_ptr, DAMAGE_NOESCAPE, 1, ss.str());
+                take_hit(creature, DAMAGE_NOESCAPE, 1, ss.str());
             }
         }
     }
 
-    if (terrain.flags.has(TerrainCharacteristics::LAVA) && !is_invuln(player_ptr) && !has_immune_fire(player_ptr)) {
+    if (terrain.flags.has(TerrainCharacteristics::LAVA) && !creature.is_invulnerable() && !creature.has_immune_fire()) {
         constexpr auto mes_leviation = _("熱で火傷した！", "The heat burns you!");
         constexpr auto mes_normal = _("で火傷した！", "burns you!");
-        if (deal_damege_by_feat(player_ptr, grid, mes_leviation, mes_normal, calc_fire_damage_rate, nullptr)) {
+        if (deal_damege_by_feat(creature, grid, mes_leviation, mes_normal, calc_fire_damage_rate, nullptr)) {
             cave_no_regen = true;
             sound(SoundKind::TERRAIN_DAMAGE);
         }
     }
 
-    if (terrain.flags.has(TerrainCharacteristics::COLD_PUDDLE) && !is_invuln(player_ptr) && !has_immune_cold(player_ptr)) {
+    if (terrain.flags.has(TerrainCharacteristics::COLD_PUDDLE) && !creature.is_invulnerable() && !creature.has_immune_cold()) {
         constexpr auto mes_leviation = _("冷気に覆われた！", "The cold engulfs you!");
         constexpr auto mes_normal = _("に凍えた！", "frostbites you!");
-        if (deal_damege_by_feat(player_ptr, grid, mes_leviation, mes_normal, calc_cold_damage_rate, nullptr)) {
+        if (deal_damege_by_feat(creature, grid, mes_leviation, mes_normal, calc_cold_damage_rate, nullptr)) {
             cave_no_regen = true;
             sound(SoundKind::TERRAIN_DAMAGE);
         }
     }
 
-    if (terrain.flags.has(TerrainCharacteristics::ELEC_PUDDLE) && !is_invuln(player_ptr) && !has_immune_elec(player_ptr)) {
+    if (terrain.flags.has(TerrainCharacteristics::ELEC_PUDDLE) && !creature.is_invulnerable() && !creature.has_immune_elec()) {
         constexpr auto mes_leviation = _("電撃を受けた！", "The electricity shocks you!");
         constexpr auto mes_normal = _("に感電した！", "shocks you!");
-        if (deal_damege_by_feat(player_ptr, grid, mes_leviation, mes_normal, calc_elec_damage_rate, nullptr)) {
+        if (deal_damege_by_feat(creature, grid, mes_leviation, mes_normal, calc_elec_damage_rate, nullptr)) {
             cave_no_regen = true;
             sound(SoundKind::TERRAIN_DAMAGE);
         }
     }
 
-    if (terrain.flags.has(TerrainCharacteristics::ACID_PUDDLE) && !is_invuln(player_ptr) && !has_immune_acid(player_ptr)) {
+    if (terrain.flags.has(TerrainCharacteristics::ACID_PUDDLE) && !creature.is_invulnerable() && !creature.has_immune_acid()) {
         constexpr auto mes_leviation = _("酸が飛び散った！", "The acid melts you!");
         constexpr auto mes_normal = _("に溶かされた！", "melts you!");
-        if (deal_damege_by_feat(player_ptr, grid, mes_leviation, mes_normal, calc_acid_damage_rate, nullptr)) {
+        if (deal_damege_by_feat(creature, grid, mes_leviation, mes_normal, calc_acid_damage_rate, nullptr)) {
             cave_no_regen = true;
             sound(SoundKind::TERRAIN_DAMAGE);
         }
     }
 
-    if (terrain.flags.has(TerrainCharacteristics::POISON_PUDDLE) && !is_invuln(player_ptr)) {
+    if (terrain.flags.has(TerrainCharacteristics::POISON_PUDDLE) && !creature.is_invulnerable()) {
         constexpr auto mes_leviation = _("毒気を吸い込んだ！", "The gas poisons you!");
         constexpr auto mes_normal = _("に毒された！", "poisons you!");
-        if (deal_damege_by_feat(player_ptr, grid, mes_leviation, mes_normal, calc_pois_damage_rate,
-                [](PlayerType *player_ptr, int damage) {
-                    if (!has_resist_pois(player_ptr)) {
-                        (void)BadStatusSetter(player_ptr).mod_poison(static_cast<TIME_EFFECT>(damage));
+        if (deal_damege_by_feat(creature, grid, mes_leviation, mes_normal, calc_pois_damage_rate,
+                [](CreatureEntity &creature, int damage) {
+                    if (!creature.has_resist_pois()) {
+                        (void)BadStatusSetter(creature).mod_poison(static_cast<TIME_EFFECT>(damage));
                     }
                 })) {
             cave_no_regen = true;
@@ -214,161 +209,161 @@ void process_player_hp_mp(PlayerType *player_ptr)
         }
     }
 
-    if (terrain.flags.has(TerrainCharacteristics::DUNG_POOL) && !is_invuln(player_ptr)) {
-        cave_no_regen = deal_damege_by_feat(player_ptr, grid, _("糞が飛び散った！", "The feced scatter to you!"), _("に浸かった！", "tainted you!"),
-            calc_acid_damage_rate, [](PlayerType *player_ptr, int damage) {
-                if (!has_resist_pois(player_ptr)) {
-                    (void)BadStatusSetter(player_ptr).mod_poison(static_cast<TIME_EFFECT>(damage));
+    if (terrain.flags.has(TerrainCharacteristics::DUNG_POOL) && !creature.is_invulnerable()) {
+        cave_no_regen = deal_damege_by_feat(creature, grid, _("糞が飛び散った！", "The feced scatter to you!"), _("に浸かった！", "tainted you!"),
+            calc_acid_damage_rate, [](CreatureEntity &creature, int damage) {
+                if (!creature.has_resist_pois()) {
+                    (void)BadStatusSetter(creature).mod_poison(static_cast<TIME_EFFECT>(damage));
                 }
             });
     }
 
     const auto can_drown = terrain.flags.has_all_of({ TerrainCharacteristics::WATER, TerrainCharacteristics::DEEP });
-    if (can_drown && !player_ptr->levitation && !player_ptr->can_swim && !has_resist_water(player_ptr)) {
-        if (calc_inventory_weight(player_ptr) > calc_weight_limit(player_ptr)) {
+    if (can_drown && !creature.has_levitation() && !creature.has_can_swim() && !creature.has_resist_water()) {
+        if (calc_inventory_weight(creature) > calc_weight_limit(creature)) {
             msg_print(_("溺れている！", "You are drowning!"));
-            take_hit(player_ptr, DAMAGE_NOESCAPE, randint1(player_ptr->level), _("溺れ", "drowning"));
+            take_hit(creature, DAMAGE_NOESCAPE, randint1(creature.get_level()), _("溺れ", "drowning"));
             cave_no_regen = true;
             sound(SoundKind::TERRAIN_DAMAGE);
         }
     }
 
-    if (terrain.flags.has(TerrainCharacteristics::THORN) && !player_ptr->levitation && !is_invuln(player_ptr)) {
+    if (terrain.flags.has(TerrainCharacteristics::THORN) && !creature.has_levitation() && !creature.is_invulnerable()) {
         int damage;
         msg_print(_("棘に体が突き刺さっている！", "Your body is stuck in a thorn!"));
-        if (calc_inventory_weight(player_ptr) > calc_weight_limit(player_ptr)) {
-            damage = randint1(player_ptr->level);
+        if (calc_inventory_weight(creature) > calc_weight_limit(creature)) {
+            damage = randint1(creature.get_level());
         } else {
-            damage = (randint1(player_ptr->level) + 1) / 2;
+            damage = (randint1(creature.get_level()) + 1) / 2;
         }
         cave_no_regen = true;
-        take_hit(player_ptr, DAMAGE_NOESCAPE, damage, _("突起物", "Protrusions"));
+        take_hit(creature, DAMAGE_NOESCAPE, damage, _("突起物", "Protrusions"));
         sound(SoundKind::TERRAIN_DAMAGE);
     }
 
-    if (terrain.flags.has(TerrainCharacteristics::PLASMA) && !is_invuln(player_ptr)) {
-        cave_no_regen = deal_damege_by_feat(player_ptr, grid, _("に包まれた!", "engulfs you!"), _("に包まれた!", "engulfs you"), calc_plasma_damage_rate, NULL);
+    if (terrain.flags.has(TerrainCharacteristics::PLASMA) && !creature.is_invulnerable()) {
+        cave_no_regen = deal_damege_by_feat(creature, grid, _("に包まれた!", "engulfs you!"), _("に包まれた!", "engulfs you"), calc_plasma_damage_rate, NULL);
         sound(SoundKind::TERRAIN_DAMAGE);
     }
 
-    if (terrain.flags.has(TerrainCharacteristics::CHAOS_TAINTED) && !is_invuln(player_ptr)) {
-        cave_no_regen = deal_damege_by_feat(player_ptr, grid, _("に汚染された!", "taints you!"),
+    if (terrain.flags.has(TerrainCharacteristics::CHAOS_TAINTED) && !creature.is_invulnerable()) {
+        cave_no_regen = deal_damege_by_feat(creature, grid, _("に汚染された!", "taints you!"),
             _("に汚染された!", "taints you"), calc_chaos_damage_rate_rand, NULL);
         sound(SoundKind::TERRAIN_DAMAGE);
     }
 
-    if (terrain.flags.has(TerrainCharacteristics::VOID) && !is_invuln(player_ptr)) {
-        cave_no_regen = deal_damege_by_feat(player_ptr, grid, _("に巻き込まれて己の存在が薄れていく!", "erases your existence!"),
+    if (terrain.flags.has(TerrainCharacteristics::VOID) && !creature.is_invulnerable()) {
+        cave_no_regen = deal_damege_by_feat(creature, grid, _("に巻き込まれて己の存在が薄れていく!", "erases your existence!"),
             _("に巻き込まれて己の存在が薄れていく!", "erases your existence!"), calc_void_damage_rate_rand, NULL);
         sound(SoundKind::TERRAIN_DAMAGE);
     }
 
-    if (get_player_flags(player_ptr, TR_SELF_FIRE) && !has_immune_fire(player_ptr)) {
+    if (get_player_flags(creature, TR_SELF_FIRE) && !creature.has_immune_fire()) {
         int damage;
-        damage = player_ptr->level;
+        damage = creature.get_level();
         if (race.tr_flags().has(TR_VUL_FIRE)) {
             damage += damage / 3;
         }
-        if (has_resist_fire(player_ptr)) {
+        if (creature.has_resist_fire()) {
             damage = damage / 3;
         }
-        if (is_oppose_fire(player_ptr)) {
+        if (is_oppose_fire(creature)) {
             damage = damage / 3;
         }
 
         damage = std::max(damage, 1);
         msg_print(_("熱い！", "It's hot!"));
-        take_hit(player_ptr, DAMAGE_NOESCAPE, damage, _("炎のオーラ", "Fire aura"));
+        take_hit(creature, DAMAGE_NOESCAPE, damage, _("炎のオーラ", "Fire aura"));
     }
 
-    if (get_player_flags(player_ptr, TR_SELF_ELEC) && !has_immune_elec(player_ptr)) {
+    if (get_player_flags(creature, TR_SELF_ELEC) && !creature.has_immune_elec()) {
         int damage;
-        damage = player_ptr->level;
+        damage = creature.get_level();
         if (race.tr_flags().has(TR_VUL_ELEC)) {
             damage += damage / 3;
         }
-        if (has_resist_elec(player_ptr)) {
+        if (creature.has_resist_elec()) {
             damage = damage / 3;
         }
-        if (is_oppose_elec(player_ptr)) {
+        if (is_oppose_elec(creature)) {
             damage = damage / 3;
         }
 
         damage = std::max(damage, 1);
         msg_print(_("痛い！", "It hurts!"));
-        take_hit(player_ptr, DAMAGE_NOESCAPE, damage, _("電気のオーラ", "Elec aura"));
+        take_hit(creature, DAMAGE_NOESCAPE, damage, _("電気のオーラ", "Elec aura"));
     }
 
-    if (get_player_flags(player_ptr, TR_SELF_COLD) && !has_immune_cold(player_ptr)) {
+    if (get_player_flags(creature, TR_SELF_COLD) && !creature.has_immune_cold()) {
         int damage;
-        damage = player_ptr->level;
+        damage = creature.get_level();
         if (race.tr_flags().has(TR_VUL_COLD)) {
             damage += damage / 3;
         }
-        if (has_resist_cold(player_ptr)) {
+        if (creature.has_resist_cold()) {
             damage = damage / 3;
         }
-        if (is_oppose_cold(player_ptr)) {
+        if (is_oppose_cold(creature)) {
             damage = damage / 3;
         }
 
         damage = std::max(damage, 1);
         msg_print(_("冷たい！", "It's cold!"));
-        take_hit(player_ptr, DAMAGE_NOESCAPE, damage, _("冷気のオーラ", "Cold aura"));
+        take_hit(creature, DAMAGE_NOESCAPE, damage, _("冷気のオーラ", "Cold aura"));
     }
 
-    if (player_ptr->riding) {
+    if (creature.get_riding()) {
         int damage;
-        auto auras = floor.m_list[player_ptr->riding].get_monrace().aura_flags;
-        if (auras.has(MonsterAuraType::FIRE) && !has_immune_fire(player_ptr)) {
-            damage = floor.m_list[player_ptr->riding].get_monrace().level / 2;
+        auto auras = floor.get_monster(creature.get_riding()).get_monrace().aura_flags;
+        if (auras.has(MonsterAuraType::FIRE) && !creature.has_immune_fire()) {
+            damage = floor.get_monster(creature.get_riding()).get_monrace().level / 2;
             if (race.tr_flags().has(TR_VUL_FIRE)) {
                 damage += damage / 3;
             }
-            if (has_resist_fire(player_ptr)) {
+            if (creature.has_resist_fire()) {
                 damage = damage / 3;
             }
-            if (is_oppose_fire(player_ptr)) {
+            if (is_oppose_fire(creature)) {
                 damage = damage / 3;
             }
 
             damage = std::max(damage, 1);
             msg_print(_("熱い！", "It's hot!"));
-            take_hit(player_ptr, DAMAGE_NOESCAPE, damage, _("炎のオーラ", "Fire aura"));
+            take_hit(creature, DAMAGE_NOESCAPE, damage, _("炎のオーラ", "Fire aura"));
         }
 
-        if (auras.has(MonsterAuraType::ELEC) && !has_immune_elec(player_ptr)) {
-            damage = floor.m_list[player_ptr->riding].get_monrace().level / 2;
+        if (auras.has(MonsterAuraType::ELEC) && !creature.has_immune_elec()) {
+            damage = floor.get_monster(creature.get_riding()).get_monrace().level / 2;
             if (race.tr_flags().has(TR_VUL_ELEC)) {
                 damage += damage / 3;
             }
-            if (has_resist_elec(player_ptr)) {
+            if (creature.has_resist_elec()) {
                 damage = damage / 3;
             }
-            if (is_oppose_elec(player_ptr)) {
+            if (is_oppose_elec(creature)) {
                 damage = damage / 3;
             }
 
             damage = std::max(damage, 1);
             msg_print(_("痛い！", "It hurts!"));
-            take_hit(player_ptr, DAMAGE_NOESCAPE, damage, _("電気のオーラ", "Elec aura"));
+            take_hit(creature, DAMAGE_NOESCAPE, damage, _("電気のオーラ", "Elec aura"));
         }
 
-        if (auras.has(MonsterAuraType::COLD) && !has_immune_cold(player_ptr)) {
-            damage = floor.m_list[player_ptr->riding].get_monrace().level / 2;
+        if (auras.has(MonsterAuraType::COLD) && !creature.has_immune_cold()) {
+            damage = floor.get_monster(creature.get_riding()).get_monrace().level / 2;
             if (race.tr_flags().has(TR_VUL_COLD)) {
                 damage += damage / 3;
             }
-            if (has_resist_cold(player_ptr)) {
+            if (creature.has_resist_cold()) {
                 damage = damage / 3;
             }
-            if (is_oppose_cold(player_ptr)) {
+            if (is_oppose_cold(creature)) {
                 damage = damage / 3;
             }
 
             damage = std::max(damage, 1);
             msg_print(_("冷たい！", "It's cold!"));
-            take_hit(player_ptr, DAMAGE_NOESCAPE, damage, _("冷気のオーラ", "Cold aura"));
+            take_hit(creature, DAMAGE_NOESCAPE, damage, _("冷気のオーラ", "Cold aura"));
         }
     }
 
@@ -380,15 +375,15 @@ void process_player_hp_mp(PlayerType *player_ptr)
      * WILL BE!
      */
     if (terrain.flags.has_none_of({ TerrainCharacteristics::MOVE, TerrainCharacteristics::CAN_FLY })) {
-        auto should_damage = !is_invuln(player_ptr);
-        should_damage &= player_ptr->wraith_form == 0;
-        should_damage &= player_ptr->tim_pass_wall == 0;
-        should_damage &= (player_ptr->hp > (player_ptr->level / 5)) || !has_pass_wall(player_ptr);
+        auto should_damage = !creature.is_invulnerable();
+        should_damage &= creature.get_timed_effect(CreatureTimedEffect::WRAITH_FORM) == 0;
+        should_damage &= creature.get_timed_effect(CreatureTimedEffect::TIM_PASS_WALL) == 0;
+        should_damage &= (creature.hp > (creature.get_level() / 5)) || !creature.has_pass_wall();
         if (should_damage) {
             concptr dam_desc;
             cave_no_regen = true;
 
-            if (has_pass_wall(player_ptr)) {
+            if (creature.has_pass_wall()) {
                 msg_print(_("体の分子が分解した気がする！", "Your molecules feel disrupted!"));
                 dam_desc = _("密度", "density");
             } else {
@@ -396,129 +391,93 @@ void process_player_hp_mp(PlayerType *player_ptr)
                 dam_desc = _("硬い岩", "solid rock");
             }
 
-            take_hit(player_ptr, DAMAGE_NOESCAPE, 1 + (player_ptr->level / 5), dam_desc);
+            take_hit(creature, DAMAGE_NOESCAPE, 1 + (creature.get_level() / 5), dam_desc);
         }
     }
 
-    if (player_ptr->food < PY_FOOD_WEAK) {
-        if (player_ptr->food < PY_FOOD_STARVE) {
-            regen_amount = 0;
-        } else if (player_ptr->food < PY_FOOD_FAINT) {
-            regen_amount = PY_REGEN_FAINT;
-        } else {
-            regen_amount = PY_REGEN_WEAK;
-        }
-    }
-
-    PlayerClass pc(player_ptr);
-    if (pattern_effect(player_ptr)) {
+    CreatureClass pc(creature);
+    if (pattern_effect(creature)) {
         cave_no_regen = true;
-    } else {
-        if (player_ptr->regenerate) {
-            regen_amount = regen_amount * 2;
-        }
-
-        if (!pc.monk_stance_is(MonkStanceType::NONE) || !pc.samurai_stance_is(SamuraiStanceType::NONE)) {
-            regen_amount /= 2;
-        }
-        if (player_ptr->cursed.has(CurseTraitType::SLOW_REGEN)) {
-            regen_amount /= 5;
-        }
     }
 
-    if ((player_ptr->action == ACTION_SEARCH) || (player_ptr->action == ACTION_REST)) {
-        regen_amount = regen_amount * 2;
-    }
+    // 統一ヘルパでベースの regen_amount を算出
+    // (満腹度・再生種族・スタンス・呪い・行動・地形衛生・ミュータント体質まで反映済み)
+    regen_amount = compute_regen_amount(creature);
 
-    upkeep_factor = calculate_upkeep(player_ptr);
-    if ((player_ptr->action == ACTION_LEARN) || (player_ptr->action == ACTION_HAYAGAKE) || pc.samurai_stance_is(SamuraiStanceType::KOUKIJIN)) {
+    upkeep_factor = calculate_upkeep(creature);
+    if ((creature.get_action() == ACTION_LEARN) || (creature.get_action() == ACTION_HAYAGAKE) || pc.samurai_stance_is(SamuraiStanceType::KOUKIJIN)) {
         upkeep_factor += 100;
     }
 
-    regenmana(player_ptr, upkeep_factor, regen_amount);
+    regenmana(creature, upkeep_factor, regen_amount);
     if (pc.equals(PlayerClassType::MAGIC_EATER)) {
-        regenmagic(player_ptr, regen_amount);
+        regenmagic(creature, regen_amount);
     }
 
-    if ((player_ptr->csp == 0) && (player_ptr->csp_frac == 0)) {
+    if ((creature.get_current_mp() == 0) && (creature.current_mp_frac == 0)) {
         while (upkeep_factor > 100) {
             msg_print(_("こんなに多くのペットを制御できない！", "Too many pets to control at once!"));
             msg_erase();
-            do_cmd_pet_dismiss(player_ptr);
+            do_cmd_pet_dismiss(creature);
 
-            upkeep_factor = calculate_upkeep(player_ptr);
+            upkeep_factor = calculate_upkeep(creature);
 
             msg_format(_("維持ＭＰは %d%%", "Upkeep: %d%% mana."), upkeep_factor);
             msg_erase();
         }
     }
 
-    if (player_poison.is_poisoned()) {
-        regen_amount = 0;
-    }
-    if (player_cut.is_cut()) {
-        regen_amount = 0;
-    }
     if (cave_no_regen) {
         regen_amount = 0;
     }
 
-    // Apply hygiene-based regeneration modifier
-    if (regen_amount > 0 && terrain.hygiene != 0) {
-        const int hygiene_modifier = 100 + terrain.hygiene;
-        regen_amount = (regen_amount * hygiene_modifier) / 100;
-        if (regen_amount < 0) {
-            regen_amount = 0;
-        }
-    }
-
-    regen_amount = (regen_amount * player_ptr->mutant_regenerate_mod) / 100;
-    if ((player_ptr->hp < player_ptr->maxhp) && !cave_no_regen) {
-        regenhp(player_ptr, regen_amount);
+    if ((creature.hp < creature.maxhp) && !cave_no_regen) {
+        regenhp(creature, regen_amount);
     }
 }
 
 /*
  * Increase players hit points, notice effects
  */
-bool hp_player(PlayerType *player_ptr, int num)
+bool hp_player(CreatureEntity &creature, int num)
 {
     int vir;
-    vir = virtue_number(static_cast<CreatureEntity &>(*player_ptr), Virtue::VITALITY);
+    vir = virtue_number(creature, Virtue::VITALITY);
 
     if (num <= 0) {
         return false;
     }
 
     if (vir) {
-        auto it = player_ptr->virtues.find(Virtue::VITALITY);
-        if (it != player_ptr->virtues.end()) {
+        auto it = creature.virtues.find(Virtue::VITALITY);
+        if (it != creature.virtues.end()) {
             num = num * (it->second + 1250) / 1250;
         }
     }
 
-    if (player_ptr->hp < player_ptr->maxhp) {
-        if ((num > 0) && (player_ptr->hp < (player_ptr->maxhp / 3))) {
-            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::TEMPERANCE, 1);
+    if (creature.hp < creature.maxhp) {
+        if ((num > 0) && (creature.hp < (creature.maxhp / 3))) {
+            chg_virtue(creature, Virtue::TEMPERANCE, 1);
         }
 
-        player_ptr->hp += num;
-        if (player_ptr->hp >= player_ptr->maxhp) {
-            player_ptr->hp = player_ptr->maxhp;
-            player_ptr->hp_frac = 0;
+        creature.hp += num;
+        if (creature.hp >= creature.maxhp) {
+            creature.hp = creature.maxhp;
+            creature.hp_frac = 0;
         }
 
         auto &rfu = RedrawingFlagsUpdater::get_instance();
         rfu.set_flag(MainWindowRedrawingFlag::HP);
         rfu.set_flag(SubWindowRedrawingFlag::PLAYER);
+        // [提案D2] 2 人称回復メッセージは notify_self seam でプレイヤーのみ表示 (モンスター回復時は無音)。
         if (num < 5) {
-            msg_print(_("少し気分が良くなった。", "You feel a little better."));
+            creature.notify_self(_("少し気分が良くなった。", "You feel a little better."));
         } else if (num < 15) {
-            msg_print(_("気分が良くなった。", "You feel better."));
+            creature.notify_self(_("気分が良くなった。", "You feel better."));
         } else if (num < 35) {
-            msg_print(_("とても気分が良くなった。", "You feel much better."));
+            creature.notify_self(_("とても気分が良くなった。", "You feel much better."));
         } else {
-            msg_print(_("ひじょうに気分が良くなった。", "You feel very good."));
+            creature.notify_self(_("ひじょうに気分が良くなった。", "You feel very good."));
         }
 
         return true;

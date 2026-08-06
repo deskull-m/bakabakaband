@@ -2,5 +2,5 @@
 
 #include "system/angband.h"
 
-class PlayerType;
-errr load_inventory(PlayerType *player_ptr);
+class CreatureEntity;
+errr load_inventory(CreatureEntity &creature);

@@ -3,8 +3,8 @@
 #include <filesystem>
 #include <string_view>
 
-class PlayerType;
-void prepare_movie_hooks(PlayerType *player_ptr);
+class CreatureEntity;
+void prepare_movie_hooks(CreatureEntity &creature);
 void prepare_browse_movie_without_path_build(const std::filesystem::path &path);
 void browse_movie();
 #ifndef WINDOWS

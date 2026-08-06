@@ -8,6 +8,7 @@
 #include "system/angband.h"
 #include "system/baseitem/baseitem-definition.h"
 #include "system/baseitem/baseitem-list.h"
+#include "system/creature-entity.h"
 #include "system/enums/terrain/terrain-kind.h"
 #include "util/point-2d.h"
 #include <array>
@@ -49,7 +50,7 @@ enum class FloorBoundary {
 
 enum class DungeonId;
 enum class GridCountKind;
-enum class MonsterTimedEffect : int;
+enum class CreatureTimedEffect;
 enum class MonraceHook;
 enum class MonraceHookTerrain;
 enum class MonraceId : short;
@@ -67,7 +68,6 @@ enum class TerrainCharacteristics;
 enum class TerrainTag;
 class DungeonDefinition;
 class Grid;
-class MonsterEntity;
 class ItemEntity;
 class FloorType {
 public:
@@ -88,12 +88,12 @@ public:
     std::vector<std::shared_ptr<ItemEntity>> o_list; /*!< The array of dungeon items [max_o_idx] */
     bool prevent_repeat_floor_item_idx = false;
 
-    std::vector<MonsterEntity> m_list; /*!< The array of dungeon monsters [max_m_idx] */
+    std::vector<CreatureEntity> m_list; /*!< The array of dungeon monsters [max_m_idx] */
     MONSTER_IDX m_max = 0; /* Number of allocated monsters */
     MONSTER_IDX m_cnt = 0; /* Number of live monsters */
 
-    std::map<MonsterTimedEffect, std::vector<short>> mproc_list; /*!< The array to process dungeon monsters[max_m_idx] */
-    std::map<MonsterTimedEffect, short> mproc_max; /*!< Number of monsters to be processed */
+    std::map<CreatureTimedEffect, std::vector<short>> mproc_list; /*!< The array to process dungeon monsters[max_m_idx] */
+    std::map<CreatureTimedEffect, short> mproc_max; /*!< Number of monsters to be processed */
 
     bool monster_noise = false;
     QuestId quest_number;
@@ -146,10 +146,13 @@ public:
     void leave_dungeon(bool state);
     void reset_mproc();
     void reset_mproc_max();
-    tl::optional<int> get_mproc_index(short m_idx, MonsterTimedEffect mte);
-    void add_mproc(short m_idx, MonsterTimedEffect mte);
-    void remove_mproc(short m_idx, MonsterTimedEffect mte);
+    tl::optional<int> get_mproc_index(short m_idx, CreatureTimedEffect mte);
+    void add_mproc(short m_idx, CreatureTimedEffect mte);
+    void remove_mproc(short m_idx, CreatureTimedEffect mte);
+    bool set_monster_timed_effect(short m_idx, CreatureTimedEffect mte, int v, int max_value);
 
+    CreatureEntity &get_monster(MONSTER_IDX m_idx);
+    const CreatureEntity &get_monster(MONSTER_IDX m_idx) const;
     short pop_empty_index_monster();
     short pop_empty_index_item();
     void forget_lite();

@@ -5,5 +5,5 @@
  */
 
 class ItemEntity;
-class PlayerType;
-bool become_random_artifact(PlayerType *player_ptr, ItemEntity *o_ptr, bool a_scroll);
+class CreatureEntity;
+bool become_random_artifact(CreatureEntity &creature, ItemEntity *o_ptr, bool a_scroll);

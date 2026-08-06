@@ -6,36 +6,47 @@
 #include "monster-floor/monster-summon.h"
 #include "monster-floor/one-monster-placer.h"
 #include "monster-floor/place-monster-types.h"
+#include "player/patron.h"
 #include "spell/summon-types.h"
+#include "system/creature-entity.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/player-type-definition.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
-int AllianceTzeentch::calcImpressionPoint(PlayerType *creature_ptr) const
+int AllianceTzeentch::calcImpressionPoint(const CreatureEntity &creature) const
 {
     int impression = 0;
     impression += calcIronmanHostilityPenalty();
     // ティーンチは知識と魔法の力を重視
-    impression += Alliance::calcPlayerPower(*creature_ptr, 2, 35);
+    impression += Alliance::calcPlayerPower(creature, 2, 35);
 
     // 知力と魔法能力による追加評価
-    impression += (creature_ptr->stat_use[A_INT] - 10) * 4;
-    impression += (creature_ptr->stat_use[A_WIS] - 10) * 2;
+    impression += (creature.get_stat_use(A_INT) - 10) * 4;
+    impression += (creature.get_stat_use(A_WIS) - 10) * 2;
+
+    // ティーンチを崇拝するクリーチャーへの好意
+    if (creature.get_patron() == static_cast<int16_t>(PatronType::TZEENTCH)) {
+        impression += 30;
+    }
+
+    // 宿敵ナーグルをパトロンとするクリーチャーへの嫌悪
+    if (creature.get_patron() == static_cast<int16_t>(PatronType::NURGLE)) {
+        impression -= 20;
+    }
 
     /*
     // 魔法使用による大幅な好感度向上
-    if (creature_ptr->realm1 != REALM_NONE || creature_ptr->realm2 != REALM_NONE) {
+    if (creature.realm1 != REALM_NONE || creature.realm2 != REALM_NONE) {
         impression += 100;
     }
 
     // 特に混沌魔法やソーサリーを好む
-    if (creature_ptr->realm1 == REALM_CHAOS || creature_ptr->realm2 == REALM_CHAOS) {
+    if (creature.realm1 == REALM_CHAOS || creature.realm2 == REALM_CHAOS) {
         impression += 150;
     }
-    if (creature_ptr->realm1 == REALM_SORCERY || creature_ptr->realm2 == REALM_SORCERY) {
+    if (creature.realm1 == REALM_SORCERY || creature.realm2 == REALM_SORCERY) {
         impression += 100;
     }
     */
@@ -66,16 +77,19 @@ bool AllianceTzeentch::isAnnihilated()
     return false; // TODO: MonraceList::get_instance().get_monrace(MonraceId::TZEENTCH_GOD).mob_num == 0;
 }
 
-void AllianceTzeentch::panishment(PlayerType &player_ptr)
+void AllianceTzeentch::panishment(CreatureEntity &creature)
 {
-    auto impression = calcImpressionPoint(&player_ptr);
+    auto impression = calcImpressionPoint(creature);
     if (isAnnihilated() || impression > -60) {
         return;
     }
 
+    if (!creature.is_player()) {
+        return;
+    }
     if (one_in_(22)) {
-        Pos2D m_pos(player_ptr.get_position());
-        m_pos = scatter(&player_ptr, m_pos, 15, PROJECT_NONE);
+        Pos2D m_pos(creature.get_position());
+        m_pos = scatter(*creature.get_floor(), m_pos, 15, PROJECT_NONE);
 
         // ティーンチの知識と変幻レベルに応じて異なる復讐者を派遣
         /*
@@ -98,9 +112,9 @@ void AllianceTzeentch::panishment(PlayerType &player_ptr)
                 "\"Receive Tzeentch's blessing!\" Pink Horrors appear to bestow the blessing of change upon you!"));
         }
 
-        const auto m_idx = place_monster_one(&player_ptr, m_pos.y, m_pos.x, avenger_id, PM_ALLOW_GROUP | PM_TZEENTCH);
+        const auto m_idx = place_monster_one(creature, m_pos.y, m_pos.x, avenger_id, PM_ALLOW_GROUP | PM_TZEENTCH);
         if (m_idx) {
-            disturb(&player_ptr, true, true);
+            disturb(creature, true, true);
 
             // 追加の配下召喚（知識と変幻の混沌）
             int summon_count = 1;
@@ -113,8 +127,8 @@ void AllianceTzeentch::panishment(PlayerType &player_ptr)
             }
 
             for (int k = 0; k < summon_count; k++) {
-                summon_specific(&player_ptr, m_pos.y, m_pos.x,
-                    std::max(player_ptr.current_floor_ptr->monster_level, 12),
+                summon_specific(&creature, m_pos.y, m_pos.x,
+                    std::max(creature.get_floor()->monster_level, 12),
                     SUMMON_ALLIANCE, PM_ALLOW_GROUP, m_idx);
             }
         }
@@ -130,7 +144,7 @@ void AllianceTzeentch::panishment(PlayerType &player_ptr)
         /*
         if (one_in_(3)) {
             msg_print(_("空間が歪み、あなたは別の場所に飛ばされた！", "Space warps and you are teleported elsewhere!"));
-            teleport_player(&player_ptr, 50, TELEPORT_NONMAGICAL);
+            teleport_player(creature, 50, TELEPORT_NONMAGICAL);
         }
         */
     }

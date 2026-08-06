@@ -18,13 +18,13 @@
 #include "sv-definition/sv-bow-types.h"
 #include "system/baseitem/baseitem-definition.h"
 #include "system/baseitem/baseitem-list.h"
-#include "system/player-type-definition.h"
+#include "system/creature-entity.h"
 #include "util/angband-files.h"
 
 /*
  * Display weapon-exp
  */
-void do_cmd_knowledge_weapon_exp(PlayerType *player_ptr)
+void do_cmd_knowledge_weapon_exp(CreatureEntity &creature)
 {
     FILE *fff = nullptr;
     GAME_TEXT file_name[FILE_NAME_SIZE];
@@ -45,8 +45,8 @@ void do_cmd_knowledge_weapon_exp(PlayerType *player_ptr)
                     continue;
                 }
 
-                SUB_EXP weapon_exp = player_ptr->weapon_exp[tval][num];
-                SUB_EXP weapon_max = player_ptr->weapon_exp_max[tval][num];
+                SUB_EXP weapon_exp = creature.get_weapon_exp(tval, num);
+                SUB_EXP weapon_max = creature.get_weapon_exp_max(tval, num);
                 fprintf(fff, "%-25s ", baseitem.stripped_name().data());
                 if (show_actual_value) {
                     fprintf(fff, "%4d/%4d ", weapon_exp, weapon_max);
@@ -68,7 +68,7 @@ void do_cmd_knowledge_weapon_exp(PlayerType *player_ptr)
     }
 
     angband_fclose(fff);
-    FileDisplayer(player_ptr->name).display(true, file_name, 0, 0, _("武器の経験値", "Weapon Proficiency"));
+    FileDisplayer(creature.name).display(true, file_name, 0, 0, _("武器の経験値", "Weapon Proficiency"));
     fd_kill(file_name);
 }
 
@@ -76,7 +76,7 @@ void do_cmd_knowledge_weapon_exp(PlayerType *player_ptr)
  * @brief 魔法の経験値を表示するコマンドのメインルーチン
  * Display spell-exp
  */
-void do_cmd_knowledge_spell_exp(PlayerType *player_ptr)
+void do_cmd_knowledge_spell_exp(CreatureEntity &creature)
 {
     FILE *fff = nullptr;
     GAME_TEXT file_name[FILE_NAME_SIZE];
@@ -84,7 +84,7 @@ void do_cmd_knowledge_spell_exp(PlayerType *player_ptr)
         return;
     }
 
-    PlayerRealm pr(player_ptr);
+    PlayerRealm pr(creature);
 
     if (pr.realm1().is_available()) {
         fprintf(fff, _("%sの魔法書\n", "%s Spellbook\n"), pr.realm1().get_name().data());
@@ -94,7 +94,7 @@ void do_cmd_knowledge_spell_exp(PlayerType *player_ptr)
             if (spell.slevel >= 99) {
                 continue;
             }
-            SUB_EXP spell_exp = player_ptr->spell_exp[i];
+            SUB_EXP spell_exp = creature.get_spell_exp(i);
             auto skill_rank = PlayerSkill::spell_skill_rank(spell_exp);
             const auto &spell_name = pr.realm1().get_spell_name(i);
             fprintf(fff, "%-25s ", spell_name.data());
@@ -131,7 +131,7 @@ void do_cmd_knowledge_spell_exp(PlayerType *player_ptr)
                 continue;
             }
 
-            SUB_EXP spell_exp = player_ptr->spell_exp[i + 32];
+            SUB_EXP spell_exp = creature.get_spell_exp(i + 32);
             auto skill_rank = PlayerSkill::spell_skill_rank(spell_exp);
             const auto spell_name = pr.realm2().get_spell_name(i);
             fprintf(fff, "%-25s ", spell_name.data());
@@ -152,7 +152,7 @@ void do_cmd_knowledge_spell_exp(PlayerType *player_ptr)
     }
 
     angband_fclose(fff);
-    FileDisplayer(player_ptr->name).display(true, file_name, 0, 0, _("魔法の経験値", "Spell Proficiency"));
+    FileDisplayer(creature.name).display(true, file_name, 0, 0, _("魔法の経験値", "Spell Proficiency"));
     fd_kill(file_name);
 }
 
@@ -160,7 +160,7 @@ void do_cmd_knowledge_spell_exp(PlayerType *player_ptr)
  * @brief スキル情報を表示するコマンドのメインルーチン /
  * Display skill-exp
  */
-void do_cmd_knowledge_skill_exp(PlayerType *player_ptr)
+void do_cmd_knowledge_skill_exp(CreatureEntity &creature)
 {
     FILE *fff = nullptr;
     char file_name[FILE_NAME_SIZE];
@@ -169,8 +169,8 @@ void do_cmd_knowledge_skill_exp(PlayerType *player_ptr)
     }
 
     for (auto i : PLAYER_SKILL_KIND_TYPE_RANGE) {
-        SUB_EXP skill_exp = player_ptr->skill_exp[i];
-        SUB_EXP skill_max = class_skills_info[enum2i(player_ptr->pclass)].s_max[i];
+        SUB_EXP skill_exp = creature.get_skill_exp(i);
+        SUB_EXP skill_max = class_skills_info[enum2i(creature.pclass)].s_max[i];
         fprintf(fff, "%-20s ", PlayerSkill::skill_name(i));
         if (show_actual_value) {
             fprintf(fff, "%4d/%4d ", std::min(skill_exp, skill_max), skill_max);
@@ -189,6 +189,6 @@ void do_cmd_knowledge_skill_exp(PlayerType *player_ptr)
     }
 
     angband_fclose(fff);
-    FileDisplayer(player_ptr->name).display(true, file_name, 0, 0, _("技能の経験値", "Miscellaneous Proficiency"));
+    FileDisplayer(creature.name).display(true, file_name, 0, 0, _("技能の経験値", "Miscellaneous Proficiency"));
     fd_kill(file_name);
 }

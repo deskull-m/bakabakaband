@@ -1,14 +1,14 @@
 #include "alliance/alliance-amber.h"
 #include "monster-race/race-kind-flags.h"
+#include "system/creature-entity.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/player-type-definition.h"
 
-int AllianceAmber::calcImpressionPoint(PlayerType *creature_ptr) const
+int AllianceAmber::calcImpressionPoint(const CreatureEntity &creature) const
 {
     int impression = 0;
-    impression += Alliance::calcPlayerPower(*creature_ptr, 10, 35);
+    impression += Alliance::calcPlayerPower(creature, 10, 35);
     impression += calcIronmanHostilityPenalty();
 
     // アンバライト・アライアンス関連モンスターの撃破による印象値減少（掛け算）
@@ -57,11 +57,11 @@ bool AllianceAmber::isAnnihilated()
 
 /*!
  * @brief 襲撃時に出現するモンスターのリストを取得する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param impression_point 印象値
  * @return アンバーのモンスターIDのリスト（印象値が低い場合は天使系や騎士系モンスター）
  */
-std::vector<MonraceId> AllianceAmber::get_ambush_monsters([[maybe_unused]] PlayerType *player_ptr, int impression_point) const
+std::vector<MonraceId> AllianceAmber::get_ambush_monsters([[maybe_unused]] CreatureEntity &creature, int impression_point) const
 {
     std::vector<MonraceId> monsters;
 

@@ -8,22 +8,21 @@
 #include "spell-kind/spells-sight.h"
 #include "status/bad-status-setter.h"
 #include "status/body-improvement.h"
-#include "system/player-type-definition.h"
-#include "timed-effect/timed-effects.h"
+#include "system/creature-entity.h"
 #include "view/display-messages.h"
 
 /*!
  * @brief 聖浄の杖の効果
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @magic 魔法の効果である場合TRUE (杖と同じ効果の呪文はあったか？ 要調査)
  * @powerful 効果が増強される時TRUE (TRUEになるタイミングはあるか？ 要調査)
  */
-bool cleansing_nova(PlayerType *player_ptr, bool magic, bool powerful)
+bool cleansing_nova(CreatureEntity &creature, bool magic, bool powerful)
 {
-    auto ident = dispel_evil(player_ptr, powerful ? 225 : 150);
-    const auto k = 3 * player_ptr->level;
+    auto ident = dispel_evil(creature, powerful ? 225 : 150);
+    const auto k = 3 * creature.get_level();
     const short turns = randint1(25) + k;
-    BodyImprovement improvement(player_ptr);
+    BodyImprovement improvement(creature);
     if (magic) {
         improvement.set_protection(turns);
     } else {
@@ -34,7 +33,7 @@ bool cleansing_nova(PlayerType *player_ptr, bool magic, bool powerful)
         ident = true;
     }
 
-    BadStatusSetter bss(player_ptr);
+    BadStatusSetter bss(creature);
     if (bss.set_poison(0)) {
         ident = true;
     }
@@ -43,7 +42,7 @@ bool cleansing_nova(PlayerType *player_ptr, bool magic, bool powerful)
         ident = true;
     }
 
-    if (hp_player(player_ptr, 50)) {
+    if (hp_player(creature, 50)) {
         ident = true;
     }
 
@@ -60,17 +59,17 @@ bool cleansing_nova(PlayerType *player_ptr, bool magic, bool powerful)
 
 /*!
  * @brief 魔力の嵐の杖の効果
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @powerful 効果が増強される時TRUE (TRUEになるタイミングはあるか？ 要調査)
  */
-bool unleash_mana_storm(PlayerType *player_ptr, bool powerful)
+bool unleash_mana_storm(CreatureEntity &creature, bool powerful)
 {
     msg_print(_("強力な魔力が敵を引き裂いた！", "Mighty magics rend your enemies!"));
-    project(player_ptr, 0, (powerful ? 7 : 5), player_ptr->y, player_ptr->x, (randint1(200) + (powerful ? 500 : 300)) * 2, AttributeType::MANA,
+    project(creature, 0, (powerful ? 7 : 5), creature.y, creature.x, (randint1(200) + (powerful ? 500 : 300)) * 2, AttributeType::MANA,
         PROJECT_KILL | PROJECT_ITEM | PROJECT_GRID);
 
-    if (!PlayerClass(player_ptr).is_wizard()) {
-        (void)take_hit(player_ptr, DAMAGE_NOESCAPE, 50, _("コントロールし難い強力な魔力の解放", "unleashing magics too mighty to control"));
+    if (!CreatureClass(creature).is_wizard()) {
+        (void)take_hit(creature, DAMAGE_NOESCAPE, 50, _("コントロールし難い強力な魔力の解放", "unleashing magics too mighty to control"));
     }
 
     return true;

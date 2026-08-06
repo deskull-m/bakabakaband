@@ -1,12 +1,10 @@
-#include <cstdlib>
-
-#include "autopick/autopick-dirty-flags.h"
 #include "autopick/autopick-editor-util.h"
+#include "autopick/autopick-dirty-flags.h"
 #include "autopick/autopick-entry.h"
 #include "autopick/autopick-flags-table.h"
-#include "autopick/autopick-key-flag-process.h"
 #include "autopick/autopick-methods-table.h"
 #include "autopick/autopick-util.h"
+#include <cstdlib>
 
 /*!
  * @brief Delete or insert string
@@ -76,7 +74,7 @@ void toggle_keyword(text_body_type *tb, BIT_FLAGS flg)
 /*!
  * @brief Change command letter
  */
-void toggle_command_letter(text_body_type *tb, byte flg)
+void toggle_command_letter(text_body_type *tb, AutopickMethod am)
 {
     autopick_type an_entry;
     autopick_type *entry = &an_entry;
@@ -91,62 +89,55 @@ void toggle_command_letter(text_body_type *tb, byte flg)
     }
 
     for (int y = by1; y <= by2; y++) {
-        int wid = 0;
-
+        auto wid = 0;
         if (!autopick_new_entry(entry, *tb->lines_list[y], false)) {
             continue;
         }
 
         if (!fixed) {
-            if (!(entry->action & flg)) {
-                add = true;
-            } else {
-                add = false;
-            }
-
+            add = entry->action.has_not(am);
             fixed = true;
         }
 
-        if (entry->action & DONT_AUTOPICK) {
+        if (entry->action.has(AutopickMethod::NOT_AUTOPICK)) {
             wid--;
-        } else if (entry->action & DO_AUTODESTROY) {
+        } else if (entry->action.has(AutopickMethod::AUTODESTROY)) {
             wid--;
-        } else if (entry->action & DO_QUERY_AUTOPICK) {
-            wid--;
-        }
-        if (!(entry->action & DO_DISPLAY)) {
+        } else if (entry->action.has(AutopickMethod::QUERY_AUTOPICK)) {
             wid--;
         }
 
-        if (flg != DO_DISPLAY) {
-            entry->action &= ~(DO_AUTOPICK | DONT_AUTOPICK | DO_AUTODESTROY | DO_QUERY_AUTOPICK);
-            if (add) {
-                entry->action |= flg;
-            } else {
-                entry->action |= DO_AUTOPICK;
-            }
+        if (entry->action.has_not(AutopickMethod::DISPLAY)) {
+            wid--;
+        }
+
+        if (am != AutopickMethod::DISPLAY) {
+            entry->action.reset({ AutopickMethod::AUTOPICK, AutopickMethod::NOT_AUTOPICK, AutopickMethod::AUTODESTROY, AutopickMethod::QUERY_AUTOPICK });
+            entry->action.set(add ? am : AutopickMethod::AUTOPICK);
         } else {
-            entry->action &= ~(DO_DISPLAY);
+            entry->action.reset(AutopickMethod::DISPLAY);
             if (add) {
-                entry->action |= flg;
+                entry->action.set(am);
             }
         }
 
         if (tb->cy == y) {
-            if (entry->action & DONT_AUTOPICK) {
+            if (entry->action.has(AutopickMethod::NOT_AUTOPICK)) {
                 wid++;
-            } else if (entry->action & DO_AUTODESTROY) {
+            } else if (entry->action.has(AutopickMethod::AUTODESTROY)) {
                 wid++;
-            } else if (entry->action & DO_QUERY_AUTOPICK) {
+            } else if (entry->action.has(AutopickMethod::QUERY_AUTOPICK)) {
                 wid++;
             }
-            if (!(entry->action & DO_DISPLAY)) {
+
+            if (entry->action.has_not(AutopickMethod::DISPLAY)) {
                 wid++;
             }
 
             if (wid > 0) {
                 tb->cx++;
             }
+
             if (wid < 0 && tb->cx > 0) {
                 tb->cx--;
             }

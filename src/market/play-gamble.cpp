@@ -6,7 +6,7 @@
 #include "market/building-actions-table.h"
 #include "market/building-util.h"
 #include "market/poker.h"
-#include "system/player-type-definition.h"
+#include "system/creature-entity.h"
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
 #include "view/display-fruit.h"
@@ -14,19 +14,19 @@
 
 /*!
  * @brief カジノ1プレイごとのメインルーチン / gamble_comm
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param cmd プレイするゲームID
  */
-void gamble_comm(PlayerType *player_ptr, int cmd)
+void gamble_comm(CreatureEntity &creature, int cmd)
 {
     screen_save();
     if (cmd == BACT_GAMBLE_RULES) {
-        FileDisplayer(player_ptr->name).display(true, _("jgambling.txt", "gambling.txt"), 0, 0);
+        FileDisplayer(creature.name).display(true, _("jgambling.txt", "gambling.txt"), 0, 0);
         screen_load();
         return;
     }
 
-    if (player_ptr->au < 1) {
+    if (creature.get_au() < 1) {
         msg_print(_("おい！おまえ一文なしじゃないか！こっから出ていけ！", "Hey! You don't have gold - get out of here!"));
         msg_erase();
         screen_load();
@@ -34,8 +34,8 @@ void gamble_comm(PlayerType *player_ptr, int cmd)
     }
 
     clear_bldg(5, 23);
-    auto maxbet = player_ptr->level * 200;
-    maxbet = std::min(maxbet, player_ptr->au);
+    auto maxbet = creature.get_level() * 200;
+    maxbet = std::min(maxbet, creature.get_au());
     constexpr auto prompt = _("賭け金？", "Your wager ?");
     const auto wager = input_integer(prompt, 1, maxbet, 1);
     if (!wager) {
@@ -44,7 +44,7 @@ void gamble_comm(PlayerType *player_ptr, int cmd)
         return;
     }
 
-    if (wager > player_ptr->au) {
+    if (wager > creature.get_au()) {
         msg_print(_("おい！金が足りないじゃないか！出ていけ！", "Hey! You don't have the gold - get out of here!"));
         msg_erase();
         screen_load();
@@ -54,11 +54,11 @@ void gamble_comm(PlayerType *player_ptr, int cmd)
     msg_erase();
     auto win = 0;
     auto odds = 0;
-    auto oldgold = player_ptr->au;
+    auto oldgold = creature.get_au();
     prt(format(_("ゲーム前の所持金: %9d", "Gold before game: %9d"), oldgold), 20, 2);
     prt(format(_("現在の掛け金:     %9d", "Current Wager:    %9d"), *wager), 21, 2);
     while (true) {
-        player_ptr->au -= *wager;
+        creature.sub_au(*wager);
         switch (cmd) {
         case BACT_IN_BETWEEN: {
             c_put_str(TERM_GREEN, _("イン・ビトイーン", "In Between"), 5, 2);
@@ -224,21 +224,21 @@ void gamble_comm(PlayerType *player_ptr, int cmd)
 
         if (win) {
             prt(_("あなたの勝ち", "YOU WON"), 16, 37);
-            player_ptr->au += odds * *wager;
+            creature.add_au(odds * *wager);
             prt(format(_("倍率: %d", "Payoff: %d"), odds), 17, 37);
         } else {
             prt(_("あなたの負け", "You Lost"), 16, 37);
             prt("", 17, 37);
         }
 
-        prt(format(_("現在の所持金:     %9d", "Current Gold:     %9d"), player_ptr->au), 22, 2);
+        prt(format(_("現在の所持金:     %9d", "Current Gold:     %9d"), creature.get_au()), 22, 2);
         prt(_("もう一度(Y/N)？", "Again(Y/N)?"), 18, 37);
         move_cursor(18, 52);
         auto again = inkey();
         prt("", 16, 37);
         prt("", 17, 37);
         prt("", 18, 37);
-        if (wager > player_ptr->au) {
+        if (wager > creature.get_au()) {
             msg_print(_("おい！金が足りないじゃないか！ここから出て行け！", "Hey! You don't have the gold - get out of here!"));
             msg_erase();
             break;
@@ -252,12 +252,12 @@ void gamble_comm(PlayerType *player_ptr, int cmd)
     }
 
     prt("", 18, 37);
-    if (player_ptr->au >= oldgold) {
+    if (creature.get_au() >= oldgold) {
         msg_print(_("「今回は儲けたな！でも次はこっちが勝ってやるからな、絶対に！」", "You came out a winner! We'll win next time, I'm sure."));
-        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::CHANCE, 3);
+        chg_virtue(creature, Virtue::CHANCE, 3);
     } else {
         msg_print(_("「金をスッてしまったな、わはは！うちに帰った方がいいぜ。」", "You lost gold! Haha, better head home."));
-        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::CHANCE, -3);
+        chg_virtue(creature, Virtue::CHANCE, -3);
     }
 
     msg_erase();

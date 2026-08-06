@@ -8,11 +8,11 @@
 #include "player/player-personality.h"
 #include "player/race-info-table.h"
 #include "player/special-defense-types.h"
-#include "system/player-type-definition.h"
+#include "system/creature-entity.h"
 #include "util/bit-flags-calculator.h"
 
-PlayerWisdom::PlayerWisdom(PlayerType *player_ptr)
-    : PlayerBasicStatistics(player_ptr)
+PlayerWisdom::PlayerWisdom(CreatureEntity &creature)
+    : PlayerBasicStatistics(creature)
 {
 }
 
@@ -38,7 +38,7 @@ int16_t PlayerWisdom::stance_bonus()
 {
     int16_t result = 0;
 
-    PlayerClass pc(player_ptr);
+    CreatureClass pc(this->creature);
     if (pc.samurai_stance_is(SamuraiStanceType::KOUKIJIN)) {
         result += 5;
     }
@@ -64,12 +64,12 @@ int16_t PlayerWisdom::mutation_bonus()
 {
     int16_t result = 0;
 
-    if (this->player_ptr->muta.any()) {
-        if (this->player_ptr->muta.has(PlayerMutationType::HYPER_INT)) {
+    if (this->creature.get_mutations().any()) {
+        if (this->creature.get_mutations().has(PlayerMutationType::HYPER_INT)) {
             result += 4;
         }
 
-        if (this->player_ptr->muta.has(PlayerMutationType::MORONIC)) {
+        if (this->creature.get_mutations().has(PlayerMutationType::MORONIC)) {
             result -= 4;
         }
     }

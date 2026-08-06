@@ -23,11 +23,11 @@
 #include "status/buff-setter.h"
 #include "sv-definition/sv-junk-types.h"
 #include "system/baseitem/baseitem-key.h"
+#include "system/creature-entity.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "term/screen-processor.h"
-#include "timed-effect/timed-effects.h"
+#include "timed-effect/player-cut.h"
 #include "util/int-char-converter.h"
 #include "util/probability-table.h"
 #include "view/display-messages.h"
@@ -42,7 +42,7 @@
 // コマンドマッピング用の構造体
 struct TextCommand {
     std::vector<std::string> keywords;
-    std::function<void(PlayerType *)> action;
+    std::function<void(CreatureEntity &)> action;
     std::string description;
 };
 
@@ -53,8 +53,8 @@ static std::string normalize_string(const std::string &str)
 {
     std::string result;
     for (char c : str) {
-        if (!std::isspace(c)) {
-            result += std::tolower(c);
+        if (!std::isspace(static_cast<unsigned char>(c))) {
+            result += static_cast<char>(std::tolower(static_cast<unsigned char>(c)));
         }
     }
     return result;
@@ -83,17 +83,17 @@ static std::vector<TextCommand> get_text_commands()
 {
     return {
         { { "search", "探す", "探索" },
-            [](PlayerType *player_ptr) {
-                do_cmd_search(player_ptr);
+            [](CreatureEntity &creature) {
+                do_cmd_search(creature);
             },
             _("周囲を探索する", "Search") },
         { { "suicide", "死ぬ", "自殺" },
-            [](PlayerType *player_ptr) {
-                do_cmd_suicide(player_ptr);
+            [](CreatureEntity &creature) {
+                do_cmd_suicide(creature);
             },
             _("自殺する", "suicide") },
         { { "defecate", "脱糞", "うんち", "うんこ" },
-            [](PlayerType *player_ptr) {
+            [](CreatureEntity &creature) {
                 // 脱糞アクション
                 msg_print(_("あなたは脱糞した！", "You defecated!"));
 
@@ -128,25 +128,25 @@ static std::vector<TextCommand> get_text_commands()
                 dung_item.number = 1;
 
                 // プレイヤーの足下に落とす
-                Pos2D pos(player_ptr->y, player_ptr->x);
-                drop_near(player_ptr, dung_item, pos);
+                Pos2D pos(creature.y, creature.x);
+                drop_near(creature, dung_item, pos);
 
                 msg_print(_("糞便が足下に落ちた。", "Dung has dropped at your feet."));
 
                 // 体力を少し消費
-                if (player_ptr->hp > 1) {
-                    player_ptr->hp--;
+                if (creature.hp > 1) {
+                    creature.hp--;
                     auto &rfu = RedrawingFlagsUpdater::get_instance();
                     rfu.set_flag(MainWindowRedrawingFlag::HP);
                 }
 
                 // 時間消費
-                PlayerEnergy(player_ptr).set_player_turn_energy(100);
+                PlayerEnergy(creature).set_player_turn_energy(100);
 
                 // 周囲のモンスターが嫌悪感を示す可能性
                 if (one_in_(4)) {
                     msg_print(_("あなたの行為に周囲が困惑している。", "Your actions confuse those around you."));
-                    aggravate_monsters(player_ptr, 0);
+                    aggravate_monsters(creature, 0);
                 } else if (one_in_(8)) {
                     msg_print(_("なんとも言えない臭いが漂っている...", "An indescribable smell wafts through the air..."));
                 }
@@ -156,14 +156,14 @@ static std::vector<TextCommand> get_text_commands()
                 if (one_in_(20)) {
                     msg_print(_("恥ずかしさで顔が真っ赤になった。", "Your face turns red with embarrassment."));
                     // 混乱状態を付与
-                    auto &timed_effects = player_ptr->effects();
+                    auto &timed_effects = creature.effects();
                     timed_effects.confusion().set(timed_effects.confusion().current() + randint1(5));
                 }
                 */
             },
             _("脱糞する", "Defecate") },
         { { "dance", "踊る", "ダンス", "おどる" },
-            [](PlayerType *player_ptr) {
+            [](CreatureEntity &creature) {
                 // 踊るアクション
                 msg_print(_("あなたは楽しそうに踊り始めた！", "You start dancing joyfully!"));
 
@@ -195,89 +195,89 @@ static std::vector<TextCommand> get_text_commands()
 #endif
 
                 // 少しの体力消費
-                if (player_ptr->csp > 1) {
-                    player_ptr->csp--;
+                if (creature.get_current_mp() > 1) {
+                    creature.sub_current_mp(1);
                     auto &rfu = RedrawingFlagsUpdater::get_instance();
                     rfu.set_flag(MainWindowRedrawingFlag::MP);
                 }
 
                 // 時間消費
-                PlayerEnergy(player_ptr).set_player_turn_energy(50);
+                PlayerEnergy(creature).set_player_turn_energy(50);
 
                 // 周囲のモンスターが反応する可能性
                 if (one_in_(3)) {
                     msg_print(_("あなたの踊りに周囲が注目している。", "Your dancing attracts attention."));
-                    aggravate_monsters(player_ptr, 0);
+                    aggravate_monsters(creature, 0);
                 }
 
                 // 稀にポジティブ効果
                 if (one_in_(10)) {
                     msg_print(_("素晴らしい踊りで気分が高揚した！", "Your wonderful dance lifts your spirits!"));
-                    set_hero(player_ptr, player_ptr->blessed + randint1(10), false);
+                    set_hero(creature, creature.get_timed_effect(CreatureTimedEffect::BLESSED) + randint1(10), false);
                 }
             },
             _("踊る", "Dance") },
         { { "headbutt", "頭突き", "ずつき", "あたまづき" },
-            [](PlayerType *player_ptr) {
+            [](CreatureEntity &creature) {
                 // 実際の頭突き攻撃処理を実行
-                do_cmd_headbutt(player_ptr);
+                do_cmd_headbutt(creature);
             },
             _("頭突き", "Headbutt") },
         { { "bodyslam", "体当たり", "たいあたり", "ぼでぃすらむ", "tackle", "タックル" },
-            [](PlayerType *player_ptr) {
+            [](CreatureEntity &creature) {
                 // 実際の体当たり攻撃処理を実行
-                do_cmd_body_slam(player_ptr);
+                do_cmd_body_slam(creature);
             },
             _("体当たり", "Body Slam") },
         { { "浣腸", "かんちょう", "enema", "カンチョー" },
-            [](PlayerType *player_ptr) {
+            [](CreatureEntity &creature) {
                 // 実際の浣腸攻撃処理を実行
-                do_cmd_enema(player_ptr);
+                do_cmd_enema(creature);
             },
             _("浣腸", "Enema") },
         { { "ひでぶ", "hidebu", "ヒデブ", "HIDEBU" },
-            [](PlayerType *player_ptr) {
+            [](CreatureEntity &creature) {
                 // ひでぶコマンド - プレイヤーに重症の傷を与える
                 msg_print(_("ひでぶ！", "Hidebu!"));
                 msg_print(_("あなたは謎の力によって重傷を負った！", "You are seriously wounded by a mysterious force!"));
 
                 // 重症の傷（現在のHPの半分のダメージ）
-                int damage = player_ptr->hp / 2;
+                int damage = creature.hp / 2;
                 if (damage < 1)
                     damage = 1;
 
                 // 最低でも50ポイントのダメージ、最大でも現HP-1まで
                 damage = std::max(damage, 50);
-                damage = std::min(damage, player_ptr->hp - 1);
+                damage = std::min(damage, creature.hp - 1);
 
-                take_hit(player_ptr, DAMAGE_NOESCAPE, damage, _("ひでぶ", "Hidebu"));
+                take_hit(creature, DAMAGE_NOESCAPE, damage, _("ひでぶ", "Hidebu"));
 
                 // HPが1未満にならないようにする
-                if (player_ptr->hp < 1) {
-                    player_ptr->hp = 1;
+                if (creature.hp < 1) {
+                    creature.hp = 1;
                 }
 
                 // 重傷状態を設定
                 auto cut_plus = PlayerCut::get_accumulation(100, 200);
                 if (cut_plus > 0) {
-                    (void)BadStatusSetter(player_ptr).mod_cut(cut_plus);
+                    (void)BadStatusSetter(creature).mod_cut(cut_plus);
                 }
 
                 // 画面更新
                 auto &rfu = RedrawingFlagsUpdater::get_instance();
                 rfu.set_flag(MainWindowRedrawingFlag::HP);
                 rfu.set_flag(MainWindowRedrawingFlag::CUT);
-                handle_stuff(player_ptr);
+                handle_stuff(creature);
 
                 // 警告メッセージ
                 msg_print(_("何ということをしたのだ...", "What have you done..."));
 
                 // 時間消費
-                PlayerEnergy(player_ptr).set_player_turn_energy(100);
+                PlayerEnergy(creature).set_player_turn_energy(100);
             },
             _("ひでぶ", "Hidebu") },
         { { "しゃぶれよ", "shabureyо", "しゃぶれ", "shabare" },
-            [](PlayerType *player_ptr) {
+            [](CreatureEntity &creature) {
                 // しゃぶれよコマンド - 敵対的ホモを召喚
                 msg_print(_("何がしゃぶれだあ、お前がしゃぶれよ", "What do you mean 'suck it', you suck it yourself!"));
 
@@ -285,7 +285,7 @@ static std::vector<TextCommand> get_text_commands()
                 int count = 0;
                 for (int k = 0; k < 2 + randint1(3); k++) {
                     // プレイヤー周辺に敵対的にホモを召喚
-                    if (summon_specific(player_ptr, player_ptr->y, player_ptr->x, player_ptr->level,
+                    if (summon_specific(creature, creature.y, creature.x, creature.get_level(),
                             SUMMON_HOMO, PM_NO_PET)) {
                         count++;
                     }
@@ -303,7 +303,7 @@ static std::vector<TextCommand> get_text_commands()
                 }
 
                 // 時間消費
-                PlayerEnergy(player_ptr).set_player_turn_energy(100);
+                PlayerEnergy(creature).set_player_turn_energy(100);
             },
             _("しゃぶれよ", "Suck it") }
     };
@@ -311,9 +311,9 @@ static std::vector<TextCommand> get_text_commands()
 
 /*!
  * @brief 文章コマンド入力処理
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
-void do_cmd_text_command(PlayerType *player_ptr)
+void do_cmd_text_command(CreatureEntity &creature)
 {
     screen_save();
 
@@ -340,7 +340,7 @@ void do_cmd_text_command(PlayerType *player_ptr)
 
     for (const auto &cmd : commands) {
         if (matches_keywords(buf.value(), cmd.keywords)) {
-            cmd.action(player_ptr);
+            cmd.action(creature);
             found = true;
             break;
         }

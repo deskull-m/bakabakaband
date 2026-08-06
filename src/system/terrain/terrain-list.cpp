@@ -41,7 +41,8 @@ TerrainList::TerrainList()
         TerrainTag::TRAP_ICE_STORM,
         TerrainTag::TRAP_CHAOS_STORM,
         TerrainTag::TRAP_JUMP_VOID,
-        TerrainTag::TRAP_LAND_MINE
+        TerrainTag::TRAP_LAND_MINE,
+        TerrainTag::TRAP_DESTRUCTION,
     };
 }
 
@@ -109,6 +110,13 @@ void TerrainList::retouch()
         terrain.destroyed = this->search_real_terrain(terrain.destroyed_tag).value_or(terrain.destroyed);
         for (auto &ts : terrain.state) {
             ts.result = this->search_real_terrain(ts.result_tag).value_or(ts.result);
+        }
+        for (auto &change : terrain.generation_changes) {
+            change.result = this->search_real_terrain(change.result_tag).value_or(change.result);
+        }
+        // ランダム変化先タグの解決
+        if (!terrain.random_change_tag.empty()) {
+            terrain.random_change = this->search_real_terrain(terrain.random_change_tag).value_or(0);
         }
     }
 }

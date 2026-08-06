@@ -13,7 +13,7 @@
 #include "io/files-util.h"
 #include "io/input-key-acceptor.h"
 #include "system/angband-exceptions.h"
-#include "system/player-type-definition.h"
+#include "system/creature-entity.h"
 #include "system/redrawing-flags-updater.h"
 #include "term/gameterm.h"
 #include "term/screen-processor.h"
@@ -343,17 +343,17 @@ static bool do_cmd_save_screen_text(int wid, int hgt)
 
 /*!
  * @brief 記念撮影のためにグラフィック使用をOFFにする
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return 記念撮影直前のグラフィックオプション
  */
-static bool update_use_graphics(PlayerType *player_ptr)
+static bool update_use_graphics(CreatureEntity &creature)
 {
     if (!use_graphics) {
         return true;
     }
 
     use_graphics = false;
-    reset_visuals(player_ptr);
+    reset_visuals(creature);
     static constexpr auto flags = {
         MainWindowRedrawingFlag::WIPE,
         MainWindowRedrawingFlag::BASIC,
@@ -362,15 +362,15 @@ static bool update_use_graphics(PlayerType *player_ptr)
         MainWindowRedrawingFlag::EQUIPPY,
     };
     RedrawingFlagsUpdater::get_instance().set_flags(flags);
-    handle_stuff(player_ptr);
+    handle_stuff(creature);
     return false;
 }
 
 /*
  * Save a screen dump to a file
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
-void do_cmd_save_screen(PlayerType *player_ptr)
+void do_cmd_save_screen(CreatureEntity &creature)
 {
     prt(_("記念撮影しますか？ [(y)es/(h)tml/(n)o] ", "Save screen dump? [(y)es/(h)tml/(n)o] "), 0, 0);
     bool html_dump;
@@ -379,11 +379,11 @@ void do_cmd_save_screen(PlayerType *player_ptr)
     }
 
     const auto &[wid, hgt] = term_get_size();
-    const auto old_use_graphics = update_use_graphics(player_ptr);
+    const auto old_use_graphics = update_use_graphics(creature);
 
     if (html_dump) {
         exe_cmd_save_screen_html_with_naming();
-        do_cmd_redraw(player_ptr);
+        do_cmd_redraw(creature);
     } else if (!do_cmd_save_screen_text(wid, hgt)) {
         return;
     }
@@ -393,7 +393,7 @@ void do_cmd_save_screen(PlayerType *player_ptr)
     }
 
     use_graphics = true;
-    reset_visuals(player_ptr);
+    reset_visuals(creature);
     static constexpr auto flags = {
         MainWindowRedrawingFlag::WIPE,
         MainWindowRedrawingFlag::BASIC,
@@ -402,7 +402,7 @@ void do_cmd_save_screen(PlayerType *player_ptr)
         MainWindowRedrawingFlag::EQUIPPY,
     };
     RedrawingFlagsUpdater::get_instance().set_flags(flags);
-    handle_stuff(player_ptr);
+    handle_stuff(creature);
 }
 
 /*!

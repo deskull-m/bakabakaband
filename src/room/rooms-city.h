@@ -24,5 +24,5 @@ private:
 };
 
 class DungeonData;
-class PlayerType;
-bool build_type16(PlayerType *player_ptr, DungeonData *dd_ptr);
+class CreatureEntity;
+bool build_type16(CreatureEntity &creature, DungeonData *dd_ptr);

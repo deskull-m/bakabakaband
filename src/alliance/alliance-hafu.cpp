@@ -7,28 +7,27 @@
 #include "monster-floor/one-monster-placer.h"
 #include "monster-floor/place-monster-types.h"
 #include "spell/summon-types.h"
+#include "system/creature-entity.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/player-type-definition.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
-int AllianceHafu::calcImpressionPoint(PlayerType *creature_ptr) const
+int AllianceHafu::calcImpressionPoint(const CreatureEntity &creature) const
 {
     int impression = 0;
 
     impression += calcIronmanHostilityPenalty();
     // 覇府は政治的権力と統治能力を重視
-    impression += Alliance::calcPlayerPower(*creature_ptr, 4, 25);
+    impression += Alliance::calcPlayerPower(creature, 4, 25);
 
     // 魅力と知恵による統治者としての評価
-    impression += (creature_ptr->stat_use[A_CHR] - 10) * 3;
-    impression += (creature_ptr->stat_use[A_WIS] - 10) * 2;
+    impression += (creature.get_stat_use(A_CHR) - 10) * 3;
+    impression += (creature.get_stat_use(A_WIS) - 10) * 2;
 
     // レベルによる権威の評価
-    impression += creature_ptr->level * 2;
-
+    impression += creature.get_level() * 2;
     /*
     // 覇府関連のモンスター討伐による減点
     impression -= MonraceList::get_instance().get_monrace(MonraceId::HAFU_SHOGUN).r_akills * 100;
@@ -56,17 +55,17 @@ bool AllianceHafu::isAnnihilated()
     return false; // MonraceList::get_instance().get_monrace(MonraceId::HAFU_SHOGUN).mob_num == 0;
 }
 
-void AllianceHafu::panishment(PlayerType &player_ptr)
+void AllianceHafu::panishment(CreatureEntity &creature)
 {
-    auto impression = calcImpressionPoint(&player_ptr);
+    auto impression = calcImpressionPoint(creature);
     if (isAnnihilated() || impression > -50) {
         return;
     }
 
     /*
 if (one_in_(18)) {
-    Pos2D m_pos(player_ptr.get_position());
-    m_pos = scatter(&player_ptr, m_pos, 12, PROJECT_NONE);
+    Pos2D m_pos(creature.get_position());
+    m_pos = scatter(*creature.get_floor(), m_pos, 12, PROJECT_NONE);
 
     // 覇府の威信レベルに応じて異なる討伐隊を派遣
     MonraceId avenger_id;
@@ -84,9 +83,9 @@ if (one_in_(18)) {
             "\"In the name of Hafu, commit seppuku!\" A Samurai throws down a challenge to you!"));
     }
 
-    const auto m_idx = place_monster_one(&player_ptr, m_pos.y, m_pos.x, avenger_id, PM_ALLOW_GROUP | PM_HAFU);
+    const auto m_idx = place_monster_one(creature, m_pos.y, m_pos.x, avenger_id, PM_ALLOW_GROUP | PM_HAFU);
     if (m_idx) {
-        disturb(&player_ptr, true, true);
+        disturb(creature, true, true);
 
         // 従者・家臣の召喚（階級に応じて）
         int retainer_count = 0;
@@ -99,8 +98,8 @@ if (one_in_(18)) {
         }
 
         for (int k = 0; k < retainer_count; k++) {
-            summon_specific(&player_ptr, m_pos.y, m_pos.x,
-                std::max(player_ptr.current_floor_ptr->monster_level, 10),
+            summon_specific(&creature, m_pos.y, m_pos.x,
+                std::max(creature.get_floor()->monster_level, 10),
                 SUMMON_ALLIANCE, PM_ALLOW_GROUP, m_idx);
         }
     }

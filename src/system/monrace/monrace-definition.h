@@ -2,7 +2,6 @@
 
 #include "alliance/alliance.h"
 #include "locale/localized-string.h"
-#include "monrace-message.h"
 #include "monster-attack/monster-attack-effect.h"
 #include "monster-attack/monster-attack-table.h"
 #include "monster-race/monster-aura-types.h"
@@ -21,10 +20,21 @@
 #include "monster-race/race-special-flags.h"
 #include "monster-race/race-visual-flags.h"
 #include "monster-race/race-wilderness-flags.h"
+#include "mutation/mutation-flag-types.h"
+#include "player-ability/player-ability-types.h"
+#include "player-info/class-types.h"
+#include "player-info/race-types.h"
+#include "player/player-personality-types.h"
+#include "realm/realm-types.h"
 #include "system/angband.h"
+#include "system/material-type-definition.h"
+#include "system/monrace/body-structure-types.h"
+#include "system/monrace/extended-slot.h"
+#include "system/monrace/monrace-message.h"
 #include "util/dice.h"
 #include "util/flag-group.h"
 #include "view/display-symbol.h"
+#include <array>
 #include <string>
 #include <string_view>
 #include <tl/optional.hpp>
@@ -112,6 +122,7 @@ public:
     std::string text = ""; //!< 思い出テキストのオフセット / Lore text offset
     std::string tag = ""; //!< モンスターのタグ / Monster tag
     Dice hit_dice; //!< HPのダイス / Creatures hit dice
+    Dice hit_dice_per_level; //!< レベル別HPテーブル用の1レベルあたりHPダイス (任意指定。未指定時は hit_dice から既定値を算出)
     ARMOUR_CLASS ac{}; //!< アーマークラス / Armour Class
     SLEEP_DEGREE sleep{}; //!< 睡眠値 / Inactive counter (base)
     POSITION aaf{}; //!< 感知範囲(1-100スクエア) / Area affect radius (1-100)
@@ -119,6 +130,21 @@ public:
     EXP mexp{}; //!< 殺害時基本経験値 / Exp value for kill
     RARITY freq_spell{}; //!< 魔法＆特殊能力仕様頻度(1/n) /  Spell frequency
     MonsterSex sex{}; //!< 性別 / Sex
+    player_personality_type personality = PERSONALITY_NONE; //!< 性格固定指定 (PERSONALITY_NONE で未指定=生成時ランダム) / Fixed personality (PERSONALITY_NONE means unspecified)
+    PlayerRaceType player_race = PlayerRaceType::NONE; //!< 種族固定指定 (提案C1。NONEで未指定。効果は未反映で prace フィールドのみ付与)
+    PlayerClassType player_class = PlayerClassType::NONE; //!< 職業固定指定 (提案C1。NONEで未指定。効果は未反映で pclass フィールドのみ付与)
+    bool grows_stats = false; //!< レベルアップ時に能力値も成長させるか (提案C2。既定false=オプトイン。既定バランス不変)
+    bool consumes_mp = false; //!< 呪文詠唱時に MP を消費するか (提案C4。既定false=オプトイン。既定バランス不変)
+    EnumClassFlagGroup<PlayerMutationType> mutations{}; //!< 生成時に付与する突然変異 (提案C5。空=なし=オプトイン)
+    RealmType realm_abilities = RealmType::NONE; //!< 詠唱能力を付与する魔法領域 (提案C6。NONE=なし=オプトイン。詠唱時に realm 由来の MonsterAbilityType を追加)
+    bool suffers_poison_dot = false; //!< 毒攻撃で継続毒(POISON DoT)を受けるか (提案D7。既定false=オプトイン。既定バランス不変)
+    bool applies_player_race_resistances = false; //!< 付与された player_race の属性耐性を被ダメージへ反映するか (提案C1第2弾。既定false=オプトイン。既定バランス不変)
+    bool applies_player_race_reflection = false; //!< 付与された player_race の反射(TR_REFLECT)をボルト反射へ反映するか (提案C1第8弾。既定false=オプトイン。既定バランス不変)
+    bool applies_player_race_regeneration = false; //!< 付与された player_race の再生(TR_REGEN)を自然回復倍化へ反映するか (提案C1第10弾。既定false=オプトイン。既定バランス不変)
+    bool applies_player_race_speed = false; //!< 付与された player_race の加速(TR_SPEED)を生成時の速度へ反映するか (提案C1第11弾。既定false=オプトイン。既定バランス不変)
+    bool applies_player_race_telepathy = false; //!< 付与された player_race のテレパシー(TR_TELEPATHY)を AI 索敵へ反映するか (提案C3第1弾。既定false=オプトイン。既定バランス不変)
+    bool grows_melee_proficiency = false; //!< レベルアップで得た戦闘習熟を近接命中へ反映するか (提案C2第2弾。既定false=オプトイン。既定バランス不変)
+    bool applies_stat_combat_bonus = false; //!< 能力値(STR)を近接ダメージへ反映するか (提案C2第3弾。既定false=オプトイン。既定バランス不変)
     EnumClassFlagGroup<MonsterFeedType> meat_feed_flags;
     EnumClassFlagGroup<MonsterAbilityType> ability_flags; //!< 能力フラグ(魔法/ブレス) / Ability Flags
     EnumClassFlagGroup<MonsterAuraType> aura_flags; //!< オーラフラグ / Aura Flags
@@ -165,7 +191,6 @@ public:
     int32_t collapse_over = 0; //!< 生成条件：時空崩壊度加減
     int32_t plus_collapse{}; //!< 死亡時の時空崩壊度進行値
     FLOOR_IDX floor_id{}; //!< 存在している保存階ID /  Location of unique monster
-    MONSTER_NUMBER r_sights{}; //!< 見えている数 / Count sightings of this monster
     MONSTER_NUMBER r_deaths{}; //!< このモンスターに殺された人数 / Count deaths from this monster
     MONSTER_NUMBER r_pkills{}; //!< このゲームで倒すのを見た数 / Count visible monsters killed in this life
     MONSTER_NUMBER r_akills{}; //!< このゲームで倒した数 / Count all monsters killed in this life
@@ -191,6 +216,24 @@ public:
     REAL_TIME defeat_time{}; //!< 倒した時間(ユニーク用) / time at which defeated this race
     PERCENTAGE cur_hp_per{}; //!< 生成時現在HP率(%)
     AllianceType alliance_idx = AllianceType::NONE;
+    //! 6 能力値 (STR/INT/WIS/DEX/CON/CHR) の生成時補正値 (内部 10 単位 = 表示 1.0 単位)。
+    //! 値が無い (tl::nullopt) 場合はダイスロールの結果をそのまま使う。
+    //! 値がある場合は get_stats() で振った結果に加算する。
+    std::array<tl::optional<int>, A_MAX> stat_modifiers{};
+
+    //! 材質 (副種族)。生成時にモンスター (CreatureEntity) へ複製される。
+    //! 各材質は能力値修正と AC 修正を持ち、複数同時指定できる。
+    std::vector<CreatureMaterialType> materials{};
+
+    //! 体構造。装備可能スロットを決定する。
+    //! 詳細は docs/monster-body-structure-equipment-slots.md 参照。
+    BodyStructureType body_structure{ BodyStructureType::HUMANOID };
+
+    //! 拡張装備スロットの個別上書き (Phase 2.7)。空なら body_structure の
+    //! デフォルトを使う。指定があればその種別・順序の拡張スロットを持つ。
+    //! 例: [SECOND_NECK, SECOND_NECK, THIRD_HEAD] でアミュレット 2 つと
+    //! 兜の追加スロットを持つカスタムモンスター。
+    std::vector<ExtendedSlotType> extended_slots_override{};
 
     bool is_valid() const;
     bool is_male() const;
@@ -207,6 +250,7 @@ public:
     tl::optional<bool> order_pet(const MonraceDefinition &other) const;
     std::string get_pronoun_of_summoned_kin() const;
     const MonraceDefinition &get_next() const;
+    std::shared_ptr<const MonraceDefinition> get_next_shared() const;
     bool is_bounty(bool unachieved_only) const;
     int calc_power() const;
     int calc_figurine_value() const;
@@ -285,7 +329,7 @@ public:
     void increment_tkills();
 
     void decrement_mob_numbers();
-    void emplace_final_summon(MonraceId id, int probability, int min_num, int max_num, int radius);
+    void emplace_final_summon(MonraceId id, int probability, int min_summon_num, int max_summon_num, int radius);
     const std::vector<MonsterSummon> &get_final_summons() const;
 
 private:

@@ -6,6 +6,7 @@
 #include "market/bounty.h"
 #include "system/angband-system.h"
 #include "system/building-type-definition.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/dungeon/dungeon-list.h"
 #include "system/dungeon/dungeon-record.h"
@@ -13,13 +14,12 @@
 #include "system/floor/floor-info.h"
 #include "system/floor/wilderness-grid.h"
 #include "system/inner-game-data.h"
-#include "system/player-type-definition.h"
 #include "world/world.h"
 
 static void rd_hengband_dungeons()
 {
-    const int dungeons_size = DungeonList::get_instance().size();
     const auto &dungeons = DungeonList::get_instance();
+    const int dungeons_size = dungeons.size();
     auto &records = DungeonRecords::get_instance();
     const int max = rd_byte();
     for (auto i = 0; i < max; i++) {
@@ -41,22 +41,22 @@ static void rd_hengband_dungeons()
     }
 }
 
-void rd_dungeons(PlayerType *player_ptr)
+void rd_dungeons(CreatureEntity &creature)
 {
     rd_hengband_dungeons();
-    if (player_ptr->max_plv < player_ptr->level) {
-        player_ptr->max_plv = player_ptr->level;
+    if (creature.get_max_plv() < creature.get_level()) {
+        creature.set_max_plv(creature.get_level());
     }
 }
 
 /*!
  * @brief 現実変容処理の有無及びその残りターン数を読み込む
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
-void rd_alter_reality(PlayerType *player_ptr)
+void rd_alter_reality(CreatureEntity &creature)
 {
-    player_ptr->recall_dungeon = i2enum<DungeonId>(rd_s16b());
-    player_ptr->alter_reality = rd_s16b();
+    creature.set_recall_dungeon(i2enum<DungeonId>(rd_s16b()));
+    creature.set_timed_effect(CreatureTimedEffect::ALTER_REALITY, rd_s16b());
 }
 
 void set_gambling_monsters()
@@ -74,18 +74,18 @@ void set_gambling_monsters()
 /*!
  * @details 自動拾い関係はこれしかないのでworldに突っ込むことにする。必要があれば再分割する
  */
-void rd_autopick(PlayerType *player_ptr)
+void rd_autopick(CreatureEntity &creature)
 {
-    player_ptr->autopick_autoregister = rd_bool();
+    creature.set_autopick_autoregister(rd_bool());
 }
 
-static void rd_world_info(PlayerType *player_ptr)
+static void rd_world_info(CreatureEntity &creature)
 {
     auto &igd = InnerGameData::get_instance();
     igd.init_turn_limit();
     auto &world = AngbandWorld::get_instance();
     world.dungeon_turn_limit = TURNS_PER_TICK * TOWN_DAWN * (MAX_DAYS - 1) + TURNS_PER_TICK * TOWN_DAWN * 3 / 4;
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *creature.get_floor();
     floor.generated_turn = rd_s32b();
     auto &df = DungeonFeeling::get_instance();
     df.set_feeling(rd_s32b());
@@ -97,7 +97,7 @@ static void rd_world_info(PlayerType *player_ptr)
     world.knows_daily_bounty = rd_s16b() != 0; // 現在bool型だが、かつてモンスター種族IDを保存していた仕様に合わせる
 }
 
-void rd_global_configurations(PlayerType *player_ptr)
+void rd_global_configurations(CreatureEntity &creature)
 {
     auto &system = AngbandSystem::get_instance();
     system.set_seed_flavor(rd_u32b());
@@ -105,15 +105,15 @@ void rd_global_configurations(PlayerType *player_ptr)
     system.set_panic_save(rd_u16b() > 0);
     auto &world = AngbandWorld::get_instance();
     world.total_winner = rd_u16b();
-    world.noscore = rd_u16b();
+    InnerGameData::get_instance().add_no_score(rd_u16b());
 
-    player_ptr->is_dead_ = rd_bool();
+    creature.is_dead_ = rd_bool();
 
     DungeonFeeling::get_instance().set_feeling(rd_byte());
-    rd_world_info(player_ptr);
+    rd_world_info(creature);
 }
 
-void load_wilderness_info(PlayerType *player_ptr)
+void load_wilderness_info(CreatureEntity &creature)
 {
     const auto x = rd_s32b();
     const auto y = rd_s32b();
@@ -122,7 +122,7 @@ void load_wilderness_info(PlayerType *player_ptr)
 
     auto &world = AngbandWorld::get_instance();
     world.set_wild_mode(rd_bool());
-    player_ptr->ambush_flag = rd_bool();
+    creature.set_ambush_flag(rd_bool());
 }
 
 errr analyze_wilderness(void)

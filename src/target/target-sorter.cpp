@@ -4,10 +4,10 @@
 #include "grid/grid.h"
 #include "monster/monster-flag-types.h"
 #include "system/artifact-type-definition.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
 #include "system/terrain/terrain-definition.h"
 
 TargetSorter::TargetSorter(const Pos2D &p_pos)
@@ -29,8 +29,8 @@ bool TargetSorter::compare_importance(const FloorType &floor, const Pos2D &pos_a
 
     const auto &grid1 = floor.get_grid(pos_a);
     const auto &grid2 = floor.get_grid(pos_b);
-    const auto &monster_a = floor.m_list[grid1.m_idx];
-    const auto &monster_b = floor.m_list[grid2.m_idx];
+    const auto &monster_a = floor.get_monster(grid1.m_idx);
+    const auto &monster_b = floor.get_monster(grid2.m_idx);
     if (this->p_pos == pos_a) {
         return true;
     }
@@ -39,8 +39,8 @@ bool TargetSorter::compare_importance(const FloorType &floor, const Pos2D &pos_a
         return false;
     }
 
-    const auto can_see_grid1 = grid1.has_monster() && monster_a.ml;
-    const auto can_see_grid2 = grid2.has_monster() && monster_b.ml;
+    const auto can_see_grid1 = grid1.has_monster() && monster_a.is_visible_on_map();
+    const auto can_see_grid2 = grid2.has_monster() && monster_b.is_visible_on_map();
     if (can_see_grid1 && !can_see_grid2) {
         return true;
     }
@@ -50,8 +50,8 @@ bool TargetSorter::compare_importance(const FloorType &floor, const Pos2D &pos_a
     }
 
     if (can_see_grid1 && can_see_grid2) {
-        const auto &appearent_monrace1 = monster_a.get_appearance_monrace();
-        const auto &appearent_monrace2 = monster_b.get_appearance_monrace();
+        const auto &appearent_monrace1 = monster_a.get_apparent_monrace();
+        const auto &appearent_monrace2 = monster_b.get_apparent_monrace();
         if (appearent_monrace1.kind_flags.has(MonsterKindType::UNIQUE) && appearent_monrace2.kind_flags.has_not(MonsterKindType::UNIQUE)) {
             return true;
         }
@@ -60,11 +60,11 @@ bool TargetSorter::compare_importance(const FloorType &floor, const Pos2D &pos_a
             return false;
         }
 
-        if (monster_a.mflag2.has(MonsterConstantFlagType::KAGE) && monster_b.mflag2.has_not(MonsterConstantFlagType::KAGE)) {
+        if (monster_a.is_kage() && !monster_b.is_kage()) {
             return true;
         }
 
-        if (monster_a.mflag2.has_not(MonsterConstantFlagType::KAGE) && monster_b.mflag2.has(MonsterConstantFlagType::KAGE)) {
+        if (!monster_a.is_kage() && monster_b.is_kage()) {
             return false;
         }
 
@@ -83,11 +83,11 @@ bool TargetSorter::compare_importance(const FloorType &floor, const Pos2D &pos_a
             }
         }
 
-        if (monster_a.ap_r_idx > monster_b.ap_r_idx) {
+        if (monster_a.get_ap_r_idx() > monster_b.get_ap_r_idx()) {
             return true;
         }
 
-        if (monster_a.ap_r_idx < monster_b.ap_r_idx) {
+        if (monster_a.get_ap_r_idx() < monster_b.get_ap_r_idx()) {
             return false;
         }
     }

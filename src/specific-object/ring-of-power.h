@@ -2,5 +2,5 @@
 
 #include <string_view>
 
-class PlayerType;
-bool activate_ring_of_power(PlayerType *player_ptr, std::string_view name);
+class CreatureEntity;
+bool activate_ring_of_power(CreatureEntity &creature, std::string_view name);

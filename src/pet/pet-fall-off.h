@@ -3,6 +3,6 @@
 #include "system/angband.h"
 
 class MonsterAttackPlayer;
-class PlayerType;
-void check_fall_off_horse(PlayerType *player_ptr, MonsterAttackPlayer *monap_ptr);
-bool process_fall_off_horse(PlayerType *player_ptr, int dam, bool force);
+class CreatureEntity;
+void check_fall_off_horse(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr);
+bool process_fall_off_horse(CreatureEntity &creature, int dam, bool force);

@@ -1,4 +1,4 @@
 #pragma once
 
-class PlayerType;
-void spoil_random_artifact(PlayerType *player_ptr);
+class CreatureEntity;
+void spoil_random_artifact(CreatureEntity &creature);

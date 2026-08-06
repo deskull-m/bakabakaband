@@ -5,12 +5,12 @@
 #include "sv-definition/sv-weapon-types.h"
 #include "system/baseitem/baseitem-definition.h"
 #include "system/baseitem/baseitem-list.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include <span>
 
-void acquire_chaos_weapon(PlayerType *player_ptr)
+void acquire_chaos_weapon(CreatureEntity &creature)
 {
     constexpr static auto weapons = {
         SV_DAGGER,
@@ -65,25 +65,25 @@ void acquire_chaos_weapon(PlayerType *player_ptr)
         SV_BLADE_OF_CHAOS, // LV50
     };
 
-    const auto candidates = std::span(weapons).first(player_ptr->level);
+    const auto candidates = std::span(weapons).first(creature.get_level());
     const auto sval = rand_choice(candidates);
 
     ItemEntity item({ ItemKindType::SWORD, sval });
-    item.to_h = 3 + randint1(player_ptr->current_floor_ptr->dun_level) % 10;
-    item.to_d = 3 + randint1(player_ptr->current_floor_ptr->dun_level) % 10;
+    item.to_h = 3 + randint1(creature.get_floor()->dun_level) % 10;
+    item.to_d = 3 + randint1(creature.get_floor()->dun_level) % 10;
     one_resistance(&item);
     item.ego_idx = EgoType::CHAOTIC;
-    (void)drop_near(player_ptr, item, player_ptr->get_position());
+    (void)drop_near(creature, item, creature.get_position());
 }
 
-void acquire_hafted_weapon(PlayerType *player_ptr)
+void acquire_hafted_weapon(CreatureEntity &creature)
 {
     ItemEntity item(BaseitemKey(ItemKindType::HAFTED, SV_GREAT_HAMMER));
     {
         item.pval = 1;
         item.to_h = 3 + randint1(18);
         item.to_d = 3 + randint1(18);
-        item.to_a = randint1(5);
+        item.to_a = static_cast<ARMOUR_CLASS>(randint1(5));
 
         switch (randint1(21)) {
         case 1:
@@ -116,5 +116,5 @@ void acquire_hafted_weapon(PlayerType *player_ptr)
             break;
         }
     }
-    (void)drop_near(player_ptr, item, player_ptr->get_position());
+    (void)drop_near(creature, item, creature.get_position());
 }

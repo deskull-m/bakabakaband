@@ -1,6 +1,6 @@
 #pragma once
 
 class FloorType;
-class PlayerType;
+class CreatureEntity;
 bool enter_wizard_mode(const FloorType &floor);
-void process_command(PlayerType *player_ptr);
+void process_command(CreatureEntity &creature);

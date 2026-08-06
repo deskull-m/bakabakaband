@@ -1,6 +1,8 @@
 #pragma once
 
+#include "autopick/autopick-methods-table.h"
 #include "system/angband.h"
+#include "util/flag-group.h"
 #include <memory>
 #include <string>
 #include <vector>
@@ -28,7 +30,7 @@ struct autopick_type {
     std::string name = ""; /*!< 自動拾い/破壊定義の名称一致基準 / Items which have 'name' as part of its name match */
     std::string insc = ""; /*!< 対象となったアイテムに自動で刻む内容 / Items will be auto-inscribed as 'insc' */
     BIT_FLAGS flags[2]{}; /*!< キーワードに関する汎用的な条件フラグ / Misc. keyword to be matched */
-    byte action = 0; /*!< 対象のアイテムを拾う/破壊/放置するかの指定フラグ / Auto-pickup or Destroy or Leave items */
+    EnumClassFlagGroup<AutopickMethod> action{}; /*!< 対象のアイテムを拾う/破壊/放置するかの指定フラグ / Auto-pickup or Destroy or Leave items */
     byte dice = 0; /*!< 武器のダイス値基準値 / Weapons which have more than 'dice' dice match */
     byte bonus = 0; /*!< アイテムのボーナス基準値 / Items which have more than 'bonus' magical bonus match */
     bool has(int flag) const;
@@ -62,7 +64,7 @@ struct text_body_type {
     int my = 0;
     byte mark = 0;
 
-    ItemEntity *search_o_ptr = nullptr;
+    std::shared_ptr<ItemEntity> search_item = nullptr;
     std::string search_str = "";
     std::string last_destroyed = "";
 
@@ -86,7 +88,6 @@ struct text_body_type {
 extern std::vector<autopick_type> autopick_list;
 extern ItemEntity autopick_last_destroyed_object;
 
-int get_com_id(char key);
 void auto_inscribe_item(ItemEntity *o_ptr, int idx);
 int count_line(text_body_type *tb);
 

@@ -28,7 +28,7 @@
 #include "racial/race-racial-command-setter.h"
 #include "racial/racial-util.h"
 #include "status/action-setter.h"
-#include "system/player-type-definition.h"
+#include "system/creature-entity.h"
 #include "system/redrawing-flags-updater.h"
 #include "term/screen-processor.h"
 #include "util/bit-flags-calculator.h"
@@ -57,11 +57,11 @@ static void racial_power_erase_cursor(rc_type *rc_ptr)
 
 /*!
  * @brief レイシャルパワー一覧を表示
- * @param player_ptr プレイヤー情報への参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param rc_ptr レイシャルパワー情報への参照ポインタ
  * @return キャンセルしたらRC_CANCEL、それ以外ならRC_CONTINUE
  */
-static void racial_power_display_list(PlayerType *player_ptr, rc_type *rc_ptr)
+static void racial_power_display_list(CreatureEntity &creature, rc_type *rc_ptr)
 {
     TERM_LEN x = 11;
     char dummy[256];
@@ -91,7 +91,7 @@ static void racial_power_display_list(PlayerType *player_ptr, rc_type *rc_ptr)
 
         auto &rpi = rc_ptr->power_desc[ctr];
         strcat(dummy,
-            format("%-30.30s %2d %4d %3d%% %s", rpi.racial_name.data(), rpi.min_level, rpi.cost, 100 - racial_chance(player_ptr, &rc_ptr->power_desc[ctr]),
+            format("%-30.30s %2d %4d %3d%% %s", rpi.racial_name.data(), rpi.min_level, rpi.cost, 100 - racial_chance(creature, &rc_ptr->power_desc[ctr]),
                 rpi.info.data())
                 .data());
 
@@ -125,11 +125,11 @@ static void racial_power_make_prompt(rc_type *rc_ptr)
 
 /*!
  * @brief レイシャルパワー選択用のカーソル位置を進める
- * @param player_ptr プレイヤー情報への参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param rc_ptr レイシャルパワー情報への参照ポインタ
  * @param i カーソル増分
  */
-static void racial_power_add_index(PlayerType *player_ptr, rc_type *rc_ptr, int i)
+static void racial_power_add_index(CreatureEntity &creature, rc_type *rc_ptr, int i)
 {
     auto n = rc_ptr->menu_line + i;
     if (i < -1 || i > 1) {
@@ -151,7 +151,7 @@ static void racial_power_add_index(PlayerType *player_ptr, rc_type *rc_ptr, int 
         rc_ptr->page = p;
         screen_load();
         screen_save();
-        racial_power_display_list(player_ptr, rc_ptr);
+        racial_power_display_list(creature, rc_ptr);
     } else {
         racial_power_display_cursor(rc_ptr);
     }
@@ -162,7 +162,7 @@ static void racial_power_add_index(PlayerType *player_ptr, rc_type *rc_ptr, int 
  * @param rc_ptr レイシャルパワー情報への参照ポインタ
  * @return キャンセルならRC_CANCEL、そうでないならRC_CONTINUE
  */
-static bool racial_power_interpret_menu_keys(PlayerType *player_ptr, rc_type *rc_ptr)
+static bool racial_power_interpret_menu_keys(CreatureEntity &creature, rc_type *rc_ptr)
 {
     switch (rc_ptr->choice) {
     case '0':
@@ -170,22 +170,22 @@ static bool racial_power_interpret_menu_keys(PlayerType *player_ptr, rc_type *rc
     case '8':
     case 'k':
     case 'K':
-        racial_power_add_index(player_ptr, rc_ptr, -1);
+        racial_power_add_index(creature, rc_ptr, -1);
         return RC_CONTINUE;
     case '2':
     case 'j':
     case 'J':
-        racial_power_add_index(player_ptr, rc_ptr, 1);
+        racial_power_add_index(creature, rc_ptr, 1);
         return RC_CONTINUE;
     case '6':
     case 'l':
     case 'L':
-        racial_power_add_index(player_ptr, rc_ptr, RC_PAGE_SIZE);
+        racial_power_add_index(creature, rc_ptr, RC_PAGE_SIZE);
         return RC_CONTINUE;
     case '4':
     case 'h':
     case 'H':
-        racial_power_add_index(player_ptr, rc_ptr, 0 - RC_PAGE_SIZE);
+        racial_power_add_index(creature, rc_ptr, 0 - RC_PAGE_SIZE);
         return RC_CONTINUE;
     case 'x':
     case 'X':
@@ -205,17 +205,17 @@ static bool racial_power_interpret_menu_keys(PlayerType *player_ptr, rc_type *rc
 
 /*!
  * @brief メニューからの選択決定を処理
- * @param player_ptr プレイヤー情報への参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param rc_ptr レイシャルパワー情報への参照ポインタ
  * @return キャンセルしたらRC_CANCEL、それ以外ならRC_CONTINUE
  */
-static bool racial_power_select_by_menu(PlayerType *player_ptr, rc_type *rc_ptr)
+static bool racial_power_select_by_menu(CreatureEntity &creature, rc_type *rc_ptr)
 {
     if (!use_menu || rc_ptr->choice == ' ') {
         return RC_CONTINUE;
     }
 
-    if (racial_power_interpret_menu_keys(player_ptr, rc_ptr)) {
+    if (racial_power_interpret_menu_keys(creature, rc_ptr)) {
         return RC_CANCEL;
     }
 
@@ -228,11 +228,11 @@ static bool racial_power_select_by_menu(PlayerType *player_ptr, rc_type *rc_ptr)
 
 /*!
  * @brief レイシャルパワーの選択を解釈
- * @param player_ptr プレイヤー情報への参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param rc_ptr レイシャルパワー情報への参照ポインタ
  * @return コマンド選択していたらtrue、していなかったらfalse
  */
-static bool racial_power_interpret_choise(PlayerType *player_ptr, rc_type *rc_ptr)
+static bool racial_power_interpret_choise(CreatureEntity &creature, rc_type *rc_ptr)
 {
     if (use_menu) {
         return false;
@@ -245,7 +245,7 @@ static bool racial_power_interpret_choise(PlayerType *player_ptr, rc_type *rc_pt
         }
         screen_load();
         screen_save();
-        racial_power_display_list(player_ptr, rc_ptr);
+        racial_power_display_list(creature, rc_ptr);
         return false;
     }
 
@@ -301,7 +301,7 @@ static bool ask_invoke_racial_power(rc_type *rc_ptr)
     return input_check(prompt);
 }
 
-static void racial_power_display_explanation(PlayerType *player_ptr, rc_type *rc_ptr)
+static void racial_power_display_explanation(CreatureEntity &creature, rc_type *rc_ptr)
 {
     auto &rpi = rc_ptr->power_desc[rc_ptr->command_code];
 
@@ -318,17 +318,17 @@ static void racial_power_display_explanation(PlayerType *player_ptr, rc_type *rc
 
     screen_load();
     screen_save();
-    racial_power_display_list(player_ptr, rc_ptr);
+    racial_power_display_list(creature, rc_ptr);
     rc_ptr->is_chosen = false;
 }
 
 /*!
  * @brief レイシャルパワー選択処理のメインループ
- * @param player_ptr プレイヤー情報への参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param rc_ptr レイシャルパワー情報への参照ポインタ
  * @return コマンド選択したらRC_CONTINUE、キャンセルしたらRC_CANCEL
  */
-static bool racial_power_process_input(PlayerType *player_ptr, rc_type *rc_ptr)
+static bool racial_power_process_input(CreatureEntity &creature, rc_type *rc_ptr)
 {
     rc_ptr->choice = (always_show_list || use_menu) ? ESCAPE : 1;
 
@@ -344,11 +344,11 @@ static bool racial_power_process_input(PlayerType *player_ptr, rc_type *rc_ptr)
             rc_ptr->choice = choice.value();
         }
 
-        if (racial_power_select_by_menu(player_ptr, rc_ptr) == RC_CANCEL) {
+        if (racial_power_select_by_menu(creature, rc_ptr) == RC_CANCEL) {
             return RC_CANCEL;
         }
 
-        if (!rc_ptr->is_chosen && racial_power_interpret_choise(player_ptr, rc_ptr)) {
+        if (!rc_ptr->is_chosen && racial_power_interpret_choise(creature, rc_ptr)) {
             decide_racial_command(rc_ptr);
             if (ask_invoke_racial_power(rc_ptr)) {
                 rc_ptr->is_chosen = true;
@@ -357,7 +357,7 @@ static bool racial_power_process_input(PlayerType *player_ptr, rc_type *rc_ptr)
 
         if (rc_ptr->is_chosen) {
             if (rc_ptr->browse_mode) {
-                racial_power_display_explanation(player_ptr, rc_ptr);
+                racial_power_display_explanation(creature, rc_ptr);
             } else {
                 break;
             }
@@ -369,11 +369,11 @@ static bool racial_power_process_input(PlayerType *player_ptr, rc_type *rc_ptr)
 
 /*!
  * @brief レイシャル/クラスパワー選択を処理
- * @param player_ptr プレイヤー情報への参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param rc_ptr レイシャルパワー情報への参照ポインタ
  * @return コマンド選択したらRC_CONTINUE、キャンセルしたらRC_CANCEL
  */
-static bool racial_power_select_power(PlayerType *player_ptr, rc_type *rc_ptr)
+static bool racial_power_select_power(CreatureEntity &creature, rc_type *rc_ptr)
 {
     const auto code = repeat_pull();
     if (code) {
@@ -386,10 +386,10 @@ static bool racial_power_select_power(PlayerType *player_ptr, rc_type *rc_ptr)
     screen_save();
 
     if (use_menu) {
-        racial_power_display_list(player_ptr, rc_ptr);
+        racial_power_display_list(creature, rc_ptr);
     }
 
-    auto canceled = racial_power_process_input(player_ptr, rc_ptr) == RC_CANCEL;
+    auto canceled = racial_power_process_input(creature, rc_ptr) == RC_CANCEL;
 
     screen_load();
 
@@ -403,21 +403,21 @@ static bool racial_power_select_power(PlayerType *player_ptr, rc_type *rc_ptr)
 
 /*!
  * @brief レイシャルパワーの使用を試みる
- * @param player_ptr プレイヤー情報への参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param rc_ptr レイシャルパワー情報への参照ポインタ
  * @details
  * 戻り値の代わりにrc_ptr->castに使用の有無を入れる。
  */
-static void racial_power_cast_power(PlayerType *player_ptr, rc_type *rc_ptr)
+static void racial_power_cast_power(CreatureEntity &creature, rc_type *rc_ptr)
 {
     auto *rpi_ptr = &rc_ptr->power_desc[rc_ptr->command_code];
 
-    switch (check_racial_level(player_ptr, rpi_ptr)) {
+    switch (check_racial_level(creature, rpi_ptr)) {
     case RACIAL_SUCCESS:
         if (rpi_ptr->number < 0) {
-            rc_ptr->cast = exe_racial_power(player_ptr, rpi_ptr->number);
+            rc_ptr->cast = exe_racial_power(creature, rpi_ptr->number);
         } else {
-            rc_ptr->cast = exe_mutation_power(player_ptr, i2enum<PlayerMutationType>(rpi_ptr->number));
+            rc_ptr->cast = exe_mutation_power(creature, i2enum<PlayerMutationType>(rpi_ptr->number));
         }
         break;
     case RACIAL_FAILURE:
@@ -431,14 +431,14 @@ static void racial_power_cast_power(PlayerType *player_ptr, rc_type *rc_ptr)
 
 /*!
  * @brief レイシャルパワーのコストを減らす
- * @param player_ptr プレイヤー情報への参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param rc_ptr レイシャルパワー情報への参照ポインタ
  * @return コストを減らしたらtrue、減らさなかったらfalse
  * @details
  * MPが足りない場合はHPを減らす。
  * 戻り値はHP/MPの再描画が必要か判定するのに使用。
  */
-static bool racial_power_reduce_mana(PlayerType *player_ptr, rc_type *rc_ptr)
+static bool racial_power_reduce_mana(CreatureEntity &creature, rc_type *rc_ptr)
 {
     int racial_cost = rc_ptr->power_desc[rc_ptr->command_code].racial_cost;
     if (racial_cost == 0) {
@@ -447,12 +447,12 @@ static bool racial_power_reduce_mana(PlayerType *player_ptr, rc_type *rc_ptr)
 
     int actual_racial_cost = racial_cost / 2 + randint1(racial_cost / 2);
 
-    if (player_ptr->csp >= actual_racial_cost) {
-        player_ptr->csp -= actual_racial_cost;
+    if (creature.get_current_mp() >= actual_racial_cost) {
+        creature.sub_current_mp(actual_racial_cost);
     } else {
-        actual_racial_cost -= player_ptr->csp;
-        player_ptr->csp = 0;
-        take_hit(player_ptr, DAMAGE_USELIFE, actual_racial_cost, _("過度の集中", "concentrating too hard"));
+        actual_racial_cost -= creature.get_current_mp();
+        creature.set_current_mp(0);
+        take_hit(creature, DAMAGE_USELIFE, actual_racial_cost, _("過度の集中", "concentrating too hard"));
     }
 
     return true;
@@ -460,34 +460,34 @@ static bool racial_power_reduce_mana(PlayerType *player_ptr, rc_type *rc_ptr)
 
 /*!
  * @brief レイシャル・パワーコマンドのメインルーチン / Allow user to choose a power (racial / mutation) to activate
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
-void do_cmd_racial_power(PlayerType *player_ptr)
+void do_cmd_racial_power(CreatureEntity &creature)
 {
     if (AngbandWorld::get_instance().is_wild_mode()) {
         return;
     }
 
-    PlayerEnergy energy(player_ptr);
-    if (cmd_limit_confused(player_ptr)) {
+    PlayerEnergy energy(creature);
+    if (cmd_limit_confused(creature)) {
         energy.reset_player_turn();
         return;
     }
 
-    PlayerClass(player_ptr).break_samurai_stance({ SamuraiStanceType::MUSOU, SamuraiStanceType::KOUKIJIN });
+    CreatureClass(creature).break_samurai_stance({ SamuraiStanceType::MUSOU, SamuraiStanceType::KOUKIJIN });
 
-    auto tmp_r = rc_type(player_ptr);
+    auto tmp_r = rc_type(creature);
     auto *rc_ptr = &tmp_r;
 
-    switch_class_racial(player_ptr, rc_ptr);
+    switch_class_racial(creature, rc_ptr);
 
-    if (player_ptr->mimic_form != MimicKindType::NONE) {
-        set_mimic_racial_command(player_ptr, rc_ptr);
+    if (creature.get_mimic_form() != MimicKindType::NONE) {
+        set_mimic_racial_command(creature, rc_ptr);
     } else {
-        set_race_racial_command(player_ptr, rc_ptr);
+        set_race_racial_command(creature, rc_ptr);
     }
 
-    select_mutation_racial(player_ptr, rc_ptr);
+    select_mutation_racial(creature, rc_ptr);
 
     if (rc_ptr->power_count() == 0) {
         msg_print(_("特殊能力はありません。", "You have no special powers."));
@@ -498,8 +498,8 @@ void do_cmd_racial_power(PlayerType *player_ptr)
     rc_ptr->page = use_menu ? 0 : -1;
     racial_power_make_prompt(rc_ptr);
 
-    if (racial_power_select_power(player_ptr, rc_ptr) == RC_CONTINUE) {
-        racial_power_cast_power(player_ptr, rc_ptr);
+    if (racial_power_select_power(creature, rc_ptr) == RC_CONTINUE) {
+        racial_power_cast_power(creature, rc_ptr);
     }
 
     if (!rc_ptr->cast) {
@@ -507,11 +507,11 @@ void do_cmd_racial_power(PlayerType *player_ptr)
         return;
     }
 
-    if (!racial_power_reduce_mana(player_ptr, rc_ptr)) {
+    if (!racial_power_reduce_mana(creature, rc_ptr)) {
         return;
     }
 
-    player_ptr->plus_incident_tree("USE_RACIAL", 1);
+    creature.plus_incident_tree("USE_RACIAL", 1);
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     const auto &flags_mwrf = {
         MainWindowRedrawingFlag::HP,

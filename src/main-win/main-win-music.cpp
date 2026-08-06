@@ -4,7 +4,6 @@
  */
 
 #include "main-win/main-win-music.h"
-#include "dungeon/quest.h"
 #include "main-win/main-win-cfg-reader.h"
 #include "main-win/main-win-define.h"
 #include "main-win/main-win-mci.h"
@@ -16,7 +15,7 @@
 #include "main/sound-of-music.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/dungeon/dungeon-list.h"
-#include "system/floor/town-info.h"
+#include "system/dungeon/quest-definition.h"
 #include "system/floor/town-list.h"
 #include "system/monrace/monrace-list.h"
 #include "term/z-term.h"
@@ -99,7 +98,7 @@ static tl::optional<std::string> quest_key_at(int index)
  */
 static tl::optional<std::string> town_key_at(int index)
 {
-    if (index >= static_cast<int>(towns_info.size())) {
+    if (index >= static_cast<int>(TownList::get_instance().size())) {
         return tl::nullopt;
     }
 

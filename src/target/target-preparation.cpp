@@ -1,16 +1,14 @@
 #include "target/target-preparation.h"
 #include "game-option/input-options.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
-#include "system/player-type-definition.h"
 #include "system/terrain/terrain-definition.h"
 #include "target/projection-path-calculator.h"
 #include "target/target-sorter.h"
 #include "target/target-types.h"
-#include "timed-effect/timed-effects.h"
 #include "util/bit-flags-calculator.h"
 #include "window/main-window-util.h"
 #include <algorithm>
@@ -22,28 +20,28 @@
  *
  * The concept of "targeting" was stolen from "Morgul" (?)
  *
- * The player can target any location, or any "target-able" monster.
+ * The creature can target any location, or any "target-able" monster.
  *
  * Currently, a monster is "target_able" if it is visible, and if
- * the player can hit it with a projection, and the player is not
+ * the creature can hit it with a projection, and the creature is not
  * hallucinating.  This allows use of "use closest target" macros.
  *
  * Future versions may restrict the ability to target "trappers"
  * and "mimics", but the semantics is a little bit weird.
  */
-bool target_able(PlayerType *player_ptr, MONSTER_IDX m_idx)
+bool target_able(CreatureEntity &creature, MONSTER_IDX m_idx)
 {
-    const auto &floor = *player_ptr->current_floor_ptr;
-    const auto &monster = floor.m_list[m_idx];
+    const auto &floor = *creature.get_floor();
+    const auto &monster = floor.get_monster(m_idx);
     if (!monster.is_valid()) {
         return false;
     }
 
-    if (player_ptr->effects()->hallucination().is_hallucinated()) {
+    if (creature.is_hallucinated()) {
         return false;
     }
 
-    if (!monster.ml) {
+    if (!monster.is_visible_on_map()) {
         return false;
     }
 
@@ -51,7 +49,7 @@ bool target_able(PlayerType *player_ptr, MONSTER_IDX m_idx)
         return true;
     }
 
-    const auto p_pos = player_ptr->get_position();
+    const auto p_pos = creature.get_position();
     if (!projectable(floor, p_pos, monster.get_position())) {
         return false;
     }
@@ -62,25 +60,25 @@ bool target_able(PlayerType *player_ptr, MONSTER_IDX m_idx)
 /*
  * Determine if a given location is "interesting"
  */
-static bool target_set_accept(PlayerType *player_ptr, const Pos2D &pos)
+static bool target_set_accept(CreatureEntity &creature, const Pos2D &pos)
 {
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *creature.get_floor();
     if (!floor.contains(pos, FloorBoundary::OUTER_WALL_EXCLUSIVE)) {
         return false;
     }
 
-    if (player_ptr->is_located_at(pos)) {
+    if (creature.is_located_at(pos)) {
         return true;
     }
 
-    if (player_ptr->effects()->hallucination().is_hallucinated()) {
+    if (creature.is_hallucinated()) {
         return false;
     }
 
     const auto &grid = floor.get_grid(pos);
     if (grid.has_monster()) {
-        auto &monster = floor.m_list[grid.m_idx];
-        if (monster.ml) {
+        auto &monster = floor.get_monster(grid.m_idx);
+        if (monster.is_visible_on_map()) {
             return true;
         }
     }
@@ -108,17 +106,17 @@ static bool target_set_accept(PlayerType *player_ptr, const Pos2D &pos)
  * @param mode ターゲット選択モード
  * @return "interesting" な座標の一覧
  */
-std::vector<Pos2D> target_set_prepare(PlayerType *player_ptr, target_type mode)
+std::vector<Pos2D> target_set_prepare(CreatureEntity &creature, target_type mode)
 {
     POSITION min_hgt, max_hgt, min_wid, max_wid;
-    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto is_killable = any_bits(mode, TARGET_KILL);
     if (is_killable) {
         const auto max_range = AngbandSystem::get_instance().get_max_range();
-        min_hgt = std::max((player_ptr->y - max_range), 0);
-        max_hgt = std::min((player_ptr->y + max_range), floor.height - 1);
-        min_wid = std::max((player_ptr->x - max_range), 0);
-        max_wid = std::min((player_ptr->x + max_range), floor.width - 1);
+        min_hgt = std::max((creature.y - max_range), 0);
+        max_hgt = std::min((creature.y + max_range), floor.height - 1);
+        min_wid = std::max((creature.x - max_range), 0);
+        max_wid = std::min((creature.x + max_range), floor.width - 1);
     } else {
         min_hgt = panel_row_min;
         max_hgt = panel_row_max;
@@ -130,16 +128,16 @@ std::vector<Pos2D> target_set_prepare(PlayerType *player_ptr, target_type mode)
     for (auto y = min_hgt; y <= max_hgt; y++) {
         for (auto x = min_wid; x <= max_wid; x++) {
             const Pos2D pos(y, x);
-            if (!target_set_accept(player_ptr, pos)) {
+            if (!target_set_accept(creature, pos)) {
                 continue;
             }
 
             const auto &grid = floor.get_grid(pos);
-            if (is_killable && !target_able(player_ptr, grid.m_idx)) {
+            if (is_killable && !target_able(creature, grid.m_idx)) {
                 continue;
             }
 
-            const auto &monster = floor.m_list[grid.m_idx];
+            const auto &monster = floor.get_monster(grid.m_idx);
             if (is_killable && !target_pet && monster.is_pet()) {
                 continue;
             }
@@ -148,7 +146,7 @@ std::vector<Pos2D> target_set_prepare(PlayerType *player_ptr, target_type mode)
         }
     }
 
-    TargetSorter sorter(player_ptr->get_position());
+    TargetSorter sorter(creature.get_position());
     if (is_killable) {
         std::stable_sort(pos_list.begin(), pos_list.end(), [&sorter](const auto &a, const auto &b) {
             return sorter.compare_distance(a, b);
@@ -159,7 +157,7 @@ std::vector<Pos2D> target_set_prepare(PlayerType *player_ptr, target_type mode)
         });
     }
 
-    if (player_ptr->riding == 0 || !target_pet || (std::ssize(pos_list) <= 1) || !is_killable) {
+    if (creature.get_riding() == 0 || !target_pet || (std::ssize(pos_list) <= 1) || !is_killable) {
         return pos_list;
     }
 
@@ -169,34 +167,34 @@ std::vector<Pos2D> target_set_prepare(PlayerType *player_ptr, target_type mode)
     return pos_list;
 }
 
-void target_sensing_monsters_prepare(PlayerType *player_ptr, std::vector<MONSTER_IDX> &monster_list)
+void target_sensing_monsters_prepare(CreatureEntity &creature, std::vector<MONSTER_IDX> &monster_list)
 {
     monster_list.clear();
 
     // 幻覚時は正常に感知できない
-    if (player_ptr->effects()->hallucination().is_hallucinated()) {
+    if (creature.is_hallucinated()) {
         return;
     }
 
-    for (MONSTER_IDX i = 1; i < player_ptr->current_floor_ptr->m_max; i++) {
-        const auto &monster = player_ptr->current_floor_ptr->m_list[i];
-        if (!monster.is_valid() || !monster.ml || monster.is_pet()) {
+    for (MONSTER_IDX i = 1; i < creature.get_floor()->m_max; i++) {
+        const auto &monster = creature.get_floor()->m_list[i];
+        if (!monster.is_valid() || !monster.is_visible_on_map() || monster.is_pet()) {
             continue;
         }
 
         // 感知魔法/スキルやESPで感知していない擬態モンスターはモンスター一覧に表示しない
-        if (monster.is_mimicry() && monster.mflag2.has_none_of({ MonsterConstantFlagType::MARK, MonsterConstantFlagType::SHOW }) && monster.mflag.has_not(MonsterTemporaryFlagType::ESP)) {
+        if (monster.is_mimicry() && !monster.has_constant_flag(MonsterConstantFlagType::MARK) && !monster.has_constant_flag(MonsterConstantFlagType::SHOW) && !monster.has_temporary_flag(MonsterTemporaryFlagType::ESP)) {
             continue;
         }
 
         monster_list.push_back(i);
     }
 
-    auto comp_importance = [&floor = *player_ptr->current_floor_ptr](MONSTER_IDX idx1, MONSTER_IDX idx2) {
-        const auto &monster1 = floor.m_list[idx1];
-        const auto &monster2 = floor.m_list[idx2];
-        const auto &monrace1 = monster1.get_appearance_monrace();
-        const auto &monrace2 = monster2.get_appearance_monrace();
+    auto comp_importance = [&floor = *creature.get_floor()](MONSTER_IDX idx1, MONSTER_IDX idx2) {
+        const auto &monster1 = floor.get_monster(idx1);
+        const auto &monster2 = floor.get_monster(idx2);
+        const auto &monrace1 = monster1.get_apparent_monrace();
+        const auto &monrace2 = monster2.get_apparent_monrace();
 
         /* Unique monsters first */
         if (monrace1.kind_flags.has(MonsterKindType::UNIQUE) != monrace2.kind_flags.has(MonsterKindType::UNIQUE)) {
@@ -204,8 +202,8 @@ void target_sensing_monsters_prepare(PlayerType *player_ptr, std::vector<MONSTER
         }
 
         /* Shadowers first (あやしい影) */
-        if (monster1.mflag2.has(MonsterConstantFlagType::KAGE) != monster2.mflag2.has(MonsterConstantFlagType::KAGE)) {
-            return monster1.mflag2.has(MonsterConstantFlagType::KAGE);
+        if (monster1.is_kage() != monster2.is_kage()) {
+            return monster1.is_kage();
         }
 
         /* Unknown monsters first */
@@ -219,7 +217,7 @@ void target_sensing_monsters_prepare(PlayerType *player_ptr, std::vector<MONSTER
         }
 
         /* Sort by index if all conditions are same */
-        return monster1.ap_r_idx > monster2.ap_r_idx;
+        return monster1.get_ap_r_idx() > monster2.get_ap_r_idx();
     };
 
     std::sort(monster_list.begin(), monster_list.end(), comp_importance);
@@ -239,13 +237,13 @@ void target_sensing_monsters_prepare(PlayerType *player_ptr, std::vector<MONSTER
  *
  * @return ペットのモンスターIDのリスト
  */
-std::vector<MONSTER_IDX> target_pets_prepare(PlayerType *player_ptr)
+std::vector<MONSTER_IDX> target_pets_prepare(CreatureEntity &creature)
 {
     std::vector<MONSTER_IDX> pets;
-    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &floor = *creature.get_floor();
 
     for (short i = 1; i < floor.m_max; ++i) {
-        const auto &monster = floor.m_list[i];
+        const auto &monster = floor.get_monster(i);
 
         if (monster.is_valid() && monster.is_pet()) {
             pets.push_back(i);
@@ -253,10 +251,10 @@ std::vector<MONSTER_IDX> target_pets_prepare(PlayerType *player_ptr)
     }
 
     auto comp_importance = [&floor](MONSTER_IDX idx1, MONSTER_IDX idx2) {
-        const auto &monster1 = floor.m_list[idx1];
-        const auto &monster2 = floor.m_list[idx2];
-        const auto &ap_monrace1 = monster1.get_appearance_monrace();
-        const auto &ap_monrace2 = monster2.get_appearance_monrace();
+        const auto &monster1 = floor.get_monster(idx1);
+        const auto &monster2 = floor.get_monster(idx2);
+        const auto &ap_monrace1 = monster1.get_apparent_monrace();
+        const auto &ap_monrace2 = monster2.get_apparent_monrace();
 
         if (monster1.is_riding() != monster2.is_riding()) {
             return monster1.is_riding();

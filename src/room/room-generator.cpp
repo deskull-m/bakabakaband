@@ -4,7 +4,6 @@
 #include "game-option/cheat-types.h"
 #include "room/door-definition.h"
 #include "room/room-info-table.h"
-#include "room/room-types.h"
 #include "room/rooms-city.h"
 #include "room/rooms-fractal.h"
 #include "room/rooms-nest.h"
@@ -13,68 +12,68 @@
 #include "room/rooms-special.h"
 #include "room/rooms-trap.h"
 #include "room/rooms-vault.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-data-definition.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/dungeon/dungeon-list.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
-#include "system/player-type-definition.h"
 #include "util/enum-converter.h"
 #include "util/probability-table.h"
 #include "wizard/wizard-messages.h"
 
 /*!
  * @brief 与えられた部屋型IDに応じて部屋の生成処理分岐を行い結果を返す / Attempt to build a room of the given type at the given block
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param type 部屋型ID
  * @note that we restrict the number of "crowded" rooms to reduce the chance of overflowing the monster list during level creation.
  * @return 部屋の生成に成功した場合 TRUE を返す。
  */
-static bool room_build(PlayerType *player_ptr, DungeonData *dd_ptr, RoomType typ)
+static bool room_build(CreatureEntity &creature, DungeonData *dd_ptr, RoomType typ)
 {
     switch (typ) {
     case RoomType::NORMAL:
-        return build_type1(player_ptr, dd_ptr);
+        return build_type1(creature, dd_ptr);
     case RoomType::OVERLAP:
-        return build_type2(player_ptr, dd_ptr);
+        return build_type2(creature, dd_ptr);
     case RoomType::CROSS:
-        return build_type3(player_ptr, dd_ptr);
+        return build_type3(creature, dd_ptr);
     case RoomType::INNER_FEAT:
-        return build_type4(player_ptr, dd_ptr);
+        return build_type4(creature, dd_ptr);
     case RoomType::NEST:
-        return build_type5(player_ptr, dd_ptr);
+        return build_type5(creature, dd_ptr);
     case RoomType::PIT:
-        return build_type6(player_ptr, dd_ptr);
+        return build_type6(creature, dd_ptr);
     case RoomType::LESSER_VAULT:
-        return build_fixed_room(player_ptr, dd_ptr, 7, false, -1);
+        return build_fixed_room(creature, dd_ptr, 7, false, -1);
     case RoomType::GREATER_VAULT:
-        return build_fixed_room(player_ptr, dd_ptr, 8, true, -1);
+        return build_fixed_room(creature, dd_ptr, 8, true, -1);
     case RoomType::FRACAVE:
-        return build_type9(player_ptr, dd_ptr);
+        return build_type9(creature, dd_ptr);
     case RoomType::RANDOM_VAULT:
-        return build_type10(player_ptr, dd_ptr);
+        return build_type10(creature, dd_ptr);
     case RoomType::OVAL:
-        return build_type11(player_ptr, dd_ptr);
+        return build_type11(creature, dd_ptr);
     case RoomType::CRYPT:
-        return build_type12(player_ptr, dd_ptr);
+        return build_type12(creature, dd_ptr);
     case RoomType::TRAP_PIT:
-        return build_type13(player_ptr, dd_ptr);
+        return build_type13(creature, dd_ptr);
     case RoomType::TRAP:
-        return build_type14(player_ptr, dd_ptr);
+        return build_type14(creature, dd_ptr);
     case RoomType::GLASS:
-        return build_type15(player_ptr, dd_ptr);
+        return build_type15(creature, dd_ptr);
     case RoomType::ARCADE:
-        return build_type16(player_ptr, dd_ptr);
+        return build_type16(creature, dd_ptr);
     case RoomType::FIXED:
-        return build_fixed_room(player_ptr, dd_ptr, 17, false, -1);
+        return build_fixed_room(creature, dd_ptr, 17, false, -1);
     case RoomType::PERVO:
-        return build_fixed_room(player_ptr, dd_ptr, 18, false, -1);
+        return build_fixed_room(creature, dd_ptr, 18, false, -1);
     case RoomType::MAZE:
-        return build_nonvault_maze(player_ptr, dd_ptr);
+        return build_nonvault_maze(creature, dd_ptr);
     case RoomType::HOUSE:
-        return build_fixed_room(player_ptr, dd_ptr, 19, false, -1);
+        return build_fixed_room(creature, dd_ptr, 19, false, -1);
     case RoomType::THRONE_ROOM:
-        return build_fixed_room(player_ptr, dd_ptr, 20, false, -1);
+        return build_fixed_room(creature, dd_ptr, 20, false, -1);
     default:
         return false;
     }
@@ -94,22 +93,22 @@ static void move_prob_list(RoomType dst, RoomType src, std::map<RoomType, int> &
 /*!
  * @brief 部屋生成処理のメインルーチン(Sangbandを経由してOangbandからの実装を引用) / Generate rooms in dungeon.  Build bigger rooms at first.　[from SAngband
  * (originally from OAngband)]
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return 部屋生成に成功した場合 TRUE を返す。
  */
-bool generate_rooms(PlayerType *player_ptr, DungeonData *dd_ptr)
+bool generate_rooms(CreatureEntity &creature, DungeonData *dd_ptr)
 {
-    auto *floor_ptr = player_ptr->current_floor_ptr;
+    auto *floor_ptr = creature.get_floor();
     auto &dungeon = floor_ptr->get_generated_dungeon_definition();
 
     // 特定階層でのVault生成チェック
     if (dungeon.specific_vault_map.count(floor_ptr->dun_level)) {
         const auto vault_id = dungeon.specific_vault_map.at(floor_ptr->dun_level);
-        if (build_fixed_room(player_ptr, dd_ptr, 7, false, enum2i(vault_id))) {
-            msg_print_wizard(player_ptr, CHEAT_DUNGEON,
+        if (build_fixed_room(creature, dd_ptr, 7, false, enum2i(vault_id))) {
+            msg_print_wizard(creature, CHEAT_DUNGEON,
                 _("特定階層Vaultを生成", "Generated specific floor vault"));
         } else {
-            msg_print_wizard(player_ptr, CHEAT_DUNGEON,
+            msg_print_wizard(creature, CHEAT_DUNGEON,
                 _("特定階層Vaultを生成失敗", "Failed generating specific floor vault"));
             return false;
         }
@@ -130,15 +129,13 @@ bool generate_rooms(PlayerType *player_ptr, DungeonData *dd_ptr)
         dun_rooms *= randint1(4);
     }
 
-    room_info_type *room_info_ptr = room_info_normal;
-
-    for (auto r : ROOM_TYPE_LIST) {
+    for (const auto &[r, room_info] : room_info_normal) {
         if (dungeon.room_rate.count(r)) {
             prob_list[r] = dungeon.room_rate.at(r);
-        } else if (floor_ptr->dun_level < room_info_ptr[enum2i(r)].min_level) {
+        } else if (floor_ptr->dun_level < room_info.min_level) {
             prob_list[r] = 0;
         } else {
-            prob_list[r] = room_info_ptr[enum2i(r)].prob[level_index];
+            prob_list[r] = room_info.prob[level_index];
         }
     }
 
@@ -227,7 +224,7 @@ bool generate_rooms(PlayerType *player_ptr, DungeonData *dd_ptr)
         auto id = std::get<1>(r);
         auto percentage = std::get<2>(r);
         if (depth == floor_ptr->dun_level && percentage > randint0(100)) {
-            if (!build_fixed_room(player_ptr, dd_ptr, 0, true, id)) {
+            if (!build_fixed_room(creature, dd_ptr, 0, true, id)) {
                 return false;
             }
         }
@@ -236,14 +233,13 @@ bool generate_rooms(PlayerType *player_ptr, DungeonData *dd_ptr)
     bool remain;
     while (true) {
         remain = false;
-        for (auto i = 0; i < ROOM_TYPE_MAX; i++) {
-            auto room_type = room_build_order[i];
+        for (const auto room_type : room_build_order) {
             if (!room_num[room_type]) {
                 continue;
             }
 
             room_num[room_type]--;
-            if (!room_build(player_ptr, dd_ptr, room_type)) {
+            if (!room_build(creature, dd_ptr, room_type)) {
                 continue;
             }
 
@@ -274,10 +270,10 @@ bool generate_rooms(PlayerType *player_ptr, DungeonData *dd_ptr)
     }
 
     if (rooms_built < 2) {
-        msg_format_wizard(player_ptr, CHEAT_DUNGEON, _("部屋数が2未満でした。生成を再試行します。", "Number of rooms was under 2. Retry."), rooms_built);
+        msg_format_wizard(creature, CHEAT_DUNGEON, _("部屋数が2未満でした。生成を再試行します。", "Number of rooms was under 2. Retry."), rooms_built);
         return false;
     }
 
-    msg_format_wizard(player_ptr, CHEAT_DUNGEON, _("このダンジョンの部屋数は %d です。", "Number of Rooms: %d"), rooms_built);
+    msg_format_wizard(creature, CHEAT_DUNGEON, _("このダンジョンの部屋数は %d です。", "Number of Rooms: %d"), rooms_built);
     return true;
 }

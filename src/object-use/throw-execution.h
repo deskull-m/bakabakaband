@@ -8,27 +8,25 @@
 #include "system/angband.h"
 #include "system/system-variables.h"
 #include "util/flag-group.h"
+#include <memory>
 #include <string>
 
 class Grid;
-class MonsterEntity;
 class ItemEntity;
-class PlayerType;
-
+class CreatureEntity;
 class ObjectThrowHitMonster {
 public:
-    ObjectThrowHitMonster(PlayerType *player_ptr, POSITION y, POSITION x);
+    ObjectThrowHitMonster(CreatureEntity &creature, POSITION y, POSITION x);
 
     MONSTER_IDX m_idx{};
-    MonsterEntity *m_ptr{};
+    CreatureEntity *m_ptr{};
     std::string m_name{};
 };
 
 class ObjectThrowEntity {
 public:
     ObjectThrowEntity() = default;
-    ObjectThrowEntity(
-        PlayerType *player_ptr, ItemEntity *q_ptr, const int delay_factor_val, const int mult, const bool boomerang, const OBJECT_IDX shuriken);
+    ObjectThrowEntity(CreatureEntity &creature, ItemEntity *q_ptr, const int delay_factor_val, const int mult, const bool boomerang, const OBJECT_IDX shuriken);
     virtual ~ObjectThrowEntity() = default;
 
     ItemEntity *q_ptr;
@@ -55,7 +53,7 @@ public:
     bool has_hit_monster() const;
 
 private:
-    PlayerType *player_ptr;
+    CreatureEntity *creature_ptr;
     OBJECT_IDX shuriken;
     int mult;
     int msec;
@@ -68,7 +66,7 @@ private:
     int tdam{};
     int tdis{};
     int cur_dis{};
-    ItemEntity *o_ptr{};
+    std::shared_ptr<ItemEntity> item = nullptr;
     bool hit_wall = false;
     bool return_when_thrown = false;
     std::string o_name{};

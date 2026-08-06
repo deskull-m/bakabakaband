@@ -27,20 +27,19 @@
 #include "pet/pet-util.h"
 #include "player/player-status-flags.h"
 #include "system/angband-system.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "system/terrain/terrain-definition.h"
 #include "target/projection-path-calculator.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
 
-static bool check_hp_for_terrain_destruction(const TerrainType &terrain, const MonsterEntity &monster)
+static bool check_hp_for_terrain_destruction(const TerrainType &terrain, const CreatureEntity &monster)
 {
     auto can_destroy = terrain.flags.has_not(TerrainCharacteristics::GLASS);
     can_destroy |= monster.get_monrace().behavior_flags.has(MonsterBehaviorType::STUPID);
@@ -50,17 +49,17 @@ static bool check_hp_for_terrain_destruction(const TerrainType &terrain, const M
 
 /*!
  * @brief モンスターによる壁の透過・破壊を行う
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param monster モンスターへの参照
  * @param pos モンスターの移動先座標
  * @param can_cross モンスターが地形を踏破できるならばTRUE
  * @return 透過も破壊もしなかった場合はFALSE、それ以外はTRUE
  */
-static bool process_wall(PlayerType *player_ptr, turn_flags *turn_flags_ptr, const MonsterEntity &monster, const Pos2D &pos, bool can_cross)
+static bool process_wall(CreatureEntity &creature, turn_flags *turn_flags_ptr, const CreatureEntity &monster, const Pos2D &pos, bool can_cross)
 {
-    const auto &grid = player_ptr->current_floor_ptr->get_grid(pos);
+    const auto &grid = creature.get_floor()->get_grid(pos);
     const auto &terrain = grid.get_terrain();
-    if (player_ptr->is_located_at(pos)) {
+    if (creature.is_located_at(pos)) {
         turn_flags_ptr->do_move = true;
         return true;
     }
@@ -75,7 +74,7 @@ static bool process_wall(PlayerType *player_ptr, turn_flags *turn_flags_ptr, con
     const auto &monrace = monster.get_monrace();
     auto can_kill_wall = monrace.feature_flags.has(Mft::KILL_WALL);
     can_kill_wall &= can_cross ? terrain.flags.has_not(Tc::LOS) : !turn_flags_ptr->is_riding_mon;
-    can_kill_wall &= terrain.flags.has(Tc::HURT_DISI);
+    can_kill_wall &= terrain.flags.has(Tc::CAN_DISINTEGRATE);
     can_kill_wall &= terrain.flags.has_not(Tc::PERMANENT);
     can_kill_wall &= check_hp_for_terrain_destruction(terrain, monster);
     if (can_kill_wall) {
@@ -93,7 +92,7 @@ static bool process_wall(PlayerType *player_ptr, turn_flags *turn_flags_ptr, con
     }
 
     turn_flags_ptr->do_move = true;
-    if ((monrace.feature_flags.has(Mft::PASS_WALL)) && (!turn_flags_ptr->is_riding_mon || has_pass_wall(player_ptr)) && terrain.flags.has(Tc::CAN_PASS)) {
+    if ((monrace.feature_flags.has(Mft::PASS_WALL)) && (!turn_flags_ptr->is_riding_mon || creature.has_pass_wall()) && terrain.flags.has(Tc::CAN_PASS)) {
         turn_flags_ptr->did_pass_wall = true;
     }
 
@@ -102,35 +101,35 @@ static bool process_wall(PlayerType *player_ptr, turn_flags *turn_flags_ptr, con
 
 /*!
  * @brief モンスターが普通のドアを開ける処理
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param turn_flags_ptr ターン経過処理フラグへの参照ポインタ
  * @param monster モンスターへの参照
  * @param pos モンスターの移動先座標
  * @return ドアを打ち破るならここでの処理は実行せずtrue、開けるだけなら開けてfalseを返す
  * @todo 関数名と処理内容が不一致、後で直す
  */
-static bool bash_normal_door(PlayerType *player_ptr, turn_flags *turn_flags_ptr, const MonsterEntity &monster, const Pos2D &pos)
+static bool bash_normal_door(CreatureEntity &creature, turn_flags *turn_flags_ptr, const CreatureEntity &monster, const Pos2D &pos)
 {
     const auto &monrace = monster.get_monrace();
-    const auto &grid = player_ptr->current_floor_ptr->get_grid(pos);
+    const auto &grid = creature.get_floor()->get_grid(pos);
     const auto &terrain = grid.get_terrain();
     turn_flags_ptr->do_move = false;
     using Tc = TerrainCharacteristics;
     auto can_bash = monrace.behavior_flags.has_not(MonsterBehaviorType::OPEN_DOOR);
     can_bash |= terrain.flags.has_not(Tc::OPEN);
-    can_bash |= monster.is_pet() && ((player_ptr->pet_extra_flags & PF_OPEN_DOORS) == 0);
+    can_bash |= monster.is_pet() && !creature.has_pet_extra_flag(PF_OPEN_DOORS);
     if (can_bash) {
         return true;
     }
 
-    if (terrain.power == 0) {
+    if (terrain.door_power == 0) {
         turn_flags_ptr->did_open_door = true;
         turn_flags_ptr->do_turn = true;
         return false;
     }
 
-    if (randint0(monster.hp / 10) > terrain.power) {
-        cave_alter_feat(player_ptr, pos.y, pos.x, Tc::DISARM);
+    if (randint0(monster.hp / 10) > terrain.door_power) {
+        cave_alter_feat(creature, pos.y, pos.x, Tc::DISARM);
         turn_flags_ptr->do_turn = true;
         return false;
     }
@@ -140,25 +139,25 @@ static bool bash_normal_door(PlayerType *player_ptr, turn_flags *turn_flags_ptr,
 
 /*!
  * @brief モンスターがガラスのドアを開ける処理
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param turn_flags_ptr ターン経過処理フラグへの参照ポインタ
  * @param monster モンスターへの参照
  * @param terrain 地形への参照
  * @param may_bash ドアを打ち破るならtrue、開けるだけならfalse
  * @todo 関数名と処理内容が不一致、後で直す
  */
-static void bash_glass_door(PlayerType *player_ptr, turn_flags *turn_flags_ptr, const MonsterEntity &monster, const TerrainType &terrain, bool may_bash)
+static void bash_glass_door(CreatureEntity &creature, turn_flags *turn_flags_ptr, const CreatureEntity &monster, const TerrainType &terrain, bool may_bash)
 {
     const auto &monrace = monster.get_monrace();
     auto can_bash = may_bash;
     can_bash &= monrace.behavior_flags.has(MonsterBehaviorType::BASH_DOOR);
     can_bash &= terrain.flags.has(TerrainCharacteristics::BASH);
-    can_bash &= !monster.is_pet() || any_bits(player_ptr->pet_extra_flags, PF_OPEN_DOORS);
+    can_bash &= !monster.is_pet() || creature.has_pet_extra_flag(PF_OPEN_DOORS);
     if (!can_bash) {
         return;
     }
 
-    if (!check_hp_for_terrain_destruction(terrain, monster) || (randint0(monster.hp / 10) <= terrain.power)) {
+    if (!check_hp_for_terrain_destruction(terrain, monster) || (randint0(monster.hp / 10) <= terrain.door_power)) {
         return;
     }
 
@@ -169,7 +168,7 @@ static void bash_glass_door(PlayerType *player_ptr, turn_flags *turn_flags_ptr, 
     }
 
     if (disturb_minor) {
-        disturb(player_ptr, false, false);
+        disturb(creature, false, false);
     }
 
     turn_flags_ptr->did_bash_door = true;
@@ -179,24 +178,24 @@ static void bash_glass_door(PlayerType *player_ptr, turn_flags *turn_flags_ptr, 
 
 /*!
  * @brief モンスターによるドアの開放・破壊を行う
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param turn_flags_ptr ターン経過処理フラグへの参照ポインタ
  * @param monster モンスターへの参照
  * @param pos モンスターの移動先座標
  * @return モンスターが死亡した場合のみFALSE
  */
-static bool process_door(PlayerType *player_ptr, turn_flags *turn_flags_ptr, const MonsterEntity &monster, const Pos2D &pos)
+static bool process_door(CreatureEntity &creature, turn_flags *turn_flags_ptr, const CreatureEntity &monster, const Pos2D &pos)
 {
     auto &monrace = monster.get_monrace();
-    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     if (!floor.has_closed_door_at(pos)) {
         return true;
     }
 
     const auto &grid = floor.get_grid(pos);
     auto &terrain = grid.get_terrain();
-    auto may_bash = bash_normal_door(player_ptr, turn_flags_ptr, monster, pos);
-    bash_glass_door(player_ptr, turn_flags_ptr, monster, terrain, may_bash);
+    auto may_bash = bash_normal_door(creature, turn_flags_ptr, monster, pos);
+    bash_glass_door(creature, turn_flags_ptr, monster, terrain, may_bash);
     if (!turn_flags_ptr->did_open_door && !turn_flags_ptr->did_bash_door) {
         return true;
     }
@@ -204,7 +203,7 @@ static bool process_door(PlayerType *player_ptr, turn_flags *turn_flags_ptr, con
     const auto &dungeon = floor.get_dungeon_definition();
     const auto is_open = dungeon.convert_terrain_id(grid.feat, TerrainCharacteristics::OPEN) == grid.feat;
     if (turn_flags_ptr->did_bash_door && (one_in_(2) || is_open || terrain.flags.has(TerrainCharacteristics::GLASS))) {
-        cave_alter_feat(player_ptr, pos.y, pos.x, TerrainCharacteristics::BASH);
+        cave_alter_feat(creature, pos.y, pos.x, TerrainCharacteristics::BASH);
         if (!monster.is_valid()) {
             auto &rfu = RedrawingFlagsUpdater::get_instance();
             rfu.set_flag(StatusRecalculatingFlag::FLOW);
@@ -213,14 +212,14 @@ static bool process_door(PlayerType *player_ptr, turn_flags *turn_flags_ptr, con
                 SubWindowRedrawingFlag::DUNGEON,
             };
             rfu.set_flags(flags);
-            if (is_original_ap_and_seen(player_ptr, monster)) {
+            if (is_original_ap_and_seen(creature, monster)) {
                 monrace.r_behavior_flags.set(MonsterBehaviorType::BASH_DOOR);
             }
 
             return false;
         }
     } else {
-        cave_alter_feat(player_ptr, pos.y, pos.x, TerrainCharacteristics::OPEN);
+        cave_alter_feat(creature, pos.y, pos.x, TerrainCharacteristics::OPEN);
     }
 
     turn_flags_ptr->do_view = true;
@@ -229,19 +228,19 @@ static bool process_door(PlayerType *player_ptr, turn_flags *turn_flags_ptr, con
 
 /*!
  * @brief 守りのルーンによるモンスターの移動制限を処理する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param turn_flags_ptr ターン経過処理フラグへの参照ポインタ
  * @param m_ptr モンスターへの参照ポインタ
  * @param pos モンスターの移動先座標
  * @return ルーンに侵入できるか否か
  */
-static bool process_protection_rune(PlayerType *player_ptr, turn_flags *turn_flags_ptr, const MonsterEntity &monster, const Pos2D &pos)
+static bool process_protection_rune(CreatureEntity &creature, turn_flags *turn_flags_ptr, const CreatureEntity &monster, const Pos2D &pos)
 {
-    auto &grid = player_ptr->current_floor_ptr->get_grid(pos);
+    auto &grid = creature.get_floor()->get_grid(pos);
     const auto &monrace = monster.get_monrace();
     auto can_enter = turn_flags_ptr->do_move;
     can_enter &= grid.is_rune_protection();
-    can_enter &= (monrace.behavior_flags.has_not(MonsterBehaviorType::NEVER_BLOW)) || !player_ptr->is_located_at(pos);
+    can_enter &= (monrace.behavior_flags.has_not(MonsterBehaviorType::NEVER_BLOW)) || !creature.is_located_at(pos);
     if (!can_enter) {
         return false;
     }
@@ -259,24 +258,24 @@ static bool process_protection_rune(PlayerType *player_ptr, turn_flags *turn_fla
     grid.info &= ~(CAVE_OBJECT);
     grid.mimic = 0;
     turn_flags_ptr->do_move = true;
-    note_spot(player_ptr, pos);
+    note_spot(creature, pos);
     return true;
 }
 
 /*!
  * @brief 爆発のルーンを処理する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param turn_flags_ptr ターン経過処理フラグへの参照ポインタ
  * @param m_ptr モンスターへの参照ポインタ
  * @param pos モンスターの移動先座標
  * @return モンスターが死亡した場合のみFALSE
  */
-static bool process_explosive_rune(PlayerType *player_ptr, turn_flags *turn_flags_ptr, const MonsterEntity &monster, const Pos2D &pos)
+static bool process_explosive_rune(CreatureEntity &creature, turn_flags *turn_flags_ptr, const CreatureEntity &monster, const Pos2D &pos)
 {
-    const auto &grid = player_ptr->current_floor_ptr->get_grid(pos);
+    const auto &grid = creature.get_floor()->get_grid(pos);
     const auto &monrace = monster.get_monrace();
     auto should_explode = turn_flags_ptr->do_move;
-    should_explode &= (monrace.behavior_flags.has_not(MonsterBehaviorType::NEVER_BLOW)) || !player_ptr->is_located_at(pos);
+    should_explode &= (monrace.behavior_flags.has_not(MonsterBehaviorType::NEVER_BLOW)) || !creature.is_located_at(pos);
     if (!should_explode) {
         return true;
     }
@@ -286,7 +285,7 @@ static bool process_explosive_rune(PlayerType *player_ptr, turn_flags *turn_flag
         return true;
     }
 
-    activate_explosive_rune(player_ptr, pos, monrace);
+    activate_explosive_rune(creature, pos, monrace);
 
     if (!monster.is_valid()) {
         return false;
@@ -298,16 +297,16 @@ static bool process_explosive_rune(PlayerType *player_ptr, turn_flags *turn_flag
 
 /*!
  * @brief モンスターが壁を掘った後続処理を実行する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @turn_flags_ptr ターン経過処理フラグへの参照ポインタ
  * @param monster モンスターへの参照
  * @param pos モンスターの移動先座標
  * @return モンスターが死亡した場合のみFALSE
  */
-static bool process_post_dig_wall(PlayerType *player_ptr, turn_flags *turn_flags_ptr, const MonsterEntity &monster, const Pos2D &pos)
+static bool process_post_dig_wall(CreatureEntity &creature, turn_flags *turn_flags_ptr, const CreatureEntity &monster, const Pos2D &pos)
 {
     auto &monrace = monster.get_monrace();
-    const auto &grid = player_ptr->current_floor_ptr->get_grid(pos);
+    const auto &grid = creature.get_floor()->get_grid(pos);
     const auto &terrain = grid.get_terrain();
     if (!turn_flags_ptr->did_kill_wall || !turn_flags_ptr->do_move) {
         return true;
@@ -322,7 +321,7 @@ static bool process_post_dig_wall(PlayerType *player_ptr, turn_flags *turn_flags
         }
     }
 
-    cave_alter_feat(player_ptr, pos.y, pos.x, TerrainCharacteristics::HURT_DISI);
+    cave_alter_feat(creature, pos.y, pos.x, TerrainCharacteristics::CAN_DISINTEGRATE);
 
     if (!monster.is_valid()) {
         auto &rfu = RedrawingFlagsUpdater::get_instance();
@@ -332,7 +331,7 @@ static bool process_post_dig_wall(PlayerType *player_ptr, turn_flags *turn_flags
             SubWindowRedrawingFlag::DUNGEON,
         };
         rfu.set_flags(flags);
-        if (is_original_ap_and_seen(player_ptr, monster)) {
+        if (is_original_ap_and_seen(creature, monster)) {
             monrace.r_feature_flags.set(MonsterFeatureType::KILL_WALL);
         }
 
@@ -346,14 +345,14 @@ static bool process_post_dig_wall(PlayerType *player_ptr, turn_flags *turn_flags
 
 /*!
  * @brief 爆発のルーンを作動させる
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param pos 爆発のルーンの位置
  * @param monrace モンスター種族への参照
  */
-void activate_explosive_rune(PlayerType *player_ptr, const Pos2D &pos, const MonraceDefinition &monrace)
+void activate_explosive_rune(CreatureEntity &creature, const Pos2D &pos, const MonraceDefinition &monrace)
 {
-    auto &grid = player_ptr->current_floor_ptr->get_grid(pos);
-    const auto level = player_ptr->level;
+    auto &grid = creature.get_floor()->get_grid(pos);
+    const auto level = creature.get_level();
     if (!grid.is_rune_explosion()) {
         return;
     }
@@ -362,7 +361,7 @@ void activate_explosive_rune(PlayerType *player_ptr, const Pos2D &pos, const Mon
         if (grid.info & CAVE_MARK) {
             msg_print(_("ルーンが爆発した！", "The rune explodes!"));
             BIT_FLAGS project_flags = PROJECT_GRID | PROJECT_ITEM | PROJECT_KILL | PROJECT_JUMP | PROJECT_NO_HANGEKI;
-            project(player_ptr, 0, 2, pos.y, pos.x, 2 * (level + Dice::roll(7, 7)), AttributeType::MANA, project_flags);
+            project(creature, 0, 2, pos.y, pos.x, 2 * (level + Dice::roll(7, 7)), AttributeType::MANA, project_flags);
         }
     } else {
         msg_print(_("爆発のルーンは解除された。", "An explosive rune was disarmed."));
@@ -372,13 +371,13 @@ void activate_explosive_rune(PlayerType *player_ptr, const Pos2D &pos, const Mon
     reset_bits(grid.info, CAVE_OBJECT);
     grid.mimic = 0;
 
-    note_spot(player_ptr, pos);
-    lite_spot(player_ptr, pos);
+    note_spot(creature, pos);
+    lite_spot(creature, pos);
 }
 
 /*!
  * @brief モンスターの移動に関するメインルーチン
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param turn_flags_ptr ターン経過処理フラグへの参照ポインタ
  * @param mmdl モンスターの移動方向リスト
  * @param pos モンスターの移動前座標
@@ -386,9 +385,9 @@ void activate_explosive_rune(PlayerType *player_ptr, const Pos2D &pos, const Mon
  * @return 移動が阻害される何か (ドア等)があったらFALSE
  * @todo 少し長いが、これといってブロックとしてまとまった部分もないので暫定でこのままとする
  */
-bool process_monster_movement(PlayerType *player_ptr, turn_flags *turn_flags_ptr, const MonsterMovementDirectionList &mmdl, const Pos2D &pos, int *count)
+bool process_monster_movement(CreatureEntity &creature, turn_flags *turn_flags_ptr, const MonsterMovementDirectionList &mmdl, const Pos2D &pos, int *count)
 {
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *creature.get_floor();
     const auto m_idx = mmdl.get_m_idx();
     for (const auto &dir : mmdl.get_movement_directions()) {
         const auto &dir_move = dir.has_direction() ? dir : rand_choice(Direction::directions_8());
@@ -398,39 +397,39 @@ bool process_monster_movement(PlayerType *player_ptr, turn_flags *turn_flags_ptr
         }
 
         auto &grid = floor.get_grid(pos_neighbor);
-        auto &monster = floor.m_list[m_idx];
+        auto &monster = floor.get_monster(m_idx);
         auto &monrace = monster.get_monrace();
-        auto can_cross = monster_can_cross_terrain(player_ptr, grid.feat, monrace, turn_flags_ptr->is_riding_mon ? CEM_RIDING : 0);
-        if (!process_wall(player_ptr, turn_flags_ptr, monster, pos_neighbor, can_cross)) {
-            if (!process_door(player_ptr, turn_flags_ptr, monster, pos_neighbor)) {
+        auto can_cross = monster_can_cross_terrain(creature, grid.feat, monrace, turn_flags_ptr->is_riding_mon ? CEM_RIDING : 0);
+        if (!process_wall(creature, turn_flags_ptr, monster, pos_neighbor, can_cross)) {
+            if (!process_door(creature, turn_flags_ptr, monster, pos_neighbor)) {
                 return false;
             }
         }
 
-        if (!process_protection_rune(player_ptr, turn_flags_ptr, monster, pos_neighbor)) {
-            if (!process_explosive_rune(player_ptr, turn_flags_ptr, monster, pos_neighbor)) {
+        if (!process_protection_rune(creature, turn_flags_ptr, monster, pos_neighbor)) {
+            if (!process_explosive_rune(creature, turn_flags_ptr, monster, pos_neighbor)) {
                 return false;
             }
         }
 
-        exe_monster_attack_to_player(player_ptr, turn_flags_ptr, m_idx, pos_neighbor);
-        if (process_monster_attack_to_monster(player_ptr, turn_flags_ptr, m_idx, grid, can_cross)) {
+        exe_monster_attack_to_player(creature, turn_flags_ptr, m_idx, pos_neighbor);
+        if (process_monster_attack_to_monster(creature, turn_flags_ptr, m_idx, grid, can_cross)) {
             return false;
         }
 
         if (turn_flags_ptr->is_riding_mon) {
-            const auto &monster_riding = floor.m_list[player_ptr->riding];
-            if (!player_ptr->riding_ryoute && !monster_riding.is_fearful()) {
+            const auto &monster_riding = floor.get_monster(creature.get_riding());
+            if (!creature.is_riding_ryoute() && !monster_riding.is_fearful()) {
                 turn_flags_ptr->do_move = false;
             }
         }
 
-        if (!process_post_dig_wall(player_ptr, turn_flags_ptr, monster, pos_neighbor)) {
+        if (!process_post_dig_wall(creature, turn_flags_ptr, monster, pos_neighbor)) {
             return false;
         }
 
         if (turn_flags_ptr->must_alter_to_move && monrace.feature_flags.has(MonsterFeatureType::AQUATIC)) {
-            if (!monster_can_cross_terrain(player_ptr, grid.feat, monrace, turn_flags_ptr->is_riding_mon ? CEM_RIDING : 0)) {
+            if (!monster_can_cross_terrain(creature, grid.feat, monrace, turn_flags_ptr->is_riding_mon ? CEM_RIDING : 0)) {
                 turn_flags_ptr->do_move = false;
             }
         }
@@ -440,7 +439,7 @@ bool process_monster_movement(PlayerType *player_ptr, turn_flags *turn_flags_ptr
         }
 
         if (turn_flags_ptr->do_move && monrace.behavior_flags.has(MonsterBehaviorType::NEVER_MOVE)) {
-            if (is_original_ap_and_seen(player_ptr, monster)) {
+            if (is_original_ap_and_seen(creature, monster)) {
                 monrace.r_behavior_flags.set(MonsterBehaviorType::NEVER_MOVE);
             }
 
@@ -461,36 +460,36 @@ bool process_monster_movement(PlayerType *player_ptr, turn_flags *turn_flags_ptr
         can_recover_energy &= monrace.feature_flags.has_not(MonsterFeatureType::CAN_FLY);
         can_recover_energy &= monrace.wilderness_flags.has_not(MonsterWildernessType::WILD_WOOD);
         if (can_recover_energy) {
-            monster.energy_need += ENERGY_NEED();
+            monster.add_energy_need(ENERGY_NEED());
         }
 
         // SLOW地形での減速処理（飛行モンスターは影響を受けない）
         auto is_slowed_by_terrain = terrain.flags.has(TerrainCharacteristics::SLOW);
         is_slowed_by_terrain &= monrace.feature_flags.has_not(MonsterFeatureType::CAN_FLY);
         if (is_slowed_by_terrain) {
-            monster.energy_need += ENERGY_NEED() / 2;
+            monster.add_energy_need(ENERGY_NEED() / 2);
         }
 
-        if (!update_riding_monster(static_cast<CreatureEntity &>(*player_ptr), turn_flags_ptr, m_idx, pos.y, pos.x, pos_neighbor.y, pos_neighbor.x)) {
+        if (!update_riding_monster(creature, turn_flags_ptr, m_idx, pos.y, pos.x, pos_neighbor.y, pos_neighbor.x)) {
             break;
         }
 
-        const auto &apparent_monrace = monster.get_appearance_monrace();
-        const auto p_pos = player_ptr->get_position(); //!< @details 関数が長すぎてプレイヤーの座標が不変であることを保証できない.
+        const auto &apparent_monrace = monster.get_apparent_monrace();
+        const auto p_pos = creature.get_position(); //!< @details 関数が長すぎてプレイヤーの座標が不変であることを保証できない.
         const auto m_pos = monster.get_position();
         const auto is_projectable = projectable(floor, p_pos, m_pos);
-        const auto can_see = disturb_near && monster.mflag.has(MonsterTemporaryFlagType::VIEW) && is_projectable;
-        const auto is_high_level = disturb_high && (apparent_monrace.r_tkills > 0) && (apparent_monrace.level >= player_ptr->level);
+        const auto can_see = disturb_near && monster.has_temporary_flag(MonsterTemporaryFlagType::VIEW) && is_projectable;
+        const auto is_high_level = disturb_high && (apparent_monrace.r_tkills > 0) && (apparent_monrace.level >= creature.get_level());
         const auto is_unknown_level = disturb_unknown && (apparent_monrace.r_tkills == 0);
-        if (monster.ml && (disturb_move || can_see || is_high_level || is_unknown_level)) {
+        if (monster.is_visible_on_map() && (disturb_move || can_see || is_high_level || is_unknown_level)) {
             if (monster.is_hostile()) {
-                disturb(player_ptr, false, true);
+                disturb(creature, false, true);
             }
         }
 
         auto is_takable_or_killable = !grid.o_idx_list.empty();
         is_takable_or_killable &= monrace.behavior_flags.has_any_of({ MonsterBehaviorType::TAKE_ITEM, MonsterBehaviorType::KILL_ITEM });
-        auto is_pickup_items = (player_ptr->pet_extra_flags & PF_PICKUP_ITEMS) != 0;
+        auto is_pickup_items = creature.has_pet_extra_flag(PF_PICKUP_ITEMS);
         is_pickup_items &= monrace.behavior_flags.has(MonsterBehaviorType::TAKE_ITEM);
         is_takable_or_killable &= !monster.is_pet() || is_pickup_items;
         if (!is_takable_or_killable) {
@@ -501,7 +500,7 @@ bool process_monster_movement(PlayerType *player_ptr, turn_flags *turn_flags_ptr
             continue;
         }
 
-        update_object_by_monster_movement(player_ptr, turn_flags_ptr, m_idx, pos_neighbor.y, pos_neighbor.x);
+        update_object_by_monster_movement(creature, turn_flags_ptr, m_idx, pos_neighbor.y, pos_neighbor.x);
         if (turn_flags_ptr->do_turn) {
             break;
         }
@@ -519,9 +518,9 @@ static bool can_speak(const MonraceDefinition &ap_r_ref, MonsterSpeakType mon_sp
     return can_speak_all || can_speak_specific;
 }
 
-static tl::optional<MonsterMessageType> get_speak_type(const MonsterEntity &monster)
+static tl::optional<MonsterMessageType> get_speak_type(const CreatureEntity &monster)
 {
-    const auto &ap_monrace = monster.get_appearance_monrace();
+    const auto &ap_monrace = monster.get_apparent_monrace();
     if (monster.is_fearful() && can_speak(ap_monrace, MonsterSpeakType::SPEAK_FEAR)) {
         return MonsterMessageType::SPEAK_FEAR;
     }
@@ -543,55 +542,56 @@ static tl::optional<MonsterMessageType> get_speak_type(const MonsterEntity &mons
 
 /*!
  * @brief 姿の見えないモンスターのメッセージを表示する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param message 対応するメッセージ
  */
-void show_sound_message(PlayerType *player_ptr, std::string_view message)
+void show_sound_message(CreatureEntity &creature, std::string_view message)
 {
     if (disturb_minor) {
-        disturb(player_ptr, false, false);
+        disturb(creature, false, false);
     }
     msg_print(message);
 }
 
 /*!
  * @brief モンスターの足音を立てる
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param m_idx モンスターID
  */
-void process_sound(PlayerType *player_ptr, MONSTER_IDX m_idx)
+void process_sound(CreatureEntity &creature, MONSTER_IDX m_idx)
 {
     if (AngbandSystem::get_instance().is_phase_out()) {
         return;
     }
 
-    const auto &floor = *player_ptr->current_floor_ptr;
-    const auto &monster = floor.m_list[m_idx];
+    const auto &floor = *creature.get_floor();
+    const auto &monster = floor.get_monster(m_idx);
     const auto &monrace = monster.get_monrace();
 
-    if (monster.ml || player_ptr->skill_srh < randint1(100)) {
+    if (monster.is_visible_on_map() || creature.get_skill_search() < randint1(100)) {
         return;
     }
     const auto m_name = std::string(_("それ", "It"));
+    const auto cdis = Grid::calc_distance(creature.get_position(), monster.get_position());
 
-    if (monster.cdis <= MAX_PLAYER_SIGHT / 2) {
+    if (cdis <= MAX_PLAYER_SIGHT / 2) {
         const auto message = monrace.get_message(m_name, MonsterMessageType::WALK_CLOSERANGE);
         if (message) {
-            show_sound_message(player_ptr, *message);
+            show_sound_message(creature, *message);
         }
         return;
     }
-    if (monster.cdis <= MAX_PLAYER_SIGHT) {
+    if (cdis <= MAX_PLAYER_SIGHT) {
         const auto message = monrace.get_message(m_name, MonsterMessageType::WALK_MIDDLERANGE);
         if (message) {
-            show_sound_message(player_ptr, *message);
+            show_sound_message(creature, *message);
         }
         return;
     }
-    if (monster.cdis <= MAX_PLAYER_SIGHT * 2) {
+    if (cdis <= MAX_PLAYER_SIGHT * 2) {
         const auto message = monrace.get_message(m_name, MonsterMessageType::WALK_LONGRANGE);
         if (message) {
-            show_sound_message(player_ptr, *message);
+            show_sound_message(creature, *message);
         }
         return;
     }
@@ -599,31 +599,31 @@ void process_sound(PlayerType *player_ptr, MONSTER_IDX m_idx)
 
 /*!
  * @brief モンスターを喋らせる
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param m_idx モンスターID
  * @param oy モンスターが元々いたY座標
  * @param ox モンスターが元々いたX座標
  * @param aware モンスターがプレイヤーに気付いているならばTRUE、超隠密状態ならばFALSE
  */
-void process_speak(PlayerType *player_ptr, MONSTER_IDX m_idx, POSITION oy, POSITION ox, bool aware)
+void process_speak(CreatureEntity &creature, MONSTER_IDX m_idx, POSITION oy, POSITION ox, bool aware)
 {
     const Pos2D pos(oy, ox);
     if (AngbandSystem::get_instance().is_phase_out()) {
         return;
     }
 
-    const auto &floor = *player_ptr->current_floor_ptr;
-    const auto &monster = floor.m_list[m_idx];
+    const auto &floor = *creature.get_floor();
+    const auto &monster = floor.get_monster(m_idx);
     const auto &monrace = monster.get_monrace();
     constexpr auto chance_speak = 8;
-    auto vociferous = monrace.r_misc_flags.has(MonsterMiscType::VOCIFEROUS) && (monster.cdis <= MAX_PLAYER_SIGHT * 2) && one_in_(chance_speak / 3 + 1);
-    const auto p_pos = player_ptr->get_position();
-    const auto can_speak = monster.get_appearance_monrace().speak_flags.any();
+    auto vociferous = monrace.r_misc_flags.has(MonsterMiscType::VOCIFEROUS) && (Grid::calc_distance(creature.get_position(), monster.get_position()) <= MAX_PLAYER_SIGHT * 2) && one_in_(chance_speak / 3 + 1);
+    const auto p_pos = creature.get_position();
+    const auto can_speak = monster.get_apparent_monrace().speak_flags.any();
     if ((!vociferous) && (!can_speak || !aware || !floor.has_los_at({ oy, ox }) || !projectable(floor, pos, p_pos))) {
         return;
     }
 
-    const auto m_name = monster.ml ? monster_desc(player_ptr, monster, 0) : std::string(_("それ", "It"));
+    const auto m_name = monster.is_visible_on_map() ? monster_desc(creature, monster, 0) : std::string(_("それ", "It"));
     const auto message_type = get_speak_type(monster);
     if (!message_type) {
         return;

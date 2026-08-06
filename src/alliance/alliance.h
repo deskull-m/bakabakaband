@@ -1,13 +1,15 @@
 #pragma once
 #include "system/angband.h"
 #include "util/flag-group.h"
+#include <initializer_list>
 #include <map>
 #include <string>
 #include <vector>
 
 enum class MonraceId : int16_t;
-class MonsterEntity;
+class CreatureEntity;
 class MonraceDefinition;
+class CreatureEntity;
 
 typedef int ALLIANCE_ID;
 class PlayerType;
@@ -85,6 +87,7 @@ enum class AllianceType : int {
     DIABOLIQUE = 69, //!< デアボリカ
     SOUKAIYA = 70, //!< ソウカイヤ
     YEEK_KINGDOM = 71, //!< イークの王国
+    EAGLE_CLAN = 72, //!< 大鷲の一族
     MAX,
 };
 
@@ -105,14 +108,14 @@ public:
     EnumClassFlagGroup<alliance_flags> alliFlags; //!< 陣営特性フラグ
     int64_t calcCurrentPower();
     virtual bool isAnnihilated();
-    virtual bool isFriendly(PlayerType *creature_ptr) const;
-    virtual int calcImpressionPoint(PlayerType *creature_ptr) const = 0;
+    virtual bool isFriendly(const CreatureEntity &creature) const;
+    virtual int calcImpressionPoint(const CreatureEntity &creature) const = 0;
     virtual ~Alliance() = default;
     int64_t AnnihilatedPowerdownDiv = 1000; //!< 壊滅時戦力指数除算
-    virtual void panishment(PlayerType &player_ptr);
-    virtual std::vector<MonraceId> get_ambush_monsters(PlayerType *player_ptr, int impression_point) const;
+    virtual void panishment(CreatureEntity &creature);
+    virtual std::vector<MonraceId> get_ambush_monsters(CreatureEntity &creature, int impression_point) const;
     virtual std::string get_ambush_message() const;
-    virtual bool is_hostile_to(const MonsterEntity &monster_other, const MonraceDefinition &monrace) const;
+    virtual bool is_hostile_to(const CreatureEntity &creature_other, const MonraceDefinition &monrace) const;
 
     // base_powerを変更するメソッド
     void set_base_power(int64_t new_power)
@@ -135,32 +138,34 @@ public:
     }
 
 protected:
-    static int calcPlayerPower(PlayerType const &player_ptr, const int bias, const int base_level);
+    static int calcPlayerPower(const CreatureEntity &creature, const int bias, const int base_level);
     static int calcIronmanHostilityPenalty();
+    //! 指定した全モンレースが絶滅 (mob_num == 0) しているかを返す (isAnnihilated の定型集約)
+    static bool all_monraces_extinct(std::initializer_list<MonraceId> monrace_ids);
 };
 
 // 分離されたアライアンスクラスのインクルード
-#include "alliance-angartha.h"
-#include "alliance-ashina-clan.h"
-#include "alliance-avarin-lords.h"
-#include "alliance-binzyou-buddhism.h"
-#include "alliance-diabolique.h"
-#include "alliance-dokachans.h"
-#include "alliance-gaichi.h"
-#include "alliance-ge-orlic.h"
-#include "alliance-getter.h"
-#include "alliance-go.h"
-#include "alliance-golan.h"
-#include "alliance-hakushin-karate.h"
-#include "alliance-king.h"
-#include "alliance-meldor.h"
-#include "alliance-naked-knights.h"
-#include "alliance-none.h"
-#include "alliance-phyrexia.h"
-#include "alliance-pure-mirrodin.h"
-#include "alliance-suren.h"
-#include "alliance-turban-kids.h"
-#include "alliance-yeek-kingdom.h"
+#include "alliance/alliance-angartha.h"
+#include "alliance/alliance-ashina-clan.h"
+#include "alliance/alliance-avarin-lords.h"
+#include "alliance/alliance-binzyou-buddhism.h"
+#include "alliance/alliance-diabolique.h"
+#include "alliance/alliance-dokachans.h"
+#include "alliance/alliance-gaichi.h"
+#include "alliance/alliance-ge-orlic.h"
+#include "alliance/alliance-getter.h"
+#include "alliance/alliance-go.h"
+#include "alliance/alliance-golan.h"
+#include "alliance/alliance-hakushin-karate.h"
+#include "alliance/alliance-king.h"
+#include "alliance/alliance-meldor.h"
+#include "alliance/alliance-naked-knights.h"
+#include "alliance/alliance-none.h"
+#include "alliance/alliance-phyrexia.h"
+#include "alliance/alliance-pure-mirrodin.h"
+#include "alliance/alliance-suren.h"
+#include "alliance/alliance-turban-kids.h"
+#include "alliance/alliance-yeek-kingdom.h"
 
 extern const std::map<AllianceType, std::shared_ptr<Alliance>> alliance_list;
 extern const std::map<std::tuple<AllianceType, AllianceType>, int> each_alliance_impression;

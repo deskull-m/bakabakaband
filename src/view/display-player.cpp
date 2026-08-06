@@ -1,5 +1,5 @@
 /*!
- * @brief プレイヤーのステータス表示メインルーチン群
+ * @brief クリーチャー（プレイヤー・モンスター）のステータス表示メインルーチン群
  * @date 2020/02/25
  * @author Hourier
  * @details
@@ -7,6 +7,7 @@
  */
 
 #include "view/display-player.h"
+#include "alliance/alliance.h"
 #include "dungeon/quest.h"
 #include "floor/floor-util.h"
 #include "game-option/text-display-options.h"
@@ -29,15 +30,17 @@
 #include "player/player-status-table.h"
 #include "player/player-status.h"
 #include "system/baseitem/baseitem-definition.h"
+#include "system/creature-entity.h"
+#include "system/dungeon/quest-definition.h"
 #include "system/floor/floor-info.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/player-type-definition.h"
 #include "term/gameterm.h"
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
 #include "view/display-characteristic.h"
+#include "view/display-player-inventory-page.h"
 #include "view/display-player-middle.h"
 #include "view/display-player-misc-info.h"
 #include "view/display-player-stat-info.h"
@@ -46,35 +49,44 @@
 #include "world/world.h"
 #include <sstream>
 #include <string>
+#include <tl/optional.hpp>
 
 /*!
  * @brief
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param mode ステータス表示モード
  * @return どれかの処理をこなしたらTRUE、何もしなかったらFALSE
+ * @details モード 2〜5 はプレイヤー由来の項目を多く含むが、モンスター閲覧時も
+ * ページ送りで参照できるようにする。モンスター時はプレイヤー前提の値が
+ * 0/空で表示されるが、各サブ関数が CreatureEntity API 経由のため安全。
  */
-static bool display_player_info(PlayerType *player_ptr, int mode)
+static bool display_player_info(CreatureEntity &creature, int mode)
 {
     if (mode == 2) {
-        display_player_misc_info(player_ptr);
-        display_player_stat_info(player_ptr);
-        display_player_flag_info_1(player_ptr, display_player_equippy);
+        display_player_misc_info(creature);
+        display_player_stat_info(creature);
+        display_player_flag_info_1(creature, display_player_equippy);
         return true;
     }
 
     if (mode == 3) {
-        display_player_flag_info_2(player_ptr, display_player_equippy);
+        display_player_flag_info_2(creature, display_player_equippy);
         return true;
     }
 
     if (mode == 4) {
-        display_player_flag_info_3(player_ptr, display_player_equippy);
+        display_player_flag_info_3(creature, display_player_equippy);
         return true;
     }
 
     if (mode == 5) {
+        display_player_inventory_page(creature);
+        return true;
+    }
+
+    if (mode == 6) {
         TermCenteredOffsetSetter tcos(MAIN_TERM_MIN_COLS, tl::nullopt);
-        do_cmd_knowledge_mutations(player_ptr);
+        do_cmd_knowledge_mutations(creature);
         return true;
     }
 
@@ -83,33 +95,38 @@ static bool display_player_info(PlayerType *player_ptr, int mode)
 
 /*!
  * @brief 名前、性別、種族、職業を表示する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
-static void display_player_basic_info(PlayerType *player_ptr)
+static void display_player_basic_info(CreatureEntity &creature)
 {
-    display_player_name(player_ptr);
-    display_player_one_line(ENTRY_SEX, sp_ptr->title, TERM_L_BLUE);
-    if (player_ptr->race != nullptr) {
-        display_player_one_line(ENTRY_RACE, (player_ptr->mimic_form != MimicKindType::NONE ? mimic_info.at(player_ptr->mimic_form).title : player_ptr->race->title), TERM_L_BLUE);
+    display_player_name(creature);
+    display_player_one_line(ENTRY_SEX, creature.get_sex_info().title, TERM_L_BLUE);
+    if (creature.race != nullptr) {
+        display_player_one_line(ENTRY_RACE, (creature.get_mimic_form() != MimicKindType::NONE ? mimic_info.at(creature.get_mimic_form()).title : creature.get_race_info()->title), TERM_L_BLUE);
+    } else {
+        display_player_one_line(ENTRY_RACE, _("なし", "None"), TERM_SLATE);
     }
-    if (player_ptr->pclass_ref != nullptr) {
-        display_player_one_line(ENTRY_CLASS, (*player_ptr->pclass_ref).title, TERM_L_BLUE);
+    if (creature.pclass_ref != nullptr) {
+        display_player_one_line(ENTRY_CLASS, (*creature.get_class_info()).title, TERM_L_BLUE);
+    } else {
+        display_player_one_line(ENTRY_CLASS, _("なし", "None"), TERM_SLATE);
     }
 }
 
 /*!
  * @brief 魔法領域を表示する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
-static void display_magic_realms(PlayerType *player_ptr)
+static void display_magic_realms(CreatureEntity &creature)
 {
-    PlayerRealm pr(player_ptr);
-    if (!pr.realm1().is_available() && player_ptr->element_realm == ElementRealmType::NONE) {
+    PlayerRealm pr(creature);
+    if (!pr.realm1().is_available() && creature.get_element_realm() == ElementRealmType::NONE) {
+        display_player_one_line(ENTRY_REALM, _("なし", "None"), TERM_SLATE);
         return;
     }
 
-    if (PlayerClass(player_ptr).equals(PlayerClassType::ELEMENTALIST)) {
-        display_player_one_line(ENTRY_REALM, get_element_title(player_ptr->element_realm), TERM_L_BLUE);
+    if (CreatureClass(creature).equals(PlayerClassType::ELEMENTALIST)) {
+        display_player_one_line(ENTRY_REALM, get_element_title(creature.get_element_realm()), TERM_L_BLUE);
         return;
     }
 
@@ -123,47 +140,86 @@ static void display_magic_realms(PlayerType *player_ptr)
 
 /*!
  * @ brief 年齢、身長、体重、威信を表示する
- * @param player_ptr プレーヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @details
  * 日本語版では、身長はcmに、体重はkgに変更してある
+ * モンスターは年齢・威信・死亡回数を持たないため、身長・体重・属性のみを出力する
  */
-static void display_phisique(PlayerType *player_ptr)
+static void display_phisique(CreatureEntity &creature)
 {
+    const auto is_player = creature.is_player();
+    constexpr auto unset_numeric = "----";
 #ifdef JP
-    display_player_one_line(ENTRY_AGE, format("%d才", (int)player_ptr->age), TERM_L_BLUE);
-    display_player_one_line(ENTRY_HEIGHT, format("%dcm", inch_to_cm(player_ptr->ht)), TERM_L_BLUE);
-    display_player_one_line(ENTRY_WEIGHT, format("%dkg", lb_to_kg(player_ptr->wt)), TERM_L_BLUE);
-    display_player_one_line(ENTRY_SOCIAL, format("%d  ", (int)player_ptr->prestige), TERM_L_BLUE);
+    if (is_player) {
+        display_player_one_line(ENTRY_AGE, format("%d才", (int)creature.get_age()), TERM_L_BLUE);
+    } else {
+        display_player_one_line(ENTRY_AGE, unset_numeric, TERM_SLATE);
+    }
+    if (is_player || creature.get_ht() > 0) {
+        display_player_one_line(ENTRY_HEIGHT, format("%dcm", inch_to_cm(creature.get_ht())), TERM_L_BLUE);
+    } else {
+        display_player_one_line(ENTRY_HEIGHT, unset_numeric, TERM_SLATE);
+    }
+    if (is_player || creature.get_wt() > 0) {
+        display_player_one_line(ENTRY_WEIGHT, format("%dkg", lb_to_kg(creature.get_wt())), TERM_L_BLUE);
+    } else {
+        display_player_one_line(ENTRY_WEIGHT, unset_numeric, TERM_SLATE);
+    }
+    if (is_player) {
+        display_player_one_line(ENTRY_SOCIAL, format("%d  ", (int)creature.get_prestige()), TERM_L_BLUE);
+    } else {
+        display_player_one_line(ENTRY_SOCIAL, unset_numeric, TERM_SLATE);
+    }
 #else
-    display_player_one_line(ENTRY_AGE, format("%d", (int)player_ptr->age), TERM_L_BLUE);
-    display_player_one_line(ENTRY_HEIGHT, format("%d", (int)player_ptr->ht), TERM_L_BLUE);
-    display_player_one_line(ENTRY_WEIGHT, format("%d", (int)player_ptr->wt), TERM_L_BLUE);
-    display_player_one_line(ENTRY_SOCIAL, format("%d", (int)player_ptr->prestige), TERM_L_BLUE);
+    if (is_player) {
+        display_player_one_line(ENTRY_AGE, format("%d", (int)creature.get_age()), TERM_L_BLUE);
+    } else {
+        display_player_one_line(ENTRY_AGE, unset_numeric, TERM_SLATE);
+    }
+    if (is_player || creature.get_ht() > 0) {
+        display_player_one_line(ENTRY_HEIGHT, format("%d", (int)creature.get_ht()), TERM_L_BLUE);
+    } else {
+        display_player_one_line(ENTRY_HEIGHT, unset_numeric, TERM_SLATE);
+    }
+    if (is_player || creature.get_wt() > 0) {
+        display_player_one_line(ENTRY_WEIGHT, format("%d", (int)creature.get_wt()), TERM_L_BLUE);
+    } else {
+        display_player_one_line(ENTRY_WEIGHT, unset_numeric, TERM_SLATE);
+    }
+    if (is_player) {
+        display_player_one_line(ENTRY_SOCIAL, format("%d", (int)creature.get_prestige()), TERM_L_BLUE);
+    } else {
+        display_player_one_line(ENTRY_SOCIAL, unset_numeric, TERM_SLATE);
+    }
 #endif
-    std::string alg = PlayerAlignment(player_ptr).get_alignment_description();
+    std::string alg = PlayerAlignment(creature).get_alignment_description();
     display_player_one_line(ENTRY_ALIGN, format("%s", alg.data()), TERM_L_BLUE);
-    display_player_one_line(ENTRY_DEATH_COUNT, format("%d  ", (int)player_ptr->death_count), TERM_L_BLUE);
+    if (is_player) {
+        display_player_one_line(ENTRY_DEATH_COUNT, format("%d  ", (int)creature.death_count), TERM_L_BLUE);
+    } else {
+        display_player_one_line(ENTRY_DEATH_COUNT, unset_numeric, TERM_SLATE);
+    }
 }
 
 /*!
  * @brief 能力値を (減少していたら色を変えて)表示する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
-static void display_player_stats(PlayerType *player_ptr)
+static void display_player_stats(CreatureEntity &creature)
 {
     for (int i = 0; i < A_MAX; i++) {
-        if (player_ptr->stat_cur[i] < player_ptr->stat_max[i]) {
+        if (creature.get_stat_cur(i) < creature.get_stat_max(i)) {
             put_str(stat_names_reduced[i], 3 + i, 53);
-            int value = player_ptr->stat_use[i];
+            int value = creature.get_stat_use(i);
             c_put_str(TERM_YELLOW, cnv_stat(value), 3 + i, 60);
-            value = player_ptr->stat_top[i];
+            value = creature.get_stat_top(i);
             c_put_str(TERM_L_GREEN, cnv_stat(value), 3 + i, 67);
         } else {
             put_str(stat_names[i], 3 + i, 53);
-            c_put_str(TERM_L_GREEN, cnv_stat(player_ptr->stat_use[i]), 3 + i, 60);
+            c_put_str(TERM_L_GREEN, cnv_stat(creature.get_stat_use(i)), 3 + i, 60);
         }
 
-        if (player_ptr->stat_max[i] == player_ptr->stat_max_max[i]) {
+        if (creature.get_stat_max(i) == creature.get_stat_max_max(i)) {
             c_put_str(TERM_WHITE, "!", 3 + i, _(58, 58 - 2));
         }
     }
@@ -171,28 +227,28 @@ static void display_player_stats(PlayerType *player_ptr)
 
 /*!
  * @brief ゲームオーバーの原因を探る (生きていたら何もしない)
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param statmsg メッセージバッファ
  * @return 生きていたらFALSE、死んでいたらTRUE
  */
-static tl::optional<std::string> search_death_cause(PlayerType *player_ptr)
+static tl::optional<std::string> search_death_cause(CreatureEntity &creature)
 {
-    const auto &floor = *player_ptr->current_floor_ptr;
-    if (!player_ptr->is_dead()) {
+    const auto &floor = *creature.get_floor();
+    if (!creature.is_dead()) {
         return tl::nullopt;
     }
 
     if (AngbandWorld::get_instance().total_winner) {
         return format(_("…あなたは勝利の後%sした。", "...You %s after winning."),
-            streq(player_ptr->died_from, "Seppuku") ? _("切腹", "committed seppuku") : _("引退", "retired from the adventure"));
+            streq(creature.died_from, "Seppuku") ? _("切腹", "committed seppuku") : _("引退", "retired from the adventure"));
     }
 
     if (!floor.is_underground()) {
         constexpr auto killed_monster = _("…あなたは%sで%sに殺されて飽きた。", "...You were killed by %s in %s and got tired..");
 #ifdef JP
-        return format(killed_monster, map_name(player_ptr).data(), player_ptr->died_from.data());
+        return format(killed_monster, map_name(creature).data(), creature.died_from.data());
 #else
-        return format(killed_monster, player_ptr->died_from.data(), map_name(player_ptr).data());
+        return format(killed_monster, creature.died_from.data(), map_name(creature).data());
 #endif
     }
 
@@ -202,34 +258,34 @@ static tl::optional<std::string> search_death_cause(PlayerType *player_ptr)
         /* Get the quest text */
         /* Bewere that INIT_ASSIGN resets the cur_num. */
         init_flags = INIT_NAME_ONLY;
-        parse_fixed_map(player_ptr, QUEST_DEFINITION_LIST, 0, 0, 0, 0);
+        parse_fixed_map(creature, QUEST_DEFINITION_LIST, 0, 0, 0, 0);
 
         const auto &quest = quests.get_quest(floor.quest_number);
         constexpr auto killed_quest = _("…あなたは、クエスト「%s」で%sに殺されて飽きた。", "...You were killed by %s in the quest '%s' and god tired..");
 #ifdef JP
-        return format(killed_quest, quest.name.data(), player_ptr->died_from.data());
+        return format(killed_quest, quest.name.data(), creature.died_from.data());
 #else
-        return format(killed_quest, player_ptr->died_from.data(), quest.name.data());
+        return format(killed_quest, creature.died_from.data(), quest.name.data());
 #endif
     }
 
     constexpr auto killed_floor = _("…あなたは、%sの%d階で%sに殺されて飽きた。", "...You were killed by %s on level %d of %s and got tired..");
 #ifdef JP
-    return format(killed_floor, map_name(player_ptr).data(), floor.dun_level, player_ptr->died_from.data());
+    return format(killed_floor, map_name(creature).data(), floor.dun_level, creature.died_from.data());
 #else
-    return format(killed_floor, player_ptr->died_from.data(), floor.dun_level, map_name(player_ptr).data());
+    return format(killed_floor, creature.died_from.data(), floor.dun_level, map_name(creature).data());
 #endif
 }
 
 /*!
  * @brief クエストフロアで生きている場合、クエスト名をバッファに詰める
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param statmsg メッセージバッファ
  * @return クエスト内であればTRUE、いなければFALSE
  */
-static tl::optional<std::string> decide_death_in_quest(PlayerType *player_ptr)
+static tl::optional<std::string> decide_death_in_quest(CreatureEntity &creature)
 {
-    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     if (!floor.is_in_quest() || !QuestType::is_fixed(floor.quest_number)) {
         return tl::nullopt;
     }
@@ -238,43 +294,43 @@ static tl::optional<std::string> decide_death_in_quest(PlayerType *player_ptr)
 
     const auto &quests = QuestList::get_instance();
     init_flags = INIT_NAME_ONLY;
-    parse_fixed_map(player_ptr, QUEST_DEFINITION_LIST, 0, 0, 0, 0);
+    parse_fixed_map(creature, QUEST_DEFINITION_LIST, 0, 0, 0, 0);
     return format(_("…あなたは現在、 クエスト「%s」を遂行中だ。", "...Now, you are in the quest '%s'."), quests.get_quest(floor.quest_number).name.data());
 }
 
 /*!
  * @brief 現在いるフロアを、または死んでいたらどこでどう死んだかをバッファに詰める
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param statmsg メッセージバッファ
  */
-static std::string decide_current_floor(PlayerType *player_ptr)
+static std::string decide_current_floor(CreatureEntity &creature)
 {
-    if (const auto death_cause = search_death_cause(player_ptr);
+    if (const auto death_cause = search_death_cause(creature);
         death_cause || !AngbandWorld::get_instance().character_dungeon) {
         return death_cause.value_or("");
     }
 
-    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     if (!floor.is_underground()) {
-        return format(_("…あなたは現在、 %s にいる。", "...Now, you are in %s."), map_name(player_ptr).data());
+        return format(_("…あなたは現在、 %s にいる。", "...Now, you are in %s."), map_name(creature).data());
     }
 
-    if (auto decision = decide_death_in_quest(player_ptr); decision.has_value()) {
+    if (auto decision = decide_death_in_quest(creature); decision.has_value()) {
         return decision.value();
     }
 
     constexpr auto mes = _("…あなたは現在、 %s の %d 階で探索している。", "...Now, you are exploring level %d of %s.");
 #ifdef JP
-    return format(mes, map_name(player_ptr).data(), floor.dun_level);
+    return format(mes, map_name(creature).data(), floor.dun_level);
 #else
-    return format(mes, floor.dun_level, map_name(player_ptr).data());
+    return format(mes, floor.dun_level, map_name(creature).data());
 #endif
 }
 
 /*!
- * @brief プレイヤーのステータス表示メイン処理
+ * @brief クリーチャー（プレイヤー・モンスター）のステータス表示メイン処理
  * Display the character on the screen (various modes)
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param tmp_mode 暫定表示モード (突然変異の有無で実際のモードに切り替える)
  * @return 死亡原因となったモンスター名が複数行に亘る場合、表示に必要な行数. それ以外を表示する場合はnullopt
  * @details
@@ -286,63 +342,61 @@ static std::string decide_current_floor(PlayerType *player_ptr)
  * Mode 4 = mutations.
  * Mode 5 = ??? (コード上の定義より6で割った余りは5になりうるが元のコメントに記載なし).
  */
-tl::optional<int> display_player(CreatureEntity *creature_ptr, const int tmp_mode)
+tl::optional<int> display_player(CreatureEntity &creature, const int tmp_mode)
 {
-    auto *player_ptr = static_cast<PlayerType *>(creature_ptr);
-    auto has_any_mutation = (player_ptr->muta.any() || has_good_luck(player_ptr) || has_pervert_attraction(player_ptr)) && display_mutations;
-    auto mode = has_any_mutation ? tmp_mode % 6 : tmp_mode % 5;
+    auto has_any_mutation = (creature.get_mutations().any() || has_good_luck(creature) || has_pervert_attraction(creature)) && display_mutations;
+    // モンスター閲覧時もページ送りを許可。プレイヤー前提の値はサブ関数側で
+    // 0/空フォールバックされる（ENTRY_RACE/CLASS が「なし」になるなど）。
+    // ページ構成: 0=基本ステータス, 1=キャラクタ生い立ち, 2=能力詳細1,
+    //            3=能力詳細2, 4=能力詳細3, 5=装備＆所持品, 6=突然変異(任意)
+    auto mode = has_any_mutation ? tmp_mode % 7 : tmp_mode % 6;
     {
         TermOffsetSetter tos(0, 0);
         clear_from(0);
     }
-    if (display_player_info(player_ptr, mode)) {
+    if (display_player_info(creature, mode)) {
         return tl::nullopt;
     }
 
-    display_player_basic_info(player_ptr);
-
-    // モンスターの場合も種族と職業を表示
-    if (!creature_ptr->is_player()) {
-        if (creature_ptr->race != nullptr) {
-            display_player_one_line(ENTRY_RACE, creature_ptr->race->title, TERM_L_BLUE);
-        }
-        if (creature_ptr->pclass_ref != nullptr) {
-            display_player_one_line(ENTRY_CLASS, creature_ptr->pclass_ref->title, TERM_L_BLUE);
-        }
+    display_player_basic_info(creature);
+    display_magic_realms(creature);
+    if (CreatureClass(creature).equals(PlayerClassType::CHAOS_WARRIOR) || (creature.get_mutations().has(PlayerMutationType::CHAOS_GIFT))) {
+        display_player_one_line(ENTRY_PATRON, patron_list[creature.get_patron()].name, TERM_L_BLUE);
+    } else {
+        display_player_one_line(ENTRY_PATRON, _("なし", "None"), TERM_SLATE);
     }
 
-    if (creature_ptr->is_player()) {
-        display_magic_realms(player_ptr);
-    }
-    if (PlayerClass(player_ptr).equals(PlayerClassType::CHAOS_WARRIOR) || (player_ptr->muta.has(PlayerMutationType::CHAOS_GIFT))) {
-        display_player_one_line(ENTRY_PATRON, patron_list[player_ptr->patron].name, TERM_L_BLUE);
+    // 所属アライアンスを表示する (プレイヤー・モンスター共通)
+    const auto alliance_idx = creature.get_alliance_idx();
+    if (alliance_idx != AllianceType::NONE) {
+        display_player_one_line(ENTRY_ALLIANCE, alliance_list.at(alliance_idx)->name, TERM_L_BLUE);
+    } else {
+        display_player_one_line(ENTRY_ALLIANCE, _("無所属", "None"), TERM_SLATE);
     }
 
     // 実際の種族と見かけの種族を表示
-    const auto &actual_monrace = MonraceList::get_instance().get_monrace(player_ptr->r_idx);
+    const auto &actual_monrace = MonraceList::get_instance().get_monrace(creature.get_r_idx());
     display_player_one_line(ENTRY_ACTUAL_RACE, actual_monrace.name, TERM_L_GREEN);
-    if (player_ptr->r_idx != player_ptr->ap_r_idx) {
-        const auto &apparent_monrace = MonraceList::get_instance().get_monrace(player_ptr->ap_r_idx);
-        auto color = (player_ptr->r_idx == player_ptr->ap_r_idx) ? TERM_L_GREEN : TERM_YELLOW;
+    if (creature.get_r_idx() != creature.get_ap_r_idx()) {
+        const auto &apparent_monrace = MonraceList::get_instance().get_monrace(creature.get_ap_r_idx());
+        auto color = (creature.get_r_idx() == creature.get_ap_r_idx()) ? TERM_L_GREEN : TERM_YELLOW;
         display_player_one_line(ENTRY_APPARENT_RACE, apparent_monrace.name, color);
     }
 
-    display_phisique(player_ptr);
-    display_player_stats(player_ptr);
+    display_phisique(creature);
+    display_player_stats(creature);
     if (mode == 0) {
-        display_player_middle(player_ptr);
-        if (creature_ptr->is_player()) {
-            display_player_various(player_ptr);
-        }
+        display_player_middle(creature);
+        display_player_various(creature);
         return tl::nullopt;
     }
 
     put_str(_("(キャラクターの生い立ち)", "(Character Background)"), 11, 25);
     for (auto i = 0; i < 4; i++) {
-        put_str(player_ptr->history[i], i + 12, 10);
+        put_str(creature.history[i], i + 12, 10);
     }
 
-    auto statmsg = decide_current_floor(player_ptr);
+    auto statmsg = decide_current_floor(creature);
     if (statmsg.empty()) {
         return tl::nullopt;
     }
@@ -354,23 +408,23 @@ tl::optional<int> display_player(CreatureEntity *creature_ptr, const int tmp_mod
 /*!
  * @brief プレイヤーの装備一覧をシンボルで並べる
  * Equippy chars
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param y 表示するコンソールの行
  * @param x 表示するコンソールの列
  * @param mode オプション
  * @todo y = 6、x = 0、mode = 0で固定。何とかする
  */
-void display_player_equippy(PlayerType *player_ptr, TERM_LEN y, TERM_LEN x, BIT_FLAGS16 mode)
+void display_player_equippy(CreatureEntity &creature, TERM_LEN y, TERM_LEN x, BIT_FLAGS16 mode)
 {
-    const auto max_i = (mode & DP_WP) ? INVEN_BOW + 1 : INVEN_TOTAL;
-    for (int i = INVEN_MAIN_HAND; i < max_i; i++) {
-        const auto &item = *player_ptr->inventory[i];
+    const auto range = (mode & DP_WP) ? INVEN_WEAPON_SLOTS : INVEN_WIELDING_SLOTS;
+    for (const auto i_idx : range) {
+        const auto &item = *creature.inventory[i_idx];
         auto symbol = item.get_symbol();
         if (!equippy_chars || !item.is_valid()) {
             symbol.color = TERM_DARK;
             symbol.character = ' ';
         }
 
-        term_putch(x + i - INVEN_MAIN_HAND, y, symbol);
+        term_putch(x + i_idx - INVEN_MAIN_HAND, y, symbol);
     }
 }

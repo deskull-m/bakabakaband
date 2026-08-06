@@ -9,24 +9,27 @@
 
 enum class MonraceId : short;
 class MonraceDefinition;
-class MonsterEntity;
-class PlayerType;
+class CreatureEntity;
 class MonsterDamageProcessor {
 public:
-    MonsterDamageProcessor(PlayerType *player_ptr, MONSTER_IDX m_idx, int dam, bool *fear, AttributeType type);
-    MonsterDamageProcessor(PlayerType *player_ptr, MONSTER_IDX m_idx, int dam, bool *fear, AttributeFlags attribute_flags);
+    MonsterDamageProcessor(CreatureEntity &creature, MONSTER_IDX m_idx, int dam, bool *fear, AttributeType type);
+    MonsterDamageProcessor(CreatureEntity &creature, MONSTER_IDX m_idx, int dam, bool *fear, AttributeFlags attribute_flags);
+    MonsterDamageProcessor(const MonsterDamageProcessor &) = default;
+    MonsterDamageProcessor(MonsterDamageProcessor &&) = default;
+    MonsterDamageProcessor &operator=(const MonsterDamageProcessor &) = delete;
+    MonsterDamageProcessor &operator=(MonsterDamageProcessor &&) = delete;
     virtual ~MonsterDamageProcessor() = default;
     bool mon_take_hit(std::string_view note);
 
 private:
-    PlayerType *player_ptr;
+    CreatureEntity &creature;
     MONSTER_IDX m_idx;
     int dam;
     bool *fear;
     AttributeFlags attribute_flags{};
-    void get_exp_from_mon(const MonsterEntity &monster, int exp_dam);
+    void get_exp_from_mon(const CreatureEntity &target, int exp_dam);
     bool genocide_patron();
-    bool process_dead_exp_virtue(std::string_view note, const MonsterEntity &exp_mon);
+    bool process_dead_exp_virtue(std::string_view note, const CreatureEntity &exp_target);
     void death_special_flag_monster();
     void increase_kill_numbers();
     void death_amberites(std::string_view m_name);

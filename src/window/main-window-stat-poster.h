@@ -1,13 +1,13 @@
 #pragma once
 
-class PlayerType;
-void print_stat(PlayerType *player_ptr, int stat);
-void print_cut(PlayerType *player_ptr);
-void print_stun(PlayerType *player_ptr);
-void print_hunger(PlayerType *player_ptr);
-void print_state(PlayerType *player_ptr);
-void print_speed(PlayerType *player_ptr);
-void print_study(PlayerType *player_ptr);
-void print_imitation(PlayerType *player_ptr);
-void print_status(PlayerType *player_ptr);
-void print_frame_extra(PlayerType *player_ptr);
+class CreatureEntity;
+void print_stat(CreatureEntity &creature, int stat);
+void print_cut(CreatureEntity &creature);
+void print_stun(CreatureEntity &creature);
+void print_hunger(CreatureEntity &creature);
+void print_state(CreatureEntity &creature);
+void print_speed(CreatureEntity &creature);
+void print_study(CreatureEntity &creature);
+void print_imitation(CreatureEntity &creature);
+void print_status(CreatureEntity &creature);
+void print_frame_extra(CreatureEntity &creature);

@@ -7,17 +7,17 @@
 #include "io/input-key-acceptor.h"
 #include "io/screen-util.h"
 #include "system/building-type-definition.h"
+#include "system/creature-entity.h"
 #include "system/enums/terrain/terrain-characteristics.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "system/terrain/terrain-definition.h"
 #include "target/target-checker.h"
 #include "target/target-sorter.h"
 #include "term/screen-processor.h"
-#include "timed-effect/timed-effects.h"
 #include "util/candidate-selector.h"
+#include "util/enum-converter.h"
 #include "util/finalizer.h"
 #include "util/int-char-converter.h"
 #include "util/string-processor.h"
@@ -32,16 +32,16 @@
  * XAngband: Prepare the "temp" array for "tget_pt"
  * based on target_set_prepare funciton.
  */
-static std::vector<Pos2D> tgt_pt_prepare(PlayerType *player_ptr)
+static std::vector<Pos2D> tgt_pt_prepare(CreatureEntity &creature)
 {
     if (!expand_list) {
         return {};
     }
 
     std::vector<Pos2D> positions;
-    const auto &floor = *player_ptr->current_floor_ptr;
-    const auto p_pos = player_ptr->get_position();
-    const auto is_hallucinated = player_ptr->effects()->hallucination().is_hallucinated();
+    const auto &floor = *creature.get_floor();
+    const auto p_pos = creature.get_position();
+    const auto is_hallucinated = creature.is_hallucinated();
     for (const auto &pos : floor.get_area(FloorBoundary::OUTER_WALL_EXCLUSIVE)) {
         if (pos == p_pos) {
             positions.push_back(pos);
@@ -85,7 +85,7 @@ static tl::optional<Pos2D> select_building_pos(const FloorType &floor)
     const auto describer = [&](const Pos2D &pos) {
         const auto &grid = floor.get_grid(pos);
         const auto &terrain = grid.get_terrain();
-        return buildings.at(terrain.subtype).name;
+        return buildings.at(enum2i(terrain.building_type)).name;
     };
 
     const auto choice = cs.select(pos_buildings, describer);
@@ -96,8 +96,8 @@ static tl::optional<Pos2D> select_building_pos(const FloorType &floor)
  * @brief 指定したシンボルのマスかどうかを判定するための条件式コールバック
  */
 std::unordered_map<int, std::function<bool(const Grid &)>> tgt_pt_symbol_call_back = {
-    { '<', [](const Grid &grid) { return grid.has(TerrainCharacteristics::STAIRS) && grid.has(TerrainCharacteristics::LESS); } },
-    { '>', [](const Grid &grid) { return grid.has(TerrainCharacteristics::STAIRS) && grid.has(TerrainCharacteristics::MORE); } },
+    { '<', [](const Grid &grid) { return grid.has(TerrainCharacteristics::STAIRS) && grid.has(TerrainCharacteristics::UP_STAIRS); } },
+    { '>', [](const Grid &grid) { return grid.has(TerrainCharacteristics::STAIRS) && grid.has(TerrainCharacteristics::DOWN_STAIRS); } },
     { '+', [](const Grid &grid) { return grid.has(TerrainCharacteristics::BLDG); } },
     { '0', [](const Grid &grid) { return grid.has(TerrainCharacteristics::STORE) && grid.is_symbol('0'); } },
     { '!', [](const Grid &grid) { return grid.has(TerrainCharacteristics::STORE) && grid.is_symbol('1'); } },
@@ -129,7 +129,7 @@ struct tgt_pt_info {
     char prev_ch = '\0'; //<! 前回入力キー
     std::function<bool(const Grid &)> callback{}; //<! 条件判定コールバック
 
-    void move_to_symbol(PlayerType *player_ptr);
+    void move_to_symbol(CreatureEntity &creature);
     bool is_ch_numeric() const
     {
         return is_numeric(this->ch);
@@ -138,11 +138,11 @@ struct tgt_pt_info {
 
 /*!
  * @brief 指定した記号のシンボルのグリッドにカーソルを移動する
- * @param player_ptr プレイヤー情報への参照ポインタ
+ * @param creature クリーチャーへの参照
  * @details 自分 (＠)の位置に戻ってくるような処理に見える.
  * コールバックにも依る？
  */
-void tgt_pt_info::move_to_symbol(PlayerType *player_ptr)
+void tgt_pt_info::move_to_symbol(CreatureEntity &creature)
 {
     if (!expand_list || this->positions.empty()) {
         return;
@@ -155,7 +155,7 @@ void tgt_pt_info::move_to_symbol(PlayerType *player_ptr)
     this->n++;
 
     if (this->ch == '+') {
-        const auto pos_building = select_building_pos(*player_ptr->current_floor_ptr);
+        const auto pos_building = select_building_pos(*creature.get_floor());
         if (!pos_building) {
             return;
         }
@@ -164,7 +164,7 @@ void tgt_pt_info::move_to_symbol(PlayerType *player_ptr)
     } else {
         for (; this->n < this->positions.size(); ++this->n) {
             const auto &pos_cur = this->positions.at(this->n);
-            const auto &grid = player_ptr->current_floor_ptr->get_grid(pos_cur);
+            const auto &grid = creature.get_floor()->get_grid(pos_cur);
             if (this->callback(grid)) {
                 this->pos = this->positions.at(this->n);
                 break;
@@ -174,35 +174,35 @@ void tgt_pt_info::move_to_symbol(PlayerType *player_ptr)
 
     if (this->n == this->positions.size()) {
         this->n = 0;
-        this->pos = player_ptr->get_position();
-        verify_panel(player_ptr);
+        this->pos = creature.get_position();
+        verify_panel(creature);
         auto &rfu = RedrawingFlagsUpdater::get_instance();
         rfu.set_flag(StatusRecalculatingFlag::MONSTER_STATUSES);
         rfu.set_flag(MainWindowRedrawingFlag::MAP);
         rfu.set_flag(SubWindowRedrawingFlag::OVERHEAD);
-        handle_stuff(player_ptr);
+        handle_stuff(creature);
     } else {
         const auto cx = (panel_col_min + panel_col_max) / 2;
         const auto cy = (panel_row_min + panel_row_max) / 2;
         const auto dy = 2 * (this->pos.y - cy) / this->height;
         const auto dx = 2 * (this->pos.x - cx) / this->width;
         if ((dy != 0) || (dx != 0)) {
-            change_panel(player_ptr, dy, dx);
+            change_panel(creature, dy, dx);
         }
     }
 }
 
 /*!
  * @brief 位置を指定するプロンプト
- * @param player_ptr プレイヤー情報への参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return 指定したらその座標、キャンセルしたらnullopt
  */
-tl::optional<Pos2D> point_target(PlayerType *player_ptr)
+tl::optional<Pos2D> point_target(CreatureEntity &creature)
 {
     tgt_pt_info info;
-    info.pos = player_ptr->get_position();
+    info.pos = creature.get_position();
     if (expand_list) {
-        info.positions = tgt_pt_prepare(player_ptr);
+        info.positions = tgt_pt_prepare(creature);
     }
 
     msg_flag = false;
@@ -221,7 +221,7 @@ tl::optional<Pos2D> point_target(PlayerType *player_ptr)
         case ' ':
         case 't':
         case '.':
-            if (player_ptr->is_located_at(info.pos)) {
+            if (creature.is_located_at(info.pos)) {
                 info.ch = 0;
             } else {
                 pos_target = info.pos;
@@ -241,7 +241,7 @@ tl::optional<Pos2D> point_target(PlayerType *player_ptr)
         case '(':
         case ')': {
             info.callback = tgt_pt_symbol_call_back[info.ch];
-            info.move_to_symbol(player_ptr);
+            info.move_to_symbol(creature);
             break;
         }
         default: {
@@ -251,12 +251,12 @@ tl::optional<Pos2D> point_target(PlayerType *player_ptr)
                         info.ch -= 16;
                     }
                     info.callback = tgt_pt_symbol_call_back[info.ch];
-                    info.move_to_symbol(player_ptr);
+                    info.move_to_symbol(creature);
                     break;
                 }
             } else {
                 if (info.ch == '5' || info.ch == '0') {
-                    if (player_ptr->is_located_at(info.pos)) {
+                    if (creature.is_located_at(info.pos)) {
                         info.ch = 0;
                     } else {
                         pos_target = info.pos;
@@ -294,10 +294,10 @@ tl::optional<Pos2D> point_target(PlayerType *player_ptr)
             }
 
             if ((info.pos.y >= panel_row_min + info.height) || (info.pos.y < panel_row_min) || (info.pos.x >= panel_col_min + info.width) || (info.pos.x < panel_col_min)) {
-                change_panel(player_ptr, dy, dx);
+                change_panel(creature, dy, dx);
             }
 
-            const auto &floor = *player_ptr->current_floor_ptr;
+            const auto &floor = *creature.get_floor();
             if (info.pos.x >= floor.width - 1) {
                 info.pos.x = floor.width - 2;
             } else if (info.pos.x <= 0) {
@@ -316,11 +316,11 @@ tl::optional<Pos2D> point_target(PlayerType *player_ptr)
     }
 
     prt("", 0, 0);
-    verify_panel(player_ptr);
+    verify_panel(creature);
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(StatusRecalculatingFlag::MONSTER_STATUSES);
     rfu.set_flag(MainWindowRedrawingFlag::MAP);
     rfu.set_flag(SubWindowRedrawingFlag::OVERHEAD);
-    handle_stuff(player_ptr);
+    handle_stuff(creature);
     return pos_target;
 }

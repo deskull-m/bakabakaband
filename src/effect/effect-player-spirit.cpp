@@ -8,22 +8,21 @@
 #include "player/player-status-flags.h"
 #include "status/bad-status-setter.h"
 #include "status/base-status.h"
-#include "system/monster-entity.h"
-#include "system/player-type-definition.h"
+#include "system/creature-entity.h"
 #include "system/redrawing-flags-updater.h"
 #include "tracking/health-bar-tracker.h"
 #include "view/display-messages.h"
 #include "world/world.h"
 
-void effect_player_drain_mana(PlayerType *player_ptr, EffectPlayerType *ep_ptr)
+void effect_player_drain_mana(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 {
-    if (check_multishadow(player_ptr)) {
+    if (check_multishadow(creature)) {
         msg_print(_("攻撃は幻影に命中し、あなたには届かなかった。", "The attack hits Shadow, but you are unharmed!"));
         ep_ptr->dam = 0;
         return;
     }
 
-    if (player_ptr->csp == 0) {
+    if (creature.get_current_mp() == 0) {
         ep_ptr->dam = 0;
         return;
     }
@@ -34,12 +33,12 @@ void effect_player_drain_mana(PlayerType *player_ptr, EffectPlayerType *ep_ptr)
         msg_print(_("精神エネルギーを吸い取られてしまった！", "Your psychic energy is drained!"));
     }
 
-    if (ep_ptr->dam >= player_ptr->csp) {
-        ep_ptr->dam = player_ptr->csp;
-        player_ptr->csp = 0;
-        player_ptr->csp_frac = 0;
+    if (ep_ptr->dam >= creature.get_current_mp()) {
+        ep_ptr->dam = creature.get_current_mp();
+        creature.set_current_mp(0);
+        creature.current_mp_frac = 0;
     } else {
-        player_ptr->csp -= ep_ptr->dam;
+        creature.sub_current_mp(ep_ptr->dam);
     }
 
     auto &rfu = RedrawingFlagsUpdater::get_instance();
@@ -65,91 +64,91 @@ void effect_player_drain_mana(PlayerType *player_ptr, EffectPlayerType *ep_ptr)
         rfu.set_flag(MainWindowRedrawingFlag::UHEALTH);
     }
 
-    if (ep_ptr->m_ptr->ml) {
+    if (ep_ptr->m_ptr->is_visible_on_map()) {
         msg_format(_("%s^は気分が良さそうだ。", "%s^ appears healthier."), ep_ptr->m_name.data());
     }
 
     ep_ptr->dam = 0;
 }
 
-void effect_player_mind_blast(PlayerType *player_ptr, EffectPlayerType *ep_ptr)
+void effect_player_mind_blast(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 {
-    if ((randint0(100 + ep_ptr->rlev / 2) < std::max<short>(5, player_ptr->skill_sav)) && !check_multishadow(player_ptr)) {
+    if ((randint0(100 + ep_ptr->rlev / 2) < std::max<short>(5, creature.get_skill_save())) && !check_multishadow(creature)) {
         msg_print(_("しかし効力を跳ね返した！", "You resist the effects!"));
         return;
     }
 
-    if (check_multishadow(player_ptr)) {
-        ep_ptr->get_damage = take_hit(player_ptr, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
+    if (check_multishadow(creature)) {
+        ep_ptr->get_damage = take_hit(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
         return;
     }
 
     msg_print(_("霊的エネルギーで精神が攻撃された。", "Your mind is blasted by psionic energy."));
-    BadStatusSetter bss(player_ptr);
-    if (!has_resist_conf(player_ptr)) {
+    BadStatusSetter bss(creature);
+    if (!creature.has_resist_conf()) {
         (void)bss.mod_confusion(randint0(4) + 4);
     }
 
-    if (!has_resist_chaos(player_ptr) && one_in_(3)) {
+    if (!creature.has_resist_chaos() && one_in_(3)) {
         (void)bss.mod_hallucination(randint0(250) + 150);
     }
 
-    player_ptr->csp -= 50;
-    if (player_ptr->csp < 0) {
-        player_ptr->csp = 0;
-        player_ptr->csp_frac = 0;
+    creature.sub_current_mp(50);
+    if (creature.get_current_mp() < 0) {
+        creature.set_current_mp(0);
+        creature.current_mp_frac = 0;
     }
 
     RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::MP);
-    ep_ptr->get_damage = take_hit(player_ptr, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
+    ep_ptr->get_damage = take_hit(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
 }
 
-void effect_player_brain_smash(PlayerType *player_ptr, EffectPlayerType *ep_ptr)
+void effect_player_brain_smash(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 {
-    if ((randint0(100 + ep_ptr->rlev / 2) < std::max<short>(5, player_ptr->skill_sav)) && !check_multishadow(player_ptr)) {
+    if ((randint0(100 + ep_ptr->rlev / 2) < std::max<short>(5, creature.get_skill_save())) && !check_multishadow(creature)) {
         msg_print(_("しかし効力を跳ね返した！", "You resist the effects!"));
         return;
     }
 
-    if (!check_multishadow(player_ptr)) {
+    if (!check_multishadow(creature)) {
         msg_print(_("霊的エネルギーで精神が攻撃された。", "Your mind is blasted by psionic energy."));
-        player_ptr->csp -= 100;
-        if (player_ptr->csp < 0) {
-            player_ptr->csp = 0;
-            player_ptr->csp_frac = 0;
+        creature.sub_current_mp(100);
+        if (creature.get_current_mp() < 0) {
+            creature.set_current_mp(0);
+            creature.current_mp_frac = 0;
         }
 
         RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::MP);
     }
 
-    ep_ptr->get_damage = take_hit(player_ptr, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
-    if (check_multishadow(player_ptr)) {
+    ep_ptr->get_damage = take_hit(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
+    if (check_multishadow(creature)) {
         return;
     }
 
-    BadStatusSetter bss(player_ptr);
-    if (!has_resist_blind(player_ptr)) {
+    BadStatusSetter bss(creature);
+    if (!creature.has_resist_blind()) {
         (void)bss.mod_blindness(8 + randint0(8));
     }
 
-    if (!has_resist_conf(player_ptr)) {
+    if (!creature.has_resist_conf()) {
         (void)bss.mod_confusion(randint0(4) + 4);
     }
 
-    if (!player_ptr->free_act) {
+    if (!creature.has_free_act()) {
         (void)bss.mod_paralysis(randint0(4) + 4);
     }
 
     (void)bss.mod_deceleration(randint0(4) + 4, false);
 
-    while (randint0(100 + ep_ptr->rlev / 2) > (std::max<short>(5, player_ptr->skill_sav))) {
-        (void)do_dec_stat(player_ptr, A_INT);
+    while (randint0(100 + ep_ptr->rlev / 2) > (std::max<short>(5, creature.get_skill_save()))) {
+        (void)do_dec_stat(creature, A_INT);
     }
-    while (randint0(100 + ep_ptr->rlev / 2) > (std::max<short>(5, player_ptr->skill_sav))) {
-        (void)do_dec_stat(player_ptr, A_WIS);
+    while (randint0(100 + ep_ptr->rlev / 2) > (std::max<short>(5, creature.get_skill_save()))) {
+        (void)do_dec_stat(creature, A_WIS);
     }
 
-    if (!has_resist_chaos(player_ptr)) {
+    if (!creature.has_resist_chaos()) {
         (void)bss.mod_hallucination(randint0(250) + 150);
     }
 }

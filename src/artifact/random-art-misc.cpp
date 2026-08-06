@@ -9,7 +9,6 @@
 #include "object-hook/hook-armor.h"
 #include "object/tval-types.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "util/bit-flags-calculator.h"
 
 static bool invest_misc_ranger(ItemEntity *o_ptr)
@@ -258,7 +257,7 @@ static void invest_misc_weak_esps(ItemEntity *o_ptr)
  * @attention オブジェクトのtval、svalに依存したハードコーディング処理がある。
  * @param o_ptr 対象のオブジェクト構造体ポインタ
  */
-void random_misc(PlayerType *player_ptr, ItemEntity *o_ptr)
+void random_misc(ItemEntity *o_ptr)
 {
     if (switch_misc_bias(o_ptr)) {
         return;
@@ -349,7 +348,7 @@ void random_misc(PlayerType *player_ptr, ItemEntity *o_ptr)
     case 25:
     case 26:
         if (o_ptr->is_protector()) {
-            random_misc(player_ptr, o_ptr);
+            random_misc(o_ptr);
         } else {
             o_ptr->to_a = 4 + randint1(11);
         }

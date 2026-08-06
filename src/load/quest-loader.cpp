@@ -1,27 +1,27 @@
 #include "load/quest-loader.h"
 #include "artifact/fixed-art-types.h"
-#include "dungeon/quest.h"
 #include "load/angband-version-comparer.h"
 #include "load/load-util.h"
 #include "load/load-zangband.h"
 #include "load/savedata-old-flag-types.h"
 #include "object-enchant/trg-types.h"
+#include "system/angband-exceptions.h"
 #include "system/artifact-type-definition.h"
+#include "system/dungeon/quest-definition.h"
 #include "system/floor/floor-info.h"
-#include "system/floor/town-info.h"
 #include "system/floor/town-list.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/player-type-definition.h"
 #include "util/enum-converter.h"
+#include <fmt/format.h>
 
 errr load_town(void)
 {
-    auto max_towns_load = rd_u16b();
-    if (max_towns_load <= towns_info.size()) {
+    size_t max_towns_load = rd_u16b();
+    if (max_towns_load <= TownList::get_instance().size()) {
         return 0;
     }
 
-    load_note(format(_("町が多すぎる(%u)！", "Too many (%u) towns!"), max_towns_load));
+    load_note(fmt::format(_("町が多すぎる({})！", "Too many ({}) towns!"), max_towns_load));
     return 23;
 }
 
@@ -42,7 +42,7 @@ static void load_quest_completion(QuestType *q_ptr)
     q_ptr->comptime = rd_u32b();
 }
 
-static void load_quest_details(PlayerType *player_ptr, QuestType *q_ptr, const QuestId loading_quest_id)
+static void load_quest_details(CreatureEntity &creature, QuestType *q_ptr, const QuestId loading_quest_id)
 {
     q_ptr->cur_num = rd_s16b();
     q_ptr->max_num = rd_s16b();
@@ -51,11 +51,13 @@ static void load_quest_details(PlayerType *player_ptr, QuestType *q_ptr, const Q
     q_ptr->r_idx = i2enum<MonraceId>(rd_s16b());
     if ((q_ptr->type == QuestKindType::RANDOM) && !q_ptr->get_bounty().is_valid()) {
         auto &quests = QuestList::get_instance();
-        determine_random_questor(player_ptr, quests.get_quest(loading_quest_id));
+        determine_random_questor(creature, quests.get_quest(loading_quest_id));
     }
-    q_ptr->reward_fa_id = i2enum<FixedArtifactId>(rd_s16b());
-    if (q_ptr->has_reward()) {
-        q_ptr->get_reward().gen_flags.set(ItemGenerationTraitType::QUESTITEM);
+
+    q_ptr->reset_reward();
+    const auto reward_fa_id = i2enum<FixedArtifactId>(rd_s16b());
+    if (reward_fa_id != FixedArtifactId::NONE) {
+        q_ptr->set_reward(reward_fa_id);
     }
 
     q_ptr->flags = rd_byte();
@@ -88,7 +90,7 @@ static bool is_loadable_quest(const QuestId q_idx, const byte max_rquests_load)
     return false;
 }
 
-void analyze_quests(PlayerType *player_ptr, const uint16_t max_quests_load, const byte max_rquests_load)
+void analyze_quests(CreatureEntity &creature, const uint16_t max_quests_load, const byte max_rquests_load)
 {
     for (auto i = 0; i < max_quests_load; i++) {
         QuestId quest_id;
@@ -112,7 +114,7 @@ void analyze_quests(PlayerType *player_ptr, const uint16_t max_quests_load, cons
             continue;
         }
 
-        load_quest_details(player_ptr, &quest, quest_id);
+        load_quest_details(creature, &quest, quest_id);
 
         quest.dungeon = i2enum<DungeonId>(rd_byte());
 

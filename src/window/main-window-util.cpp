@@ -6,16 +6,15 @@
 #include "game-option/special-options.h"
 #include "grid/grid.h"
 #include "player/player-status.h"
+#include "system/creature-entity.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/floor/floor-info.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/player-type-definition.h"
 #include "term/gameterm.h"
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
-#include "timed-effect/timed-effects.h"
 #include "view/display-map.h"
 #include "view/display-symbol.h"
 #include "world/world.h"
@@ -68,7 +67,7 @@ void print_field(std::string_view info, TERM_LEN row, TERM_LEN col)
  * of both "lite_spot()" and "print_rel()", and that we use the
  * "lite_spot()" function to display the player grid, if needed.
  */
-void print_map(PlayerType *player_ptr)
+void print_map(CreatureEntity &creature)
 {
     auto [wid, hgt] = term_get_size();
     wid -= COL_MAP + 2;
@@ -77,7 +76,7 @@ void print_map(PlayerType *player_ptr)
     const auto v = term_get_cursor();
     term_set_cursor(false);
 
-    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     POSITION xmin = (0 < panel_col_min) ? panel_col_min : 0;
     POSITION xmax = (floor.width - 1 > panel_col_max) ? panel_col_max : floor.width - 1;
     POSITION ymin = (0 < panel_row_min) ? panel_row_min : 0;
@@ -93,28 +92,28 @@ void print_map(PlayerType *player_ptr)
 
     for (auto y = ymin; y <= ymax; y++) {
         for (auto x = xmin; x <= xmax; x++) {
-            auto symbol_pair = map_info(player_ptr, { y, x });
-            symbol_pair.symbol_foreground.color = get_monochrome_display_color(player_ptr).value_or(symbol_pair.symbol_foreground.color);
+            auto symbol_pair = map_info(creature, { y, x });
+            symbol_pair.symbol_foreground.color = get_monochrome_display_color(creature).value_or(symbol_pair.symbol_foreground.color);
 
             term_queue_bigchar(panel_col_of(x), y - panel_row_prt, symbol_pair);
         }
     }
 
-    lite_spot(player_ptr, player_ptr->get_position());
+    lite_spot(creature, creature.get_position());
     term_set_cursor(v != 0);
 }
 
 /*!
  * @brief 短縮マップにおける自動拾い対象のアイテムを短縮表記する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param item アイテムへの参照
  * @param y 表示する行番号
  */
-static void display_shortened_item_name(PlayerType *player_ptr, const ItemEntity &item, int y)
+static void display_shortened_item_name(CreatureEntity &creature, const ItemEntity &item, int y)
 {
-    auto item_name = describe_flavor(player_ptr, item, (OD_NO_FLAVOR | OD_OMIT_PREFIX | OD_NAME_ONLY));
+    auto item_name = describe_flavor(creature, item, (OD_NO_FLAVOR | OD_OMIT_PREFIX | OD_NAME_ONLY));
     auto attr = tval_to_attr[enum2i(item.bi_key.tval()) % 128];
-    if (player_ptr->effects()->hallucination().is_hallucinated()) {
+    if (creature.is_hallucinated()) {
         attr = TERM_WHITE;
         item_name = _("何か奇妙な物", "something strange");
     }
@@ -144,14 +143,14 @@ static void display_shortened_item_name(PlayerType *player_ptr, const ItemEntity
 
 /*!
  * @brief 縮小マップ表示 / Display a "small-scale" map of the dungeon in the active Term
- * @param player_ptr プレイヤー情報への参照ポインタ
+ * @param creature クリーチャー情報への参照
  * @param cy 縮小マップ上のプレイヤーのy座標
  * @param cx 縮小マップ上のプレイヤーのx座標
  * @details
  * メインウィンドウ('M'コマンド)、サブウィンドウ兼(縮小図)用。
  * use_bigtile時に横の描画列数は1/2になる。
  */
-void display_map(PlayerType *player_ptr, int *cy, int *cx)
+void display_map(CreatureEntity &creature, int *cy, int *cx)
 {
     int i, j, x, y;
 
@@ -168,7 +167,7 @@ void display_map(PlayerType *player_ptr, int *cy, int *cx)
         wid = wid / 2 - 1;
     }
 
-    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto yrat = (floor.height + hgt - 1) / hgt;
     const auto xrat = (floor.width + wid - 1) / wid;
     view_special_lite = false;
@@ -193,7 +192,7 @@ void display_map(PlayerType *player_ptr, int *cy, int *cx)
             match_autopick = -1;
             autopick_obj = nullptr;
             feat_priority = -1;
-            const auto symbol_pair = map_info(player_ptr, { j, i });
+            const auto symbol_pair = map_info(creature, { j, i });
             tp = (byte)feat_priority;
             if (match_autopick != -1 && (match_autopick_yx[y][x] == -1 || match_autopick_yx[y][x] > match_autopick)) {
                 match_autopick_yx[y][x] = match_autopick;
@@ -252,7 +251,7 @@ void display_map(PlayerType *player_ptr, int *cy, int *cx)
         term_gotoxy(COL_MAP, y);
         for (x = 0; x < wid + 2; ++x) {
             DisplaySymbol symbol_foreground(ma[y][x], mc[y][x]);
-            symbol_foreground.color = get_monochrome_display_color(player_ptr).value_or(symbol_foreground.color);
+            symbol_foreground.color = get_monochrome_display_color(creature).value_or(symbol_foreground.color);
 
             term_add_bigch(symbol_foreground);
         }
@@ -269,24 +268,24 @@ void display_map(PlayerType *player_ptr, int *cy, int *cx)
 
         term_putstr(0, y, 12, 0, "            ");
         if (match_autopick != -1) {
-            display_shortened_item_name(player_ptr, *autopick_obj, y);
+            display_shortened_item_name(creature, *autopick_obj, y);
         }
     }
 
-    (*cy) = player_ptr->y / yrat + 1 + ROW_MAP;
+    (*cy) = creature.y / yrat + 1 + ROW_MAP;
     if (!use_bigtile) {
-        (*cx) = player_ptr->x / xrat + 1 + COL_MAP;
+        (*cx) = creature.x / xrat + 1 + COL_MAP;
     } else {
-        (*cx) = (player_ptr->x / xrat + 1) * 2 + COL_MAP;
+        (*cx) = (creature.x / xrat + 1) * 2 + COL_MAP;
     }
 
     view_special_lite = old_view_special_lite;
     view_granite_lite = old_view_granite_lite;
 }
 
-DisplaySymbol set_term_color(PlayerType *player_ptr, const Pos2D &pos, const DisplaySymbol &symbol_orig)
+DisplaySymbol set_term_color(CreatureEntity &creature, const Pos2D &pos, const DisplaySymbol &symbol_orig)
 {
-    if (!player_ptr->is_located_at(pos)) {
+    if (!creature.is_located_at(pos)) {
         return symbol_orig;
     }
 

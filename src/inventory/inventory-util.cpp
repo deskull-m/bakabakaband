@@ -12,10 +12,11 @@
 #include "io/input-key-requester.h"
 #include "object/item-tester-hooker.h"
 #include "object/item-use-flags.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "util/bit-flags-calculator.h"
+#include "util/enum-converter.h"
 #include "util/int-char-converter.h"
 #include "util/string-processor.h"
 #include <sstream>
@@ -65,13 +66,13 @@ tl::optional<short> get_tag_floor(const FloorType &floor, char tag, const std::v
     return floor_item_indice;
 }
 
-static tl::optional<std::pair<short, short>> get_inventory_range(BIT_FLAGS mode)
+static tl::optional<EnumRange<inventory_slot_type>> get_inventory_range(BIT_FLAGS mode)
 {
     switch (mode) {
     case USE_EQUIP:
-        return std::make_pair(INVEN_MAIN_HAND, INVEN_TOTAL);
+        return INVEN_WIELDING_SLOTS.to_enum_range();
     case USE_INVEN:
-        return std::make_pair(static_cast<short>(0), INVEN_PACK);
+        return INVEN_PACK_SLOTS;
     default:
         return tl::nullopt;
     }
@@ -79,7 +80,7 @@ static tl::optional<std::pair<short, short>> get_inventory_range(BIT_FLAGS mode)
 
 /*!
  * @brief 所持/装備オブジェクトに選択タグを与える/タグに該当するオブジェクトがあるかを返す
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param cp 対応するタグIDを与える参照ポインタ
  * @param tag 該当するオブジェクトがあるかを調べたいタグ
  * @param mode 所持、装備の切り替え
@@ -92,17 +93,16 @@ static tl::optional<std::pair<short, short>> get_inventory_range(BIT_FLAGS mode)
  * Also, the tag "@xn" will work as well, where "n" is a any tag-char,\n
  * and "x" is the "current" command_cmd code.\n
  */
-tl::optional<short> get_tag(PlayerType *player_ptr, char tag, BIT_FLAGS mode, const ItemTester &item_tester)
+tl::optional<short> get_tag(CreatureEntity &creature, char tag, BIT_FLAGS mode, const ItemTester &item_tester)
 {
     const auto range = get_inventory_range(mode);
     if (!range) {
         return tl::nullopt;
     }
 
-    const auto &[start, end] = *range;
-    tl::optional<short> i_idx;
-    for (auto i = start; i < end; i++) {
-        const auto &item = *player_ptr->inventory[i];
+    tl::optional<short> result;
+    for (const auto i_idx : *range) {
+        const auto &item = *creature.inventory[i_idx];
         if (!item.is_valid() || !item.is_inscribed()) {
             continue;
         }
@@ -114,18 +114,18 @@ tl::optional<short> get_tag(PlayerType *player_ptr, char tag, BIT_FLAGS mode, co
         auto sv = extract_suffix(*item.inscription, '@');
         while (sv) {
             if ((sv->length() > 2) && (sv->at(1) == command_cmd) && (sv->at(2) == tag)) {
-                return i;
+                return i_idx;
             }
 
-            if (!i_idx && is_numeric(tag) && (sv->length() > 1) && (sv->at(1) == tag)) {
-                i_idx = i;
+            if (!result && is_numeric(tag) && (sv->length() > 1) && (sv->at(1) == tag)) {
+                result = i_idx;
             }
 
             sv = extract_suffix(sv->substr(1), '@');
         }
     }
 
-    return i_idx;
+    return result;
 }
 
 /*!
@@ -134,26 +134,26 @@ tl::optional<short> get_tag(PlayerType *player_ptr, char tag, BIT_FLAGS mode, co
  * @param i 選択アイテムID
  * @return 正規のIDならばTRUEを返す。
  */
-bool get_item_okay(PlayerType *player_ptr, OBJECT_IDX i, const ItemTester &item_tester)
+bool get_item_okay(CreatureEntity &creature, OBJECT_IDX i, const ItemTester &item_tester)
 {
-    if ((i < 0) || (i >= INVEN_TOTAL)) {
+    if (!INVEN_ALL_SLOTS.contains(i2enum<inventory_slot_type>(i))) {
         return false;
     }
 
-    if (player_ptr->select_ring_slot) {
+    if (creature.is_select_ring_slot()) {
         return is_ring_slot(i);
     }
 
-    return item_tester.okay(player_ptr->inventory[i].get());
+    return item_tester.okay(creature.inventory[i].get());
 }
 
 /*!
  * @brief 選択したアイテムの確認処理のメインルーチン
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param i_idx 選択アイテムID
  * @return 確認がYesならTRUEを返す。
  */
-bool get_item_allow(PlayerType *player_ptr, INVENTORY_IDX i_idx)
+bool get_item_allow(CreatureEntity &creature, INVENTORY_IDX i_idx)
 {
     if (!command_cmd) {
         return true;
@@ -161,9 +161,9 @@ bool get_item_allow(PlayerType *player_ptr, INVENTORY_IDX i_idx)
 
     ItemEntity *o_ptr;
     if (i_idx >= 0) {
-        o_ptr = player_ptr->inventory[i_idx].get();
+        o_ptr = creature.inventory[i_idx].get();
     } else {
-        o_ptr = player_ptr->current_floor_ptr->o_list[0 - i_idx].get();
+        o_ptr = creature.get_floor()->o_list[0 - i_idx].get();
     }
 
     if (!o_ptr->is_inscribed()) {
@@ -173,7 +173,7 @@ bool get_item_allow(PlayerType *player_ptr, INVENTORY_IDX i_idx)
     auto s = angband_strchr(o_ptr->inscription->data(), '!');
     while (s) {
         if ((s[1] == command_cmd) || (s[1] == '*')) {
-            if (!verify(player_ptr, _("本当に", "Really try"), i_idx)) {
+            if (!verify(creature, _("本当に", "Really try"), i_idx)) {
                 return false;
             }
         }
@@ -186,23 +186,23 @@ bool get_item_allow(PlayerType *player_ptr, INVENTORY_IDX i_idx)
 
 /*!
  * @brief 選択アルファベットラベルからプレイヤーの装備オブジェクトIDを返す /
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * Convert a label into the index of a item in the "equip"
  * @return 対応するID。該当スロットにオブジェクトが存在しなかった場合-1を返す / Return "-1" if the label does not indicate a real item
  */
-INVENTORY_IDX label_to_equipment(PlayerType *player_ptr, int c)
+INVENTORY_IDX label_to_equipment(CreatureEntity &creature, int c)
 {
     INVENTORY_IDX i = (INVENTORY_IDX)(islower(c) ? A2I(c) : -1) + INVEN_MAIN_HAND;
 
-    if ((i < INVEN_MAIN_HAND) || (i >= INVEN_TOTAL)) {
+    if (!INVEN_WIELDING_SLOTS.contains(i2enum<inventory_slot_type>(i))) {
         return -1;
     }
 
-    if (player_ptr->select_ring_slot) {
+    if (creature.is_select_ring_slot()) {
         return is_ring_slot(i) ? i : -1;
     }
 
-    if (!player_ptr->inventory[i]->bi_id) {
+    if (!creature.inventory[i]->bi_id) {
         return -1;
     }
 
@@ -212,16 +212,16 @@ INVENTORY_IDX label_to_equipment(PlayerType *player_ptr, int c)
 /*!
  * @brief 選択アルファベットラベルからプレイヤーの所持オブジェクトIDを返す /
  * Convert a label into the index of an item in the "inven"
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param c 選択されたアルファベット
  * @return 対応するID。該当スロットにオブジェクトが存在しなかった場合-1を返す / Return "-1" if the label does not indicate a real item
  * @details Note that the label does NOT distinguish inven/equip.
  */
-INVENTORY_IDX label_to_inventory(PlayerType *player_ptr, int c)
+INVENTORY_IDX label_to_inventory(CreatureEntity &creature, int c)
 {
     INVENTORY_IDX i = (INVENTORY_IDX)(islower(c) ? A2I(c) : -1);
 
-    if ((i < 0) || (i > INVEN_PACK) || !player_ptr->inventory[i]->is_valid()) {
+    if (!INVEN_PACK_SLOTS.contains(i2enum<inventory_slot_type>(i)) || !creature.inventory[i]->is_valid()) {
         return -1;
     }
 
@@ -230,15 +230,15 @@ INVENTORY_IDX label_to_inventory(PlayerType *player_ptr, int c)
 
 /*!
  * @brief 選択したアイテムの確認処理の補助
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param prompt メッセージ表示の一部
  * @param i_idx 選択アイテムID
  * @return 確認がYesならTRUEを返す。
  */
-bool verify(PlayerType *player_ptr, concptr prompt, INVENTORY_IDX i_idx)
+bool verify(CreatureEntity &creature, concptr prompt, INVENTORY_IDX i_idx)
 {
-    const auto &item = i_idx >= 0 ? *player_ptr->inventory[i_idx] : *player_ptr->current_floor_ptr->o_list[0 - i_idx];
-    const auto item_name = describe_flavor(player_ptr, item, 0);
+    const auto &item = i_idx >= 0 ? *creature.inventory[i_idx] : *creature.get_floor()->o_list[0 - i_idx];
+    const auto item_name = describe_flavor(creature, item, 0);
     std::stringstream ss;
     ss << prompt;
 #ifndef JP
@@ -250,19 +250,19 @@ bool verify(PlayerType *player_ptr, concptr prompt, INVENTORY_IDX i_idx)
 
 /*!
  * @brief タグIDにあわせてタグアルファベットのリストを返す
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param mode 所持品リストか装備品リストかの切り替え
  * @param item_tester アイテムの絞り込み条件
  * @return 有効なラベルリスト
  */
-std::string prepare_label_string(PlayerType *player_ptr, BIT_FLAGS mode, const ItemTester &item_tester)
+std::string prepare_label_string(CreatureEntity &creature, BIT_FLAGS mode, const ItemTester &item_tester)
 {
     constexpr std::string_view alphabet("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ");
     std::string tag_chars(alphabet);
     const auto offset = match_bits(mode, USE_EQUIP, USE_EQUIP) ? INVEN_MAIN_HAND : 0;
     for (size_t i = 0; i < tag_chars.length(); i++) {
         const auto tag_char = alphabet[i];
-        const auto i_idx = get_tag(player_ptr, tag_char, mode, item_tester);
+        const auto i_idx = get_tag(creature, tag_char, mode, item_tester);
         if (!i_idx) {
             continue;
         }

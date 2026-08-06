@@ -1,4 +1,4 @@
 #pragma once
 
-class PlayerType;
-void compact_objects(PlayerType *player_ptr, int size);
+class CreatureEntity;
+void compact_objects(CreatureEntity &creature, int size);

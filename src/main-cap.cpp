@@ -4,7 +4,9 @@
 
 #include "io/exit-panic.h"
 #include "system/angband.h"
+#include "system/player-type-definition.h"
 #include "term/gameterm.h"
+#include "term/term-color-types.h"
 #include "term/z-form.h"
 
 #ifdef USE_CAP
@@ -732,7 +734,7 @@ static errr game_term_xtra_cap_event(int v)
 
         /* Hack -- Handle "errors" */
         if ((i <= 0) && (errno != EINTR)) {
-            exit_game_panic(p_ptr);
+            exit_game_panic(PlayerType::get_instance());
         }
     }
 

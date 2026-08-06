@@ -11,8 +11,8 @@ public:
     using Alliance::Alliance;
     AllianceCourtOfChaos() = delete;
     EnumClassFlagGroup<alliance_flags> alliFlags; //!< 陣営特性フラグ
-    int calcImpressionPoint(PlayerType *creature_ptr) const override;
-    std::vector<MonraceId> get_ambush_monsters(PlayerType *player_ptr, int impression_point) const override;
+    int calcImpressionPoint(const CreatureEntity &creature) const override;
+    std::vector<MonraceId> get_ambush_monsters(CreatureEntity &creature, int impression_point) const override;
     std::string get_ambush_message() const override;
     virtual ~AllianceCourtOfChaos() = default;
 };

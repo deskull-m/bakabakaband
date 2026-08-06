@@ -4,11 +4,11 @@
 #include "player-info/mimic-info-table.h"
 #include "player-info/race-types.h"
 #include "player/race-info-table.h"
-#include "system/player-type-definition.h"
+#include "system/creature-entity.h"
 #include "util/enum-converter.h"
 
-PlayerInfravision::PlayerInfravision(PlayerType *player_ptr)
-    : PlayerStatusBase(player_ptr)
+PlayerInfravision::PlayerInfravision(CreatureEntity &creature)
+    : PlayerStatusBase(creature)
 {
 }
 
@@ -32,7 +32,7 @@ void PlayerInfravision::set_locals()
  */
 int16_t PlayerInfravision::race_bonus()
 {
-    return PlayerRace(this->player_ptr).get_info()->infra;
+    return CreatureRace(&this->creature).get_info()->infra;
 }
 
 /*!
@@ -44,7 +44,7 @@ int16_t PlayerInfravision::race_bonus()
 int16_t PlayerInfravision::mutation_bonus()
 {
     int16_t bonus = 0;
-    if (this->player_ptr->muta.has(PlayerMutationType::INFRAVIS)) {
+    if (this->creature.get_mutations().has(PlayerMutationType::INFRAVIS)) {
         bonus += 3;
     }
 
@@ -60,7 +60,7 @@ int16_t PlayerInfravision::mutation_bonus()
 int16_t PlayerInfravision::time_effect_bonus()
 {
     int16_t bonus = 0;
-    if (this->player_ptr->tim_infra) {
+    if (this->creature.get_timed_effect(CreatureTimedEffect::TIM_INFRA)) {
         bonus += 3;
     }
 

@@ -3,16 +3,16 @@
 #include "system/angband.h"
 #include <string>
 
-class PlayerType;
+class CreatureEntity;
 class PlayerAlignment {
 public:
-    PlayerAlignment(PlayerType *player_ptr);
+    PlayerAlignment(CreatureEntity &creature);
     virtual ~PlayerAlignment() = default;
     std::string get_alignment_description(bool with_value = false);
     void update_alignment();
 
 private:
-    PlayerType *player_ptr;
+    CreatureEntity *creature_ptr;
     std::string alignment_label() const;
     void bias_good_alignment(int value);
     void bias_evil_alignment(int value);

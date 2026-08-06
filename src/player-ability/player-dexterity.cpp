@@ -11,11 +11,11 @@
 #include "player/special-defense-types.h"
 #include "realm/realm-hex-numbers.h"
 #include "spell-realm/spells-hex.h"
-#include "system/player-type-definition.h"
+#include "system/creature-entity.h"
 #include "util/bit-flags-calculator.h"
 
-PlayerDexterity::PlayerDexterity(PlayerType *player_ptr)
-    : PlayerBasicStatistics(player_ptr)
+PlayerDexterity::PlayerDexterity(CreatureEntity &creature)
+    : PlayerBasicStatistics(creature)
 {
 }
 
@@ -36,7 +36,7 @@ int16_t PlayerDexterity::race_bonus()
 {
     int16_t result = PlayerBasicStatistics::race_bonus();
 
-    result += PlayerRace(this->player_ptr).additional_dexterity();
+    result += CreatureRace(&this->creature).additional_dexterity();
 
     return result;
 }
@@ -52,8 +52,8 @@ int16_t PlayerDexterity::time_effect_bonus()
 {
     int16_t result = 0;
 
-    if (PlayerRealm(this->player_ptr).is_realm_hex()) {
-        if (SpellHex(this->player_ptr).is_spelling_specific(HEX_BUILDING)) {
+    if (PlayerRealm(this->creature).is_realm_hex()) {
+        if (SpellHex(this->creature).is_spelling_specific(HEX_BUILDING)) {
             result += 4;
         }
     }
@@ -75,7 +75,7 @@ int16_t PlayerDexterity::stance_bonus()
 {
     int16_t result = 0;
 
-    PlayerClass pc(player_ptr);
+    CreatureClass pc(this->creature);
     if (pc.samurai_stance_is(SamuraiStanceType::KOUKIJIN)) {
         result += 5;
     }
@@ -104,15 +104,15 @@ int16_t PlayerDexterity::mutation_bonus()
 {
     int16_t result = 0;
 
-    if (this->player_ptr->muta.has(PlayerMutationType::IRON_SKIN)) {
+    if (this->creature.get_mutations().has(PlayerMutationType::IRON_SKIN)) {
         result -= 1;
     }
 
-    if (this->player_ptr->muta.has(PlayerMutationType::LIMBER)) {
+    if (this->creature.get_mutations().has(PlayerMutationType::LIMBER)) {
         result += 3;
     }
 
-    if (this->player_ptr->muta.has(PlayerMutationType::ARTHRITIS)) {
+    if (this->creature.get_mutations().has(PlayerMutationType::ARTHRITIS)) {
         result -= 3;
     }
 

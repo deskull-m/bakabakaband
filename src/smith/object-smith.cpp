@@ -9,8 +9,8 @@
 #include "smith/smith-info.h"
 #include "smith/smith-tables.h"
 #include "smith/smith-types.h"
+#include "system/creature-entity.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include <algorithm>
 #include <sstream>
 #include <tl/optional.hpp>
@@ -45,9 +45,9 @@ int addable_count(smith_data_type *smith_data, std::vector<SmithEssenceType> ess
 /*!
  * @brief 鍛冶クラスコンストラクタ
  */
-Smith::Smith(PlayerType *player_ptr)
-    : player_ptr(player_ptr)
-    , smith_data(PlayerClass(player_ptr).get_specific_data<smith_data_type>())
+Smith::Smith(CreatureEntity &creature)
+    : creature(creature)
+    , smith_data(CreatureClass(creature).get_specific_data<smith_data_type>())
 {
 }
 
@@ -360,8 +360,8 @@ Smith::DrainEssenceResult Smith::drain_essence(ItemEntity *o_ptr)
         o_ptr->timeout = old_o.timeout;
     }
 
-    o_ptr->ident |= (IDENT_FULL_KNOWN);
-    object_aware(player_ptr, *o_ptr);
+    o_ptr->ident.set(IdentificationFlag::FULL_KNOWN);
+    object_aware(this->creature, *o_ptr);
     o_ptr->mark_as_known();
 
     const auto new_flags = o_ptr->get_flags();
@@ -446,7 +446,7 @@ bool Smith::add_essence(SmithEffectType effect, ItemEntity *o_ptr, int number)
         this->smith_data->essences[essence] -= static_cast<int16_t>(total_consumption);
     }
 
-    return info.value()->add_essence(this->player_ptr, o_ptr, number);
+    return info.value()->add_essence(this->creature, o_ptr, number);
 }
 
 /*!

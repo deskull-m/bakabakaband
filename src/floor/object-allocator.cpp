@@ -7,13 +7,14 @@
 #include "grid/object-placer.h"
 #include "object-enchant/item-apply-magic.h"
 #include "object/object-kind-hook.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
+#include "system/dungeon/quest-definition.h"
 #include "system/enums/terrain/terrain-tag.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/player-type-definition.h"
 #include "system/terrain/terrain-definition.h"
 #include "system/terrain/terrain-list.h"
 #include "term/z-rand.h"
@@ -40,14 +41,14 @@ static int next_to_walls(const FloorType &floor, const Pos2D &pos)
 
 /*!
  * @brief alloc_stairs()の補助として指定の位置に階段を生成できるかの判定を行う
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param pos 基準座標
  * @param walls 最低減隣接させたい外壁の数
  * @return 階段を生成して問題がないならばTRUEを返す。
  */
-static bool alloc_stairs_aux(PlayerType *player_ptr, const Pos2D &pos, int walls)
+static bool alloc_stairs_aux(const CreatureEntity &creature, const Pos2D &pos, int walls)
 {
-    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto &grid = floor.get_grid(pos);
     if (!grid.is_floor() || grid.has(TerrainCharacteristics::PATTERN) || !grid.o_idx_list.empty() || grid.has_monster() || next_to_walls(floor, pos) < walls) {
         return false;
@@ -58,19 +59,19 @@ static bool alloc_stairs_aux(PlayerType *player_ptr, const Pos2D &pos, int walls
 
 /*!
  * @brief 外壁に隣接させて階段を生成する / Places some staircases near walls
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param feat 配置したい地形ID
  * @param num 配置したい階段の数
  * @param walls 最低減隣接させたい外壁の数
  * @return 規定数通りに生成に成功したらTRUEを返す。
  */
-bool alloc_stairs(PlayerType *player_ptr, FEAT_IDX feat, int num, int walls)
+bool alloc_stairs(CreatureEntity &creature, FEAT_IDX feat, int num, int walls)
 {
     int shaft_num = 0;
     const auto &terrain = TerrainList::get_instance().get_terrain(feat);
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *creature.get_floor();
     const auto &dungeon = floor.get_dungeon_definition();
-    if (terrain.flags.has(TerrainCharacteristics::LESS)) {
+    if (terrain.flags.has(TerrainCharacteristics::UP_STAIRS)) {
         if (ironman_downward || !floor.is_underground()) {
             return true;
         }
@@ -78,7 +79,7 @@ bool alloc_stairs(PlayerType *player_ptr, FEAT_IDX feat, int num, int walls)
         if (floor.dun_level > dungeon.mindepth) {
             shaft_num = (randint1(num + 1)) / 2;
         }
-    } else if (terrain.flags.has(TerrainCharacteristics::MORE)) {
+    } else if (terrain.flags.has(TerrainCharacteristics::DOWN_STAIRS)) {
         auto quest_id = floor.get_quest_id();
         const auto &quests = QuestList::get_instance();
         if (floor.dun_level > 1 && inside_quest(quest_id)) {
@@ -101,7 +102,7 @@ bool alloc_stairs(PlayerType *player_ptr, FEAT_IDX feat, int num, int walls)
 
     for (auto i = 0; i < num; i++) {
         while (true) {
-            const auto can_alloc_stair = [&](const Pos2D &pos) { return alloc_stairs_aux(player_ptr, pos, walls); };
+            const auto can_alloc_stair = [&](const Pos2D &pos) { return alloc_stairs_aux(creature, pos, walls); };
             const auto pos_candidates =
                 floor.get_area(FloorBoundary::OUTER_WALL_INCLUSIVE) |
                 ranges::views::filter(can_alloc_stair) |
@@ -135,10 +136,10 @@ bool alloc_stairs(PlayerType *player_ptr, FEAT_IDX feat, int num, int walls)
  * @param num 配置したい数
  * @return 規定数通りに生成に成功したらTRUEを返す。
  */
-void alloc_object(PlayerType *player_ptr, dap_type set, dungeon_allocation_type typ, int num)
+void alloc_object(CreatureEntity &creature, dap_type set, dungeon_allocation_type typ, int num)
 {
     auto dummy = 0;
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *creature.get_floor();
     num = num * floor.height * floor.width / (MAX_HGT * MAX_WID) + 1;
     for (auto k = 0; k < num; k++) {
         Pos2D pos(0, 0);
@@ -151,7 +152,7 @@ void alloc_object(PlayerType *player_ptr, dap_type set, dungeon_allocation_type 
                 continue;
             }
 
-            if (player_ptr->is_located_at(pos)) {
+            if (creature.is_located_at(pos)) {
                 continue;
             }
 
@@ -164,7 +165,7 @@ void alloc_object(PlayerType *player_ptr, dap_type set, dungeon_allocation_type 
         }
 
         if (dummy >= SAFE_MAX_ATTEMPTS) {
-            msg_print_wizard(player_ptr, CHEAT_DUNGEON, _("アイテムの配置に失敗しました。", "Failed to place object."));
+            msg_print_wizard(creature, CHEAT_DUNGEON, _("アイテムの配置に失敗しました。", "Failed to place object."));
             return;
         }
 
@@ -178,13 +179,13 @@ void alloc_object(PlayerType *player_ptr, dap_type set, dungeon_allocation_type 
             floor.get_grid(pos).info &= ~(CAVE_FLOOR);
             break;
         case ALLOC_TYP_GOLD:
-            place_gold(player_ptr, pos);
+            place_gold(creature, pos);
             break;
         case ALLOC_TYP_OBJECT:
-            place_object(player_ptr, pos, 0);
+            place_object(creature, pos, 0);
             break;
         case ALLOC_TYP_SUSHI:
-            place_object(player_ptr, pos, AM_IGNORE_LEVEL, kind_is_sushi);
+            place_object(creature, pos, AM_IGNORE_LEVEL, kind_is_sushi);
             break;
         case ALLOC_TYP_SPECIFIC_ITEMS:
             // This case is handled by alloc_specific_floor_items function
@@ -197,11 +198,11 @@ void alloc_object(PlayerType *player_ptr, dap_type set, dungeon_allocation_type 
 
 /*!
  * @brief 特定階層でのダイスベースアイテム生成 / Generate items on specific floors using dice rules
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
-void alloc_specific_floor_items(PlayerType *player_ptr)
+void alloc_specific_floor_items(CreatureEntity &creature)
 {
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *creature.get_floor();
     const auto &dungeon = floor.get_generated_dungeon_definition();
 
     // 現在の階層に特定のアイテム生成ルールがあるかチェック
@@ -239,17 +240,17 @@ void alloc_specific_floor_items(PlayerType *player_ptr)
                 continue;
             }
 
-            if (player_ptr->is_located_at(pos)) {
+            if (creature.is_located_at(pos)) {
                 continue;
             }
 
             // アイテムを床に配置
-            drop_near(player_ptr, item, pos, false);
+            drop_near(creature, item, pos, false);
             break;
         }
 
         if (dummy >= SAFE_MAX_ATTEMPTS) {
-            msg_print_wizard(player_ptr, CHEAT_DUNGEON,
+            msg_print_wizard(creature, CHEAT_DUNGEON,
                 _("特定階層アイテムの配置に失敗しました。", "Failed to place specific floor item."));
         }
     }

@@ -30,12 +30,13 @@
 #include "spell-realm/spells-song.h"
 #include "system/angband-system.h"
 #include "system/building-type-definition.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/dungeon/dungeon-record.h"
+#include "system/dungeon/quest-definition.h"
 #include "system/enums/dungeon/dungeon-id.h"
 #include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "target/target-checker.h"
 #include "util/bit-flags-calculator.h"
@@ -44,7 +45,7 @@
 #include "world/world-turn-processor.h"
 #include "world/world.h"
 
-static void redraw_character_xtra(PlayerType *player_ptr)
+static void redraw_character_xtra(CreatureEntity &creature)
 {
     auto &world = AngbandWorld::get_instance();
     world.character_xtra = true;
@@ -81,7 +82,7 @@ static void redraw_character_xtra(PlayerType *player_ptr)
         StatusRecalculatingFlag::FLOW,
     };
     rfu.set_flags(flags_srf);
-    handle_stuff(player_ptr);
+    handle_stuff(creature);
     world.character_xtra = false;
 }
 
@@ -99,13 +100,13 @@ static void redraw_character_xtra(PlayerType *player_ptr)
  * the user dies, or the game is terminated.\n
  * </p>
  */
-void process_dungeon(PlayerType *player_ptr, bool load_game)
+void process_dungeon(CreatureEntity &creature, bool load_game)
 {
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *creature.get_floor();
     auto &world = AngbandWorld::get_instance();
     floor.base_level = floor.dun_level;
     world.is_loading_now = false;
-    player_ptr->leaving = false;
+    creature.set_leaving(false);
 
     command_cmd = 0;
     command_rep = 0;
@@ -113,12 +114,11 @@ void process_dungeon(PlayerType *player_ptr, bool load_game)
     command_dir = Direction::none();
 
     Target::clear_last_target();
-    player_ptr->pet_t_m_idx = 0;
-    player_ptr->riding_t_m_idx = 0;
-    player_ptr->ambush_flag = false;
-    health_track(player_ptr, 0);
+    creature.reset_pet_riding_targets();
+    creature.set_ambush_flag(false);
+    health_track(creature, 0);
 
-    disturb(player_ptr, true, true);
+    disturb(creature, true, true);
     const auto quest_id = floor.get_quest_id();
     auto &quests = QuestList::get_instance();
     auto &monrace_questor = quests.get_quest(quest_id).get_bounty();
@@ -126,8 +126,8 @@ void process_dungeon(PlayerType *player_ptr, bool load_game)
         monrace_questor.misc_flags.set(MonsterMiscType::QUESTOR);
     }
 
-    if (player_ptr->max_plv < player_ptr->level) {
-        player_ptr->max_plv = player_ptr->level;
+    if (creature.get_max_plv() < creature.get_level()) {
+        creature.set_max_plv(creature.get_level());
     }
 
     auto &dungeon_record = DungeonRecords::get_instance().get_record(floor.dungeon_id);
@@ -138,12 +138,12 @@ void process_dungeon(PlayerType *player_ptr, bool load_game)
         }
     }
 
-    (void)calculate_upkeep(player_ptr);
+    (void)calculate_upkeep(creature);
     panel_bounds_center();
-    verify_panel(player_ptr);
+    verify_panel(creature);
     msg_erase();
 
-    redraw_character_xtra(player_ptr);
+    redraw_character_xtra(creature);
     auto flags_srf = {
         StatusRecalculatingFlag::BONUS,
         StatusRecalculatingFlag::HP,
@@ -153,32 +153,32 @@ void process_dungeon(PlayerType *player_ptr, bool load_game)
         StatusRecalculatingFlag::REORDER,
     };
     RedrawingFlagsUpdater::get_instance().set_flags(flags_srf);
-    handle_stuff(player_ptr);
+    handle_stuff(creature);
     term_fresh();
 
     auto no_feeling_quest = (quest_id == QuestId::MELKO);
     no_feeling_quest |= none_bits(quests.get_quest(quest_id).flags, QUEST_FLAG_PRESET);
     if (inside_quest(quest_id) && QuestType::is_fixed(quest_id) && !no_feeling_quest) {
-        do_cmd_feeling(player_ptr);
+        do_cmd_feeling(creature);
     }
 
     const auto is_watching = AngbandSystem::get_instance().is_phase_out();
     if (is_watching) {
         if (load_game) {
-            player_ptr->energy_need = 0;
+            creature.set_energy_need(0);
             auto &melee_arena = MeleeArena::get_instance();
-            melee_arena.update_gladiators(player_ptr);
+            melee_arena.update_gladiators(creature);
         } else {
             msg_print(_("試合開始！", "Ready..Fight!"));
             msg_erase();
         }
     }
 
-    if (PlayerClass(player_ptr).equals(PlayerClassType::BARD) && (get_singing_song_effect(player_ptr) > MUSIC_DETECT)) {
-        set_singing_song_effect(player_ptr, MUSIC_DETECT);
+    if (CreatureClass(creature).equals(PlayerClassType::BARD) && (get_singing_song_effect(creature) > MUSIC_DETECT)) {
+        set_singing_song_effect(creature, MUSIC_DETECT);
     }
 
-    if (!player_ptr->playing || player_ptr->is_dead()) {
+    if (!creature.is_playing() || creature.is_dead()) {
         return;
     }
 
@@ -201,14 +201,14 @@ void process_dungeon(PlayerType *player_ptr, bool load_game)
     }
 
     if (!load_game) {
-        set_superstealth(player_ptr, false);
+        set_superstealth(creature, false);
     }
 
     floor.monster_level = floor.base_level;
     floor.object_level = floor.base_level;
     world.is_loading_now = true;
-    if (player_ptr->energy_need > 0 && !is_watching && (floor.is_underground() || floor.is_leaving_dungeon() || floor.inside_arena)) {
-        player_ptr->energy_need = 0;
+    if (creature.get_energy_need() > 0 && !is_watching && (floor.is_underground() || floor.is_leaving_dungeon() || floor.inside_arena)) {
+        creature.set_energy_need(0);
     }
 
     floor.leave_dungeon(false);
@@ -216,51 +216,51 @@ void process_dungeon(PlayerType *player_ptr, bool load_game)
 
     while (true) {
         if ((floor.m_cnt + 32 > MAX_FLOOR_MONSTERS) && !is_watching) {
-            compact_monsters(player_ptr, 64);
+            compact_monsters(creature, 64);
         }
 
         if ((floor.m_cnt + 32 < floor.m_max) && !is_watching) {
-            compact_monsters(player_ptr, 0);
+            compact_monsters(creature, 0);
         }
 
         if (floor.o_list.size() + 32 > MAX_FLOOR_ITEMS) {
-            compact_objects(player_ptr, 64);
+            compact_objects(creature, 64);
         }
 
-        process_player(player_ptr);
-        process_upkeep_with_speed(player_ptr);
-        handle_stuff(player_ptr);
+        process_player(creature);
+        process_upkeep_with_speed(creature);
+        handle_stuff(creature);
 
-        move_cursor_relative(player_ptr->y, player_ptr->x);
+        move_cursor_relative(creature.y, creature.x);
         if (fresh_after) {
             term_fresh_force();
         }
 
-        if (!player_ptr->playing || player_ptr->is_dead()) {
+        if (!creature.is_playing() || creature.is_dead()) {
             break;
         }
 
-        process_monsters(player_ptr);
-        handle_stuff(player_ptr);
+        process_monsters(creature);
+        handle_stuff(creature);
 
-        move_cursor_relative(player_ptr->y, player_ptr->x);
+        move_cursor_relative(creature.y, creature.x);
         if (fresh_after) {
             term_fresh_force();
         }
 
-        if (!player_ptr->playing || player_ptr->is_dead()) {
+        if (!creature.is_playing() || creature.is_dead()) {
             break;
         }
 
-        WorldTurnProcessor(player_ptr).process_world();
-        handle_stuff(player_ptr);
+        WorldTurnProcessor(creature).process_world();
+        handle_stuff(creature);
 
-        move_cursor_relative(player_ptr->y, player_ptr->x);
+        move_cursor_relative(creature.y, creature.x);
         if (fresh_after) {
             term_fresh_force();
         }
 
-        if (!player_ptr->playing || player_ptr->is_dead() || wc_ptr->is_blown_away()) {
+        if (!creature.is_playing() || creature.is_dead() || wc_ptr->is_blown_away()) {
             break;
         }
 
@@ -274,9 +274,9 @@ void process_dungeon(PlayerType *player_ptr, bool load_game)
             }
         }
 
-        prevent_turn_overflow(player_ptr);
+        prevent_turn_overflow(creature);
 
-        if (player_ptr->leaving) {
+        if (creature.is_leaving()) {
             break;
         }
 
@@ -289,12 +289,12 @@ void process_dungeon(PlayerType *player_ptr, bool load_game)
         monrace_questor.misc_flags.reset(MonsterMiscType::QUESTOR);
     }
 
-    if (player_ptr->playing && !player_ptr->is_dead()) {
+    if (creature.is_playing() && !creature.is_dead()) {
         /*
          * Maintain Unique monsters and artifact, save current
          * floor, then prepare next floor
          */
-        leave_floor(player_ptr);
+        leave_floor(creature);
         reinit_wilderness = false;
     }
 

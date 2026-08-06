@@ -1,6 +1,7 @@
 #include "birth/birth-stat.h"
 #include "birth/auto-roller.h"
 #include "combat/martial-arts-style.h"
+#include "player-ability/player-ability-types.h"
 #include "player-base/player-class.h"
 #include "player-base/player-race.h"
 #include "player-info/class-info.h"
@@ -13,7 +14,6 @@
 #include "sv-definition/sv-weapon-types.h"
 #include "system/creature-entity.h"
 #include "system/inner-game-data.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include <array>
 
@@ -45,10 +45,10 @@ int adjust_stat(int value, int amount)
 {
     value += amount * 10;
 
-    if (value < 30) {
-        value = 30;
-    } else if (value > 400) {
-        value = 400;
+    if (value < STAT_MIN_VALUE) {
+        value = STAT_MIN_VALUE;
+    } else if (value > STAT_MAX_VALUE) {
+        value = STAT_MAX_VALUE;
     }
 
     return value;
@@ -56,13 +56,13 @@ int adjust_stat(int value, int amount)
 
 /*!
  * @brief クリーチャー（プレイヤーやモンスター等）の能力値を一通りロールする。 / Roll for a creature's stats
- * @param creature_ptr クリーチャーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @details
  * プレイヤーのキャラメイクと同じロジックで能力値を生成する。
  * calc_bonuses()による、独立ステータスからの副次ステータス算出も行っている。
  * For efficiency, we include a chunk of "calc_bonuses()".\n
  */
-void get_stats(CreatureEntity *creature_ptr)
+void get_stats(CreatureEntity &creature)
 {
     while (true) {
         auto sum = 0;
@@ -72,7 +72,8 @@ void get_stats(CreatureEntity *creature_ptr)
                 auto stat = i * 3 + j;
                 auto val = auto_roller_distribution[tmp % random_distribution];
                 sum += val;
-                creature_ptr->stat_cur[stat] = creature_ptr->stat_max[stat] = val;
+                creature.set_stat_max(stat, val);
+                creature.set_stat_cur(stat, val);
                 tmp /= random_distribution;
             }
         }
@@ -83,31 +84,34 @@ void get_stats(CreatureEntity *creature_ptr)
         }
     }
 
-    // stat_max_maxは初期化する
+    // stat_max_max は初期化、stat_use はロール結果と同値を初期表示にする。
+    // プレイヤーは後段の calc_bonuses() で stat_use を再計算するが、
+    // モンスターは calc_bonuses() を呼ばないので stat_use がここで確定する。
     for (auto i = 0; i < A_MAX; i++) {
-        creature_ptr->stat_max_max[i] = creature_ptr->stat_max[i];
+        creature.set_stat_max_max(i, creature.get_stat_max(i));
+        creature.set_stat_use(i, creature.get_stat_max(i));
     }
 }
 
 /*!
  * @brief クリーチャーの初期所持金を決める（プレイヤーと同様のロジック）
- * @param creature_ptr クリーチャーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @details プレイヤーのget_money()と同等の処理を行う
  */
-void get_money_for_creature(CreatureEntity *creature_ptr)
+void get_money_for_creature(CreatureEntity &creature)
 {
-    int gold = (creature_ptr->prestige * 6) + randint1(100) + 300;
+    int gold = (creature.get_prestige() * 6) + randint1(100) + 300;
 
     // 能力値に応じて所持金を調整
     for (int i = 0; i < A_MAX; i++) {
-        if (creature_ptr->stat_max[i] >= 680) {
+        if (creature.get_stat_max(i) >= 680) {
             gold -= 300;
-        } else if (creature_ptr->stat_max[i] >= 380) {
+        } else if (creature.get_stat_max(i) >= 380) {
             gold -= 200;
-        } else if (creature_ptr->stat_max[i] > 180) {
+        } else if (creature.get_stat_max(i) > 180) {
             gold -= 150;
         } else {
-            gold -= (creature_ptr->stat_max[i] / 10 - 8) * 10;
+            gold -= (creature.get_stat_max(i) / 10 - 8) * 10;
         }
     }
 
@@ -116,23 +120,23 @@ void get_money_for_creature(CreatureEntity *creature_ptr)
         gold = minimum_deposit;
     }
 
-    creature_ptr->au = gold;
+    creature.set_au(gold);
 }
 
 /*!
  * @brief 経験値修正の合計値を計算
  */
-uint16_t get_expfact(PlayerType *player_ptr)
+uint16_t get_expfact(CreatureEntity &creature)
 {
-    uint16_t expfact = player_ptr->race->r_exp;
+    uint16_t expfact = creature.get_race_info()->r_exp;
 
-    PlayerRace pr(player_ptr);
+    CreatureRace pr(&creature);
     if (!pr.equals(PlayerRaceType::ANDROID)) {
-        expfact += (*player_ptr->pclass_ref).c_exp;
+        expfact += (*creature.get_class_info()).c_exp;
     }
 
     auto is_race_gaining_additional_speed = pr.equals(PlayerRaceType::KLACKON) || pr.equals(PlayerRaceType::SPRITE);
-    auto is_class_gaining_additional_speed = PlayerClass(player_ptr).has_additional_speed();
+    auto is_class_gaining_additional_speed = CreatureClass(creature).has_additional_speed();
     if (is_race_gaining_additional_speed && is_class_gaining_additional_speed) {
         expfact -= 15;
     }
@@ -143,59 +147,59 @@ uint16_t get_expfact(PlayerType *player_ptr)
 /*!
  * @brief その他「オートローラ中は算出の対象にしない」副次ステータスを処理する / Roll for some info that the auto-roller ignores
  */
-void get_extra(PlayerType *player_ptr, bool roll_hitdie)
+void get_extra(CreatureEntity &creature, bool roll_hitdie)
 {
-    player_ptr->expfact = get_expfact(player_ptr);
+    creature.expfact = get_expfact(creature);
 
     /* Reset record of race/realm changes */
-    InnerGameData::get_instance().set_start_race(player_ptr->prace);
-    player_ptr->old_race1 = 0L;
-    player_ptr->old_race2 = 0L;
-    player_ptr->old_realm = 0;
+    InnerGameData::get_instance().set_start_race(creature.prace);
+    creature.set_old_race_flags1(0L);
+    creature.set_old_race_flags2(0L);
+    creature.set_old_realm(0);
 
-    PlayerClass pc(player_ptr);
+    CreatureClass pc(creature);
     auto is_sorcerer = pc.equals(PlayerClassType::SORCERER);
     for (int i = 0; i < 64; i++) {
         if (is_sorcerer) {
-            player_ptr->spell_exp[i] = PlayerSkill::spell_exp_at(PlayerSkillRank::MASTER);
+            creature.set_spell_exp(i, PlayerSkill::spell_exp_at(PlayerSkillRank::MASTER));
         } else if (pc.equals(PlayerClassType::RED_MAGE)) {
-            player_ptr->spell_exp[i] = PlayerSkill::spell_exp_at(PlayerSkillRank::SKILLED);
+            creature.set_spell_exp(i, PlayerSkill::spell_exp_at(PlayerSkillRank::SKILLED));
         } else {
-            player_ptr->spell_exp[i] = PlayerSkill::spell_exp_at(PlayerSkillRank::UNSKILLED);
+            creature.set_spell_exp(i, PlayerSkill::spell_exp_at(PlayerSkillRank::UNSKILLED));
         }
     }
 
-    auto pclass = enum2i(player_ptr->pclass);
-    player_ptr->weapon_exp = class_skills_info[pclass].w_start;
-    player_ptr->weapon_exp_max = class_skills_info[pclass].w_max;
+    auto pclass = enum2i(creature.pclass);
+    creature.weapon_exp = class_skills_info[pclass].w_start;
+    creature.weapon_exp_max = class_skills_info[pclass].w_max;
 
-    if (player_ptr->ppersonality == PERSONALITY_SEXY) {
-        auto &whip_exp = player_ptr->weapon_exp[ItemKindType::HAFTED][SV_WHIP];
+    if (creature.ppersonality == PERSONALITY_SEXY) {
+        auto &whip_exp = creature.weapon_exp[ItemKindType::HAFTED][SV_WHIP];
         whip_exp = std::max(whip_exp, PlayerSkill::weapon_exp_at(PlayerSkillRank::BEGINNER));
     }
 
     for (auto i : PLAYER_SKILL_KIND_TYPE_RANGE) {
-        player_ptr->skill_exp[i] = class_skills_info[pclass].s_start[i];
+        creature.set_skill_exp(i, class_skills_info[pclass].s_start[i]);
     }
 
     // 武術スタイルの初期設定
-    player_ptr->martial_arts_style = MartialArtsStyleType::TRADITIONAL;
+    creature.martial_arts_style = MartialArtsStyleType::TRADITIONAL;
 
-    const auto r_mhp = is_sorcerer ? player_ptr->race->r_mhp / 2 : player_ptr->race->r_mhp;
-    player_ptr->hit_dice = Dice(1, r_mhp + (*player_ptr->pclass_ref).c_mhp + (*player_ptr->personality).a_mhp);
+    const auto r_mhp = is_sorcerer ? creature.get_race_info()->r_mhp / 2 : creature.get_race_info()->r_mhp;
+    creature.hit_dice = Dice(1, r_mhp + (*creature.get_class_info()).c_mhp + (*creature.get_personality_info()).a_mhp);
     if (roll_hitdie) {
-        roll_hitdice(player_ptr, SPOP_NO_UPDATE);
+        roll_hitdice(creature, SPOP_NO_UPDATE);
     }
 
-    player_ptr->maxhp = player_ptr->player_hp[0];
+    creature.maxhp = creature.get_hp_table(0);
 }
 
 /*!
  * @brief プレイヤーの限界ステータスを決める。
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @details 新生の薬やステータスシャッフルでもこの関数が呼ばれる
  */
-void get_max_stats(PlayerType *player_ptr)
+void get_max_stats(CreatureEntity &creature)
 {
     int dice[6]{};
     while (true) {
@@ -213,15 +217,15 @@ void get_max_stats(PlayerType *player_ptr)
     for (auto i = 0; i < A_MAX; i++) {
         // 新形式: 180 + 60 + dice[i] * 10 = 240 + 10~70 = 250~310 (25.0~31.0)
         short max_max = 180 + 60 + dice[i] * 10;
-        player_ptr->stat_max_max[i] = max_max;
-        if (player_ptr->stat_max[i] > max_max) {
-            player_ptr->stat_max[i] = max_max;
+        creature.set_stat_max_max(i, max_max);
+        if (creature.get_stat_max(i) > max_max) {
+            creature.set_stat_max(i, max_max);
         }
-        if (player_ptr->stat_cur[i] > max_max) {
-            player_ptr->stat_cur[i] = max_max;
+        if (creature.get_stat_cur(i) > max_max) {
+            creature.set_stat_cur(i, max_max);
         }
     }
 
-    player_ptr->knowledge &= ~(KNOW_STAT);
+    creature.remove_knowledge(KNOW_STAT);
     RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::ABILITY_SCORE);
 }

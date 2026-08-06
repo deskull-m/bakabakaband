@@ -1,9 +1,14 @@
 #pragma once
 #include "player-status/player-status-base.h"
 
+class CreatureEntity;
 class PlayerSpeed : public PlayerStatusBase {
 public:
-    PlayerSpeed(PlayerType *player_ptr);
+    PlayerSpeed(CreatureEntity &creature);
+    PlayerSpeed(const PlayerSpeed &) = default;
+    PlayerSpeed(PlayerSpeed &&) = default;
+    PlayerSpeed &operator=(const PlayerSpeed &) = delete;
+    PlayerSpeed &operator=(PlayerSpeed &&) = delete;
 
 protected:
     void set_locals() override;

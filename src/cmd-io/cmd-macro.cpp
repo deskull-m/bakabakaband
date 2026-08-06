@@ -9,11 +9,12 @@
 #include "io/macro-configurations-store.h"
 #include "io/read-pref-file.h"
 #include "main/sound-of-music.h"
-#include "system/player-type-definition.h"
+#include "system/creature-entity.h"
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
 #include "term/z-form.h"
 #include "util/angband-files.h"
+#include "util/enum-converter.h"
 #include "util/int-char-converter.h"
 #include "util/string-processor.h"
 #include "view/display-messages.h"
@@ -141,7 +142,7 @@ static errr keymap_dump(std::string_view filename)
  * Could use some helpful instructions on this page.
  * </pre>
  */
-void do_cmd_macros(PlayerType *player_ptr)
+void do_cmd_macros(CreatureEntity &creature)
 {
     char buf[1024];
     static char macro_buf[1024];
@@ -165,7 +166,7 @@ void do_cmd_macros(PlayerType *player_ptr)
     };
     print_macro_menu();
 
-    const auto initial_filename = format("%s.prf", player_ptr->base_name.data());
+    const auto initial_filename = format("%s.prf", creature.base_name.data());
     while (true) {
         msg_print(_("コマンド: ", "Command: "));
         const auto key = inkey();
@@ -184,7 +185,7 @@ void do_cmd_macros(PlayerType *player_ptr)
                 continue;
             }
 
-            const auto err = process_pref_file(player_ptr, *ask_result, true);
+            const auto err = process_pref_file(creature, *ask_result, true);
             const auto *mes = ask_result->data();
             if (-2 == err) {
                 msg_format(_("標準の設定ファイル'%s'を読み込みました。", "Loaded default '%s'."), mes);

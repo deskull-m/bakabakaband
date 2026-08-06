@@ -9,66 +9,67 @@
 #include "object/tval-types.h"
 #include "player-base/player-race.h"
 #include "player-info/equipment-info.h"
+#include "player-info/race-info.h"
 #include "player/player-status.h"
 #include "spell-kind/spells-launcher.h"
 #include "sv-definition/sv-armor-types.h"
 #include "sv-definition/sv-protector-types.h"
 #include "sv-definition/sv-weapon-types.h"
 #include "system/artifact-type-definition.h"
+#include "system/creature-entity.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "target/target-getter.h"
 #include "view/display-messages.h"
 
-bool android_inside_weapon(PlayerType *player_ptr)
+bool android_inside_weapon(CreatureEntity &creature)
 {
-    const auto dir = get_aim_dir(player_ptr);
+    const auto dir = get_aim_dir(creature);
     if (!dir) {
         return false;
     }
 
-    if (player_ptr->level < 10) {
+    if (creature.get_level() < 10) {
         msg_print(_("レイガンを発射した。", "You fire your ray gun."));
-        fire_bolt(player_ptr, AttributeType::MISSILE, dir, (player_ptr->level + 1) / 2);
+        fire_bolt(creature, AttributeType::MISSILE, dir, (creature.get_level() + 1) / 2);
         return true;
     }
 
-    if (player_ptr->level < 25) {
+    if (creature.get_level() < 25) {
         msg_print(_("ブラスターを発射した。", "You fire your blaster."));
-        fire_bolt(player_ptr, AttributeType::MISSILE, dir, player_ptr->level);
+        fire_bolt(creature, AttributeType::MISSILE, dir, creature.get_level());
         return true;
     }
 
-    if (player_ptr->level < 35) {
+    if (creature.get_level() < 35) {
         msg_print(_("バズーカを発射した。", "You fire your bazooka."));
-        fire_ball(player_ptr, AttributeType::MISSILE, dir, player_ptr->level * 2, 2);
+        fire_ball(creature, AttributeType::MISSILE, dir, creature.get_level() * 2, 2);
         return true;
     }
 
-    if (player_ptr->level < 45) {
+    if (creature.get_level() < 45) {
         msg_print(_("ビームキャノンを発射した。", "You fire a beam cannon."));
-        fire_beam(player_ptr, AttributeType::MISSILE, dir, player_ptr->level * 2);
+        fire_beam(creature, AttributeType::MISSILE, dir, creature.get_level() * 2);
         return true;
     }
 
     msg_print(_("ロケットを発射した。", "You fire a rocket."));
-    fire_rocket(player_ptr, AttributeType::ROCKET, dir, player_ptr->level * 5, 2);
+    fire_rocket(creature, AttributeType::ROCKET, dir, creature.get_level() * 5, 2);
     return true;
 }
 
-void calc_android_exp(PlayerType *player_ptr)
+void calc_android_exp(CreatureEntity &creature)
 {
     uint32_t total_exp = 0;
-    if (player_ptr->is_dead() || !PlayerRace(player_ptr).equals(PlayerRaceType::ANDROID)) {
+    if (creature.is_dead() || !CreatureRace(&creature).equals(PlayerRaceType::ANDROID)) {
         return;
     }
 
-    for (int i = INVEN_MAIN_HAND; i < INVEN_TOTAL; i++) {
-        auto *o_ptr = player_ptr->inventory[i].get();
+    for (const auto i_idx : INVEN_WIELDING_SLOTS) {
+        auto *o_ptr = creature.inventory[i_idx].get();
         uint32_t value, exp;
         DEPTH level = std::max(o_ptr->get_baseitem_level() - 8, 1);
 
-        if ((i == INVEN_MAIN_RING) || (i == INVEN_SUB_RING) || (i == INVEN_NECK) || (i == INVEN_LITE)) {
+        if ((i_idx == INVEN_MAIN_RING) || (i_idx == INVEN_SUB_RING) || (i_idx == INVEN_NECK) || (i_idx == INVEN_LITE)) {
             continue;
         }
         if (!o_ptr->is_valid()) {
@@ -117,7 +118,7 @@ void calc_android_exp(PlayerType *player_ptr)
         }
 
         const auto &bi_key = o_ptr->bi_key;
-        if ((bi_key == BaseitemKey(ItemKindType::SOFT_ARMOR, SV_ABUNAI_MIZUGI)) && (player_ptr->ppersonality != PERSONALITY_SEXY)) {
+        if ((bi_key == BaseitemKey(ItemKindType::SOFT_ARMOR, SV_ABUNAI_MIZUGI)) && (creature.ppersonality != PERSONALITY_SEXY)) {
             value /= 32;
         }
 
@@ -154,16 +155,17 @@ void calc_android_exp(PlayerType *player_ptr)
                 exp += (value - 100000L) / 4 * level;
             }
         }
-        if ((((i == INVEN_MAIN_HAND) || (i == INVEN_SUB_HAND)) && (has_melee_weapon(player_ptr, i))) || (i == INVEN_BOW)) {
+        if ((((i_idx == INVEN_MAIN_HAND) || (i_idx == INVEN_SUB_HAND)) && (has_melee_weapon(creature, i_idx))) || (i_idx == INVEN_BOW)) {
             total_exp += exp / 48;
         } else {
             total_exp += exp / 16;
         }
-        if (i == INVEN_BODY) {
+        if (i_idx == INVEN_BODY) {
             total_exp += exp / 32;
         }
     }
 
-    player_ptr->exp = player_ptr->max_exp = total_exp;
-    check_experience(static_cast<CreatureEntity &>(*player_ptr));
+    creature.set_max_exp(total_exp);
+    creature.set_exp(total_exp);
+    check_experience(creature);
 }

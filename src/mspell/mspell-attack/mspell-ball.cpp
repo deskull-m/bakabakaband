@@ -13,19 +13,17 @@
 #include "mspell/mspell-data.h"
 #include "mspell/mspell-result.h"
 #include "mspell/mspell-util.h"
+#include "system/creature-entity.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/floor/floor-info.h"
-#include "system/monster-entity.h"
-#include "system/player-type-definition.h"
-#include "timed-effect/timed-effects.h"
 #include "view/display-messages.h"
 
-static bool message_fire_ball(PlayerType *player_ptr, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
+static bool message_fire_ball(CreatureEntity &creature, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
 {
     mspell_cast_msg_blind msg;
-    const auto &monster = player_ptr->current_floor_ptr->m_list[m_idx];
+    const auto &monster = creature.get_floor()->get_monster(m_idx);
 
-    if (monster.r_idx == MonraceId::ROLENTO) {
+    if (monster.get_r_idx() == MonraceId::ROLENTO) {
         msg.blind = _("%sが何かを投げた。", "%s^ throws something.");
         msg.to_player = _("%sは手榴弾を投げた。", "%s^ throws a hand grenade.");
         msg.to_mons = _("%s^が%s^に向かって手榴弾を投げた。", "%s^ throws a hand grenade.");
@@ -35,25 +33,25 @@ static bool message_fire_ball(PlayerType *player_ptr, MONSTER_IDX m_idx, MONSTER
         msg.to_mons = _("%s^が%sに向かってファイア・ボールの呪文を唱えた。", "%s^ casts a fire ball at %s.");
     }
 
-    return monspell_message(player_ptr, m_idx, t_idx, msg, target_type);
+    return monspell_message(creature, m_idx, t_idx, msg, target_type);
 }
 
-static bool message_water_ball(PlayerType *player_ptr, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
+static bool message_water_ball(CreatureEntity &creature, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
 {
-    auto known = monster_near_player(*player_ptr->current_floor_ptr, m_idx, t_idx);
-    auto see_either = see_monster(player_ptr, m_idx) || see_monster(player_ptr, t_idx);
+    auto known = monster_near_player(creature, m_idx, t_idx);
+    auto see_either = see_monster(creature, m_idx) || see_monster(creature, t_idx);
     auto mon_to_mon = (target_type == MONSTER_TO_MONSTER);
     auto mon_to_player = (target_type == MONSTER_TO_PLAYER);
-    const auto t_name = monster_name(player_ptr, t_idx);
+    const auto t_name = monster_name(creature, t_idx);
 
     mspell_cast_msg_blind msg(_("%s^が何かをつぶやいた。", "%s^ mumbles."), _("%s^が流れるような身振りをした。", "%s^ gestures fluidly."),
         _("%s^が%sに対して流れるような身振りをした。", "%s^ gestures fluidly at %s."));
 
-    auto result = monspell_message(player_ptr, m_idx, t_idx, msg, target_type);
+    auto result = monspell_message(creature, m_idx, t_idx, msg, target_type);
 
     if (mon_to_player) {
         msg_format(_("あなたは渦巻きに飲み込まれた。", "You are engulfed in a whirlpool."));
-    } else if (mon_to_mon && known && see_either && !player_ptr->effects()->blindness().is_blind()) {
+    } else if (mon_to_mon && known && see_either && !creature.is_blind()) {
         msg_format(_("%s^は渦巻に飲み込まれた。", "%s^ is engulfed in a whirlpool."), t_name.data());
     }
     return result;
@@ -120,18 +118,18 @@ const std::unordered_map<MonsterAbilityType, MSpellData> ball_list = {
                                           AttributeType::GRAVITY } }
 };
 
-MSpellBall::MSpellBall(PlayerType *player_ptr, MONSTER_IDX m_idx, MonsterAbilityType ability, POSITION rad, int target_type)
-    : AbstractMSpellAttack(player_ptr, m_idx, ability, get_mspell_data(ball_list, ability), target_type,
-          [=](auto y, auto x, int dam, auto attribute) {
-              return ball(player_ptr, y, x, m_idx, attribute, dam, rad, target_type);
+MSpellBall::MSpellBall(CreatureEntity &creature, MONSTER_IDX m_idx, MonsterAbilityType ability, POSITION rad, int target_type)
+    : AbstractMSpellAttack(creature, m_idx, ability, get_mspell_data(ball_list, ability), target_type,
+          [creature_ptr = &creature, m_idx, rad, target_type](auto y, auto x, int dam, auto attribute) {
+              return ball(*creature_ptr, y, x, m_idx, attribute, dam, rad, target_type);
           })
 {
 }
 
-MSpellBall::MSpellBall(PlayerType *player_ptr, MONSTER_IDX m_idx, MONSTER_IDX t_idx, MonsterAbilityType ability, POSITION rad, int target_type)
-    : AbstractMSpellAttack(player_ptr, m_idx, t_idx, ability, get_mspell_data(ball_list, ability), target_type,
-          [=](auto y, auto x, int dam, auto attribute) {
-              return ball(player_ptr, y, x, m_idx, attribute, dam, rad, target_type);
+MSpellBall::MSpellBall(CreatureEntity &creature, MONSTER_IDX m_idx, MONSTER_IDX t_idx, MonsterAbilityType ability, POSITION rad, int target_type)
+    : AbstractMSpellAttack(creature, m_idx, t_idx, ability, get_mspell_data(ball_list, ability), target_type,
+          [creature_ptr = &creature, m_idx, rad, target_type](auto y, auto x, int dam, auto attribute) {
+              return ball(*creature_ptr, y, x, m_idx, attribute, dam, rad, target_type);
           })
 {
 }

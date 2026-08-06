@@ -12,8 +12,8 @@
 #include "perception/object-perception.h"
 #include "system/artifact-type-definition.h"
 #include "system/baseitem/baseitem-definition.h"
+#include "system/creature-entity.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "util/bit-flags-calculator.h"
 #include "util/string-processor.h"
 #ifdef JP
@@ -392,7 +392,7 @@ static std::string describe_body(const ItemEntity &item, [[maybe_unused]] const 
  * @param opt 記述オプション
  * @return std::string 記述したアイテム名
  */
-std::string describe_named_item(PlayerType *player_ptr, const ItemEntity &item, const describe_option_type &opt)
+std::string describe_named_item(CreatureEntity &creature, const ItemEntity &item, const describe_option_type &opt)
 {
     auto [basename, modstr] = switch_tval_description(item, opt);
     if (auto name = get_fullname_if_set(item, opt); !name.empty()) {
@@ -418,7 +418,7 @@ std::string describe_named_item(PlayerType *player_ptr, const ItemEntity &item, 
 
 #ifdef JP
     if (item.is_smith() && none_bits(opt.mode, OD_BASE_NAME)) {
-        ss << format("鍛冶師%sの", player_ptr->name.data());
+        ss << format("鍛冶師%sの", creature.name.data());
     }
 
     ss << describe_unique_name_before_body_ja(item, opt);
@@ -434,7 +434,7 @@ std::string describe_named_item(PlayerType *player_ptr, const ItemEntity &item, 
     ss << describe_unique_name_after_body_ja(item, opt);
 #else
     if (item.is_smith() && none_bits(opt.mode, OD_BASE_NAME)) {
-        ss << format(" of %s the Smith", player_ptr->name.data());
+        ss << format(" of %s the Smith", creature.name.data());
     }
 
     ss << describe_unique_name_after_body_en(item, opt);

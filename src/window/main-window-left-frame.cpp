@@ -2,24 +2,25 @@
 #include "floor/dungeon-feeling.h"
 #include "game-option/special-options.h"
 #include "game-option/text-display-options.h"
+#include "monster/monster-timed-effects.h"
 #include "player-base/player-race.h"
 #include "player-info/class-info.h"
 #include "player-info/mimic-info-table.h"
 #include "player/player-status-table.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
-#include "system/player-type-definition.h"
 #include "term/gameterm.h"
 #include "term/screen-processor.h"
+#include "term/term-color-types.h"
 #include "term/z-form.h"
-#include "timed-effect/timed-effects.h"
 #include "tracking/health-bar-tracker.h"
 #include "util/string-processor.h"
 #include "window/main-window-row-column.h"
 #include "window/main-window-stat-poster.h"
 #include "window/main-window-util.h"
 #include "world/world.h"
+#include <algorithm>
 #include <fmt/format.h>
 
 /*!
@@ -33,32 +34,20 @@ struct condition_layout_info {
 /*!
  * @brief プレイヤーの称号を表示する / Prints "title", including "wizard" or "winner" as needed.
  */
-void print_title(PlayerType *player_ptr)
+void print_title(CreatureEntity &creature)
 {
-    std::string p;
-    const auto &world = AngbandWorld::get_instance();
-    if (world.wizard) {
-        p = _("[ウィザード]", "[=-WIZARD-=]");
-    } else if (world.total_winner) {
-        if (world.is_player_true_winner()) {
-            p = _("*真・勝利者*", "*TRUEWINNER*");
-        } else {
-            p = _("***勝利者***", "***WINNER***");
-        }
-    } else {
-        p = player_titles.at(player_ptr->pclass).at((player_ptr->level - 1) / 5);
-    }
-
-    print_field(p, ROW_TITLE, COL_TITLE);
+    // 称号算出は CreatureEntity::get_title() virtual に集約 (提案 E5)。
+    // プレイヤーは wizard / winner / 職業別称号、モンスターは "なし"。
+    print_field(creature.get_title(), ROW_TITLE, COL_TITLE);
 }
 
 /*!
  * @brief プレイヤーのレベルを表示する / Prints level
  */
-void print_level(PlayerType *player_ptr)
+void print_level(CreatureEntity &creature)
 {
-    const auto tmp = format("%5d", player_ptr->level);
-    if (player_ptr->level >= player_ptr->max_plv) {
+    const auto tmp = format("%5d", creature.get_level());
+    if (creature.get_level() >= creature.get_max_plv()) {
         put_str(_("レベル ", "LEVEL "), ROW_LEVEL, 0);
         c_put_str(TERM_L_GREEN, tmp, ROW_LEVEL, COL_LEVEL + 7);
     } else {
@@ -70,22 +59,26 @@ void print_level(PlayerType *player_ptr)
 /*!
  * @brief プレイヤーの経験値を表示する / Display the experience
  */
-void print_exp(PlayerType *player_ptr)
+void print_exp(CreatureEntity &creature)
 {
     std::string out_val;
 
-    PlayerRace pr(player_ptr);
-    if ((!exp_need) || pr.equals(PlayerRaceType::ANDROID)) {
-        out_val = format("%8d", player_ptr->exp);
+    CreatureRace pr(&creature);
+    if (!creature.is_player()) {
+        // モンスターは player_exp 表に該当エントリを持たないため、
+        // 現在経験値のみ表示する。
+        out_val = format("%8d", creature.get_exp());
+    } else if ((!exp_need) || pr.equals(PlayerRaceType::ANDROID)) {
+        out_val = format("%8d", creature.get_exp());
     } else {
-        if (player_ptr->level >= PY_MAX_LEVEL) {
+        if (creature.get_level() >= PY_MAX_LEVEL) {
             (void)sprintf(out_val.data(), "********");
         } else {
-            out_val = format("%8d", player_exp[player_ptr->level - 1] * player_ptr->expfact / 100 - player_ptr->exp);
+            out_val = format("%8d", player_exp[creature.get_level() - 1] * creature.expfact / 100 - creature.get_exp());
         }
     }
 
-    if (player_ptr->exp >= player_ptr->max_exp) {
+    if (creature.get_exp() >= creature.get_max_exp()) {
         if (pr.equals(PlayerRaceType::ANDROID)) {
             put_str(_("強化 ", "Cst "), ROW_EXP, 0);
         } else {
@@ -101,96 +94,103 @@ void print_exp(PlayerType *player_ptr)
 /*!
  * @brief プレイヤーのACを表示する / Prints current AC
  */
-void print_ac(PlayerType *player_ptr)
+void print_ac(CreatureEntity &creature)
 {
     char tmp[32];
 
 #ifdef JP
     /* AC の表示方式を変更している */
     put_str(" ＡＣ(     )", ROW_AC, COL_AC);
-    sprintf(tmp, "%5d", player_ptr->dis_ac + player_ptr->dis_to_a);
+    sprintf(tmp, "%5d", creature.get_dis_ac() + creature.get_dis_to_a());
     c_put_str(TERM_L_GREEN, tmp, ROW_AC, COL_AC + 6);
 #else
     put_str("Cur AC ", ROW_AC, COL_AC);
-    sprintf(tmp, "%5d", player_ptr->dis_ac + player_ptr->dis_to_a);
+    sprintf(tmp, "%5d", creature.get_dis_ac() + creature.get_dis_to_a());
     c_put_str(TERM_L_GREEN, tmp, ROW_AC, COL_AC + 7);
 #endif
 }
 
 /*!
  * @brief プレイヤーのHPを表示する / Prints Cur/Max hit points
+ * @param creature クリーチャーへの参照
  */
-void print_hp(PlayerType *player_ptr)
+void print_hp(CreatureEntity &creature)
 {
     char tmp[32];
     put_str("HP", ROW_CURHP, COL_CURHP);
-    sprintf(tmp, "%4ld", (long int)player_ptr->hp);
+    sprintf(tmp, "%4ld", (long int)creature.hp);
     TERM_COLOR color;
-    if (player_ptr->hp >= player_ptr->maxhp) {
+    if (creature.hp >= creature.maxhp) {
         color = TERM_L_GREEN;
-    } else if (player_ptr->hp > (player_ptr->maxhp * hitpoint_warn) / 10) {
+    } else if (creature.hp > (creature.maxhp * hitpoint_warn) / 10) {
         color = TERM_YELLOW;
     } else {
         color = TERM_RED;
     }
 
-    c_put_str(color, format("%4d", player_ptr->hp), ROW_CURHP, COL_CURHP + 3);
+    c_put_str(color, format("%4d", creature.hp), ROW_CURHP, COL_CURHP + 3);
     put_str("/", ROW_CURHP, COL_CURHP + 7);
-    sprintf(tmp, "%4ld", (long int)player_ptr->maxhp);
+    sprintf(tmp, "%4ld", (long int)creature.maxhp);
     color = TERM_L_GREEN;
-    c_put_str(color, format("%4d", player_ptr->maxhp), ROW_CURHP, COL_CURHP + 8);
+    c_put_str(color, format("%4d", creature.maxhp), ROW_CURHP, COL_CURHP + 8);
 }
 
 /*!
- * @brief プレイヤーのMPを表示する / Prints players max/cur spell points
+ * @brief MPを表示する / Prints max/cur spell points
+ * @param creature クリーチャーへの参照
+ * @details プレイヤー職業や max_mp の値に関わらず常に表示する。
+ * モンスターは生成時に max_mp/current_mp とも 0 で初期化されるため 0/0 と表示される。
  */
-void print_sp(PlayerType *player_ptr)
+void print_sp(CreatureEntity &creature)
 {
     char tmp[32];
     byte color;
-    if ((mp_ptr->spell_book == ItemKindType::NONE) && mp_ptr->spell_first == SPELL_FIRST_NO_SPELL) {
-        return;
-    }
 
     put_str(_("MP", "SP"), ROW_CURSP, COL_CURSP);
-    sprintf(tmp, "%4ld", (long int)player_ptr->csp);
-    if (player_ptr->csp >= player_ptr->msp) {
+    sprintf(tmp, "%4ld", (long int)creature.get_current_mp());
+    if (creature.get_max_mp() <= 0) {
+        color = TERM_SLATE;
+    } else if (creature.get_current_mp() >= creature.get_max_mp()) {
         color = TERM_L_GREEN;
-    } else if (player_ptr->csp > (player_ptr->msp * mana_warn) / 10) {
+    } else if (creature.get_current_mp() > (creature.get_max_mp() * mana_warn) / 10) {
         color = TERM_YELLOW;
     } else {
         color = TERM_RED;
     }
 
-    c_put_str(color, format("%4d", player_ptr->csp), ROW_CURSP, COL_CURSP + 3);
+    c_put_str(color, format("%4d", creature.get_current_mp()), ROW_CURSP, COL_CURSP + 3);
     put_str("/", ROW_CURSP, COL_CURSP + 7);
-    sprintf(tmp, "%4ld", (long int)player_ptr->msp);
-    color = TERM_L_GREEN;
-    c_put_str(color, format("%4d", player_ptr->msp), ROW_CURSP, COL_CURSP + 8);
+    sprintf(tmp, "%4ld", (long int)creature.get_max_mp());
+    color = (creature.get_max_mp() <= 0) ? TERM_SLATE : TERM_L_GREEN;
+    c_put_str(color, format("%4d", creature.get_max_mp()), ROW_CURSP, COL_CURSP + 8);
 }
 
 /*!
  * @brief プレイヤーの所持金を表示する / Prints current gold
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
-void print_gold(PlayerType *player_ptr)
+void print_gold(CreatureEntity &creature)
 {
     put_str(_("＄ ", "AU "), ROW_GOLD, COL_GOLD);
-    c_put_str(TERM_L_GREEN, format("%9d", player_ptr->au), ROW_GOLD, COL_GOLD + 3);
+    c_put_str(TERM_L_GREEN, format("%9d", creature.get_au()), ROW_GOLD, COL_GOLD + 3);
 }
 
 /*!
  * @brief 現在のフロアの深さを表示する / Prints depth in stat area
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
-void print_depth(PlayerType *player_ptr)
+void print_depth(CreatureEntity &creature)
 {
+#ifdef GODOT_RICH_UI
+    (void)creature;
+    return; // Godot StatusPanel に表示するため terminal 描画をスキップ
+#else
     std::string depths;
     TERM_COLOR attr = TERM_WHITE;
     const auto &[wid, hgt] = term_get_size();
     const auto col_depth = wid + COL_DEPTH;
     const auto row_depth = hgt + ROW_DEPTH;
-    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     if (!floor.is_underground()) {
         c_prt(attr, format("%7s", _("地上", "Surf.")), row_depth, col_depth);
         return;
@@ -239,39 +239,49 @@ void print_depth(PlayerType *player_ptr)
     }
 
     c_prt(attr, depths.c_str(), row_depth, col_depth);
+#endif // GODOT_RICH_UI
 }
 
 /*!
  * @brief プレイヤーのステータスを一括表示する（左側部分） / Display basic info (mostly left of map)
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
-void print_frame_basic(PlayerType *player_ptr)
+void print_frame_basic(CreatureEntity &creature)
 {
-    const auto &title = player_ptr->mimic_form == MimicKindType::NONE
-                            ? player_ptr->race->title
-                            : mimic_info.at(player_ptr->mimic_form).title;
+    // モンスター時 race_info は nullptr なので種族名は monrace.name を使う。
+    // どちらも取れない場合は「なし」表記。
+    std::string_view title;
+    if (creature.get_mimic_form() != MimicKindType::NONE) {
+        title = mimic_info.at(creature.get_mimic_form()).title;
+    } else if (const auto *race_info = creature.get_race_info(); race_info != nullptr) {
+        title = race_info->title;
+    } else if (creature.has_monster_profile()) {
+        title = creature.get_monrace().name;
+    } else {
+        title = _("なし", "None");
+    }
     print_field(title, ROW_RACE, COL_RACE);
-    print_title(player_ptr);
-    print_level(player_ptr);
-    print_exp(player_ptr);
+    print_title(creature);
+    print_level(creature);
+    print_exp(creature);
     for (int i = 0; i < A_MAX; i++) {
-        print_stat(player_ptr, i);
+        print_stat(creature, i);
     }
 
-    print_ac(player_ptr);
-    print_hp(player_ptr);
-    print_sp(player_ptr);
-    print_gold(player_ptr);
-    print_depth(player_ptr);
-    print_health(player_ptr, true);
-    print_health(player_ptr, false);
+    print_ac(creature);
+    print_hp(creature);
+    print_sp(creature);
+    print_gold(creature);
+    print_depth(creature);
+    print_health(creature, true);
+    print_health(creature, false);
 }
 
 /*!
  * @brief wizardモード中の闘技場情報を表示する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
-static void print_health_monster_in_arena_for_wizard(PlayerType *player_ptr)
+static void print_health_monster_in_arena_for_wizard(CreatureEntity &creature)
 {
     int row = ROW_INFO - 1;
     int col = COL_INFO + 2;
@@ -284,7 +294,7 @@ static void print_health_monster_in_arena_for_wizard(PlayerType *player_ptr)
 
         term_putstr(col - 2, row + row_offset, 12, TERM_WHITE, "      /     ");
 
-        auto &monster = player_ptr->current_floor_ptr->m_list[monster_list_index];
+        auto &monster = creature.get_floor()->get_monster(static_cast<MONSTER_IDX>(monster_list_index));
         if (monster.is_valid()) {
             const auto &monrace = monster.get_monrace();
             const auto &symbol_config = monrace.symbol_config;
@@ -300,30 +310,30 @@ static void print_health_monster_in_arena_for_wizard(PlayerType *player_ptr)
  * @param monster 対象のモンスター
  * @return condition_layout_infoのリスト
  */
-static std::vector<condition_layout_info> get_condition_layout_info(const MonsterEntity &monster)
+static std::vector<condition_layout_info> get_condition_layout_info(const CreatureEntity &monster)
 {
     std::vector<condition_layout_info> result;
 
     if (monster.is_invulnerable()) {
-        result.push_back({ effect_type_to_label.at(MonsterTimedEffect::INVULNERABILITY), TERM_WHITE });
+        result.push_back({ effect_type_to_label.at(CreatureTimedEffect::INVULNERABILITY), TERM_WHITE });
     }
     if (monster.is_accelerated()) {
-        result.push_back({ effect_type_to_label.at(MonsterTimedEffect::FAST), TERM_L_GREEN });
+        result.push_back({ effect_type_to_label.at(CreatureTimedEffect::ACCELERATION), TERM_L_GREEN });
     }
     if (monster.is_decelerated()) {
-        result.push_back({ effect_type_to_label.at(MonsterTimedEffect::SLOW), TERM_UMBER });
+        result.push_back({ effect_type_to_label.at(CreatureTimedEffect::DECELERATION), TERM_UMBER });
     }
     if (monster.is_fearful()) {
-        result.push_back({ effect_type_to_label.at(MonsterTimedEffect::FEAR), TERM_SLATE });
+        result.push_back({ effect_type_to_label.at(CreatureTimedEffect::FEAR), TERM_SLATE });
     }
     if (monster.is_confused()) {
-        result.push_back({ effect_type_to_label.at(MonsterTimedEffect::CONFUSION), TERM_L_UMBER });
+        result.push_back({ effect_type_to_label.at(CreatureTimedEffect::CONFUSION), TERM_L_UMBER });
     }
     if (monster.is_asleep()) {
-        result.push_back({ effect_type_to_label.at(MonsterTimedEffect::SLEEP), TERM_BLUE });
+        result.push_back({ effect_type_to_label.at(CreatureTimedEffect::SLEEP_OR_PARALYSIS), TERM_BLUE });
     }
     if (monster.is_stunned()) {
-        result.push_back({ effect_type_to_label.at(MonsterTimedEffect::STUN), TERM_ORANGE });
+        result.push_back({ effect_type_to_label.at(CreatureTimedEffect::STUN), TERM_ORANGE });
     }
 
     return result;
@@ -348,21 +358,21 @@ static std::vector<condition_layout_info> get_condition_layout_info(const Monste
  * health-bar stops tracking any monster that "disappears".
  * </pre>
  */
-void print_health(PlayerType *player_ptr, bool riding)
+void print_health(CreatureEntity &creature, bool riding)
 {
     tl::optional<short> monster_idx;
     int row, col;
 
     if (riding) {
-        if (player_ptr->riding > 0) {
-            monster_idx = player_ptr->riding;
+        if (creature.get_riding() > 0) {
+            monster_idx = creature.get_riding();
         }
         row = ROW_RIDING_INFO;
         col = COL_RIDING_INFO;
     } else {
         // ウィザードモードで闘技場観戦時の表示
         if (AngbandWorld::get_instance().wizard && AngbandSystem::get_instance().is_phase_out()) {
-            print_health_monster_in_arena_for_wizard(player_ptr);
+            print_health_monster_in_arena_for_wizard(creature);
             return;
         }
 
@@ -385,9 +395,9 @@ void print_health(PlayerType *player_ptr, bool riding)
         return;
     }
 
-    const auto &monster = player_ptr->current_floor_ptr->m_list[monster_idx.value()];
+    const auto &monster = creature.get_floor()->get_monster(monster_idx.value());
 
-    if ((!monster.ml) || (player_ptr->effects()->hallucination().is_hallucinated()) || monster.is_dead()) {
+    if ((!monster.is_visible_on_map()) || (creature.is_hallucinated()) || monster.is_dead()) {
         term_putstr(col, row, max_width, TERM_WHITE, "[----------]");
         return;
     }

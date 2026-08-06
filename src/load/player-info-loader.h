@@ -1,8 +1,8 @@
 #pragma once
 
-class PlayerType;
-void rd_base_info(PlayerType *player_ptr);
-void rd_experience(PlayerType *player_ptr);
-void rd_skills(PlayerType *player_ptr);
+class CreatureEntity;
+void rd_base_info(CreatureEntity &creature);
+void rd_experience(CreatureEntity &creature);
+void rd_skills(CreatureEntity &creature);
 void rd_bounty_uniques(void);
-void rd_player_info(PlayerType *player_ptr);
+void rd_player_info(CreatureEntity &creature);

@@ -111,6 +111,7 @@
 #include "main/sound-of-music.h"
 #include "save/save.h"
 #include "system/angband.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
@@ -826,14 +827,14 @@ static void rebuild_term(term_data *td, bool resize_window = true)
 /*!
  * @brief React to global changes
  */
-static errr term_xtra_win_react(PlayerType *player_ptr)
+static errr term_xtra_win_react(CreatureEntity &creature)
 {
     refresh_color_table();
 
     const byte current_mode = static_cast<byte>(graphic.get_mode());
     if (current_mode != arg_graphics) {
         change_graphics_mode(static_cast<graphics_mode>(arg_graphics));
-        reset_visuals(player_ptr);
+        reset_visuals(creature);
     }
 
     for (int i = 0; i < MAX_TERM_DATA; i++) {
@@ -1009,7 +1010,7 @@ static errr term_xtra_win(int n, int v)
         return term_xtra_win_clear();
     }
     case TERM_XTRA_REACT: {
-        return term_xtra_win_react(p_ptr);
+        return term_xtra_win_react(PlayerType::get_instance());
     }
     case TERM_XTRA_DELAY: {
         return term_xtra_win_delay(v);
@@ -1582,7 +1583,7 @@ static void check_for_save_file(const std::string &savefile_option)
 /*!
  * @brief Process a menu command
  */
-static void process_menus(PlayerType *player_ptr, WORD wCmd)
+static void process_menus(CreatureEntity &creature, WORD wCmd)
 {
     if (!initialized) {
         plog(_("まだ初期化中です...", "You cannot do that yet..."));
@@ -1629,7 +1630,7 @@ static void process_menus(PlayerType *player_ptr, WORD wCmd)
             }
 
             msg_flag = false;
-            do_cmd_save_game(player_ptr, false);
+            do_cmd_save_game(creature, false);
         } else {
             plog(_("今、セーブすることは出来ません。", "You may not do that right now."));
         }
@@ -1644,7 +1645,7 @@ static void process_menus(PlayerType *player_ptr, WORD wCmd)
             }
 
             msg_flag = false;
-            auto &floor = *player_ptr->current_floor_ptr;
+            auto &floor = *creature.get_floor();
             floor.forget_lite();
             floor.forget_view();
             floor.forget_mon_lite();
@@ -1845,7 +1846,7 @@ static void process_menus(PlayerType *player_ptr, WORD wCmd)
         if (arg_graphics != enum2i(graphics_mode::GRAPHICS_NONE)) {
             arg_graphics = enum2i(graphics_mode::GRAPHICS_NONE);
             if (game_in_progress) {
-                do_cmd_redraw(player_ptr);
+                do_cmd_redraw(creature);
             }
         }
         break;
@@ -1854,7 +1855,7 @@ static void process_menus(PlayerType *player_ptr, WORD wCmd)
         if (arg_graphics != enum2i(graphics_mode::GRAPHICS_ORIGINAL)) {
             arg_graphics = enum2i(graphics_mode::GRAPHICS_ORIGINAL);
             if (game_in_progress) {
-                do_cmd_redraw(player_ptr);
+                do_cmd_redraw(creature);
             }
         }
 
@@ -1864,7 +1865,7 @@ static void process_menus(PlayerType *player_ptr, WORD wCmd)
         if (arg_graphics != enum2i(graphics_mode::GRAPHICS_ADAM_BOLT)) {
             arg_graphics = enum2i(graphics_mode::GRAPHICS_ADAM_BOLT);
             if (game_in_progress) {
-                do_cmd_redraw(player_ptr);
+                do_cmd_redraw(creature);
             }
         }
 
@@ -1874,7 +1875,7 @@ static void process_menus(PlayerType *player_ptr, WORD wCmd)
         if (arg_graphics != enum2i(graphics_mode::GRAPHICS_HENGBAND)) {
             arg_graphics = enum2i(graphics_mode::GRAPHICS_HENGBAND);
             if (game_in_progress) {
-                do_cmd_redraw(player_ptr);
+                do_cmd_redraw(creature);
             }
         }
 
@@ -1896,7 +1897,7 @@ static void process_menus(PlayerType *player_ptr, WORD wCmd)
 
         init_music();
         if (game_in_progress) {
-            select_floor_music(player_ptr);
+            select_floor_music(creature);
         }
 
         break;
@@ -2159,7 +2160,7 @@ static void fit_term_size_to_window(term_data *td, bool recalc_window_size = fal
 
         if (!is_main_term(td)) {
             RedrawingFlagsUpdater::get_instance().fill_up_sub_flags();
-            handle_stuff(p_ptr);
+            handle_stuff(PlayerType::get_instance());
         }
     }
 }
@@ -2440,7 +2441,7 @@ static LRESULT PASCAL angband_window_procedure(HWND hWnd, UINT uMsg, WPARAM wPar
         }
 
         msg_flag = false;
-        auto &floor = *p_ptr->current_floor_ptr;
+        auto &floor = *PlayerType::get_instance().get_floor();
         floor.forget_lite();
         floor.forget_view();
         floor.forget_mon_lite();
@@ -2454,14 +2455,15 @@ static LRESULT PASCAL angband_window_procedure(HWND hWnd, UINT uMsg, WPARAM wPar
         }
 
         msg_flag = false;
-        if (p_ptr->hp < 0) {
-            p_ptr->is_dead_ = false;
+        auto &creature = PlayerType::get_instance();
+        if (creature.hp < 0) {
+            creature.is_dead_ = false;
         }
-        exe_write_diary(*p_ptr->current_floor_ptr, DiaryKind::GAMESTART, 0, _("----ゲーム中断----", "---- Save and Exit Game ----"));
+        exe_write_diary(*creature.get_floor(), DiaryKind::GAMESTART, 0, _("----ゲーム中断----", "---- Save and Exit Game ----"));
         AngbandSystem::get_instance().set_panic_save(true);
         signals_ignore_tstp();
-        p_ptr->died_from = _("(緊急セーブ)", "(panic save)");
-        (void)save_player(p_ptr, SaveType::CLOSE_GAME);
+        creature.died_from = _("(緊急セーブ)", "(panic save)");
+        (void)save_player(creature, SaveType::CLOSE_GAME);
         quit("");
         return 0;
     }
@@ -2470,7 +2472,7 @@ static LRESULT PASCAL angband_window_procedure(HWND hWnd, UINT uMsg, WPARAM wPar
         return 0;
     }
     case WM_COMMAND: {
-        process_menus(p_ptr, LOWORD(wParam));
+        process_menus(PlayerType::get_instance(), LOWORD(wParam));
         return 0;
     }
     case WM_ACTIVATE: {
@@ -2716,7 +2718,7 @@ static void init_stuff()
 void create_debug_spoiler()
 {
     init_stuff();
-    init_angband(p_ptr, true);
+    init_angband(PlayerType::get_instance(), true);
 
     switch (output_all_spoilers()) {
     case SpoilerOutputResultType::SUCCESSFUL:
@@ -2820,7 +2822,7 @@ int WINAPI WinMain(
     {
         TermCenteredOffsetSetter tcos(MAIN_TERM_MIN_COLS, MAIN_TERM_MIN_ROWS);
 
-        init_angband(p_ptr, false);
+        init_angband(PlayerType::get_instance(), false);
         initialized = true;
 
         check_for_save_file(command_line.get_savefile_option());
@@ -2847,13 +2849,13 @@ int WINAPI WinMain(
     term_flush();
     if (movie_in_progress) {
         // selected movie
-        play_game(p_ptr, false, true);
+        play_game(PlayerType::get_instance(), false, true);
     } else if (savefile.empty()) {
         // new game
-        play_game(p_ptr, true, false);
+        play_game(PlayerType::get_instance(), true, false);
     } else {
         // selected savefile
-        play_game(p_ptr, false, false);
+        play_game(PlayerType::get_instance(), false, false);
     }
 
     quit("");

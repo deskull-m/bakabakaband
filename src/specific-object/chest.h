@@ -2,14 +2,14 @@
 
 #include "util/point-2d.h"
 
-class PlayerType;
+class CreatureEntity;
 class Chest {
 public:
-    Chest(PlayerType *player_ptr);
+    Chest(CreatureEntity &creature);
     virtual ~Chest() = default;
     void open(bool scatter, const Pos2D &pos, short item_idx);
     void fire_trap(const Pos2D &pos, short item_idx);
 
 private:
-    PlayerType *player_ptr;
+    CreatureEntity *creature_ptr;
 };

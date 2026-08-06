@@ -1,7 +1,7 @@
 #pragma once
 
 class ItemEntity;
-class PlayerType;
+class CreatureEntity;
 void inven_item_charges(const ItemEntity &item);
-void inven_item_describe(PlayerType *player_ptr, short i_idx);
-void display_koff(PlayerType *player_ptr);
+void inven_item_describe(CreatureEntity &creature, short i_idx);
+void display_koff(CreatureEntity &creature);

@@ -1,19 +1,19 @@
 #include "alliance/alliance-frieza-clan.h"
 #include "alliance/alliance.h"
-#include "system/player-type-definition.h"
+#include "system/creature-entity.h"
 #include "view/display-messages.h"
 
 /*!
  * @brief フリーザ一族アライアンスの印象ポイント計算
- * @param creature_ptr プレイヤー情報
+ * @param creature クリーチャーへの参照
  * @return 印象ポイント
  * @details 宇宙の帝王として高い戦闘力を求める
  */
-int AllianceFriezaClan::calcImpressionPoint(PlayerType *creature_ptr) const
+int AllianceFriezaClan::calcImpressionPoint(const CreatureEntity &creature) const
 {
     int impression = 0;
     // 宇宙の帝王として、高レベルの強者を重視
-    impression += Alliance::calcPlayerPower(*creature_ptr, 25, 30);
+    impression += Alliance::calcPlayerPower(creature, 25, 30);
     impression += calcIronmanHostilityPenalty();
 
     return impression;
@@ -21,10 +21,10 @@ int AllianceFriezaClan::calcImpressionPoint(PlayerType *creature_ptr) const
 
 /*!
  * @brief フリーザ一族アライアンスの制裁処理
- * @param player_ptr プレイヤー情報
+ * @param creature クリーチャーへの参照
  * @details 裏切り者に対する厳しい制裁
  */
-void AllianceFriezaClan::panishment([[maybe_unused]] PlayerType &player_ptr)
+void AllianceFriezaClan::panishment([[maybe_unused]] CreatureEntity &creature)
 {
     // TODO: フリーザ一族の制裁システムを実装
     // msg_print("宇宙の帝王の怒りが降り注ぐ！");

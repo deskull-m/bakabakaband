@@ -1,10 +1,10 @@
 #include "alliance/alliance-binzyou-buddhism.h"
+#include "system/creature-entity.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/player-type-definition.h"
 
-int AllianceBinzyouBuddhism::calcImpressionPoint([[maybe_unused]] PlayerType *creature_ptr) const
+int AllianceBinzyouBuddhism::calcImpressionPoint([[maybe_unused]] const CreatureEntity &creature) const
 {
     int result = 0;
     result += calcIronmanHostilityPenalty();
@@ -22,5 +22,5 @@ int AllianceBinzyouBuddhism::calcImpressionPoint([[maybe_unused]] PlayerType *cr
 
 bool AllianceBinzyouBuddhism::isAnnihilated()
 {
-    return MonraceList::get_instance().get_monrace(MonraceId::BINZYOU_MUR).mob_num == 0;
+    return all_monraces_extinct({ MonraceId::BINZYOU_MUR });
 }

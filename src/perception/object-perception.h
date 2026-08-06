@@ -1,5 +1,5 @@
 #pragma once
 
+class CreatureEntity;
 class ItemEntity;
-class PlayerType;
-void object_aware(PlayerType *player_ptr, const ItemEntity &item);
+void object_aware(CreatureEntity &creature, const ItemEntity &item);

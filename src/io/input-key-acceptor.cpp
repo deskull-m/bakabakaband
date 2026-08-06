@@ -26,22 +26,20 @@ int num_more = 0;
  */
 concptr inkey_next = nullptr;
 
-/* Save macro trigger string for use in inkey_special() */
-static char inkey_macro_trigger_string[1024];
+namespace {
+constexpr char GROUP_SEPARATOR = 29;
+constexpr char RECORD_SEPARATOR = 30;
+constexpr char UNIT_SEPARATOR = 31;
 
-/*
- * Local variable -- we are inside a "macro action"
- *
- * Do not match any macros until "ascii 30" is found.
- */
-static bool parse_macro = false;
+//! Save macro trigger string for use in inkey_special()
+char inkey_macro_trigger_string[1024];
 
-/*
- * Local variable -- we are inside a "macro trigger"
- *
- * Strip all keypresses until a low ascii value is found.
- */
-static bool parse_under = false;
+//! Meaning inside a "macro action", do not match any macros until Record Separator is found.
+bool parse_macro = false;
+
+//! Meaning inside a "macro trigger", strip all keypresses until a low ascii value is found.
+bool parse_under = false;
+}
 
 /*!
  * @brief 全てのウィンドウの再描画を行う
@@ -54,7 +52,7 @@ static void all_term_fresh()
     auto [x, y] = term_locate();
 
     RedrawingFlagsUpdater::get_instance().fill_up_sub_flags();
-    handle_stuff(p_ptr);
+    handle_stuff(PlayerType::get_instance());
 
     term_activate(angband_terms[0]);
     term_gotoxy(x, y);
@@ -64,21 +62,15 @@ static void all_term_fresh()
 /*
  * Cancel macro action on the queue
  */
-static void forget_macro_action(void)
+static void forget_macro_action()
 {
     if (!parse_macro) {
         return;
     }
 
     while (true) {
-        char ch;
-        if (term_inkey(&ch, false, true)) {
-            break;
-        }
-        if (ch == 0) {
-            break;
-        }
-        if (ch == 30) {
+        const auto ch = term_inkey(false, true);
+        if ((ch == '\0') || (ch == RECORD_SEPARATOR)) {
             break;
         }
     }
@@ -93,9 +85,9 @@ static void forget_macro_action(void)
  *
  * We use the "term_key_push()" function to handle "failed" macros, as well
  * as "extra" keys read in while choosing the proper macro, and also to hold
- * the action for the macro, plus a special "ascii 30" character indicating
+ * the action for the macro, plus a special Record Separator indicating
  * that any macro action in progress is complete.  Embedded macros are thus
- * illegal, unless a macro action includes an explicit "ascii 30" character,
+ * illegal, unless a macro action includes an explicit Record Separator,
  * which would probably be a massive hack, and might break things.
  *
  * Only 500 (0+1+2+...+29+30) milliseconds may elapse between each key in
@@ -103,51 +95,48 @@ static void forget_macro_action(void)
  * macro trigger, 500 milliseconds must pass before the key sequence is
  * known not to be that macro trigger.
  */
-static char inkey_aux(void)
+static char inkey_aux()
 {
-    int k = 0, n, p = 0, w = 0;
-    char ch;
-    char *buf = inkey_macro_trigger_string;
-
     num_more = 0;
-
+    char ch;
     if (parse_macro) {
-        if (term_inkey(&ch, false, true)) {
+        if (ch = term_inkey(false, true); ch == '\0') {
             parse_macro = false;
         }
     } else {
-        (void)(term_inkey(&ch, true, true));
+        ch = term_inkey(true, true);
     }
 
-    if (ch == 30) {
+    if (ch == RECORD_SEPARATOR) {
         parse_macro = false;
-    }
-
-    if (ch == 30) {
-        return ch;
-    }
-    if (parse_macro) {
-        return ch;
-    }
-    if (parse_under) {
         return ch;
     }
 
+    if (parse_macro || parse_under) {
+        return ch;
+    }
+
+    char *buf = inkey_macro_trigger_string;
+    size_t p = 0;
     buf[p++] = ch;
     buf[p] = '\0';
-    k = macro_find_check(buf);
+    auto k = macro_find_check(buf);
     if (k < 0) {
         return ch;
     }
 
+    auto w = 0;
     while (true) {
         k = macro_find_maybe(buf);
-
         if (k < 0) {
             break;
         }
 
-        if (0 == term_inkey(&ch, false, true)) {
+        if (ch = term_inkey(false, true); ch != '\0') {
+            if (p >= sizeof(inkey_macro_trigger_string) - 1) {
+                break;
+            }
+
             buf[p++] = ch;
             buf[p] = '\0';
             w = 0;
@@ -161,34 +150,30 @@ static char inkey_aux(void)
         }
     }
 
-    k = macro_find_ready(buf);
-    if (k < 0) {
+    if (k = macro_find_ready(buf); k < 0) {
         while (p > 0) {
             if (term_key_push(buf[--p])) {
                 return 0;
             }
         }
 
-        (void)term_inkey(&ch, true, true);
-        return ch;
+        return term_inkey(true, true);
     }
 
-    concptr pat = macro_patterns[k].data();
-    n = strlen(pat);
-    while (p > n) {
+    const auto &pat = macro_patterns[k];
+    while (p > pat.length()) {
         if (term_key_push(buf[--p])) {
             return 0;
         }
     }
 
     parse_macro = true;
-    if (term_key_push(30)) {
+    if (term_key_push(RECORD_SEPARATOR)) {
         return 0;
     }
 
-    concptr act = macro_actions[k].data();
-
-    n = strlen(act);
+    const auto &act = macro_actions[k];
+    auto n = act.length();
     while (n > 0) {
         if (term_key_push(act[--n])) {
             return 0;
@@ -231,29 +216,32 @@ char inkey(bool do_all_term_refresh)
     }
 
     term_activate(angband_terms[0]);
-    char kk;
     while (!ch) {
-        if (!inkey_base && inkey_scan && (0 != term_inkey(&kk, false, false))) {
-            break;
+        if (!inkey_base && inkey_scan) {
+            if (const auto key = term_inkey(false, false); key == '\0') {
+                break;
+            }
         }
 
-        if (!done && (0 != term_inkey(&kk, false, false))) {
-            start_term_fresh();
-            if (do_all_term_refresh) {
-                all_term_fresh();
-            } else {
-                term_fresh();
-            }
+        if (!done) {
+            if (const auto key = term_inkey(false, false); key == '\0') {
+                start_term_fresh();
+                if (do_all_term_refresh) {
+                    all_term_fresh();
+                } else {
+                    term_fresh();
+                }
 
-            world.character_saved = false;
-            signal_count = 0;
-            done = true;
+                world.character_saved = false;
+                signal_count = 0;
+                done = true;
+            }
         }
 
         if (inkey_base) {
             int w = 0;
             if (!inkey_scan) {
-                if (0 == term_inkey(&ch, true, true)) {
+                if (ch = term_inkey(true, true); ch == '\0') {
                     break;
                 }
 
@@ -261,7 +249,7 @@ char inkey(bool do_all_term_refresh)
             }
 
             while (true) {
-                if (0 == term_inkey(&ch, false, true)) {
+                if (ch = term_inkey(false, true); ch != '\0') {
                     break;
                 } else {
                     w += 10;
@@ -277,7 +265,7 @@ char inkey(bool do_all_term_refresh)
         }
 
         ch = inkey_aux();
-        if (ch == 29) {
+        if (ch == GROUP_SEPARATOR) {
             ch = 0;
             continue;
         }
@@ -287,9 +275,9 @@ char inkey(bool do_all_term_refresh)
             parse_under = false;
         }
 
-        if (ch == 30) {
+        if (ch == RECORD_SEPARATOR) {
             ch = 0;
-        } else if (ch == 31) {
+        } else if (ch == UNIT_SEPARATOR) {
             ch = 0;
             parse_under = true;
         } else if (parse_under) {
@@ -325,7 +313,7 @@ char inkey_for_image()
     // 画面更新なしで入力を待つ
     while (!ch) {
         // 入力があるまで待機
-        if (0 == term_inkey(&ch, true, true)) {
+        if (ch = term_inkey(true, true); ch != '\0') {
             break;
         }
         // 短い遅延

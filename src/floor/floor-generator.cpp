@@ -34,25 +34,25 @@
 #include "monster/monster-flag-types.h"
 #include "monster/monster-status-setter.h"
 #include "monster/monster-status.h"
+#include "monster/monster-timed-effects.h"
 #include "monster/monster-update.h"
 #include "monster/monster-util.h"
-#include "player/player-status.h"
 #include "system/angband-system.h"
 #include "system/building-type-definition.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/dungeon/dungeon-list.h"
+#include "system/dungeon/quest-definition.h"
 #include "system/enums/terrain/terrain-tag.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/monster-entity.h"
-#include "system/player-type-definition.h"
 #include "system/terrain/terrain-definition.h"
 #include "system/terrain/terrain-list.h"
+#include "term/z-rand.h"
 #include "util/bit-flags-calculator.h"
-#include "util/rng-xoshiro.h"
 #include "view/display-messages.h"
 #include "window/main-window-util.h"
 #include "wizard/wizard-messages.h"
@@ -63,21 +63,22 @@
 
 /*!
  * @brief 闘技場用のアリーナ地形を作成する / Builds the on_defeat_arena_monster after it is entered -KMW-
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
-static Pos2D build_arena(PlayerType *player_ptr)
+static Pos2D build_arena(CreatureEntity &creature)
 {
+
     const auto yval = SCREEN_HGT / 2;
     const auto xval = SCREEN_WID / 2;
     const auto y_height = yval - 15;
     const auto y_depth = yval + 15;
     const auto x_left = xval - 15;
     const auto x_right = xval + 15;
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *creature.get_floor();
     for (auto y = y_height; y <= y_height + 5; y++) {
         for (auto x = x_left; x <= x_right; x++) {
             const Pos2D pos(y, x);
-            place_bold(player_ptr, pos.y, pos.x, GB_EXTRA_PERM);
+            place_bold(creature, pos.y, pos.x, GB_EXTRA_PERM);
             floor.get_grid(pos).info |= (CAVE_GLOW | CAVE_MARK);
         }
     }
@@ -85,7 +86,7 @@ static Pos2D build_arena(PlayerType *player_ptr)
     for (auto y = y_depth; y >= y_depth - 5; y--) {
         for (auto x = x_left; x <= x_right; x++) {
             const Pos2D pos(y, x);
-            place_bold(player_ptr, pos.y, pos.x, GB_EXTRA_PERM);
+            place_bold(creature, pos.y, pos.x, GB_EXTRA_PERM);
             floor.get_grid(pos).info |= (CAVE_GLOW | CAVE_MARK);
         }
     }
@@ -93,7 +94,7 @@ static Pos2D build_arena(PlayerType *player_ptr)
     for (auto x = x_left; x <= x_left + 5; x++) {
         for (auto y = y_height; y <= y_depth; y++) {
             const Pos2D pos(y, x);
-            place_bold(player_ptr, pos.y, pos.x, GB_EXTRA_PERM);
+            place_bold(creature, pos.y, pos.x, GB_EXTRA_PERM);
             floor.get_grid(pos).info |= (CAVE_GLOW | CAVE_MARK);
         }
     }
@@ -101,28 +102,28 @@ static Pos2D build_arena(PlayerType *player_ptr)
     for (auto x = x_right; x >= x_right - 5; x--) {
         for (auto y = y_height; y <= y_depth; y++) {
             const Pos2D pos(y, x);
-            place_bold(player_ptr, pos.y, pos.x, GB_EXTRA_PERM);
+            place_bold(creature, pos.y, pos.x, GB_EXTRA_PERM);
             floor.get_grid(pos).info |= (CAVE_GLOW | CAVE_MARK);
         }
     }
 
     // 柱っぽいもの
-    place_bold(player_ptr, y_height + 6, x_left + 18, GB_EXTRA_PERM);
+    place_bold(creature, y_height + 6, x_left + 18, GB_EXTRA_PERM);
     floor.get_grid({ y_height + 6, x_left + 18 }).info |= CAVE_GLOW | CAVE_MARK;
-    place_bold(player_ptr, y_depth - 6, x_left + 18, GB_EXTRA_PERM);
+    place_bold(creature, y_depth - 6, x_left + 18, GB_EXTRA_PERM);
     floor.get_grid({ y_depth - 6, x_left + 18 }).info |= CAVE_GLOW | CAVE_MARK;
-    place_bold(player_ptr, y_height + 6, x_right - 18, GB_EXTRA_PERM);
+    place_bold(creature, y_height + 6, x_right - 18, GB_EXTRA_PERM);
     floor.get_grid({ y_height + 6, x_right - 18 }).info |= CAVE_GLOW | CAVE_MARK;
-    place_bold(player_ptr, y_depth - 6, x_right - 18, GB_EXTRA_PERM);
+    place_bold(creature, y_depth - 6, x_right - 18, GB_EXTRA_PERM);
     floor.get_grid({ y_depth - 6, x_right - 18 }).info |= CAVE_GLOW | CAVE_MARK;
 
-    place_bold(player_ptr, y_height + 9, x_left + 21, GB_EXTRA_PERM);
+    place_bold(creature, y_height + 9, x_left + 21, GB_EXTRA_PERM);
     floor.get_grid({ y_height + 9, x_left + 21 }).info |= CAVE_GLOW | CAVE_MARK;
-    place_bold(player_ptr, y_depth - 9, x_left + 21, GB_EXTRA_PERM);
+    place_bold(creature, y_depth - 9, x_left + 21, GB_EXTRA_PERM);
     floor.get_grid({ y_height - 9, x_left + 21 }).info |= CAVE_GLOW | CAVE_MARK;
-    place_bold(player_ptr, y_height + 9, x_right - 21, GB_EXTRA_PERM);
+    place_bold(creature, y_height + 9, x_right - 21, GB_EXTRA_PERM);
     floor.get_grid({ y_height + 9, x_left - 21 }).info |= CAVE_GLOW | CAVE_MARK;
-    place_bold(player_ptr, y_depth - 9, x_right - 21, GB_EXTRA_PERM);
+    place_bold(creature, y_depth - 9, x_right - 21, GB_EXTRA_PERM);
     floor.get_grid({ y_height - 9, x_left - 21 }).info |= CAVE_GLOW | CAVE_MARK;
 
     const Pos2D pos(y_height + 10, xval);
@@ -134,18 +135,19 @@ static Pos2D build_arena(PlayerType *player_ptr)
 
 /*!
  * @brief 挑戦時闘技場への入場処理
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @details 互換性のため、『森トロル』など地上と闘技場の両方に出現するユニークを撃破した際の不戦勝処理を残している
  * @todo v3.0正式版リリース以降に上記を削除する
  */
-static void generate_challenge_arena(PlayerType *player_ptr)
+static void generate_challenge_arena(CreatureEntity &creature)
 {
-    auto &floor = *player_ptr->current_floor_ptr;
+
+    auto &floor = *creature.get_floor();
     floor.height = SCREEN_HGT;
     floor.width = SCREEN_WID;
     for (auto y = 0; y < MAX_HGT; y++) {
         for (auto x = 0; x < MAX_WID; x++) {
-            place_bold(player_ptr, y, x, GB_SOLID_PERM);
+            place_bold(creature, y, x, GB_SOLID_PERM);
             floor.get_grid({ y, x }).add_info(CAVE_GLOW | CAVE_MARK);
         }
     }
@@ -156,14 +158,14 @@ static void generate_challenge_arena(PlayerType *player_ptr)
         }
     }
 
-    const auto pos = build_arena(player_ptr);
-    if (!player_ptr->try_set_position(pos)) {
+    const auto pos = build_arena(creature);
+    if (!creature.try_set_position(pos)) {
         return;
     }
 
     auto &entries = ArenaEntryList::get_instance();
     const auto &monrace = entries.get_monrace();
-    if (place_specific_monster(player_ptr, player_ptr->y + 5, player_ptr->x, monrace.idx, PM_NO_KAGE | PM_NO_PET)) {
+    if (place_specific_monster(creature, creature.y + 5, creature.x, monrace.idx, PM_NO_KAGE | PM_NO_PET)) {
         return;
     }
 
@@ -174,21 +176,22 @@ static void generate_challenge_arena(PlayerType *player_ptr)
 
 /*!
  * @brief モンスター闘技場のフロア生成 / Builds the on_defeat_arena_monster after it is entered -KMW-
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
-static Pos2D build_battle(PlayerType *player_ptr)
+static Pos2D build_battle(CreatureEntity &creature)
 {
+
     const auto yval = ARENA_WID / 2;
     const auto xval = ARENA_HGT / 2;
     const auto y_height = yval - 15;
     const auto y_depth = yval + 15;
     const auto x_left = xval - 15;
     const auto x_right = xval + 15;
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *creature.get_floor();
     for (auto y = y_height; y <= y_height + 5; y++) {
         for (auto x = x_left; x <= x_right; x++) {
             const Pos2D pos(y, x);
-            place_bold(player_ptr, pos.y, pos.x, GB_EXTRA_PERM);
+            place_bold(creature, pos.y, pos.x, GB_EXTRA_PERM);
             floor.get_grid(pos).info |= (CAVE_GLOW | CAVE_MARK);
         }
     }
@@ -196,7 +199,7 @@ static Pos2D build_battle(PlayerType *player_ptr)
     for (auto y = y_depth; y >= y_depth - 3; y--) {
         for (auto x = x_left; x <= x_right; x++) {
             const Pos2D pos(y, x);
-            place_bold(player_ptr, pos.y, pos.x, GB_EXTRA_PERM);
+            place_bold(creature, pos.y, pos.x, GB_EXTRA_PERM);
             floor.get_grid(pos).info |= (CAVE_GLOW | CAVE_MARK);
         }
     }
@@ -204,7 +207,7 @@ static Pos2D build_battle(PlayerType *player_ptr)
     for (auto x = x_left; x <= x_left + 17; x++) {
         for (auto y = y_height; y <= y_depth; y++) {
             const Pos2D pos(y, x);
-            place_bold(player_ptr, pos.y, pos.x, GB_EXTRA_PERM);
+            place_bold(creature, pos.y, pos.x, GB_EXTRA_PERM);
             floor.get_grid(pos).info |= (CAVE_GLOW | CAVE_MARK);
         }
     }
@@ -212,18 +215,18 @@ static Pos2D build_battle(PlayerType *player_ptr)
     for (auto x = x_right; x >= x_right - 17; x--) {
         for (auto y = y_height; y <= y_depth; y++) {
             const Pos2D pos(y, x);
-            place_bold(player_ptr, pos.y, pos.x, GB_EXTRA_PERM);
+            place_bold(creature, pos.y, pos.x, GB_EXTRA_PERM);
             floor.get_grid(pos).info |= (CAVE_GLOW | CAVE_MARK);
         }
     }
 
-    place_bold(player_ptr, y_height + 6, x_left + 18, GB_EXTRA_PERM);
+    place_bold(creature, y_height + 6, x_left + 18, GB_EXTRA_PERM);
     floor.get_grid({ y_height + 6, x_left + 18 }).info |= CAVE_GLOW | CAVE_MARK;
-    place_bold(player_ptr, y_depth - 4, x_left + 18, GB_EXTRA_PERM);
+    place_bold(creature, y_depth - 4, x_left + 18, GB_EXTRA_PERM);
     floor.get_grid({ y_depth - 4, x_left + 18 }).info |= CAVE_GLOW | CAVE_MARK;
-    place_bold(player_ptr, y_height + 6, x_right - 18, GB_EXTRA_PERM);
+    place_bold(creature, y_height + 6, x_right - 18, GB_EXTRA_PERM);
     floor.get_grid({ y_height + 6, x_right - 18 }).info |= CAVE_GLOW | CAVE_MARK;
-    place_bold(player_ptr, y_depth - 4, x_right - 18, GB_EXTRA_PERM);
+    place_bold(creature, y_depth - 4, x_right - 18, GB_EXTRA_PERM);
     floor.get_grid({ y_depth - 4, x_right - 18 }).info |= CAVE_GLOW | CAVE_MARK;
 
     for (auto y = y_height + 1; y <= y_height + 5; y++) {
@@ -241,13 +244,14 @@ static Pos2D build_battle(PlayerType *player_ptr)
 /*!
  * @brief モンスター闘技場への導入処理 / Town logic flow for generation of on_defeat_arena_monster -KMW-
  */
-static void generate_gambling_arena(PlayerType *player_ptr)
+static void generate_gambling_arena(CreatureEntity &creature)
 {
-    auto &floor = *player_ptr->current_floor_ptr;
+
+    auto &floor = *creature.get_floor();
     for (auto y = 0; y < MAX_HGT; y++) {
         for (auto x = 0; x < MAX_WID; x++) {
             const Pos2D pos(y, x);
-            place_bold(player_ptr, y, x, GB_SOLID_PERM);
+            place_bold(creature, y, x, GB_SOLID_PERM);
             floor.get_grid(pos).info |= (CAVE_GLOW | CAVE_MARK);
         }
     }
@@ -258,42 +262,43 @@ static void generate_gambling_arena(PlayerType *player_ptr)
         }
     }
 
-    const auto pos = build_battle(player_ptr);
-    if (!player_ptr->try_set_position(pos)) {
+    const auto pos = build_battle(creature);
+    if (!creature.try_set_position(pos)) {
         return;
     }
 
     const auto &melee_arena = MeleeArena::get_instance();
     for (auto i = 0; i < NUM_GLADIATORS; i++) {
         const auto &gladiator = melee_arena.get_gladiator(i);
-        const Pos2D m_pos(player_ptr->y + 8 + (i / 2) * 4, player_ptr->x - 2 + (i % 2) * 4);
+        const Pos2D m_pos(creature.y + 8 + (i / 2) * 4, creature.x - 2 + (i % 2) * 4);
         constexpr auto mode = PM_NO_KAGE | PM_NO_PET;
-        const auto m_idx = place_specific_monster(player_ptr, m_pos.y, m_pos.x, gladiator.monrace_id, mode);
+        const auto m_idx = place_specific_monster(creature, m_pos.y, m_pos.x, gladiator.monrace_id, mode);
         if (m_idx > 0) {
-            floor.m_list[*m_idx].set_friendly();
+            floor.get_monster(*m_idx).set_friendly();
         }
     }
 
     for (short i = 1; i < floor.m_max; i++) {
-        auto &monster = floor.m_list[i];
+        auto &monster = floor.get_monster(i);
         if (!monster.is_valid()) {
             continue;
         }
 
-        monster.mflag2.set({ MonsterConstantFlagType::MARK, MonsterConstantFlagType::SHOW });
-        update_monster(player_ptr, i, false);
+        monster.set_constant_flags({ MonsterConstantFlagType::MARK, MonsterConstantFlagType::SHOW });
+        update_monster(creature, i, false);
     }
 }
 
 /*!
  * @brief 固定マップクエストのフロア生成 / Generate a quest level
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
-static void generate_fixed_floor(PlayerType *player_ptr)
+static void generate_fixed_floor(CreatureEntity &creature)
 {
-    auto &floor = *player_ptr->current_floor_ptr;
+
+    auto &floor = *creature.get_floor();
     for (const auto &pos : floor.get_area()) {
-        place_bold(player_ptr, pos.y, pos.x, GB_SOLID_PERM);
+        place_bold(creature, pos.y, pos.x, GB_SOLID_PERM);
     }
 
     const auto &quests = QuestList::get_instance();
@@ -302,47 +307,60 @@ static void generate_fixed_floor(PlayerType *player_ptr)
     floor.object_level = floor.base_level;
     floor.monster_level = floor.base_level;
     if (record_stair) {
-        exe_write_diary_quest(player_ptr, DiaryKind::TO_QUEST, floor.quest_number);
+        exe_write_diary_quest(creature, DiaryKind::TO_QUEST, floor.quest_number);
     }
 
-    get_mon_num_prep_enum(player_ptr, floor.get_monrace_hook());
+    get_mon_num_prep_enum(creature, floor.get_monrace_hook());
     init_flags = INIT_CREATE_DUNGEON;
-    parse_fixed_map(player_ptr, QUEST_DEFINITION_LIST, 0, 0, MAX_HGT, MAX_WID);
+    parse_fixed_map(creature, QUEST_DEFINITION_LIST, 0, 0, MAX_HGT, MAX_WID);
 }
 
 /*!
  * @brief ダンジョン時のランダムフロア生成 / Make a real level
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param seed 乱数の種（オプショナル）。指定された場合は固定ダンジョンを生成
  * @return フロアの生成に成功したらTRUE
  */
-static tl::optional<std::string> level_gen(PlayerType *player_ptr, tl::optional<uint32_t> seed = tl::nullopt)
+static tl::optional<std::string> level_gen(CreatureEntity &creature, tl::optional<uint32_t> seed = tl::nullopt)
 {
+
     // 乱数種の保存と復元用
-    Xoshiro128StarStar::state_type original_state{};
+    std::array<uint32_t, xso::rng32::word_count()> original_state{};
     bool seed_was_fixed = false;
 
     // 乱数種が指定された場合は固定
     if (seed) {
         auto &rng = AngbandSystem::get_instance().get_rng();
-        original_state = rng.get_state(); // 現在の乱数状態を保存
-        rng = Xoshiro128StarStar(*seed); // 指定された種で乱数を初期化
+        rng.get_state(original_state.begin()); // 現在の乱数状態を保存
+        rng = xso::rng32(*seed); // 指定された種で乱数を初期化
         seed_was_fixed = true;
-        msg_format_wizard(player_ptr, CHEAT_DUNGEON,
+        msg_format_wizard(creature, CHEAT_DUNGEON,
             _("乱数種を固定してフロア生成: 0x%08X", "Generating floor with fixed seed: 0x%08X"),
             *seed);
     }
 
     constexpr auto chance_small_floor = 10;
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *creature.get_floor();
     const auto &dungeon = floor.get_generated_dungeon_definition();
     int level_height, level_width;
     if (dungeon.flags.has(DungeonFeatureType::ALWAY_MAX_SIZE)) {
         level_height = MAX_HGT / SCREEN_HGT;
         level_width = MAX_WID / SCREEN_WID;
-    } else if (always_small_levels || ironman_small_levels || (small_levels && one_in_(chance_small_floor)) || dungeon.flags.has(DungeonFeatureType::SMALLEST)) {
+    } else if (always_small_floor || ironman_smallest_floor || (allow_smallest_floor && !always_large_floor && one_in_(chance_small_floor)) || dungeon.flags.has(DungeonFeatureType::SMALLEST)) {
         level_height = MIN_HGT_MULTIPLE;
         level_width = MIN_WID_MULTIPLE;
+        // 鉄人「常に最小フロア」+ 鉄人「常に普通でない部屋」+ NO_VAULT 無し の組み合わせで
+        // 1x1 ブロックに VAULT を生成しようとして無限ループに陥るのを回避するため、
+        // VAULT が出現可能なら最低 2x1 ブロックを保証する (上流 hengband#5369 相当)。
+        if (ironman_smallest_floor && ironman_rooms && dungeon.flags.has_not(DungeonFeatureType::NO_VAULT)) {
+            level_height = MIN_HGT_MULTIPLE * 2;
+            level_width = MIN_WID_MULTIPLE;
+        }
+    } else if (always_large_floor) {
+        // 常に大きめのフロアを生成する (上流 #5423 相当)。
+        // always_small_floor 等の「小さめ」系が優先されるよう、それらより後に判定する。
+        level_height = MAX_HGT / SCREEN_HGT;
+        level_width = MAX_WID / SCREEN_WID;
     } else if (dungeon.flags.has(DungeonFeatureType::BEGINNER)) {
         level_height = MIN_HGT_MULTIPLE * 2;
         level_width = MIN_WID_MULTIPLE * 2;
@@ -350,7 +368,7 @@ static tl::optional<std::string> level_gen(PlayerType *player_ptr, tl::optional<
         if (one_in_(HUGE_DUNGEON_RATE)) {
             level_height = randint1(MAX_HGT / SCREEN_HGT);
             level_width = randint1(MAX_WID / SCREEN_WID);
-        } else if (one_in_(LARGE_DUNGEON_RATE) || dungeon.flags.has(DungeonFeatureType::BIG)) {
+        } else if (one_in_(LARGE_DUNGEON_RATE) || dungeon.flags.has(DungeonFeatureType::LARGEST)) {
             level_height = randint1(MAX_HGT / SCREEN_HGT / 2);
             level_width = randint1(MAX_WID / SCREEN_WID / 2);
         } else {
@@ -358,12 +376,13 @@ static tl::optional<std::string> level_gen(PlayerType *player_ptr, tl::optional<
             level_width = randint1(MAX_WID / SCREEN_WID / 3);
         }
         bool is_first_level_area = true;
-        bool is_max_area = (level_height == MAX_HGT / SCREEN_HGT) && (level_width == MAX_WID / SCREEN_WID);
+        // allow_largest_floor が ON の場合は最大面積フロアを除外しない (上流 #5423 相当)。
+        bool is_max_area = !allow_largest_floor && (level_height == MAX_HGT / SCREEN_HGT) && (level_width == MAX_WID / SCREEN_WID);
         while (is_first_level_area || is_max_area) {
             level_height = randint1(MAX_HGT / SCREEN_HGT);
             level_width = randint1(MAX_WID / SCREEN_WID);
             is_first_level_area = false;
-            is_max_area = (level_height == MAX_HGT / SCREEN_HGT) && (level_width == MAX_WID / SCREEN_WID);
+            is_max_area = !allow_largest_floor && (level_height == MAX_HGT / SCREEN_HGT) && (level_width == MAX_WID / SCREEN_WID);
         }
     }
     floor.height = level_height * SCREEN_HGT;
@@ -371,14 +390,45 @@ static tl::optional<std::string> level_gen(PlayerType *player_ptr, tl::optional<
     panel_row_min = floor.height;
     panel_col_min = floor.width;
 
-    auto result = cave_gen(player_ptr, seed);
+    auto result = cave_gen(creature, seed);
 
     // 乱数状態を復元
     if (seed_was_fixed) {
-        AngbandSystem::get_instance().get_rng().set_state(original_state);
+        AngbandSystem::get_instance().get_rng().seed(original_state.cbegin(), original_state.cend());
     }
 
     return result;
+}
+
+static FEAT_IDX select_terrain_generation_change(FEAT_IDX terrain_id)
+{
+    const auto &terrain = TerrainList::get_instance().get_terrain(terrain_id);
+    if (terrain.generation_changes.empty()) {
+        return terrain_id;
+    }
+
+    const auto chance = randint1(100);
+    auto cumulative_probability = 0;
+    for (const auto &change : terrain.generation_changes) {
+        cumulative_probability += change.probability;
+        if (chance <= cumulative_probability) {
+            return change.result;
+        }
+    }
+
+    return terrain_id;
+}
+
+/*!
+ * @brief 生成時の確率的な地形変化をフロア全体に適用する (上流 #5393 相当)
+ * @param floor フロアへの参照
+ */
+void apply_terrain_generation_changes(FloorType &floor)
+{
+    for (const auto &pos : floor.get_area()) {
+        auto &grid = floor.get_grid(pos);
+        grid.feat = select_terrain_generation_change(grid.feat);
+    }
 }
 
 /*!
@@ -426,11 +476,12 @@ void wipe_generate_random_floor_flags(FloorType &floor)
 
 /*!
  * @brief フロアの全情報を初期化する / Clear and empty floor.
- * @parama player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
-void clear_cave(PlayerType *player_ptr)
+void clear_cave(CreatureEntity &creature)
 {
-    auto &floor = *player_ptr->current_floor_ptr;
+
+    auto &floor = *creature.get_floor();
     floor.o_list.clear();
     floor.o_list.push_back(std::make_shared<ItemEntity>()); // 0番にダミーアイテムを用意
 
@@ -440,7 +491,7 @@ void clear_cave(PlayerType *player_ptr)
     }
     floor.m_max = 1;
     floor.m_cnt = 0;
-    for (const auto mte : MONSTER_TIMED_EFFECT_RANGE) {
+    for (const auto mte : MONSTER_TIMED_EFFECT_LIST) {
         floor.mproc_max[mte] = 0;
     }
 
@@ -556,35 +607,41 @@ static bool floor_is_connected(const FloorType &floor, const IsWallFunc is_wall)
 
 /*!
  * ダンジョンのランダムフロアを生成する / Generates a random dungeon level -RAK-
- * @parama player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @note Hack -- regenerate any "overflow" levels
  */
-void generate_floor(PlayerType *player_ptr)
+void generate_floor(CreatureEntity &creature)
 {
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *creature.get_floor();
     const auto is_wild_mode = AngbandWorld::get_instance().is_wild_mode();
     for (int num = 0; true; num++) {
         tl::optional<std::string> why;
-        clear_cave(player_ptr);
-        player_ptr->x = player_ptr->y = 0;
+        auto should_apply_terrain_generation_changes = true;
+        clear_cave(creature);
+        creature.x = creature.y = 0;
         if (floor.inside_arena) {
-            generate_challenge_arena(player_ptr);
+            generate_challenge_arena(creature);
         } else if (AngbandSystem::get_instance().is_phase_out()) {
-            generate_gambling_arena(player_ptr);
+            generate_gambling_arena(creature);
         } else if (floor.is_in_quest()) {
-            generate_fixed_floor(player_ptr);
+            generate_fixed_floor(creature);
         } else if (!floor.is_underground()) {
             if (is_wild_mode) {
-                wilderness_gen_small(player_ptr);
+                wilderness_gen_small(creature);
             } else {
-                wilderness_gen(player_ptr);
+                wilderness_gen(creature);
             }
         } else {
-            why = level_gen(player_ptr);
+            why = level_gen(creature);
+            should_apply_terrain_generation_changes = false;
         }
 
-        if (is_sushi_eater(player_ptr)) {
-            alloc_object(player_ptr, ALLOC_SET_BOTH, ALLOC_TYP_SUSHI, randnor(floor.width * floor.height / 20, 3));
+        if (!why && should_apply_terrain_generation_changes) {
+            apply_terrain_generation_changes(floor);
+        }
+
+        if (creature.is_sushi_eater()) {
+            alloc_object(creature, ALLOC_SET_BOTH, ALLOC_TYP_SUSHI, randnor(floor.width * floor.height / 20, 3));
         }
 
         if (floor.o_list.size() >= MAX_FLOOR_ITEMS) {
@@ -597,7 +654,7 @@ void generate_floor(PlayerType *player_ptr)
         // 狂戦士でのプレイに支障をきたしうるので再生成する。
         // 地上、荒野マップ、クエストでは連結性判定は行わない。
         // TODO: 本来はダンジョン生成アルゴリズム自身で連結性を保証するのが理想ではある。
-        const auto check_conn = why && floor.is_underground() && !floor.is_in_quest();
+        const auto check_conn = !why && floor.is_underground() && !floor.is_in_quest();
         if (check_conn && !floor_is_connected(floor, is_permanent_blocker)) {
             // 一定回数試しても連結にならないなら諦める。
             if (num >= 1000) {
@@ -613,10 +670,10 @@ void generate_floor(PlayerType *player_ptr)
 
         msg_format(_("生成やり直し(%s)", "Generation restarted (%s)"), why->data());
         wipe_o_list(floor);
-        wipe_monsters_list(player_ptr);
+        wipe_monsters_list(creature);
     }
 
-    glow_deep_lava_and_bldg(player_ptr);
+    glow_deep_lava_and_bldg(creature);
     floor.enter_dungeon(false);
     wipe_generate_random_floor_flags(floor);
 }

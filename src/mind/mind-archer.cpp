@@ -15,10 +15,10 @@
 #include "object/item-use-flags.h"
 #include "perception/object-perception.h"
 #include "system/angband.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "system/terrain/terrain-definition.h"
 #include "target/target-getter.h"
@@ -89,74 +89,73 @@ static bool select_ammo_creation_type(ammo_creation_type &type, PLAYER_LEVEL ple
  * Hook to determine if an object is contertible in an arrow/bolt
  * @return 製造を実際に行ったらTRUE、キャンセルしたらFALSEを返す
  */
-bool create_ammo(PlayerType *player_ptr)
+bool create_ammo(CreatureEntity &creature)
 {
-    if (cmd_limit_confused(player_ptr) || cmd_limit_blind(player_ptr)) {
+    if (cmd_limit_confused(creature) || cmd_limit_blind(creature)) {
         return false;
     }
 
     ammo_creation_type ext = AMMO_NONE;
 
-    if (!select_ammo_creation_type(ext, player_ptr->level)) {
+    if (!select_ammo_creation_type(ext, creature.get_level())) {
         return false;
     }
 
     switch (ext) {
     case AMMO_SHOT: {
-        const auto dir = get_rep_dir(player_ptr);
+        const auto dir = get_rep_dir(creature);
         if (!dir) {
             return false;
         }
 
-        const auto pos = player_ptr->get_neighbor(dir);
-        const auto &grid = player_ptr->current_floor_ptr->get_grid(pos);
+        const auto pos = creature.get_neighbor(dir);
+        const auto &grid = creature.get_floor()->get_grid(pos);
         if (grid.get_terrain(TerrainKind::MIMIC).flags.has_not(TerrainCharacteristics::CAN_DIG)) {
             msg_print(_("そこには岩石がない。", "You need a pile of rubble."));
             return false;
         }
 
-        if (!grid.has(TerrainCharacteristics::CAN_DIG) || !grid.has(TerrainCharacteristics::HURT_ROCK)) {
+        if (!grid.has(TerrainCharacteristics::CAN_DIG) || !grid.has(TerrainCharacteristics::STONE)) {
             msg_print(_("硬すぎて崩せなかった。", "You failed to make ammo."));
             return true;
         }
 
-        ItemEntity item({ ItemKindType::SHOT, m_bonus(1, player_ptr->level) + 1 });
+        ItemEntity item({ ItemKindType::SHOT, m_bonus(1, creature.get_level()) + 1 });
         item.number = rand_range(15, 30);
-        object_aware(player_ptr, item);
+        object_aware(creature, item);
         item.mark_as_known();
-        ItemMagicApplier(player_ptr, &item, player_ptr->level, AM_NO_FIXED_ART).execute();
+        ItemMagicApplier(creature, &item, creature.get_level(), AM_NO_FIXED_ART).execute();
         item.discount = 99;
-        int16_t slot = store_item_to_inventory(player_ptr, &item);
-        const auto item_name = describe_flavor(player_ptr, item, 0);
+        int16_t slot = creature.store_item(item);
+        const auto item_name = describe_flavor(creature, item, 0);
         msg_print(_(format("%sを作った。", item_name.data()), "You make some ammo."));
         if (slot >= 0) {
-            autopick_alter_item(player_ptr, slot, false);
+            autopick_alter_item(creature, slot, false);
         }
 
-        cave_alter_feat(player_ptr, pos.y, pos.x, TerrainCharacteristics::HURT_ROCK);
+        cave_alter_feat(creature, pos.y, pos.x, TerrainCharacteristics::STONE);
         RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::FLOW);
         return true;
     }
     case AMMO_ARROW: {
         constexpr auto q = _("どのアイテムから作りますか？ ", "Convert which item? ");
         constexpr auto s = _("材料を持っていない。", "You have no item to convert.");
-        short i_idx;
-        auto *q_ptr = choose_object(player_ptr, &i_idx, q, s, USE_INVEN | USE_FLOOR, FuncItemTester(&ItemEntity::is_convertible));
-        if (!q_ptr) {
+        const auto &[item, i_idx] = choose_item(creature, q, s, USE_INVEN | USE_FLOOR, FuncItemTester(&ItemEntity::is_convertible));
+        if (!item) {
             return false;
         }
-        ItemEntity ammo({ ItemKindType::ARROW, m_bonus(1, player_ptr->level) + 1 });
+        ItemEntity ammo({ ItemKindType::ARROW, m_bonus(1, creature.get_level()) + 1 });
         ammo.number = rand_range(5, 10);
-        object_aware(player_ptr, ammo);
+        object_aware(creature, ammo);
         ammo.mark_as_known();
-        ItemMagicApplier(player_ptr, &ammo, player_ptr->level, AM_NO_FIXED_ART).execute();
+        ItemMagicApplier(creature, &ammo, creature.get_level(), AM_NO_FIXED_ART).execute();
         ammo.discount = 99;
-        const auto item_name = describe_flavor(player_ptr, ammo, 0);
+        const auto item_name = describe_flavor(creature, ammo, 0);
         msg_print(_(format("%sを作った。", item_name.data()), "You make some ammo."));
-        vary_item(player_ptr, i_idx, -1);
-        int16_t slot = store_item_to_inventory(player_ptr, &ammo);
+        vary_item(creature, i_idx, -1);
+        int16_t slot = creature.store_item(ammo);
         if (slot >= 0) {
-            autopick_alter_item(player_ptr, slot, false);
+            autopick_alter_item(creature, slot, false);
         }
 
         return true;
@@ -164,24 +163,23 @@ bool create_ammo(PlayerType *player_ptr)
     case AMMO_BOLT: {
         constexpr auto q = _("どのアイテムから作りますか？ ", "Convert which item? ");
         constexpr auto s = _("材料を持っていない。", "You have no item to convert.");
-        short i_idx;
-        auto *q_ptr = choose_object(player_ptr, &i_idx, q, s, (USE_INVEN | USE_FLOOR), FuncItemTester(&ItemEntity::is_convertible));
-        if (!q_ptr) {
+        const auto &[item, i_idx] = choose_item(creature, q, s, (USE_INVEN | USE_FLOOR), FuncItemTester(&ItemEntity::is_convertible));
+        if (!item) {
             return false;
         }
 
-        ItemEntity ammo({ ItemKindType::BOLT, m_bonus(1, player_ptr->level) + 1 });
+        ItemEntity ammo({ ItemKindType::BOLT, m_bonus(1, creature.get_level()) + 1 });
         ammo.number = rand_range(4, 8);
-        object_aware(player_ptr, ammo);
+        object_aware(creature, ammo);
         ammo.mark_as_known();
-        ItemMagicApplier(player_ptr, &ammo, player_ptr->level, AM_NO_FIXED_ART).execute();
+        ItemMagicApplier(creature, &ammo, creature.get_level(), AM_NO_FIXED_ART).execute();
         ammo.discount = 99;
-        const auto item_name = describe_flavor(player_ptr, ammo, 0);
+        const auto item_name = describe_flavor(creature, ammo, 0);
         msg_print(_(format("%sを作った。", item_name.data()), "You make some ammo."));
-        vary_item(player_ptr, i_idx, -1);
-        int16_t slot = store_item_to_inventory(player_ptr, &ammo);
+        vary_item(creature, i_idx, -1);
+        int16_t slot = creature.store_item(ammo);
         if (slot >= 0) {
-            autopick_alter_item(player_ptr, slot, false);
+            autopick_alter_item(creature, slot, false);
         }
 
         return true;

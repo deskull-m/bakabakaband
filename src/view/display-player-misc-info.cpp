@@ -3,7 +3,7 @@
 #include "player-info/mimic-info-table.h"
 #include "player/player-personality.h"
 #include "player/player-sex.h"
-#include "system/player-type-definition.h"
+#include "system/creature-entity.h"
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
 #include "view/display-player-stat-info.h"
@@ -12,15 +12,25 @@
 /*!
  * @brief 画面上部にプレイヤーの名前を表示する
  *
+ * @param creature クリーチャーへの参照
  * @param name_only trueならば名前のみ表示する。falseならばプレイヤーの性格も表示する。
  */
-void display_player_name(PlayerType *player_ptr, bool name_only)
+void display_player_name(CreatureEntity &creature, bool name_only)
 {
     std::stringstream ss;
-    if (!name_only && player_ptr->personality != nullptr) {
-        ss << (*player_ptr->personality).title << _((*player_ptr->personality).no == 1 ? "の" : "", " ");
+    // 性格が「なし」(未設定の NONE / 無心 EMPTY、いずれも表示名「なし」) の場合は
+    // 二つ名 (「○○の」) を一切付けない。
+    const auto ppersonality = creature.get_ppersonality();
+    const auto has_personality_title = (creature.personality != nullptr) && (ppersonality != PERSONALITY_NONE) && (ppersonality != PERSONALITY_EMPTY);
+    if (!name_only && has_personality_title) {
+        ss << (*creature.get_personality_info()).title << _((*creature.get_personality_info()).no == 1 ? "の" : "", " ");
     }
-    ss << player_ptr->name;
+    // 無名モンスター（または匿名プレイヤー）の場合は「名無し」表記へフォールバック
+    if (creature.name.empty()) {
+        ss << _("名無し", "No Name");
+    } else {
+        ss << creature.name;
+    }
     const auto display_name = ss.str();
 
     constexpr std::string_view header = _("名前  : ", "Name  : ");
@@ -37,26 +47,34 @@ void display_player_name(PlayerType *player_ptr, bool name_only)
 
 /*!
  * @brief プレイヤーの特性フラグ一覧表示2a /
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * Special display, part 2a
  */
-void display_player_misc_info(PlayerType *player_ptr)
+void display_player_misc_info(CreatureEntity &creature)
 {
-    display_player_name(player_ptr);
+    display_player_name(creature);
 
     put_str(_("性別  :", "Sex   :"), 3, 1);
     put_str(_("種族  :", "Race  :"), 4, 1);
     put_str(_("職業  :", "Class :"), 5, 1);
 
-    c_put_str(TERM_L_BLUE, sp_ptr->title, 3, 9);
-    c_put_str(TERM_L_BLUE, (player_ptr->mimic_form != MimicKindType::NONE ? mimic_info.at(player_ptr->mimic_form).title : player_ptr->race->title), 4, 9);
-    c_put_str(TERM_L_BLUE, (*player_ptr->pclass_ref).title, 5, 9);
+    c_put_str(TERM_L_BLUE, creature.get_sex_info().title, 3, 9);
+    if (creature.race != nullptr) {
+        c_put_str(TERM_L_BLUE, (creature.get_mimic_form() != MimicKindType::NONE ? mimic_info.at(creature.get_mimic_form()).title : creature.get_race_info()->title), 4, 9);
+    } else {
+        c_put_str(TERM_SLATE, _("なし", "None"), 4, 9);
+    }
+    if (creature.pclass_ref != nullptr) {
+        c_put_str(TERM_L_BLUE, (*creature.get_class_info()).title, 5, 9);
+    } else {
+        c_put_str(TERM_SLATE, _("なし", "None"), 5, 9);
+    }
 
     put_str(_("レベル:", "Level :"), 6, 1);
     put_str(_("ＨＰ  :", "Hits  :"), 7, 1);
     put_str(_("ＭＰ  :", "Mana  :"), 8, 1);
 
-    c_put_str(TERM_L_BLUE, format("%d", (int)player_ptr->level), 6, 9);
-    c_put_str(TERM_L_BLUE, format("%d/%d", (int)player_ptr->hp, (int)player_ptr->maxhp), 7, 9);
-    c_put_str(TERM_L_BLUE, format("%d/%d", (int)player_ptr->csp, (int)player_ptr->msp), 8, 9);
+    c_put_str(TERM_L_BLUE, format("%d", (int)creature.get_level()), 6, 9);
+    c_put_str(TERM_L_BLUE, format("%d/%d", (int)creature.hp, (int)creature.maxhp), 7, 9);
+    c_put_str(TERM_L_BLUE, format("%d/%d", (int)creature.get_current_mp(), (int)creature.get_max_mp()), 8, 9);
 }

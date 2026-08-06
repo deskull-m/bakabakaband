@@ -21,25 +21,25 @@
 #include "perception/object-perception.h"
 #include "sv-definition/sv-lite-types.h"
 #include "sv-definition/sv-other-types.h"
+#include "system/creature-entity.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/floor/floor-info.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/player-type-definition.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
 #include <unordered_map>
 
 /*!
  * @brief コンストラクタ
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param o_ptr 強化を与えたい/生成したいオブジェクトの構造体参照ポインタ
  * @param power 生成ランク
  * @details power > 2はデバッグ専用.
  */
-OtherItemsEnchanter::OtherItemsEnchanter(PlayerType *player_ptr, ItemEntity *o_ptr)
-    : player_ptr(player_ptr)
+OtherItemsEnchanter::OtherItemsEnchanter(CreatureEntity &creature, ItemEntity *o_ptr)
+    : creature(creature)
     , o_ptr(o_ptr)
 {
 }
@@ -65,7 +65,7 @@ void OtherItemsEnchanter::apply_magic()
         break;
     case ItemKindType::CAPTURE:
         this->o_ptr->pval = 0;
-        object_aware(this->player_ptr, *this->o_ptr);
+        object_aware(this->creature, *this->o_ptr);
         this->o_ptr->mark_as_known();
         break;
     case ItemKindType::FIGURINE:
@@ -109,7 +109,7 @@ void OtherItemsEnchanter::enchant_wand_staff()
  */
 void OtherItemsEnchanter::generate_figurine()
 {
-    const auto &floor = *this->player_ptr->current_floor_ptr;
+    const auto &floor = *this->creature.get_floor();
     const auto &monraces = MonraceList::get_instance();
     const auto monrace_id = monraces.select_figurine(floor.dun_level);
     this->o_ptr->pval = enum2i(monrace_id);
@@ -133,12 +133,12 @@ void OtherItemsEnchanter::generate_corpse()
         { SV_CORPSE, MonsterDropType::DROP_CORPSE },
     };
 
-    get_mon_num_prep_enum(this->player_ptr, MonraceHook::FIGURINE);
-    const auto &floor = *this->player_ptr->current_floor_ptr;
+    get_mon_num_prep_enum(this->creature, MonraceHook::FIGURINE);
+    const auto &floor = *this->creature.get_floor();
     const auto &monraces = MonraceList::get_instance();
     MonraceId monrace_id;
     while (true) {
-        monrace_id = get_mon_num(this->player_ptr, 0, floor.dun_level, PM_NONE | PM_IGNORE_LEVEL);
+        monrace_id = get_mon_num(this->creature, 0, floor.dun_level, PM_NONE | PM_IGNORE_LEVEL);
         const auto &monrace = monraces.get_monrace(monrace_id);
         const auto check = (floor.dun_level < monrace.level) ? (monrace.level - floor.dun_level) : 0;
         const auto sval = this->o_ptr->bi_key.sval();
@@ -154,7 +154,7 @@ void OtherItemsEnchanter::generate_corpse()
     }
 
     this->o_ptr->pval = enum2i(monrace_id);
-    object_aware(this->player_ptr, *this->o_ptr);
+    object_aware(this->creature, *this->o_ptr);
     this->o_ptr->mark_as_known();
 }
 
@@ -177,7 +177,7 @@ void OtherItemsEnchanter::generate_statue()
         msg_format(_("%sの像", "Statue of %s"), monrace.name.data());
     }
 
-    object_aware(this->player_ptr, *this->o_ptr);
+    object_aware(this->creature, *this->o_ptr);
     this->o_ptr->mark_as_known();
 }
 
@@ -197,7 +197,7 @@ void OtherItemsEnchanter::generate_chest()
         this->o_ptr->pval = 6;
     }
 
-    this->o_ptr->chest_level = this->player_ptr->current_floor_ptr->dun_level + 5;
+    this->o_ptr->chest_level = this->creature.get_floor()->dun_level + 5;
     if (this->o_ptr->pval > 55) {
         this->o_ptr->pval = 55 + randint0(5);
     }
@@ -205,5 +205,5 @@ void OtherItemsEnchanter::generate_chest()
 
 void OtherItemsEnchanter::generate_disarmed_trap()
 {
-    this->o_ptr->pval = static_cast<PARAMETER_VALUE>(this->player_ptr->current_floor_ptr->select_random_trap());
+    this->o_ptr->pval = static_cast<PARAMETER_VALUE>(this->creature.get_floor()->select_random_trap());
 }

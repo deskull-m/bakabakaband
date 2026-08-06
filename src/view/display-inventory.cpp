@@ -10,12 +10,13 @@
 #include "object/item-use-flags.h"
 #include "object/object-info.h"
 #include "system/baseitem/baseitem-definition.h"
+#include "system/creature-entity.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "term/gameterm.h"
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
 #include "term/z-form.h"
+#include "util/enum-converter.h"
 #include "util/string-processor.h"
 
 /*!
@@ -26,9 +27,8 @@
  * @details
  * Hack -- do not display "trailing" empty slots
  */
-COMMAND_CODE show_inventory(PlayerType *player_ptr, int target_item, BIT_FLAGS mode, const ItemTester &item_tester)
+COMMAND_CODE show_inventory(CreatureEntity &creature, int target_item, BIT_FLAGS mode, const ItemTester &item_tester)
 {
-    COMMAND_CODE i;
     int k, l, z = 0;
     COMMAND_CODE out_index[23]{};
     TERM_COLOR out_color[23]{};
@@ -37,18 +37,19 @@ COMMAND_CODE show_inventory(PlayerType *player_ptr, int target_item, BIT_FLAGS m
     auto col = command_gap;
     const auto &[wid, hgt] = term_get_size();
     auto len = wid - col - 1;
-    for (i = 0; i < INVEN_PACK; i++) {
-        const auto &item = *player_ptr->inventory[i];
+    for (const auto i_idx : INVEN_PACK_SLOTS) {
+        const auto &item = *creature.inventory[i_idx];
         if (!item.is_valid()) {
             continue;
         }
 
-        z = i + 1;
+        z = enum2i(i_idx) + 1;
     }
 
-    const auto inven_label = prepare_label_string(player_ptr, USE_INVEN, item_tester);
+    COMMAND_CODE i;
+    const auto inven_label = prepare_label_string(creature, USE_INVEN, item_tester);
     for (k = 0, i = 0; i < z; i++) {
-        auto &item = *player_ptr->inventory[i];
+        auto &item = *creature.inventory[i];
         if (!item_tester.okay(&item) && !(mode & USE_FULL)) {
             continue;
         }
@@ -59,7 +60,7 @@ COMMAND_CODE show_inventory(PlayerType *player_ptr, int target_item, BIT_FLAGS m
             out_color[k] = TERM_L_DARK;
         }
 
-        out_desc[k] = describe_flavor(player_ptr, item, 0);
+        out_desc[k] = describe_flavor(creature, item, 0);
         l = out_desc[k].length() + 5;
         if (show_weights) {
             l += 9;
@@ -84,7 +85,7 @@ COMMAND_CODE show_inventory(PlayerType *player_ptr, int target_item, BIT_FLAGS m
     int j;
     for (j = 0; j < k; j++) {
         i = out_index[j];
-        const auto &item = *player_ptr->inventory[i];
+        const auto &item = *creature.inventory[i];
         prt("", j + 1, col ? col - 2 : col);
         std::string head;
         if (use_menu && target_item) {
@@ -131,29 +132,29 @@ COMMAND_CODE show_inventory(PlayerType *player_ptr, int target_item, BIT_FLAGS m
  * @brief 所持アイテム一覧を表示する /
  * Choice window "shadow" of the "show_inven()" function
  */
-void display_inventory(PlayerType *player_ptr, const ItemTester &item_tester)
+void display_inventory(CreatureEntity &creature, const ItemTester &item_tester)
 {
-    int i, z = 0;
+    int z = 0;
     TERM_COLOR attr = TERM_WHITE;
-    if (!player_ptr || player_ptr->inventory.empty()) {
+    if (creature.inventory.empty()) {
         return;
     }
 
     const auto &[wid, hgt] = term_get_size();
-    for (i = 0; i < INVEN_PACK; i++) {
-        auto o_ptr = player_ptr->inventory[i].get();
+    for (const auto i_idx : INVEN_PACK_SLOTS) {
+        auto o_ptr = creature.inventory[i_idx].get();
         if (!o_ptr->is_valid()) {
             continue;
         }
-        z = i + 1;
+        z = enum2i(i_idx) + 1;
     }
 
-    for (i = 0; i < z; i++) {
+    for (auto i = 0; i < z; i++) {
         if (i >= hgt) {
             break;
         }
 
-        auto &item = *player_ptr->inventory[i];
+        auto &item = *creature.inventory[i];
         auto do_disp = item_tester.okay(&item);
         std::string label = "   ";
         if (do_disp) {
@@ -164,7 +165,7 @@ void display_inventory(PlayerType *player_ptr, const ItemTester &item_tester)
         int cur_col = 3;
         term_erase(cur_col, i);
         term_putstr(0, i, cur_col, TERM_WHITE, label);
-        const auto item_name = describe_flavor(player_ptr, item, 0);
+        const auto item_name = describe_flavor(creature, item, 0);
         attr = tval_to_attr[enum2i(item.bi_key.tval()) % 128];
         if (item.timeout) {
             attr = TERM_L_DARK;
@@ -190,7 +191,7 @@ void display_inventory(PlayerType *player_ptr, const ItemTester &item_tester)
         }
     }
 
-    for (i = z; i < hgt; i++) {
+    for (auto i = z; i < hgt; i++) {
         term_erase(0, i);
     }
 }

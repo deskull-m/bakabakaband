@@ -1,0 +1,2949 @@
+{
+  "version": 2,
+  "dungeons": [
+    {
+      "id": 0,
+      "name": {
+        "ja": "荒野",
+        "en": "Wilderness",
+      },
+      "description": {
+        "ja": "荒野",
+        "en": "wilderness",
+      },
+      "tag": "WILDERNESS",
+      "position": {
+        "y": 0,
+        "x": 0,
+      },
+      "generation": {
+        "min_depth": 0,
+        "max_depth": 0,
+        "min_player_level": 0,
+        "flags_mode": "NONE",
+        "min_count": 14,
+        "extra_spawn_probability": 6250,
+        "obj_good": 75,
+        "obj_great": 20,
+        "pit": [],
+        "nest": [],
+      },
+      "floor": {
+        "tiles": [
+          {
+            "terrain": "FLOOR",
+            "rate": 100,
+          },
+          {
+            "terrain": "FLOOR",
+            "rate": 0,
+          },
+          {
+            "terrain": "FLOOR",
+            "rate": 0,
+          },
+        ],
+        "tunnel_rate": 50,
+      },
+      "wall": {
+        "tiles": [
+          {
+            "terrain": "FLOOR",
+            "rate": 100,
+          },
+          {
+            "terrain": "GRANITE",
+            "rate": 0,
+          },
+          {
+            "terrain": "GRANITE",
+            "rate": 0,
+          },
+        ],
+        "outer": "FLOOR",
+        "inner": "FLOOR",
+        "streams": [
+          { "type": "FLOOR", "count": 4, "chance": 15, "priority": 0 },
+
+          { "type": "FLOOR", "count": 6, "chance": 30, "priority": 1 },
+        ],
+      },
+      "normal_monster_rate": 0,
+    },
+    {
+      "id": 1,
+      "name": {
+        "ja": "鉄獄",
+        "en": "Angband",
+      },
+      "description": {
+        "ja": "鉄獄への入り口",
+        "en": "the entrance to the Dungeon of Angband",
+      },
+      "tag": "ANGBAND",
+      "position": {
+        "y": 40,
+        "x": 57,
+      },
+      "generation": {
+        "min_depth": 1,
+        "max_depth": 127,
+        "min_player_level": 0,
+        "flags_mode": "NONE",
+        "min_count": 14,
+        "extra_spawn_probability": 6250,
+        "obj_good": 75,
+        "obj_great": 20,
+        "pit": [
+          "ORC",
+          "TROLL",
+          "GIANT",
+          "HORROR",
+          "SYMBOL_GOOD",
+          "SYMBOL_EVIL",
+          "CHAPEL",
+          "DRAGON",
+          "DEMON",
+          "DARK_ELF",
+        ],
+        "nest": [
+          "CLONE",
+          "JELLY",
+          "SYMBOL_GOOD",
+          "SYMBOL_EVIL",
+          "MIMIC",
+          "HORROR",
+          "KENNEL",
+          "ANIMAL",
+          "CHAPEL",
+          "UNDEAD",
+        ],
+      },
+      "floor": {
+        "tiles": [
+          {
+            "terrain": "FLOOR",
+            "rate": 100,
+          },
+          {
+            "terrain": "FLOOR",
+            "rate": 0,
+          },
+          {
+            "terrain": "FLOOR",
+            "rate": 0,
+          },
+        ],
+        "tunnel_rate": 50,
+      },
+      "wall": {
+        "tiles": [
+          {
+            "terrain": "GRANITE",
+            "rate": 100,
+          },
+          {
+            "terrain": "GRANITE",
+            "rate": 0,
+          },
+          {
+            "terrain": "GRANITE",
+            "rate": 0,
+          },
+        ],
+        "outer": "GRANITE",
+        "inner": "GRANITE",
+        "streams": [
+          { "type": "QUARTZ_VEIN", "count": 4, "chance": 15, "priority": 0 },
+
+          { "type": "MAGMA_VEIN", "count": 6, "chance": 30, "priority": 1 },
+        ],
+      },
+      "flags": [
+        "CAVERN",
+        "WATER_RIVER",
+        "LAVA_RIVER",
+        "ARENA",
+        "DESTROY",
+        "CURTAIN",
+        "GLASS_ROOM",
+        "LAKE_WATER",
+        "LAKE_LAVA",
+        "LAKE_RUBBLE",
+        "LAKE_TREE",
+        "ARCADE",
+        "LAKE_ACID",
+        "ACID_RIVER",
+        "LAKE_POISONOUS",
+        "POISONOUS_RIVER",
+      ],
+      "specific_items": [
+        {
+          "floor": 20,
+          "probability": 3,
+          "dice_num": 6,
+          "dice_sides": 6,
+          "item_id": 42,
+        },
+      ],
+      "monster_rate": 150,
+      "normal_monster_rate": 100,
+    },
+    {
+      "id": 2,
+      "name": {
+        "ja": "イークの洞穴",
+        "en": "Yeek cave",
+      },
+      "description": {
+        "ja": "イークの住みかへと続く小さな洞穴",
+        "en": "the entrance to the cave leading to the Yeek's den",
+      },
+      "tag": "YEEK_CAVE",
+      "position": {
+        "y": 48,
+        "x": 5,
+      },
+      "generation": {
+        "min_depth": 1,
+        "max_depth": 13,
+        "min_player_level": 1,
+        "flags_mode": "NONE",
+        "min_count": 14,
+        "extra_spawn_probability": 4166,
+        "obj_good": 75,
+        "obj_great": 20,
+        "pit": [],
+        "nest": [],
+      },
+      "floor": {
+        "tiles": [
+          {
+            "terrain": "FLOOR",
+            "rate": 100,
+          },
+          {
+            "terrain": "FLOOR",
+            "rate": 0,
+          },
+          {
+            "terrain": "FLOOR",
+            "rate": 0,
+          },
+        ],
+        "tunnel_rate": 8,
+      },
+      "wall": {
+        "tiles": [
+          {
+            "terrain": "GRANITE",
+            "rate": 100,
+          },
+          {
+            "terrain": "GRANITE",
+            "rate": 0,
+          },
+          {
+            "terrain": "GRANITE",
+            "rate": 0,
+          },
+        ],
+        "outer": "GRANITE",
+        "inner": "GRANITE",
+        "streams": [
+          { "type": "QUARTZ_VEIN", "count": 4, "chance": 15, "priority": 0 },
+
+          { "type": "MAGMA_VEIN", "count": 6, "chance": 30, "priority": 1 },
+        ],
+      },
+      "flags": ["NO_VAULT", "BEGINNER"],
+      "room_rates": [
+        {
+          "type": 1,
+          "rate": 100,
+        },
+      ],
+      "final_floor": { "guardian": 237, "object": 426 },
+      "normal_monster_rate": 0,
+    },
+    {
+      "id": 3,
+      "name": {
+        "ja": "モリア",
+        "en": "Moria",
+      },
+      "description": {
+        "ja": "オークが支配するモリアの鉱山",
+        "en": "Orc dominated mines in Moria.",
+      },
+      "tag": "MORIA",
+      "position": {
+        "y": 45,
+        "x": 30,
+      },
+      "generation": {
+        "min_depth": 10,
+        "max_depth": 43,
+        "min_player_level": 15,
+        "flags_mode": "OR",
+        "min_count": 18,
+        "extra_spawn_probability": 5000,
+        "obj_good": 75,
+        "obj_great": 20,
+        "pit": ["ORC", "SYMBOL_GOOD", "SYMBOL_EVIL"],
+        "nest": ["CLONE", "SYMBOL_GOOD", "SYMBOL_EVIL", "HORROR", "KENNEL"],
+      },
+      "floor": {
+        "tiles": [
+          {
+            "terrain": "DIRT",
+            "rate": 70,
+          },
+          {
+            "terrain": "GRASS",
+            "rate": 30,
+          },
+          {
+            "terrain": "FLOOR",
+            "rate": 0,
+          },
+        ],
+        "tunnel_rate": 14,
+      },
+      "wall": {
+        "tiles": [
+          {
+            "terrain": "GRANITE",
+            "rate": 70,
+          },
+          {
+            "terrain": "MOUNTAIN_WALL",
+            "rate": 30,
+          },
+          {
+            "terrain": "FLOOR",
+            "rate": 0,
+          },
+        ],
+        "outer": "GRANITE",
+        "inner": "GRANITE",
+        "streams": [
+          { "type": "QUARTZ_VEIN", "count": 4, "chance": 15, "priority": 0 },
+
+          { "type": "MAGMA_VEIN", "count": 6, "chance": 30, "priority": 1 },
+        ],
+      },
+      "flags": ["CAVE", "WATER_RIVER", "CAVERN", "LAKE_TREE", "DESTROY", "LARGEST"],
+      "monster_flags": ["ORC", "ANIMAL"],
+      "monster_symbols": ["k", "o", "O"],
+      "final_floor": { "guardian": 373, "object": 148 },
+      "normal_monster_rate": 50,
+    },
+    {
+      "id": 4,
+      "name": {
+        "ja": "迷宮",
+        "en": "Labyrinth",
+      },
+      "description": {
+        "ja": "恐るべき奇妙な迷宮",
+        "en": "the frightening entrance to the Labyrinth",
+      },
+      "position": {
+        "y": 57,
+        "x": 31,
+      },
+      "generation": {
+        "min_depth": 10,
+        "max_depth": 18,
+        "min_player_level": 1,
+        "flags_mode": "NONE",
+        "min_count": 80,
+        "extra_spawn_probability": 6250,
+        "obj_good": 75,
+        "obj_great": 20,
+        "pit": [],
+        "nest": [],
+      },
+      "floor": {
+        "tiles": [
+          {
+            "terrain": "FLOOR",
+            "rate": 100,
+          },
+          {
+            "terrain": "FLOOR",
+            "rate": 0,
+          },
+          {
+            "terrain": "FLOOR",
+            "rate": 0,
+          },
+        ],
+        "tunnel_rate": 100,
+      },
+      "wall": {
+        "tiles": [
+          {
+            "terrain": "GRANITE",
+            "rate": 100,
+          },
+          {
+            "terrain": "GRANITE",
+            "rate": 0,
+          },
+          {
+            "terrain": "GRANITE",
+            "rate": 0,
+          },
+        ],
+        "outer": "GRANITE",
+        "inner": "GRANITE",
+        "streams": [
+          { "type": "QUARTZ_VEIN", "count": 4, "chance": 15, "priority": 0 },
+
+          { "type": "MAGMA_VEIN", "count": 6, "chance": 30, "priority": 1 },
+        ],
+      },
+      "flags": ["MAZE", "SMALLEST", "FORGET", "VANISH_STAIRS"],
+      "normal_monster_rate": 100,
+      "final_floor": { "guardian": 1034, "object": 354 },
+    },
+    {
+      "id": 5,
+      "name": {
+        "ja": "竜の住みか",
+        "en": "Dragon's lair",
+      },
+      "description": {
+        "ja": "竜の住みかへ続く大きく、薄暗い恐るべきトンネル",
+        "en": "a big tunnel leading to a Dragon's Lair",
+      },
+      "tag": "DRAGONS_LAIR",
+      "position": {
+        "y": 28,
+        "x": 74,
+      },
+      "generation": {
+        "min_depth": 60,
+        "max_depth": 72,
+        "min_player_level": 25,
+        "flags_mode": "OR",
+        "min_count": 20,
+        "extra_spawn_probability": 7142,
+        "obj_good": 75,
+        "obj_great": 20,
+        "pit": ["TROLL", "GIANT", "SYMBOL_EVIL", "DRAGON"],
+        "nest": ["CLONE", "KENNEL", "ANIMAL"],
+      },
+      "floor": {
+        "tiles": [
+          {
+            "terrain": "DIRT",
+            "rate": 100,
+          },
+          {
+            "terrain": "FLOOR",
+            "rate": 0,
+          },
+          {
+            "terrain": "FLOOR",
+            "rate": 0,
+          },
+        ],
+        "tunnel_rate": 0,
+      },
+      "wall": {
+        "tiles": [
+          {
+            "terrain": "GRANITE",
+            "rate": 90,
+          },
+          {
+            "terrain": "DARK_PIT",
+            "rate": 10,
+          },
+          {
+            "terrain": "GRANITE",
+            "rate": 0,
+          },
+        ],
+        "outer": "GRANITE",
+        "inner": "GRANITE",
+        "streams": [
+          { "type": "DARK_PIT", "count": 4, "chance": 15, "priority": 0 },
+
+          { "type": "MAGMA_VEIN", "count": 6, "chance": 30, "priority": 1 },
+        ],
+      },
+      "flags": [
+        "LARGEST",
+        "LAVA_RIVER",
+        "CAVERN",
+        "DESTROY",
+        "CAVE",
+        "LAKE_LAVA",
+        "LAKE_TREE",
+        "LAKE_RUBBLE",
+        "LAKE_ACID",
+        "ACID_RIVER",
+        "LAKE_POISONOUS",
+        "POISONOUS_RIVER",
+      ],
+      "monster_flags": ["DRAGON"],
+      "monster_symbols": ["d", "D"],
+      "normal_monster_rate": 16,
+    },
+    {
+      "id": 6,
+      "name": {
+        "ja": "墓地",
+        "en": "Graveyard",
+      },
+      "description": {
+        "ja": "墓地の地下への穴",
+        "en": "a hole to the Graveyard underground",
+      },
+      "tag": "GRAVEYARD",
+      "position": {
+        "y": 19,
+        "x": 85,
+      },
+      "generation": {
+        "min_depth": 40,
+        "max_depth": 70,
+        "min_player_level": 18,
+        "flags_mode": "OR",
+        "min_count": 14,
+        "extra_spawn_probability": 6250,
+        "obj_good": 75,
+        "obj_great": 20,
+        "pit": ["HORROR", "SYMBOL_EVIL", "DEMON"],
+        "nest": ["CLONE", "JELLY", "SYMBOL_EVIL", "MIMIC", "HORROR", "KENNEL", "UNDEAD"],
+      },
+      "floor": {
+        "tiles": [
+          {
+            "terrain": "FLOOR",
+            "rate": 85,
+          },
+          {
+            "terrain": "SHALLOW_WATER",
+            "rate": 15,
+          },
+          {
+            "terrain": "FLOOR",
+            "rate": 0,
+          },
+        ],
+        "tunnel_rate": 30,
+      },
+      "wall": {
+        "tiles": [
+          {
+            "terrain": "GRANITE",
+            "rate": 75,
+          },
+          {
+            "terrain": "DARK_PIT",
+            "rate": 25,
+          },
+          {
+            "terrain": "GRANITE",
+            "rate": 0,
+          },
+        ],
+        "outer": "GRANITE",
+        "inner": "GRANITE",
+        "streams": [
+          { "type": "DEEP_WATER", "count": 4, "chance": 15, "priority": 0 },
+
+          { "type": "SHALLOW_WATER", "count": 6, "chance": 30, "priority": 1 },
+        ],
+      },
+      "flags": [
+        "WATER_RIVER",
+        "DESTROY",
+        "ARENA",
+        "LAKE_WATER",
+        "LAKE_RUBBLE",
+        "DESTROY",
+        "LAKE_POISONOUS",
+        "POISONOUS_RIVER",
+      ],
+      "monster_flags": ["UNDEAD", "NONLIVING"],
+      "normal_monster_rate": 6,
+      "final_floor": { "guardian": 804, "artifact": 89 },
+    },
+    {
+      "id": 7,
+      "name": {
+        "ja": "森",
+        "en": "Forest",
+      },
+      "description": {
+        "ja": "エルフの森へ続く草の道",
+        "en": "a path leading to a elven forest",
+      },
+      "tag": "FOREST",
+      "position": {
+        "y": 53,
+        "x": 63,
+      },
+      "generation": {
+        "min_depth": 15,
+        "max_depth": 52,
+        "min_player_level": 5,
+        "flags_mode": "OR",
+        "min_count": 14,
+        "extra_spawn_probability": 6250,
+        "obj_good": 75,
+        "obj_great": 20,
+        "pit": ["ORC"],
+        "nest": ["JELLY", "MIMIC", "KENNEL"],
+      },
+      "floor": {
+        "tiles": [
+          {
+            "terrain": "GRASS",
+            "rate": 85,
+          },
+          {
+            "terrain": "FLOWER",
+            "rate": 5,
+          },
+          {
+            "terrain": "SHALLOW_WATER",
+            "rate": 10,
+          },
+        ],
+        "tunnel_rate": 15,
+      },
+      "wall": {
+        "tiles": [
+          {
+            "terrain": "TREE",
+            "rate": 80,
+          },
+          {
+            "terrain": "GRANITE",
+            "rate": 1,
+          },
+          {
+            "terrain": "LARGE_TREE",
+            "rate": 19,
+          },
+        ],
+        "outer": "BRAKE",
+        "inner": "TREE",
+        "streams": [
+          { "type": "BRAKE", "count": 4, "chance": 15, "priority": 0 },
+
+          { "type": "GRANITE", "count": 6, "chance": 30, "priority": 1 },
+        ],
+      },
+      "flags": ["NO_DOORS", "WATER_RIVER", "NO_TUNNEL"],
+      "monster_flags": ["ANIMAL", "ELF", "WILD_WOOD", "GOOD"],
+      "normal_monster_rate": 23,
+      "final_floor": { "guardian": 1946, "object": 409 },
+    },
+    {
+      "id": 8,
+      "name": {
+        "ja": "火山",
+        "en": "Volcano",
+      },
+      "description": {
+        "ja": "火山の中心への穴",
+        "en": "a hole to the center of the Volcano",
+      },
+      "tag": "VOLCANO",
+      "position": {
+        "y": 53,
+        "x": 13,
+      },
+      "generation": {
+        "min_depth": 50,
+        "max_depth": 60,
+        "min_player_level": 27,
+        "flags_mode": "OR",
+        "min_count": 14,
+        "extra_spawn_probability": 6250,
+        "obj_good": 80,
+        "obj_great": 30,
+        "pit": ["ORC", "TROLL", "GIANT", "HORROR", "SYMBOL_GOOD", "SYMBOL_EVIL", "DRAGON", "DEMON"],
+        "nest": [
+          "CLONE",
+          "SYMBOL_GOOD",
+          "SYMBOL_EVIL",
+          "MIMIC",
+          "HORROR",
+          "KENNEL",
+          "ANIMAL",
+          "UNDEAD",
+        ],
+      },
+      "floor": {
+        "tiles": [
+          {
+            "terrain": "DIRT",
+            "rate": 40,
+          },
+          {
+            "terrain": "SHALLOW_LAVA",
+            "rate": 40,
+          },
+          {
+            "terrain": "DEEP_LAVA",
+            "rate": 20,
+          },
+        ],
+        "tunnel_rate": 0,
+      },
+      "wall": {
+        "tiles": [
+          {
+            "terrain": "GRANITE",
+            "rate": 90,
+          },
+          {
+            "terrain": "DARK_PIT",
+            "rate": 10,
+          },
+          {
+            "terrain": "GRANITE",
+            "rate": 0,
+          },
+        ],
+        "outer": "GRANITE",
+        "inner": "GRANITE",
+        "streams": [
+          { "type": "QUARTZ_VEIN", "count": 4, "chance": 15, "priority": 0 },
+
+          { "type": "DARK_PIT", "count": 6, "chance": 30, "priority": 1 },
+        ],
+      },
+      "flags": ["CAVE", "CAVERN", "LAKE_LAVA", "LAVA_RIVER", "DESTROY"],
+      "monster_flags": ["IM_FIRE", "CAN_FLY", "WILD_VOLCANO"],
+      "normal_monster_rate": 0,
+      "final_floor": { "guardian": 972, "object": 629 },
+    },
+    {
+      "id": 9,
+      "name": {
+        "ja": "地獄",
+        "en": "Hell",
+      },
+      "description": {
+        "ja": "地獄への階段",
+        "en": "the stairway to Hell",
+      },
+      "tag": "HELL",
+      "position": {
+        "y": 62,
+        "x": 94,
+      },
+      "generation": {
+        "min_depth": 666,
+        "max_depth": 696,
+        "min_player_level": 45,
+        "flags_mode": "AND",
+        "min_count": 14,
+        "extra_spawn_probability": 6250,
+        "obj_good": 90,
+        "obj_great": 77,
+        "pit": ["HORROR", "DRAGON", "DEMON"],
+        "nest": ["ANIMAL", "UNDEAD"],
+      },
+      "floor": {
+        "tiles": [
+          {
+            "terrain": "SHALLOW_LAVA",
+            "rate": 80,
+          },
+          {
+            "terrain": "DEEP_LAVA",
+            "rate": 20,
+          },
+          {
+            "terrain": "FLOOR",
+            "rate": 0,
+          },
+        ],
+        "tunnel_rate": 0,
+      },
+      "wall": {
+        "tiles": [
+          {
+            "terrain": "DEEP_LAVA",
+            "rate": 80,
+          },
+          {
+            "terrain": "DARK_PIT",
+            "rate": 20,
+          },
+          {
+            "terrain": "DARK_PIT",
+            "rate": 0,
+          },
+        ],
+        "outer": "GRANITE",
+        "inner": "DEEP_LAVA",
+        "streams": [
+          { "type": "NONE", "count": 4, "chance": 15, "priority": 0 },
+
+          { "type": "NONE", "count": 6, "chance": 30, "priority": 1 },
+        ],
+      },
+      "flags": ["CAVERN", "LAKE_LAVA", "LAVA_RIVER", "WINNER", "LARGEST"],
+      "monster_flags": ["IM_FIRE", "EVIL"],
+      "normal_monster_rate": 0,
+    },
+    {
+      "id": 10,
+      "name": {
+        "ja": "天界",
+        "en": "Heaven",
+      },
+      "description": {
+        "ja": "天界へと通じる道",
+        "en": "the way to Heaven",
+      },
+      "tag": "HEAVEN",
+      "position": {
+        "y": 2,
+        "x": 94,
+      },
+      "generation": {
+        "min_depth": 555,
+        "max_depth": 585,
+        "min_player_level": 45,
+        "flags_mode": "AND",
+        "min_count": 18,
+        "extra_spawn_probability": 6250,
+        "obj_good": 85,
+        "obj_great": 35,
+        "pit": ["CHAPEL"],
+        "nest": ["SYMBOL_GOOD", "CHAPEL"],
+      },
+      "floor": {
+        "tiles": [
+          {
+            "terrain": "FLOOR",
+            "rate": 100,
+          },
+          {
+            "terrain": "FLOOR",
+            "rate": 0,
+          },
+          {
+            "terrain": "FLOOR",
+            "rate": 0,
+          },
+        ],
+        "tunnel_rate": 1000,
+      },
+      "wall": {
+        "tiles": [
+          {
+            "terrain": "SKY",
+            "rate": 80,
+          },
+          {
+            "terrain": "CLOUD",
+            "rate": 20,
+          },
+          {
+            "terrain": "GRANITE",
+            "rate": 0,
+          },
+        ],
+        "outer": "PERMANENT",
+        "inner": "GRANITE",
+        "streams": [
+          { "type": "NONE", "count": 4, "chance": 15, "priority": 0 },
+
+          { "type": "NONE", "count": 6, "chance": 30, "priority": 1 },
+        ],
+      },
+      "flags": ["WATER_RIVER", "WINNER", "LARGEST", "GLASS_ROOM"],
+      "monster_flags": ["GOOD"],
+      "normal_monster_rate": 0,
+    },
+    {
+      "id": 11,
+      "name": {
+        "ja": "ヌメノール",
+        "en": "Numenor",
+      },
+      "description": {
+        "ja": "アルダより脱した地ヌメノールへの水没した道",
+        "en": "a submerged way to the exodus Numenor from Arda",
+      },
+      "tag": "NUMENOR",
+      "position": {
+        "y": 27,
+        "x": 30,
+      },
+      "generation": {
+        "min_depth": 30,
+        "max_depth": 60,
+        "min_player_level": 20,
+        "flags_mode": "OR",
+        "min_count": 14,
+        "extra_spawn_probability": 6250,
+        "obj_good": 80,
+        "obj_great": 30,
+        "pit": [],
+        "nest": [],
+      },
+      "floor": {
+        "tiles": [
+          {
+            "terrain": "FLOOR",
+            "rate": 80,
+          },
+          {
+            "terrain": "SHALLOW_WATER",
+            "rate": 20,
+          },
+          {
+            "terrain": "FLOOR",
+            "rate": 0,
+          },
+        ],
+        "tunnel_rate": 100,
+      },
+      "wall": {
+        "tiles": [
+          {
+            "terrain": "DEEP_WATER",
+            "rate": 80,
+          },
+          {
+            "terrain": "SHALLOW_WATER",
+            "rate": 10,
+          },
+          {
+            "terrain": "GRANITE",
+            "rate": 10,
+          },
+        ],
+        "outer": "GRANITE",
+        "inner": "DEEP_WATER",
+        "streams": [
+          { "type": "NONE", "count": 4, "chance": 15, "priority": 0 },
+
+          { "type": "NONE", "count": 6, "chance": 30, "priority": 1 },
+        ],
+      },
+      "flags": ["LAKE_WATER", "WATER_RIVER", "DESTROY"],
+      "monster_flags": ["CAN_SWIM", "CAN_FLY", "AQUATIC", "WILD_OCEAN"],
+      "normal_monster_rate": 0,
+      "final_floor": { "guardian": 854, "artifact": 107 },
+      "alliance": "NUMENOR",
+    },
+    {
+      "id": 12,
+      "name": {
+        "ja": "城",
+        "en": "Castle",
+      },
+      "description": {
+        "ja": "城",
+        "en": "the entrance to the Castle",
+      },
+      "tag": "CASTLE",
+      "position": {
+        "y": 34,
+        "x": 88,
+      },
+      "generation": {
+        "min_depth": 20,
+        "max_depth": 65,
+        "min_player_level": 20,
+        "flags_mode": "OR",
+        "min_count": 14,
+        "extra_spawn_probability": 6250,
+        "obj_good": 75,
+        "obj_great": 20,
+        "pit": [
+          "ORC",
+          "TROLL",
+          "GIANT",
+          "HORROR",
+          "SYMBOL_GOOD",
+          "SYMBOL_EVIL",
+          "CHAPEL",
+          "DEMON",
+          "DARK_ELF",
+        ],
+        "nest": [
+          "CLONE",
+          "JELLY",
+          "SYMBOL_GOOD",
+          "SYMBOL_EVIL",
+          "MIMIC",
+          "HORROR",
+          "CHAPEL",
+          "UNDEAD",
+        ],
+      },
+      "floor": {
+        "tiles": [
+          {
+            "terrain": "FLOOR",
+            "rate": 100,
+          },
+          {
+            "terrain": "FLOOR",
+            "rate": 0,
+          },
+          {
+            "terrain": "FLOOR",
+            "rate": 0,
+          },
+        ],
+        "tunnel_rate": 100,
+      },
+      "wall": {
+        "tiles": [
+          {
+            "terrain": "GRANITE",
+            "rate": 100,
+          },
+          {
+            "terrain": "GRANITE",
+            "rate": 0,
+          },
+          {
+            "terrain": "GRANITE",
+            "rate": 0,
+          },
+        ],
+        "outer": "GRANITE",
+        "inner": "GRANITE",
+        "streams": [
+          { "type": "NONE", "count": 4, "chance": 15, "priority": 0 },
+
+          { "type": "NONE", "count": 6, "chance": 30, "priority": 1 },
+        ],
+      },
+      "flags": ["ARENA", "NO_CAVE", "CURTAIN", "GLASS_ROOM", "ALWAY_ARENA"],
+      "monster_flags": ["DEMON"],
+      "monster_symbols": ["p", "h", "H", "g"],
+      "room_rates": [
+        {
+          "type": 20,
+          "rate": 50,
+        },
+      ],
+      "fixed_rooms": [
+        {
+          "depth": 60,
+          "id": 27,
+          "percentage": 100,
+        },
+      ],
+      "normal_monster_rate": 25,
+      "final_floor": { "guardian": 882 },
+      "trap_rate": 10000,
+    },
+    {
+      "id": 13,
+      "name": {
+        "ja": "ルルイエ",
+        "en": "R'lyeh",
+      },
+      "description": {
+        "ja": "ルルイエ",
+        "en": "a way to R'lyeh",
+      },
+      "tag": "RLYEH",
+      "position": {
+        "y": 3,
+        "x": 40,
+      },
+      "generation": {
+        "min_depth": 80,
+        "max_depth": 96,
+        "min_player_level": 40,
+        "flags_mode": "OR",
+        "min_count": 14,
+        "extra_spawn_probability": 6250,
+        "obj_good": 75,
+        "obj_great": 20,
+        "pit": ["HORROR", "SYMBOL_EVIL", "DRAGON", "DEMON"],
+        "nest": ["CLONE", "JELLY", "SYMBOL_GOOD", "SYMBOL_EVIL", "MIMIC", "HORROR", "UNDEAD"],
+      },
+      "floor": {
+        "tiles": [
+          {
+            "terrain": "FLOOR",
+            "rate": 50,
+          },
+          {
+            "terrain": "SHALLOW_WATER",
+            "rate": 30,
+          },
+          {
+            "terrain": "DEEP_WATER",
+            "rate": 20,
+          },
+        ],
+        "tunnel_rate": 100,
+      },
+      "wall": {
+        "tiles": [
+          {
+            "terrain": "GRANITE",
+            "rate": 100,
+          },
+          {
+            "terrain": "GRANITE",
+            "rate": 0,
+          },
+          {
+            "terrain": "GRANITE",
+            "rate": 0,
+          },
+        ],
+        "outer": "GRANITE",
+        "inner": "GRANITE",
+        "streams": [
+          { "type": "DEEP_WATER", "count": 4, "chance": 15, "priority": 0 },
+
+          { "type": "SHALLOW_WATER", "count": 6, "chance": 30, "priority": 1 },
+        ],
+      },
+      "flags": [
+        "ARENA",
+        "WATER_RIVER",
+        "LAKE_WATER",
+        "LAKE_ACID",
+        "ACID_RIVER",
+        "LAKE_POISONOUS",
+        "POISONOUS_RIVER",
+      ],
+      "monster_flags": ["DEMON", "ELDRITCH_HORROR"],
+      "normal_monster_rate": 25,
+      "final_floor": { "guardian": 857, "artifact": 129 },
+    },
+    {
+      "id": 14,
+      "name": {
+        "ja": "山",
+        "en": "Mountain",
+      },
+      "description": {
+        "ja": "山",
+        "en": "a way leading to the mountain",
+      },
+      "tag": "MOUNTAIN",
+      "position": {
+        "y": 46,
+        "x": 76,
+      },
+      "generation": {
+        "min_depth": 25,
+        "max_depth": 50,
+        "min_player_level": 20,
+        "flags_mode": "OR",
+        "min_count": 14,
+        "extra_spawn_probability": 6250,
+        "obj_good": 75,
+        "obj_great": 20,
+        "pit": ["ORC", "TROLL", "GIANT", "SYMBOL_GOOD", "SYMBOL_EVIL", "DRAGON"],
+        "nest": ["CLONE", "JELLY", "SYMBOL_GOOD", "SYMBOL_EVIL", "MIMIC", "KENNEL", "ANIMAL"],
+      },
+      "floor": {
+        "tiles": [
+          {
+            "terrain": "GRASS",
+            "rate": 100,
+          },
+          {
+            "terrain": "GRASS",
+            "rate": 0,
+          },
+          {
+            "terrain": "GRASS",
+            "rate": 0,
+          },
+        ],
+        "tunnel_rate": 0,
+      },
+      "wall": {
+        "tiles": [
+          {
+            "terrain": "MOUNTAIN_WALL",
+            "rate": 100,
+          },
+          {
+            "terrain": "GRANITE",
+            "rate": 0,
+          },
+          {
+            "terrain": "GRANITE",
+            "rate": 0,
+          },
+        ],
+        "outer": "MOUNTAIN_WALL",
+        "inner": "GRANITE",
+        "streams": [
+          { "type": "NONE", "count": 4, "chance": 15, "priority": 0 },
+
+          { "type": "NONE", "count": 6, "chance": 30, "priority": 1 },
+        ],
+      },
+      "flags": ["WATER_RIVER", "CAVE", "CAVERN", "NO_DOORS", "LARGEST"],
+      "monster_flags": ["TROLL", "GIANT", "CAN_FLY", "ANIMAL", "WILD_MOUNTAIN"],
+      "monster_symbols": ["O", "Y", "H"],
+      "final_floor": { "guardian": 468, "object": 239 },
+      "normal_monster_rate": 25,
+    },
+    {
+      "id": 15,
+      "name": {
+        "ja": "金鉱",
+        "en": "Mine",
+      },
+      "description": {
+        "ja": "金鉱",
+        "en": "the entrance to the Mine",
+      },
+      "tag": "MINE",
+      "position": {
+        "y": 23,
+        "x": 49,
+      },
+      "generation": {
+        "min_depth": 75,
+        "max_depth": 80,
+        "min_player_level": 30,
+        "flags_mode": "OR",
+        "min_count": 18,
+        "extra_spawn_probability": 12500,
+        "obj_good": 80,
+        "obj_great": 25,
+        "pit": [],
+        "nest": ["MIMIC"],
+      },
+      "floor": {
+        "tiles": [
+          {
+            "terrain": "FLOOR",
+            "rate": 100,
+          },
+          {
+            "terrain": "FLOOR",
+            "rate": 0,
+          },
+          {
+            "terrain": "FLOOR",
+            "rate": 0,
+          },
+        ],
+        "tunnel_rate": 0,
+      },
+      "wall": {
+        "tiles": [
+          {
+            "terrain": "GRANITE",
+            "rate": 60,
+          },
+          {
+            "terrain": "MAGMA_TREASURE",
+            "rate": 20,
+          },
+          {
+            "terrain": "QUARTZ_TREASURE",
+            "rate": 20,
+          },
+        ],
+        "outer": "GRANITE",
+        "inner": "GRANITE",
+        "streams": [
+          { "type": "QUARTZ_VEIN", "count": 4, "chance": 15, "priority": 0 },
+
+          { "type": "MAGMA_VEIN", "count": 6, "chance": 30, "priority": 1 },
+        ],
+      },
+      "flags": [
+        "WATER_RIVER",
+        "CAVE",
+        "CAVERN",
+        "SMALLEST",
+        "LAVA_RIVER",
+        "DESTROY",
+        "LAKE_ACID",
+        "ACID_RIVER",
+      ],
+      "monster_flags": [],
+      "monster_symbols": ["$"],
+      "normal_monster_rate": 2,
+      "monster_rate": 12,
+    },
+    {
+      "id": 16,
+      "name": {
+        "ja": "反魔法の洞窟",
+        "en": "Anti-magic cave",
+      },
+      "description": {
+        "ja": "反魔法の洞窟",
+        "en": "the entrance to the cave filled with anti-magic cloud",
+      },
+      "tag": "ANTI_MAGIC_CAVE",
+      "position": {
+        "y": 6,
+        "x": 84,
+      },
+      "generation": {
+        "min_depth": 40,
+        "max_depth": 50,
+        "min_player_level": 20,
+        "flags_mode": "NONE",
+        "min_count": 14,
+        "extra_spawn_probability": 6250,
+        "obj_good": 75,
+        "obj_great": 20,
+        "pit": [
+          "ORC",
+          "TROLL",
+          "GIANT",
+          "HORROR",
+          "SYMBOL_GOOD",
+          "SYMBOL_EVIL",
+          "CHAPEL",
+          "DRAGON",
+          "DEMON",
+        ],
+        "nest": ["CLONE", "SYMBOL_GOOD", "SYMBOL_EVIL", "HORROR", "KENNEL", "ANIMAL", "CHAPEL"],
+      },
+      "floor": {
+        "tiles": [
+          {
+            "terrain": "FLOOR",
+            "rate": 100,
+          },
+          {
+            "terrain": "FLOOR",
+            "rate": 0,
+          },
+          {
+            "terrain": "FLOOR",
+            "rate": 0,
+          },
+        ],
+        "tunnel_rate": 50,
+      },
+      "wall": {
+        "tiles": [
+          {
+            "terrain": "GRANITE",
+            "rate": 100,
+          },
+          {
+            "terrain": "GRANITE",
+            "rate": 0,
+          },
+          {
+            "terrain": "GRANITE",
+            "rate": 0,
+          },
+        ],
+        "outer": "GRANITE",
+        "inner": "GRANITE",
+        "streams": [
+          { "type": "QUARTZ_VEIN", "count": 4, "chance": 15, "priority": 0 },
+
+          { "type": "MAGMA_VEIN", "count": 6, "chance": 30, "priority": 1 },
+        ],
+      },
+      "flags": [
+        "CAVERN",
+        "WATER_RIVER",
+        "LAVA_RIVER",
+        "ARENA",
+        "DESTROY",
+        "LAKE_WATER",
+        "LAKE_LAVA",
+        "LAKE_RUBBLE",
+        "LAKE_TREE",
+        "NO_MAGIC",
+      ],
+      "normal_monster_rate": 0,
+    },
+    {
+      "id": 17,
+      "name": {
+        "ja": "反攻撃の洞窟",
+        "en": "Anti-melee cave",
+      },
+      "description": {
+        "ja": "反攻撃の洞窟",
+        "en": "the entrance to the cave filled with restricting magical field",
+      },
+      "tag": "ANTI_MELEE_CAVE",
+      "position": {
+        "y": 45,
+        "x": 47,
+      },
+      "generation": {
+        "min_depth": 40,
+        "max_depth": 50,
+        "min_player_level": 20,
+        "flags_mode": "NONE",
+        "min_count": 14,
+        "extra_spawn_probability": 6250,
+        "obj_good": 75,
+        "obj_great": 20,
+        "pit": [
+          "ORC",
+          "TROLL",
+          "GIANT",
+          "HORROR",
+          "SYMBOL_GOOD",
+          "SYMBOL_EVIL",
+          "CHAPEL",
+          "DRAGON",
+          "DEMON",
+        ],
+        "nest": ["CLONE", "SYMBOL_GOOD", "SYMBOL_EVIL", "HORROR", "KENNEL", "ANIMAL", "CHAPEL"],
+      },
+      "floor": {
+        "tiles": [
+          {
+            "terrain": "FLOOR",
+            "rate": 100,
+          },
+          {
+            "terrain": "FLOOR",
+            "rate": 0,
+          },
+          {
+            "terrain": "FLOOR",
+            "rate": 0,
+          },
+        ],
+        "tunnel_rate": 50,
+      },
+      "wall": {
+        "tiles": [
+          {
+            "terrain": "GRANITE",
+            "rate": 100,
+          },
+          {
+            "terrain": "GRANITE",
+            "rate": 0,
+          },
+          {
+            "terrain": "GRANITE",
+            "rate": 0,
+          },
+        ],
+        "outer": "GRANITE",
+        "inner": "GRANITE",
+        "streams": [
+          { "type": "QUARTZ_VEIN", "count": 4, "chance": 15, "priority": 0 },
+
+          { "type": "MAGMA_VEIN", "count": 6, "chance": 30, "priority": 1 },
+        ],
+      },
+      "flags": [
+        "CAVERN",
+        "WATER_RIVER",
+        "LAVA_RIVER",
+        "ARENA",
+        "DESTROY",
+        "GLASS_ROOM",
+        "LAKE_WATER",
+        "LAKE_LAVA",
+        "LAKE_RUBBLE",
+        "LAKE_TREE",
+        "NO_MELEE",
+      ],
+      "normal_monster_rate": 0,
+    },
+    {
+      "id": 18,
+      "name": {
+        "ja": "カメレオン洞",
+        "en": "Chameleon cave",
+      },
+      "description": {
+        "ja": "カメレオンだけが棲息する洞窟",
+        "en": "the entrance to the chameleon's den",
+      },
+      "tag": "CHAMELEON_CAVE",
+      "position": {
+        "y": 52,
+        "x": 94,
+      },
+      "generation": {
+        "min_depth": 30,
+        "max_depth": 45,
+        "min_player_level": 10,
+        "flags_mode": "OR",
+        "min_count": 30,
+        "extra_spawn_probability": 6250,
+        "obj_good": 75,
+        "obj_great": 20,
+        "pit": [],
+        "nest": [],
+      },
+      "floor": {
+        "tiles": [
+          {
+            "terrain": "FLOOR",
+            "rate": 100,
+          },
+          {
+            "terrain": "FLOOR",
+            "rate": 0,
+          },
+          {
+            "terrain": "FLOOR",
+            "rate": 0,
+          },
+        ],
+        "tunnel_rate": 50,
+      },
+      "wall": {
+        "tiles": [
+          {
+            "terrain": "GRANITE",
+            "rate": 100,
+          },
+          {
+            "terrain": "GRANITE",
+            "rate": 0,
+          },
+          {
+            "terrain": "GRANITE",
+            "rate": 0,
+          },
+        ],
+        "outer": "GRANITE",
+        "inner": "GRANITE",
+        "streams": [
+          { "type": "QUARTZ_VEIN", "count": 4, "chance": 15, "priority": 0 },
+
+          { "type": "MAGMA_VEIN", "count": 6, "chance": 30, "priority": 1 },
+        ],
+      },
+      "flags": [
+        "CAVERN",
+        "WATER_RIVER",
+        "LAVA_RIVER",
+        "ARENA",
+        "DESTROY",
+        "LAKE_WATER",
+        "LAKE_LAVA",
+        "LAKE_RUBBLE",
+        "LAKE_TREE",
+        "CHAMELEON",
+      ],
+      "monster_flags": ["CHAMELEON"],
+      "normal_monster_rate": 0,
+      "final_floor": { "guardian": 1041, "object": 617 },
+    },
+    {
+      "id": 19,
+      "name": {
+        "ja": "暗闇の洞窟",
+        "en": "Dark cave",
+      },
+      "description": {
+        "ja": "暗闇の洞窟",
+        "en": "the dark entrance to the cave filled with magical darkness",
+      },
+      "tag": "DARK_CAVE",
+      "position": {
+        "y": 12,
+        "x": 57,
+      },
+      "generation": {
+        "min_depth": 55,
+        "max_depth": 72,
+        "min_player_level": 30,
+        "flags_mode": "NONE",
+        "min_count": 14,
+        "extra_spawn_probability": 6250,
+        "obj_good": 80,
+        "obj_great": 30,
+        "pit": [
+          "ORC",
+          "TROLL",
+          "GIANT",
+          "HORROR",
+          "SYMBOL_GOOD",
+          "SYMBOL_EVIL",
+          "CHAPEL",
+          "DRAGON",
+          "DEMON",
+          "DARK_ELF",
+        ],
+        "nest": [
+          "CLONE",
+          "JELLY",
+          "SYMBOL_GOOD",
+          "SYMBOL_EVIL",
+          "MIMIC",
+          "HORROR",
+          "KENNEL",
+          "ANIMAL",
+          "CHAPEL",
+          "UNDEAD",
+        ],
+      },
+      "floor": {
+        "tiles": [
+          {
+            "terrain": "FLOOR",
+            "rate": 100,
+          },
+          {
+            "terrain": "FLOOR",
+            "rate": 0,
+          },
+          {
+            "terrain": "FLOOR",
+            "rate": 0,
+          },
+        ],
+        "tunnel_rate": 50,
+      },
+      "wall": {
+        "tiles": [
+          {
+            "terrain": "GRANITE",
+            "rate": 100,
+          },
+          {
+            "terrain": "GRANITE",
+            "rate": 0,
+          },
+          {
+            "terrain": "GRANITE",
+            "rate": 0,
+          },
+        ],
+        "outer": "GRANITE",
+        "inner": "GRANITE",
+        "streams": [
+          { "type": "QUARTZ_VEIN", "count": 4, "chance": 15, "priority": 0 },
+
+          { "type": "MAGMA_VEIN", "count": 6, "chance": 30, "priority": 1 },
+        ],
+      },
+      "flags": [
+        "CAVERN",
+        "WATER_RIVER",
+        "LAVA_RIVER",
+        "ARENA",
+        "DESTROY",
+        "GLASS_ROOM",
+        "LAKE_WATER",
+        "LAKE_LAVA",
+        "LAKE_RUBBLE",
+        "LAKE_TREE",
+        "LAKE_ACID",
+        "ACID_RIVER",
+        "LAKE_POISONOUS",
+        "POISONOUS_RIVER",
+        "DARKNESS",
+      ],
+      "normal_monster_rate": 100,
+      "final_floor": { "guardian": 803 },
+    },
+    {
+      "id": 20,
+      "name": {
+        "ja": "ガラスの城",
+        "en": "Glass castle",
+      },
+      "description": {
+        "ja": "ガラスの城",
+        "en": "the entrance to the glass castle",
+      },
+      "tag": "GLASS_CASTLE",
+      "position": {
+        "y": 40,
+        "x": 37,
+      },
+      "generation": {
+        "min_depth": 40,
+        "max_depth": 60,
+        "min_player_level": 20,
+        "flags_mode": "OR",
+        "min_count": 14,
+        "extra_spawn_probability": 6250,
+        "obj_good": 75,
+        "obj_great": 20,
+        "pit": ["HORROR", "SYMBOL_GOOD", "SYMBOL_EVIL", "CHAPEL", "DRAGON", "DEMON"],
+        "nest": ["CLONE", "SYMBOL_GOOD", "SYMBOL_EVIL", "MIMIC", "HORROR", "CHAPEL", "UNDEAD"],
+      },
+      "floor": {
+        "tiles": [
+          {
+            "terrain": "GLASS_FLOOR",
+            "rate": 100,
+          },
+          {
+            "terrain": "GLASS_FLOOR",
+            "rate": 0,
+          },
+          {
+            "terrain": "GLASS_FLOOR",
+            "rate": 0,
+          },
+        ],
+        "tunnel_rate": 100,
+      },
+      "wall": {
+        "tiles": [
+          {
+            "terrain": "GLASS_WALL",
+            "rate": 100,
+          },
+          {
+            "terrain": "GLASS_WALL",
+            "rate": 0,
+          },
+          {
+            "terrain": "GLASS_WALL",
+            "rate": 0,
+          },
+        ],
+        "outer": "GLASS_WALL",
+        "inner": "GLASS_WALL",
+        "streams": [
+          { "type": "NONE", "count": 4, "chance": 15, "priority": 0 },
+
+          { "type": "NONE", "count": 6, "chance": 30, "priority": 1 },
+        ],
+      },
+      "flags": ["ARENA", "NO_CAVE", "CURTAIN", "GLASS_DOOR", "GLASS_ROOM"],
+      "monster_flags": [
+        "INVISIBLE",
+        "HAS_LITE_1",
+        "SELF_LITE_1",
+        "HAS_LITE_2",
+        "SELF_LITE_2",
+        "HAS_DARK_1",
+        "SELF_DARK_1",
+        "HAS_DARK_2",
+        "SELF_DARK_2",
+      ],
+      "monster_spells": ["BR_LITE", "BR_DARK", "BA_DARK", "BA_LITE"],
+      "normal_monster_rate": 0,
+    },
+    {
+      "id": 21,
+      "name": {
+        "ja": "下北沢",
+        "en": "Shimokitazawa",
+      },
+      "description": {
+        "ja": "ホモの聖地",
+        "en": "Sacred place for gays",
+      },
+      "tag": "SHIMOKITAZAWA",
+      "position": {
+        "y": 48,
+        "x": 88,
+      },
+      "generation": {
+        "min_depth": 10,
+        "max_depth": 50,
+        "min_player_level": 10,
+        "flags_mode": "OR",
+        "min_count": 14,
+        "extra_spawn_probability": 6250,
+        "obj_good": 75,
+        "obj_great": 20,
+        "pit": [
+          "ORC",
+          "TROLL",
+          "GIANT",
+          "HORROR",
+          "SYMBOL_GOOD",
+          "SYMBOL_EVIL",
+          "CHAPEL",
+          "DEMON",
+          "DARK_ELF",
+        ],
+        "nest": [
+          "CLONE",
+          "JELLY",
+          "SYMBOL_GOOD",
+          "SYMBOL_EVIL",
+          "MIMIC",
+          "HORROR",
+          "CHAPEL",
+          "UNDEAD",
+        ],
+      },
+      "floor": {
+        "tiles": [
+          {
+            "terrain": "FLOOR",
+            "rate": 100,
+          },
+          {
+            "terrain": "FLOOR",
+            "rate": 0,
+          },
+          {
+            "terrain": "FLOOR",
+            "rate": 0,
+          },
+        ],
+        "tunnel_rate": 100,
+      },
+      "wall": {
+        "tiles": [
+          {
+            "terrain": "GRANITE",
+            "rate": 100,
+          },
+          {
+            "terrain": "GRANITE",
+            "rate": 0,
+          },
+          {
+            "terrain": "GRANITE",
+            "rate": 0,
+          },
+        ],
+        "outer": "GRANITE",
+        "inner": "GRANITE",
+        "streams": [
+          { "type": "NONE", "count": 4, "chance": 15, "priority": 0 },
+
+          { "type": "NONE", "count": 6, "chance": 30, "priority": 1 },
+        ],
+      },
+      "flags": ["ALWAY_ARENA", "NO_CAVE", "CURTAIN", "GLASS_ROOM"],
+      "monster_flags": ["MALE", "NASTY", "HOMO_SEXUAL"],
+      "monster_symbols": ["p", "h", "H", "g"],
+      "specific_vaults": [
+        {
+          "floor": 50,
+          "vault_id": 213,
+        },
+      ],
+      "room_rates": [
+        {
+          "type": 1,
+          "rate": 1,
+        },
+        {
+          "type": 17,
+          "rate": 600,
+        },
+      ],
+      "normal_monster_rate": 2,
+      "final_floor": { "guardian": 1309 },
+    },
+    {
+      "id": 22,
+      "name": {
+        "ja": "百合天国☆",
+        "en": "Yuri Heaven",
+      },
+      "description": {
+        "ja": "43名くらいで集まって出来たヴォイスドラマ企画空間",
+        "en": "Voice drama plan space",
+      },
+      "tag": "YURI_HEAVEN",
+      "position": {
+        "y": 50,
+        "x": 84,
+      },
+      "generation": {
+        "min_depth": 10,
+        "max_depth": 50,
+        "min_player_level": 10,
+        "flags_mode": "OR",
+        "min_count": 14,
+        "extra_spawn_probability": 6250,
+        "obj_good": 75,
+        "obj_great": 20,
+        "pit": [
+          "ORC",
+          "TROLL",
+          "GIANT",
+          "HORROR",
+          "SYMBOL_GOOD",
+          "SYMBOL_EVIL",
+          "CHAPEL",
+          "DEMON",
+          "DARK_ELF",
+        ],
+        "nest": [
+          "CLONE",
+          "JELLY",
+          "SYMBOL_GOOD",
+          "SYMBOL_EVIL",
+          "MIMIC",
+          "HORROR",
+          "CHAPEL",
+          "UNDEAD",
+        ],
+      },
+      "floor": {
+        "tiles": [
+          {
+            "terrain": "FLOOR",
+            "rate": 100,
+          },
+          {
+            "terrain": "FLOOR",
+            "rate": 0,
+          },
+          {
+            "terrain": "FLOOR",
+            "rate": 0,
+          },
+        ],
+        "tunnel_rate": 100,
+      },
+      "wall": {
+        "tiles": [
+          {
+            "terrain": "GRANITE",
+            "rate": 100,
+          },
+          {
+            "terrain": "GRANITE",
+            "rate": 0,
+          },
+          {
+            "terrain": "GRANITE",
+            "rate": 0,
+          },
+        ],
+        "outer": "GRANITE",
+        "inner": "GRANITE",
+        "streams": [
+          { "type": "NONE", "count": 4, "chance": 15, "priority": 0 },
+
+          { "type": "NONE", "count": 6, "chance": 30, "priority": 1 },
+        ],
+      },
+      "flags": ["ARENA", "NO_CAVE", "CURTAIN", "GLASS_ROOM"],
+      "monster_flags": ["FEMALE", "NASTY", "HOMO_SEXUAL"],
+      "monster_symbols": ["p", "h", "H", "g"],
+      "normal_monster_rate": 2,
+      "final_floor": { "guardian": 1308 },
+    },
+    {
+      "id": 23,
+      "name": {
+        "ja": "虚空領域",
+        "en": "Void Territory",
+      },
+      "description": {
+        "ja": "忘却界や猿空間とも言われる論理すら歪む空間",
+        "en": "Void Territory",
+      },
+      "tag": "VOID_TERRITORY",
+      "position": {
+        "y": 39,
+        "x": 45,
+      },
+      "generation": {
+        "min_depth": 1,
+        "max_depth": 127,
+        "min_player_level": 20,
+        "flags_mode": "NONE",
+        "min_count": 14,
+        "extra_spawn_probability": 6250,
+        "obj_good": 75,
+        "obj_great": 20,
+        "pit": [
+          "ORC",
+          "TROLL",
+          "GIANT",
+          "HORROR",
+          "SYMBOL_GOOD",
+          "SYMBOL_EVIL",
+          "CHAPEL",
+          "DRAGON",
+          "DEMON",
+          "DARK_ELF",
+        ],
+        "nest": [
+          "CLONE",
+          "JELLY",
+          "SYMBOL_GOOD",
+          "SYMBOL_EVIL",
+          "MIMIC",
+          "HORROR",
+          "KENNEL",
+          "ANIMAL",
+          "CHAPEL",
+          "UNDEAD",
+        ],
+      },
+      "floor": {
+        "tiles": [
+          {
+            "terrain": "FLOOR",
+            "rate": 100,
+          },
+          {
+            "terrain": "FLOOR",
+            "rate": 0,
+          },
+          {
+            "terrain": "FLOOR",
+            "rate": 0,
+          },
+        ],
+        "tunnel_rate": 50,
+      },
+      "wall": {
+        "tiles": [
+          {
+            "terrain": "VOID_ZONE",
+            "rate": 100,
+          },
+          {
+            "terrain": "VOID_ZONE",
+            "rate": 0,
+          },
+          {
+            "terrain": "VOID_ZONE",
+            "rate": 0,
+          },
+        ],
+        "outer": "VOID_ZONE",
+        "inner": "VOID_ZONE",
+        "streams": [
+          { "type": "VOID_ZONE", "count": 4, "chance": 15, "priority": 0 },
+
+          { "type": "VOID_ZONE", "count": 6, "chance": 30, "priority": 1 },
+        ],
+      },
+      "flags": ["CAVERN", "DESTROY", "DIFFICULT_RECALL", "NO_ROOM", "VESTIGE"],
+      "normal_monster_rate": 100,
+    },
+    {
+      "id": 24,
+      "name": {
+        "ja": "聖杯の迷宮",
+        "en": "H.Grail Dun",
+      },
+      "description": {
+        "ja": "聖杯の生み出す悪夢の迷宮",
+        "en": "Labyrinth of the nightmare to bring about of the Holy Grail",
+      },
+      "tag": "HOLY_GRAIL_DUNGEON",
+      "position": {
+        "y": 50,
+        "x": 3,
+      },
+      "generation": {
+        "min_depth": 10,
+        "max_depth": 75,
+        "min_player_level": 5,
+        "flags_mode": "OR",
+        "min_count": 14,
+        "extra_spawn_probability": 6250,
+        "obj_good": 75,
+        "obj_great": 20,
+        "pit": [
+          "ORC",
+          "TROLL",
+          "GIANT",
+          "HORROR",
+          "SYMBOL_GOOD",
+          "SYMBOL_EVIL",
+          "CHAPEL",
+          "DEMON",
+          "DARK_ELF",
+        ],
+        "nest": [
+          "CLONE",
+          "JELLY",
+          "SYMBOL_GOOD",
+          "SYMBOL_EVIL",
+          "MIMIC",
+          "HORROR",
+          "CHAPEL",
+          "UNDEAD",
+        ],
+      },
+      "floor": {
+        "tiles": [
+          {
+            "terrain": "FLOOR",
+            "rate": 100,
+          },
+          {
+            "terrain": "FLOOR",
+            "rate": 0,
+          },
+          {
+            "terrain": "FLOOR",
+            "rate": 0,
+          },
+        ],
+        "tunnel_rate": 100,
+      },
+      "wall": {
+        "tiles": [
+          {
+            "terrain": "GRANITE",
+            "rate": 100,
+          },
+          {
+            "terrain": "GRANITE",
+            "rate": 0,
+          },
+          {
+            "terrain": "GRANITE",
+            "rate": 0,
+          },
+        ],
+        "outer": "GRANITE",
+        "inner": "GRANITE",
+        "streams": [
+          { "type": "NONE", "count": 4, "chance": 15, "priority": 0 },
+
+          { "type": "NONE", "count": 6, "chance": 30, "priority": 1 },
+        ],
+      },
+      "flags": ["ARENA", "NO_CAVE", "CURTAIN", "GLASS_ROOM"],
+      "monster_flags": ["DEMON"],
+      "monster_symbols": ["p", "h", "H", "g"],
+      "room_rates": [
+        {
+          "type": 0,
+          "rate": 1,
+        },
+        {
+          "type": 1,
+          "rate": 1,
+        },
+        {
+          "type": 2,
+          "rate": 1,
+        },
+        {
+          "type": 3,
+          "rate": 1,
+        },
+        {
+          "type": 4,
+          "rate": 1,
+        },
+        {
+          "type": 16,
+          "rate": 3600,
+        },
+        {
+          "type": 17,
+          "rate": 3600,
+        },
+      ],
+      "normal_monster_rate": 25,
+    },
+    {
+      "id": 25,
+      "name": {
+        "ja": "ソープロ農場",
+        "en": "StP Farm",
+      },
+      "description": {
+        "ja": "戦いから追放されたすべての者が行き着く農場",
+        "en": "A farm where all those exiled from battle end up",
+      },
+      "tag": "STP_FARM",
+      "position": {
+        "y": 51,
+        "x": 9,
+      },
+      "generation": {
+        "min_depth": 1,
+        "max_depth": 50,
+        "min_player_level": 0,
+        "flags_mode": "NONE",
+        "min_count": 14,
+        "extra_spawn_probability": 6250,
+        "obj_good": 75,
+        "obj_great": 20,
+        "pit": [],
+        "nest": [],
+      },
+      "floor": {
+        "tiles": [
+          {
+            "terrain": "DIRT",
+            "rate": 100,
+          },
+          {
+            "terrain": "DIRT",
+            "rate": 0,
+          },
+          {
+            "terrain": "DIRT",
+            "rate": 0,
+          },
+        ],
+        "tunnel_rate": 50,
+      },
+      "wall": {
+        "tiles": [
+          {
+            "terrain": "VEGITABLE_FIELD",
+            "rate": 100,
+          },
+          {
+            "terrain": "VEGITABLE_FIELD",
+            "rate": 0,
+          },
+          {
+            "terrain": "VEGITABLE_FIELD",
+            "rate": 0,
+          },
+        ],
+        "outer": "VEGITABLE_FIELD",
+        "inner": "VEGITABLE_FIELD",
+        "streams": [
+          { "type": "VEGITABLE_FIELD", "count": 4, "chance": 15, "priority": 0 },
+
+          { "type": "VEGITABLE_FIELD", "count": 6, "chance": 30, "priority": 1 },
+        ],
+      },
+      "flags": [
+        "CAVERN",
+        "WATER_RIVER",
+        "LAVA_RIVER",
+        "ARENA",
+        "DESTROY",
+        "LAKE_WATER",
+        "LAKE_LAVA",
+        "LAKE_RUBBLE",
+        "LAKE_TREE",
+        "NO_ROOM",
+        "NO_MAGIC",
+        "NO_MELEE",
+        "DIFFICULT_RECALL",
+        "ALWAYS_LIGHT",
+      ],
+      "normal_monster_rate": 0,
+    },
+    {
+      "id": 26,
+      "name": {
+        "ja": "ア ナ ル 鉄獄",
+        "en": "*Dark Ring*",
+      },
+      "description": {
+        "ja": "ア ナ ル 鉄獄",
+        "en": "the ass holl to the cave filled with nasty darkness",
+      },
+      "tag": "DARK_RING",
+      "position": {
+        "y": 41,
+        "x": 55,
+      },
+      "generation": {
+        "min_depth": 19,
+        "max_depth": 72,
+        "min_player_level": 20,
+        "flags_mode": "NONE",
+        "min_count": 14,
+        "extra_spawn_probability": 6250,
+        "obj_good": 80,
+        "obj_great": 30,
+        "pit": [
+          "ORC",
+          "TROLL",
+          "GIANT",
+          "HORROR",
+          "SYMBOL_GOOD",
+          "SYMBOL_EVIL",
+          "CHAPEL",
+          "DRAGON",
+          "DEMON",
+          "DARK_ELF",
+        ],
+        "nest": [
+          "CLONE",
+          "JELLY",
+          "SYMBOL_GOOD",
+          "SYMBOL_EVIL",
+          "MIMIC",
+          "HORROR",
+          "KENNEL",
+          "ANIMAL",
+          "CHAPEL",
+          "UNDEAD",
+        ],
+      },
+      "floor": {
+        "tiles": [
+          {
+            "terrain": "ORGANIC_FLOOR",
+            "rate": 100,
+          },
+          {
+            "terrain": "TENTACLE_BATH",
+            "rate": 3,
+          },
+          {
+            "terrain": "ORGANIC_FLOOR",
+            "rate": 0,
+          },
+        ],
+        "tunnel_rate": 100,
+      },
+      "wall": {
+        "tiles": [
+          {
+            "terrain": "ORGANIC_WALL",
+            "rate": 100,
+          },
+          {
+            "terrain": "ORGANIC_WALL",
+            "rate": 0,
+          },
+          {
+            "terrain": "ORGANIC_WALL",
+            "rate": 0,
+          },
+        ],
+        "outer": "ORGANIC_WALL",
+        "inner": "ORGANIC_WALL",
+        "streams": [
+          { "type": "ORGANIC_WALL", "count": 4, "chance": 15, "priority": 0 },
+
+          { "type": "ORGANIC_WALL", "count": 6, "chance": 30, "priority": 1 },
+        ],
+      },
+      "flags": [
+        "CAVERN",
+        "ACID_RIVER",
+        "ARENA",
+        "DESTROY",
+        "LAKE_ACID",
+        "ACID_RIVER",
+        "LAKE_POISONOUS",
+        "POISONOUS_RIVER",
+        "ALWAY_MAX_SIZE",
+        "DARKNESS",
+      ],
+      "monster_flags": ["NASTY", "HOMO_SEXUAL"],
+      "room_rates": [
+        {
+          "type": 1,
+          "rate": 1,
+        },
+        {
+          "type": 2,
+          "rate": 1,
+        },
+        {
+          "type": 8,
+          "rate": 1000,
+        },
+      ],
+      "normal_monster_rate": 2,
+      "final_floor": { "guardian": 1704 },
+    },
+    {
+      "id": 27,
+      "name": {
+        "ja": "砂漠",
+        "en": "Desert",
+      },
+      "description": {
+        "ja": "広大なる砂漠",
+        "en": "Vast desert",
+      },
+      "tag": "DESERT",
+      "position": {
+        "y": 38,
+        "x": 29,
+      },
+      "generation": {
+        "min_depth": 10,
+        "max_depth": 35,
+        "min_player_level": 10,
+        "flags_mode": "OR",
+        "min_count": 14,
+        "extra_spawn_probability": 6250,
+        "obj_good": 75,
+        "obj_great": 20,
+        "pit": [
+          "ORC",
+          "TROLL",
+          "GIANT",
+          "HORROR",
+          "SYMBOL_GOOD",
+          "SYMBOL_EVIL",
+          "CHAPEL",
+          "DEMON",
+          "DARK_ELF",
+        ],
+        "nest": [
+          "CLONE",
+          "JELLY",
+          "SYMBOL_GOOD",
+          "SYMBOL_EVIL",
+          "MIMIC",
+          "HORROR",
+          "CHAPEL",
+          "UNDEAD",
+        ],
+      },
+      "floor": {
+        "tiles": [
+          {
+            "terrain": "DIRT",
+            "rate": 100,
+          },
+          {
+            "terrain": "DIRT",
+            "rate": 0,
+          },
+          {
+            "terrain": "DIRT",
+            "rate": 0,
+          },
+        ],
+        "tunnel_rate": 100,
+      },
+      "wall": {
+        "tiles": [
+          {
+            "terrain": "DIRT",
+            "rate": 100,
+          },
+          {
+            "terrain": "DIRT",
+            "rate": 0,
+          },
+          {
+            "terrain": "DIRT",
+            "rate": 0,
+          },
+        ],
+        "outer": "DIRT",
+        "inner": "DIRT",
+        "streams": [
+          { "type": "NONE", "count": 4, "chance": 15, "priority": 0 },
+
+          { "type": "NONE", "count": 6, "chance": 30, "priority": 1 },
+        ],
+      },
+      "flags": ["NO_ROOM", "NO_DOORS", "WATER_RIVER", "ALWAY_MAX_SIZE", "ALWAYS_LIGHT"],
+      "monster_flags": ["ANIMAL"],
+      "normal_monster_rate": 25,
+    },
+    {
+      "id": 28,
+      "name": {
+        "ja": "雪原",
+        "en": "Snow Field",
+      },
+      "description": {
+        "ja": "広大なる雪原",
+        "en": "Vast snow field",
+      },
+      "tag": "SNOW_FIELD",
+      "position": {
+        "y": 2,
+        "x": 73,
+      },
+      "generation": {
+        "min_depth": 10,
+        "max_depth": 35,
+        "min_player_level": 10,
+        "flags_mode": "OR",
+        "min_count": 14,
+        "extra_spawn_probability": 6250,
+        "obj_good": 75,
+        "obj_great": 20,
+        "pit": [
+          "ORC",
+          "TROLL",
+          "GIANT",
+          "HORROR",
+          "SYMBOL_GOOD",
+          "SYMBOL_EVIL",
+          "CHAPEL",
+          "DEMON",
+          "DARK_ELF",
+        ],
+        "nest": [
+          "CLONE",
+          "JELLY",
+          "SYMBOL_GOOD",
+          "SYMBOL_EVIL",
+          "MIMIC",
+          "HORROR",
+          "CHAPEL",
+          "UNDEAD",
+        ],
+      },
+      "floor": {
+        "tiles": [
+          {
+            "terrain": "SNOW_FIELD",
+            "rate": 100,
+          },
+          {
+            "terrain": "SNOW_FIELD",
+            "rate": 0,
+          },
+          {
+            "terrain": "SNOW_FIELD",
+            "rate": 0,
+          },
+        ],
+        "tunnel_rate": 100,
+      },
+      "wall": {
+        "tiles": [
+          {
+            "terrain": "SNOW_MOUNTAIN",
+            "rate": 20,
+          },
+          {
+            "terrain": "ICE_PILLAR",
+            "rate": 40,
+          },
+          {
+            "terrain": "ICE_WALL",
+            "rate": 40,
+          },
+        ],
+        "outer": "SNOW_FIELD",
+        "inner": "SNOW_FIELD",
+        "streams": [
+          { "type": "NONE", "count": 4, "chance": 15, "priority": 0 },
+
+          { "type": "NONE", "count": 6, "chance": 30, "priority": 1 },
+        ],
+      },
+      "flags": ["NO_ROOM", "NO_DOORS", "WATER_RIVER", "ALWAY_MAX_SIZE", "ALWAYS_LIGHT"],
+      "monster_flags": ["ANIMAL"],
+      "normal_monster_rate": 25,
+    },
+    {
+      "id": 29,
+      "name": {
+        "ja": "GOLAN本部",
+        "en": "GOLAN.H.Q.",
+      },
+      "description": {
+        "ja": "GOLAN本部",
+        "en": "Head Quarter of GOLAN",
+      },
+      "tag": "GOLAN_HQ",
+      "position": {
+        "y": 45,
+        "x": 33,
+      },
+      "generation": {
+        "min_depth": 36,
+        "max_depth": 38,
+        "min_player_level": 10,
+        "flags_mode": "OR",
+        "min_count": 14,
+        "extra_spawn_probability": 6250,
+        "obj_good": 75,
+        "obj_great": 20,
+        "pit": [
+          "ORC",
+          "TROLL",
+          "GIANT",
+          "HORROR",
+          "SYMBOL_GOOD",
+          "SYMBOL_EVIL",
+          "CHAPEL",
+          "DEMON",
+          "DARK_ELF",
+        ],
+        "nest": [
+          "CLONE",
+          "JELLY",
+          "SYMBOL_GOOD",
+          "SYMBOL_EVIL",
+          "MIMIC",
+          "HORROR",
+          "CHAPEL",
+          "UNDEAD",
+        ],
+      },
+      "floor": {
+        "tiles": [
+          {
+            "terrain": "ASPHALT",
+            "rate": 100,
+          },
+          {
+            "terrain": "ASPHALT",
+            "rate": 0,
+          },
+          {
+            "terrain": "ASPHALT",
+            "rate": 0,
+          },
+        ],
+        "tunnel_rate": 100,
+      },
+      "wall": {
+        "tiles": [
+          {
+            "terrain": "CONCRETE",
+            "rate": 100,
+          },
+          {
+            "terrain": "CONCRETE",
+            "rate": 0,
+          },
+          {
+            "terrain": "CONCRETE",
+            "rate": 0,
+          },
+        ],
+        "outer": "CONCRETE",
+        "inner": "CONCRETE",
+        "streams": [
+          { "type": "NONE", "count": 4, "chance": 15, "priority": 0 },
+
+          { "type": "NONE", "count": 6, "chance": 30, "priority": 1 },
+        ],
+      },
+      "flags": ["ARENA", "NO_CAVE", "CURTAIN", "GLASS_ROOM", "ALWAYS_LIGHT"],
+      "monster_flags": ["HUMAN"],
+      "normal_monster_rate": 25,
+      "final_floor": { "guardian": 1607 },
+      "alliance": "GOLAN",
+    },
+    {
+      "id": 30,
+      "name": {
+        "ja": "ドルアーガの塔",
+        "en": "The Tower of Druaga",
+      },
+      "description": {
+        "ja": "ドルアーガの塔",
+        "en": "The Tower of Druaga",
+      },
+      "tag": "TOWER_OF_DRUAGA",
+      "position": {
+        "y": 52,
+        "x": 91,
+      },
+      "generation": {
+        "min_depth": 1,
+        "max_depth": 60,
+        "min_player_level": 0,
+        "flags_mode": "OR",
+        "min_count": 14,
+        "extra_spawn_probability": 6250,
+        "obj_good": 75,
+        "obj_great": 20,
+        "pit": [
+          "ORC",
+          "TROLL",
+          "GIANT",
+          "HORROR",
+          "SYMBOL_GOOD",
+          "SYMBOL_EVIL",
+          "CHAPEL",
+          "DEMON",
+          "DARK_ELF",
+        ],
+        "nest": [
+          "CLONE",
+          "JELLY",
+          "SYMBOL_GOOD",
+          "SYMBOL_EVIL",
+          "MIMIC",
+          "HORROR",
+          "CHAPEL",
+          "UNDEAD",
+        ],
+      },
+      "floor": {
+        "tiles": [
+          {
+            "terrain": "FLOOR",
+            "rate": 100,
+          },
+          {
+            "terrain": "FLOOR",
+            "rate": 0,
+          },
+          {
+            "terrain": "FLOOR",
+            "rate": 0,
+          },
+        ],
+        "tunnel_rate": 100,
+      },
+      "wall": {
+        "tiles": [
+          {
+            "terrain": "GRANITE",
+            "rate": 100,
+          },
+          {
+            "terrain": "GRANITE",
+            "rate": 0,
+          },
+          {
+            "terrain": "GRANITE",
+            "rate": 0,
+          },
+        ],
+        "outer": "GRANITE",
+        "inner": "GRANITE",
+        "streams": [
+          { "type": "NONE", "count": 4, "chance": 15, "priority": 0 },
+
+          { "type": "NONE", "count": 6, "chance": 30, "priority": 1 },
+        ],
+      },
+      "flags": ["MAZE", "SMALLEST"],
+      "monster_flags": [],
+      "monster_symbols": ["p", "h", "H", "g"],
+      "final_floor": { "guardian": 935 },
+    },
+    {
+      "id": 31,
+      "name": {
+        "ja": "モリヤの鉱山",
+        "en": "Mine of Moriya",
+      },
+      "description": {
+        "ja": "モリヤの鉱山",
+        "en": "the entrance to the Mine of Moriya",
+      },
+      "tag": "MINE_OF_MORIYA",
+      "position": {
+        "y": 41,
+        "x": 71,
+      },
+      "generation": {
+        "min_depth": 43,
+        "max_depth": 50,
+        "min_player_level": 0,
+        "flags_mode": "OR",
+        "min_count": 18,
+        "extra_spawn_probability": 12500,
+        "obj_good": 80,
+        "obj_great": 25,
+        "pit": [],
+        "nest": ["MIMIC"],
+      },
+      "floor": {
+        "tiles": [
+          {
+            "terrain": "FLOOR",
+            "rate": 100,
+          },
+          {
+            "terrain": "FLOOR",
+            "rate": 0,
+          },
+          {
+            "terrain": "FLOOR",
+            "rate": 0,
+          },
+        ],
+        "tunnel_rate": 0,
+      },
+      "wall": {
+        "tiles": [
+          {
+            "terrain": "GRANITE",
+            "rate": 84,
+          },
+          {
+            "terrain": "MAGMA_TREASURE",
+            "rate": 8,
+          },
+          {
+            "terrain": "QUARTZ_TREASURE",
+            "rate": 8,
+          },
+        ],
+        "outer": "GRANITE",
+        "inner": "GRANITE",
+        "streams": [
+          { "type": "QUARTZ_VEIN", "count": 4, "chance": 15, "priority": 0 },
+
+          { "type": "MAGMA_VEIN", "count": 6, "chance": 30, "priority": 1 },
+        ],
+      },
+      "flags": [
+        "WATER_RIVER",
+        "CAVE",
+        "CAVERN",
+        "SMALLEST",
+        "LAVA_RIVER",
+        "DESTROY",
+        "LAKE_ACID",
+        "ACID_RIVER",
+      ],
+      "normal_monster_rate": 25,
+      "final_floor": { "guardian": 1480 },
+      "monster_rate": 12,
+    },
+    {
+      "id": 32,
+      "name": {
+        "ja": "ぷよぷよ地獄",
+        "en": "Puyopuyo Hell",
+      },
+      "description": {
+        "ja": "ぷよぷよ地獄",
+        "en": "Puyopuyo Hell",
+      },
+      "tag": "PUYOPUYO_HELL",
+      "position": {
+        "y": 49,
+        "x": 24,
+      },
+      "generation": {
+        "min_depth": 25,
+        "max_depth": 40,
+        "min_player_level": 0,
+        "flags_mode": "OR",
+        "min_count": 18,
+        "extra_spawn_probability": 12500,
+        "obj_good": 80,
+        "obj_great": 25,
+        "pit": [],
+        "nest": [],
+      },
+      "floor": {
+        "tiles": [
+          {
+            "terrain": "FLOOR",
+            "rate": 100,
+          },
+          {
+            "terrain": "FLOOR",
+            "rate": 0,
+          },
+          {
+            "terrain": "FLOOR",
+            "rate": 0,
+          },
+        ],
+        "tunnel_rate": 0,
+      },
+      "wall": {
+        "tiles": [
+          {
+            "terrain": "GRANITE",
+            "rate": 90,
+          },
+          {
+            "terrain": "MAGMA_TREASURE",
+            "rate": 5,
+          },
+          {
+            "terrain": "QUARTZ_TREASURE",
+            "rate": 5,
+          },
+        ],
+        "outer": "GRANITE",
+        "inner": "GRANITE",
+        "streams": [
+          { "type": "QUARTZ_VEIN", "count": 4, "chance": 15, "priority": 0 },
+
+          { "type": "MAGMA_VEIN", "count": 6, "chance": 30, "priority": 1 },
+        ],
+      },
+      "flags": ["CAVE", "CAVERN", "SMALLEST"],
+      "monster_flags": ["PUYO"],
+      "normal_monster_rate": 0,
+      "monster_rate": 12,
+    },
+    {
+      "id": 33,
+      "name": {
+        "ja": "腐れ谷",
+        "en": "VoDefile",
+      },
+      "description": {
+        "ja": "腐れ谷",
+        "en": "Valley of Defilement",
+      },
+      "tag": "VOD",
+      "position": {
+        "y": 48,
+        "x": 21,
+      },
+      "generation": {
+        "min_depth": 29,
+        "max_depth": 33,
+        "min_player_level": 45,
+        "flags_mode": "AND",
+        "min_count": 14,
+        "extra_spawn_probability": 6250,
+        "obj_good": 90,
+        "obj_great": 77,
+        "pit": ["HORROR", "DRAGON", "DEMON"],
+        "nest": ["ANIMAL", "UNDEAD"],
+      },
+      "floor": {
+        "tiles": [
+          {
+            "terrain": "SHALLOW_POISONOUS_PUDDLE",
+            "rate": 30,
+          },
+          {
+            "terrain": "DEEP_POISONOUS_PUDDLE",
+            "rate": 10,
+          },
+          {
+            "terrain": "FLOOR",
+            "rate": 70,
+          },
+        ],
+        "tunnel_rate": 0,
+      },
+      "wall": {
+        "tiles": [
+          {
+            "terrain": "GRANITE",
+            "rate": 80,
+          },
+          {
+            "terrain": "DARK_PIT",
+            "rate": 20,
+          },
+          {
+            "terrain": "DARK_PIT",
+            "rate": 0,
+          },
+        ],
+        "outer": "GRANITE",
+        "inner": "DEEP_POISONOUS_PUDDLE",
+        "streams": [
+          { "type": "NONE", "count": 4, "chance": 15, "priority": 0 },
+
+          { "type": "NONE", "count": 6, "chance": 30, "priority": 1 },
+        ],
+      },
+      "flags": ["CAVERN", "LAKE_POISONOUS", "POISONOUS_RIVER", "ALWAYS_RIVER"],
+      "monster_flags": ["IM_POIS", "EVIL"],
+      "normal_monster_rate": 0,
+    },
+  ],
+}

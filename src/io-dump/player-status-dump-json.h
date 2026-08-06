@@ -2,18 +2,18 @@
 
 #include <string>
 
-class PlayerType;
+class CreatureEntity;
 
 /*!
- * @brief プレイヤーのステータス情報をJSON形式で出力する
- * @param player_ptr プレイヤーへの参照ポインタ
- * @return JSON文字列
+ * @brief クリーチャー（プレイヤー・モンスター）のステータス情報を JSON 形式で出力する
+ * @param creature クリーチャーへの参照
+ * @return JSON 文字列
  */
-std::string dump_player_status_json(PlayerType *player_ptr);
+std::string dump_player_status_json(CreatureEntity &creature);
 
 /*!
- * @brief プレイヤーのステータス情報をJSON形式でファイルに出力する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @brief クリーチャー（プレイヤー・モンスター）のステータス情報を JSON 形式でファイルに出力する
+ * @param creature クリーチャーへの参照
  * @param fff ファイルポインタ
  */
-void dump_player_status_json_to_file(PlayerType *player_ptr, FILE *fff);
+void dump_player_status_json_to_file(CreatureEntity &creature, FILE *fff);

@@ -33,10 +33,10 @@
 #include "player-info/race-types.h"
 #include "player/player-personality-types.h"
 #include "system/angband-system.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
+#include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "tracking/health-bar-tracker.h"
 #include "util/bit-flags-calculator.h"
@@ -46,9 +46,9 @@
 
 // Melee-post-process-type
 struct mam_pp_type {
-    mam_pp_type(PlayerType *player_ptr, MONSTER_IDX m_idx, int dam, bool *dead, bool *fear, std::string_view note, MONSTER_IDX src_idx);
+    mam_pp_type(CreatureEntity &creature, MONSTER_IDX m_idx, int dam, bool *dead, bool *fear, std::string_view note, MONSTER_IDX src_idx);
     MONSTER_IDX m_idx;
-    MonsterEntity *m_ptr;
+    CreatureEntity *m_ptr;
     int dam;
     bool *dead;
     bool *fear;
@@ -59,23 +59,23 @@ struct mam_pp_type {
     std::string m_name;
 };
 
-mam_pp_type::mam_pp_type(PlayerType *player_ptr, MONSTER_IDX m_idx, int dam, bool *dead, bool *fear, std::string_view note, MONSTER_IDX src_idx)
+mam_pp_type::mam_pp_type(CreatureEntity &creature, MONSTER_IDX m_idx, int dam, bool *dead, bool *fear, std::string_view note, MONSTER_IDX src_idx)
     : m_idx(m_idx)
-    , m_ptr(&player_ptr->current_floor_ptr->m_list[m_idx])
+    , m_ptr(&creature.get_floor()->get_monster(m_idx))
     , dam(dam)
     , dead(dead)
     , fear(fear)
     , note(note)
     , src_idx(src_idx)
 {
-    this->seen = is_seen(player_ptr, *this->m_ptr);
-    this->known = this->m_ptr->cdis <= MAX_PLAYER_SIGHT;
-    this->m_name = monster_desc(player_ptr, *this->m_ptr, 0);
+    this->seen = is_seen(creature, *this->m_ptr);
+    this->known = Grid::calc_distance(creature.get_position(), this->m_ptr->get_position()) <= MAX_PLAYER_SIGHT;
+    this->m_name = monster_desc(creature, *this->m_ptr, 0);
 }
 
 static void prepare_redraw(mam_pp_type *mam_pp_ptr)
 {
-    if (!mam_pp_ptr->m_ptr->ml) {
+    if (!mam_pp_ptr->m_ptr->is_visible_on_map()) {
         return;
     }
 
@@ -135,21 +135,21 @@ static bool process_all_resistances(mam_pp_type *mam_pp_ptr)
 
 /*!
  * @brief モンスター死亡時のメッセージ表示
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param mam_pp_ptr 標的モンスター構造体への参照ポインタ
  * @details
  * 見えない位置で死んだら何も表示しない
  * 爆発して粉々になった等ならその旨を、残りは生命か無生命かで分岐
  */
-static void print_monster_dead_by_monster(PlayerType *player_ptr, mam_pp_type *mam_pp_ptr)
+static void print_monster_dead_by_monster(CreatureEntity &creature, mam_pp_type *mam_pp_ptr)
 {
     if (!mam_pp_ptr->known) {
         return;
     }
 
-    mam_pp_ptr->m_name = monster_desc(player_ptr, *mam_pp_ptr->m_ptr, MD_TRUE_NAME);
+    mam_pp_ptr->m_name = monster_desc(creature, *mam_pp_ptr->m_ptr, MD_TRUE_NAME);
     if (!mam_pp_ptr->seen) {
-        player_ptr->current_floor_ptr->monster_noise = true;
+        creature.get_floor()->monster_noise = true;
         return;
     }
 
@@ -172,11 +172,11 @@ static void print_monster_dead_by_monster(PlayerType *player_ptr, mam_pp_type *m
 
 /*!
  * @brief ダメージを受けたモンスターのHPが0未満になった際の処理
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param mam_pp_ptr 標的モンスター構造体への参照ポインタ
  * @return 生きていたらTRUE、それ以外 (ユニークは＠以外の攻撃では死なない)はFALSE
  */
-static bool check_monster_hp(PlayerType *player_ptr, mam_pp_type *mam_pp_ptr)
+static bool check_monster_hp(CreatureEntity &creature, mam_pp_type *mam_pp_ptr)
 {
     const auto &monrace = mam_pp_ptr->m_ptr->get_monrace();
     if (mam_pp_ptr->m_ptr->hp < 0) {
@@ -192,24 +192,24 @@ static bool check_monster_hp(PlayerType *player_ptr, mam_pp_type *mam_pp_ptr)
     }
 
     *(mam_pp_ptr->dead) = true;
-    print_monster_dead_by_monster(player_ptr, mam_pp_ptr);
-    monster_gain_exp(player_ptr, mam_pp_ptr->src_idx, mam_pp_ptr->m_ptr->r_idx);
-    monster_death(player_ptr, mam_pp_ptr->m_idx, false, AttributeType::NONE);
-    delete_monster_idx(player_ptr, mam_pp_ptr->m_idx);
+    print_monster_dead_by_monster(creature, mam_pp_ptr);
+    monster_gain_exp(creature, mam_pp_ptr->src_idx, mam_pp_ptr->m_ptr->get_r_idx());
+    monster_death(creature, mam_pp_ptr->m_idx, false, AttributeType::NONE);
+    delete_monster_idx(creature, mam_pp_ptr->m_idx);
     *(mam_pp_ptr->fear) = false;
     return true;
 }
 
 /*!
  * @brief 死亡等で恐慌状態をキャンセルする
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param mam_pp_ptr 標的モンスター構造体への参照ポインタ
  */
-static void cancel_fear_by_pain(PlayerType *player_ptr, mam_pp_type *mam_pp_ptr)
+static void cancel_fear_by_pain(CreatureEntity &creature, mam_pp_type *mam_pp_ptr)
 {
     const auto &m_ref = *mam_pp_ptr->m_ptr;
     const auto dam = mam_pp_ptr->dam;
-    if (!m_ref.is_fearful() || (dam <= 0) || !set_monster_monfear(player_ptr, mam_pp_ptr->m_idx, m_ref.get_remaining_fear() - randint1(dam / 4))) {
+    if (!m_ref.is_fearful() || (dam <= 0) || !set_monster_monfear(*creature.get_floor(), mam_pp_ptr->m_idx, m_ref.get_remaining_fear() - randint1(dam / 4))) {
         return;
     }
 
@@ -218,10 +218,10 @@ static void cancel_fear_by_pain(PlayerType *player_ptr, mam_pp_type *mam_pp_ptr)
 
 /*!
  * @biref HP残量などに応じてモンスターを恐慌状態にする
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param mam_pp_ptr 標的モンスター構造体への参照ポインタ
  */
-static void make_monster_fear(PlayerType *player_ptr, mam_pp_type *mam_pp_ptr)
+static void make_monster_fear(CreatureEntity &creature, mam_pp_type *mam_pp_ptr)
 {
     const auto &monrace = mam_pp_ptr->m_ptr->get_monrace();
     if (mam_pp_ptr->m_ptr->is_fearful() || (monrace.resistance_flags.has_not(MonsterResistanceType::NO_FEAR))) {
@@ -236,26 +236,26 @@ static void make_monster_fear(PlayerType *player_ptr, mam_pp_type *mam_pp_ptr)
 
     *(mam_pp_ptr->fear) = true;
     (void)set_monster_monfear(
-        player_ptr, mam_pp_ptr->m_idx, (randint1(10) + (((mam_pp_ptr->dam >= mam_pp_ptr->m_ptr->hp) && (percentage > 7)) ? 20 : ((11 - percentage) * 5))));
+        *creature.get_floor(), mam_pp_ptr->m_idx, (randint1(10) + (((mam_pp_ptr->dam >= mam_pp_ptr->m_ptr->hp) && (percentage > 7)) ? 20 : ((11 - percentage) * 5))));
 }
 
 /*!
  * @brief モンスター同士の乱闘による落馬処理
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param mam_pp_ptr 標的モンスター構造体への参照ポインタ
  */
-static void fall_off_horse_by_melee(PlayerType *player_ptr, mam_pp_type *mam_pp_ptr)
+static void fall_off_horse_by_melee(CreatureEntity &creature, mam_pp_type *mam_pp_ptr)
 {
     if (!mam_pp_ptr->m_ptr->is_riding() || (mam_pp_ptr->dam <= 0)) {
         return;
     }
 
-    mam_pp_ptr->m_name = monster_desc(player_ptr, *mam_pp_ptr->m_ptr, 0);
+    mam_pp_ptr->m_name = monster_desc(creature, *mam_pp_ptr->m_ptr, 0);
     if (mam_pp_ptr->m_ptr->hp > mam_pp_ptr->m_ptr->maxhp / 3) {
         mam_pp_ptr->dam = (mam_pp_ptr->dam + 1) / 2;
     }
 
-    if (process_fall_off_horse(player_ptr, (mam_pp_ptr->dam > 200) ? 200 : mam_pp_ptr->dam, false)) {
+    if (process_fall_off_horse(creature, (mam_pp_ptr->dam > 200) ? 200 : mam_pp_ptr->dam, false)) {
         msg_format(_("%s^に振り落とされた！", "You have been thrown off from %s!"), mam_pp_ptr->m_name.data());
     }
 }
@@ -271,17 +271,17 @@ static void fall_off_horse_by_melee(PlayerType *player_ptr, mam_pp_type *mam_pp_
  * @param src_idx 打撃を行ったモンスターの参照ID
  * @todo 打撃が当たった時の後処理 (爆発持ちのモンスターを爆発させる等)なので、関数名を変更する必要あり
  */
-void mon_take_hit_mon(PlayerType *player_ptr, MONSTER_IDX m_idx, int dam, bool *dead, bool *fear, std::string_view note, MONSTER_IDX src_idx)
+void mon_take_hit_mon(CreatureEntity &creature, MONSTER_IDX m_idx, int dam, bool *dead, bool *fear, std::string_view note, MONSTER_IDX src_idx)
 {
-    auto &floor = *player_ptr->current_floor_ptr;
-    auto &monster = floor.m_list[m_idx];
-    mam_pp_type tmp_mam_pp(player_ptr, m_idx, dam, dead, fear, note, src_idx);
+    auto &floor = *creature.get_floor();
+    auto &monster = floor.get_monster(m_idx);
+    mam_pp_type tmp_mam_pp(creature, m_idx, dam, dead, fear, note, src_idx);
     mam_pp_type *mam_pp_ptr = &tmp_mam_pp;
     prepare_redraw(mam_pp_ptr);
-    (void)set_monster_csleep(player_ptr, m_idx, 0);
+    (void)set_monster_csleep(*creature.get_floor(), m_idx, 0);
 
     if (monster.is_riding()) {
-        disturb(player_ptr, true, true);
+        disturb(creature, true, true);
     }
 
     if (process_invulnerability(mam_pp_ptr) || process_all_resistances(mam_pp_ptr)) {
@@ -289,19 +289,19 @@ void mon_take_hit_mon(PlayerType *player_ptr, MONSTER_IDX m_idx, int dam, bool *
     }
 
     monster.hp -= dam;
-    if (check_monster_hp(player_ptr, mam_pp_ptr)) {
+    if (check_monster_hp(creature, mam_pp_ptr)) {
         return;
     }
 
     *dead = false;
-    cancel_fear_by_pain(player_ptr, mam_pp_ptr);
-    make_monster_fear(player_ptr, mam_pp_ptr);
+    cancel_fear_by_pain(creature, mam_pp_ptr);
+    make_monster_fear(creature, mam_pp_ptr);
     if ((dam > 0) && !monster.is_pet() && !monster.is_friendly() && (mam_pp_ptr->src_idx != m_idx)) {
-        const auto &monster_src = floor.m_list[src_idx];
-        if (monster_src.is_pet() && !player_ptr->is_located_at({ monster.target_y, monster.target_x })) {
+        const auto &monster_src = floor.get_monster(src_idx);
+        if (monster_src.is_pet() && !creature.is_located_at(monster.get_target_position())) {
             monster.set_target(monster_src.get_position());
         }
     }
 
-    fall_off_horse_by_melee(player_ptr, mam_pp_ptr);
+    fall_off_horse_by_melee(creature, mam_pp_ptr);
 }

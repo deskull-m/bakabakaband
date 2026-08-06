@@ -49,12 +49,11 @@
 #include "status/bad-status-setter.h"
 #include "status/body-improvement.h"
 #include "status/buff-setter.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "target/projection-path-calculator.h"
 #include "target/target-checker.h"
@@ -63,7 +62,6 @@
 #include "target/target-types.h"
 #include "term/screen-processor.h"
 #include "term/z-form.h"
-#include "timed-effect/timed-effects.h"
 #include "util/enum-converter.h"
 #include "util/int-char-converter.h"
 #include "view/display-messages.h"
@@ -156,9 +154,9 @@ static int damage;
  * @param dam ものまねの威力
  * @param std::string ものまねの効果を表す文字列
  */
-static std::string mane_info(PlayerType *player_ptr, MonsterAbilityType power, int dam)
+static std::string mane_info(CreatureEntity &creature, MonsterAbilityType power, int dam)
 {
-    PLAYER_LEVEL plev = player_ptr->level;
+    PLAYER_LEVEL plev = static_cast<PLAYER_LEVEL>(creature.get_level());
 
     const auto power_int = enum2i(power);
     using Mat = MonsterAbilityType;
@@ -206,14 +204,14 @@ static std::string mane_info(PlayerType *player_ptr, MonsterAbilityType power, i
  * when you run it. It's probably easy to fix but I haven't tried,
  * sorry.
  */
-static int get_mane_power(PlayerType *player_ptr, int *sn, bool baigaesi)
+static int get_mane_power(CreatureEntity &creature, int *sn, bool baigaesi)
 {
     int i = 0;
     int num = 0;
     TERM_LEN y = 1;
     TERM_LEN x = 18;
     PERCENTAGE minfail = 0;
-    PLAYER_LEVEL plev = player_ptr->level;
+    PLAYER_LEVEL plev = static_cast<PLAYER_LEVEL>(creature.get_level());
     PERCENTAGE chance = 0;
     char choice;
     concptr p = _("能力", "power");
@@ -227,7 +225,7 @@ static int get_mane_power(PlayerType *player_ptr, int *sn, bool baigaesi)
     flag = false;
     redraw = false;
 
-    auto mane_data = PlayerClass(player_ptr).get_specific_data<mane_data_type>();
+    auto mane_data = CreatureClass(creature).get_specific_data<mane_data_type>();
 
     num = mane_data->mane_list.size();
 
@@ -274,33 +272,33 @@ static int get_mane_power(PlayerType *player_ptr, int *sn, bool baigaesi)
                     }
 
                     /* Reduce failure rate by INT/WIS adjustment */
-                    chance -= 3 * (adj_mag_stat[player_ptr->stat_index[spell.use_stat]] + adj_mag_stat[player_ptr->stat_index[A_DEX]] - 2) / 2;
+                    chance -= 3 * (adj_mag_stat[creature.get_stat_index(spell.use_stat)] + adj_mag_stat[creature.get_stat_index(A_DEX)] - 2) / 2;
 
                     if (spell.manedam) {
                         chance = chance * (baigaesi ? mane.damage * 2 : mane.damage) / spell.manedam;
                     }
 
-                    chance += player_ptr->to_m_chance;
+                    chance += creature.get_to_m_chance();
 
-                    if (player_ptr->is_wielding(FixedArtifactId::GOGO_PENDANT)) {
+                    if (creature.is_wielding(FixedArtifactId::GOGO_PENDANT)) {
                         chance -= 10;
                     }
 
                     /* Extract the minimum failure rate */
-                    minfail = adj_mag_fail[player_ptr->stat_index[spell.use_stat]];
+                    minfail = adj_mag_fail[creature.get_stat_index(spell.use_stat)];
 
                     /* Minimum failure rate */
                     if (chance < minfail) {
                         chance = minfail;
                     }
 
-                    chance += player_ptr->effects()->stun().get_magic_chance_penalty();
+                    chance += creature.get_stun_magic_chance_penalty();
                     if (chance > 95) {
                         chance = 95;
                     }
 
                     /* Get info */
-                    const auto comment = mane_info(player_ptr, mane.spell, (baigaesi ? mane.damage * 2 : mane.damage));
+                    const auto comment = mane_info(creature, mane.spell, (baigaesi ? mane.damage * 2 : mane.damage));
 
                     /* Dump the spell --(-- */
                     prt(format("  %c) %-30s %3d%%%s", I2A(i), spell.name, chance, comment.data()), y + i + 1, x);
@@ -341,7 +339,7 @@ static int get_mane_power(PlayerType *player_ptr, int *sn, bool baigaesi)
     }
 
     RedrawingFlagsUpdater::get_instance().set_flag(SubWindowRedrawingFlag::SPELL);
-    handle_stuff(player_ptr);
+    handle_stuff(creature);
 
     /* Abort if needed */
     if (!flag) {
@@ -359,14 +357,14 @@ static int get_mane_power(PlayerType *player_ptr, int *sn, bool baigaesi)
 
 /*!
  * @brief ものまね処理の発動 /
- * do_cmd_cast calls this function if the player's class is 'imitator'.
- * @param player_ptr プレイヤーへの参照ポインタ
+ * do_cmd_cast calls this function if the creature's class is 'imitator'.
+ * @param creature クリーチャーへの参照
  * @param spell 発動するモンスター攻撃のID
  * @return 処理を実行したらTRUE、キャンセルした場合FALSEを返す。
  */
-static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
+static bool use_mane(CreatureEntity &creature, MonsterAbilityType spell)
 {
-    PLAYER_LEVEL plev = player_ptr->level;
+    PLAYER_LEVEL plev = static_cast<PLAYER_LEVEL>(creature.get_level());
     BIT_FLAGS mode = (PM_ALLOW_GROUP | PM_FORCE_PET);
     BIT_FLAGS u_mode = 0L;
 
@@ -376,7 +374,7 @@ static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
 
     auto dir = Direction::none();
     if (AIMING_SPELLS.contains(spell)) {
-        dir = get_aim_dir(player_ptr);
+        dir = get_aim_dir(creature);
         if (!dir) {
             return false;
         }
@@ -386,22 +384,22 @@ static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
     switch (spell) {
     case MonsterAbilityType::SHRIEK:
         msg_print(_("かん高い金切り声をあげた。", "You make a high pitched shriek."));
-        aggravate_monsters(player_ptr, 0);
+        aggravate_monsters(creature, 0);
         break;
 
     case MonsterAbilityType::XXX1:
         break;
 
     case MonsterAbilityType::DISPEL: {
-        const auto pos = target_set(player_ptr, TARGET_KILL).get_position();
+        const auto pos = target_set(creature, TARGET_KILL).get_position();
         if (!pos) {
             return false;
         }
 
-        const auto &floor = *player_ptr->current_floor_ptr;
+        const auto &floor = *creature.get_floor();
         const auto &grid = floor.get_grid(*pos);
         const auto m_idx = grid.m_idx;
-        const auto p_pos = player_ptr->get_position();
+        const auto p_pos = creature.get_position();
         auto should_dispel = m_idx == 0;
         should_dispel &= grid.has_los();
         should_dispel &= projectable(floor, p_pos, *pos);
@@ -409,18 +407,18 @@ static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
             break;
         }
 
-        dispel_monster_status(player_ptr, m_idx);
+        dispel_monster_status(creature, m_idx);
         break;
     }
 
     case MonsterAbilityType::ROCKET:
         msg_print(_("ロケットを発射した。", "You fire a rocket."));
-        fire_rocket(player_ptr, AttributeType::ROCKET, dir, damage, 2);
+        fire_rocket(creature, AttributeType::ROCKET, dir, damage, 2);
         break;
 
     case MonsterAbilityType::SHOOT:
         msg_print(_("矢を放った。", "You fire an arrow."));
-        fire_bolt(player_ptr, AttributeType::MONSTER_SHOOT, dir, damage);
+        fire_bolt(creature, AttributeType::MONSTER_SHOOT, dir, damage);
         break;
 
     case MonsterAbilityType::XXX2:
@@ -434,322 +432,322 @@ static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
 
     case MonsterAbilityType::BR_ACID:
         msg_print(_("酸のブレスを吐いた。", "You breathe acid."));
-        fire_breath(player_ptr, AttributeType::ACID, dir, damage, (plev > 35 ? 3 : 2));
+        fire_breath(creature, AttributeType::ACID, dir, damage, (plev > 35 ? 3 : 2));
         break;
 
     case MonsterAbilityType::BR_ELEC:
         msg_print(_("稲妻のブレスを吐いた。", "You breathe lightning."));
-        fire_breath(player_ptr, AttributeType::ELEC, dir, damage, (plev > 35 ? 3 : 2));
+        fire_breath(creature, AttributeType::ELEC, dir, damage, (plev > 35 ? 3 : 2));
         break;
 
     case MonsterAbilityType::BR_FIRE:
         msg_print(_("火炎のブレスを吐いた。", "You breathe fire."));
-        fire_breath(player_ptr, AttributeType::FIRE, dir, damage, (plev > 35 ? 3 : 2));
+        fire_breath(creature, AttributeType::FIRE, dir, damage, (plev > 35 ? 3 : 2));
         break;
 
     case MonsterAbilityType::BR_COLD:
         msg_print(_("冷気のブレスを吐いた。", "You breathe frost."));
-        fire_breath(player_ptr, AttributeType::COLD, dir, damage, (plev > 35 ? 3 : 2));
+        fire_breath(creature, AttributeType::COLD, dir, damage, (plev > 35 ? 3 : 2));
         break;
 
     case MonsterAbilityType::BR_POIS:
         msg_print(_("ガスのブレスを吐いた。", "You breathe gas."));
-        fire_breath(player_ptr, AttributeType::POIS, dir, damage, (plev > 35 ? 3 : 2));
+        fire_breath(creature, AttributeType::POIS, dir, damage, (plev > 35 ? 3 : 2));
         break;
 
     case MonsterAbilityType::BR_NETH:
         msg_print(_("地獄のブレスを吐いた。", "You breathe nether."));
-        fire_breath(player_ptr, AttributeType::NETHER, dir, damage, (plev > 35 ? 3 : 2));
+        fire_breath(creature, AttributeType::NETHER, dir, damage, (plev > 35 ? 3 : 2));
         break;
 
     case MonsterAbilityType::BR_LITE:
         msg_print(_("閃光のブレスを吐いた。", "You breathe light."));
-        fire_breath(player_ptr, AttributeType::LITE, dir, damage, (plev > 35 ? 3 : 2));
+        fire_breath(creature, AttributeType::LITE, dir, damage, (plev > 35 ? 3 : 2));
         break;
 
     case MonsterAbilityType::BR_DARK:
         msg_print(_("暗黒のブレスを吐いた。", "You breathe darkness."));
-        fire_breath(player_ptr, AttributeType::DARK, dir, damage, (plev > 35 ? 3 : 2));
+        fire_breath(creature, AttributeType::DARK, dir, damage, (plev > 35 ? 3 : 2));
         break;
 
     case MonsterAbilityType::BR_CONF:
         msg_print(_("混乱のブレスを吐いた。", "You breathe confusion."));
-        fire_breath(player_ptr, AttributeType::CONFUSION, dir, damage, (plev > 35 ? 3 : 2));
+        fire_breath(creature, AttributeType::CONFUSION, dir, damage, (plev > 35 ? 3 : 2));
         break;
 
     case MonsterAbilityType::BR_SOUN:
         msg_print(_("轟音のブレスを吐いた。", "You breathe sound."));
-        fire_breath(player_ptr, AttributeType::SOUND, dir, damage, (plev > 35 ? 3 : 2));
+        fire_breath(creature, AttributeType::SOUND, dir, damage, (plev > 35 ? 3 : 2));
         break;
 
     case MonsterAbilityType::BR_CHAO:
         msg_print(_("カオスのブレスを吐いた。", "You breathe chaos."));
-        fire_breath(player_ptr, AttributeType::CHAOS, dir, damage, (plev > 35 ? 3 : 2));
+        fire_breath(creature, AttributeType::CHAOS, dir, damage, (plev > 35 ? 3 : 2));
         break;
 
     case MonsterAbilityType::BR_DISE:
         msg_print(_("劣化のブレスを吐いた。", "You breathe disenchantment."));
-        fire_breath(player_ptr, AttributeType::DISENCHANT, dir, damage, (plev > 35 ? 3 : 2));
+        fire_breath(creature, AttributeType::DISENCHANT, dir, damage, (plev > 35 ? 3 : 2));
         break;
 
     case MonsterAbilityType::BR_NEXU:
         msg_print(_("因果混乱のブレスを吐いた。", "You breathe nexus."));
-        fire_breath(player_ptr, AttributeType::NEXUS, dir, damage, (plev > 35 ? 3 : 2));
+        fire_breath(creature, AttributeType::NEXUS, dir, damage, (plev > 35 ? 3 : 2));
         break;
 
     case MonsterAbilityType::BR_TIME:
         msg_print(_("時間逆転のブレスを吐いた。", "You breathe time."));
-        fire_breath(player_ptr, AttributeType::TIME, dir, damage, (plev > 35 ? 3 : 2));
+        fire_breath(creature, AttributeType::TIME, dir, damage, (plev > 35 ? 3 : 2));
         break;
 
     case MonsterAbilityType::BR_INER:
         msg_print(_("遅鈍のブレスを吐いた。", "You breathe inertia."));
-        fire_breath(player_ptr, AttributeType::INERTIAL, dir, damage, (plev > 35 ? 3 : 2));
+        fire_breath(creature, AttributeType::INERTIAL, dir, damage, (plev > 35 ? 3 : 2));
         break;
 
     case MonsterAbilityType::BR_GRAV:
         msg_print(_("重力のブレスを吐いた。", "You breathe gravity."));
-        fire_breath(player_ptr, AttributeType::GRAVITY, dir, damage, (plev > 35 ? 3 : 2));
+        fire_breath(creature, AttributeType::GRAVITY, dir, damage, (plev > 35 ? 3 : 2));
         break;
 
     case MonsterAbilityType::BR_SHAR:
         msg_print(_("破片のブレスを吐いた。", "You breathe shards."));
-        fire_breath(player_ptr, AttributeType::SHARDS, dir, damage, (plev > 35 ? 3 : 2));
+        fire_breath(creature, AttributeType::SHARDS, dir, damage, (plev > 35 ? 3 : 2));
         break;
 
     case MonsterAbilityType::BR_PLAS:
         msg_print(_("プラズマのブレスを吐いた。", "You breathe plasma."));
-        fire_breath(player_ptr, AttributeType::PLASMA, dir, damage, (plev > 35 ? 3 : 2));
+        fire_breath(creature, AttributeType::PLASMA, dir, damage, (plev > 35 ? 3 : 2));
         break;
 
     case MonsterAbilityType::BR_FORC:
         msg_print(_("フォースのブレスを吐いた。", "You breathe force."));
-        fire_breath(player_ptr, AttributeType::FORCE, dir, damage, (plev > 35 ? 3 : 2));
+        fire_breath(creature, AttributeType::FORCE, dir, damage, (plev > 35 ? 3 : 2));
         break;
 
     case MonsterAbilityType::BR_MANA:
         msg_print(_("魔力のブレスを吐いた。", "You breathe mana."));
-        fire_breath(player_ptr, AttributeType::MANA, dir, damage, (plev > 35 ? 3 : 2));
+        fire_breath(creature, AttributeType::MANA, dir, damage, (plev > 35 ? 3 : 2));
         break;
 
     case MonsterAbilityType::BA_NUKE:
         msg_print(_("放射能球を放った。", "You cast a ball of radiation."));
-        fire_ball(player_ptr, AttributeType::NUKE, dir, damage, 2);
+        fire_ball(creature, AttributeType::NUKE, dir, damage, 2);
         break;
 
     case MonsterAbilityType::BR_NUKE:
         msg_print(_("放射性廃棄物のブレスを吐いた。", "You breathe toxic waste."));
-        fire_breath(player_ptr, AttributeType::NUKE, dir, damage, (plev > 35 ? 3 : 2));
+        fire_breath(creature, AttributeType::NUKE, dir, damage, (plev > 35 ? 3 : 2));
         break;
 
     case MonsterAbilityType::BA_CHAO:
         msg_print(_("純ログルスを放った。", "You invoke a raw Logrus."));
-        fire_ball(player_ptr, AttributeType::CHAOS, dir, damage, 4);
+        fire_ball(creature, AttributeType::CHAOS, dir, damage, 4);
         break;
     case MonsterAbilityType::BR_DISI:
         msg_print(_("分解のブレスを吐いた。", "You breathe disintegration."));
-        fire_breath(player_ptr, AttributeType::DISINTEGRATE, dir, damage, (plev > 35 ? 3 : 2));
+        fire_breath(creature, AttributeType::DISINTEGRATE, dir, damage, (plev > 35 ? 3 : 2));
         break;
     case MonsterAbilityType::BR_VOID:
         msg_print(_("虚無のブレスを吐いた。", "You breathe void."));
-        fire_breath(player_ptr, AttributeType::VOID_MAGIC, dir, damage, (plev > 35 ? 3 : 2));
+        fire_breath(creature, AttributeType::VOID_MAGIC, dir, damage, (plev > 35 ? 3 : 2));
         break;
 
     case MonsterAbilityType::BR_ABYSS:
         msg_print(_("深淵のブレスを吐いた。", "You breathe abyss."));
-        fire_breath(player_ptr, AttributeType::ABYSS, dir, damage, (plev > 35 ? 3 : 2));
+        fire_breath(creature, AttributeType::ABYSS, dir, damage, (plev > 35 ? 3 : 2));
         break;
 
     case MonsterAbilityType::BA_ACID:
         msg_print(_("アシッド・ボールの呪文を唱えた。", "You cast an acid ball."));
-        fire_ball(player_ptr, AttributeType::ACID, dir, damage, 2);
+        fire_ball(creature, AttributeType::ACID, dir, damage, 2);
         break;
     case MonsterAbilityType::BA_ELEC:
         msg_print(_("サンダー・ボールの呪文を唱えた。", "You cast a lightning ball."));
-        fire_ball(player_ptr, AttributeType::ELEC, dir, damage, 2);
+        fire_ball(creature, AttributeType::ELEC, dir, damage, 2);
         break;
     case MonsterAbilityType::BA_FIRE:
         msg_print(_("ファイア・ボールの呪文を唱えた。", "You cast a fire ball."));
-        fire_ball(player_ptr, AttributeType::FIRE, dir, damage, 2);
+        fire_ball(creature, AttributeType::FIRE, dir, damage, 2);
         break;
     case MonsterAbilityType::BA_COLD:
         msg_print(_("アイス・ボールの呪文を唱えた。", "You cast a frost ball."));
-        fire_ball(player_ptr, AttributeType::COLD, dir, damage, 2);
+        fire_ball(creature, AttributeType::COLD, dir, damage, 2);
         break;
     case MonsterAbilityType::BA_POIS:
         msg_print(_("悪臭雲の呪文を唱えた。", "You cast a stinking cloud."));
-        fire_ball(player_ptr, AttributeType::POIS, dir, damage, 2);
+        fire_ball(creature, AttributeType::POIS, dir, damage, 2);
         break;
     case MonsterAbilityType::BA_NETH:
         msg_print(_("地獄球の呪文を唱えた。", "You cast a nether ball."));
-        fire_ball(player_ptr, AttributeType::NETHER, dir, damage, 2);
+        fire_ball(creature, AttributeType::NETHER, dir, damage, 2);
         break;
     case MonsterAbilityType::BA_WATE:
         msg_print(_("流れるような身振りをした。", "You gesture fluidly."));
-        fire_ball(player_ptr, AttributeType::WATER, dir, damage, 4);
+        fire_ball(creature, AttributeType::WATER, dir, damage, 4);
         break;
     case MonsterAbilityType::BA_MANA:
         msg_print(_("魔力の嵐の呪文を念じた。", "You invoke a mana storm."));
-        fire_ball(player_ptr, AttributeType::MANA, dir, damage, 4);
+        fire_ball(creature, AttributeType::MANA, dir, damage, 4);
         break;
     case MonsterAbilityType::BA_DARK:
         msg_print(_("暗黒の嵐の呪文を念じた。", "You invoke a darkness storm."));
-        fire_ball(player_ptr, AttributeType::DARK, dir, damage, 4);
+        fire_ball(creature, AttributeType::DARK, dir, damage, 4);
         break;
     case MonsterAbilityType::BA_VOID:
         msg_print(_("虚無の嵐の呪文を念じた。", "You cast a void ball."));
-        fire_ball(player_ptr, AttributeType::VOID_MAGIC, dir, damage, 4);
+        fire_ball(creature, AttributeType::VOID_MAGIC, dir, damage, 4);
         break;
     case MonsterAbilityType::BA_ABYSS:
         msg_print(_("深淵の嵐の呪文を念じた。", "You cast a abyss ball."));
-        fire_ball(player_ptr, AttributeType::ABYSS, dir, damage, 4);
+        fire_ball(creature, AttributeType::ABYSS, dir, damage, 4);
         break;
     case MonsterAbilityType::BA_METEOR:
         msg_print(_("メテオスウォームの呪文を念じた。", "You cast a meteor swarm."));
-        fire_ball(player_ptr, AttributeType::METEOR, dir, damage, 4);
+        fire_ball(creature, AttributeType::METEOR, dir, damage, 4);
         break;
     case MonsterAbilityType::BA_GRAVITY:
         msg_print(_("超重力の呪文を念じた。", "You invoke a gravity storm."));
-        fire_ball(player_ptr, AttributeType::GRAVITY, dir, damage, 4);
+        fire_ball(creature, AttributeType::GRAVITY, dir, damage, 4);
         break;
     case MonsterAbilityType::DRAIN_MANA:
-        fire_ball_hide(player_ptr, AttributeType::DRAIN_MANA, dir, randint1(plev * 3) + plev, 0);
+        fire_ball_hide(creature, AttributeType::DRAIN_MANA, dir, randint1(plev * 3) + plev, 0);
         break;
     case MonsterAbilityType::MIND_BLAST:
-        fire_ball_hide(player_ptr, AttributeType::MIND_BLAST, dir, damage, 0);
+        fire_ball_hide(creature, AttributeType::MIND_BLAST, dir, damage, 0);
         break;
     case MonsterAbilityType::BRAIN_SMASH:
-        fire_ball_hide(player_ptr, AttributeType::BRAIN_SMASH, dir, damage, 0);
+        fire_ball_hide(creature, AttributeType::BRAIN_SMASH, dir, damage, 0);
         break;
     case MonsterAbilityType::CAUSE_1:
-        fire_ball_hide(player_ptr, AttributeType::CAUSE_1, dir, damage, 0);
+        fire_ball_hide(creature, AttributeType::CAUSE_1, dir, damage, 0);
         break;
     case MonsterAbilityType::CAUSE_2:
-        fire_ball_hide(player_ptr, AttributeType::CAUSE_2, dir, damage, 0);
+        fire_ball_hide(creature, AttributeType::CAUSE_2, dir, damage, 0);
         break;
     case MonsterAbilityType::CAUSE_3:
-        fire_ball_hide(player_ptr, AttributeType::CAUSE_3, dir, damage, 0);
+        fire_ball_hide(creature, AttributeType::CAUSE_3, dir, damage, 0);
         break;
     case MonsterAbilityType::CAUSE_4:
-        fire_ball_hide(player_ptr, AttributeType::CAUSE_4, dir, damage, 0);
+        fire_ball_hide(creature, AttributeType::CAUSE_4, dir, damage, 0);
         break;
     case MonsterAbilityType::BO_ACID:
         msg_print(_("アシッド・ボルトの呪文を唱えた。", "You cast an acid bolt."));
-        fire_bolt(player_ptr, AttributeType::ACID, dir, damage);
+        fire_bolt(creature, AttributeType::ACID, dir, damage);
         break;
     case MonsterAbilityType::BO_ELEC:
         msg_print(_("サンダー・ボルトの呪文を唱えた。", "You cast a lightning bolt."));
-        fire_bolt(player_ptr, AttributeType::ELEC, dir, damage);
+        fire_bolt(creature, AttributeType::ELEC, dir, damage);
         break;
     case MonsterAbilityType::BO_FIRE:
         msg_print(_("ファイア・ボルトの呪文を唱えた。", "You cast a fire bolt."));
-        fire_bolt(player_ptr, AttributeType::FIRE, dir, damage);
+        fire_bolt(creature, AttributeType::FIRE, dir, damage);
         break;
     case MonsterAbilityType::BO_COLD:
         msg_print(_("アイス・ボルトの呪文を唱えた。", "You cast a frost bolt."));
-        fire_bolt(player_ptr, AttributeType::COLD, dir, damage);
+        fire_bolt(creature, AttributeType::COLD, dir, damage);
         break;
     case MonsterAbilityType::BA_LITE:
         msg_print(_("スターバーストの呪文を念じた。", "You invoke a starburst."));
-        fire_ball(player_ptr, AttributeType::LITE, dir, damage, 4);
+        fire_ball(creature, AttributeType::LITE, dir, damage, 4);
         break;
     case MonsterAbilityType::BO_NETH:
         msg_print(_("地獄の矢の呪文を唱えた。", "You cast a nether bolt."));
-        fire_bolt(player_ptr, AttributeType::NETHER, dir, damage);
+        fire_bolt(creature, AttributeType::NETHER, dir, damage);
         break;
     case MonsterAbilityType::BO_WATE:
         msg_print(_("ウォーター・ボルトの呪文を唱えた。", "You cast a water bolt."));
-        fire_bolt(player_ptr, AttributeType::WATER, dir, damage);
+        fire_bolt(creature, AttributeType::WATER, dir, damage);
         break;
     case MonsterAbilityType::BO_MANA:
         msg_print(_("魔力の矢の呪文を唱えた。", "You cast a mana bolt."));
-        fire_bolt(player_ptr, AttributeType::MANA, dir, damage);
+        fire_bolt(creature, AttributeType::MANA, dir, damage);
         break;
     case MonsterAbilityType::BO_PLAS:
         msg_print(_("プラズマ・ボルトの呪文を唱えた。", "You cast a plasma bolt."));
-        fire_bolt(player_ptr, AttributeType::PLASMA, dir, damage);
+        fire_bolt(creature, AttributeType::PLASMA, dir, damage);
         break;
     case MonsterAbilityType::BO_ICEE:
         msg_print(_("極寒の矢の呪文を唱えた。", "You cast a ice bolt."));
-        fire_bolt(player_ptr, AttributeType::ICE, dir, damage);
+        fire_bolt(creature, AttributeType::ICE, dir, damage);
         break;
     case MonsterAbilityType::BO_VOID:
         msg_print(_("虚無の矢の呪文を唱えた。", "You cast a void bolt."));
-        fire_bolt(player_ptr, AttributeType::VOID_MAGIC, dir, damage);
+        fire_bolt(creature, AttributeType::VOID_MAGIC, dir, damage);
         break;
     case MonsterAbilityType::BO_ABYSS:
         msg_print(_("深淵の矢の呪文を唱えた。", "You cast a abyss bolt."));
-        fire_bolt(player_ptr, AttributeType::ABYSS, dir, damage);
+        fire_bolt(creature, AttributeType::ABYSS, dir, damage);
         break;
     case MonsterAbilityType::BO_METEOR:
         msg_print(_("メテオストライクの呪文を唱えた。", "You cast a meteor strike."));
-        fire_bolt(player_ptr, AttributeType::METEOR, dir, damage);
+        fire_bolt(creature, AttributeType::METEOR, dir, damage);
         break;
     case MonsterAbilityType::BO_LITE:
         msg_print(_("スターライトアローの呪文を唱えた。", "You cast a starlight arrow."));
-        fire_bolt(player_ptr, AttributeType::LITE, dir, damage);
+        fire_bolt(creature, AttributeType::LITE, dir, damage);
         break;
     case MonsterAbilityType::MISSILE:
         msg_print(_("マジック・ミサイルの呪文を唱えた。", "You cast a magic missile."));
-        fire_bolt(player_ptr, AttributeType::MISSILE, dir, damage);
+        fire_bolt(creature, AttributeType::MISSILE, dir, damage);
         break;
     case MonsterAbilityType::SCARE:
         msg_print(_("恐ろしげな幻覚を作り出した。", "You cast a fearful illusion."));
-        fear_monster(player_ptr, dir, plev + 10);
+        fear_monster(creature, dir, plev + 10);
         break;
     case MonsterAbilityType::BLIND:
-        confuse_monster(player_ptr, dir, plev * 2);
+        confuse_monster(creature, dir, plev * 2);
         break;
     case MonsterAbilityType::CONF:
         msg_print(_("誘惑的な幻覚をつくり出した。", "You cast a mesmerizing illusion."));
-        confuse_monster(player_ptr, dir, plev * 2);
+        confuse_monster(creature, dir, plev * 2);
         break;
     case MonsterAbilityType::SLOW:
-        slow_monster(player_ptr, dir, plev);
+        slow_monster(creature, dir, plev);
         break;
     case MonsterAbilityType::HOLD:
-        sleep_monster(player_ptr, dir, plev);
+        sleep_monster(creature, dir, plev);
         break;
     case MonsterAbilityType::HASTE:
-        (void)set_acceleration(player_ptr, randint1(20 + plev) + plev, false);
+        (void)set_acceleration(creature, randint1(20 + plev) + plev, false);
         break;
     case MonsterAbilityType::HAND_DOOM: {
         msg_print(_("<破滅の手>を放った！", "You invoke the Hand of Doom!"));
-        fire_ball_hide(player_ptr, AttributeType::HAND_DOOM, dir, 200, 0);
+        fire_ball_hide(creature, AttributeType::HAND_DOOM, dir, 200, 0);
         break;
     }
     case MonsterAbilityType::HEAL: {
         msg_print(_("自分の傷に念を集中した。", "You concentrate on your wounds!"));
-        (void)hp_player(player_ptr, plev * 6);
-        BadStatusSetter bss(player_ptr);
+        (void)hp_player(creature, plev * 6);
+        BadStatusSetter bss(creature);
         (void)bss.set_stun(0);
         (void)bss.set_cut(0);
         break;
     }
     case MonsterAbilityType::INVULNER:
         msg_print(_("無傷の球の呪文を唱えた。", "You cast a Globe of Invulnerability."));
-        (void)set_invuln(player_ptr, randint1(7) + 7, false);
+        (void)set_invuln(creature, randint1(7) + 7, false);
         break;
     case MonsterAbilityType::BLINK:
-        teleport_player(player_ptr, 10, TELEPORT_SPONTANEOUS);
+        teleport_player(creature, 10, TELEPORT_SPONTANEOUS);
         break;
     case MonsterAbilityType::TPORT:
-        teleport_player(player_ptr, plev * 5, TELEPORT_SPONTANEOUS);
+        teleport_player(creature, plev * 5, TELEPORT_SPONTANEOUS);
         break;
     case MonsterAbilityType::WORLD:
-        (void)time_walk(player_ptr);
+        (void)time_walk(creature);
         break;
     case MonsterAbilityType::SPECIAL:
         break;
     case MonsterAbilityType::TELE_TO: {
-        const auto pos = target_set(player_ptr, TARGET_KILL).get_position();
+        const auto pos = target_set(creature, TARGET_KILL).get_position();
         if (!pos) {
             return false;
         }
 
-        const auto &floor = *player_ptr->current_floor_ptr;
+        const auto &floor = *creature.get_floor();
         const auto &grid_target = floor.get_grid(*pos);
-        const auto p_pos = player_ptr->get_position();
+        const auto p_pos = creature.get_position();
         auto should_teleport = grid_target.has_monster();
         should_teleport &= grid_target.has_los();
         should_teleport &= projectable(floor, p_pos, *pos);
@@ -757,19 +755,19 @@ static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
             break;
         }
 
-        const auto &monster = floor.m_list[grid_target.m_idx];
+        const auto &monster = floor.get_monster(grid_target.m_idx);
         auto &monrace = monster.get_monrace();
-        const auto m_name = monster_desc(player_ptr, monster, 0);
+        const auto m_name = monster_desc(creature, monster, 0);
         if (monrace.resistance_flags.has(MonsterResistanceType::RESIST_TELEPORT)) {
             if (monrace.kind_flags.has(MonsterKindType::UNIQUE) || monrace.resistance_flags.has(MonsterResistanceType::RESIST_ALL)) {
-                if (is_original_ap_and_seen(player_ptr, monster)) {
+                if (is_original_ap_and_seen(creature, monster)) {
                     monrace.r_resistance_flags.set(MonsterResistanceType::RESIST_TELEPORT);
                 }
                 msg_format(_("%sには効果がなかった！", "%s is unaffected!"), m_name.data());
 
                 break;
             } else if (monrace.level > randint1(100)) {
-                if (is_original_ap_and_seen(player_ptr, monster)) {
+                if (is_original_ap_and_seen(creature, monster)) {
                     monrace.r_resistance_flags.set(MonsterResistanceType::RESIST_TELEPORT);
                 }
                 msg_format(_("%sには耐性がある！", "%s resists!"), m_name.data());
@@ -779,34 +777,34 @@ static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
         }
         msg_format(_("%sを引き戻した。", "You command %s to return."), m_name.data());
 
-        teleport_monster_to(player_ptr, grid_target.m_idx, player_ptr->y, player_ptr->x, 100, TELEPORT_PASSIVE);
+        teleport_monster_to(creature, grid_target.m_idx, creature.y, creature.x, 100, TELEPORT_PASSIVE);
         break;
     }
     case MonsterAbilityType::TELE_AWAY:
-        (void)fire_beam(player_ptr, AttributeType::AWAY_ALL, dir, plev);
+        (void)fire_beam(creature, AttributeType::AWAY_ALL, dir, plev);
         break;
 
     case MonsterAbilityType::TELE_LEVEL:
-        return teleport_level_other(player_ptr);
+        return teleport_level_other(creature);
         break;
 
     case MonsterAbilityType::PSY_SPEAR:
         msg_print(_("光の剣を放った。", "You throw a psycho-spear."));
-        (void)fire_beam(player_ptr, AttributeType::PSY_SPEAR, dir, damage);
+        (void)fire_beam(creature, AttributeType::PSY_SPEAR, dir, damage);
         break;
 
     case MonsterAbilityType::DARKNESS:
         msg_print(_("暗闇の中で手を振った。", "You gesture in shadow."));
-        (void)unlite_area(player_ptr, 10, 3);
+        (void)unlite_area(creature, 10, 3);
         break;
 
     case MonsterAbilityType::TRAPS: {
-        const auto pos = target_set(player_ptr, TARGET_KILL).get_position();
+        const auto pos = target_set(creature, TARGET_KILL).get_position();
         if (!pos) {
             return false;
         }
         msg_print(_("呪文を唱えて邪悪に微笑んだ。", "You cast a spell and cackle evilly."));
-        trap_creation(player_ptr, pos->y, pos->x);
+        trap_creation(creature, pos->y, pos->x);
         break;
     }
     case MonsterAbilityType::FORGET:
@@ -814,23 +812,23 @@ static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
         break;
     case MonsterAbilityType::RAISE_DEAD:
         msg_print(_("死者復活の呪文を唱えた。", "You animate the dead."));
-        (void)animate_dead(player_ptr, 0, player_ptr->y, player_ptr->x);
+        (void)animate_dead(creature, 0, creature.y, creature.x);
         break;
     case MonsterAbilityType::S_KIN: {
-        const auto pos = target_set(player_ptr, TARGET_KILL).get_position();
+        const auto pos = target_set(creature, TARGET_KILL).get_position();
         if (!pos) {
             return false;
         }
 
         msg_print(_("援軍を召喚した。", "You summon minions."));
         for (auto k = 0; k < 4; k++) {
-            (void)summon_kin_player(player_ptr, plev, pos->y, pos->x, (PM_FORCE_PET | PM_ALLOW_GROUP));
+            (void)summon_kin_player(creature, plev, pos->y, pos->x, (PM_FORCE_PET | PM_ALLOW_GROUP));
         }
         break;
     }
     case MonsterAbilityType::S_CYBER: {
-        int max_cyber = (player_ptr->current_floor_ptr->dun_level / 50) + randint1(3);
-        const auto pos = target_set(player_ptr, TARGET_KILL).get_position();
+        int max_cyber = (creature.get_floor()->dun_level / 50) + randint1(3);
+        const auto pos = target_set(creature, TARGET_KILL).get_position();
         if (!pos) {
             return false;
         }
@@ -839,329 +837,329 @@ static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
             max_cyber = 4;
         }
         for (auto k = 0; k < max_cyber; k++) {
-            summon_specific(player_ptr, pos->y, pos->x, plev, SUMMON_CYBER, mode);
+            summon_specific(creature, pos->y, pos->x, plev, SUMMON_CYBER, mode);
         }
         break;
     }
     case MonsterAbilityType::S_MONSTER: {
-        const auto pos = target_set(player_ptr, TARGET_KILL).get_position();
+        const auto pos = target_set(creature, TARGET_KILL).get_position();
         if (!pos) {
             return false;
         }
         msg_print(_("仲間を召喚した。", "You summon help."));
         for (auto k = 0; k < 1; k++) {
-            summon_specific(player_ptr, pos->y, pos->x, plev, SUMMON_NONE, (mode | u_mode));
+            summon_specific(creature, pos->y, pos->x, plev, SUMMON_NONE, (mode | u_mode));
         }
         break;
     }
     case MonsterAbilityType::S_MONSTERS: {
-        const auto pos = target_set(player_ptr, TARGET_KILL).get_position();
+        const auto pos = target_set(creature, TARGET_KILL).get_position();
         if (!pos) {
             return false;
         }
         msg_print(_("モンスターを召喚した！", "You summon monsters!"));
         for (auto k = 0; k < 6; k++) {
-            summon_specific(player_ptr, pos->y, pos->x, plev, SUMMON_NONE, (mode | u_mode));
+            summon_specific(creature, pos->y, pos->x, plev, SUMMON_NONE, (mode | u_mode));
         }
         break;
     }
     case MonsterAbilityType::S_ANT: {
-        const auto pos = target_set(player_ptr, TARGET_KILL).get_position();
+        const auto pos = target_set(creature, TARGET_KILL).get_position();
         if (!pos) {
             return false;
         }
         msg_print(_("アリを召喚した。", "You summon ants."));
         for (auto k = 0; k < 6; k++) {
-            summon_specific(player_ptr, pos->y, pos->x, plev, SUMMON_ANT, mode);
+            summon_specific(creature, pos->y, pos->x, plev, SUMMON_ANT, mode);
         }
         break;
     }
     case MonsterAbilityType::S_SPIDER: {
-        const auto pos = target_set(player_ptr, TARGET_KILL).get_position();
+        const auto pos = target_set(creature, TARGET_KILL).get_position();
         if (!pos) {
             return false;
         }
         msg_print(_("蜘蛛を召喚した。", "You summon spiders."));
         for (auto k = 0; k < 6; k++) {
-            summon_specific(player_ptr, pos->y, pos->x, plev, SUMMON_SPIDER, mode);
+            summon_specific(creature, pos->y, pos->x, plev, SUMMON_SPIDER, mode);
         }
         break;
     }
     case MonsterAbilityType::S_HOUND: {
-        const auto pos = target_set(player_ptr, TARGET_KILL).get_position();
+        const auto pos = target_set(creature, TARGET_KILL).get_position();
         if (!pos) {
             return false;
         }
         msg_print(_("ハウンドを召喚した。", "You summon hounds."));
         for (auto k = 0; k < 4; k++) {
-            summon_specific(player_ptr, pos->y, pos->x, plev, SUMMON_HOUND, mode);
+            summon_specific(creature, pos->y, pos->x, plev, SUMMON_HOUND, mode);
         }
         break;
     }
     case MonsterAbilityType::S_HYDRA: {
-        const auto pos = target_set(player_ptr, TARGET_KILL).get_position();
+        const auto pos = target_set(creature, TARGET_KILL).get_position();
         if (!pos) {
             return false;
         }
         msg_print(_("ヒドラを召喚した。", "You summon hydras."));
         for (auto k = 0; k < 4; k++) {
-            summon_specific(player_ptr, pos->y, pos->x, plev, SUMMON_HYDRA, mode);
+            summon_specific(creature, pos->y, pos->x, plev, SUMMON_HYDRA, mode);
         }
         break;
     }
     case MonsterAbilityType::S_FAIRY: {
-        const auto pos = target_set(player_ptr, TARGET_KILL).get_position();
+        const auto pos = target_set(creature, TARGET_KILL).get_position();
         if (!pos) {
             return false;
         }
         msg_print(_("フェアリーを召喚した。", "You summon fairies."));
         for (auto k = 0; k < 4; k++) {
-            summon_specific(player_ptr, pos->y, pos->x, plev, SUMMON_FAIRY, mode);
+            summon_specific(creature, pos->y, pos->x, plev, SUMMON_FAIRY, mode);
         }
         break;
     }
     case MonsterAbilityType::S_APE: {
-        const auto pos = target_set(player_ptr, TARGET_KILL).get_position();
+        const auto pos = target_set(creature, TARGET_KILL).get_position();
         if (!pos) {
             return false;
         }
         msg_print(_("類人猿を召喚した。", "You summon apes."));
         for (auto k = 0; k < 4; k++) {
-            summon_specific(player_ptr, pos->y, pos->x, plev, SUMMON_APE, mode);
+            summon_specific(creature, pos->y, pos->x, plev, SUMMON_APE, mode);
         }
         break;
     }
     case MonsterAbilityType::S_BIRD: {
-        const auto pos = target_set(player_ptr, TARGET_KILL).get_position();
+        const auto pos = target_set(creature, TARGET_KILL).get_position();
         if (!pos) {
             return false;
         }
         msg_print(_("鳥を召喚した。", "You summon birds."));
         for (auto k = 0; k < 4; k++) {
-            summon_specific(player_ptr, pos->y, pos->x, plev, SUMMON_BIRD, mode);
+            summon_specific(creature, pos->y, pos->x, plev, SUMMON_BIRD, mode);
         }
         break;
     }
     case MonsterAbilityType::S_INSECT: {
-        const auto pos = target_set(player_ptr, TARGET_KILL).get_position();
+        const auto pos = target_set(creature, TARGET_KILL).get_position();
         if (!pos) {
             return false;
         }
         msg_print(_("昆虫を召喚した！", "You summon insects!"));
         for (auto k = 0; k < 4; k++) {
-            summon_specific(player_ptr, pos->y, pos->x, plev, SUMMON_INSECT, mode);
+            summon_specific(creature, pos->y, pos->x, plev, SUMMON_INSECT, mode);
         }
         break;
     }
     case MonsterAbilityType::S_ELDRAZI: {
-        const auto pos = target_set(player_ptr, TARGET_KILL).get_position();
+        const auto pos = target_set(creature, TARGET_KILL).get_position();
         if (!pos) {
             return false;
         }
         msg_print(_("エルドラージを召喚した！", "You summon Eldrazi!"));
         for (auto k = 0; k < std::max(1, plev / 30); k++) {
-            summon_specific(player_ptr, pos->y, pos->x, plev, SUMMON_ELDRAZI, mode);
+            summon_specific(creature, pos->y, pos->x, plev, SUMMON_ELDRAZI, mode);
         }
         break;
     }
     case MonsterAbilityType::S_ANGEL: {
-        const auto pos = target_set(player_ptr, TARGET_KILL).get_position();
+        const auto pos = target_set(creature, TARGET_KILL).get_position();
         if (!pos) {
             return false;
         }
         msg_print(_("天使を召喚した！", "You summon an angel!"));
         for (auto k = 0; k < 1; k++) {
-            summon_specific(player_ptr, pos->y, pos->x, plev, SUMMON_ANGEL, mode);
+            summon_specific(creature, pos->y, pos->x, plev, SUMMON_ANGEL, mode);
         }
         break;
     }
     case MonsterAbilityType::S_DEMON: {
-        const auto pos = target_set(player_ptr, TARGET_KILL).get_position();
+        const auto pos = target_set(creature, TARGET_KILL).get_position();
         if (!pos) {
             return false;
         }
         msg_print(_("混沌の宮廷から悪魔を召喚した！", "You summon a demon from the Courts of Chaos!"));
         for (auto k = 0; k < 1; k++) {
-            summon_specific(player_ptr, pos->y, pos->x, plev, SUMMON_DEMON, (mode | u_mode));
+            summon_specific(creature, pos->y, pos->x, plev, SUMMON_DEMON, (mode | u_mode));
         }
         break;
     }
     case MonsterAbilityType::S_UNDEAD: {
-        const auto pos = target_set(player_ptr, TARGET_KILL).get_position();
+        const auto pos = target_set(creature, TARGET_KILL).get_position();
         if (!pos) {
             return false;
         }
         msg_print(_("アンデッドの強敵を召喚した！", "You summon an undead adversary!"));
         for (auto k = 0; k < 1; k++) {
-            summon_specific(player_ptr, pos->y, pos->x, plev, SUMMON_UNDEAD, (mode | u_mode));
+            summon_specific(creature, pos->y, pos->x, plev, SUMMON_UNDEAD, (mode | u_mode));
         }
         break;
     }
     case MonsterAbilityType::S_DRAGON: {
-        const auto pos = target_set(player_ptr, TARGET_KILL).get_position();
+        const auto pos = target_set(creature, TARGET_KILL).get_position();
         if (!pos) {
             return false;
         }
         msg_print(_("ドラゴンを召喚した！", "You summon a dragon!"));
         for (auto k = 0; k < 1; k++) {
-            summon_specific(player_ptr, pos->y, pos->x, plev, SUMMON_DRAGON, (mode | u_mode));
+            summon_specific(creature, pos->y, pos->x, plev, SUMMON_DRAGON, (mode | u_mode));
         }
         break;
     }
     case MonsterAbilityType::S_HI_UNDEAD: {
-        const auto pos = target_set(player_ptr, TARGET_KILL).get_position();
+        const auto pos = target_set(creature, TARGET_KILL).get_position();
         if (!pos) {
             return false;
         }
         msg_print(_("強力なアンデッドを召喚した！", "You summon greater undead!"));
         for (auto k = 0; k < 6; k++) {
-            summon_specific(player_ptr, pos->y, pos->x, plev, SUMMON_HI_UNDEAD, (mode | u_mode));
+            summon_specific(creature, pos->y, pos->x, plev, SUMMON_HI_UNDEAD, (mode | u_mode));
         }
         break;
     }
     case MonsterAbilityType::S_HI_DRAGON: {
-        const auto pos = target_set(player_ptr, TARGET_KILL).get_position();
+        const auto pos = target_set(creature, TARGET_KILL).get_position();
         if (!pos) {
             return false;
         }
         msg_print(_("古代ドラゴンを召喚した！", "You summon ancient dragons!"));
         for (auto k = 0; k < 4; k++) {
-            summon_specific(player_ptr, pos->y, pos->x, plev, SUMMON_HI_DRAGON, (mode | u_mode));
+            summon_specific(creature, pos->y, pos->x, plev, SUMMON_HI_DRAGON, (mode | u_mode));
         }
         break;
     }
     case MonsterAbilityType::S_AMBERITES: {
-        const auto pos = target_set(player_ptr, TARGET_KILL).get_position();
+        const auto pos = target_set(creature, TARGET_KILL).get_position();
         if (!pos) {
             return false;
         }
         msg_print(_("アンバーの王族を召喚した！", "You summon Lords of Amber!"));
         for (auto k = 0; k < 4; k++) {
-            summon_specific(player_ptr, pos->y, pos->x, plev, SUMMON_AMBERITES, (mode | PM_ALLOW_UNIQUE));
+            summon_specific(creature, pos->y, pos->x, plev, SUMMON_AMBERITES, (mode | PM_ALLOW_UNIQUE));
         }
         break;
     }
     case MonsterAbilityType::S_CHOASIANS: {
-        const auto pos = target_set(player_ptr, TARGET_KILL).get_position();
+        const auto pos = target_set(creature, TARGET_KILL).get_position();
         if (!pos) {
             return false;
         }
         msg_print(_("混沌の王族を召喚した！", "You summon Lords of Chaos!"));
         for (auto k = 0; k < 4; k++) {
-            summon_specific(player_ptr, pos->y, pos->x, plev, SUMMON_CHOASIANS, (mode | PM_ALLOW_UNIQUE));
+            summon_specific(creature, pos->y, pos->x, plev, SUMMON_CHOASIANS, (mode | PM_ALLOW_UNIQUE));
         }
         break;
     }
     case MonsterAbilityType::S_UNIQUE: {
         int count = 0;
-        const auto pos = target_set(player_ptr, TARGET_KILL).get_position();
+        const auto pos = target_set(creature, TARGET_KILL).get_position();
         if (!pos) {
             return false;
         }
         msg_print(_("特別な強敵を召喚した！", "You summon special opponents!"));
         for (auto k = 0; k < 4; k++) {
-            if (summon_specific(player_ptr, pos->y, pos->x, plev, SUMMON_UNIQUE, (mode | PM_ALLOW_UNIQUE))) {
+            if (summon_specific(creature, pos->y, pos->x, plev, SUMMON_UNIQUE, (mode | PM_ALLOW_UNIQUE))) {
                 count++;
             }
         }
         for (auto k = count; k < 4; k++) {
-            summon_specific(player_ptr, pos->y, pos->x, plev, SUMMON_HI_UNDEAD, (mode | u_mode));
+            summon_specific(creature, pos->y, pos->x, plev, SUMMON_HI_UNDEAD, (mode | u_mode));
         }
         break;
     }
     case MonsterAbilityType::S_DEAD_UNIQUE: {
-        const auto pos = target_set(player_ptr, TARGET_KILL).get_position();
+        const auto pos = target_set(creature, TARGET_KILL).get_position();
         if (!pos) {
             return false;
         }
         msg_print(_("特別な強敵を蘇生した！", "You summon special dead opponents!"));
         for (auto k = 0; k < 4; k++) {
-            summon_specific(player_ptr, pos->y, pos->x, plev, SUMMON_DEAD_UNIQUE, (mode | PM_ALLOW_UNIQUE | PM_CLONE));
+            summon_specific(creature, pos->y, pos->x, plev, SUMMON_DEAD_UNIQUE, (mode | PM_ALLOW_UNIQUE | PM_CLONE));
         }
         break;
     }
     case MonsterAbilityType::S_NASTY: {
-        const auto pos = target_set(player_ptr, TARGET_KILL).get_position();
+        const auto pos = target_set(creature, TARGET_KILL).get_position();
         if (!pos) {
             return false;
         }
         msg_print(_("汚い怪物を召喚した！", "You summon nasty monsters!"));
         for (auto k = 0; k < 6; k++) {
-            summon_specific(player_ptr, pos->y, pos->x, plev, SUMMON_NASTY, (mode | PM_ALLOW_GROUP));
+            summon_specific(creature, pos->y, pos->x, plev, SUMMON_NASTY, (mode | PM_ALLOW_GROUP));
         }
         break;
     }
     case MonsterAbilityType::S_GOLEM: {
-        const auto pos = target_set(player_ptr, TARGET_KILL).get_position();
+        const auto pos = target_set(creature, TARGET_KILL).get_position();
         if (!pos) {
             return false;
         }
         msg_print(_("ゴーレムを召喚した！", "You summon golems!"));
         for (auto k = 0; k < 3; k++) {
-            summon_specific(player_ptr, pos->y, pos->x, plev, SUMMON_GOLEM, (mode | PM_ALLOW_GROUP));
+            summon_specific(creature, pos->y, pos->x, plev, SUMMON_GOLEM, (mode | PM_ALLOW_GROUP));
         }
         break;
     }
     case MonsterAbilityType::S_CAT: {
-        const auto pos = target_set(player_ptr, TARGET_KILL).get_position();
+        const auto pos = target_set(creature, TARGET_KILL).get_position();
         if (!pos) {
             return false;
         }
         msg_print(_("猫を召喚した！", "You summon cats!"));
         for (auto k = 0; k < 3; k++) {
-            summon_specific(player_ptr, pos->y, pos->x, plev, SUMMON_CATS, (mode | PM_ALLOW_GROUP));
+            summon_specific(creature, pos->y, pos->x, plev, SUMMON_CATS, (mode | PM_ALLOW_GROUP));
         }
         break;
     }
     case MonsterAbilityType::S_PERVERT: {
-        const auto pos = target_set(player_ptr, TARGET_KILL).get_position();
+        const auto pos = target_set(creature, TARGET_KILL).get_position();
         if (!pos) {
             return false;
         }
         msg_print(_("変質者を召喚した！", "You summon perverts!"));
         for (auto k = 0; k < 3; k++) {
-            summon_specific(player_ptr, pos->y, pos->x, plev, SUMMON_PERVERTS, (mode | PM_ALLOW_GROUP));
+            summon_specific(creature, pos->y, pos->x, plev, SUMMON_PERVERTS, (mode | PM_ALLOW_GROUP));
         }
         break;
     }
     case MonsterAbilityType::S_PUYO: {
-        const auto pos = target_set(player_ptr, TARGET_KILL).get_position();
+        const auto pos = target_set(creature, TARGET_KILL).get_position();
         if (!pos) {
             return false;
         }
         msg_print(_("ぷよを召喚した！", "You summon puyo!"));
         for (auto k = 0; k < 3; k++) {
-            summon_specific(player_ptr, pos->y, pos->x, plev, SUMMON_PUYO, (mode | PM_ALLOW_GROUP));
+            summon_specific(creature, pos->y, pos->x, plev, SUMMON_PUYO, (mode | PM_ALLOW_GROUP));
         }
         break;
     }
     case MonsterAbilityType::S_HOMO: {
-        const auto pos = target_set(player_ptr, TARGET_KILL).get_position();
+        const auto pos = target_set(creature, TARGET_KILL).get_position();
         if (!pos) {
             return false;
         }
         msg_print(_("ホモを召喚した！", "You summon homos!"));
         for (auto k = 0; k < 3; k++) {
-            summon_specific(player_ptr, pos->y, pos->x, plev, SUMMON_HOMO, (mode | PM_ALLOW_GROUP));
+            summon_specific(creature, pos->y, pos->x, plev, SUMMON_HOMO, (mode | PM_ALLOW_GROUP));
         }
         break;
     }
     case MonsterAbilityType::BR_FECES:
         msg_print(_("糞便のブレスを吐いた。", "You breathe feces."));
-        fire_breath(player_ptr, AttributeType::DIRT, dir, damage, (plev > 35 ? 3 : 2));
+        fire_breath(creature, AttributeType::DIRT, dir, damage, (plev > 35 ? 3 : 2));
         break;
     case MonsterAbilityType::BR_SPIDER_STRING:
         msg_print(_("蜘蛛糸のブレスを吐いた。", "You breathe spider string."));
-        fire_breath(player_ptr, AttributeType::SPIDER_STRING, dir, damage, (plev > 35 ? 3 : 2));
+        fire_breath(creature, AttributeType::SPIDER_STRING, dir, damage, (plev > 35 ? 3 : 2));
         break;
     case MonsterAbilityType::S_WALL: {
-        const auto pos = target_set(player_ptr, TARGET_KILL).get_position();
+        const auto pos = target_set(creature, TARGET_KILL).get_position();
         if (!pos) {
             return false;
         }
         msg_print(_("壁を召喚した！", "You summon walls!"));
         for (auto k = 0; k < 1; k++) {
-            summon_specific(player_ptr, pos->y, pos->x, plev, SUMMON_WALL, (mode | u_mode));
+            summon_specific(creature, pos->y, pos->x, plev, SUMMON_WALL, (mode | u_mode));
         }
         break;
     }
@@ -1174,7 +1172,7 @@ static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
 
 /*!
  * @brief ものまねコマンドのメインルーチン /
- * do_cmd_cast calls this function if the player's class is 'imitator'.
+ * do_cmd_cast calls this function if the creature's class is 'imitator'.
  * @param baigaesi TRUEならば倍返し上の処理として行う
  * @return 処理を実行したらTRUE、キャンセルした場合FALSEを返す。
  * @details
@@ -1189,27 +1187,27 @@ static bool use_mane(PlayerType *player_ptr, MonsterAbilityType spell)
  * when you run it. It's probably easy to fix but I haven't tried,
  * sorry.
  */
-bool do_cmd_mane(PlayerType *player_ptr, bool baigaesi)
+bool do_cmd_mane(CreatureEntity &creature, bool baigaesi)
 {
     int n = 0;
     PERCENTAGE chance;
     PERCENTAGE minfail = 0;
-    PLAYER_LEVEL plev = player_ptr->level;
+    PLAYER_LEVEL plev = static_cast<PLAYER_LEVEL>(creature.get_level());
     monster_power spell;
     bool cast;
 
-    if (cmd_limit_confused(player_ptr)) {
+    if (cmd_limit_confused(creature)) {
         return false;
     }
 
-    auto mane_data = PlayerClass(player_ptr).get_specific_data<mane_data_type>();
+    auto mane_data = CreatureClass(creature).get_specific_data<mane_data_type>();
 
     if (mane_data->mane_list.empty()) {
         msg_print(_("まねられるものが何もない！", "You don't remember any action!"));
         return false;
     }
 
-    if (!get_mane_power(player_ptr, &n, baigaesi)) {
+    if (!get_mane_power(creature, &n, baigaesi)) {
         return false;
     }
 
@@ -1224,23 +1222,23 @@ bool do_cmd_mane(PlayerType *player_ptr, bool baigaesi)
     }
 
     /* Reduce failure rate by 1 stat and DEX adjustment */
-    chance -= 3 * (adj_mag_stat[player_ptr->stat_index[spell.use_stat]] + adj_mag_stat[player_ptr->stat_index[A_DEX]] - 2) / 2;
+    chance -= 3 * (adj_mag_stat[creature.get_stat_index(spell.use_stat)] + adj_mag_stat[creature.get_stat_index(A_DEX)] - 2) / 2;
 
     if (spell.manedam) {
         chance = chance * damage / spell.manedam;
     }
 
-    chance += player_ptr->to_m_chance;
+    chance += creature.get_to_m_chance();
 
     /* Extract the minimum failure rate */
-    minfail = adj_mag_fail[player_ptr->stat_index[spell.use_stat]];
+    minfail = adj_mag_fail[creature.get_stat_index(spell.use_stat)];
 
     /* Minimum failure rate */
     if (chance < minfail) {
         chance = minfail;
     }
 
-    chance += player_ptr->effects()->stun().get_magic_chance_penalty();
+    chance += creature.get_stun_magic_chance_penalty();
     if (chance > 95) {
         chance = 95;
     }
@@ -1254,14 +1252,14 @@ bool do_cmd_mane(PlayerType *player_ptr, bool baigaesi)
         sound(SoundKind::FAIL);
     } else {
         sound(SoundKind::ZAP);
-        cast = use_mane(player_ptr, mane_data->mane_list[n].spell);
+        cast = use_mane(creature, mane_data->mane_list[n].spell);
         if (!cast) {
             return false;
         }
     }
 
     mane_data->mane_list.erase(std::next(mane_data->mane_list.begin(), n));
-    PlayerEnergy(player_ptr).set_player_turn_energy(100);
+    PlayerEnergy(creature).set_player_turn_energy(100);
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(MainWindowRedrawingFlag::IMITATION);
     static constexpr auto flags = {

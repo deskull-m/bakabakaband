@@ -43,12 +43,11 @@
 #include "spell-kind/spells-teleport.h"
 #include "status/bad-status-setter.h"
 #include "status/base-status.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "term/screen-processor.h"
-#include "timed-effect/timed-effects.h"
 #include "util/enum-converter.h"
 #include "view/display-messages.h"
 #include "view/display-util.h"
@@ -64,7 +63,7 @@ struct cm_type {
     PERCENTAGE chance; //!< 失敗率
     PERCENTAGE minfail; //!< 最低失敗率
     PLAYER_LEVEL plev; //!< 取得レベル
-    int old_csp; //!< 行使前のMP
+    int old_current_mp; //!< 行使前のMP
     mind_type spell; //!< 職業技能の基本設定構造体
     bool cast; //!< 行使の成否
     int mana_cost; //!< 最終算出消費MP
@@ -74,13 +73,13 @@ struct cm_type {
 /*!
  * @brief 職業技能処理構造体の初期化
  */
-static cm_type *initialize_cm_type(PlayerType *player_ptr, cm_type *cm_ptr)
+static cm_type *initialize_cm_type(CreatureEntity &creature, cm_type *cm_ptr)
 {
     cm_ptr->n = 0;
     cm_ptr->b = 0;
     cm_ptr->minfail = 0;
-    cm_ptr->plev = player_ptr->level;
-    cm_ptr->old_csp = player_ptr->csp;
+    cm_ptr->plev = creature.get_level();
+    cm_ptr->old_current_mp = creature.get_current_mp();
     cm_ptr->on_mirror = false;
     return cm_ptr;
 }
@@ -88,9 +87,9 @@ static cm_type *initialize_cm_type(PlayerType *player_ptr, cm_type *cm_ptr)
 /*!
  * @brief 職業別の行使可能な技能種別を構造体に付加する
  */
-static void switch_mind_kind(PlayerType *player_ptr, cm_type *cm_ptr)
+static void switch_mind_kind(CreatureEntity &creature, cm_type *cm_ptr)
 {
-    switch (player_ptr->pclass) {
+    switch (creature.pclass) {
     case PlayerClassType::MINDCRAFTER:
         cm_ptr->use_mind = MindKindType::MINDCRAFTER;
         cm_ptr->mind_explanation = _("精神", "skill");
@@ -118,39 +117,39 @@ static void switch_mind_kind(PlayerType *player_ptr, cm_type *cm_ptr)
     }
 }
 
-static void decide_mind_ki_chance(PlayerType *player_ptr, cm_type *cm_ptr)
+static void decide_mind_ki_chance(CreatureEntity &creature, cm_type *cm_ptr)
 {
     if (cm_ptr->use_mind != MindKindType::KI) {
         return;
     }
 
-    if (heavy_armor(player_ptr)) {
+    if (heavy_armor(creature)) {
         cm_ptr->chance += 20;
     }
 
-    if (player_ptr->is_icky_wield[0]) {
+    if (creature.is_icky_wield(0)) {
         cm_ptr->chance += 20;
-    } else if (has_melee_weapon(player_ptr, INVEN_MAIN_HAND)) {
+    } else if (has_melee_weapon(creature, INVEN_MAIN_HAND)) {
         cm_ptr->chance += 10;
     }
 
-    if (player_ptr->is_icky_wield[1]) {
+    if (creature.is_icky_wield(1)) {
         cm_ptr->chance += 20;
-    } else if (has_melee_weapon(player_ptr, INVEN_SUB_HAND)) {
+    } else if (has_melee_weapon(creature, INVEN_SUB_HAND)) {
         cm_ptr->chance += 10;
     }
 
     if (cm_ptr->n == 5) {
-        for (int j = 0; j < get_current_ki(player_ptr) / 50; j++) {
+        for (int j = 0; j < get_current_ki(creature) / 50; j++) {
             cm_ptr->mana_cost += (j + 1) * 3 / 2;
         }
     }
 }
 
-static bool check_mind_hp_mp_sufficiency(PlayerType *player_ptr, cm_type *cm_ptr)
+static bool check_mind_hp_mp_sufficiency(CreatureEntity &creature, cm_type *cm_ptr)
 {
     if ((cm_ptr->use_mind == MindKindType::BERSERKER) || (cm_ptr->use_mind == MindKindType::NINJUTSU)) {
-        if (cm_ptr->mana_cost > player_ptr->hp) {
+        if (cm_ptr->mana_cost > creature.hp) {
             msg_print(_("ＨＰが足りません。", "You do not have enough hp to use this power."));
             return false;
         }
@@ -158,7 +157,7 @@ static bool check_mind_hp_mp_sufficiency(PlayerType *player_ptr, cm_type *cm_ptr
         return true;
     }
 
-    if (cm_ptr->mana_cost <= player_ptr->csp) {
+    if (cm_ptr->mana_cost <= creature.get_current_mp()) {
         return true;
     }
 
@@ -170,43 +169,43 @@ static bool check_mind_hp_mp_sufficiency(PlayerType *player_ptr, cm_type *cm_ptr
     return input_check(_("それでも挑戦しますか? ", "Attempt it anyway? "));
 }
 
-static void decide_mind_chance(PlayerType *player_ptr, cm_type *cm_ptr)
+static void decide_mind_chance(CreatureEntity &creature, cm_type *cm_ptr)
 {
     if (cm_ptr->chance == 0) {
         return;
     }
 
     cm_ptr->chance -= 3 * (cm_ptr->plev - cm_ptr->spell.min_lev);
-    cm_ptr->chance += player_ptr->to_m_chance;
-    cm_ptr->chance -= 3 * (adj_mag_stat[player_ptr->stat_index[mp_ptr->spell_stat]] - 1);
-    if ((cm_ptr->mana_cost > player_ptr->csp) && (cm_ptr->use_mind != MindKindType::BERSERKER) && (cm_ptr->use_mind != MindKindType::NINJUTSU)) {
-        cm_ptr->chance += 5 * (cm_ptr->mana_cost - player_ptr->csp);
+    cm_ptr->chance += creature.get_to_m_chance();
+    cm_ptr->chance -= 3 * (adj_mag_stat[creature.get_stat_index(mp_ptr->spell_stat)] - 1);
+    if ((cm_ptr->mana_cost > creature.get_current_mp()) && (cm_ptr->use_mind != MindKindType::BERSERKER) && (cm_ptr->use_mind != MindKindType::NINJUTSU)) {
+        cm_ptr->chance += 5 * (cm_ptr->mana_cost - creature.get_current_mp());
     }
 
-    cm_ptr->minfail = adj_mag_fail[player_ptr->stat_index[mp_ptr->spell_stat]];
+    cm_ptr->minfail = adj_mag_fail[creature.get_stat_index(mp_ptr->spell_stat)];
     if (cm_ptr->chance < cm_ptr->minfail) {
         cm_ptr->chance = cm_ptr->minfail;
     }
 
-    cm_ptr->chance += player_ptr->effects()->stun().get_magic_chance_penalty();
+    cm_ptr->chance += creature.get_stun_magic_chance_penalty();
     if (cm_ptr->use_mind != MindKindType::KI) {
         return;
     }
 
-    if (heavy_armor(player_ptr)) {
+    if (heavy_armor(creature)) {
         cm_ptr->chance += 5;
     }
 
-    if (player_ptr->is_icky_wield[0]) {
+    if (creature.is_icky_wield(0)) {
         cm_ptr->chance += 5;
     }
 
-    if (player_ptr->is_icky_wield[1]) {
+    if (creature.is_icky_wield(1)) {
         cm_ptr->chance += 5;
     }
 }
 
-static void check_mind_mindcrafter(PlayerType *player_ptr, cm_type *cm_ptr)
+static void check_mind_mindcrafter(CreatureEntity &creature, cm_type *cm_ptr)
 {
     if (cm_ptr->use_mind != MindKindType::MINDCRAFTER) {
         return;
@@ -214,11 +213,11 @@ static void check_mind_mindcrafter(PlayerType *player_ptr, cm_type *cm_ptr)
 
     if (cm_ptr->b < 5) {
         msg_print(_("なんてこった！頭の中が真っ白になった！", "Oh, no! Your mind has gone blank!"));
-        lose_all_info(player_ptr);
+        lose_all_info(creature);
         return;
     }
 
-    BadStatusSetter bss(player_ptr);
+    BadStatusSetter bss(creature);
     if (cm_ptr->b < 15) {
         msg_print(_("奇妙な光景が目の前で踊っている...", "Weird visions seem to dance before your eyes..."));
         (void)bss.mod_hallucination(5 + randint1(10));
@@ -237,12 +236,12 @@ static void check_mind_mindcrafter(PlayerType *player_ptr, cm_type *cm_ptr)
     }
 
     msg_format(_("%sの力が制御できない氾流となって解放された！", "Your mind unleashes its power in an uncontrollable storm!"), cm_ptr->mind_explanation);
-    project(player_ptr, PROJECT_WHO_UNCTRL_POWER, 2 + cm_ptr->plev / 10, player_ptr->y, player_ptr->x, cm_ptr->plev * 2, AttributeType::MANA,
+    project(creature, PROJECT_WHO_UNCTRL_POWER, 2 + cm_ptr->plev / 10, creature.y, creature.x, cm_ptr->plev * 2, AttributeType::MANA,
         PROJECT_JUMP | PROJECT_KILL | PROJECT_GRID | PROJECT_ITEM);
-    player_ptr->csp = std::max(0, player_ptr->csp - cm_ptr->plev * std::max(1, cm_ptr->plev / 10));
+    creature.set_current_mp(std::max(0, creature.get_current_mp() - cm_ptr->plev * std::max(1, cm_ptr->plev / 10)));
 }
 
-static void check_mind_mirror_master(PlayerType *player_ptr, cm_type *cm_ptr)
+static void check_mind_mirror_master(CreatureEntity &creature, cm_type *cm_ptr)
 {
     if (cm_ptr->use_mind != MindKindType::MIRROR_MASTER) {
         return;
@@ -254,31 +253,31 @@ static void check_mind_mirror_master(PlayerType *player_ptr, cm_type *cm_ptr)
 
     if (cm_ptr->b < 81) {
         msg_print(_("鏡の世界の干渉を受けた！", "Weird visions seem to dance before your eyes..."));
-        teleport_player(player_ptr, 10, TELEPORT_PASSIVE);
+        teleport_player(creature, 10, TELEPORT_PASSIVE);
         return;
     }
 
     if (cm_ptr->b < 96) {
         msg_print(_("まわりのものがキラキラ輝いている！", "Your brain is addled!"));
-        (void)BadStatusSetter(player_ptr).mod_hallucination(5 + randint1(10));
+        (void)BadStatusSetter(creature).mod_hallucination(5 + randint1(10));
         return;
     }
 
     msg_format(_("%sの力が制御できない氾流となって解放された！", "Your mind unleashes its power in an uncontrollable storm!"), cm_ptr->mind_explanation);
-    project(player_ptr, PROJECT_WHO_UNCTRL_POWER, 2 + cm_ptr->plev / 10, player_ptr->y, player_ptr->x, cm_ptr->plev * 2, AttributeType::MANA,
+    project(creature, PROJECT_WHO_UNCTRL_POWER, 2 + cm_ptr->plev / 10, creature.y, creature.x, cm_ptr->plev * 2, AttributeType::MANA,
         PROJECT_JUMP | PROJECT_KILL | PROJECT_GRID | PROJECT_ITEM);
-    player_ptr->csp = std::max(0, player_ptr->csp - cm_ptr->plev * std::max(1, cm_ptr->plev / 10));
+    creature.set_current_mp(std::max(0, creature.get_current_mp() - cm_ptr->plev * std::max(1, cm_ptr->plev / 10)));
 }
 
-static void check_mind_class(PlayerType *player_ptr, cm_type *cm_ptr)
+static void check_mind_class(CreatureEntity &creature, cm_type *cm_ptr)
 {
     if ((cm_ptr->use_mind == MindKindType::BERSERKER) || (cm_ptr->use_mind == MindKindType::NINJUTSU)) {
         return;
     }
 
-    if ((cm_ptr->use_mind == MindKindType::KI) && (cm_ptr->n != 5) && get_current_ki(player_ptr)) {
+    if ((cm_ptr->use_mind == MindKindType::KI) && (cm_ptr->n != 5) && get_current_ki(creature)) {
         msg_print(_("気が散ってしまった．．．", "Your improved Force has gone away..."));
-        set_current_ki(player_ptr, true, 0);
+        set_current_ki(creature, true, 0);
     }
 
     if (randint1(100) >= (cm_ptr->chance / 2)) {
@@ -286,31 +285,31 @@ static void check_mind_class(PlayerType *player_ptr, cm_type *cm_ptr)
     }
 
     cm_ptr->b = randint1(100);
-    check_mind_mindcrafter(player_ptr, cm_ptr);
-    check_mind_mirror_master(player_ptr, cm_ptr);
+    check_mind_mindcrafter(creature, cm_ptr);
+    check_mind_mirror_master(creature, cm_ptr);
 }
 
-static bool switch_mind_class(PlayerType *player_ptr, cm_type *cm_ptr)
+static bool switch_mind_class(CreatureEntity &creature, cm_type *cm_ptr)
 {
     switch (cm_ptr->use_mind) {
     case MindKindType::MINDCRAFTER:
-        cm_ptr->cast = cast_mindcrafter_spell(player_ptr, i2enum<MindMindcrafterType>(cm_ptr->n));
+        cm_ptr->cast = cast_mindcrafter_spell(creature, i2enum<MindMindcrafterType>(cm_ptr->n));
         return true;
     case MindKindType::KI:
-        cm_ptr->cast = cast_force_spell(player_ptr, i2enum<MindForceTrainerType>(cm_ptr->n));
+        cm_ptr->cast = cast_force_spell(creature, i2enum<MindForceTrainerType>(cm_ptr->n));
         return true;
     case MindKindType::BERSERKER:
-        cm_ptr->cast = cast_berserk_spell(player_ptr, i2enum<MindBerserkerType>(cm_ptr->n));
+        cm_ptr->cast = cast_berserk_spell(creature, i2enum<MindBerserkerType>(cm_ptr->n));
         return true;
     case MindKindType::MIRROR_MASTER:
-        if (player_ptr->current_floor_ptr->grid_array[player_ptr->y][player_ptr->x].is_mirror()) {
+        if (creature.get_floor()->grid_array[creature.y][creature.x].is_mirror()) {
             cm_ptr->on_mirror = true;
         }
 
-        cm_ptr->cast = cast_mirror_spell(player_ptr, i2enum<MindMirrorMasterType>(cm_ptr->n));
+        cm_ptr->cast = cast_mirror_spell(creature, i2enum<MindMirrorMasterType>(cm_ptr->n));
         return true;
     case MindKindType::NINJUTSU:
-        cm_ptr->cast = cast_ninja_spell(player_ptr, i2enum<MindNinjaType>(cm_ptr->n));
+        cm_ptr->cast = cast_ninja_spell(creature, i2enum<MindNinjaType>(cm_ptr->n));
         return true;
     default:
         msg_format(_("謎の能力:%d, %d", "Mystery power:%d, %d"), cm_ptr->use_mind, cm_ptr->n);
@@ -318,10 +317,10 @@ static bool switch_mind_class(PlayerType *player_ptr, cm_type *cm_ptr)
     }
 }
 
-static void mind_turn_passing(PlayerType *player_ptr, cm_type *cm_ptr)
+static void mind_turn_passing(CreatureEntity &creature, cm_type *cm_ptr)
 {
-    PlayerEnergy energy(player_ptr);
-    if (cm_ptr->on_mirror && PlayerClass(player_ptr).equals(PlayerClassType::MIRROR_MASTER)) {
+    PlayerEnergy energy(creature);
+    if (cm_ptr->on_mirror && CreatureClass(creature).equals(PlayerClassType::MIRROR_MASTER)) {
         if (cm_ptr->n == 3 || cm_ptr->n == 5 || cm_ptr->n == 7 || cm_ptr->n == 16) {
             energy.set_player_turn_energy(50);
             return;
@@ -331,11 +330,11 @@ static void mind_turn_passing(PlayerType *player_ptr, cm_type *cm_ptr)
     energy.set_player_turn_energy(100);
 }
 
-static bool judge_mind_chance(PlayerType *player_ptr, cm_type *cm_ptr)
+static bool judge_mind_chance(CreatureEntity &creature, cm_type *cm_ptr)
 {
     if (!evaluate_percent(cm_ptr->chance)) {
         sound(SoundKind::ZAP);
-        return switch_mind_class(player_ptr, cm_ptr) && cm_ptr->cast;
+        return switch_mind_class(creature, cm_ptr) && cm_ptr->cast;
     }
 
     if (flush_failure) {
@@ -344,85 +343,85 @@ static bool judge_mind_chance(PlayerType *player_ptr, cm_type *cm_ptr)
 
     msg_format(_("%sの集中に失敗した！", "You failed to concentrate hard enough for %s!"), cm_ptr->mind_explanation);
     sound(SoundKind::FAIL);
-    check_mind_class(player_ptr, cm_ptr);
+    check_mind_class(creature, cm_ptr);
     return true;
 }
 
-static void mind_reflection(PlayerType *player_ptr, cm_type *cm_ptr)
+static void mind_reflection(CreatureEntity &creature, cm_type *cm_ptr)
 {
-    int oops = cm_ptr->mana_cost - cm_ptr->old_csp;
-    if ((player_ptr->csp - cm_ptr->mana_cost) < 0) {
-        player_ptr->csp_frac = 0;
+    int oops = cm_ptr->mana_cost - cm_ptr->old_current_mp;
+    if ((creature.get_current_mp() - cm_ptr->mana_cost) < 0) {
+        creature.current_mp_frac = 0;
     }
 
-    player_ptr->csp = std::max(0, player_ptr->csp - cm_ptr->mana_cost);
+    creature.set_current_mp(std::max(0, creature.get_current_mp() - cm_ptr->mana_cost));
     msg_print(_(format("%sを集中しすぎて気を失ってしまった！", cm_ptr->mind_explanation), "You faint from the effort!"));
-    (void)BadStatusSetter(player_ptr).mod_paralysis(randnum1<short>(5 * oops + 1));
+    (void)BadStatusSetter(creature).mod_paralysis(randnum1<short>(5 * oops + 1));
     if (one_in_(2)) {
         return;
     }
 
     const auto perm = one_in_(4);
     msg_print(_("自分の精神を攻撃してしまった！", "You have damaged your mind!"));
-    (void)dec_stat(player_ptr, A_WIS, 15 + randint1(10), perm);
+    (void)dec_stat(creature, A_WIS, 15 + randint1(10), perm);
 }
 
-static void process_hard_concentration(PlayerType *player_ptr, cm_type *cm_ptr)
+static void process_hard_concentration(CreatureEntity &creature, cm_type *cm_ptr)
 {
     if ((cm_ptr->use_mind == MindKindType::BERSERKER) || (cm_ptr->use_mind == MindKindType::NINJUTSU)) {
-        take_hit(player_ptr, DAMAGE_USELIFE, cm_ptr->mana_cost, _("過度の集中", "concentrating too hard"));
+        take_hit(creature, DAMAGE_USELIFE, cm_ptr->mana_cost, _("過度の集中", "concentrating too hard"));
         RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::HP);
         return;
     }
 
-    if (cm_ptr->mana_cost > cm_ptr->old_csp) {
-        mind_reflection(player_ptr, cm_ptr);
+    if (cm_ptr->mana_cost > cm_ptr->old_current_mp) {
+        mind_reflection(creature, cm_ptr);
         return;
     }
 
-    player_ptr->csp -= cm_ptr->mana_cost;
-    if (player_ptr->csp < 0) {
-        player_ptr->csp = 0;
+    creature.sub_current_mp(cm_ptr->mana_cost);
+    if (creature.get_current_mp() < 0) {
+        creature.set_current_mp(0);
     }
 
     if ((cm_ptr->use_mind == MindKindType::MINDCRAFTER) && (cm_ptr->n == 13)) {
-        player_ptr->csp = 0;
-        player_ptr->csp_frac = 0;
+        creature.set_current_mp(0);
+        creature.current_mp_frac = 0;
     }
 }
 
 /*!
  * @brief 特殊技能コマンドのメインルーチン /
  */
-void do_cmd_mind(PlayerType *player_ptr)
+void do_cmd_mind(CreatureEntity &creature)
 {
     cm_type tmp_cm;
-    cm_type *cm_ptr = initialize_cm_type(player_ptr, &tmp_cm);
-    if (cmd_limit_confused(player_ptr) || !MindPowerGetter(player_ptr).get_mind_power(&cm_ptr->n, false)) {
+    cm_type *cm_ptr = initialize_cm_type(creature, &tmp_cm);
+    if (cmd_limit_confused(creature) || !MindPowerGetter(creature).get_mind_power(&cm_ptr->n, false)) {
         return;
     }
 
-    switch_mind_kind(player_ptr, cm_ptr);
+    switch_mind_kind(creature, cm_ptr);
     cm_ptr->spell = mind_powers[enum2i(cm_ptr->use_mind)].info[cm_ptr->n];
     cm_ptr->chance = cm_ptr->spell.fail;
     cm_ptr->mana_cost = cm_ptr->spell.mana_cost;
-    decide_mind_ki_chance(player_ptr, cm_ptr);
-    if (!check_mind_hp_mp_sufficiency(player_ptr, cm_ptr)) {
+    decide_mind_ki_chance(creature, cm_ptr);
+    if (!check_mind_hp_mp_sufficiency(creature, cm_ptr)) {
         return;
     }
 
-    decide_mind_chance(player_ptr, cm_ptr);
+    decide_mind_chance(creature, cm_ptr);
     if (cm_ptr->chance > 95) {
         cm_ptr->chance = 95;
     }
 
-    if (!judge_mind_chance(player_ptr, cm_ptr)) {
+    if (!judge_mind_chance(creature, cm_ptr)) {
         return;
     }
 
-    mind_turn_passing(player_ptr, cm_ptr);
-    process_hard_concentration(player_ptr, cm_ptr);
-    player_ptr->plus_incident_tree("USE_MIND", 1);
+    mind_turn_passing(creature, cm_ptr);
+    process_hard_concentration(creature, cm_ptr);
+    creature.plus_incident_tree("USE_MIND", 1);
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(MainWindowRedrawingFlag::MP);
     static constexpr auto flags = {
@@ -432,9 +431,9 @@ void do_cmd_mind(PlayerType *player_ptr)
     rfu.set_flags(flags);
 }
 
-static MindKindType decide_use_mind_browse(PlayerType *player_ptr)
+static MindKindType decide_use_mind_browse(CreatureEntity &creature)
 {
-    switch (player_ptr->pclass) {
+    switch (creature.pclass) {
     case PlayerClassType::MINDCRAFTER:
         return MindKindType::MINDCRAFTER;
     case PlayerClassType::FORCETRAINER:
@@ -453,13 +452,13 @@ static MindKindType decide_use_mind_browse(PlayerType *player_ptr)
 /*!
  * @brief 現在プレイヤーが使用可能な特殊技能の一覧表示 /
  */
-void do_cmd_mind_browse(PlayerType *player_ptr)
+void do_cmd_mind_browse(CreatureEntity &creature)
 {
     SPELL_IDX n = 0;
-    MindKindType use_mind = decide_use_mind_browse(player_ptr);
+    MindKindType use_mind = decide_use_mind_browse(creature);
     screen_save();
     while (true) {
-        if (!MindPowerGetter(player_ptr).get_mind_power(&n, true)) {
+        if (!MindPowerGetter(creature).get_mind_power(&n, true)) {
             screen_load();
             return;
         }

@@ -2,17 +2,21 @@
 
 #include "system/angband.h"
 
+class CreatureEntity;
 class ItemEntity;
-class PlayerType;
 class ObjectQuaffEntity {
 public:
-    ObjectQuaffEntity(PlayerType *player_ptr);
+    ObjectQuaffEntity(CreatureEntity &creature);
+    ObjectQuaffEntity(const ObjectQuaffEntity &) = default;
+    ObjectQuaffEntity(ObjectQuaffEntity &&) = default;
+    ObjectQuaffEntity &operator=(const ObjectQuaffEntity &) = delete;
+    ObjectQuaffEntity &operator=(ObjectQuaffEntity &&) = delete;
     virtual ~ObjectQuaffEntity() = default;
 
     void execute(INVENTORY_IDX i_idx, bool is_rectal = false);
 
 private:
-    PlayerType *player_ptr;
+    CreatureEntity &creature;
 
     bool can_influence();
     bool can_quaff();

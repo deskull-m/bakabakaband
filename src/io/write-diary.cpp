@@ -10,12 +10,13 @@
 #include "io/files-util.h"
 #include "market/arena-entry.h"
 #include "player/player-status.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/dungeon/dungeon-record.h"
+#include "system/dungeon/quest-definition.h"
 #include "system/floor/floor-info.h"
 #include "system/inner-game-data.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/player-type-definition.h"
 #include "term/z-form.h"
 #include "util/angband-files.h"
 #include "util/bit-flags-calculator.h"
@@ -53,7 +54,7 @@ static bool open_diary_file(FILE **fff, bool *disable_diary)
 
 /*!
  * @brief フロア情報を日記に追加する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return クエストIDとレベルノートのペア
  */
 static std::pair<QuestId, std::string> write_floor(const FloorType &floor)
@@ -150,7 +151,7 @@ static void write_diary_pet(FILE *fff, int num, std::string_view note)
  * @param num 日記内容のIDに応じた番号
  * @return エラーコード
  */
-int exe_write_diary_quest(PlayerType *player_ptr, DiaryKind dk, QuestId quest_id)
+int exe_write_diary_quest(CreatureEntity &creature, DiaryKind dk, QuestId quest_id)
 {
     static auto disable_diary = false;
     const auto &[day, hour, min] = AngbandWorld::get_instance().extract_date_time(InnerGameData::get_instance().get_start_race());
@@ -158,13 +159,13 @@ int exe_write_diary_quest(PlayerType *player_ptr, DiaryKind dk, QuestId quest_id
         return -1;
     }
 
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *creature.get_floor();
     const auto old_quest = floor.quest_number;
     const auto &quests = QuestList::get_instance();
     const auto &quest = quests.get_quest(quest_id);
     floor.quest_number = (quest.type == QuestKindType::RANDOM) ? QuestId::NONE : quest_id;
     init_flags = INIT_NAME_ONLY;
-    parse_fixed_map(player_ptr, QUEST_DEFINITION_LIST, 0, 0, 0, 0);
+    parse_fixed_map(creature, QUEST_DEFINITION_LIST, 0, 0, 0, 0);
     floor.quest_number = old_quest;
 
     const auto &[q_idx, note_level] = write_floor(floor);
@@ -377,7 +378,7 @@ void exe_write_diary(const FloorType &floor, DiaryKind dk, int num, std::string_
         break;
     }
     case DiaryKind::LEVELUP: {
-        constexpr auto fmt = _(" %2d:%02d %20s レベルが%dに上がった。\n", " %2d:%02d %20s reached player level %d.\n");
+        constexpr auto fmt = _(" %2d:%02d %20s レベルが%dに上がった。\n", " %2d:%02d %20s reached creature level %d.\n");
         fprintf(fff, fmt, hour, min, note_level.data(), num);
         break;
     }

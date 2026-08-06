@@ -8,11 +8,11 @@
 #include "player-info/race-info.h"
 #include "player/special-defense-types.h"
 #include "sv-definition/sv-lite-types.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "util/bit-flags-calculator.h"
 #include "util/point-2d.h"
@@ -68,11 +68,11 @@ void torch_lost_fuel(ItemEntity *o_ptr)
  * @details
  * SWD: Experimental modification: multiple light sources have additive effect.
  */
-void update_lite_radius(PlayerType *player_ptr)
+void update_lite_radius(CreatureEntity &creature)
 {
-    player_ptr->cur_lite = 0;
-    for (int i = INVEN_MAIN_HAND; i < INVEN_TOTAL; i++) {
-        const auto *o_ptr = player_ptr->inventory[i].get();
+    POSITION cur_lite = 0;
+    for (const auto i_idx : INVEN_WIELDING_SLOTS) {
+        const auto *o_ptr = creature.inventory[i_idx].get();
         if (!o_ptr->is_valid()) {
             continue;
         }
@@ -86,38 +86,40 @@ void update_lite_radius(PlayerType *player_ptr)
                 }
             }
         }
-        player_ptr->cur_lite += o_ptr->get_lite_radius();
+        cur_lite += o_ptr->get_lite_radius();
     }
 
-    if (player_ptr->cur_lite <= 0 && player_ptr->lite) {
-        player_ptr->cur_lite++;
+    if (cur_lite <= 0 && creature.has_lite_flag()) {
+        cur_lite++;
     }
 
-    if (player_ptr->cur_lite > 14) {
-        player_ptr->cur_lite = 14;
+    if (cur_lite > 14) {
+        cur_lite = 14;
     }
 
-    if (player_ptr->mimic_form == MimicKindType::ANGEL) {
-        player_ptr->cur_lite += 3;
+    if (creature.get_mimic_form() == MimicKindType::ANGEL) {
+        cur_lite += 3;
     }
 
-    if (player_ptr->mimic_form == MimicKindType::DEMIGOD) {
-        player_ptr->cur_lite += 6;
+    if (creature.get_mimic_form() == MimicKindType::DEMIGOD) {
+        cur_lite += 6;
     }
 
-    if (player_ptr->tim_emission > 0) {
-        player_ptr->cur_lite += player_ptr->level / 5;
+    if (creature.get_timed_effect(CreatureTimedEffect::TIM_EMISSION) > 0) {
+        cur_lite += creature.get_level() / 5;
     }
 
-    if (player_ptr->current_floor_ptr->get_dungeon_definition().flags.has(DungeonFeatureType::DARKNESS) && player_ptr->cur_lite > 1) {
-        player_ptr->cur_lite = 1;
+    if (creature.get_floor()->get_dungeon_definition().flags.has(DungeonFeatureType::DARKNESS) && cur_lite > 1) {
+        cur_lite = 1;
     }
 
-    if (player_ptr->cur_lite < 0) {
-        player_ptr->cur_lite = 0;
+    if (cur_lite < 0) {
+        cur_lite = 0;
     }
 
-    if (player_ptr->old_lite == player_ptr->cur_lite) {
+    creature.set_cur_lite(cur_lite);
+
+    if (creature.get_old_lite() == cur_lite) {
         return;
     }
 
@@ -127,9 +129,9 @@ void update_lite_radius(PlayerType *player_ptr)
         StatusRecalculatingFlag::MONSTER_STATUSES,
     };
     RedrawingFlagsUpdater::get_instance().set_flags(flags);
-    player_ptr->old_lite = player_ptr->cur_lite;
-    if (player_ptr->cur_lite > 0) {
-        set_superstealth(player_ptr, false);
+    creature.set_old_lite(cur_lite);
+    if (cur_lite > 0) {
+        set_superstealth(creature, false);
     }
 }
 
@@ -157,12 +159,12 @@ void update_lite_radius(PlayerType *player_ptr)
  *                 ***         *****
  *                              ***
  */
-void update_lite(PlayerType *player_ptr)
+void update_lite(CreatureEntity &creature)
 {
-    POSITION p = player_ptr->cur_lite;
-    auto &floor = *player_ptr->current_floor_ptr;
+    POSITION p = creature.get_cur_lite();
+    auto &floor = *creature.get_floor();
     const auto points = floor.reset_lite();
-    const auto p_pos = player_ptr->get_position();
+    const auto p_pos = creature.get_position();
     if (p >= 1) {
         floor.set_lite_at(p_pos);
         floor.set_lite_at(p_pos + Direction(2).vec());
@@ -223,30 +225,30 @@ void update_lite(PlayerType *player_ptr)
             floor.set_lite_at(p_pos + Direction(7).vec() * 2);
         }
 
-        auto min_y = player_ptr->y - p;
+        auto min_y = creature.y - p;
         if (min_y < 0) {
             min_y = 0;
         }
 
-        auto max_y = player_ptr->y + p;
+        auto max_y = creature.y + p;
         if (max_y > floor.height - 1) {
             max_y = floor.height - 1;
         }
 
-        auto min_x = player_ptr->x - p;
+        auto min_x = creature.x - p;
         if (min_x < 0) {
             min_x = 0;
         }
 
-        auto max_x = player_ptr->x + p;
+        auto max_x = creature.x + p;
         if (max_x > floor.width - 1) {
             max_x = floor.width - 1;
         }
 
         for (auto y = min_y; y <= max_y; y++) {
             for (auto x = min_x; x <= max_x; x++) {
-                const auto dy = (player_ptr->y > y) ? (player_ptr->y - y) : (y - player_ptr->y);
-                const auto dx = (player_ptr->x > x) ? (player_ptr->x - x) : (x - player_ptr->x);
+                const auto dy = (creature.y > y) ? (creature.y - y) : (y - creature.y);
+                const auto dx = (creature.x > x) ? (creature.x - x) : (x - creature.x);
                 if ((dy <= 2) && (dx <= 2)) {
                     continue;
                 }

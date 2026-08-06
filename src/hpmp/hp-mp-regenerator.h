@@ -13,9 +13,21 @@
 
 extern int wild_regen;
 
-class PlayerType;
-void regenhp(PlayerType *player_ptr, int percent);
-void regenmana(PlayerType *player_ptr, MANA_POINT upkeep_factor, MANA_POINT regen_amount);
-void regenmagic(PlayerType *player_ptr, int regen_amount);
-void regenerate_monsters(PlayerType *player_ptr);
-void regenerate_captured_monsters(PlayerType *player_ptr);
+class CreatureEntity;
+
+/*!
+ * @brief 共通の自然回復量 (regen_amount) を算出する。
+ * @details
+ * プレイヤーの基準計算を CreatureEntity 上に統一したヘルパ。
+ * - 食料・スタンス・呪い・ミュータント体質等のプレイヤー固有要因は is_player() ガードで分岐
+ * - 再生種族フラグ・毒・切り傷・行動・地形衛生等は両者で共通に効く
+ * 戻り値は HP/MP 回復共通の係数 (1/2^16 単位) で、
+ * regenhp() / regenmana() / display 用 calculate_*_regen_rate() で同じ値を使う。
+ */
+int compute_regen_amount(CreatureEntity &creature);
+
+void regenhp(CreatureEntity &creature, int percent);
+void regenmana(CreatureEntity &creature, MANA_POINT upkeep_factor, MANA_POINT regen_amount);
+void regenmagic(CreatureEntity &creature, int regen_amount);
+void regenerate_monsters(CreatureEntity &creature);
+void regenerate_captured_monsters(CreatureEntity &creature);

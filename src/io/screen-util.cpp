@@ -24,7 +24,6 @@
 #include "player-info/mimic-info-table.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/floor/floor-info.h"
-#include "system/floor/town-info.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "target/target-checker.h"
@@ -46,11 +45,12 @@ void resize_map()
         return;
     }
 
+    auto &creature = PlayerType::get_instance();
     panel_row_max = 0;
     panel_col_max = 0;
-    panel_row_min = p_ptr->current_floor_ptr->height;
-    panel_col_min = p_ptr->current_floor_ptr->width;
-    verify_panel(p_ptr);
+    panel_row_min = creature.get_floor()->height;
+    panel_col_min = creature.get_floor()->width;
+    verify_panel(creature);
 
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     static constexpr auto flags_srf = {
@@ -75,11 +75,11 @@ void resize_map()
         MainWindowRedrawingFlag::EQUIPPY,
     };
     rfu.set_flags(flags_mwrf);
-    handle_stuff(p_ptr);
+    handle_stuff(creature);
     term_redraw();
 
     if (can_save) {
-        move_cursor_relative(p_ptr->y, p_ptr->x);
+        move_cursor_relative(creature.y, creature.x);
     }
 
     term_fresh();

@@ -1,4 +1,4 @@
 #pragma once
 
-class PlayerType;
-void set_spells_old(PlayerType *player_ptr);
+class CreatureEntity;
+void set_spells_old(CreatureEntity &creature);

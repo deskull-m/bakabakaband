@@ -5,13 +5,12 @@
 #include "combat/combat-options-type.h"
 #include "object-enchant/tr-flags.h"
 
+class CreatureEntity;
 class MonsterAttackPlayer;
-class MonsterEntity;
 struct player_attack_type;
-class PlayerType;
-MULTIPLY mult_hissatsu(PlayerType *player_ptr, MULTIPLY mult, const TrFlags &flags, const MonsterEntity &monster, combat_options mode);
-void concentration(PlayerType *player_ptr);
-bool choose_samurai_stance(PlayerType *player_ptr);
-int calc_attack_quality(PlayerType *player_ptr, player_attack_type *pa_ptr);
-void mineuchi(PlayerType *player_ptr, player_attack_type *pa_ptr);
-void musou_counterattack(PlayerType *player_ptr, MonsterAttackPlayer *monap_ptr);
+MULTIPLY mult_hissatsu(CreatureEntity &creature, MULTIPLY mult, const TrFlags &flags, const CreatureEntity &target, combat_options mode);
+void concentration(CreatureEntity &creature);
+bool choose_samurai_stance(CreatureEntity &creature);
+int calc_attack_quality(CreatureEntity &creature, player_attack_type *pa_ptr);
+void mineuchi(CreatureEntity &creature, player_attack_type *pa_ptr);
+void musou_counterattack(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr);

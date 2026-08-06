@@ -13,7 +13,7 @@
  */
 
 #include "main/angband-initializer.h"
-#include "dungeon/quest.h"
+#include "autopick/autopick-menu-data-table.h"
 #include "floor/wild.h"
 #include "info-reader/feature-reader.h"
 #include "io/files-util.h"
@@ -23,17 +23,27 @@
 #include "main/game-data-initializer.h"
 #include "main/info-initializer.h"
 #include "market/building-initializer.h"
+#include "rumor/rumor-service.h"
 #include "system/angband-system.h"
+#include "system/baseitem/baseitem-service.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
+#include "system/dungeon/quest-definition.h"
+#include "system/floor/town-list.h"
 #include "system/monrace/monrace-definition.h"
+#include "system/monrace/monrace-list.h"
+#include "system/monrace/monrace-records.h"
 #include "system/services/baseitem-monrace-service.h"
 #include "system/system-variables.h"
 #include "term/gameterm.h"
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
-#include "time.h"
 #include "util/angband-files.h"
+#include "view/display-messages.h"
 #include "world/world.h"
+#include <exception>
+#include <fmt/format.h>
+#include <time.h>
 #ifdef WINDOWS
 #include "util/png-displayer.h"
 #endif
@@ -122,11 +132,11 @@ static void put_title()
 
 /*!
  * @brief 全ゲームデータ読み込みのメインルーチン /
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param no_term TRUEならゲーム画面無しの状態で初期化を行う。
  *                コマンドラインからスポイラーの出力のみを行う時の使用を想定する。
  */
-void init_angband(PlayerType *player_ptr, bool no_term)
+void init_angband(CreatureEntity &creature, bool no_term)
 {
     const auto path_news = path_build(ANGBAND_DIR_FILE, _("news_j.txt", "news.txt"));
     auto fd = fd_open(path_news, O_RDONLY);
@@ -192,6 +202,8 @@ void init_angband(PlayerType *player_ptr, bool no_term)
 
     init_note(_("[データの初期化中... (アイテム)]", "[Initializing arrays... (objects)]"));
     init_baseitems_info();
+    BaseitemService::initialize_baseitem_configs();
+    BaseitemService::initialize_baseitem_records();
 
     init_note(_("[データの初期化中... (伝説のアイテム)]", "[Initializing arrays... (artifacts)]"));
     init_artifacts_info();
@@ -201,6 +213,8 @@ void init_angband(PlayerType *player_ptr, bool no_term)
 
     init_note(_("[データの初期化中... (モンスター)]", "[Initializing arrays... (monsters)]"));
     init_monrace_definitions();
+    const auto monraces_size = MonraceList::get_instance().size();
+    MonraceRecords::get_instance().initialize(monraces_size);
     const auto error = BaseitemMonraceService::check_specific_drop_gold_flags_duplication();
     if (error) {
         quit(*error);
@@ -225,19 +239,38 @@ void init_angband(PlayerType *player_ptr, bool no_term)
     init_wilderness();
 
     init_note(_("[配列を初期化しています... (街)]", "[Initializing arrays... (towns)]"));
-    init_towns();
+    TownList::get_instance().initialize();
 
     init_note(_("[配列を初期化しています... (建物)]", "[Initializing arrays... (buildings)]"));
     init_buildings();
 
     init_note(_("[配列を初期化しています... (クエスト)]", "[Initializing arrays... (quests)]"));
-    QuestList::get_instance().initialize();
+    try {
+        QuestList::get_instance().initialize();
+    } catch (const std::exception &e) {
+        std::stringstream ss;
+        ss << _("ファイル読み込みエラー: ", "File loading error: ") << e.what();
+        msg_print(ss.str());
+        msg_erase();
+        quit(_("クエスト初期化エラー", "Error of quests initializing"));
+    }
 
+    init_note(_("配列を初期化しています... (パーティ)", "[Initializing arrays... (parties)]"));
+    init_creature_parties_info();
     init_note(_("[データの初期化中... (宝物庫)]", "[Initializing arrays... (vaults)]"));
     init_vaults_info();
 
+    init_note(_("[データの初期化中... (噂)]", "[Initializing arrays... (rumors)]"));
+    try {
+        RumorService::initialize();
+        RumorService::retouch();
+    } catch (const std::exception &e) {
+        quit(fmt::format(_("噂の初期化に失敗: {}", "Error of rumors initializing: {}"), e.what()));
+    }
+
     init_note(_("[データの初期化中... (その他)]", "[Initializing arrays... (other)]"));
-    init_other(player_ptr);
+    init_other(creature);
+    CommandMenuData::get_instance().initialize();
 
     init_note(_("[データの初期化中... (モンスターアロケーション)]", "[Initializing arrays... (monsters alloc)]"));
     init_monsters_alloc();
@@ -246,8 +279,8 @@ void init_angband(PlayerType *player_ptr, bool no_term)
     init_items_alloc();
 
     init_note(_("[ユーザー設定ファイルを初期化しています...]", "[Initializing user pref files...]"));
-    process_pref_file(player_ptr, "pref.prf");
-    process_pref_file(player_ptr, std::string("pref-").append(ANGBAND_SYS).append(".prf"));
+    process_pref_file(creature, "pref.prf");
+    process_pref_file(creature, std::string("pref-").append(ANGBAND_SYS).append(".prf"));
 
     init_note(_("[初期化終了]", "[Initialization complete]"));
 

@@ -1,4 +1,5 @@
 #include "store/cmd-store.h"
+#include "bot/bot-json-output.h"
 #include "cmd-io/macro-util.h"
 #include "core/stuff-handler.h"
 #include "core/window-redrawer.h"
@@ -17,13 +18,13 @@
 #include "store/store-owners.h"
 #include "store/store-util.h"
 #include "store/store.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/floor/floor-info.h"
 #include "system/floor/town-info.h"
 #include "system/floor/town-list.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "system/terrain/terrain-definition.h"
 #include "term/gameterm.h"
@@ -38,7 +39,7 @@
 /*!
  * @brief 店舗処理全体のメインルーチン /
  * Enter a store, and interact with it. *
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @note
  * <pre>
  * Note that we use the standard "request_command()" function
@@ -49,7 +50,7 @@
  * (cast magic) into "g" (get), and "s" (search) into "d" (drop).
  * </pre>
  */
-void do_cmd_store(PlayerType *player_ptr, std::optional<StoreSaleType> specified_store)
+void do_cmd_store(CreatureEntity &creature, std::optional<StoreSaleType> specified_store)
 {
     if (AngbandWorld::get_instance().is_wild_mode()) {
         return;
@@ -59,9 +60,9 @@ void do_cmd_store(PlayerType *player_ptr, std::optional<StoreSaleType> specified
     xtra_stock = std::min(14 + 26, ((hgt > MAIN_TERM_MIN_ROWS) ? (hgt - MAIN_TERM_MIN_ROWS) : 0));
     store_bottom = MIN_STOCK + xtra_stock;
 
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *creature.get_floor();
     StoreSaleType store_num;
-    const auto &grid = floor.get_grid(player_ptr->get_position());
+    const auto &grid = floor.get_grid(creature.get_position());
 
     if (specified_store.has_value()) {
         // 指定された店舗を使用
@@ -72,32 +73,32 @@ void do_cmd_store(PlayerType *player_ptr, std::optional<StoreSaleType> specified
             msg_print(_("ここには店がありません。", "You see no store here."));
             return;
         }
-        store_num = i2enum<StoreSaleType>(grid.get_terrain().subtype);
+        store_num = grid.get_terrain().store_sale_type;
     }
 
     // TODO:
-    //   施設の種類により、一時的に現在地 (player_ptr->town_num) を違う値に偽装して処理している。
+    //   施設の種類により、一時的に現在地 (creature.get_town_num()) を違う値に偽装して処理している。
     //   我が家および博物館は全ての町で内容を共有するため、現在地を辺境の地 (1) にしている。
     //   ダンジョン内の店の場合、現在地を NO_TOWN にしている。
     //   inner_town_num は、施設内で C コマンドなどを使ったときにそのままでは現在地の偽装がバレる
     //   ため、それを糊塗するためのグローバル変数。
     //   この辺はリファクタしたい。
-    old_town_num = player_ptr->town_num;
+    old_town_num = creature.get_town_num();
     if ((store_num == StoreSaleType::HOME) || (store_num == StoreSaleType::MUSEUM)) {
-        player_ptr->town_num = 1;
+        creature.set_town_num(1);
     }
 
     if (floor.is_underground()) {
-        player_ptr->town_num = VALID_TOWNS;
+        creature.set_town_num(VALID_TOWNS);
     }
 
-    inner_town_num = player_ptr->town_num;
-    auto &town = towns_info[player_ptr->town_num];
+    inner_town_num = creature.get_town_num();
+    auto &town = TownList::get_instance().get_town(creature.get_town_num());
     auto &store = town.get_store(store_num);
     auto &world = AngbandWorld::get_instance();
     if ((store.store_open >= world.game_turn) || ironman_shops) {
         msg_print(_("ドアに鍵がかかっている。", "The doors are locked."));
-        player_ptr->town_num = old_town_num;
+        creature.set_town_num(old_town_num);
         return;
     }
 
@@ -107,7 +108,7 @@ void do_cmd_store(PlayerType *player_ptr, std::optional<StoreSaleType> specified
     }
 
     if (maintain_num > 0) {
-        store_maintenance(player_ptr, player_ptr->town_num, store_num, maintain_num);
+        store_maintenance(creature, creature.get_town_num(), store_num, maintain_num);
         store.last_visit = world.game_turn;
     }
 
@@ -119,17 +120,17 @@ void do_cmd_store(PlayerType *player_ptr, std::optional<StoreSaleType> specified
     command_new = 0;
     get_com_no_macros = true;
     cur_store_feat = grid.feat;
-    st_ptr = &towns_info[player_ptr->town_num].get_store(store_num);
+    st_ptr = &TownList::get_instance().get_town(creature.get_town_num()).get_store(store_num);
     ot_ptr = &owners.at(store_num)[st_ptr->owner];
     store_top = 0;
 
     // 店舗に入ったインシデントを記録
-    player_ptr->plus_incident_tree("STORE/ENTER", 1);
+    creature.plus_incident_tree("STORE/ENTER", 1);
     const std::string store_tag = get_store_sale_type_tag(store_num);
-    player_ptr->plus_incident_tree("STORE/ENTER/" + store_tag, 1);
+    creature.plus_incident_tree("STORE/ENTER/" + store_tag, 1);
 
     play_music(TERM_XTRA_MUSIC_BASIC, MUSIC_BASIC_BUILD);
-    display_store(player_ptr, store_num);
+    display_store(creature, store_num);
     leave_store = false;
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     while (!leave_store) {
@@ -163,15 +164,16 @@ void do_cmd_store(PlayerType *player_ptr, std::optional<StoreSaleType> specified
         }
 
         prt(_("コマンド:", "You may: "), 20 + xtra_stock, 0);
-        InputKeyRequestor(player_ptr, true).request_command();
-        store_process_command(player_ptr, store_num);
+        output_bot_json_store_snapshot(creature, store_num);
+        InputKeyRequestor(creature, true).request_command();
+        store_process_command(creature, store_num);
 
         const auto should_redraw_store_inventory = rfu.has(StatusRecalculatingFlag::BONUS);
         world.character_icky_depth = 1;
-        handle_stuff(player_ptr);
-        if (player_ptr->inventory[INVEN_PACK]->bi_id) {
+        handle_stuff(creature);
+        if (creature.inventory[INVEN_PACK]->bi_id) {
             INVENTORY_IDX i_idx = INVEN_PACK;
-            const auto &item_inventory = *player_ptr->inventory[i_idx];
+            const auto &item_inventory = *creature.inventory[i_idx];
             if (store_num != StoreSaleType::HOME) {
                 if (store_num == StoreSaleType::MUSEUM) {
                     msg_print(_("ザックからアイテムがあふれそうなので、あわてて博物館から出た...", "Your pack is so full that you flee the Museum..."));
@@ -186,20 +188,20 @@ void do_cmd_store(PlayerType *player_ptr, std::optional<StoreSaleType> specified
             } else {
                 msg_print(_("ザックからアイテムがあふれてしまった！", "Your pack overflows!"));
                 auto item = item_inventory.clone();
-                const auto item_name = describe_flavor(player_ptr, item, 0);
+                const auto item_name = describe_flavor(creature, item, 0);
                 msg_format(_("%sが落ちた。(%c)", "You drop %s (%c)."), item_name.data(), index_to_label(i_idx));
-                vary_item(player_ptr, i_idx, -255);
-                handle_stuff(player_ptr);
-                const auto item_pos = home_carry(player_ptr, &item, store_num);
+                vary_item(creature, i_idx, -255);
+                handle_stuff(creature);
+                const auto item_pos = home_carry(creature, &item, store_num);
                 if (item_pos >= 0) {
                     store_top = (item_pos / store_bottom) * store_bottom;
-                    display_store_inventory(player_ptr, store_num);
+                    display_store_inventory(creature, store_num);
                 }
             }
         }
 
         if (should_redraw_store_inventory) {
-            display_store_inventory(player_ptr, store_num);
+            display_store_inventory(creature, store_num);
         }
 
         if (st_ptr->store_open >= world.game_turn) {
@@ -208,10 +210,10 @@ void do_cmd_store(PlayerType *player_ptr, std::optional<StoreSaleType> specified
     }
 
     // 現在地の偽装を解除。
-    player_ptr->town_num = old_town_num;
+    creature.set_town_num(old_town_num);
 
-    select_floor_music(player_ptr);
-    PlayerEnergy(player_ptr).set_player_turn_energy(100);
+    select_floor_music(creature);
+    PlayerEnergy(creature).set_player_turn_energy(100);
     world.character_icky_depth = 0;
     command_new = 0;
     command_see = false;

@@ -9,7 +9,7 @@
 #include "main/sound-of-music.h"
 #include "player-base/player-class.h"
 #include "player/player-personality.h"
-#include "system/player-type-definition.h"
+#include "system/creature-entity.h"
 #include "term/gameterm.h"
 #include "term/screen-processor.h"
 #include "util/angband-files.h"
@@ -22,23 +22,23 @@
 
 /*!
  * @brief 日記のタイトル表記と内容出力
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
-static void display_diary(PlayerType *player_ptr)
+static void display_diary(CreatureEntity &creature)
 {
-    const auto subtitle_candidates = PlayerClass(player_ptr).get_subtitle_candidates();
+    const auto subtitle_candidates = CreatureClass(creature).get_subtitle_candidates();
     const auto choice = Rand_external(subtitle_candidates.size());
     const auto &subtitle = subtitle_candidates[choice];
 #ifdef JP
-    const auto diary_title = format("「%s%s%sの伝説 -%s-」", (*player_ptr->personality).title.data(), (*player_ptr->personality).no ? "の" : "", player_ptr->name.data(), subtitle.data());
+    const auto diary_title = format("「%s%s%sの伝説 -%s-」", (*creature.get_personality_info()).title.data(), (*creature.get_personality_info()).no ? "の" : "", creature.name.data(), subtitle.data());
 #else
-    const auto diary_title = format("Legend of %s %s '%s'", (*player_ptr->personality).title.data(), player_ptr->name.data(), subtitle.data());
+    const auto diary_title = format("Legend of %s %s '%s'", (*creature.get_personality_info()).title.data(), creature.name.data(), subtitle.data());
 #endif
 
     std::stringstream ss;
     ss << _("playrecord-", "playrec-") << savefile_base.string() << ".txt";
     const auto path = path_build(ANGBAND_DIR_USER, ss.str());
-    FileDisplayer(player_ptr->name).display(false, path.string(), -1, 0, diary_title);
+    FileDisplayer(creature.name).display(false, path.string(), -1, 0, diary_title);
 }
 
 /*!
@@ -102,13 +102,13 @@ static void do_cmd_erase_diary()
 
 /*!
  * @brief 日記コマンド
- * @param crerature_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
-void do_cmd_diary(PlayerType *player_ptr)
+void do_cmd_diary(CreatureEntity &creature)
 {
     screen_save();
     TermCenteredOffsetSetter tcos(MAIN_TERM_MIN_COLS, MAIN_TERM_MIN_ROWS);
-    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     while (true) {
         term_clear();
         prt(_("[ 記録の設定 ]", "[ Play Record ]"), 2, 0);
@@ -125,7 +125,7 @@ void do_cmd_diary(PlayerType *player_ptr)
 
         switch (i) {
         case '1':
-            display_diary(player_ptr);
+            display_diary(creature);
             break;
         case '2':
             add_diary_note(floor);
@@ -139,7 +139,7 @@ void do_cmd_diary(PlayerType *player_ptr)
         case 'r':
         case 'R':
             screen_load();
-            prepare_movie_hooks(player_ptr);
+            prepare_movie_hooks(creature);
             return;
         default:
             bell();

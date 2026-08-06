@@ -1,5 +1,5 @@
 #pragma once
 
-class PlayerType;
+class CreatureEntity;
 struct rc_type;
-void select_mutation_racial(PlayerType *player_ptr, rc_type *rc_ptr);
+void select_mutation_racial(CreatureEntity &creature, rc_type *rc_ptr);

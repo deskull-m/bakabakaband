@@ -15,6 +15,7 @@
 #include "main/sound-of-music.h"
 #include "object-enchant/item-feeling.h"
 #include "object-enchant/special-object-flags.h"
+#include "object/item-tester-hooker.h"
 #include "object/item-use-flags.h"
 #include "object/object-info.h"
 #include "object/object-stack.h"
@@ -26,9 +27,9 @@
 #include "store/service-checker.h"
 #include "store/store-owners.h"
 #include "store/store.h"
+#include "system/creature-entity.h"
 #include "system/floor/town-info.h"
 #include "system/floor/town-list.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "view/display-messages.h"
 #include "view/display-store.h"
@@ -38,18 +39,18 @@
 
 /*!
  * @brief プレイヤーが売却する時の確認プロンプト / Prompt to sell for the price
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param o_ptr オブジェクトの構造体参照ポインタ
  * @return 売るなら(true,売値)、売らないなら(false,0)のタプル
  */
-static tl::optional<int> prompt_to_sell(PlayerType *player_ptr, ItemEntity *o_ptr, StoreSaleType store_num)
+static tl::optional<int> prompt_to_sell(CreatureEntity &creature, ItemEntity *o_ptr, StoreSaleType store_num)
 {
-    auto price_ask = price_item(player_ptr, o_ptr, ot_ptr->inflate, true, store_num);
+    auto price_ask = price_item(creature, o_ptr, ot_ptr->inflate, true, store_num);
 
     price_ask = std::min(price_ask, ot_ptr->max_cost);
     price_ask *= o_ptr->number;
     const auto s = fmt::format(_("売値 ${} で売りますか？", "Do you sell for ${}? "), price_ask);
-    if (input_check_strict(player_ptr, s, UserCheck::DEFAULT_Y)) {
+    if (input_check_strict(creature, s, UserCheck::DEFAULT_Y)) {
         return price_ask;
     }
 
@@ -59,9 +60,9 @@ static tl::optional<int> prompt_to_sell(PlayerType *player_ptr, ItemEntity *o_pt
 /*!
  * @brief 店からの売却処理のメインルーチン /
  * Sell an item to the store (or home)
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
-void store_sell(PlayerType *player_ptr, StoreSaleType store_num)
+void store_sell(CreatureEntity &creature, StoreSaleType store_num)
 {
     concptr q; //!< @note プロンプトメッセージ
     concptr s_none; //!< @note 売る/置くものがない場合のメッセージ
@@ -84,31 +85,30 @@ void store_sell(PlayerType *player_ptr, StoreSaleType store_num)
         break;
     }
 
-    short i_idx;
     const auto options = USE_EQUIP | USE_INVEN | USE_FLOOR | IGNORE_BOTHHAND_SLOT;
-    auto *o_ptr = choose_object(player_ptr, &i_idx, q, s_none, options, FuncItemTester(store_will_buy, player_ptr, store_num));
-    if (o_ptr == nullptr) {
+    const auto &[item, i_idx] = choose_item(creature, q, s_none, options, FuncItemTester([](CreatureEntity *c, const ItemEntity *o, StoreSaleType st) { return store_will_buy(*c, o, st); }, creature, store_num));
+    if (!item) {
         return;
     }
 
-    if ((i_idx >= INVEN_MAIN_HAND) && o_ptr->is_cursed()) {
+    if ((i_idx >= INVEN_MAIN_HAND) && item->is_cursed()) {
         msg_print(_("ふーむ、どうやらそれは呪われているようだね。", "Hmmm, it seems to be cursed."));
         return;
     }
 
     auto amt = 1;
-    if (o_ptr->number > 1) {
-        amt = input_quantity(o_ptr->number);
+    if (item->number > 1) {
+        amt = input_quantity(item->number);
         if (amt <= 0) {
             return;
         }
     }
 
-    auto selling_item = o_ptr->clone();
+    auto selling_item = item->clone();
     selling_item.number = amt;
 
-    if (o_ptr->is_wand_rod()) {
-        selling_item.pval = o_ptr->pval * amt / o_ptr->number;
+    if (item->is_wand_rod()) {
+        selling_item.pval = item->pval * amt / item->number;
     }
 
     if ((store_num != StoreSaleType::HOME) && (store_num != StoreSaleType::MUSEUM)) {
@@ -123,71 +123,71 @@ void store_sell(PlayerType *player_ptr, StoreSaleType store_num)
 
     bool placed = false;
     if ((store_num != StoreSaleType::HOME) && (store_num != StoreSaleType::MUSEUM)) {
-        const auto item_name = describe_flavor(player_ptr, selling_item, 0);
+        const auto item_name = describe_flavor(creature, selling_item, 0);
         msg_format(_("%s(%c)を売却する。", "Selling %s (%c)."), item_name.data(), index_to_label(i_idx));
         msg_erase();
 
-        auto res = prompt_to_sell(player_ptr, &selling_item, store_num);
+        auto res = prompt_to_sell(creature, &selling_item, store_num);
         placed = res.has_value();
         if (placed) {
             const auto price = res.value();
-            store_owner_says_comment(player_ptr, store_num);
+            store_owner_says_comment(price, store_num);
 
             sound(SoundKind::SELL);
             if (store_num == StoreSaleType::BLACK) {
-                chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::JUSTICE, -1);
+                chg_virtue(creature, Virtue::JUSTICE, -1);
             }
 
-            const auto tval = o_ptr->bi_key.tval();
+            const auto tval = item->bi_key.tval();
             if ((tval == ItemKindType::BOTTLE) && (store_num != StoreSaleType::HOME)) {
-                chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::NATURE, 1);
+                chg_virtue(creature, Virtue::NATURE, 1);
             }
 
-            player_ptr->au += price;
-            store_prt_gold(player_ptr->au);
+            creature.add_au(price);
+            store_prt_gold(creature.get_au());
             const auto dummy = selling_item.calc_price() * selling_item.number;
 
-            identify_item(player_ptr, o_ptr);
-            auto sold_item = o_ptr->clone();
+            identify_item(creature, item.get());
+            auto sold_item = item->clone();
             sold_item.number = amt;
-            sold_item.ident |= IDENT_STORE;
+            sold_item.ident.set(IdentificationFlag::STORE);
 
-            if (o_ptr->is_wand_rod()) {
-                sold_item.pval = o_ptr->pval * amt / o_ptr->number;
+            if (item->is_wand_rod()) {
+                sold_item.pval = item->pval * amt / item->number;
             }
 
             const auto value = sold_item.calc_price() * sold_item.number;
-            const auto sold_item_name = describe_flavor(player_ptr, sold_item, 0);
+            const auto sold_item_name = describe_flavor(creature, sold_item, 0);
             msg_format(_("%sを $%dで売却しました。", "You sold %s for %d gold."), sold_item_name.data(), price);
 
             if (record_sell) {
-                exe_write_diary(*player_ptr->current_floor_ptr, DiaryKind::SELL, 0, sold_item_name);
+                exe_write_diary(*creature.get_floor(), DiaryKind::SELL, 0, sold_item_name);
             }
 
-            player_ptr->plus_incident_tree("STORE_SELL", 1);
+            creature.plus_incident_tree("STORE_SELL", 1);
 
             if (!((tval == ItemKindType::FIGURINE) && (value > 0))) {
-                purchase_analyze(player_ptr, price, value, dummy);
+                purchase_analyze(creature, price, value, dummy);
             }
 
-            distribute_charges(o_ptr, &sold_item, amt);
+            distribute_charges(item.get(), &sold_item, amt);
             sold_item.timeout = 0;
-            inven_item_increase(player_ptr, i_idx, -amt);
-            inven_item_describe(player_ptr, i_idx);
-            if (o_ptr->number > 0) {
-                autopick_alter_item(player_ptr, i_idx, false);
+            inven_item_increase(creature, i_idx, -amt);
+            inven_item_describe(creature, i_idx);
+            if (item->number > 0) {
+                autopick_alter_item(creature, i_idx, false);
             }
 
-            inven_item_optimize(player_ptr, i_idx);
-            auto &store = towns_info[player_ptr->town_num].get_store(store_num);
+            inven_item_optimize(creature, i_idx);
+            auto &store = TownList::get_instance().get_town(creature.get_town_num()).get_store(store_num);
             const auto item_pos = store.carry(sold_item);
             if (item_pos) {
                 store_top = (*item_pos / store_bottom) * store_bottom;
-                display_store_inventory(player_ptr, store_num);
+                display_store_inventory(creature, store_num);
             }
         }
     } else if (store_num == StoreSaleType::MUSEUM) {
-        const auto museum_item_name = describe_flavor(player_ptr, selling_item, OD_NAME_ONLY);
+        const auto museum_item_name = describe_flavor(creature, selling_item, OD_NAME_ONLY);
         if (-1 == store_check_num(&selling_item, store_num)) {
             msg_print(_("それと同じ品物は既に博物館にあるようです。", "The Museum already has one of those items."));
         } else {
@@ -198,40 +198,40 @@ void store_sell(PlayerType *player_ptr, StoreSaleType store_num)
             return;
         }
 
-        identify_item(player_ptr, &selling_item);
-        selling_item.ident |= IDENT_FULL_KNOWN;
+        identify_item(creature, &selling_item);
+        selling_item.ident.set(IdentificationFlag::FULL_KNOWN);
 
-        distribute_charges(o_ptr, &selling_item, amt);
+        distribute_charges(item.get(), &selling_item, amt);
         msg_format(_("%sを置いた。(%c)", "You drop %s (%c)."), museum_item_name.data(), index_to_label(i_idx));
         placed = true;
 
-        vary_item(player_ptr, i_idx, -amt);
+        vary_item(creature, i_idx, -amt);
 
-        int item_pos = home_carry(player_ptr, &selling_item, store_num);
+        int item_pos = home_carry(creature, &selling_item, store_num);
         if (item_pos >= 0) {
             store_top = (item_pos / store_bottom) * store_bottom;
-            display_store_inventory(player_ptr, store_num);
+            display_store_inventory(creature, store_num);
         }
     } else {
-        distribute_charges(o_ptr, &selling_item, amt);
-        const auto item_name = describe_flavor(player_ptr, selling_item, 0);
+        distribute_charges(item.get(), &selling_item, amt);
+        const auto item_name = describe_flavor(creature, selling_item, 0);
         msg_format(_("%sを置いた。(%c)", "You drop %s (%c)."), item_name.data(), index_to_label(i_idx));
         placed = true;
-        vary_item(player_ptr, i_idx, -amt);
-        int item_pos = home_carry(player_ptr, &selling_item, store_num);
+        vary_item(creature, i_idx, -amt);
+        int item_pos = home_carry(creature, &selling_item, store_num);
         if (item_pos >= 0) {
             store_top = (item_pos / store_bottom) * store_bottom;
-            display_store_inventory(player_ptr, store_num);
+            display_store_inventory(creature, store_num);
         }
     }
 
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(StatusRecalculatingFlag::BONUS);
     rfu.set_flag(SubWindowRedrawingFlag::PLAYER);
-    handle_stuff(player_ptr);
+    handle_stuff(creature);
 
     if (placed && (i_idx >= INVEN_MAIN_HAND)) {
-        calc_android_exp(player_ptr);
-        verify_equip_slot(player_ptr, i_idx);
+        calc_android_exp(creature);
+        verify_equip_slot(creature, i_idx);
     }
 }

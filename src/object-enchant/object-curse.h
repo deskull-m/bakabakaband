@@ -3,7 +3,7 @@
 #include "system/angband.h"
 
 class ItemEntity;
-class PlayerType;
+class CreatureEntity;
 enum class CurseTraitType;
 CurseTraitType get_curse(int power, ItemEntity *o_ptr);
-void curse_equipment(PlayerType *player_ptr, PERCENTAGE chance, PERCENTAGE heavy_chance);
+void curse_equipment(CreatureEntity &creature, PERCENTAGE chance, PERCENTAGE heavy_chance);

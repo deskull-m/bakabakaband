@@ -6,12 +6,12 @@
 #include "monster/monster-describer.h"
 #include "monster/monster-description-types.h"
 #include "monster/monster-info.h"
+#include "monster/monster-timed-effects.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
-#include "system/player-type-definition.h"
 #include "target/target-checker.h"
 #include "tracking/health-bar-tracker.h"
 #include "view/display-messages.h"
@@ -19,63 +19,57 @@
 
 /*!
  * @brief モンスター情報を配列内移動する / Move an object from index i1 to index i2 in the object list
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param i1 配列移動元添字
  * @param i2 配列移動先添字
  */
-static void compact_monsters_aux(PlayerType *player_ptr, MONSTER_IDX i1, MONSTER_IDX i2)
+static void compact_monsters_aux(CreatureEntity &creature, MONSTER_IDX i1, MONSTER_IDX i2)
 {
     if (i1 == i2) {
         return;
     }
 
-    auto &floor = *player_ptr->current_floor_ptr;
-    const auto &monster = floor.m_list[i1];
+    auto &floor = *creature.get_floor();
+    const auto &monster = floor.get_monster(i1);
 
     const auto y = monster.y;
     const auto x = monster.x;
     auto &grid = floor.grid_array[y][x];
     grid.m_idx = i2;
 
-    for (const auto this_o_idx : monster.hold_o_idx_list) {
-        ItemEntity *o_ptr;
-        o_ptr = floor.o_list[this_o_idx].get();
-        o_ptr->held_m_idx = i2;
-    }
+    // [フェーズ A-4b] 所持アイテムは inventory[] (CreatureEntity 共通) に統合済み。
+    // monster は floor.m_list[i1→i2] の代入時に inventory[] を含めて移動するため、
+    // floor.o_list 経由の held_m_idx 更新は不要
 
     const auto target_m_idx = Target::get_last_target().get_m_idx();
     if (target_m_idx == i1) {
-        Target::set_last_target(Target::create_monster_target(player_ptr, i2));
+        Target::set_last_target(Target::create_monster_target(creature, i2));
     }
 
-    if (player_ptr->pet_t_m_idx == i1) {
-        player_ptr->pet_t_m_idx = i2;
-    }
-    if (player_ptr->riding_t_m_idx == i1) {
-        player_ptr->riding_t_m_idx = i2;
-    }
+    creature.remap_pet_riding_targets(i1, i2);
 
-    if (monster.is_riding()) { // player_ptr->riding == i1 のままの方がいい？
-        player_ptr->riding = i2;
+    if (monster.is_riding()) { // creature.get_riding() == i1 のままの方がいい？
+        creature.set_riding(i2);
     }
 
     if (HealthBarTracker::get_instance().is_tracking(i1)) {
-        health_track(player_ptr, i2);
+        health_track(creature, i2);
     }
 
     if (monster.is_pet()) {
         for (int i = 1; i < floor.m_max; i++) {
-            MonsterEntity *m2_ptr = &floor.m_list[i];
+            CreatureEntity *m2_ptr = &floor.get_monster(static_cast<MONSTER_IDX>(i));
 
-            if (m2_ptr->parent_m_idx == i1) {
-                m2_ptr->parent_m_idx = i2;
+            if (m2_ptr->get_parent_m_idx() == i1) {
+                m2_ptr->set_parent_m_idx(i2);
             }
         }
     }
 
-    floor.m_list[i2] = std::exchange(floor.m_list[i1], {});
+    floor.m_list[i2] = std::move(floor.m_list[i1]);
+    floor.m_list[i1].wipe();
 
-    for (const auto mte : MONSTER_TIMED_EFFECT_RANGE) {
+    for (const auto mte : MONSTER_TIMED_EFFECT_LIST) {
         const auto index = floor.get_mproc_index(i1, mte);
         if (index >= 0) {
             floor.mproc_list[mte][*index] = i2;
@@ -85,7 +79,7 @@ static void compact_monsters_aux(PlayerType *player_ptr, MONSTER_IDX i1, MONSTER
 
 /*!
  * @brief モンスター情報配列を圧縮する / Compact and Reorder the monster list
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param size 圧縮後のモンスター件数目標
  * @details
  * This function can be very dangerous, use with caution!
@@ -97,33 +91,34 @@ static void compact_monsters_aux(PlayerType *player_ptr, MONSTER_IDX i1, MONSTER
  * After "compacting" (if needed), we "reorder" the monsters into a more
  * compact order, and we reset the allocation info, and the "live" array.
  */
-void compact_monsters(PlayerType *player_ptr, int size)
+void compact_monsters(CreatureEntity &creature, int size)
 {
     if (size) {
         msg_print(_("モンスター情報を圧縮しています...", "Compacting monsters..."));
     }
 
     /* Compact at least 'size' objects */
-    auto &floor = *player_ptr->current_floor_ptr;
+    auto &floor = *creature.get_floor();
+    const auto p_pos = creature.get_position();
     for (int num = 0, cnt = 1; num < size; cnt++) {
         int cur_lev = 5 * cnt;
         int cur_dis = 5 * (20 - cnt);
-        for (MONSTER_IDX i = 1; i < floor.m_max; i++) {
-            const auto &monster = floor.m_list[i];
+        // [提案 14b]
+        const auto candidates = creature.collect_creatures([&](const CreatureEntity &mon) {
+            if (mon.get_monrace().level > cur_lev) {
+                return false;
+            }
+            if (mon.is_riding()) {
+                return false;
+            }
+            if ((cur_dis > 0) && (Grid::calc_distance(p_pos, mon.get_position()) < cur_dis)) {
+                return false;
+            }
+            return true;
+        });
+        for (auto i : candidates) {
+            const auto &monster = floor.get_monster(i);
             const auto &monrace = monster.get_monrace();
-            if (!monster.is_valid()) {
-                continue;
-            }
-            if (monrace.level > cur_lev) {
-                continue;
-            }
-            if (monster.is_riding()) {
-                continue;
-            }
-            if ((cur_dis > 0) && (monster.cdis < cur_dis)) {
-                continue;
-            }
-
             int chance = 90;
             if (monrace.misc_flags.has(MonsterMiscType::QUESTOR) && (cnt < 1000)) {
                 chance = 100;
@@ -138,23 +133,23 @@ void compact_monsters(PlayerType *player_ptr, int size)
             }
 
             if (record_named_pet && monster.is_named_pet()) {
-                const auto m_name = monster_desc(player_ptr, monster, MD_INDEF_VISIBLE);
+                const auto m_name = monster_desc(creature, monster, MD_INDEF_VISIBLE);
                 exe_write_diary(floor, DiaryKind::NAMED_PET, RECORD_NAMED_PET_COMPACT, m_name);
             }
 
-            delete_monster_idx(player_ptr, i);
+            delete_monster_idx(creature, i);
             num++;
         }
     }
 
     /* Excise dead monsters (backwards!) */
     for (MONSTER_IDX i = floor.m_max - 1; i >= 1; i--) {
-        const auto &monster = floor.m_list[i];
+        const auto &monster = floor.get_monster(i);
         if (monster.is_valid()) {
             continue;
         }
 
-        compact_monsters_aux(player_ptr, floor.m_max - 1, i);
+        compact_monsters_aux(creature, floor.m_max - 1, i);
         floor.m_max--;
     }
 }

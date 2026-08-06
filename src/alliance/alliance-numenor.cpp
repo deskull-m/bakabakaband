@@ -1,14 +1,14 @@
 #include "alliance/alliance-numenor.h"
+#include "system/creature-entity.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/player-type-definition.h"
-int AllianceNumenor::calcImpressionPoint([[maybe_unused]] PlayerType *creature_ptr) const
+int AllianceNumenor::calcImpressionPoint([[maybe_unused]] const CreatureEntity &creature) const
 {
     int impression = 0;
     impression += calcIronmanHostilityPenalty();
 
-    impression += Alliance::calcPlayerPower(*creature_ptr, 10, 20);
+    impression += Alliance::calcPlayerPower(creature, 10, 20);
 
     // ヌメノール・アライアンスに属するモンスターの撃破による印象値減少
     const auto &monrace_list = MonraceList::get_instance();
@@ -30,5 +30,5 @@ int AllianceNumenor::calcImpressionPoint([[maybe_unused]] PlayerType *creature_p
 bool AllianceNumenor::isAnnihilated()
 {
     // 黄金王『アル=ファラゾン』が存在しない場合、ヌメノールは壊滅する
-    return MonraceList::get_instance().get_monrace(MonraceId::AR_PHARAZON).mob_num == 0;
+    return all_monraces_extinct({ MonraceId::AR_PHARAZON });
 }

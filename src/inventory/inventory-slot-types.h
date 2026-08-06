@@ -19,9 +19,25 @@ enum inventory_slot_type : short {
     INVEN_ASSHOLE = 36, /*!< アイテムスロット…尻の穴 */
     INVEN_AMMO = 23, /*!< used for get_random_ego()  */
     INVEN_TOTAL = 37, /*!< Total number of inventory slots (hard-coded). */
+    //! [Phase 2] 拡張装備スロット ID の起点。wield_slot() が返す値は
+    //! INVEN_EXTENDED_BASE + extended_inventory のインデックス。
+    //! 通常スロット (INVEN_*) と区別するため十分離した値を使う。
+    INVEN_EXTENDED_BASE = 100,
     INVEN_NONE = 1000, /*!< アイテムスロット非選択状態 */
     INVEN_FORCE = 1111, /*!< inventory slot for selecting force (hard-coded). */
 };
 
+/*!
+ * 所持品スロットの範囲
+ * @note 0-22番を使用。INVEN_PACK(23番)のスロットは特殊な用途で使用される
+ */
+constexpr auto INVEN_PACK_SLOTS = EnumRange(static_cast<inventory_slot_type>(0), INVEN_PACK);
+
 /** 装備スロットの範囲  */
 constexpr auto INVEN_WIELDING_SLOTS = EnumRangeInclusive(INVEN_MAIN_HAND, INVEN_ASSHOLE);
+
+/** 装備スロットのうち、武器(近接・遠隔)スロットの範囲 */
+constexpr auto INVEN_WEAPON_SLOTS = EnumRangeInclusive(INVEN_MAIN_HAND, INVEN_BOW);
+
+/** 所持品と装備を合わせた全スロットの範囲  */
+constexpr auto INVEN_ALL_SLOTS = EnumRange(static_cast<inventory_slot_type>(0), INVEN_TOTAL);

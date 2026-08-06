@@ -1,5 +1,5 @@
 #pragma once
 
-class PlayerType;
+class CreatureEntity;
 
-void process_alliance_recovery(PlayerType *player_ptr);
+void process_alliance_recovery(CreatureEntity &creature);

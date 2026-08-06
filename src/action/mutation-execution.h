@@ -5,5 +5,5 @@
  */
 
 enum class PlayerMutationType;
-class PlayerType;
-bool exe_mutation_power(PlayerType *player_ptr, PlayerMutationType power);
+class CreatureEntity;
+bool exe_mutation_power(CreatureEntity &creature, PlayerMutationType power);

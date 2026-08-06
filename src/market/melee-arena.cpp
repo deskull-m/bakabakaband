@@ -13,8 +13,8 @@
 #include "status/buff-setter.h"
 #include "system/angband-system.h"
 #include "system/building-type-definition.h"
+#include "system/creature-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/player-type-definition.h"
 #include "term/screen-processor.h"
 #include "util/int-char-converter.h"
 #include "view/display-messages.h"
@@ -39,22 +39,22 @@ void display_gladiators()
 
 /*!
  * @brief モンスター闘技場のメインルーチン
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return 賭けを開始したか否か
  */
-bool melee_arena_comm(PlayerType *player_ptr)
+bool melee_arena_comm(CreatureEntity &creature)
 {
     auto &world = AngbandWorld::get_instance();
     if ((world.game_turn - world.arena_start_turn) > TURNS_PER_TICK * 250) {
         auto &melee_arena = MeleeArena::get_instance();
-        melee_arena.update_gladiators(player_ptr);
+        melee_arena.update_gladiators(creature);
         world.arena_start_turn = world.game_turn;
     }
 
     screen_save();
 
     /* No money */
-    if (player_ptr->au <= 1) {
+    if (creature.get_au() <= 1) {
         msg_print(_("おい！おまえ一文なしじゃないか！こっから出ていけ！", "Hey! You don't have gold - get out of here!"));
         msg_erase();
         screen_load();
@@ -86,8 +86,8 @@ bool melee_arena_comm(PlayerType *player_ptr)
         }
     }
 
-    auto maxbet = player_ptr->level * 200;
-    maxbet = std::min(maxbet, player_ptr->au);
+    auto maxbet = creature.get_level() * 200;
+    maxbet = std::min(maxbet, creature.get_au());
     constexpr auto prompt = _("賭け金？", "Your wager? ");
     const auto wager = input_integer(prompt, 1, maxbet, 1);
     if (!wager) {
@@ -95,7 +95,7 @@ bool melee_arena_comm(PlayerType *player_ptr)
         return false;
     }
 
-    if (wager > player_ptr->au) {
+    if (wager > creature.get_au()) {
         msg_print(_("おい！金が足りないじゃないか！出ていけ！", "Hey! You don't have the gold - get out of here!"));
         msg_erase();
         screen_load();
@@ -104,12 +104,12 @@ bool melee_arena_comm(PlayerType *player_ptr)
 
     msg_erase();
     melee_arena.set_wager(*wager);
-    player_ptr->au -= *wager;
-    reset_tim_flags(player_ptr);
+    creature.sub_au(*wager);
+    reset_tim_flags(creature);
 
     FloorChangeModesStore::get_instace()->set(FloorChangeMode::SAVE_FLOORS);
     AngbandSystem::get_instance().set_phase_out(true);
-    player_ptr->leaving = true;
+    creature.set_leaving(true);
     screen_load();
     return true;
 }

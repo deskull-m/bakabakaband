@@ -7,5 +7,5 @@
 
 struct MonsterSpellResult;
 
-class PlayerType;
-MonsterSpellResult spell_RF4_BREATH(PlayerType *player_ptr, MonsterAbilityType ms_type, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type);
+class CreatureEntity;
+MonsterSpellResult spell_RF4_BREATH(CreatureEntity &creature, MonsterAbilityType ms_type, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type);

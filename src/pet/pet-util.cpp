@@ -4,11 +4,10 @@
 #include "monster/monster-info.h"
 #include "monster/monster-status.h"
 #include "player-info/class-info.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "util/bit-flags-calculator.h"
 #include "world/world.h"
@@ -21,40 +20,41 @@ int total_friends = 0;
  * @param now_riding trueなら下馬処理、falseならば騎乗処理
  * @return 可能ならばtrueを返す
  */
-bool can_player_ride_pet(PlayerType *player_ptr, const Grid &grid, bool now_riding)
+bool can_player_ride_pet(CreatureEntity &creature, const Grid &grid, bool now_riding)
 {
     auto &world = AngbandWorld::get_instance();
     const auto old_character_xtra = world.character_xtra;
-    const auto old_riding = player_ptr->riding;
-    const auto old_riding_two_hands = player_ptr->riding_ryoute;
-    const auto old_old_riding_two_hands = player_ptr->old_riding_ryoute;
-    const auto old_pf_two_hands = any_bits(player_ptr->pet_extra_flags, PF_TWO_HANDS);
+    const auto old_riding = creature.get_riding();
+    const auto old_riding_two_hands = creature.is_riding_ryoute();
+    const auto old_old_riding_two_hands = creature.was_riding_ryoute();
+    const auto old_pf_two_hands = creature.has_pet_extra_flag(PF_TWO_HANDS);
     world.character_xtra = true;
 
     if (now_riding) {
-        player_ptr->ride_monster(grid.m_idx);
+        creature.ride_monster(grid.m_idx);
     } else {
-        player_ptr->ride_monster(0);
-        player_ptr->pet_extra_flags &= ~(PF_TWO_HANDS);
-        player_ptr->riding_ryoute = player_ptr->old_riding_ryoute = false;
+        creature.ride_monster(0);
+        creature.remove_pet_extra_flag(PF_TWO_HANDS);
+        creature.set_was_riding_ryoute(false);
+        creature.set_riding_ryoute(false);
     }
 
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(StatusRecalculatingFlag::BONUS);
-    handle_stuff(player_ptr);
+    handle_stuff(creature);
 
-    bool p_can_enter = player_can_enter(player_ptr, grid.feat, CEM_P_CAN_ENTER_PATTERN);
-    player_ptr->ride_monster(old_riding);
+    bool p_can_enter = player_can_enter(creature, grid.feat, CEM_P_CAN_ENTER_PATTERN);
+    creature.ride_monster(old_riding);
     if (old_pf_two_hands) {
-        player_ptr->pet_extra_flags |= (PF_TWO_HANDS);
+        creature.add_pet_extra_flag(PF_TWO_HANDS);
     } else {
-        player_ptr->pet_extra_flags &= ~(PF_TWO_HANDS);
+        creature.remove_pet_extra_flag(PF_TWO_HANDS);
     }
 
-    player_ptr->riding_ryoute = old_riding_two_hands;
-    player_ptr->old_riding_ryoute = old_old_riding_two_hands;
+    creature.set_riding_ryoute(old_riding_two_hands);
+    creature.set_was_riding_ryoute(old_old_riding_two_hands);
     rfu.set_flag(StatusRecalculatingFlag::BONUS);
-    handle_stuff(player_ptr);
+    handle_stuff(creature);
 
     world.character_xtra = old_character_xtra;
     return p_can_enter;
@@ -64,13 +64,13 @@ bool can_player_ride_pet(PlayerType *player_ptr, const Grid &grid, bool now_ridi
  * @brief ペットの維持コスト計算
  * @return 維持コスト(%)
  */
-PERCENTAGE calculate_upkeep(PlayerType *player_ptr)
+PERCENTAGE calculate_upkeep(CreatureEntity &creature)
 {
     bool has_a_unique = false;
     DEPTH total_friend_levels = 0;
     total_friends = 0;
-    for (auto m_idx = player_ptr->current_floor_ptr->m_max - 1; m_idx >= 1; m_idx--) {
-        const auto &monster = player_ptr->current_floor_ptr->m_list[m_idx];
+    for (auto m_idx = creature.get_floor()->m_max - 1; m_idx >= 1; m_idx--) {
+        const auto &monster = creature.get_floor()->get_monster(static_cast<MONSTER_IDX>(m_idx));
         if (!monster.is_valid()) {
             continue;
         }
@@ -86,7 +86,7 @@ PERCENTAGE calculate_upkeep(PlayerType *player_ptr)
             continue;
         }
 
-        if (player_ptr->pclass != PlayerClassType::CAVALRY) {
+        if (creature.pclass != PlayerClassType::CAVALRY) {
             total_friend_levels += (monrace.level + 5) * 10;
             continue;
         }
@@ -106,7 +106,13 @@ PERCENTAGE calculate_upkeep(PlayerType *player_ptr)
         return 0;
     }
 
-    int upkeep_factor = (total_friend_levels - (player_ptr->level * 80 / ((*player_ptr->pclass_ref).pet_upkeep_div)));
+    // pet_upkeep_div は職業を持たないクリーチャー (対応職業のないモンスター等)
+    // では 0 になりうるため、ゼロ除算を避けてレベル分の軽減項を省く。
+    const int pet_upkeep_div = (*creature.get_class_info()).pet_upkeep_div;
+    int upkeep_factor = total_friend_levels;
+    if (pet_upkeep_div != 0) {
+        upkeep_factor -= creature.get_level() * 80 / pet_upkeep_div;
+    }
     if (upkeep_factor < 0) {
         upkeep_factor = 0;
     }

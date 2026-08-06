@@ -2,17 +2,21 @@
 
 #include "system/angband.h"
 
+class CreatureEntity;
 class ItemEntity;
-class PlayerType;
 class ObjectReadEntity {
 public:
-    ObjectReadEntity(PlayerType *player_ptr, INVENTORY_IDX i_idx);
+    ObjectReadEntity(CreatureEntity &creature, INVENTORY_IDX i_idx);
+    ObjectReadEntity(const ObjectReadEntity &) = default;
+    ObjectReadEntity(ObjectReadEntity &&) = default;
+    ObjectReadEntity &operator=(const ObjectReadEntity &) = delete;
+    ObjectReadEntity &operator=(ObjectReadEntity &&) = delete;
     virtual ~ObjectReadEntity() = default;
 
     void execute(bool known);
 
 private:
-    PlayerType *player_ptr;
+    CreatureEntity &creature;
     INVENTORY_IDX i_idx;
 
     bool can_read() const;

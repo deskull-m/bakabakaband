@@ -1,5 +1,5 @@
 #pragma once
 
-class PlayerType;
+class CreatureEntity;
 
-void do_cmd_martial_arts_style(PlayerType *player_ptr);
+void do_cmd_martial_arts_style(CreatureEntity &creature);

@@ -15,19 +15,18 @@
 #include "spell-kind/spells-perception.h"
 #include "sv-definition/sv-other-types.h"
 #include "sv-definition/sv-scroll-types.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
-#include "system/player-type-definition.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
 #include <set>
 
 /*!
  * @brief 汎用的なビーム/ボルト/ボール系によるアイテムオブジェクトへの効果処理 / Handle a beam/bolt/ball causing damage to a monster.
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param src_idx 魔法を発動したモンスター(0ならばプレイヤー) / Index of "source" monster (zero for "player")
  * @param r 効果半径(ビーム/ボルト = 0 / ボール = 1以上) / Radius of explosion (0 = beam/bolt, 1 to 9 = ball)
  * @param y 目標Y座標 / Target y location (or location to travel "towards")
@@ -36,9 +35,9 @@
  * @param typ 効果属性 / Type of damage to apply to monsters (and objects)
  * @return 何か一つでも効力があればTRUEを返す / TRUE if any "effects" of the projection were observed, else FALSE
  */
-bool affect_item(PlayerType *player_ptr, MONSTER_IDX src_idx, POSITION r, POSITION y, POSITION x, int dam, AttributeType typ)
+bool affect_item(CreatureEntity &creature, MONSTER_IDX src_idx, POSITION r, POSITION y, POSITION x, int dam, AttributeType typ)
 {
-    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const Pos2D pos(y, x);
     const auto &grid = floor.get_grid(pos);
 
@@ -49,7 +48,7 @@ bool affect_item(PlayerType *player_ptr, MONSTER_IDX src_idx, POSITION r, POSITI
     std::vector<OBJECT_IDX> delete_i_idx_list;
     std::vector<short> affected_potions;
     for (const auto this_o_idx : grid.o_idx_list) {
-        auto &item = *player_ptr->current_floor_ptr->o_list[this_o_idx];
+        auto &item = *creature.get_floor()->o_list[this_o_idx];
         auto ignore = false;
         auto do_kill = false;
         concptr note_kill = nullptr;
@@ -193,8 +192,8 @@ bool affect_item(PlayerType *player_ptr, MONSTER_IDX src_idx, POSITION r, POSITI
             break;
         }
         case AttributeType::IDENTIFY: {
-            identify_item(player_ptr, &item);
-            autopick_alter_item(player_ptr, (-this_o_idx), false);
+            identify_item(creature, &item);
+            autopick_alter_item(creature, (-this_o_idx), false);
             break;
         }
         case AttributeType::KILL_TRAP:
@@ -226,7 +225,7 @@ bool affect_item(PlayerType *player_ptr, MONSTER_IDX src_idx, POSITION r, POSITI
             }
 
             BIT_FLAGS mode = 0L;
-            if (is_player(src_idx) || player_ptr->current_floor_ptr->m_list[src_idx].is_pet()) {
+            if (is_player(src_idx) || creature.get_floor()->get_monster(src_idx).is_pet()) {
                 mode |= PM_FORCE_PET;
             }
 
@@ -239,7 +238,7 @@ bool affect_item(PlayerType *player_ptr, MONSTER_IDX src_idx, POSITION r, POSITI
                     }
 
                     continue;
-                } else if (summon_named_creature(player_ptr, src_idx, y, x, monrace.idx, mode)) {
+                } else if (summon_named_creature(creature, src_idx, y, x, monrace.idx, mode)) {
                     note_kill = _("生き返った。", " revived.");
                 } else if (!note_kill) {
                     note_kill = _("灰になった。", (plural ? " become dust." : " becomes dust."));
@@ -261,7 +260,7 @@ bool affect_item(PlayerType *player_ptr, MONSTER_IDX src_idx, POSITION r, POSITI
         std::string item_name("");
         if (known && item.marked.has(OmType::FOUND)) {
             is_item_affected = true;
-            item_name = describe_flavor(player_ptr, item, (OD_OMIT_PREFIX | OD_NAME_ONLY));
+            item_name = describe_flavor(creature, item, (OD_OMIT_PREFIX | OD_NAME_ONLY));
         }
 
         if ((is_fixed_or_random_artifact || ignore)) {
@@ -281,12 +280,12 @@ bool affect_item(PlayerType *player_ptr, MONSTER_IDX src_idx, POSITION r, POSITI
             affected_potions.push_back(item.bi_id);
         }
 
-        lite_spot(player_ptr, pos);
+        lite_spot(creature, pos);
     }
 
-    delete_items(player_ptr, std::move(delete_i_idx_list));
+    delete_items(creature, std::move(delete_i_idx_list));
     for (const auto bi_id : affected_potions) {
-        (void)potion_smash_effect(player_ptr, src_idx, y, x, bi_id);
+        (void)potion_smash_effect(creature, src_idx, y, x, bi_id);
     }
 
     return is_item_affected;

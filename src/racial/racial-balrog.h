@@ -1,4 +1,4 @@
 #pragma once
 
-class PlayerType;
-bool demonic_breath(PlayerType *player_ptr);
+class CreatureEntity;
+bool demonic_breath(CreatureEntity &creature);

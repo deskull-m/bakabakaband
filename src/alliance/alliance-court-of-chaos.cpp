@@ -1,14 +1,14 @@
 #include "alliance/alliance-court-of-chaos.h"
 #include "alliance/alliance.h"
+#include "system/creature-entity.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/player-type-definition.h"
 
-int AllianceCourtOfChaos::calcImpressionPoint(PlayerType *creature_ptr) const
+int AllianceCourtOfChaos::calcImpressionPoint(const CreatureEntity &creature) const
 {
     int impression = 0;
-    impression += Alliance::calcPlayerPower(*creature_ptr, 10, 35);
+    impression += Alliance::calcPlayerPower(creature, 10, 35);
     impression += calcIronmanHostilityPenalty();
 
     // 混沌の宮廷のメンバーを殺害した場合の減点
@@ -42,11 +42,11 @@ int AllianceCourtOfChaos::calcImpressionPoint(PlayerType *creature_ptr) const
 
 /*!
  * @brief 襲撃時に出現するモンスターのリストを取得する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param impression_point 印象値
  * @return 混沌の宮廷のモンスターIDのリスト（印象値が低い場合はカオス系モンスター）
  */
-std::vector<MonraceId> AllianceCourtOfChaos::get_ambush_monsters([[maybe_unused]] PlayerType *player_ptr, int impression_point) const
+std::vector<MonraceId> AllianceCourtOfChaos::get_ambush_monsters([[maybe_unused]] CreatureEntity &creature, int impression_point) const
 {
     std::vector<MonraceId> monsters;
 

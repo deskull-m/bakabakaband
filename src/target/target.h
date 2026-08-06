@@ -4,7 +4,7 @@
 #include <memory>
 #include <tl/optional.hpp>
 
-class PlayerType;
+class CreatureEntity;
 class Target {
 public:
     Target(const Target &);
@@ -12,8 +12,8 @@ public:
     ~Target();
 
     static Target none();
-    static Target create_grid_target(PlayerType *player_ptr, const Pos2D &pos);
-    static Target create_monster_target(PlayerType *player_ptr, short m_idx);
+    static Target create_grid_target(CreatureEntity &creature, const Pos2D &pos);
+    static Target create_monster_target(CreatureEntity &creature, short m_idx);
 
     static void set_last_target(const Target &target);
     static Target get_last_target();

@@ -1,5 +1,5 @@
 #pragma once
 
-class PlayerType;
-void building_recharge(PlayerType *player_ptr);
-void building_recharge_all(PlayerType *player_ptr);
+class CreatureEntity;
+void building_recharge(CreatureEntity &creature);
+void building_recharge_all(CreatureEntity &creature);

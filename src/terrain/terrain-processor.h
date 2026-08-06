@@ -6,6 +6,6 @@
 
 #pragma once
 
-class PlayerType;
+class CreatureEntity;
 
-void process_terrain_effects(PlayerType *player_ptr);
+void process_terrain_effects(CreatureEntity &creature);

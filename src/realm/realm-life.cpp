@@ -20,24 +20,24 @@
 #include "status/element-resistance.h"
 #include "status/experience.h"
 #include "status/temporary-resistance.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
-#include "system/player-type-definition.h"
 #include "target/target-getter.h"
 #include "util/dice.h"
 
 /*!
  * @brief 生命領域魔法の各処理を行う
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param spell 魔法ID
  * @param mode 処理内容 (SpellProcessType::NAME / SPELL_DESC / SpellProcessType::INFO / SpellProcessType::CAST)
  * @return SpellProcessType::NAME / SPELL_DESC / SpellProcessType::INFO 時には文字列を返す。SpellProcessType::CAST時は tl::nullopt を返す。
  */
-tl::optional<std::string> do_life_spell(PlayerType *player_ptr, SPELL_IDX spell, SpellProcessType mode)
+tl::optional<std::string> do_life_spell(CreatureEntity &creature, SPELL_IDX spell, SpellProcessType mode)
 {
     bool info = mode == SpellProcessType::INFO;
     bool cast = mode == SpellProcessType::CAST;
 
-    PLAYER_LEVEL plev = player_ptr->level;
+    PLAYER_LEVEL plev = creature.get_level();
 
     switch (spell) {
     case 0: {
@@ -46,7 +46,7 @@ tl::optional<std::string> do_life_spell(PlayerType *player_ptr, SPELL_IDX spell,
             return info_heal(dice);
         }
         if (cast) {
-            (void)cure_light_wounds(player_ptr, dice.roll());
+            (void)cure_light_wounds(creature, dice.roll());
         }
     } break;
 
@@ -59,7 +59,7 @@ tl::optional<std::string> do_life_spell(PlayerType *player_ptr, SPELL_IDX spell,
         }
 
         if (cast) {
-            set_blessed(player_ptr, dice.roll() + base, false);
+            set_blessed(creature, dice.roll() + base, false);
         }
     } break;
 
@@ -71,11 +71,11 @@ tl::optional<std::string> do_life_spell(PlayerType *player_ptr, SPELL_IDX spell,
         }
 
         if (cast) {
-            const auto dir = get_aim_dir(player_ptr);
+            const auto dir = get_aim_dir(creature);
             if (!dir) {
                 return tl::nullopt;
             }
-            fire_ball_hide(player_ptr, AttributeType::WOUNDS, dir, dice.roll(), 0);
+            fire_ball_hide(creature, AttributeType::WOUNDS, dir, dice.roll(), 0);
         }
     } break;
 
@@ -88,7 +88,7 @@ tl::optional<std::string> do_life_spell(PlayerType *player_ptr, SPELL_IDX spell,
         }
 
         if (cast) {
-            lite_area(player_ptr, dice.roll(), rad);
+            lite_area(creature, dice.roll(), rad);
         }
     } break;
 
@@ -100,9 +100,9 @@ tl::optional<std::string> do_life_spell(PlayerType *player_ptr, SPELL_IDX spell,
         }
 
         if (cast) {
-            detect_traps(player_ptr, rad, true);
-            detect_doors(player_ptr, rad);
-            detect_stairs(player_ptr, rad);
+            detect_traps(creature, rad, true);
+            detect_doors(creature, rad);
+            detect_stairs(creature, rad);
         }
     } break;
 
@@ -113,26 +113,26 @@ tl::optional<std::string> do_life_spell(PlayerType *player_ptr, SPELL_IDX spell,
             return info_heal(dice);
         }
         if (cast) {
-            (void)cure_serious_wounds(player_ptr, dice.roll());
+            (void)cure_serious_wounds(creature, dice.roll());
         }
     } break;
 
     case 6:
         if (cast) {
-            (void)BadStatusSetter(player_ptr).set_poison(0);
+            (void)BadStatusSetter(creature).set_poison(0);
         }
 
         break;
 
     case 7: {
         if (cast) {
-            set_food(player_ptr, PY_FOOD_MAX - 1);
+            set_food(creature, PY_FOOD_MAX - 1);
         }
     } break;
 
     case 8: {
         if (cast) {
-            (void)remove_curse(player_ptr);
+            (void)remove_curse(creature);
         }
     } break;
 
@@ -144,11 +144,11 @@ tl::optional<std::string> do_life_spell(PlayerType *player_ptr, SPELL_IDX spell,
         }
 
         if (cast) {
-            const auto dir = get_aim_dir(player_ptr);
+            const auto dir = get_aim_dir(creature);
             if (!dir) {
                 return tl::nullopt;
             }
-            fire_ball_hide(player_ptr, AttributeType::WOUNDS, dir, dice.roll(), 0);
+            fire_ball_hide(creature, AttributeType::WOUNDS, dir, dice.roll(), 0);
         }
     } break;
 
@@ -159,7 +159,7 @@ tl::optional<std::string> do_life_spell(PlayerType *player_ptr, SPELL_IDX spell,
             return info_heal(dice);
         }
         if (cast) {
-            (void)cure_critical_wounds(player_ptr, dice.roll());
+            (void)cure_critical_wounds(creature, dice.roll());
         }
     } break;
 
@@ -172,8 +172,8 @@ tl::optional<std::string> do_life_spell(PlayerType *player_ptr, SPELL_IDX spell,
         }
 
         if (cast) {
-            set_oppose_cold(player_ptr, dice.roll() + base, false);
-            set_oppose_fire(player_ptr, dice.roll() + base, false);
+            set_oppose_cold(creature, dice.roll() + base, false);
+            set_oppose_fire(creature, dice.roll() + base, false);
         }
     } break;
 
@@ -185,13 +185,13 @@ tl::optional<std::string> do_life_spell(PlayerType *player_ptr, SPELL_IDX spell,
         }
 
         if (cast) {
-            map_area(player_ptr, rad);
+            map_area(creature, rad);
         }
     } break;
 
     case 13: {
         if (cast) {
-            turn_undead(player_ptr);
+            turn_undead(creature);
         }
     } break;
 
@@ -201,25 +201,25 @@ tl::optional<std::string> do_life_spell(PlayerType *player_ptr, SPELL_IDX spell,
             return info_heal(heal);
         }
         if (cast) {
-            (void)cure_critical_wounds(player_ptr, heal);
+            (void)cure_critical_wounds(creature, heal);
         }
     } break;
 
     case 15: {
         if (cast) {
-            create_rune_protection_one(player_ptr);
+            create_rune_protection_one(creature);
         }
     } break;
 
     case 16: {
         if (cast) {
-            (void)remove_all_curse(player_ptr);
+            (void)remove_all_curse(creature);
         }
     } break;
 
     case 17: {
         if (cast) {
-            if (!ident_spell(player_ptr, false)) {
+            if (!ident_spell(creature, false)) {
                 return tl::nullopt;
             }
         }
@@ -233,7 +233,7 @@ tl::optional<std::string> do_life_spell(PlayerType *player_ptr, SPELL_IDX spell,
         }
 
         if (cast) {
-            dispel_undead(player_ptr, dice.roll());
+            dispel_undead(creature, dice.roll());
         }
     } break;
 
@@ -245,7 +245,7 @@ tl::optional<std::string> do_life_spell(PlayerType *player_ptr, SPELL_IDX spell,
         }
 
         if (cast) {
-            charm_monsters(player_ptr, power);
+            charm_monsters(creature, power);
         }
     } break;
 
@@ -257,11 +257,11 @@ tl::optional<std::string> do_life_spell(PlayerType *player_ptr, SPELL_IDX spell,
         }
 
         if (cast) {
-            const auto dir = get_aim_dir(player_ptr);
+            const auto dir = get_aim_dir(creature);
             if (!dir) {
                 return tl::nullopt;
             }
-            fire_ball_hide(player_ptr, AttributeType::WOUNDS, dir, dice.roll(), 0);
+            fire_ball_hide(creature, AttributeType::WOUNDS, dir, dice.roll(), 0);
         }
     } break;
 
@@ -274,7 +274,7 @@ tl::optional<std::string> do_life_spell(PlayerType *player_ptr, SPELL_IDX spell,
         }
 
         if (cast) {
-            if (!recall_player(player_ptr, dice.roll() + base)) {
+            if (!recall_player(creature, dice.roll() + base)) {
                 return tl::nullopt;
             }
         }
@@ -289,7 +289,7 @@ tl::optional<std::string> do_life_spell(PlayerType *player_ptr, SPELL_IDX spell,
         }
 
         if (cast) {
-            reserve_alter_reality(player_ptr, dice.roll() + base);
+            reserve_alter_reality(creature, dice.roll() + base);
         }
     } break;
 
@@ -301,14 +301,14 @@ tl::optional<std::string> do_life_spell(PlayerType *player_ptr, SPELL_IDX spell,
         }
 
         if (cast) {
-            create_rune_protection_one(player_ptr);
-            create_rune_protection_area(player_ptr, player_ptr->y, player_ptr->x);
+            create_rune_protection_one(creature);
+            create_rune_protection_area(creature, creature.y, creature.x);
         }
     } break;
 
     case 24: {
         if (cast) {
-            player_ptr->current_floor_ptr->num_repro += MAX_REPRODUCTION;
+            creature.get_floor()->num_repro += MAX_REPRODUCTION;
         }
     } break;
 
@@ -320,7 +320,7 @@ tl::optional<std::string> do_life_spell(PlayerType *player_ptr, SPELL_IDX spell,
         }
 
         if (cast) {
-            detect_all(player_ptr, rad);
+            detect_all(creature, rad);
         }
     } break;
 
@@ -332,20 +332,20 @@ tl::optional<std::string> do_life_spell(PlayerType *player_ptr, SPELL_IDX spell,
         }
 
         if (cast) {
-            mass_genocide_undead(player_ptr, power, true);
+            mass_genocide_undead(creature, power, true);
         }
     } break;
 
     case 27: {
         if (cast) {
-            wiz_lite(player_ptr, false);
+            wiz_lite(creature, false);
         }
     } break;
 
     case 28: {
         if (cast) {
-            (void)restore_all_status(player_ptr);
-            restore_level(static_cast<CreatureEntity &>(*player_ptr));
+            (void)restore_all_status(creature);
+            restore_level(creature);
         }
     } break;
 
@@ -355,13 +355,13 @@ tl::optional<std::string> do_life_spell(PlayerType *player_ptr, SPELL_IDX spell,
             return info_heal(heal);
         }
         if (cast) {
-            (void)cure_critical_wounds(player_ptr, heal);
+            (void)cure_critical_wounds(creature, heal);
         }
     } break;
 
     case 30: {
         if (cast) {
-            if (!identify_fully(player_ptr, false)) {
+            if (!identify_fully(creature, false)) {
                 return tl::nullopt;
             }
         }
@@ -377,13 +377,13 @@ tl::optional<std::string> do_life_spell(PlayerType *player_ptr, SPELL_IDX spell,
 
         if (cast) {
             const auto v = static_cast<TIME_EFFECT>(dice.roll() + base);
-            set_acceleration(player_ptr, v, false);
-            set_oppose_acid(player_ptr, v, false);
-            set_oppose_elec(player_ptr, v, false);
-            set_oppose_fire(player_ptr, v, false);
-            set_oppose_cold(player_ptr, v, false);
-            set_oppose_pois(player_ptr, v, false);
-            set_ultimate_res(player_ptr, v, false);
+            set_acceleration(creature, v, false);
+            set_oppose_acid(creature, v, false);
+            set_oppose_elec(creature, v, false);
+            set_oppose_fire(creature, v, false);
+            set_oppose_cold(creature, v, false);
+            set_oppose_pois(creature, v, false);
+            set_ultimate_res(creature, v, false);
         }
     } break;
     }

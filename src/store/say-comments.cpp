@@ -2,22 +2,22 @@
 #include "avatar/avatar.h"
 #include "main/sound-definitions-table.h"
 #include "main/sound-of-music.h"
+#include "rumor/rumor-rarity.h"
+#include "rumor/rumor-service.h"
 #include "store/rumor.h"
 #include "store/store-owner-comments.h"
 #include "store/store-util.h"
+#include "system/creature-entity.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "view/display-messages.h"
 
-#define RUMOR_CHANCE 8
-
 /*!
- * @brief 取引成功時の店主のメッセージ処理 /
+ * @brief 取引成功時の店主のメッセージ処理
  * ブラックマーケットのときは別のメッセージを出す
- * Successful haggle.
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param price 取引価格
+ * @param store_num 店舗の種類
  */
-void store_owner_says_comment(PlayerType *player_ptr, StoreSaleType store_num)
+void store_owner_says_comment(int price, StoreSaleType store_num)
 {
     if (store_num == StoreSaleType::BLACK) {
         msg_print(rand_choice(comment_1_B));
@@ -25,10 +25,25 @@ void store_owner_says_comment(PlayerType *player_ptr, StoreSaleType store_num)
         msg_print(rand_choice(comment_1));
     }
 
-    if (one_in_(RUMOR_CHANCE)) {
-        msg_print(_("店主は耳うちした:", "The shopkeeper whispers something into your ear:"));
-        display_rumor(player_ptr, true);
+    constexpr auto rumor_chance = 8;
+    if (!one_in_(rumor_chance)) {
+        return;
     }
+
+    msg_print(_("店主は耳うちした:", "The shopkeeper whispers something into your ear:"));
+    constexpr auto high_rarity_rumor_threshold = 2500;
+    constexpr auto medium_rarity_rumor_threshold = 50;
+    RumorRarity rt;
+    if (price >= high_rarity_rumor_threshold) {
+        rt = RumorRarity::HIGH;
+    } else if (price >= medium_rarity_rumor_threshold) {
+        rt = RumorRarity::MEDIUM;
+    } else {
+        rt = RumorRarity::LOW;
+    }
+
+    const auto &rumor = RumorService::pick_rumor(rt);
+    display_selected_rumor(rumor);
 }
 
 /*!
@@ -40,13 +55,13 @@ void store_owner_says_comment(PlayerType *player_ptr, StoreSaleType store_num)
  * @details
  * We paid "price", it was worth "value", and we thought it was worth "guess"
  */
-void purchase_analyze(PlayerType *player_ptr, PRICE price, PRICE value, PRICE guess)
+void purchase_analyze(CreatureEntity &creature, PRICE price, PRICE value, PRICE guess)
 {
     /* Item was worthless, but we bought it */
     if ((value <= 0) && (price > value)) {
         msg_print(rand_choice(comment_7a));
-        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::HONOUR, -1);
-        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::JUSTICE, -1);
+        chg_virtue(creature, Virtue::HONOUR, -1);
+        chg_virtue(creature, Virtue::JUSTICE, -1);
         sound(SoundKind::STORE1);
         return;
     }
@@ -54,9 +69,9 @@ void purchase_analyze(PlayerType *player_ptr, PRICE price, PRICE value, PRICE gu
     /* Item was cheaper than we thought, and we paid more than necessary */
     if ((value < guess) && (price > value)) {
         msg_print(rand_choice(comment_7b));
-        chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::JUSTICE, -1);
+        chg_virtue(creature, Virtue::JUSTICE, -1);
         if (one_in_(4)) {
-            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::HONOUR, -1);
+            chg_virtue(creature, Virtue::HONOUR, -1);
         }
         sound(SoundKind::STORE2);
         return;
@@ -66,9 +81,9 @@ void purchase_analyze(PlayerType *player_ptr, PRICE price, PRICE value, PRICE gu
     if ((value > guess) && (value < (4 * guess)) && (price < value)) {
         msg_print(rand_choice(comment_7c));
         if (one_in_(4)) {
-            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::HONOUR, -1);
+            chg_virtue(creature, Virtue::HONOUR, -1);
         } else if (one_in_(4)) {
-            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::HONOUR, 1);
+            chg_virtue(creature, Virtue::HONOUR, 1);
         }
         sound(SoundKind::STORE3);
         return;
@@ -78,13 +93,13 @@ void purchase_analyze(PlayerType *player_ptr, PRICE price, PRICE value, PRICE gu
     if ((value > guess) && (price < value)) {
         msg_print(rand_choice(comment_7d));
         if (one_in_(2)) {
-            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::HONOUR, -1);
+            chg_virtue(creature, Virtue::HONOUR, -1);
         }
         if (one_in_(4)) {
-            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::HONOUR, 1);
+            chg_virtue(creature, Virtue::HONOUR, 1);
         }
         if (10 * price < value) {
-            chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::SACRIFICE, 1);
+            chg_virtue(creature, Virtue::SACRIFICE, 1);
         }
         sound(SoundKind::STORE4);
         return;

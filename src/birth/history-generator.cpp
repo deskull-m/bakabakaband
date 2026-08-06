@@ -1,16 +1,20 @@
 #include "birth/history-generator.h"
 #include "birth/history.h"
 #include "player-info/race-types.h"
-#include "system/player-type-definition.h"
+#include "system/creature-entity.h"
 #include "util/buffer-shaper.h"
 #include "util/string-processor.h"
 #include <algorithm>
 #include <sstream>
 #include <string>
 
-static int get_history_chart(PlayerType *player_ptr)
+static int get_history_chart(CreatureEntity &creature)
 {
-    switch (player_ptr->prace) {
+    if (!creature.is_player()) {
+        return 0;
+    }
+
+    switch (creature.prace) {
     case PlayerRaceType::AMBERITE:
         return 67;
     case PlayerRaceType::HUMAN:
@@ -91,12 +95,16 @@ static int get_history_chart(PlayerType *player_ptr)
 
 /*!
  * @brief 生い立ちを画面に表示しつつ、種族から社会的地位を決定する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
-static std::string decide_social_class(PlayerType *player_ptr)
+static std::string decide_social_class(CreatureEntity &creature)
 {
+    if (!creature.is_player()) {
+        return "";
+    }
+
     auto social_class = randnum1<short>(4);
-    auto chart = get_history_chart(player_ptr);
+    auto chart = get_history_chart(creature);
     std::stringstream ss;
     while (chart != 0) {
         auto i = 0;
@@ -116,26 +124,30 @@ static std::string decide_social_class(PlayerType *player_ptr)
         social_class = 1;
     }
 
-    player_ptr->prestige = social_class;
+    creature.set_prestige(social_class);
     return ss.str();
 }
 
 /*!
  * @brief プレイヤーの生い立ちの自動生成を行う。 / Get the racial history, and prestige, using the "history charts".
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
-void get_history(PlayerType *player_ptr)
+void get_history(CreatureEntity &creature)
 {
-    constexpr auto lines = 4;
-    for (int i = 0; i < lines; i++) {
-        player_ptr->history[i][0] = '\0';
+    if (!creature.is_player()) {
+        return;
     }
 
-    auto social_class = decide_social_class(player_ptr);
-    constexpr auto max_line_len = sizeof(player_ptr->history[0]);
+    constexpr auto lines = 4;
+    for (int i = 0; i < lines; i++) {
+        creature.history[i][0] = '\0';
+    }
+
+    auto social_class = decide_social_class(creature);
+    constexpr auto max_line_len = sizeof(creature.history[0]);
     const auto history_lines = shape_buffer(social_class.data(), max_line_len);
     const auto max_lines = std::min<int>(lines, history_lines.size());
     for (auto i = 0; i < max_lines; ++i) {
-        angband_strcpy(player_ptr->history[i], history_lines[i], max_line_len);
+        angband_strcpy(creature.history[i], history_lines[i], max_line_len);
     }
 }

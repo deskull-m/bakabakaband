@@ -4,18 +4,18 @@
 #include "autopick/autopick-util.h"
 #include "game-option/map-screen-options.h"
 #include "game-option/special-options.h"
-#include "player/player-status.h"
+#include "system/baseitem/baseitem-config.h"
+#include "system/baseitem/baseitem-service.h"
+#include "system/creature-entity.h"
 #include "system/enums/terrain/terrain-tag.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/monster-entity.h"
-#include "system/player-type-definition.h"
 #include "system/terrain/terrain-definition.h"
 #include "system/terrain/terrain-list.h"
-#include "timed-effect/timed-effects.h"
+#include "term/term-color-types.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-symbol.h"
 #include "window/main-window-util.h"
@@ -23,7 +23,7 @@
 #include <algorithm>
 #include <span>
 
-uint8_t display_autopick; /*!< 自動拾い状態の設定フラグ */
+EnumClassFlagGroup<AutopickMethod> display_autopick{}; /*!< 自動拾い状態の設定フラグ */
 
 namespace {
 /* 一般的にオブジェクトシンボルとして扱われる記号を定義する(幻覚処理向け) /  Hack -- Legal object codes */
@@ -39,8 +39,7 @@ const std::string image_monsters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQR
 DisplaySymbol image_object()
 {
     if (use_graphics) {
-        const auto &baseitem = BaseitemList::get_instance().pick_one_at_random();
-        return baseitem.symbol_config;
+        return BaseitemService::pick_one_at_random().get_symbol();
     }
 
     const auto color = randnum1<uint8_t>(15);
@@ -88,7 +87,7 @@ DisplaySymbol image_random()
  * 周り全てが壁に囲まれている壁についてはオプション状態による。
  * 1か所でも空きがあるか、壁ではない地形、金を含む地形、永久岩は表示。
  */
-static bool is_revealed_wall(const FloorType &floor, const Pos2D &pos)
+bool is_revealed_wall(const FloorType &floor, const Pos2D &pos)
 {
     const auto &grid = floor.get_grid(pos);
     if (view_hidden_walls) {
@@ -126,20 +125,20 @@ static bool is_revealed_wall(const FloorType &floor, const Pos2D &pos)
 
 /*!
  * @brief 指定した座標の地形の表示属性を取得する
- * @param player_ptr プレイヤー情報への参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param pos 階の中の座標
  * @return シンボル表記
  * @todo 強力発動コピペの嵐…ポインタ引数の嵐……Fuuu^h^hck!!
  */
-DisplaySymbolPair map_info(PlayerType *player_ptr, const Pos2D &pos)
+DisplaySymbolPair map_info(CreatureEntity &creature, const Pos2D &pos)
 {
-    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     const auto &grid = floor.get_grid(pos);
     const auto &terrains = TerrainList::get_instance();
     const auto &world = AngbandWorld::get_instance();
     const auto is_wild_mode = world.is_wild_mode();
-    const auto is_blind = player_ptr->effects()->blindness().is_blind();
-    const auto has_nocto = player_ptr->see_nocto != 0;
+    const auto is_blind = creature.is_blind();
+    const auto has_nocto = creature.has_see_nocto() != 0;
     const auto is_darkened = !has_nocto && grid.is_darkened();
     const auto tag_unsafe = (view_unsafe_grids && (grid.info & CAVE_UNSAFE)) ? TerrainTag::UNDETECTED : TerrainTag::NONE;
     const auto *terrain_mimic_ptr = &grid.get_terrain(TerrainKind::MIMIC);
@@ -200,7 +199,7 @@ DisplaySymbolPair map_info(PlayerType *player_ptr, const Pos2D &pos)
                         symbol_config = terrain_mimic_ptr->symbol_configs.at(F_LIT_DARK);
                     } else if ((grid.info & (CAVE_GLOW | CAVE_MNDK)) != CAVE_GLOW) {
                         symbol_config = terrain_mimic_ptr->symbol_configs.at(F_LIT_DARK);
-                    } else if (terrain_mimic_ptr->flags.has_not(TerrainCharacteristics::LOS) && !floor.is_illuminated_at(player_ptr->get_position(), pos)) {
+                    } else if (terrain_mimic_ptr->flags.has_not(TerrainCharacteristics::LOS) && !floor.is_illuminated_at(creature.get_position(), pos)) {
                         symbol_config = terrain_mimic_ptr->symbol_configs.at(F_LIT_DARK);
                     }
                 }
@@ -216,7 +215,7 @@ DisplaySymbolPair map_info(PlayerType *player_ptr, const Pos2D &pos)
     }
 
     DisplaySymbolPair symbol_pair(symbol_config, symbol_config);
-    const auto is_hallucinated = player_ptr->effects()->hallucination().is_hallucinated();
+    const auto is_hallucinated = creature.is_hallucinated();
     if (is_hallucinated && one_in_(256)) {
         symbol_pair.symbol_foreground = image_random();
     }
@@ -227,14 +226,14 @@ DisplaySymbolPair map_info(PlayerType *player_ptr, const Pos2D &pos)
             continue;
         }
 
-        if (display_autopick) {
-            match_autopick = find_autopick_list(player_ptr, &item);
+        if (display_autopick.any()) {
+            match_autopick = find_autopick_list(creature, &item);
             if (match_autopick == -1) {
                 continue;
             }
 
-            const auto act = autopick_list[match_autopick].action;
-            if ((act & DO_DISPLAY) && (act & display_autopick)) {
+            const auto &act = autopick_list[match_autopick].action;
+            if (act.has(AutopickMethod::DISPLAY) && (act.has_any_of(display_autopick))) {
                 autopick_obj = &item;
             } else {
                 match_autopick = -1;
@@ -251,36 +250,36 @@ DisplaySymbolPair map_info(PlayerType *player_ptr, const Pos2D &pos)
         break;
     }
 
-    if (grid.has_monster() && display_autopick != 0) {
-        symbol_pair.symbol_foreground = set_term_color(player_ptr, pos, symbol_pair.symbol_foreground);
+    if (grid.has_monster() && display_autopick.any()) {
+        symbol_pair.symbol_foreground = set_term_color(creature, pos, symbol_pair.symbol_foreground);
         return symbol_pair;
     }
 
-    const auto &monster = floor.m_list[grid.m_idx];
-    if (!monster.ml) {
-        symbol_pair.symbol_foreground = set_term_color(player_ptr, pos, symbol_pair.symbol_foreground);
+    const auto &monster = floor.get_monster(grid.m_idx);
+    if (!monster.is_visible_on_map()) {
+        symbol_pair.symbol_foreground = set_term_color(creature, pos, symbol_pair.symbol_foreground);
         return symbol_pair;
     }
 
-    const auto &monrace_ap = monster.get_appearance_monrace();
+    const auto &monrace_ap = monster.get_apparent_monrace();
     feat_priority = 30;
     if (is_hallucinated) {
         if (!monrace_ap.visual_flags.has_all_of({ MonsterVisualType::CLEAR, MonsterVisualType::CLEAR_COLOR })) {
             symbol_pair.symbol_foreground = image_monster();
         }
 
-        symbol_pair.symbol_foreground = set_term_color(player_ptr, pos, symbol_pair.symbol_foreground);
+        symbol_pair.symbol_foreground = set_term_color(creature, pos, symbol_pair.symbol_foreground);
         return symbol_pair;
     }
 
     symbol_config = monrace_ap.symbol_config;
     if (monrace_ap.visual_flags.has_none_of({ MonsterVisualType::CLEAR, MonsterVisualType::SHAPECHANGER, MonsterVisualType::CLEAR_COLOR, MonsterVisualType::MULTI_COLOR, MonsterVisualType::RANDOM_COLOR })) {
-        symbol_pair.symbol_foreground = set_term_color(player_ptr, pos, symbol_config);
+        symbol_pair.symbol_foreground = set_term_color(creature, pos, symbol_config);
         return symbol_pair;
     }
 
     if (monrace_ap.visual_flags.has_all_of({ MonsterVisualType::CLEAR, MonsterVisualType::CLEAR_COLOR })) {
-        symbol_pair.symbol_foreground = set_term_color(player_ptr, pos, symbol_pair.symbol_foreground);
+        symbol_pair.symbol_foreground = set_term_color(creature, pos, symbol_pair.symbol_foreground);
         return symbol_pair;
     }
 
@@ -309,7 +308,7 @@ DisplaySymbolPair map_info(PlayerType *player_ptr, const Pos2D &pos)
     }
 
     if (monrace_ap.visual_flags.has(MonsterVisualType::CLEAR) && (symbol_pair.symbol_foreground.character != ' ') && !use_graphics) {
-        symbol_pair.symbol_foreground = set_term_color(player_ptr, pos, symbol_pair.symbol_foreground);
+        symbol_pair.symbol_foreground = set_term_color(creature, pos, symbol_pair.symbol_foreground);
         return symbol_pair;
     }
 
@@ -322,11 +321,11 @@ DisplaySymbolPair map_info(PlayerType *player_ptr, const Pos2D &pos)
             symbol_pair.symbol_foreground.character = one_in_(25) ? rand_choice(image_objects) : rand_choice(image_monsters);
         }
 
-        symbol_pair.symbol_foreground = set_term_color(player_ptr, pos, symbol_pair.symbol_foreground);
+        symbol_pair.symbol_foreground = set_term_color(creature, pos, symbol_pair.symbol_foreground);
         return symbol_pair;
     }
 
-    symbol_pair.symbol_foreground = set_term_color(player_ptr, pos, { symbol_pair.symbol_foreground.color, symbol_config.character });
+    symbol_pair.symbol_foreground = set_term_color(creature, pos, { symbol_pair.symbol_foreground.color, symbol_config.character });
     return symbol_pair;
 }
 
@@ -342,7 +341,7 @@ DisplaySymbolPair map_info(PlayerType *player_ptr, const Pos2D &pos)
  *
  * @return 単色表示色。単色表示を行わない場合はtl::nullopt
  */
-tl::optional<uint8_t> get_monochrome_display_color(PlayerType *player_ptr)
+tl::optional<uint8_t> get_monochrome_display_color(CreatureEntity &creature)
 {
     if (use_graphics) {
         return tl::nullopt;
@@ -351,10 +350,10 @@ tl::optional<uint8_t> get_monochrome_display_color(PlayerType *player_ptr)
     if (AngbandWorld::get_instance().timewalk_m_idx) {
         return TERM_DARK;
     }
-    if (is_invuln(player_ptr) || player_ptr->timewalk) {
+    if (creature.is_invulnerable() || creature.is_timewalking()) {
         return TERM_WHITE;
     }
-    if (player_ptr->wraith_form) {
+    if (creature.get_timed_effect(CreatureTimedEffect::WRAITH_FORM)) {
         return TERM_L_DARK;
     }
 

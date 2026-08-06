@@ -8,87 +8,87 @@
 #include "achievement/achievement-checker.h"
 #include "achievement/achievement-tracker.h"
 #include "achievement/achievement-types.h"
+#include "system/creature-entity.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/player-type-definition.h"
 
 namespace AchievementChecker {
 
-void check_dungeon_entry(PlayerType *player_ptr)
+void check_dungeon_entry(CreatureEntity &creature)
 {
     auto &tracker = AchievementTracker::get_instance();
-    tracker.unlock_achievement(player_ptr, AchievementType::FIRST_DUNGEON_ENTRY);
+    tracker.unlock_achievement(creature, AchievementType::FIRST_DUNGEON_ENTRY);
 }
 
-void check_depth_reached(PlayerType *player_ptr, DEPTH depth)
+void check_depth_reached(CreatureEntity &creature, DEPTH depth)
 {
     auto &tracker = AchievementTracker::get_instance();
 
     if (depth >= 10) {
-        tracker.unlock_achievement(player_ptr, AchievementType::REACH_DEPTH_10);
+        tracker.unlock_achievement(creature, AchievementType::REACH_DEPTH_10);
     }
     if (depth >= 50) {
-        tracker.unlock_achievement(player_ptr, AchievementType::REACH_DEPTH_50);
+        tracker.unlock_achievement(creature, AchievementType::REACH_DEPTH_50);
     }
     if (depth >= 100) {
-        tracker.unlock_achievement(player_ptr, AchievementType::REACH_DEPTH_100);
+        tracker.unlock_achievement(creature, AchievementType::REACH_DEPTH_100);
     }
 }
 
-void check_monster_kill(PlayerType *player_ptr, MonraceId monrace_id)
+void check_monster_kill(CreatureEntity &creature, MonraceId monrace_id)
 {
     auto &tracker = AchievementTracker::get_instance();
 
     // 初めての撃破
-    tracker.unlock_achievement(player_ptr, AchievementType::FIRST_KILL);
+    tracker.unlock_achievement(creature, AchievementType::FIRST_KILL);
 
-    // 総撃破数のカウント（実際のカウントはplayer_ptrから取得すべき）
-    // TODO: player_ptrに総撃破数フィールドを追加
+    // 総撃破数のカウント（実際のカウントはcreatureから取得すべき）
+    // TODO: creatureに総撃破数フィールドを追加
 
     // ユニーク撃破チェック
     const auto &monrace = MonraceList::get_instance().get_monrace(monrace_id);
     if (monrace.kind_flags.has(MonsterKindType::UNIQUE)) {
-        tracker.unlock_achievement(player_ptr, AchievementType::KILL_FIRST_UNIQUE);
+        tracker.unlock_achievement(creature, AchievementType::KILL_FIRST_UNIQUE);
         // TODO: ユニーク撃破数のカウント
     }
 }
 
-void check_level_up(PlayerType *player_ptr, PLAYER_LEVEL new_level)
+void check_level_up(CreatureEntity &creature, PLAYER_LEVEL new_level)
 {
     auto &tracker = AchievementTracker::get_instance();
 
     if (new_level >= 10) {
-        tracker.unlock_achievement(player_ptr, AchievementType::REACH_LEVEL_10);
+        tracker.unlock_achievement(creature, AchievementType::REACH_LEVEL_10);
     }
     if (new_level >= 25) {
-        tracker.unlock_achievement(player_ptr, AchievementType::REACH_LEVEL_25);
+        tracker.unlock_achievement(creature, AchievementType::REACH_LEVEL_25);
     }
     if (new_level >= 50) {
-        tracker.unlock_achievement(player_ptr, AchievementType::REACH_LEVEL_50);
+        tracker.unlock_achievement(creature, AchievementType::REACH_LEVEL_50);
     }
 }
 
-void check_item_acquisition(PlayerType *player_ptr, bool is_artifact)
+void check_item_acquisition(CreatureEntity &creature, bool is_artifact)
 {
     auto &tracker = AchievementTracker::get_instance();
 
     if (is_artifact) {
-        tracker.unlock_achievement(player_ptr, AchievementType::FIRST_ARTIFACT);
+        tracker.unlock_achievement(creature, AchievementType::FIRST_ARTIFACT);
         // TODO: ★入手数のカウント
     }
 }
 
-void check_death(PlayerType *player_ptr)
+void check_death(CreatureEntity &creature)
 {
     auto &tracker = AchievementTracker::get_instance();
-    tracker.unlock_achievement(player_ptr, AchievementType::FIRST_DEATH);
+    tracker.unlock_achievement(creature, AchievementType::FIRST_DEATH);
     // TODO: 死亡回数のカウント
 }
 
-void check_game_win(PlayerType *player_ptr)
+void check_game_win(CreatureEntity &creature)
 {
     auto &tracker = AchievementTracker::get_instance();
-    tracker.unlock_achievement(player_ptr, AchievementType::WIN_GAME);
+    tracker.unlock_achievement(creature, AchievementType::WIN_GAME);
 
     // TODO: アイアンマンモードチェック
     // TODO: スピードランチェック

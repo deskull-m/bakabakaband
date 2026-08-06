@@ -90,8 +90,6 @@ typedef int MUTATION_IDX; /*!< 突然変異のID型を定義 */
 typedef int32_t POSITION; /*!< ゲーム中の座標型を定義 */
 typedef int16_t POSITION_IDX; /*!< ゲーム中の座標リストID型 */
 
-typedef byte FEAT_SUBTYPE; /*!< 地形情報の副値 (トラップ種別/パターン種別/店舗種別)*/
-
 typedef char GAME_TEXT; /*!< ゲーム中のテキスト型定義 */
 
 /*!
@@ -153,7 +151,6 @@ typedef int TERM_LEN; /*!< コンソール表示座標の型定義 */
 typedef byte TERM_COLOR; /*!< テキスト表示色の型定義 */
 typedef int32_t SPELL_IDX; /*!< 各魔法領域/職業能力ごとの呪文ID型定義 */
 typedef int16_t PROB; /*!< 確率の重みの型定義 */
-typedef byte FEAT_POWER; /*!< 地形強度の型定義 */
 
 typedef int QUANTITY; /*!< インターフェース上の指定個数 */
 

@@ -1,4 +1,4 @@
 #pragma once
 
-class PlayerType;
-void wiz_mutation_menu(PlayerType *player_ptr);
+class CreatureEntity;
+void wiz_mutation_menu(CreatureEntity &creature);

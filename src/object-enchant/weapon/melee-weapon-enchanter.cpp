@@ -6,11 +6,12 @@
 
 #include "object-enchant/weapon/melee-weapon-enchanter.h"
 #include "artifact/random-art-generator.h"
+#include "system/creature-entity.h"
 #include "system/item-entity.h"
 
-MeleeWeaponEnchanter::MeleeWeaponEnchanter(PlayerType *player_ptr, ItemEntity *o_ptr, DEPTH level, int power)
+MeleeWeaponEnchanter::MeleeWeaponEnchanter(CreatureEntity &creature, ItemEntity *o_ptr, DEPTH level, int power)
     : AbstractWeaponEnchanter(o_ptr, level, power)
-    , player_ptr(player_ptr)
+    , creature(creature)
 {
 }
 
@@ -41,7 +42,7 @@ void MeleeWeaponEnchanter::apply_magic()
 void MeleeWeaponEnchanter::strengthen()
 {
     if ((this->power > 2) || one_in_(40)) {
-        become_random_artifact(this->player_ptr, this->o_ptr, false);
+        become_random_artifact(this->creature, this->o_ptr, false);
         return;
     }
 

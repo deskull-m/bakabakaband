@@ -4,7 +4,7 @@
 #include <string>
 #include <tl/optional.hpp>
 
-class PlayerType;
+class CreatureEntity;
 
 /*!
  * @brief ダンジョンID・レベルから地形生成用のシード値を計算する
@@ -15,6 +15,6 @@ class PlayerType;
  */
 uint32_t calculate_terrain_seed(int dungeon_id, int dun_level);
 
-tl::optional<std::string> cave_gen(PlayerType *player_ptr, tl::optional<uint32_t> seed = tl::nullopt);
-void apply_vestige_terrain_replacement(PlayerType *player_ptr);
-void apply_void_terrain_placement(PlayerType *player_ptr);
+tl::optional<std::string> cave_gen(CreatureEntity &creature, tl::optional<uint32_t> seed = tl::nullopt);
+void apply_vestige_terrain_replacement(CreatureEntity &creature);
+void apply_void_terrain_placement(CreatureEntity &creature);

@@ -10,7 +10,7 @@
 #include "mspell/mspell-damage-calculator.h"
 #include "spell-kind/spells-launcher.h"
 #include "system/angband-exceptions.h"
-#include "system/player-type-definition.h"
+#include "system/creature-entity.h"
 #include "target/target-getter.h"
 #include "view/display-messages.h"
 #include <fmt/format.h>
@@ -28,9 +28,9 @@ const std::unordered_map<MonsterAbilityType, AttributeType> BLUE_MAGIC_SPIRIT_CU
 };
 }
 
-bool cast_blue_magic_spirit_curse(PlayerType *player_ptr, bmc_type *bmc_ptr)
+bool cast_blue_magic_spirit_curse(CreatureEntity &creature, bmc_type *bmc_ptr)
 {
-    const auto dir = get_aim_dir(player_ptr);
+    const auto dir = get_aim_dir(creature);
     if (!dir) {
         return false;
     }
@@ -42,7 +42,7 @@ bool cast_blue_magic_spirit_curse(PlayerType *player_ptr, bmc_type *bmc_ptr)
     }
 
     const auto attribute_type = magic->second;
-    const auto damage = monspell_bluemage_damage(player_ptr, bmc_ptr->spell, bmc_ptr->plev, DAM_ROLL);
-    fire_ball_hide(player_ptr, attribute_type, dir, damage, 0);
+    const auto damage = monspell_bluemage_damage(creature, bmc_ptr->spell, bmc_ptr->plev, DAM_ROLL);
+    fire_ball_hide(creature, attribute_type, dir, damage, 0);
     return true;
 }

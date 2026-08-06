@@ -5,10 +5,10 @@
 #include "alliance/alliance-nanto-orthodox.h"
 #include "floor/floor-util.h"
 #include "floor/wild.h"
+#include "system/creature-entity.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/player-type-definition.h"
 /*!
  * @brief アライアンス「南斗正統派」のコンストラクタ
  * @param id アライアンスID
@@ -23,15 +23,15 @@ AllianceNantoOrthodox::AllianceNantoOrthodox(AllianceType id, std::string tag, s
 
 /*!
  * @brief 南斗正統派におけるプレイヤーの印象度を算出する
- * @param creature_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @return 印象度
  */
-int AllianceNantoOrthodox::calcImpressionPoint(PlayerType *creature_ptr) const
+int AllianceNantoOrthodox::calcImpressionPoint(const CreatureEntity &creature) const
 {
     int impression = 0;
     impression += calcIronmanHostilityPenalty();
 
-    impression += Alliance::calcPlayerPower(*creature_ptr, 15, 20);
+    impression += Alliance::calcPlayerPower(creature, 15, 20);
     return impression;
 }
 

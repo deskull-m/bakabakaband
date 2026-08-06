@@ -7,11 +7,11 @@
 #include <utility>
 
 class Direction;
-class PlayerType;
+class CreatureEntity;
 class MonsterSweepGrid {
 public:
-    MonsterSweepGrid(PlayerType *player_ptr, MONSTER_IDX m_idx);
-    PlayerType *player_ptr;
+    MonsterSweepGrid(CreatureEntity *creature_ptr, MONSTER_IDX m_idx);
+    CreatureEntity *creature_ptr;
     MONSTER_IDX m_idx;
     tl::optional<MonsterMovementDirectionList> get_movable_grid();
 };

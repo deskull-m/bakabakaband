@@ -29,8 +29,8 @@
 #include "status/buff-setter.h"
 #include "status/sight-setter.h"
 #include "status/temporary-resistance.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
-#include "system/player-type-definition.h"
 #include "target/target-getter.h"
 #include "util/dice.h"
 #include "view/display-messages.h"
@@ -38,17 +38,17 @@
 
 /*!
  * @brief 破邪領域魔法の各処理を行う
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param spell 魔法ID
  * @param mode 処理内容 (SpellProcessType::NAME / SPELL_DESC / SpellProcessType::INFO / SpellProcessType::CAST)
  * @return SpellProcessType::NAME / SPELL_DESC / SpellProcessType::INFO 時には文字列を返す。SpellProcessType::CAST時は tl::nullopt を返す。
  */
-tl::optional<std::string> do_crusade_spell(PlayerType *player_ptr, SPELL_IDX spell, SpellProcessType mode)
+tl::optional<std::string> do_crusade_spell(CreatureEntity &creature, SPELL_IDX spell, SpellProcessType mode)
 {
     const auto info = mode == SpellProcessType::INFO;
     const auto cast = mode == SpellProcessType::CAST;
 
-    PLAYER_LEVEL plev = player_ptr->level;
+    PLAYER_LEVEL plev = creature.get_level();
 
     switch (spell) {
     case 0: {
@@ -57,11 +57,11 @@ tl::optional<std::string> do_crusade_spell(PlayerType *player_ptr, SPELL_IDX spe
             return info_damage(dice);
         }
         if (cast) {
-            const auto dir = get_aim_dir(player_ptr);
+            const auto dir = get_aim_dir(creature);
             if (!dir) {
                 return tl::nullopt;
             }
-            fire_bolt_or_beam(player_ptr, beam_chance(player_ptr) - 10, AttributeType::LITE, dir, dice.roll());
+            fire_bolt_or_beam(creature, beam_chance(creature) - 10, AttributeType::LITE, dir, dice.roll());
         }
     } break;
 
@@ -71,18 +71,18 @@ tl::optional<std::string> do_crusade_spell(PlayerType *player_ptr, SPELL_IDX spe
             return info_radius(rad);
         }
         if (cast) {
-            detect_monsters_evil(player_ptr, rad);
+            detect_monsters_evil(creature, rad);
         }
     } break;
 
     case 2: {
         if (cast) {
-            const auto dir = get_aim_dir(player_ptr);
+            const auto dir = get_aim_dir(creature);
             if (!dir) {
                 return tl::nullopt;
             }
 
-            destroy_door(player_ptr, dir);
+            destroy_door(creature, dir);
         }
     } break;
 
@@ -93,8 +93,8 @@ tl::optional<std::string> do_crusade_spell(PlayerType *player_ptr, SPELL_IDX spe
             return info_duration(base, dice);
         }
         if (cast) {
-            set_tim_res_lite(player_ptr, dice.roll() + base, false);
-            set_tim_res_dark(player_ptr, dice.roll() + base, false);
+            set_tim_res_lite(creature, dice.roll() + base, false);
+            set_tim_res_dark(creature, dice.roll() + base, false);
         }
     } break;
 
@@ -104,11 +104,11 @@ tl::optional<std::string> do_crusade_spell(PlayerType *player_ptr, SPELL_IDX spe
             return info_damage(dice);
         }
         if (cast) {
-            const auto dir = get_aim_dir(player_ptr);
+            const auto dir = get_aim_dir(creature);
             if (!dir) {
                 return tl::nullopt;
             }
-            fire_bolt_or_beam(player_ptr, beam_chance(player_ptr) - 10, AttributeType::ELEC, dir, dice.roll());
+            fire_bolt_or_beam(creature, beam_chance(creature) - 10, AttributeType::ELEC, dir, dice.roll());
         }
     } break;
 
@@ -118,13 +118,13 @@ tl::optional<std::string> do_crusade_spell(PlayerType *player_ptr, SPELL_IDX spe
             return info_range(range);
         }
         if (cast) {
-            teleport_player(player_ptr, range, TELEPORT_SPONTANEOUS);
+            teleport_player(creature, range, TELEPORT_SPONTANEOUS);
         }
     } break;
 
     case 6: {
         if (cast) {
-            BadStatusSetter bss(player_ptr);
+            BadStatusSetter bss(creature);
             (void)bss.set_cut(0);
             (void)bss.set_poison(0);
             (void)bss.set_stun(0);
@@ -133,7 +133,7 @@ tl::optional<std::string> do_crusade_spell(PlayerType *player_ptr, SPELL_IDX spe
 
     case 7: {
         if (cast) {
-            (void)remove_curse(player_ptr);
+            (void)remove_curse(creature);
         }
     } break;
 
@@ -144,7 +144,7 @@ tl::optional<std::string> do_crusade_spell(PlayerType *player_ptr, SPELL_IDX spe
             return info_duration(base, dice);
         }
         if (cast) {
-            (void)heroism(player_ptr, dice.roll() + base);
+            (void)heroism(creature, dice.roll() + base);
         }
     } break;
 
@@ -154,11 +154,11 @@ tl::optional<std::string> do_crusade_spell(PlayerType *player_ptr, SPELL_IDX spe
             return info_power(power);
         }
         if (cast) {
-            const auto dir = get_aim_dir(player_ptr);
+            const auto dir = get_aim_dir(creature);
             if (!dir) {
                 return tl::nullopt;
             }
-            fire_ball(player_ptr, AttributeType::AWAY_EVIL, dir, power, 0);
+            fire_ball(creature, AttributeType::AWAY_EVIL, dir, power, 0);
         }
     } break;
 
@@ -166,7 +166,7 @@ tl::optional<std::string> do_crusade_spell(PlayerType *player_ptr, SPELL_IDX spe
         const Dice dice(3, 6);
         const POSITION rad = (plev < 30) ? 2 : 3;
         int base;
-        PlayerClass pc(player_ptr);
+        CreatureClass pc(creature);
         if (pc.equals(PlayerClassType::PRIEST) || pc.equals(PlayerClassType::HIGH_MAGE) || pc.equals(PlayerClassType::SORCERER)) {
             base = plev + plev / 2;
         } else {
@@ -176,11 +176,11 @@ tl::optional<std::string> do_crusade_spell(PlayerType *player_ptr, SPELL_IDX spe
             return info_damage(dice, base);
         }
         if (cast) {
-            const auto dir = get_aim_dir(player_ptr);
+            const auto dir = get_aim_dir(creature);
             if (!dir) {
                 return tl::nullopt;
             }
-            fire_ball(player_ptr, AttributeType::HOLY_FIRE, dir, dice.roll() + base, rad);
+            fire_ball(creature, AttributeType::HOLY_FIRE, dir, dice.roll() + base, rad);
         }
     } break;
 
@@ -191,7 +191,7 @@ tl::optional<std::string> do_crusade_spell(PlayerType *player_ptr, SPELL_IDX spe
             return info_duration(base, dice);
         }
         if (cast) {
-            set_tim_emission(player_ptr, dice.roll() + base, false);
+            set_tim_emission(creature, dice.roll() + base, false);
         }
     } break;
 
@@ -202,13 +202,13 @@ tl::optional<std::string> do_crusade_spell(PlayerType *player_ptr, SPELL_IDX spe
             return info_duration(base, dice);
         }
         if (cast) {
-            BodyImprovement(player_ptr).set_protection(dice.roll() + base);
+            BodyImprovement(creature).set_protection(dice.roll() + base);
         }
     } break;
 
     case 13: {
         if (cast) {
-            (void)remove_all_curse(player_ptr);
+            (void)remove_all_curse(creature);
         }
     } break;
 
@@ -218,11 +218,11 @@ tl::optional<std::string> do_crusade_spell(PlayerType *player_ptr, SPELL_IDX spe
             return info_damage(dam);
         }
         if (cast) {
-            const auto dir = get_aim_dir(player_ptr);
+            const auto dir = get_aim_dir(creature);
             if (!dir) {
                 return tl::nullopt;
             }
-            fire_bolt(player_ptr, AttributeType::LITE, dir, dam);
+            fire_bolt(creature, AttributeType::LITE, dir, dam);
         }
     } break;
 
@@ -233,9 +233,9 @@ tl::optional<std::string> do_crusade_spell(PlayerType *player_ptr, SPELL_IDX spe
             return format(_("損:1d%d/回%d", "dam:d%d/h%d"), dam_sides, heal);
         }
         if (cast) {
-            BadStatusSetter bss(player_ptr);
-            dispel_evil(player_ptr, randint1(dam_sides));
-            hp_player(player_ptr, heal);
+            BadStatusSetter bss(creature);
+            dispel_evil(creature, randint1(dam_sides));
+            hp_player(creature, heal);
             (void)bss.set_fear(0);
             (void)bss.set_poison(0);
             (void)bss.set_stun(0);
@@ -250,7 +250,7 @@ tl::optional<std::string> do_crusade_spell(PlayerType *player_ptr, SPELL_IDX spe
             return info_duration(base, dice);
         }
         if (cast) {
-            set_tim_sh_holy(player_ptr, dice.roll() + base, false);
+            set_tim_sh_holy(creature, dice.roll() + base, false);
         }
     } break;
 
@@ -261,13 +261,13 @@ tl::optional<std::string> do_crusade_spell(PlayerType *player_ptr, SPELL_IDX spe
             return info_duration(base, dice);
         }
         if (cast) {
-            set_tim_exorcism(player_ptr, dice.roll() + base, false);
+            set_tim_exorcism(creature, dice.roll() + base, false);
         }
     } break;
 
     case 18: {
         if (cast) {
-            brand_weapon(player_ptr, 13);
+            brand_weapon(creature, 13);
         }
     } break;
 
@@ -278,7 +278,7 @@ tl::optional<std::string> do_crusade_spell(PlayerType *player_ptr, SPELL_IDX spe
             return info_duration(base, dice);
         }
         if (cast) {
-            set_mimic(player_ptr, base + dice.roll(), MimicKindType::ANGEL, false);
+            set_mimic(creature, base + dice.roll(), MimicKindType::ANGEL, false);
         }
     } break;
 
@@ -289,11 +289,11 @@ tl::optional<std::string> do_crusade_spell(PlayerType *player_ptr, SPELL_IDX spe
         }
         if (cast) {
             const POSITION rad = 4;
-            const auto dir = get_aim_dir(player_ptr);
+            const auto dir = get_aim_dir(creature);
             if (!dir) {
                 return tl::nullopt;
             }
-            fire_ball(player_ptr, AttributeType::ELEC, dir, dam, rad);
+            fire_ball(creature, AttributeType::ELEC, dir, dam, rad);
         }
     } break;
 
@@ -304,18 +304,18 @@ tl::optional<std::string> do_crusade_spell(PlayerType *player_ptr, SPELL_IDX spe
         }
         if (cast) {
             const POSITION rad = 4;
-            const auto dir = get_aim_dir(player_ptr);
+            const auto dir = get_aim_dir(creature);
             if (!dir) {
                 return tl::nullopt;
             }
 
-            fire_ball(player_ptr, AttributeType::LITE, dir, dam, rad);
+            fire_ball(creature, AttributeType::LITE, dir, dam, rad);
         }
     } break;
 
     case 22: {
         if (cast) {
-            cast_blue_dispel(player_ptr);
+            cast_blue_dispel(creature);
         }
     } break;
 
@@ -331,7 +331,7 @@ tl::optional<std::string> do_crusade_spell(PlayerType *player_ptr, SPELL_IDX spe
             if (!(pet && (plev < 50))) {
                 flg |= PM_ALLOW_GROUP;
             }
-            if (summon_specific(player_ptr, player_ptr->y, player_ptr->x, (plev * 3) / 2, SUMMON_ANGEL, flg)) {
+            if (summon_specific(creature, creature.y, creature.x, (plev * 3) / 2, SUMMON_ANGEL, flg)) {
                 if (pet) {
                     msg_print(_("「ご用でございますか、ご主人様」", "'What is thy bidding... Master?'"));
                 } else {
@@ -347,7 +347,7 @@ tl::optional<std::string> do_crusade_spell(PlayerType *player_ptr, SPELL_IDX spe
             return info_power(power);
         }
         if (cast) {
-            if (banish_evil(player_ptr, power)) {
+            if (banish_evil(creature, power)) {
                 msg_print(_("神聖な力が邪悪を打ち払った！", "The holy power banishes evil!"));
             }
         }
@@ -357,7 +357,7 @@ tl::optional<std::string> do_crusade_spell(PlayerType *player_ptr, SPELL_IDX spe
         const auto base = 12;
         const Dice dice(1, 4);
         if (cast) {
-            destroy_area(player_ptr, player_ptr->y, player_ptr->x, base + dice.roll(), false);
+            destroy_area(creature, creature.y, creature.x, base + dice.roll(), false);
         }
     } break;
 
@@ -368,7 +368,7 @@ tl::optional<std::string> do_crusade_spell(PlayerType *player_ptr, SPELL_IDX spe
             return info_duration(base, dice);
         }
         if (cast) {
-            set_tim_eyeeye(player_ptr, dice.roll() + base, false);
+            set_tim_eyeeye(creature, dice.roll() + base, false);
         }
     } break;
 
@@ -379,7 +379,7 @@ tl::optional<std::string> do_crusade_spell(PlayerType *player_ptr, SPELL_IDX spe
             return info_duration(base, dice);
         }
         if (cast) {
-            set_tim_imm_dark(player_ptr, dice.roll() + base, false);
+            set_tim_imm_dark(creature, dice.roll() + base, false);
         }
     } break;
 
@@ -390,8 +390,11 @@ tl::optional<std::string> do_crusade_spell(PlayerType *player_ptr, SPELL_IDX spe
         }
         if (cast) {
             const POSITION rad = 7;
-            const auto dir = get_aim_dir(player_ptr);
-            fire_ball(player_ptr, AttributeType::DISINTEGRATE, dir, dam, rad);
+            const auto dir = get_aim_dir(creature);
+            if (!dir) {
+                return tl::nullopt;
+            }
+            fire_ball(creature, AttributeType::DISINTEGRATE, dir, dam, rad);
         }
     } break;
 
@@ -402,11 +405,11 @@ tl::optional<std::string> do_crusade_spell(PlayerType *player_ptr, SPELL_IDX spe
         }
         if (cast) {
             const POSITION rad = plev / 5;
-            const auto dir = get_aim_dir(player_ptr);
+            const auto dir = get_aim_dir(creature);
             if (!dir) {
                 return tl::nullopt;
             }
-            fire_ball(player_ptr, AttributeType::ELEC, dir, dam, rad);
+            fire_ball(creature, AttributeType::ELEC, dir, dam, rad);
         }
     } break;
 
@@ -419,14 +422,14 @@ tl::optional<std::string> do_crusade_spell(PlayerType *player_ptr, SPELL_IDX spe
             return format(_("回%d/損%d+%d", "h%d/dm%d+%d"), heal, d_dam, b_dam / 2);
         }
         if (cast) {
-            project(player_ptr, 0, 1, player_ptr->y, player_ptr->x, b_dam, AttributeType::HOLY_FIRE, PROJECT_KILL);
-            dispel_monsters(player_ptr, d_dam);
-            slow_monsters(player_ptr, plev);
-            stun_monsters(player_ptr, power);
-            confuse_monsters(player_ptr, power);
-            turn_monsters(player_ptr, power);
-            stasis_monsters(player_ptr, power);
-            hp_player(player_ptr, heal);
+            project(creature, 0, 1, creature.y, creature.x, b_dam, AttributeType::HOLY_FIRE, PROJECT_KILL);
+            dispel_monsters(creature, d_dam);
+            slow_monsters(creature, plev);
+            stun_monsters(creature, power);
+            confuse_monsters(creature, power);
+            turn_monsters(creature, power);
+            stasis_monsters(creature, power);
+            hp_player(creature, heal);
         }
     } break;
 
@@ -437,7 +440,7 @@ tl::optional<std::string> do_crusade_spell(PlayerType *player_ptr, SPELL_IDX spe
             return info_duration(base, dice);
         }
         if (cast) {
-            set_mimic(player_ptr, base + dice.roll(), MimicKindType::DEMIGOD, false);
+            set_mimic(creature, base + dice.roll(), MimicKindType::DEMIGOD, false);
         }
     } break;
     }

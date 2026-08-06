@@ -9,6 +9,7 @@
 #include "util/enum-converter.h"
 #include "view/display-messages.h"
 #include "world/world.h"
+#include <array>
 
 /*!
  * @brief セーブファイルからバージョン情報及びセーブ情報を取得する
@@ -50,11 +51,10 @@ void rd_version_info(void)
         system.set_version({ major, minor, patch, extra });
     }
 
-    auto &world = AngbandWorld::get_instance();
-    world.sf_system = rd_u32b();
-    world.sf_when = rd_u32b();
-    world.sf_lives = rd_u16b();
-    world.sf_saves = rd_u16b();
+    // 旧 sf_system / sf_when / sf_lives / sf_saves の領域 (計 12 バイト)。
+    // 上流 hengband#5402 で未使用フィールドとして廃止された。bakabakaband では
+    // セーブフォーマット互換のため常にこの 12 バイトを書き出しているため読み飛ばす。
+    strip_bytes(12);
 
     loading_savefile_version = rd_u32b();
 
@@ -77,13 +77,12 @@ void rd_version_info(void)
 void rd_randomizer(void)
 {
     strip_bytes(4);
-    Xoshiro128StarStar::state_type state{};
+    std::array<uint32_t, xso::rng32::word_count()> state{};
     for (auto &s : state) {
         s = rd_u32b();
     }
 
-    Xoshiro128StarStar game_rng;
-    game_rng.set_state(state);
+    xso::rng32 game_rng(state.cbegin(), state.cend());
     AngbandSystem::get_instance().set_rng(game_rng);
     strip_bytes(4 * (RAND_DEG - state.size()));
 }

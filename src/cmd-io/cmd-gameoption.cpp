@@ -15,7 +15,8 @@
 #include "io/input-key-acceptor.h"
 #include "io/write-diary.h"
 #include "main/sound-of-music.h"
-#include "system/player-type-definition.h"
+#include "system/creature-entity.h"
+#include "system/inner-game-data.h"
 #include "system/redrawing-flags-updater.h"
 #include "term/gameterm.h"
 #include "term/screen-processor.h"
@@ -91,7 +92,7 @@ static int16_t toggle_frequency(int16_t current)
  * @brief 自動セーブオプションを変更するコマンドのメインルーチン
  * @param info 表示メッセージ
  */
-static void do_cmd_options_autosave(PlayerType *player_ptr, std::string_view info)
+static void do_cmd_options_autosave(CreatureEntity &creature, std::string_view info)
 {
     auto k = 0;
     constexpr auto n = 2;
@@ -143,7 +144,7 @@ static void do_cmd_options_autosave(PlayerType *player_ptr, std::string_view inf
             prt(format(_("自動セーブの頻度： %d ターン毎", "Timed autosave frequency: every %d turns"), autosave_freq), 5, 0);
             break;
         case '?':
-            FileDisplayer(player_ptr->name).display(true, _("joption.txt#Autosave", "option.txt#Autosave"), 0, 0);
+            FileDisplayer(creature.name).display(true, _("joption.txt#Autosave", "option.txt#Autosave"), 0, 0);
             term_clear();
             break;
         default:
@@ -207,7 +208,7 @@ static void clear_window_flag(int x, int y)
  * @brief ウィンドウオプションを変更するコマンドのメインルーチン /
  * Modify the "window" options
  */
-static void do_cmd_options_win(PlayerType *player_ptr)
+static void do_cmd_options_win(CreatureEntity &creature)
 {
     int i, j;
     TERM_LEN y = 0;
@@ -281,7 +282,7 @@ static void do_cmd_options_win(PlayerType *player_ptr)
             set_window_flag(x, y);
             break;
         case '?':
-            FileDisplayer(player_ptr->name).display(true, _("joption.txt#Window", "option.txt#Window"), 0, 0);
+            FileDisplayer(creature.name).display(true, _("joption.txt#Window", "option.txt#Window"), 0, 0);
             term_clear();
             break;
         default: {
@@ -369,13 +370,13 @@ static void do_cmd_options_cheat(const FloorType &floor, std::string_view player
         case 'y':
         case 'Y':
         case '6': {
-            auto &world = AngbandWorld::get_instance();
-            if (!world.noscore) {
+            auto &igd = InnerGameData::get_instance();
+            if (!igd.is_no_score()) {
                 exe_write_diary(floor, DiaryKind::DESCRIPTION, 0,
                     _("詐欺オプションをONにして、スコアを残せなくなった。", "gave up sending score to use cheating options."));
             }
 
-            world.noscore |= cheat.flag_position * 256 + cheat.offset;
+            igd.add_no_score(cheat.flag_position * 256 + cheat.offset);
             *cheat.value = true;
             k = (k + 1) % n;
             break;
@@ -422,8 +423,10 @@ void extract_option_vars(void)
  * in any options which control "visual" aspects of the game.
  * </pre>
  */
-void do_cmd_options(PlayerType *player_ptr)
+void do_cmd_options(CreatureEntity &creature)
 {
+    TermCenteredOffsetSetter tcos(MAIN_TERM_MIN_COLS, MAIN_TERM_MIN_ROWS);
+
     char k;
     int skey;
     TERM_LEN i, y = 0;
@@ -431,7 +434,7 @@ void do_cmd_options(PlayerType *player_ptr)
     const auto &world = AngbandWorld::get_instance();
     while (true) {
         auto n = std::ssize(option_fields);
-        if (!world.noscore && !allow_debug_opts) {
+        if (!InnerGameData::get_instance().is_no_score() && !allow_debug_opts) {
             n--;
         }
 
@@ -496,65 +499,65 @@ void do_cmd_options(PlayerType *player_ptr)
 
         switch (k) {
         case '1': {
-            do_cmd_options_aux(player_ptr, GameOptionPage::INPUT, _("キー入力オプション", "Input Options"));
+            do_cmd_options_aux(creature, GameOptionPage::INPUT, _("キー入力オプション", "Input Options"));
             break;
         }
         case '2': {
-            do_cmd_options_aux(player_ptr, GameOptionPage::MAPSCREEN, _("マップ画面オプション", "Map Screen Options"));
+            do_cmd_options_aux(creature, GameOptionPage::MAPSCREEN, _("マップ画面オプション", "Map Screen Options"));
             break;
         }
         case '3': {
-            do_cmd_options_aux(player_ptr, GameOptionPage::TEXT, _("テキスト表示オプション", "Text Display Options"));
+            do_cmd_options_aux(creature, GameOptionPage::TEXT, _("テキスト表示オプション", "Text Display Options"));
             break;
         }
         case '4': {
-            do_cmd_options_aux(player_ptr, GameOptionPage::GAMEPLAY, _("ゲームプレイ・オプション", "Game-Play Options"));
+            do_cmd_options_aux(creature, GameOptionPage::GAMEPLAY, _("ゲームプレイ・オプション", "Game-Play Options"));
             break;
         }
         case '5': {
-            do_cmd_options_aux(player_ptr, GameOptionPage::DISTURBANCE, _("行動中止関係のオプション", "Disturbance Options"));
+            do_cmd_options_aux(creature, GameOptionPage::DISTURBANCE, _("行動中止関係のオプション", "Disturbance Options"));
             break;
         }
         case '6': {
-            do_cmd_options_aux(player_ptr, GameOptionPage::AUTODESTROY, _("簡易自動破壊オプション", "Easy Auto-Destroyer Options"));
+            do_cmd_options_aux(creature, GameOptionPage::AUTODESTROY, _("簡易自動破壊オプション", "Easy Auto-Destroyer Options"));
             break;
         }
         case 'R':
         case 'r': {
-            do_cmd_options_aux(player_ptr, GameOptionPage::PLAYRECORD, _("プレイ記録オプション", "Play-record Options"));
+            do_cmd_options_aux(creature, GameOptionPage::PLAYRECORD, _("プレイ記録オプション", "Play-record Options"));
             break;
         }
         case 'B':
         case 'b': {
-            do_cmd_options_aux(player_ptr, GameOptionPage::BIRTH,
+            do_cmd_options_aux(creature, GameOptionPage::BIRTH,
                 (!world.wizard || !allow_debug_opts) ? _("初期オプション(参照のみ)", "Birth Options(browse only)")
                                                      : _("初期オプション((*)はスコアに影響)", "Birth Options ((*)) affect score"));
             break;
         }
         case 'C':
         case 'c': {
-            if (!world.noscore && !allow_debug_opts) {
+            if (!InnerGameData::get_instance().is_no_score() && !allow_debug_opts) {
                 bell();
                 break;
             }
 
-            do_cmd_options_cheat(*player_ptr->current_floor_ptr, player_ptr->name, _("詐欺師は決して勝利できない！", "Cheaters never win"));
+            do_cmd_options_cheat(*creature.get_floor(), creature.name, _("詐欺師は決して勝利できない！", "Cheaters never win"));
             break;
         }
         case 'a':
         case 'A': {
-            do_cmd_options_autosave(player_ptr, _("自動セーブ", "Autosave"));
+            do_cmd_options_autosave(creature, _("自動セーブ", "Autosave"));
             break;
         }
         case 'W':
         case 'w': {
-            do_cmd_options_win(player_ptr);
+            do_cmd_options_win(creature);
             RedrawingFlagsUpdater::get_instance().fill_up_sub_flags();
             break;
         }
         case 'P':
         case 'p': {
-            do_cmd_edit_autopick(player_ptr);
+            do_cmd_edit_autopick(creature);
             break;
         }
         case 'D':
@@ -581,7 +584,7 @@ void do_cmd_options(PlayerType *player_ptr)
                 if (k == ESCAPE) {
                     break;
                 } else if (k == '?') {
-                    FileDisplayer(player_ptr->name).display(true, _("joption.txt#Hitpoint", "option.txt#Hitpoint"), 0, 0);
+                    FileDisplayer(creature.name).display(true, _("joption.txt#Hitpoint", "option.txt#Hitpoint"), 0, 0);
                     term_clear();
                 } else if (isdigit(k)) {
                     hitpoint_warn = D2I(k);
@@ -603,7 +606,7 @@ void do_cmd_options(PlayerType *player_ptr)
                 if (k == ESCAPE) {
                     break;
                 } else if (k == '?') {
-                    FileDisplayer(player_ptr->name).display(true, _("joption.txt#Manapoint", "option.txt#Manapoint"), 0, 0);
+                    FileDisplayer(creature.name).display(true, _("joption.txt#Manapoint", "option.txt#Manapoint"), 0, 0);
                     term_clear();
                 } else if (isdigit(k)) {
                     mana_warn = D2I(k);
@@ -615,7 +618,7 @@ void do_cmd_options(PlayerType *player_ptr)
             break;
         }
         case '?':
-            FileDisplayer(player_ptr->name).display(true, _("joption.txt", "option.txt"), 0, 0);
+            FileDisplayer(creature.name).display(true, _("joption.txt", "option.txt"), 0, 0);
             term_clear();
             break;
         default: {
@@ -636,7 +639,7 @@ void do_cmd_options(PlayerType *player_ptr)
  * @param page オプションページ番号
  * @param info 表示メッセージ
  */
-void do_cmd_options_aux(PlayerType *player_ptr, GameOptionPage page, std::string_view info)
+void do_cmd_options_aux(CreatureEntity &creature, GameOptionPage page, std::string_view info)
 {
     char ch;
     int k = 0, n = 0, l;
@@ -735,7 +738,7 @@ void do_cmd_options_aux(PlayerType *player_ptr, GameOptionPage page, std::string
 
             break;
         case '?':
-            FileDisplayer(player_ptr->name).display(true, std::string(_("joption.txt#", "option.txt#")).append(option.text), 0, 0);
+            FileDisplayer(creature.name).display(true, std::string(_("joption.txt#", "option.txt#")).append(option.text), 0, 0);
             term_clear();
             break;
         default:

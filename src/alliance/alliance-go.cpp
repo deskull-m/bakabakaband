@@ -1,7 +1,7 @@
 #include "alliance/alliance-go.h"
-#include "system/player-type-definition.h"
+#include "system/creature-entity.h"
 
-int AllianceGO::calcImpressionPoint([[maybe_unused]] PlayerType *creature_ptr) const
+int AllianceGO::calcImpressionPoint([[maybe_unused]] const CreatureEntity &creature) const
 {
     int impression = 0;
     impression += calcIronmanHostilityPenalty();

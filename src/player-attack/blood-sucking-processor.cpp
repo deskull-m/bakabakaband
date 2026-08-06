@@ -15,23 +15,23 @@
 #include "player-info/equipment-info.h"
 #include "realm/realm-hex-numbers.h"
 #include "spell-realm/spells-hex.h"
+#include "system/creature-entity.h"
 #include "system/item-entity.h"
-#include "system/monster-entity.h"
-#include "system/player-type-definition.h"
 #include "util/bit-flags-calculator.h"
+#include "util/enum-converter.h"
 #include "view/display-messages.h"
 
 /*!
  * @brief 生命のあるモンスターから吸血できるか判定する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param pa_ptr 直接攻撃構造体への参照ポインタ
  */
-void decide_blood_sucking(PlayerType *player_ptr, player_attack_type *pa_ptr)
+void decide_blood_sucking(CreatureEntity &creature, player_attack_type *pa_ptr)
 {
     bool is_blood_sucker = pa_ptr->flags.has(TR_VAMPIRIC);
     is_blood_sucker |= pa_ptr->chaos_effect == CE_VAMPIRIC;
     is_blood_sucker |= pa_ptr->mode == HISSATSU_DRAIN;
-    is_blood_sucker |= SpellHex(player_ptr).is_spelling_specific(HEX_VAMP_BLADE);
+    is_blood_sucker |= SpellHex(creature).is_spelling_specific(HEX_VAMP_BLADE);
     if (!is_blood_sucker) {
         return;
     }
@@ -41,12 +41,12 @@ void decide_blood_sucking(PlayerType *player_ptr, player_attack_type *pa_ptr)
 
 /*!
  * @brief 浄化(悪魔・アンデッドモンスターからの吸血)をできるか判定する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param pa_ptr 直接攻撃構造体への参照ポインタ
  */
-void decide_exorcism(PlayerType *player_ptr, player_attack_type *pa_ptr)
+void decide_exorcism(CreatureEntity &creature, player_attack_type *pa_ptr)
 {
-    auto is_exorcism = player_ptr->tim_exorcism > 0;
+    auto is_exorcism = creature.get_timed_effect(CreatureTimedEffect::TIM_EXORCISM) > 0;
     if (!is_exorcism) {
         return;
     }
@@ -71,17 +71,17 @@ void calc_drain(player_attack_type *pa_ptr)
 
 /*!
  * @brief 村正による吸血処理
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param pa_ptr 直接攻撃構造体への参照ポインタ
  * @param is_human モンスターが人間かどうか
  */
-static void drain_muramasa(PlayerType *player_ptr, player_attack_type *pa_ptr, const bool is_human)
+static void drain_muramasa(CreatureEntity &creature, player_attack_type *pa_ptr, const bool is_human)
 {
     if (!is_human) {
         return;
     }
 
-    auto *o_ptr = player_ptr->inventory[enum2i(INVEN_MAIN_HAND) + pa_ptr->hand].get();
+    auto *o_ptr = creature.inventory[enum2i(INVEN_MAIN_HAND) + pa_ptr->hand].get();
     HIT_PROB to_h = o_ptr->to_h;
     int to_d = o_ptr->to_d;
     bool flag = true;
@@ -117,12 +117,12 @@ static void drain_muramasa(PlayerType *player_ptr, player_attack_type *pa_ptr, c
 
 /*!
  * @brief 吸血武器による吸血処理
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param pa_ptr 直接攻撃構造体への参照ポインタ
  * @param drain_msg 吸血をした旨のメッセージを表示するかどうか
  * @details 1行目の5がマジックナンバーで良く分からなかったので、取り敢えず元々あったコメントをベースに定数宣言しておいた
  */
-static void drain_result(PlayerType *player_ptr, player_attack_type *pa_ptr, bool *drain_msg)
+static void drain_result(CreatureEntity &creature, player_attack_type *pa_ptr, bool *drain_msg)
 {
     const int real_drain = 5;
     if (pa_ptr->drain_result <= real_drain) {
@@ -131,7 +131,7 @@ static void drain_result(PlayerType *player_ptr, player_attack_type *pa_ptr, boo
 
     int drain_heal = Dice::roll(2, pa_ptr->drain_result / 6);
 
-    if (SpellHex(player_ptr).is_spelling_specific(HEX_VAMP_BLADE)) {
+    if (SpellHex(creature).is_spelling_specific(HEX_VAMP_BLADE)) {
         drain_heal *= 2;
     }
 
@@ -151,7 +151,7 @@ static void drain_result(PlayerType *player_ptr, player_attack_type *pa_ptr, boo
     }
 
     if (*drain_msg) {
-        if (has_melee_weapon(player_ptr, pa_ptr->hand)) {
+        if (has_melee_weapon(creature, enum2i(INVEN_MAIN_HAND) + pa_ptr->hand)) {
             msg_format(_("刃が%sから生命力を吸い取った！", "Your weapon drains life from %s!"), pa_ptr->m_name);
         } else {
             msg_format(_("手が%sから生命力を吸い取った！", "Your hands drain life from %s!"), pa_ptr->m_name);
@@ -159,29 +159,29 @@ static void drain_result(PlayerType *player_ptr, player_attack_type *pa_ptr, boo
         *drain_msg = false;
     }
 
-    drain_heal = (drain_heal * player_ptr->mutant_regenerate_mod) / 100;
-    hp_player(player_ptr, drain_heal);
+    drain_heal = (drain_heal * creature.get_mutant_regenerate_mod()) / 100;
+    hp_player(creature, drain_heal);
 }
 
 /*!
  * @brief 吸血処理のメインルーチン
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param pa_ptr 直接攻撃構造体への参照ポインタ
  * @param is_human 人間かどうか(村正用フラグ)
  * @param drain_msg 吸血をした旨のメッセージを表示するかどうか
  * @details モンスターが死んだ場合、(ゲームのフレーバー的に)吸血しない
  */
-void process_drain(PlayerType *player_ptr, player_attack_type *pa_ptr, const bool is_human, bool *drain_msg)
+void process_drain(CreatureEntity &creature, player_attack_type *pa_ptr, const bool is_human, bool *drain_msg)
 {
     if (!pa_ptr->can_drain || (pa_ptr->drain_result <= 0)) {
         return;
     }
 
-    auto *o_ptr = player_ptr->inventory[enum2i(INVEN_MAIN_HAND) + pa_ptr->hand].get();
+    auto *o_ptr = creature.inventory[enum2i(INVEN_MAIN_HAND) + pa_ptr->hand].get();
     if (o_ptr->is_specific_artifact(FixedArtifactId::MURAMASA)) {
-        drain_muramasa(player_ptr, pa_ptr, is_human);
+        drain_muramasa(creature, pa_ptr, is_human);
     } else {
-        drain_result(player_ptr, pa_ptr, drain_msg);
+        drain_result(creature, pa_ptr, drain_msg);
     }
 
     pa_ptr->m_ptr->maxhp -= (pa_ptr->attack_damage + 7) / 8;

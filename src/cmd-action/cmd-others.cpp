@@ -30,9 +30,10 @@
 #include "player/player-move.h"
 #include "player/special-defense-types.h"
 #include "status/action-setter.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
-#include "system/player-type-definition.h"
+#include "system/inner-game-data.h"
 #include "system/redrawing-flags-updater.h"
 #include "system/terrain/terrain-definition.h"
 #include "target/target-getter.h"
@@ -45,56 +46,52 @@
 /*!
  * @brief 探索コマンドのメインルーチン / Simple command to "search" for one turn
  */
-void do_cmd_search(PlayerType *player_ptr)
+void do_cmd_search(CreatureEntity &creature)
 {
-    if (command_arg) {
-        command_rep = command_arg - 1;
-        RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::ACTION);
-        command_arg = 0;
-    }
+    set_command_repeat_from_arg();
 
-    PlayerEnergy(player_ptr).set_player_turn_energy(100);
-    search(player_ptr);
+    PlayerEnergy(creature).set_player_turn_energy(100);
+    search(creature);
 
-    if (player_ptr->action == ACTION_SEARCH) {
-        search(player_ptr);
+    if (creature.get_action() == ACTION_SEARCH) {
+        search(creature);
     }
 }
 
-static bool exe_alter(PlayerType *player_ptr)
+static bool exe_alter(CreatureEntity &creature)
 {
-    const auto dir = get_rep_dir(player_ptr, true);
+    const auto dir = get_rep_dir(creature, true);
     if (!dir) {
         return false;
     }
 
-    const auto pos = player_ptr->get_neighbor(dir);
-    const auto &grid = player_ptr->current_floor_ptr->get_grid(pos);
+    const auto pos = creature.get_neighbor(dir);
+    const auto &grid = creature.get_floor()->get_grid(pos);
     const auto &terrain = grid.get_terrain(TerrainKind::MIMIC);
-    PlayerEnergy(player_ptr).set_player_turn_energy(100);
+    PlayerEnergy(creature).set_player_turn_energy(100);
     if (grid.has_monster()) {
-        do_cmd_attack(player_ptr, pos.y, pos.x, HISSATSU_NONE);
+        do_cmd_attack(creature, pos.y, pos.x, HISSATSU_NONE);
         return false;
     }
 
     if (terrain.flags.has(TerrainCharacteristics::OPEN)) {
-        return exe_open(player_ptr, pos.y, pos.x);
+        return exe_open(creature, pos.y, pos.x);
     }
 
     if (terrain.flags.has(TerrainCharacteristics::BASH)) {
-        return exe_bash(player_ptr, pos.y, pos.x, dir);
+        return exe_bash(creature, pos.y, pos.x, dir);
     }
 
     if (terrain.flags.has(TerrainCharacteristics::TUNNEL)) {
-        return exe_tunnel(player_ptr, pos.y, pos.x);
+        return exe_tunnel(creature, pos.y, pos.x);
     }
 
     if (terrain.flags.has(TerrainCharacteristics::CLOSE)) {
-        return exe_close(player_ptr, pos.y, pos.x);
+        return exe_close(creature, pos);
     }
 
     if (terrain.flags.has(TerrainCharacteristics::DISARM)) {
-        return exe_disarm(player_ptr, pos.y, pos.x, dir);
+        return exe_disarm(creature, pos.y, pos.x, dir);
     }
 
     msg_print(_("何もない空中を攻撃した。", "You attack the empty air."));
@@ -105,18 +102,14 @@ static bool exe_alter(PlayerType *player_ptr)
  * @brief 特定のマスに影響を及ぼすための汎用的コマンド / Manipulate an adjacent grid in some way
  * @details
  */
-void do_cmd_alter(PlayerType *player_ptr)
+void do_cmd_alter(CreatureEntity &creature)
 {
-    PlayerClass(player_ptr).break_samurai_stance({ SamuraiStanceType::MUSOU });
+    CreatureClass(creature).break_samurai_stance({ SamuraiStanceType::MUSOU });
 
-    if (command_arg) {
-        command_rep = command_arg - 1;
-        RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::ACTION);
-        command_arg = 0;
-    }
+    set_command_repeat_from_arg();
 
-    if (!exe_alter(player_ptr)) {
-        disturb(player_ptr, false, false);
+    if (!exe_alter(creature)) {
+        disturb(creature, false, false);
     }
 }
 
@@ -127,7 +120,7 @@ void do_cmd_alter(PlayerType *player_ptr)
  */
 static bool decide_suicide()
 {
-    if (AngbandWorld::get_instance().noscore) {
+    if (InnerGameData::get_instance().is_no_score()) {
         return true;
     }
 
@@ -138,7 +131,7 @@ static bool decide_suicide()
     return i == '@';
 }
 
-static void accept_winner_message(PlayerType *player_ptr)
+static void accept_winner_message(CreatureEntity &creature)
 {
     if (!AngbandWorld::get_instance().total_winner || !last_words) {
         return;
@@ -152,14 +145,14 @@ static void accept_winner_message(PlayerType *player_ptr)
             continue;
         }
 
-        if (input_check_strict(player_ptr, _("よろしいですか？", "Are you sure? "), UserCheck::NO_HISTORY)) {
+        if (input_check_strict(creature, _("よろしいですか？", "Are you sure? "), UserCheck::NO_HISTORY)) {
             break;
         }
     }
 
     if (!buf->empty()) {
-        player_ptr->last_message = buf.value();
-        msg_print(player_ptr->last_message);
+        creature.last_message = buf.value();
+        msg_print(creature.last_message);
     }
 }
 
@@ -168,12 +161,12 @@ static void accept_winner_message(PlayerType *player_ptr)
  * commit suicide
  * @details
  */
-void do_cmd_suicide(PlayerType *player_ptr)
+void do_cmd_suicide(CreatureEntity &creature)
 {
     flush();
     auto &world = AngbandWorld::get_instance();
     if (world.total_winner) {
-        if (!input_check_strict(player_ptr, _("虚無りますか? ", "Do you want to go to the Nihil War? "), UserCheck::NO_HISTORY)) {
+        if (!input_check_strict(creature, _("虚無りますか? ", "Do you want to go to the Nihil War? "), UserCheck::NO_HISTORY)) {
             return;
         }
     } else {
@@ -186,31 +179,31 @@ void do_cmd_suicide(PlayerType *player_ptr)
         return;
     }
 
-    player_ptr->last_message = "";
-    player_ptr->playing = false;
-    player_ptr->is_dead_ = true;
-    player_ptr->leaving = true;
+    creature.last_message = "";
+    creature.set_playing(false);
+    creature.is_dead_ = true;
+    creature.set_leaving(true);
     if (world.total_winner) {
-        accept_winner_message(player_ptr);
-        world.add_retired_class(player_ptr->pclass);
+        accept_winner_message(creature);
+        InnerGameData::get_instance().add_retired_class(creature.pclass);
     } else {
         play_music(TERM_XTRA_MUSIC_BASIC, MUSIC_BASIC_GAMEOVER);
-        const auto &floor = *player_ptr->current_floor_ptr;
+        const auto &floor = *creature.get_floor();
         exe_write_diary(floor, DiaryKind::DESCRIPTION, 0, _("ダンジョンの探索に飽きて自殺した。", "got tired to commit suicide."));
         exe_write_diary(floor, DiaryKind::GAMESTART, 1, _("-------- ゲームオーバー --------", "--------   Game  Over   --------"));
         exe_write_diary(floor, DiaryKind::DESCRIPTION, 1, "\n\n\n\n");
     }
 
-    player_ptr->died_from = _("途中終了", "Quitting");
+    creature.died_from = _("途中終了", "Quitting");
 }
 
 /*!
  * @brief 地形に説明を書き込むコマンド / Inscribe description on terrain
  */
-void do_cmd_inscribe_terrain(PlayerType *player_ptr)
+void do_cmd_inscribe_terrain(CreatureEntity &creature)
 {
-    auto &floor = *player_ptr->current_floor_ptr;
-    auto &grid = floor.get_grid(player_ptr->get_position());
+    auto &floor = *creature.get_floor();
+    auto &grid = floor.get_grid(creature.get_position());
 
     // 現在の説明を表示
     if (!grid.terrain_description.empty()) {

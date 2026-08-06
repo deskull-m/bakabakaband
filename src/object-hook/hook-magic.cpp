@@ -6,8 +6,8 @@
 #include "player-info/class-info.h"
 #include "player/player-realm.h"
 #include "system/baseitem/baseitem-key.h"
+#include "system/creature-entity.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "util/bit-flags-calculator.h"
 #include "util/enum-converter.h"
 
@@ -37,10 +37,10 @@ bool object_is_activatable(const ItemEntity *o_ptr)
  * @param o_ptr 判定したいオブジェクトの構造体参照ポインタ
  * @return 利用可能ならばTRUEを返す
  */
-bool item_tester_hook_use(PlayerType *player_ptr, const ItemEntity *o_ptr)
+bool item_tester_hook_use(CreatureEntity &creature, const ItemEntity *o_ptr)
 {
     const auto tval = o_ptr->bi_key.tval();
-    if (tval == player_ptr->tval_ammo) {
+    if (tval == creature.get_tval_ammo()) {
         return true;
     }
 
@@ -58,8 +58,8 @@ bool item_tester_hook_use(PlayerType *player_ptr, const ItemEntity *o_ptr)
             return false;
         }
 
-        for (int i = INVEN_MAIN_HAND; i < INVEN_TOTAL; i++) {
-            if ((player_ptr->inventory[i].get() == o_ptr) && o_ptr->get_flags().has(TR_ACTIVATE)) {
+        for (const auto i_idx : INVEN_WIELDING_SLOTS) {
+            if ((creature.inventory[i_idx].get() == o_ptr) && o_ptr->get_flags().has(TR_ACTIVATE)) {
                 return true;
             }
         }
@@ -73,17 +73,17 @@ bool item_tester_hook_use(PlayerType *player_ptr, const ItemEntity *o_ptr)
  * @param o_ptr 判定したいオブ会ジェクトの構造体参照ポインタ
  * @return 学習できる魔道書ならばTRUEを返す
  */
-bool item_tester_learn_spell(PlayerType *player_ptr, const ItemEntity *o_ptr)
+bool item_tester_learn_spell(CreatureEntity &creature, const ItemEntity *o_ptr)
 {
     if (!o_ptr->is_spell_book()) {
         return false;
     }
 
-    PlayerRealm pr(player_ptr);
-    auto choices = PlayerRealm::get_realm2_choices(player_ptr->pclass);
-    PlayerClass pc(player_ptr);
+    PlayerRealm pr(creature);
+    auto choices = PlayerRealm::get_realm2_choices(creature.pclass);
+    CreatureClass pc(creature);
     if (pc.equals(PlayerClassType::PRIEST)) {
-        if (PlayerRealm(player_ptr).realm1().is_good_attribute()) {
+        if (PlayerRealm(creature).realm1().is_good_attribute()) {
             choices.reset({ RealmType::DEATH, RealmType::DAEMON });
         } else {
             choices.reset({ RealmType::LIFE, RealmType::CRUSADE });

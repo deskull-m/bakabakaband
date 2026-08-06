@@ -27,12 +27,11 @@
 #include "spell-kind/spells-sight.h"
 #include "spell-kind/spells-teleport.h"
 #include "spell-realm/spells-hex.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/monster-entity.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "util/bit-flags-calculator.h"
 #include "util/string-processor.h"
@@ -40,23 +39,23 @@
 
 /*!
  * @brief 打撃でモンスターを混乱させる処理
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param pa_ptr 直接攻撃構造体への参照ポインタ
  * @param can_resist レベルで抵抗可能ならTRUE、できないならFALSE
  * @details
  * カオス属性や混乱の手
  */
-static void attack_confuse(PlayerType *player_ptr, player_attack_type *pa_ptr, bool can_resist = true)
+static void attack_confuse(CreatureEntity &creature, player_attack_type *pa_ptr, bool can_resist = true)
 {
-    if (player_ptr->special_attack & ATTACK_CONFUSE) {
-        player_ptr->special_attack &= ~(ATTACK_CONFUSE);
+    if (creature.has_special_attack(ATTACK_CONFUSE)) {
+        creature.remove_special_attack(ATTACK_CONFUSE);
         msg_print(_("手の輝きがなくなった。", "Your hands stop glowing."));
         RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
     }
 
-    auto &monrace = *pa_ptr->r_ptr;
+    auto &monrace = *pa_ptr->monrace;
     if (monrace.resistance_flags.has(MonsterResistanceType::NO_CONF)) {
-        if (is_original_ap_and_seen(player_ptr, *pa_ptr->m_ptr)) {
+        if (is_original_ap_and_seen(creature, *pa_ptr->m_ptr)) {
             monrace.r_resistance_flags.set(MonsterResistanceType::NO_CONF);
         }
         msg_format(_("%s^には効果がなかった。", "%s^ is unaffected."), pa_ptr->m_name);
@@ -65,23 +64,23 @@ static void attack_confuse(PlayerType *player_ptr, player_attack_type *pa_ptr, b
         msg_format(_("%s^には効果がなかった。", "%s^ is unaffected."), pa_ptr->m_name);
     } else {
         msg_format(_("%s^は混乱したようだ。", "%s^ appears confused."), pa_ptr->m_name);
-        (void)set_monster_confused(player_ptr, pa_ptr->m_idx, pa_ptr->m_ptr->get_remaining_confusion() + 10 + randint0(player_ptr->level) / 5);
+        (void)set_monster_confused(*creature.get_floor(), pa_ptr->m_idx, pa_ptr->m_ptr->get_remaining_confusion() + 10 + randint0(creature.get_level()) / 5);
     }
 }
 
 /*!
  * @brief 打撃でモンスターを朦朧とさせる処理
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param pa_ptr 直接攻撃構造体への参照ポインタ
  * @param can_resist レベルで抵抗可能ならTRUE、できないならFALSE
  * @details
  * 魔術属性
  */
-static void attack_stun(PlayerType *player_ptr, player_attack_type *pa_ptr, bool can_resist = true)
+static void attack_stun(CreatureEntity &creature, player_attack_type *pa_ptr, bool can_resist = true)
 {
-    auto &monrace = *pa_ptr->r_ptr;
+    auto &monrace = *pa_ptr->monrace;
     if (monrace.resistance_flags.has(MonsterResistanceType::NO_STUN)) {
-        if (is_original_ap_and_seen(player_ptr, *pa_ptr->m_ptr)) {
+        if (is_original_ap_and_seen(creature, *pa_ptr->m_ptr)) {
             monrace.resistance_flags.set(MonsterResistanceType::NO_STUN);
         }
         msg_format(_("%s^には効果がなかった。", "%s^ is unaffected."), pa_ptr->m_name);
@@ -89,23 +88,23 @@ static void attack_stun(PlayerType *player_ptr, player_attack_type *pa_ptr, bool
         msg_format(_("%s^には効果がなかった。", "%s^ is unaffected."), pa_ptr->m_name);
     } else {
         msg_format(_("%s^は朦朧としたようだ。", "%s^ appears stunned."), pa_ptr->m_name);
-        (void)set_monster_stunned(player_ptr, pa_ptr->m_idx, pa_ptr->m_ptr->get_remaining_stun() + 10 + randint0(player_ptr->level) / 5);
+        (void)set_monster_stunned(*creature.get_floor(), pa_ptr->m_idx, pa_ptr->m_ptr->get_remaining_stun() + 10 + randint0(creature.get_level()) / 5);
     }
 }
 
 /*!
  * @brief 打撃でモンスターを恐怖させる処理
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param pa_ptr 直接攻撃構造体への参照ポインタ
  * @param can_resist レベルで抵抗可能ならTRUE、できないならFALSE
  * @details
  * 魔術属性
  */
-static void attack_scare(PlayerType *player_ptr, player_attack_type *pa_ptr, bool can_resist = true)
+static void attack_scare(CreatureEntity &creature, player_attack_type *pa_ptr, bool can_resist = true)
 {
-    auto &monrace = *pa_ptr->r_ptr;
-    if (monrace.resistance_flags.has(MonsterResistanceType::NO_FEAR) || pa_ptr->m_ptr->mflag2.has(MonsterConstantFlagType::FRENZY)) {
-        if (is_original_ap_and_seen(player_ptr, *pa_ptr->m_ptr)) {
+    auto &monrace = *pa_ptr->monrace;
+    if (monrace.resistance_flags.has(MonsterResistanceType::NO_FEAR)) {
+        if (is_original_ap_and_seen(creature, *pa_ptr->m_ptr)) {
             monrace.resistance_flags.set(MonsterResistanceType::NO_FEAR);
         }
         msg_format(_("%s^には効果がなかった。", "%s^ is unaffected."), pa_ptr->m_name);
@@ -113,54 +112,54 @@ static void attack_scare(PlayerType *player_ptr, player_attack_type *pa_ptr, boo
         msg_format(_("%s^には効果がなかった。", "%s^ is unaffected."), pa_ptr->m_name);
     } else {
         msg_format(_("%s^は恐怖して逃げ出した！", "%s^ flees in terror!"), pa_ptr->m_name);
-        (void)set_monster_monfear(player_ptr, pa_ptr->m_idx, pa_ptr->m_ptr->get_remaining_fear() + 10 + randint0(player_ptr->level) / 5);
+        (void)set_monster_monfear(*creature.get_floor(), pa_ptr->m_idx, pa_ptr->m_ptr->get_remaining_fear() + 10 + randint0(creature.get_level()) / 5);
     }
 }
 
 /*!
  * @brief 打撃でモンスターを無力化する処理
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param pa_ptr 直接攻撃構造体への参照ポインタ
  * @details
  * 魔術属性
  */
-static void attack_dispel(PlayerType *player_ptr, player_attack_type *pa_ptr)
+static void attack_dispel(CreatureEntity &creature, player_attack_type *pa_ptr)
 {
-    if (pa_ptr->r_ptr->ability_flags.has_none_of(RF_ABILITY_ATTACK_MASK) && pa_ptr->r_ptr->ability_flags.has_none_of(RF_ABILITY_INDIRECT_MASK)) {
+    if (pa_ptr->monrace->ability_flags.has_none_of(RF_ABILITY_ATTACK_MASK) && pa_ptr->monrace->ability_flags.has_none_of(RF_ABILITY_INDIRECT_MASK)) {
         return;
     }
 
     auto dd = 2;
-    if (pa_ptr->m_ptr->mtimed[MonsterTimedEffect::SLOW]) {
+    if (pa_ptr->m_ptr->get_timed_effect(CreatureTimedEffect::DECELERATION)) {
         dd += 1;
     }
-    if (pa_ptr->m_ptr->mtimed[MonsterTimedEffect::FAST]) {
+    if (pa_ptr->m_ptr->get_timed_effect(CreatureTimedEffect::ACCELERATION)) {
         dd += 2;
     }
-    if (pa_ptr->m_ptr->mtimed[MonsterTimedEffect::INVULNERABILITY]) {
+    if (pa_ptr->m_ptr->get_timed_effect(CreatureTimedEffect::INVULNERABILITY)) {
         dd += 3;
     }
 
     msg_print(_("武器が敵の魔力を吸い取った！", "The weapon drains mana from your enemy!"));
-    dispel_monster_status(player_ptr, pa_ptr->m_idx);
+    dispel_monster_status(creature, pa_ptr->m_idx);
 
     auto sp = Dice::roll(dd, 8);
-    player_ptr->csp = std::min(player_ptr->msp, player_ptr->csp + sp);
+    creature.set_current_mp(std::min(creature.get_max_mp(), creature.get_current_mp() + sp));
     RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::MP);
 }
 
 /*!
  * @brief 打撃でモンスターを調査する処理
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param pa_ptr 直接攻撃構造体への参照ポインタ
  * @details
  * 魔術属性
  */
-static void attack_probe(PlayerType *player_ptr, player_attack_type *pa_ptr)
+static void attack_probe(CreatureEntity &creature, player_attack_type *pa_ptr)
 {
     msg_print(_("刃が敵を調査した...", "The blade probed your enemy..."));
     msg_erase();
-    msg_print(probed_monster_info(player_ptr, *pa_ptr->m_ptr, *pa_ptr->r_ptr));
+    msg_print(probed_monster_info(creature, *pa_ptr->m_ptr, *pa_ptr->monrace));
     msg_erase();
     const auto mes = MonraceList::get_instance().probe_lore(pa_ptr->r_idx);
     if (mes) {
@@ -171,19 +170,19 @@ static void attack_probe(PlayerType *player_ptr, player_attack_type *pa_ptr)
 
 /*!
  * @breif カオス武器でのテレポート・アウェイを行うか判定する (抵抗されたら無効)
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param pa_ptr 直接攻撃構造体への参照ポインタ
  * @return 抵抗されたらTRUE、アウェイされるならFALSE
  */
-static bool judge_tereprt_resistance(PlayerType *player_ptr, player_attack_type *pa_ptr)
+static bool judge_tereprt_resistance(CreatureEntity &creature, player_attack_type *pa_ptr)
 {
-    auto &monrace = *pa_ptr->r_ptr;
+    auto &monrace = *pa_ptr->monrace;
     if (monrace.resistance_flags.has_not(MonsterResistanceType::RESIST_TELEPORT)) {
         return false;
     }
 
     if (monrace.kind_flags.has(MonsterKindType::UNIQUE)) {
-        if (is_original_ap_and_seen(player_ptr, *pa_ptr->m_ptr)) {
+        if (is_original_ap_and_seen(creature, *pa_ptr->m_ptr)) {
             monrace.r_resistance_flags.set(MonsterResistanceType::RESIST_TELEPORT);
         }
 
@@ -192,7 +191,7 @@ static bool judge_tereprt_resistance(PlayerType *player_ptr, player_attack_type 
     }
 
     if (monrace.level > randint1(100)) {
-        if (is_original_ap_and_seen(player_ptr, *pa_ptr->m_ptr)) {
+        if (is_original_ap_and_seen(creature, *pa_ptr->m_ptr)) {
             monrace.r_resistance_flags.set(MonsterResistanceType::RESIST_TELEPORT);
         }
 
@@ -205,37 +204,37 @@ static bool judge_tereprt_resistance(PlayerType *player_ptr, player_attack_type 
 
 /*!
  * @brief カオス武器でのテレポート・アウェイを実行する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param pa_ptr 直接攻撃構造体への参照ポインタ
  * @param num 現在の攻撃回数 (テレポートしてしまったら追加攻撃できないのでその補正)
  */
-static void attack_teleport_away(PlayerType *player_ptr, player_attack_type *pa_ptr, int *num)
+static void attack_teleport_away(CreatureEntity &creature, player_attack_type *pa_ptr, int *num)
 {
-    if (judge_tereprt_resistance(player_ptr, pa_ptr)) {
+    if (judge_tereprt_resistance(creature, pa_ptr)) {
         return;
     }
 
-    msg_format(_("%s^は消えた！", "%s^ disappears!"), pa_ptr->m_name);
-    teleport_away(player_ptr, pa_ptr->m_idx, 50, TELEPORT_PASSIVE);
+    msg_format(_("％s^は消えた！", "%s^ disappears!"), pa_ptr->m_name);
+    teleport_away(creature, pa_ptr->m_idx, 50, TELEPORT_PASSIVE);
     *num = pa_ptr->num_blow + 1;
     *(pa_ptr->mdeath) = true;
 }
 
 /*!
  * @brief カオス武器でのテレポート・アウェイを実行する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param pa_ptr 直接攻撃構造体への参照ポインタ
  * @param y モンスターのY座標
  * @param x モンスターのX座標
  */
-static void attack_polymorph(PlayerType *player_ptr, player_attack_type *pa_ptr, POSITION y, POSITION x)
+static void attack_polymorph(CreatureEntity &creature, player_attack_type *pa_ptr, POSITION y, POSITION x)
 {
-    const auto &monrace = *pa_ptr->r_ptr;
+    const auto &monrace = *pa_ptr->monrace;
     if (monrace.kind_flags.has(MonsterKindType::UNIQUE) || monrace.misc_flags.has(MonsterMiscType::QUESTOR) || monrace.resistance_flags.has_any_of(RFR_EFF_RESIST_CHAOS_MASK)) {
         return;
     }
 
-    if (polymorph_monster(player_ptr, y, x)) {
+    if (polymorph_monster(creature, y, x)) {
         msg_format(_("%s^は変化した！", "%s^ changes!"), pa_ptr->m_name);
         *(pa_ptr->fear) = false;
         pa_ptr->weak = false;
@@ -243,76 +242,88 @@ static void attack_polymorph(PlayerType *player_ptr, player_attack_type *pa_ptr,
         msg_format(_("%s^には効果がなかった。", "%s^ is unaffected."), pa_ptr->m_name);
     }
 
-    pa_ptr->m_ptr = &player_ptr->current_floor_ptr->m_list[pa_ptr->m_idx];
-    angband_strcpy(pa_ptr->m_name, monster_desc(player_ptr, *pa_ptr->m_ptr, 0), sizeof(pa_ptr->m_name));
+    pa_ptr->m_ptr = &creature.get_floor()->get_monster(pa_ptr->m_idx);
+    angband_strcpy(pa_ptr->m_name, monster_desc(creature, *pa_ptr->m_ptr, 0), sizeof(pa_ptr->m_name));
 }
 
 /*!
  * @brief ゴールデンハンマーによるアイテム奪取処理
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param pa_ptr 直接攻撃構造体への参照ポインタ
  */
-static void attack_golden_hammer(PlayerType *player_ptr, player_attack_type *pa_ptr)
+static void attack_golden_hammer(CreatureEntity &creature, player_attack_type *pa_ptr)
 {
-    auto &floor = *player_ptr->current_floor_ptr;
-    auto &monster = floor.m_list[pa_ptr->m_idx];
-    if (monster.hold_o_idx_list.empty()) {
+    auto &floor = *creature.get_floor();
+    auto &monster = floor.get_monster(pa_ptr->m_idx);
+
+    // [フェーズ A-4] inventory[] のパックスロットから先頭の有効アイテムを 1 個盗む
+    INVENTORY_IDX src_slot = -1;
+    for (INVENTORY_IDX i = 0; i < INVEN_PACK; i++) {
+        if (monster.inventory[i]->is_valid()) {
+            src_slot = i;
+            break;
+        }
+    }
+    if (src_slot < 0) {
         return;
     }
 
-    auto &item = *floor.o_list[monster.hold_o_idx_list.front()];
-    const auto item_name = describe_flavor(player_ptr, item, OD_NAME_ONLY);
-    item.held_m_idx = 0;
-    item.marked.clear().set(OmType::TOUCHED);
-    monster.hold_o_idx_list.pop_front();
+    auto &item_in_pack = *monster.inventory[src_slot];
+    auto stolen = item_in_pack.clone();
+    const auto item_name = describe_flavor(creature, stolen, OD_NAME_ONLY);
+    stolen.held_m_idx = 0;
+    stolen.marked.clear().set(OmType::TOUCHED);
+    item_in_pack.wipe();
+    if (monster.get_inven_cnt() > 0) {
+    }
     msg_format(_("%sを奪った。", "You snatched %s."), item_name.data());
-    store_item_to_inventory(player_ptr, &item);
+    creature.store_item(stolen);
 }
 
 /*!
  * @brief カオス武器その他でモンスターのステータスを変化させる
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param pa_ptr 直接攻撃構造体への参照ポインタ
  * @param y モンスターのY座標
  * @param x モンスターのX座標
  * @param num 現在の攻撃回数
  */
-void change_monster_stat(PlayerType *player_ptr, player_attack_type *pa_ptr, const POSITION y, const POSITION x, int *num)
+void change_monster_stat(CreatureEntity &creature, player_attack_type *pa_ptr, const POSITION y, const POSITION x, int *num)
 {
-    auto should_confuse = any_bits(player_ptr->special_attack, ATTACK_CONFUSE);
+    auto should_confuse = creature.has_special_attack(ATTACK_CONFUSE);
     should_confuse |= pa_ptr->chaos_effect == CE_CONFUSION;
     should_confuse |= pa_ptr->mode == HISSATSU_CONF;
-    should_confuse |= SpellHex(player_ptr).is_spelling_specific(HEX_CONFUSION);
+    should_confuse |= SpellHex(creature).is_spelling_specific(HEX_CONFUSION);
     if (should_confuse) {
-        attack_confuse(player_ptr, pa_ptr);
+        attack_confuse(creature, pa_ptr);
     }
 
     if (pa_ptr->magical_effect == MagicalBrandEffectType::STUN) {
-        attack_stun(player_ptr, pa_ptr, false);
+        attack_stun(creature, pa_ptr, false);
     }
 
     if (pa_ptr->magical_effect == MagicalBrandEffectType::SCARE) {
-        attack_scare(player_ptr, pa_ptr, false);
+        attack_scare(creature, pa_ptr, false);
     }
 
     if (pa_ptr->magical_effect == MagicalBrandEffectType::DISPELL) {
-        attack_dispel(player_ptr, pa_ptr);
+        attack_dispel(creature, pa_ptr);
     }
 
     if (pa_ptr->magical_effect == MagicalBrandEffectType::PROBE) {
-        attack_probe(player_ptr, pa_ptr);
+        attack_probe(creature, pa_ptr);
     }
 
     if (pa_ptr->chaos_effect == CE_TELE_AWAY) {
-        attack_teleport_away(player_ptr, pa_ptr, num);
+        attack_teleport_away(creature, pa_ptr, num);
     }
 
     if (pa_ptr->chaos_effect == CE_POLYMORPH && (randint1(90) > pa_ptr->m_ptr->get_monrace().level)) {
-        attack_polymorph(player_ptr, pa_ptr, y, x);
+        attack_polymorph(creature, pa_ptr, y, x);
     }
 
-    const auto &item = *player_ptr->inventory[enum2i(INVEN_MAIN_HAND) + pa_ptr->hand];
+    const auto &item = *creature.inventory[enum2i(INVEN_MAIN_HAND) + pa_ptr->hand];
     if (item.is_specific_artifact(FixedArtifactId::G_HAMMER)) {
-        attack_golden_hammer(player_ptr, pa_ptr);
+        attack_golden_hammer(creature, pa_ptr);
     }
 }

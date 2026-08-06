@@ -2,6 +2,6 @@
 
 #include "system/angband.h"
 
+class CreatureEntity;
 class ItemEntity;
-class PlayerType;
-bool object_sort_comp(PlayerType *player_ptr, const ItemEntity &item1, const ItemEntity &item2);
+bool object_sort_comp(CreatureEntity &creature, const ItemEntity &item1, const ItemEntity &item2);

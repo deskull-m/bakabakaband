@@ -4,12 +4,12 @@
 #include <string>
 #include <tl/optional.hpp>
 
+class CreatureEntity;
 class Direction;
-class PlayerType;
 struct ProjectResult;
 class SpellsMirrorMaster {
 public:
-    SpellsMirrorMaster(PlayerType *player_ptr);
+    SpellsMirrorMaster(CreatureEntity &creature);
     void remove_all_mirrors(bool explode);
     void remove_mirror(int y, int x);
     bool mirror_tunnel();
@@ -20,7 +20,7 @@ public:
     void super_ray(const Direction &dir, int dam);
 
 private:
-    PlayerType *player_ptr;
+    CreatureEntity *creature_ptr;
     Pos2D get_next_mirror_position(const Pos2D &pos_current) const;
     void project_seeker_ray(int target_x, int target_y, int dam);
     void project_super_ray(int target_x, int target_y, int dam);

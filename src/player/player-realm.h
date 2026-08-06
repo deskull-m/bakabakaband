@@ -13,12 +13,12 @@ using RealmChoices = EnumClassFlagGroup<RealmType>;
 
 enum class ItemKindType : short;
 enum class PlayerClassType : short;
-class PlayerType;
+class CreatureEntity;
 class LocalizedString;
 struct magic_type;
 class PlayerRealm {
 public:
-    PlayerRealm(PlayerType *player_ptr);
+    PlayerRealm(CreatureEntity &creature);
 
     static const LocalizedString &get_name(RealmType realm);
     static std::string_view get_explanation(RealmType realm);
@@ -61,7 +61,7 @@ public:
 private:
     void set_(RealmType realm1, RealmType realm2);
 
-    PlayerType *player_ptr;
+    CreatureEntity *creature_ptr;
     Realm realm1_;
     Realm realm2_;
 };

@@ -1,0 +1,69 @@
+[gd_scene load_steps=3 format=3 uid="uid://bakabakaband_status_panel"]
+
+[ext_resource type="Script" path="res://scripts/status_panel.gd" id="1_status"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_status"]
+bg_color = Color(0.1, 0.07, 0.07, 0.85)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(1, 1, 1, 0.5)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+content_margin_left = 8.0
+content_margin_top = 6.0
+content_margin_right = 8.0
+content_margin_bottom = 6.0
+
+[node name="StatusPanel" type="PanelContainer"]
+custom_minimum_size = Vector2(196, 0)
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_status")
+script = ExtResource("1_status")
+
+[node name="VBox" type="VBoxContainer" parent="."]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="NameLabel" type="Label" parent="VBox"]
+layout_mode = 2
+text = "-"
+
+[node name="RaceClassLabel" type="Label" parent="VBox"]
+layout_mode = 2
+text = "-"
+
+[node name="LevelLabel" type="Label" parent="VBox"]
+layout_mode = 2
+text = "Lv -"
+
+[node name="HpLabel" type="Label" parent="VBox"]
+layout_mode = 2
+text = "HP -"
+
+[node name="SpLabel" type="Label" parent="VBox"]
+layout_mode = 2
+text = "SP -"
+
+[node name="AcLabel" type="Label" parent="VBox"]
+layout_mode = 2
+text = "AC -"
+
+[node name="SpeedLabel" type="Label" parent="VBox"]
+layout_mode = 2
+text = "速度 +0"
+
+[node name="GoldLabel" type="Label" parent="VBox"]
+layout_mode = 2
+text = "$ -"
+
+[node name="DepthLabel" type="Label" parent="VBox"]
+layout_mode = 2
+text = "地上"
+
+[node name="StatsLabel" type="Label" parent="VBox"]
+layout_mode = 2
+text = "-"

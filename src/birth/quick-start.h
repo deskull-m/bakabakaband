@@ -30,7 +30,7 @@ struct birther {
 
     short stat_max[6]{}; /* Current "maximal" stat values */
     short stat_max_max[6]{}; /* Maximal "maximal" stat values */
-    int player_hp[PY_MAX_LEVEL]{};
+    int hp_table[PY_MAX_LEVEL]{};
 
     int16_t patron{}; /*! パトロンのID */
 
@@ -43,7 +43,8 @@ struct birther {
 
 extern birther previous_char;
 
+class CreatureEntity;
 class PlayerType;
-bool ask_quick_start(PlayerType *player_ptr);
-void save_prev_data(PlayerType *player_ptr, birther *birther_ptr);
-void load_prev_data(PlayerType *player_ptr, bool swap);
+bool ask_quick_start(CreatureEntity &creature);
+void save_prev_data(CreatureEntity &creature, birther *birther_ptr);
+void load_prev_data(CreatureEntity &creature, bool swap);

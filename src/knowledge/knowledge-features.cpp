@@ -10,8 +10,8 @@
 #include "io-dump/dump-util.h"
 #include "io/input-key-acceptor.h"
 #include "knowledge/lighting-level-table.h"
+#include "system/creature-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/player-type-definition.h"
 #include "system/services/dungeon-service.h"
 #include "system/terrain/terrain-definition.h"
 #include "system/terrain/terrain-list.h"
@@ -353,7 +353,7 @@ void do_cmd_knowledge_features(bool *need_redraw, bool visual_only, IDX direct_f
 /*
  * Dungeon
  */
-void do_cmd_knowledge_dungeon(PlayerType *player_ptr)
+void do_cmd_knowledge_dungeon(CreatureEntity &creature)
 {
     FILE *fff = nullptr;
     GAME_TEXT file_name[FILE_NAME_SIZE];
@@ -367,6 +367,6 @@ void do_cmd_knowledge_dungeon(PlayerType *player_ptr)
     }
 
     angband_fclose(fff);
-    FileDisplayer(player_ptr->name).display(true, file_name, 0, 0, _("今までに入ったダンジョン", "Dungeon"));
+    FileDisplayer(creature.name).display(true, file_name, 0, 0, _("今までに入ったダンジョン", "Dungeon"));
     fd_kill(file_name);
 }

@@ -30,8 +30,8 @@
 #include "store/sell-order.h"
 #include "store/store-util.h"
 #include "store/store.h"
+#include "system/creature-entity.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "util/int-char-converter.h"
 #include "view/display-messages.h"
 #include "view/display-store.h"
@@ -43,7 +43,7 @@ bool leave_store = false;
 /*!
  * @brief 店舗処理コマンド選択のメインルーチン /
  * Process a command in a store
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @note
  * <pre>
  * Note that we must allow the use of a few "special" commands
@@ -52,7 +52,7 @@ bool leave_store = false;
  * but not in the stores, to prevent chaos.
  * </pre>
  */
-void store_process_command(PlayerType *player_ptr, StoreSaleType store_num)
+void store_process_command(CreatureEntity &creature, StoreSaleType store_num)
 {
     repeat_check();
     if (rogue_like_commands && (command_cmd == 'l')) {
@@ -81,7 +81,7 @@ void store_process_command(PlayerType *player_ptr, StoreSaleType store_num)
                 }
             }
 
-            display_store_inventory(player_ptr, store_num);
+            display_store_inventory(creature, store_num);
         }
 
         break;
@@ -101,53 +101,53 @@ void store_process_command(PlayerType *player_ptr, StoreSaleType store_num)
                 store_top = 0;
             }
 
-            display_store_inventory(player_ptr, store_num);
+            display_store_inventory(creature, store_num);
         }
 
         break;
     }
     case KTRL('R'): {
-        do_cmd_redraw(player_ptr);
-        display_store(player_ptr, store_num);
+        do_cmd_redraw(creature);
+        display_store(creature, store_num);
         break;
     }
     case 'g': {
-        store_purchase(player_ptr, store_num);
+        store_purchase(creature, store_num);
         break;
     }
     case 'd': {
-        store_sell(player_ptr, store_num);
+        store_sell(creature, store_num);
         break;
     }
     case 'x': {
-        store_examine(player_ptr, store_num);
+        store_examine(creature, store_num);
         break;
     }
     case '\r': {
         break;
     }
     case 'w': {
-        do_cmd_wield(player_ptr);
+        do_cmd_wield(creature);
         break;
     }
     case 't': {
-        do_cmd_takeoff(player_ptr);
+        do_cmd_takeoff(creature);
         break;
     }
     case 'k': {
-        do_cmd_destroy(player_ptr);
+        do_cmd_destroy(creature);
         break;
     }
     case 'e': {
-        do_cmd_equip(player_ptr);
+        do_cmd_equip(creature);
         break;
     }
     case 'i': {
-        do_cmd_inven(player_ptr);
+        do_cmd_inven(creature);
         break;
     }
     case 'I': {
-        do_cmd_observe(player_ptr);
+        do_cmd_observe(creature);
         break;
     }
     case KTRL('I'): {
@@ -155,78 +155,78 @@ void store_process_command(PlayerType *player_ptr, StoreSaleType store_num)
         break;
     }
     case 'b': {
-        PlayerClass pc(player_ptr);
+        CreatureClass pc(creature);
         if (pc.can_browse()) {
-            do_cmd_mind_browse(player_ptr);
+            do_cmd_mind_browse(creature);
         } else if (pc.equals(PlayerClassType::ELEMENTALIST)) {
-            do_cmd_element_browse(player_ptr);
+            do_cmd_element_browse(creature);
         } else if (pc.equals(PlayerClassType::SMITH)) {
-            do_cmd_kaji(player_ptr, true);
+            do_cmd_kaji(creature, true);
         } else if (pc.equals(PlayerClassType::MAGIC_EATER)) {
-            do_cmd_magic_eater(player_ptr, true, false);
+            do_cmd_magic_eater(creature, true, false);
         } else if (pc.equals(PlayerClassType::SNIPER)) {
-            do_cmd_snipe_browse(player_ptr);
+            do_cmd_snipe_browse(creature);
         } else {
-            do_cmd_browse(player_ptr);
+            do_cmd_browse(creature);
         }
 
         break;
     }
     case '{': {
-        do_cmd_inscribe(player_ptr);
+        do_cmd_inscribe(creature);
         break;
     }
     case '}': {
-        do_cmd_uninscribe(player_ptr);
+        do_cmd_uninscribe(creature);
         break;
     }
     case '?': {
-        do_cmd_help(player_ptr);
+        do_cmd_help(creature);
         break;
     }
     case '/': {
-        do_cmd_query_symbol(player_ptr);
+        do_cmd_query_symbol(creature);
         break;
     }
     case 'C': {
-        player_ptr->town_num = old_town_num;
-        do_cmd_player_status(player_ptr);
-        player_ptr->town_num = inner_town_num;
-        display_store(player_ptr, store_num);
+        creature.set_town_num(old_town_num);
+        do_cmd_player_status(creature);
+        creature.set_town_num(inner_town_num);
+        display_store(creature, store_num);
         break;
     }
     case '!':
         term_user();
         break;
     case '"': {
-        player_ptr->town_num = old_town_num;
-        do_cmd_pref(player_ptr);
-        player_ptr->town_num = inner_town_num;
+        creature.set_town_num(old_town_num);
+        do_cmd_pref(creature);
+        creature.set_town_num(inner_town_num);
         break;
     }
     case '@': {
-        player_ptr->town_num = old_town_num;
-        do_cmd_macros(player_ptr);
-        player_ptr->town_num = inner_town_num;
+        creature.set_town_num(old_town_num);
+        do_cmd_macros(creature);
+        creature.set_town_num(inner_town_num);
         break;
     }
     case '%': {
-        player_ptr->town_num = old_town_num;
-        do_cmd_visuals(player_ptr);
-        player_ptr->town_num = inner_town_num;
+        creature.set_town_num(old_town_num);
+        do_cmd_visuals(creature);
+        creature.set_town_num(inner_town_num);
         break;
     }
     case '&': {
-        player_ptr->town_num = old_town_num;
-        do_cmd_colors(player_ptr);
-        player_ptr->town_num = inner_town_num;
+        creature.set_town_num(old_town_num);
+        do_cmd_colors(creature);
+        creature.set_town_num(inner_town_num);
         break;
     }
     case '=': {
-        do_cmd_options(player_ptr);
-        (void)combine_and_reorder_home(player_ptr, StoreSaleType::HOME);
-        do_cmd_redraw(player_ptr);
-        display_store(player_ptr, store_num);
+        do_cmd_options(creature);
+        (void)combine_and_reorder_home(creature, StoreSaleType::HOME);
+        do_cmd_redraw(creature);
+        display_store(creature, store_num);
         break;
     }
     case ':': {
@@ -238,7 +238,7 @@ void store_process_command(PlayerType *player_ptr, StoreSaleType store_num)
         break;
     }
     case KTRL('F'): {
-        do_cmd_feeling(player_ptr);
+        do_cmd_feeling(creature);
         break;
     }
     case KTRL('O'): {
@@ -250,11 +250,11 @@ void store_process_command(PlayerType *player_ptr, StoreSaleType store_num)
         break;
     }
     case '|': {
-        do_cmd_diary(player_ptr);
+        do_cmd_diary(creature);
         break;
     }
     case '~': {
-        do_cmd_knowledge(player_ptr);
+        do_cmd_knowledge(creature);
         break;
     }
     case '(': {
@@ -262,12 +262,12 @@ void store_process_command(PlayerType *player_ptr, StoreSaleType store_num)
         break;
     }
     case ')': {
-        do_cmd_save_screen(player_ptr);
+        do_cmd_save_screen(creature);
         break;
     }
     default: {
         if ((store_num == StoreSaleType::MUSEUM) && (command_cmd == 'r')) {
-            museum_remove_object(player_ptr);
+            museum_remove_object(creature);
         } else {
             msg_print(_("そのコマンドは店の中では使えません。", "That command does not work in stores."));
         }

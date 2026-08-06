@@ -14,13 +14,13 @@
 #include "player/special-defense-types.h"
 #include "specific-object/torch.h"
 #include "status/action-setter.h"
+#include "system/creature-entity.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "world/world.h"
 
-ThrowCommand::ThrowCommand(PlayerType *player_ptr)
-    : player_ptr(player_ptr)
+ThrowCommand::ThrowCommand(CreatureEntity &creature)
+    : creature_ptr(&creature)
 {
 }
 
@@ -28,7 +28,7 @@ ThrowCommand::ThrowCommand(PlayerType *player_ptr)
  * @brief 投射処理メインルーチン /
  * Throw an object from the pack or floor.
  * @param mult 威力の倍率
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param boomerang ブーメラン処理ならばTRUE
  * @param shuriken 忍者の手裏剣処理ならばTRUE ← 間違い、-1が渡されてくることがある。要調査.
  * @return ターンを消費した場合TRUEを返す
@@ -47,11 +47,11 @@ bool ThrowCommand::do_cmd_throw(int mult, bool boomerang, OBJECT_IDX shuriken)
         return false;
     }
 
-    PlayerClass pc(this->player_ptr);
+    CreatureClass pc(*this->creature_ptr);
     pc.break_samurai_stance({ SamuraiStanceType::MUSOU });
 
     ItemEntity tmp_object;
-    ObjectThrowEntity ote(this->player_ptr, &tmp_object, delay_factor, mult, boomerang, shuriken);
+    ObjectThrowEntity ote(*this->creature_ptr, &tmp_object, delay_factor, mult, boomerang, shuriken);
     if (!ote.check_can_throw()) {
         return false;
     }
@@ -76,12 +76,12 @@ bool ThrowCommand::do_cmd_throw(int mult, bool boomerang, OBJECT_IDX shuriken)
         torch_lost_fuel(ote.q_ptr);
     }
 
-    ote.corruption_possibility = ote.has_hit_monster() ? breakage_chance(this->player_ptr, ote.q_ptr, pc.equals(PlayerClassType::ARCHER), 0) : 0;
+    ote.corruption_possibility = ote.has_hit_monster() ? breakage_chance(*this->creature_ptr, ote.q_ptr, pc.equals(PlayerClassType::ARCHER), 0) : 0;
     ote.display_figurine_throw();
     ote.display_potion_throw();
     ote.check_boomerang_throw();
     ote.process_boomerang_back();
     ote.drop_thrown_item();
-    this->player_ptr->plus_incident_tree("THROW", 1);
+    this->creature_ptr->plus_incident_tree("THROW", 1);
     return true;
 }

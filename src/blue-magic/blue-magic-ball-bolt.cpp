@@ -10,7 +10,7 @@
 #include "mspell/mspell-damage-calculator.h"
 #include "spell-kind/spells-launcher.h"
 #include "system/angband-exceptions.h"
-#include "system/player-type-definition.h"
+#include "system/creature-entity.h"
 #include "target/target-getter.h"
 #include "view/display-messages.h"
 #include <fmt/format.h>
@@ -65,9 +65,9 @@ const std::unordered_map<MonsterAbilityType, blue_magic_bolt_type> BLUE_MAGIC_BO
 };
 }
 
-bool cast_blue_magic_ball(PlayerType *player_ptr, bmc_type *bmc_ptr)
+bool cast_blue_magic_ball(CreatureEntity &creature, bmc_type *bmc_ptr)
 {
-    const auto dir = get_aim_dir(player_ptr);
+    const auto dir = get_aim_dir(creature);
     if (!dir) {
         return false;
     }
@@ -80,14 +80,14 @@ bool cast_blue_magic_ball(PlayerType *player_ptr, bmc_type *bmc_ptr)
 
     const auto &[attribute_type, radius, message] = magic->second;
     msg_print(message);
-    const auto damage = monspell_bluemage_damage(player_ptr, bmc_ptr->spell, bmc_ptr->plev, DAM_ROLL);
-    fire_ball(player_ptr, attribute_type, dir, damage, radius);
+    const auto damage = monspell_bluemage_damage(creature, bmc_ptr->spell, bmc_ptr->plev, DAM_ROLL);
+    fire_ball(creature, attribute_type, dir, damage, radius);
     return true;
 };
 
-bool cast_blue_magic_bolt(PlayerType *player_ptr, bmc_type *bmc_ptr)
+bool cast_blue_magic_bolt(CreatureEntity &creature, bmc_type *bmc_ptr)
 {
-    const auto dir = get_aim_dir(player_ptr);
+    const auto dir = get_aim_dir(creature);
     if (!dir) {
         return false;
     }
@@ -100,7 +100,7 @@ bool cast_blue_magic_bolt(PlayerType *player_ptr, bmc_type *bmc_ptr)
 
     const auto &[attribute_type, message] = magic->second;
     msg_print(message);
-    const auto damage = monspell_bluemage_damage(player_ptr, bmc_ptr->spell, bmc_ptr->plev, DAM_ROLL);
-    fire_bolt(player_ptr, attribute_type, dir, damage);
+    const auto damage = monspell_bluemage_damage(creature, bmc_ptr->spell, bmc_ptr->plev, DAM_ROLL);
+    fire_bolt(creature, attribute_type, dir, damage);
     return true;
 };

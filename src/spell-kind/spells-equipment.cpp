@@ -7,20 +7,20 @@
 #include "object-hook/hook-weapon.h"
 #include "object/object-info.h"
 #include "racial/racial-android.h"
+#include "system/creature-entity.h"
 #include "system/item-entity.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "view/display-messages.h"
 
 /*!
  * @brief プレイヤーの装備劣化処理 /
  * Apply disenchantment to the player's stuff
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param mode 最下位ビットが1ならば劣化処理が若干低減される
  * @return 劣化処理に関するメッセージが発せられた場合はTRUEを返す /
  * Return "TRUE" if the player notices anything
  */
-bool apply_disenchant(PlayerType *player_ptr, BIT_FLAGS mode)
+bool apply_disenchant(CreatureEntity &creature, BIT_FLAGS mode)
 {
     constexpr static auto candidates = {
         INVEN_MAIN_HAND,
@@ -34,7 +34,7 @@ bool apply_disenchant(PlayerType *player_ptr, BIT_FLAGS mode)
     };
 
     const auto t = rand_choice(candidates);
-    auto &item = *player_ptr->inventory[t];
+    auto &item = *creature.inventory[t];
     if (!item.is_valid()) {
         return false;
     }
@@ -47,7 +47,7 @@ bool apply_disenchant(PlayerType *player_ptr, BIT_FLAGS mode)
         return false;
     }
 
-    const auto item_name = describe_flavor(player_ptr, item, (OD_OMIT_PREFIX | OD_NAME_ONLY));
+    const auto item_name = describe_flavor(creature, item, (OD_OMIT_PREFIX | OD_NAME_ONLY));
     if (item.is_fixed_or_random_artifact() && evaluate_percent(71)) {
 #ifdef JP
         msg_format("%s(%c)は劣化を跳ね返した！", item_name.data(), index_to_label(t));
@@ -100,8 +100,8 @@ bool apply_disenchant(PlayerType *player_ptr, BIT_FLAGS mode)
 #else
     msg_format("Your %s (%c) %s disenchanted!", item_name.data(), index_to_label(t), (item.number != 1) ? "were" : "was");
 #endif
-    chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::HARMONY, 1);
-    chg_virtue(static_cast<CreatureEntity &>(*player_ptr), Virtue::ENCHANT, -2);
+    chg_virtue(creature, Virtue::HARMONY, 1);
+    chg_virtue(creature, Virtue::ENCHANT, -2);
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(StatusRecalculatingFlag::BONUS);
     static constexpr auto flags = {
@@ -109,6 +109,6 @@ bool apply_disenchant(PlayerType *player_ptr, BIT_FLAGS mode)
         SubWindowRedrawingFlag::PLAYER,
     };
     rfu.set_flags(flags);
-    calc_android_exp(player_ptr);
+    calc_android_exp(creature);
     return true;
 }

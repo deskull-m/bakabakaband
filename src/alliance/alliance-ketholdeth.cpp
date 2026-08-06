@@ -1,15 +1,15 @@
 #include "alliance/alliance-ketholdeth.h"
+#include "system/creature-entity.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/player-type-definition.h"
 
-int AllianceKetholdeth::calcImpressionPoint([[maybe_unused]] PlayerType *creature_ptr) const
+int AllianceKetholdeth::calcImpressionPoint([[maybe_unused]] const CreatureEntity &creature) const
 {
     return 0;
 }
 
 bool AllianceKetholdeth::isAnnihilated()
 {
-    return MonraceList::get_instance().get_monrace(MonraceId::PRINCESS_KETHOLDETH).mob_num == 0;
+    return all_monraces_extinct({ MonraceId::PRINCESS_KETHOLDETH });
 }

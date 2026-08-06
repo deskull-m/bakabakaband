@@ -3,9 +3,9 @@
 #include "monster-race/monster-race-hook.h"
 #include "monster/monster-list.h"
 #include "monster/monster-util.h"
+#include "system/creature-entity.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/player-type-definition.h"
 #include "system/services/dungeon-service.h"
 #include <numeric>
 
@@ -94,13 +94,13 @@ std::vector<std::string> MeleeArena::build_gladiators_names() const
 
 /*!
  * @brief モンスター闘技場に参加するモンスターを更新する。
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
-void MeleeArena::update_gladiators(PlayerType *player_ptr)
+void MeleeArena::update_gladiators(CreatureEntity &creature)
 {
     const auto mon_level = DungeonService::decide_gradiator_level();
     while (true) {
-        auto [total, is_applicable] = this->set_gladiators(player_ptr, mon_level);
+        auto [total, is_applicable] = this->set_gladiators(creature, mon_level);
         const auto &[count, new_total] = this->set_odds(total, is_applicable);
         total = new_total;
         if (count == NUM_GLADIATORS) {
@@ -109,13 +109,13 @@ void MeleeArena::update_gladiators(PlayerType *player_ptr)
     }
 }
 
-std::pair<int, bool> MeleeArena::set_gladiators(PlayerType *player_ptr, int mon_level)
+std::pair<int, bool> MeleeArena::set_gladiators(CreatureEntity &creature, int mon_level)
 {
     auto total = 0;
     auto is_applicable = false;
     for (auto i = 0; i < NUM_GLADIATORS; i++) {
         auto &gladiator = this->get_gladiator(i);
-        gladiator.monrace_id = this->search_gladiator(player_ptr, mon_level, i);
+        gladiator.monrace_id = this->search_gladiator(creature, mon_level, i);
         if (gladiator.get_monrace().level < 45) {
             is_applicable = true;
         }
@@ -163,13 +163,13 @@ std::pair<int, int> MeleeArena::set_odds(int current_total, bool is_applicable)
     return { count, total };
 }
 
-MonraceId MeleeArena::search_gladiator(PlayerType *player_ptr, int mon_level, int num_gladiator) const
+MonraceId MeleeArena::search_gladiator(CreatureEntity &creature, int mon_level, int num_gladiator) const
 {
     const auto &monraces = MonraceList::get_instance();
     MonraceId monrace_id;
     while (true) {
-        get_mon_num_prep_enum(player_ptr, MonraceHook::ARENA);
-        monrace_id = get_mon_num(player_ptr, 0, mon_level, PM_ARENA);
+        get_mon_num_prep_enum(creature, MonraceHook::ARENA);
+        monrace_id = get_mon_num(creature, 0, mon_level, PM_ARENA);
         if (!MonraceList::is_valid(monrace_id)) {
             continue;
         }

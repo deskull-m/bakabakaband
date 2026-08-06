@@ -3,16 +3,16 @@
 #include "effect/effect-characteristics.h"
 #include "floor/floor-util.h"
 #include "monster-floor/monster-summon.h"
+#include "system/creature-entity.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/player-type-definition.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
 
-int AllianceTophamHatt::calcImpressionPoint(PlayerType *creature_ptr) const
+int AllianceTophamHatt::calcImpressionPoint(const CreatureEntity &creature) const
 {
-    auto impression = Alliance::calcPlayerPower(*creature_ptr, 10, 5);
+    auto impression = Alliance::calcPlayerPower(creature, 10, 5);
 
     const auto &monraces = MonraceList::get_instance();
 
@@ -27,5 +27,5 @@ int AllianceTophamHatt::calcImpressionPoint(PlayerType *creature_ptr) const
 
 bool AllianceTophamHatt::isAnnihilated()
 {
-    return MonraceList::get_instance().get_monrace(MonraceId::TOPHAMHATT_ENGINEER).mob_num == 0;
+    return all_monraces_extinct({ MonraceId::TOPHAMHATT_ENGINEER });
 }

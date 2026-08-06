@@ -7,7 +7,6 @@
 
 #include "autopick/autopick-matcher.h"
 #include "autopick/autopick-flags-table.h"
-#include "autopick/autopick-key-flag-process.h"
 #include "autopick/autopick-util.h"
 #include "inventory/inventory-slot-types.h"
 #include "object-enchant/item-feeling.h"
@@ -21,20 +20,20 @@
 #include "player-base/player-class.h"
 #include "player/player-realm.h"
 #include "system/baseitem/baseitem-definition.h"
+#include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/player-type-definition.h"
 #include "util/string-processor.h"
 
-static bool check_item_features(PlayerType *player_ptr, const autopick_type &entry, const ItemEntity &item, const ItemKindType tval)
+static bool check_item_features(CreatureEntity &creature, const autopick_type &entry, const ItemEntity &item, const ItemKindType tval)
 {
     if (entry.has(FLG_WEAPONS)) {
         return item.is_weapon();
     }
 
     if (entry.has(FLG_FAVORITE_WEAPONS)) {
-        return object_is_favorite(player_ptr, &item);
+        return object_is_favorite(creature, &item);
     }
 
     if (entry.has(FLG_ARMORS)) {
@@ -74,7 +73,7 @@ static bool check_item_features(PlayerType *player_ptr, const autopick_type &ent
     }
 
     if (entry.has(FLG_CORPSES)) {
-        return (tval == ItemKindType::MONSTER_REMAINS) || (tval == ItemKindType::FLAVOR_SKELETON);
+        return tval == ItemKindType::MONSTER_REMAINS || tval == ItemKindType::FLAVOR_SKELETON;
     }
 
     if (entry.has(FLG_SPELLBOOKS)) {
@@ -110,7 +109,7 @@ static bool check_item_features(PlayerType *player_ptr, const autopick_type &ent
     }
 
     if (entry.has(FLG_HELMS)) {
-        return (tval == ItemKindType::CROWN) || (tval == ItemKindType::HELM);
+        return tval == ItemKindType::CROWN || tval == ItemKindType::HELM;
     }
 
     if (entry.has(FLG_GLOVES)) {
@@ -127,13 +126,13 @@ static bool check_item_features(PlayerType *player_ptr, const autopick_type &ent
 /*!
  * @brief A function for Auto-picker/destroyer Examine whether the object matches to the entry
  */
-bool is_autopick_match(PlayerType *player_ptr, const ItemEntity *o_ptr, const autopick_type &entry, std::string_view item_name)
+bool is_autopick_match(CreatureEntity &creature, const ItemEntity *o_ptr, const autopick_type &entry, std::string_view item_name)
 {
     if (entry.has(FLG_UNAWARE) && o_ptr->is_aware()) {
         return false;
     }
 
-    if (entry.has(FLG_UNIDENTIFIED) && (o_ptr->is_known() || (o_ptr->ident & IDENT_SENSE))) {
+    if (entry.has(FLG_UNIDENTIFIED) && (o_ptr->is_known() || (o_ptr->ident.has(IdentificationFlag::SENSE)))) {
         return false;
     }
 
@@ -155,7 +154,7 @@ bool is_autopick_match(PlayerType *player_ptr, const ItemEntity *o_ptr, const au
             return false;
         }
 
-        if (!o_ptr->is_known() && o_ptr->is_target_of(player_ptr->current_floor_ptr->quest_number)) {
+        if (!o_ptr->is_known() && o_ptr->is_target_of(creature.get_floor()->quest_number)) {
             return false;
         }
     }
@@ -182,7 +181,7 @@ bool is_autopick_match(PlayerType *player_ptr, const ItemEntity *o_ptr, const au
         }
     }
 
-    if (entry.has(FLG_WORTHLESS) && (o_ptr->calc_price() > 0)) {
+    if (entry.has(FLG_WORTHLESS) && o_ptr->calc_price() > 0) {
         return false;
     }
 
@@ -196,7 +195,8 @@ bool is_autopick_match(PlayerType *player_ptr, const ItemEntity *o_ptr, const au
         if (!o_ptr->is_ego()) {
             return false;
         }
-        if (!o_ptr->is_known() && !((o_ptr->ident & IDENT_SENSE) && o_ptr->feeling == FEEL_EXCELLENT)) {
+        const auto sensed_excellent = (o_ptr->ident.has(IdentificationFlag::SENSE)) && o_ptr->feeling == FEEL_EXCELLENT;
+        if (!o_ptr->is_known() && !sensed_excellent) {
             return false;
         }
     }
@@ -206,19 +206,11 @@ bool is_autopick_match(PlayerType *player_ptr, const ItemEntity *o_ptr, const au
             return false;
         }
         if (o_ptr->is_known()) {
-            if (!o_ptr->is_nameless()) {
+            if (!o_ptr->is_nameless() || (o_ptr->to_a <= 0 && (o_ptr->to_h + o_ptr->to_d) <= 0)) {
                 return false;
             }
-
-            if (o_ptr->to_a <= 0 && (o_ptr->to_h + o_ptr->to_d) <= 0) {
-                return false;
-            }
-        } else if (o_ptr->ident & IDENT_SENSE) {
-            switch (o_ptr->feeling) {
-            case FEEL_GOOD:
-                break;
-
-            default:
+        } else if (o_ptr->ident.has(IdentificationFlag::SENSE)) {
+            if (o_ptr->feeling != FEEL_GOOD) {
                 return false;
             }
         } else {
@@ -234,7 +226,7 @@ bool is_autopick_match(PlayerType *player_ptr, const ItemEntity *o_ptr, const au
             if (!o_ptr->is_nameless()) {
                 return false;
             }
-        } else if (o_ptr->ident & IDENT_SENSE) {
+        } else if (o_ptr->ident.has(IdentificationFlag::SENSE)) {
             switch (o_ptr->feeling) {
             case FEEL_AVERAGE:
             case FEEL_GOOD:
@@ -255,23 +247,11 @@ bool is_autopick_match(PlayerType *player_ptr, const ItemEntity *o_ptr, const au
             return false;
         }
         if (o_ptr->is_known()) {
-            if (!o_ptr->is_nameless()) {
+            if (!o_ptr->is_nameless() || o_ptr->is_cursed() || o_ptr->is_broken() || o_ptr->to_a > 0 || (o_ptr->to_h + o_ptr->to_d) > 0) {
                 return false;
             }
-
-            if (o_ptr->is_cursed() || o_ptr->is_broken()) {
-                return false;
-            }
-
-            if (o_ptr->to_a > 0 || (o_ptr->to_h + o_ptr->to_d) > 0) {
-                return false;
-            }
-        } else if (o_ptr->ident & IDENT_SENSE) {
-            switch (o_ptr->feeling) {
-            case FEEL_AVERAGE:
-                break;
-
-            default:
+        } else if (o_ptr->ident.has(IdentificationFlag::SENSE)) {
+            if (o_ptr->feeling != FEEL_AVERAGE) {
                 return false;
             }
         } else {
@@ -297,7 +277,8 @@ bool is_autopick_match(PlayerType *player_ptr, const ItemEntity *o_ptr, const au
     const auto sval = *bi_key.sval();
     if (entry.has(FLG_UNIQUE) && o_ptr->has_monrace()) {
         const auto &monrace = o_ptr->get_monrace();
-        if (((tval != ItemKindType::MONSTER_REMAINS && tval != ItemKindType::STATUE) || monrace.kind_flags.has_not(MonsterKindType::UNIQUE))) {
+        const auto is_remains_or_statue = tval == ItemKindType::MONSTER_REMAINS || tval == ItemKindType::STATUE;
+        if (!is_remains_or_statue || monrace.kind_flags.has_not(MonsterKindType::UNIQUE)) {
             return false;
         }
     }
@@ -310,16 +291,16 @@ bool is_autopick_match(PlayerType *player_ptr, const ItemEntity *o_ptr, const au
     }
 
     if (entry.has(FLG_UNREADABLE)) {
-        const auto unreadable_book = bi_key.is_spell_book() && !check_book_realm(player_ptr, bi_key);
+        const auto unreadable_book = bi_key.is_spell_book() && !check_book_realm(creature, bi_key);
         if (!unreadable_book) {
             return false;
         }
     }
 
-    PlayerClass pc(player_ptr);
+    CreatureClass pc(creature);
     auto realm_except_class = pc.equals(PlayerClassType::SORCERER) || pc.equals(PlayerClassType::RED_MAGE);
 
-    PlayerRealm pr(player_ptr);
+    PlayerRealm pr(creature);
     if (entry.has(FLG_REALM1) && ((pr.realm1().get_book() != tval) || realm_except_class)) {
         return false;
     }
@@ -328,33 +309,35 @@ bool is_autopick_match(PlayerType *player_ptr, const ItemEntity *o_ptr, const au
         return false;
     }
 
-    if (entry.has(FLG_FIRST) && (!o_ptr->is_spell_book() || (sval != 0))) {
+    if (entry.has(FLG_FIRST) && (!o_ptr->is_spell_book() || sval != 0)) {
         return false;
     }
 
-    if (entry.has(FLG_SECOND) && (!o_ptr->is_spell_book() || (sval != 1))) {
+    if (entry.has(FLG_SECOND) && (!o_ptr->is_spell_book() || sval != 1)) {
         return false;
     }
 
-    if (entry.has(FLG_THIRD) && (!o_ptr->is_spell_book() || (sval != 2))) {
+    if (entry.has(FLG_THIRD) && (!o_ptr->is_spell_book() || sval != 2)) {
         return false;
     }
 
-    if (entry.has(FLG_FOURTH) && (!o_ptr->is_spell_book() || (sval != 3))) {
+    if (entry.has(FLG_FOURTH) && (!o_ptr->is_spell_book() || sval != 3)) {
         return false;
     }
 
-    if (!check_item_features(player_ptr, entry, *o_ptr, tval)) {
+    if (!check_item_features(creature, entry, *o_ptr, tval)) {
         return false;
     }
 
-    if (entry.name[0] == '^') {
-        if (!item_name.starts_with(std::string_view(entry.name).substr(1))) {
-            return false;
-        }
-    } else {
-        if (!str_find(std::string(item_name), entry.name)) {
-            return false;
+    if (!entry.name.empty()) {
+        if (entry.name[0] == '^') {
+            if (!item_name.starts_with(std::string_view(entry.name).substr(1))) {
+                return false;
+            }
+        } else {
+            if (!str_find(std::string(item_name), entry.name)) {
+                return false;
+            }
         }
     }
 
@@ -362,13 +345,13 @@ bool is_autopick_match(PlayerType *player_ptr, const ItemEntity *o_ptr, const au
         return true;
     }
 
-    for (int j = 0; j < INVEN_PACK; j++) {
+    for (const auto i_idx : INVEN_PACK_SLOTS) {
         /*
          * 'Collecting' means the item must be absorbed
          * into an inventory slot.
          * But an item can not be absorbed into itself!
          */
-        if ((player_ptr->inventory[j].get() != o_ptr) && player_ptr->inventory[j]->is_similar(*o_ptr)) {
+        if ((creature.inventory[i_idx].get() != o_ptr) && creature.inventory[i_idx]->is_similar(*o_ptr)) {
             return true;
         }
     }

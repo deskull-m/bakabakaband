@@ -56,6 +56,10 @@
 #define ENTRY_APPARENT_RACE 49
 #define ENTRY_HP_REGEN 50
 #define ENTRY_MP_REGEN 51
+#define ENTRY_ALLIANCE 52
 
-class PlayerType;
-void display_player_various(PlayerType *player_ptr);
+class CreatureEntity;
+class ItemEntity;
+void calc_player_shot_params(CreatureEntity &creature, ItemEntity *o_ptr, int *shots, int *shot_frac);
+void calc_player_two_hands(CreatureEntity &creature, int *damage, int *to_h);
+void display_player_various(CreatureEntity &creature);

@@ -25,18 +25,16 @@
 #include "mutation/mutation-flag-types.h"
 #include "player/player-personality-types.h"
 #include "player/player-status-flags.h"
-#include "player/player-status.h"
 #include "system/angband-system.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/floor/floor-info.h"
 #include "system/floor/town-info.h"
 #include "system/floor/town-list.h"
 #include "system/inner-game-data.h"
-#include "system/player-type-definition.h"
 #include "term/gameterm.h"
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
-#include "timed-effect/timed-effects.h"
 #include "util/angband-files.h"
 #include "util/int-char-converter.h"
 #include "view/display-messages.h"
@@ -46,29 +44,28 @@
 /*!
  * @brief 画面を再描画するコマンドのメインルーチン
  * Hack -- redraw the screen
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @details
  * Allow absolute file names?
  */
-void do_cmd_pref(PlayerType *player_ptr)
+void do_cmd_pref(CreatureEntity &creature)
 {
     const auto input_str = input_string(_("設定変更コマンド: ", "Pref: "), 80);
     if (!input_str.has_value()) {
         return;
     }
 
-    auto buf(input_str.value());
-    (void)interpret_pref_file(player_ptr, buf.data());
+    (void)interpret_pref_file(creature, *input_str);
 }
 
 /*
  * Interact with "colors"
  */
-void do_cmd_colors(PlayerType *player_ptr)
+void do_cmd_colors(CreatureEntity &creature)
 {
     FILE *auto_dump_stream;
     screen_save();
-    const auto initial_filename = format("%s.prf", player_ptr->base_name.data());
+    const auto initial_filename = format("%s.prf", creature.base_name.data());
     while (true) {
         term_clear();
         prt(_("[ カラーの設定 ]", "Interact with Colors"), 2, 0);
@@ -90,7 +87,7 @@ void do_cmd_colors(PlayerType *player_ptr)
                 continue;
             }
 
-            (void)process_pref_file(player_ptr, *ask_result, true);
+            (void)process_pref_file(creature, *ask_result, true);
             term_xtra(TERM_XTRA_REACT, 0);
             term_redraw();
             break;
@@ -233,12 +230,12 @@ void do_cmd_version()
  * Note that "feeling" is set to zero unless some time has passed.
  * Note that this is done when the level is GENERATED, not entered.
  */
-void do_cmd_feeling(PlayerType *player_ptr)
+void do_cmd_feeling(CreatureEntity &creature)
 {
     if (AngbandWorld::get_instance().is_wild_mode()) {
         return;
     }
-    FloorType *floor_ptr = player_ptr->current_floor_ptr;
+    FloorType *floor_ptr = creature.get_floor();
     int grids_rate = floor_ptr->width * floor_ptr->height * 100 / (MAX_WID * MAX_HGT);
 
     if (floor_ptr->allianceID != AllianceType::NONE) {
@@ -248,14 +245,14 @@ void do_cmd_feeling(PlayerType *player_ptr)
         }
     }
 
-    const auto &floor = *player_ptr->current_floor_ptr;
+    const auto &floor = *creature.get_floor();
     if (floor.is_in_quest() && !inside_quest(floor.get_random_quest_id())) {
         msg_print(_("典型的なクエストのダンジョンのようだ。", "Looks like a typical quest level."));
         return;
     }
 
-    if (player_ptr->town_num && !floor.is_underground()) {
-        if (towns_info[player_ptr->town_num].name == _("荒野", "wilderness")) {
+    if (creature.get_town_num() && !floor.is_underground()) {
+        if (TownList::get_instance().get_town(creature.get_town_num()).get_name() == _("荒野", "wilderness")) {
             msg_print(_("何かありそうな荒野のようだ。", "Looks like a strange wilderness."));
             return;
         }
@@ -289,9 +286,9 @@ void do_cmd_feeling(PlayerType *player_ptr)
 
     const auto &df = DungeonFeeling::get_instance();
     std::string_view feeling_text;
-    if (has_good_luck(player_ptr)) {
+    if (has_good_luck(creature)) {
         feeling_text = df.get_feeling_lucky();
-    } else if (is_echizen(player_ptr)) {
+    } else if (creature.is_echizen()) {
         feeling_text = df.get_feeling_combat();
     } else {
         feeling_text = df.get_feeling_normal();
@@ -302,16 +299,16 @@ void do_cmd_feeling(PlayerType *player_ptr)
 
 /*
  * Display the time and date
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  */
-void do_cmd_time(PlayerType *player_ptr)
+void do_cmd_time(CreatureEntity &creature)
 {
     const auto &[day, hour, min] = AngbandWorld::get_instance().extract_date_time(InnerGameData::get_instance().get_start_race());
     std::string day_buf = (day < MAX_DAYS) ? std::to_string(day) : "*****";
     constexpr auto mes = _("%s日目, 時刻は%d:%02d %sです。", "This is day %s. The time is %d:%02d %s.");
     msg_format(mes, day_buf.data(), (hour % 12 == 0) ? 12 : (hour % 12), min, (hour < 12) ? "AM" : "PM");
     std::filesystem::path path;
-    if (!randint0(10) || player_ptr->effects()->hallucination().is_hallucinated()) {
+    if (!randint0(10) || creature.is_hallucinated()) {
         path = path_build(ANGBAND_DIR_FILE, _("timefun_j.txt", "timefun.txt"));
     } else {
         path = path_build(ANGBAND_DIR_FILE, _("timenorm_j.txt", "timenorm.txt"));

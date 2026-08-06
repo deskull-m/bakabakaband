@@ -1,4 +1,4 @@
 #pragma once
 
-class PlayerType;
-void update_mon_lite(PlayerType *player_ptr);
+class CreatureEntity;
+void update_mon_lite(CreatureEntity &creature);

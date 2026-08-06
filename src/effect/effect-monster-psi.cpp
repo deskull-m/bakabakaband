@@ -10,10 +10,9 @@
 #include "player-base/player-class.h"
 #include "player/player-damage.h"
 #include "status/bad-status-setter.h"
+#include "system/creature-entity.h"
 #include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
-#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "util/bit-flags-calculator.h"
 #include "util/string-processor.h"
@@ -22,20 +21,20 @@
 
 /*!
  * @brief 精神のないモンスターのPsi攻撃に対する完全な耐性を発動する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param em_ptr モンスター効果への参照ポインタ
  * @return 完全な耐性を発動した場合TRUE、そうでなければFALSE
  */
-static bool resisted_psi_because_empty_mind(PlayerType *player_ptr, EffectMonster *em_ptr)
+static bool resisted_psi_because_empty_mind(CreatureEntity &creature, EffectMonster *em_ptr)
 {
-    if (em_ptr->r_ptr->misc_flags.has_not(MonsterMiscType::EMPTY_MIND)) {
+    if (em_ptr->monrace->misc_flags.has_not(MonsterMiscType::EMPTY_MIND)) {
         return false;
     }
 
     em_ptr->dam = 0;
     em_ptr->note = _("には完全な耐性がある！", " is immune.");
-    if (is_original_ap_and_seen(player_ptr, *em_ptr->m_ptr)) {
-        em_ptr->r_ptr->r_misc_flags.set(MonsterMiscType::EMPTY_MIND);
+    if (is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
+        em_ptr->monrace->r_misc_flags.set(MonsterMiscType::EMPTY_MIND);
     }
 
     return true;
@@ -53,10 +52,11 @@ static bool resisted_psi_because_empty_mind(PlayerType *player_ptr, EffectMonste
  */
 static bool resisted_psi_because_weird_mind_or_powerful(EffectMonster *em_ptr)
 {
-    bool has_resistance = em_ptr->r_ptr->behavior_flags.has(MonsterBehaviorType::STUPID);
-    has_resistance |= em_ptr->r_ptr->misc_flags.has(MonsterMiscType::WEIRD_MIND);
-    has_resistance |= em_ptr->r_ptr->kind_flags.has(MonsterKindType::ANIMAL);
-    has_resistance |= (em_ptr->r_ptr->level > randint1(3 * em_ptr->dam));
+    bool has_resistance = em_ptr->monrace->behavior_flags.has(MonsterBehaviorType::STUPID);
+    has_resistance |= em_ptr->monrace->misc_flags.has(MonsterMiscType::WEIRD_MIND);
+    has_resistance |= em_ptr->monrace->kind_flags.has(MonsterKindType::ANIMAL);
+    // [提案C2第3弾・セーヴ] applies_stat_combat_bonus の個体は WIS セーヴ補正を実効レベルへ加算 (opt-in・既定OFF)
+    has_resistance |= ((em_ptr->monrace->level + em_ptr->m_ptr->get_save_stat_bonus()) > randint1(3 * em_ptr->dam));
     if (!has_resistance) {
         return false;
     }
@@ -68,7 +68,7 @@ static bool resisted_psi_because_weird_mind_or_powerful(EffectMonster *em_ptr)
 
 /*!
  * @brief 堕落した精神のモンスターへのPsi攻撃のダメージ反射を発動する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param em_ptr モンスター効果への参照ポインタ
  * @return ダメージ反射を発動した場合TRUE、そうでなければFALSE
  * @details
@@ -76,10 +76,10 @@ static bool resisted_psi_because_weird_mind_or_powerful(EffectMonster *em_ptr)
  * 1) UNDEADまたはDEMONである
  * 2) レベルが詠唱者の レベル/2 より大きい
  */
-static bool reflects_psi_with_currupted_mind(PlayerType *player_ptr, EffectMonster *em_ptr)
+static bool reflects_psi_with_currupted_mind(CreatureEntity &creature, EffectMonster *em_ptr)
 {
-    bool is_corrupted = em_ptr->r_ptr->kind_flags.has_any_of(has_corrupted_mind);
-    is_corrupted &= (em_ptr->r_ptr->level > player_ptr->level / 2);
+    bool is_corrupted = em_ptr->monrace->kind_flags.has_any_of(has_corrupted_mind);
+    is_corrupted &= (em_ptr->monrace->level > creature.get_level() / 2);
     is_corrupted &= one_in_(2);
     if (!is_corrupted) {
         return false;
@@ -94,19 +94,19 @@ static bool reflects_psi_with_currupted_mind(PlayerType *player_ptr, EffectMonst
 
 /*!
  * @brief モンスターがPsi攻撃をダメージ反射した場合のプレイヤーへの追加効果を発動する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param em_ptr モンスター効果への参照ポインタ
  * @details
  * 効果は、混乱、朦朧、恐怖、麻痺
  * 3/4の確率または影分身時はダメージ及び追加効果はない。
  */
-static void effect_monster_psi_reflect_extra_effect(PlayerType *player_ptr, EffectMonster *em_ptr)
+static void effect_monster_psi_reflect_extra_effect(CreatureEntity &creature, EffectMonster *em_ptr)
 {
-    if (!one_in_(4) || check_multishadow(player_ptr)) {
+    if (!one_in_(4) || check_multishadow(creature)) {
         return;
     }
 
-    BadStatusSetter bss(player_ptr);
+    BadStatusSetter bss(creature);
     switch (randint1(4)) {
     case 1:
         (void)bss.mod_confusion(3 + randint1(em_ptr->dam));
@@ -115,7 +115,7 @@ static void effect_monster_psi_reflect_extra_effect(PlayerType *player_ptr, Effe
         (void)bss.mod_stun(randnum1<short>(em_ptr->dam));
         return;
     case 3:
-        if (em_ptr->r_ptr->resistance_flags.has(MonsterResistanceType::NO_FEAR)) {
+        if (em_ptr->monrace->resistance_flags.has(MonsterResistanceType::NO_FEAR)) {
             em_ptr->note = _("には効果がなかった。", " is unaffected.");
         } else {
             (void)bss.mod_fear(3 + randint1(em_ptr->dam));
@@ -123,7 +123,7 @@ static void effect_monster_psi_reflect_extra_effect(PlayerType *player_ptr, Effe
 
         return;
     default:
-        if (!player_ptr->free_act) {
+        if (!creature.has_free_act()) {
             (void)bss.mod_paralysis(randnum1<short>(em_ptr->dam));
         }
 
@@ -133,40 +133,40 @@ static void effect_monster_psi_reflect_extra_effect(PlayerType *player_ptr, Effe
 
 /*!
  * @brief モンスターのPsi攻撃に対する耐性を発動する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param em_ptr モンスター効果への参照ポインタ
  * @details
  * 耐性を発動した精神の堕落したモンスターは効力を跳ね返すことがある。
  */
-static void effect_monster_psi_resist(PlayerType *player_ptr, EffectMonster *em_ptr)
+static void effect_monster_psi_resist(CreatureEntity &creature, EffectMonster *em_ptr)
 {
-    if (resisted_psi_because_empty_mind(player_ptr, em_ptr)) {
+    if (resisted_psi_because_empty_mind(creature, em_ptr)) {
         return;
     }
     if (!resisted_psi_because_weird_mind_or_powerful(em_ptr)) {
         return;
     }
-    if (!reflects_psi_with_currupted_mind(player_ptr, em_ptr)) {
+    if (!reflects_psi_with_currupted_mind(creature, em_ptr)) {
         return;
     }
 
     /* プレイヤーの反射判定 */
-    if ((randint0(100 + em_ptr->r_ptr->level / 2) < player_ptr->skill_sav) && !check_multishadow(player_ptr)) {
+    if ((creature.does_save_against(em_ptr->monrace->level)) && !check_multishadow(creature)) {
         msg_print(_("しかし効力を跳ね返した！", "You resist the effects!"));
         em_ptr->dam = 0;
         return;
     }
 
     /* Injure +/- confusion */
-    angband_strcpy(em_ptr->killer, monster_desc(player_ptr, *em_ptr->m_ptr, MD_WRONGDOER_NAME), sizeof(em_ptr->killer));
-    take_hit(player_ptr, DAMAGE_ATTACK, em_ptr->dam, em_ptr->killer);
-    effect_monster_psi_reflect_extra_effect(player_ptr, em_ptr);
+    angband_strcpy(em_ptr->killer, monster_desc(creature, *em_ptr->m_ptr, MD_WRONGDOER_NAME), sizeof(em_ptr->killer));
+    take_hit(creature, DAMAGE_ATTACK, em_ptr->dam, em_ptr->killer);
+    effect_monster_psi_reflect_extra_effect(creature, em_ptr);
     em_ptr->dam = 0;
 }
 
 /*!
  * @brief モンスターへのPsi攻撃の追加効果を発動する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param em_ptr モンスター効果への参照ポインタ
  * @details
  * 効果は、混乱、朦朧、恐怖、麻痺(各耐性無効)
@@ -197,19 +197,19 @@ static void effect_monster_psi_extra_effect(EffectMonster *em_ptr)
 
 /*!
  * @brief モンスターへのPsi攻撃(PSI)の効果を発動する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param em_ptr モンスター効果への参照ポインタ
  * @return PROICESS_CONTINUE
  * @details
  * 視界による影響を発動する。
  * モンスターの耐性とそれに不随した効果を発動する。
  */
-ProcessResult effect_monster_psi(PlayerType *player_ptr, EffectMonster *em_ptr)
+ProcessResult effect_monster_psi(CreatureEntity &creature, EffectMonster *em_ptr)
 {
     if (em_ptr->seen) {
         em_ptr->obvious = true;
     }
-    if (!los(*player_ptr->current_floor_ptr, em_ptr->m_ptr->get_position(), player_ptr->get_position())) {
+    if (!los(*creature.get_floor(), em_ptr->m_ptr->get_position(), creature.get_position())) {
         if (em_ptr->seen_msg) {
             msg_format(_("%sはあなたが見えないので影響されない！", "%s^ can't see you, and isn't affected!"), em_ptr->m_name);
         }
@@ -218,7 +218,7 @@ ProcessResult effect_monster_psi(PlayerType *player_ptr, EffectMonster *em_ptr)
         return ProcessResult::PROCESS_CONTINUE;
     }
 
-    effect_monster_psi_resist(player_ptr, em_ptr);
+    effect_monster_psi_resist(creature, em_ptr);
     effect_monster_psi_extra_effect(em_ptr);
     em_ptr->note_dies = _("の精神は崩壊し、肉体は抜け殻となった。", " collapses, a mindless husk.");
     return ProcessResult::PROCESS_CONTINUE;
@@ -226,64 +226,64 @@ ProcessResult effect_monster_psi(PlayerType *player_ptr, EffectMonster *em_ptr)
 
 /*!
  * @brief モンスターのPsi攻撃(PSI_DRAIN)に対する耐性を発動する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param em_ptr モンスター効果への参照ポインタ
  * @details
  * 耐性を発動した精神の堕落したモンスターは効力を跳ね返すことがある。
  */
-static void effect_monster_psi_drain_resist(PlayerType *player_ptr, EffectMonster *em_ptr)
+static void effect_monster_psi_drain_resist(CreatureEntity &creature, EffectMonster *em_ptr)
 {
-    if (resisted_psi_because_empty_mind(player_ptr, em_ptr)) {
+    if (resisted_psi_because_empty_mind(creature, em_ptr)) {
         return;
     }
     if (!resisted_psi_because_weird_mind_or_powerful(em_ptr)) {
         return;
     }
-    if (!reflects_psi_with_currupted_mind(player_ptr, em_ptr)) {
+    if (!reflects_psi_with_currupted_mind(creature, em_ptr)) {
         return;
     }
 
     /* プレイヤーの反射判定 */
-    if ((randint0(100 + em_ptr->r_ptr->level / 2) < player_ptr->skill_sav) && !check_multishadow(player_ptr)) {
+    if ((creature.does_save_against(em_ptr->monrace->level)) && !check_multishadow(creature)) {
         msg_print(_("あなたは効力を跳ね返した！", "You resist the effects!"));
         em_ptr->dam = 0;
         return;
     }
 
-    angband_strcpy(em_ptr->killer, monster_desc(player_ptr, *em_ptr->m_ptr, MD_WRONGDOER_NAME), sizeof(em_ptr->killer));
-    if (check_multishadow(player_ptr)) {
-        take_hit(player_ptr, DAMAGE_ATTACK, em_ptr->dam, em_ptr->killer);
+    angband_strcpy(em_ptr->killer, monster_desc(creature, *em_ptr->m_ptr, MD_WRONGDOER_NAME), sizeof(em_ptr->killer));
+    if (check_multishadow(creature)) {
+        take_hit(creature, DAMAGE_ATTACK, em_ptr->dam, em_ptr->killer);
         em_ptr->dam = 0;
         return;
     }
 
     msg_print(_("超能力パワーを吸いとられた！", "Your psychic energy is drained!"));
-    player_ptr->csp -= Dice::roll(5, em_ptr->dam) / 2;
-    if (player_ptr->csp < 0) {
-        player_ptr->csp = 0;
+    creature.sub_current_mp(Dice::roll(5, em_ptr->dam) / 2);
+    if (creature.get_current_mp() < 0) {
+        creature.set_current_mp(0);
     }
 
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(MainWindowRedrawingFlag::MP);
     rfu.set_flag(SubWindowRedrawingFlag::SPELL);
-    take_hit(player_ptr, DAMAGE_ATTACK, em_ptr->dam, em_ptr->killer);
+    take_hit(creature, DAMAGE_ATTACK, em_ptr->dam, em_ptr->killer);
     em_ptr->dam = 0;
 }
 
 /*!
  * @brief モンスターへのPsi攻撃(PSI_DRAIN)のダメージをMPに変換する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param em_ptr モンスター効果への参照ポインタ
  */
-static void effect_monster_psi_drain_change_power(PlayerType *player_ptr, EffectMonster *em_ptr)
+static void effect_monster_psi_drain_change_power(CreatureEntity &creature, EffectMonster *em_ptr)
 {
     int b = Dice::roll(5, em_ptr->dam) / 4;
-    concptr str = PlayerClass(player_ptr).equals(PlayerClassType::MINDCRAFTER) ? _("超能力パワー", "psychic energy") : _("魔力", "mana");
+    concptr str = CreatureClass(creature).equals(PlayerClassType::MINDCRAFTER) ? _("超能力パワー", "psychic energy") : _("魔力", "mana");
     concptr msg = _("あなたは%sの苦痛を%sに変換した！", (em_ptr->seen ? "You convert %s's pain into %s!" : "You convert %ss pain into %s!"));
     msg_format(msg, em_ptr->m_name, str);
 
-    b = std::min(player_ptr->msp, player_ptr->csp + b);
-    player_ptr->csp = b;
+    b = std::min(creature.get_max_mp(), creature.get_current_mp() + b);
+    creature.set_current_mp(b);
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(MainWindowRedrawingFlag::MP);
     rfu.set_flag(SubWindowRedrawingFlag::SPELL);
@@ -291,21 +291,21 @@ static void effect_monster_psi_drain_change_power(PlayerType *player_ptr, Effect
 
 /*!
  * @brief モンスターへのPsi攻撃(PSI_DRAIN)の効果を発動する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param em_ptr モンスター効果への参照ポインタ
  * @return PROICESS_CONTINUE
  * @details
  * ダメージがないか3/4の確率で追加効果なし
  */
-ProcessResult effect_monster_psi_drain(PlayerType *player_ptr, EffectMonster *em_ptr)
+ProcessResult effect_monster_psi_drain(CreatureEntity &creature, EffectMonster *em_ptr)
 {
     if (em_ptr->seen) {
         em_ptr->obvious = true;
     }
 
-    effect_monster_psi_drain_resist(player_ptr, em_ptr);
+    effect_monster_psi_drain_resist(creature, em_ptr);
     if (em_ptr->dam > 0) {
-        effect_monster_psi_drain_change_power(player_ptr, em_ptr);
+        effect_monster_psi_drain_change_power(creature, em_ptr);
     }
 
     em_ptr->note_dies = _("の精神は崩壊し、肉体は抜け殻となった。", " collapses, a mindless husk.");
@@ -314,7 +314,7 @@ ProcessResult effect_monster_psi_drain(PlayerType *player_ptr, EffectMonster *em
 
 /*!
  * @brief モンスターへのテレキネシス(TELEKINESIS)の効果を発動する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param em_ptr モンスター効果への参照ポインタ
  * @return PROICESS_CONTINUE
  * @details
@@ -334,7 +334,7 @@ ProcessResult effect_monster_telekinesis(EffectMonster *em_ptr)
     }
 
     em_ptr->do_stun = Dice::roll((em_ptr->caster_lev / 20) + 3, em_ptr->dam) + 1;
-    if (em_ptr->r_ptr->kind_flags.has(MonsterKindType::UNIQUE) || (em_ptr->r_ptr->level > 5 + randint1(em_ptr->dam))) {
+    if (em_ptr->monrace->kind_flags.has(MonsterKindType::UNIQUE) || (em_ptr->monrace->level > 5 + randint1(em_ptr->dam))) {
         em_ptr->do_stun = 0;
         em_ptr->obvious = false;
     }

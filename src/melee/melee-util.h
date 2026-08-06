@@ -9,13 +9,13 @@ enum class RaceBlowEffectType;
 enum class RaceBlowMethodType;
 
 /* monster-attack-monster type*/
-class MonsterEntity;
+class CreatureEntity;
 struct mam_type {
     BlowEffectType attribute{};
     MONSTER_IDX m_idx = 0;
     MONSTER_IDX t_idx = 0;
-    MonsterEntity *m_ptr = nullptr;
-    MonsterEntity *t_ptr = nullptr;
+    CreatureEntity *m_ptr = nullptr;
+    CreatureEntity *t_ptr = nullptr;
     GAME_TEXT m_name[MAX_NLEN]{};
     GAME_TEXT t_name[MAX_NLEN]{};
     int damage = 0;
@@ -40,7 +40,7 @@ struct mam_type {
     bool known = false;
     bool fear = false;
     bool dead = false;
+    short weapon_slot_for_blow = -1; //!< 当該打撃で使用する武器スロット (-1 = 武器なし)
 };
 
-class PlayerType;
-mam_type *initialize_mam_type(PlayerType *player_ptr, mam_type *mam_ptr, MONSTER_IDX m_idx, MONSTER_IDX t_idx);
+mam_type *initialize_mam_type(CreatureEntity &creature, mam_type *mam_ptr, MONSTER_IDX m_idx, MONSTER_IDX t_idx);

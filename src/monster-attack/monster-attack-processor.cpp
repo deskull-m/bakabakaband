@@ -12,34 +12,33 @@
 #include "monster/monster-processor-util.h"
 #include "monster/monster-status-setter.h"
 #include "monster/monster-status.h"
+#include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monster-entity.h"
-#include "system/player-type-definition.h"
 #include "util/bit-flags-calculator.h"
 
 /*!
  * @brief モンスターが移動した結果、そこにプレイヤーがいたら直接攻撃を行う
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param turn_flags_ptr ターン経過処理フラグへの参照ポインタ
  * @param m_idx モンスターID
  * @param pos モンスターの移動先座標
  * @details
  * 反攻撃の洞窟など、直接攻撃ができない場所では処理をスキップする
  */
-void exe_monster_attack_to_player(PlayerType *player_ptr, turn_flags *turn_flags_ptr, MONSTER_IDX m_idx, const Pos2D &pos)
+void exe_monster_attack_to_player(CreatureEntity &creature, turn_flags *turn_flags_ptr, MONSTER_IDX m_idx, const Pos2D &pos)
 {
-    auto &floor = *player_ptr->current_floor_ptr;
-    const auto &monster = floor.m_list[m_idx];
+    auto &floor = *creature.get_floor();
+    const auto &monster = floor.get_monster(m_idx);
     auto &monrace = monster.get_monrace();
-    if (!turn_flags_ptr->do_move || !player_ptr->is_located_at(pos)) {
+    if (!turn_flags_ptr->do_move || !creature.is_located_at(pos)) {
         return;
     }
 
     if (monrace.behavior_flags.has(MonsterBehaviorType::NEVER_BLOW)) {
-        if (is_original_ap_and_seen(player_ptr, monster)) {
+        if (is_original_ap_and_seen(creature, monster)) {
             monrace.r_behavior_flags.set(MonsterBehaviorType::NEVER_BLOW);
         }
 
@@ -49,7 +48,7 @@ void exe_monster_attack_to_player(PlayerType *player_ptr, turn_flags *turn_flags
     if (turn_flags_ptr->do_move && floor.get_dungeon_definition().flags.has(DungeonFeatureType::NO_MELEE) && !monster.is_confused()) {
         if (monrace.behavior_flags.has_not(MonsterBehaviorType::STUPID)) {
             turn_flags_ptr->do_move = false;
-        } else if (is_original_ap_and_seen(player_ptr, monster)) {
+        } else if (is_original_ap_and_seen(creature, monster)) {
             monrace.r_behavior_flags.set(MonsterBehaviorType::STUPID);
         }
     }
@@ -58,8 +57,8 @@ void exe_monster_attack_to_player(PlayerType *player_ptr, turn_flags *turn_flags
         return;
     }
 
-    if (!player_ptr->riding || one_in_(2)) {
-        MonsterAttackPlayer(player_ptr, m_idx).make_attack_normal();
+    if (!creature.get_riding() || one_in_(2)) {
+        MonsterAttackPlayer(creature, m_idx).make_attack_normal();
         turn_flags_ptr->do_move = false;
         turn_flags_ptr->do_turn = true;
     }
@@ -67,28 +66,28 @@ void exe_monster_attack_to_player(PlayerType *player_ptr, turn_flags *turn_flags
 
 /*!
  * @brief モンスターからモンスターへの直接攻撃を実行する
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param m_idx モンスターID
  * @param grid グリッドへの参照
  */
-static bool exe_monster_attack_to_monster(PlayerType *player_ptr, MONSTER_IDX m_idx, const Grid &grid)
+static bool exe_monster_attack_to_monster(CreatureEntity &creature, MONSTER_IDX m_idx, const Grid &grid)
 {
-    const auto &floor = *player_ptr->current_floor_ptr;
-    const auto &monster = floor.m_list[m_idx];
+    const auto &floor = *creature.get_floor();
+    const auto &monster = floor.get_monster(m_idx);
     auto &monrace = monster.get_monrace();
-    const auto &monster_target = player_ptr->current_floor_ptr->m_list[grid.m_idx];
+    const auto &monster_target = creature.get_floor()->get_monster(grid.m_idx);
     if (monrace.behavior_flags.has(MonsterBehaviorType::NEVER_BLOW)) {
         return false;
     }
 
-    if ((monrace.behavior_flags.has_not(MonsterBehaviorType::KILL_BODY)) && is_original_ap_and_seen(player_ptr, monster)) {
+    if ((monrace.behavior_flags.has_not(MonsterBehaviorType::KILL_BODY)) && is_original_ap_and_seen(creature, monster)) {
         monrace.r_behavior_flags.set(MonsterBehaviorType::KILL_BODY);
     }
 
     if (!monster_target.is_valid() || (monster_target.hp < 0)) {
         return false;
     }
-    if (monst_attack_monst(player_ptr, m_idx, grid.m_idx)) {
+    if (monst_attack_monst(creature, m_idx, grid.m_idx)) {
         return true;
     }
     if (floor.get_dungeon_definition().flags.has_not(DungeonFeatureType::NO_MELEE)) {
@@ -101,7 +100,7 @@ static bool exe_monster_attack_to_monster(PlayerType *player_ptr, MONSTER_IDX m_
         return false;
     }
 
-    if (is_original_ap_and_seen(player_ptr, monster)) {
+    if (is_original_ap_and_seen(creature, monster)) {
         monrace.r_behavior_flags.set(MonsterBehaviorType::STUPID);
     }
 
@@ -110,44 +109,44 @@ static bool exe_monster_attack_to_monster(PlayerType *player_ptr, MONSTER_IDX m_
 
 /*!
  * @brief モンスターからモンスターへの攻撃処理
- * @param player_ptr プレイヤーへの参照ポインタ
+ * @param creature クリーチャーへの参照
  * @param turn_flags_ptr ターン経過処理フラグへの参照ポインタ
  * @param m_idx モンスターID
  * @param grid グリッドへの参照
  * @param can_cross モンスターが地形を踏破できるならばTRUE
  * @return ターン消費が発生したらTRUE
  */
-bool process_monster_attack_to_monster(PlayerType *player_ptr, turn_flags *turn_flags_ptr, MONSTER_IDX m_idx, const Grid &grid, bool can_cross)
+bool process_monster_attack_to_monster(CreatureEntity &creature, turn_flags *turn_flags_ptr, MONSTER_IDX m_idx, const Grid &grid, bool can_cross)
 {
     if (!turn_flags_ptr->do_move || !grid.has_monster()) {
         return false;
     }
 
     turn_flags_ptr->do_move = false;
-    const auto &monster_from = player_ptr->current_floor_ptr->m_list[m_idx];
+    const auto &monster_from = creature.get_floor()->get_monster(m_idx);
     const auto &monrace_from = monster_from.get_monrace();
-    const auto &monster_to = player_ptr->current_floor_ptr->m_list[grid.m_idx];
+    const auto &monster_to = creature.get_floor()->get_monster(grid.m_idx);
     const auto &monrace_to = monster_to.get_monrace();
     auto do_kill_body = monrace_from.behavior_flags.has(MonsterBehaviorType::KILL_BODY) && monrace_from.behavior_flags.has_not(MonsterBehaviorType::NEVER_BLOW);
     do_kill_body &= (monrace_from.mexp * monrace_from.level > monrace_to.mexp * monrace_to.level);
     do_kill_body &= !monster_to.is_riding();
     const bool is_same_alliance_intelligent = (monrace_from.alliance_idx != AllianceType::NONE && monrace_from.alliance_idx == monrace_to.alliance_idx && monrace_from.behavior_flags.has_not(MonsterBehaviorType::STUPID));
     do_kill_body &= !is_same_alliance_intelligent;
-    const bool is_same_summon_parent = (monster_from.parent_m_idx == monster_to.parent_m_idx && monrace_from.behavior_flags.has_not(MonsterBehaviorType::STUPID)) || (monster_from.mflag2.has(MonsterConstantFlagType::PET) != monster_to.mflag2.has(MonsterConstantFlagType::PET));
+    const bool is_same_summon_parent = (monster_from.get_parent_m_idx() == monster_to.get_parent_m_idx() && monrace_from.behavior_flags.has_not(MonsterBehaviorType::STUPID)) || (monster_from.is_pet() != monster_to.is_pet());
     do_kill_body &= !is_same_summon_parent;
     if (do_kill_body || monster_from.is_hostile_to_melee(monster_to) || monster_from.is_confused()) {
-        return exe_monster_attack_to_monster(player_ptr, m_idx, grid);
+        return exe_monster_attack_to_monster(creature, m_idx, grid);
     }
 
     auto do_move_body = monrace_from.behavior_flags.has(MonsterBehaviorType::MOVE_BODY) && monrace_from.behavior_flags.has_not(MonsterBehaviorType::NEVER_MOVE);
     do_move_body &= (monrace_from.mexp > monrace_to.mexp);
     do_move_body &= can_cross;
     do_move_body &= !monster_to.is_riding();
-    do_move_body &= monster_can_cross_terrain(player_ptr, player_ptr->current_floor_ptr->grid_array[monster_from.y][monster_from.x].feat, monrace_to, 0);
+    do_move_body &= monster_can_cross_terrain(creature, creature.get_floor()->grid_array[monster_from.y][monster_from.x].feat, monrace_to, 0);
     if (do_move_body) {
         turn_flags_ptr->do_move = true;
         turn_flags_ptr->did_move_body = true;
-        (void)set_monster_csleep(player_ptr, grid.m_idx, 0);
+        (void)set_monster_csleep(*creature.get_floor(), grid.m_idx, 0);
     }
 
     return false;

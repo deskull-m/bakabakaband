@@ -156,5 +156,7 @@ enum class MonsterKindType {
     SMITH = 152, // 鍛冶師
     WHEEL = 153, // 車輪
     GREAT_OLD_ONE = 154, // 旧支配者
+    MESUGAKI = 155, // メスガキ
+    SAIYAN = 156, // サイヤ人
     MAX,
 };
