@@ -84,6 +84,7 @@ hengband_SOURCES = \
 	alliance/alliance-gondor.cpp alliance/alliance-gondor.h \
 	alliance/alliance-utumno.cpp alliance/alliance-utumno.h \
 	alliance/alliance-valverde.cpp alliance/alliance-valverde.h \
+	alliance/alliance-eagle-clan.cpp alliance/alliance-eagle-clan.h \
 	alliance/alliance-silvan-elf.cpp alliance/alliance-silvan-elf.h \
 	alliance/alliance-soukaiya.cpp alliance/alliance-soukaiya.h \
 	alliance/alliance-arioch.cpp alliance/alliance-arioch.h \

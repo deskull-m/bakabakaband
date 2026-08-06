@@ -2717,6 +2717,9 @@
     <ClCompile Include="..\..\src\alliance\alliance-dokachans.cpp">
       <Filter>alliance</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\alliance\alliance-eagle-clan.cpp">
+      <Filter>alliance</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\src\alliance\alliance-gaichi.cpp">
       <Filter>alliance</Filter>
     </ClCompile>
@@ -6005,6 +6008,9 @@
       <Filter>alliance</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\alliance\alliance-dokachans.h">
+      <Filter>alliance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\alliance\alliance-eagle-clan.h">
       <Filter>alliance</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\alliance\alliance-gaichi.h">

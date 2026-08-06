@@ -17162,6 +17162,7 @@
         "ja": "マンウェに遣わされた偉大な大鷲は人の言葉を話し、マイアールと同じ魂を持っていると言われる。この大鷲はその一族の一員である。",
         "en": "An agent of supernatural beings, this creature looks like a huge eagle.",
       },
+      "alliance": "EAGLE-CLAN",
       "flags": [
         "CAN_FLY",
         "WILD_ONLY",
@@ -19942,7 +19943,7 @@
         "ja": "マンウェに遣わされた偉大な大鷲は人の言葉を話し、マイアールと同じ魂を持っていると言われる。メネルドールは一族の中でグワイヒアとその弟ランドローバルに継いで速く、疾翼と呼ばれる。",
         "en": "An agent of supernatural beings, this creature looks like a huge eagle.",
       },
-      "alliance": "VALINOR",
+      "alliance": "EAGLE-CLAN",
       "flags": [
         "CAN_FLY",
         "UNIQUE",
@@ -21491,7 +21492,7 @@
         "ja": "マンウェに遣わされた偉大な大鷲は人の言葉を話し、マイアールと同じ魂を持っていると言われる。グワイヒアは大鷲の王であり、一族の中で最も強く、速い。これが風の支配者と呼ばれる所以である。",
         "en": "An agent of supernatural beings, this creature looks like a huge eagle.",
       },
-      "alliance": "VALINOR",
+      "alliance": "EAGLE-CLAN",
       "flags": [
         "CAN_FLY",
         "UNIQUE",
@@ -25044,7 +25045,7 @@
         "ja": "マンウェに遣わされた偉大な大鷲は人の言葉を話し、マイアールと同じ魂を持っていると言われる。ソロンドールは全ての大鷲のうちで最初に現れた者であり、最強かつ最大の王だ。その巨大な体を前にすればメルコールの卑小な召使い達は逃げ惑うことしか出来無い。",
         "en": "An agent of supernatural being, Thorondor is the lord of eagles.",
       },
-      "alliance": "VALINOR",
+      "alliance": "EAGLE-CLAN",
       "flags": [
         "CAN_FLY",
         "UNIQUE",
