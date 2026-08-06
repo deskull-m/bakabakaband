@@ -15,6 +15,7 @@
 #include "alliance/alliance-court-of-chaos.h"
 #include "alliance/alliance-diabolique.h"
 #include "alliance/alliance-dokachans.h"
+#include "alliance/alliance-eagle-clan.h"
 #include "alliance/alliance-eldrazi.h"
 #include "alliance/alliance-fangfamily.h"
 #include "alliance/alliance-feanor-noldor.h"
@@ -157,6 +158,7 @@ const std::map<AllianceType, std::shared_ptr<Alliance>> alliance_list = {
     { AllianceType::DIABOLIQUE, std::make_unique<AllianceDiabolique>(AllianceType::DIABOLIQUE, "DIABOLIQUE", _("\u30c7\u30a2\u30dc\u30ea\u30ab", "Diabolique"), 5000000L) },
     { AllianceType::SOUKAIYA, std::make_unique<AllianceSoukaiya>(AllianceType::SOUKAIYA, "SOUKAIYA", _("ソウカイヤ", "Soukaiya"), 3000000L) },
     { AllianceType::YEEK_KINGDOM, std::make_unique<AllianceYeekKingdom>(AllianceType::YEEK_KINGDOM, "YEEK-KINGDOM", _("イークの王国", "Yeek Kingdom"), 15000L) },
+    { AllianceType::EAGLE_CLAN, std::make_unique<AllianceEagleClan>(AllianceType::EAGLE_CLAN, "EAGLE-CLAN", _("大鷲の一族", "Eagle Clan"), 2500000L, 600L) },
 };
 
 const std::map<std::tuple<AllianceType, AllianceType>, int> each_alliance_impression = {

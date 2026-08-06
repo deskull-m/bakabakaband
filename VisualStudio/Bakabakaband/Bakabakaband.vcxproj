@@ -284,6 +284,7 @@
     <ClCompile Include="..\..\src\alliance\alliance-court-of-chaos.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-diabolique.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-dokachans.cpp" />
+    <ClCompile Include="..\..\src\alliance\alliance-eagle-clan.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-eldrazi.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-fangfamily.cpp" />
     <ClCompile Include="..\..\src\alliance\alliance-feanor-noldor.cpp" />
@@ -1154,6 +1155,7 @@
     <ClInclude Include="..\..\src\alliance\alliance-court-of-chaos.h" />
     <ClInclude Include="..\..\src\alliance\alliance-diabolique.h" />
     <ClInclude Include="..\..\src\alliance\alliance-dokachans.h" />
+    <ClInclude Include="..\..\src\alliance\alliance-eagle-clan.h" />
     <ClInclude Include="..\..\src\alliance\alliance-eldrazi.h" />
     <ClInclude Include="..\..\src\alliance\alliance-fangfamily.h" />
     <ClInclude Include="..\..\src\alliance\alliance-feanor-noldor.h" />
