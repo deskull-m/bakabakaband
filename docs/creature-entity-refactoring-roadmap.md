@@ -3458,13 +3458,16 @@ per-turn 変異処理ループの新設（性能・正当性）、(b) 副作用�
   UI プロンプト・脱糞等プレイヤー専用副作用や、モンスターに無意味な変異は扱わない。
   メッセージはモンスター視認時のみ。
   - **C5-2b（curated セット拡充）**: 純粋にモンスター安全なプリミティブで完結する
-    能動変異 2 種を追加。**INVULN**（`!has_anti_magic()` かつ `one_in_(5000)` で
+    能動変異 3 種を追加。**INVULN**（`!has_anti_magic()` かつ `one_in_(5000)` で
     `set_monster_invulner()` により一時無敵化。視認時メッセージ）/ **SP_TO_HP**
     （`one_in_(2000)` で傷がある場合、`get_current_mp()` を上限に `heal_hp()` で
     HP を回復し `sub_current_mp()` で MP を消費。HP 変化は `HealthBarTracker` で
-    追跡対象時のみ再描画。プレイヤー版同様メッセージ無し）。いずれも死亡経路や
-    プレイヤー専用副作用を伴わない純粋自己効果のため安全。プレイヤー版
-    (`take_hit` を用いる `HP_TO_SP` 等) はモンスター死亡経路を要するため据え置き。
+    追跡対象時のみ再描画。プレイヤー版同様メッセージ無し）/ **HP_TO_SP**
+    （`!has_anti_magic()` かつ `one_in_(4000)` で MP 不足があれば HP を消費して MP を
+    回復）。**HP_TO_SP はプレイヤー版が `take_hit` で死亡し得るが、モンスターの自己変異は
+    ドロップ・撃破クレジット等の死亡経路を避けるため現在 HP を 1 残す非致死ガードを
+    付与**（`converted = min(current_hp - 1, mp_deficit)`）。いずれも死亡経路や
+    プレイヤー専用副作用を伴わない純粋自己効果のため安全。
 - **C5-3（発火）**: `process_world()` のプレイヤー変異処理直後に、変異持ちモンスターを
   走査して `process_monster_mutation()` を呼ぶ。`process_world` 全体が
   `TURNS_PER_TICK`(10 ゲームターン)でゲートされるため**プレイヤーと同一周期**で、
@@ -3475,9 +3478,9 @@ per-turn 変異処理ループの新設（性能・正当性）、(b) 副作用�
 フルビルド (g++ -O3 -Werror) / clang-format-18 / validate_json.py で検証済。
 
 **将来拡張余地:** 対応変異の追加（受動変異の stat/耐性反映等）、モンスター視点での
-より豊かなメッセージ、`HP_TO_SP` 等の死亡経路を伴う変異（`MonsterDamageProcessor`
-経由の自己ダメージ）。現状は能動 6 種の curated セット
-（BERS_RAGE / COWARDICE / RTELEPORT / SPEED_FLUX / INVULN / SP_TO_HP）。
+より豊かなメッセージ、`MonsterDamageProcessor` 経由で死亡し得る自己ダメージ変異の導入
+（現状の `HP_TO_SP` は非致死ガード付き）。現状は能動 7 種の curated セット
+（BERS_RAGE / COWARDICE / RTELEPORT / SPEED_FLUX / INVULN / SP_TO_HP / HP_TO_SP）。
 
 ---
 

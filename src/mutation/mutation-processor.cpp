@@ -640,6 +640,25 @@ void process_monster_mutation(CreatureEntity &player, CreatureEntity &monster)
             HealthBarTracker::get_instance().set_flag_if_tracking(m_idx);
         }
     }
+
+    // HP を MP へ変換する (HP_TO_SP)。プレイヤー版は take_hit で死亡し得るが、
+    // モンスターの自己変異はドロップ・撃破クレジット等の死亡経路を避けるため
+    // 現在 HP を 1 残す非致死ガードを付与する。
+    if (muta.has(PlayerMutationType::HP_TO_SP) && !monster.has_anti_magic() && one_in_(4000)) {
+        const auto mp_deficit = monster.get_max_mp() - monster.get_current_mp();
+        if (mp_deficit > 0) {
+            auto converted = monster.get_current_hp() - 1;
+            if (converted > mp_deficit) {
+                converted = mp_deficit;
+            }
+            if (converted > 0) {
+                monster.hp -= converted;
+                monster.add_current_mp(converted);
+                HealthBarTracker::get_instance().set_flag_if_tracking(m_idx);
+                notify(_("%sは頭に血が昇った。", "%s^ has a rush of blood to the head."));
+            }
+        }
+    }
 }
 
 bool drop_weapons(CreatureEntity &creature)
