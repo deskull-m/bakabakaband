@@ -874,8 +874,11 @@ C トラック第 4 弾で、**JSON オプトイン方式**（既定=なし=バ�
   が担う。巨大なプレイヤー版（UI プロンプト・脱糞・`BadStatusSetter` の徳/構え副作用等
   深いプレイヤー結合）は改造せず、モンスターに意味のある能動変異のみ curated 実装:
   **BERS_RAGE**（激怒→恐怖解除+加速）/ **COWARDICE**（恐怖）/ **RTELEPORT**
-  （テレポート）/ **SPEED_FLUX**（速度変動）。効果は `set_monster_monfear/fast/slow` /
-  `teleport_away` 等モンスター安全なプリミティブで適用し、メッセージは視認時のみ。
+  （テレポート）/ **SPEED_FLUX**（速度変動）/ **INVULN**（一時無敵）/
+  **SP_TO_HP**（MP を消費して傷を癒す）。効果は `set_monster_monfear/fast/slow` /
+  `set_monster_invulner` / `teleport_away` / `heal_hp`+`sub_current_mp` 等モンスター
+  安全なプリミティブで適用し、メッセージは視認時のみ（HP 変化は視認対象なら
+  `HealthBarTracker` で再描画）。
 - 発火は `process_world()`（`TURNS_PER_TICK`=10 ゲームターン周期）のプレイヤー変異処理
   直後に変異持ちモンスターを走査して行うため、発動確率はプレイヤー版と同一周期で整合。
 - **未対応の変異は付与しても per-turn では発火しない**（上記 4 種以外）。受動変異
