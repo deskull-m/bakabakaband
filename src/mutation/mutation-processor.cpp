@@ -56,6 +56,7 @@
 #include "target/target-setter.h"
 #include "target/target-types.h"
 #include "term/screen-processor.h"
+#include "tracking/health-bar-tracker.h"
 #include "view/display-messages.h"
 #include "world/world-collapsion.h"
 #include "world/world.h"
@@ -560,7 +561,7 @@ void process_world_aux_mutation(CreatureEntity &creature)
  * @param monster 対象モンスター
  * @details プレイヤー用 process_world_aux_mutation() とは分離した、モンスターに
  *          意味のある能動突然変異のみを扱う専用処理。効果はモンスター安全な
- *          プリミティブ (set_monster_* / teleport_away) で適用し、プレイヤー専用の
+ *          プリミティブ (set_monster_* / teleport_away / heal_hp 等) で適用し、プレイヤー専用の
  *          副作用 (BadStatusSetter の徳変化・UI プロンプト・脱糞等) は用いない。
  *          メッセージはモンスターが視認可能な時のみ表示する。
  */
@@ -617,6 +618,27 @@ void process_monster_mutation(CreatureEntity &player, CreatureEntity &monster)
             set_monster_fast(floor, m_idx, monster.get_timed_effect(CreatureTimedEffect::ACCELERATION) + randint1(30) + 10);
         }
         notify(_("%sの速度が急に変化した。", "%s^'s speed suddenly changes."));
+    }
+
+    // 一時的無敵 (INVULN)
+    if (muta.has(PlayerMutationType::INVULN) && !monster.has_anti_magic() && one_in_(5000)) {
+        set_monster_invulner(floor, m_idx, randint1(8) + 8, false);
+        notify(_("%sは無敵になった気がしているようだ！", "%s^ seems to feel invincible!"));
+    }
+
+    // MP を HP へ変換して傷を癒す (SP_TO_HP)
+    if (muta.has(PlayerMutationType::SP_TO_HP) && one_in_(2000)) {
+        const auto wounds = monster.get_max_hp() - monster.get_current_hp();
+        if (wounds > 0) {
+            auto healing = monster.get_current_mp();
+            if (healing > wounds) {
+                healing = wounds;
+            }
+
+            monster.heal_hp(healing);
+            monster.sub_current_mp(healing);
+            HealthBarTracker::get_instance().set_flag_if_tracking(m_idx);
+        }
     }
 }
 
