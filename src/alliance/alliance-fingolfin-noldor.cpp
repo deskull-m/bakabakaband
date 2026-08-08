@@ -18,6 +18,9 @@ int AllianceFingolfinNoldor::calcImpressionPoint(const CreatureEntity &creature)
     impression += Alliance::calcPlayerPower(creature, 17, 24);
     impression += calcIronmanHostilityPenalty();
 
+    // トールキンの善玉陣営: 善のアライメントほどそこそこプラス、悪の場合は大きめにマイナス
+    impression += (creature.alignment > 0) ? creature.alignment : creature.alignment * 3;
+
     return impression;
 }
 

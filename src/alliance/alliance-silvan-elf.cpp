@@ -10,6 +10,9 @@ int AllianceSilvanElf::calcImpressionPoint(const CreatureEntity &creature) const
 
     impression += Alliance::calcPlayerPower(creature, 12, 25);
 
+    // トールキンの善玉陣営: 善のアライメントほどそこそこプラス、悪の場合は大きめにマイナス
+    impression += (creature.alignment > 0) ? creature.alignment : creature.alignment * 3;
+
     // シルヴァンエルフの指導者を殺害した場合の大幅減点
     const auto &monrace_list = MonraceList::get_instance();
     if (monrace_list.get_monrace(MonraceId::THRANDUIL).r_pkills > 0) {
