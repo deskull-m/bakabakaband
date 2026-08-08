@@ -27576,5 +27576,40 @@
       ],
       "flags": ["RES_ELEC", "IGNORE_ELEC"],
     },
+    {
+      "id": 829,
+      "name": {
+        "ja": "アルミホイルハット",
+        "en": "& Aluminum Foil Hat~",
+      },
+      "symbol": {
+        "character": "]",
+        "color": "White",
+      },
+      "itemkind": {
+        "type_value": 32,
+        "subtype_value": 27,
+      },
+      "parameter_value": 0,
+      "level": 1,
+      "weight": 2,
+      "cost": 0,
+      "base_ac": 0,
+      "base_dice": "0d0",
+      "hit_bonus": 0,
+      "damage_bonus": 0,
+      "ac_bonus": 0,
+      "allocations": [
+        {
+          "depth": 1,
+          "rarity": 1,
+        },
+      ],
+      "flags": [],
+      "flavor": {
+        "ja": "頭にかぶるために折り畳まれたアルミホイルだ。これさえあれば「奴ら」の電波もマインドコントロールも防げると信じられているが、その効果のほどは定かではない。",
+        "en": "A hat folded from aluminum foil. Some swear it wards off mind control and the rays of 'them,' though its effectiveness is, at best, unproven.",
+      },
+    },
   ],
 }
