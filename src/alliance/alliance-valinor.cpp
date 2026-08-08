@@ -19,7 +19,8 @@ int AllianceValinor::calcImpressionPoint(const CreatureEntity &creature) const
     int impression = 0;
     impression += calcIronmanHostilityPenalty();
 
-    impression += (creature.alignment > 0) ? creature.alignment : -creature.alignment * 3;
+    // トールキンの善玉陣営: 善のアライメントほどそこそこプラス、悪の場合は大きめにマイナス
+    impression += (creature.alignment > 0) ? creature.alignment : creature.alignment * 3;
     impression += Alliance::calcPlayerPower(creature, -16, 30);
     return impression;
 }

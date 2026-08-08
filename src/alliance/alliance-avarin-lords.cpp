@@ -10,6 +10,9 @@ int AllianceAvarinLords::calcImpressionPoint(const CreatureEntity &creature) con
     impression += Alliance::calcPlayerPower(creature, 10, 23);
     impression += calcIronmanHostilityPenalty();
 
+    // トールキンの善玉陣営: 善のアライメントほどそこそこプラス、悪の場合は大きめにマイナス
+    impression += (creature.alignment > 0) ? creature.alignment : creature.alignment * 3;
+
     // アヴァリ諸侯同盟のモンスター撃破による印象値低下
     const auto &monrace_list = MonraceList::get_instance();
 
