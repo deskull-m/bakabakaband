@@ -148773,5 +148773,46 @@
         "en": "Is it there or is it not?",
       },
     },
+    {
+      "id": 2359,
+      "name": {
+        "ja": "子泣きじじい",
+        "en": "Konaki-jijii",
+      },
+      "symbol": {
+        "character": "H",
+        "color": "Light Brown",
+      },
+      "speed": 0,
+      "hit_point": "5d8",
+      "vision": 20,
+      "armor_class": 12,
+      "alertness": 20,
+      "level": 20,
+      "rarity": 2,
+      "exp": 30,
+      "body_structure": "BIPEDAL",
+      "sex": "MALE",
+      "next_exp": 0,
+      "next_mon": 0,
+      "escorts": [],
+      "blows": [
+        {
+          "method": "WAIL",
+          "effect": "HURT",
+          "damage_dice": "1d4",
+        },
+        {
+          "method": "CRUSH",
+          "effect": "INERTIA",
+          "damage_dice": "1d6",
+        },
+      ],
+      "flavor": {
+        "ja": "赤ん坊のような声で泣く老人の妖怪だ。哀れに思って抱き上げると、石のように重くなり、相手の動きを封じて押し潰そうとする。その場から動くことはないが、うかつに近づいた者を離さない。",
+        "en": "An old yokai that cries like an infant. Pick it up out of pity and it turns as heavy as stone, weighing its victim down before crushing them. It never moves from its spot, but woe to those who wander too close.",
+      },
+      "flags": ["NEVER_MOVE", "FAIRY"],
+    },
   ],
 }
