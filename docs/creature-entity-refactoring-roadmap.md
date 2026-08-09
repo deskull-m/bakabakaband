@@ -3465,19 +3465,36 @@ per-turn 変異処理ループの新設（性能・正当性）、(b) 副作用�
     追跡対象時のみ再描画。プレイヤー版同様メッセージ無し）。いずれも死亡経路や
     プレイヤー専用副作用を伴わない純粋自己効果のため安全。プレイヤー版
     (`take_hit` を用いる `HP_TO_SP` 等) はモンスター死亡経路を要するため据え置き。
-- **C5-3（発火）**: `process_world()` のプレイヤー変異処理直後に、変異持ちモンスターを
-  走査して `process_monster_mutation()` を呼ぶ。`process_world` 全体が
-  `TURNS_PER_TICK`(10 ゲームターン)でゲートされるため**プレイヤーと同一周期**で、
-  発動確率(`one_in_(3000)` 等)がそのまま整合。大多数のモンスターは `none()` 即スキップ。
+  - **C5-3（発火）**: `process_world()` のプレイヤー変異処理直後に、変異持ちモンスターを
+    走査して `process_monster_mutation()` を呼ぶ。`process_world` 全体が
+    `TURNS_PER_TICK`(10 ゲームターン)でゲートされるため**プレイヤーと同一周期**で、
+    発動確率(`one_in_(3000)` 等)がそのまま整合。大多数のモンスターは `none()` 即スキップ。
+    HP 変化を伴う能動変異（SP_TO_HP 等）は追跡対象時のみ `HealthBarTracker` で再描画し、
+    メッセージはモンスター視認時のみ。**プレイヤー版 `HP_TO_SP`（`take_hit` で死亡し得る）は
+    モンスターの死亡経路（ドロップ・撃破クレジット等）を避ける必要があるため引き続き据え置きで、
+    モンスターには発火しない**（C5-2b と同方針。将来モンスターに導入する際は現在 HP を 1 残す
+    等の非致死変換ルールが前提となる）。
+  - **C5-2c（受動変異の反映）**: 常時効果の受動変異を、per-turn 処理ではなく
+    既存のクエリ仮想へ OR-in する形で反映（C1 の種族由来フラグ反映と同じ手法）。
+    **REGEN**（`has_regen_flag()` のモンスター分岐へ `has_mutation(REGEN)` を OR-in →
+    自然回復 2 倍化。C1第10弾の `has_race_granted_regeneration()` と同経路）/ **ESP**
+    （`process_stealth()` の `has_race_granted_telepathy()` 判定へ `has_mutation(ESP)` を
+    OR-in → 忍者の超隠密を無視。C3第1弾と同経路）を追加。**FEARLESS** は
+    `has_resist_fear()` 仮想が呼ぶ自由関数 `::has_resist_fear()` がクリーチャー共通で
+    `FEARLESS` 変異を参照するため**追加配線なしで既に反映済み**と確認。いずれも
+    JSON `"mutations"` opt-in（既定は付与個体ゼロ）でバランス不変。元素オーラ
+    （`has_sh_fire` 等はモンスター側が別系統 AuraType 管理）・AC/能力値修正は
+    monster 側メカニクスの差異が大きいため将来拡張。
 
 **バランス:** JSON `"mutations"` を指定した個体のみ発火。既定（未指定）は完全不変。
 **工数:** 中（3 コミット）。**価値:** 中（opt-in 個体に確率的な自己効果を付与）。
 フルビルド (g++ -O3 -Werror) / clang-format-18 / validate_json.py で検証済。
 
-**将来拡張余地:** 対応変異の追加（受動変異の stat/耐性反映等）、モンスター視点での
-より豊かなメッセージ、`HP_TO_SP` 等の死亡経路を伴う変異（`MonsterDamageProcessor`
-経由の自己ダメージ）。現状は能動 6 種の curated セット
-（BERS_RAGE / COWARDICE / RTELEPORT / SPEED_FLUX / INVULN / SP_TO_HP）。
+**将来拡張余地:** 受動変異の stat/AC/元素オーラ反映（monster 側メカニクス差異が大きい）、
+モンスター視点でのより豊かなメッセージ、`MonsterDamageProcessor` 経由で死亡し得る
+自己ダメージ変異の導入（現状の `HP_TO_SP` は非致死ガード付き）。現状は
+**能動 7 種**（BERS_RAGE / COWARDICE / RTELEPORT / SPEED_FLUX / INVULN / SP_TO_HP /
+HP_TO_SP）の curated セット＋**受動 3 種**（REGEN / ESP / FEARLESS）を反映済み。
 
 ---
 
