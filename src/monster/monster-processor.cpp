@@ -55,6 +55,7 @@
 #include "mspell/mspell-attack.h"
 #include "mspell/mspell-judgement.h"
 #include "mspell/mspell-util.h"
+#include "mutation/mutation-flag-types.h"
 #include "object-enchant/trc-types.h"
 #include "object/object-kind-hook.h"
 #include "pet/pet-fall-off.h"
@@ -1044,7 +1045,9 @@ void process_monster(CreatureEntity &creature, MONSTER_IDX m_idx)
 bool process_stealth(CreatureEntity &creature, MONSTER_IDX m_idx)
 {
     // [提案C3第1弾] テレパシーを持つモンスターは忍者の超隠密を無視して常に気付く (opt-in・既定OFF)。
-    if (creature.get_floor()->get_monster(m_idx).has_race_granted_telepathy()) {
+    // [提案C5] テレパシー (ESP) 突然変異を持つモンスターも同様に超隠密を無視する (opt-in・既定OFF)。
+    const auto &stealth_target = creature.get_floor()->get_monster(m_idx);
+    if (stealth_target.has_race_granted_telepathy() || stealth_target.has_mutation(PlayerMutationType::ESP)) {
         return true;
     }
 

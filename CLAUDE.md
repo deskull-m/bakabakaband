@@ -881,8 +881,17 @@ C トラック第 4 弾で、**JSON オプトイン方式**（既定=なし=バ�
   `HealthBarTracker` で再描画）。
 - 発火は `process_world()`（`TURNS_PER_TICK`=10 ゲームターン周期）のプレイヤー変異処理
   直後に変異持ちモンスターを走査して行うため、発動確率はプレイヤー版と同一周期で整合。
-- **未対応の変異は付与しても per-turn では発火しない**（上記 4 種以外）。受動変異
-  （耐性・ESP 等）の反映は将来拡張。スキーマに `mutations` を登録済。
+- **受動変異の反映（常時効果、per-turn 処理ではなく既存クエリ仮想へ OR-in）:**
+  - **REGEN**（急回復）: `has_regen_flag()` のモンスター分岐へ `has_mutation(REGEN)` を
+    OR-in。native `REGENERATE` / 種族由来再生（C1第10弾）と同様に自然回復量を 2 倍化
+    （`compute_regen_amount`）。
+  - **ESP**（テレパシー）: `process_stealth()` の `has_race_granted_telepathy()`（C3第1弾）
+    判定へ `has_mutation(ESP)` を OR-in。忍者の超隠密を無視して常に気付く。
+  - **FEARLESS**（恐れ知らず）は特段の配線不要で既に反映済み。`has_resist_fear()` 仮想が
+    自由関数 `::has_resist_fear(*this)` を呼び、これがクリーチャー共通で `FEARLESS` 変異を
+    参照するため、変異を持つモンスターは自動的に恐怖耐性を得る。
+- **上記以外の未対応の能動変異は付与しても per-turn では発火しない**。その他の受動変異
+  （元素オーラ・AC 修正・能力値修正等）の反映は将来拡張。スキーマに `mutations` を登録済。
 
 ### モンスターの魔法領域詠唱 (`realm_abilities`) — 提案 C6
 
