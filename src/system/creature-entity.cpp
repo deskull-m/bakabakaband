@@ -2468,7 +2468,8 @@ bool CreatureEntity::has_regen_flag() const
 {
     if (this->has_monster_profile()) {
         // [提案C1第10弾] 付与種族の再生 (TR_REGEN) も native REGENERATE と同様に自然回復を倍化 (opt-in・既定OFF)。
-        return this->get_monrace().misc_flags.has(MonsterMiscType::REGENERATE) || this->has_race_granted_regeneration();
+        // [提案C5] 再生 (REGEN) 突然変異を持つモンスターも同様に自然回復を倍化 (opt-in・既定OFF)。
+        return this->get_monrace().misc_flags.has(MonsterMiscType::REGENERATE) || this->has_race_granted_regeneration() || this->has_mutation(PlayerMutationType::REGEN);
     }
     return this->regenerate != 0;
 }
