@@ -898,6 +898,12 @@ C トラック第 4 弾で、**JSON オプトイン方式**（既定=なし=バ�
     直後）へプレイヤー版と同じ加減速値で反映。**XTRA_LEGS**（+3）/ **SHORT_LEG**（-3）/
     **XTRA_FAT**（-2）/ **WEAK_LOWER_BODY**（-2）。変異は `assign_fixed_mutations()` で
     付与済みのため生成時に参照可能。静的な `speed` フィールドへ加算する固定反映。
+  - **魔法防御**（セーヴ）: **MAGIC_RES**。`CreatureEntity::get_save_mutation_bonus()` が
+    プレイヤー版 skill_sav の加算（`15 + level/5`）と同じ補正を返し、レベル基準セーヴ判定の
+    実効レベルへ加算。C2第3弾の `get_save_stat_bonus()`（WIS）と同じ 3 サイト
+    （`spells-diceroll` の魅了/服従・状態異常、`effect-monster-psi`、`effect-monster-util` の
+    `monster_saves_status_by_level`）へ配線。C2 の `applies_stat_combat_bonus` ゲートとは
+    独立（MAGIC_RES 保有のみで発火）。
 - **上記以外の未対応の能動変異は付与しても per-turn では発火しない**。その他の受動変異
   （元素オーラは monster 側が別系統 `MonsterAuraType` 管理・能力値修正等）の反映は将来拡張。
   スキーマに `mutations` を登録済。

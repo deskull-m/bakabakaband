@@ -85,6 +85,7 @@ bool target_race_resists_element(EffectMonster *em_ptr, tr_type res_flag)
 
 bool monster_saves_status_by_level(EffectMonster *em_ptr, int difficulty)
 {
-    const auto effective_level = em_ptr->monrace->level + em_ptr->m_ptr->get_save_stat_bonus();
+    // [提案C2第3弾・セーヴ] WIS + [提案C5・セーヴ] MAGIC_RES 突然変異のセーヴ補正を実効レベルへ加算 (いずれも opt-in・既定OFF)
+    const auto effective_level = em_ptr->monrace->level + em_ptr->m_ptr->get_save_stat_bonus() + em_ptr->m_ptr->get_save_mutation_bonus();
     return effective_level > randint1(std::max(1, difficulty - 10)) + 10;
 }
