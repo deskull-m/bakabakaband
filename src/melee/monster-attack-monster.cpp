@@ -30,6 +30,7 @@
 #include "monster/monster-info.h"
 #include "monster/monster-status-setter.h"
 #include "monster/monster-status.h"
+#include "mutation/mutation-flag-types.h"
 #include "spell-kind/spells-teleport.h"
 #include "spell-realm/spells-hex.h"
 #include "system/creature-entity.h"
@@ -85,7 +86,9 @@ static void aura_fire_by_melee(CreatureEntity &creature, mam_type *mam_ptr)
 {
     auto &monrace = mam_ptr->m_ptr->get_monrace();
     auto &monrace_target = mam_ptr->t_ptr->get_monrace();
-    if (monrace_target.aura_flags.has_not(MonsterAuraType::FIRE) || !mam_ptr->m_ptr->is_valid()) {
+    // [提案C5] FIRE_BODY 突然変異も native 火オーラと同様に反撃 (opt-in・既定OFF)
+    const auto has_native_aura = monrace_target.aura_flags.has(MonsterAuraType::FIRE);
+    if ((!has_native_aura && !mam_ptr->t_ptr->has_mutation(PlayerMutationType::FIRE_BODY)) || !mam_ptr->m_ptr->is_valid()) {
         return;
     }
 
@@ -98,7 +101,8 @@ static void aura_fire_by_melee(CreatureEntity &creature, mam_type *mam_ptr)
         msg_format(_("%s^は突然熱くなった！", "%s^ is suddenly very hot!"), mam_ptr->m_name);
     }
 
-    if (mam_ptr->m_ptr->is_visible_on_map() && is_original_ap_and_seen(creature, *mam_ptr->t_ptr)) {
+    // 種族由来 (native) オーラのみ思い出フラグを記録する (mutation 由来は monrace 固有でないため記録しない)
+    if (has_native_aura && mam_ptr->m_ptr->is_visible_on_map() && is_original_ap_and_seen(creature, *mam_ptr->t_ptr)) {
         monrace_target.aura_flags.set(MonsterAuraType::FIRE);
     }
 
@@ -139,7 +143,9 @@ static void aura_elec_by_melee(CreatureEntity &creature, mam_type *mam_ptr)
     const auto &monster = *mam_ptr->m_ptr;
     auto &monrace = monster.get_monrace();
     auto &monrace_target = mam_ptr->t_ptr->get_monrace();
-    if (monrace_target.aura_flags.has_not(MonsterAuraType::ELEC) || !monster.is_valid()) {
+    // [提案C5] ELEC_TOUC 突然変異も native 電オーラと同様に反撃 (opt-in・既定OFF)
+    const auto has_native_aura = monrace_target.aura_flags.has(MonsterAuraType::ELEC);
+    if ((!has_native_aura && !mam_ptr->t_ptr->has_mutation(PlayerMutationType::ELEC_TOUC)) || !monster.is_valid()) {
         return;
     }
 
@@ -152,7 +158,8 @@ static void aura_elec_by_melee(CreatureEntity &creature, mam_type *mam_ptr)
         msg_format(_("%s^は電撃を食らった！", "%s^ gets zapped!"), mam_ptr->m_name);
     }
 
-    if (monster.is_visible_on_map() && is_original_ap_and_seen(creature, *mam_ptr->t_ptr)) {
+    // 種族由来 (native) オーラのみ思い出フラグを記録する (mutation 由来は monrace 固有でないため記録しない)
+    if (has_native_aura && monster.is_visible_on_map() && is_original_ap_and_seen(creature, *mam_ptr->t_ptr)) {
         monrace_target.aura_flags.set(MonsterAuraType::ELEC);
     }
 

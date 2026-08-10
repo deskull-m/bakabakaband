@@ -715,17 +715,37 @@ void PlayerType::on_death(std::string_view cause)
  * @param dam_func ダメージ処理を行う関数の参照ポインタ
  * @param message オーラダメージを受けた際のメッセージ
  */
+/*!
+ * @brief オーラ属性に対応する突然変異をソースが持つか [提案C5]
+ * @details FIRE_BODY→火オーラ / ELEC_TOUC→電オーラ。COLD オーラに対応する突然変異は無い。
+ * opt-in (JSON "mutations") 個体のみ true。プレイヤー・非対応では false。
+ */
+static bool source_has_aura_by_mutation(const CreatureEntity &source, MonsterAuraType aura_flag)
+{
+    switch (aura_flag) {
+    case MonsterAuraType::FIRE:
+        return source.has_mutation(PlayerMutationType::FIRE_BODY);
+    case MonsterAuraType::ELEC:
+        return source.has_mutation(PlayerMutationType::ELEC_TOUC);
+    default:
+        return false;
+    }
+}
+
 static void process_aura_damage(const CreatureEntity &source, CreatureEntity &creature, bool immune, MonsterAuraType aura_flag, dam_func dam_func, concptr message)
 {
     auto &monrace = source.get_monrace();
-    if (monrace.aura_flags.has_not(aura_flag) || immune) {
+    const auto has_native_aura = monrace.aura_flags.has(aura_flag);
+    // [提案C5] FIRE_BODY→火オーラ / ELEC_TOUC→電オーラ 突然変異も native オーラと同様に反撃 (opt-in・既定OFF)
+    if ((!has_native_aura && !source_has_aura_by_mutation(source, aura_flag)) || immune) {
         return;
     }
 
     int aura_damage = Dice::roll(1 + (monrace.level / 26), 1 + (monrace.level / 17));
     msg_print(message);
     (*dam_func)(creature, aura_damage, monster_desc(creature, source, MD_WRONGDOER_NAME).data(), true);
-    if (is_original_ap_and_seen(creature, source)) {
+    // 種族由来 (native) オーラのみ思い出フラグを記録する (mutation 由来は monrace 固有でないため記録しない)
+    if (has_native_aura && is_original_ap_and_seen(creature, source)) {
         monrace.r_aura_flags.set(aura_flag);
     }
 
