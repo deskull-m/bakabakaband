@@ -4012,6 +4012,33 @@ void CreatureEntity::set_forgotten_spell(int realm_idx, int spell_id, bool value
     this->set_spell_forgotten_flags(realm_idx, flags);
 }
 
+void CreatureEntity::learn_realm_spellbooks(RealmType realm, uint32_t book_mask)
+{
+    if ((realm == RealmType::NONE) || (book_mask == 0)) {
+        return;
+    }
+
+    // 学習領域を realm1 に設定する (未設定時のみ)。
+    if (this->get_realm1() == RealmType::NONE) {
+        this->set_realm1(realm);
+    }
+
+    constexpr int spells_per_book = 8; // 各魔導書は 8 呪文 (4 書 × 8 = 32 = SPELLS_IN_REALM)
+    constexpr int books_per_realm = 4;
+    constexpr SUB_EXP learned_spell_exp = 1200; // SPELL_EXP_SKILLED 相当 (熟練度は将来の案B詠唱で使用)
+    for (int book = 0; book < books_per_realm; ++book) {
+        if ((book_mask & (1U << book)) == 0) {
+            continue;
+        }
+        for (int offset = 0; offset < spells_per_book; ++offset) {
+            const int spell_id = (book * spells_per_book) + offset;
+            this->set_learned_spell(0, spell_id, true);
+            this->set_worked_spell(0, spell_id, true);
+            this->set_spell_exp(spell_id, learned_spell_exp);
+        }
+    }
+}
+
 // ==== 提案 E4: creature-entity.h からの inline virtual accessor 本体移設 ====
 
 AllianceType CreatureEntity::get_alliance_idx() const

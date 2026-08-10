@@ -3637,6 +3637,59 @@ JSON `"realm_abilities": "CHAOS"` を指定した個体は、詠唱時（`msa_ty
 
 ---
 
+## 提案 C6-R: 魔導書学習ベースへの組み直し（NPC が PC 同様に魔導書から学習して使う）
+
+### 方針転換の背景
+
+C6（realm まるごと付与）は「realm を指定すると its ability セットが付く」レンズ方式
+だった。メンテナ要望により、**「NPC がプレイヤーと同様、所定の魔導書から呪文を学習し、
+学んだ呪文を使う」** 方針へ組み直す。学習はプレイヤーと同じ `spell_learned` データ構造を
+用い、将来のプレイヤー経路詠唱（案B）でもそのまま流用できる基盤とする。
+
+### 実コード検証（案B の障壁の再確認）
+
+- `exe_spell(creature, realm, spell, CAST)` → `do_*_spell()` の CAST 経路は
+  `get_aim_dir` / `get_direction` / `get_item` / メニュー等 **UI プロンプトを直呼び**
+  する（realm ファイル全体で約 **115 箇所**）。→ 完全な PC 経路詠唱をモンスターに
+  行わせるには「ヘッドレス seam（対象を事前注入して UI プロンプトを回避）」の整備が要る。
+- ただし `get_aim_dir` は `command_dir` / `use_old_target` + 最終ターゲットが設定済みなら
+  プロンプトを出さずに方向を返す repeat/auto-target 機構を持つ → 将来のヘッドレス化の
+  seam として利用可能（後続段）。
+
+### ✅ 第1段 完了（学習データ基盤 ＋ 学習駆動の詠唱）
+
+- **データモデル:** `MonraceDefinition::spellbook_realm`（`RealmType`）＋
+  `spellbook_mask`（`uint8_t` ビットマスク、bit b=第b書 0..3）。JSON は
+  `"spellbook_realm": "CHAOS", "spellbook_indices": [0,1]`。reader は
+  `parse_realm_ability_token`（realm）＋新設 `set_mon_spellbook_indices`（配列→mask）。
+  schema 登録済。
+- **学習（生成時）:** `place_monster_one()` が `CreatureEntity::learn_realm_spellbooks(realm, mask)`
+  を呼び、`realm1` 設定＋指定書（各8呪文 `[b*8, b*8+8)`）を `spell_learned` /
+  `spell_worked` に登録し `spell_exp` を `SPELL_EXP_SKILLED`(1200) 相当にする。
+  **プレイヤーの学習と同一フィールドを埋める。**
+- **詠唱（学習駆動）:** `add_realm_granted_abilities()` を `add_realm_base_abilities()` /
+  `add_realm_advanced_abilities()` に分解し、新設 `add_learned_spellbook_abilities()` が
+  学習済み呪文のティア（第1〜2書=spell_id 0..15→基本 / 第3〜4書=16..31→高位）に応じて
+  `MonsterAbilityType` を OR-in。詠唱自体は既存 mspell 経路をそのまま利用。C6 の
+  realm_abilities（まるごと）とは独立経路で併用可能。
+- **既定なしのため実データ・既定バランス不変。** フルビルド (g++ -O3 -Werror) /
+  clang-format-18 / validate_json.py(9/9) で検証済。
+
+### 第2段以降（残・案B へ向けて）
+
+- **ヘッドレス詠唱 seam:** `exe_spell` の CAST を、対象を事前注入して UI プロンプトを
+  回避する形でモンスターから呼べるようにする（`get_aim_dir` の auto-target 機構を
+  スコープ付きで利用する RAII ガード等）。まず「方向系のみを使う攻撃/操作呪文」の
+  ホワイトリストから。
+- **castable 判定:** realm 呪文ごとに「モンスターがヘッドレスで安全に撃てるか」
+  （player-only 効果＝探知/地図/帰還等を除外）を表で管理し、学習済みかつ castable な
+  呪文を実際に `exe_spell` 経由で撃たせる。第1段の `spell_learned` をそのまま消費する。
+- **spell_exp の成長・詠唱失敗率:** 学習済み呪文の実運用（熟練度上昇・失敗率）を
+  プレイヤー式に寄せる。
+- **realm2 の学習:** 現状 `learn_realm_spellbooks` は realm1 のみ。二領域学習へ拡張。
+
+---
+
 ## 提案 C7: class_specific_data の限定運用 ✅ 完了（groundwork）
 
 **完了内容:** C1 で `pclass` を付与されたモンスターのうち、モンスター運用に意味の
