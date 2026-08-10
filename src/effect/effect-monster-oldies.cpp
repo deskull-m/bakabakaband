@@ -6,6 +6,7 @@
 #include "monster/monster-status-setter.h"
 #include "monster/monster-status.h"
 #include "monster/monster-util.h"
+#include "mutation/mutation-flag-types.h"
 #include "object-enchant/tr-types.h"
 #include "system/creature-entity.h"
 #include "system/enums/monrace/monrace-id.h"
@@ -244,6 +245,8 @@ ProcessResult effect_monster_old_sleep(CreatureEntity &creature, EffectMonster *
     has_resistance |= em_ptr->monrace->resistance_flags.has(MonsterResistanceType::NO_SLEEP);
     // [提案C1第5弾] 付与種族が自由行動 (TR_FREE_ACT) を持てば魔法睡眠を無効化 (opt-in・既定OFF)
     has_resistance |= target_race_resists_element(em_ptr, TR_FREE_ACT);
+    // [提案C5] 正確で力強い動作 (MOTION) 突然変異も自由行動として魔法睡眠を無効化 (opt-in・既定OFF)
+    has_resistance |= em_ptr->m_ptr->has_mutation(PlayerMutationType::MOTION);
     has_resistance |= monster_saves_status_by_level(em_ptr, em_ptr->dam);
 
     if (has_resistance) {
@@ -305,6 +308,8 @@ ProcessResult effect_monster_stasis(EffectMonster *em_ptr, bool to_evil)
     has_resistance |= monster_saves_status_by_level(em_ptr, em_ptr->dam);
     // [提案C1第5弾] 付与種族が自由行動 (TR_FREE_ACT) を持てば拘束(stasis)を無効化 (opt-in・既定OFF)
     has_resistance |= target_race_resists_element(em_ptr, TR_FREE_ACT);
+    // [提案C5] 正確で力強い動作 (MOTION) 突然変異も自由行動として拘束(stasis)を無効化 (opt-in・既定OFF)
+    has_resistance |= em_ptr->m_ptr->has_mutation(PlayerMutationType::MOTION);
     if (to_evil) {
         has_resistance |= em_ptr->monrace->kind_flags.has_not(MonsterKindType::EVIL);
     }

@@ -3475,7 +3475,11 @@ per-turn 変異処理ループの新設（性能・正当性）、(b) 副作用�
     （`process_stealth()` の `has_race_granted_telepathy()` 判定へ `has_mutation(ESP)` を
     OR-in → 忍者の超隠密を無視。C3第1弾と同経路）を追加。**FEARLESS** は
     `has_resist_fear()` 仮想が呼ぶ自由関数 `::has_resist_fear()` がクリーチャー共通で
-    `FEARLESS` 変異を参照するため**追加配線なしで既に反映済み**と確認。さらに
+    `FEARLESS` 変異を参照するため**追加配線なしで既に反映済み**と確認（同様に **VULN_ELEM**
+    元素弱点も `has_vuln_*()` が自由関数経由で参照するため反映済み）。**MOTION**（正確で
+    力強い動作＝`TR_FREE_ACT`）は C1第5弾で `TR_FREE_ACT` を配線済みの
+    `effect_monster_old_sleep` / `effect_monster_stasis` の `has_resistance` 集約へ
+    `has_mutation(MOTION)` を OR-in し、魔法睡眠・拘束を無効化するよう追加。さらに
     **AC 修正の皮膚系変異**（**WART_SKIN** +5 / **SCALES** +10 / **IRON_SKIN** +25）を
     `get_ac()` のモンスター分岐へ、プレイヤー版 `calc_to_ac()` と同じ加算値で反映
     （C2第3弾の DEX→AC と同じ get_ac() 分岐）。さらに **加速系変異**（**XTRA_LEGS** +3 /
@@ -3504,8 +3508,11 @@ per-turn 変異処理ループの新設（性能・正当性）、(b) 副作用�
 メッセージ、`MonsterDamageProcessor` 経由で死亡し得る自己ダメージ変異の導入
 （現状の `HP_TO_SP` は非致死ガード付き）。現状は **能動 7 種**（BERS_RAGE / COWARDICE /
 RTELEPORT / SPEED_FLUX / INVULN / SP_TO_HP / HP_TO_SP）の curated セット＋
-**受動 11 種**（REGEN / ESP / FEARLESS / WART_SKIN / SCALES / IRON_SKIN /
-XTRA_LEGS / SHORT_LEG / XTRA_FAT / WEAK_LOWER_BODY / MAGIC_RES）を反映済み。
+**受動 13 種**（REGEN / ESP / FEARLESS / VULN_ELEM / MOTION / WART_SKIN / SCALES /
+IRON_SKIN / XTRA_LEGS / SHORT_LEG / XTRA_FAT / WEAK_LOWER_BODY / MAGIC_RES）を反映済み
+（FEARLESS / VULN_ELEM は自由関数経由で追加配線なし）。残る主要な未反映は元素オーラ
+（別系統 `MonsterAuraType`・多攻撃サイト）と能力値修正（monster 内部×10 スケールと
+player スケールの対応・生成時 HP ロール順序の設計が必要）。
 
 ---
 

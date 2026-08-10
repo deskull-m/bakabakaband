@@ -888,9 +888,14 @@ C トラック第 4 弾で、**JSON オプトイン方式**（既定=なし=バ�
     （`compute_regen_amount`）。
   - **ESP**（テレパシー）: `process_stealth()` の `has_race_granted_telepathy()`（C3第1弾）
     判定へ `has_mutation(ESP)` を OR-in。忍者の超隠密を無視して常に気付く。
-  - **FEARLESS**（恐れ知らず）は特段の配線不要で既に反映済み。`has_resist_fear()` 仮想が
-    自由関数 `::has_resist_fear(*this)` を呼び、これがクリーチャー共通で `FEARLESS` 変異を
-    参照するため、変異を持つモンスターは自動的に恐怖耐性を得る。
+  - **自由行動**（睡眠/拘束耐性）: **MOTION**（正確で力強い動作＝`TR_FREE_ACT`）。
+    C1第5弾で `TR_FREE_ACT` を配線済みの `effect_monster_old_sleep` / `effect_monster_stasis`
+    （`effect-monster-oldies.cpp`）の `has_resistance` 集約へ `has_mutation(MOTION)` を OR-in。
+    魔法睡眠・拘束を無効化する。
+  - **FEARLESS**（恐れ知らず）/ **VULN_ELEM**（元素弱点）は特段の配線不要で既に反映済み。
+    `has_resist_fear()` / `has_vuln_fire()` 等の仮想が自由関数 `::has_resist_fear(*this)` /
+    `::has_vuln_X(*this)` を呼び、これらがクリーチャー共通で `FEARLESS` / `VULN_ELEM` 変異を
+    参照するため、変異を持つモンスターは自動的に恐怖耐性 / 元素弱点を得る。
   - **AC 修正**（皮膚系）: `get_ac()` のモンスター分岐へプレイヤー版 `calc_to_ac()` と
     同じ加算値で反映。**WART_SKIN**（イボ肌 +5）/ **SCALES**（鱗肌 +10）/
     **IRON_SKIN**（鉄の肌 +25）。C2第3弾の DEX→AC 反映と同じ get_ac() 分岐。
