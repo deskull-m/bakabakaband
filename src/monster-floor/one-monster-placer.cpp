@@ -32,6 +32,7 @@
 #include "monster/monster-timed-effects.h"
 #include "monster/monster-update.h"
 #include "monster/monster-util.h"
+#include "mutation/mutation-flag-types.h"
 #include "object/warning.h"
 #include "player-ability/player-ability-types.h"
 #include "player-base/player-class.h"
@@ -737,6 +738,22 @@ tl::optional<MONSTER_IDX> place_monster_one(CreatureEntity &player, POSITION y, 
     if (m_ptr->has_race_granted_speed()) {
         constexpr short race_granted_speed_bonus = 3;
         m_ptr->speed += race_granted_speed_bonus;
+    }
+
+    // [提案C5] 加速系の突然変異を生成時速度へ反映 (opt-in・既定OFF)。
+    // プレイヤー版と同じ加減速値 (XTRA_LEGS +3 / SHORT_LEG -3 / XTRA_FAT -2 / WEAK_LOWER_BODY -2)。
+    // 変異は assign_fixed_mutations() (上記) で付与済みのためここで参照できる。
+    if (m_ptr->has_mutation(PlayerMutationType::XTRA_LEGS)) {
+        m_ptr->speed += 3;
+    }
+    if (m_ptr->has_mutation(PlayerMutationType::SHORT_LEG)) {
+        m_ptr->speed -= 3;
+    }
+    if (m_ptr->has_mutation(PlayerMutationType::XTRA_FAT)) {
+        m_ptr->speed -= 2;
+    }
+    if (m_ptr->has_mutation(PlayerMutationType::WEAK_LOWER_BODY)) {
+        m_ptr->speed -= 2;
     }
 
     if (any_bits(mode, PM_HASTE)) {

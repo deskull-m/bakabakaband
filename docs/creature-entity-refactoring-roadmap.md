@@ -3484,10 +3484,13 @@ per-turn 変異処理ループの新設（性能・正当性）、(b) 副作用�
     `FEARLESS` 変異を参照するため**追加配線なしで既に反映済み**と確認。さらに
     **AC 修正の皮膚系変異**（**WART_SKIN** +5 / **SCALES** +10 / **IRON_SKIN** +25）を
     `get_ac()` のモンスター分岐へ、プレイヤー版 `calc_to_ac()` と同じ加算値で反映
-    （C2第3弾の DEX→AC と同じ get_ac() 分岐）。いずれも JSON `"mutations"` opt-in
+    （C2第3弾の DEX→AC と同じ get_ac() 分岐）。さらに **加速系変異**（**XTRA_LEGS** +3 /
+    **SHORT_LEG** -3 / **XTRA_FAT** -2 / **WEAK_LOWER_BODY** -2）を `place_monster_one()` の
+    生成時速度設定（C1第11弾の種族加速の直後、`assign_fixed_mutations()` 後）へ
+    プレイヤー版と同じ加減速値で反映。いずれも JSON `"mutations"` opt-in
     （既定は付与個体ゼロ）でバランス不変。元素オーラ（`has_sh_fire` 等はモンスター側が
     別系統 `MonsterAuraType` 管理で、被攻撃時の反撃サブシステムが player 側と逆方向）・
-    能力値修正は monster 側メカニクスの差異が大きいため将来拡張。
+    能力値修正（生成時 HP ロールとの順序依存があり要設計）は将来拡張。
   走査して `process_monster_mutation()` を呼ぶ。`process_world` 全体が
   `TURNS_PER_TICK`(10 ゲームターン)でゲートされるため**プレイヤーと同一周期**で、
   発動確率(`one_in_(3000)` 等)がそのまま整合。大多数のモンスターは `none()` 即スキップ。
@@ -3501,7 +3504,8 @@ per-turn 変異処理ループの新設（性能・正当性）、(b) 副作用�
 メッセージ、`MonsterDamageProcessor` 経由で死亡し得る自己ダメージ変異の導入
 （現状の `HP_TO_SP` は非致死ガード付き）。現状は **能動 7 種**（BERS_RAGE / COWARDICE /
 RTELEPORT / SPEED_FLUX / INVULN / SP_TO_HP / HP_TO_SP）の curated セット＋
-**受動 6 種**（REGEN / ESP / FEARLESS / WART_SKIN / SCALES / IRON_SKIN）を反映済み。
+**受動 10 種**（REGEN / ESP / FEARLESS / WART_SKIN / SCALES / IRON_SKIN /
+XTRA_LEGS / SHORT_LEG / XTRA_FAT / WEAK_LOWER_BODY）を反映済み。
 
 ---
 
