@@ -612,6 +612,16 @@ public:
     int get_save_stat_bonus() const;
 
     /*!
+     * @brief 魔法防御 (MAGIC_RES) 突然変異によるレベル基準セーヴ補正を返す [提案C5]
+     * @return 実効レベルへの加算値 (モンスター・MAGIC_RES 保有時のみ非 0)
+     * @details MAGIC_RES 突然変異を持つモンスターに、プレイヤー版 skill_sav の加算
+     * (15 + level/5) と同じ補正を返す。get_save_stat_bonus() と同じレベル基準セーヴ
+     * 判定 (monrace.level > randint1(...)) の実効レベルへ加算する。JSON "mutations"
+     * opt-in / プレイヤーでは 0 を返すため既定バランス不変。
+     */
+    int get_save_mutation_bonus() const;
+
+    /*!
      * @brief クリーチャーがプレイヤーかどうかを判定
      * @return プレイヤーならtrue、モンスターならfalse
      * @details デフォルトはfalse（モンスター）。PlayerTypeのみtrueを返す。
