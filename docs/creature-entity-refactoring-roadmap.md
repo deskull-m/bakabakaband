@@ -3491,10 +3491,20 @@ per-turn 変異処理ループの新設（性能・正当性）、(b) 副作用�
     3 サイト（`spells-diceroll` の魅了/服従・状態異常、`effect-monster-psi`、
     `effect-monster-util::monster_saves_status_by_level`）へ配線し、C2 の
     `applies_stat_combat_bonus` ゲートとは独立に MAGIC_RES 保有のみで発火する。
-    いずれも JSON `"mutations"` opt-in（既定は付与個体ゼロ）でバランス不変。元素オーラ
-    （`has_sh_fire` 等はモンスター側が別系統 `MonsterAuraType` 管理で、被攻撃時の反撃
-    サブシステムが player 側と逆方向・複数攻撃サイトを跨ぐ）・能力値修正
-    （生成時 HP ロールとの順序依存があり要設計）は将来拡張。
+    いずれも JSON `"mutations"` opt-in（既定は付与個体ゼロ）でバランス不変。
+  - **C5-2d（能力値修正変異）**: `place_monster_one()` の `assign_fixed_mutations()` 直後で、
+    プレイヤー版の表示値を内部 ×10 単位（reader が `modifier * 10` で格納する C1
+    `stat_modifiers` と同一スケール）に換算し、同じ機構で `stat_max/cur/max_max/use` へ加算。
+    16 エントリの表駆動（**HYPER_STR** STR+4 / **PUNY** STR-4 / **WEAK_LOWER_BODY** STR+2 /
+    **HYPER_INT** INT+4・WIS+4 / **MORONIC** INT-4・WIS-4 / **RESILIENT** CON+4 /
+    **XTRA_FAT** CON+2 / **ALBINO** CON-4 / **FLESH_ROT** CON-2・CHR-1 / **SILLY_VOI** CHR-4 /
+    **BLANK_FAC** CHR-1 / **LIMBER** DEX+3 / **ARTHRITIS** DEX-3）。適用位置が所持金
+    (`get_money_for_creature`)・最大MP (`calc_creature_mana`)・最大HP (`calc_max_hp_con_bonus`)
+    算出の前段のため、CHR→所持金・INT→最大MP・CON→最大HP に一貫して流れ、STR/DEX/WIS は
+    C2 opt-in (`applies_stat_combat_bonus`) の戦闘反映で用いられる。スケール対応・順序依存の
+    設計課題を解決して反映。いずれも JSON `"mutations"` opt-in（既定は付与個体ゼロ）で
+    バランス不変。元素オーラ（`has_sh_fire` 等はモンスター側が別系統 `MonsterAuraType` 管理で、
+    被攻撃時の反撃サブシステムが player 側と逆方向・複数攻撃サイトを跨ぐ）は将来拡張。
   走査して `process_monster_mutation()` を呼ぶ。`process_world` 全体が
   `TURNS_PER_TICK`(10 ゲームターン)でゲートされるため**プレイヤーと同一周期**で、
   発動確率(`one_in_(3000)` 等)がそのまま整合。大多数のモンスターは `none()` 即スキップ。
@@ -3508,11 +3518,12 @@ per-turn 変異処理ループの新設（性能・正当性）、(b) 副作用�
 メッセージ、`MonsterDamageProcessor` 経由で死亡し得る自己ダメージ変異の導入
 （現状の `HP_TO_SP` は非致死ガード付き）。現状は **能動 7 種**（BERS_RAGE / COWARDICE /
 RTELEPORT / SPEED_FLUX / INVULN / SP_TO_HP / HP_TO_SP）の curated セット＋
-**受動 13 種**（REGEN / ESP / FEARLESS / VULN_ELEM / MOTION / WART_SKIN / SCALES /
-IRON_SKIN / XTRA_LEGS / SHORT_LEG / XTRA_FAT / WEAK_LOWER_BODY / MAGIC_RES）を反映済み
+**受動 24 種**（REGEN / ESP / FEARLESS / VULN_ELEM / MOTION / WART_SKIN / SCALES /
+IRON_SKIN / XTRA_LEGS / SHORT_LEG / XTRA_FAT / WEAK_LOWER_BODY / MAGIC_RES ＋
+能力値修正 13 種 HYPER_STR / PUNY / HYPER_INT / MORONIC / RESILIENT / ALBINO /
+FLESH_ROT / SILLY_VOI / BLANK_FAC / LIMBER / ARTHRITIS 他）を反映済み
 （FEARLESS / VULN_ELEM は自由関数経由で追加配線なし）。残る主要な未反映は元素オーラ
-（別系統 `MonsterAuraType`・多攻撃サイト）と能力値修正（monster 内部×10 スケールと
-player スケールの対応・生成時 HP ロール順序の設計が必要）。
+（別系統 `MonsterAuraType`・多攻撃サイト）のみ。
 
 ---
 
