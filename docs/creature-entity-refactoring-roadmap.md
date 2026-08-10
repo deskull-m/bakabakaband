@@ -3475,10 +3475,13 @@ per-turn 変異処理ループの新設（性能・正当性）、(b) 副作用�
     （`process_stealth()` の `has_race_granted_telepathy()` 判定へ `has_mutation(ESP)` を
     OR-in → 忍者の超隠密を無視。C3第1弾と同経路）を追加。**FEARLESS** は
     `has_resist_fear()` 仮想が呼ぶ自由関数 `::has_resist_fear()` がクリーチャー共通で
-    `FEARLESS` 変異を参照するため**追加配線なしで既に反映済み**と確認。いずれも
-    JSON `"mutations"` opt-in（既定は付与個体ゼロ）でバランス不変。元素オーラ
-    （`has_sh_fire` 等はモンスター側が別系統 AuraType 管理）・AC/能力値修正は
-    monster 側メカニクスの差異が大きいため将来拡張。
+    `FEARLESS` 変異を参照するため**追加配線なしで既に反映済み**と確認。さらに
+    **AC 修正の皮膚系変異**（**WART_SKIN** +5 / **SCALES** +10 / **IRON_SKIN** +25）を
+    `get_ac()` のモンスター分岐へ、プレイヤー版 `calc_to_ac()` と同じ加算値で反映
+    （C2第3弾の DEX→AC と同じ get_ac() 分岐）。いずれも JSON `"mutations"` opt-in
+    （既定は付与個体ゼロ）でバランス不変。元素オーラ（`has_sh_fire` 等はモンスター側が
+    別系統 `MonsterAuraType` 管理で、被攻撃時の反撃サブシステムが player 側と逆方向）・
+    能力値修正は monster 側メカニクスの差異が大きいため将来拡張。
   走査して `process_monster_mutation()` を呼ぶ。`process_world` 全体が
   `TURNS_PER_TICK`(10 ゲームターン)でゲートされるため**プレイヤーと同一周期**で、
   発動確率(`one_in_(3000)` 等)がそのまま整合。大多数のモンスターは `none()` 即スキップ。
@@ -3487,11 +3490,12 @@ per-turn 変異処理ループの新設（性能・正当性）、(b) 副作用�
 **工数:** 中（3 コミット）。**価値:** 中（opt-in 個体に確率的な自己効果を付与）。
 フルビルド (g++ -O3 -Werror) / clang-format-18 / validate_json.py で検証済。
 
-**将来拡張余地:** 受動変異の stat/AC/元素オーラ反映（monster 側メカニクス差異が大きい）、
-モンスター視点でのより豊かなメッセージ、`MonsterDamageProcessor` 経由で死亡し得る
-自己ダメージ変異の導入（現状の `HP_TO_SP` は非致死ガード付き）。現状は
-**能動 7 種**（BERS_RAGE / COWARDICE / RTELEPORT / SPEED_FLUX / INVULN / SP_TO_HP /
-HP_TO_SP）の curated セット＋**受動 3 種**（REGEN / ESP / FEARLESS）を反映済み。
+**将来拡張余地:** 受動変異の元素オーラ反映（monster 側は別系統 `MonsterAuraType` かつ
+被攻撃反撃サブシステムが player と逆方向）・能力値修正、モンスター視点でのより豊かな
+メッセージ、`MonsterDamageProcessor` 経由で死亡し得る自己ダメージ変異の導入
+（現状の `HP_TO_SP` は非致死ガード付き）。現状は **能動 7 種**（BERS_RAGE / COWARDICE /
+RTELEPORT / SPEED_FLUX / INVULN / SP_TO_HP / HP_TO_SP）の curated セット＋
+**受動 6 種**（REGEN / ESP / FEARLESS / WART_SKIN / SCALES / IRON_SKIN）を反映済み。
 
 ---
 

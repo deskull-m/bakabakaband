@@ -1752,6 +1752,18 @@ int CreatureEntity::get_ac() const
                 total_ac = 0;
             }
         }
+
+        // [提案C5] AC 修正の突然変異を反映 (opt-in・既定OFF)。プレイヤー版 calc_to_ac()
+        // と同じ加算値 (WART_SKIN +5 / SCALES +10 / IRON_SKIN +25)。皮膚系の常時効果。
+        if (this->has_mutation(PlayerMutationType::WART_SKIN)) {
+            total_ac += 5;
+        }
+        if (this->has_mutation(PlayerMutationType::SCALES)) {
+            total_ac += 10;
+        }
+        if (this->has_mutation(PlayerMutationType::IRON_SKIN)) {
+            total_ac += 25;
+        }
     }
 
     return total_ac;
