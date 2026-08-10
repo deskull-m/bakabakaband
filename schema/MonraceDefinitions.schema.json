@@ -193,6 +193,10 @@
                         "type": "string",
                         "description": "詠唱能力を付与する魔法領域 (提案C6)。トークンは r_info_realm を参照。指定するとその realm 由来の MonsterAbilityType が詠唱時に追加される。既定=なし=オプトイン。"
                     },
+                    "realm_abilities2": {
+                        "type": "string",
+                        "description": "詠唱能力を付与する第2魔法領域 (提案C6第2弾)。realm_abilities と併用でき、二重詠唱者となる。トークンは r_info_realm を参照。既定=なし=オプトイン。"
+                    },
                     "suffers_poison_dot": {
                         "type": "boolean",
                         "description": "毒攻撃で継続毒(POISON DoT)を受けるか (提案D7)。既定false=オプトイン。trueの個体のみ毒攻撃後に継続ダメージを受ける。"
