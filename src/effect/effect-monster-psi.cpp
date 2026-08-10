@@ -56,7 +56,8 @@ static bool resisted_psi_because_weird_mind_or_powerful(EffectMonster *em_ptr)
     has_resistance |= em_ptr->monrace->misc_flags.has(MonsterMiscType::WEIRD_MIND);
     has_resistance |= em_ptr->monrace->kind_flags.has(MonsterKindType::ANIMAL);
     // [提案C2第3弾・セーヴ] applies_stat_combat_bonus の個体は WIS セーヴ補正を実効レベルへ加算 (opt-in・既定OFF)
-    has_resistance |= ((em_ptr->monrace->level + em_ptr->m_ptr->get_save_stat_bonus()) > randint1(3 * em_ptr->dam));
+    // [提案C5・セーヴ] MAGIC_RES 突然変異のセーヴ補正も実効レベルへ加算 (opt-in・既定OFF)
+    has_resistance |= ((em_ptr->monrace->level + em_ptr->m_ptr->get_save_stat_bonus() + em_ptr->m_ptr->get_save_mutation_bonus()) > randint1(3 * em_ptr->dam));
     if (!has_resistance) {
         return false;
     }

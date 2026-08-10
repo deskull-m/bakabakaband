@@ -2006,6 +2006,21 @@ int CreatureEntity::get_save_stat_bonus() const
     return static_cast<int>(adj_wis_sav[index]);
 }
 
+int CreatureEntity::get_save_mutation_bonus() const
+{
+    if (!this->has_monster_profile()) {
+        return 0;
+    }
+
+    // [提案C5] 魔法防御 (MAGIC_RES) 突然変異をレベル基準セーヴへ反映 (opt-in・既定OFF)。
+    // プレイヤー版 skill_sav の加算 (15 + level/5) に合わせる。
+    if (this->has_mutation(PlayerMutationType::MAGIC_RES)) {
+        return 15 + this->get_level() / 5;
+    }
+
+    return 0;
+}
+
 /*!
  * @brief 表示用の称号を取得する (提案 E5, 基底 = モンスター既定)
  * @details モンスターは称号を持たないため "なし" を返す。プレイヤーは
