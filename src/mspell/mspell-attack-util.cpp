@@ -32,60 +32,73 @@ void add_realm_granted_abilities(EnumClassFlagGroup<MonsterAbilityType> &flags, 
     const auto advanced = level >= REALM_ADVANCED_ABILITY_MIN_LEVEL;
     switch (realm) {
     case RealmType::LIFE:
-        flags.set({ Ma::HEAL, Ma::CAUSE_2 });
+        // 生命: 自己回復と対象を蝕む聖なる傷 (cause) の階梯。
+        flags.set({ Ma::HEAL, Ma::CAUSE_1, Ma::CAUSE_2 });
         if (advanced) {
-            flags.set({ Ma::CAUSE_3 });
+            flags.set({ Ma::CAUSE_3, Ma::CAUSE_4 });
         }
         break;
     case RealmType::SORCERY:
-        flags.set({ Ma::SLOW, Ma::CONF, Ma::SCARE, Ma::BLINK });
+        // 仙術: 非属性の操作・妨害・移動。減速/混乱/盲目/恐慌と短距離転移。
+        flags.set({ Ma::SLOW, Ma::CONF, Ma::BLIND, Ma::SCARE, Ma::BLINK });
         if (advanced) {
-            flags.set({ Ma::TELE_AWAY });
+            flags.set({ Ma::HOLD, Ma::TELE_TO, Ma::TELE_AWAY });
         }
         break;
     case RealmType::NATURE:
-        flags.set({ Ma::BO_FIRE });
+        // 自然: 元素のボルト群を基本に、上位で元素・毒のボール。
+        flags.set({ Ma::BO_FIRE, Ma::BO_COLD, Ma::BO_ELEC });
         if (advanced) {
-            flags.set({ Ma::BA_ELEC, Ma::BA_COLD });
+            flags.set({ Ma::BA_ELEC, Ma::BA_COLD, Ma::BA_POIS });
         }
         break;
     case RealmType::CHAOS:
-        flags.set({ Ma::CONF, Ma::BA_FIRE });
+        // 混沌: マジックミサイル・火炎を基本に、上位で火/ログルス球とカオスブレス。
+        flags.set({ Ma::MISSILE, Ma::BO_FIRE, Ma::CONF });
         if (advanced) {
-            flags.set({ Ma::BA_CHAO, Ma::BR_CHAO });
+            flags.set({ Ma::BA_FIRE, Ma::BA_CHAO, Ma::BR_CHAO });
         }
         break;
     case RealmType::DEATH:
-        flags.set({ Ma::CAUSE_3, Ma::BO_NETH, Ma::DRAIN_MANA });
+        // 死: 傷の呪い・地獄の矢・魔力吸収を基本に、上位で高位 cause/地獄球/死者復活。
+        flags.set({ Ma::CAUSE_1, Ma::CAUSE_2, Ma::BO_NETH, Ma::DRAIN_MANA });
         if (advanced) {
-            flags.set({ Ma::CAUSE_4, Ma::BA_NETH });
+            flags.set({ Ma::CAUSE_3, Ma::CAUSE_4, Ma::BA_NETH, Ma::S_UNDEAD });
         }
         break;
     case RealmType::TRUMP:
-        flags.set({ Ma::BLINK, Ma::TPORT, Ma::TELE_TO });
+        // トランプ: 転移の万能さを基本に、上位で多様な召喚。
+        flags.set({ Ma::BLINK, Ma::TPORT, Ma::TELE_TO, Ma::TELE_AWAY });
         if (advanced) {
-            flags.set({ Ma::S_MONSTER, Ma::S_KIN });
+            flags.set({ Ma::S_MONSTER, Ma::S_MONSTERS, Ma::S_KIN, Ma::S_HOUND });
         }
         break;
     case RealmType::ARCANE:
-        flags.set({ Ma::BO_MANA, Ma::MIND_BLAST });
+        // 秘術: 汎用で威力控えめ。ミサイルと短距離転移を基本に、上位で魔力の矢/嵐。
+        flags.set({ Ma::MISSILE, Ma::BLINK });
         if (advanced) {
-            flags.set({ Ma::BA_MANA });
+            flags.set({ Ma::BO_MANA, Ma::BA_MANA });
         }
         break;
     case RealmType::CRAFT:
+        // 匠: 自己強化 (加速・回復) を基本に、上位で無敵化。
         flags.set({ Ma::HASTE, Ma::HEAL });
+        if (advanced) {
+            flags.set({ Ma::INVULNER });
+        }
         break;
     case RealmType::DAEMON:
-        flags.set({ Ma::BA_FIRE });
+        // 悪魔: 火炎のボルト/ボールを基本に、上位で火炎ブレス・地獄球・悪魔召喚。
+        flags.set({ Ma::BO_FIRE, Ma::BA_FIRE });
         if (advanced) {
             flags.set({ Ma::BR_FIRE, Ma::BA_NETH, Ma::S_DEMON });
         }
         break;
     case RealmType::CRUSADE:
-        flags.set({ Ma::CAUSE_3, Ma::SCARE });
+        // 破邪: 光のボルト・恐慌・傷の呪いを基本に、上位でスターバースト・秘孔。
+        flags.set({ Ma::BO_LITE, Ma::SCARE, Ma::CAUSE_2 });
         if (advanced) {
-            flags.set({ Ma::BA_LITE });
+            flags.set({ Ma::BA_LITE, Ma::CAUSE_4 });
         }
         break;
     default:
