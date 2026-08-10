@@ -893,6 +893,10 @@ C トラック第 4 弾で、**JSON オプトイン方式**（既定=なし=バ�
   - **AC 修正**（皮膚系）: `get_ac()` のモンスター分岐へプレイヤー版 `calc_to_ac()` と
     同じ加算値で反映。**WART_SKIN**（イボ肌 +5）/ **SCALES**（鱗肌 +10）/
     **IRON_SKIN**（鉄の肌 +25）。C2第3弾の DEX→AC 反映と同じ get_ac() 分岐。
+  - **加速修正**（生成時速度）: `place_monster_one()` の速度設定（C1第11弾の種族加速の
+    直後）へプレイヤー版と同じ加減速値で反映。**XTRA_LEGS**（+3）/ **SHORT_LEG**（-3）/
+    **XTRA_FAT**（-2）/ **WEAK_LOWER_BODY**（-2）。変異は `assign_fixed_mutations()` で
+    付与済みのため生成時に参照可能。静的な `speed` フィールドへ加算する固定反映。
 - **上記以外の未対応の能動変異は付与しても per-turn では発火しない**。その他の受動変異
   （元素オーラは monster 側が別系統 `MonsterAuraType` 管理・能力値修正等）の反映は将来拡張。
   スキーマに `mutations` を登録済。
