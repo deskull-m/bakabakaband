@@ -3602,8 +3602,22 @@ JSON `"realm_abilities": "CHAOS"` を指定した個体は、詠唱時（`msa_ty
 - **既定 `NONE` のため実データ・既定バランス不変。** フルビルド (g++ -O3 -Werror) /
   clang-format-18 / validate_json.py で検証済。
 
-**将来拡張余地:** 写像表の精緻化、realm レベル依存の能力段階化、MUSIC/HISSATSU/HEX の
-技術領域マッピング（サステイン/技系のため要設計）。
+### ✅ 第3弾 完了（realm レベル依存の能力段階化）
+
+**完了内容:** `add_realm_granted_abilities()` を各 realm「基本能力 (常時)」＋「高位能力
+(モンスター実効レベル >= `REALM_ADVANCED_ABILITY_MIN_LEVEL`=20)」の 2 段階に再構成。
+低レベルの realm-caster 個体には過剰な高位能力 (ボール/ブレス/召喚/高位 cause 等) を
+与えないようにした。
+
+- **両段の和集合は従来の全集合と一致**するため、閾値以上の個体は従来と完全同一
+  （strict な安全リファイン: 高位能力が低レベル個体から外れるのみ）。
+- 関数に `level` 引数を追加し、`msa_type` 構築時の `m_ptr->get_level()` を渡す
+  （realm_abilities / realm_abilities2 の両者に適用）。閾値は調整用 constexpr。
+- **realm 由来能力は opt-in 個体のみに付くため既定バランス不変。** フルビルド
+  (g++ -O3 -Werror) / clang-format-18 で検証済。
+
+**将来拡張余地:** 写像表の精緻化、MUSIC/HISSATSU/HEX の技術領域マッピング
+（サステイン/技系のため要設計・現状は意図的に未マッピング）。
 
 ---
 
