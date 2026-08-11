@@ -581,6 +581,57 @@ tl::optional<MONSTER_IDX> place_monster_one(CreatureEntity &player, POSITION y, 
     // [提案 C5-1] JSON で突然変異が固定指定されたモンスターに付与 (付与のみ、per-turn 処理は別段)
     m_ptr->assign_fixed_mutations();
 
+    // [提案C5] 能力値修正の突然変異を生成時能力値へ反映 (opt-in・既定OFF)。プレイヤー版と同じ
+    // 表示値を内部 ×10 単位に換算し、C1 stat_modifiers と同じ機構で stat_max/cur/max_max/use へ
+    // 加算する。assign_fixed_mutations() 直後で適用するため、CON 変化は後段の最大HP
+    // (calc_max_hp_con_bonus)、INT 変化は最大MP (calc_creature_mana)、CHR 変化は所持金
+    // (get_money_for_creature) にそれぞれ流れる。STR/DEX/WIS 変化は C2 opt-in
+    // (applies_stat_combat_bonus) の戦闘反映で用いられる。
+    {
+        struct StatMutationMod {
+            PlayerMutationType mutation;
+            int stat;
+            int display_delta; // 表示単位 (内部は ×10)
+        };
+        static constexpr StatMutationMod stat_mutation_table[] = {
+            { PlayerMutationType::HYPER_STR, A_STR, 4 },
+            { PlayerMutationType::PUNY, A_STR, -4 },
+            { PlayerMutationType::WEAK_LOWER_BODY, A_STR, 2 },
+            { PlayerMutationType::HYPER_INT, A_INT, 4 },
+            { PlayerMutationType::HYPER_INT, A_WIS, 4 },
+            { PlayerMutationType::MORONIC, A_INT, -4 },
+            { PlayerMutationType::MORONIC, A_WIS, -4 },
+            { PlayerMutationType::RESILIENT, A_CON, 4 },
+            { PlayerMutationType::XTRA_FAT, A_CON, 2 },
+            { PlayerMutationType::ALBINO, A_CON, -4 },
+            { PlayerMutationType::FLESH_ROT, A_CON, -2 },
+            { PlayerMutationType::FLESH_ROT, A_CHR, -1 },
+            { PlayerMutationType::SILLY_VOI, A_CHR, -4 },
+            { PlayerMutationType::BLANK_FAC, A_CHR, -1 },
+            { PlayerMutationType::LIMBER, A_DEX, 3 },
+            { PlayerMutationType::ARTHRITIS, A_DEX, -3 },
+        };
+        int stat_muta_mod[A_MAX] = {};
+        for (const auto &entry : stat_mutation_table) {
+            if (m_ptr->has_mutation(entry.mutation)) {
+                stat_muta_mod[entry.stat] += entry.display_delta * 10;
+            }
+        }
+        for (auto stat = 0; stat < A_MAX; ++stat) {
+            if (stat_muta_mod[stat] == 0) {
+                continue;
+            }
+            auto adjusted = static_cast<int>(m_ptr->get_stat_max(stat)) + stat_muta_mod[stat];
+            adjusted = std::clamp(adjusted, static_cast<int>(STAT_MIN_VALUE), static_cast<int>(STAT_MAX_VALUE));
+            m_ptr->set_stat_max(stat, static_cast<short>(adjusted));
+            m_ptr->set_stat_cur(stat, static_cast<short>(adjusted));
+            // 突然変異は生得の恒久補正のため、負の変異でも本来の最大値 (stat_max_max) を
+            // 補正後の値へ同期する (「大きい時のみ更新」だと負の変異で ceiling が下がらない)。
+            m_ptr->set_stat_max_max(stat, m_ptr->get_stat_max(stat));
+            m_ptr->set_stat_use(stat, m_ptr->get_stat_max(stat));
+        }
+    }
+
     // 種族が指定されている場合、身長・体重を設定
     get_height_weight(*m_ptr);
 

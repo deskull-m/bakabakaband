@@ -902,14 +902,23 @@ C トラック第 4 弾で、**JSON オプトイン方式**（既定=なし=バ�
     直後）へプレイヤー版と同じ加減速値で反映。**XTRA_LEGS**（+3）/ **SHORT_LEG**（-3）/
     **XTRA_FAT**（-2）/ **WEAK_LOWER_BODY**（-2）。変異は `assign_fixed_mutations()` で
     付与済みのため生成時に参照可能。静的な `speed` フィールドへ加算する固定反映。
+  - **能力値修正**（生成時能力値）: `place_monster_one()` の `assign_fixed_mutations()` 直後で、
+    プレイヤー版と同じ表示値を内部 ×10 単位に換算し C1 `stat_modifiers` と同じ機構で
+    `stat_max/cur/max_max/use` へ加算。**HYPER_STR**（腕力+4）/ **PUNY**（腕力-4）/
+    **WEAK_LOWER_BODY**（腕力+2）/ **HYPER_INT**（知能・賢さ+4）/ **MORONIC**（知能・賢さ-4）/
+    **RESILIENT**（耐久+4）/ **XTRA_FAT**（耐久+2）/ **ALBINO**（耐久-4）/
+    **FLESH_ROT**（耐久-2・魅力-1）/ **SILLY_VOI**（魅力-4）/ **BLANK_FAC**（魅力-1）/
+    **LIMBER**（器用+3）/ **ARTHRITIS**（器用-3）。適用位置が所持金・最大MP・最大HP 算出の
+    前段のため、CHR→所持金・INT→最大MP・CON→最大HP に流れ、STR/DEX/WIS は C2 opt-in
+    (`applies_stat_combat_bonus`) の戦闘反映で用いられる。
   - **魔法防御**（セーヴ）: **MAGIC_RES**。`CreatureEntity::get_save_mutation_bonus()` が
     プレイヤー版 skill_sav の加算（`15 + level/5`）と同じ補正を返し、レベル基準セーヴ判定の
     実効レベルへ加算。C2第3弾の `get_save_stat_bonus()`（WIS）と同じ 3 サイト
     （`spells-diceroll` の魅了/服従・状態異常、`effect-monster-psi`、`effect-monster-util` の
     `monster_saves_status_by_level`）へ配線。C2 の `applies_stat_combat_bonus` ゲートとは
     独立（MAGIC_RES 保有のみで発火）。
-- **上記以外の未対応の能動変異は付与しても per-turn では発火しない**。その他の受動変異
-  （元素オーラは monster 側が別系統 `MonsterAuraType` 管理・能力値修正等）の反映は将来拡張。
+- **上記以外の未対応の能動変異は付与しても per-turn では発火しない**。残る主要な未反映は
+  元素オーラ（monster 側が別系統 `MonsterAuraType` 管理・複数攻撃サイトを跨ぐ）。
   スキーマに `mutations` を登録済。
 
 ### モンスターの魔法領域詠唱 (`realm_abilities`) — 提案 C6
