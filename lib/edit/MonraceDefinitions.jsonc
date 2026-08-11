@@ -82838,6 +82838,7 @@
         "IM_POIS",
         "NO_CONF",
         "NO_SLEEP",
+        "AURA_DIRT",
       ],
       "skill": {
         "list": ["BR_FECES"],

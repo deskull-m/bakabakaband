@@ -1235,8 +1235,9 @@ void set_monster_aura_summary(lore_type *lore_ptr)
     auto has_fire_aura = lore_ptr->aura_flags.has(MonsterAuraType::FIRE);
     auto has_cold_aura = lore_ptr->aura_flags.has(MonsterAuraType::COLD);
     auto has_elec_aura = lore_ptr->aura_flags.has(MonsterAuraType::ELEC);
+    auto has_dirt_aura = lore_ptr->aura_flags.has(MonsterAuraType::DIRT);
 
-    if (has_fire_aura || has_elec_aura || has_cold_aura) {
+    if (has_fire_aura || has_elec_aura || has_cold_aura || has_dirt_aura) {
         lore_ptr->lore_msgs.emplace_back(_("オーラ:", "aura:"), TERM_WHITE);
     }
     if (has_fire_aura) {
@@ -1248,7 +1249,10 @@ void set_monster_aura_summary(lore_type *lore_ptr)
     if (has_elec_aura) {
         lore_ptr->lore_msgs.emplace_back(_("電", "elec"), TERM_L_BLUE);
     }
-    if (has_fire_aura || has_elec_aura || has_cold_aura) {
+    if (has_dirt_aura) {
+        lore_ptr->lore_msgs.emplace_back(_("糞", "filth"), TERM_L_DARK);
+    }
+    if (has_fire_aura || has_elec_aura || has_cold_aura || has_dirt_aura) {
         lore_ptr->lore_msgs.emplace_back(" | ", TERM_WHITE);
     }
 }
@@ -1273,6 +1277,10 @@ void display_monster_aura(lore_type *lore_ptr)
         hook_c_roff(TERM_BLUE, format(_("%s^は氷に包まれている。", "%s^ is surrounded by ice.  "), Who::who(lore_ptr->msex).data()));
     } else if (has_elec_aura) {
         hook_c_roff(TERM_L_BLUE, format(_("%s^はスパークに包まれている。", "%s^ is surrounded by electricity.  "), Who::who(lore_ptr->msex).data()));
+    }
+
+    if (lore_ptr->aura_flags.has(MonsterAuraType::DIRT)) {
+        hook_c_roff(TERM_L_DARK, format(_("%s^は汚物にまみれている。", "%s^ is covered with filth.  "), Who::who(lore_ptr->msex).data()));
     }
 }
 

@@ -365,6 +365,18 @@ void process_player_hp_mp(CreatureEntity &creature)
             msg_print(_("冷たい！", "It's cold!"));
             take_hit(creature, DAMAGE_NOESCAPE, damage, _("冷気のオーラ", "Cold aura"));
         }
+
+        if (auras.has(MonsterAuraType::DIRT)) {
+            damage = floor.get_monster(creature.get_riding()).get_monrace().level / 2;
+            damage = damage * calc_pois_damage_rate(creature) / 100;
+            if (damage > 0) {
+                msg_print(_("汚い！", "It's filthy!"));
+                take_hit(creature, DAMAGE_NOESCAPE, damage, _("汚物のオーラ", "Filth aura"));
+                if (!is_oppose_pois(creature) && !creature.has_resist_pois()) {
+                    (void)BadStatusSetter(creature).mod_poison(static_cast<TIME_EFFECT>(randint1(damage) + 1));
+                }
+            }
+        }
     }
 
     /* Spectres -- take damage when moving through walls */
