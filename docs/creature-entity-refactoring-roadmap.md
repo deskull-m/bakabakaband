@@ -3594,7 +3594,22 @@ JSON `"realm_abilities": "CHAOS"` を指定した個体は、詠唱時（`msa_ty
   monrace に `freq_spell > 0` が要る（メンテナのデータ設定）。
 - フルビルド (g++ -O3 -Werror) / clang-format-18 / validate_json.py で検証済。
 
-**将来拡張余地:** 写像表の精緻化、realm2 の併用、realm レベル依存の能力段階化。
+### ✅ 第2弾 完了（realm2 併用）
+
+**完了内容:** `MonraceDefinition::realm_abilities2`（`RealmType`、既定 `NONE`）を追加。
+`realm_abilities` と併用でき、`msa_type` 構築時に両 realm 由来の `MonsterAbilityType` を
+順に OR-in する（**二重詠唱者**＝プレイヤーの realm1/realm2 に相当）。
+
+- reader は共通ヘルパ `parse_realm_ability_token(json, RealmType&)` を新設し、
+  `set_mon_realm_abilities` / `set_mon_realm_abilities2` の両者が共用（重複排除）。
+  schema に `realm_abilities2` を登録。
+- 写像は既存の `add_realm_granted_abilities()` を第2 realm にもそのまま適用するため、
+  10 realm 表をそのまま二領域で再利用（新規写像コードなし）。
+- **既定 `NONE` のため実データ・既定バランス不変。** フルビルド (g++ -O3 -Werror) /
+  clang-format-18 / validate_json.py で検証済。
+
+**将来拡張余地:** 写像表の精緻化、realm レベル依存の能力段階化、MUSIC/HISSATSU/HEX の
+技術領域マッピング（サステイン/技系のため要設計）。
 
 ---
 

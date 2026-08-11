@@ -953,8 +953,19 @@ HISSATSU / HEX）を参照。
   (`src/mspell/mspell-attack-util.cpp` の `add_realm_granted_abilities()`)。
 - 写像表は保守的な初期セット（10 魔法領域。MUSIC/HISSATSU/HEX は未マッピング）で、
   バランス調整・拡張はこの表で行う。
+- **第2弾（`realm_abilities2` 併用）:** `MonraceDefinition::realm_abilities2`
+  （`RealmType`、既定 `NONE`）を追加。`realm_abilities` と併用でき、両 realm 由来の
+  `MonsterAbilityType` 群が `msa_type` 構築時に OR-in される（**二重詠唱者**）。
+  プレイヤーの realm1/realm2 に相当する二領域運用を可能にする。reader は共通ヘルパ
+  `parse_realm_ability_token()` を両フィールドで共用。
+
+  ```jsonc
+  "realm_abilities": "CHAOS",
+  "realm_abilities2": "DEATH"
+  ```
 - 実際に撃たせるには当該 monrace に `freq_spell > 0`（詠唱頻度）が必要。
-- 既定 `NONE` のため実データ・既定バランスは不変。スキーマに `realm_abilities` を登録済。
+- 既定 `NONE` のため実データ・既定バランスは不変。スキーマに `realm_abilities` /
+  `realm_abilities2` を登録済。
 
 ### モンスターの継続毒 (`suffers_poison_dot`) — 提案 D7
 

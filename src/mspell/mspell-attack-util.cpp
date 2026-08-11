@@ -68,8 +68,12 @@ msa_type::msa_type(CreatureEntity &creature, MONSTER_IDX m_idx)
 
     // [提案 C6] realm_abilities が指定された個体は、その魔法領域由来の
     // モンスター能力を詠唱能力へ加える (恒久的に monrace は変えず、詠唱文脈のみ)。
+    // [提案 C6第2弾] realm_abilities2 も指定されていれば併用し、二重詠唱者となる。
     if (this->monrace->realm_abilities != RealmType::NONE) {
         add_realm_granted_abilities(this->ability_flags, this->monrace->realm_abilities);
+    }
+    if (this->monrace->realm_abilities2 != RealmType::NONE) {
+        add_realm_granted_abilities(this->ability_flags, this->monrace->realm_abilities2);
     }
 }
 
