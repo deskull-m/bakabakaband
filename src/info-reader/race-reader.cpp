@@ -383,15 +383,15 @@ errr RaceReader::set_mon_player_class(const nlohmann::json &class_data, MonraceD
 }
 
 /*!
- * @brief JSON Objectからモンスターの詠唱魔法領域を設定する (提案C6)
+ * @brief JSON Objectからモンスターの詠唱魔法領域トークンを解析する共通ヘルパ (提案C6)
  * @param realm_data 魔法領域情報の格納されたJSON Object (文字列)
- * @param monrace 保管先のモンスター種族構造体
+ * @param target 保管先の RealmType (realm_abilities / realm_abilities2)
  * @return エラーコード
  * @details 未指定 (null) なら RealmType::NONE のまま。指定時は詠唱 (mspell) 実行時に
  *          その realm 由来の MonsterAbilityType 群が能力に追加される (効果反映)。
- *          トークンは r_info_realm を参照。
+ *          トークンは r_info_realm を参照。set_mon_realm_abilities / *2 の両者が使う。
  */
-errr RaceReader::set_mon_realm_abilities(const nlohmann::json &realm_data, MonraceDefinition &monrace)
+static errr parse_realm_ability_token(const nlohmann::json &realm_data, RealmType &target)
 {
     if (realm_data.is_null()) {
         return PARSE_ERROR_NONE;
@@ -404,8 +404,18 @@ errr RaceReader::set_mon_realm_abilities(const nlohmann::json &realm_data, Monra
     if (!info_grab_one_const(realm, r_info_realm, realm_data.get<std::string>())) {
         return PARSE_ERROR_INVALID_FLAG;
     }
-    monrace.realm_abilities = static_cast<RealmType>(realm);
+    target = static_cast<RealmType>(realm);
     return PARSE_ERROR_NONE;
+}
+
+errr RaceReader::set_mon_realm_abilities(const nlohmann::json &realm_data, MonraceDefinition &monrace)
+{
+    return parse_realm_ability_token(realm_data, monrace.realm_abilities);
+}
+
+errr RaceReader::set_mon_realm_abilities2(const nlohmann::json &realm_data, MonraceDefinition &monrace)
+{
+    return parse_realm_ability_token(realm_data, monrace.realm_abilities2);
 }
 
 /*!
@@ -1549,6 +1559,11 @@ errr RaceReader::read()
     err = set_mon_realm_abilities(mon_data["realm_abilities"], monrace);
     if (err) {
         msg_format(_("モンスター魔法領域読込失敗。ID: '%d'。", "Failed to load monster realm_abilities. ID: '%d'."), error_idx);
+        return err;
+    }
+    err = set_mon_realm_abilities2(mon_data["realm_abilities2"], monrace);
+    if (err) {
+        msg_format(_("モンスター第2魔法領域読込失敗。ID: '%d'。", "Failed to load monster realm_abilities2. ID: '%d'."), error_idx);
         return err;
     }
     err = info_set_bool(mon_data["suffers_poison_dot"], monrace.suffers_poison_dot, false);
