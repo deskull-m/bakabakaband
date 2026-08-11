@@ -10,6 +10,7 @@
 #include "inventory/inventory-slot-types.h"
 #include "main/sound-definitions-table.h"
 #include "main/sound-of-music.h"
+#include "mutation/mutation-flag-types.h"
 #include "object-enchant/object-ego.h"
 #include "object-enchant/tr-types.h"
 #include "object-enchant/trc-types.h"
@@ -314,8 +315,12 @@ void process_player_hp_mp(CreatureEntity &creature)
 
     if (creature.get_riding()) {
         int damage;
-        auto auras = floor.get_monster(creature.get_riding()).get_monrace().aura_flags;
-        if (auras.has(MonsterAuraType::FIRE) && !creature.has_immune_fire()) {
+        const auto &mount = floor.get_monster(creature.get_riding());
+        auto auras = mount.get_monrace().aura_flags;
+        // [提案C5] 騎乗中のモンスターの FIRE_BODY / ELEC_TOUC 突然変異も native オーラと同様に騎手へ反撃 (opt-in・既定OFF)
+        const auto mount_fire_aura = auras.has(MonsterAuraType::FIRE) || mount.has_mutation(PlayerMutationType::FIRE_BODY);
+        const auto mount_elec_aura = auras.has(MonsterAuraType::ELEC) || mount.has_mutation(PlayerMutationType::ELEC_TOUC);
+        if (mount_fire_aura && !creature.has_immune_fire()) {
             damage = floor.get_monster(creature.get_riding()).get_monrace().level / 2;
             if (race.tr_flags().has(TR_VUL_FIRE)) {
                 damage += damage / 3;
@@ -332,7 +337,7 @@ void process_player_hp_mp(CreatureEntity &creature)
             take_hit(creature, DAMAGE_NOESCAPE, damage, _("炎のオーラ", "Fire aura"));
         }
 
-        if (auras.has(MonsterAuraType::ELEC) && !creature.has_immune_elec()) {
+        if (mount_elec_aura && !creature.has_immune_elec()) {
             damage = floor.get_monster(creature.get_riding()).get_monrace().level / 2;
             if (race.tr_flags().has(TR_VUL_ELEC)) {
                 damage += damage / 3;

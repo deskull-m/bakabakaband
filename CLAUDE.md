@@ -917,9 +917,15 @@ C トラック第 4 弾で、**JSON オプトイン方式**（既定=なし=バ�
     （`spells-diceroll` の魅了/服従・状態異常、`effect-monster-psi`、`effect-monster-util` の
     `monster_saves_status_by_level`）へ配線。C2 の `applies_stat_combat_bonus` ゲートとは
     独立（MAGIC_RES 保有のみで発火）。
-- **上記以外の未対応の能動変異は付与しても per-turn では発火しない**。残る主要な未反映は
-  元素オーラ（monster 側が別系統 `MonsterAuraType` 管理・複数攻撃サイトを跨ぐ）。
-  スキーマに `mutations` を登録済。
+  - **元素オーラ**（被攻撃反撃）: **FIRE_BODY**（火オーラ = `MonsterAuraType::FIRE`）/
+    **ELEC_TOUC**（電オーラ = `MonsterAuraType::ELEC`）。native の `aura_flags` を読む 3 経路
+    すべてへ「native オーラ ∨ 対応変異」で OR-in: プレイヤー被弾（`player-damage.cpp`
+    `process_aura_damage`）・モンスター対モンスター（`monster-attack-monster.cpp` の
+    `aura_fire/elec_by_melee`）・騎乗中の騎手被弾（`hp-mp-processor.cpp`）。思い出フラグ
+    (`r_aura_flags`) は **native オーラ時のみ記録**（変異由来は monrace 固有でないため非記録、
+    C1 の native ガードと同方針）。COLD オーラに対応する突然変異は無いため対象外。
+- **上記以外の未対応の能動変異は付与しても per-turn では発火しない**。スキーマに
+  `mutations` を登録済。**C5 の主要な変異反映（能動 7 種＋受動 26 種）は概ね完了。**
 
 ### モンスターの魔法領域詠唱 (`realm_abilities`) — 提案 C6
 
