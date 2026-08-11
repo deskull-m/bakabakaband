@@ -953,6 +953,12 @@ HISSATSU / HEX）を参照。
   (`src/mspell/mspell-attack-util.cpp` の `add_realm_granted_abilities()`)。
 - 写像表は保守的な初期セット（10 魔法領域。MUSIC/HISSATSU/HEX は未マッピング）で、
   バランス調整・拡張はこの表で行う。
+- **第3弾（レベル段階化）:** 各 realm の能力を「基本能力（常時）」と「高位能力
+  （モンスター実効レベル >= `REALM_ADVANCED_ABILITY_MIN_LEVEL`=20）」の 2 段階に分け、
+  低レベル個体には過剰な高位能力（ボール/ブレス/召喚/高位 cause 等）を与えない。
+  両段の和集合は従来の全集合と一致するため、**閾値以上の個体は従来と完全同一**。
+  `add_realm_granted_abilities(flags, realm, level)` に `msa_type` 構築時の
+  `m_ptr->get_level()` を渡す（realm_abilities / realm_abilities2 の両者に適用）。
 - **第2弾（`realm_abilities2` 併用）:** `MonraceDefinition::realm_abilities2`
   （`RealmType`、既定 `NONE`）を追加。`realm_abilities` と併用でき、両 realm 由来の
   `MonsterAbilityType` 群が `msa_type` 構築時に OR-in される（**二重詠唱者**）。
