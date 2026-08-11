@@ -3509,8 +3509,15 @@ per-turn 変異処理ループの新設（性能・正当性）、(b) 副作用�
     算出の前段のため、CHR→所持金・INT→最大MP・CON→最大HP に一貫して流れ、STR/DEX/WIS は
     C2 opt-in (`applies_stat_combat_bonus`) の戦闘反映で用いられる。スケール対応・順序依存の
     設計課題を解決して反映。いずれも JSON `"mutations"` opt-in（既定は付与個体ゼロ）で
-    バランス不変。元素オーラ（`has_sh_fire` 等はモンスター側が別系統 `MonsterAuraType` 管理で、
-    被攻撃時の反撃サブシステムが player 側と逆方向・複数攻撃サイトを跨ぐ）は将来拡張。
+    バランス不変。
+  - **C5-2e（元素オーラ変異）**: **FIRE_BODY**（火オーラ）/ **ELEC_TOUC**（電オーラ）を、
+    native `aura_flags` を読む 3 経路すべてへ「native オーラ ∨ 対応変異」で OR-in:
+    プレイヤー被弾（`player-damage.cpp::process_aura_damage`）・モンスター対モンスター
+    （`monster-attack-monster.cpp` の `aura_fire/elec_by_melee`）・騎乗中の騎手被弾
+    （`hp-mp-processor.cpp`）。思い出フラグ (`r_aura_flags`) は **native オーラ時のみ記録**
+    （変異由来は monrace 固有でないため非記録、C1 の native ガードと同方針）。COLD オーラに
+    対応する突然変異は無いため対象外。ロードマップが最後に残していた「別系統
+    `MonsterAuraType`・逆方向・多攻撃サイト」の課題を、各サイトへ最小 OR-in する形で解決。
   走査して `process_monster_mutation()` を呼ぶ。`process_world` 全体が
   `TURNS_PER_TICK`(10 ゲームターン)でゲートされるため**プレイヤーと同一周期**で、
   発動確率(`one_in_(3000)` 等)がそのまま整合。大多数のモンスターは `none()` 即スキップ。
@@ -3524,12 +3531,12 @@ per-turn 変異処理ループの新設（性能・正当性）、(b) 副作用�
 メッセージ、`MonsterDamageProcessor` 経由で死亡し得る自己ダメージ変異の導入
 （現状の `HP_TO_SP` は非致死ガード付き）。現状は **能動 7 種**（BERS_RAGE / COWARDICE /
 RTELEPORT / SPEED_FLUX / INVULN / SP_TO_HP / HP_TO_SP）の curated セット＋
-**受動 24 種**（REGEN / ESP / FEARLESS / VULN_ELEM / MOTION / WART_SKIN / SCALES /
-IRON_SKIN / XTRA_LEGS / SHORT_LEG / XTRA_FAT / WEAK_LOWER_BODY / MAGIC_RES ＋
-能力値修正 13 種 HYPER_STR / PUNY / HYPER_INT / MORONIC / RESILIENT / ALBINO /
-FLESH_ROT / SILLY_VOI / BLANK_FAC / LIMBER / ARTHRITIS 他）を反映済み
-（FEARLESS / VULN_ELEM は自由関数経由で追加配線なし）。残る主要な未反映は元素オーラ
-（別系統 `MonsterAuraType`・多攻撃サイト）のみ。
+**受動 26 種**（REGEN / ESP / FEARLESS / VULN_ELEM / MOTION / FIRE_BODY / ELEC_TOUC /
+WART_SKIN / SCALES / IRON_SKIN / XTRA_LEGS / SHORT_LEG / XTRA_FAT / WEAK_LOWER_BODY /
+MAGIC_RES ＋ 能力値修正 13 種 HYPER_STR / PUNY / HYPER_INT / MORONIC / RESILIENT /
+ALBINO / FLESH_ROT / SILLY_VOI / BLANK_FAC / LIMBER / ARTHRITIS 他）を反映済み
+（FEARLESS / VULN_ELEM は自由関数経由で追加配線なし）。**C5 の主要な変異反映は概ね完了。**
+残るのは効果がモンスターに意味を持ちにくい細かな変異（XTRA_EYES 探索・INFRAVIS 等）のみ。
 
 ---
 
