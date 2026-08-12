@@ -168,6 +168,27 @@ static void aura_elec_by_melee(CreatureEntity &creature, mam_type *mam_ptr)
     project(creature, mam_ptr->t_idx, 0, monster.y, monster.x, dam, AttributeType::ELEC, flags);
 }
 
+static void aura_dirt_by_melee(CreatureEntity &creature, mam_type *mam_ptr)
+{
+    const auto &monster = *mam_ptr->m_ptr;
+    auto &monrace_target = mam_ptr->t_ptr->get_monrace();
+    if (monrace_target.aura_flags.has_not(MonsterAuraType::DIRT) || !monster.is_valid()) {
+        return;
+    }
+
+    if (mam_ptr->see_either) {
+        msg_format(_("%s^は汚物にまみれた！", "%s^ is covered with filth!"), mam_ptr->m_name);
+    }
+
+    if (monster.is_visible_on_map() && is_original_ap_and_seen(creature, *mam_ptr->t_ptr)) {
+        monrace_target.r_aura_flags.set(MonsterAuraType::DIRT);
+    }
+
+    const auto dam = Dice::roll(1 + ((monrace_target.level) / 26), 1 + ((monrace_target.level) / 17));
+    constexpr auto flags = PROJECT_KILL | PROJECT_STOP | PROJECT_AIMED;
+    project(creature, mam_ptr->t_idx, 0, monster.y, monster.x, dam, AttributeType::DIRT, flags);
+}
+
 static bool check_same_monster(CreatureEntity &creature, mam_type *mam_ptr)
 {
     if (mam_ptr->m_idx == mam_ptr->t_idx) {
@@ -267,6 +288,7 @@ static void process_monster_attack_effect(CreatureEntity &creature, mam_type *ma
     aura_fire_by_melee(creature, mam_ptr);
     aura_cold_by_melee(creature, mam_ptr);
     aura_elec_by_melee(creature, mam_ptr);
+    aura_dirt_by_melee(creature, mam_ptr);
 }
 
 static void process_melee(CreatureEntity &creature, mam_type *mam_ptr)

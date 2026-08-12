@@ -358,6 +358,7 @@ const std::unordered_map<std::string_view, MonsterAuraType> r_info_aura_flags = 
     { "AURA_GRAVITY", MonsterAuraType::GRAVITY },
     { "AURA_VOIDS", MonsterAuraType::VOIDS },
     { "AURA_ABYSS", MonsterAuraType::ABYSS },
+    { "AURA_DIRT", MonsterAuraType::DIRT },
 };
 
 const std::unordered_map<std::string_view, MonsterBehaviorType> r_info_behavior_flags = {
