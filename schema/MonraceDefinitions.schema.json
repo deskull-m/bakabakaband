@@ -197,6 +197,19 @@
                         "type": "string",
                         "description": "詠唱能力を付与する第2魔法領域 (提案C6第2弾)。realm_abilities と併用でき、二重詠唱者となる。トークンは r_info_realm を参照。既定=なし=オプトイン。"
                     },
+                    "spellbook_realm": {
+                        "type": "string",
+                        "description": "魔導書学習の魔法領域 (提案C6-R)。spellbook_indices の書からこの realm の呪文を生成時に学習し、学習した書のティアに応じて詠唱する。トークンは r_info_realm を参照。既定=なし=オプトイン。"
+                    },
+                    "spellbook_indices": {
+                        "type": "array",
+                        "items": {
+                            "type": "integer",
+                            "minimum": 0,
+                            "maximum": 3
+                        },
+                        "description": "学習する魔導書の番号 (0..3) の配列 (提案C6-R)。第1〜2書(0,1)で基本呪文、第3〜4書(2,3)で高位呪文を学ぶ。spellbook_realm と併用。既定=なし=オプトイン。"
+                    },
                     "suffers_poison_dot": {
                         "type": "boolean",
                         "description": "毒攻撃で継続毒(POISON DoT)を受けるか (提案D7)。既定false=オプトイン。trueの個体のみ毒攻撃後に継続ダメージを受ける。"

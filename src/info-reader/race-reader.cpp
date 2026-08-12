@@ -419,6 +419,44 @@ errr RaceReader::set_mon_realm_abilities2(const nlohmann::json &realm_data, Monr
 }
 
 /*!
+ * @brief JSON Objectからモンスターの魔導書学習の魔法領域を設定する (提案C6-R)
+ * @details 未指定 (null) なら RealmType::NONE のまま。指定時は spellbook_indices の書から
+ *          その realm の呪文を生成時に学習する。トークンは r_info_realm を参照。
+ */
+errr RaceReader::set_mon_spellbook_realm(const nlohmann::json &realm_data, MonraceDefinition &monrace)
+{
+    return parse_realm_ability_token(realm_data, monrace.spellbook_realm);
+}
+
+/*!
+ * @brief JSON Arrayからモンスターの学習済み魔導書 (書番号 0..3) をビットマスクへ設定する (提案C6-R)
+ * @details 未指定 (null) なら 0 のまま。各要素は 0..3 の書番号。範囲外はエラー。
+ */
+errr RaceReader::set_mon_spellbook_indices(const nlohmann::json &indices_data, MonraceDefinition &monrace)
+{
+    if (indices_data.is_null()) {
+        return PARSE_ERROR_NONE;
+    }
+    if (!indices_data.is_array()) {
+        return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+    }
+
+    uint8_t mask = 0;
+    for (const auto &element : indices_data) {
+        if (!element.is_number_integer()) {
+            return PARSE_ERROR_INVALID_FLAG;
+        }
+        const auto book = element.get<int>();
+        if ((book < 0) || (book > 3)) {
+            return PARSE_ERROR_INVALID_FLAG;
+        }
+        mask |= static_cast<uint8_t>(1U << book);
+    }
+    monrace.spellbook_mask = mask;
+    return PARSE_ERROR_NONE;
+}
+
+/*!
  * @brief JSON Objectからモンスターに付与する突然変異をセットする (提案C5)
  * @param mutations_data 突然変異情報の格納されたJSON Array (文字列の配列)
  * @param monrace 保管先のモンスター種族構造体
@@ -1564,6 +1602,16 @@ errr RaceReader::read()
     err = set_mon_realm_abilities2(mon_data["realm_abilities2"], monrace);
     if (err) {
         msg_format(_("モンスター第2魔法領域読込失敗。ID: '%d'。", "Failed to load monster realm_abilities2. ID: '%d'."), error_idx);
+        return err;
+    }
+    err = set_mon_spellbook_realm(mon_data["spellbook_realm"], monrace);
+    if (err) {
+        msg_format(_("モンスター魔導書領域読込失敗。ID: '%d'。", "Failed to load monster spellbook_realm. ID: '%d'."), error_idx);
+        return err;
+    }
+    err = set_mon_spellbook_indices(mon_data["spellbook_indices"], monrace);
+    if (err) {
+        msg_format(_("モンスター魔導書番号読込失敗。ID: '%d'。", "Failed to load monster spellbook_indices. ID: '%d'."), error_idx);
         return err;
     }
     err = info_set_bool(mon_data["suffers_poison_dot"], monrace.suffers_poison_dot, false);

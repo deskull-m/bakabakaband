@@ -14,95 +14,140 @@ namespace {
 constexpr int REALM_ADVANCED_ABILITY_MIN_LEVEL = 20;
 
 /*!
- * @brief 魔法領域に対応する MonsterAbilityType 群を詠唱能力へ加える (提案C6)
- * @param flags 詠唱能力フラグ (OR-in 先)
- * @param realm 付与する魔法領域
- * @param level モンスターの実効レベル (高位能力のレベル段階化に使用、提案C6第3弾)
- * @details realm_abilities が指定されたモンスターの詠唱時に、その realm 由来の
- *          モンスター能力を ability_flags に OR-in する。既存 mspell 経路
- *          (自動ターゲット・MP消費(C4)・耐性・AI) をそのまま利用する。
- *          各 realm は「基本能力 (常時)」と「高位能力 (level >= 閾値)」の 2 段階に分け、
- *          低レベル個体には過剰な高位能力 (ボール/ブレス/召喚/高位 cause 等) を与えない。
- *          両段の和集合は従来の全集合と一致するため、閾値以上の個体は従来と同一。
- *          写像はバランス調整・拡張の起点。MUSIC / HISSATSU / HEX / NONE は現状未マッピング。
+ * @brief 魔法領域の「基本能力」(第1〜2書相当) を詠唱能力へ加える (提案C6)
+ * @details ボルト・操作・自己強化など低〜中位の能力。realm_abilities の常時分、および
+ *          魔導書学習 (提案C6-R) で第1〜2書を学んだ個体が得る分。
  */
-void add_realm_granted_abilities(EnumClassFlagGroup<MonsterAbilityType> &flags, RealmType realm, int level)
+void add_realm_base_abilities(EnumClassFlagGroup<MonsterAbilityType> &flags, RealmType realm)
 {
     using Ma = MonsterAbilityType;
-    const auto advanced = level >= REALM_ADVANCED_ABILITY_MIN_LEVEL;
     switch (realm) {
-    case RealmType::LIFE:
-        // 生命: 自己回復と対象を蝕む聖なる傷 (cause) の階梯。
+    case RealmType::LIFE: // 生命: 自己回復と聖なる傷 (cause) の基本階梯。
         flags.set({ Ma::HEAL, Ma::CAUSE_1, Ma::CAUSE_2 });
-        if (advanced) {
-            flags.set({ Ma::CAUSE_3, Ma::CAUSE_4 });
-        }
         break;
-    case RealmType::SORCERY:
-        // 仙術: 非属性の操作・妨害・移動。減速/混乱/盲目/恐慌と短距離転移。
+    case RealmType::SORCERY: // 仙術: 非属性の操作・妨害・短距離転移。
         flags.set({ Ma::SLOW, Ma::CONF, Ma::BLIND, Ma::SCARE, Ma::BLINK });
-        if (advanced) {
-            flags.set({ Ma::HOLD, Ma::TELE_TO, Ma::TELE_AWAY });
-        }
         break;
-    case RealmType::NATURE:
-        // 自然: 元素のボルト群を基本に、上位で元素・毒のボール。
+    case RealmType::NATURE: // 自然: 元素のボルト群。
         flags.set({ Ma::BO_FIRE, Ma::BO_COLD, Ma::BO_ELEC });
-        if (advanced) {
-            flags.set({ Ma::BA_ELEC, Ma::BA_COLD, Ma::BA_POIS });
-        }
         break;
-    case RealmType::CHAOS:
-        // 混沌: マジックミサイル・火炎を基本に、上位で火/ログルス球とカオスブレス。
+    case RealmType::CHAOS: // 混沌: マジックミサイル・火炎ボルト・混乱。
         flags.set({ Ma::MISSILE, Ma::BO_FIRE, Ma::CONF });
-        if (advanced) {
-            flags.set({ Ma::BA_FIRE, Ma::BA_CHAO, Ma::BR_CHAO });
-        }
         break;
-    case RealmType::DEATH:
-        // 死: 傷の呪い・地獄の矢・魔力吸収を基本に、上位で高位 cause/地獄球/死者復活。
+    case RealmType::DEATH: // 死: 傷の呪い・地獄の矢・魔力吸収。
         flags.set({ Ma::CAUSE_1, Ma::CAUSE_2, Ma::BO_NETH, Ma::DRAIN_MANA });
-        if (advanced) {
-            flags.set({ Ma::CAUSE_3, Ma::CAUSE_4, Ma::BA_NETH, Ma::S_UNDEAD });
-        }
         break;
-    case RealmType::TRUMP:
-        // トランプ: 転移の万能さを基本に、上位で多様な召喚。
+    case RealmType::TRUMP: // トランプ: 転移の万能さ。
         flags.set({ Ma::BLINK, Ma::TPORT, Ma::TELE_TO, Ma::TELE_AWAY });
-        if (advanced) {
-            flags.set({ Ma::S_MONSTER, Ma::S_MONSTERS, Ma::S_KIN, Ma::S_HOUND });
-        }
         break;
-    case RealmType::ARCANE:
-        // 秘術: 汎用で威力控えめ。ミサイルと短距離転移を基本に、上位で魔力の矢/嵐。
+    case RealmType::ARCANE: // 秘術: 汎用で威力控えめ。ミサイルと短距離転移。
         flags.set({ Ma::MISSILE, Ma::BLINK });
-        if (advanced) {
-            flags.set({ Ma::BO_MANA, Ma::BA_MANA });
-        }
         break;
-    case RealmType::CRAFT:
-        // 匠: 自己強化 (加速・回復) を基本に、上位で無敵化。
+    case RealmType::CRAFT: // 匠: 自己強化 (加速・回復)。
         flags.set({ Ma::HASTE, Ma::HEAL });
-        if (advanced) {
-            flags.set(Ma::INVULNER);
-        }
         break;
-    case RealmType::DAEMON:
-        // 悪魔: 火炎のボルトを基本に、上位で火炎球・火炎ブレス・地獄球・悪魔召喚。
+    case RealmType::DAEMON: // 悪魔: 火炎のボルト (上位は火炎球・ブレス・地獄球・悪魔召喚)。
         flags.set(Ma::BO_FIRE);
-        if (advanced) {
-            flags.set({ Ma::BA_FIRE, Ma::BR_FIRE, Ma::BA_NETH, Ma::S_DEMON });
-        }
         break;
-    case RealmType::CRUSADE:
-        // 破邪: 光のボルト・恐慌・傷の呪いを基本に、上位でスターバースト・秘孔。
+    case RealmType::CRUSADE: // 破邪: 光のボルト・恐慌・傷の呪い。
         flags.set({ Ma::BO_LITE, Ma::SCARE, Ma::CAUSE_2 });
-        if (advanced) {
-            flags.set({ Ma::BA_LITE, Ma::CAUSE_4 });
-        }
         break;
     default:
         break;
+    }
+}
+
+/*!
+ * @brief 魔法領域の「高位能力」(第3〜4書相当) を詠唱能力へ加える (提案C6)
+ * @details ボール・ブレス・召喚・高位 cause・無敵など高位の能力。realm_abilities では
+ *          実効レベルが閾値以上のとき、魔導書学習 (提案C6-R) では第3〜4書を学んだ個体が得る。
+ */
+void add_realm_advanced_abilities(EnumClassFlagGroup<MonsterAbilityType> &flags, RealmType realm)
+{
+    using Ma = MonsterAbilityType;
+    switch (realm) {
+    case RealmType::LIFE:
+        flags.set({ Ma::CAUSE_3, Ma::CAUSE_4 });
+        break;
+    case RealmType::SORCERY:
+        flags.set({ Ma::HOLD, Ma::TELE_TO, Ma::TELE_AWAY });
+        break;
+    case RealmType::NATURE:
+        flags.set({ Ma::BA_ELEC, Ma::BA_COLD, Ma::BA_POIS });
+        break;
+    case RealmType::CHAOS:
+        flags.set({ Ma::BA_FIRE, Ma::BA_CHAO, Ma::BR_CHAO });
+        break;
+    case RealmType::DEATH:
+        flags.set({ Ma::CAUSE_3, Ma::CAUSE_4, Ma::BA_NETH, Ma::S_UNDEAD });
+        break;
+    case RealmType::TRUMP:
+        flags.set({ Ma::S_MONSTER, Ma::S_MONSTERS, Ma::S_KIN, Ma::S_HOUND });
+        break;
+    case RealmType::ARCANE:
+        flags.set({ Ma::BO_MANA, Ma::BA_MANA });
+        break;
+    case RealmType::CRAFT:
+        flags.set(Ma::INVULNER);
+        break;
+    case RealmType::DAEMON:
+        flags.set({ Ma::BA_FIRE, Ma::BR_FIRE, Ma::BA_NETH, Ma::S_DEMON });
+        break;
+    case RealmType::CRUSADE:
+        flags.set({ Ma::BA_LITE, Ma::CAUSE_4 });
+        break;
+    default:
+        break;
+    }
+}
+
+/*!
+ * @brief realm_abilities (魔法領域まるごと付与) 由来の詠唱能力を加える (提案C6)
+ * @details 基本能力は常時、高位能力は実効レベルが閾値以上のときに付与する (提案C6第3弾)。
+ */
+void add_realm_granted_abilities(EnumClassFlagGroup<MonsterAbilityType> &flags, RealmType realm, int level)
+{
+    add_realm_base_abilities(flags, realm);
+    if (level >= REALM_ADVANCED_ABILITY_MIN_LEVEL) {
+        add_realm_advanced_abilities(flags, realm);
+    }
+}
+
+/*!
+ * @brief 魔導書学習 (提案C6-R) 由来の詠唱能力を加える
+ * @details プレイヤー同様、モンスターは所定の魔導書から realm 呪文を学習する
+ *          (spell_learned に登録済み)。学習した書のティアに応じて能力を付与する:
+ *          第1〜2書 (spell_id 0..15) を学べば基本能力、第3〜4書 (16..31) を学べば
+ *          高位能力。realm_abilities (まるごと付与) とは独立の、より忠実な経路。
+ *          詠唱自体は既存 mspell (自動ターゲット・MP・耐性・AI) をそのまま用いる。
+ */
+void add_learned_spellbook_abilities(EnumClassFlagGroup<MonsterAbilityType> &flags, const CreatureEntity &caster)
+{
+    const auto realm = caster.get_realm1();
+    if (realm == RealmType::NONE) {
+        return;
+    }
+
+    auto learned_basic = false;
+    for (auto spell_id = 0; spell_id < 16; ++spell_id) {
+        if (caster.has_learned_spell(0, spell_id)) {
+            learned_basic = true;
+            break;
+        }
+    }
+    auto learned_advanced = false;
+    for (auto spell_id = 16; spell_id < 32; ++spell_id) {
+        if (caster.has_learned_spell(0, spell_id)) {
+            learned_advanced = true;
+            break;
+        }
+    }
+
+    if (learned_basic) {
+        add_realm_base_abilities(flags, realm);
+    }
+    if (learned_advanced) {
+        add_realm_advanced_abilities(flags, realm);
     }
 }
 }
@@ -130,6 +175,9 @@ msa_type::msa_type(CreatureEntity &creature, MONSTER_IDX m_idx)
     if (this->monrace->realm_abilities2 != RealmType::NONE) {
         add_realm_granted_abilities(this->ability_flags, this->monrace->realm_abilities2, realm_ability_level);
     }
+
+    // [提案 C6-R] 魔導書から学習した realm 呪文に応じて詠唱能力を加える (学習済みの書のティア準拠)。
+    add_learned_spellbook_abilities(this->ability_flags, *this->m_ptr);
 }
 
 Pos2D msa_type::get_position() const

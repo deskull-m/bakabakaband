@@ -35,6 +35,7 @@
 #include "util/flag-group.h"
 #include "view/display-symbol.h"
 #include <array>
+#include <cstdint>
 #include <string>
 #include <string_view>
 #include <tl/optional.hpp>
@@ -138,6 +139,8 @@ public:
     EnumClassFlagGroup<PlayerMutationType> mutations{}; //!< 生成時に付与する突然変異 (提案C5。空=なし=オプトイン)
     RealmType realm_abilities = RealmType::NONE; //!< 詠唱能力を付与する魔法領域 (提案C6。NONE=なし=オプトイン。詠唱時に realm 由来の MonsterAbilityType を追加)
     RealmType realm_abilities2 = RealmType::NONE; //!< 詠唱能力を付与する第2魔法領域 (提案C6第2弾。NONE=なし=オプトイン。realm_abilities と併用して二重詠唱者に)
+    RealmType spellbook_realm = RealmType::NONE; //!< 魔導書学習の魔法領域 (提案C6-R。NONE=なし=オプトイン。生成時に spellbook_mask の書から realm 呪文を学習)
+    uint8_t spellbook_mask = 0; //!< 学習済み魔導書のビットマスク (提案C6-R。bit b = 第b書(0..3)を学習。各書8呪文 [b*8, b*8+8) を spell_learned に登録)
     bool suffers_poison_dot = false; //!< 毒攻撃で継続毒(POISON DoT)を受けるか (提案D7。既定false=オプトイン。既定バランス不変)
     bool applies_player_race_resistances = false; //!< 付与された player_race の属性耐性を被ダメージへ反映するか (提案C1第2弾。既定false=オプトイン。既定バランス不変)
     bool applies_player_race_reflection = false; //!< 付与された player_race の反射(TR_REFLECT)をボルト反射へ反映するか (提案C1第8弾。既定false=オプトイン。既定バランス不変)

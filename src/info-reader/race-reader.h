@@ -33,6 +33,8 @@ private:
     errr set_mon_mutations(const nlohmann::json &mutations_data, MonraceDefinition &monrace);
     errr set_mon_realm_abilities(const nlohmann::json &realm_data, MonraceDefinition &monrace);
     errr set_mon_realm_abilities2(const nlohmann::json &realm_data, MonraceDefinition &monrace);
+    errr set_mon_spellbook_realm(const nlohmann::json &realm_data, MonraceDefinition &monrace);
+    errr set_mon_spellbook_indices(const nlohmann::json &indices_data, MonraceDefinition &monrace);
     errr set_mon_materials(const nlohmann::json &materials_data, MonraceDefinition &monrace);
     errr set_mon_body_structure(const nlohmann::json &body_data, MonraceDefinition &monrace);
     errr set_mon_extended_slots(const nlohmann::json &slots_data, MonraceDefinition &monrace);
