@@ -3622,8 +3622,24 @@ JSON `"realm_abilities": "CHAOS"` を指定した個体は、詠唱時（`msa_ty
 - **realm 由来能力は opt-in 個体のみに付くため既定バランス不変。** フルビルド
   (g++ -O3 -Werror) / clang-format-18 で検証済。
 
-**将来拡張余地:** 写像表の精緻化、MUSIC/HISSATSU/HEX の技術領域マッピング
-（サステイン/技系のため要設計・現状は意図的に未マッピング）。
+### ✅ 第4弾 完了（写像表の精緻化）
+
+**完了内容:** `add_realm_granted_abilities()` の realm→ability 写像を、各 realm の実際の
+呪文性格に沿って拡充・thematic 化した。豊富な `MonsterAbilityType` 語彙を活用しつつ、
+基本/高位のティア規律（ボルト・操作・自己強化＝基本、ボール・ブレス・召喚・高位 cause・
+無敵＝高位）を維持。
+
+- 主な精緻化: NATURE=元素ボルト三種→上位で元素・毒ボール / CHAOS=マジックミサイル起点 /
+  DEATH=cause 階梯＋地獄＋魔力吸収→上位で死者復活 (S_UNDEAD) / TRUMP=転移＋多様な召喚
+  (S_MONSTERS/S_HOUND) / SORCERY=減速/混乱/盲目/恐慌＋上位で麻痺・両転移 /
+  CRAFT=加速/回復→上位で無敵 (INVULNER) / CRUSADE=光のボルト・恐慌→上位でスターバースト /
+  ARCANE=汎用弱め (ミサイル＋転移→上位で魔力の矢/嵐) / LIFE=回復＋cause 階梯 /
+  DAEMON=火炎ボルト→上位で火炎球・ブレス・地獄球・悪魔召喚。
+- **realm 由来能力は opt-in 個体のみに付くため既定バランス不変。** バランス調整は
+  引き続きこの表で行う。フルビルド (g++ -O3 -Werror) / clang-format-18 で検証済。
+
+**将来拡張余地:** MUSIC/HISSATSU/HEX の技術領域マッピング（サステイン/技系のため
+要設計・現状は意図的に未マッピング）、詠唱頻度/コストの realm 別調整。
 
 ---
 

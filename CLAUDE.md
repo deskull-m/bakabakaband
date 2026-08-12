@@ -951,8 +951,9 @@ HISSATSU / HEX）を参照。
   で mspell に読まれるため、恒久的に monrace を書き換えず、詠唱文脈
   (`msa_type` 構築時) の `ability_flags` にのみ realm 由来能力を **OR-in** する
   (`src/mspell/mspell-attack-util.cpp` の `add_realm_granted_abilities()`)。
-- 写像表は保守的な初期セット（10 魔法領域。MUSIC/HISSATSU/HEX は未マッピング）で、
-  バランス調整・拡張はこの表で行う。
+- 写像表は各 realm の呪文性格に沿って thematic 化済み（10 魔法領域。MUSIC/HISSATSU/HEX は
+  技術領域のため未マッピング）。基本/高位のティア規律（ボルト・操作・自己強化＝基本、
+  ボール・ブレス・召喚・高位 cause・無敵＝高位）を保ちつつ拡充。バランス調整はこの表で行う。
 - **第3弾（レベル段階化）:** 各 realm の能力を「基本能力（常時）」と「高位能力
   （モンスター実効レベル >= `REALM_ADVANCED_ABILITY_MIN_LEVEL`=20）」の 2 段階に分け、
   低レベル個体には過剰な高位能力（ボール/ブレス/召喚/高位 cause 等）を与えない。
