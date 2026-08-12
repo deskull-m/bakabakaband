@@ -3161,6 +3161,17 @@ public:
     virtual void set_forgotten_spell(int realm_idx, int spell_id, bool value);
     std::vector<int> spell_order_learned{}; /* order spells learned */
 
+    /*!
+     * @brief 指定魔法領域の魔導書 (ビットマスク) からモンスターが呪文を学習する [提案C6-R]
+     * @param realm 学習する魔法領域 (NONE なら何もしない)
+     * @param book_mask 学習済み魔導書のビットマスク (bit b = 第b書。各書8呪文 [b*8, b*8+8))
+     * @details realm1 を設定し、指定書の呪文を spell_learned / spell_worked に登録して
+     *          spell_exp を習得済み相当にする。プレイヤーと同じ学習データ構造を用いるため、
+     *          将来のプレイヤー経路詠唱 (案B) でもそのまま利用できる。opt-in・既定なしで
+     *          呼ばれない (spellbook_realm=NONE) ため既定バランス不変。
+     */
+    void learn_realm_spellbooks(RealmType realm, uint32_t book_mask);
+
     // [A-3] private 化済。get_hp_table(level_index) / set_hp_table(level_index, value) 経由。
     // CreatureEntity 内部の roll_hp_table() 等は this->hp_table を直接操作。
 private:

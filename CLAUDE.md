@@ -974,6 +974,41 @@ HISSATSU / HEX）を参照。
 - 既定 `NONE` のため実データ・既定バランスは不変。スキーマに `realm_abilities` /
   `realm_abilities2` を登録済。
 
+### モンスターの魔導書学習 (`spellbook_realm` / `spellbook_indices`) — 提案 C6-R
+
+提案 C6（realm まるごと付与）に対し、**「NPC がプレイヤー同様、所定の魔導書から
+呪文を学習し、学んだ呪文を使う」** 方針でモンスター詠唱を組み直す第 1 段。学習は
+プレイヤーと同じ `spell_learned` データ構造を用いる（将来のプレイヤー経路詠唱＝案B
+でもそのまま流用できる）。**JSON オプトイン方式**（既定 `NONE`/空でバランス不変）。
+
+```jsonc
+"spellbook_realm": "CHAOS",
+"spellbook_indices": [0, 1]   // 第1・2の魔導書を学習
+```
+
+- **データモデル:** `MonraceDefinition::spellbook_realm`（`RealmType`）＋
+  `spellbook_mask`（`uint8_t`、bit b = 第b書 0..3 を学習）。各魔導書は 8 呪文
+  （4 書 × 8 = 32 = `SPELLS_IN_REALM`）で、第b書は spell_id `[b*8, b*8+8)` を含む。
+- **学習（生成時）:** `place_monster_one()` が `CreatureEntity::learn_realm_spellbooks(realm, mask)`
+  を呼び、`realm1` を設定して指定書の呪文を `spell_learned` / `spell_worked` に登録、
+  `spell_exp` を習得済み相当（`SPELL_EXP_SKILLED`=1200）にする。**プレイヤーの学習と
+  同じフィールドを埋める**。
+- **詠唱（学習駆動）:** `msa_type` 構築時に `add_learned_spellbook_abilities()` が、
+  学習済みの呪文のティアに応じて `MonsterAbilityType` を OR-in する（第1〜2書 spell_id
+  0..15 → 基本能力、第3〜4書 16..31 → 高位能力）。詠唱自体は既存 mspell 経路
+  （自動ターゲット・MP消費(C4)・耐性・smart AI）をそのまま利用。realm→ability 写像は
+  C6 の `add_realm_base_abilities()` / `add_realm_advanced_abilities()` を共用。
+- realm まるごとの `realm_abilities`（C6）とは**独立の経路**で、より忠実な
+  「魔導書から学習した分だけ使える」表現。両者は併用可能（OR-in）。
+- **現状の橋渡し（第1段の限界）:** 学習した個々の呪文は、忠実な PC 詠唱経路
+  （`exe_spell`）ではなく、対応する `MonsterAbilityType` に写像して既存 mspell で
+  撃つ。`exe_spell` の CAST 経路は `get_aim_dir` 等 UI プロンプトを直呼びしヘッドレス
+  不可のため（realm ファイル全体で約 115 箇所）、完全な PC 経路詠唱（案B）は
+  ヘッドレス seam の整備を要する後続段とする。第1段で **学習データ構造は完成** し、
+  案B はこの学習済みデータを消費するだけでよい状態にした。
+- 既定なしのため実データ・既定バランスは不変。スキーマに `spellbook_realm` /
+  `spellbook_indices` を登録済。実際に撃たせるには `freq_spell > 0` が必要。
+
 ### モンスターの継続毒 (`suffers_poison_dot`) — 提案 D7
 
 `MonraceDefinition` に `bool suffers_poison_dot`

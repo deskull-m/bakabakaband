@@ -632,6 +632,10 @@ tl::optional<MONSTER_IDX> place_monster_one(CreatureEntity &player, POSITION y, 
         }
     }
 
+    // [提案C6-R] 指定された魔導書からモンスターが realm 呪文を学習する (opt-in・既定OFF)。
+    // プレイヤーと同じ spell_learned データ構造へ登録し、詠唱は学習済みの書に応じて発火する。
+    m_ptr->learn_realm_spellbooks(new_monrace.spellbook_realm, new_monrace.spellbook_mask);
+
     // 種族が指定されている場合、身長・体重を設定
     get_height_weight(*m_ptr);
 
