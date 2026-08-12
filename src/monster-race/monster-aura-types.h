@@ -29,5 +29,6 @@ enum class MonsterAuraType {
     GRAVITY = 21, // 重力.
     VOIDS = 22, // 虚無.
     ABYSS = 23, // 深淵.
+    DIRT = 24, // 汚物(糞).
     MAX,
 };

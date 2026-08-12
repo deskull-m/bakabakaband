@@ -51,6 +51,7 @@
 #include "player/special-defense-types.h"
 #include "racial/racial-android.h"
 #include "save/save.h"
+#include "status/bad-status-setter.h"
 #include "status/base-status.h"
 #include "status/element-resistance.h"
 #include "sv-definition/sv-junk-types.h"
@@ -273,6 +274,32 @@ int cold_dam(CreatureEntity &creature, int dam, std::string_view kb_str, bool au
     int get_damage = take_hit(creature, aura ? DAMAGE_NOESCAPE : DAMAGE_ATTACK, dam, kb_str);
     if (!aura && !(double_resist && creature.has_resist_cold())) {
         inventory_damage(creature, BreakerCold(), inv);
+    }
+
+    return get_damage;
+}
+
+/*!
+ * @brief 汚物(糞)属性によるプレイヤー損害処理
+ * Hurt the creature with filth (feces)
+ * @param creature 汚物を浴びたクリーチャーへの参照
+ * @param dam 基本ダメージ量
+ * @param kb_str ダメージ原因記述
+ * @param aura オーラよるダメージが原因ならばTRUE
+ * @return 修正HPダメージ量
+ * @details 毒耐性でダメージを軽減し、耐性が無ければ一定確率で毒状態を付与する。
+ */
+int dirt_dam(CreatureEntity &creature, int dam, std::string_view kb_str, bool aura)
+{
+    bool double_resist = is_oppose_pois(creature);
+    dam = dam * calc_pois_damage_rate(creature) / 100;
+    if (dam <= 0) {
+        return 0;
+    }
+
+    int get_damage = take_hit(creature, aura ? DAMAGE_NOESCAPE : DAMAGE_ATTACK, dam, kb_str);
+    if ((aura || !check_multishadow(creature)) && !(double_resist || creature.has_resist_pois())) {
+        (void)BadStatusSetter(creature).mod_poison(randint1(dam) + 1);
     }
 
     return get_damage;
@@ -762,9 +789,11 @@ void touch_zap_player(const CreatureEntity &source, CreatureEntity &creature)
     constexpr auto fire_mes = _("突然とても熱くなった！", "You are suddenly very hot!");
     constexpr auto cold_mes = _("突然とても寒くなった！", "You are suddenly very cold!");
     constexpr auto elec_mes = _("電撃をくらった！", "You get zapped!");
+    constexpr auto dirt_mes = _("汚物にまみれた！", "You are covered with filth!");
     process_aura_damage(source, creature, creature.has_immune_fire() != 0, MonsterAuraType::FIRE, fire_dam, fire_mes);
     process_aura_damage(source, creature, creature.has_immune_cold() != 0, MonsterAuraType::COLD, cold_dam, cold_mes);
     process_aura_damage(source, creature, creature.has_immune_elec() != 0, MonsterAuraType::ELEC, elec_dam, elec_mes);
+    process_aura_damage(source, creature, false, MonsterAuraType::DIRT, dirt_dam, dirt_mes);
 }
 
 /*!

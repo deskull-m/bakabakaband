@@ -16,5 +16,6 @@ int acid_dam(CreatureEntity &creature, int dam, std::string_view kb_str, bool au
 int elec_dam(CreatureEntity &creature, int dam, std::string_view kb_str, bool aura);
 int fire_dam(CreatureEntity &creature, int dam, std::string_view kb_str, bool aura);
 int cold_dam(CreatureEntity &creature, int dam, std::string_view kb_str, bool aura);
+int dirt_dam(CreatureEntity &creature, int dam, std::string_view kb_str, bool aura);
 void touch_zap_player(const CreatureEntity &source, CreatureEntity &creature);
 void player_defecate(CreatureEntity &creature);
