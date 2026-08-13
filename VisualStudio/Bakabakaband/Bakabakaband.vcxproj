@@ -390,6 +390,7 @@
     <ClCompile Include="..\..\src\combat\martial-arts-style.cpp" />
     <ClCompile Include="..\..\src\core\score-util.cpp" />
     <ClCompile Include="..\..\src\info-reader\party-reader.cpp" />
+    <ClCompile Include="..\..\src\info-reader\quest-reader.cpp" />
     <ClCompile Include="..\..\src\io-dump\player-status-dump-json.cpp" />
     <ClCompile Include="..\..\src\io-dump\score-sender.cpp" />
     <ClCompile Include="..\..\src\knowledge\knowledge-alliance.cpp" />
@@ -1026,6 +1027,7 @@
     <ClCompile Include="..\..\src\info-reader\fixed-map-parser.cpp" />
     <ClCompile Include="..\..\src\system\dungeon\dungeon-definition.cpp" />
     <ClCompile Include="..\..\src\system\dungeon\quest-definition.cpp" />
+    <ClCompile Include="..\..\src\system\dungeon\quest-fixed-map.cpp" />
     <ClCompile Include="..\..\src\locale\english.cpp" />
     <ClCompile Include="..\..\src\floor\floor-events.cpp" />
     <ClCompile Include="..\..\src\floor\floor-generator.cpp" />
@@ -1470,6 +1472,7 @@
     <ClInclude Include="..\..\src\info-reader\message-reader.h" />
     <ClInclude Include="..\..\src\info-reader\parse-error-types.h" />
     <ClInclude Include="..\..\src\info-reader\race-info-tokens-table.h" />
+    <ClInclude Include="..\..\src\info-reader\quest-reader.h" />
     <ClInclude Include="..\..\src\info-reader\race-reader.h" />
     <ClInclude Include="..\..\src\info-reader\random-grid-effect-types.h" />
     <ClInclude Include="..\..\src\info-reader\skill-reader.h" />
@@ -2252,6 +2255,7 @@
     <ClInclude Include="..\..\src\info-reader\fixed-map-parser.h" />
     <ClInclude Include="..\..\src\system\dungeon\dungeon-definition.h" />
     <ClInclude Include="..\..\src\system\dungeon\quest-definition.h" />
+    <ClInclude Include="..\..\src\system\dungeon\quest-fixed-map.h" />
     <ClInclude Include="..\..\src\io\files-util.h" />
     <ClInclude Include="..\..\src\floor\floor-events.h" />
     <ClInclude Include="..\..\src\floor\floor-generator.h" />

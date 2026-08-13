@@ -76,6 +76,7 @@
 #include "system/baseitem/baseitem-service.h"
 #include "system/creature-entity.h"
 #include "system/dungeon/quest-definition.h"
+#include "system/dungeon/quest-fixed-map.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/floor/floor-info.h"
 #include "system/floor/wilderness-grid.h"
@@ -449,11 +450,27 @@ void play_game(CreatureEntity &creature, bool new_game, bool browsing_movie, std
         restore_world_floor_info(creature);
     }
 
-    // クエスト開始時は、マップサイズを事前に取得する
+    // クエスト開始時は、マップサイズを事前に取得する (旧 INIT_ASSIGN/INIT_GET_SIZE の .txt パースを
+    // JSONC レイアウトからの寸法算出に置換。実寸は後段 generate_fixed_floor の parse_qtw_P が確定する
+    // ため、ここはグリッド配置の副作用なしにパネル単位へ丸めた上限サイズを与えれば十分)。
     auto &floor = *creature.get_floor();
     if (new_game && floor.is_in_quest()) {
-        init_flags = INIT_GET_SIZE;
-        parse_fixed_map(creature, QUEST_DEFINITION_LIST, 0, 0, 0, 0);
+        const auto fixed_map = QuestFixedMapList::get_instance().find(floor.quest_number);
+        if (fixed_map && fixed_map->has_map()) {
+            // マップバリアント選択は generate_quest_floor_from_json と同じ (seed_town による固定選択)
+            const auto variant_count = fixed_map->maps.size();
+            const auto variant_index = (variant_count <= 1) ? 0 : (AngbandSystem::get_instance().get_seed_town() % variant_count);
+            const auto &rows = fixed_map->maps[variant_index];
+            auto max_y = static_cast<int>(rows.size());
+            auto max_x = 0;
+            for (const auto &row : rows) {
+                max_x = std::max(max_x, static_cast<int>(row.size()));
+            }
+            const auto panels_y = (max_y / SCREEN_HGT) + ((max_y % SCREEN_HGT) ? 1 : 0);
+            const auto panels_x = (max_x / SCREEN_WID) + ((max_x % SCREEN_WID) ? 1 : 0);
+            floor.height = panels_y * SCREEN_HGT;
+            floor.width = panels_x * SCREEN_WID;
+        }
         // サイズが取得できなかった場合はデフォルト値を設定
         if (floor.height == 0 || floor.width == 0) {
             floor.height = MAX_HGT;

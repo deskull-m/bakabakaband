@@ -138,13 +138,11 @@ void player_wipe_without_name(CreatureEntity &creature)
  */
 void init_dungeon_quests(CreatureEntity &creature)
 {
-    init_flags = INIT_ASSIGN;
     auto &floor = *creature.get_floor();
     auto &quests = QuestList::get_instance();
-    floor.quest_number = QuestId::RANDOM_QUEST1;
-    parse_fixed_map(creature, QUEST_DEFINITION_LIST, 0, 0, 0, 0);
     floor.quest_number = QuestId::NONE;
     for (auto quest_id : RANDOM_QUEST_ID_RANGE) {
+        assign_json_quest_metadata(quest_id);
         auto &quest = quests.get_quest(quest_id);
         quest.status = QuestStatusType::TAKEN;
         determine_random_questor(creature, quest);
@@ -153,9 +151,7 @@ void init_dungeon_quests(CreatureEntity &creature)
         quest.max_num = 1;
     }
 
-    init_flags = INIT_ASSIGN;
-    floor.quest_number = QuestId::MELKO;
-    parse_fixed_map(creature, QUEST_DEFINITION_LIST, 0, 0, 0, 0);
+    assign_json_quest_metadata(QuestId::MELKO);
     quests.get_quest(QuestId::MELKO).status = QuestStatusType::TAKEN;
 
     floor.quest_number = QuestId::NONE;

@@ -7,6 +7,7 @@
 #include "knowledge/knowledge-quests.h"
 #include "artifact/fixed-art-types.h"
 #include "core/show-file.h"
+#include "dungeon/quest.h"
 #include "flavor/flavor-describer.h"
 #include "flavor/object-flavor-types.h"
 #include "info-reader/fixed-map-parser.h"
@@ -67,14 +68,7 @@ static void do_cmd_knowledge_quests_current(CreatureEntity &creature, FILE *fff)
             continue;
         }
 
-        const auto old_quest = creature.get_floor()->quest_number;
-
-        quest_text_lines.clear();
-
-        creature.get_floor()->quest_number = quest_id;
-        init_flags = INIT_SHOW_TEXT;
-        parse_fixed_map(creature, QUEST_DEFINITION_LIST, 0, 0, 0, 0);
-        creature.get_floor()->quest_number = old_quest;
+        populate_quest_text_lines(quest_id);
         if (quest.flags & QUEST_FLAG_SILENT) {
             continue;
         }
@@ -178,19 +172,13 @@ static void do_cmd_knowledge_quests_current(CreatureEntity &creature, FILE *fff)
     }
 }
 
-static bool do_cmd_knowledge_quests_aux(CreatureEntity &creature, FILE *fff, QuestId q_idx)
+static bool do_cmd_knowledge_quests_aux(CreatureEntity &, FILE *fff, QuestId q_idx)
 {
     const auto &quests = QuestList::get_instance();
     const auto &quest = quests.get_quest(q_idx);
 
-    auto &floor = *creature.get_floor();
     auto is_fixed_quest = QuestType::is_fixed(q_idx);
     if (is_fixed_quest) {
-        const auto old_quest = floor.quest_number;
-        floor.quest_number = q_idx;
-        init_flags = INIT_NAME_ONLY;
-        parse_fixed_map(creature, QUEST_DEFINITION_LIST, 0, 0, 0, 0);
-        floor.quest_number = old_quest;
         if (quest.flags & QUEST_FLAG_SILENT) {
             return false;
         }

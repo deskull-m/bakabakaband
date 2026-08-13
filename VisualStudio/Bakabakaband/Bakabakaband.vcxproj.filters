@@ -2504,6 +2504,9 @@
     <ClCompile Include="..\..\src\system\dungeon\quest-definition.cpp">
       <Filter>system\dungeon</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\system\dungeon\quest-fixed-map.cpp">
+      <Filter>system\dungeon</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\src\system\dungeon\dungeon-data-definition.cpp">
       <Filter>system\dungeon</Filter>
     </ClCompile>
@@ -2847,6 +2850,9 @@
       <Filter>system\creature-party</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\info-reader\party-reader.cpp">
+      <Filter>info-reader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\info-reader\quest-reader.cpp">
       <Filter>info-reader</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\monster-floor\party-generator.cpp" />
@@ -3980,6 +3986,9 @@
       <Filter>info-reader</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\info-reader\message-reader.h">
+      <Filter>info-reader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\info-reader\quest-reader.h">
       <Filter>info-reader</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\info-reader\race-reader.h">
@@ -5763,6 +5772,9 @@
       <Filter>system\dungeon</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\system\dungeon\quest-definition.h">
+      <Filter>system\dungeon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\system\dungeon\quest-fixed-map.h">
       <Filter>system\dungeon</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\system\dungeon\dungeon-data-definition.h">

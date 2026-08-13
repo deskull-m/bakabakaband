@@ -201,9 +201,10 @@ void player_birth(CreatureEntity &creature, std::optional<QuestId> initial_quest
         auto &quest = quests.get_quest(*initial_quest_id);
 
         // クエストの初期化処理（ウィザードモードのwiz_enter_quest関数を参考）
-        init_flags = i2enum<init_flags_type>(INIT_SHOW_TEXT | INIT_ASSIGN);
+        // 旧 INIT_ASSIGN 相当: メタデータ確立と報酬解決を status を TAKEN にする前に行う。
         creature.get_floor()->quest_number = *initial_quest_id;
-        parse_fixed_map(creature, QUEST_DEFINITION_LIST, 0, 0, 0, 0);
+        assign_json_quest_metadata(*initial_quest_id);
+        populate_quest_text_lines(*initial_quest_id);
         quest.status = QuestStatusType::TAKEN;
 
         // クエストに突入
