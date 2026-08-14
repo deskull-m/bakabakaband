@@ -711,6 +711,20 @@ bakabakaband ではプレイヤーとモンスター双方が `CreatureEntity` �
     装備品 + ULTIMATE_RESISTANCE 等を反映
 - **B-2b**: 近接攻撃のダメージボーナス (7a9cda1ec)
   - HIT/PUNCH/SLASH/STING 打撃で `weapon.damage_dice.roll() + weapon.to_d` 加算
+  - 後に共通の `calc_attack_damage_with_slay()` でスレイ/ブランドも反映
+- **B-2b2**: 武器ダメージ計算のプレイヤー完全同化 (会心の追加)
+  - B-2b の「ダイス→スレイ/ブランド→ to_d」に**会心 (`critical_norm`)** を追加し、
+    プレイヤーの `process_weapon_attack()` と同一パイプラインに揃えた
+  - 共通ヘルパ `calc_weapon_melee_damage(attacker, weapon, target, hand)`
+    (`src/combat/slaying.cpp`) に集約。対プレイヤー
+    (`monster-attack-player.cpp`) / 対モンスター (`monster-attack-monster.cpp`)
+    の両経路が同一関数を呼ぶ
+  - `critical_norm()` の会心メッセージ・効果音は攻撃者視点の文言のため
+    `creature.is_player()` でガードし、モンスター会心時はダメージのみ反映して
+    表示を抑止 (ダメージ値はプレイヤーと完全同一)
+  - **武器を装備したモンスターは、対プレイヤー・対モンスターのいずれでも
+    プレイヤーと同じ武器打撃ダメージ (会心込み) を与える**。武器ダメージは
+    従来同様、種族固有の innate blow ダメージに**加算**される (B-2b の加算モデルを継承)
 - **B-2c**: 近接攻撃の命中ボーナス (11058a278)
   - `to_h` を `check_hit_from_monster_to_player` の power に加算
 - **B-4**: look 表示で装備品/パック品を区別 (145f1fb56)
