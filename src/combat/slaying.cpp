@@ -1,5 +1,6 @@
 #include "combat/slaying.h"
 #include "artifact/fixed-art-types.h"
+#include "combat/attack-criticality.h"
 #include "effect/attribute-types.h"
 #include "mind/mind-samurai.h"
 #include "monster-race/race-flags-resistance.h"
@@ -235,6 +236,31 @@ int calc_attack_damage_with_slay(CreatureEntity &creature, ItemEntity *o_ptr, in
         mult = 150;
     }
     return tdam * mult / 10;
+}
+
+/*!
+ * @brief 武器を装備したクリーチャーの1打撃分の武器ダメージを、プレイヤーの打撃処理と同一の式で算出する
+ * @param attacker 攻撃側クリーチャー (プレイヤー・モンスターいずれも可)
+ * @param weapon 使用する近接武器
+ * @param target 攻撃対象クリーチャー (プレイヤー・モンスターいずれも可)
+ * @param hand 使用する手 (0=利き手 / 1=逆手)。会心判定の基本命中力 (meichuu) 参照に使う
+ * @return 武器ダイス→スレイ/ブランド倍率→会心→武器の to_d までを反映したダメージ値
+ * @details
+ * プレイヤーの process_weapon_attack() が武器から算出する部分
+ * (ダイスロール→calc_attack_damage_with_slay()→critical_norm()→ to_d 加算) と同一の
+ * パイプラインを、攻撃側の種別 (プレイヤー/モンスター) に依らず共通で適用する。
+ * これにより、武器を装備したモンスターは対プレイヤー・対モンスターのいずれでも
+ * プレイヤーと同じ武器打撃ダメージを与える。
+ * プレイヤー固有の追加ダイス (damage_dice_bonus) ・ヴォーパル・get_to_d(hand) 等の
+ * 装備/職業由来ボーナスは呼出側で別途反映される (モンスターは get_melee_stat_damage_bonus() 等)。
+ */
+int calc_weapon_melee_damage(CreatureEntity &attacker, ItemEntity &weapon, const CreatureEntity &target, int hand)
+{
+    auto damage = calc_attack_damage_with_slay(attacker, &weapon, weapon.damage_dice.roll(), target, HISSATSU_NONE, false);
+    const auto do_impact = weapon.get_flags().has(TR_IMPACT);
+    damage = critical_norm(attacker, weapon.weight, weapon.to_h, damage, attacker.get_to_h(hand), HISSATSU_NONE, do_impact);
+    damage += weapon.to_d;
+    return damage;
 }
 
 AttributeFlags melee_attribute(CreatureEntity &creature, ItemEntity *o_ptr, combat_options mode)

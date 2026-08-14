@@ -315,12 +315,13 @@ static void process_melee(CreatureEntity &creature, mam_type *mam_ptr)
         mam_ptr->damage = 0;
     }
 
-    // 武器を装備している場合、プレイヤーと共通の calc_attack_damage_with_slay() で
-    // スレイ・ブランド効果を反映したダメージを加算する。
+    // 武器を装備している場合、プレイヤーの打撃処理と共通の calc_weapon_melee_damage() で
+    // スレイ・ブランド・会心を反映したダメージを加算する。
+    // 対モンスターでも対プレイヤーと同一の武器ダメージ計算を行う。
     if (!mam_ptr->explode && (mam_ptr->weapon_slot_for_blow >= 0)) {
         auto &weapon = *mam_ptr->m_ptr->inventory[mam_ptr->weapon_slot_for_blow];
-        const auto base_dam = weapon.damage_dice.roll();
-        mam_ptr->damage += calc_attack_damage_with_slay(*mam_ptr->m_ptr, &weapon, base_dam, *mam_ptr->t_ptr, HISSATSU_NONE, false) + weapon.to_d;
+        const auto hand = mam_ptr->weapon_slot_for_blow - enum2i(INVEN_MAIN_HAND);
+        mam_ptr->damage += calc_weapon_melee_damage(*mam_ptr->m_ptr, weapon, *mam_ptr->t_ptr, hand);
     }
 
     mam_ptr->attribute = BlowEffectType::NONE;

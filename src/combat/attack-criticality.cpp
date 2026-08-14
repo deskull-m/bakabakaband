@@ -71,8 +71,12 @@ int critical_norm(CreatureEntity &creature, WEIGHT weight, int plus, int dam, in
     }
 
     const auto &[critical_dam, msg, battle_sound] = apply_critical_norm_damage(k, dam);
-    sound(battle_sound);
-    msg_print(msg);
+    // クリティカルメッセージ・効果音はプレイヤー攻撃者視点の文言のため、
+    // モンスターが武器で会心を出した場合はダメージ計算のみ共通化し表示は抑止する。
+    if (creature.is_player()) {
+        sound(battle_sound);
+        msg_print(msg);
+    }
     return critical_dam;
 }
 

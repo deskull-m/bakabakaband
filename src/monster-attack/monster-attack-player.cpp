@@ -292,11 +292,12 @@ bool MonsterAttackPlayer::process_monster_attack_hit()
     // [フェーズ B-2b / 二刀流対応] 装備武器によるダメージボーナス
     // weapon_slot_for_blow は process_monster_blows() で設定され、
     // 物理打撃 (HIT/PUNCH/SLASH/STING) かつ武器装備時のみ有効
-    // スレイ・ブランド等はプレイヤーと共通の calc_attack_damage_with_slay() を再利用する。
+    // スレイ・ブランド・会心はプレイヤーの打撃処理と共通の calc_weapon_melee_damage() を再利用し、
+    // 武器を装備したモンスターがプレイヤーと同一の武器ダメージを与えるようにする。
     if (!this->explode && this->weapon_slot_for_blow >= 0) {
         auto &weapon = *this->m_ptr->inventory[this->weapon_slot_for_blow];
-        const auto base_dam = weapon.damage_dice.roll();
-        this->damage += calc_attack_damage_with_slay(*this->m_ptr, &weapon, base_dam, creature, HISSATSU_NONE, false) + weapon.to_d;
+        const auto hand = this->weapon_slot_for_blow - enum2i(INVEN_MAIN_HAND);
+        this->damage += calc_weapon_melee_damage(*this->m_ptr, weapon, creature, hand);
     }
 
     switch_monster_blow_to_player(creature, this);
