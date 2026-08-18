@@ -8,7 +8,7 @@
 
 class ItemEntity;
 class CreatureEntity;
-MULTIPLY mult_slaying(CreatureEntity &creature, MULTIPLY mult, const TrFlags &flags, const CreatureEntity &target);
+MULTIPLY mult_slaying(CreatureEntity &creature, MULTIPLY mult, const TrFlags &flags, CreatureEntity &target);
 MULTIPLY mult_brand(CreatureEntity &creature, MULTIPLY mult, const TrFlags &flags, CreatureEntity &target);
 int calc_attack_damage_with_slay(CreatureEntity &creature, ItemEntity *o_ptr, int tdam, CreatureEntity &target, combat_options mode, bool thrown);
 int calc_weapon_melee_damage(CreatureEntity &attacker, ItemEntity &weapon, CreatureEntity &target, int hand);
