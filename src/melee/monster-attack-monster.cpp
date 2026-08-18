@@ -316,12 +316,26 @@ static void process_melee(CreatureEntity &creature, mam_type *mam_ptr)
     }
 
     // 武器を装備している場合、プレイヤーの打撃処理と共通の calc_weapon_melee_damage() で
-    // スレイ・ブランド・会心を反映したダメージを加算する。
+    // スレイ・ブランド・会心・ヴォーパルを反映したダメージを加算する。
     // 対モンスターでも対プレイヤーと同一の武器ダメージ計算を行う。
     if (!mam_ptr->explode && (mam_ptr->weapon_slot_for_blow >= 0)) {
         auto &weapon = *mam_ptr->m_ptr->inventory[mam_ptr->weapon_slot_for_blow];
         const auto hand = mam_ptr->weapon_slot_for_blow - enum2i(INVEN_MAIN_HAND);
-        mam_ptr->damage += calc_weapon_melee_damage(*mam_ptr->m_ptr, weapon, *mam_ptr->t_ptr, hand);
+        const auto weapon_damage = calc_weapon_melee_damage(*mam_ptr->m_ptr, weapon, *mam_ptr->t_ptr, hand);
+        mam_ptr->damage += weapon_damage;
+
+        // 吸血武器: プレイヤーの吸血処理と同じく、生命のある対象から HP を吸収して回復する。
+        const auto did_heal = mam_ptr->m_ptr->get_current_hp() < mam_ptr->m_ptr->get_max_hp();
+        const auto drained = apply_weapon_vampiric_drain(*mam_ptr->m_ptr, weapon, *mam_ptr->t_ptr, weapon_damage);
+        if (drained > 0) {
+            HealthBarTracker::get_instance().set_flag_if_tracking(mam_ptr->m_idx);
+            if (mam_ptr->m_ptr->is_riding()) {
+                RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::UHEALTH);
+            }
+            if (mam_ptr->see_m && did_heal) {
+                msg_format(_("%sは%sから生命力を吸い取った！", "%s^ drains life from %s^!"), mam_ptr->m_name, mam_ptr->t_name);
+            }
+        }
     }
 
     mam_ptr->attribute = BlowEffectType::NONE;
