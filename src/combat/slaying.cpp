@@ -19,6 +19,7 @@
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/redrawing-flags-updater.h"
+#include "term/z-rand.h"
 #include "util/bit-flags-calculator.h"
 
 /*!
@@ -244,21 +245,38 @@ int calc_attack_damage_with_slay(CreatureEntity &creature, ItemEntity *o_ptr, in
  * @param weapon 使用する近接武器
  * @param target 攻撃対象クリーチャー (プレイヤー・モンスターいずれも可)
  * @param hand 使用する手 (0=利き手 / 1=逆手)。会心判定の基本命中力 (meichuu) 参照に使う
- * @return 武器ダイス→スレイ/ブランド倍率→会心→武器の to_d までを反映したダメージ値
+ * @return 武器ダイス→スレイ/ブランド倍率→会心→ヴォーパル→武器の to_d までを反映したダメージ値
  * @details
  * プレイヤーの process_weapon_attack() が武器から算出する部分
- * (ダイスロール→calc_attack_damage_with_slay()→critical_norm()→ to_d 加算) と同一の
- * パイプラインを、攻撃側の種別 (プレイヤー/モンスター) に依らず共通で適用する。
- * これにより、武器を装備したモンスターは対プレイヤー・対モンスターのいずれでも
- * プレイヤーと同じ武器打撃ダメージを与える。
- * プレイヤー固有の追加ダイス (damage_dice_bonus) ・ヴォーパル・get_to_d(hand) 等の
+ * (ダイスロール→calc_attack_damage_with_slay()→critical_norm()→process_vorpal_attack()
+ * → to_d 加算) と同一のパイプラインを、攻撃側の種別 (プレイヤー/モンスター) に依らず
+ * 共通で適用する。これにより、武器を装備したモンスターは対プレイヤー・対モンスターの
+ * いずれでもプレイヤーと同じ武器打撃ダメージを与える。
+ * プレイヤー固有の追加ダイス (damage_dice_bonus) ・get_to_d(hand) 等の
  * 装備/職業由来ボーナスは呼出側で別途反映される (モンスターは get_melee_stat_damage_bonus() 等)。
+ * ヴォーパルの倍率算出はプレイヤーと同一だが、ルーンソード呪唱 (術者状態) や
+ * 斬鉄剣無効化 (対象が非切断) 等の術者/対象文脈依存分岐は武器固有プロパティのみに限定する。
  */
 int calc_weapon_melee_damage(CreatureEntity &attacker, ItemEntity &weapon, const CreatureEntity &target, int hand)
 {
+    const auto flags = weapon.get_flags();
     auto damage = calc_attack_damage_with_slay(attacker, &weapon, weapon.damage_dice.roll(), target, HISSATSU_NONE, false);
-    const auto do_impact = weapon.get_flags().has(TR_IMPACT);
-    damage = critical_norm(attacker, weapon.weight, weapon.to_h, damage, attacker.get_to_h(hand), HISSATSU_NONE, do_impact);
+    damage = critical_norm(attacker, weapon.weight, weapon.to_h, damage, attacker.get_to_h(hand), HISSATSU_NONE, flags.has(TR_IMPACT));
+
+    // ヴォーパル (メッタ斬り): プレイヤーの process_vorpal_attack() と同一の倍率算出。
+    // メッセージは攻撃者・対象双方の文脈が必要なため、共通ダメージ計算では省略する。
+    if (flags.has(TR_VORPAL)) {
+        const auto is_vorpal_artifact = weapon.is_specific_artifact(FixedArtifactId::VORPAL_BLADE) || weapon.is_specific_artifact(FixedArtifactId::CHAINSWORD);
+        const auto vorpal_chance = is_vorpal_artifact ? 2 : 4;
+        if (randint1(vorpal_chance * 3 / 2) == 1) {
+            auto vorpal_magnification = 2;
+            while (one_in_(vorpal_chance)) {
+                vorpal_magnification++;
+            }
+            damage *= vorpal_magnification;
+        }
+    }
+
     damage += weapon.to_d;
     return damage;
 }
