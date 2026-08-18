@@ -44,6 +44,7 @@
 #include "player/player-damage.h"
 #include "player/player-skill.h"
 #include "player/special-defense-types.h"
+#include "spell-kind/earthquake.h"
 #include "spell-kind/spells-teleport.h"
 #include "spell-realm/spells-hex.h"
 #include "status/action-setter.h"
@@ -111,6 +112,12 @@ void MonsterAttackPlayer::make_attack_normal()
     }
 
     this->postprocess_monster_blows();
+
+    // [B-2b5] 地震武器: 全打撃終了後にまとめて地震を起こす (プレイヤーの cause_earthquake 相当)。
+    // 打撃ループ中に起こすと floor / monster 参照が無効化されうるため後段で処理する。
+    if (this->do_quake && this->m_ptr->is_valid()) {
+        earthquake(creature, this->m_ptr->get_position(), 10, this->m_idx);
+    }
 }
 
 /*!
@@ -309,6 +316,11 @@ bool MonsterAttackPlayer::process_monster_attack_hit()
             if (this->m_ptr->is_visible_on_map() && did_heal) {
                 msg_format(_("%s^はあなたから生命力を吸い取った！", "%s^ drains life from you!"), this->m_name);
             }
+        }
+
+        // 地震武器: プレイヤーと同じ条件で地震を予約する。実発生は全打撃終了後 (make_attack_normal)。
+        if (!this->explode && does_weapon_cause_earthquake(weapon, weapon_damage)) {
+            this->do_quake = true;
         }
     }
 

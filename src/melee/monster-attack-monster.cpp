@@ -31,6 +31,7 @@
 #include "monster/monster-status-setter.h"
 #include "monster/monster-status.h"
 #include "mutation/mutation-flag-types.h"
+#include "spell-kind/earthquake.h"
 #include "spell-kind/spells-teleport.h"
 #include "spell-realm/spells-hex.h"
 #include "system/creature-entity.h"
@@ -336,6 +337,11 @@ static void process_melee(CreatureEntity &creature, mam_type *mam_ptr)
                 msg_format(_("%sは%sから生命力を吸い取った！", "%s^ drains life from %s^!"), mam_ptr->m_name, mam_ptr->t_name);
             }
         }
+
+        // 地震武器: プレイヤーと同じ条件で地震を予約する。実発生は全打撃終了後 (monst_attack_monst)。
+        if (does_weapon_cause_earthquake(weapon, weapon_damage)) {
+            mam_ptr->do_quake = true;
+        }
     }
 
     mam_ptr->attribute = BlowEffectType::NONE;
@@ -461,6 +467,13 @@ bool monst_attack_monst(CreatureEntity &creature, MONSTER_IDX m_idx, MONSTER_IDX
     }
 
     repeat_melee(creature, mam_ptr);
+
+    // [B-2b5] 地震武器: 全打撃終了後にまとめて地震を起こす (プレイヤーの cause_earthquake 相当)。
+    // 打撃ループ中に起こすと floor / monster 参照が無効化されうるため後段で処理する。
+    if (mam_ptr->do_quake && mam_ptr->m_ptr->is_valid()) {
+        earthquake(creature, mam_ptr->m_ptr->get_position(), 10, mam_ptr->m_idx);
+    }
+
     explode_monster_by_melee(creature, mam_ptr);
     if (!mam_ptr->blinked || !mam_ptr->m_ptr->is_valid()) {
         return true;
