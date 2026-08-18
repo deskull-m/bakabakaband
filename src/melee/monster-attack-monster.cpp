@@ -8,6 +8,7 @@
 #include "combat/attack-accuracy.h"
 #include "combat/combat-options-type.h"
 #include "combat/hallucination-attacks-table.h"
+#include "combat/monster-chaos-weapon.h"
 #include "combat/slaying.h"
 #include "core/disturbance.h"
 #include "dungeon/dungeon-flag-types.h"
@@ -340,6 +341,12 @@ static void process_melee(CreatureEntity &creature, mam_type *mam_ptr)
 
         // 地震武器: プレイヤーと同じ条件で地震を予約する。実発生は全打撃終了後 (monst_attack_monst)。
         if (does_weapon_cause_earthquake(weapon, weapon_damage)) {
+            mam_ptr->do_quake = true;
+        }
+
+        // カオス武器: プレイヤーと同じ確率で吸血/地震/混乱/テレポートの追加効果を与える。
+        // player コンテキスト (フロア・行為者) は process_melee の creature (プレイヤー)。
+        if (apply_monster_weapon_chaos_effect(*mam_ptr->m_ptr, weapon, *mam_ptr->t_ptr, creature, mam_ptr->m_idx, mam_ptr->t_idx, weapon_damage)) {
             mam_ptr->do_quake = true;
         }
     }

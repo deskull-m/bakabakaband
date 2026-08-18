@@ -228,6 +228,7 @@ hengband_SOURCES = \
 	combat/martial-arts-style.cpp combat/martial-arts-style.h \
 	combat/attack-accuracy.cpp combat/attack-accuracy.h \
 	combat/slaying.cpp combat/slaying.h \
+	combat/monster-chaos-weapon.cpp combat/monster-chaos-weapon.h \
 	combat/combat-options-type.h \
 	combat/attack-criticality.cpp combat/attack-criticality.h \
 	combat/shoot.cpp combat/shoot.h \
