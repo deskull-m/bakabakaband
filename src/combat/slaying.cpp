@@ -83,6 +83,48 @@ MULTIPLY mult_slaying(CreatureEntity &creature, MULTIPLY mult, const TrFlags &fl
     return mult;
 }
 
+namespace {
+/*!
+ * @brief プレイヤーが属性ブランドに免疫を持つか (モンスターの武器攻撃で標的がプレイヤーの場合に使用)
+ * @details 毒ブランドはプレイヤー用の免疫クエリが無いため常に false (免疫なし扱い)。
+ */
+bool is_player_immune_to_brand(CreatureEntity &target, tr_type brand_flag)
+{
+    switch (brand_flag) {
+    case TR_BRAND_ACID:
+        return target.has_immune_acid() != 0;
+    case TR_BRAND_ELEC:
+        return target.has_immune_elec() != 0;
+    case TR_BRAND_FIRE:
+        return target.has_immune_fire() != 0;
+    case TR_BRAND_COLD:
+        return target.has_immune_cold() != 0;
+    default:
+        return false;
+    }
+}
+
+/*!
+ * @brief プレイヤーが属性ブランドに弱点を持つか (モンスターの武器攻撃で標的がプレイヤーの場合に使用)
+ * @details 毒ブランドはプレイヤー用の弱点クエリが無いため常に false (弱点なし扱い)。
+ */
+bool is_player_vulnerable_to_brand(CreatureEntity &target, tr_type brand_flag)
+{
+    switch (brand_flag) {
+    case TR_BRAND_ACID:
+        return target.has_vuln_acid() != 0;
+    case TR_BRAND_ELEC:
+        return target.has_vuln_elec() != 0;
+    case TR_BRAND_FIRE:
+        return target.has_vuln_fire() != 0;
+    case TR_BRAND_COLD:
+        return target.has_vuln_cold() != 0;
+    default:
+        return false;
+    }
+}
+}
+
 /*!
  * @brief プレイヤー攻撃の属性スレイング倍率計算
  * @param creature クリーチャーへの参照
@@ -91,7 +133,7 @@ MULTIPLY mult_slaying(CreatureEntity &creature, MULTIPLY mult, const TrFlags &fl
  * @param m_ptr 目標モンスターの構造体参照ポインタ
  * @return スレイング加味後の倍率(/10倍)
  */
-MULTIPLY mult_brand(CreatureEntity &creature, MULTIPLY mult, const TrFlags &flags, const CreatureEntity &target)
+MULTIPLY mult_brand(CreatureEntity &creature, MULTIPLY mult, const TrFlags &flags, CreatureEntity &target)
 {
     static const struct brand_table_t {
         tr_type brand_flag;
@@ -110,6 +152,19 @@ MULTIPLY mult_brand(CreatureEntity &creature, MULTIPLY mult, const TrFlags &flag
         const struct brand_table_t *p = &brand_table[i];
 
         if (flags.has_not(p->brand_flag)) {
+            continue;
+        }
+
+        // プレイヤーが攻撃対象の場合 (モンスターの武器攻撃) は、モンスター種族定義の代わりに
+        // プレイヤー自身の免疫/弱点を参照してブランド倍率を決める。モンスター標的と対称に、
+        // 免疫でブランド無効・弱点で 5 倍・それ以外 (部分耐性含む) は通常 2.5 倍とする。
+        // (この属性ブランド倍率モデルではモンスターも「免疫のみ無効・部分耐性は素通し」のため対称)
+        if (target.is_player()) {
+            if (is_player_immune_to_brand(target, p->brand_flag)) {
+                continue;
+            }
+
+            mult = std::max<short>(mult, is_player_vulnerable_to_brand(target, p->brand_flag) ? 50 : 25);
             continue;
         }
 
@@ -154,7 +209,7 @@ MULTIPLY mult_brand(CreatureEntity &creature, MULTIPLY mult, const TrFlags &flag
  * Note that most brands and slays are x3, except Slay Animal (x2),\n
  * Slay Evil (x2), and Kill dragon (x5).\n
  */
-int calc_attack_damage_with_slay(CreatureEntity &creature, ItemEntity *o_ptr, int tdam, const CreatureEntity &target, combat_options mode, bool thrown)
+int calc_attack_damage_with_slay(CreatureEntity &creature, ItemEntity *o_ptr, int tdam, CreatureEntity &target, combat_options mode, bool thrown)
 {
     auto flags = o_ptr->get_flags();
     torch_flags(o_ptr, flags); /* torches has secret flags */
@@ -259,7 +314,7 @@ int calc_attack_damage_with_slay(CreatureEntity &creature, ItemEntity *o_ptr, in
  * ヴォーパルの倍率算出はプレイヤーと同一だが、ルーンソード呪唱 (術者状態) や
  * 斬鉄剣無効化 (対象が非切断) 等の術者/対象文脈依存分岐は武器固有プロパティのみに限定する。
  */
-int calc_weapon_melee_damage(CreatureEntity &attacker, ItemEntity &weapon, const CreatureEntity &target, int hand)
+int calc_weapon_melee_damage(CreatureEntity &attacker, ItemEntity &weapon, CreatureEntity &target, int hand)
 {
     const auto flags = weapon.get_flags();
     auto damage = calc_attack_damage_with_slay(attacker, &weapon, weapon.damage_dice.roll(), target, HISSATSU_NONE, false);
