@@ -749,6 +749,18 @@ bakabakaband ではプレイヤーとモンスター双方が `CreatureEntity` �
     DRAIN 打撃) が「回復のみ・上限なし」である慣習に合わせて省略。恒久的な最大 HP 減少を
     プレイヤーへ課す挙動は保守的に見送り (将来のバランス判断で追加余地)
   - **吸血武器を装備したモンスターは対プレイヤー・対モンスターとも生命力を吸収して回復する**
+- **B-2b5**: 地震 (アースクエイク武器) の同化
+  - 共通判定 `does_weapon_cause_earthquake(weapon, weapon_damage)` (`src/combat/slaying.cpp`)
+    を追加。`TR_EARTHQUAKE` 武器で武器ダメージ > 50 または 1/7 で地震予約
+    (プレイヤー `does_equip_cause_earthquake()` と同条件)
+  - **発生タイミング**: プレイヤーの `cause_earthquake` 同様、全打撃終了後にまとめて
+    `earthquake(player, 攻撃モンスターの位置, 10, 攻撃モンスターの m_idx)` を発火。
+    打撃ループ中は floor / monster 参照が無効化されうるため、`do_quake` フラグを
+    `MonsterAttackPlayer` / `mam_type` に持たせ、ループ後 (`make_attack_normal` /
+    `monst_attack_monst`) に 1 度だけ起こす
+  - 地震の破壊/巻き込みはプレイヤー版と同一 (`earthquake()` を共用)。震源は攻撃側
+    モンスター、原因 (`m_idx`) も攻撃側モンスターとして正しく帰属
+  - **地震武器を装備したモンスターは対プレイヤー・対モンスターとも地震を起こす**
 - **B-2c**: 近接攻撃の命中ボーナス (11058a278)
   - `to_h` を `check_hit_from_monster_to_player` の power に加算
 - **B-4**: look 表示で装備品/パック品を区別 (145f1fb56)

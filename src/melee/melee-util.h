@@ -41,6 +41,7 @@ struct mam_type {
     bool fear = false;
     bool dead = false;
     short weapon_slot_for_blow = -1; //!< 当該打撃で使用する武器スロット (-1 = 武器なし)
+    bool do_quake = false; //!< [B-2b5] 地震武器による地震を全打撃終了後に起こすか
 };
 
 mam_type *initialize_mam_type(CreatureEntity &creature, mam_type *mam_ptr, MONSTER_IDX m_idx, MONSTER_IDX t_idx);

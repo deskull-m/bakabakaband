@@ -37,6 +37,7 @@ public:
     bool alive = true;
     bool fear = false;
     short weapon_slot_for_blow = -1; //!< [フェーズ B-2 二刀流] 当該打撃で使用する武器スロット (-1 = 武器なし)
+    bool do_quake = false; //!< [B-2b5] 地震武器による地震を全打撃終了後に起こすか
 
     void make_attack_normal();
 
