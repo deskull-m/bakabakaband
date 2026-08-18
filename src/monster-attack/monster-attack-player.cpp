@@ -58,6 +58,7 @@
 #include "system/redrawing-flags-updater.h"
 #include "timed-effect/player-cut.h"
 #include "timed-effect/player-stun.h"
+#include "tracking/health-bar-tracker.h"
 #include "util/bit-flags-calculator.h"
 #include "util/string-processor.h"
 #include "view/display-messages.h"
@@ -292,12 +293,23 @@ bool MonsterAttackPlayer::process_monster_attack_hit()
     // [フェーズ B-2b / 二刀流対応] 装備武器によるダメージボーナス
     // weapon_slot_for_blow は process_monster_blows() で設定され、
     // 物理打撃 (HIT/PUNCH/SLASH/STING) かつ武器装備時のみ有効
-    // スレイ・ブランド・会心はプレイヤーの打撃処理と共通の calc_weapon_melee_damage() を再利用し、
-    // 武器を装備したモンスターがプレイヤーと同一の武器ダメージを与えるようにする。
+    // スレイ・ブランド・会心・ヴォーパルはプレイヤーの打撃処理と共通の calc_weapon_melee_damage() を
+    // 再利用し、武器を装備したモンスターがプレイヤーと同一の武器ダメージを与えるようにする。
     if (!this->explode && this->weapon_slot_for_blow >= 0) {
         auto &weapon = *this->m_ptr->inventory[this->weapon_slot_for_blow];
         const auto hand = this->weapon_slot_for_blow - enum2i(INVEN_MAIN_HAND);
-        this->damage += calc_weapon_melee_damage(*this->m_ptr, weapon, creature, hand);
+        const auto weapon_damage = calc_weapon_melee_damage(*this->m_ptr, weapon, creature, hand);
+        this->damage += weapon_damage;
+
+        // 吸血武器: プレイヤーの吸血処理と同じく、生命のあるプレイヤーから HP を吸収して回復する。
+        const auto did_heal = this->m_ptr->get_current_hp() < this->m_ptr->get_max_hp();
+        const auto drained = apply_weapon_vampiric_drain(*this->m_ptr, weapon, creature, weapon_damage);
+        if (drained > 0) {
+            HealthBarTracker::get_instance().set_flag_if_tracking(this->m_idx);
+            if (this->m_ptr->is_visible_on_map() && did_heal) {
+                msg_format(_("%s^はあなたから生命力を吸い取った！", "%s^ drains life from you!"), this->m_name);
+            }
+        }
     }
 
     switch_monster_blow_to_player(creature, this);

@@ -21,6 +21,8 @@
 #include "system/redrawing-flags-updater.h"
 #include "term/z-rand.h"
 #include "util/bit-flags-calculator.h"
+#include "util/dice.h"
+#include <algorithm>
 
 /*!
  * @brief プレイヤー攻撃の種族スレイング倍率計算
@@ -279,6 +281,38 @@ int calc_weapon_melee_damage(CreatureEntity &attacker, ItemEntity &weapon, const
 
     damage += weapon.to_d;
     return damage;
+}
+
+/*!
+ * @brief 吸血武器を装備したクリーチャーの近接打撃による吸血 (HP 吸収) を適用する
+ * @param attacker 攻撃側クリーチャー (プレイヤー・モンスターいずれも可)
+ * @param weapon 使用した近接武器
+ * @param target 攻撃対象クリーチャー (プレイヤー・モンスターいずれも可)
+ * @param weapon_damage calc_weapon_melee_damage() が返した当該打撃の武器ダメージ
+ * @return 吸収して回復した (ロールした) HP 量。0 なら吸血が発生しなかった
+ * @details
+ * プレイヤーの吸血処理 (blood-sucking-processor.cpp) と同じく、TR_VAMPIRIC を持つ武器で
+ * 生命のある対象 (has_living_flag) を攻撃した場合に、与えた武器ダメージ (対象の残 HP が上限) を
+ * 元に 2d(drain/6) の HP を攻撃側へ回復する。吸血はダメージ倍率を持たず回復のみ (プレイヤー版と同様)。
+ * プレイヤー版が行う対象最大 HP 減少 (weaken) は、既存のモンスター吸血 (heal_monster_by_melee) が
+ * 回復のみである慣習に合わせて行わない。回復量の攻撃全体上限 (MAX_VAMPIRIC_DRAIN) も既存モンスター
+ * 吸血同様に設けない。メッセージ表示・体力バー再描画は呼出側が担う。
+ */
+int apply_weapon_vampiric_drain(CreatureEntity &attacker, const ItemEntity &weapon, const CreatureEntity &target, int weapon_damage)
+{
+    if (!weapon.get_flags().has(TR_VAMPIRIC) || !target.has_living_flag()) {
+        return 0;
+    }
+
+    const auto drain = std::min(weapon_damage, target.get_current_hp());
+    constexpr auto real_drain = 5;
+    if (drain <= real_drain) {
+        return 0;
+    }
+
+    const auto drain_heal = Dice::roll(2, drain / 6);
+    attacker.heal_hp(drain_heal);
+    return drain_heal;
 }
 
 AttributeFlags melee_attribute(CreatureEntity &creature, ItemEntity *o_ptr, combat_options mode)

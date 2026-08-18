@@ -736,6 +736,19 @@ bakabakaband ではプレイヤーとモンスター双方が `CreatureEntity` �
     (ダメージのみ反映)。ルーンソード呪唱 (術者状態) ・斬鉄剣無効化 (対象非切断) 等の
     文脈依存分岐は武器固有プロパティのみに限定 (`TR_VORPAL` フラグ判定のみ)
   - **ヴォーパル武器を装備したモンスターもプレイヤーと同じメッタ斬りダメージを与える**
+- **B-2b4**: 吸血 (ヴァンパイア武器) の同化
+  - 共通関数 `apply_weapon_vampiric_drain(attacker, weapon, target, weapon_damage)`
+    (`src/combat/slaying.cpp`) を追加。`TR_VAMPIRIC` 武器で生命のある対象
+    (`has_living_flag`) を攻撃した場合、与えた武器ダメージ (対象残 HP が上限) を元に
+    `2d(drain/6)` の HP を攻撃側へ回復 (プレイヤー `blood-sucking-processor.cpp` と同式)
+  - 吸血はダメージ倍率を持たず回復のみ (プレイヤー版と同様に `mult_brand` 非関与)
+  - 対プレイヤー (`monster-attack-player.cpp`) / 対モンスター
+    (`monster-attack-monster.cpp`) の両経路で発火。体力バー再描画・視認時メッセージを付随
+  - **意図的な簡略化**: プレイヤー版の対象最大 HP 減少 (weaken) と攻撃全体の回復上限
+    (`MAX_VAMPIRIC_DRAIN`=50) は、既存モンスター吸血 (`heal_monster_by_melee`、innate
+    DRAIN 打撃) が「回復のみ・上限なし」である慣習に合わせて省略。恒久的な最大 HP 減少を
+    プレイヤーへ課す挙動は保守的に見送り (将来のバランス判断で追加余地)
+  - **吸血武器を装備したモンスターは対プレイヤー・対モンスターとも生命力を吸収して回復する**
 - **B-2c**: 近接攻撃の命中ボーナス (11058a278)
   - `to_h` を `check_hit_from_monster_to_player` の power に加算
 - **B-4**: look 表示で装備品/パック品を区別 (145f1fb56)
