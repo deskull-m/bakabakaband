@@ -315,6 +315,25 @@ int apply_weapon_vampiric_drain(CreatureEntity &attacker, const ItemEntity &weap
     return drain_heal;
 }
 
+/*!
+ * @brief 装備武器による近接打撃が地震を起こすか判定する
+ * @param weapon 使用した近接武器
+ * @param weapon_damage calc_weapon_melee_damage() が返した当該打撃の武器ダメージ
+ * @return 地震を起こすなら true
+ * @details
+ * プレイヤーの does_equip_cause_earthquake() と同じく、地震付与武器 (TR_EARTHQUAKE) で
+ * 与えたダメージが 50 を超えるか 1/7 の確率で地震を起こす。実際の地震発生はモンスターの
+ * 全打撃終了後 (打撃ループ中は floor / monster 参照が無効化されうるため) に呼出側が行う。
+ */
+bool does_weapon_cause_earthquake(const ItemEntity &weapon, int weapon_damage)
+{
+    if (!weapon.get_flags().has(TR_EARTHQUAKE)) {
+        return false;
+    }
+
+    return (weapon_damage > 50) || one_in_(7);
+}
+
 AttributeFlags melee_attribute(CreatureEntity &creature, ItemEntity *o_ptr, combat_options mode)
 {
     AttributeFlags attribute_flags{};
