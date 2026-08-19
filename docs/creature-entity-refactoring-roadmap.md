@@ -779,6 +779,20 @@ bakabakaband ではプレイヤーとモンスター双方が `CreatureEntity` �
     アンデッド種族プレイヤーへ等) は「属性」ではなく「スレイ」であり本弾の対象外。
     属性ダメージを物理ではなく属性型として被ダメージ経路へ適用する方式 (部分耐性も反映) は、
     そもそも PC のブランドが倍率モデル (部分耐性は素通し) のため PC 挙動と乖離する。よって不採用
+- **B-2b7**: スレイのプレイヤー種族対応 (B-2b6 の対称仕上げ)
+  - **背景**: B-2b6 の属性ブランドと同様、`mult_slaying()` もプレイヤー標的では空 monrace の
+    kind_flags を見るため、スレイ武器 (スレイ・アンデッド等) がプレイヤーの種族性質を無視していた
+  - **修正**: `mult_slaying()` にプレイヤー標的分岐を追加。ヘルパ
+    `player_counts_as_kind(player, MonsterKindType)` で、モンスターの kind_flags 相当を
+    プレイヤーの種族/生死種別/性別/アライメントから判定:
+    - UNDEAD/DEMON: `CreatureRace::life()` (`PlayerRaceLifeType`、ミミック変身を反映)
+    - ORC/TROLL/GIANT/HUMAN: `CreatureRace::equals(PlayerRaceType::…)`、DRAGON: `DRACONIAN`
+    - MALE/FEMALE: `get_psex()`、EVIL/GOOD: `alignment` の善悪境界 (>10 / <-10、表記ラベルと一致)
+    - ANIMAL: 対応するプレイヤー種族が無いため常に非該当
+  - プレイヤーには思い出フラグ (`r_kind_flags`) が無いため記録はしない
+  - `mult_slaying()` の `target` も `CreatureEntity &` に変更 (`CreatureRace` 構築が非 const 参照要求)
+  - **スレイ武器を装備したモンスターは、対応する種族/性別/アライメントのプレイヤーへ
+    スレイ倍率を乗せる** (例: スレイ・ヒューマン武器 → 人間プレイヤー、スレイ・アンデッド → 屍鬼系種族)
 - **B-2c**: 近接攻撃の命中ボーナス (11058a278)
   - `to_h` を `check_hit_from_monster_to_player` の power に加算
 - **B-4**: look 表示で装備品/パック品を区別 (145f1fb56)

@@ -9,7 +9,11 @@
 #include "object-enchant/tr-types.h"
 #include "object/tval-types.h"
 #include "player-base/player-class.h"
+#include "player-base/player-race.h"
+#include "player-info/race-info.h"
+#include "player-info/race-types.h"
 #include "player/attack-defense-types.h"
+#include "player/player-sex.h"
 #include "realm/realm-hex-numbers.h"
 #include "specific-object/torch.h"
 #include "spell-realm/spells-crusade.h"
@@ -24,6 +28,48 @@
 #include "util/dice.h"
 #include <algorithm>
 
+namespace {
+/*!
+ * @brief プレイヤーがモンスター種別 (MonsterKindType) 相当の性質を持つか判定する
+ * (モンスターの武器攻撃でスレイ判定の標的がプレイヤーの場合に使用)
+ * @details モンスターの kind_flags に相当する概念を、プレイヤーの種族 (CreatureRace) /
+ * 生死種別 (PlayerRaceLifeType) / 性別 (player_sex) / アライメント (alignment) から求める。
+ * 種族由来の性質 (UNDEAD/DEMON/ORC/TROLL/GIANT/DRAGON/HUMAN) はミミック変身を考慮する
+ * (life() / equals() が変身を反映)。EVIL/GOOD はアライメント表記の善悪境界 (>10 / <-10) に合わせる。
+ * ANIMAL は対応するプレイヤー種族が無いため常に false。
+ */
+bool player_counts_as_kind(CreatureEntity &player, MonsterKindType kind)
+{
+    const CreatureRace race(&player);
+    switch (kind) {
+    case MonsterKindType::HUMAN:
+        return race.equals(PlayerRaceType::HUMAN);
+    case MonsterKindType::MALE:
+        return player.get_psex() == player_sex::SEX_MALE;
+    case MonsterKindType::FEMALE:
+        return player.get_psex() == player_sex::SEX_FEMALE;
+    case MonsterKindType::UNDEAD:
+        return race.life() == PlayerRaceLifeType::UNDEAD;
+    case MonsterKindType::DEMON:
+        return race.life() == PlayerRaceLifeType::DEMON;
+    case MonsterKindType::ORC:
+        return race.equals(PlayerRaceType::ORC);
+    case MonsterKindType::TROLL:
+        return race.equals(PlayerRaceType::TROLL);
+    case MonsterKindType::GIANT:
+        return race.equals(PlayerRaceType::GIANT);
+    case MonsterKindType::DRAGON:
+        return race.equals(PlayerRaceType::DRACONIAN);
+    case MonsterKindType::EVIL:
+        return player.alignment < -10;
+    case MonsterKindType::GOOD:
+        return player.alignment > 10;
+    default:
+        return false;
+    }
+}
+}
+
 /*!
  * @brief プレイヤー攻撃の種族スレイング倍率計算
  * @param creature クリーチャーへの参照
@@ -32,7 +78,7 @@
  * @param m_ptr 目標モンスターの構造体参照ポインタ
  * @return スレイング加味後の倍率(/10倍)
  */
-MULTIPLY mult_slaying(CreatureEntity &creature, MULTIPLY mult, const TrFlags &flags, const CreatureEntity &target)
+MULTIPLY mult_slaying(CreatureEntity &creature, MULTIPLY mult, const TrFlags &flags, CreatureEntity &target)
 {
     static const struct slay_table_t {
         tr_type slay_flag;
@@ -69,7 +115,22 @@ MULTIPLY mult_slaying(CreatureEntity &creature, MULTIPLY mult, const TrFlags &fl
     for (size_t i = 0; i < sizeof(slay_table) / sizeof(slay_table[0]); ++i) {
         const struct slay_table_t *p = &slay_table[i];
 
-        if (flags.has_not(p->slay_flag) || monrace.kind_flags.has_not(p->affect_race_flag)) {
+        if (flags.has_not(p->slay_flag)) {
+            continue;
+        }
+
+        // プレイヤーが攻撃対象の場合 (モンスターの武器攻撃) は、モンスター種族定義の
+        // kind_flags の代わりにプレイヤー自身の種族/生死種別/性別/アライメントから
+        // スレイ対象性を判定する。プレイヤーには思い出フラグ (r_kind_flags) が無いため記録はしない。
+        if (target.is_player()) {
+            if (player_counts_as_kind(target, p->affect_race_flag)) {
+                mult = std::max(mult, p->slay_mult);
+            }
+
+            continue;
+        }
+
+        if (monrace.kind_flags.has_not(p->affect_race_flag)) {
             continue;
         }
 
