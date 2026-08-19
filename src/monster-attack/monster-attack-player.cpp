@@ -12,6 +12,7 @@
 #include "combat/aura-counterattack.h"
 #include "combat/combat-options-type.h"
 #include "combat/hallucination-attacks-table.h"
+#include "combat/monster-chaos-weapon.h"
 #include "combat/slaying.h"
 #include "core/disturbance.h"
 #include "dungeon/dungeon-flag-types.h"
@@ -326,6 +327,12 @@ bool MonsterAttackPlayer::process_monster_attack_hit()
 
         // 地震武器: プレイヤーと同じ条件で地震を予約する。実発生は全打撃終了後 (make_attack_normal)。
         if (!this->explode && does_weapon_cause_earthquake(weapon, weapon_damage)) {
+            this->do_quake = true;
+        }
+
+        // カオス武器: プレイヤーと同じ確率で吸血/地震/混乱/テレポートの追加効果を与える。
+        // 地震は do_quake 予約に集約する。
+        if (apply_monster_weapon_chaos_effect(*this->m_ptr, weapon, creature, creature, this->m_idx, 0, weapon_damage)) {
             this->do_quake = true;
         }
     }
