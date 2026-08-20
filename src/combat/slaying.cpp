@@ -414,13 +414,13 @@ int calc_weapon_melee_damage(CreatureEntity &attacker, ItemEntity &weapon, Creat
  * 回復のみである慣習に合わせて行わない。回復量の攻撃全体上限 (MAX_VAMPIRIC_DRAIN) も既存モンスター
  * 吸血同様に設けない。メッセージ表示・体力バー再描画は呼出側が担う。
  */
-int apply_weapon_vampiric_drain(CreatureEntity &attacker, const ItemEntity &weapon, const CreatureEntity &target, int weapon_damage)
+int drain_life_to_attacker(CreatureEntity &attacker, const CreatureEntity &target, int amount)
 {
-    if (!weapon.get_flags().has(TR_VAMPIRIC) || !target.has_living_flag()) {
+    if (!target.has_living_flag()) {
         return 0;
     }
 
-    const auto drain = std::min(weapon_damage, target.get_current_hp());
+    const auto drain = std::min(amount, target.get_current_hp());
     constexpr auto real_drain = 5;
     if (drain <= real_drain) {
         return 0;
@@ -429,6 +429,15 @@ int apply_weapon_vampiric_drain(CreatureEntity &attacker, const ItemEntity &weap
     const auto drain_heal = Dice::roll(2, drain / 6);
     attacker.heal_hp(drain_heal);
     return drain_heal;
+}
+
+int apply_weapon_vampiric_drain(CreatureEntity &attacker, const ItemEntity &weapon, const CreatureEntity &target, int weapon_damage)
+{
+    if (!weapon.get_flags().has(TR_VAMPIRIC)) {
+        return 0;
+    }
+
+    return drain_life_to_attacker(attacker, target, weapon_damage);
 }
 
 /*!

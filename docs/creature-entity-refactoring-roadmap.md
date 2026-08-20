@@ -793,6 +793,26 @@ bakabakaband ではプレイヤーとモンスター双方が `CreatureEntity` �
   - `mult_slaying()` の `target` も `CreatureEntity &` に変更 (`CreatureRace` 構築が非 const 参照要求)
   - **スレイ武器を装備したモンスターは、対応する種族/性別/アライメントのプレイヤーへ
     スレイ倍率を乗せる** (例: スレイ・ヒューマン武器 → 人間プレイヤー、スレイ・アンデッド → 屍鬼系種族)
+- **B-2b8**: カオス武器 (TR_CHAOTIC) の追加効果の同化
+  - 新規 TU `src/combat/monster-chaos-weapon.{h,cpp}` に
+    `apply_monster_weapon_chaos_effect()` を追加。プレイヤーの `select_chaotic_effect()` と
+    **同一確率**でカオス効果を抽選し (TR_CHAOTIC 保有かつ 1/2 で発動、以降 吸血 3/5 →
+    地震 1/250 → 混乱 9/10 → テレポート/変身)、対プレイヤー・対モンスターそれぞれに適した
+    既存プリミティブへ振り分ける:
+    - **吸血 (CE_VAMPIRIC)**: `drain_life_to_attacker()` (slaying から抽出。TR_VAMPIRIC の
+      有無に依らず発火)。攻撃側 HP バー再描画
+    - **地震 (CE_QUAKE)**: 戻り値 true で B-2b5 の `do_quake` 予約に集約 (全打撃終了後に発火)
+    - **混乱 (CE_CONFUSION)**: プレイヤーは `BadStatusSetter::mod_confusion()`、モンスターは
+      `set_monster_confused()`
+    - **テレポート (CE_TELE_AWAY)**: プレイヤーは `teleport_player_away()`、モンスターは
+      `teleport_away()`
+  - **意図的な保留 (変身 CE_POLYMORPH)**: `polymorph_monster()` は打撃ループ途中で対象を
+    delete/再生成し得て被害者ポインタ (`t_ptr`) を無効化する危険があるため本段では非適用
+    (何も起こさない)。プレイヤーへの変身プリミティブも存在しない。安全な発火点の整備を要する後続段とする
+  - 吸血処理の共通コアを `apply_weapon_vampiric_drain()` から `drain_life_to_attacker()` に
+    切り出し、TR_VAMPIRIC ゲート版とカオス版で共用
+  - **カオス武器を装備したモンスターは対プレイヤー・対モンスターとも吸血/地震/混乱/テレポートを
+    引き起こす** (変身は保留)
 - **B-2c**: 近接攻撃の命中ボーナス (11058a278)
   - `to_h` を `check_hit_from_monster_to_player` の power に加算
 - **B-4**: look 表示で装備品/パック品を区別 (145f1fb56)
