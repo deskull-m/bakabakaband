@@ -13,6 +13,7 @@
 #include "combat/combat-options-type.h"
 #include "combat/hallucination-attacks-table.h"
 #include "combat/monster-chaos-weapon.h"
+#include "combat/monster-magical-brand.h"
 #include "combat/slaying.h"
 #include "core/disturbance.h"
 #include "dungeon/dungeon-flag-types.h"
@@ -306,7 +307,9 @@ bool MonsterAttackPlayer::process_monster_attack_hit()
     if (!this->explode && this->weapon_slot_for_blow >= 0) {
         auto &weapon = *this->m_ptr->inventory[this->weapon_slot_for_blow];
         const auto hand = this->weapon_slot_for_blow - enum2i(INVEN_MAIN_HAND);
-        const auto weapon_damage = calc_weapon_melee_damage(*this->m_ptr, weapon, creature, hand);
+        // 魔術ブランド (TR_BRAND_MAGIC): 効果を抽選し、追加ダイスを武器ダメージへ含める。
+        const auto magical_effect = roll_monster_magical_brand_effect(weapon);
+        const auto weapon_damage = calc_weapon_melee_damage(*this->m_ptr, weapon, creature, hand, monster_magical_brand_extra_dice(magical_effect));
         this->damage += weapon_damage;
 
         // 吸血武器: プレイヤーの吸血処理と同じく、生命のあるプレイヤーから HP を吸収して回復する。
@@ -330,6 +333,10 @@ bool MonsterAttackPlayer::process_monster_attack_hit()
         if (apply_monster_weapon_chaos_effect(*this->m_ptr, weapon, creature, creature, this->m_idx, 0, weapon_damage) == ChaosWeaponDeferred::EARTHQUAKE) {
             this->do_quake = true;
         }
+
+        // 魔術ブランド: 追加ダイスは上で反映済み。朦朧/恐怖の状態異常を適用する
+        // (魔力吸収 DISPELL はプレイヤーバフ解呪プリミティブが無いため非対象)。
+        apply_monster_magical_brand_status(*this->m_ptr, magical_effect, creature, creature, this->m_idx);
 
         // 毒針: 通常ダメージを毒針の即死/1ダメージ判定で上書きする。
         // プレイヤーは UNIQUE 扱い (is_unique) のため即死せず 1 ダメージに抑えられる。

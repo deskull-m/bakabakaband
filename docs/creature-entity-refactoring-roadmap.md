@@ -838,6 +838,25 @@ bakabakaband ではプレイヤーとモンスター双方が `CreatureEntity` �
     POLYMORPH_TARGET を返さないため do_polymorph を持たない (EARTHQUAKE のみ処理)
   - **カオス武器を装備したモンスターは非 UNIQUE モンスターを変身させ得るが、プレイヤーは
     変身しない** (is_unique 保護)
+- **B-2b11**: 魔術ブランド (TR_BRAND_MAGIC) の追加効果の同化
+  - 新規 TU `src/combat/monster-magical-brand.{h,cpp}` に
+    `roll_monster_magical_brand_effect()` / `monster_magical_brand_extra_dice()` /
+    `apply_monster_magical_brand_status()` を追加。プレイヤーの `select_magical_brand_effect()` と
+    **同一確率**で効果を抽選 (1/5 STUN → 1/5 SCARE → 1/10 DISPELL → 1/16 PROBE → EXTRA):
+    - **EXTRA (追加ダイス)**: `calc_weapon_melee_damage()` に `extra_damage_dice` 引数を追加し、
+      EXTRA=+1 / STUN・SCARE・DISPELL・PROBE=+2 ダイスを**基本ロールに含めて**スレイ/会心倍率を通す
+      (プレイヤーの `magical_brand_extra_dice` と同じく全効果で追加ダイスが乗る)
+    - **STUN (朦朧)**: プレイヤーは `BadStatusSetter::mod_stun()`、モンスターは NO_STUN・レベル抵抗を
+      経て `set_monster_stunned()`
+    - **SCARE (恐怖)**: プレイヤーは `BadStatusSetter::mod_fear()`、モンスターは NO_FEAR・レベル抵抗を
+      経て `set_monster_monfear()`
+    - **DISPELL (魔力吸収)**: 攻撃能力を持つモンスター標的のみ、`dispel_monster_status()` で強化解除し
+      攻撃側モンスターが `Dice::roll(dd,8)` の MP を回復 (プレイヤーの `attack_dispel` と同式)
+  - **意図的な非適用**: **PROBE** はプレイヤーへの情報提示効果でモンスター攻撃者には無意味なため非適用。
+    **プレイヤー標的への DISPELL** はプレイヤーバフ解呪の単純プリミティブが無いため非適用 (追加ダイス・
+    朦朧・恐怖はプレイヤーにも適用)
+  - **魔術ブランド武器を装備したモンスターは対プレイヤー・対モンスターとも追加ダメージ + 朦朧/恐怖を
+    与え、対モンスターでは魔力吸収も行う**
 - **B-2c**: 近接攻撃の命中ボーナス (11058a278)
   - `to_h` を `check_hit_from_monster_to_player` の power に加算
 - **B-4**: look 表示で装備品/パック品を区別 (145f1fb56)
