@@ -813,6 +813,18 @@ bakabakaband ではプレイヤーとモンスター双方が `CreatureEntity` �
     切り出し、TR_VAMPIRIC ゲート版とカオス版で共用
   - **カオス武器を装備したモンスターは対プレイヤー・対モンスターとも吸血/地震/混乱/テレポートを
     引き起こす** (変身は保留)
+- **B-2b9**: プレイヤーの UNIQUE 扱い + 毒針 (SV_POISON_NEEDLE) の即死同化
+  - **`CreatureEntity::is_unique()`** virtual を追加。モンスターは種族 UNIQUE フラグ、
+    **プレイヤーは常に true**。プレイヤーを唯一無二の固有存在として UNIQUE モンスターと同格に扱い、
+    即死・変身等の「UNIQUE には効かない」危険効果からプレイヤーを保護する。これにより
+    モンスターの武器由来の危険効果を導入してもプレイヤー側のバランスが崩れにくい
+  - **毒針の即死**: `poison_needle_blow_damage(weapon, target)` (`slaying.cpp`) を追加。
+    プレイヤーの `critical_attack()` の毒針処理と同じく `randint1(randint1(level/7)+5)==1` で
+    即死 (対象現在 HP+1)、失敗で 1 ダメージ。即死は **`target.is_unique()` (プレイヤー・UNIQUE
+    モンスター) と NO_INSTANTLY_DEATH 耐性を除外**。両経路 (monster-attack-player /
+    monster-attack-monster) の武器ブロック末尾で通常ダメージを上書き
+  - **毒針を装備したモンスターは非 UNIQUE モンスターを確率で即死させるが、プレイヤーには
+    即死せず 1 ダメージに留まる** (is_unique 保護)
 - **B-2c**: 近接攻撃の命中ボーナス (11058a278)
   - `to_h` を `check_hit_from_monster_to_player` の power に加算
 - **B-4**: look 表示で装備品/パック品を区別 (145f1fb56)

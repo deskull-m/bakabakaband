@@ -296,6 +296,22 @@ bool CreatureEntity::has_undead_flag(bool is_appearance) const
     return monrace.has_undead_flag();
 }
 
+/*!
+ * @brief 唯一無二の存在 (UNIQUE) として扱うか
+ * @return モンスターは種族の UNIQUE フラグ、プレイヤーは常に true
+ * @details プレイヤーは世界に一人の固有存在であり UNIQUE モンスターと同格に扱う。
+ * これにより即死・変身などの「UNIQUE には効かない」危険効果からプレイヤーが保護され、
+ * モンスターの武器由来の危険効果を導入してもプレイヤー側のゲームバランスが崩れにくくなる。
+ */
+bool CreatureEntity::is_unique() const
+{
+    if (this->is_player()) {
+        return true;
+    }
+
+    return this->get_monrace().kind_flags.has(MonsterKindType::UNIQUE);
+}
+
 bool CreatureEntity::is_explodable() const
 {
     return this->get_monrace().is_explodable();

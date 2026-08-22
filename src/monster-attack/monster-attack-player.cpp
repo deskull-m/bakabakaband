@@ -329,6 +329,12 @@ bool MonsterAttackPlayer::process_monster_attack_hit()
         if (apply_monster_weapon_chaos_effect(*this->m_ptr, weapon, creature, creature, this->m_idx, 0, weapon_damage)) {
             this->do_quake = true;
         }
+
+        // 毒針: 通常ダメージを毒針の即死/1ダメージ判定で上書きする。
+        // プレイヤーは UNIQUE 扱い (is_unique) のため即死せず 1 ダメージに抑えられる。
+        if (const auto needle_damage = poison_needle_blow_damage(weapon, creature)) {
+            this->damage = *needle_damage;
+        }
     }
 
     switch_monster_blow_to_player(creature, this);

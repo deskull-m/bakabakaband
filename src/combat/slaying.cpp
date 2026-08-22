@@ -18,6 +18,7 @@
 #include "specific-object/torch.h"
 #include "spell-realm/spells-crusade.h"
 #include "spell-realm/spells-hex.h"
+#include "sv-definition/sv-weapon-types.h"
 #include "system/creature-entity.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/item-entity.h"
@@ -438,6 +439,32 @@ int apply_weapon_vampiric_drain(CreatureEntity &attacker, const ItemEntity &weap
     }
 
     return drain_life_to_attacker(attacker, target, weapon_damage);
+}
+
+/*!
+ * @brief 毒針 (SV_POISON_NEEDLE) による当該打撃のダメージを求める
+ * @param weapon 使用した近接武器
+ * @param target 攻撃対象クリーチャー (プレイヤー・モンスターいずれも可)
+ * @return 毒針でなければ nullopt。毒針の場合、即死判定成功で対象の現在 HP + 1 (致死)、失敗で 1
+ * @details
+ * プレイヤーの critical_attack() の毒針処理と同じく、`randint1(randint1(level/7)+5) == 1` で即死。
+ * ただし対象が UNIQUE 扱い (プレイヤーおよび UNIQUE モンスター) または NO_INSTANTLY_DEATH 耐性を
+ * 持つ場合は即死せず 1 ダメージに留める。プレイヤーは常に UNIQUE 扱い (is_unique) のため、
+ * モンスターが毒針で攻撃してもプレイヤーが即死することはない。
+ */
+tl::optional<int> poison_needle_blow_damage(const ItemEntity &weapon, const CreatureEntity &target)
+{
+    if (weapon.bi_key != BaseitemKey(ItemKindType::SWORD, SV_POISON_NEEDLE)) {
+        return tl::nullopt;
+    }
+
+    const auto &monrace = target.get_monrace();
+    const auto no_instant_death = target.is_unique() || monrace.resistance_flags.has(MonsterResistanceType::NO_INSTANTLY_DEATH);
+    if (!no_instant_death && (randint1(randint1(monrace.level / 7) + 5) == 1)) {
+        return target.get_current_hp() + 1;
+    }
+
+    return 1;
 }
 
 /*!
