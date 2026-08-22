@@ -1,0 +1,232 @@
+{
+  "version": 1,
+  "id": 36,
+  "name": {
+    "ja": "迫真空手部性の裏技",
+    "en": "The Hakusin Karate",
+  },
+  "definition": {
+    "type": "KILL_ALL",
+    "level": 45,
+    "flags": ["PRESET", "ONCE"],
+  },
+  "descriptions": [
+    {
+      "when": {
+        "statusAtMost": "COMPLETED",
+      },
+      "text": {
+        "ja": [
+          "鈴木先輩の股間はいつも盛り上がってる。",
+          "俺は気になってしょうがない。",
+          "初めてみる先輩の・・・。でも、先輩たちのいじめは俺の想像を越えていた。",
+          "「お前のほしいのはこれなんだろ？」",
+          "雄達の秘密の楽しみ体育会・性のいじめ。",
+          "いじめは良くないので全員を叩きのめしてきてください。",
+        ],
+        // 旧 q0seinourawaza.txt には受託時の英語版説明文が存在しないため空とする
+        "en": [],
+      },
+    },
+    {
+      "when": {
+        "status": "REWARDED",
+      },
+      "text": {
+        "ja": ["素晴らしい!! ご褒美を外に置いておきました。"],
+        "en": ["Impressive!! Your reward is waiting for you outside."],
+      },
+    },
+    {
+      "when": {
+        "status": "FAILED",
+      },
+      "text": {
+        "ja": ["この淫夢はあなたには難しかったようですね。"],
+        "en": ["It seems like this INM was too difficult for you."],
+      },
+    },
+  ],
+  "legend": {
+    // うごめくりんご
+    "a": {
+      "terrain": "FLOOR",
+      "caveInfo": ["ROOM"],
+      "monster": 1476,
+    },
+    // みうらねこ
+    "f": {
+      "terrain": "FLOOR",
+      "caveInfo": ["ROOM"],
+      "monster": 1301,
+    },
+    // 小型MUR肉
+    "h": {
+      "terrain": "FLOOR",
+      "caveInfo": ["ROOM"],
+      "monster": 1346,
+    },
+    // 中型MUR肉
+    "i": {
+      "terrain": "FLOOR",
+      "caveInfo": ["ROOM"],
+      "monster": 1300,
+    },
+    // 大型MUR肉
+    "j": {
+      "terrain": "FLOOR",
+      "caveInfo": ["ROOM"],
+      "monster": 1347,
+    },
+    // 超巨大MUR肉
+    "k": {
+      "terrain": "FLOOR",
+      "caveInfo": ["ROOM"],
+      "monster": 1348,
+    },
+    // シン大MUR肉
+    "K": {
+      "terrain": "FLOOR",
+      "caveInfo": ["ROOM"],
+      "monster": 1349,
+    },
+    // 目力先輩
+    "m": {
+      "terrain": "FLOOR",
+      "caveInfo": ["ROOM"],
+      "monster": 1338,
+    },
+    // 涅槃先輩
+    "n": {
+      "terrain": "FLOOR",
+      "caveInfo": ["ROOM"],
+      "monster": 1468,
+    },
+    // 観葉植物
+    "w": {
+      "terrain": "FLOOR",
+      "caveInfo": ["ROOM"],
+      "monster": 1294,
+    },
+    // KMR
+    "r": {
+      "terrain": "FLOOR",
+      "caveInfo": ["ROOM"],
+      "monster": 1331,
+    },
+    // SZK
+    "q": {
+      "terrain": "FLOOR",
+      "caveInfo": ["ROOM"],
+      "monster": 1332,
+    },
+    // MUR
+    "p": {
+      "terrain": "FLOOR",
+      "caveInfo": ["ROOM"],
+      "monster": 1333,
+    },
+    // 縦割れアナル
+    "t": {
+      "terrain": "FLOOR",
+      "caveInfo": ["ROOM"],
+      "monster": 1470,
+    },
+    // DBイカ
+    "M": {
+      "terrain": "DEEP_WATER",
+      "caveInfo": ["ROOM"],
+      "monster": 1340,
+    },
+    // 巨大DBイカ
+    "N": {
+      "terrain": "DEEP_WATER",
+      "caveInfo": ["ROOM"],
+      "monster": 1341,
+    },
+    // レッサークラーケン
+    "l": {
+      "terrain": "DEEP_WATER",
+      "caveInfo": ["ROOM"],
+      "monster": 740,
+    },
+    // グレータークラーケン
+    "o": {
+      "terrain": "DEEP_WATER",
+      "caveInfo": ["ROOM"],
+      "monster": 775,
+    },
+    // 通常床
+    ".": {
+      "terrain": "FLOOR",
+      "caveInfo": ["ROOM"],
+    },
+    // 施錠された扉
+    "|": {
+      "terrain": "LOCKED_DOOR_7",
+      "caveInfo": ["ROOM"],
+    },
+    // 木
+    "E": {
+      "terrain": "TREE",
+      "caveInfo": ["MARK"],
+    },
+    // 深い溶岩
+    "L": {
+      "terrain": "DEEP_LAVA",
+      "caveInfo": ["MARK", "GLOW"],
+    },
+    // 深淵
+    "C": {
+      "terrain": "DARK_PIT",
+      "caveInfo": ["MARK"],
+    },
+    // 固く閉ざされたガラスの扉
+    "+": {
+      "terrain": "JAMMED_GLASS_DOOR_7",
+      "caveInfo": ["ROOM"],
+    },
+    // *体力回復*の薬 (ビール)
+    "Y": {
+      "terrain": "FLOOR",
+      "caveInfo": ["ROOM"],
+      "object": 419,
+    },
+    // エルフのウェイブレッド (つまみ)
+    "e": {
+      "terrain": "FLOOR",
+      "caveInfo": ["ROOM"],
+      "object": 25,
+    },
+  },
+  "map": [
+    "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+    "X<.............................X",
+    "X...E....f.....h......h........X",
+    "X..EaE.....................i...X",
+    "X...E..........................X",
+    "X........h....E%%..............X",
+    "X...........EEEE%%%.........E..X",
+    "X...........EEEE%%%........EaE.X",
+    "X....f.....EEEmmm%%%........E..X",
+    "X..........EEEmnm%%%...........X",
+    "X..........ECCmmmCC%....i......X",
+    "X.h.........CCCCCCC............X",
+    "X...........CCCCCCC.......j....X",
+    "X....i........CCC....j.........X",
+    "X..............................X",
+    "X................kkKkk.........X",
+    "X.........j......kX|XX++XXXXX+XX",
+    "X......E.........kX.....wXlWWWoX",
+    "X.....EaE........kX......XWWWWWX",
+    "X......E..........+......XWMWNWX",
+    "X.................+....r.X.....X",
+    "X.................X.q....X..t..X",
+    "X.................XYe.p..|.....X",
+    "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+  ],
+  "start": {
+    "y": 1,
+    "x": 1,
+  },
+}

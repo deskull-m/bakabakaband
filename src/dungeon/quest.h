@@ -16,6 +16,8 @@ class CreatureEntity;
 class FloorType;
 class ItemEntity;
 class QuestType;
+bool populate_quest_text_lines(QuestId quest_id);
+void assign_json_quest_metadata(QuestId quest_id);
 void determine_random_questor(CreatureEntity &creature, QuestType &quest);
 void record_quest_final_status(QuestType *q_ptr, PLAYER_LEVEL lev, QuestStatusType stat);
 void complete_quest(CreatureEntity &creature, QuestId quest_num);

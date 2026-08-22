@@ -83,7 +83,7 @@ exit 0
 %{_datadir}/games/hengband/lib/apex/readme.txt
 %attr(664 root,games) %config(noreplace) %{_datadir}/games/hengband/lib/apex/scores.raw
 %{_datadir}/games/hengband/lib/edit/*.txt
-%{_datadir}/games/hengband/lib/edit/quests/*.txt
+%{_datadir}/games/hengband/lib/edit/quests/*.jsonc
 %{_datadir}/games/hengband/lib/edit/towns/*.txt
 %{_datadir}/games/hengband/lib/file/*.txt
 %{_datadir}/games/hengband/lib/help/*.hlp
