@@ -705,6 +705,8 @@ hengband_SOURCES = \
 	info-reader/message-reader.cpp info-reader/message-reader.h \
 	info-reader/parse-error-types.h \
 	info-reader/party-reader.cpp info-reader/party-reader.h \
+	headless-term/headless-term.cpp headless-term/headless-term.h \
+	\
 	info-reader/quest-reader.cpp info-reader/quest-reader.h \
 	info-reader/race-info-tokens-table.cpp info-reader/race-info-tokens-table.h \
 	info-reader/race-reader.cpp info-reader/race-reader.h \
