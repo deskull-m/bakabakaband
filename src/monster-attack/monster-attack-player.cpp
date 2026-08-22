@@ -331,8 +331,9 @@ bool MonsterAttackPlayer::process_monster_attack_hit()
         }
 
         // カオス武器: プレイヤーと同じ確率で吸血/地震/混乱/テレポートの追加効果を与える。
-        // 地震は do_quake 予約に集約する。
-        if (apply_monster_weapon_chaos_effect(*this->m_ptr, weapon, creature, creature, this->m_idx, 0, weapon_damage)) {
+        // 地震は do_quake 予約に集約する。変身 (POLYMORPH_TARGET) はプレイヤーが is_unique の
+        // ため発生しない (念のため無視する)。
+        if (apply_monster_weapon_chaos_effect(*this->m_ptr, weapon, creature, creature, this->m_idx, 0, weapon_damage) == ChaosWeaponDeferred::EARTHQUAKE) {
             this->do_quake = true;
         }
 

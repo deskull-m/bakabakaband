@@ -33,6 +33,7 @@
 #include "monster/monster-status.h"
 #include "mutation/mutation-flag-types.h"
 #include "spell-kind/earthquake.h"
+#include "spell-kind/spells-polymorph.h"
 #include "spell-kind/spells-teleport.h"
 #include "spell-realm/spells-hex.h"
 #include "system/creature-entity.h"
@@ -344,10 +345,18 @@ static void process_melee(CreatureEntity &creature, mam_type *mam_ptr)
             mam_ptr->do_quake = true;
         }
 
-        // カオス武器: プレイヤーと同じ確率で吸血/地震/混乱/テレポートの追加効果を与える。
+        // カオス武器: プレイヤーと同じ確率で吸血/地震/混乱/テレポート/変身の追加効果を与える。
         // player コンテキスト (フロア・行為者) は process_melee の creature (プレイヤー)。
-        if (apply_monster_weapon_chaos_effect(*mam_ptr->m_ptr, weapon, *mam_ptr->t_ptr, creature, mam_ptr->m_idx, mam_ptr->t_idx, weapon_damage)) {
+        // 地震・変身は被害者ポインタ無効化を避けるため全打撃終了後に遅延実行する。
+        switch (apply_monster_weapon_chaos_effect(*mam_ptr->m_ptr, weapon, *mam_ptr->t_ptr, creature, mam_ptr->m_idx, mam_ptr->t_idx, weapon_damage)) {
+        case ChaosWeaponDeferred::EARTHQUAKE:
             mam_ptr->do_quake = true;
+            break;
+        case ChaosWeaponDeferred::POLYMORPH_TARGET:
+            mam_ptr->do_polymorph = true;
+            break;
+        case ChaosWeaponDeferred::NONE:
+            break;
         }
 
         // 毒針: 通常ダメージを毒針の即死/1ダメージ判定で上書きする。
@@ -480,6 +489,12 @@ bool monst_attack_monst(CreatureEntity &creature, MONSTER_IDX m_idx, MONSTER_IDX
     }
 
     repeat_melee(creature, mam_ptr);
+
+    // [B-2b10] カオス武器の変身: polymorph_monster は対象を delete/再生成して t_ptr を無効化するため、
+    // 打撃ループ完了後に一度だけ実行する。対象が既に死亡していれば行わない。
+    if (mam_ptr->do_polymorph && mam_ptr->t_ptr->is_valid()) {
+        polymorph_monster(creature, mam_ptr->t_ptr->y, mam_ptr->t_ptr->x);
+    }
 
     // [B-2b5] 地震武器: 全打撃終了後にまとめて地震を起こす (プレイヤーの cause_earthquake 相当)。
     // 打撃ループ中に起こすと floor / monster 参照が無効化されうるため後段で処理する。
