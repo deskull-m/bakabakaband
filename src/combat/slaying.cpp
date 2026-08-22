@@ -376,10 +376,13 @@ int calc_attack_damage_with_slay(CreatureEntity &creature, ItemEntity *o_ptr, in
  * ヴォーパルの倍率算出はプレイヤーと同一だが、ルーンソード呪唱 (術者状態) や
  * 斬鉄剣無効化 (対象が非切断) 等の術者/対象文脈依存分岐は武器固有プロパティのみに限定する。
  */
-int calc_weapon_melee_damage(CreatureEntity &attacker, ItemEntity &weapon, CreatureEntity &target, int hand)
+int calc_weapon_melee_damage(CreatureEntity &attacker, ItemEntity &weapon, CreatureEntity &target, int hand, int extra_damage_dice)
 {
     const auto flags = weapon.get_flags();
-    auto damage = calc_attack_damage_with_slay(attacker, &weapon, weapon.damage_dice.roll(), target, HISSATSU_NONE, false);
+    // 魔術ブランド (TR_BRAND_MAGIC) 等による追加ダイスは、プレイヤーと同じく基本ロールに含めて
+    // スレイ/ブランド/会心の各倍率を通す。
+    const auto base_roll = Dice::roll(weapon.damage_dice.num + extra_damage_dice, weapon.damage_dice.sides);
+    auto damage = calc_attack_damage_with_slay(attacker, &weapon, base_roll, target, HISSATSU_NONE, false);
     damage = critical_norm(attacker, weapon.weight, weapon.to_h, damage, attacker.get_to_h(hand), HISSATSU_NONE, flags.has(TR_IMPACT));
 
     // ヴォーパル (メッタ斬り): プレイヤーの process_vorpal_attack() と同一の倍率算出。
