@@ -825,6 +825,19 @@ bakabakaband ではプレイヤーとモンスター双方が `CreatureEntity` �
     monster-attack-monster) の武器ブロック末尾で通常ダメージを上書き
   - **毒針を装備したモンスターは非 UNIQUE モンスターを確率で即死させるが、プレイヤーには
     即死せず 1 ダメージに留まる** (is_unique 保護)
+- **B-2b10**: カオス武器の変身 (CE_POLYMORPH) の有効化 (B-2b8 の保留解除)
+  - `apply_monster_weapon_chaos_effect()` の戻り値を `bool`→`enum ChaosWeaponDeferred`
+    (NONE / EARTHQUAKE / POLYMORPH_TARGET) に変更。混乱・テレポート・吸血は即時、地震・変身は
+    遅延実行に分類
+  - **変身の安全化**: `polymorph_monster()` は対象を delete/再生成し `t_ptr` を無効化するため、
+    `mam_type::do_polymorph` に予約し、`monst_attack_monst()` の**全打撃終了後**に一度だけ
+    (対象が生存していれば) 実行。除外条件はプレイヤーの `attack_polymorph()` と同一
+    (`is_unique()` = プレイヤー・UNIQUE モンスター / QUESTOR / カオス耐性、加えて
+    `randint1(90) > level` 抽選)
+  - **プレイヤーは is_unique により変身対象外**。対プレイヤー経路 (monster-attack-player) は
+    POLYMORPH_TARGET を返さないため do_polymorph を持たない (EARTHQUAKE のみ処理)
+  - **カオス武器を装備したモンスターは非 UNIQUE モンスターを変身させ得るが、プレイヤーは
+    変身しない** (is_unique 保護)
 - **B-2c**: 近接攻撃の命中ボーナス (11058a278)
   - `to_h` を `check_hit_from_monster_to_player` の power に加算
 - **B-4**: look 表示で装備品/パック品を区別 (145f1fb56)
