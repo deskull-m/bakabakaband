@@ -7831,5 +7831,48 @@
         },
       ],
     },
+    {
+      "id_list": [2361 /*龍神『ニコル・ボーラス』*/],
+      "message": [
+        {
+          "action": "SPEAK_ALL",
+          "chance": 8,
+          "message": {
+            "ja": [
+              "「ひざまずけ。それが貴様に残された唯一の選択だ。」",
+              "「私はこの多元宇宙が生まれる前から在り、滅びた後も在る。」",
+              "「貴様の記憶は、さぞ美味であろうな。」",
+              "「その灯をよこせ。貴様には過ぎたものだ。」",
+              "「私の駒になれ。死んだ後でも構わんぞ。」",
+              "「絶望するがいい。それはこの上なく正しい判断だ。」",
+              "「かつて我が同胞たちも、そう言って灰になったよ。」",
+              "「私を殺し得るのは、私だけだ。」",
+              "「永遠衆よ、この虫けらに礼儀を教えてやれ。」",
+              "「時間の無駄だ。だが、暇つぶしにはなる。」",
+            ],
+            "en": [
+              "\"Kneel. It is the only choice left to you.\"",
+              "\"I was here before this Multiverse began, and I will remain when it ends.\"",
+              "\"Your memories will make a fine meal.\"",
+              "\"Give me that spark. It is wasted on you.\"",
+              "\"Become my pawn. I do not require you to be alive.\"",
+              "\"Despair. It is by far the most rational response.\"",
+              "\"My own kin said much the same, before they burned.\"",
+              "\"Only I can kill me.\"",
+              "\"Eternals. Teach this insect some manners.\"",
+              "\"A waste of my time, though it does pass the time.\"",
+            ],
+          },
+        },
+        {
+          "action": "SPEAK_DEATH",
+          "chance": 8,
+          "message": {
+            "ja": ["「馬鹿な……この私が……定命の者ごときに……」"],
+            "en": ["\"Impossible... I... undone by a mortal...\""],
+          },
+        },
+      ],
+    },
   ],
 }
