@@ -834,6 +834,7 @@
     <ClCompile Include="..\..\src\monster-attack\monster-eating.cpp" />
     <ClCompile Include="..\..\src\player-attack\player-attack.cpp" />
     <ClCompile Include="..\..\src\combat\monster-chaos-weapon.cpp" />
+    <ClCompile Include="..\..\src\combat\monster-magical-brand.cpp" />
     <ClCompile Include="..\..\src\combat\slaying.cpp" />
     <ClCompile Include="..\..\src\player-attack\blood-sucking-processor.cpp" />
     <ClCompile Include="..\..\src\object-enchant\vorpal-weapon.cpp" />
@@ -1791,6 +1792,7 @@
     <ClInclude Include="..\..\src\monster-attack\monster-eating.h" />
     <ClInclude Include="..\..\src\player-attack\player-attack.h" />
     <ClInclude Include="..\..\src\combat\monster-chaos-weapon.h" />
+    <ClInclude Include="..\..\src\combat\monster-magical-brand.h" />
     <ClInclude Include="..\..\src\combat\slaying.h" />
     <ClInclude Include="..\..\src\object-enchant\vorpal-weapon.h" />
     <ClInclude Include="..\..\src\floor\floor-object.h" />

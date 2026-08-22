@@ -9,6 +9,7 @@
 #include "combat/combat-options-type.h"
 #include "combat/hallucination-attacks-table.h"
 #include "combat/monster-chaos-weapon.h"
+#include "combat/monster-magical-brand.h"
 #include "combat/slaying.h"
 #include "core/disturbance.h"
 #include "dungeon/dungeon-flag-types.h"
@@ -324,7 +325,9 @@ static void process_melee(CreatureEntity &creature, mam_type *mam_ptr)
     if (!mam_ptr->explode && (mam_ptr->weapon_slot_for_blow >= 0)) {
         auto &weapon = *mam_ptr->m_ptr->inventory[mam_ptr->weapon_slot_for_blow];
         const auto hand = mam_ptr->weapon_slot_for_blow - enum2i(INVEN_MAIN_HAND);
-        const auto weapon_damage = calc_weapon_melee_damage(*mam_ptr->m_ptr, weapon, *mam_ptr->t_ptr, hand);
+        // 魔術ブランド (TR_BRAND_MAGIC): 効果を抽選し、追加ダイスを武器ダメージへ含める。
+        const auto magical_effect = roll_monster_magical_brand_effect(weapon);
+        const auto weapon_damage = calc_weapon_melee_damage(*mam_ptr->m_ptr, weapon, *mam_ptr->t_ptr, hand, monster_magical_brand_extra_dice(magical_effect));
         mam_ptr->damage += weapon_damage;
 
         // 吸血武器: プレイヤーの吸血処理と同じく、生命のある対象から HP を吸収して回復する。
@@ -358,6 +361,9 @@ static void process_melee(CreatureEntity &creature, mam_type *mam_ptr)
         case ChaosWeaponDeferred::NONE:
             break;
         }
+
+        // 魔術ブランド: 追加ダイスは上で反映済み。朦朧/恐怖/魔力吸収の状態異常を適用する。
+        apply_monster_magical_brand_status(*mam_ptr->m_ptr, magical_effect, *mam_ptr->t_ptr, creature, mam_ptr->t_idx);
 
         // 毒針: 通常ダメージを毒針の即死/1ダメージ判定で上書きする。
         // UNIQUE (プレイヤー含む) と NO_INSTANTLY_DEATH 耐性の対象は即死しない。
