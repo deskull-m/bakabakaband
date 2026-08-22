@@ -349,6 +349,12 @@ static void process_melee(CreatureEntity &creature, mam_type *mam_ptr)
         if (apply_monster_weapon_chaos_effect(*mam_ptr->m_ptr, weapon, *mam_ptr->t_ptr, creature, mam_ptr->m_idx, mam_ptr->t_idx, weapon_damage)) {
             mam_ptr->do_quake = true;
         }
+
+        // 毒針: 通常ダメージを毒針の即死/1ダメージ判定で上書きする。
+        // UNIQUE (プレイヤー含む) と NO_INSTANTLY_DEATH 耐性の対象は即死しない。
+        if (const auto needle_damage = poison_needle_blow_damage(weapon, *mam_ptr->t_ptr)) {
+            mam_ptr->damage = *needle_damage;
+        }
     }
 
     mam_ptr->attribute = BlowEffectType::NONE;

@@ -536,6 +536,7 @@ public:
     bool has_living_flag(bool is_appearance = false) const;
     bool has_demon_flag(bool is_appearance = false) const;
     bool has_undead_flag(bool is_appearance = false) const;
+    virtual bool is_unique() const;
     bool is_explodable() const;
     std::string get_died_message() const;
     bool can_ring_boss_call_nazgul() const;
