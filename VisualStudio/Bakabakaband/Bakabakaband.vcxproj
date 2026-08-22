@@ -351,7 +351,11 @@
     <ClCompile Include="..\..\src\artifact\random-art-resistance.cpp" />
     <ClCompile Include="..\..\src\artifact\random-art-slay.cpp" />
     <ClCompile Include="..\..\src\avatar\avatar-changer.cpp" />
+    <ClCompile Include="..\..\src\bot\bot-control-server.cpp" />
     <ClCompile Include="..\..\src\bot\bot-json-output.cpp" />
+    <ClCompile Include="..\..\src\bot\bot-report.cpp" />
+    <ClCompile Include="..\..\src\bot\bot-screen.cpp" />
+    <ClCompile Include="..\..\src\bot\bot-socket-server.cpp" />
     <ClCompile Include="..\..\src\birth\auto-roller.cpp" />
     <ClCompile Include="..\..\src\birth\birth-body-spec.cpp" />
     <ClCompile Include="..\..\src\birth\birth-select-class.cpp" />
@@ -1320,7 +1324,11 @@
     <ClInclude Include="..\..\src\artifact\random-art-slay.h" />
     <ClInclude Include="..\..\src\artifact\random-art-characteristics.h" />
     <ClInclude Include="..\..\src\avatar\avatar-changer.h" />
+    <ClInclude Include="..\..\src\bot\bot-control-server.h" />
     <ClInclude Include="..\..\src\bot\bot-json-output.h" />
+    <ClInclude Include="..\..\src\bot\bot-report.h" />
+    <ClInclude Include="..\..\src\bot\bot-screen.h" />
+    <ClInclude Include="..\..\src\bot\bot-socket-server.h" />
     <ClInclude Include="..\..\src\birth\auto-roller.h" />
     <ClInclude Include="..\..\src\birth\birth-body-spec.h" />
     <ClInclude Include="..\..\src\birth\birth-select-class.h" />

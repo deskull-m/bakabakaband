@@ -30,6 +30,8 @@ EXTRA_DIST = \
 	readme-eng.md \
 	THIRD-PARTY-NOTICES.txt \
 	hengband.spec \
+	tools/bot/hbctl.py \
+	tools/bot/README.md \
 	$(visual_studio_files) \
 	$(schema_files)
 

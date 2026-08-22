@@ -1,5 +1,9 @@
 #pragma once
 
+#include <nlohmann/json_fwd.hpp>
+#include <string>
+#include <string_view>
+
 class CreatureEntity;
 enum class StoreSaleType;
 
@@ -26,6 +30,9 @@ enum class BotKnowledgeCategory {
     MAX,
 };
 
+std::string to_json_utf8(std::string_view str);
+nlohmann::json make_message_history_json(int count);
+nlohmann::json make_bot_json_snapshot(CreatureEntity &creature, bool include_map = true);
 void output_bot_json_snapshot(CreatureEntity &creature);
 void output_bot_json_store_snapshot(CreatureEntity &creature, StoreSaleType store_num);
 void output_bot_json_character_snapshot(CreatureEntity &creature);

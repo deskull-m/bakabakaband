@@ -4,10 +4,14 @@
  */
 
 #include "main-win/commandline-win.h"
+#include "game-option/runtime-arguments.h"
 #include "main-win/main-win-utils.h"
 #include "term/z-util.h"
 
+#include <fmt/format.h>
 #include <iostream>
+#include <string>
+#include <string_view>
 #include <windows.h>
 
 // interface object
@@ -16,19 +20,57 @@ CommandLine command_line{};
 namespace {
 // セーブファイル名
 std::string savefile_option;
+
+/*!
+ * @brief プラットフォームに依存しない長いコマンドライン引数を解釈する
+ * @param option コマンドライン引数
+ * @return 実行時オプションとして解釈した場合TRUE
+ * @details
+ * オプションの綴りと値の解釈をUnix版と共有するため、ワイド文字列をマルチバイトへ変換して
+ * parse_runtime_argument()に委譲する。値が不正な場合はその旨を通知して終了する。
+ *
+ * 本関数はコンソールもquit_aux/plog_auxも用意されていない起動直後に呼ばれるため、
+ * 終了する前に自前でコンソールを確保する。これを怠るとquit()のメッセージが出力先を失い、
+ * 何も表示されないまま終了してしまう。
+ */
+bool parse_runtime_option(const WCHAR *option)
+{
+    auto converted = to_multibyte(option);
+    if (converted.c_str() == nullptr) {
+        return false;
+    }
+
+    const std::string_view narrow_option(converted.c_str());
+    if (!narrow_option.starts_with("--")) {
+        return false;
+    }
+
+    switch (parse_runtime_argument(narrow_option.substr(2))) {
+    case RuntimeArgumentResult::HANDLED:
+        return true;
+    case RuntimeArgumentResult::INVALID:
+        attach_console();
+        quit(fmt::format("Invalid value in '{}'", narrow_option));
+        return true;
+    case RuntimeArgumentResult::NOT_HANDLED:
+        break;
+    }
+
+    return false;
+}
 }
 
 /*!
- * @brief コンソールを作成する
+ * @brief デバッグ用のコンソールを作成する
  * @details
- * 標準出力のみ対応。
+ * attach_console()が繋ぐ標準エラー出力に加えて、標準出力もコンソールへ繋ぐ。
  */
 static void create_console(void)
 {
-    ::AllocConsole();
+    attach_console();
     FILE *stream = nullptr;
     freopen_s(&stream, "CONOUT$", "w+", stdout);
-    std::cout << "Hengband debug console" << std::endl;
+    std::cout << "Bakabakaband debug console" << std::endl;
 }
 
 void CommandLine::handle(void)
@@ -43,6 +85,8 @@ void CommandLine::handle(void)
                 continue;
             } else if (wcscmp(argv[i], L"--output-spoilers") == 0) {
                 create_debug_spoiler();
+                continue;
+            } else if (parse_runtime_option(argv[i])) {
                 continue;
             } else {
                 if (argv[i][0] != L'-') {
