@@ -6,6 +6,8 @@
 #include "effect/attribute-types.h"
 #include "object-enchant/tr-flags.h"
 
+#include <tl/optional.hpp>
+
 class ItemEntity;
 class CreatureEntity;
 MULTIPLY mult_slaying(CreatureEntity &creature, MULTIPLY mult, const TrFlags &flags, CreatureEntity &target);
@@ -14,5 +16,6 @@ int calc_attack_damage_with_slay(CreatureEntity &creature, ItemEntity *o_ptr, in
 int calc_weapon_melee_damage(CreatureEntity &attacker, ItemEntity &weapon, CreatureEntity &target, int hand);
 int drain_life_to_attacker(CreatureEntity &attacker, const CreatureEntity &target, int amount);
 int apply_weapon_vampiric_drain(CreatureEntity &attacker, const ItemEntity &weapon, const CreatureEntity &target, int weapon_damage);
+tl::optional<int> poison_needle_blow_damage(const ItemEntity &weapon, const CreatureEntity &target);
 bool does_weapon_cause_earthquake(const ItemEntity &weapon, int weapon_damage);
 AttributeFlags melee_attribute(CreatureEntity &creature, ItemEntity *o_ptr, combat_options mode);
