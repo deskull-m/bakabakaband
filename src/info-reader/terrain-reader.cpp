@@ -8,6 +8,7 @@
 #include "term/gameterm.h"
 #include "view/display-messages.h"
 #include <algorithm>
+#include <nlohmann/json.hpp>
 #include <optional>
 #include <string>
 #include <string_view>

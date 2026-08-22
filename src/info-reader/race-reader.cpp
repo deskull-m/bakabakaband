@@ -15,6 +15,7 @@
 #include "util/string-processor.h"
 #include "view/display-messages.h"
 #include <algorithm>
+#include <nlohmann/json.hpp>
 #include <string>
 
 /*!

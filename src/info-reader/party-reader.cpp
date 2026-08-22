@@ -9,6 +9,7 @@
 #include "util/dice.h"
 #include "util/enum-converter.h"
 #include "view/display-messages.h"
+#include <nlohmann/json.hpp>
 
 /*!
  * @brief パーティ名をJSONから読み込む

@@ -24,6 +24,7 @@
 #include "system/terrain/terrain-list.h"
 #include "util/angband-files.h"
 #include "util/string-processor.h"
+#include <nlohmann/json.hpp>
 #include <string>
 
 dungeon_grid letter[255];
