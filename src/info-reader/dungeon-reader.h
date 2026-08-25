@@ -1,7 +1,7 @@
 #pragma once
 
 #include "system/angband.h"
-#include <nlohmann/json.hpp>
+#include <nlohmann/json_fwd.hpp>
 #include <string_view>
 
 class DungeonDefinition;

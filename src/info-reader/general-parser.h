@@ -5,7 +5,7 @@
 #include "system/angband.h"
 #include <fstream>
 #include <functional>
-#include <nlohmann/json.hpp>
+#include <nlohmann/json_fwd.hpp>
 #include <string>
 #include <string_view>
 #include <tuple>
