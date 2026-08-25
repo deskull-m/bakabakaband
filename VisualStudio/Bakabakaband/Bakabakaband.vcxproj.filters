@@ -2774,6 +2774,9 @@
     <ClCompile Include="..\..\src\alliance\alliance-anor-londo.cpp">
       <Filter>alliance</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\alliance\alliance-bolas.cpp">
+      <Filter>alliance</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\src\alliance\alliance-boletaria.cpp">
       <Filter>alliance</Filter>
     </ClCompile>
@@ -6065,6 +6068,9 @@
     <ClInclude Include="..\..\src\combat\martial-arts-style.h" />
     <ClInclude Include="..\..\src\terrain\terrain-processor.h" />
     <ClInclude Include="..\..\src\alliance\alliance-anor-londo.h">
+      <Filter>alliance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\alliance\alliance-bolas.h">
       <Filter>alliance</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\alliance\alliance-boletaria.h">
