@@ -12,6 +12,7 @@
 #include "util/enum-converter.h"
 #include "util/string-processor.h"
 #include "view/display-messages.h"
+#include <nlohmann/json.hpp>
 
 ArtifactReader::ArtifactReader(const nlohmann::json &art_data)
     : art_data(art_data)

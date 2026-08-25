@@ -303,6 +303,7 @@ hengband_SOURCES = \
 	external-lib/include/range/v3/experimental/view/shared.hpp \
 	external-lib/include/range/v3/range_access.hpp \
 	external-lib/include/range/v3/numeric/inner_product.hpp \
+	external-lib/include/nlohmann/json_fwd.hpp \
 	external-lib/include/range/v3/numeric/iota.hpp \
 	external-lib/include/range/v3/numeric/partial_sum.hpp \
 	external-lib/include/range/v3/numeric/adjacent_difference.hpp \
