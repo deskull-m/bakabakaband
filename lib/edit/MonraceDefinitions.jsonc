@@ -122452,7 +122452,7 @@
         "POWERFUL",
       ],
       "skill": {
-        "list": ["BR_DISI", "BO_MANA"],
+        "list": ["BR_DISI", "BO_MANA", "S_ROBOT"],
         "probability": "1_IN_4",
       },
     },
@@ -139886,7 +139886,7 @@
         "NONLIVING",
       ],
       "skill": {
-        "list": ["BO_MANA", "BO_PLAS"],
+        "list": ["BO_MANA", "BO_PLAS", "S_ROBOT"],
         "probability": "1_IN_6",
       },
     },

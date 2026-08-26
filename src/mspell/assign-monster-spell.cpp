@@ -58,6 +58,7 @@ static MonsterSpellResult monspell_to_player_impl(CreatureEntity &creature, Mons
         case MonsterAbilityType::S_WALL:
         case MonsterAbilityType::S_INSECT:
         case MonsterAbilityType::S_ELDRAZI:
+        case MonsterAbilityType::S_ROBOT:
         case MonsterAbilityType::S_UNIQUE:
             x = m_ptr->x;
             y = m_ptr->y;
@@ -205,6 +206,7 @@ static MonsterSpellResult monspell_to_player_impl(CreatureEntity &creature, Mons
     case MonsterAbilityType::S_WALL: return spell_RF6_S_WALL(creature, y, x, m_idx, 0, MONSTER_TO_PLAYER); /* RF6_S_WALL */
     case MonsterAbilityType::S_INSECT: return spell_RF6_S_INSECT(creature, y, x, m_idx, 0, MONSTER_TO_PLAYER); /* RF6_S_INSECT */
     case MonsterAbilityType::S_ELDRAZI: return spell_RF6_S_ELDRAZI(creature, y, x, m_idx, 0, MONSTER_TO_PLAYER); /* RF6_S_ELDRAZI */
+    case MonsterAbilityType::S_ROBOT: return spell_RF6_S_ROBOT(creature, y, x, m_idx, 0, MONSTER_TO_PLAYER); /* RF6_S_ROBOT */
     default: break;
     }
     // clang-format on
@@ -243,6 +245,7 @@ static MonsterSpellResult monspell_to_monster_impl(
         case MonsterAbilityType::S_WALL:
         case MonsterAbilityType::S_INSECT:
         case MonsterAbilityType::S_ELDRAZI:
+        case MonsterAbilityType::S_ROBOT:
         case MonsterAbilityType::S_UNIQUE:
             x = m_ptr->x;
             y = m_ptr->y;
@@ -390,6 +393,7 @@ static MonsterSpellResult monspell_to_monster_impl(
     case MonsterAbilityType::S_WALL: return spell_RF6_S_WALL(creature, y, x, m_idx, t_idx, MONSTER_TO_MONSTER); /* RF6_S_WALL */
     case MonsterAbilityType::S_INSECT: return spell_RF6_S_INSECT(creature, y, x, m_idx, t_idx, MONSTER_TO_MONSTER); /* RF6_S_INSECT */
     case MonsterAbilityType::S_ELDRAZI: return spell_RF6_S_ELDRAZI(creature, y, x, m_idx, t_idx, MONSTER_TO_MONSTER); /* RF6_S_ELDRAZI */
+    case MonsterAbilityType::S_ROBOT: return spell_RF6_S_ROBOT(creature, y, x, m_idx, t_idx, MONSTER_TO_MONSTER); /* RF6_S_ROBOT */
     default: break;
     }
     // clang-format on

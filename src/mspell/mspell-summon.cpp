@@ -1487,6 +1487,47 @@ MonsterSpellResult spell_RF6_S_INSECT(CreatureEntity &creature, POSITION y, POSI
 }
 
 /*!
+ * @brief RF6_S_ROBOTの処理。ロボット召喚。 /
+ * @param creature クリーチャーへの参照
+ * @param y 対象の地点のy座標
+ * @param x 対象の地点のx座標
+ * @param m_idx 呪文を唱えるモンスターID
+ * @param t_idx 呪文を受けるモンスターID。プレイヤーの場合はdummyで0とする。
+ * @param target_type プレイヤーを対象とする場合MONSTER_TO_PLAYER、モンスターを対象とする場合MONSTER_TO_MONSTER
+ * @return ダメージ量を返す。
+ */
+MonsterSpellResult spell_RF6_S_ROBOT(CreatureEntity &creature, POSITION y, POSITION x, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
+{
+    auto &floor = *creature.get_floor();
+    const auto rlev = monster_level_idx(floor, m_idx);
+    const auto known = monster_near_player(creature, m_idx, t_idx);
+    const auto see_either = see_monster(creature, m_idx) || see_monster(creature, t_idx);
+    const auto mon_to_mon = (target_type == MONSTER_TO_MONSTER);
+
+    mspell_cast_msg_blind msg(_("%s^が何かをつぶやいた。", "%s^ mumbles."),
+        _("%s^が魔法でロボットを召喚した！", "%s^ magically summons robots!"),
+        _("%s^が魔法でロボットを召喚した。", "%s^ magically summons robots."));
+
+    monspell_message(creature, m_idx, t_idx, msg, target_type);
+    summon_disturb(creature, target_type, known, see_either);
+
+    auto count = 0;
+    for (auto k = 0; k < std::max(1, rlev / 25); k++) {
+        count += summon_specific(creature, y, x, rlev, SUMMON_ROBOT, PM_ALLOW_GROUP | PM_ALLIANCE_LIMIT, m_idx) ? 1 : 0;
+    }
+
+    if (creature.is_blind() && count) {
+        msg_print(_("何か機械的なものが間近に現れた音がする。", "You hear something mechanical appear nearby."));
+    }
+
+    if (monster_near_player(creature, m_idx, t_idx) && !see_monster(creature, t_idx) && count && mon_to_mon) {
+        floor.monster_noise = true;
+    }
+
+    return MonsterSpellResult::make_learnable(target_type == MONSTER_TO_PLAYER);
+}
+
+/*!
  * @brief RF6_S_ELDRAZIの処理。エルドラージ召喚。 /
  * @param creature クリーチャーへの参照
  * @param y 対象の地点のy座標
