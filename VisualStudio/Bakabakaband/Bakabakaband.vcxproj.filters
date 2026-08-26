@@ -2154,6 +2154,9 @@
     <ClCompile Include="..\..\src\system\player-type-definition.cpp">
       <Filter>system</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\headless-term\headless-term.cpp">
+      <Filter>headless-term</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\src\hpmp\hp-mp-processor.cpp">
       <Filter>hpmp</Filter>
     </ClCompile>
@@ -5294,6 +5297,9 @@
     <ClInclude Include="..\..\src\player-status\player-hand-types.h">
       <Filter>player-status</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\headless-term\headless-term.h">
+      <Filter>headless-term</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\src\hpmp\hp-mp-processor.h">
       <Filter>hpmp</Filter>
     </ClInclude>
@@ -6386,6 +6392,9 @@
     </Filter>
     <Filter Include="player-status">
       <UniqueIdentifier>{ff73fd79-e082-4a2c-8c5b-9457c30d9e74}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="headless-term">
+      <UniqueIdentifier>{9ed35751-f784-4f57-ad94-7a1edcf48ff3}</UniqueIdentifier>
     </Filter>
     <Filter Include="hpmp">
       <UniqueIdentifier>{fb766b4b-8783-4d07-9474-059259afe7c6}</UniqueIdentifier>
