@@ -2205,7 +2205,19 @@
     <ClCompile Include="..\..\src\avatar\avatar-changer.cpp">
       <Filter>avatar</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\bot\bot-control-server.cpp">
+      <Filter>bot</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\src\bot\bot-json-output.cpp">
+      <Filter>bot</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\bot\bot-report.cpp">
+      <Filter>bot</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\bot\bot-screen.cpp">
+      <Filter>bot</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\bot\bot-socket-server.cpp">
       <Filter>bot</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\avatar\avatar.cpp">
@@ -5324,7 +5336,19 @@
     <ClInclude Include="..\..\src\avatar\avatar-changer.h">
       <Filter>avatar</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\bot\bot-control-server.h">
+      <Filter>bot</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\src\bot\bot-json-output.h">
+      <Filter>bot</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\bot\bot-report.h">
+      <Filter>bot</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\bot\bot-screen.h">
+      <Filter>bot</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\bot\bot-socket-server.h">
       <Filter>bot</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\avatar\avatar.h">

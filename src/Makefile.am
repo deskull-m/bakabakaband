@@ -151,7 +151,11 @@ hengband_SOURCES = \
 	birth/initial-equipments-table.cpp birth/initial-equipments-table.h \
 	birth/inventory-initializer.cpp birth/inventory-initializer.h \
 	birth/game-play-initializer.cpp birth/game-play-initializer.h \
+	bot/bot-control-server.cpp bot/bot-control-server.h \
 	birth/history-editor.cpp birth/history-editor.h \
+	bot/bot-report.cpp bot/bot-report.h \
+	bot/bot-screen.cpp bot/bot-screen.h \
+	bot/bot-socket-server.cpp bot/bot-socket-server.h \
 	birth/birth-select-race.cpp birth/birth-select-race.h \
 	birth/birth-select-class.cpp birth/birth-select-class.h \
 	birth/birth-select-personality.cpp birth/birth-select-personality.h \
