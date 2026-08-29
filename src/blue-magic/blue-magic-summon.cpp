@@ -474,6 +474,22 @@ bool cast_blue_summon_insect(CreatureEntity &creature, bmc_type *bmc_ptr)
     return true;
 }
 
+bool cast_blue_summon_robot(CreatureEntity &creature, bmc_type *bmc_ptr)
+{
+    msg_print(_("ロボットを召喚した！", "You summon robots!"));
+    for (int k = 0; k < 1 + bmc_ptr->plev / 25; k++) {
+        if (summon_specific(creature, creature.y, creature.x, bmc_ptr->summon_lev, SUMMON_ROBOT, (PM_ALLOW_GROUP | bmc_ptr->p_mode))) {
+            if (!bmc_ptr->pet) {
+                msg_print(_("召喚されたロボットは怒っている！", "The summoned robots are angry!"));
+            }
+        } else {
+            bmc_ptr->no_trump = true;
+        }
+    }
+
+    return true;
+}
+
 bool cast_blue_summon_eldrazi(CreatureEntity &creature, bmc_type *bmc_ptr)
 {
     msg_print(_("エルドラージを召喚した！", "You summon Eldrazi!"));

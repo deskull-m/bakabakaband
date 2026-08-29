@@ -125,5 +125,6 @@ enum class MonsterAbilityType {
     S_APE = 119, /* Summon Ape */
     S_BIRD = 120, /* Summon Bird */
     S_ELDRAZI = 121, /* Summon Eldrazi */
+    S_ROBOT = 122, /* Summon Robot */
     MAX,
 };
