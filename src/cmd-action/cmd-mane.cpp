@@ -962,6 +962,17 @@ static bool use_mane(CreatureEntity &creature, MonsterAbilityType spell)
         }
         break;
     }
+    case MonsterAbilityType::S_ROBOT: {
+        const auto pos = target_set(creature, TARGET_KILL).get_position();
+        if (!pos) {
+            return false;
+        }
+        msg_print(_("ロボットを召喚した！", "You summon robots!"));
+        for (auto k = 0; k < 3; k++) {
+            summon_specific(creature, pos->y, pos->x, plev, SUMMON_ROBOT, (mode | PM_ALLOW_GROUP));
+        }
+        break;
+    }
     case MonsterAbilityType::S_ANGEL: {
         const auto pos = target_set(creature, TARGET_KILL).get_position();
         if (!pos) {

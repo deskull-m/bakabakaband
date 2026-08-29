@@ -392,6 +392,8 @@ static bool switch_cast_blue_magic(CreatureEntity &creature, bmc_type *bmc_ptr)
         return cast_blue_summon_wall(creature, bmc_ptr);
     case MonsterAbilityType::S_ELDRAZI:
         return cast_blue_summon_eldrazi(creature, bmc_ptr);
+    case MonsterAbilityType::S_ROBOT:
+        return cast_blue_summon_robot(creature, bmc_ptr);
     default:
         msg_print("hoge?");
         return true;

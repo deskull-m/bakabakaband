@@ -329,6 +329,7 @@ static const std::vector<AbilityCellDef> &summon_magic_defs()
         { MonsterAbilityType::S_AMBERITES, "アンバーの王族", "Lords of Amber", TERM_VIOLET },
         { MonsterAbilityType::S_UNIQUE, "ユニークモンスター", "Unique Monsters", TERM_VIOLET },
         { MonsterAbilityType::S_DEAD_UNIQUE, "ユニークモンスター口寄せ", "animate Unique Monsters", TERM_VIOLET },
+        { MonsterAbilityType::S_ROBOT, "ロボット", "robots", TERM_SLATE },
     };
     return defs;
 }
