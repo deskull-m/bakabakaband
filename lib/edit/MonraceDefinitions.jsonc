@@ -70148,6 +70148,7 @@
         "ja": "半人半魔のプレインズウォーカー、ティボルトは苦痛と騒乱が、自分を含めた全ての人々に及ぶことを常に望んでいる。",
         "en": "The half-devil Planeswalker, Tibalt always has a preference for spread of pain and disorder to everyone including himself.",
       },
+      "alliance": "BOLAS",
       "sex": "MALE",
       "flags": [
         "UNIQUE",
@@ -83773,6 +83774,7 @@
       "flavor": {
         "ja": "ティボルトがプレインズウォーカーとしての能力を駆使して生み出す小悪魔だ。",
       },
+      "alliance": "BOLAS",
       "flags": ["FRIENDS", "OPEN_DOOR", "BASH_DOOR", "EVIL", "DEMON", "IM_FIRE", "NO_FEAR"],
       "skill": {
         "list": ["BO_FIRE"],
@@ -105103,6 +105105,7 @@
       "flavor": {
         "ja": "ニコル・ボーラスがアモンケットの遠大な計画で生み出した軍団の一員だ。生前熟練の戦士であったものが、ラゾテプ鉱に覆われ意志を持たぬアンデッド、永遠衆に加工されたものである。",
       },
+      "alliance": "BOLAS",
       "sex": "MALE",
       "flags": [
         "HAS_LITE_1",
@@ -138020,6 +138023,7 @@
       "flavor": {
         "ja": "ダブリエル・ケインは極めて洗練された狡猾なプレインズウォーカーだ。他者の精神を操りその能力を奪い取る影魔法に加えて、悪魔が泣きわめきたくなるほどの悪辣かつ巧みな契約で彼らを支配している。",
       },
+      "alliance": "BOLAS",
       "sex": "MALE",
       "flags": [
         "UNIQUE",
@@ -148939,6 +148943,7 @@
         "ja": "多元宇宙の中でも強大な古龍の一体にして、あらゆる次元を我が物にせんと謀り続けるプレインズウォーカーだ。死者の軍団『永遠衆』を従え、他者を喰らって幾千年も力を蓄えてきた。その黄金の眼に見据えられた時点で、あなたは既に彼の盤上の駒でしかない。",
         "en": "One of the strongest Elder Dragons, a planeswalker who schemes to make every plane his own. Commanding the Eternals, his legion of the dead, he has hoarded power for millennia by devouring many others. The moment his golden gaze finds you, you are already a pawn on his board.",
       },
+      "alliance": "BOLAS",
       "sex": "MALE",
       "realm_abilities": "DEATH",
       "realm_abilities2": "SORCERY",
