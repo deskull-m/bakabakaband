@@ -8,6 +8,7 @@
 #include "alliance/alliance-avarin-lords.h"
 #include "alliance/alliance-basam-empire.h"
 #include "alliance/alliance-binzyou-buddhism.h"
+#include "alliance/alliance-bolas.h"
 #include "alliance/alliance-boletaria.h"
 #include "alliance/alliance-chardros.h"
 #include "alliance/alliance-chinchintei.h"
@@ -159,6 +160,7 @@ const std::map<AllianceType, std::shared_ptr<Alliance>> alliance_list = {
     { AllianceType::SOUKAIYA, std::make_unique<AllianceSoukaiya>(AllianceType::SOUKAIYA, "SOUKAIYA", _("ソウカイヤ", "Soukaiya"), 3000000L) },
     { AllianceType::YEEK_KINGDOM, std::make_unique<AllianceYeekKingdom>(AllianceType::YEEK_KINGDOM, "YEEK-KINGDOM", _("イークの王国", "Yeek Kingdom"), 15000L) },
     { AllianceType::EAGLE_CLAN, std::make_unique<AllianceEagleClan>(AllianceType::EAGLE_CLAN, "EAGLE-CLAN", _("大鷲の一族", "Eagle Clan"), 2500000L, 600L) },
+    { AllianceType::BOLAS, std::make_unique<AllianceBolas>(AllianceType::BOLAS, "BOLAS", _("ボーラス", "Bolas"), 20000000L, 2000L) },
 };
 
 const std::map<std::tuple<AllianceType, AllianceType>, int> each_alliance_impression = {

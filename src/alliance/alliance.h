@@ -88,6 +88,7 @@ enum class AllianceType : int {
     SOUKAIYA = 70, //!< ソウカイヤ
     YEEK_KINGDOM = 71, //!< イークの王国
     EAGLE_CLAN = 72, //!< 大鷲の一族
+    BOLAS = 73, //!< ボーラス
     MAX,
 };
 

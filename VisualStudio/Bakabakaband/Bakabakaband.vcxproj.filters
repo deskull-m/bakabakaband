@@ -2729,6 +2729,9 @@
     <ClCompile Include="..\..\src\alliance\alliance-binzyou-buddhism.cpp">
       <Filter>alliance</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\alliance\alliance-bolas.cpp">
+      <Filter>alliance</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\src\alliance\alliance-dokachans.cpp">
       <Filter>alliance</Filter>
     </ClCompile>
@@ -6035,6 +6038,9 @@
       <Filter>alliance</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\alliance\alliance-binzyou-buddhism.h">
+      <Filter>alliance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\alliance\alliance-bolas.h">
       <Filter>alliance</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\alliance\alliance-dokachans.h">

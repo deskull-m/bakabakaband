@@ -325,4 +325,10 @@ enum class MonraceId : int16_t {
     KING_SOLDIER = 2282,
     POLYGON_SPIN = 2343, // まわるポリゴン（hengband#5180 相当）
     HUNGRY_OLD_MAN = 2344, // 亡霊『はらへりじじい』（hengband#5180 相当）
+    // ボーラス・アライアンス (MtG)
+    TIBALT = 1110, // 悪鬼の血脈『ティボルト』
+    TIBALTS_RAGER = 1322, // ティボルトの憤怒鬼
+    DREADHORDE_WARRIOR = 1660, // 戦慄衆の戦士
+    DAVRIEL = 2187, // 魂の仲介人『ダブリエル』
+    NICOL_BOLAS = 2361, // 龍神『ニコル・ボーラス』
 };
