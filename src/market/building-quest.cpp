@@ -31,12 +31,12 @@ static void get_questinfo(CreatureEntity &creature, QuestId quest_id, bool do_in
     const auto old_quest = floor.quest_number;
     floor.quest_number = quest_id;
 
-    init_flags = INIT_SHOW_TEXT;
+    // 受託時のみ静的メタデータを確立する (旧 INIT_ASSIGN 相当)。表示のみのときは行わない。
     if (do_init) {
-        init_flags = i2enum<init_flags_type>(init_flags | INIT_ASSIGN);
+        assign_json_quest_metadata(quest_id);
     }
 
-    parse_fixed_map(creature, QUEST_DEFINITION_LIST, 0, 0, 0, 0);
+    populate_quest_text_lines(quest_id);
     floor.quest_number = old_quest;
 }
 
