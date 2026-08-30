@@ -27,6 +27,7 @@
 #include "dungeon/dungeon-processor.h"
 #include "dungeon/quest.h"
 #include "flavor/object-flavor.h"
+#include "floor/fixed-map-generator.h"
 #include "floor/floor-changer.h"
 #include "floor/floor-leaver.h"
 #include "floor/floor-mode-changer.h"
@@ -76,6 +77,7 @@
 #include "system/baseitem/baseitem-service.h"
 #include "system/creature-entity.h"
 #include "system/dungeon/quest-definition.h"
+#include "system/dungeon/quest-fixed-map.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/floor/floor-info.h"
 #include "system/floor/wilderness-grid.h"
@@ -454,8 +456,11 @@ void play_game(CreatureEntity &creature, bool new_game, bool browsing_movie, std
     // クエスト開始時は、マップサイズを事前に取得する
     auto &floor = *creature.get_floor();
     if (new_game && floor.is_in_quest()) {
-        init_flags = INIT_GET_SIZE;
-        parse_fixed_map(creature, QUEST_DEFINITION_LIST, 0, 0, 0, 0);
+        const auto fixed_map = QuestFixedMapList::get_instance().find(floor.quest_number);
+        if (fixed_map) {
+            get_quest_floor_size_from_json(creature, *fixed_map);
+        }
+
         // サイズが取得できなかった場合はデフォルト値を設定
         if (floor.height == 0 || floor.width == 0) {
             floor.height = MAX_HGT;

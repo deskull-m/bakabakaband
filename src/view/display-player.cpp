@@ -255,11 +255,6 @@ static tl::optional<std::string> search_death_cause(CreatureEntity &creature)
     if (floor.is_in_quest() && QuestType::is_fixed(floor.quest_number)) {
         const auto &quests = QuestList::get_instance();
 
-        /* Get the quest text */
-        /* Bewere that INIT_ASSIGN resets the cur_num. */
-        init_flags = INIT_NAME_ONLY;
-        parse_fixed_map(creature, QUEST_DEFINITION_LIST, 0, 0, 0, 0);
-
         const auto &quest = quests.get_quest(floor.quest_number);
         constexpr auto killed_quest = _("…あなたは、クエスト「%s」で%sに殺されて飽きた。", "...You were killed by %s in the quest '%s' and god tired..");
 #ifdef JP
@@ -290,11 +285,7 @@ static tl::optional<std::string> decide_death_in_quest(CreatureEntity &creature)
         return tl::nullopt;
     }
 
-    quest_text_lines.clear();
-
     const auto &quests = QuestList::get_instance();
-    init_flags = INIT_NAME_ONLY;
-    parse_fixed_map(creature, QUEST_DEFINITION_LIST, 0, 0, 0, 0);
     return format(_("…あなたは現在、 クエスト「%s」を遂行中だ。", "...Now, you are in the quest '%s'."), quests.get_quest(floor.quest_number).name.data());
 }
 

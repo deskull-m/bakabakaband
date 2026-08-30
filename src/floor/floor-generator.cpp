@@ -13,6 +13,7 @@
 #include "dungeon/dungeon-flag-types.h"
 #include "dungeon/quest.h"
 #include "floor/cave-generator.h"
+#include "floor/fixed-map-generator.h"
 #include "floor/floor-base-definitions.h"
 #include "floor/floor-events.h"
 #include "floor/floor-save.h" //!< @todo precalc_cur_num_of_pet() が依存している、違和感.
@@ -43,6 +44,7 @@
 #include "system/dungeon/dungeon-definition.h"
 #include "system/dungeon/dungeon-list.h"
 #include "system/dungeon/quest-definition.h"
+#include "system/dungeon/quest-fixed-map.h"
 #include "system/enums/terrain/terrain-tag.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
@@ -301,8 +303,13 @@ static void generate_fixed_floor(CreatureEntity &creature)
         place_bold(creature, pos.y, pos.x, GB_SOLID_PERM);
     }
 
-    const auto &quests = QuestList::get_instance();
-    floor.base_level = quests.get_quest(floor.quest_number).level;
+    auto &quest = QuestList::get_instance().get_quest(floor.quest_number);
+    const auto fixed_map = QuestFixedMapList::get_instance().find(floor.quest_number);
+    if (fixed_map) {
+        apply_quest_metadata(*fixed_map, quest);
+    }
+
+    floor.base_level = quest.level;
     floor.dun_level = floor.base_level;
     floor.object_level = floor.base_level;
     floor.monster_level = floor.base_level;
@@ -312,7 +319,9 @@ static void generate_fixed_floor(CreatureEntity &creature)
 
     get_mon_num_prep_enum(creature, floor.get_monrace_hook());
     init_flags = INIT_CREATE_DUNGEON;
-    parse_fixed_map(creature, QUEST_DEFINITION_LIST, 0, 0, MAX_HGT, MAX_WID);
+    if (fixed_map && fixed_map->has_map()) {
+        generate_quest_floor_from_json(creature, quest, *fixed_map);
+    }
 }
 
 /*!

@@ -552,6 +552,7 @@
     <ClCompile Include="..\..\src\info-reader\dungeon-info-tokens-table.cpp" />
     <ClCompile Include="..\..\src\info-reader\dungeon-reader.cpp" />
     <ClCompile Include="..\..\src\info-reader\ego-reader.cpp" />
+    <ClCompile Include="..\..\src\info-reader\quest-reader.cpp" />
     <ClCompile Include="..\..\src\info-reader\feature-info-tokens-table.cpp" />
     <ClCompile Include="..\..\src\info-reader\feature-reader.cpp" />
     <ClCompile Include="..\..\src\info-reader\general-parser.cpp" />
@@ -1034,6 +1035,7 @@
     <ClCompile Include="..\..\src\info-reader\fixed-map-parser.cpp" />
     <ClCompile Include="..\..\src\system\dungeon\dungeon-definition.cpp" />
     <ClCompile Include="..\..\src\system\dungeon\quest-definition.cpp" />
+    <ClCompile Include="..\..\src\system\dungeon\quest-fixed-map.cpp" />
     <ClCompile Include="..\..\src\locale\english.cpp" />
     <ClCompile Include="..\..\src\floor\floor-events.cpp" />
     <ClCompile Include="..\..\src\floor\floor-generator.cpp" />
@@ -1472,6 +1474,7 @@
     <ClInclude Include="..\..\src\info-reader\dungeon-info-tokens-table.h" />
     <ClInclude Include="..\..\src\info-reader\dungeon-reader.h" />
     <ClInclude Include="..\..\src\info-reader\ego-reader.h" />
+    <ClInclude Include="..\..\src\info-reader\quest-reader.h" />
     <ClInclude Include="..\..\src\info-reader\feature-info-tokens-table.h" />
     <ClInclude Include="..\..\src\info-reader\feature-reader.h" />
     <ClInclude Include="..\..\src\info-reader\general-parser.h" />
@@ -2268,6 +2271,7 @@
     <ClInclude Include="..\..\src\info-reader\fixed-map-parser.h" />
     <ClInclude Include="..\..\src\system\dungeon\dungeon-definition.h" />
     <ClInclude Include="..\..\src\system\dungeon\quest-definition.h" />
+    <ClInclude Include="..\..\src\system\dungeon\quest-fixed-map.h" />
     <ClInclude Include="..\..\src\io\files-util.h" />
     <ClInclude Include="..\..\src\floor\floor-events.h" />
     <ClInclude Include="..\..\src\floor\floor-generator.h" />
