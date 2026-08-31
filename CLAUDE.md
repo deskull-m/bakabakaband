@@ -451,6 +451,36 @@ UNIQUE フラグ付きモンスターは生成時に `creature.name = monrace.na
 スケールアップ) の両方で同じ計算式を使用。さらに `c` ステータス画面 (`display_player`)
 の `ENTRY_HP_REGEN`/`ENTRY_MP_REGEN` 表示もモンスター inspect 時に同じ式で表示される。
 
+### 状態メッセージ seam (`notify_self`) — 提案 D2
+
+状態異常・バフ setter 群（`BadStatusSetter` / `buff-setter.cpp`）や回復処理は本体が
+既に `CreatureEntity &` の共通プリミティブのみで書かれており、モンスターにも適用できる。
+唯一の障壁だった「2 人称メッセージの直書き」を `CreatureEntity::notify_self()` seam に
+逃がしてある。
+
+```cpp
+// 3 人称文が意味を持たないプレイヤー固有処理 (構えの崩れ・青魔法の学習中断等)
+creature.notify_self(_("型が崩れた。", "You lose your stance."));
+
+// プレイヤー・モンスター双方に意味がある状態変化
+creature.notify_self(_("あなたは混乱した！", "You are confused!"),
+    _("%s^は混乱したようだ。", "%s^ seems confused."));
+```
+
+| 呼出形 | プレイヤー | モンスター |
+|---|---|---|
+| `notify_self(message)` | `msg_print(message)` | 無表示 |
+| `notify_self(message, others_format)` | `msg_print(message)`（1 引数版と同一） | **視認時のみ** `others_format` に `monster_desc()` の名前を埋めて表示 |
+
+- `others_format` は `"%s^"` 書式（`^` は先頭大文字化）。新規の 3 人称文は
+  `effect-monster-oldies.cpp` / `mspell-status.cpp` の既存モンスター向け文言に
+  語調を合わせること。
+- 朦朧・切り傷のようにランク依存の文言は
+  `PlayerStun::get_stun_mes_others()` / `PlayerCut::get_cut_mes_others()`
+  （既存の `get_stun_mes` / `get_cut_mes` と対になる static）を使う。
+- **上流マージ時**: setter 内の `msg_print(_("あなたは…", "You …"))` は
+  `notify_self(...)` へ載せ替えること（プレイヤー挙動は完全に同一）。
+
 ### 最大HP算出の統一 (`maxhp` / `max_maxhp` の意味統一)
 
 プレイヤーとモンスターの最大HP算出を観点ごとに `CreatureEntity` の共通メソッドへ
@@ -1164,7 +1194,7 @@ CI と同等のチェックをローカルで実行するためのスクリプ�
 GitHub Actions の `check_format` ジョブと同等の確認を行う。
 
 ```bash
-sh .github/scripts/ci-check-format.sh
+sh .github/scripts/check-cpp-format.sh
 ```
 
 - `clang-format-18` が必要。未インストールの場合は `sudo apt-get install clang-format-18`
@@ -1471,6 +1501,7 @@ bakabakaband 側と上流側でよくある構造的差異を以下のルール�
 | 同上書込 | `creature.set_timewalking(X)` / `set_now_damaged(X)` / `set_playing(X)` / `set_leaving(X)` / `set_teleport_town(X)` / `set_sutemi(X)` (提案 43) |
 | `creature.level_up_message` 読取 / 書込 | `creature.has_level_up_message()` / `set_level_up_message(X)` (提案 43) |
 | `creature.monk_notify_aux` / `creature.fishing_dir` / `creature.yoiyami` 読取 / 書込 | `creature.get_monk_notify_aux()` / `get_fishing_dir()` / `get_yoiyami()` / `set_X(value)` (提案 43)。yoiyami の `\|=` は `set_yoiyami(get_yoiyami() \| X)` |
+| 状態異常/バフ setter 内の 2 人称 `msg_print(_("あなたは…", "You …"))` | `creature.notify_self(2人称文)`、3 人称文がある状態なら `creature.notify_self(2人称文, _("%s^は…", "%s^ …"))` (提案 D2)。プレイヤーは 2 人称、モンスターは視認時のみ 3 人称で表示される |
 
 **GCC 固有の注意**:
 上流は MSVC 前提のことが多く、`<cstdint>` 等のインクルード漏れがあれば追加する。
@@ -1478,7 +1509,7 @@ bakabakaband 側と上流側でよくある構造的差異を以下のルール�
 #### Step 5: ビルド・フォーマット確認
 
 ```bash
-sh .github/scripts/ci-check-format.sh
+sh .github/scripts/check-cpp-format.sh
 sh .github/scripts/ci-build-test.sh
 ```
 

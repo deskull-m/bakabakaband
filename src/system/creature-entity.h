@@ -898,6 +898,18 @@ public:
     void notify_self(std::string_view message) const;
 
     /*!
+     * @brief クリーチャー自身に関する状態メッセージを表示する (提案D2 第3弾: 3 人称対応版)
+     * @param message 2 人称の状態メッセージ (プレイヤー視点文)
+     * @param others_format 3 人称の状態メッセージ書式 ("%s^" にクリーチャー名が入る)
+     * @details プレイヤーなら `message` を `msg_print()` で表示、モンスターなら
+     *          **視認できている場合に限り** `others_format` にモンスター名を埋めて表示する。
+     *          プレイヤー経路の挙動は 1 引数版と完全に同一。3 人称文が意味を持たない
+     *          プレイヤー固有の状態 (構えの崩れ・職業固有処理等) は 1 引数版を使うこと。
+     *          定義は creature-entity.cpp。
+     */
+    void notify_self(std::string_view message, const char *others_format) const;
+
+    /*!
      * @brief カメレオンの変身を元に戻す。
      * @details r_idx と ap_r_idx を実種族IDにリセットする。
      */

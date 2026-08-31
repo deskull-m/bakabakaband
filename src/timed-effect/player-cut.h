@@ -21,6 +21,7 @@ public:
 
     static PlayerCutRank get_rank(short value);
     static std::string get_cut_mes(PlayerCutRank stun_rank);
+    static const char *get_cut_mes_others(PlayerCutRank cut_rank);
     static short get_accumulation(int total, int damage);
 
     static bool is_cut(short value);

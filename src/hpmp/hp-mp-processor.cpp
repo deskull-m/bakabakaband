@@ -485,15 +485,16 @@ bool hp_player(CreatureEntity &creature, int num)
         auto &rfu = RedrawingFlagsUpdater::get_instance();
         rfu.set_flag(MainWindowRedrawingFlag::HP);
         rfu.set_flag(SubWindowRedrawingFlag::PLAYER);
-        // [提案D2] 2 人称回復メッセージは notify_self seam でプレイヤーのみ表示 (モンスター回復時は無音)。
+        // [提案D2 第3弾] 回復メッセージは notify_self seam でプレイヤーは 2 人称、
+        // モンスターは視認時のみ 3 人称で表示される。
         if (num < 5) {
-            creature.notify_self(_("少し気分が良くなった。", "You feel a little better."));
+            creature.notify_self(_("少し気分が良くなった。", "You feel a little better."), _("%s^は少し気分が良くなったようだ。", "%s^ looks a little better."));
         } else if (num < 15) {
-            creature.notify_self(_("気分が良くなった。", "You feel better."));
+            creature.notify_self(_("気分が良くなった。", "You feel better."), _("%s^は気分が良くなったようだ。", "%s^ looks better."));
         } else if (num < 35) {
-            creature.notify_self(_("とても気分が良くなった。", "You feel much better."));
+            creature.notify_self(_("とても気分が良くなった。", "You feel much better."), _("%s^はとても気分が良くなったようだ。", "%s^ looks much better."));
         } else {
-            creature.notify_self(_("ひじょうに気分が良くなった。", "You feel very good."));
+            creature.notify_self(_("ひじょうに気分が良くなった。", "You feel very good."), _("%s^はひじょうに気分が良くなったようだ。", "%s^ looks very good."));
         }
 
         return true;

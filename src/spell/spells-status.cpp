@@ -269,7 +269,7 @@ bool life_stream(CreatureEntity &creature, bool message, bool virtue_change)
     }
 
     if (message) {
-        creature.notify_self(_("体中に生命力が満ちあふれてきた！", "You feel life flow through your body!"));
+        creature.notify_self(_("体中に生命力が満ちあふれてきた！", "You feel life flow through your body!"), _("%s^の体に生命力が満ちあふれた！", "%s^ is filled with life force!"));
     }
 
     restore_level(creature);

@@ -16,6 +16,7 @@
 #include "monster-race/race-kind-flags.h"
 #include "monster-race/race-misc-flags.h"
 #include "monster-race/race-sex-const.h"
+#include "monster/monster-describer.h"
 #include "monster/monster-flag-types.h"
 #include "monster/monster-pain-describer.h"
 #include "monster/monster-timed-effects.h"
@@ -49,6 +50,7 @@
 #include "system/monrace/monrace-list.h"
 #include "system/monrace/monrace-records.h"
 #include "system/monster-profile.h"
+#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "target/projection-path-calculator.h"
 #include "term/term-color-types.h"
@@ -153,6 +155,21 @@ void CreatureEntity::notify_self(std::string_view message) const
     if (this->is_player()) {
         msg_print(message);
     }
+}
+
+void CreatureEntity::notify_self(std::string_view message, const char *others_format) const
+{
+    if (this->is_player()) {
+        msg_print(message);
+        return;
+    }
+
+    if (!this->is_visible_on_map()) {
+        return;
+    }
+
+    const auto monster_name = monster_desc(PlayerType::get_instance(), *this, 0);
+    msg_format(others_format, monster_name.data());
 }
 
 void CreatureEntity::plus_incident(INCIDENT incidentID, int num)
