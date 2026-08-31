@@ -2032,6 +2032,25 @@ static bool is_bare_knuckle(CreatureEntity &creature)
     return bare_knuckle;
 }
 
+/*!
+ * @brief 武器以外の装備による命中・ダメージ修正を加算する対象のスロットかを判定する
+ * @param creature クリーチャーへの参照
+ * @param slot 判定する装備スロット
+ * @return 加算対象ならtrue
+ * @details
+ * 空きスロットとモンスター・ボールは対象外。打撃武器と遠隔武器自身の修正は武器の分として別に計算するため、
+ * 打撃武器を装備している手と遠隔武器のスロットも対象外とする。
+ */
+static bool is_non_weapon_bonus_slot(CreatureEntity &creature, inventory_slot_type slot)
+{
+    const auto &item = *creature.inventory[slot];
+    if (!item.is_valid() || (item.bi_key.tval() == ItemKindType::CAPTURE)) {
+        return false;
+    }
+
+    return (slot != INVEN_BOW) && !has_melee_weapon(creature, slot);
+}
+
 static short calc_to_damage(CreatureEntity &creature, INVENTORY_IDX slot, bool is_real_value)
 {
     const auto *o_ptr = creature.inventory[slot].get();
@@ -2092,12 +2111,7 @@ static short calc_to_damage(CreatureEntity &creature, INVENTORY_IDX slot, bool i
     for (const auto i_idx : INVEN_WIELDING_SLOTS) {
         int bonus_to_d = 0;
         o_ptr = creature.inventory[i_idx].get();
-        const auto has_melee = has_melee_weapon(creature, i_idx);
-        if (!o_ptr->is_valid() || (o_ptr->bi_key.tval() == ItemKindType::CAPTURE)) {
-            continue;
-        }
-
-        if (((i_idx == INVEN_MAIN_HAND) && has_melee) || ((i_idx == INVEN_SUB_HAND) && has_melee) || (i_idx == INVEN_BOW)) {
+        if (!is_non_weapon_bonus_slot(creature, i_idx)) {
             continue;
         }
 
@@ -2332,13 +2346,7 @@ static short calc_to_hit(CreatureEntity &creature, INVENTORY_IDX slot, bool is_r
     for (const auto i_idx : INVEN_WIELDING_SLOTS) {
         auto *o_ptr = creature.inventory[i_idx].get();
 
-        /* Ignore empty hands, handed weapons, bows and capture balls */
-        const auto has_melee = has_melee_weapon(creature, i_idx);
-        if (!o_ptr->is_valid() || o_ptr->bi_key.tval() == ItemKindType::CAPTURE) {
-            continue;
-        }
-
-        if (((i_idx == INVEN_MAIN_HAND) && has_melee) || ((i_idx == INVEN_SUB_HAND) && has_melee) || (i_idx == INVEN_BOW)) {
+        if (!is_non_weapon_bonus_slot(creature, i_idx)) {
             continue;
         }
 
@@ -2473,12 +2481,7 @@ static int16_t calc_to_hit_bow(CreatureEntity &creature, bool is_real_value)
     for (const auto i_idx : INVEN_WIELDING_SLOTS) {
         int bonus_to_h;
         o_ptr = creature.inventory[i_idx].get();
-        const auto has_melee = has_melee_weapon(creature, i_idx);
-        if (!o_ptr->is_valid() || (o_ptr->bi_key.tval() == ItemKindType::CAPTURE)) {
-            continue;
-        }
-
-        if (((i_idx == INVEN_MAIN_HAND) && has_melee) || ((i_idx == INVEN_SUB_HAND) && has_melee) || (i_idx == INVEN_BOW)) {
+        if (!is_non_weapon_bonus_slot(creature, i_idx)) {
             continue;
         }
 
@@ -2508,7 +2511,7 @@ static int16_t calc_to_damage_misc(CreatureEntity &creature)
 
     for (const auto i_idx : INVEN_WIELDING_SLOTS) {
         o_ptr = creature.inventory[i_idx].get();
-        if (!o_ptr->is_valid()) {
+        if (!is_non_weapon_bonus_slot(creature, i_idx)) {
             continue;
         }
 
@@ -2538,7 +2541,7 @@ static int16_t calc_to_hit_misc(CreatureEntity &creature)
 
     for (const auto i_idx : INVEN_WIELDING_SLOTS) {
         o_ptr = creature.inventory[i_idx].get();
-        if (!o_ptr->is_valid()) {
+        if (!is_non_weapon_bonus_slot(creature, i_idx)) {
             continue;
         }
 
