@@ -3,7 +3,10 @@
 AUTOMAKE_OPTIONS = foreign
 
 visual_studio_files = \
+	VisualStudio/.gitattributes \
 	VisualStudio/Bakabakaband.sln \
+	VisualStudio/Bakabakaband/Bakabakaband.Common.props \
+	VisualStudio/Bakabakaband/Bakabakaband.Configuration.props \
 	VisualStudio/Bakabakaband/Bakabakaband.vcxproj \
 	VisualStudio/Bakabakaband/Bakabakaband.vcxproj.filters \
 	VisualStudio/Bakabakaband/packages.config \
