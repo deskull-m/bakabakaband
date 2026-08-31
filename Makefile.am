@@ -9,9 +9,7 @@ visual_studio_files = \
 	VisualStudio/Bakabakaband/Bakabakaband.Configuration.props \
 	VisualStudio/Bakabakaband/Bakabakaband.vcxproj \
 	VisualStudio/Bakabakaband/Bakabakaband.vcxproj.filters \
-	VisualStudio/Bakabakaband/packages.config \
-	VisualStudio/Hengband/Hengband.vcxproj \
-	VisualStudio/Hengband/Hengband.vcxproj.filters
+	VisualStudio/Bakabakaband/packages.config
 
 schema_files = \
 	schema/ArtifactDefinitions.schema.json \
