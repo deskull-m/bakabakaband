@@ -3931,7 +3931,7 @@ A/B と違い挙動が変わるため、対象範囲と数値はメンテナ判�
 |---|---|---|---|---|---|
 | D1 | セービングスロー述語 `does_save_against()` 統一 | 純粋refactor | 小 | 中 | ✅ 完了 |
 | D2 | 回復・状態治療関数の is_player ガード除去 + メッセージ seam | 同化中核 | 中〜大 | 高 | ✅ 完了（回復・治療9関数＋能力値回復＋3人称 seam） |
-| D3 | 統一クリーチャーテレポートプリミティブ | primitive | 中 | 中 | 計画 |
+| D3 | 統一クリーチャーテレポートプリミティブ | primitive | 中 | 中 | ✅ 完了（薄いディスパッチャ＋apply_nexus 開放） |
 | D4 | 属性ダメージ分類器（immune/resist/vuln）の共通化 | primitive | 中 | 中 | ✅ 第1弾完了（monster側 immune/hurt 共通化） |
 | D5 | 小規模統合（charm/control セーヴ統合ほか） | 純粋refactor | 小 | 低〜中 | ✅ 完了（charm/control。他2件は精査の上見送り） |
 | D6 | spoiler/lore の PlayerType dummy 軽量化（※前提訂正） | 構造 | 小 | 低 | 計画（低優先・前提誤り訂正済） |
@@ -4056,16 +4056,83 @@ seam を setter 群へ横展開、と段階化する。
 
 ---
 
-## 提案 D3: 統一クリーチャーテレポートプリミティブ
+## 提案 D3: 統一クリーチャーテレポートプリミティブ ✅ 完了
 
-**現状:** テレポート系は `teleport_player` / `teleport_player_to` / `teleport_player_aux`
-（プレイヤー）と `teleport_away`（モンスター、`CreatureEntity &, m_idx`）に分かれる。
-`apply_nexus`(:644) / `teleport_level`(spells-world.cpp:60) / 突然変異の RTELEPORT 等が
-プレイヤー版に依存し、モンスター運用時に別プリミティブへ切替が要る。
+**着手前の現状:** テレポート系は `teleport_player` / `teleport_player_to` /
+`teleport_player_aux`（プレイヤー）と `teleport_away` / `teleport_monster_to`
+（モンスター、`CreatureEntity &subject, m_idx`）に分かれる。`apply_nexus` /
+突然変異の RTELEPORT 等がプレイヤー版に依存し、モンスター運用時に別プリミティブへ
+切替が要る（実際 C5 のモンスター変異処理は同一分岐を `teleport_away` で二重に
+書いていた）。
 
-**提案:** 対象クリーチャーを受けて適切に移動する統一プリミティブ（内部で
-is_player 分岐または位置操作の共通化）。これにより apply_nexus / teleport_level の
-ガードを外せる。**工数:** 中。**価値:** 中。**リスク:** 中（移動は副作用が広い）。
+### 設計判断: アルゴリズム統合は行わず「薄いディスパッチャ」に留める
+
+実コード検証の結果、移動先選定アルゴリズムは**両者で本質的に異なる**:
+
+| | プレイヤー (`teleport_player_aux`) | モンスター (`teleport_away`) |
+|---|---|---|
+| 選定方式 | 距離内の候補を**全列挙**し、上位 50% 圏から**一様抽選** | `rand_spread` の**乱数散布**を成功まで最大 100 回リトライ |
+| 距離の扱い | 固定 `dis` 内 | 失敗のたび `dis` 倍増・`min` 半減 |
+| 移動処理 | `move_player_effect()`（罠・拾得・視界等の副作用込み） | グリッド付替え ＋ `update_monster` / `lite_spot` |
+
+これらを 1 本化すると**乱数消費列と移動先分布が変わる**ため、挙動保存を原則とする
+本ロードマップでは統合しない。よって**型で既存実装へ振り分ける薄いディスパッチャ**を
+新設する方針を採った。
+
+### ✅ 完了内容
+
+**新プリミティブ 2 種**（`spell-kind/spells-teleport.{h,cpp}`）:
+
+```cpp
+bool teleport_creature(CreatureEntity &target, POSITION dis, teleport_flags mode);
+void teleport_creature_to(CreatureEntity &target, const Pos2D &pos, teleport_flags mode);
+```
+
+- プレイヤーなら `teleport_player()` / `teleport_player_to()`、モンスターなら
+  `get_self_m_idx()` を引いて `teleport_away()` / `teleport_monster_to()` に委譲。
+  モンスター側の subject（視界更新・徳変動の基準）は常に
+  `PlayerType::get_instance()`（既存の全 call site と同じ規約）。
+- `teleport_monster_to()` の成功率 `power` は、常に成功するプレイヤー版と揃えるため
+  `100` 固定。
+- `m_idx` が引けない（座標が古い等）モンスターは `false` / no-op を返す。
+
+**`teleport_player()` の戻り値化:** `void` → `bool`（`teleport_player_aux()` の結果を
+そのまま伝播）。既存 62 call site は**いずれも戻り値を使っていない**ため無影響。
+
+**Phase 4 のダメージディスパッチャとの違い（削除された `apply_damage_to_creature()`
+の轍を踏まないこと）:** あちらは全 call site が被害者型を既に把握していたため未使用に
+なった。本提案は**実際に型が不定な call site が 2 つ存在する**ことを確認済みで、
+両方を移行している（下記）。
+
+**移行サイト:**
+
+1. `mutation/mutation-processor.cpp` の **RTELEPORT**: プレイヤー版
+   (`process_world_aux_mutation`) とモンスター版 (`process_monster_mutation`) が
+   同一条件・別プリミティブで二重に書かれていたものを、両方 `teleport_creature()`
+   に統一。モンスター版の `m_idx` は元々関数冒頭で `monster.get_self_m_idx()` から
+   得て `<= 0` なら早期 return しているため、ディスパッチャ内の再取得と**同値**（挙動不変）。
+2. `spell/spells-status.cpp` の **`apply_nexus()`**: 冒頭の
+   `if (!creature.is_player()) return;` を撤去。7 分岐のうち
+   - 1〜3（ランダムテレポート）→ `teleport_creature()`
+   - 4〜5（術者への引き寄せ）→ `teleport_creature_to(attacker.get_position())`
+   - 6（階層テレポート）→ `teleport_level()` の第 1 引数は**視点となるプレイヤー**、
+     第 2 引数が対象 m_idx（0 でプレイヤー自身）という契約なので、
+     `teleport_level(PlayerType::get_instance(), creature.is_player() ? 0 : creature.get_self_m_idx())`
+     とした。`teleport_level` は元々モンスター対象を扱える。
+   - 7（能力値シャッフル）→ `status_shuffle()` は D2 第2弾で開放済み
+   - 2 人称メッセージ 3 箇所は D2 第3弾の `notify_self` 3 人称 seam に載せ替え
+
+  呼出元は `effect-player-resist-hurt.cpp` の 1 箇所のみで常にプレイヤーを渡すため、
+  **既定挙動は完全不変**（enabling 変更）。
+
+**検証:** フルビルド（g++ -O3 -Werror -Wall -Wextra）/ clang-format-18 済。
+
+### 残（後続）
+
+- 因果混乱をモンスターに実際に浴びせる経路（`effect_monster_nexus` 相当）の追加は
+  バランス変更のため C トラック方針（JSON オプトイン）で別途扱う。
+- `teleport_player_away` / `dimension_door` 等の残プリミティブは対象が
+  プレイヤー固定の文脈でしか使われないため据え置き。
 
 ---
 

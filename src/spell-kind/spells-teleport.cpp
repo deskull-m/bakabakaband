@@ -28,6 +28,7 @@
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
+#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "target/grid-selector.h"
 #include "target/target-checker.h"
@@ -378,14 +379,17 @@ bool teleport_player_aux(CreatureEntity &creature, POSITION dis, bool is_quantum
  * @param creature クリーチャーへの参照
  * @param dis 基本移動距離
  * @param mode オプション
+ * @return テレポートが実際に行われたらtrue
+ * @details 戻り値は提案 D3 で teleport_creature() から成否を伝えるために追加した。
+ *          既存の呼出は全て戻り値を無視しており、処理内容は変更していない。
  */
-void teleport_player(CreatureEntity &creature, POSITION dis, BIT_FLAGS mode)
+bool teleport_player(CreatureEntity &creature, POSITION dis, BIT_FLAGS mode)
 {
     const POSITION oy = creature.y;
     const POSITION ox = creature.x;
 
     if (!teleport_player_aux(creature, dis, false, i2enum<teleport_flags>(mode))) {
-        return;
+        return false;
     }
 
     /* Monsters with teleport ability may follow the creature */
@@ -408,6 +412,61 @@ void teleport_player(CreatureEntity &creature, POSITION dis, BIT_FLAGS mode)
             }
         }
     }
+
+    return true;
+}
+
+/*!
+ * @brief 対象クリーチャーをテレポートさせる統一プリミティブ (提案 D3)
+ * @param target テレポートさせるクリーチャー (プレイヤー / モンスターのいずれでもよい)
+ * @param dis 基本移動距離
+ * @param mode オプション
+ * @return テレポートが実際に行われたらtrue
+ * @details
+ * プレイヤーとモンスターでは移動先の選定アルゴリズムが本質的に異なる
+ * (プレイヤー: 候補全列挙から一様抽選 / モンスター: 乱数散布によるリトライ) ため、
+ * アルゴリズム自体は統合せず、対象の型で既存の実装へ振り分ける薄いディスパッチャとする。
+ * これにより「被対象がプレイヤーにもモンスターにもなり得る」処理
+ * (apply_nexus / 突然変異の RTELEPORT 等) が型分岐なしに書けるようになる。
+ * モンスター側の subject (経験値・視界更新の基準) は常にプレイヤーである。
+ */
+bool teleport_creature(CreatureEntity &target, POSITION dis, teleport_flags mode)
+{
+    if (target.is_player()) {
+        return teleport_player(target, dis, mode);
+    }
+
+    const auto m_idx = target.get_self_m_idx();
+    if (m_idx <= 0) {
+        return false;
+    }
+
+    return teleport_away(PlayerType::get_instance(), m_idx, dis, mode);
+}
+
+/*!
+ * @brief 対象クリーチャーを指定座標付近へテレポートさせる統一プリミティブ (提案 D3)
+ * @param target テレポートさせるクリーチャー (プレイヤー / モンスターのいずれでもよい)
+ * @param pos 目標座標
+ * @param mode オプション
+ * @details
+ * モンスター側の teleport_monster_to() は成功率 power を取るが、プレイヤー側は
+ * 常に成功するため、両者を揃えて power = 100 (必ず成功) で呼ぶ。
+ */
+void teleport_creature_to(CreatureEntity &target, const Pos2D &pos, teleport_flags mode)
+{
+    if (target.is_player()) {
+        teleport_player_to(target, pos.y, pos.x, mode);
+        return;
+    }
+
+    const auto m_idx = target.get_self_m_idx();
+    if (m_idx <= 0) {
+        return;
+    }
+
+    constexpr auto always_succeed = 100;
+    teleport_monster_to(PlayerType::get_instance(), m_idx, pos.y, pos.x, always_succeed, mode);
 }
 
 /*!
