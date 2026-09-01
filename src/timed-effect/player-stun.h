@@ -11,6 +11,7 @@ public:
 
     static PlayerStunRank get_rank(short value);
     static std::string_view get_stun_mes(PlayerStunRank stun_rank);
+    static const char *get_stun_mes_others(PlayerStunRank stun_rank);
     static short get_accumulation(int rank);
     static int get_accumulation_rank(int total, int damage);
 

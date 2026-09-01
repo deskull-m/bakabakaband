@@ -3930,7 +3930,7 @@ A/B と違い挙動が変わるため、対象範囲と数値はメンテナ判�
 | 番号 | 提案 | 種別 | 工数 | 価値 | 状態 |
 |---|---|---|---|---|---|
 | D1 | セービングスロー述語 `does_save_against()` 統一 | 純粋refactor | 小 | 中 | ✅ 完了 |
-| D2 | 回復・状態治療関数の is_player ガード除去 + メッセージ seam | 同化中核 | 中〜大 | 高 | ✅ 完了（回復・治療9関数＋能力値回復） |
+| D2 | 回復・状態治療関数の is_player ガード除去 + メッセージ seam | 同化中核 | 中〜大 | 高 | ✅ 完了（回復・治療9関数＋能力値回復＋3人称 seam） |
 | D3 | 統一クリーチャーテレポートプリミティブ | primitive | 中 | 中 | 計画 |
 | D4 | 属性ダメージ分類器（immune/resist/vuln）の共通化 | primitive | 中 | 中 | ✅ 第1弾完了（monster側 immune/hurt 共通化） |
 | D5 | 小規模統合（charm/control セーヴ統合ほか） | 純粋refactor | 小 | 低〜中 | ✅ 完了（charm/control。他2件は精査の上見送り） |
@@ -3957,7 +3957,7 @@ effect-monster-charm / mspell-status / mspell-floor / effect-player-resist-hurt�
 
 ---
 
-## 提案 D2: 回復・状態治療関数の is_player ガード除去 + メッセージ seam（同化の中核） ✅ 第1弾完了
+## 提案 D2: 回復・状態治療関数の is_player ガード除去 + メッセージ seam（同化の中核） ✅ 第1〜3弾完了
 
 ### ✅ 第1弾 完了内容（メッセージ seam + 回復6関数）
 
@@ -3987,13 +3987,46 @@ effect-monster-charm / mspell-status / mspell-floor / effect-player-resist-hurt�
 - フルビルド (g++ -O3 -Werror) / clang-format-18 で検証済。**回復・状態治療系 9 関数
   ＋能力値回復がモンスターに安全に適用可能**になった（現状 monster 呼出は無く挙動不変）。
 
-### 第3弾以降（残）
+### ✅ 第3弾 完了内容（3 人称メッセージ seam）
 
-- `notify_self` を**モンスター視認時の 3 人称文**へ拡張（現状はモンスター無表示）。
+**2 引数オーバーロードの新設:** `CreatureEntity::notify_self(std::string_view message,
+const char *others_format)` を追加（`creature-entity.{h,cpp}`）。
+
+- **プレイヤー**: `msg_print(message)`（1 引数版と完全に同一 ＝ **挙動完全不変**）。
+- **モンスター**: `is_visible_on_map()` が真のときに限り、`monster_desc()` で得た名前を
+  `others_format`（`"%s^"` 書式）に埋めて `msg_format()` で表示。非視認・
+  `monster_profile` 無しでは無表示（`is_visible_on_map()` が profile 有無を先に見るため
+  安全）。
+
+**移行サイト（計 42）:** `bad-status-setter.cpp` 20 / `buff-setter.cpp` 17 /
+`spells-status.cpp`(`life_stream`) 1 / `hp-mp-processor.cpp`(`hp_player` の 4 段階回復文)
+4 ＝ 実質 42 サイト（通知呼出し単位）。3 人称文は既存のモンスター向け文言（`effect-monster-oldies.cpp` /
+`mspell-status.cpp` の `"%s^は混乱から立ち直った。"` / `"%s^は麻痺した！"` /
+`"%s^の動きが遅くなった。"` 等）に語調を合わせた。
+
+**ランク別メッセージの対応表を新設:** 朦朧・切り傷は文言がランク依存のため、
+`PlayerStun::get_stun_mes_others(PlayerStunRank)` /
+`PlayerCut::get_cut_mes_others(PlayerCutRank)`（既存の `get_stun_mes` /
+`get_cut_mes` と対になる static）を追加し、`process_stun_status` /
+`decrease_charisma` から渡す。
+
+**1 引数版のまま残置したサイト（3 人称が意味を持たないプレイヤー固有処理）:**
+青魔法の学習中断（`"学習が続けられない！"`）・構えの崩れ（`"構えがとけた。"` /
+`"型が崩れた。"` 計 4 箇所）・朦朧時の頭痛（`"割れるような頭痛がする。"`、能力値低下の
+内部処理）・オクレ兄さん化の掛け声（`"「オクレ兄さん！」"`）。これらは今後モンスターに
+対応概念が生まれた時点で個別に 3 人称化する。
+
+**検証:** フルビルド（g++ -O3 -Werror -Wall -Wextra）/ clang-format-18 済。
+プレイヤー経路のメッセージ・乱数消費は不変。
+
+### 第4弾以降（残）
+
 - setter 群の残るプレイヤー専用テール（stance / spell 停止 / redraw）は no-op で
   モンスター無害だが、必要なら virtual 化で整理。
-- これにより「モンスターの回復・状態治療」を実際に使う機能（C トラックの回復
-  モンスター等）への足場が完成する。
+- 上記の「1 引数版のまま残置したサイト」の 3 人称化（対応概念の実装後）。
+- これで「モンスターの回復・状態治療」を実際に使う機能（C トラックの回復
+  モンスター等）への足場は完成した。当該機能側は C トラック方針（JSON オプトイン）で
+  段階導入すること。
 
 ### 参考: 当初の設計メモ
 

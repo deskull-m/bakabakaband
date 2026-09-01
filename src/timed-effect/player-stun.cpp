@@ -56,6 +56,31 @@ std::string_view PlayerStun::get_stun_mes(PlayerStunRank stun_rank)
     }
 }
 
+/*!
+ * @brief 朦朧ランクに対応する 3 人称メッセージ書式を返す (提案D2 第3弾).
+ * @param stun_rank 朦朧ランク
+ * @return "%s^" にクリーチャー名が入る書式文字列
+ */
+const char *PlayerStun::get_stun_mes_others(PlayerStunRank stun_rank)
+{
+    switch (stun_rank) {
+    case PlayerStunRank::NONE:
+        return "";
+    case PlayerStunRank::SLIGHT:
+        return _("%s^は少し朦朧としたようだ。", "%s^ has been slightly stunned.");
+    case PlayerStunRank::NORMAL:
+        return _("%s^は朦朧としたようだ。", "%s^ has been stunned.");
+    case PlayerStunRank::HARD:
+        return _("%s^はひどく朦朧としたようだ。", "%s^ has been heavily stunned.");
+    case PlayerStunRank::UNCONSCIOUS:
+        return _("%s^は意識が遠のいたようだ。", "%s^ has been knocked senseless.");
+    case PlayerStunRank::KNOCKED:
+        return _("%s^はぶっ倒れた！", "%s^ is knocked out!!");
+    default:
+        THROW_EXCEPTION(std::logic_error, "Invalid StunRank is specified!");
+    }
+}
+
 short PlayerStun::get_accumulation(int rank)
 {
     switch (rank) {
