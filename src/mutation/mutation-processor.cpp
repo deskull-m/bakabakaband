@@ -151,7 +151,8 @@ void process_world_aux_mutation(CreatureEntity &creature)
             disturb(creature, false, true);
             msg_print(_("あなたの位置は突然ひじょうに不確定になった...", "Your position suddenly seems very uncertain..."));
             msg_erase();
-            teleport_player(creature, 40, TELEPORT_PASSIVE);
+            // [提案D3] 統一プリミティブ経由。プレイヤーでは teleport_player() と等価。
+            teleport_creature(creature, 40, TELEPORT_PASSIVE);
         }
     }
 
@@ -557,11 +558,11 @@ void process_world_aux_mutation(CreatureEntity &creature)
 
 /*!
  * @brief モンスターの突然変異を 10 ゲームターン毎に処理する (提案C5)
- * @param player プレイヤー (メッセージ表示・テレポート処理の視点)
+ * @param player プレイヤー (メッセージ表示の視点)
  * @param monster 対象モンスター
  * @details プレイヤー用 process_world_aux_mutation() とは分離した、モンスターに
  *          意味のある能動突然変異のみを扱う専用処理。効果はモンスター安全な
- *          プリミティブ (set_monster_* / teleport_away / heal_hp 等) で適用し、プレイヤー専用の
+ *          プリミティブ (set_monster_* / teleport_creature / heal_hp 等) で適用し、プレイヤー専用の
  *          副作用 (BadStatusSetter の徳変化・UI プロンプト・脱糞等) は用いない。
  *          メッセージはモンスターが視認可能な時のみ表示する。
  */
@@ -606,7 +607,8 @@ void process_monster_mutation(CreatureEntity &player, CreatureEntity &monster)
     if (muta.has(PlayerMutationType::RTELEPORT) && (randint1(5000) == 88)) {
         if (!monster.has_resist_shard() && muta.has_not(PlayerMutationType::VTELEPORT) && !monster.has_anti_tele()) {
             notify(_("%sの位置は突然ひじょうに不確定になった...", "%s^'s position suddenly seems very uncertain..."));
-            teleport_away(player, m_idx, 40, TELEPORT_PASSIVE);
+            // [提案D3] 統一プリミティブ経由。モンスターでは teleport_away() と等価。
+            teleport_creature(monster, 40, TELEPORT_PASSIVE);
         }
     }
 

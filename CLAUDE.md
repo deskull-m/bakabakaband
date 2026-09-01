@@ -481,6 +481,30 @@ creature.notify_self(_("あなたは混乱した！", "You are confused!"),
 - **上流マージ時**: setter 内の `msg_print(_("あなたは…", "You …"))` は
   `notify_self(...)` へ載せ替えること（プレイヤー挙動は完全に同一）。
 
+### テレポートの統一プリミティブ (`teleport_creature`) — 提案 D3
+
+テレポートの移動先選定アルゴリズムはプレイヤー（候補全列挙から一様抽選）と
+モンスター（乱数散布のリトライ）で本質的に異なり、1 本化すると乱数消費列と
+移動先分布が変わってしまう。そのため**アルゴリズムは統合せず、対象の型で既存実装へ
+振り分ける薄いディスパッチャ**を用意している（`spell-kind/spells-teleport.h`）。
+
+```cpp
+bool teleport_creature(CreatureEntity &target, POSITION dis, teleport_flags mode);
+void teleport_creature_to(CreatureEntity &target, const Pos2D &pos, teleport_flags mode);
+```
+
+| 対象 | 委譲先 |
+|---|---|
+| プレイヤー | `teleport_player()` / `teleport_player_to()` |
+| モンスター | `teleport_away()` / `teleport_monster_to()`（subject は常に `PlayerType::get_instance()`、m_idx は `target.get_self_m_idx()`） |
+
+- **被対象の型が実行時に不定な処理**（`apply_nexus` / 突然変異の RTELEPORT 等）は
+  これを使うこと。型が確定している call site は従来どおり個別関数を直接呼んでよい。
+- `teleport_player()` は提案 D3 で `void` → `bool`（`teleport_player_aux()` の結果を
+  伝播）に変更済み。
+- `teleport_level(subject, m_idx)` の第 1 引数は**視点となるプレイヤー**、第 2 引数が
+  対象（`0` でプレイヤー自身）。元々モンスター対象を扱えるので統一プリミティブは不要。
+
 ### 最大HP算出の統一 (`maxhp` / `max_maxhp` の意味統一)
 
 プレイヤーとモンスターの最大HP算出を観点ごとに `CreatureEntity` の共通メソッドへ
@@ -1502,6 +1526,7 @@ bakabakaband 側と上流側でよくある構造的差異を以下のルール�
 | `creature.level_up_message` 読取 / 書込 | `creature.has_level_up_message()` / `set_level_up_message(X)` (提案 43) |
 | `creature.monk_notify_aux` / `creature.fishing_dir` / `creature.yoiyami` 読取 / 書込 | `creature.get_monk_notify_aux()` / `get_fishing_dir()` / `get_yoiyami()` / `set_X(value)` (提案 43)。yoiyami の `\|=` は `set_yoiyami(get_yoiyami() \| X)` |
 | 状態異常/バフ setter 内の 2 人称 `msg_print(_("あなたは…", "You …"))` | `creature.notify_self(2人称文)`、3 人称文がある状態なら `creature.notify_self(2人称文, _("%s^は…", "%s^ …"))` (提案 D2)。プレイヤーは 2 人称、モンスターは視認時のみ 3 人称で表示される |
+| `teleport_player(creature, dis, mode)` / `teleport_away(player, m_idx, ...)` (被対象の型が不定な文脈) | `teleport_creature(target, dis, mode)` / `teleport_creature_to(target, pos, mode)` (提案 D3)。型が確定している call site は従来の個別関数のままでよい |
 
 **GCC 固有の注意**:
 上流は MSVC 前提のことが多く、`<cstdint>` 等のインクルード漏れがあれば追加する。

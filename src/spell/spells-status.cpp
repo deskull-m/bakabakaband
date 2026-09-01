@@ -46,6 +46,7 @@
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
+#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "target/target-getter.h"
 #include "util/bit-flags-calculator.h"
@@ -616,47 +617,49 @@ std::shared_ptr<ItemEntity> cosmic_cast_off(CreatureEntity &creature, const Item
 }
 
 /*!
- * @brief プレイヤーの因果混乱処理 / Apply Nexus
- * @param monster 因果混乱をプレイヤーに与えたモンスターの情報参照
- * @param creature クリーチャーへの参照
+ * @brief 因果混乱処理 / Apply Nexus
+ * @param attacker 因果混乱を与えたモンスターの情報参照
+ * @param creature 因果混乱を受けるクリーチャーへの参照
+ * @details
+ * [提案D3] テレポートを統一プリミティブ (teleport_creature / teleport_creature_to)
+ * 経由にし、メッセージを notify_self seam (提案D2) に載せ替えたことで is_player
+ * ガードを撤去した。プレイヤー経路のメッセージ・乱数消費・移動処理は完全に不変。
+ * 現状の呼出元 (effect-player-resist-hurt.cpp) は常にプレイヤーを渡すため挙動は変わらない。
  */
 void apply_nexus(const CreatureEntity &attacker, CreatureEntity &creature)
 {
-    if (!creature.is_player()) {
-        return;
-    }
-
     switch (randint1(7)) {
     case 1:
     case 2:
     case 3: {
-        teleport_player(creature, 200, TELEPORT_PASSIVE);
+        teleport_creature(creature, 200, TELEPORT_PASSIVE);
         break;
     }
 
     case 4:
     case 5: {
-        teleport_player_to(creature, attacker.y, attacker.x, TELEPORT_PASSIVE);
+        teleport_creature_to(creature, attacker.get_position(), TELEPORT_PASSIVE);
         break;
     }
 
     case 6: {
         if (evaluate_percent(creature.get_skill_save())) {
-            msg_print(_("しかし効力を跳ね返した！", "You resist the effects!"));
+            creature.notify_self(_("しかし効力を跳ね返した！", "You resist the effects!"), _("%s^は効力を跳ね返した！", "%s^ resists the effects!"));
             break;
         }
 
-        teleport_level(creature, 0);
+        // teleport_level() の第 1 引数は視点となるプレイヤー、第 2 引数が対象 (0 ならプレイヤー自身)。
+        teleport_level(PlayerType::get_instance(), creature.is_player() ? 0 : creature.get_self_m_idx());
         break;
     }
 
     case 7: {
         if (evaluate_percent(creature.get_skill_save())) {
-            msg_print(_("しかし効力を跳ね返した！", "You resist the effects!"));
+            creature.notify_self(_("しかし効力を跳ね返した！", "You resist the effects!"), _("%s^は効力を跳ね返した！", "%s^ resists the effects!"));
             break;
         }
 
-        msg_print(_("体がねじれ始めた...", "Your body starts to scramble..."));
+        creature.notify_self(_("体がねじれ始めた...", "Your body starts to scramble..."), _("%s^の体がねじれ始めた...", "%s^'s body starts to scramble..."));
         status_shuffle(creature);
         break;
     }
