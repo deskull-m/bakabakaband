@@ -165,8 +165,11 @@ SpoilerOutputResultType spoil_obj_desc()
 
         ofs << "\n\n"
             << name << "\n\n";
+
+        // describe_flavor() は creature を読み取るのみ (OD_NAME_ONLY 経路では name の参照だけ) で
+        // 変更しないため、ループ不変な dummy はループ外で 1 度だけ構築すれば足りる。
+        PlayerType dummy;
         for (const auto &bi_id : whats) {
-            PlayerType dummy;
             const auto item = prepare_item_for_obj_desc(bi_id);
             const auto item_name = describe_flavor(dummy, item, OD_NAME_ONLY | OD_STORE);
             const auto &[depth, price] = get_info(item);

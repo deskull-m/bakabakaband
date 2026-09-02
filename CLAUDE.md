@@ -36,6 +36,12 @@ CreatureEntity  (基底クラス)  src/system/creature-entity.h
 `CreatureEntity::monster_profile` に `MonsterProfile`
 （`src/system/monster-profile.h`）を詰めて使用する。
 
+**`PlayerType` はデータメンバを一切持たない**（11 個の virtual override と 2 個の
+static アクセサのみの薄い殻）。実測で `sizeof(PlayerType) == sizeof(CreatureEntity)`
+（いずれも 2224 バイト）であり、コンストラクタも `= default`。よって
+「`PlayerType` を軽量な `CreatureEntity` に置き換えて軽量化する」類の変更には
+**一切の効果が無い**（`is_player()` が反転するぶんリスクだけが残る。提案 D6 参照）。
+
 ### 純粋仮想メソッド（必ず両クラスで実装）
 
 | メソッド | 説明 |
