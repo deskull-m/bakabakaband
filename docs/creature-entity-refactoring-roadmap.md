@@ -3934,7 +3934,7 @@ A/B と違い挙動が変わるため、対象範囲と数値はメンテナ判�
 | D3 | 統一クリーチャーテレポートプリミティブ | primitive | 中 | 中 | ✅ 完了（薄いディスパッチャ＋apply_nexus 開放） |
 | D4 | 属性ダメージ分類器（immune/resist/vuln）の共通化 | primitive | 中 | 中 | ✅ 第1弾完了（monster側 immune/hurt 共通化） |
 | D5 | 小規模統合（charm/control セーヴ統合ほか） | 純粋refactor | 小 | 低〜中 | ✅ 完了（charm/control。他2件は精査の上見送り） |
-| D6 | spoiler/lore の PlayerType dummy 軽量化（※前提訂正） | 構造 | 小 | 低 | 計画（低優先・前提誤り訂正済） |
+| D6 | spoiler/lore の PlayerType dummy 軽量化 | 構造 | 小 | 低 | ⏭️ 見送り（前提が完全に消滅・付随する無駄のみ修正） |
 | D7 | モンスターの poison DoT（opt-in 機能） | 機能(C隣接) | 中 | 中 | ✅ 完了（poison、opt-in・既定OFF） |
 
 ---
@@ -4222,17 +4222,54 @@ dark の 2 サイトを集約（native_resist 条件も維持、挙動不変）�
 
 ---
 
-## 提案 D6: spoiler/lore の PlayerType dummy 軽量化（前提訂正済・低優先）
+## 提案 D6: spoiler/lore の PlayerType dummy 軽量化 ⏭️ 見送り（前提が完全に消滅）
 
-**⚠️ 当初前提の訂正（実コード検証）:** 調査時「`CreatureEntity` はインスタンス化
-不可」としたが**誤り**。`CreatureEntity` に純粋仮想は無く（`= 0` は全てメンバ既定値）、
-モンスターは `std::vector<CreatureEntity> m_list` として**直接インスタンス化されている**
+**⚠️ 第1次訂正（既出）:** 調査時「`CreatureEntity` はインスタンス化不可」としたが
+**誤り**。`CreatureEntity` に純粋仮想は無く（`= 0` は全てメンバ既定値）、モンスターは
+`std::vector<CreatureEntity> m_list` として**直接インスタンス化されている**
 （＝ concrete class）。よって「インスタンス化可能化」という課題自体が存在しない。
 
-**残る小課題:** spoiler/lore が便宜上 `PlayerType dummy;`（重量オブジェクト）を作る
-2 箇所 (`display-lore.cpp:122` / `items-spoiler.cpp:167`)。原理的には軽量な
-`CreatureEntity` で置換可能だが、callee がアクセスするフィールドを満たす必要があり、
-価値は低い（wizard/spoiler の非ゲーム経路）。**低優先。**
+### ⚠️ 第2次訂正: 「軽量化」の前提も成立しない（本提案の結論）
+
+残る小課題は「spoiler/lore が便宜上 `PlayerType dummy;`（**重量オブジェクト**）を作る
+2 箇所を軽量な `CreatureEntity` に置換する」であった。実測により**この前提自体が
+誤りであることが判明**した。
+
+```text
+sizeof(PlayerType)     == 2224
+sizeof(CreatureEntity) == 2224   // 完全一致
+```
+
+`PlayerType` は `CreatureEntity` に対し**データメンバを 1 つも追加していない**
+（`player-type-definition.h`: 11 個の virtual override ＋ 2 個の static アクセサ
+のみの薄い殻）。コンストラクタも `PlayerType::PlayerType() = default;` で、
+構築コストの実体は基底 `CreatureEntity` の `std::map` / `std::vector` /
+`std::string` メンバであり**両者で同一**。
+
+したがって `PlayerType dummy;` → `CreatureEntity dummy;` の置換は:
+
+- **メモリ削減 0 バイト**・**構築コスト削減 0**
+- 一方で `is_player()` が `true` → `false` に**反転**し、callee の分岐挙動が変わる
+
+**＝ 得るものが無く、リスクだけがある。よって本提案は見送りとする。**
+E トラックの調査所見「`PlayerType` は既に薄い殻で大規模 hoist は残っていない」と
+同じ結論に、別経路から到達したことになる。
+
+### ✅ 付随して発見・修正した実際の無駄（loop-invariant な dummy 構築）
+
+型の話とは独立に、`wizard/items-spoiler.cpp` の `spoil_obj_desc()` が
+`PlayerType dummy;` を**内側ループの中**で構築していた（アイテム 1 個ごとに
+2224 バイト・`std::map`/`std::vector`/`std::string` メンバ込みで構築・破棄）。
+
+`describe_flavor(dummy, item, OD_NAME_ONLY | OD_STORE, ...)` は creature を
+**読み取るのみ**（`OD_NAME_ONLY` 指定時は `describe_named_item()` の直後に早期
+return し、そこで参照されるのは `creature.name` だけ）で一切変更しないため、
+**ループ外へ巻き上げても挙動は完全に不変**。1 箇所修正済み。
+
+`view/display-lore.cpp` の `output_monster_spoiler()` 側も同型
+（monrace ごとに約 2,300 回構築）だが、こちらは dummy が関数ローカルのため
+巻き上げには公開関数のシグネチャ変更が必要で、debug 専用スポイラー出力
+（既に行単位のファイル I/O を伴う経路）に対して churn が見合わない。**据え置き。**
 
 **別途の小改善（→ 提案 E2 で完了）:** `PlayerType::should_skip_natural_regen` /
 `apply_state_regen_modifier`（Samurai/Monk 構えの再生補正）の `const_cast<PlayerType&>`
@@ -4268,7 +4305,7 @@ BadStatusSetter は実質プレイヤー専用）。よって tick だけ足し�
 ## D トラック着手順の推奨
 
 **D1（完了）→ D5（小整理）→ D4（分類器）→ D2（同化中核）→ D3（テレポート）→
-D6（構造）→ D7（機能）**。純粋 refactor で安全な D1/D5 を先に、"同化"の本丸で
+D6（構造・見送り）→ D7（機能）**。純粋 refactor で安全な D1/D5 を先に、"同化"の本丸で
 価値の高い D2 は seam 設計後に段階着手、機能寄りの D7 は C トラック方針
 （opt-in・バランス確認）で扱う。
 
