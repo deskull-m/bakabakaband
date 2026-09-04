@@ -2249,6 +2249,18 @@ public:
     bool has_race_granted_speed() const;
     //! 付与された player_race 由来のテレパシー (TR_TELEPATHY) を AI 索敵で使えるか (提案C3第1弾。opt-in・既定OFF・モンスター専用)
     bool has_race_granted_telepathy() const;
+
+    /*!
+     * @brief クリーチャー自身のテレパシーで相手の存在を感知できるか (提案C3)
+     * @return 感知できるならtrue
+     * @details 付与種族由来のテレパシー (C1/C3 第1弾、`applies_player_race_telepathy` で
+     *          opt-in) と ESP 突然変異 (C5) のいずれかを持つかを返す。**どちらも既定 OFF**
+     *          なので、既存モンスターでは常に false ＝ 既定バランス不変。
+     *          monrace ネイティブの ESP 相当フラグは含めない (含めると既存モンスターの
+     *          AI 挙動が変わってしまうため)。装備由来のプレイヤーテレパシー
+     *          (`has_telepathy()`) とも別物。
+     */
+    bool has_telepathic_awareness() const;
     virtual bool has_two_handed_weapons();
     virtual BIT_FLAGS has_sh_fire();
     virtual BIT_FLAGS has_sh_elec();

@@ -3178,7 +3178,7 @@ JSON で明示付与**する形で導入する。これにより:
 | C0 | 成長状態の savefile 完全永続化 (`hp_table`) | ほぼ完了 | 小 | 小 | バージョン bump 要否 |
 | C1 | 種族・職業の顕在化（`prace`/`pclass` 付与） | ✅ cache 有 | 中 | 高 | ✅ 1(付与)/2(基本5)/3(二次7)/4(恐怖)/5(自由行動)/6(光闇)/7(複合攻撃) 完了 |
 | C2 | 能力成長の拡張（stat / 熟練度） | ✅ 成長機構 | 中 | 中 | ✅ stat成長/熟練度=近接命中/STR→近接ダメージ/STR・DEX→命中/DEX→AC/WIS→セーヴ(全opt-in `applies_stat_combat_bonus`) 完了 |
-| C3 | ESP のモンスター付与 | 🔴 新規 AI 要 | 中〜大 | 中 | ESP をモンスター AI にどう効かせるか（新規設計） |
+| C3 | ESP のモンスター付与 | 🔴 新規 AI 要 | 中〜大 | 中 | ✅ 1(超隠密無視)/2(睡眠時の壁越し・長距離覚醒) 完了。種族別 ESP は要設計判断 |
 | C4 | MP 消費詠唱 | 🟡 pool 有 | 中 | 中 | ✅ 完了（opt-in・レベル比例コスト） |
 | C5 | 突然変異のモンスター運用 | 🟡 処理汎用 | 中 | 中 | ✅ 完了（3段: 付与→専用処理→発火） |
 | C6 | 魔法領域詠唱のモンスター運用 | 🔴 別系統 | 大 | 中〜高 | ✅ 完了（案A: realm→ability・opt-in） |
@@ -3539,8 +3539,48 @@ one-monster-placer 等）がプレイヤーを渡すことを確認済。**モ�
 共通ヘルパ `race_grants_tr_flag(TR_TELEPATHY)`。**C トラックで初めて AI 挙動に触れた反映**
 （効果は超隠密無視に限定＝低リスク）。フルビルド (BUILD_EXIT=0) / validate_json 8/8 で検証済。
 
-**残（第2弾以降・大）:** 睡眠中モンスターの ESP による覚醒、種族別 ESP（esp_evil 等）で
-プレイヤー種別を感知、壁越し索敵距離等。いずれも新規 AI ＋バランス判断を要する大物。
+### ✅ 第2弾 完了（睡眠中モンスターの ESP 覚醒＝壁越し・長距離感知）
+
+**対象:** `process_monsters_timed_effect_aux()`（`monster/monster-status.cpp`）の
+`SLEEP_OR_PARALYSIS` 分岐にある「覚醒判定に入るか」のゲート。着手前は 2 条件のみ:
+
+```cpp
+if (cdis < MAX_MONSTER_SENSING) {          // 100
+    if (cdis <= aaf) { ... }                // 種族の索敵半径 (視線不要)
+    else if ((cdis <= MAX_PLAYER_SIGHT) && has_los_at(...)) { ... }  // 20 かつ視線あり
+}
+```
+
+**実装:** テレパシー持ちは相手の「心」を直接感知するため、**種族の索敵半径 (`aaf`) や
+視線の有無によらず `MAX_MONSTER_SENSING`(=100) 内なら覚醒判定に入る**ようにした
+（先頭に条件を 1 つ足す純増分。既存 2 条件は順序・内容とも不変）。
+
+- 実データの `aaf` は中央値 20（最頻値 20 が 811 体）なので、**中央的なモンスターで
+  索敵半径が 5 倍**に広がり、かつ視線条件（20 グリッド）を超えて壁越しに効く。
+- ゲート通過後の「気付き」判定 `(notice^3) > csleep_noise` と覚醒量 `d` の計算は
+  **一切変更していない**。テレパシーは「感知範囲」だけを広げ、隠密（`csleep_noise`）の
+  効果は従来どおり残る（覚醒が即時にならない保守的スコープ）。
+
+**述語の集約:** `CreatureEntity::has_telepathic_awareness()` を新設し、
+付与種族由来 (`has_race_granted_telepathy()`、C3 第1弾) と ESP 突然変異 (C5) の
+論理和を 1 箇所に集約。第1弾で実装した `process_stealth()` の同一の二項判定も
+この述語に置換（DRY 化）。monrace ネイティブの ESP 相当フラグは**含めない**
+（含めると既存モンスターの AI 挙動が変わるため）。装備由来のプレイヤーテレパシー
+(`has_telepathy()`) とも別物。
+
+**既定バランス不変の根拠（データ実測）:** `applies_player_race_telepathy` の既定は
+`false` で、**実データ `MonraceDefinitions.jsonc` で指定している monrace は 0 件**。
+`"mutations"` キーを持つ monrace も**0 件**。よって全既存モンスターで
+`has_telepathic_awareness()` は常に `false` となり、覚醒挙動は完全に不変。
+
+**検証:** フルビルド（g++ -O3 -Werror -Wall -Wextra）/ clang-format-18 済。
+あわせて第1弾の置換で不要になった `mutation/mutation-flag-types.h` の include を
+`monster-processor.cpp` から削除。
+
+**残（第3弾以降・大・要メンテナ判断）:** 種族別 ESP（`esp_evil` / `esp_undead` 等）で
+プレイヤーの種別を選択的に感知する仕組み。プレイヤー側の「種別」をどう定義して
+モンスターの ESP 種別と突き合わせるかという**新規のゲーム設計判断**を要するため、
+本ロードマップの範囲では扱わない。
 
 ---
 

@@ -770,13 +770,26 @@ void teleport_creature_to(CreatureEntity &target, const Pos2D &pos, teleport_fla
 - **反映対象（C3第1弾: テレパシー＝AI 索敵）:** テレパシー `TR_TELEPATHY`。**別フラグ
   `applies_player_race_telepathy`（既定 `false`=オプトイン）**。`process_stealth`
   （`monster-processor.cpp`、モンスターがプレイヤーに気付くか判定）の冒頭で
-  `has_race_granted_telepathy()` が真なら `return true`（常に気付く）。効果は**忍者の
+  テレパシーを持てば `return true`（常に気付く）。効果は**忍者の
   超隠密状態（`ninja_data->s_stealth`）を無視**する点に限定される（通常時はモンスターは
   元々プレイヤー位置を把握しているため、awareness ギャップは超隠密のみ）。**C トラックで
-  初めて AI 挙動に触れた反映**。壁越し感知・睡眠中の感知等のより広い ESP は新規 AI・
-  バランス判断を要するため将来段（roadmap C3 参照）。プレイヤー無敵化（透明）は本ゲームで
+  初めて AI 挙動に触れた反映**。プレイヤー無敵化（透明）は本ゲームで
   モンスター AI 要因でないため see_invis 反映は対象外。述語 `has_race_granted_telepathy()`
   は共通ヘルパ `race_grants_tr_flag(TR_TELEPATHY)` ＋有効化フラグ。
+- **反映対象（C3第2弾: テレパシー＝睡眠時の壁越し・長距離覚醒）:** 同じテレパシーを
+  **睡眠中モンスターの覚醒判定**にも反映。`process_monsters_timed_effect_aux()`
+  （`monster/monster-status.cpp`）の `SLEEP_OR_PARALYSIS` 分岐で、テレパシー持ちは
+  **種族の索敵半径 `aaf` や視線の有無によらず `MAX_MONSTER_SENSING`(=100) 内なら
+  覚醒判定に入る**（既存 2 条件の手前に条件を 1 つ足す純増分で、既存条件は不変）。
+  実データの `aaf` は中央値 20 なので中央的な個体で索敵半径が約 5 倍になり、視線条件
+  （20 グリッド）を超えて壁越しに効く。**ゲート通過後の「気付き」判定
+  `(notice^3) > csleep_noise` と覚醒量 `d` は一切変更しない**ため、隠密の効果は従来どおり
+  残る（覚醒が即時にならない保守的スコープ）。
+- **テレパシー述語の集約:** 付与種族由来（C3）と ESP 突然変異（C5）の論理和を
+  `CreatureEntity::has_telepathic_awareness()` に集約し、`process_stealth()` と
+  睡眠覚醒判定の双方で共用する。monrace ネイティブの ESP 相当フラグは**含めない**
+  （含めると既存モンスターの AI 挙動が変わるため）。装備由来のプレイヤーテレパシー
+  `has_telepathy()` とも別物。
 - **共通述語の配置:** `target_race_resists_element(EffectMonster*, tr_type)` は
   `effect-monster-util.{h,cpp}` に配置（属性ダメージ／状態異常の両 TU から使う共通述語）。
   ダメージ軽減 `apply_monster_race_resistance(em_ptr)`（基本 5 属性用の 1/3 軽減）は
@@ -945,8 +958,9 @@ C トラック第 4 弾で、**JSON オプトイン方式**（既定=なし=バ�
   - **REGEN**（急回復）: `has_regen_flag()` のモンスター分岐へ `has_mutation(REGEN)` を
     OR-in。native `REGENERATE` / 種族由来再生（C1第10弾）と同様に自然回復量を 2 倍化
     （`compute_regen_amount`）。
-  - **ESP**（テレパシー）: `process_stealth()` の `has_race_granted_telepathy()`（C3第1弾）
-    判定へ `has_mutation(ESP)` を OR-in。忍者の超隠密を無視して常に気付く。
+  - **ESP**（テレパシー）: C3 のテレパシー判定へ OR-in（`has_telepathic_awareness()` に
+    集約）。忍者の超隠密を無視して常に気付き（C3第1弾）、睡眠中なら索敵半径・視線に
+    よらず覚醒判定に入る（C3第2弾）。
   - **自由行動**（睡眠/拘束耐性）: **MOTION**（正確で力強い動作＝`TR_FREE_ACT`）。
     C1第5弾で `TR_FREE_ACT` を配線済みの `effect_monster_old_sleep` / `effect_monster_stasis`
     （`effect-monster-oldies.cpp`）の `has_resistance` 集約へ `has_mutation(MOTION)` を OR-in。
