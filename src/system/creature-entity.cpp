@@ -2458,6 +2458,14 @@ bool CreatureEntity::has_race_granted_telepathy() const
     // [提案C3第1弾] 付与種族のテレパシーを AI 索敵へ反映 (opt-in・既定OFF・モンスター専用)
     return this->race_grants_tr_flag(TR_TELEPATHY) && this->get_monrace().applies_player_race_telepathy;
 }
+
+bool CreatureEntity::has_telepathic_awareness() const
+{
+    // [提案C3] 付与種族由来 (C3 第1弾) と ESP 突然変異 (C5) のテレパシーを集約した述語。
+    // 索敵 (超隠密無視) と睡眠時の覚醒判定で共用する。いずれも opt-in・既定 OFF。
+    return this->has_race_granted_telepathy() || this->has_mutation(PlayerMutationType::ESP);
+}
+
 bool CreatureEntity::has_two_handed_weapons()
 {
     if (this->has_monster_profile()) {

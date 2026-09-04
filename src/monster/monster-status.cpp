@@ -118,8 +118,16 @@ static void process_monsters_timed_effect_aux(CreatureEntity &creature, MONSTER_
         auto &monrace = monster.get_monrace();
         auto is_wakeup = false;
         if (cdis < MAX_MONSTER_SENSING) {
+            // [提案C3第2弾] テレパシー持ちは相手の「心」を直接感知するため、種族の索敵半径 (aaf) や
+            // 視線の有無によらず MAX_MONSTER_SENSING 内なら覚醒判定に入る (opt-in・既定OFF)。
+            // 付与種族由来 (applies_player_race_telepathy) と ESP 突然変異のいずれも既定 OFF のため、
+            // 既存モンスターでは has_telepathic_awareness() が常に false となり挙動は不変。
+            if (monster.has_telepathic_awareness()) {
+                is_wakeup = true;
+            }
+
             /* Handle "sensing radius" */
-            if (cdis <= (monster.is_pet() ? ((monrace.aaf > MAX_PLAYER_SIGHT) ? MAX_PLAYER_SIGHT : monrace.aaf) : monrace.aaf)) {
+            else if (cdis <= (monster.is_pet() ? ((monrace.aaf > MAX_PLAYER_SIGHT) ? MAX_PLAYER_SIGHT : monrace.aaf) : monrace.aaf)) {
                 is_wakeup = true;
             }
 
