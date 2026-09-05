@@ -37,3 +37,11 @@ concptr desc_moan3[MAX_MOANS] = {
     "「種モミじゃ～種モミじゃ～」",
     "「は…半年、半年の間探し回ってようやくこれだけ…」",
 };
+
+/*! 撮り鉄メッセージテーブル / Trainspotter moan messages */
+concptr desc_moan_toritetsu[MAX_MOANS] = {
+    _("は「どけええええ！写り込んでんだよ！」と怒鳴っている。", "screams 'GET OUT OF THE WAY! You're in my shot!'"),
+    _("は「ここは俺の撮影地だ、勝手に入るな！」と喚いている。", "yells 'This is MY photo spot! Stay out of it!'"),
+    _("は「邪魔な柵は引っこ抜いておいた」と得意げに語っている。", "brags 'I pulled out that fence; it was ruining the composition.'"),
+    _("は三脚を振り回しながら列車の時刻を叫んでいる。", "waves a tripod around while shouting train timetables."),
+};
