@@ -325,6 +325,7 @@ enum class MonraceId : int16_t {
     KING_SOLDIER = 2282,
     POLYGON_SPIN = 2343, // まわるポリゴン（hengband#5180 相当）
     HUNGRY_OLD_MAN = 2344, // 亡霊『はらへりじじい』（hengband#5180 相当）
+    TORITETSU = 2362, // 撮り鉄
     // ボーラス・アライアンス (MtG)
     TIBALT = 1110, // 悪鬼の血脈『ティボルト』
     TIBALTS_RAGER = 1322, // ティボルトの憤怒鬼
