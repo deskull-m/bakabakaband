@@ -8,9 +8,11 @@
 #pragma once
 
 #include "inventory/inventory-slot-types.h"
+#include "system/angband.h"
 #include "system/monrace/body-structure-types.h"
 #include "system/monrace/extended-slot.h"
 #include <bitset>
+#include <string_view>
 #include <vector>
 
 /*!
@@ -56,3 +58,19 @@ private:
  * @return ポリシー (static 寿命)
  */
 const BodySlotPolicy &get_body_slot_policy(BodyStructureType type);
+
+/*!
+ * @brief 体構造の表示名を取得する
+ * @param type 体構造
+ * @return ローカライズされた表示名 (静的文字列)
+ * @details c コマンドのステータス表示と r コマンドの思い出表示で共用し、
+ *          呼称が食い違わないようにする。
+ */
+std::string_view body_structure_name(BodyStructureType type);
+
+/*!
+ * @brief 体構造の表示色を取得する
+ * @param type 体構造
+ * @return 表示色
+ */
+TERM_COLOR body_structure_color(BodyStructureType type);
