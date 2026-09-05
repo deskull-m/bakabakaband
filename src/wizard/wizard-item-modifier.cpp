@@ -1013,12 +1013,14 @@ WishResultType do_cmd_wishing(CreatureEntity &creature, int prob, bool allow_art
     if (exam_base) {
         auto max_len = 0;
         const auto &baseitems = BaseitemList::get_instance();
+        // ベースアイテムの照合用なので、モンスター種族が未設定の人形・像・死体類は種族名を省いて記述する
+        constexpr auto mode = OD_OMIT_PREFIX | OD_NAME_ONLY | OD_STORE | OD_OMIT_MONRACE;
         for (short bi_id : baseitems.collect_valid_bi_ids()) {
             ItemEntity item(bi_id);
 #ifdef JP
-            const auto item_name = describe_flavor(creature, item, (OD_OMIT_PREFIX | OD_NAME_ONLY | OD_STORE));
+            const auto item_name = describe_flavor(creature, item, mode);
 #else
-            const auto item_name = str_tolower(describe_flavor(creature, item, (OD_OMIT_PREFIX | OD_NAME_ONLY | OD_STORE)));
+            const auto item_name = str_tolower(describe_flavor(creature, item, mode));
 #endif
             if (cheat_xtra) {
                 msg_format("Matching object No.%d %s", bi_id, item_name.data());
