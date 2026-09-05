@@ -798,20 +798,24 @@ short CreatureEntity::select_melee_weapon_slot(int blow_index, RaceBlowMethodTyp
     }
 }
 
+BodyStructureType CreatureEntity::get_body_structure() const
+{
+    // プレイヤーで monster へ polymorph していない通常状態は HUMANOID 固定。
+    if (this->is_player() && this->get_r_idx() == MonraceId::PLAYER) {
+        return BodyStructureType::HUMANOID;
+    }
+
+    // モンスター、または monster 化したプレイヤーは種族定義の体構造に従う。
+    return this->get_monrace().body_structure;
+}
+
 bool CreatureEntity::can_equip_to(int slot) const
 {
     if (slot < INVEN_MAIN_HAND || slot >= INVEN_TOTAL) {
         return false;
     }
 
-    // プレイヤーで monster へ polymorph していない通常状態: HUMANOID 想定で全スロット許可
-    if (this->is_player() && this->get_r_idx() == MonraceId::PLAYER) {
-        return true;
-    }
-
-    // モンスター、または monster 化したプレイヤー: 種族の body_structure に対応するポリシーを参照
-    const auto &monrace = this->get_monrace();
-    const auto &policy = get_body_slot_policy(monrace.body_structure);
+    const auto &policy = get_body_slot_policy(this->get_body_structure());
     return policy.is_allowed(slot);
 }
 

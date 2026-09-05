@@ -22,6 +22,7 @@
 #include "system/baseitem/baseitem-list.h"
 #include "system/creature-entity.h"
 #include "system/enums/monrace/monrace-id.h"
+#include "system/monrace/body-structure-policy.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
 #include "system/monrace/monrace-record.h"
@@ -393,30 +394,11 @@ void display_monster_kind_tags(lore_type *lore_ptr)
         hook_c_roff(TERM_YELLOW, _("[天使]", "[angel]"));
     }
 
-    // [モンスター体構造] 体構造タグ (HUMANOID は記載省略)
-    switch (lore_ptr->monrace->body_structure) {
-    case BodyStructureType::HUMANOID:
-        break; // デフォルト、記載省略
-    case BodyStructureType::BIPEDAL:
-        hook_c_roff(TERM_L_BLUE, _("[二足型]", "[bipedal]"));
-        break;
-    case BodyStructureType::QUADRUPED:
-        hook_c_roff(TERM_L_BLUE, _("[四足型]", "[quadruped]"));
-        break;
-    case BodyStructureType::SERPENTINE:
-        hook_c_roff(TERM_L_BLUE, _("[蛇型]", "[serpentine]"));
-        break;
-    case BodyStructureType::AMORPHOUS:
-        hook_c_roff(TERM_L_BLUE, _("[不定形]", "[amorphous]"));
-        break;
-    case BodyStructureType::INCORPOREAL:
-        hook_c_roff(TERM_L_DARK, _("[非実体]", "[incorporeal]"));
-        break;
-    case BodyStructureType::DRACONIC:
-        hook_c_roff(TERM_ORANGE, _("[竜体]", "[draconic]"));
-        break;
-    case BodyStructureType::MAX:
-        break;
+    // [モンスター体構造] 体構造タグ (HUMANOID は既定なので記載省略)
+    // 呼称・表示色は c コマンドのステータス表示と共用する (body-structure-policy.h)。
+    const auto body_structure = lore_ptr->monrace->body_structure;
+    if ((body_structure != BodyStructureType::HUMANOID) && (body_structure != BodyStructureType::MAX)) {
+        hook_c_roff(body_structure_color(body_structure), format("[%s]", body_structure_name(body_structure).data()));
     }
 
     hooked_roff("\n");

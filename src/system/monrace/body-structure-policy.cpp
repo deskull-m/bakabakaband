@@ -1,4 +1,6 @@
 #include "system/monrace/body-structure-policy.h"
+#include "locale/language-switcher.h"
+#include "term/term-color-types.h"
 #include "util/enum-converter.h"
 #include <array>
 
@@ -58,6 +60,49 @@ const std::array<BodySlotPolicy, enum2i(BodyStructureType::MAX)> body_slot_polic
     BodySlotPolicy(make_all_mask(), { ExtendedSlotType::TAIL_RING, ExtendedSlotType::WING_LEFT, ExtendedSlotType::WING_RIGHT }),
 };
 
+}
+
+std::string_view body_structure_name(BodyStructureType type)
+{
+    switch (type) {
+    case BodyStructureType::HUMANOID:
+        return _("人型", "humanoid");
+    case BodyStructureType::BIPEDAL:
+        return _("二足型", "bipedal");
+    case BodyStructureType::QUADRUPED:
+        return _("四足型", "quadruped");
+    case BodyStructureType::SERPENTINE:
+        return _("蛇型", "serpentine");
+    case BodyStructureType::AMORPHOUS:
+        return _("不定形", "amorphous");
+    case BodyStructureType::INCORPOREAL:
+        return _("非実体", "incorporeal");
+    case BodyStructureType::DRACONIC:
+        return _("竜体", "draconic");
+    case BodyStructureType::MAX:
+        break;
+    }
+
+    return _("不明", "unknown");
+}
+
+TERM_COLOR body_structure_color(BodyStructureType type)
+{
+    switch (type) {
+    case BodyStructureType::INCORPOREAL:
+        return TERM_L_DARK;
+    case BodyStructureType::DRACONIC:
+        return TERM_ORANGE;
+    case BodyStructureType::HUMANOID:
+    case BodyStructureType::BIPEDAL:
+    case BodyStructureType::QUADRUPED:
+    case BodyStructureType::SERPENTINE:
+    case BodyStructureType::AMORPHOUS:
+    case BodyStructureType::MAX:
+        break;
+    }
+
+    return TERM_L_BLUE;
 }
 
 const BodySlotPolicy &get_body_slot_policy(BodyStructureType type)

@@ -34,6 +34,7 @@
 #include "system/dungeon/quest-definition.h"
 #include "system/floor/floor-info.h"
 #include "system/item-entity.h"
+#include "system/monrace/body-structure-policy.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
 #include "term/gameterm.h"
@@ -373,6 +374,12 @@ tl::optional<int> display_player(CreatureEntity &creature, const int tmp_mode)
         auto color = (creature.get_r_idx() == creature.get_ap_r_idx()) ? TERM_L_GREEN : TERM_YELLOW;
         display_player_one_line(ENTRY_APPARENT_RACE, apparent_monrace.name, color);
     }
+
+    // 体構造 (人型 / 四足型 / 蛇型 等) を表示する。
+    // player_birth_as_monster でモンスターを選んだ場合、人型以外になり装備可能部位が
+    // 変わるため、その形状を明示する (通常のプレイヤーは常に「人型」)。
+    const auto body_structure = creature.get_body_structure();
+    display_player_one_line(ENTRY_BODY_STRUCTURE, body_structure_name(body_structure), body_structure_color(body_structure));
 
     display_phisique(creature);
     display_player_stats(creature);

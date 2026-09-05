@@ -19,6 +19,7 @@
 | Phase 2.6 | AC / 耐性集計の extended_inventory 反映 (FLAG_CAUSE_INVEN_EXTENDED) | ✅ |
 | Phase 2.7 | extended_equipment_slots の JSON 個別上書き | ✅ |
 | 表示 | r recall に体構造タグ表示、装備時メッセージ | ✅ |
+| 表示 | c ステータス 1 ページ目に自分の体構造を表示 (2026-09-01) | ✅ |
 | 分類調整 | D → DRACONIC、n → HUMANOID リファインメント | ✅ |
 
 **現状分類分布**:
@@ -43,6 +44,8 @@
 - `src/save/monster-writer.cpp` + `src/load/old/monster-loader-savefile50.cpp` (save/load)
 - `src/view/display-player-inventory-page.{h,cpp}` (拡張部位セクション)
 - `src/view/display-lore.cpp` (体構造タグ)
+- `src/view/display-player.cpp` + `src/view/display-util.cpp` + `src/view/status-first-page.h` (c ステータスの体構造行)
+- `src/test/system/monrace/test-body-structure-policy.cpp` (ポリシー・表示名のユニットテスト)
 - `src/monster-floor/monster-object.cpp` (装備時メッセージ)
 - `lib/edit/MonraceDefinitions.jsonc` (全モンスターの body_structure 設定)
 
@@ -506,9 +509,13 @@ ExtendedSlot 参照は `creature.get_extended_inventory(slot_id)`
 1. **AMORPHOUS のリング装備可否**: スライムは「擬足にリングをはめる」
    と考えると面白いが、不自然との意見もあり。最終決定は実装時。
 2. **プレイヤーが装備不可能なボディタイプを持つ可能性**:
-   将来「変身」「変異」でプレイヤーも body_structure を変えるか?
-   現状はプレイヤー = HUMANOID 固定で良いが、`mimic_form` 連動の
-   検討余地あり。
+   → **一部実現済み**。`player_birth_as_monster` でモンスターを選ぶと
+   `r_idx != MonraceId::PLAYER` となり、プレイヤーもその種族の
+   `body_structure` に従う (人型以外になり装備部位が減る)。判定は
+   `CreatureEntity::get_body_structure()` に集約し、`can_equip_to()` /
+   拡張スロット / c コマンドの体構造表示が同じ窓口を共有する。
+   通常のプレイヤー (`r_idx == MonraceId::PLAYER`) は従来どおり
+   HUMANOID 固定。`mimic_form` 連動は未対応 (変身中も体構造は変わらない)。
 3. **ペット / 召喚モンスターの装備引き継ぎ**: ペット化したモンスター
    に装備を渡す際の `can_equip_to()` チェック。提案 13 のフェーズ C
    で実装した「ペットへの装備譲渡」コマンドの拡張。
@@ -535,3 +542,4 @@ ExtendedSlot 参照は `creature.get_extended_inventory(slot_id)`
 | 日付 | 内容 | 担当 |
 |---|---|---|
 | 2026-05-14 | 初版設計提案 | Claude Code (claude/monster-stealth-perception-e6cuk) |
+| 2026-09-01 | c ステータス 1 ページ目に体構造を表示。表示名/表示色を `body_structure_name()` / `body_structure_color()` に集約し r recall と共用。`CreatureEntity::get_body_structure()` を新設 | Claude Code (claude/creature-entity-integration-zzgibe) |
