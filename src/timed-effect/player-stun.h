@@ -4,7 +4,15 @@
 #include <string>
 #include <tuple>
 
-enum class PlayerStunRank;
+enum class PlayerStunRank {
+    NONE = 0,
+    SLIGHT = 1,
+    NORMAL = 2,
+    HARD = 3,
+    UNCONSCIOUS = 4,
+    KNOCKED = 5,
+};
+
 class PlayerStun {
 public:
     PlayerStun() = delete;

@@ -2,15 +2,6 @@
 #include "system/angband-exceptions.h"
 #include "system/angband.h"
 
-enum class PlayerStunRank {
-    NONE = 0,
-    SLIGHT = 1,
-    NORMAL = 2,
-    HARD = 3,
-    UNCONSCIOUS = 4,
-    KNOCKED = 5,
-};
-
 PlayerStunRank PlayerStun::get_rank(short value)
 {
     if (value > 200) {
