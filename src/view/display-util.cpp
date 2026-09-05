@@ -67,6 +67,7 @@ const std::vector<disp_player_line> disp_player_lines = {
     { 29, 11, 21, _("HP回復/100T", "HP Regen/100T") },
     { 29, 12, 21, _("MP回復/100T", "MP Regen/100T") },
     { 1, 8, -1, _("所属     : ", "Alliance : ") },
+    { 1, 9, -1, _("体構造   : ", "Body     : ") },
 };
 }
 

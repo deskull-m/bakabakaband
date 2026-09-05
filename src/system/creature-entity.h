@@ -49,6 +49,7 @@ enum class MimicKindType;
 enum class CurseTraitType;
 enum class CurseSpecialTraitType;
 enum class ExtendedSlotType : uint8_t;
+enum class BodyStructureType : uint8_t;
 enum class MonraceId : int16_t;
 enum class MonsterAbilityType;
 enum class PlayerSkillKindType;
@@ -1530,6 +1531,18 @@ public:
      *          docs/monster-body-structure-equipment-slots.md 参照。
      */
     virtual bool can_equip_to(int slot) const;
+
+    /*!
+     * @brief クリーチャーの体構造を取得する
+     * @return 体構造 (BodyStructureType)
+     * @details モンスター化していない通常のプレイヤーは HUMANOID 固定。
+     *          モンスター、および monster 化したプレイヤー (player_birth_as_monster)
+     *          は種族定義の MonraceDefinition::body_structure を返す。
+     *          装備スロット可否 (can_equip_to) / 拡張スロット (get_extended_slot_*) と
+     *          c コマンドの体構造表示が同じ判定を共有するための窓口。
+     *          docs/monster-body-structure-equipment-slots.md 参照。
+     */
+    virtual BodyStructureType get_body_structure() const;
 
     /*!
      * @brief 拡張装備スロット数を取得する (Phase 2)

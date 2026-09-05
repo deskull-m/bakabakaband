@@ -57,6 +57,7 @@
 #define ENTRY_HP_REGEN 50
 #define ENTRY_MP_REGEN 51
 #define ENTRY_ALLIANCE 52
+#define ENTRY_BODY_STRUCTURE 53
 
 class CreatureEntity;
 class ItemEntity;
