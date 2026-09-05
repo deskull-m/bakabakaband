@@ -1,7 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="..\..\src\main-win.cpp" />
     <ClCompile Include="..\..\src\combat\shoot.cpp">
       <Filter>combat</Filter>
     </ClCompile>
@@ -6203,7 +6202,6 @@
     <ClInclude Include="..\..\src\floor\party-monsters.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\src\wall.bmp" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
@@ -6519,8 +6517,5 @@
     <Filter Include="system\creature-party">
       <UniqueIdentifier>{6246be9f-4a6a-418a-a1e4-65eba10a8f58}</UniqueIdentifier>
     </Filter>
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="..\..\src\angband.rc" />
   </ItemGroup>
 </Project>

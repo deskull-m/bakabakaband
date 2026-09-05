@@ -8,7 +8,8 @@ visual_studio_files = \
 	VisualStudio/Bakabakaband/Bakabakaband.Common.props \
 	VisualStudio/Bakabakaband/Bakabakaband.Configuration.props \
 	VisualStudio/Bakabakaband/Bakabakaband.vcxproj \
-	VisualStudio/Bakabakaband/Bakabakaband.vcxproj.filters \
+	VisualStudio/Bakabakaband/BakabakabandCore.vcxproj \
+	VisualStudio/Bakabakaband/BakabakabandCore.vcxproj.filters \
 	VisualStudio/Bakabakaband/packages.config
 
 schema_files = \
