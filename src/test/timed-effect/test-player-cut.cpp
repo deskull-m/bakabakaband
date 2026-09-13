@@ -70,7 +70,7 @@ TEST_CASE("PlayerCut reports the rank of the given value with its damage and col
 // is_cut() はランクが NONE より上かどうかと一致する必要がある
 TEST_CASE("PlayerCut is cut exactly when its rank is above NONE")
 {
-    for (const short value : { 0, 1 }) {
+    for (const short value : { short{ 0 }, short{ 1 } }) {
         CAPTURE(value);
         CHECK(PlayerCut::is_cut(value) == (PlayerCut::get_rank(value) > PlayerCutRank::NONE));
     }
