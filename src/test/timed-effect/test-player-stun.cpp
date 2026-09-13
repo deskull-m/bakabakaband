@@ -73,7 +73,7 @@ TEST_CASE("PlayerStun reports the rank of the given value with its penalties and
 // is_stunned() はランクが NONE より上かどうかと一致する必要がある
 TEST_CASE("PlayerStun is stunned exactly when its rank is above NONE")
 {
-    for (const short value : { 0, 1 }) {
+    for (const short value : { short{ 0 }, short{ 1 } }) {
         CAPTURE(value);
         CHECK(PlayerStun::is_stunned(value) == (PlayerStun::get_rank(value) > PlayerStunRank::NONE));
     }

@@ -176,7 +176,8 @@ TEST_CASE("every body structure has a display name and color")
         }
 
         std::sort(names.begin(), names.end());
-        CHECK(std::adjacent_find(names.begin(), names.end()) == names.end());
+        const bool all_names_unique = std::adjacent_find(names.begin(), names.end()) == names.end();
+        CHECK(all_names_unique);
     }
 
     SUBCASE("incorporeal and draconic are colored differently from the default")

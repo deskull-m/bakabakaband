@@ -65,6 +65,7 @@
     <ClCompile Include="..\..\src\test\util\test-flag-group.cpp" />
     <ClCompile Include="..\..\src\test\util\test-probability-table.cpp" />
     <ClCompile Include="..\..\src\test\util\test-sha256.cpp" />
+    <ClCompile Include="..\..\src\test\test-win-stubs.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\stdafx.h" />
