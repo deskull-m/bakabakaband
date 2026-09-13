@@ -12,6 +12,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Bakabakaband", "Bakabakaban
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BakabakabandCore", "Bakabakaband\BakabakabandCore.vcxproj", "{91B5F434-C680-49FE-9532-8586F6F6E2E4}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BakabakabandTest", "Bakabakaband\BakabakabandTest.vcxproj", "{49D5706B-A153-4EC1-AE3F-65508BF4C93B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -36,6 +38,14 @@ Global
 		{7B3E1C46-2AF5-4E8D-9C41-6D0F5A9B2E13}.English-Release|Win32.Build.0 = English-Release|Win32
 		{7B3E1C46-2AF5-4E8D-9C41-6D0F5A9B2E13}.Release|Win32.ActiveCfg = Release|Win32
 		{7B3E1C46-2AF5-4E8D-9C41-6D0F5A9B2E13}.Release|Win32.Build.0 = Release|Win32
+		{49D5706B-A153-4EC1-AE3F-65508BF4C93B}.Debug|Win32.ActiveCfg = Debug|Win32
+		{49D5706B-A153-4EC1-AE3F-65508BF4C93B}.Debug|Win32.Build.0 = Debug|Win32
+		{49D5706B-A153-4EC1-AE3F-65508BF4C93B}.English-Debug|Win32.ActiveCfg = English-Debug|Win32
+		{49D5706B-A153-4EC1-AE3F-65508BF4C93B}.English-Debug|Win32.Build.0 = English-Debug|Win32
+		{49D5706B-A153-4EC1-AE3F-65508BF4C93B}.English-Release|Win32.ActiveCfg = English-Release|Win32
+		{49D5706B-A153-4EC1-AE3F-65508BF4C93B}.English-Release|Win32.Build.0 = English-Release|Win32
+		{49D5706B-A153-4EC1-AE3F-65508BF4C93B}.Release|Win32.ActiveCfg = Release|Win32
+		{49D5706B-A153-4EC1-AE3F-65508BF4C93B}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
