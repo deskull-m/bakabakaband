@@ -10,6 +10,8 @@ visual_studio_files = \
 	VisualStudio/Bakabakaband/Bakabakaband.vcxproj \
 	VisualStudio/Bakabakaband/BakabakabandCore.vcxproj \
 	VisualStudio/Bakabakaband/BakabakabandCore.vcxproj.filters \
+	VisualStudio/Bakabakaband/BakabakabandTest.vcxproj \
+	VisualStudio/Bakabakaband/BakabakabandTest.vcxproj.filters \
 	VisualStudio/Bakabakaband/packages.config
 
 schema_files = \

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="English-Debug|Win32">
+      <Configuration>English-Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="English-Release|Win32">
+      <Configuration>English-Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{49D5706B-A153-4EC1-AE3F-65508BF4C93B}</ProjectGuid>
+    <RootNamespace>BakabakabandTest</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <Import Project="Bakabakaband.Configuration.props" />
+  <PropertyGroup Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="Bakabakaband.Common.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <OutDir>$(Configuration)\</OutDir>
+    <TargetName>bakabakaband-test</TargetName>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <Link>
+      <!-- doctest が生成する main() を持つコンソールアプリのため、
+           Bakabakaband.Common.props の SubSystem=Windows を上書きする -->
+      <SubSystem>Console</SubSystem>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <!--
+      プリコンパイルヘッダ。BakabakabandCore とは IntDir が異なり pch を共有できないため、
+      テストプロジェクト側でも stdafx.cpp から生成する。
+      stdafx.cpp はシンボルを定義しないので BakabakabandCore.lib 内の同名オブジェクトとは衝突しない。
+    -->
+    <ClCompile Include="..\..\src\stdafx.cpp">
+      <PrecompiledHeader>Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\..\src\test\test-main.cpp" />
+    <ClCompile Include="..\..\src\test\system\monrace\test-body-structure-policy.cpp" />
+    <ClCompile Include="..\..\src\test\system\monrace\test-monrace-max-level.cpp" />
+    <ClCompile Include="..\..\src\test\timed-effect\test-player-cut.cpp" />
+    <ClCompile Include="..\..\src\test\timed-effect\test-player-stun.cpp" />
+    <ClCompile Include="..\..\src\test\util\test-dice.cpp" />
+    <ClCompile Include="..\..\src\test\util\test-flag-group.cpp" />
+    <ClCompile Include="..\..\src\test\util\test-probability-table.cpp" />
+    <ClCompile Include="..\..\src\test\util\test-sha256.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\src\stdafx.h" />
+    <ClInclude Include="..\..\src\test\scoped-rng.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="BakabakabandCore.vcxproj">
+      <Project>{91B5F434-C680-49FE-9532-8586F6F6E2E4}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets" />
+</Project>

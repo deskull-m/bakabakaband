@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="system">
+      <UniqueIdentifier>{da617f35-e903-420f-a3c2-35c05c34635e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="system\monrace">
+      <UniqueIdentifier>{92ff44d3-839e-4000-9ff0-d6cdefda0a83}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="timed-effect">
+      <UniqueIdentifier>{966ee29c-0d64-440a-93da-4ae9a23bbdb4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="util">
+      <UniqueIdentifier>{b5fce0ab-8f5f-40b9-86c9-a3b22374936b}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\src\stdafx.cpp" />
+    <ClCompile Include="..\..\src\test\test-main.cpp" />
+    <ClCompile Include="..\..\src\test\system\monrace\test-body-structure-policy.cpp">
+      <Filter>system\monrace</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\test\system\monrace\test-monrace-max-level.cpp">
+      <Filter>system\monrace</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\test\timed-effect\test-player-cut.cpp">
+      <Filter>timed-effect</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\test\timed-effect\test-player-stun.cpp">
+      <Filter>timed-effect</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\test\util\test-dice.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\test\util\test-flag-group.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\test\util\test-probability-table.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\test\util\test-sha256.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\src\stdafx.h" />
+    <ClInclude Include="..\..\src\test\scoped-rng.h" />
+  </ItemGroup>
+</Project>
