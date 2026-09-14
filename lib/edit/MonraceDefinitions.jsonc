@@ -33237,6 +33237,7 @@
       },
       "sex": "MALE",
       "flags": [
+        "PALADIN",
         "FORCE_MAXHP",
         "SMART",
         "RES_NETH",
@@ -42638,6 +42639,7 @@
       },
       "sex": "MALE",
       "flags": [
+        "PALADIN",
         "FORCE_MAXHP",
         "SMART",
         "IM_FIRE",
@@ -65524,6 +65526,7 @@
       },
       "sex": "MALE",
       "flags": [
+        "PALADIN",
         "FORCE_MAXHP",
         "HUMAN",
         "ONLY_ITEM",
