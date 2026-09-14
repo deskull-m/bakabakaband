@@ -50,3 +50,16 @@ void equip_armed_monster_initial_weapon(CreatureEntity &monster);
  *          近接武器・弓の双方を装備する。
  */
 void equip_ranged_monster_initial_bow(CreatureEntity &monster);
+
+/*!
+ * @brief MAGE フラグを持つモンスターに初期装備の軽装 (胴体防具) を着せる。
+ * @param monster 対象モンスター
+ * @details 魔術師が裸同然でいるのは不自然なため、生成時に種族レベル相応の
+ *          軽装 (ローブ〜軽い革鎧) を 1 着与えて胴体に装備させる。体構造的に
+ *          胴体防具を着られない個体と、既に胴体スロットが埋まっている個体は
+ *          対象外。**モンスターの装備防具の AC は `CreatureEntity::get_ac()`
+ *          で集計される**ため、これは MAGE 持ちモンスターへのバランス変更
+ *          (AC 最大 +5) を伴う。防具の格は `decide_initial_robe()` のレベル帯
+ *          テーブルで調整すること。
+ */
+void equip_spellcaster_monster_initial_robe(CreatureEntity &monster);
