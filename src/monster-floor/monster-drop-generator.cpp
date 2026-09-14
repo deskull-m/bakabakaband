@@ -11,6 +11,7 @@
 #include "monster-race/race-misc-flags.h"
 #include "object-enchant/item-apply-magic.h"
 #include "object/tval-types.h"
+#include "sv-definition/sv-bow-types.h"
 #include "sv-definition/sv-weapon-types.h"
 #include "system/angband-system.h"
 #include "system/baseitem/baseitem-key.h"
@@ -132,6 +133,45 @@ BaseitemKey decide_initial_weapon(int level)
     // 最下段の min_level が 0 のため通常ここには来ないが、防御的に短剣を返す。
     return { ItemKindType::SWORD, SV_DAGGER };
 }
+
+/*!
+ * @brief 射手モンスターのレベル帯ごとの射撃武器 (弓) 候補
+ * @details 近接武器と同じく、先頭から順に `monrace.level >= min_level` で最初に
+ *          一致した段の候補から 1 つを等確率で選ぶ。
+ *          **装備した弓の倍率はモンスターの射撃ダメージに反映される**
+ *          (`monspell_damage()`) ため、この表がそのまま ARCHER / RANGER 持ち
+ *          モンスターの射撃強化量になる。バランス調整はここで行うこと。
+ */
+const std::vector<InitialWeaponTier> &get_initial_bow_tiers()
+{
+    static const std::vector<InitialWeaponTier> tiers = {
+        { 40, { { ItemKindType::BOW, SV_HEAVY_XBOW }, { ItemKindType::BOW, SV_LONG_BOW } } },
+        { 25, { { ItemKindType::BOW, SV_LONG_BOW }, { ItemKindType::BOW, SV_LIGHT_XBOW } } },
+        { 10, { { ItemKindType::BOW, SV_SHORT_BOW } } },
+        { 0, { { ItemKindType::BOW, SV_SLING } } },
+    };
+
+    return tiers;
+}
+
+/*!
+ * @brief 種族レベルに応じた初期弓を 1 つ選ぶ
+ * @param level モンスター種族のレベル
+ * @return 選ばれた弓のベースアイテムキー
+ */
+BaseitemKey decide_initial_bow(int level)
+{
+    for (const auto &tier : get_initial_bow_tiers()) {
+        if (level < tier.min_level) {
+            continue;
+        }
+
+        return rand_choice(tier.candidates);
+    }
+
+    // 最下段の min_level が 0 のため通常ここには来ないが、防御的にスリングを返す。
+    return { ItemKindType::BOW, SV_SLING };
+}
 }
 
 void generate_monster_drop_items(CreatureEntity &player, CreatureEntity &monster)
@@ -205,4 +245,28 @@ void equip_armed_monster_initial_weapon(CreatureEntity &monster)
     // エゴ・アーティファクト化や強化値は付けない。素の打撃ダイスのみを加える
     // ことで、強化量をレベル帯テーブルの範囲に収める。
     (void)monster.acquire_item(weapon);
+}
+
+void equip_ranged_monster_initial_bow(CreatureEntity &monster)
+{
+    const auto &monrace = monster.get_monrace();
+    if (monrace.kind_flags.has_none_of({ MonsterKindType::ARCHER, MonsterKindType::RANGER })) {
+        return;
+    }
+
+    // 体構造的に弓を構えられない個体 (四足・不定形・非実体等) には持たせない。
+    if (!monster.can_equip_to(INVEN_BOW)) {
+        return;
+    }
+
+    // 既に射撃スロットが埋まっているなら何もしない (生成直後は通常空)。
+    if (monster.inventory[INVEN_BOW]->is_valid()) {
+        return;
+    }
+
+    ItemEntity bow(decide_initial_bow(monrace.level));
+    bow.number = 1;
+
+    // 近接武器と同様、エゴ・アーティファクト化や強化値は付けない。
+    (void)monster.acquire_item(bow);
 }
