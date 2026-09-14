@@ -34,3 +34,19 @@ void generate_monster_drop_items(CreatureEntity &player, CreatureEntity &monster
  *          利き手を初期武器が確保できるようにする。
  */
 void equip_armed_monster_initial_weapon(CreatureEntity &monster);
+
+/*!
+ * @brief ARCHER / RANGER フラグを持つモンスターに初期装備の弓を持たせる。
+ * @param monster 対象モンスター
+ * @details 射手は得物として弓を携えているのが自然なため、生成時に種族レベル相応の
+ *          弓を 1 張り与えて射撃スロットに装備させる。体構造的に弓を構えられない
+ *          個体と、既に射撃スロットが埋まっている個体は対象外。
+ *          **モンスターの装備弓の倍率は射撃 (MonsterAbilityType::SHOOT) ダメージに
+ *          反映される** (`monspell_damage`) ため、これは ARCHER / RANGER 持ち
+ *          モンスターへのバランス変更を伴う。弓の格は `decide_initial_bow()` の
+ *          レベル帯テーブルで、倍率の効き方は `monspell_damage()` の
+ *          `MONSTER_SHOOT_BASELINE_MAGNIFICATION` で調整すること。
+ *          近接武器と別スロットのため、WARRIOR と ARCHER を併せ持つ個体は
+ *          近接武器・弓の双方を装備する。
+ */
+void equip_ranged_monster_initial_bow(CreatureEntity &monster);
