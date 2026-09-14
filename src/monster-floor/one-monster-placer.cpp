@@ -838,6 +838,9 @@ tl::optional<MONSTER_IDX> place_monster_one(CreatureEntity &player, POSITION y, 
     // 一般ドロップより先に呼び、利き手を初期武器が確保できるようにする。
     equip_armed_monster_initial_weapon(*m_ptr);
 
+    // ARCHER / RANGER 持ちのモンスターに初期装備の弓を持たせる。
+    equip_ranged_monster_initial_bow(*m_ptr);
+
     // [ドロップ品移行] 一般ドロップ品を生成時に所持品として前生成する。
     // 死亡時は drop_all_inventory() でまとめて床へ放出される。
     generate_monster_drop_items(const_cast<CreatureEntity &>(player), *m_ptr);

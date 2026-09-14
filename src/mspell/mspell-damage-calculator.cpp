@@ -10,6 +10,7 @@
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
 #include "util/bit-flags-calculator.h"
+#include <algorithm>
 
 /*!
  * @brief モンスターの使う呪文の威力を決定する /
@@ -438,6 +439,43 @@ static int monspell_damage_base(
 }
 
 /*!
+ * @brief モンスターの射撃ダメージが暗黙に前提としている弓の倍率
+ * @details 従来 `monrace.shoot_damage_dice` は「弓を含めた射撃ダメージそのもの」
+ *          として調整されていた。装備弓の倍率をそのまま乗じると素の 2〜4 倍に
+ *          膨れ上がるため、この基準倍率で正規化し、**基準より上等な弓を持った
+ *          分だけ**強くなるようにする。既定の 2 では最下級の弓 (スリング /
+ *          ショートボウ = x2) を持つ個体の射撃ダメージは従来と完全に同じ。
+ *          射撃バランスの調整はこの定数と `decide_initial_bow()` のレベル帯
+ *          テーブルで行うこと。
+ */
+constexpr auto MONSTER_SHOOT_BASELINE_MAGNIFICATION = 2;
+
+/*!
+ * @brief 装備している弓の性能を射撃ダメージへ反映する
+ * @param monster 射撃を行うモンスター
+ * @param dam 種族の射撃ダイスから求めた素のダメージ
+ * @return 装備弓を反映した射撃ダメージ
+ * @details プレイヤーの射撃 (`exe_fire`) と同じく、弓のダメージ修正を加えた上で
+ *          倍率を乗じる。弓を装備していない (あるいは倍率を持たない弓の) 場合は
+ *          素のダメージをそのまま返すため、既存モンスターの挙動は変わらない。
+ */
+static int apply_equipped_bow_to_shoot_damage(const CreatureEntity &monster, int dam)
+{
+    const auto &bow = monster.inventory[INVEN_BOW];
+    if (!bow || !bow->is_valid() || (bow->bi_key.tval() != ItemKindType::BOW)) {
+        return dam;
+    }
+
+    const auto magnification = bow->get_arrow_magnification();
+    if (magnification <= 0) {
+        return dam;
+    }
+
+    const auto boosted = (dam + bow->to_d) * magnification / MONSTER_SHOOT_BASELINE_MAGNIFICATION;
+    return std::max(boosted, 0);
+}
+
+/*!
  * @brief モンスターの使う呪文の威力を返す /
  * @param creature クリーチャーへの参照
  * @param ms_type 呪文番号
@@ -453,7 +491,14 @@ int monspell_damage(CreatureEntity &creature, MonsterAbilityType ms_type, MONSTE
     DEPTH rlev = monster_level_idx(floor, m_idx);
     int hp = (TYPE == DAM_ROLL) ? monster.hp : monster.max_maxhp;
 
-    return monspell_damage_base(creature, ms_type, hp, rlev, monster_is_powerful(floor, m_idx), monrace.shoot_damage_dice, 0, TYPE);
+    const auto dam = monspell_damage_base(creature, ms_type, hp, rlev, monster_is_powerful(floor, m_idx), monrace.shoot_damage_dice, 0, TYPE);
+    if ((ms_type != MonsterAbilityType::SHOOT) || (dam < 0)) {
+        return dam;
+    }
+
+    // 射撃は装備している弓の性能を反映する (種族単位の monspell_race_damage() は
+    // 個体を持たないため対象外)。
+    return apply_equipped_bow_to_shoot_damage(monster, dam);
 }
 
 /*!
