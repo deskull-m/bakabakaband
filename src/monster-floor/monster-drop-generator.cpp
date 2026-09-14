@@ -11,6 +11,7 @@
 #include "monster-race/race-misc-flags.h"
 #include "object-enchant/item-apply-magic.h"
 #include "object/tval-types.h"
+#include "sv-definition/sv-armor-types.h"
 #include "sv-definition/sv-bow-types.h"
 #include "sv-definition/sv-weapon-types.h"
 #include "system/angband-system.h"
@@ -172,6 +173,45 @@ BaseitemKey decide_initial_bow(int level)
     // 最下段の min_level が 0 のため通常ここには来ないが、防御的にスリングを返す。
     return { ItemKindType::BOW, SV_SLING };
 }
+
+/*!
+ * @brief 魔術師モンスターのレベル帯ごとの軽装 (胴体防具) 候補
+ * @details 近接武器・弓と同じく、先頭から順に `monrace.level >= min_level` で
+ *          最初に一致した段の候補から 1 つを等確率で選ぶ。
+ *          魔術師が裸同然でいるのは不自然なため、ローブを基本としつつ格に応じて
+ *          軽い革鎧までを与える。**モンスターの装備防具の AC は `get_ac()` で
+ *          集計される**ため、この表がそのまま MAGE 持ちモンスターの AC 上昇量
+ *          (最大 +5) になる。バランス調整はここで行うこと。
+ */
+const std::vector<InitialWeaponTier> &get_initial_robe_tiers()
+{
+    static const std::vector<InitialWeaponTier> tiers = {
+        { 40, { { ItemKindType::SOFT_ARMOR, SV_SOFT_STUDDED_LEATHER }, { ItemKindType::SOFT_ARMOR, SV_SOFT_LEATHER_ARMOR } } },
+        { 15, { { ItemKindType::SOFT_ARMOR, SV_SOFT_LEATHER_ARMOR }, { ItemKindType::SOFT_ARMOR, SV_ROBE } } },
+        { 0, { { ItemKindType::SOFT_ARMOR, SV_ROBE } } },
+    };
+
+    return tiers;
+}
+
+/*!
+ * @brief 種族レベルに応じた初期軽装を 1 つ選ぶ
+ * @param level モンスター種族のレベル
+ * @return 選ばれた胴体防具のベースアイテムキー
+ */
+BaseitemKey decide_initial_robe(int level)
+{
+    for (const auto &tier : get_initial_robe_tiers()) {
+        if (level < tier.min_level) {
+            continue;
+        }
+
+        return rand_choice(tier.candidates);
+    }
+
+    // 最下段の min_level が 0 のため通常ここには来ないが、防御的にローブを返す。
+    return { ItemKindType::SOFT_ARMOR, SV_ROBE };
+}
 }
 
 void generate_monster_drop_items(CreatureEntity &player, CreatureEntity &monster)
@@ -269,4 +309,28 @@ void equip_ranged_monster_initial_bow(CreatureEntity &monster)
 
     // 近接武器と同様、エゴ・アーティファクト化や強化値は付けない。
     (void)monster.acquire_item(bow);
+}
+
+void equip_spellcaster_monster_initial_robe(CreatureEntity &monster)
+{
+    const auto &monrace = monster.get_monrace();
+    if (monrace.kind_flags.has_not(MonsterKindType::MAGE)) {
+        return;
+    }
+
+    // 体構造的に胴体防具を着られない個体 (不定形・非実体等) には持たせない。
+    if (!monster.can_equip_to(INVEN_BODY)) {
+        return;
+    }
+
+    // 既に胴体スロットが埋まっているなら何もしない (生成直後は通常空)。
+    if (monster.inventory[INVEN_BODY]->is_valid()) {
+        return;
+    }
+
+    ItemEntity robe(decide_initial_robe(monrace.level));
+    robe.number = 1;
+
+    // 近接武器・弓と同様、エゴ・アーティファクト化や強化値は付けない。
+    (void)monster.acquire_item(robe);
 }

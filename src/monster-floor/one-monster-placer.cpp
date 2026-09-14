@@ -841,6 +841,9 @@ tl::optional<MONSTER_IDX> place_monster_one(CreatureEntity &player, POSITION y, 
     // ARCHER / RANGER 持ちのモンスターに初期装備の弓を持たせる。
     equip_ranged_monster_initial_bow(*m_ptr);
 
+    // MAGE 持ちのモンスターに初期装備の軽装を着せる。
+    equip_spellcaster_monster_initial_robe(*m_ptr);
+
     // [ドロップ品移行] 一般ドロップ品を生成時に所持品として前生成する。
     // 死亡時は drop_all_inventory() でまとめて床へ放出される。
     generate_monster_drop_items(const_cast<CreatureEntity &>(player), *m_ptr);
