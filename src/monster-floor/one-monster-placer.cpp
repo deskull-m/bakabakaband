@@ -317,46 +317,6 @@ static void warn_unique_generation(CreatureEntity &creature, MonraceId r_idx)
 }
 
 /*!
- * @brief JSON で個別指定の無い能力値へ与える、種族レベル比例の既定補正の係数
- * @details 表示単位 / 種族レベル。1 なら「種族レベル 40 のモンスターは全能力値 +40.0」。
- *          モンスターの能力値は本来プレイヤーと同じ 8.0〜17.0 のロールしか持たず、
- *          格上のモンスターでも能力値だけは新米冒険者並みという不自然さがあったため、
- *          個別指定が無い個体には格相応の底上げを既定で与える。
- *          **CON 経由で最大HP (`calc_max_hp_con_bonus`) に、CHR 経由で所持金
- *          (`get_money_for_creature`) に、INT 経由で最大MP (`calc_creature_mana`) に
- *          それぞれ波及する**ため、これはゲームバランスの変更を伴う。調整はこの定数で行うこと。
- */
-constexpr int DEFAULT_STAT_MODIFIER_PER_LEVEL = 1;
-
-/*!
- * @brief 種族の能力値補正をロール結果へ適用する
- * @param monster 対象モンスター
- * @param monrace 実効的な種族定義 (カメレオン判定後のもの)
- * @details 補正値は内部 10 単位 (表示 1.0 = 10) で扱う。JSON の `stat_modifiers` で
- *          個別指定された能力値はその値を、指定の無い能力値は種族レベル比例の既定補正
- *          (`DEFAULT_STAT_MODIFIER_PER_LEVEL`) を加算する。
- */
-static void apply_monrace_stat_modifiers(CreatureEntity &monster, const MonraceDefinition &monrace)
-{
-    const auto default_modifier = monrace.level * DEFAULT_STAT_MODIFIER_PER_LEVEL * 10;
-    for (auto stat = 0; stat < A_MAX; ++stat) {
-        const auto modifier = monrace.stat_modifiers[stat].value_or(default_modifier);
-        if (modifier == 0) {
-            continue;
-        }
-
-        auto adjusted = static_cast<int>(monster.get_stat_max(stat)) + modifier;
-        adjusted = std::clamp(adjusted, STAT_MIN_VALUE, STAT_MAX_VALUE);
-        monster.set_stat_max(stat, static_cast<short>(adjusted));
-        monster.set_stat_cur(stat, static_cast<short>(adjusted));
-        if (monster.get_stat_max_max(stat) < monster.get_stat_max(stat)) {
-            monster.set_stat_max_max(stat, monster.get_stat_max(stat));
-        }
-        monster.set_stat_use(stat, monster.get_stat_max(stat));
-    }
-}
-
-/*!
  * @brief モンスターを一体生成する / Attempt to place a monster of the given race at the given location.
  * @param player プレイヤーへの参照
  * @param y 生成位置y座標
@@ -428,8 +388,8 @@ tl::optional<MONSTER_IDX> place_monster_one(CreatureEntity &player, POSITION y, 
 
     const auto &new_monrace = m_ptr->get_monrace();
     // 種族側の能力値補正をロール結果に加算する。JSON で個別指定の無い能力値には
-    // 種族レベル比例の既定補正が入る。
-    apply_monrace_stat_modifiers(*m_ptr, new_monrace);
+    // 種族レベル比例の既定補正が入る (プレイヤーのモンスター開始経路と共通)。
+    m_ptr->apply_monrace_stat_modifiers(new_monrace);
     const auto is_summoned = summoner_m_idx.has_value();
     const CreatureEntity &summoner = floor.m_list[summoner_m_idx.value_or(0)];
 

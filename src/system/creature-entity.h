@@ -2128,6 +2128,24 @@ public:
     virtual void apply_material_stat_modifiers();
 
     /*!
+     * @brief モンスター種族の能力値修正を能力値に適用する
+     * @param monrace 適用元の種族定義 (モンスターでは chameleon 判定後の実効種族)
+     * @details JSON `stat_modifiers` で個別指定された能力値はその値を、指定の無い
+     *          能力値は種族レベル比例の既定補正 (`DEFAULT_STAT_MODIFIER_PER_LEVEL`) を
+     *          `stat_max` / `stat_cur` / `stat_use` へ加算し `[30, 2000]` にクランプする
+     *          (`stat_max_max` は必要に応じて引き上げる)。
+     *          モンスター生成 (`place_monster_one`) とモンスターとしてのゲーム開始
+     *          (`player_birth_as_monster`) の双方から呼び、両者の能力値を揃える。
+     */
+    void apply_monrace_stat_modifiers(const MonraceDefinition &monrace);
+
+    //! JSON で個別指定の無い能力値へ与える、種族レベル比例の既定補正の係数
+    //! (表示単位 / 種族レベル)。1 なら「種族レベル 40 の個体は全能力値 +40.0」。
+    //! 能力値は CON → 最大HP・INT → 最大MP・CHR → 所持金へ波及するため、
+    //! この定数はゲームバランスの調整点となる。
+    static constexpr int DEFAULT_STAT_MODIFIER_PER_LEVEL = 1;
+
+    /*!
      * @brief 性格を指定値に設定する
      * @details ppersonality と personality ポインタの双方を更新する。
      * @param value 設定する性格

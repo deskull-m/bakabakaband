@@ -1164,6 +1164,25 @@ void CreatureEntity::apply_material_stat_modifiers()
     }
 }
 
+void CreatureEntity::apply_monrace_stat_modifiers(const MonraceDefinition &monrace)
+{
+    const auto default_modifier = monrace.level * DEFAULT_STAT_MODIFIER_PER_LEVEL * 10;
+    for (auto stat = 0; stat < A_MAX; ++stat) {
+        const auto modifier = monrace.stat_modifiers[stat].value_or(default_modifier);
+        if (modifier == 0) {
+            continue;
+        }
+
+        const auto adjusted = std::clamp(static_cast<int>(this->get_stat_max(stat)) + modifier, STAT_MIN_VALUE, STAT_MAX_VALUE);
+        this->set_stat_max(stat, static_cast<short>(adjusted));
+        this->set_stat_cur(stat, static_cast<short>(adjusted));
+        if (this->get_stat_max_max(stat) < this->get_stat_max(stat)) {
+            this->set_stat_max_max(stat, this->get_stat_max(stat));
+        }
+        this->set_stat_use(stat, this->get_stat_max(stat));
+    }
+}
+
 void CreatureEntity::initialize_materials()
 {
     if (!this->has_monster_profile()) {

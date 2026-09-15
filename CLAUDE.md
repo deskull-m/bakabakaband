@@ -433,11 +433,11 @@ JSON `lib/edit/MonraceDefinitions.jsonc` で個別モンスターの 6 能力値
 (表示 3.0〜200.0) にクランプする。
 
 **JSON で指定の無い能力値には種族レベル比例の既定補正が入る**
-(`DEFAULT_STAT_MODIFIER_PER_LEVEL`、`src/monster-floor/one-monster-placer.cpp`)。
-既定係数 1 は「表示単位で `monrace.level` × 1.0」を意味し、Lv40 のモンスターは
-指定の無い全能力値が +40.0 される。モンスターの素のロールはプレイヤーと同じ
-8.0〜17.0 しか出ないため、格上のモンスターでも能力値だけは新米冒険者並みという
-不自然さを解消する狙い。バランス調整はこの定数で行う。
+(`CreatureEntity::DEFAULT_STAT_MODIFIER_PER_LEVEL`)。既定係数 1 は
+「表示単位で `monrace.level` × 1.0」を意味し、Lv40 のモンスターは指定の無い
+全能力値が +40.0 される。モンスターの素のロールはプレイヤーと同じ 8.0〜17.0 しか
+出ないため、格上のモンスターでも能力値だけは新米冒険者並みという不自然さを
+解消する狙い。バランス調整はこの定数で行う。
 
 - 波及先: CON → 最大HP (`calc_max_hp_con_bonus`)、INT → 最大MP
   (`calc_creature_mana`)、CHR → 所持金 (`get_money_for_creature`)。
@@ -449,9 +449,16 @@ JSON `lib/edit/MonraceDefinitions.jsonc` で個別モンスターの 6 能力値
   `INT +5` / `WIS +3` の指定により INT 21.0 / WIS 16.0 に留まり、指定の無い
   STR/DEX/CON/CHR は 45〜49 になる)。該当は全 6 能力値指定の 16 体と部分指定の
   33 体。レベルスケールさせたい個体は指定を外すこと。
-- プレイヤーがモンスターとしてゲーム開始する経路
-  (`apply_monrace_to_player`、`src/birth/monster-birth.cpp`) は従来どおり
-  **JSON 指定分のみ**を適用し、既定補正は入らない。
+- 適用は `CreatureEntity::apply_monrace_stat_modifiers(monrace)` に集約し、
+  **敵としての生成 (`place_monster_one`) とモンスターとしてのゲーム開始
+  (`player_birth_as_monster`) の双方から同じ式で呼ぶ**。後者では
+  `get_max_stats()` が `stat_max_max` を 25.0〜31.0 に引き直して `stat_max` を
+  そこへ切り詰めるため、**`get_max_stats()` より後**に適用して補正が消えない
+  ようにしている (補正後の値まで `stat_max_max` を引き上げる点は敵生成と同じ)。
+  プレイヤーの最大HPは `update_creature()` → `update_max_hitpoints()` が
+  能力値確定後に算出するため、CON 補正はそのまま反映される
+  (実測: 黒衣の騎士『アシュラム』 Lv40 で開始 → 全能力値 49.0〜57.0 /
+  プレイヤーレベル 20 / CON 56.0 が最大HPへ +400)。
 
 街の `WILD_TOWN` フラグ付き `t` 系人間モンスター 44 体には負の補正値が一括付与済み
 (`fewer monsters... but tougher` ではなく flavor 重視のバランス)。これらは Lv0 が

@@ -663,7 +663,8 @@ bool select_player_personality(CreatureEntity &creature)
 /*!
  * @brief MonraceDefinition のパラメータをプレイヤーステータスに反映する
  * @details HP / AC / 速度等、モンスターから派生できるパラメータを設定する。
- *          stat_modifiers がある場合はそれも適用する。
+ *          能力値補正は get_max_stats() が stat_max_max で頭打ちにするため、
+ *          ここではなく get_max_stats() の後で apply_monrace_stat_modifiers() を呼ぶ。
  */
 void apply_monrace_to_player(CreatureEntity &creature, MonraceId monrace_id)
 {
@@ -676,25 +677,6 @@ void apply_monrace_to_player(CreatureEntity &creature, MonraceId monrace_id)
 
     // r_idx / ap_r_idx を当該モンスターに揃える
     creature.polymorph_to(monrace_id);
-
-    // 能力値補正 (stat_modifiers) を適用 (one-monster-placer.cpp の処理と揃える)
-    // 補正値は内部 10 単位 (表示 1.0 = 10) で格納されており、tl::nullopt の能力値は補正しない。
-    constexpr short stat_min = STAT_MIN_VALUE;
-    constexpr short stat_max = STAT_MAX_VALUE;
-    for (auto i = 0; i < A_MAX; ++i) {
-        const auto &mod = monrace.stat_modifiers[i];
-        if (!mod.has_value()) {
-            continue;
-        }
-        auto adjusted = static_cast<int>(creature.get_stat_max(i)) + *mod;
-        adjusted = std::clamp(adjusted, static_cast<int>(stat_min), static_cast<int>(stat_max));
-        creature.set_stat_max(i, static_cast<short>(adjusted));
-        creature.set_stat_cur(i, static_cast<short>(adjusted));
-        if (creature.get_stat_max_max(i) < creature.get_stat_max(i)) {
-            creature.set_stat_max_max(i, creature.get_stat_max(i));
-        }
-        creature.set_stat_use(i, creature.get_stat_max(i));
-    }
 
     // HP ダイスをモンスター種族のものに揃える (hp_table[] は get_extra で再計算)
     creature.hit_dice = monrace.hit_dice;
@@ -781,6 +763,14 @@ bool player_birth_as_monster(CreatureEntity &creature)
     // HP / MP / 経験値テーブル等の通常初期化
     get_extra(creature, true);
     get_max_stats(creature);
+
+    // 種族の能力値補正 (JSON 指定分 + 指定の無い能力値への種族レベル比例の既定補正) を
+    // 敵として生成される時 (place_monster_one) と同じ式で適用する。
+    // get_max_stats() は stat_max_max を 25.0〜31.0 に引き直して stat_max を
+    // そこへ切り詰めるため、補正が消えないよう**その後**に適用する
+    // (補正後の値まで stat_max_max を引き上げる点も敵生成と同じ)。
+    creature.apply_monrace_stat_modifiers(MonraceList::get_instance().get_monrace(*monrace_id));
+
     initialize_virtues(creature);
 
     // 初期レベルを「生成階層 / 2」相当に揃える (get_extra で expfact が
