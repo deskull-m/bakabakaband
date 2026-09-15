@@ -426,13 +426,36 @@ JSON `lib/edit/MonraceDefinitions.jsonc` で個別モンスターの 6 能力値
 "stat_modifiers": { "STR": -3, "INT": -5, "WIS": -2, "DEX": -4, "CON": -1, "CHR": -2 }
 ```
 
-各値は表示単位 (1 = +1.0 = 内部 10 単位)、`-40〜+40` の範囲。値が指定されない能力値は
-`get_stats()` のロール結果をそのまま使う。指定されている能力値は `place_monster_one()`
-内で chameleon 判定後の `new_monrace.stat_modifiers` を加算し、`stat_max/stat_cur/stat_use`
-を更新（`stat_max_max` 必要に応じて拡張）、最終的に `[30, 400]` にクランプする。
+各値は表示単位 (1 = +1.0 = 内部 10 単位)、`-40〜+40` の範囲。適用は
+`place_monster_one()` 内の `apply_monrace_stat_modifiers()` が行い、chameleon 判定後の
+`new_monrace` を参照して `stat_max/stat_cur/stat_use` を更新（`stat_max_max` は必要に
+応じて拡張）、最終的に `[STAT_MIN_VALUE, STAT_MAX_VALUE]` = `[30, 2000]`
+(表示 3.0〜200.0) にクランプする。
+
+**JSON で指定の無い能力値には種族レベル比例の既定補正が入る**
+(`DEFAULT_STAT_MODIFIER_PER_LEVEL`、`src/monster-floor/one-monster-placer.cpp`)。
+既定係数 1 は「表示単位で `monrace.level` × 1.0」を意味し、Lv40 のモンスターは
+指定の無い全能力値が +40.0 される。モンスターの素のロールはプレイヤーと同じ
+8.0〜17.0 しか出ないため、格上のモンスターでも能力値だけは新米冒険者並みという
+不自然さを解消する狙い。バランス調整はこの定数で行う。
+
+- 波及先: CON → 最大HP (`calc_max_hp_con_bonus`)、INT → 最大MP
+  (`calc_creature_mana`)、CHR → 所持金 (`get_money_for_creature`)。
+  STR/DEX/WIS は C2 opt-in (`applies_stat_combat_bonus`) の戦闘反映で効く。
+  実データでの最大HP は Lv10 以上の帯で概ね 1.25〜1.8 倍になる。
+- **既定補正は「指定の無い能力値」にのみ入る**ため、JSON で明示指定した能力値は
+  レベルスケールしない。一部だけ指定した個体では、指定した能力値の方が指定の無い
+  能力値より低くなる逆転が起きる (例: エルダー・マインドフレイヤー Lv35 は
+  `INT +5` / `WIS +3` の指定により INT 21.0 / WIS 16.0 に留まり、指定の無い
+  STR/DEX/CON/CHR は 45〜49 になる)。該当は全 6 能力値指定の 16 体と部分指定の
+  33 体。レベルスケールさせたい個体は指定を外すこと。
+- プレイヤーがモンスターとしてゲーム開始する経路
+  (`apply_monrace_to_player`、`src/birth/monster-birth.cpp`) は従来どおり
+  **JSON 指定分のみ**を適用し、既定補正は入らない。
 
 街の `WILD_TOWN` フラグ付き `t` 系人間モンスター 44 体には負の補正値が一括付与済み
-(`fewer monsters... but tougher` ではなく flavor 重視のバランス)。
+(`fewer monsters... but tougher` ではなく flavor 重視のバランス)。これらは Lv0 が
+中心のため既定補正もほぼ 0 で、従来どおりの弱さを保つ。
 
 ### UNIQUE モンスターの個体名
 
