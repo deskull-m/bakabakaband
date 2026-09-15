@@ -282,10 +282,18 @@ void player_outfit(CreatureEntity &creature)
         }
 
         PlayerRealm prealm(creature);
-        if (tval == ItemKindType::SORCERY_BOOK) {
-            tval = prealm.realm1().get_book();
-        } else if (tval == ItemKindType::DEATH_BOOK) {
-            tval = prealm.realm2().get_book();
+        if ((tval == ItemKindType::SORCERY_BOOK) || (tval == ItemKindType::DEATH_BOOK)) {
+            // この 2 つは「第一領域 / 第二領域の魔法書」を指すプレースホルダ。
+            // 領域が未設定 (RealmType::NONE) だと対応する魔法書が存在せず、
+            // get_book() が例外を投げるため、その場合はこの初期アイテムを飛ばす。
+            // (モンスターとしてゲーム開始した場合、assign_auto_realm() が第一領域
+            //  しか割り当てないため第二領域が未設定になり得る)
+            const auto &realm = (tval == ItemKindType::SORCERY_BOOK) ? prealm.realm1() : prealm.realm2();
+            if (!realm.is_available()) {
+                continue;
+            }
+
+            tval = realm.get_book();
         } else if (tval == ItemKindType::RING && sval == SV_RING_RES_FEAR && pr.equals(PlayerRaceType::BARBARIAN)) {
             sval = SV_RING_SUSTAIN_STR;
         } else if (tval == ItemKindType::RING && sval == SV_RING_SUSTAIN_INT && pr.equals(PlayerRaceType::MIND_FLAYER)) {
