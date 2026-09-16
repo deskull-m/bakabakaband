@@ -1137,6 +1137,34 @@ per-turn で発火しない（切り傷・毒の inflict 経路が無い）」�
   tick 量 (1) で調整可能。cut DoT は近接由来で inflict 経路が別のため今回は poison のみ。
 - スキーマに `suffers_poison_dot` を登録済。
 
+### モンスターの武装度 (`armament_level`)
+
+`MonraceDefinition` に `tl::optional<int> armament_level`
+(`src/system/monrace/monrace-definition.h`) を持ち、JSON
+`lib/edit/MonraceDefinitions.jsonc` で個別モンスターの**武装度**を指定できる。
+武装度は「生成時にどれだけ上質な装備を与えるか」を表す種族固有の値で、
+職業フラグ (SOLDIER / WARRIOR / ARCHER / RANGER / MAGE) による装備部位の
+決定とは独立した軸として、装備の**質**を決める土台となる。
+
+```jsonc
+"armament_level": 3000
+```
+
+- 指定範囲は `0 〜 MonraceDefinition::ARMAMENT_LEVEL_MAX` (= 100000)。
+- **未指定のモンスターは種族レベル比例の既定値**
+  `level * MonraceDefinition::ARMAMENT_LEVEL_PER_LEVEL` (= `level * 50`) を持つ。
+  Lv40 なら 2000、Lv99 なら 4950。既定値算出の係数・上限はこの 2 定数で調整する。
+- **フィールドを直接読まず必ず `monrace.get_armament_level()` を使うこと。**
+  既定値はレベルから都度算出されるため、`armament_level` を直接読むと
+  未指定個体で `tl::nullopt` になる。`tl::optional` のまま保持しているのは
+  「明示指定された値」と「レベル由来の既定値」を区別できるようにするため。
+- **現段階では値の保持のみで、装備生成には未反映。** 武装度に応じて初期装備の
+  質を段階的に上げる処理は後続で実装する (現在の初期装備は
+  `src/monster-floor/monster-drop-generator.cpp` のレベル帯テーブルで決まる)。
+  そのため**既定バランスは完全不変**。
+- スキーマ `schema/MonraceDefinitions.schema.json` に `armament_level` を登録済。
+- 既定値の算出規則は `src/test/system/monrace/test-armament-level.cpp` で検証している。
+
 ### モンスターのレベル別HPダイス指定 (`hit_point_per_level`)
 
 `MonraceDefinition` に `Dice hit_dice_per_level`

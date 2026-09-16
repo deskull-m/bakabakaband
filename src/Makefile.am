@@ -1603,6 +1603,7 @@ hengband_test_SOURCES = \
 	test/test-main.cpp \
 	test/scoped-rng.h \
 	\
+	test/system/monrace/test-armament-level.cpp \
 	test/system/monrace/test-body-structure-policy.cpp \
 	\
 	test/timed-effect/test-player-cut.cpp \

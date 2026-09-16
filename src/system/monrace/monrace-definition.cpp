@@ -84,6 +84,19 @@ MonraceDefinition::MonraceDefinition()
 }
 
 /*!
+ * @brief 武装度を取得する
+ * @return JSON で明示指定があればその値、無ければ種族レベルから算出した既定値
+ * @details 武装度は「生成時にどれだけ上質な装備を与えるか」を表す種族固有の値。
+ *          未指定のモンスターには `level * ARMAMENT_LEVEL_PER_LEVEL` を既定値として
+ *          与えるため、格が上がるほど自動的に良い装備を持つ。既定値をレベルから
+ *          算出する都合上、`armament_level` を直接読まずに必ず本メソッドを使うこと。
+ */
+int MonraceDefinition::get_armament_level() const
+{
+    return this->armament_level.value_or(this->level * ARMAMENT_LEVEL_PER_LEVEL);
+}
+
+/*!
  * @brief 正当なモンスター (実際に存在するモンスター種族IDである)かどうかを調べる
  * @details モンスター種族IDが MonsterRaceDefinitions に実在するもの(MonraceId::PLAYERは除く)であるかどうかの用途の他、
  * m_list 上の要素などの r_idx にMonraceId::PLAYER を入れることで死亡扱いとして使われるのでその判定に使用する事もある

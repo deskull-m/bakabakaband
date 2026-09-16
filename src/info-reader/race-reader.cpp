@@ -384,6 +384,31 @@ errr RaceReader::set_mon_player_class(const nlohmann::json &class_data, MonraceD
 }
 
 /*!
+ * @brief JSON Objectからモンスターの武装度を読み込む
+ * @param armament_data 武装度情報の格納されたJSON Object (整数)
+ * @param monrace 保管先のモンスター種族構造体
+ * @return エラーコード
+ * @details 武装度は「生成時にどれだけ上質な装備を与えるか」を表す種族固有の値。
+ *          未指定 (null) なら tl::nullopt のままとし、`get_armament_level()` が
+ *          `level * ARMAMENT_LEVEL_PER_LEVEL` を既定値として返す。
+ */
+errr RaceReader::set_mon_armament_level(const nlohmann::json &armament_data, MonraceDefinition &monrace)
+{
+    if (armament_data.is_null()) {
+        return PARSE_ERROR_NONE;
+    }
+
+    auto armament_level = 0;
+    const auto err = info_set_integer(armament_data, armament_level, true, Range(0, MonraceDefinition::ARMAMENT_LEVEL_MAX));
+    if (err) {
+        return err;
+    }
+
+    monrace.armament_level = armament_level;
+    return PARSE_ERROR_NONE;
+}
+
+/*!
  * @brief JSON Objectからモンスターの詠唱魔法領域トークンを解析する共通ヘルパ (提案C6)
  * @param realm_data 魔法領域情報の格納されたJSON Object (文字列)
  * @param target 保管先の RealmType (realm_abilities / realm_abilities2)
@@ -1578,6 +1603,11 @@ errr RaceReader::read()
     err = set_mon_player_class(mon_data["player_class"], monrace);
     if (err) {
         msg_format(_("モンスター職業読込失敗。ID: '%d'。", "Failed to load monster player_class. ID: '%d'."), error_idx);
+        return err;
+    }
+    err = set_mon_armament_level(mon_data["armament_level"], monrace);
+    if (err) {
+        msg_format(_("モンスター武装度読込失敗。ID: '%d'。", "Failed to load monster armament_level. ID: '%d'."), error_idx);
         return err;
     }
     err = info_set_bool(mon_data["grows_stats"], monrace.grows_stats, false);
