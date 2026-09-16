@@ -1239,6 +1239,21 @@ per-turn で発火しない（切り傷・毒の inflict 経路が無い）」�
   一度も表示されていなかった。早期 return をやめ、一般ドロップの文は
   `drop_gold > 0 || drop_item > 0` の条件ブロックに包み、
   `display_drop_kind_items()` は常に呼ぶようにした (一般ドロップ側の出力は不変)。
+- **`drop_tvals` (アイテム種別ドロップ) の思い出表示も追加済み**:
+  `display_drop_tval_items()` を新設し、`display_drop_kind_items()` と文面を
+  共通化した (`display_drop_entries()` テンプレートに集約。両者は表示名の
+  求め方だけが異なる)。`drop_tvals` は種別のみの指定で、死亡時は
+  `lookup_baseitem_id()` の sval=0 経路で当該種別から無作為にベースアイテムが
+  選ばれるため、個別アイテム名ではなく**種別名**で表示する
+  (名称はアイテム生成ウィザードの `tval_desc_list` を共用。表に無い
+  NONE / GOLD / BOTTLE / NO_AMMO は総称「アイテム」へフォールバック)。
+- **注意: `drop_tvals` は現状どの reader も populate しない**。唯一の
+  `drop_tvals.push_back` は `RaceReader::set_mon_flags()` 内の約 250 行に及ぶ
+  **コメントアウト済みブロック** (旧 txt 形式の複合フラグ解析) にあり、JSON
+  reader には `drop_kind` に相当する `drop_tval` キーの処理が無い。よって
+  `on_dead_drop_tval_item()` / `display_drop_tval_items()` はいずれも実データでは
+  発火しない。実際に使うには JSON reader (`set_mon_drop_tvals()` 相当) と
+  スキーマ登録の追加が必要。
 - プレイヤーがモンスターとして開始する経路 (`player_birth_as_monster`) は従来どおり
   固定ドロップを付与しない。
 
