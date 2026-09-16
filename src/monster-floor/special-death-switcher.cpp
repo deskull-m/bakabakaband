@@ -201,18 +201,6 @@ static void on_dead_bottle_gnome(CreatureEntity &killer, MonsterDeath *md_ptr)
     (void)drop_near(killer, *q_ptr, md_ptr->get_position());
 }
 
-static void on_dead_bloodletter(CreatureEntity &killer, MonsterDeath *md_ptr)
-{
-    if (!md_ptr->drop_chosen_item || (randint1(100) >= 15)) {
-        return;
-    }
-
-    ItemEntity item;
-    item.generate(BaseitemList::get_instance().lookup_baseitem_id({ ItemKindType::SWORD, SV_BLADE_OF_CHAOS }));
-    ItemMagicApplier(killer, &item, killer.get_floor()->object_level, AM_NO_FIXED_ART | md_ptr->mo_mode).execute();
-    (void)drop_near(killer, item, md_ptr->get_position());
-}
-
 static void on_dead_inariman1_2(CreatureEntity &killer, MonsterDeath *md_ptr)
 {
     ItemEntity forge;
@@ -531,9 +519,6 @@ void switch_special_death(CreatureEntity &creature, MonsterDeath *md_ptr, Attrib
         return;
     case MonraceId::BOTTLE_GNOME:
         on_dead_bottle_gnome(creature, md_ptr);
-        return;
-    case MonraceId::BLOODLETTER:
-        on_dead_bloodletter(creature, md_ptr);
         return;
     case MonraceId::RAAL:
         on_dead_raal(creature, md_ptr);

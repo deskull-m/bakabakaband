@@ -28573,6 +28573,14 @@
         "RES_CHAO",
         "DEMON",
       ],
+      "equip_kind": [
+        {
+          "id": 36,
+          "probability": "15_IN_100",
+          "grade": 0,
+          "dice": "1d1",
+        },
+      ],
     },
     {
       "id": 524,
