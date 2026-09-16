@@ -63,3 +63,24 @@ void equip_ranged_monster_initial_bow(CreatureEntity &monster);
  *          テーブルで調整すること。
  */
 void equip_spellcaster_monster_initial_robe(CreatureEntity &monster);
+
+/*!
+ * @brief 種族の武装度 (`MonraceDefinition::get_armament_level()`) を予算として
+ *        モンスターの装備スロットを埋める。
+ * @param monster 対象モンスター
+ * @details 武装度は「生成時にどれだけ上質な装備を与えるか」を表す種族固有値
+ *          (未指定なら `monrace.level * 50`)。これを購買力とみなし、体構造的に
+ *          装備でき、かつまだ空いているスロットへ予算内で最も上等な品を与える。
+ *          予算は残りスロット数で等分して割り当て、余りは次のスロットへ繰り越す
+ *          ため、武装度が高いほど全身が上等になる。
+ *          役割装備 (SOLDIER / WARRIOR の近接武器、ARCHER / RANGER の弓、
+ *          MAGE の軽装) で既に埋まったスロットはそのまま残し、その価値を予算から
+ *          差し引くため二重取りにならない。よって**役割装備の 3 関数より後**、
+ *          一般ドロップ (`generate_monster_drop_items`) より前に呼ぶこと。
+ *          **モンスターの装備は AC (`CreatureEntity::get_ac()`) と近接ダメージ
+ *          (`calc_weapon_melee_damage`) に反映される**ため、これは装備可能な体構造を
+ *          持つ全モンスターへのバランス変更を伴う。調整は武装度そのもの
+ *          (JSON `armament_level` / `ARMAMENT_LEVEL_PER_LEVEL`) と
+ *          `get_armament_slot_entries()` の対象スロット表で行うこと。
+ */
+void equip_monster_by_armament_budget(CreatureEntity &monster);
