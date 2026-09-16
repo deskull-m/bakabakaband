@@ -1247,13 +1247,30 @@ per-turn で発火しない（切り傷・毒の inflict 経路が無い）」�
   選ばれるため、個別アイテム名ではなく**種別名**で表示する
   (名称はアイテム生成ウィザードの `tval_desc_list` を共用。表に無い
   NONE / GOLD / BOTTLE / NO_AMMO は総称「アイテム」へフォールバック)。
-- **注意: `drop_tvals` は現状どの reader も populate しない**。唯一の
-  `drop_tvals.push_back` は `RaceReader::set_mon_flags()` 内の約 250 行に及ぶ
-  **コメントアウト済みブロック** (旧 txt 形式の複合フラグ解析) にあり、JSON
-  reader には `drop_kind` に相当する `drop_tval` キーの処理が無い。よって
-  `on_dead_drop_tval_item()` / `display_drop_tval_items()` はいずれも実データでは
-  発火しない。実際に使うには JSON reader (`set_mon_drop_tvals()` 相当) と
-  スキーマ登録の追加が必要。
+- **`drop_tval` の JSON reader とスキーマも追加済み**: 従来 `drop_tvals` を
+  populate するのは `RaceReader::set_mon_flags()` 内の**コメントアウト済みブロック**
+  (旧 txt 形式の複合フラグ解析、約 250 行) だけで、JSON reader に相当する処理が
+  無かったため `on_dead_drop_tval_item()` は完全な dead code だった。
+  `RaceReader::set_mon_drop_tvals()` を追加し、`drop_kind` と対称な `drop_tval`
+  キーを読めるようにした。
+
+  ```jsonc
+  "drop_tval": [
+    { "tval": 75, "probability": "1_IN_1", "grade": 0, "dice": "3d3" },
+  ],
+  ```
+
+  - 書式は `drop_kind` と同一で、対象の指定が `id` (ベースアイテムID) ではなく
+    `tval` (アイテム種別 = `ItemKindType` の値) になるだけ。共通部分は
+    `set_mon_drop_entries()` に集約し、両 reader が同じ解析を通る。
+  - **tval は数値指定** (`BaseitemDefinitions.jsonc` の `type_value` と同じ流儀)。
+  - **候補となるベースアイテムが 1 つも無い種別 (NONE / GOLD 等) は読込時に
+    エラーで弾く**。死亡時の `lookup_baseitem_id({tval, 0})` は候補ゼロだと
+    例外を投げるため、データ不備を実行時の異常終了ではなく起動時のエラー
+    (「モンスタードロップアイテム種別情報読み込み失敗。ID: 'N'。」) にする。
+  - スキーマには `drop_tval` とあわせて**未登録だった `drop_kind` も登録**した
+    (monster 要素は `additionalProperties` 未指定のため従来は素通りしていた)。
+  - 実データには `drop_tval` の指定がまだ無いため**既定バランスは不変**。
 - プレイヤーがモンスターとして開始する経路 (`player_birth_as_monster`) は従来どおり
   固定ドロップを付与しない。
 

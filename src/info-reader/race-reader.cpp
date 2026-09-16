@@ -6,7 +6,11 @@
 #include "info-reader/parse-error-types.h"
 #include "info-reader/race-info-tokens-table.h"
 #include "locale/character-encoding.h"
+#include "object/tval-types.h"
 #include "player-ability/player-ability-types.h"
+#include "system/baseitem/baseitem-definition.h"
+#include "system/baseitem/baseitem-key.h"
+#include "system/baseitem/baseitem-list.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
 #include "system/monrace/monrace-message.h"
@@ -1323,12 +1327,15 @@ errr RaceReader::set_mon_spawn_item(const nlohmann::json &spawn_data, MonraceDef
 }
 
 /*!
- * @brief JSON Objectからモンスターのドロップアイテム情報をセットする
- * @param drop_data ドロップアイテム情報の格納されたJSON Object
- * @param monrace 保管先のモンスター種族構造体
+ * @brief JSON Objectからモンスターの固定ドロップ指定をセットする (drop_kind / drop_tval 共通)
+ * @param drop_data 固定ドロップ情報の格納されたJSON Object
+ * @param id_key 対象を指定するキー名 ("id" = ベースアイテムID / "tval" = アイテム種別)
+ * @param id_range id_key で取り得る値の範囲
+ * @param drops 保管先のドロップ指定リスト
  * @return エラーコード
+ * @details 対象の指定方法以外の書式 (probability / grade / dice) は両者で完全に同一。
  */
-errr RaceReader::set_mon_drop_kinds(const nlohmann::json &drop_data, MonraceDefinition &monrace)
+static errr set_mon_drop_entries(const nlohmann::json &drop_data, std::string_view id_key, const Range &id_range, std::vector<MonraceDropKind> &drops)
 {
     if (drop_data.is_null()) {
         return PARSE_ERROR_NONE;
@@ -1339,12 +1346,12 @@ errr RaceReader::set_mon_drop_kinds(const nlohmann::json &drop_data, MonraceDefi
     }
 
     for (const auto &drop_item : drop_data) {
-        if (!drop_item.contains("id") || !drop_item.contains("probability") || !drop_item.contains("grade") || !drop_item.contains("dice")) {
+        if (!drop_item.contains(id_key) || !drop_item.contains("probability") || !drop_item.contains("grade") || !drop_item.contains("dice")) {
             return PARSE_ERROR_TOO_FEW_ARGUMENTS;
         }
 
-        short item_id;
-        if (auto err = info_set_integer(drop_item["id"], item_id, true, Range(0, 9999))) {
+        short target_id;
+        if (auto err = info_set_integer(drop_item[std::string(id_key)], target_id, true, id_range)) {
             return err;
         }
 
@@ -1398,8 +1405,60 @@ errr RaceReader::set_mon_drop_kinds(const nlohmann::json &drop_data, MonraceDefi
             return PARSE_ERROR_INVALID_FLAG;
         }
 
-        // 分子、分母、アイテムID、グレード、ドロップ個数ダイス ("XdY") を設定
-        monrace.drop_kinds.push_back({ numerator, denominator, item_id, grade, Dice(dice_num, dice_side) });
+        // 分子、分母、対象 (アイテムID or アイテム種別)、グレード、ドロップ個数ダイス ("XdY") を設定
+        drops.push_back({ numerator, denominator, target_id, grade, Dice(dice_num, dice_side) });
+    }
+
+    return PARSE_ERROR_NONE;
+}
+
+/*!
+ * @brief 指定されたアイテム種別に生成可能なベースアイテムが存在するか調べる
+ * @param tval アイテム種別
+ * @return 1 つでも存在すれば true
+ * @details 死亡時ドロップは `lookup_baseitem_id({ tval, 0 })` で当該種別から無作為に
+ *          ベースアイテムを選ぶが、種別に候補が 1 つも無いと例外を投げる。
+ *          データ読込時に弾いて実行時の異常終了を防ぐ。
+ */
+static bool has_any_baseitem_of_kind(ItemKindType tval)
+{
+    const auto &baseitems = BaseitemList::get_instance();
+    const auto &bi_ids = baseitems.collect_valid_bi_ids();
+    return std::any_of(bi_ids.begin(), bi_ids.end(),
+        [&baseitems, tval](short bi_id) { return baseitems.get_baseitem(bi_id).bi_key.tval() == tval; });
+}
+
+/*!
+ * @brief JSON Objectからモンスターのドロップアイテム情報をセットする
+ * @param drop_data ドロップアイテム情報の格納されたJSON Object
+ * @param monrace 保管先のモンスター種族構造体
+ * @return エラーコード
+ */
+errr RaceReader::set_mon_drop_kinds(const nlohmann::json &drop_data, MonraceDefinition &monrace)
+{
+    return set_mon_drop_entries(drop_data, "id", Range(0, 9999), monrace.drop_kinds);
+}
+
+/*!
+ * @brief JSON Objectからモンスターのアイテム種別ドロップ情報をセットする
+ * @param drop_data アイテム種別ドロップ情報の格納されたJSON Object
+ * @param monrace 保管先のモンスター種族構造体
+ * @return エラーコード
+ * @details drop_kind がベースアイテムを 1 つ指定するのに対し、drop_tval は種別のみを
+ *          指定し、死亡時に当該種別から無作為にベースアイテムが選ばれる。
+ */
+errr RaceReader::set_mon_drop_tvals(const nlohmann::json &drop_data, MonraceDefinition &monrace)
+{
+    const auto first_added = monrace.drop_tvals.size();
+    if (auto err = set_mon_drop_entries(drop_data, "tval", Range(0, 128), monrace.drop_tvals)) {
+        return err;
+    }
+
+    // 候補の無い種別を指定されると死亡時に例外を投げるため、読込時に弾く。
+    for (auto i = first_added; i < monrace.drop_tvals.size(); i++) {
+        if (!has_any_baseitem_of_kind(i2enum<ItemKindType>(monrace.drop_tvals[i].id))) {
+            return PARSE_ERROR_INVALID_FLAG;
+        }
     }
 
     return PARSE_ERROR_NONE;
@@ -1785,6 +1844,11 @@ errr RaceReader::read()
     err = set_mon_drop_kinds(mon_data["drop_kind"], monrace);
     if (err) {
         msg_format(_("モンスタードロップアイテム情報読み込み失敗。ID: '%d'。", "Failed to load monster drop kind data. ID: '%d'."), error_idx);
+        return err;
+    }
+    err = set_mon_drop_tvals(mon_data["drop_tval"], monrace);
+    if (err) {
+        msg_format(_("モンスタードロップアイテム種別情報読み込み失敗。ID: '%d'。", "Failed to load monster drop tval data. ID: '%d'."), error_idx);
         return err;
     }
     err = set_mon_dead_spawns(mon_data["dead_spawn"], monrace);
