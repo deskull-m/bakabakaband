@@ -1219,11 +1219,18 @@ per-turn で発火しない（切り傷・毒の inflict 経路が無い）」�
 - **挙動差**: 従来 `on_dead_drop_kind_item` は `drop_item == false` の死 (量子消失・
   モンスター同士の戦闘等) でもドロップしていたが、所持品経由になったことで
   `drop_all_inventory()` と同じ抑制を受けるようになった (一般ドロップ移行と同じ扱い)。
-- **既知の不整合 (本変更では据え置き)**: `drop_kinds` のタプルは reader が
-  `dice_side` / `dice_num` の順で詰めるのに対し `display-lore.cpp` は
-  `dice_num` / `dice_side` の順で分解しており、`Dice::roll` への引数順も
-  死亡時処理の時点で入れ替わっている ("2d10" 指定が実質 10d2)。個数が変わるため
-  生成時側も**死亡時処理と同じ引数順に揃えて**挙動を維持している。
+- **ドロップ個数ダイスの順序不整合は修正済み**: 旧実装の `drop_kinds` /
+  `drop_tvals` は `std::tuple<int, int, short, int, int, int>` で、reader が
+  `dice_side` / `dice_num` の順で詰めるのに対し利用側 (`Dice::roll` /
+  `display-lore.cpp`) は `dice_num` / `dice_side` の順で受けており、JSON の
+  "XdY" 指定が実質 "YdX" として振られていた (クッキーおばあちゃんの `1d5` が
+  `5d1` = 常に 5 個、『ヨロシク仮面』の `2d10` が `10d2`、気狂いピエロの
+  `10d5` が `5d10` 等、実データ 91 エントリ中 14 が該当)。位置依存で誤りやすい
+  タプルを廃し、名前付きの `MonraceDropKind` クラス (`numerator` /
+  `denominator` / `id` / `grade` / `Dice dice`) に置き換えて修正した。
+  reader (JSON / 旧 txt)・死亡時処理・生成時装備・思い出表示の全 7 箇所が
+  同じ `kind.dice` を参照するため、以後順序を取り違えようがない。
+  **ドロップ個数が変わるバランス変更を伴う** (JSON の指定どおりになる)。
 - プレイヤーがモンスターとして開始する経路 (`player_birth_as_monster`) は従来どおり
   固定ドロップを付与しない。
 

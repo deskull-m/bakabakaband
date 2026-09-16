@@ -604,26 +604,20 @@ void equip_monster_fixed_drops(CreatureEntity &player, CreatureEntity &monster)
 {
     const auto &monrace = monster.get_monrace();
     for (const auto &kind : monrace.drop_kinds) {
-        const auto &[numerator, denominator, bi_id, grade, dice_side, dice_num] = kind;
-
         // 装備品でない固定ドロップは従来どおり死亡時に生成する。
-        if (!is_wearable_drop_kind(bi_id)) {
+        if (!is_wearable_drop_kind(kind.id)) {
             continue;
         }
 
-        if (randint1(denominator) > numerator) {
+        if (randint1(kind.denominator) > kind.numerator) {
             continue;
         }
 
-        // ダイスの引数順は死亡時処理 (on_dead_drop_kind_item) と完全に揃える。
-        // drop_kinds のタプルは reader が dice_side / dice_num の順で詰めており、
-        // 死亡時処理もその順のまま Dice::roll に渡しているため、ここで「正しい」
-        // 順に直すと個数が変わってしまう (既存の命名不整合。挙動は据え置く)。
-        const auto drop_nums = Dice::roll(dice_side, dice_num);
+        const auto drop_nums = kind.dice.roll();
         for (auto i = 0; i < drop_nums; i++) {
             ItemEntity item;
-            item.generate(bi_id);
-            apply_drop_kind_magic(player, item, grade);
+            item.generate(kind.id);
+            apply_drop_kind_magic(player, item, kind.grade);
 
             // 装備できるスロットが空いていれば装備し、無理なら所持品に入る。
             // いずれにせよ死亡時は drop_all_inventory() で床へ落ちる。

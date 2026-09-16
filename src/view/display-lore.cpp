@@ -1471,7 +1471,7 @@ void display_drop_kind_items(lore_type *lore_ptr)
 #endif
 
     bool first = true;
-    for (const auto &[numerator, denominator, item_id, grade, dice_num, dice_side] : lore_ptr->monrace->drop_kinds) {
+    for (const auto &kind : lore_ptr->monrace->drop_kinds) {
         if (!first) {
 #ifdef JP
             hooked_roff("、");
@@ -1481,25 +1481,26 @@ void display_drop_kind_items(lore_type *lore_ptr)
         }
         first = false;
 
-        const auto &baseitem = BaseitemList::get_instance().get_baseitem(item_id);
+        const auto &baseitem = BaseitemList::get_instance().get_baseitem(kind.id);
         const auto &item_name = baseitem.name;
+        const auto dice_expression = kind.dice.to_string();
 
         // グレード修飾語を取得
         std::string grade_modifier = "";
 #ifdef JP
-        if (grade == 1) {
+        if (kind.grade == 1) {
             grade_modifier = "上質な";
-        } else if (grade == 2) {
+        } else if (kind.grade == 2) {
             grade_modifier = "高級品の";
         }
-        hooked_roff(format("確率%d/%dで%s%sを%dd%d個", numerator, denominator, grade_modifier.data(), item_name.data(), dice_num, dice_side));
+        hooked_roff(format("確率%d/%dで%s%sを%s個", kind.numerator, kind.denominator, grade_modifier.data(), item_name.data(), dice_expression.data()));
 #else
-        if (grade == 1) {
+        if (kind.grade == 1) {
             grade_modifier = "excellent ";
-        } else if (grade == 2) {
+        } else if (kind.grade == 2) {
             grade_modifier = "premium ";
         }
-        hooked_roff(format("with probability %d/%d %dd%d %s%s", numerator, denominator, dice_num, dice_side, grade_modifier.data(), item_name.data()));
+        hooked_roff(format("with probability %d/%d %s %s%s", kind.numerator, kind.denominator, dice_expression.data(), grade_modifier.data(), item_name.data()));
 #endif
     }
 
