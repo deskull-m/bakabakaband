@@ -81,7 +81,7 @@
         "DROP_CORPSE",
         "DROP_SKELETON",
       ],
-      "drop_kind": [
+      "equip_kind": [
         {
           "id": 102,
           "probability": "1_IN_5",
@@ -319,7 +319,7 @@
         "OPEN_DOOR",
         "BASH_DOOR",
       ],
-      "drop_kind": [
+      "equip_kind": [
         {
           "id": 533,
           "probability": "1_IN_5",
@@ -483,7 +483,7 @@
         "RABBLE",
         "TAKE_ITEM",
       ],
-      "drop_kind": [
+      "equip_kind": [
         {
           "id": 102,
           "probability": "1_IN_5",
@@ -543,7 +543,7 @@
         "OPEN_DOOR",
         "BASH_DOOR",
       ],
-      "drop_kind": [
+      "equip_kind": [
         {
           "id": 102,
           "probability": "1_IN_5",
@@ -654,7 +654,7 @@
         "TAKE_ITEM",
         "OPEN_DOOR",
       ],
-      "drop_kind": [
+      "equip_kind": [
         {
           "id": 102,
           "probability": "1_IN_5",
@@ -720,7 +720,7 @@
         "EAT_LOSE_CON",
         "EAT_POISONOUS",
       ],
-      "drop_kind": [
+      "equip_kind": [
         {
           "id": 102,
           "probability": "1_IN_5",
@@ -83572,7 +83572,7 @@
         "OPEN_DOOR",
         "BASH_DOOR",
       ],
-      "drop_kind": [
+      "equip_kind": [
         {
           "id": 94,
           "probability": "1_IN_1",
@@ -92967,7 +92967,7 @@
         "OPEN_DOOR",
         "BASH_DOOR",
       ],
-      "drop_kind": [
+      "equip_kind": [
         {
           "id": 775,
           "probability": "1_IN_1",
@@ -95131,7 +95131,7 @@
       },
       "sex": "MALE",
       "flags": ["UNIQUE", "FORCE_MAXHP", "DROP_60", "DROP_90", "DROP_GOOD", "NASTY", "HOMO_SEXUAL"],
-      "drop_kind": [
+      "equip_kind": [
         {
           "id": 682,
           "probability": "1_IN_1",
@@ -97468,7 +97468,7 @@
         "OPEN_DOOR",
         "BASH_DOOR",
       ],
-      "drop_kind": [
+      "equip_kind": [
         {
           "id": 803,
           "probability": "1_IN_1",
@@ -99947,7 +99947,7 @@
       },
       "sex": "MALE",
       "flags": ["UNIQUE", "DROP_CORPSE", "HUMAN", "STUPID", "DROP_SKELETON"],
-      "drop_kind": [
+      "equip_kind": [
         {
           "id": 42,
           "probability": "1_IN_1",
@@ -100431,13 +100431,15 @@
         "DROP_CORPSE",
         "EVIL",
       ],
-      "drop_kind": [
+      "equip_kind": [
         {
           "id": 40,
           "probability": "1_IN_1",
           "grade": 1,
           "dice": "1d1",
         },
+      ],
+      "drop_kind": [
         {
           "id": 748,
           "probability": "1_IN_8",
@@ -100516,13 +100518,15 @@
         "DROP_CORPSE",
         "EVIL",
       ],
-      "drop_kind": [
+      "equip_kind": [
         {
           "id": 40,
           "probability": "1_IN_1",
           "grade": 1,
           "dice": "1d1",
         },
+      ],
+      "drop_kind": [
         {
           "id": 748,
           "probability": "1_IN_8",
@@ -115455,7 +115459,7 @@
         "DROP_CORPSE",
         "DROP_SKELETON",
       ],
-      "drop_kind": [
+      "equip_kind": [
         {
           "id": 102,
           "probability": "1_IN_5",
@@ -118609,7 +118613,7 @@
         "OPEN_DOOR",
         "BASH_DOOR",
       ],
-      "drop_kind": [
+      "equip_kind": [
         {
           "id": 102,
           "probability": "1_IN_5",
@@ -119276,7 +119280,7 @@
         "OPEN_DOOR",
         "HENTAI",
       ],
-      "drop_kind": [
+      "equip_kind": [
         {
           "id": 102,
           "probability": "1_IN_5",
@@ -119592,7 +119596,7 @@
         "EAT_LOSE_CON",
         "EAT_POISONOUS",
       ],
-      "drop_kind": [
+      "equip_kind": [
         {
           "id": 102,
           "probability": "1_IN_5",
@@ -123442,7 +123446,7 @@
         "TAKE_ITEM",
         "OPEN_DOOR",
       ],
-      "drop_kind": [
+      "equip_kind": [
         {
           "id": 102,
           "probability": "1_IN_5",
@@ -124317,7 +124321,7 @@
         "OPEN_DOOR",
         "BASH_DOOR",
       ],
-      "drop_kind": [
+      "equip_kind": [
         {
           "id": 533,
           "probability": "1_IN_5",
@@ -126120,7 +126124,7 @@
         "list": ["SHRIEK"],
         "probability": "1_IN_4",
       },
-      "drop_kind": [
+      "equip_kind": [
         {
           "id": 781,
           "probability": "1_IN_1",
@@ -132830,7 +132834,7 @@
         "list": ["SHRIEK"],
         "probability": "1_IN_12",
       },
-      "drop_kind": [
+      "equip_kind": [
         {
           "id": 169,
           "probability": "1_IN_5",
@@ -133935,7 +133939,7 @@
         "OPEN_DOOR",
         "BASH_DOOR",
       ],
-      "drop_kind": [
+      "equip_kind": [
         {
           "id": 64,
           "probability": "1_IN_5",
@@ -134749,7 +134753,7 @@
         "IM_ELEC",
         "IM_POIS",
       ],
-      "drop_kind": [
+      "equip_kind": [
         {
           "id": 702,
           "probability": "1_IN_1",
@@ -134809,7 +134813,7 @@
         "IM_ELEC",
         "IM_POIS",
       ],
-      "drop_kind": [
+      "equip_kind": [
         {
           "id": 803,
           "probability": "1_IN_1",
@@ -139292,7 +139296,7 @@
         "list": ["BA_POIS", "SLOW"],
         "probability": "1_IN_4",
       },
-      "drop_kind": [
+      "equip_kind": [
         {
           "id": 102,
           "probability": "1_IN_5",

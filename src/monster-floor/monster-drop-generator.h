@@ -7,6 +7,7 @@
 
 class CreatureEntity;
 class ItemEntity;
+class MonraceDropKind;
 
 /*!
  * @brief モンスターの一般ドロップ品 (drop_flags に基づくアイテム/金) を
@@ -87,36 +88,38 @@ void equip_spellcaster_monster_initial_robe(CreatureEntity &monster);
 void equip_monster_by_armament_budget(CreatureEntity &monster);
 
 /*!
- * @brief 固定ドロップ (`MonraceDefinition::drop_kinds`) のうち装備品を判定する
- * @param bi_id ベースアイテムID
- * @return 装備スロットに入るアイテム (`BaseitemKey::is_wearable()`) なら true
- * @details 生成時に持たせる側 (`equip_monster_fixed_drops`) と、死亡時に生成する側
- *          (`on_dead_drop_kind_item`) が**同一の述語**で振り分けるために共用する。
- *          ベースアイテムIDのみで決まるため、両者の判定が食い違うことはない。
+ * @brief 固定アイテム指定から実際に生成するベースアイテムIDを決める
+ * @param entry 固定アイテム指定
+ * @param is_itemkind entry がアイテム種別指定 (`*_tvals`) なら true
+ * @return ベースアイテムID
+ * @details ベースアイテムID指定 (`*_kinds`) はその値をそのまま返す。アイテム種別指定
+ *          (`*_tvals`) は当該種別の中から無作為に 1 つ選ぶ。候補が 1 つも無い種別は
+ *          reader (`RaceReader::set_mon_equip_tvals` 等) が読込時に弾いているため、
+ *          ここで例外が飛ぶことはない。
  */
-bool is_wearable_drop_kind(short bi_id);
+short resolve_fixed_item_bi_id(const MonraceDropKind &entry, bool is_itemkind);
 
 /*!
- * @brief 固定ドロップの等級 (grade) に応じたアイテム魔法を適用する
+ * @brief 固定アイテムの等級 (grade) に応じたアイテム魔法を適用する
  * @param creature 生成基準となるクリーチャー (フロア階層の取得に使う)
  * @param item 対象アイテム
- * @param grade 固定ドロップの等級 (-2:呪い〜2:優良、3:特別)
- * @details 生成時と死亡時で品質が変わらないよう、両経路で本関数を共用する。
+ * @param grade 固定アイテム指定の等級 (-2:呪い〜2:優良、3:特別)
+ * @details 生成時装備 (`equip_*`) と死亡時ドロップ (`drop_*`) で品質が変わらないよう、
+ *          両経路で本関数を共用する。
  */
 void apply_drop_kind_magic(CreatureEntity &creature, ItemEntity &item, int grade);
 
 /*!
- * @brief 固定ドロップのうち装備品をモンスターの生成時に持たせる。
+ * @brief 生成時装備指定 (`equip_kinds` / `equip_tvals`) のアイテムをモンスターに持たせる。
  * @param player プレイヤーへの参照 (アイテム生成基準)
  * @param monster 対象モンスター
- * @details 「その装備を落とす」と定義されたモンスターは、本来それを**身に着けて
- *          いる**のが自然なため、装備品の固定ドロップは死亡時ではなく生成時に
- *          materialize して装備スロットへ入れる。体構造的に装備できない・スロットが
- *          埋まっている場合は所持品に入り、いずれにせよ死亡時は
- *          `drop_all_inventory()` で床へ落ちる。
- *          装備品でない固定ドロップは従来どおり死亡時に生成される
- *          (`on_dead_drop_kind_item` が `is_wearable_drop_kind()` で除外する)。
+ * @details 「その装備を身に着けている」と定義されたモンスターに、生成時点で
+ *          materialize したアイテムを渡す。装備できるスロットが空いていれば装備し、
+ *          体構造的に装備できない・スロットが埋まっている場合は所持品に入る。
+ *          いずれにせよ**撃破すれば `drop_all_inventory()` で床へ落ちる**。
+ *          対して `drop_kinds` / `drop_tvals` は生成時には存在せず、死亡時に初めて
+ *          生成される (死体から剥ぐ素材など、本人が所持しているとは限らないもの)。
  *          種族固有の「らしさ」を最優先するため、**役割装備・武装度充填より前**に
  *          呼ぶこと。装備した分の価値は武装度予算から差し引かれる。
  */
-void equip_monster_fixed_drops(CreatureEntity &player, CreatureEntity &monster);
+void equip_monster_fixed_items(CreatureEntity &player, CreatureEntity &monster);

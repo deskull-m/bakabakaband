@@ -48,19 +48,22 @@ enum class FixedArtifactId : short;
 enum class MonraceId : int16_t;
 
 /*!
- * @brief 固定ドロップ指定 (`drop_kinds` / `drop_tvals` 共通)
- * @details 以前は `std::tuple<int, int, short, int, int, int>` だったが、
+ * @brief 固定アイテム指定 (`equip_kinds` / `equip_tvals` / `drop_kinds` / `drop_tvals` 共通)
+ * @details `equip_*` は生成時に持たせて装備させる指定 (撃破すれば所持品ごと落ちる)、
+ *          `drop_*` は死亡時に初めて生成する指定。書式は 4 者で完全に同一で、
+ *          `id` がベースアイテムID (`*_kinds`) かアイテム種別 (`*_tvals`) かだけが異なる。
+ *          以前は `std::tuple<int, int, short, int, int, int>` だったが、
  *          ダイス 2 要素の順序をリーダと利用側で取り違えており
  *          ("XdY" 指定が実質 "YdX" になっていた)、思い出表示とも食い違っていた。
  *          位置依存で誤りやすいタプルをやめ、個数ダイスは `Dice` 型で保持する。
  */
 class MonraceDropKind {
 public:
-    int numerator{}; //!< ドロップ確率の分子 ("X_IN_Y" の X)
-    int denominator{}; //!< ドロップ確率の分母 ("X_IN_Y" の Y)
-    short id{}; //!< `drop_kinds` ではベースアイテムID、`drop_tvals` ではアイテム種別
+    int numerator{}; //!< 発生確率の分子 ("X_IN_Y" の X)
+    int denominator{}; //!< 発生確率の分母 ("X_IN_Y" の Y)
+    short id{}; //!< `*_kinds` ではベースアイテムID、`*_tvals` ではアイテム種別
     int grade{}; //!< 品質等級 (-2:呪い 〜 2:優良、3:特別)
-    Dice dice{}; //!< ドロップ個数のダイス
+    Dice dice{}; //!< 個数のダイス
 };
 
 class DropArtifact {
@@ -187,8 +190,10 @@ public:
     std::vector<std::tuple<int, int, MonraceId>> spawn_monsters; //!< 落とし子生成率
     std::vector<std::tuple<int, int, FEAT_IDX>> change_feats; //!< 地形変化率
     std::vector<std::tuple<int, int, short>> spawn_items; //!< アイテム自然生成率
-    std::vector<MonraceDropKind> drop_kinds; //!< アイテム特定ドロップ指定
-    std::vector<MonraceDropKind> drop_tvals; //!< アイテム種別ドロップ指定
+    std::vector<MonraceDropKind> equip_kinds; //!< 生成時装備指定 (ベースアイテムID)
+    std::vector<MonraceDropKind> equip_tvals; //!< 生成時装備指定 (アイテム種別)
+    std::vector<MonraceDropKind> drop_kinds; //!< 死亡時ドロップ指定 (ベースアイテムID)
+    std::vector<MonraceDropKind> drop_tvals; //!< 死亡時ドロップ指定 (アイテム種別)
     std::vector<std::tuple<int, int, MonraceId, int, int>> dead_spawns; //!< 死亡時モンスター生成
 
     //! 特定アーティファクトドロップリスト <アーティファクトID,ドロップ率>

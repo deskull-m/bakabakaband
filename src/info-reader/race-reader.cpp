@@ -1429,39 +1429,83 @@ static bool has_any_baseitem_of_kind(ItemKindType tval)
 }
 
 /*!
- * @brief JSON Objectからモンスターのドロップアイテム情報をセットする
+ * @brief JSON ObjectからベースアイテムID指定の固定アイテム情報をセットする
+ * @param json_data 固定アイテム情報の格納されたJSON Object
+ * @param entries 保管先のリスト
+ * @return エラーコード
+ */
+static errr set_mon_baseitem_entries(const nlohmann::json &json_data, std::vector<MonraceDropKind> &entries)
+{
+    return set_mon_drop_entries(json_data, "id", Range(0, 9999), entries);
+}
+
+/*!
+ * @brief JSON Objectからアイテム種別指定の固定アイテム情報をセットする
+ * @param json_data 固定アイテム情報の格納されたJSON Object
+ * @param entries 保管先のリスト
+ * @return エラーコード
+ * @details `*_kind` がベースアイテムを 1 つ指定するのに対し、`*_tval` は種別のみを
+ *          指定し、実際のベースアイテムは当該種別から無作為に選ばれる。
+ */
+static errr set_mon_itemkind_entries(const nlohmann::json &json_data, std::vector<MonraceDropKind> &entries)
+{
+    const auto first_added = entries.size();
+    if (auto err = set_mon_drop_entries(json_data, "tval", Range(0, 128), entries)) {
+        return err;
+    }
+
+    // 候補の無い種別を指定されるとアイテム生成時に例外を投げるため、読込時に弾く。
+    for (auto i = first_added; i < entries.size(); i++) {
+        if (!has_any_baseitem_of_kind(i2enum<ItemKindType>(entries[i].id))) {
+            return PARSE_ERROR_INVALID_FLAG;
+        }
+    }
+
+    return PARSE_ERROR_NONE;
+}
+
+/*!
+ * @brief JSON Objectからモンスターの生成時装備情報 (ベースアイテムID指定) をセットする
+ * @param equip_data 生成時装備情報の格納されたJSON Object
+ * @param monrace 保管先のモンスター種族構造体
+ * @return エラーコード
+ */
+errr RaceReader::set_mon_equip_kinds(const nlohmann::json &equip_data, MonraceDefinition &monrace)
+{
+    return set_mon_baseitem_entries(equip_data, monrace.equip_kinds);
+}
+
+/*!
+ * @brief JSON Objectからモンスターの生成時装備情報 (アイテム種別指定) をセットする
+ * @param equip_data 生成時装備情報の格納されたJSON Object
+ * @param monrace 保管先のモンスター種族構造体
+ * @return エラーコード
+ */
+errr RaceReader::set_mon_equip_tvals(const nlohmann::json &equip_data, MonraceDefinition &monrace)
+{
+    return set_mon_itemkind_entries(equip_data, monrace.equip_tvals);
+}
+
+/*!
+ * @brief JSON Objectからモンスターの死亡時ドロップ情報 (ベースアイテムID指定) をセットする
  * @param drop_data ドロップアイテム情報の格納されたJSON Object
  * @param monrace 保管先のモンスター種族構造体
  * @return エラーコード
  */
 errr RaceReader::set_mon_drop_kinds(const nlohmann::json &drop_data, MonraceDefinition &monrace)
 {
-    return set_mon_drop_entries(drop_data, "id", Range(0, 9999), monrace.drop_kinds);
+    return set_mon_baseitem_entries(drop_data, monrace.drop_kinds);
 }
 
 /*!
- * @brief JSON Objectからモンスターのアイテム種別ドロップ情報をセットする
+ * @brief JSON Objectからモンスターの死亡時ドロップ情報 (アイテム種別指定) をセットする
  * @param drop_data アイテム種別ドロップ情報の格納されたJSON Object
  * @param monrace 保管先のモンスター種族構造体
  * @return エラーコード
- * @details drop_kind がベースアイテムを 1 つ指定するのに対し、drop_tval は種別のみを
- *          指定し、死亡時に当該種別から無作為にベースアイテムが選ばれる。
  */
 errr RaceReader::set_mon_drop_tvals(const nlohmann::json &drop_data, MonraceDefinition &monrace)
 {
-    const auto first_added = monrace.drop_tvals.size();
-    if (auto err = set_mon_drop_entries(drop_data, "tval", Range(0, 128), monrace.drop_tvals)) {
-        return err;
-    }
-
-    // 候補の無い種別を指定されると死亡時に例外を投げるため、読込時に弾く。
-    for (auto i = first_added; i < monrace.drop_tvals.size(); i++) {
-        if (!has_any_baseitem_of_kind(i2enum<ItemKindType>(monrace.drop_tvals[i].id))) {
-            return PARSE_ERROR_INVALID_FLAG;
-        }
-    }
-
-    return PARSE_ERROR_NONE;
+    return set_mon_itemkind_entries(drop_data, monrace.drop_tvals);
 }
 
 /*!
@@ -1839,6 +1883,16 @@ errr RaceReader::read()
     err = set_mon_spawn_item(mon_data["spawn_item"], monrace);
     if (err) {
         msg_format(_("モンスター自然生成アイテム情報読み込み失敗。ID: '%d'。", "Failed to load monster spawn item data. ID: '%d'."), error_idx);
+        return err;
+    }
+    err = set_mon_equip_kinds(mon_data["equip_kind"], monrace);
+    if (err) {
+        msg_format(_("モンスター生成時装備情報読み込み失敗。ID: '%d'。", "Failed to load monster equip kind data. ID: '%d'."), error_idx);
+        return err;
+    }
+    err = set_mon_equip_tvals(mon_data["equip_tval"], monrace);
+    if (err) {
+        msg_format(_("モンスター生成時装備種別情報読み込み失敗。ID: '%d'。", "Failed to load monster equip tval data. ID: '%d'."), error_idx);
         return err;
     }
     err = set_mon_drop_kinds(mon_data["drop_kind"], monrace);
