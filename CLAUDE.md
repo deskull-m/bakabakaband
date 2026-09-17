@@ -1248,6 +1248,25 @@ per-turn で発火しない（切り傷・毒の inflict 経路が無い）」�
   `kill_interval` 指定かつ確率 1/1 のときだけ「確率1/1で」を省くため、
   **`kill_interval` 無しの既存エントリの表示は一切変わらない**。
 
+**深度加重抽選 (`use_allocation_table`, `*_tval` 専用)**: 既定の一様抽選ではなく
+**通常のアイテム生成 (`make_object`) と同じ深度・レアリティ加重**で品目を選ぶ。
+
+```jsonc
+"drop_tval": [
+  { "tval": 30, "probability": "1_IN_1", "grade": 0, "dice": "1d1", "use_allocation_table": true },
+],
+```
+
+- 実体は `floor.select_baseitem_id(floor.object_level, 0)` を tval 制約付きで呼ぶだけ。
+  **生成階を超える深度の品は選ばれない**ため、浅い階で高級品が出ない。
+- **候補が 1 つも無い階では何も生成しない** (`resolve_fixed_item_bi_id()` が 0 を返し、
+  呼出側がスキップする)。`make_object()` が `tl::nullopt` を返すのと同じ振舞い。
+- 省略時は false (一様抽選) で従来と完全に同じ。
+- **`*_kind` には指定できない**。品目を名指しする指定では意味を持たないためで、
+  指定すると**読込時エラー**になる。
+- 同じ tval でも `grade` の魔法適用は従来どおり `apply_drop_kind_magic()` が行う。
+  変わるのは**ベースアイテムの選び方だけ**。
+
 **この 2 系統の区別は意味論上重要**:
 
 - `equip_*` = 「その個体が身に着けている / 持っている」。生成時に materialize され、
@@ -1380,6 +1399,23 @@ NONE / GOLD / BOTTLE / NO_AMMO は総称「アイテム」へフォールバッ�
   闘技場での量産が可能になる。気になる場合は
   `drop_fixed_items_on_death()` に `md_ptr->drop_chosen_item` ガードを入れること
   (ただし既存 `drop_kind` 全体の振舞いが変わる)。
+
+**ハードコーディングからの移行例 (ケット・シー)**: `CAIT_SITH` の case が
+`drop_specific_item_on_dead(kind_is_boots)` で靴を生成していたものを
+`drop_tval` (tval 30 = BOOTS, `1_IN_1`, grade 0, `1d1`, `use_allocation_table: true`)
+へ移した。シンボルは `f` なので `default:` 落ちも無害。
+
+- **`use_allocation_table` が必須**: BOOTS は 6 種しか無く、うち 1 つが
+  ドラゴン・ブーツ (深度 60 / 10000G)。既定の一様抽選にすると**どの深さでも
+  1/6 でドラゴン・ブーツ**が出てしまうため、旧実装 (`make_object`) と同じ
+  深度加重抽選を使う。本キーはこの移行のために新設した。
+- **失われたガード 2 つ**: 旧実装の `dun_level <= 0` (地上では落とさない) と
+  `is_chameleon` は 4 キーでは表現できないため落ちている。
+  地上のケット・シーや化けたカメレオンからも靴が出る。
+- 旧実装は `make_object` が `tl::nullopt` を返すと何も落ちなかったが、
+  `use_allocation_table` の 0 スキップで同じ振舞いになる。
+- 等級適用は grade 0 (= `AM_NO_FIXED_ART`)。CAIT_SITH は `DROP_GOOD` / `DROP_GREAT` /
+  `DROP_NASTY` を持たず `mo_mode == 0` なので旧実装と同じ。
 
 **移行時の注意 — `switch_special_death()` の `default:`**: 個別 `case` を削除すると
 その種族は `default: on_dead_mimics()` に落ちる。`on_dead_mimics()` は**表示シンボル

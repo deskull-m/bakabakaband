@@ -80170,6 +80170,15 @@
         "list": ["HASTE", "HEAL", "CAUSE_2"],
         "probability": "1_IN_4",
       },
+      "drop_tval": [
+        {
+          "tval": 30,
+          "probability": "1_IN_1",
+          "grade": 0,
+          "dice": "1d1",
+          "use_allocation_table": true,
+        },
+      ],
     },
     {
       "id": 1263,

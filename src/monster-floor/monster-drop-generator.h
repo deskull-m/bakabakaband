@@ -89,15 +89,18 @@ void equip_monster_by_armament_budget(CreatureEntity &monster);
 
 /*!
  * @brief 固定アイテム指定から実際に生成するベースアイテムIDを決める
+ * @param creature 生成基準となるクリーチャへの参照 (深度加重抽選時の階取得用)
  * @param entry 固定アイテム指定
  * @param is_itemkind entry がアイテム種別指定 (`*_tvals`) なら true
- * @return ベースアイテムID
+ * @return ベースアイテムID。生成すべき候補が無い場合は 0
  * @details ベースアイテムID指定 (`*_kinds`) はその値をそのまま返す。アイテム種別指定
- *          (`*_tvals`) は当該種別の中から無作為に 1 つ選ぶ。候補が 1 つも無い種別は
- *          reader (`RaceReader::set_mon_equip_tvals` 等) が読込時に弾いているため、
+ *          (`*_tvals`) は既定で当該種別の全 sval から一様に 1 つ選ぶ。候補が 1 つも
+ *          無い種別は reader (`RaceReader::set_mon_equip_tvals` 等) が読込時に弾いているため、
  *          ここで例外が飛ぶことはない。
+ *          `use_allocation_table` が立っていれば代わりに `make_object` と同じ深度加重
+ *          アロケーションテーブルで選び、生成階に候補が無ければ 0 を返す。
  */
-short resolve_fixed_item_bi_id(const MonraceDropKind &entry, bool is_itemkind);
+short resolve_fixed_item_bi_id(CreatureEntity &creature, const MonraceDropKind &entry, bool is_itemkind);
 
 /*!
  * @brief 固定アイテムの等級 (grade) に応じたアイテム魔法を適用する
