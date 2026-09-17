@@ -240,6 +240,21 @@ public:
     //! 兜の追加スロットを持つカスタムモンスター。
     std::vector<ExtendedSlotType> extended_slots_override{};
 
+    //! 武装度。生成時にどれだけ上質な装備を与えるかを表す種族固有の値。
+    //! 未指定 (tl::nullopt) の場合は `get_armament_level()` が
+    //! `level * ARMAMENT_LEVEL_PER_LEVEL` を既定値として返す。
+    //! 直接読まず必ず `get_armament_level()` を使うこと。
+    tl::optional<int> armament_level{};
+
+    //! `armament_level` 未指定時の既定値を種族レベルから算出する係数。
+    static constexpr int ARMAMENT_LEVEL_PER_LEVEL = 50;
+
+    //! JSON で指定できる武装度の上限 (データ検証用)。既定値の最大は
+    //! レベル上限 255 * ARMAMENT_LEVEL_PER_LEVEL = 12750 なので十分な余裕を持たせる。
+    static constexpr int ARMAMENT_LEVEL_MAX = 100000;
+
+    int get_armament_level() const;
+
     bool is_valid() const;
     bool is_male() const;
     bool is_female() const;

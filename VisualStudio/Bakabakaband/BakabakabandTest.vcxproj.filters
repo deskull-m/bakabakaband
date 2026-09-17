@@ -18,6 +18,9 @@
     <ClCompile Include="..\..\src\stdafx.cpp" />
     <ClCompile Include="..\..\src\test\test-main.cpp" />
     <ClCompile Include="..\..\src\test\test-win-stubs.cpp" />
+    <ClCompile Include="..\..\src\test\system\monrace\test-armament-level.cpp">
+      <Filter>system\monrace</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\src\test\system\monrace\test-body-structure-policy.cpp">
       <Filter>system\monrace</Filter>
     </ClCompile>
