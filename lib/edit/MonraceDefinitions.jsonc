@@ -86198,6 +86198,15 @@
         ],
         "probability": "1_IN_2",
       },
+      "drop_tval": [
+        {
+          "tval": 40,
+          "probability": "1_IN_1",
+          "grade": 0,
+          "dice": "1d1",
+          "use_allocation_table": true,
+        },
+      ],
     },
     {
       "id": 1362,

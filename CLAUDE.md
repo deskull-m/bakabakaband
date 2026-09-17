@@ -1417,6 +1417,24 @@ NONE / GOLD / BOTTLE / NO_AMMO は総称「アイテム」へフォールバッ�
 - 等級適用は grade 0 (= `AM_NO_FIXED_ART`)。CAIT_SITH は `DROP_GOOD` / `DROP_GREAT` /
   `DROP_NASTY` を持たず `mo_mode == 0` なので旧実装と同じ。
 
+**ハードコーディングからの移行例 (『イェンダーの魔法使い』第二形態)**: `YENDOR_WIZARD_2`
+(id 1361) の case が `drop_specific_item_on_dead(kind_is_amulet)` でアミュレットを
+生成していたものを `drop_tval` (tval 40 = AMULET, `1_IN_1`, grade 0, `1d1`,
+`use_allocation_table: true`) へ移した。ケット・シーと完全に同じ形。
+シンボルは `p` なので `default:` 落ちも無害。
+
+- **AMULET でも `use_allocation_table` が必須**: 31 種あり深度 12〜70 に広がる上、
+  **12 種は allocation エントリが空** (印籠 100000G / 勾玉 90000G 等、通常生成されない品)。
+  一様抽選にするとこれらも引いてしまうが、アロケーションテーブル経由なら
+  確率エントリが無いため自動的に除外される。
+- **AMULET の最浅深度は 12** なので、それより浅い階では候補ゼロで何も落ちない
+  (旧実装の `make_object` が `tl::nullopt` を返すのと同じ)。ただし
+  `select_baseitem_id()` の深度ブースト (`CHANCE_BASEITEM_LEVEL_BOOST`) で稀に出る。
+  これもバニラのアイテム生成と同じ振舞い。
+- 失われたガードはケット・シーと同じ 2 つ (`dun_level <= 0` / `is_chameleon`)。
+- **検証上の注意**: YENDOR_WIZARD_2 は UNIQUE なので一度倒すと同じセーブで再召喚
+  できない (`cur_num`/`mob_num` の制約)。テスト時は新規キャラが必要。
+
 **移行時の注意 — `switch_special_death()` の `default:`**: 個別 `case` を削除すると
 その種族は `default: on_dead_mimics()` に落ちる。`on_dead_mimics()` は**表示シンボル
 文字**で分岐し `( / [ \ | ]` のいずれかならミミック相当の装備をドロップするため、
