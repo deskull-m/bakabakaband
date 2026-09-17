@@ -10,12 +10,16 @@
 #include "monster-race/race-kind-flags.h"
 #include "monster-race/race-misc-flags.h"
 #include "object-enchant/item-apply-magic.h"
+#include "object-enchant/trg-types.h"
+#include "object/object-info.h"
 #include "object/tval-types.h"
 #include "sv-definition/sv-armor-types.h"
 #include "sv-definition/sv-bow-types.h"
 #include "sv-definition/sv-weapon-types.h"
 #include "system/angband-system.h"
+#include "system/baseitem/baseitem-definition.h"
 #include "system/baseitem/baseitem-key.h"
+#include "system/baseitem/baseitem-list.h"
 #include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/item-entity.h"
@@ -27,6 +31,7 @@
 #include "util/probability-table.h"
 #include <algorithm>
 #include <limits>
+#include <map>
 #include <vector>
 
 namespace {
@@ -212,6 +217,188 @@ BaseitemKey decide_initial_robe(int level)
     // 最下段の min_level が 0 のため通常ここには来ないが、防御的にローブを返す。
     return { ItemKindType::SOFT_ARMOR, SV_ROBE };
 }
+
+/*!
+ * @brief 武装度予算で埋める装備スロットと、そこへ装備できるアイテム種別
+ * @details 先頭の要素から順に予算を割り当てるため、**重要な部位ほど先に**並べる。
+ *          指輪 (INVEN_MAIN_RING / SUB_RING)・首飾り (INVEN_NECK) は呪い付きや
+ *          効果がランダムな品が多く、光源 (INVEN_LITE) は燃料の設定が必要なため
+ *          初版では対象外。射撃 (INVEN_BOW) も、射撃能力を持たない個体に弓だけ
+ *          持たせても無意味なので ARCHER / RANGER の役割装備に任せて対象外とする。
+ */
+struct ArmamentSlotEntry {
+    int slot; //!< 装備スロット (INVEN_*)
+    std::vector<ItemKindType> tvals; //!< そのスロットへ装備できるアイテム種別
+};
+
+const std::vector<ArmamentSlotEntry> &get_armament_slot_entries()
+{
+    static const std::vector<ArmamentSlotEntry> entries = {
+        { INVEN_BODY, { ItemKindType::SOFT_ARMOR, ItemKindType::HARD_ARMOR } },
+        { INVEN_MAIN_HAND, { ItemKindType::SWORD, ItemKindType::POLEARM, ItemKindType::HAFTED } },
+        { INVEN_HEAD, { ItemKindType::HELM, ItemKindType::CROWN } },
+        { INVEN_SUB_HAND, { ItemKindType::SHIELD } },
+        { INVEN_FEET, { ItemKindType::BOOTS } },
+        { INVEN_ARMS, { ItemKindType::GLOVES } },
+        { INVEN_OUTER, { ItemKindType::CLOAK } },
+    };
+
+    return entries;
+}
+
+/*!
+ * @brief 武装度予算で購入できるベースアイテムか判定する
+ * @details 通常のフロア生成に乗らない品 (生成確率が全て 0)・固定アーティファクト
+ *          化する品・クエスト専用品・呪い付きの品は除外する。価値 0 の品は
+ *          予算の意味が無くなるため除外する。
+ */
+bool is_purchasable_armament(const BaseitemDefinition &baseitem)
+{
+    if (!baseitem.is_valid() || (baseitem.cost <= 0)) {
+        return false;
+    }
+
+    const auto &tables = baseitem.alloc_tables;
+    const auto has_allocation = std::any_of(tables.begin(), tables.end(), [](const auto &table) { return table.chance > 0; });
+    if (!has_allocation) {
+        return false;
+    }
+
+    return baseitem.gen_flags.has_none_of({
+        ItemGenerationTraitType::INSTA_ART,
+        ItemGenerationTraitType::QUESTITEM,
+        ItemGenerationTraitType::CURSED,
+        ItemGenerationTraitType::HEAVY_CURSE,
+        ItemGenerationTraitType::PERMA_CURSE,
+    });
+}
+
+//! 武装度予算で購入できるベースアイテムの候補 (価値・性能付き)
+struct ArmamentCandidate {
+    BaseitemKey bi_key;
+    int cost; //!< 予算から差し引く価値
+    int quality; //!< 選定に使う性能 (防具は基本AC、武器は打撃ダイスの最大値)
+};
+
+/*!
+ * @brief ベースアイテムの「装備としての性能」を求める
+ * @details 装備しても効果が無い品 (AC 0 の衣装や打撃ダイスを持たない品) を
+ *          候補から除くために使う。防具は基本AC、武器は打撃ダイスの最大値。
+ *          **選定基準には使わない** (理由は `pick_armament` の説明を参照)。
+ */
+int calc_armament_quality(const BaseitemDefinition &baseitem)
+{
+    switch (baseitem.bi_key.tval()) {
+    case ItemKindType::SWORD:
+    case ItemKindType::POLEARM:
+    case ItemKindType::HAFTED:
+        return baseitem.damage_dice.maxroll() + baseitem.to_d;
+    default:
+        return baseitem.ac + baseitem.to_a;
+    }
+}
+
+/*!
+ * @brief スロットごとの購入候補一覧を得る (初回呼出時にベースアイテム表から構築)
+ * @details ベースアイテム表はゲーム初期化時に確定するため、初回の呼出で構築して
+ *          以降は使い回す。モンスター生成のたびに全ベースアイテムを走査しない。
+ */
+const std::map<int, std::vector<ArmamentCandidate>> &get_armament_candidates()
+{
+    static const auto candidates = [] {
+        std::map<int, std::vector<ArmamentCandidate>> result;
+        const auto &baseitems = BaseitemList::get_instance();
+        for (const auto &entry : get_armament_slot_entries()) {
+            auto &slot_candidates = result[entry.slot];
+            for (const auto &baseitem : baseitems) {
+                const auto tval = baseitem.bi_key.tval();
+                if (std::find(entry.tvals.begin(), entry.tvals.end(), tval) == entry.tvals.end()) {
+                    continue;
+                }
+                if (!is_purchasable_armament(baseitem)) {
+                    continue;
+                }
+
+                const auto quality = calc_armament_quality(baseitem);
+                if (quality <= 0) {
+                    continue;
+                }
+
+                slot_candidates.push_back({ baseitem.bi_key, baseitem.cost, quality });
+            }
+        }
+
+        return result;
+    }();
+
+    return candidates;
+}
+
+/*!
+ * @brief 予算内で最も上等な装備を 1 つ選ぶ
+ * @param slot 対象の装備スロット
+ * @param budget このスロットに使える上限価値
+ * @return 選ばれた候補。予算内の候補が無ければ tl::nullopt
+ * @details 予算内で最も高価な品の価値を基準とし、その半額以上の候補から等確率で
+ *          選ぶ。価値を選定基準にすることで「武装度が高いほど上質な装備」が
+ *          単調に成り立ち (実データで防具AC計 17→42 / 武器ダイス 5→20)、同レベル帯の
+ *          個体が全て同じ装備になることも避けられる。
+ *          **性能 (`calc_armament_quality`) を選定基準にしてはならない。**
+ *          本データには安価で高性能なフレーバー品 (鉄の甲羅 AC22 が 1G 等) が
+ *          あるため、性能で選ぶと予算が効かず低レベル個体まで防具AC計 41〜86 に
+ *          達してしまう。性能値は「装備しても無意味な AC0 の品」を候補から
+ *          除くためだけに使う。
+ */
+tl::optional<ArmamentCandidate> pick_armament(int slot, int budget)
+{
+    const auto &candidates_map = get_armament_candidates();
+    const auto it = candidates_map.find(slot);
+    if (it == candidates_map.end()) {
+        return tl::nullopt;
+    }
+
+    auto best_cost = 0;
+    for (const auto &candidate : it->second) {
+        if ((candidate.cost <= budget) && (candidate.cost > best_cost)) {
+            best_cost = candidate.cost;
+        }
+    }
+
+    if (best_cost <= 0) {
+        return tl::nullopt;
+    }
+
+    std::vector<ArmamentCandidate> affordable;
+    for (const auto &candidate : it->second) {
+        if ((candidate.cost <= budget) && (candidate.cost * 2 >= best_cost)) {
+            affordable.push_back(candidate);
+        }
+    }
+
+    return rand_choice(affordable);
+}
+
+/*!
+ * @brief 既に装備しているアイテムの価値の合計を求める
+ * @details 役割装備 (SOLDIER / WARRIOR の近接武器、ARCHER / RANGER の弓、
+ *          MAGE の軽装) で既に埋まっているスロットの分を武装度予算から差し引き、
+ *          二重取りにならないようにする。
+ */
+int calc_equipped_armament_cost(const CreatureEntity &monster)
+{
+    auto total = 0;
+    const auto &baseitems = BaseitemList::get_instance();
+    for (auto slot = static_cast<int>(INVEN_MAIN_HAND); slot < static_cast<int>(INVEN_TOTAL); slot++) {
+        const auto &item = *monster.inventory[slot];
+        if (!item.is_valid()) {
+            continue;
+        }
+
+        total += baseitems.get_baseitem(item.bi_id).cost;
+    }
+
+    return total;
+}
 }
 
 void generate_monster_drop_items(CreatureEntity &player, CreatureEntity &monster)
@@ -333,4 +520,40 @@ void equip_spellcaster_monster_initial_robe(CreatureEntity &monster)
 
     // 近接武器・弓と同様、エゴ・アーティファクト化や強化値は付けない。
     (void)monster.acquire_item(robe);
+}
+
+void equip_monster_by_armament_budget(CreatureEntity &monster)
+{
+    // 役割装備で既に使った分を差し引いた残額が、この個体の購買力になる。
+    auto budget = monster.get_monrace().get_armament_level() - calc_equipped_armament_cost(monster);
+    if (budget <= 0) {
+        return;
+    }
+
+    // 体構造的に装備でき、かつまだ空いているスロットだけを対象にする。
+    std::vector<const ArmamentSlotEntry *> targets;
+    for (const auto &entry : get_armament_slot_entries()) {
+        if (!monster.can_equip_to(entry.slot) || monster.inventory[entry.slot]->is_valid()) {
+            continue;
+        }
+
+        targets.push_back(&entry);
+    }
+
+    // 残りスロット数で等分した額を各スロットの上限とし、余りは次のスロットへ繰り越す。
+    // これにより 1 部位に予算を使い切らず、武装度が高いほど全身が上等になる。
+    for (auto i = 0U; i < targets.size(); i++) {
+        const auto slot_budget = budget / static_cast<int>(targets.size() - i);
+        const auto candidate = pick_armament(targets[i]->slot, slot_budget);
+        if (!candidate) {
+            continue;
+        }
+
+        ItemEntity item(candidate->bi_key);
+        item.number = 1;
+
+        // 役割装備と同様、エゴ・アーティファクト化や強化値は付けない。
+        (void)monster.acquire_item(item);
+        budget -= candidate->cost;
+    }
 }
