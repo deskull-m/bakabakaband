@@ -829,6 +829,10 @@ tl::optional<MONSTER_IDX> place_monster_one(CreatureEntity &player, POSITION y, 
     // MAGE 持ちのモンスターに初期装備の軽装を着せる。
     equip_spellcaster_monster_initial_robe(*m_ptr);
 
+    // 種族の武装度を予算として、残る装備スロットを埋める。
+    // 役割装備の価値は予算から差し引かれるため、必ず上記 3 関数の後に呼ぶ。
+    equip_monster_by_armament_budget(*m_ptr);
+
     // [ドロップ品移行] 一般ドロップ品を生成時に所持品として前生成する。
     // 死亡時は drop_all_inventory() でまとめて床へ放出される。
     generate_monster_drop_items(const_cast<CreatureEntity &>(player), *m_ptr);
