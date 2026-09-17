@@ -63881,6 +63881,14 @@
         "list": ["TPORT", "HASTE", "TELE_AWAY", "TELE_LEVEL", "BLINK"],
         "probability": "1_IN_3",
       },
+      "drop_kind": [
+        {
+          "id": 620,
+          "probability": "1_IN_1",
+          "grade": 0,
+          "dice": "1d1",
+        },
+      ],
     },
     {
       "id": 1011,
@@ -63934,6 +63942,14 @@
         "list": ["TPORT", "HASTE", "TELE_AWAY", "TELE_LEVEL", "BLINK"],
         "probability": "1_IN_3",
       },
+      "drop_kind": [
+        {
+          "id": 620,
+          "probability": "1_IN_5",
+          "grade": 0,
+          "dice": "1d1",
+        },
+      ],
     },
     {
       "id": 1012,
