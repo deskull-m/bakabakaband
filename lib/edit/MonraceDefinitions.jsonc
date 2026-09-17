@@ -91544,6 +91544,14 @@
         "NO_FEAR",
         "NONLIVING",
       ],
+      "drop_kind": [
+        {
+          "id": 241,
+          "probability": "1_IN_1",
+          "grade": 0,
+          "dice": "1d1",
+        },
+      ],
     },
     {
       "id": 1445,
