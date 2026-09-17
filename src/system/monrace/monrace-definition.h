@@ -64,6 +64,14 @@ public:
     short id{}; //!< `*_kinds` ではベースアイテムID、`*_tvals` ではアイテム種別
     int grade{}; //!< 品質等級 (-2:呪い 〜 2:優良、3:特別)
     Dice dice{}; //!< 個数のダイス
+
+    /*!
+     * @brief 種族の累計撃破数がこの値の倍数のときのみ発火させる (1 = 常に発火)
+     * @details 「確実に N 体に 1 体」を表すための指定。`numerator` /
+     * `denominator` の確率抽選とは AND で組み合わさる。累計撃破数を
+     * 参照する性質上 **`drop_*` 専用**で、`equip_*` への指定は読込時に弾く。
+     */
+    int kill_interval = 1;
 };
 
 class DropArtifact {

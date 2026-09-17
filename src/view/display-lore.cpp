@@ -1491,20 +1491,38 @@ static void display_drop_entries(lore_type *lore_ptr, const std::vector<MonraceD
 
         // グレード修飾語を取得
         std::string grade_modifier = "";
+        // kill_interval 指定時は「確実に N 体に 1 体」なので確率表記とは別に述べる。
+        std::string interval_phrase = "";
 #ifdef JP
         if (kind.grade == 1) {
             grade_modifier = "上質な";
         } else if (kind.grade == 2) {
             grade_modifier = "高級品の";
         }
-        hooked_roff(format("確率%d/%dで%s%sを%s個", kind.numerator, kind.denominator, grade_modifier.data(), item_name.data(), dice_expression.data()));
+        if (kind.kill_interval > 1) {
+            interval_phrase = format("%d体目ごとに", kind.kill_interval);
+        }
+        // kill_interval があり確率が 1/1 のときだけ確率表記を省く。
+        // kill_interval 無しの既存エントリの表示は一切変えない。
+        if ((kind.kill_interval > 1) && (kind.numerator >= kind.denominator)) {
+            hooked_roff(format("%s%s%sを%s個", interval_phrase.data(), grade_modifier.data(), item_name.data(), dice_expression.data()));
+        } else {
+            hooked_roff(format("%s確率%d/%dで%s%sを%s個", interval_phrase.data(), kind.numerator, kind.denominator, grade_modifier.data(), item_name.data(), dice_expression.data()));
+        }
 #else
         if (kind.grade == 1) {
             grade_modifier = "excellent ";
         } else if (kind.grade == 2) {
             grade_modifier = "premium ";
         }
-        hooked_roff(format("with probability %d/%d %s %s%s", kind.numerator, kind.denominator, dice_expression.data(), grade_modifier.data(), item_name.data()));
+        if (kind.kill_interval > 1) {
+            interval_phrase = format("on every %d-th kill ", kind.kill_interval);
+        }
+        if ((kind.kill_interval > 1) && (kind.numerator >= kind.denominator)) {
+            hooked_roff(format("%s%s %s%s", interval_phrase.data(), dice_expression.data(), grade_modifier.data(), item_name.data()));
+        } else {
+            hooked_roff(format("%swith probability %d/%d %s %s%s", interval_phrase.data(), kind.numerator, kind.denominator, dice_expression.data(), grade_modifier.data(), item_name.data()));
+        }
 #endif
     }
 
