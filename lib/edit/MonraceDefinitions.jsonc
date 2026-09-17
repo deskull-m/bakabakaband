@@ -60254,6 +60254,24 @@
         "IM_ELEC",
         "IM_POIS",
       ],
+      "drop_kind": [
+        {
+          "id": 30,
+          "probability": "1_IN_2",
+          "grade": 0,
+          "dice": "1d1",
+          "exclusive_group": 1,
+          "apply_magic": false,
+        },
+        {
+          "id": 47,
+          "probability": "1_IN_1",
+          "grade": 0,
+          "dice": "1d1",
+          "exclusive_group": 1,
+          "apply_magic": false,
+        },
+      ],
     },
     {
       "id": 954,

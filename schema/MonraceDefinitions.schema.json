@@ -581,6 +581,16 @@
                                     "type": "string",
                                     "description": "個数のダイス。XdY形式",
                                     "pattern": "[1-9][0-9]*d[1-9][0-9]*"
+                                },
+                                "exclusive_group": {
+                                    "type": "integer",
+                                    "description": "排他グループ番号。同じ番号のエントリはリスト順に抽選し、最初に当たった 1 つだけを採用する (先勝ちカスケード)。省略時は 0 = グループ無しでエントリごとに独立抽選",
+                                    "minimum": 1,
+                                    "maximum": 100
+                                },
+                                "apply_magic": {
+                                    "type": "boolean",
+                                    "description": "ItemMagicApplier による魔法的強化を与えるか。省略時は true = grade に応じた強化を適用。false にすると grade を無視してベースアイテムのまま生成する"
                                 }
                             }
                         }
@@ -619,11 +629,21 @@
                                     "type": "string",
                                     "description": "個数のダイス。XdY形式",
                                     "pattern": "[1-9][0-9]*d[1-9][0-9]*"
-                },
-                "use_allocation_table": {
-                    "type": "boolean",
-                    "description": "品目を通常のアイテム生成と同じ深度加重アロケーションテーブルで選ぶか。省略時は false = 当該種別の全 sval から一様抽選。*_tval 専用"
-                }
+                                },
+                                "use_allocation_table": {
+                                    "type": "boolean",
+                                    "description": "品目を通常のアイテム生成と同じ深度加重アロケーションテーブルで選ぶか。省略時は false = 当該種別の全 sval から一様抽選。*_tval 専用"
+                                },
+                                "exclusive_group": {
+                                    "type": "integer",
+                                    "description": "排他グループ番号。同じ番号のエントリはリスト順に抽選し、最初に当たった 1 つだけを採用する (先勝ちカスケード)。省略時は 0 = グループ無しでエントリごとに独立抽選",
+                                    "minimum": 1,
+                                    "maximum": 100
+                                },
+                                "apply_magic": {
+                                    "type": "boolean",
+                                    "description": "ItemMagicApplier による魔法的強化を与えるか。省略時は true = grade に応じた強化を適用。false にすると grade を無視してベースアイテムのまま生成する"
+                                }
                             }
                         }
                     },
@@ -667,6 +687,16 @@
                                     "description": "確実に N 体に 1 体だけ落とす場合の N。種族の累計撃破数がこの倍数のときのみ発火する (probability とは AND)。省略時は 1 = 毎回判定。drop_* 専用",
                                     "minimum": 1,
                                     "maximum": 1000
+                                },
+                                "exclusive_group": {
+                                    "type": "integer",
+                                    "description": "排他グループ番号。同じ番号のエントリはリスト順に抽選し、最初に当たった 1 つだけを採用する (先勝ちカスケード)。省略時は 0 = グループ無しでエントリごとに独立抽選",
+                                    "minimum": 1,
+                                    "maximum": 100
+                                },
+                                "apply_magic": {
+                                    "type": "boolean",
+                                    "description": "ItemMagicApplier による魔法的強化を与えるか。省略時は true = grade に応じた強化を適用。false にすると grade を無視してベースアイテムのまま生成する"
                                 }
                             }
                         }
@@ -711,11 +741,21 @@
                                     "description": "確実に N 体に 1 体だけ落とす場合の N。種族の累計撃破数がこの倍数のときのみ発火する (probability とは AND)。省略時は 1 = 毎回判定。drop_* 専用",
                                     "minimum": 1,
                                     "maximum": 1000
-                },
-                "use_allocation_table": {
-                    "type": "boolean",
-                    "description": "品目を通常のアイテム生成と同じ深度加重アロケーションテーブルで選ぶか。省略時は false = 当該種別の全 sval から一様抽選。*_tval 専用"
-                }
+                                },
+                                "use_allocation_table": {
+                                    "type": "boolean",
+                                    "description": "品目を通常のアイテム生成と同じ深度加重アロケーションテーブルで選ぶか。省略時は false = 当該種別の全 sval から一様抽選。*_tval 専用"
+                                },
+                                "exclusive_group": {
+                                    "type": "integer",
+                                    "description": "排他グループ番号。同じ番号のエントリはリスト順に抽選し、最初に当たった 1 つだけを採用する (先勝ちカスケード)。省略時は 0 = グループ無しでエントリごとに独立抽選",
+                                    "minimum": 1,
+                                    "maximum": 100
+                                },
+                                "apply_magic": {
+                                    "type": "boolean",
+                                    "description": "ItemMagicApplier による魔法的強化を与えるか。省略時は true = grade に応じた強化を適用。false にすると grade を無視してベースアイテムのまま生成する"
+                                }
                             }
                         }
                     }

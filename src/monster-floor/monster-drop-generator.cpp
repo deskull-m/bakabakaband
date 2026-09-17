@@ -34,6 +34,7 @@
 #include <algorithm>
 #include <limits>
 #include <map>
+#include <set>
 #include <vector>
 
 namespace {
@@ -616,6 +617,44 @@ short resolve_fixed_item_bi_id(CreatureEntity &creature, const MonraceDropKind &
     return BaseitemList::get_instance().lookup_baseitem_id(BaseitemKey(tval));
 }
 
+tl::optional<ItemEntity> generate_fixed_item(CreatureEntity &creature, const MonraceDropKind &entry, bool is_itemkind)
+{
+    // 深度加重抽選 (use_allocation_table) で候補が無かった場合は 0 が返るので生成しない。
+    const auto bi_id = resolve_fixed_item_bi_id(creature, entry, is_itemkind);
+    if (bi_id == 0) {
+        return tl::nullopt;
+    }
+
+    ItemEntity item;
+    item.generate(bi_id);
+
+    // apply_magic: false はハードコーディング由来の「素のアイテム」指定。
+    // grade を無視し、エゴ・アーティファクト化・呪いのいずれも起こさない。
+    if (entry.apply_magic) {
+        apply_drop_kind_magic(creature, item, entry.grade);
+    }
+
+    return item;
+}
+
+bool roll_fixed_item_entry(const MonraceDropKind &entry, std::set<int> &fired_groups)
+{
+    // 同グループの先行エントリが既に当たっていれば、このエントリは抽選せず見送る。
+    if ((entry.exclusive_group > 0) && fired_groups.contains(entry.exclusive_group)) {
+        return false;
+    }
+
+    if (randint1(entry.denominator) > entry.numerator) {
+        return false;
+    }
+
+    if (entry.exclusive_group > 0) {
+        fired_groups.insert(entry.exclusive_group);
+    }
+
+    return true;
+}
+
 /*!
  * @brief 固定装備指定 1 リスト分をモンスターに持たせる
  * @param player プレイヤーへの参照 (アイテム生成基準)
@@ -625,26 +664,23 @@ short resolve_fixed_item_bi_id(CreatureEntity &creature, const MonraceDropKind &
  */
 static void equip_monster_fixed_entries(CreatureEntity &player, CreatureEntity &monster, const std::vector<MonraceDropKind> &entries, bool is_itemkind)
 {
+    // 排他グループ (exclusive_group) は 1 リストの中で閉じる。
+    std::set<int> fired_groups;
     for (const auto &entry : entries) {
-        if (randint1(entry.denominator) > entry.numerator) {
+        if (!roll_fixed_item_entry(entry, fired_groups)) {
             continue;
         }
 
         const auto item_nums = entry.dice.roll();
         for (auto i = 0; i < item_nums; i++) {
-            // 深度加重抽選で候補が無かった場合は 0 が返るので生成しない。
-            const auto bi_id = resolve_fixed_item_bi_id(player, entry, is_itemkind);
-            if (bi_id == 0) {
+            auto item = generate_fixed_item(player, entry, is_itemkind);
+            if (!item) {
                 continue;
             }
 
-            ItemEntity item;
-            item.generate(bi_id);
-            apply_drop_kind_magic(player, item, entry.grade);
-
             // 装備できるスロットが空いていれば装備し、無理なら所持品に入る。
             // いずれにせよ死亡時は drop_all_inventory() で床へ落ちる。
-            (void)monster.acquire_item(item);
+            (void)monster.acquire_item(*item);
         }
     }
 }

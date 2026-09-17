@@ -1476,15 +1476,19 @@ static void display_drop_entries(lore_type *lore_ptr, const std::vector<MonraceD
     hooked_roff(format(lead_format, Who::who(lore_ptr->msex).data()));
 
     bool first = true;
+    int previous_group = 0;
     for (const auto &kind : drops) {
         if (!first) {
+            // 同じ排他グループが続く場合は択一であることが分かる接続詞にする。
+            const auto continues_group = (kind.exclusive_group > 0) && (kind.exclusive_group == previous_group);
 #ifdef JP
-            hooked_roff("、");
+            hooked_roff(continues_group ? "、さもなくば" : "、");
 #else
-            hooked_roff(", ");
+            hooked_roff(continues_group ? ", or otherwise " : ", ");
 #endif
         }
         first = false;
+        previous_group = kind.exclusive_group;
 
         const auto item_name = describe_item(kind);
         const auto dice_expression = kind.dice.to_string();
@@ -1493,6 +1497,9 @@ static void display_drop_entries(lore_type *lore_ptr, const std::vector<MonraceD
         std::string grade_modifier = "";
         // kill_interval 指定時は「確実に N 体に 1 体」なので確率表記とは別に述べる。
         std::string interval_phrase = "";
+        // 確率 1/1 の「必ず」は、確実指定 (kill_interval) や排他グループの
+        // 末尾エントリでは冗長なので表記しない。
+        const auto omits_probability = (kind.numerator >= kind.denominator) && ((kind.kill_interval > 1) || (kind.exclusive_group > 0));
 #ifdef JP
         if (kind.grade == 1) {
             grade_modifier = "上質な";
@@ -1502,9 +1509,9 @@ static void display_drop_entries(lore_type *lore_ptr, const std::vector<MonraceD
         if (kind.kill_interval > 1) {
             interval_phrase = format("%d体目ごとに", kind.kill_interval);
         }
-        // kill_interval があり確率が 1/1 のときだけ確率表記を省く。
-        // kill_interval 無しの既存エントリの表示は一切変えない。
-        if ((kind.kill_interval > 1) && (kind.numerator >= kind.denominator)) {
+        // kill_interval / exclusive_group があり確率が 1/1 のときだけ確率表記を省く。
+        // どちらも無い既存エントリの表示は一切変えない。
+        if (omits_probability) {
             hooked_roff(format("%s%s%sを%s個", interval_phrase.data(), grade_modifier.data(), item_name.data(), dice_expression.data()));
         } else {
             hooked_roff(format("%s確率%d/%dで%s%sを%s個", interval_phrase.data(), kind.numerator, kind.denominator, grade_modifier.data(), item_name.data(), dice_expression.data()));
@@ -1518,7 +1525,7 @@ static void display_drop_entries(lore_type *lore_ptr, const std::vector<MonraceD
         if (kind.kill_interval > 1) {
             interval_phrase = format("on every %d-th kill ", kind.kill_interval);
         }
-        if ((kind.kill_interval > 1) && (kind.numerator >= kind.denominator)) {
+        if (omits_probability) {
             hooked_roff(format("%s%s %s%s", interval_phrase.data(), dice_expression.data(), grade_modifier.data(), item_name.data()));
         } else {
             hooked_roff(format("%swith probability %d/%d %s %s%s", interval_phrase.data(), kind.numerator, kind.denominator, dice_expression.data(), grade_modifier.data(), item_name.data()));

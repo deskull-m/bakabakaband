@@ -1338,6 +1338,7 @@ errr RaceReader::set_mon_spawn_item(const nlohmann::json &spawn_data, MonraceDef
  * @details 対象の指定方法以外の書式 (probability / grade / dice) は両者で完全に同一。
  *          任意の "kill_interval" は累計撃破数を参照するため drop_* 専用、
  *          任意の "use_allocation_table" は品目抽選の設定なので *_tval 専用。
+ *          任意の "exclusive_group" / "apply_magic" は 4 キー共通で指定できる。
  */
 static errr set_mon_drop_entries(const nlohmann::json &drop_data, std::string_view id_key, const Range &id_range, std::vector<MonraceDropKind> &drops, bool allows_kill_interval, bool is_itemkind)
 {
@@ -1438,9 +1439,30 @@ static errr set_mon_drop_entries(const nlohmann::json &drop_data, std::string_vi
             use_allocation_table = value.get<bool>();
         }
 
+        // 「どれか 1 つだけ」を表す任意指定。同じ番号を持つエントリ同士は
+        // 先勝ちカスケードで択一になる。4 キーいずれでも指定できる。
+        auto exclusive_group = 0;
+        if (drop_item.contains("exclusive_group")) {
+            if (auto err = info_set_integer(drop_item["exclusive_group"], exclusive_group, true, Range(1, 100))) {
+                return err;
+            }
+        }
+
+        // 魔法的強化を与えるかの任意指定。false ならベースアイテムのまま生成する
+        // (grade は無視される)。4 キーいずれでも指定できる。
+        auto apply_magic = true;
+        if (drop_item.contains("apply_magic")) {
+            const auto &value = drop_item["apply_magic"];
+            if (!value.is_boolean()) {
+                return PARSE_ERROR_INVALID_FLAG;
+            }
+
+            apply_magic = value.get<bool>();
+        }
+
         // 分子、分母、対象 (アイテムID or アイテム種別)、グレード、ドロップ個数ダイス ("XdY")、
-        // 撃破数間隔、深度加重抽選の有無を設定
-        drops.push_back({ numerator, denominator, target_id, grade, Dice(dice_num, dice_side), kill_interval, use_allocation_table });
+        // 撃破数間隔、深度加重抽選の有無、排他グループ、魔法的強化の有無を設定
+        drops.push_back({ numerator, denominator, target_id, grade, Dice(dice_num, dice_side), kill_interval, use_allocation_table, exclusive_group, apply_magic });
     }
 
     return PARSE_ERROR_NONE;
