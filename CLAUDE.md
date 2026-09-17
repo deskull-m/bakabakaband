@@ -1235,6 +1235,15 @@ per-turn で発火しない（切り傷・毒の inflict 経路が無い）」�
   ボトルのノームのように「自身が薬瓶の身体だが自分では使えない」もの、死体から
   剥いで得られる素材などがこちら。
 
+**非装備品を `equip_*` に入れた場合**: `wield_slot()` が FOOD / POTION 等を
+`default: return -1` で弾くため自動装備は起きず、`acquire_item()` が
+`store_item()` へフォールして**所持品欄 (パック) に入る**。死亡時は
+`drop_all_inventory()` がパック・装備スロットの両方を走査するので床へ落ちる。
+**ただし落下条件が違う**: `equip_*` (パック保持) は
+`monster_death()` の `if (drop_item)` ガード配下なので**モンスター同士の戦闘や
+量子消失では落ちない**が、`drop_*` は `switch_special_death()` 内で**無条件**に
+生成される (クローン体・カメレオン・闘技場・ペット討伐でも発火する)。
+
 実装:
 
 - 生成時装備は `equip_monster_fixed_items()`
@@ -1304,6 +1313,25 @@ NONE / GOLD / BOTTLE / NO_AMMO は総称「アイテム」へフォールバッ�
 `try_make_artifact()` は何もせず、POTION には専用 enchanter が無く
 (`OtherItemsEnchanter` に POTION の case が無い)、`apply_cursed()` も
 価値 100G (非 worthless) かつ `gen_flags` 空のため無効果。
+
+**ハードコーディングからの移行例 (いなり男)**: `on_dead_inariman1_2()` / `on_dead_inariman3()` が
+死亡時に必ずスシを生成していたものを `equip_kind` へ移した。
+『第二のいなり男』(id 1519) → id 741「スシの詰め合わせ(いなり抜き)」、
+『第三のいなり男』(id 1520) → id 742「ほぼ食い尽くされたスシの詰め合わせ」
+(いずれも `1_IN_1`, grade 0, `1d1`)。**彼らはスシを配達で持ち歩いている**設定
+なので `drop_*` ではなく `equip_*` が正しい (ボトルのノームとは逆の判断)。
+スシは非装備品 (FOOD) なので所持品欄に入り、戦闘力には影響しない。
+旧実装の `ItemMagicApplier(..., AM_NO_FIXED_ART | md_ptr->mo_mode)` は両種族とも
+`DROP_GOOD` / `DROP_GREAT` / `DROP_NASTY` を持たず `mo_mode == 0` なので
+**grade 0 と完全に等価**。シンボルは `t` なので `default:` 落ちも無害。
+
+- **振舞いの差**: 旧実装は無条件に死亡時生成だったが、`equip_*` は所持品経由なので
+  `monster_death()` の `if (drop_item)` ガード配下になる (モンスター同士の戦闘や
+  量子消失では落ちない)。「配達中の持ち物」という意味論に合うため意図的に受入れている。
+
+- **`INARIMAN_1` (id 1518) には元々 case が無かった**。関数名は
+  `on_dead_inariman1_2` だったが switch からは `INARIMAN_2` しか呼ばれておらず、
+  第一のいなり男はスシを落とさない。移行でこの振舞いは変えていない。
 
 **移行時の注意 — `switch_special_death()` の `default:`**: 個別 `case` を削除すると
 その種族は `default: on_dead_mimics()` に落ちる。`on_dead_mimics()` は**表示シンボル
