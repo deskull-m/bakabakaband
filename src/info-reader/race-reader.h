@@ -30,6 +30,7 @@ private:
     errr set_mon_personality(const nlohmann::json &personality_data, MonraceDefinition &monrace);
     errr set_mon_player_race(const nlohmann::json &race_data, MonraceDefinition &monrace);
     errr set_mon_player_class(const nlohmann::json &class_data, MonraceDefinition &monrace);
+    errr set_mon_armament_level(const nlohmann::json &armament_data, MonraceDefinition &monrace);
     errr set_mon_mutations(const nlohmann::json &mutations_data, MonraceDefinition &monrace);
     errr set_mon_realm_abilities(const nlohmann::json &realm_data, MonraceDefinition &monrace);
     errr set_mon_realm_abilities2(const nlohmann::json &realm_data, MonraceDefinition &monrace);

@@ -180,6 +180,12 @@
                         "type": "string",
                         "description": "プレイヤー職業固定指定 (提案C1)。トークンは r_info_player_class を参照。効果は未反映で pclass フィールドのみ付与。"
                     },
+                    "armament_level": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100000,
+                        "description": "武装度。生成時にどれだけ上質な装備を与えるかを表す種族固有の値。未指定の場合は level * 50 が既定値となる。"
+                    },
                     "grows_stats": {
                         "type": "boolean",
                         "description": "レベルアップ時に能力値も成長させるか (提案C2)。既定false=オプトイン。trueの個体のみ成長。"
