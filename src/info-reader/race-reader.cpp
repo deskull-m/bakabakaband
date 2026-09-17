@@ -1338,7 +1338,9 @@ errr RaceReader::set_mon_spawn_item(const nlohmann::json &spawn_data, MonraceDef
  * @details 対象の指定方法以外の書式 (probability / grade / dice) は両者で完全に同一。
  *          任意の "kill_interval" は累計撃破数を参照するため drop_* 専用、
  *          任意の "use_allocation_table" は品目抽選の設定なので *_tval 専用。
- *          任意の "exclusive_group" / "apply_magic" は 4 キー共通で指定できる。
+ *          任意の "sval_min" も品目抽選の設定なので *_tval 専用。
+ *          任意の "exclusive_group" / "apply_magic" / "allows_fixed_artifact" は
+ *          4 キー共通で指定できる。
  */
 static errr set_mon_drop_entries(const nlohmann::json &drop_data, std::string_view id_key, const Range &id_range, std::vector<MonraceDropKind> &drops, bool allows_kill_interval, bool is_itemkind)
 {
@@ -1460,9 +1462,34 @@ static errr set_mon_drop_entries(const nlohmann::json &drop_data, std::string_vi
             apply_magic = value.get<bool>();
         }
 
+        // 種別の中の一部だけを候補にする任意指定。品目を名指しする `*_kind` では
+        // 意味を持たないため、`*_tval` 専用として読込時に弾く。
+        auto sval_min = 0;
+        if (drop_item.contains("sval_min")) {
+            if (!is_itemkind) {
+                return PARSE_ERROR_INVALID_FLAG;
+            }
+
+            if (auto err = info_set_integer(drop_item["sval_min"], sval_min, true, Range(0, 255))) {
+                return err;
+            }
+        }
+
+        // 固定アーティファクト化を許すかの任意指定。4 キーいずれでも指定できる。
+        auto allows_fixed_artifact = false;
+        if (drop_item.contains("allows_fixed_artifact")) {
+            const auto &value = drop_item["allows_fixed_artifact"];
+            if (!value.is_boolean()) {
+                return PARSE_ERROR_INVALID_FLAG;
+            }
+
+            allows_fixed_artifact = value.get<bool>();
+        }
+
         // 分子、分母、対象 (アイテムID or アイテム種別)、グレード、ドロップ個数ダイス ("XdY")、
-        // 撃破数間隔、深度加重抽選の有無、排他グループ、魔法的強化の有無を設定
-        drops.push_back({ numerator, denominator, target_id, grade, Dice(dice_num, dice_side), kill_interval, use_allocation_table, exclusive_group, apply_magic });
+        // 撃破数間隔、深度加重抽選の有無、排他グループ、魔法的強化の有無、
+        // 最小 sval、固定アーティファクト許可を設定
+        drops.push_back({ numerator, denominator, target_id, grade, Dice(dice_num, dice_side), kill_interval, use_allocation_table, exclusive_group, apply_magic, sval_min, allows_fixed_artifact });
     }
 
     return PARSE_ERROR_NONE;
@@ -1471,17 +1498,21 @@ static errr set_mon_drop_entries(const nlohmann::json &drop_data, std::string_vi
 /*!
  * @brief 指定されたアイテム種別に生成可能なベースアイテムが存在するか調べる
  * @param tval アイテム種別
+ * @param sval_min 候補として許す最小 sval (0 で下限なし)
  * @return 1 つでも存在すれば true
  * @details 死亡時ドロップは `lookup_baseitem_id({ tval, 0 })` で当該種別から無作為に
  *          ベースアイテムを選ぶが、種別に候補が 1 つも無いと例外を投げる。
  *          データ読込時に弾いて実行時の異常終了を防ぐ。
  */
-static bool has_any_baseitem_of_kind(ItemKindType tval)
+static bool has_any_baseitem_of_kind(ItemKindType tval, int sval_min)
 {
     const auto &baseitems = BaseitemList::get_instance();
     const auto &bi_ids = baseitems.collect_valid_bi_ids();
     return std::any_of(bi_ids.begin(), bi_ids.end(),
-        [&baseitems, tval](short bi_id) { return baseitems.get_baseitem(bi_id).bi_key.tval() == tval; });
+        [&baseitems, tval, sval_min](short bi_id) {
+            const auto &bi_key = baseitems.get_baseitem(bi_id).bi_key;
+            return (bi_key.tval() == tval) && (bi_key.sval() >= sval_min);
+        });
 }
 
 /*!
@@ -1514,7 +1545,7 @@ static errr set_mon_itemkind_entries(const nlohmann::json &json_data, std::vecto
 
     // 候補の無い種別を指定されるとアイテム生成時に例外を投げるため、読込時に弾く。
     for (auto i = first_added; i < entries.size(); i++) {
-        if (!has_any_baseitem_of_kind(i2enum<ItemKindType>(entries[i].id))) {
+        if (!has_any_baseitem_of_kind(i2enum<ItemKindType>(entries[i].id), entries[i].sval_min)) {
             return PARSE_ERROR_INVALID_FLAG;
         }
     }

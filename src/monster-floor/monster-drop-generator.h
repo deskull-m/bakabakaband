@@ -109,11 +109,11 @@ short resolve_fixed_item_bi_id(CreatureEntity &creature, const MonraceDropKind &
  * @brief 固定アイテムの等級 (grade) に応じたアイテム魔法を適用する
  * @param creature 生成基準となるクリーチャー (フロア階層の取得に使う)
  * @param item 対象アイテム
- * @param grade 固定アイテム指定の等級 (-2:呪い〜2:優良、3:特別)
+ * @param entry 固定アイテム指定 (等級 -2:呪い〜2:優良、3:特別と固定アーティファクト許可を読む)
  * @details 生成時装備 (`equip_*`) と死亡時ドロップ (`drop_*`) で品質が変わらないよう、
  *          両経路で本関数を共用する。
  */
-void apply_drop_kind_magic(CreatureEntity &creature, ItemEntity &item, int grade);
+void apply_drop_kind_magic(CreatureEntity &creature, ItemEntity &item, const MonraceDropKind &entry);
 
 /*!
  * @brief 固定アイテム指定 1 件分のアイテムを生成する

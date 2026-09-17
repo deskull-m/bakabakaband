@@ -5219,6 +5219,17 @@
         "IM_ELEC",
         "IM_POIS",
       ],
+      "drop_tval": [
+        {
+          "tval": 23,
+          "probability": "1_IN_1",
+          "grade": 0,
+          "dice": "1d1",
+          "use_allocation_table": true,
+          "sval_min": 3,
+          "allows_fixed_artifact": true,
+        },
+      ],
     },
     {
       "id": 108,
@@ -22093,6 +22104,17 @@
         "NO_CONF",
         "NO_SLEEP",
         "NO_FEAR",
+      ],
+      "drop_tval": [
+        {
+          "tval": 23,
+          "probability": "1_IN_1",
+          "grade": 0,
+          "dice": "1d1",
+          "use_allocation_table": true,
+          "sval_min": 3,
+          "allows_fixed_artifact": true,
+        },
       ],
     },
     {
@@ -80195,6 +80217,7 @@
           "grade": 0,
           "dice": "1d1",
           "use_allocation_table": true,
+          "allows_fixed_artifact": true,
         },
       ],
     },
@@ -86223,6 +86246,7 @@
           "grade": 0,
           "dice": "1d1",
           "use_allocation_table": true,
+          "allows_fixed_artifact": true,
         },
       ],
     },
