@@ -80,12 +80,13 @@ static void drop_fixed_items_on_death(CreatureEntity &killer, MonsterDeath *md_p
 {
     // 排他グループ (exclusive_group) は 1 リストの中で閉じる。
     std::set<int> fired_groups;
+    const auto dun_level = killer.get_floor()->dun_level;
     for (const auto &entry : entries) {
         if ((entry.kill_interval > 1) && ((md_ptr->monrace->r_akills % entry.kill_interval) != 0)) {
             continue;
         }
 
-        if (!roll_fixed_item_entry(entry, fired_groups)) {
+        if (!roll_fixed_item_entry(entry, fired_groups, dun_level)) {
             continue;
         }
 
@@ -368,68 +369,6 @@ static void on_dead_manimani(CreatureEntity &killer, MonsterDeath *md_ptr)
     msg_print(_("どこからか声が聞こえる…「ハロー！　そして…グッドバイ！」", "Heard a voice from somewhere... 'Hello! And... good bye!'"));
 }
 
-static void drop_specific_item_on_dead(CreatureEntity &killer, MonsterDeath *md_ptr, BaseitemRestrict restrict)
-{
-    if (auto item = make_object(killer, md_ptr->mo_mode, restrict)) {
-        (void)drop_near(killer, *item, md_ptr->get_position());
-    }
-}
-
-static void on_dead_mimics(CreatureEntity &killer, MonsterDeath *md_ptr)
-{
-    if (!md_ptr->drop_chosen_item) {
-        return;
-    }
-
-    // JSON で死亡時ドロップを明示した種族は、シンボル由来の暗黙ドロップを行わない。
-    // 「折れたデスソード」のようにハードコーディングされた個別ドロップを 4 キーへ
-    // 移行した種族が、case 削除によって本処理へ落ちて二重にドロップするのを防ぐ。
-    // 生成時装備 (equip_*) は死亡時ドロップではないため抑止条件に含めない。
-    if (!md_ptr->monrace->drop_kinds.empty() || !md_ptr->monrace->drop_tvals.empty()) {
-        return;
-    }
-
-    switch (md_ptr->monrace->symbol_definition.character) {
-    case '(':
-        if (killer.get_floor()->dun_level <= 0) {
-            return;
-        }
-
-        drop_specific_item_on_dead(killer, md_ptr, kind_is_cloak);
-        return;
-    case '/':
-        if (killer.get_floor()->dun_level <= 4) {
-            return;
-        }
-
-        drop_specific_item_on_dead(killer, md_ptr, kind_is_polearm);
-        return;
-    case '[':
-        if (killer.get_floor()->dun_level <= 19) {
-            return;
-        }
-
-        drop_specific_item_on_dead(killer, md_ptr, kind_is_armor);
-        return;
-    case '\\':
-        if (killer.get_floor()->dun_level <= 4) {
-            return;
-        }
-
-        drop_specific_item_on_dead(killer, md_ptr, kind_is_hafted);
-        return;
-    case ']':
-        if (killer.get_floor()->dun_level <= 19) {
-            return;
-        }
-
-        drop_specific_item_on_dead(killer, md_ptr, kind_is_boots);
-        return;
-    default:
-        return;
-    }
-}
-
 static void on_dead_swordfish(CreatureEntity &killer, MonsterDeath *md_ptr, AttributeFlags attribute_flags)
 {
     if (attribute_flags.has_not(AttributeType::COLD) || !md_ptr->drop_chosen_item || (randint1(100) >= 10)) {
@@ -513,7 +452,6 @@ void switch_special_death(CreatureEntity &creature, MonsterDeath *md_ptr, Attrib
         on_dead_swordfish(creature, md_ptr, attribute_flags);
         break;
     default:
-        on_dead_mimics(creature, md_ptr);
         return;
     }
 }

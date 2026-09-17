@@ -120,6 +120,16 @@ public:
      * アーティファクト化を試みる。`apply_magic` が false なら無意味。
      */
     bool allows_fixed_artifact = false;
+
+    /*!
+     * @brief 発火に必要な最小の階層 (0 = 制限なし)
+     * @details 生成階 (`dun_level`) がこの値未満なら発火しない。旧
+     * `on_dead_mimics()` が持っていた `dun_level <= N` の浅階ガード
+     * (「浅い階では落とさない」) を忠実に移行するための指定。
+     * `kill_interval` と同様、これで弾かれたエントリは `exclusive_group` を
+     * 消費しない。
+     */
+    int min_dun_level = 0;
 };
 
 class DropArtifact {
