@@ -819,6 +819,10 @@ tl::optional<MONSTER_IDX> place_monster_one(CreatureEntity &player, POSITION y, 
     update_monster(const_cast<CreatureEntity &>(player), g_ptr->m_idx, true);
     m_ptr->get_real_monrace().increment_current_numbers();
 
+    // 装備品の固定ドロップ (drop_kinds) を生成時に持たせる。種族固有の「らしさ」を
+    // 最優先するため、役割装備・武装度充填より先にスロットを確保させる。
+    equip_monster_fixed_drops(player, *m_ptr);
+
     // SOLDIER / WARRIOR 持ちのモンスターに初期装備の近接武器を持たせる。
     // 一般ドロップより先に呼び、利き手を初期武器が確保できるようにする。
     equip_armed_monster_initial_weapon(*m_ptr);

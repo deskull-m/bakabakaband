@@ -4,12 +4,14 @@
  */
 
 #include "monster-floor/monster-drop-generator.h"
+#include "artifact/random-art-generator.h"
 #include "floor/floor-object.h"
 #include "inventory/inventory-slot-types.h"
 #include "monster-race/race-drop-flags.h"
 #include "monster-race/race-kind-flags.h"
 #include "monster-race/race-misc-flags.h"
 #include "object-enchant/item-apply-magic.h"
+#include "object-enchant/item-magic-applier.h"
 #include "object-enchant/trg-types.h"
 #include "object/object-info.h"
 #include "object/tval-types.h"
@@ -555,5 +557,77 @@ void equip_monster_by_armament_budget(CreatureEntity &monster)
         // 役割装備と同様、エゴ・アーティファクト化や強化値は付けない。
         (void)monster.acquire_item(item);
         budget -= candidate->cost;
+    }
+}
+
+bool is_wearable_drop_kind(short bi_id)
+{
+    const auto &baseitems = BaseitemList::get_instance();
+    if (!baseitems.is_valid(bi_id)) {
+        return false;
+    }
+
+    return baseitems.get_baseitem(bi_id).bi_key.is_wearable();
+}
+
+void apply_drop_kind_magic(CreatureEntity &creature, ItemEntity &item, int grade)
+{
+    const auto level = creature.get_floor()->dun_level;
+    switch (grade) {
+    case -2:
+        ItemMagicApplier(creature, &item, level, AM_NO_FIXED_ART | AM_GOOD | AM_GREAT | AM_CURSED).execute();
+        return;
+    case -1:
+        ItemMagicApplier(creature, &item, level, AM_NO_FIXED_ART | AM_GOOD | AM_CURSED).execute();
+        return;
+    case 0:
+        ItemMagicApplier(creature, &item, level, AM_NO_FIXED_ART).execute();
+        return;
+    case 1:
+        ItemMagicApplier(creature, &item, level, AM_NO_FIXED_ART | AM_GOOD).execute();
+        return;
+    case 2:
+        ItemMagicApplier(creature, &item, level, AM_NO_FIXED_ART | AM_GOOD | AM_GREAT).execute();
+        return;
+    case 3:
+        ItemMagicApplier(creature, &item, level, AM_GOOD | AM_GREAT | AM_SPECIAL).execute();
+        if (!item.is_fixed_artifact()) {
+            become_random_artifact(creature, &item, false);
+        }
+        return;
+    default:
+        return;
+    }
+}
+
+void equip_monster_fixed_drops(CreatureEntity &player, CreatureEntity &monster)
+{
+    const auto &monrace = monster.get_monrace();
+    for (const auto &kind : monrace.drop_kinds) {
+        const auto &[numerator, denominator, bi_id, grade, dice_side, dice_num] = kind;
+
+        // 装備品でない固定ドロップは従来どおり死亡時に生成する。
+        if (!is_wearable_drop_kind(bi_id)) {
+            continue;
+        }
+
+        if (randint1(denominator) > numerator) {
+            continue;
+        }
+
+        // ダイスの引数順は死亡時処理 (on_dead_drop_kind_item) と完全に揃える。
+        // drop_kinds のタプルは reader が dice_side / dice_num の順で詰めており、
+        // 死亡時処理もその順のまま Dice::roll に渡しているため、ここで「正しい」
+        // 順に直すと個数が変わってしまう (既存の命名不整合。挙動は据え置く)。
+        const auto drop_nums = Dice::roll(dice_side, dice_num);
+        for (auto i = 0; i < drop_nums; i++) {
+            ItemEntity item;
+            item.generate(bi_id);
+            apply_drop_kind_magic(player, item, grade);
+
+            // 装備できるスロットが空いていれば装備し、無理なら所持品に入る。
+            // いずれにせよ死亡時は drop_all_inventory() で床へ落ちる。
+            (void)monster.acquire_item(item);
+        }
     }
 }

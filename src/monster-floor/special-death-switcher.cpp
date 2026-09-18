@@ -16,6 +16,7 @@
 #include "main/sound-of-music.h"
 #include "monster-floor/monster-death-util.h"
 #include "monster-floor/monster-death.h"
+#include "monster-floor/monster-drop-generator.h"
 #include "monster-floor/monster-summon.h"
 #include "monster-floor/place-monster-types.h"
 #include "monster-race/race-kind-flags.h"
@@ -151,52 +152,25 @@ static void on_dead_spawn_monsters(CreatureEntity &killer, MonsterDeath *md_ptr)
  */
 static void on_dead_drop_kind_item(CreatureEntity &killer, MonsterDeath *md_ptr)
 {
-    for (auto kind : md_ptr->monrace->drop_kinds) {
-        ItemEntity item;
-        int num = std::get<0>(kind);
-        int deno = std::get<1>(kind);
+    for (const auto &kind : md_ptr->monrace->drop_kinds) {
+        const auto &[num, deno, kind_idx, grade, dn, ds] = kind;
+
+        // 装備品の固定ドロップはモンスター生成時に持たせ済み
+        // (equip_monster_fixed_drops)。死亡時は所持品ごと床へ落ちるため、
+        // ここで再生成すると二重取りになる。
+        if (is_wearable_drop_kind(kind_idx)) {
+            continue;
+        }
+
         if (randint1(deno) > num) {
             continue;
         }
-        short kind_idx = std::get<2>(kind);
-        int grade = std::get<3>(kind);
-        int dn = std::get<4>(kind);
-        int ds = std::get<5>(kind);
-        int drop_nums = Dice::roll(dn, ds);
 
-        for (int i = 0; i < drop_nums; i++) {
+        const auto drop_nums = Dice::roll(dn, ds);
+        for (auto i = 0; i < drop_nums; i++) {
+            ItemEntity item;
             item.generate(kind_idx);
-            switch (grade) {
-            /* Apply bad magic, but first clear object */
-            case -2:
-                ItemMagicApplier(killer, &item, killer.get_floor()->dun_level, AM_NO_FIXED_ART | AM_GOOD | AM_GREAT | AM_CURSED).execute();
-                break;
-            /* Apply bad magic, but first clear object */
-            case -1:
-                ItemMagicApplier(killer, &item, killer.get_floor()->dun_level, AM_NO_FIXED_ART | AM_GOOD | AM_CURSED).execute();
-                break;
-            /* Apply normal magic, but first clear object */
-            case 0:
-                ItemMagicApplier(killer, &item, killer.get_floor()->dun_level, AM_NO_FIXED_ART).execute();
-                break;
-            /* Apply good magic, but first clear object */
-            case 1:
-                ItemMagicApplier(killer, &item, killer.get_floor()->dun_level, AM_NO_FIXED_ART | AM_GOOD).execute();
-                break;
-            /* Apply great magic, but first clear object */
-            case 2:
-                ItemMagicApplier(killer, &item, killer.get_floor()->dun_level, AM_NO_FIXED_ART | AM_GOOD | AM_GREAT).execute();
-                break;
-            /* Apply special magic, but first clear object */
-            case 3:
-                ItemMagicApplier(killer, &item, killer.get_floor()->dun_level, AM_GOOD | AM_GREAT | AM_SPECIAL).execute();
-                if (!item.is_fixed_artifact()) {
-                    become_random_artifact(killer, &item, false);
-                }
-                break;
-            default:
-                break;
-            }
+            apply_drop_kind_magic(killer, item, grade);
             (void)drop_near(killer, item, md_ptr->get_position());
         }
     }
