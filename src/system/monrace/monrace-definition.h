@@ -58,6 +58,17 @@ enum class MonraceId : int16_t;
  *          ("XdY" 指定が実質 "YdX" になっていた)、思い出表示とも食い違っていた。
  *          位置依存で誤りやすいタプルをやめ、個数ダイスは `Dice` 型で保持する。
  */
+/*!
+ * @brief `*_tval` で tval 単体ではなくベースアイテムの分類を指定するための種別
+ * @details `kind_is_book` / `kind_is_good_book` のように tval を跨ぐ述語を
+ * データから指定するためのもの。`NONE` なら従来どおり `tval` で絞る。
+ */
+enum class MonraceDropCategory {
+    NONE,
+    SPELL_BOOK, //!< 魔法書全般 (`BaseitemKey::is_spell_book`)
+    HIGH_LEVEL_BOOK, //!< 高位魔法書 (`BaseitemKey::is_high_level_book`)
+};
+
 class MonraceDropKind {
 public:
     int numerator{}; //!< 発生確率の分子 ("X_IN_Y" の X)
@@ -131,6 +142,13 @@ public:
      * 消費しない。
      */
     int min_dun_level = 0;
+
+    /*!
+     * @brief tval ではなくベースアイテムの分類で候補を絞る (`NONE` なら tval 指定)
+     * @details 魔法書のように複数 tval に跨る分類を指定するための **`*_tval` 専用**
+     * オプション。指定した場合 `tval` は省略でき、書いても無視される。
+     */
+    MonraceDropCategory category = MonraceDropCategory::NONE;
 };
 
 /*!
@@ -147,11 +165,29 @@ public:
     Dice damage_dice{}; //!< ダメージダイス
 };
 
+/*!
+ * @brief 死亡時ランダムアーティファクト生成の指定 (JSON キー `death_random_artifact`)
+ * @details 旧 `on_dead_random_artifact()` を呼ぶ `case` 群をデータ化したもの。
+ * 「指定種別の装備品を、まともな☆になるまで振り直して 1 個落とす」処理。
+ */
+class MonraceDeathRandomArtifact {
+public:
+    short tval{}; //!< 候補とするアイテム種別
+    int sval_min = 0; //!< 候補として許す最小 sval (0 で下限なし)
+};
+
 class DropArtifact {
 public:
-    DropArtifact(FixedArtifactId fa_id, int chance);
+    DropArtifact(FixedArtifactId fa_id, int chance, tl::optional<AttributeType> required_attribute = tl::nullopt);
     FixedArtifactId fa_id;
     int chance; //!< ドロップ確率 (%)
+
+    /*!
+     * @brief この属性で止めを刺したときだけ落とす (未指定なら属性を問わない)
+     * @details メカジキを冷気で倒したときだけ『フローズン・ソードフィッシュ』が
+     * 出る、といった条件付きドロップ用。
+     */
+    tl::optional<AttributeType> required_attribute;
 };
 
 class MonsterBlow {
@@ -235,7 +271,8 @@ public:
     PlayerRaceType player_race = PlayerRaceType::NONE; //!< 種族固定指定 (提案C1。NONEで未指定。効果は未反映で prace フィールドのみ付与)
     PlayerClassType player_class = PlayerClassType::NONE; //!< 職業固定指定 (提案C1。NONEで未指定。効果は未反映で pclass フィールドのみ付与)
     bool grows_stats = false; //!< レベルアップ時に能力値も成長させるか (提案C2。既定false=オプトイン。既定バランス不変)
-    bool consumes_mp = false; //!< 呪文詠唱時に MP を消費するか (提案C4。既定false=オプトイン。既定バランス不変)
+    bool consumes_mp = false;
+    bool drops_sacred_treasures = false; //!< 撃破者が「なまけもの」なら未生成のナマケ装備を 1 つ落とすか //!< 呪文詠唱時に MP を消費するか (提案C4。既定false=オプトイン。既定バランス不変)
     EnumClassFlagGroup<PlayerMutationType> mutations{}; //!< 生成時に付与する突然変異 (提案C5。空=なし=オプトイン)
     RealmType realm_abilities = RealmType::NONE; //!< 詠唱能力を付与する魔法領域 (提案C6。NONE=なし=オプトイン。詠唱時に realm 由来の MonsterAbilityType を追加)
     RealmType realm_abilities2 = RealmType::NONE; //!< 詠唱能力を付与する第2魔法領域 (提案C6第2弾。NONE=なし=オプトイン。realm_abilities と併用して二重詠唱者に)
@@ -432,6 +469,7 @@ public:
     void emplace_reinforce(MonraceId monrace_id, const Dice &dice);
     std::vector<DropArtifact> drop_artifacts; //!< 特定アーティファクトドロップリスト
     tl::optional<MonraceDeathExplosion> death_explosion; //!< 死亡時爆発 (未指定なら爆発しない)
+    tl::optional<MonraceDeathRandomArtifact> death_random_artifact; //!< 死亡時ランダムアーティファクト (未指定なら生成しない)
 
     //!< @todo ここから先はミュータブルなフィールドなので分離すべき.
     bool has_entity() const;

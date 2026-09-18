@@ -282,6 +282,10 @@
                                     "description": "ドロップ率 1-100%",
                                     "minimum": 1,
                                     "maximum": 100
+                                },
+                                "required_attribute": {
+                                    "type": "string",
+                                    "description": "この属性で止めを刺したときだけ落とす。トークンは r_info_attribute (AttributeType の enum 名) を参照。省略時は属性を問わない"
                                 }
                             }
                         }
@@ -612,7 +616,6 @@
                             "type": "object",
                             "additionalProperties": false,
                             "required": [
-                                "tval",
                                 "probability",
                                 "grade",
                                 "dice"
@@ -669,6 +672,14 @@
                                     "description": "発火に必要な最小の階層。生成階 (dun_level) がこの値未満なら発火しない。省略時は 0 = 制限なし",
                                     "minimum": 0,
                                     "maximum": 128
+                                },
+                                "category": {
+                                    "type": "string",
+                                    "description": "tval を跨ぐベースアイテム分類で候補を絞る。SPELL_BOOK / HIGH_LEVEL_BOOK。指定時は tval を省略できる。*_tval 専用",
+                                    "enum": [
+                                        "SPELL_BOOK",
+                                        "HIGH_LEVEL_BOOK"
+                                    ]
                                 }
                             }
                         }
@@ -744,7 +755,6 @@
                             "type": "object",
                             "additionalProperties": false,
                             "required": [
-                                "tval",
                                 "probability",
                                 "grade",
                                 "dice"
@@ -807,6 +817,14 @@
                                     "description": "発火に必要な最小の階層。生成階 (dun_level) がこの値未満なら発火しない。省略時は 0 = 制限なし",
                                     "minimum": 0,
                                     "maximum": 128
+                                },
+                                "category": {
+                                    "type": "string",
+                                    "description": "tval を跨ぐベースアイテム分類で候補を絞る。SPELL_BOOK / HIGH_LEVEL_BOOK。指定時は tval を省略できる。*_tval 専用",
+                                    "enum": [
+                                        "SPELL_BOOK",
+                                        "HIGH_LEVEL_BOOK"
+                                    ]
                                 }
                             }
                         }
@@ -837,6 +855,32 @@
                                 "pattern": "[1-9][0-9]*d[1-9][0-9]*"
                             }
                         }
+                    },
+                    "death_random_artifact": {
+                        "type": "object",
+                        "description": "死亡時ランダムアーティファクト生成。指定種別の装備品をまともな☆になるまで振り直して1個落とす。未指定なら生成しない",
+                        "additionalProperties": false,
+                        "required": [
+                            "tval"
+                        ],
+                        "properties": {
+                            "tval": {
+                                "type": "integer",
+                                "description": "候補とするアイテム種別 (ItemKindType の値)",
+                                "minimum": 0,
+                                "maximum": 128
+                            },
+                            "sval_min": {
+                                "type": "integer",
+                                "description": "候補として許す最小 sval。省略時は 0 = 下限なし",
+                                "minimum": 0,
+                                "maximum": 255
+                            }
+                        }
+                    },
+                    "drops_sacred_treasures": {
+                        "type": "boolean",
+                        "description": "撃破者の性格が「なまけもの」のとき、未生成のナマケ装備 (三種の神器) を 1 つ落とすか。既定 false"
                     }
                 }
             }

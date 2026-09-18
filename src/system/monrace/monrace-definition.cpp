@@ -27,9 +27,10 @@ static int count_lore_mflag_group(const EnumClassFlagGroup<T> &flags, const Enum
 }
 }
 
-DropArtifact::DropArtifact(FixedArtifactId fa_id, int chance)
+DropArtifact::DropArtifact(FixedArtifactId fa_id, int chance, tl::optional<AttributeType> required_attribute)
     : fa_id(fa_id)
     , chance(chance)
+    , required_attribute(required_attribute)
 {
 }
 

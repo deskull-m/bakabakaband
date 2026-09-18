@@ -4298,6 +4298,13 @@
         "en": "An animal with a swordlike \"beak\".",
       },
       "flags": ["ANIMAL", "AQUATIC", "WILD_ALL", "RES_WATE", "FISH"],
+      "artifacts": [
+        {
+          "drop_artifact_id": 275,
+          "drop_probability": 9,
+          "required_attribute": "COLD",
+        },
+      ],
     },
     {
       "id": 89,
@@ -30683,6 +30690,26 @@
         ],
         "probability": "1_IN_2",
       },
+      "drop_tval": [
+        {
+          "category": "HIGH_LEVEL_BOOK",
+          "probability": "1_IN_5",
+          "grade": 0,
+          "dice": "1d1",
+          "allows_fixed_artifact": true,
+          "min_dun_level": 50,
+          "exclusive_group": 1,
+        },
+        {
+          "category": "SPELL_BOOK",
+          "probability": "1_IN_1",
+          "grade": 0,
+          "dice": "1d1",
+          "allows_fixed_artifact": true,
+          "min_dun_level": 10,
+          "exclusive_group": 1,
+        },
+      ],
     },
     {
       "id": 558,
@@ -53659,6 +53686,7 @@
         ],
         "probability": "1_IN_3",
       },
+      "drops_sacred_treasures": true,
     },
     {
       "id": 860,
@@ -53875,6 +53903,7 @@
         ],
         "probability": "1_IN_3",
       },
+      "drops_sacred_treasures": true,
     },
     {
       "id": 862,
@@ -53984,6 +54013,16 @@
         ],
         "probability": "1_IN_3",
       },
+      "artifacts": [
+        {
+          "drop_artifact_id": 111,
+          "drop_probability": 100,
+        },
+        {
+          "drop_artifact_id": 34,
+          "drop_probability": 100,
+        },
+      ],
     },
     {
       "id": 863,
@@ -54165,6 +54204,7 @@
         ],
         "probability": "1_IN_2",
       },
+      "drops_sacred_treasures": true,
     },
     {
       "id": 865,
@@ -86230,6 +86270,9 @@
         ],
         "probability": "1_IN_2",
       },
+      "death_random_artifact": {
+        "tval": 40,
+      },
     },
     {
       "id": 1361,
@@ -87703,6 +87746,10 @@
       "skill": {
         "list": ["INVULNER", "SCARE", "TELE_TO", "BR_TIME"],
         "probability": "1_IN_6",
+      },
+      "death_random_artifact": {
+        "tval": 23,
+        "sval_min": 3,
       },
     },
     {

@@ -214,20 +214,6 @@ static void on_dead_drop_tval_item(CreatureEntity &killer, MonsterDeath *md_ptr)
     drop_fixed_items_on_death(killer, md_ptr, md_ptr->monrace->drop_tvals, true);
 }
 
-static void on_dead_raal(CreatureEntity &killer, MonsterDeath *md_ptr)
-{
-    const auto &floor = *killer.get_floor();
-    if (!md_ptr->drop_chosen_item || (floor.dun_level <= 9)) {
-        return;
-    }
-
-    const auto restrict = ((floor.dun_level > 49) && one_in_(5)) ? kind_is_good_book : kind_is_book;
-
-    if (auto item = make_object(killer, md_ptr->mo_mode, restrict)) {
-        (void)drop_near(killer, *item, md_ptr->get_position());
-    }
-}
-
 static void drop_sushi(CreatureEntity &killer, MonsterDeath *md_ptr)
 {
     if (auto item = make_object(killer, AM_IGNORE_LEVEL, kind_is_sushi, 10)) {
@@ -306,23 +292,6 @@ static void on_dead_sacred_treasures(CreatureEntity &killer, MonsterDeath *md_pt
     create_named_art(killer, a_idx, md_ptr->md_y, md_ptr->md_x);
 }
 
-static void on_dead_serpent(CreatureEntity &killer, MonsterDeath *md_ptr)
-{
-    if (!md_ptr->drop_chosen_item) {
-        return;
-    }
-
-    ItemEntity item_grond({ ItemKindType::HAFTED, SV_GROND });
-    item_grond.fa_id = FixedArtifactId::GROND;
-    ItemMagicApplier(killer, &item_grond, -1, AM_GOOD | AM_GREAT).execute();
-    (void)drop_near(killer, item_grond, md_ptr->get_position());
-
-    ItemEntity item_chaos({ ItemKindType::CROWN, SV_CHAOS });
-    item_chaos.fa_id = FixedArtifactId::CHAOS;
-    ItemMagicApplier(killer, &item_chaos, -1, AM_GOOD | AM_GREAT).execute();
-    (void)drop_near(killer, item_chaos, md_ptr->get_position());
-}
-
 /*!
  * @brief 装備品の生成を試みる
  * @param creature クリーチャーへの参照
@@ -387,16 +356,26 @@ static void on_dead_random_artifact(CreatureEntity &killer, MonsterDeath *md_ptr
     }
 }
 
-static void on_dead_swordfish(CreatureEntity &killer, MonsterDeath *md_ptr, AttributeFlags attribute_flags)
+/*!
+ * @brief JSON の `death_random_artifact` 指定に従ってランダムアーティファクトを落とす
+ * @details 未指定の種族では何もしない。カメレオンは旧 `case` と同じく除外する。
+ */
+static void on_dead_random_artifact_by_data(CreatureEntity &killer, MonsterDeath *md_ptr)
 {
-    if (attribute_flags.has_not(AttributeType::COLD) || !md_ptr->drop_chosen_item || (randint1(100) >= 10)) {
+    const auto &spec = md_ptr->monrace->death_random_artifact;
+    if (!spec || md_ptr->is_chameleon) {
         return;
     }
 
-    drop_single_artifact(killer, md_ptr, FixedArtifactId::FROZEN_SWORDFISH);
+    const auto tval = i2enum<ItemKindType>(spec->tval);
+    const auto sval_min = spec->sval_min;
+    on_dead_random_artifact(killer, md_ptr, [tval, sval_min](short bi_id) {
+        const auto &bi_key = BaseitemList::get_instance().get_baseitem(bi_id).bi_key;
+        return (bi_key.tval() == tval) && (bi_key.sval() >= sval_min);
+    });
 }
 
-void switch_special_death(CreatureEntity &creature, MonsterDeath *md_ptr, AttributeFlags attribute_flags)
+void switch_special_death(CreatureEntity &creature, MonsterDeath *md_ptr)
 {
     auto &monrace = MonraceList::get_instance().get_monrace(md_ptr->apparent_monrace->idx);
     const auto &summon_list = monrace.get_final_summons();
@@ -434,34 +413,12 @@ void switch_special_death(CreatureEntity &creature, MonsterDeath *md_ptr, Attrib
     // PROJECT_ITEM でドロップ品を巻き込むため、旧実装と同じくドロップ処理の後に置く。
     on_dead_explosion_by_data(creature, md_ptr);
 
-    switch (md_ptr->apparent_monrace->idx) {
-    case MonraceId::RAAL:
-        on_dead_raal(creature, md_ptr);
-        return;
-    case MonraceId::UNICORN_ORD:
-    case MonraceId::MORGOTH:
-    case MonraceId::ONE_RING:
+    // 爆発の PROJECT_ITEM に巻き込まれないよう、☆生成は爆発より後に置く。
+    on_dead_random_artifact_by_data(creature, md_ptr);
+
+    // 撃破者の性格に依存する処理なので monrace データには置けない。対象種族の指定
+    // だけを JSON フラグへ出し、ハードコードされた MonraceId 参照を無くしてある。
+    if (md_ptr->monrace->drops_sacred_treasures) {
         on_dead_sacred_treasures(creature, md_ptr);
-        return;
-    case MonraceId::SERPENT:
-        on_dead_serpent(creature, md_ptr);
-        return;
-    case MonraceId::YENDOR_WIZARD_1:
-        if (md_ptr->is_chameleon) {
-            return;
-        }
-        on_dead_random_artifact(creature, md_ptr, kind_is_amulet);
-        return;
-    case MonraceId::LOSTRINGIL:
-        if (md_ptr->is_chameleon) {
-            return;
-        }
-        on_dead_random_artifact(creature, md_ptr, kind_is_sword);
-        return;
-    case MonraceId::SWORDFISH:
-        on_dead_swordfish(creature, md_ptr, attribute_flags);
-        break;
-    default:
-        return;
     }
 }
