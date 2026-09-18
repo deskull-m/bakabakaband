@@ -49748,6 +49748,11 @@
           "probability": "1_IN_2",
         },
       ],
+      "death_explosion": {
+        "attribute": "CHAOS",
+        "radius": 6,
+        "damage_dice": "100d1",
+      },
     },
     {
       "id": 816,
@@ -64141,6 +64146,11 @@
       "skill": {
         "list": ["BA_FIRE", "HASTE", "SPECIAL"],
         "probability": "1_IN_3",
+      },
+      "death_explosion": {
+        "attribute": "FIRE",
+        "radius": 3,
+        "damage_dice": "20d10",
       },
     },
     {
@@ -86759,6 +86769,17 @@
         "list": ["S_KIN"],
         "probability": "1_IN_2",
       },
+      "message": [
+        {
+          "action": "SPEAK_DEATH",
+          "chance": 1,
+          "use_name": false,
+          "message": {
+            "ja": "どこからか声が聞こえる…「ハロー！　そして…グッドバイ！」",
+            "en": "Heard a voice from somewhere... 'Hello! And... good bye!'",
+          },
+        },
+      ],
     },
     {
       "id": 1369,
@@ -91729,6 +91750,7 @@
         "ja": "22世紀の貧乏家庭も持てるお手軽な未来の日用品だ。これでネズミが多い日も安心！",
       },
       "flags": [
+        "SPEAK_DEATH",
         "FORCE_MAXHP",
         "REFLECTING",
         "EMPTY_MIND",
@@ -91744,6 +91766,22 @@
         "NO_SLEEP",
         "NONLIVING",
         "RES_TELE",
+      ],
+      "death_explosion": {
+        "attribute": "DISINTEGRATE",
+        "radius": 10,
+        "damage_dice": "10000d1",
+      },
+      "message": [
+        {
+          "action": "SPEAK_DEATH",
+          "chance": 1,
+          "use_name": false,
+          "message": {
+            "ja": "ワーオ！22世紀の文明の叡知が今炸裂した！",
+            "en": "Wow! The wisdom of 22nd century civilization has now exploded!",
+          },
+        },
       ],
     },
     {

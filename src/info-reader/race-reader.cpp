@@ -641,6 +641,47 @@ errr RaceReader::set_mon_artifacts(nlohmann::json &artifact_data, MonraceDefinit
 }
 
 /*!
+ * @brief JSON Objectからモンスターの死亡時爆発情報をセットする
+ * @param explosion_data 死亡時爆発情報の格納されたJSON Object
+ * @param monrace 保管先のモンスター種族構造体
+ * @return エラーコード
+ * @details 未指定なら爆発しない。固定ダメージは `"Nd1"` と書く
+ *          (`rand_range(1, 1)` は乱数を消費しないので乱数列は変わらない)。
+ */
+errr RaceReader::set_mon_death_explosion(const nlohmann::json &explosion_data, MonraceDefinition &monrace)
+{
+    if (explosion_data.is_null()) {
+        return PARSE_ERROR_NONE;
+    }
+    if (!explosion_data.is_object()) {
+        return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+    }
+
+    const auto &attribute_str = explosion_data["attribute"];
+    if (attribute_str.is_null() || !attribute_str.is_string()) {
+        return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+    }
+
+    const auto attribute = r_info_attribute.find(attribute_str.get<std::string>());
+    if (attribute == r_info_attribute.end()) {
+        return PARSE_ERROR_INVALID_FLAG;
+    }
+
+    int radius;
+    if (auto err = info_set_integer(explosion_data["radius"], radius, true, Range(0, 20))) {
+        return err;
+    }
+
+    Dice damage_dice;
+    if (auto err = info_set_dice(explosion_data["damage_dice"], damage_dice, true)) {
+        return err;
+    }
+
+    monrace.death_explosion = MonraceDeathExplosion{ attribute->second, radius, damage_dice };
+    return PARSE_ERROR_NONE;
+}
+
+/*!
  * @brief JSON Objectからモンスターの護衛情報をセットする
  * @param escort_data 護衛情報の格納されたJSON Object
  * @param monrace 保管先のモンスター種族構造体
@@ -1962,6 +2003,12 @@ errr RaceReader::read()
         msg_format(_("モンスターアライアンス情報読込失敗。ID: '%d'。", "Failed to load monster alliance: '%d'."), error_idx);
         return err;
     }
+    err = set_mon_death_explosion(mon_data["death_explosion"], monrace);
+    if (err) {
+        msg_format(_("モンスター死亡時爆発情報読み込みに失敗しました。 : %s", "Failed to load monster death explosion info. : %s"), monrace.name.data());
+        return err;
+    }
+
     err = set_mon_message(mon_data["message"], monrace);
     if (err) {
         msg_format(_("モンスターメッセージ読込失敗。ID: '%d'。", "Failed to load monster message. ID: '%d'."), error_idx);

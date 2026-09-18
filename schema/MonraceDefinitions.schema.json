@@ -810,6 +810,33 @@
                                 }
                             }
                         }
+                    },
+                    "death_explosion": {
+                        "type": "object",
+                        "description": "死亡時爆発。未指定なら爆発しない",
+                        "additionalProperties": false,
+                        "required": [
+                            "attribute",
+                            "radius",
+                            "damage_dice"
+                        ],
+                        "properties": {
+                            "attribute": {
+                                "type": "string",
+                                "description": "爆発の属性。トークンは r_info_attribute (AttributeType の enum 名) を参照"
+                            },
+                            "radius": {
+                                "type": "integer",
+                                "description": "効果半径",
+                                "minimum": 0,
+                                "maximum": 20
+                            },
+                            "damage_dice": {
+                                "type": "string",
+                                "description": "ダメージダイス。XdY形式。固定値は \"Nd1\" と書く",
+                                "pattern": "[1-9][0-9]*d[1-9][0-9]*"
+                            }
+                        }
                     }
                 }
             }

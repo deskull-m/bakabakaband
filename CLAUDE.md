@@ -1685,6 +1685,92 @@ id 47 = 折れた剣 `1_IN_1`。いずれも grade 0, `1d1`, `exclusive_group: 1
   また四足型なども体構造が許す胴・頭を装備するため、獣に兜を被せたくない場合は
   対象スロット表か `body_structure` 側で制御する。
 
+### モンスターの死亡時爆発 (`death_explosion`)
+
+`MonraceDefinition` に `tl::optional<MonraceDeathExplosion> death_explosion`
+(`src/system/monrace/monrace-definition.h`) を持ち、JSON
+`lib/edit/MonraceDefinitions.jsonc` で死亡時の `project()` 爆発を指定できる。
+`switch_special_death()` の `case` が個別に `project()` を直書きしていたものを
+データ化したもの。
+
+```jsonc
+"death_explosion": {
+  "attribute": "CHAOS",
+  "radius": 6,
+  "damage_dice": "100d1",
+},
+```
+
+- `attribute` のトークンは `r_info_attribute`
+  (`src/info-reader/race-info-tokens-table.cpp`) を参照。`AttributeType` の
+  enum 名がそのままトークンで、`NONE` を除く全 112 種を登録済み。
+- **固定ダメージは `"Nd1"` と書く**。`Dice::roll` は `randint1(1)` を N 回呼ぶが、
+  `rand_range(1, 1)` は `a >= b` で即 return し**乱数を消費しない**ため、
+  固定値を直書きしていた旧実装と乱数列が変わらない。
+- 未指定なら爆発しない。半径は 0〜20。
+- 発火は `switch_special_death()` の `on_dead_explosion_by_data()`。
+  **`PROJECT_ITEM` を含むため床のドロップ品を巻き込んで破壊しうるので、
+  死亡時ドロップより後に呼ぶ**(旧 `case` 群と同じ位置)。
+- **プレイヤーには当たらない**。旧実装から引き継いだフラグが
+  `PROJECT_GRID | PROJECT_ITEM | PROJECT_KILL` で **`PROJECT_PLAYER` を含まない**
+  ため、効果は周囲のモンスター・床のアイテム・地形に限られる。
+- **`EXPLODE` 打撃とは別機構**。`method: "EXPLODE"` の打撃を持つ種族は
+  `monster_death()` の `on_dead_explosion()` が別途爆発させる (半径 3 固定・
+  属性は `mbe_info[effect].explode_type`・ダメージは打撃ダイス)。
+  `地球はかいばくだん` は両方を持つので、挙動を検証する際は取り違えないこと。
+- **移行済みの種族**:
+
+  | id | 種族 | 属性 | 半径 | ダメージ |
+  |---|---|---|---|---|
+  | 815 | 混沌 | CHAOS | 6 | `100d1` |
+  | 1013 | 『ロレント』 | FIRE | 3 | `20d10` |
+  | 1445 | 地球はかいばくだん | DISINTEGRATE | 10 | `10000d1` |
+
+- **`NINJA` 種族フラグ由来の爆発 (`on_dead_ninja`) は C++ のまま**。12 種族に
+  共通する一括挙動で、「サヨナラ！」「%sは哀れ爆発四散した！」の 2 行メッセージも
+  kind 全体の flavor のため、12 種族へデータ複製するのは保守性の後退になる。
+  爆発そのものは共通ヘルパ `explode_on_death()` を `death_explosion` と共用する。
+
+### モンスターの死亡時メッセージ (`SPEAK_DEATH`)
+
+死亡時に固有メッセージを出すだけの処理は、**既存の `SPEAK_DEATH` 機構**で
+コードを増やさずに書ける。`MonsterMessageType::SPEAK_DEATH` は
+`MonsterDamageProcessor::dying_scream()` に配線済みで、JSON の `message` キーから
+使える。
+
+```jsonc
+"flags": [ ..., "SPEAK_DEATH" ],
+"message": [
+  {
+    "action": "SPEAK_DEATH",
+    "chance": 1,
+    "use_name": false,
+    "message": {
+      "ja": "どこからか声が聞こえる…「ハロー！　そして…グッドバイ！」",
+      "en": "Heard a voice from somewhere... 'Hello! And... good bye!'",
+    },
+  },
+],
+```
+
+- **`chance` は百分率ではなく `1/chance`**。`MonsterMessage::get_message()` が
+  `one_in_(chance)` で判定するので、**必ず出したいなら `chance: 1`** と書く。
+  キー名と reader の `Range(1, 100)` に釣られて `100` と書くと 1% になる。
+- `flags` に `SPEAK_DEATH` か **`SPEAK_ALL`** のいずれかが必要
+  (`dying_scream()` が `has_none_of({SPEAK_ALL, SPEAK_DEATH})` で弾く)。
+- 同じ `action` に複数書くと `rand_choice` で**どれか 1 つ**が選ばれる。
+  2 行続けて出したい場合には使えない。
+- `use_name` を true にするとメッセージ先頭にモンスター名が入る。
+- **移行済み**: 『チョコラータ』(1368) の「どこからか声が聞こえる…」、
+  地球はかいばくだん (1445) の「ワーオ！22世紀の文明の叡知が今炸裂した！」。
+  いずれも `switch_special_death()` から `case` ごと削除した。
+- **旧実装との差**: 旧 `on_dead_manimani()` は `is_seen()` を要求したが
+  `dying_scream()` に視認判定は無いので、見えていなくても表示される
+  (「どこからか声が聞こえる」という文面にはむしろ合う)。また発火位置が
+  `switch_special_death()` より前 (撃破メッセージの直前) になる。
+  旧 `on_dead_earth_destroyer()` の `is_player()` ガードは、
+  `monster_death()` の全呼出元がプレイヤーを渡すため元から no-op だった。
+
 ### モンスターのレベル別HPダイス指定 (`hit_point_per_level`)
 
 `MonraceDefinition` に `Dice hit_dice_per_level`

@@ -44,6 +44,7 @@
 /*! モンスターが1ターンに攻撃する最大回数 (射撃を含む) / The maximum number of times a monster can attack in a turn (including SHOOT) */
 constexpr int MAX_NUM_BLOWS = 4;
 
+enum class AttributeType : int;
 enum class FixedArtifactId : short;
 enum class MonraceId : int16_t;
 
@@ -130,6 +131,20 @@ public:
      * 消費しない。
      */
     int min_dun_level = 0;
+};
+
+/*!
+ * @brief 死亡時爆発の指定 (JSON キー `death_explosion`)
+ * @details 旧 `on_dead_unmaker` 相当の `case` 群が個別に書いていた
+ * 「死亡時に project() で爆発する」処理をデータ化したもの。
+ * 固定ダメージは `"Nd1"` と書く (`rand_range(1, 1)` は乱数を消費しないので
+ * 乱数列は変わらない)。
+ */
+class MonraceDeathExplosion {
+public:
+    AttributeType attribute{}; //!< 爆発の属性
+    int radius = 0; //!< 効果半径
+    Dice damage_dice{}; //!< ダメージダイス
 };
 
 class DropArtifact {
@@ -416,6 +431,7 @@ public:
     void emplace_drop_artifact(FixedArtifactId fa_id, int percentage);
     void emplace_reinforce(MonraceId monrace_id, const Dice &dice);
     std::vector<DropArtifact> drop_artifacts; //!< 特定アーティファクトドロップリスト
+    tl::optional<MonraceDeathExplosion> death_explosion; //!< 死亡時爆発 (未指定なら爆発しない)
 
     //!< @todo ここから先はミュータブルなフィールドなので分離すべき.
     bool has_entity() const;
