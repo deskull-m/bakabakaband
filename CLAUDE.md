@@ -1391,10 +1391,37 @@ per-turn で発火しない（切り傷・毒の inflict 経路が無い）」�
 `default: return -1` で弾くため自動装備は起きず、`acquire_item()` が
 `store_item()` へフォールして**所持品欄 (パック) に入る**。死亡時は
 `drop_all_inventory()` がパック・装備スロットの両方を走査するので床へ落ちる。
-**ただし落下条件が違う**: `equip_*` (パック保持) は
-`monster_death()` の `if (drop_item)` ガード配下なので**モンスター同士の戦闘や
-量子消失では落ちない**が、`drop_*` は `switch_special_death()` 内で**無条件**に
-生成される (クローン体・カメレオン・闘技場・ペット討伐でも発火する)。
+**ただし落下条件が違う**: 下記「ドロップ条件ガード」を参照。
+
+#### ドロップ条件ガード (`drop_item` と `drop_chosen_item`)
+
+固定アイテムが実際に床へ出る条件は 2 系統で異なり、`drop_*` の方が**厳しい**。
+
+| 系統 | ガード | 落ちない状況 |
+|---|---|---|
+| `equip_*` (所持品経由、`drop_all_inventory()`) | `monster_death()` の `if (drop_item)` | 量子消失 / モンスター同士の近接戦 / ペットの効果死 |
+| `drop_*` (`drop_fixed_items_on_death()`) | `md_ptr->drop_chosen_item` | 上記に加えて**クローン体・カメレオン・闘技場・モンスター闘技場・ペット討伐** |
+
+- `drop_chosen_item` は `MonsterDeath` のコンストラクタで
+  `drop_item && !cloned && !is_chameleon && !inside_arena && !is_phase_out && !is_pet`
+  として算出される (`monster-death-util.cpp`)。`drop_item` を第 1 項に含むので
+  `equip_*` 側の条件を**完全に包含**する。
+- **`drop_*` に `drop_chosen_item` を課すのが正しい**理由: 4 キーへ移行する前の
+  個別ハードコーディング (`on_dead_can_angel()` / `on_dead_bottle_gnome()` /
+  `drop_specific_item_on_dead()` 等) は**すべて冒頭に
+  `if (!md_ptr->drop_chosen_item) return;` を持っていた**。固定アーティファクト
+  (`drop_artifacts()`) も同じガードを使う。当初 `drop_fixed_items_on_death()` は
+  これを持たずクローン量産・闘技場量産が可能だったため、後から追加して
+  **移行前の挙動を正確に復元**した。
+- 一方 `equip_*` は「その個体の所持品」なので、他の所持品と同じ `drop_item` 条件で
+  落ちるのが正しい。クローン体でも装備は落ちる (一般ドロップ品と同じ扱い)。
+  **この非対称は意図的**。
+- **`kill_interval` との相互作用**: `r_akills` は `increase_kill_numbers()` で
+  クローン体・闘技場・ペット討伐でも無条件に加算されるため、ガードで弾かれた
+  撃破も撃破数を消費する。つまり「5 体目ごとにもれなく」は**正規の撃破 5 体**では
+  なく**通算 5 体目が正規の撃破だったとき**に発火する。これは旧
+  `on_dead_can_angel()` (`drop_chosen_item` ガード + `r_akills % 5`) と
+  **まったく同じ挙動**なので、移行による差ではない。
 
 実装:
 
@@ -1503,12 +1530,11 @@ NONE / GOLD / BOTTLE / NO_AMMO は総称「アイテム」へフォールバッ�
   (`generate_chest()`) は渡された `lev` も `power` も使わず `get_baseitem_level()` と
   `dun_level` を直接読む。当該ベースアイテムは `gen_flags` 空・価値 500000G
   (非 worthless) なので `apply_cursed()` も無効果。
-- **⚠️ 振舞いの差 (要注意)**: 旧実装は `drop_chosen_item` ガード下だったが、
-  `drop_fixed_items_on_death()` にはこのガードが無いため**クローン体・カメレオン・
-  闘技場・ペット討伐でも落ちる**。価値 500000G の高額品なので、クローン命令や
-  闘技場での量産が可能になる。気になる場合は
-  `drop_fixed_items_on_death()` に `md_ptr->drop_chosen_item` ガードを入れること
-  (ただし既存 `drop_kind` 全体の振舞いが変わる)。
+- **ドロップ条件も旧実装と一致**: 当初 `drop_fixed_items_on_death()` は
+  `drop_chosen_item` ガードを持たず、価値 500000G のおもちゃのカンヅメが
+  クローン命令や闘技場で量産できてしまっていた。後に同関数へガードを追加して
+  解消済み (上記「ドロップ条件ガード」参照)。`r_akills` がガードで弾かれた撃破でも
+  加算される点も旧実装と同じ。
 
 **ハードコーディングからの移行例 (ケット・シー)**: `CAIT_SITH` の case が
 `drop_specific_item_on_dead(kind_is_boots)` で靴を生成していたものを
@@ -1519,9 +1545,11 @@ NONE / GOLD / BOTTLE / NO_AMMO は総称「アイテム」へフォールバッ�
   ドラゴン・ブーツ (深度 60 / 10000G)。既定の一様抽選にすると**どの深さでも
   1/6 でドラゴン・ブーツ**が出てしまうため、旧実装 (`make_object`) と同じ
   深度加重抽選を使う。本キーはこの移行のために新設した。
-- **失われたガード 2 つ**: 旧実装の `dun_level <= 0` (地上では落とさない) と
-  `is_chameleon` は 4 キーでは表現できないため落ちている。
-  地上のケット・シーや化けたカメレオンからも靴が出る。
+- **失われたガード**: 旧実装の `dun_level <= 0` (地上では落とさない) は
+  当時 4 キーで表現できず落ちていたが、後に新設した `min_dun_level: 1` で
+  表現できる (本エントリには未指定のまま。地上のケット・シーからも靴が出る)。
+  `is_chameleon` の方は `drop_fixed_items_on_death()` への `drop_chosen_item`
+  ガード追加で復元済み。
 - 旧実装は `make_object` が `tl::nullopt` を返すと何も落ちなかったが、
   `use_allocation_table` の 0 スキップで同じ振舞いになる。
 - 等級適用は grade 0 + **`allows_fixed_artifact: true`**。CAIT_SITH は `DROP_GOOD` /
@@ -1544,7 +1572,8 @@ NONE / GOLD / BOTTLE / NO_AMMO は総称「アイテム」へフォールバッ�
   (旧実装の `make_object` が `tl::nullopt` を返すのと同じ)。ただし
   `select_baseitem_id()` の深度ブースト (`CHANCE_BASEITEM_LEVEL_BOOST`) で稀に出る。
   これもバニラのアイテム生成と同じ振舞い。
-- 失われたガードはケット・シーと同じ 2 つ (`dun_level <= 0` / `is_chameleon`)。
+- 失われたガードはケット・シーと同じ (`dun_level <= 0` は未指定のまま。
+  `is_chameleon` は `drop_chosen_item` ガード追加で復元済み)。
 - 等級適用もケット・シーと同じく grade 0 + **`allows_fixed_artifact: true`**
   (固定アーティファクトのアミュレットが出うる点を後から補った)。
 - **検証上の注意**: YENDOR_WIZARD_2 は UNIQUE なので一度倒すと同じセーブで再召喚
@@ -1564,9 +1593,10 @@ id 47 = 折れた剣 `1_IN_1`。いずれも grade 0, `1d1`, `exclusive_group: 1
   アイテムを落としていた。`grade: 0` でも `dun_level + 10` [%] で power ±1 が付き、
   折れたダガーがエゴ化・呪い・ダイス増加し、極稀 (power 2 の 1/40) には
   ランダムアーティファクトにまでなってしまう。本キーはこの移行のために新設した。
-- **失われたガード**: 旧実装の `if (!md_ptr->drop_chosen_item) return;` は 4 キーには
-  無いため、クローン体・カメレオン・闘技場・ペット討伐でも落ちる。折れた剣は
-  価値 1〜2G なので実害は無い。
+- **ドロップ条件は旧実装と一致**: 旧実装の
+  `if (!md_ptr->drop_chosen_item) return;` は、後に
+  `drop_fixed_items_on_death()` へ同じガードを追加したことで復元済み
+  (上記「ドロップ条件ガード」参照)。
 - `next_mon` でデスソード (id 107) に進化する個体だが、進化は死亡処理を経ないので
   ドロップには影響しない。
 
@@ -1597,9 +1627,10 @@ id 47 = 折れた剣 `1_IN_1`。いずれも grade 0, `1d1`, `exclusive_group: 1
   唯一無二の魔剣なので剣を落とさない) が、`case '|':` を消せばこの除外も一緒に
   消え、指定の無い種族は何も落とさないという既定に吸収される。**ハードコードされた
   MonraceId 参照が 1 つ減る。**
-- **失われたガード**: 旧実装の `if (!md_ptr->drop_chosen_item) return;` が無くなるため、
-  クローン体・カメレオン・闘技場・ペット討伐でも落ちる (他の `drop_*` と同じ)。
-  デスソード系は剣 1 本なので実害は小さいが、ヘルブレードは Lv27 相当の剣が出る。
+- **ドロップ条件は旧実装と一致**: 旧実装の
+  `if (!md_ptr->drop_chosen_item) return;` は `drop_fixed_items_on_death()` への
+  ガード追加で復元済み。ヘルブレードは Lv27 相当の剣が出るため、クローン体や
+  闘技場で量産できないことが特に重要 (上記「ドロップ条件ガード」参照)。
 - `case '|':` の削除が `on_dead_mimics()` 全廃 (下記) の第一歩になった。
 
 **ハードコーディングからの移行例 (残り 5 シンボル = `on_dead_mimics()` の全廃)**:
@@ -1627,8 +1658,9 @@ id 47 = 折れた剣 `1_IN_1`。いずれも grade 0, `1d1`, `exclusive_group: 1
   (`get_final_summons()`)・`NINJA` 種族フラグ・`switch` の個別 `case` のいずれも
   持たないため、現状どれも純粋に `default: on_dead_mimics()` へ落ちていた。
   よって発火条件は `drop_tval` への移行で一致する。
-- **失われたガード**: 他の移行と同じく `if (!md_ptr->drop_chosen_item) return;` が
-  無くなるため、クローン体・カメレオン・闘技場・ペット討伐でも落ちる。
+- **ドロップ条件は旧実装と一致**: 他の移行と同じく
+  `if (!md_ptr->drop_chosen_item) return;` は `drop_fixed_items_on_death()` への
+  ガード追加で復元済み (上記「ドロップ条件ガード」参照)。
 - 併せて、使われなくなった `kind_is_cloak` / `kind_is_polearm` / `kind_is_armor` /
   `kind_is_hafted` / `kind_is_boots` の 5 フックを `object-kind-hook.{h,cpp}` から
   削除した (`kind_is_sword` は LOSTRINGIL のランダムアーティファクト生成で
