@@ -868,7 +868,7 @@ errr RaceReader::set_mon_flags(const nlohmann::json &flag_data, MonraceDefinitio
                     }
                     info_set_value(dn, dices[0]);
                     info_set_value(ds, dices[1]);
-                    r_ptr->drop_kinds.push_back({ num, deno, kind_idx, grade, ds, dn });
+                    r_ptr->drop_kinds.push_back({ num, deno, kind_idx, grade, Dice(dn, ds) });
                     continue;
                 }
 
@@ -889,7 +889,7 @@ errr RaceReader::set_mon_flags(const nlohmann::json &flag_data, MonraceDefinitio
                     }
                     info_set_value(dn, dices[0]);
                     info_set_value(ds, dices[1]);
-                    r_ptr->drop_tvals.push_back({ num, deno, kind_idx, grade, ds, dn });
+                    r_ptr->drop_tvals.push_back({ num, deno, kind_idx, grade, Dice(dn, ds) });
                     continue;
                 }
                 if (s_tokens.size() == 7 && s_tokens[0] == "DEAD" && s_tokens[1] == "SPAWN" && s_tokens[3] == "IN") {
@@ -1399,8 +1399,8 @@ errr RaceReader::set_mon_drop_kinds(const nlohmann::json &drop_data, MonraceDefi
             return PARSE_ERROR_INVALID_FLAG;
         }
 
-        // 分子、分母、アイテムID、グレード、ダイス面数、ダイス個数を設定
-        monrace.drop_kinds.push_back({ numerator, denominator, item_id, grade, dice_side, dice_num });
+        // 分子、分母、アイテムID、グレード、ドロップ個数ダイス ("XdY") を設定
+        monrace.drop_kinds.push_back({ numerator, denominator, item_id, grade, Dice(dice_num, dice_side) });
     }
 
     return PARSE_ERROR_NONE;

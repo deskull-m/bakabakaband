@@ -153,24 +153,22 @@ static void on_dead_spawn_monsters(CreatureEntity &killer, MonsterDeath *md_ptr)
 static void on_dead_drop_kind_item(CreatureEntity &killer, MonsterDeath *md_ptr)
 {
     for (const auto &kind : md_ptr->monrace->drop_kinds) {
-        const auto &[num, deno, kind_idx, grade, dn, ds] = kind;
-
         // 装備品の固定ドロップはモンスター生成時に持たせ済み
         // (equip_monster_fixed_drops)。死亡時は所持品ごと床へ落ちるため、
         // ここで再生成すると二重取りになる。
-        if (is_wearable_drop_kind(kind_idx)) {
+        if (is_wearable_drop_kind(kind.id)) {
             continue;
         }
 
-        if (randint1(deno) > num) {
+        if (randint1(kind.denominator) > kind.numerator) {
             continue;
         }
 
-        const auto drop_nums = Dice::roll(dn, ds);
+        const auto drop_nums = kind.dice.roll();
         for (auto i = 0; i < drop_nums; i++) {
             ItemEntity item;
-            item.generate(kind_idx);
-            apply_drop_kind_magic(killer, item, grade);
+            item.generate(kind.id);
+            apply_drop_kind_magic(killer, item, kind.grade);
             (void)drop_near(killer, item, md_ptr->get_position());
         }
     }
@@ -184,18 +182,14 @@ static void on_dead_drop_kind_item(CreatureEntity &killer, MonsterDeath *md_ptr)
  */
 static void on_dead_drop_tval_item(CreatureEntity &killer, MonsterDeath *md_ptr)
 {
-    for (auto kind : md_ptr->monrace->drop_tvals) {
+    for (const auto &kind : md_ptr->monrace->drop_tvals) {
         ItemEntity item;
-        int num = std::get<0>(kind);
-        int deno = std::get<1>(kind);
-        if (randint1(deno) > num) {
+        if (randint1(kind.denominator) > kind.numerator) {
             continue;
         }
-        int tval = std::get<2>(kind);
-        int grade = std::get<3>(kind);
-        int dn = std::get<4>(kind);
-        int ds = std::get<5>(kind);
-        int drop_nums = Dice::roll(dn, ds);
+        const auto tval = kind.id;
+        const auto grade = kind.grade;
+        const auto drop_nums = kind.dice.roll();
 
         for (int i = 0; i < drop_nums; i++) {
             item.generate(BaseitemList::get_instance().lookup_baseitem_id({ i2enum<ItemKindType>(tval), 0 }));
