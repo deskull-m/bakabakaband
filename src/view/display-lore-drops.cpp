@@ -131,20 +131,21 @@ void display_monster_drops_summary(lore_type *lore_ptr)
 
 void display_monster_drops(lore_type *lore_ptr)
 {
-    if ((lore_ptr->drop_gold == 0) && (lore_ptr->drop_item == 0)) {
-        return;
-    }
-
-    hooked_roff(format(_("%s^は", "%s^ may carry"), Who::who(lore_ptr->msex).data()));
+    // 一般ドロップ (drop_flags 由来のアイテム/財宝) を持たないモンスターでも、
+    // 固定ドロップ (drop_kinds) は表示する必要があるため早期 return しない。
+    if ((lore_ptr->drop_gold > 0) || (lore_ptr->drop_item > 0)) {
+        hooked_roff(format(_("%s^は", "%s^ may carry"), Who::who(lore_ptr->msex).data()));
 #ifdef JP
 #else
-    lore_ptr->sin = false;
+        lore_ptr->sin = false;
 #endif
 
-    display_monster_drop_quantity(lore_ptr);
-    display_monster_drop_quality(lore_ptr);
-    display_monster_drop_items(lore_ptr);
-    display_monster_drop_golds(lore_ptr);
-    hooked_roff(_("を持っていることがある。", ".  "));
+        display_monster_drop_quantity(lore_ptr);
+        display_monster_drop_quality(lore_ptr);
+        display_monster_drop_items(lore_ptr);
+        display_monster_drop_golds(lore_ptr);
+        hooked_roff(_("を持っていることがある。", ".  "));
+    }
+
     display_drop_kind_items(lore_ptr);
 }
