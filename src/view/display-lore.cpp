@@ -35,7 +35,9 @@
 #include "util/string-processor.h"
 #include "view/display-messages.h"
 #include "view/display-symbol.h"
+#include "wizard/tval-descriptions-table.h"
 #include "world/world.h"
+#include <algorithm>
 
 /*!
  * @brief モンスター情報のヘッダを記述する
@@ -1468,12 +1470,17 @@ void display_monster_dead_spawns(lore_type *lore_ptr)
 }
 
 /*!
- * @brief モンスターの思い出にdrop_kind情報を表示する
+ * @brief 固定ドロップ指定の一覧を思い出として表示する
  * @param lore_ptr モンスターの思い出構造体への参照ポインタ
+ * @param drops 表示対象の固定ドロップ指定 (drop_kinds / drop_tvals)
+ * @param describe_item 1 件のドロップ指定から表示名を得る関数
+ * @details drop_kinds (ベースアイテム指定) と drop_tvals (アイテム種別指定) は
+ *          表示名の求め方だけが異なるため、文面はここで共通化する。
  */
-void display_drop_kind_items(lore_type *lore_ptr)
+template <typename ItemDescriber>
+static void display_drop_entries(lore_type *lore_ptr, const std::vector<MonraceDropKind> &drops, ItemDescriber describe_item)
 {
-    if (lore_ptr->monrace->drop_kinds.empty()) {
+    if (drops.empty()) {
         return;
     }
 
@@ -1488,7 +1495,7 @@ void display_drop_kind_items(lore_type *lore_ptr)
 #endif
 
     bool first = true;
-    for (const auto &kind : lore_ptr->monrace->drop_kinds) {
+    for (const auto &kind : drops) {
         if (!first) {
 #ifdef JP
             hooked_roff("、");
@@ -1498,8 +1505,7 @@ void display_drop_kind_items(lore_type *lore_ptr)
         }
         first = false;
 
-        const auto &baseitem = BaseitemList::get_instance().get_baseitem(kind.id);
-        const auto &item_name = baseitem.name;
+        const auto item_name = describe_item(kind);
         const auto dice_expression = kind.dice.to_string();
 
         // グレード修飾語を取得
@@ -1526,6 +1532,46 @@ void display_drop_kind_items(lore_type *lore_ptr)
 #else
     hooked_roff(".  ");
 #endif
+}
+
+/*!
+ * @brief アイテム種別 (tval) の表示名を返す
+ * @param tval アイテム種別
+ * @details 名称の定義はアイテム生成ウィザードと共用する (tval_desc_list)。
+ *          表に無い種別 (NONE / GOLD / BOTTLE / NO_AMMO) は総称へフォールバックする。
+ */
+static std::string describe_item_kind(ItemKindType tval)
+{
+    const auto it = std::find_if(tval_desc_list.begin(), tval_desc_list.end(),
+        [tval](const auto &entry) { return entry.tval == tval; });
+    if (it == tval_desc_list.end()) {
+        return _("アイテム", "item");
+    }
+
+    return it->desc;
+}
+
+/*!
+ * @brief モンスターの思い出にdrop_kind情報 (ベースアイテム指定) を表示する
+ * @param lore_ptr モンスターの思い出構造体への参照ポインタ
+ */
+void display_drop_kind_items(lore_type *lore_ptr)
+{
+    display_drop_entries(lore_ptr, lore_ptr->monrace->drop_kinds,
+        [](const MonraceDropKind &kind) { return BaseitemList::get_instance().get_baseitem(kind.id).name; });
+}
+
+/*!
+ * @brief モンスターの思い出にdrop_tval情報 (アイテム種別指定) を表示する
+ * @param lore_ptr モンスターの思い出構造体への参照ポインタ
+ * @details drop_tvals は種別のみの指定で、死亡時は当該種別の中から無作為に
+ *          ベースアイテムが選ばれる (`lookup_baseitem_id` の sval=0 経路) ため、
+ *          個別のアイテム名ではなく種別名で表示する。
+ */
+void display_drop_tval_items(lore_type *lore_ptr)
+{
+    display_drop_entries(lore_ptr, lore_ptr->monrace->drop_tvals,
+        [](const MonraceDropKind &kind) { return describe_item_kind(i2enum<ItemKindType>(kind.id)); });
 }
 
 void display_monster_guardian(lore_type *lore_ptr)
