@@ -26,7 +26,6 @@
 #include "object-enchant/item-magic-applier.h"
 #include "object/object-kind-hook.h"
 #include "spell/summon-types.h"
-#include "sv-definition/sv-food-types.h"
 #include "sv-definition/sv-other-types.h"
 #include "sv-definition/sv-potion-types.h"
 #include "sv-definition/sv-protector-types.h"
@@ -191,24 +190,6 @@ static void on_dead_drop_kind_item(CreatureEntity &killer, MonsterDeath *md_ptr)
 static void on_dead_drop_tval_item(CreatureEntity &killer, MonsterDeath *md_ptr)
 {
     drop_fixed_items_on_death(killer, md_ptr, md_ptr->monrace->drop_tvals, true);
-}
-
-static void on_dead_inariman1_2(CreatureEntity &killer, MonsterDeath *md_ptr)
-{
-    ItemEntity forge;
-    ItemEntity *q_ptr = &forge;
-    q_ptr->generate(BaseitemList::get_instance().lookup_baseitem_id({ ItemKindType::FOOD, SV_FOOD_SUSHI2 }));
-    ItemMagicApplier(killer, q_ptr, killer.get_floor()->dun_level, AM_NO_FIXED_ART | md_ptr->mo_mode).execute();
-    (void)drop_near(killer, *q_ptr, md_ptr->get_position());
-}
-
-static void on_dead_inariman3(CreatureEntity &killer, MonsterDeath *md_ptr)
-{
-    ItemEntity forge;
-    ItemEntity *q_ptr = &forge;
-    q_ptr->generate(BaseitemList::get_instance().lookup_baseitem_id({ ItemKindType::FOOD, SV_FOOD_SUSHI3 }));
-    ItemMagicApplier(killer, q_ptr, killer.get_floor()->dun_level, AM_NO_FIXED_ART | md_ptr->mo_mode).execute();
-    (void)drop_near(killer, *q_ptr, md_ptr->get_position());
 }
 
 static void on_dead_raal(CreatureEntity &killer, MonsterDeath *md_ptr)
@@ -559,12 +540,6 @@ void switch_special_death(CreatureEntity &creature, MonsterDeath *md_ptr, Attrib
             return;
         }
         on_dead_random_artifact(creature, md_ptr, kind_is_sword);
-        return;
-    case MonraceId::INARIMAN_2:
-        on_dead_inariman1_2(creature, md_ptr);
-        return;
-    case MonraceId::INARIMAN_3:
-        on_dead_inariman3(creature, md_ptr);
         return;
     case MonraceId::SWORDFISH:
         on_dead_swordfish(creature, md_ptr, attribute_flags);
