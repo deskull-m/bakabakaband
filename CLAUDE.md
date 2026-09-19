@@ -1137,6 +1137,47 @@ per-turn で発火しない（切り傷・毒の inflict 経路が無い）」�
   tick 量 (1) で調整可能。cut DoT は近接由来で inflict 経路が別のため今回は poison のみ。
 - スキーマに `suffers_poison_dot` を登録済。
 
+### モンスターの体構造 (`body_structure`) と装備枠
+
+`MonraceDefinition::body_structure` (`BodyStructureType`) が、その種族が
+**どの装備スロットを使えるか**を決める。JSON の `body_structure` キーで指定し、
+未指定なら `HUMANOID` (全スロット可)。トークンは `r_info_body_structure`
+(`src/info-reader/race-info-tokens-table.cpp`)、スロット可否は
+`get_body_slot_policy()` (`src/system/monrace/body-structure-policy.cpp`) が返す。
+
+| トークン | 表示名 | 装備できるスロット |
+|---|---|---|
+| `HUMANOID` | 人型 | 全 13 スロット (既定) |
+| `BIPEDAL` | 二足型 | 首・光源・胴・頭・脚 |
+| `QUADRUPED` | 四足型 | 首・胴・頭 |
+| `SERPENTINE` | 蛇型 | 首・胴 (+ 拡張: 尾の指輪) |
+| `AMORPHOUS` | 粘体型 | 指輪 2 個のみ (擬足にはめる) |
+| `INCORPOREAL` | 非実体 | なし |
+| `DRACONIC` | 竜体 | 全 13 スロット (+ 拡張: 尾の指輪・両翼) |
+| `FORMLESS` | 不定形 | **なし** |
+
+- **`FORMLESS` (不定形)** は「決まった形を持たない塊・雲・霧」用に追加した体構造。
+  `AMORPHOUS` が持つ擬足の指輪すら無く、**装備枠が一切ない**。
+  「泡立つ巨大な雲状の塊」「不定形の黒いねばねば」のような、体は在るが
+  装身具を身に着けようがない存在に使う。
+- **`INCORPOREAL` との違いは意味論**。どちらも装備枠ゼロだが、`INCORPOREAL` は
+  幽霊・ベクターのような**実体を持たない**もの、`FORMLESS` は**実体はあるが
+  形が定まらない**もの。挙動は現状同じだが、表示名と将来の分岐のために分けてある。
+- **`AMORPHOUS` の表示名は `FORMLESS` 追加にあわせて「不定形」→「粘体型」に
+  変更した**。enum コメントの「スライム・ジェル」という実態と、該当 114 体
+  (ゼリー / モルド / ウーズ / ベトベト等) の顔ぶれに沿わせたもの。
+  **JSON トークンは `AMORPHOUS` のまま**なのでデータ側の書き換えは不要。
+- **`armament_level: 0` との使い分け**: 体構造は「構造的に装備できない」、
+  武装度 0 は「装備できるが持たせない」。前者は `equip_*` で明示指定しても
+  装備スロットに入らず所持品送りになるのに対し、後者は `equip_*` や役割フラグ
+  (SOLDIER 等) を書けば装備が復活する。**設定上そもそも身に着けられない種族は
+  体構造で表すほうが根本的**。
+- **enum への追加は末尾 (`MAX` の直前) に行うこと**。
+  `body_slot_policies` が `enum2i()` の値で添字参照する `std::array` のため、
+  中間挿入すると全種族のスロット可否がずれる。`body_structure` は monrace 定義
+  (JSON 由来) でありセーブデータには載らないので、**セーブデータバージョンの
+  更新は不要**。
+
 ### モンスターの武装度 (`armament_level`)
 
 `MonraceDefinition` に `tl::optional<int> armament_level`

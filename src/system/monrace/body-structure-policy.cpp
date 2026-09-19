@@ -58,6 +58,9 @@ const std::array<BodySlotPolicy, enum2i(BodyStructureType::MAX)> body_slot_polic
 
     // DRACONIC: HUMANOID 装備可能 + 尾の指輪 + 両翼の装飾
     BodySlotPolicy(make_all_mask(), { ExtendedSlotType::TAIL_RING, ExtendedSlotType::WING_LEFT, ExtendedSlotType::WING_RIGHT }),
+
+    // FORMLESS: 決まった形を持たない塊・雲・霧。装備枠一切なし (擬足の指輪も無い)
+    BodySlotPolicy(BodySlotPolicy::SlotMask{}, {}),
 };
 
 }
@@ -74,11 +77,13 @@ std::string_view body_structure_name(BodyStructureType type)
     case BodyStructureType::SERPENTINE:
         return _("蛇型", "serpentine");
     case BodyStructureType::AMORPHOUS:
-        return _("不定形", "amorphous");
+        return _("粘体型", "amorphous");
     case BodyStructureType::INCORPOREAL:
         return _("非実体", "incorporeal");
     case BodyStructureType::DRACONIC:
         return _("竜体", "draconic");
+    case BodyStructureType::FORMLESS:
+        return _("不定形", "formless");
     case BodyStructureType::MAX:
         break;
     }
@@ -98,6 +103,7 @@ TERM_COLOR body_structure_color(BodyStructureType type)
     case BodyStructureType::QUADRUPED:
     case BodyStructureType::SERPENTINE:
     case BodyStructureType::AMORPHOUS:
+    case BodyStructureType::FORMLESS:
     case BodyStructureType::MAX:
         break;
     }
