@@ -1295,6 +1295,23 @@ NONE / GOLD / BOTTLE / NO_AMMO は総称「アイテム」へフォールバッ�
 - 生成基準階が `object_level` から `dun_level` に変わる (`apply_drop_kind_magic()` が
   後者を使う) 微差はある。
 
+**ハードコーディングからの移行例 (ボトルのノーム)**: `on_dead_bottle_gnome()` が
+死亡時に必ず「致命傷の治癒」の薬を生成していたものを `drop_kind`
+(id 241, `1_IN_1`, grade 0, `1d1`) へ移した。**自身が薬瓶の身体だが自分では使えない**
+ため `equip_*` ではなく `drop_*` が正しい (血戮悪魔とは逆の判断)。旧実装は
+`ItemMagicApplier` を一切呼ばなかったが、この薬に対しては `grade 0` の適用が
+**完全な no-op** なので等価: `AM_NO_FIXED_ART` で `calculate_rolls()` が 0 を返し
+`try_make_artifact()` は何もせず、POTION には専用 enchanter が無く
+(`OtherItemsEnchanter` に POTION の case が無い)、`apply_cursed()` も
+価値 100G (非 worthless) かつ `gen_flags` 空のため無効果。
+
+**移行時の注意 — `switch_special_death()` の `default:`**: 個別 `case` を削除すると
+その種族は `default: on_dead_mimics()` に落ちる。`on_dead_mimics()` は**表示シンボル
+文字**で分岐し `( / [ \ | ]` のいずれかならミミック相当の装備をドロップするため、
+**これらのシンボルを持つ種族の case を削除すると意図しないドロップが増える**。
+ボトルのノーム (`g`) と血戮悪魔 (`U`) はいずれも `default: return` に落ちるだけで
+無害だが、移行対象のシンボルを必ず確認すること。
+
 - プレイヤーがモンスターとして開始する経路 (`player_birth_as_monster`) は従来どおり
   固定アイテムを付与しない。
 - **既知のフレーバー上の粗**: 武装度充填は価値基準のため、高価だが弱いネタ装備
