@@ -50,6 +50,8 @@ private:
     errr set_mon_terrain_feature(const nlohmann::json &terrain_data, MonraceDefinition &monrace);
     errr set_mon_spawn_creature(const nlohmann::json &spawn_data, MonraceDefinition &monrace);
     errr set_mon_spawn_item(const nlohmann::json &spawn_data, MonraceDefinition &monrace);
+    errr set_mon_equip_kinds(const nlohmann::json &equip_data, MonraceDefinition &monrace);
+    errr set_mon_equip_tvals(const nlohmann::json &equip_data, MonraceDefinition &monrace);
     errr set_mon_drop_kinds(const nlohmann::json &drop_data, MonraceDefinition &monrace);
     errr set_mon_drop_tvals(const nlohmann::json &drop_data, MonraceDefinition &monrace);
     errr set_mon_dead_spawns(const nlohmann::json &dead_spawn_data, MonraceDefinition &monrace);
