@@ -193,14 +193,6 @@ static void on_dead_drop_tval_item(CreatureEntity &killer, MonsterDeath *md_ptr)
     drop_fixed_items_on_death(killer, md_ptr, md_ptr->monrace->drop_tvals, true);
 }
 
-static void on_dead_bottle_gnome(CreatureEntity &killer, MonsterDeath *md_ptr)
-{
-    ItemEntity forge;
-    ItemEntity *q_ptr = &forge;
-    q_ptr->generate(BaseitemList::get_instance().lookup_baseitem_id({ ItemKindType::POTION, SV_POTION_CURE_CRITICAL }));
-    (void)drop_near(killer, *q_ptr, md_ptr->get_position());
-}
-
 static void on_dead_inariman1_2(CreatureEntity &killer, MonsterDeath *md_ptr)
 {
     ItemEntity forge;
@@ -516,9 +508,6 @@ void switch_special_death(CreatureEntity &creature, MonsterDeath *md_ptr, Attrib
     switch (md_ptr->apparent_monrace->idx) {
     case MonraceId::EARTH_DESTROYER:
         on_dead_earth_destroyer(creature, md_ptr);
-        return;
-    case MonraceId::BOTTLE_GNOME:
-        on_dead_bottle_gnome(creature, md_ptr);
         return;
     case MonraceId::RAAL:
         on_dead_raal(creature, md_ptr);
