@@ -96258,6 +96258,14 @@
         "NO_CONF",
         "NO_SLEEP",
       ],
+      "equip_kind": [
+        {
+          "id": 741,
+          "probability": "1_IN_1",
+          "grade": 0,
+          "dice": "1d1",
+        },
+      ],
     },
     {
       "id": 1520,
@@ -96309,6 +96317,14 @@
         "HAS_LITE_1",
         "NO_CONF",
         "NO_SLEEP",
+      ],
+      "equip_kind": [
+        {
+          "id": 742,
+          "probability": "1_IN_1",
+          "grade": 0,
+          "dice": "1d1",
+        },
       ],
     },
     {
