@@ -552,6 +552,82 @@
                                 }
                             }
                         }
+                    },
+                    "drop_kind": {
+                        "type": "array",
+                        "description": "固定ドロップ指定。死亡時 (装備品は生成時) に指定のベースアイテムを落とす",
+                        "items": {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                                "id",
+                                "probability",
+                                "grade",
+                                "dice"
+                            ],
+                            "properties": {
+                                "id": {
+                                    "type": "integer",
+                                    "description": "ドロップするベースアイテムID",
+                                    "minimum": 0,
+                                    "maximum": 9999
+                                },
+                                "probability": {
+                                    "type": "string",
+                                    "description": "確率。X_IN_Y形式",
+                                    "pattern": "[1-9][0-9]*_IN_[1-9][0-9]*"
+                                },
+                                "grade": {
+                                    "type": "integer",
+                                    "description": "品質等級。-2:呪い 〜 2:優良",
+                                    "minimum": -2,
+                                    "maximum": 2
+                                },
+                                "dice": {
+                                    "type": "string",
+                                    "description": "ドロップ個数のダイス。XdY形式",
+                                    "pattern": "[1-9][0-9]*d[1-9][0-9]*"
+                                }
+                            }
+                        }
+                    },
+                    "drop_tval": {
+                        "type": "array",
+                        "description": "アイテム種別ドロップ指定。死亡時に指定種別の中から無作為にベースアイテムが選ばれる",
+                        "items": {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                                "tval",
+                                "probability",
+                                "grade",
+                                "dice"
+                            ],
+                            "properties": {
+                                "tval": {
+                                    "type": "integer",
+                                    "description": "ドロップするアイテム種別 (ItemKindType の値)。候補となるベースアイテムが 1 つも無い種別は読込エラーになる",
+                                    "minimum": 0,
+                                    "maximum": 128
+                                },
+                                "probability": {
+                                    "type": "string",
+                                    "description": "確率。X_IN_Y形式",
+                                    "pattern": "[1-9][0-9]*_IN_[1-9][0-9]*"
+                                },
+                                "grade": {
+                                    "type": "integer",
+                                    "description": "品質等級。-2:呪い 〜 2:優良",
+                                    "minimum": -2,
+                                    "maximum": 2
+                                },
+                                "dice": {
+                                    "type": "string",
+                                    "description": "ドロップ個数のダイス。XdY形式",
+                                    "pattern": "[1-9][0-9]*d[1-9][0-9]*"
+                                }
+                            }
+                        }
                     }
                 }
             }
