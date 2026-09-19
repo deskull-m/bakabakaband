@@ -560,16 +560,6 @@ void equip_monster_by_armament_budget(CreatureEntity &monster)
     }
 }
 
-bool is_wearable_drop_kind(short bi_id)
-{
-    const auto &baseitems = BaseitemList::get_instance();
-    if (!baseitems.is_valid(bi_id)) {
-        return false;
-    }
-
-    return baseitems.get_baseitem(bi_id).bi_key.is_wearable();
-}
-
 void apply_drop_kind_magic(CreatureEntity &creature, ItemEntity &item, int grade)
 {
     const auto level = creature.get_floor()->dun_level;
@@ -600,28 +590,50 @@ void apply_drop_kind_magic(CreatureEntity &creature, ItemEntity &item, int grade
     }
 }
 
-void equip_monster_fixed_drops(CreatureEntity &player, CreatureEntity &monster)
+short resolve_fixed_item_bi_id(const MonraceDropKind &entry, bool is_itemkind)
 {
-    const auto &monrace = monster.get_monrace();
-    for (const auto &kind : monrace.drop_kinds) {
-        // 装備品でない固定ドロップは従来どおり死亡時に生成する。
-        if (!is_wearable_drop_kind(kind.id)) {
+    const auto &baseitems = BaseitemList::get_instance();
+    if (!is_itemkind) {
+        return entry.id;
+    }
+
+    // sval を省略 (tl::nullopt) すると当該種別の中から無作為にベースアイテムが選ばれる。
+    // 0 を渡すと「sval 0 のベースアイテム」の完全一致検索になり、SWORD 等
+    // sval 0 が存在しない種別で例外を投げるので注意。
+    // 候補ゼロの種別は reader が弾いているため、ここで例外にはならない。
+    return baseitems.lookup_baseitem_id(BaseitemKey(i2enum<ItemKindType>(entry.id)));
+}
+
+/*!
+ * @brief 固定装備指定 1 リスト分をモンスターに持たせる
+ * @param player プレイヤーへの参照 (アイテム生成基準)
+ * @param monster 対象モンスター
+ * @param entries 装備指定のリスト
+ * @param is_itemkind entries がアイテム種別指定 (equip_tvals) なら true
+ */
+static void equip_monster_fixed_entries(CreatureEntity &player, CreatureEntity &monster, const std::vector<MonraceDropKind> &entries, bool is_itemkind)
+{
+    for (const auto &entry : entries) {
+        if (randint1(entry.denominator) > entry.numerator) {
             continue;
         }
 
-        if (randint1(kind.denominator) > kind.numerator) {
-            continue;
-        }
-
-        const auto drop_nums = kind.dice.roll();
-        for (auto i = 0; i < drop_nums; i++) {
+        const auto item_nums = entry.dice.roll();
+        for (auto i = 0; i < item_nums; i++) {
             ItemEntity item;
-            item.generate(kind.id);
-            apply_drop_kind_magic(player, item, kind.grade);
+            item.generate(resolve_fixed_item_bi_id(entry, is_itemkind));
+            apply_drop_kind_magic(player, item, entry.grade);
 
             // 装備できるスロットが空いていれば装備し、無理なら所持品に入る。
             // いずれにせよ死亡時は drop_all_inventory() で床へ落ちる。
             (void)monster.acquire_item(item);
         }
     }
+}
+
+void equip_monster_fixed_items(CreatureEntity &player, CreatureEntity &monster)
+{
+    const auto &monrace = monster.get_monrace();
+    equip_monster_fixed_entries(player, monster, monrace.equip_kinds, false);
+    equip_monster_fixed_entries(player, monster, monrace.equip_tvals, true);
 }

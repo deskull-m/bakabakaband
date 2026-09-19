@@ -64,6 +64,33 @@ static BIT_FLAGS dead_mode(MonsterDeath *md_ptr)
 }
 
 /*!
+ * @brief 死亡時ドロップ指定のアイテムを床へ落とす
+ * @param killer 撃破したクリーチャーへの参照
+ * @param md_ptr モンスター撃破構造体への参照ポインタ
+ * @param entries ドロップ指定のリスト (drop_kinds / drop_tvals)
+ * @param is_itemkind entries がアイテム種別指定 (drop_tvals) なら true
+ * @details 生成時装備 (equip_kinds / equip_tvals) は既に所持品として存在し
+ *          drop_all_inventory() で落ちるため、ここでは扱わない。
+ *          本経路は「死んで初めて生成される物」(死体から剥ぐ素材等) 専用。
+ */
+static void drop_fixed_items_on_death(CreatureEntity &killer, MonsterDeath *md_ptr, const std::vector<MonraceDropKind> &entries, bool is_itemkind)
+{
+    for (const auto &entry : entries) {
+        if (randint1(entry.denominator) > entry.numerator) {
+            continue;
+        }
+
+        const auto drop_nums = entry.dice.roll();
+        for (auto i = 0; i < drop_nums; i++) {
+            ItemEntity item;
+            item.generate(resolve_fixed_item_bi_id(entry, is_itemkind));
+            apply_drop_kind_magic(killer, item, entry.grade);
+            (void)drop_near(killer, item, md_ptr->get_position());
+        }
+    }
+}
+
+/*!
  * @brief 死亡時召喚処理
  * @param creature クリーチャーへの参照
  * @param md_ptr モンスター撃破構造体への参照ポインタ
@@ -152,26 +179,7 @@ static void on_dead_spawn_monsters(CreatureEntity &killer, MonsterDeath *md_ptr)
  */
 static void on_dead_drop_kind_item(CreatureEntity &killer, MonsterDeath *md_ptr)
 {
-    for (const auto &kind : md_ptr->monrace->drop_kinds) {
-        // 装備品の固定ドロップはモンスター生成時に持たせ済み
-        // (equip_monster_fixed_drops)。死亡時は所持品ごと床へ落ちるため、
-        // ここで再生成すると二重取りになる。
-        if (is_wearable_drop_kind(kind.id)) {
-            continue;
-        }
-
-        if (randint1(kind.denominator) > kind.numerator) {
-            continue;
-        }
-
-        const auto drop_nums = kind.dice.roll();
-        for (auto i = 0; i < drop_nums; i++) {
-            ItemEntity item;
-            item.generate(kind.id);
-            apply_drop_kind_magic(killer, item, kind.grade);
-            (void)drop_near(killer, item, md_ptr->get_position());
-        }
-    }
+    drop_fixed_items_on_death(killer, md_ptr, md_ptr->monrace->drop_kinds, false);
 }
 
 /*
@@ -182,53 +190,7 @@ static void on_dead_drop_kind_item(CreatureEntity &killer, MonsterDeath *md_ptr)
  */
 static void on_dead_drop_tval_item(CreatureEntity &killer, MonsterDeath *md_ptr)
 {
-    for (const auto &kind : md_ptr->monrace->drop_tvals) {
-        ItemEntity item;
-        if (randint1(kind.denominator) > kind.numerator) {
-            continue;
-        }
-        const auto tval = kind.id;
-        const auto grade = kind.grade;
-        const auto drop_nums = kind.dice.roll();
-
-        for (int i = 0; i < drop_nums; i++) {
-            item.generate(BaseitemList::get_instance().lookup_baseitem_id({ i2enum<ItemKindType>(tval), 0 }));
-            switch (grade) {
-            /* Apply bad magic, but first clear object */
-            case -2:
-                ItemMagicApplier(killer, &item, killer.get_floor()->dun_level, AM_NO_FIXED_ART | AM_GOOD | AM_GREAT | AM_CURSED).execute();
-                break;
-            /* Apply bad magic, but first clear object */
-            case -1:
-                ItemMagicApplier(killer, &item, killer.get_floor()->dun_level, AM_NO_FIXED_ART | AM_GOOD | AM_CURSED).execute();
-                break;
-            /* Apply normal magic, but first clear object */
-            case 0:
-                ItemMagicApplier(killer, &item, killer.get_floor()->dun_level, AM_NO_FIXED_ART).execute();
-                break;
-            /* Apply good magic, but first clear object */
-            case 1:
-                ItemMagicApplier(killer, &item, killer.get_floor()->dun_level, AM_NO_FIXED_ART | AM_GOOD).execute();
-                break;
-            /* Apply great magic, but first clear object */
-            case 2:
-                ItemMagicApplier(killer, &item, killer.get_floor()->dun_level, AM_NO_FIXED_ART | AM_GOOD | AM_GREAT).execute();
-                break;
-            /* Apply special magic, but first clear object */
-            case 3:
-                ItemMagicApplier(killer, &item, killer.get_floor()->dun_level, AM_GOOD | AM_GREAT | AM_SPECIAL).execute();
-                if (!item.is_fixed_artifact()) {
-                    if (killer.is_player()) {
-                        become_random_artifact(killer, &item, false);
-                    }
-                }
-                break;
-            default:
-                break;
-            }
-            (void)drop_near(killer, item, md_ptr->get_position());
-        }
-    }
+    drop_fixed_items_on_death(killer, md_ptr, md_ptr->monrace->drop_tvals, true);
 }
 
 static void on_dead_bottle_gnome(CreatureEntity &killer, MonsterDeath *md_ptr)

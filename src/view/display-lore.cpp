@@ -1470,15 +1470,17 @@ void display_monster_dead_spawns(lore_type *lore_ptr)
 }
 
 /*!
- * @brief 固定ドロップ指定の一覧を思い出として表示する
+ * @brief 固定アイテム指定の一覧を思い出として表示する
  * @param lore_ptr モンスターの思い出構造体への参照ポインタ
- * @param drops 表示対象の固定ドロップ指定 (drop_kinds / drop_tvals)
- * @param describe_item 1 件のドロップ指定から表示名を得る関数
- * @details drop_kinds (ベースアイテム指定) と drop_tvals (アイテム種別指定) は
- *          表示名の求め方だけが異なるため、文面はここで共通化する。
+ * @param drops 表示対象の指定 (equip_kinds / equip_tvals / drop_kinds / drop_tvals)
+ * @param lead_format 導入句の書式 (人称代名詞を %s で 1 つだけ取る)
+ * @param tail 結びの語
+ * @param describe_item 1 件の指定から表示名を得る関数
+ * @details 4 つのリストは「導入句・結び」と「表示名の求め方」だけが異なるため、
+ *          確率・等級・個数ダイスの文面はここで共通化する。
  */
 template <typename ItemDescriber>
-static void display_drop_entries(lore_type *lore_ptr, const std::vector<MonraceDropKind> &drops, ItemDescriber describe_item)
+static void display_drop_entries(lore_type *lore_ptr, const std::vector<MonraceDropKind> &drops, concptr lead_format, concptr tail, ItemDescriber describe_item)
 {
     if (drops.empty()) {
         return;
@@ -1488,11 +1490,7 @@ static void display_drop_entries(lore_type *lore_ptr, const std::vector<MonraceD
         return;
     }
 
-#ifdef JP
-    hooked_roff(format("%s^は倒すと、", Who::who(lore_ptr->msex).data()));
-#else
-    hooked_roff(format("When defeated, %s^ may drop ", Who::who(lore_ptr->msex).data()));
-#endif
+    hooked_roff(format(lead_format, Who::who(lore_ptr->msex).data()));
 
     bool first = true;
     for (const auto &kind : drops) {
@@ -1527,11 +1525,7 @@ static void display_drop_entries(lore_type *lore_ptr, const std::vector<MonraceD
 #endif
     }
 
-#ifdef JP
-    hooked_roff("落とす。");
-#else
-    hooked_roff(".  ");
-#endif
+    hooked_roff(tail);
 }
 
 /*!
@@ -1551,27 +1545,61 @@ static std::string describe_item_kind(ItemKindType tval)
     return it->desc;
 }
 
+//! ベースアイテムID指定 (`*_kinds`) の表示名を返す
+static std::string describe_baseitem_entry(const MonraceDropKind &entry)
+{
+    return BaseitemList::get_instance().get_baseitem(entry.id).name;
+}
+
 /*!
- * @brief モンスターの思い出にdrop_kind情報 (ベースアイテム指定) を表示する
+ * @brief アイテム種別指定 (`*_tvals`) の表示名を返す
+ * @details 種別のみの指定で、実際のベースアイテムは当該種別の中から無作為に選ばれる
+ *          (`lookup_baseitem_id` の sval=0 経路) ため、個別のアイテム名ではなく
+ *          種別名で表示する。
+ */
+static std::string describe_itemkind_entry(const MonraceDropKind &entry)
+{
+    return describe_item_kind(i2enum<ItemKindType>(entry.id));
+}
+
+/*!
+ * @brief モンスターの思い出に生成時装備情報 (ベースアイテム指定) を表示する
+ * @param lore_ptr モンスターの思い出構造体への参照ポインタ
+ */
+void display_equip_kind_items(lore_type *lore_ptr)
+{
+    display_drop_entries(lore_ptr, lore_ptr->monrace->equip_kinds,
+        _("%s^は", "%s^ may be equipped with "), _("装備している。", ".  "), describe_baseitem_entry);
+}
+
+/*!
+ * @brief モンスターの思い出に生成時装備情報 (アイテム種別指定) を表示する
+ * @param lore_ptr モンスターの思い出構造体への参照ポインタ
+ */
+void display_equip_tval_items(lore_type *lore_ptr)
+{
+    display_drop_entries(lore_ptr, lore_ptr->monrace->equip_tvals,
+        _("%s^は", "%s^ may be equipped with "), _("装備している。", ".  "), describe_itemkind_entry);
+}
+
+/*!
+ * @brief モンスターの思い出に死亡時ドロップ情報 (ベースアイテム指定) を表示する
  * @param lore_ptr モンスターの思い出構造体への参照ポインタ
  */
 void display_drop_kind_items(lore_type *lore_ptr)
 {
     display_drop_entries(lore_ptr, lore_ptr->monrace->drop_kinds,
-        [](const MonraceDropKind &kind) { return BaseitemList::get_instance().get_baseitem(kind.id).name; });
+        _("%s^は倒すと、", "When defeated, %s^ may drop "), _("落とす。", ".  "), describe_baseitem_entry);
 }
 
 /*!
- * @brief モンスターの思い出にdrop_tval情報 (アイテム種別指定) を表示する
+ * @brief モンスターの思い出に死亡時ドロップ情報 (アイテム種別指定) を表示する
  * @param lore_ptr モンスターの思い出構造体への参照ポインタ
- * @details drop_tvals は種別のみの指定で、死亡時は当該種別の中から無作為に
- *          ベースアイテムが選ばれる (`lookup_baseitem_id` の sval=0 経路) ため、
- *          個別のアイテム名ではなく種別名で表示する。
  */
 void display_drop_tval_items(lore_type *lore_ptr)
 {
     display_drop_entries(lore_ptr, lore_ptr->monrace->drop_tvals,
-        [](const MonraceDropKind &kind) { return describe_item_kind(i2enum<ItemKindType>(kind.id)); });
+        _("%s^は倒すと、", "When defeated, %s^ may drop "), _("落とす。", ".  "), describe_itemkind_entry);
 }
 
 void display_monster_guardian(lore_type *lore_ptr)
