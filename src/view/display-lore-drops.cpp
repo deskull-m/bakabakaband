@@ -148,4 +148,5 @@ void display_monster_drops(lore_type *lore_ptr)
     }
 
     display_drop_kind_items(lore_ptr);
+    display_drop_tval_items(lore_ptr);
 }
