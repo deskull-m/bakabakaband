@@ -513,12 +513,6 @@ void switch_special_death(CreatureEntity &creature, MonsterDeath *md_ptr, Attrib
         }
         on_dead_random_artifact(creature, md_ptr, kind_is_amulet);
         return;
-    case MonraceId::YENDOR_WIZARD_2:
-        if (creature.get_floor()->dun_level <= 0 || md_ptr->is_chameleon) {
-            return;
-        }
-        drop_specific_item_on_dead(creature, md_ptr, kind_is_amulet);
-        return;
     case MonraceId::MANIMANI:
         on_dead_manimani(creature, md_ptr);
         return;
