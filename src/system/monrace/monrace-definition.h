@@ -72,6 +72,15 @@ public:
      * 参照する性質上 **`drop_*` 専用**で、`equip_*` への指定は読込時に弾く。
      */
     int kill_interval = 1;
+
+    /*!
+     * @brief `*_tval` の品目選定を深度加重アロケーションテーブル経由にするか
+     * @details 既定 (false) は当該種別の全 sval から一様抽選する。true にすると
+     * 通常のアイテム生成 (`make_object`) と同じ深度・レアリティ加重で選ばれ、
+     * 生成階を超える深度の品は出ない。品目を指定しない **`*_tval` 専用**で、
+     * `*_kind` への指定は読込時に弾く。
+     */
+    bool use_allocation_table = false;
 };
 
 class DropArtifact {

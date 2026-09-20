@@ -88,8 +88,14 @@ static void drop_fixed_items_on_death(CreatureEntity &killer, MonsterDeath *md_p
 
         const auto drop_nums = entry.dice.roll();
         for (auto i = 0; i < drop_nums; i++) {
+            // 深度加重抽選 (use_allocation_table) で候補が無かった場合は 0 が返るので生成しない。
+            const auto bi_id = resolve_fixed_item_bi_id(killer, entry, is_itemkind);
+            if (bi_id == 0) {
+                continue;
+            }
+
             ItemEntity item;
-            item.generate(resolve_fixed_item_bi_id(entry, is_itemkind));
+            item.generate(bi_id);
             apply_drop_kind_magic(killer, item, entry.grade);
             (void)drop_near(killer, item, md_ptr->get_position());
         }
@@ -500,12 +506,6 @@ void switch_special_death(CreatureEntity &creature, MonsterDeath *md_ptr, Attrib
         return;
     case MonraceId::ROLENTO:
         (void)project(creature, md_ptr->m_idx, 3, md_ptr->md_y, md_ptr->md_x, Dice::roll(20, 10), AttributeType::FIRE, PROJECT_GRID | PROJECT_ITEM | PROJECT_KILL);
-        return;
-    case MonraceId::CAIT_SITH:
-        if (creature.get_floor()->dun_level <= 0 || md_ptr->is_chameleon) {
-            return;
-        }
-        drop_specific_item_on_dead(creature, md_ptr, kind_is_boots);
         return;
     case MonraceId::YENDOR_WIZARD_1:
         if (md_ptr->is_chameleon) {
