@@ -5,6 +5,9 @@
 
 #pragma once
 
+#include <set>
+#include <tl/optional.hpp>
+
 class CreatureEntity;
 class ItemEntity;
 class MonraceDropKind;
@@ -111,6 +114,29 @@ short resolve_fixed_item_bi_id(CreatureEntity &creature, const MonraceDropKind &
  *          両経路で本関数を共用する。
  */
 void apply_drop_kind_magic(CreatureEntity &creature, ItemEntity &item, int grade);
+
+/*!
+ * @brief 固定アイテム指定 1 件分のアイテムを生成する
+ * @param creature 生成基準となるクリーチャー (フロア階層の取得に使う)
+ * @param entry 固定アイテム指定
+ * @param is_itemkind entry がアイテム種別指定 (`*_tvals`) なら true
+ * @return 生成したアイテム。生成できなかった場合は tl::nullopt
+ * @details 生成時装備 (`equip_*`) と死亡時ドロップ (`drop_*`) で品質が変わらないよう、
+ *          ベースアイテムの決定と魔法的強化の適用を両経路で本関数に集約する。
+ *          `apply_magic` が false の指定では `grade` を無視してベースアイテムのまま返す。
+ */
+tl::optional<ItemEntity> generate_fixed_item(CreatureEntity &creature, const MonraceDropKind &entry, bool is_itemkind);
+
+/*!
+ * @brief 排他グループ (`exclusive_group`) を考慮して 1 件分の発火可否を判定する
+ * @param entry 固定アイテム指定
+ * @param fired_groups 既に発火したグループ番号の集合 (発火時に更新する)
+ * @return 発火させるなら true
+ * @details 同じグループ番号のエントリはリスト順に評価し、最初に確率抽選が当たった
+ *          ものだけを採用する (先勝ちカスケード)。グループ番号 0 は従来どおり
+ *          エントリごとに独立して抽選する。
+ */
+bool roll_fixed_item_entry(const MonraceDropKind &entry, std::set<int> &fired_groups);
 
 /*!
  * @brief 生成時装備指定 (`equip_kinds` / `equip_tvals`) のアイテムをモンスターに持たせる。

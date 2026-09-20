@@ -21,6 +21,7 @@
 #include "view/display-messages.h"
 #include <algorithm>
 #include <nlohmann/json.hpp>
+#include <set>
 #include <string>
 
 /*!
@@ -1328,6 +1329,42 @@ errr RaceReader::set_mon_spawn_item(const nlohmann::json &spawn_data, MonraceDef
 }
 
 /*!
+ * @brief 排他グループ (exclusive_group) が連続したエントリで構成されているか検証する
+ * @param drops 検証対象の指定リスト
+ * @param first_added 今回の読込で追加した先頭要素の添字
+ * @return エラーコード
+ * @details 実行時 (`roll_fixed_item_entry`) は `fired_groups` をリスト全体で持つため、
+ *          同じ番号が離れて現れても択一として扱う。一方で思い出表示
+ *          (`display_drop_entries`) は直前のエントリと同じ番号のときだけ「さもなくば」で
+ *          繋ぐため、**飛び飛びの再利用は表示と実挙動が食い違う**。
+ *          択一を意図するなら並べて書けばよいので、非連続の再利用は読込時に弾く。
+ */
+static errr validate_exclusive_groups(const std::vector<MonraceDropKind> &drops, size_t first_added)
+{
+    std::set<int> closed_groups;
+    auto previous_group = 0;
+    for (auto i = first_added; i < drops.size(); i++) {
+        const auto group = drops[i].exclusive_group;
+        if (group == previous_group) {
+            continue;
+        }
+
+        // 直前のグループはここで途切れるので、以降での再利用を禁じる。
+        if (previous_group > 0) {
+            closed_groups.insert(previous_group);
+        }
+
+        if ((group > 0) && closed_groups.contains(group)) {
+            return PARSE_ERROR_INVALID_FLAG;
+        }
+
+        previous_group = group;
+    }
+
+    return PARSE_ERROR_NONE;
+}
+
+/*!
  * @brief JSON Objectからモンスターの固定ドロップ指定をセットする (drop_kind / drop_tval 共通)
  * @param drop_data 固定ドロップ情報の格納されたJSON Object
  * @param id_key 対象を指定するキー名 ("id" = ベースアイテムID / "tval" = アイテム種別)
@@ -1339,6 +1376,7 @@ errr RaceReader::set_mon_spawn_item(const nlohmann::json &spawn_data, MonraceDef
  * @details 対象の指定方法以外の書式 (probability / grade / dice) は両者で完全に同一。
  *          任意の "kill_interval" は累計撃破数を参照するため drop_* 専用、
  *          任意の "use_allocation_table" は品目抽選の設定なので *_tval 専用。
+ *          任意の "exclusive_group" / "apply_magic" は 4 キー共通で指定できる。
  */
 static errr set_mon_drop_entries(const nlohmann::json &drop_data, std::string_view id_key, const Range &id_range, std::vector<MonraceDropKind> &drops, bool allows_kill_interval, bool is_itemkind)
 {
@@ -1350,6 +1388,7 @@ static errr set_mon_drop_entries(const nlohmann::json &drop_data, std::string_vi
         return PARSE_ERROR_TOO_FEW_ARGUMENTS;
     }
 
+    const auto first_added = drops.size();
     for (const auto &drop_item : drop_data) {
         if (!drop_item.contains(id_key) || !drop_item.contains("probability") || !drop_item.contains("grade") || !drop_item.contains("dice")) {
             return PARSE_ERROR_TOO_FEW_ARGUMENTS;
@@ -1439,12 +1478,33 @@ static errr set_mon_drop_entries(const nlohmann::json &drop_data, std::string_vi
             use_allocation_table = value.get<bool>();
         }
 
+        // 「どれか 1 つだけ」を表す任意指定。同じ番号を持つエントリ同士は
+        // 先勝ちカスケードで択一になる。4 キーいずれでも指定できる。
+        auto exclusive_group = 0;
+        if (drop_item.contains("exclusive_group")) {
+            if (auto err = info_set_integer(drop_item["exclusive_group"], exclusive_group, true, Range(1, 100))) {
+                return err;
+            }
+        }
+
+        // 魔法的強化を与えるかの任意指定。false ならベースアイテムのまま生成する
+        // (grade は無視される)。4 キーいずれでも指定できる。
+        auto apply_magic = true;
+        if (drop_item.contains("apply_magic")) {
+            const auto &value = drop_item["apply_magic"];
+            if (!value.is_boolean()) {
+                return PARSE_ERROR_INVALID_FLAG;
+            }
+
+            apply_magic = value.get<bool>();
+        }
+
         // 分子、分母、対象 (アイテムID or アイテム種別)、グレード、ドロップ個数ダイス ("XdY")、
-        // 撃破数間隔、深度加重抽選の有無を設定
-        drops.push_back({ numerator, denominator, target_id, grade, Dice(dice_num, dice_side), kill_interval, use_allocation_table });
+        // 撃破数間隔、深度加重抽選の有無、排他グループ、魔法的強化の有無を設定
+        drops.push_back({ numerator, denominator, target_id, grade, Dice(dice_num, dice_side), kill_interval, use_allocation_table, exclusive_group, apply_magic });
     }
 
-    return PARSE_ERROR_NONE;
+    return validate_exclusive_groups(drops, first_added);
 }
 
 /*!
