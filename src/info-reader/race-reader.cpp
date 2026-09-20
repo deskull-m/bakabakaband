@@ -1333,10 +1333,12 @@ errr RaceReader::set_mon_spawn_item(const nlohmann::json &spawn_data, MonraceDef
  * @param id_key 対象を指定するキー名 ("id" = ベースアイテムID / "tval" = アイテム種別)
  * @param id_range id_key で取り得る値の範囲
  * @param drops 保管先のドロップ指定リスト
+ * @param allows_kill_interval "kill_interval" (確定 N 体に 1 体) の指定を許すか
  * @return エラーコード
  * @details 対象の指定方法以外の書式 (probability / grade / dice) は両者で完全に同一。
+ *          任意の "kill_interval" は累計撃破数を参照するため drop_* 専用。
  */
-static errr set_mon_drop_entries(const nlohmann::json &drop_data, std::string_view id_key, const Range &id_range, std::vector<MonraceDropKind> &drops)
+static errr set_mon_drop_entries(const nlohmann::json &drop_data, std::string_view id_key, const Range &id_range, std::vector<MonraceDropKind> &drops, bool allows_kill_interval)
 {
     if (drop_data.is_null()) {
         return PARSE_ERROR_NONE;
@@ -1406,8 +1408,22 @@ static errr set_mon_drop_entries(const nlohmann::json &drop_data, std::string_vi
             return PARSE_ERROR_INVALID_FLAG;
         }
 
-        // 分子、分母、対象 (アイテムID or アイテム種別)、グレード、ドロップ個数ダイス ("XdY") を設定
-        drops.push_back({ numerator, denominator, target_id, grade, Dice(dice_num, dice_side) });
+        // "確実に N 体に 1 体" を表す任意指定。累計撃破数を参照するため
+        // drop_* 専用で、equip_* への指定はデータ不備として読込時に弾く。
+        auto kill_interval = 1;
+        if (drop_item.contains("kill_interval")) {
+            if (!allows_kill_interval) {
+                return PARSE_ERROR_INVALID_FLAG;
+            }
+
+            if (auto err = info_set_integer(drop_item["kill_interval"], kill_interval, true, Range(1, 1000))) {
+                return err;
+            }
+        }
+
+        // 分子、分母、対象 (アイテムID or アイテム種別)、グレード、ドロップ個数ダイス ("XdY")、
+        // 撃破数間隔を設定
+        drops.push_back({ numerator, denominator, target_id, grade, Dice(dice_num, dice_side), kill_interval });
     }
 
     return PARSE_ERROR_NONE;
@@ -1433,25 +1449,27 @@ static bool has_any_baseitem_of_kind(ItemKindType tval)
  * @brief JSON ObjectからベースアイテムID指定の固定アイテム情報をセットする
  * @param json_data 固定アイテム情報の格納されたJSON Object
  * @param entries 保管先のリスト
+ * @param allows_kill_interval "kill_interval" の指定を許すか (drop_* のみ true)
  * @return エラーコード
  */
-static errr set_mon_baseitem_entries(const nlohmann::json &json_data, std::vector<MonraceDropKind> &entries)
+static errr set_mon_baseitem_entries(const nlohmann::json &json_data, std::vector<MonraceDropKind> &entries, bool allows_kill_interval)
 {
-    return set_mon_drop_entries(json_data, "id", Range(0, 9999), entries);
+    return set_mon_drop_entries(json_data, "id", Range(0, 9999), entries, allows_kill_interval);
 }
 
 /*!
  * @brief JSON Objectからアイテム種別指定の固定アイテム情報をセットする
  * @param json_data 固定アイテム情報の格納されたJSON Object
  * @param entries 保管先のリスト
+ * @param allows_kill_interval "kill_interval" の指定を許すか (drop_* のみ true)
  * @return エラーコード
  * @details `*_kind` がベースアイテムを 1 つ指定するのに対し、`*_tval` は種別のみを
  *          指定し、実際のベースアイテムは当該種別から無作為に選ばれる。
  */
-static errr set_mon_itemkind_entries(const nlohmann::json &json_data, std::vector<MonraceDropKind> &entries)
+static errr set_mon_itemkind_entries(const nlohmann::json &json_data, std::vector<MonraceDropKind> &entries, bool allows_kill_interval)
 {
     const auto first_added = entries.size();
-    if (auto err = set_mon_drop_entries(json_data, "tval", Range(0, 128), entries)) {
+    if (auto err = set_mon_drop_entries(json_data, "tval", Range(0, 128), entries, allows_kill_interval)) {
         return err;
     }
 
@@ -1473,7 +1491,7 @@ static errr set_mon_itemkind_entries(const nlohmann::json &json_data, std::vecto
  */
 errr RaceReader::set_mon_equip_kinds(const nlohmann::json &equip_data, MonraceDefinition &monrace)
 {
-    return set_mon_baseitem_entries(equip_data, monrace.equip_kinds);
+    return set_mon_baseitem_entries(equip_data, monrace.equip_kinds, false);
 }
 
 /*!
@@ -1484,7 +1502,7 @@ errr RaceReader::set_mon_equip_kinds(const nlohmann::json &equip_data, MonraceDe
  */
 errr RaceReader::set_mon_equip_tvals(const nlohmann::json &equip_data, MonraceDefinition &monrace)
 {
-    return set_mon_itemkind_entries(equip_data, monrace.equip_tvals);
+    return set_mon_itemkind_entries(equip_data, monrace.equip_tvals, false);
 }
 
 /*!
@@ -1495,7 +1513,7 @@ errr RaceReader::set_mon_equip_tvals(const nlohmann::json &equip_data, MonraceDe
  */
 errr RaceReader::set_mon_drop_kinds(const nlohmann::json &drop_data, MonraceDefinition &monrace)
 {
-    return set_mon_baseitem_entries(drop_data, monrace.drop_kinds);
+    return set_mon_baseitem_entries(drop_data, monrace.drop_kinds, true);
 }
 
 /*!
@@ -1506,7 +1524,7 @@ errr RaceReader::set_mon_drop_kinds(const nlohmann::json &drop_data, MonraceDefi
  */
 errr RaceReader::set_mon_drop_tvals(const nlohmann::json &drop_data, MonraceDefinition &monrace)
 {
-    return set_mon_itemkind_entries(drop_data, monrace.drop_tvals);
+    return set_mon_itemkind_entries(drop_data, monrace.drop_tvals, true);
 }
 
 /*!

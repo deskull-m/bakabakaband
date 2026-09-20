@@ -1201,7 +1201,9 @@ per-turn で発火しない（切り傷・毒の inflict 経路が無い）」�
 
 モンスター種族ごとの固定アイテムは **「いつ存在し始めるか」で 2 系統**に分かれ、
 **それぞれ「ベースアイテムID指定 (`*_kind`)」「アイテム種別指定 (`*_tval`)」**の
-2 通りで書ける。計 4 キーで、書式は 4 者とも完全に同一。
+2 通りで書ける。計 4 キーで、必須項目 (`id`/`tval` / `probability` /
+`grade` / `dice`) の書式は 4 者とも完全に同一。任意の `kill_interval` のみ
+`drop_*` 専用 (後述)。
 
 | JSON キー | 対象の指定 | 意味 |
 |---|---|---|
@@ -1224,6 +1226,27 @@ per-turn で発火しない（切り傷・毒の inflict 経路が無い）」�
   { "tval": 75, "probability": "1_IN_1", "grade": 0, "dice": "2d2" },
 ],
 ```
+
+**確定「N 体に 1 体」指定 (`kill_interval`, `drop_*` 専用)**: 確率抽選ではなく
+**種族の累計撃破数が N の倍数のときだけ確実に落とす**場合に使う。
+
+```jsonc
+"drop_kind": [
+  { "id": 620, "probability": "1_IN_1", "grade": 0, "dice": "1d1", "kill_interval": 5 },
+],
+```
+
+- 参照するのは `monrace.r_akills` (種族の累計撃破数)。これは
+  `MonsterDamageProcessor::increase_kill_numbers()` で `monster_death()` より**先に**
+  加算されるため、N 体目の撃破時に `r_akills == N` となり正しく発火する。
+- **`probability` とは AND**。上例の `1_IN_1` + `kill_interval: 5` が「5 体に 1 体、
+  もれなく」。`1_IN_2` + `kill_interval: 5` なら「5 体目のうち半分」になる。
+- 省略時は 1 (毎回判定) で従来と完全に同じ。範囲は 1〜1000。
+- **`equip_*` には指定できない**。累計撃破数は生成時に意味を持たないためで、
+  指定すると**読込時エラー**になる (「モンスター生成時装備情報読み込み失敗」)。
+- 思い出表示は「倒すと、**5 体目ごとに**おもちゃのカンヅメを 1d1 個落とす。」の形。
+  `kill_interval` 指定かつ確率 1/1 のときだけ「確率1/1で」を省くため、
+  **`kill_interval` 無しの既存エントリの表示は一切変わらない**。
 
 **この 2 系統の区別は意味論上重要**:
 
@@ -1332,6 +1355,31 @@ NONE / GOLD / BOTTLE / NO_AMMO は総称「アイテム」へフォールバッ�
 - **`INARIMAN_1` (id 1518) には元々 case が無かった**。関数名は
   `on_dead_inariman1_2` だったが switch からは `INARIMAN_2` しか呼ばれておらず、
   第一のいなり男はスシを落とさない。移行でこの振舞いは変えていない。
+
+**ハードコーディングからの移行例 (エンゼル)**: `on_dead_can_angel()` が死亡時に
+「おもちゃのカンヅメ」(id 620) を生成していたものを `drop_kind` へ移した。
+金のエンゼル (id 1010) は `1_IN_1`、銀のエンゼル (id 1011) は `1_IN_1` +
+`"kill_interval": 5` (いずれも grade 0, `1d1`)。シンボルは `A` なので
+`default:` 落ちも無害。
+
+- **銀のエンゼルは `kill_interval` で旧実装と完全に同じ**: 旧実装の
+  `monrace.r_akills % 5 == 0` (確実に 5 体に 1 体) を、本件のために追加した
+  `"kill_interval": 5` + `"probability": "1_IN_1"` でそのまま表現している。
+  両エンゼルの種族解説文「金なら1匹、銀なら5匹で**もれなく**おもちゃの
+  カンヅメが当たります。」を満たす (当初 `1_IN_5` の確率近似で入れたが、
+  「もれなく」の保証を破るため `kill_interval` を新設して置き換えた)。
+- **等級適用は完全等価**: 旧実装の
+  `ItemMagicApplier(..., object_level, AM_NO_FIXED_ART)` に対し grade 0 は
+  `dun_level` を渡すが、CHEST の enchanter (`generate_chest()`) は渡された
+  `lev` も `power` も使わず `get_baseitem_level()` と `dun_level` を直接読むため
+  差が出ない。`AM_NO_FIXED_ART` で `calculate_rolls()` は 0、当該ベースアイテムは
+  `gen_flags` 空・価値 500000G (非 worthless) なので `apply_cursed()` も無効果。
+- **⚠️ 振舞いの差 (要注意)**: 旧実装は `drop_chosen_item` ガード下だったが、
+  `drop_fixed_items_on_death()` にはこのガードが無いため**クローン体・カメレオン・
+  闘技場・ペット討伐でも落ちる**。価値 500000G の高額品なので、クローン命令や
+  闘技場での量産が可能になる。気になる場合は
+  `drop_fixed_items_on_death()` に `md_ptr->drop_chosen_item` ガードを入れること
+  (ただし既存 `drop_kind` 全体の振舞いが変わる)。
 
 **移行時の注意 — `switch_special_death()` の `default:`**: 個別 `case` を削除すると
 その種族は `default: on_dead_mimics()` に落ちる。`on_dead_mimics()` は**表示シンボル

@@ -26,7 +26,6 @@
 #include "object-enchant/item-magic-applier.h"
 #include "object/object-kind-hook.h"
 #include "spell/summon-types.h"
-#include "sv-definition/sv-other-types.h"
 #include "sv-definition/sv-potion-types.h"
 #include "sv-definition/sv-protector-types.h"
 #include "sv-definition/sv-weapon-types.h"
@@ -71,10 +70,18 @@ static BIT_FLAGS dead_mode(MonsterDeath *md_ptr)
  * @details 生成時装備 (equip_kinds / equip_tvals) は既に所持品として存在し
  *          drop_all_inventory() で落ちるため、ここでは扱わない。
  *          本経路は「死んで初めて生成される物」(死体から剥ぐ素材等) 専用。
+ *          kill_interval が指定されていれば種族の累計撃破数がその倍数のときだけ
+ *          発火する (確率抽選とは AND)。r_akills は本関数より前の
+ *          MonsterDamageProcessor::increase_kill_numbers() で加算済みなので、
+ *          N 体目の撃破時に r_akills == N となり「確実に N 体に 1 体」になる。
  */
 static void drop_fixed_items_on_death(CreatureEntity &killer, MonsterDeath *md_ptr, const std::vector<MonraceDropKind> &entries, bool is_itemkind)
 {
     for (const auto &entry : entries) {
+        if ((entry.kill_interval > 1) && ((md_ptr->monrace->r_akills % entry.kill_interval) != 0)) {
+            continue;
+        }
+
         if (randint1(entry.denominator) > entry.numerator) {
             continue;
         }
@@ -289,22 +296,6 @@ static void on_dead_death_sword(CreatureEntity &killer, MonsterDeath *md_ptr)
     (void)drop_near(killer, item, md_ptr->get_position());
 }
 
-static void on_dead_can_angel(CreatureEntity &killer, MonsterDeath *md_ptr)
-{
-    auto is_drop_can = md_ptr->drop_chosen_item;
-    auto is_silver = md_ptr->m_ptr->get_r_idx() == MonraceId::A_SILVER;
-    is_silver &= md_ptr->monrace->r_akills % 5 == 0;
-    is_drop_can &= (md_ptr->m_ptr->get_r_idx() == MonraceId::A_GOLD) || is_silver;
-    if (!is_drop_can) {
-        return;
-    }
-
-    ItemEntity item;
-    item.generate(BaseitemList::get_instance().lookup_baseitem_id({ ItemKindType::CHEST, SV_CHEST_KANDUME }));
-    ItemMagicApplier(killer, &item, killer.get_floor()->object_level, AM_NO_FIXED_ART).execute();
-    (void)drop_near(killer, item, md_ptr->get_position());
-}
-
 /*!
  * @brief 装備品の生成を試みる
  * @param creature クリーチャーへの参照
@@ -506,10 +497,6 @@ void switch_special_death(CreatureEntity &creature, MonsterDeath *md_ptr, Attrib
         return;
     case MonraceId::B_DEATH_SWORD:
         on_dead_death_sword(creature, md_ptr);
-        return;
-    case MonraceId::A_GOLD:
-    case MonraceId::A_SILVER:
-        on_dead_can_angel(creature, md_ptr);
         return;
     case MonraceId::ROLENTO:
         (void)project(creature, md_ptr->m_idx, 3, md_ptr->md_y, md_ptr->md_x, Dice::roll(20, 10), AttributeType::FIRE, PROJECT_GRID | PROJECT_ITEM | PROJECT_KILL);
