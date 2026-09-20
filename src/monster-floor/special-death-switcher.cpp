@@ -70,10 +70,18 @@ static BIT_FLAGS dead_mode(MonsterDeath *md_ptr)
  * @details 生成時装備 (equip_kinds / equip_tvals) は既に所持品として存在し
  *          drop_all_inventory() で落ちるため、ここでは扱わない。
  *          本経路は「死んで初めて生成される物」(死体から剥ぐ素材等) 専用。
+ *          kill_interval が指定されていれば種族の累計撃破数がその倍数のときだけ
+ *          発火する (確率抽選とは AND)。r_akills は本関数より前の
+ *          MonsterDamageProcessor::increase_kill_numbers() で加算済みなので、
+ *          N 体目の撃破時に r_akills == N となり「確実に N 体に 1 体」になる。
  */
 static void drop_fixed_items_on_death(CreatureEntity &killer, MonsterDeath *md_ptr, const std::vector<MonraceDropKind> &entries, bool is_itemkind)
 {
     for (const auto &entry : entries) {
+        if ((entry.kill_interval > 1) && ((md_ptr->monrace->r_akills % entry.kill_interval) != 0)) {
+            continue;
+        }
+
         if (randint1(entry.denominator) > entry.numerator) {
             continue;
         }

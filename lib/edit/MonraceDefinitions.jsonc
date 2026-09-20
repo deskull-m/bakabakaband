@@ -63945,9 +63945,10 @@
       "drop_kind": [
         {
           "id": 620,
-          "probability": "1_IN_5",
+          "probability": "1_IN_1",
           "grade": 0,
           "dice": "1d1",
+          "kill_interval": 5,
         },
       ],
     },
