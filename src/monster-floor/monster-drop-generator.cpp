@@ -590,18 +590,30 @@ void apply_drop_kind_magic(CreatureEntity &creature, ItemEntity &item, int grade
     }
 }
 
-short resolve_fixed_item_bi_id(const MonraceDropKind &entry, bool is_itemkind)
+short resolve_fixed_item_bi_id(CreatureEntity &creature, const MonraceDropKind &entry, bool is_itemkind)
 {
-    const auto &baseitems = BaseitemList::get_instance();
     if (!is_itemkind) {
         return entry.id;
+    }
+
+    const auto tval = i2enum<ItemKindType>(entry.id);
+    if (entry.use_allocation_table) {
+        // 通常のアイテム生成 (make_object) と同じ深度加重抽選を使う。
+        // 生成階を超える深度の品は選ばれないため、浅い階で高級品が出ない。
+        // 候補が 1 つも無い深度では 0 (= 生成しない) が返る。
+        auto &table = BaseitemAllocationTable::get_instance();
+        table.set_restriction([tval](short bi_id) { return BaseitemList::get_instance().get_baseitem(bi_id).bi_key.tval() == tval; });
+        const auto &floor = *creature.get_floor();
+        const auto bi_id = floor.select_baseitem_id(floor.object_level, 0);
+        table.reset_restriction();
+        return bi_id;
     }
 
     // sval を省略 (tl::nullopt) すると当該種別の中から無作為にベースアイテムが選ばれる。
     // 0 を渡すと「sval 0 のベースアイテム」の完全一致検索になり、SWORD 等
     // sval 0 が存在しない種別で例外を投げるので注意。
     // 候補ゼロの種別は reader が弾いているため、ここで例外にはならない。
-    return baseitems.lookup_baseitem_id(BaseitemKey(i2enum<ItemKindType>(entry.id)));
+    return BaseitemList::get_instance().lookup_baseitem_id(BaseitemKey(tval));
 }
 
 /*!
@@ -620,8 +632,14 @@ static void equip_monster_fixed_entries(CreatureEntity &player, CreatureEntity &
 
         const auto item_nums = entry.dice.roll();
         for (auto i = 0; i < item_nums; i++) {
+            // 深度加重抽選で候補が無かった場合は 0 が返るので生成しない。
+            const auto bi_id = resolve_fixed_item_bi_id(player, entry, is_itemkind);
+            if (bi_id == 0) {
+                continue;
+            }
+
             ItemEntity item;
-            item.generate(resolve_fixed_item_bi_id(entry, is_itemkind));
+            item.generate(bi_id);
             apply_drop_kind_magic(player, item, entry.grade);
 
             // 装備できるスロットが空いていれば装備し、無理なら所持品に入る。
