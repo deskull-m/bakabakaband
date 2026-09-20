@@ -26,7 +26,6 @@
 #include "object-enchant/item-magic-applier.h"
 #include "object/object-kind-hook.h"
 #include "spell/summon-types.h"
-#include "sv-definition/sv-other-types.h"
 #include "sv-definition/sv-potion-types.h"
 #include "sv-definition/sv-protector-types.h"
 #include "sv-definition/sv-weapon-types.h"
@@ -289,22 +288,6 @@ static void on_dead_death_sword(CreatureEntity &killer, MonsterDeath *md_ptr)
     (void)drop_near(killer, item, md_ptr->get_position());
 }
 
-static void on_dead_can_angel(CreatureEntity &killer, MonsterDeath *md_ptr)
-{
-    auto is_drop_can = md_ptr->drop_chosen_item;
-    auto is_silver = md_ptr->m_ptr->get_r_idx() == MonraceId::A_SILVER;
-    is_silver &= md_ptr->monrace->r_akills % 5 == 0;
-    is_drop_can &= (md_ptr->m_ptr->get_r_idx() == MonraceId::A_GOLD) || is_silver;
-    if (!is_drop_can) {
-        return;
-    }
-
-    ItemEntity item;
-    item.generate(BaseitemList::get_instance().lookup_baseitem_id({ ItemKindType::CHEST, SV_CHEST_KANDUME }));
-    ItemMagicApplier(killer, &item, killer.get_floor()->object_level, AM_NO_FIXED_ART).execute();
-    (void)drop_near(killer, item, md_ptr->get_position());
-}
-
 /*!
  * @brief 装備品の生成を試みる
  * @param creature クリーチャーへの参照
@@ -506,10 +489,6 @@ void switch_special_death(CreatureEntity &creature, MonsterDeath *md_ptr, Attrib
         return;
     case MonraceId::B_DEATH_SWORD:
         on_dead_death_sword(creature, md_ptr);
-        return;
-    case MonraceId::A_GOLD:
-    case MonraceId::A_SILVER:
-        on_dead_can_angel(creature, md_ptr);
         return;
     case MonraceId::ROLENTO:
         (void)project(creature, md_ptr->m_idx, 3, md_ptr->md_y, md_ptr->md_x, Dice::roll(20, 10), AttributeType::FIRE, PROJECT_GRID | PROJECT_ITEM | PROJECT_KILL);

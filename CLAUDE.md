@@ -1333,6 +1333,33 @@ NONE / GOLD / BOTTLE / NO_AMMO は総称「アイテム」へフォールバッ�
   `on_dead_inariman1_2` だったが switch からは `INARIMAN_2` しか呼ばれておらず、
   第一のいなり男はスシを落とさない。移行でこの振舞いは変えていない。
 
+**ハードコーディングからの移行例 (エンゼル)**: `on_dead_can_angel()` が死亡時に
+「おもちゃのカンヅメ」(id 620) を生成していたものを `drop_kind` へ移した。
+金のエンゼル (id 1010) は `1_IN_1`、銀のエンゼル (id 1011) は `1_IN_5`
+(いずれも grade 0, `1d1`)。シンボルは `A` なので `default:` 落ちも無害。
+
+- **⚠️ 銀のエンゼルの確率は近似 (フレーバーと矛盾)**: 旧実装は
+  `monrace.r_akills % 5 == 0` (種族累計撃破数が 5 の倍数、つまり
+  **確実に 5 体に 1 体**) だったが、4 キーに累計カウンタ条件は書けないため
+  同じ期待値の確率 `1_IN_5` で置き換えている。**両エンゼルの種族解説文は
+  「金なら1匹、銀なら5匹でもれなくおもちゃのカンヅメが当たります。」と
+  明言しており**「もれなく」の保証は失われる** (5 体倒しても 0 個のことが
+  あり得る)。平均収穫は同じ。フレーバーを優先するなら銀のエンゼルだけ
+  `on_dead_can_angel()` 相当の累計カウンタ判定を C++ 側に戻すか、
+  4 キーに「N 体に 1 体」の確定指定を追加する必要がある。
+- **等級適用は完全等価**: 旧実装の
+  `ItemMagicApplier(..., object_level, AM_NO_FIXED_ART)` に対し grade 0 は
+  `dun_level` を渡すが、CHEST の enchanter (`generate_chest()`) は渡された
+  `lev` も `power` も使わず `get_baseitem_level()` と `dun_level` を直接読むため
+  差が出ない。`AM_NO_FIXED_ART` で `calculate_rolls()` は 0、当該ベースアイテムは
+  `gen_flags` 空・価値 500000G (非 worthless) なので `apply_cursed()` も無効果。
+- **⚠️ 振舞いの差 (要注意)**: 旧実装は `drop_chosen_item` ガード下だったが、
+  `drop_fixed_items_on_death()` にはこのガードが無いため**クローン体・カメレオン・
+  闘技場・ペット討伐でも落ちる**。価値 500000G の高額品なので、クローン命令や
+  闘技場での量産が可能になる。気になる場合は
+  `drop_fixed_items_on_death()` に `md_ptr->drop_chosen_item` ガードを入れること
+  (ただし既存 `drop_kind` 全体の振舞いが変わる)。
+
 **移行時の注意 — `switch_special_death()` の `default:`**: 個別 `case` を削除すると
 その種族は `default: on_dead_mimics()` に落ちる。`on_dead_mimics()` は**表示シンボル
 文字**で分岐し `( / [ \ | ]` のいずれかならミミック相当の装備をドロップするため、
