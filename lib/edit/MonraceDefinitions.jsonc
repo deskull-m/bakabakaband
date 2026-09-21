@@ -101961,6 +101961,14 @@
         "EVIL",
         "BASH_DOOR",
       ],
+      "equip_kind": [
+        {
+          "id": 788,
+          "probability": "1_IN_1",
+          "grade": 0,
+          "dice": "1d1",
+        },
+      ],
     },
     {
       "id": 1608,
@@ -102040,6 +102048,14 @@
         "EVIL",
         "BASH_DOOR",
         "HOME_ONLY",
+      ],
+      "equip_kind": [
+        {
+          "id": 788,
+          "probability": "1_IN_1",
+          "grade": 0,
+          "dice": "1d1",
+        },
       ],
     },
     {
@@ -107158,6 +107174,14 @@
         "EVIL",
         "SOLDIER",
       ],
+      "equip_kind": [
+        {
+          "id": 788,
+          "probability": "1_IN_1",
+          "grade": 0,
+          "dice": "1d1",
+        },
+      ],
     },
     {
       "id": 1688,
@@ -107474,6 +107498,14 @@
         "EVIL",
         "WILD_TOWN",
         "WILD_ALL",
+      ],
+      "equip_kind": [
+        {
+          "id": 788,
+          "probability": "1_IN_1",
+          "grade": 0,
+          "dice": "1d1",
+        },
       ],
       "drop_kind": [
         {
@@ -116154,6 +116186,14 @@
         "OPEN_DOOR",
         "EVIL",
         "BASH_DOOR",
+      ],
+      "equip_kind": [
+        {
+          "id": 788,
+          "probability": "1_IN_1",
+          "grade": 0,
+          "dice": "1d1",
+        },
       ],
     },
     {
