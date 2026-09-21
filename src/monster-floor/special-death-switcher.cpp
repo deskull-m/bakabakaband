@@ -235,6 +235,35 @@ static void drop_sushi(CreatureEntity &killer, MonsterDeath *md_ptr)
     }
 }
 
+/*!
+ * @brief 死亡時に指定属性の爆発を起こす
+ * @param killer 撃破したクリーチャーへの参照
+ * @param md_ptr モンスター撃破構造体への参照ポインタ
+ * @param attribute 爆発の属性
+ * @param radius 効果半径
+ * @param damage ダメージ
+ * @details PROJECT_ITEM を含むため、既に床へ出ているドロップ品を巻き込んで破壊しうる。
+ *          死亡時ドロップより後に呼ぶこと。
+ */
+static void explode_on_death(CreatureEntity &killer, MonsterDeath *md_ptr, AttributeType attribute, int radius, int damage)
+{
+    (void)project(killer, md_ptr->m_idx, radius, md_ptr->md_y, md_ptr->md_x, damage, attribute, PROJECT_GRID | PROJECT_ITEM | PROJECT_KILL);
+}
+
+/*!
+ * @brief JSON の `death_explosion` 指定に従って死亡時爆発を起こす
+ * @details 未指定の種族では何もしない。
+ */
+static void on_dead_explosion_by_data(CreatureEntity &killer, MonsterDeath *md_ptr)
+{
+    const auto &explosion = md_ptr->monrace->death_explosion;
+    if (!explosion) {
+        return;
+    }
+
+    explode_on_death(killer, md_ptr, explosion->attribute, explosion->radius, explosion->damage_dice.roll());
+}
+
 static void on_dead_ninja(CreatureEntity &killer, MonsterDeath *md_ptr)
 {
     if (is_seen(killer, *md_ptr->m_ptr)) {
@@ -243,16 +272,9 @@ static void on_dead_ninja(CreatureEntity &killer, MonsterDeath *md_ptr)
         msg_format(_("%sは哀れ爆発四散した！ショッギョ・ムッジョ！", "%s explodes pitifully! Shogyomujo!"), m_name.data());
     }
 
-    (void)project(killer, md_ptr->m_idx, 6, md_ptr->md_y, md_ptr->md_x, 20, AttributeType::MISSILE, PROJECT_GRID | PROJECT_ITEM | PROJECT_KILL);
-}
-
-static void on_dead_earth_destroyer(CreatureEntity &killer, MonsterDeath *md_ptr)
-{
-    if (!killer.is_player()) {
-        return;
-    }
-    msg_print(_("ワーオ！22世紀の文明の叡知が今炸裂した！", "Wow! The wisdom of 22nd century civilization has now exploded!"));
-    (void)project(killer, md_ptr->m_idx, 10, md_ptr->md_y, md_ptr->md_x, 10000, AttributeType::DISINTEGRATE, PROJECT_GRID | PROJECT_ITEM | PROJECT_KILL);
+    // NINJA は種族フラグ由来の一括挙動なので、メッセージと爆発諸元は 12 種族へ
+    // データ複製せず C++ 側に残す。爆発そのものは death_explosion と共通化する。
+    explode_on_death(killer, md_ptr, AttributeType::MISSILE, 6, 20);
 }
 
 static void on_dead_sacred_treasures(CreatureEntity &killer, MonsterDeath *md_ptr)
@@ -365,19 +387,6 @@ static void on_dead_random_artifact(CreatureEntity &killer, MonsterDeath *md_ptr
     }
 }
 
-/*!
- * @brief マニマニのあくま撃破時メッセージ
- * @todo 死亡時の特殊メッセージを表示するだけの処理を複数作るなら、switch/case文に分けられるように汎用化すること
- */
-static void on_dead_manimani(CreatureEntity &killer, MonsterDeath *md_ptr)
-{
-    if (!is_seen(killer, *md_ptr->m_ptr)) {
-        return;
-    }
-
-    msg_print(_("どこからか声が聞こえる…「ハロー！　そして…グッドバイ！」", "Heard a voice from somewhere... 'Hello! And... good bye!'"));
-}
-
 static void on_dead_swordfish(CreatureEntity &killer, MonsterDeath *md_ptr, AttributeFlags attribute_flags)
 {
     if (attribute_flags.has_not(AttributeType::COLD) || !md_ptr->drop_chosen_item || (randint1(100) >= 10)) {
@@ -421,16 +430,14 @@ void switch_special_death(CreatureEntity &creature, MonsterDeath *md_ptr, Attrib
         drop_sushi(creature, md_ptr);
     }
 
+    // 旧 EARTH_DESTROYER / UNMAKER / ROLENTO の case が個別に書いていた死亡時爆発。
+    // PROJECT_ITEM でドロップ品を巻き込むため、旧実装と同じくドロップ処理の後に置く。
+    on_dead_explosion_by_data(creature, md_ptr);
+
     switch (md_ptr->apparent_monrace->idx) {
-    case MonraceId::EARTH_DESTROYER:
-        on_dead_earth_destroyer(creature, md_ptr);
-        return;
     case MonraceId::RAAL:
         on_dead_raal(creature, md_ptr);
         return;
-    case MonraceId::UNMAKER:
-        (void)project(creature, md_ptr->m_idx, 6, md_ptr->md_y, md_ptr->md_x, 100, AttributeType::CHAOS, PROJECT_GRID | PROJECT_ITEM | PROJECT_KILL);
-        break;
     case MonraceId::UNICORN_ORD:
     case MonraceId::MORGOTH:
     case MonraceId::ONE_RING:
@@ -439,17 +446,11 @@ void switch_special_death(CreatureEntity &creature, MonsterDeath *md_ptr, Attrib
     case MonraceId::SERPENT:
         on_dead_serpent(creature, md_ptr);
         return;
-    case MonraceId::ROLENTO:
-        (void)project(creature, md_ptr->m_idx, 3, md_ptr->md_y, md_ptr->md_x, Dice::roll(20, 10), AttributeType::FIRE, PROJECT_GRID | PROJECT_ITEM | PROJECT_KILL);
-        return;
     case MonraceId::YENDOR_WIZARD_1:
         if (md_ptr->is_chameleon) {
             return;
         }
         on_dead_random_artifact(creature, md_ptr, kind_is_amulet);
-        return;
-    case MonraceId::MANIMANI:
-        on_dead_manimani(creature, md_ptr);
         return;
     case MonraceId::LOSTRINGIL:
         if (md_ptr->is_chameleon) {
