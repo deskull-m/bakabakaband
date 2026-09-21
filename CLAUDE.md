@@ -1356,6 +1356,24 @@ per-turn で発火しない（切り傷・毒の inflict 経路が無い）」�
 - `grade: 3` は元から `AM_NO_FIXED_ART` を付けないため本キーの影響を受けない。
   `apply_magic: false` のときも無意味 (強化自体を行わないため)。
 
+**浅階ガード (`min_dun_level`, 4 キー共通)**: 生成階 (`dun_level`) がこの値未満なら
+発火しない。
+
+```jsonc
+"drop_tval": [
+  { "tval": 30, "probability": "1_IN_1", "grade": 0, "dice": "1d1",
+    "use_allocation_table": true, "min_dun_level": 20 },
+],
+```
+
+- 旧 `on_dead_mimics()` が持っていた `if (dun_level <= N) return;` (「浅い階では
+  落とさない」) を忠実に移行するための指定。`dun_level <= 19` なら
+  `min_dun_level: 20` と書く。
+- 省略時は 0 (制限なし) で従来と完全に同じ。範囲は 0〜128。
+- `kill_interval` と同様、これで弾かれたエントリは `exclusive_group` を消費しない
+  (発火資格が無いだけで、抽選自体を行わないため)。
+- `equip_*` にも指定できる。この場合はモンスター生成時の階層で判定される。
+
 **生成基準階について (`object_level` と `dun_level`)**: `make_object()` は
 `floor.object_level`、`apply_drop_kind_magic()` は `floor.dun_level` を渡すが、
 **死亡時ドロップの時点では両者は一致する**。`process_dungeon()` が毎回
@@ -1587,29 +1605,50 @@ id 47 = 折れた剣 `1_IN_1`。いずれも grade 0, `1d1`, `exclusive_group: 1
 - **失われたガード**: 旧実装の `if (!md_ptr->drop_chosen_item) return;` が無くなるため、
   クローン体・カメレオン・闘技場・ペット討伐でも落ちる (他の `drop_*` と同じ)。
   デスソード系は剣 1 本なので実害は小さいが、ヘルブレードは Lv27 相当の剣が出る。
-- `case '|':` の削除により、`on_dead_mimics()` に残るシンボル分岐は
-  `( / [ \\ ]` の 5 種になった。
+- `case '|':` の削除が `on_dead_mimics()` 全廃 (下記) の第一歩になった。
 
-**移行時の注意 — `switch_special_death()` の `default:`**: 個別 `case` を削除すると
-その種族は `default: on_dead_mimics()` に落ちる。`on_dead_mimics()` は**表示シンボル
-文字**で分岐し `( / [ \ | ]` のいずれかならミミック相当の装備をドロップするため、
-**これらのシンボルを持つ種族の case を削除すると意図しないドロップが増える**。
-ボトルのノーム (`g`) と血戮悪魔 (`U`) はいずれも `default: return` に落ちるだけで
-無害だが、移行対象のシンボルを必ず確認すること。
+**ハードコーディングからの移行例 (残り 5 シンボル = `on_dead_mimics()` の全廃)**:
+`|` に続いて `( / [ \\ ]` の 5 シンボルも `drop_tval` へ移し、
+**`on_dead_mimics()` と `drop_specific_item_on_dead()` を削除**した。
+`switch_special_death()` の `default:` は `return;` だけになり、**表示シンボル文字で
+ドロップを決める暗黙の仕組みはコードから無くなった**。
 
-**この二重ドロップを避けるため、`on_dead_mimics()` は `drop_kind` / `drop_tval` を
-1 件でも持つ種族では何もしない**(折れたデスソードの移行で追加)。「JSON で死亡時
-ドロップを明示した種族はシンボル由来の暗黙ドロップを行わない」という規則で、
-シンボル側の暗黙既定を明示指定が上書きする形。生成時装備 (`equip_*`) は死亡時
-ドロップではないので抑止条件に含めない (`(` の空飛ぶフンドシ / 空飛ぶブリーフは
-従来どおりミミックのマント也ドロップも行う)。追加時点で `drop_kind` /
-`drop_tval` とミミックシンボルを併せ持つ種族は折れたデスソードのみなので、
-**既存種族の挙動は変わらない**。
+| シンボル | 旧 restrict | tval | 旧浅階ガード | `min_dun_level` | 対象種族 |
+|---|---|---|---|---|---|
+| `(` | `kind_is_cloak` | 35 CLOAK | `dun_level <= 0` | 1 | クローカー(243) / 空飛ぶフンドシ(2133) / 空飛ぶブリーフ(2134) |
+| `/` | `kind_is_polearm` | 22 POLEARM | `dun_level <= 4` | 5 | 生きたポール・アックス(908) |
+| `[` | `kind_is_armor` | 37 HARD_ARMOR | `dun_level <= 19` | 20 | リビングアーマー(1035) / テヨの光盾(1311) |
+| `\\` | `kind_is_hafted` | 21 HAFTED | `dun_level <= 4` | 5 | 地獄の鉄槌(627) |
+| `]` | `kind_is_boots` | 30 BOOTS | `dun_level <= 19` | 20 | ★シヴァの化身の軟革ブーツ(1264) / 王冠ぷよ(2080) / ミミック(アナルアサシングローブ)(2092) |
 
-なお `|` グループを移行した現在、この抑止規則に実際に掛かる種族はいない
-(`|` の分岐自体を削除したため)。残る 5 シンボルを同様に移行していけば
-`on_dead_mimics()` ごと削除でき、その時点でこの抑止も不要になる。それまでは
-移行途中の種族が二重ドロップしないための安全網として残す。
+- 対象は**全 10 体だけ**。指定はいずれも
+  `{ 1_IN_1, grade 0, 1d1, use_allocation_table: true, allows_fixed_artifact: true,
+  min_dun_level: N }` で、`|` グループと同じ 3 キー + 浅階ガードの再現。
+  5 つの restrict はどれも純粋な tval 判定 (`kind_is_sword` だけが `sval > 2` を
+  持っていた) なので `sval_min` は不要。
+- **浅階ガードのために `min_dun_level` を新設**した。`|` の分岐だけはガードが
+  無かったため前回は不要だったが、残り 5 つは全て持っている。
+- **10 体とも早期 return 経路に該当しない**ことを確認済み: 最終召喚
+  (`get_final_summons()`)・`NINJA` 種族フラグ・`switch` の個別 `case` のいずれも
+  持たないため、現状どれも純粋に `default: on_dead_mimics()` へ落ちていた。
+  よって発火条件は `drop_tval` への移行で一致する。
+- **失われたガード**: 他の移行と同じく `if (!md_ptr->drop_chosen_item) return;` が
+  無くなるため、クローン体・カメレオン・闘技場・ペット討伐でも落ちる。
+- 併せて、使われなくなった `kind_is_cloak` / `kind_is_polearm` / `kind_is_armor` /
+  `kind_is_hafted` / `kind_is_boots` の 5 フックを `object-kind-hook.{h,cpp}` から
+  削除した (`kind_is_sword` は LOSTRINGIL のランダムアーティファクト生成で
+  引き続き使う)。
+- **折れたデスソードの移行で入れた抑止条件も一緒に削除**した。`on_dead_mimics()`
+  自体が無くなり、シンボル由来の暗黙ドロップと明示指定が二重に掛かる状況が
+  原理的に発生しなくなったため。
+
+**移行時の注意 — `switch_special_death()` の `default:`**: 上記の全廃により、
+個別 `case` を削除しても `default: return;` に落ちるだけで**何も起きない**。
+かつては `default:` が `on_dead_mimics()` を呼び、表示シンボル文字が
+`( / [ \ | ]` のいずれかなら勝手にミミック相当の装備がドロップしたため、
+これらのシンボルを持つ種族の `case` を消すと意図しないドロップが増える罠が
+あった (ボトルのノーム `g` と血戮悪魔 `U` は無害な `default: return` 落ちだった)。
+**現在この罠は存在しない**ので、`case` の削除はシンボルに関係なく安全に行える。
 
 - プレイヤーがモンスターとして開始する経路 (`player_birth_as_monster`) は従来どおり
   固定アイテムを付与しない。

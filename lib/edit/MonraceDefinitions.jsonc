@@ -12282,6 +12282,17 @@
         "IM_ELEC",
         "IM_POIS",
       ],
+      "drop_tval": [
+        {
+          "tval": 35,
+          "probability": "1_IN_1",
+          "grade": 0,
+          "dice": "1d1",
+          "use_allocation_table": true,
+          "allows_fixed_artifact": true,
+          "min_dun_level": 1,
+        },
+      ],
     },
     {
       "id": 244,
@@ -35345,6 +35356,17 @@
         "RES_DARK",
         "BASH_DOOR",
       ],
+      "drop_tval": [
+        {
+          "tval": 21,
+          "probability": "1_IN_1",
+          "grade": 0,
+          "dice": "1d1",
+          "use_allocation_table": true,
+          "allows_fixed_artifact": true,
+          "min_dun_level": 5,
+        },
+      ],
     },
     {
       "id": 628,
@@ -57028,6 +57050,17 @@
         "list": ["SCARE", "BLIND", "CONF", "S_MONSTER"],
         "probability": "1_IN_6",
       },
+      "drop_tval": [
+        {
+          "tval": 22,
+          "probability": "1_IN_1",
+          "grade": 0,
+          "dice": "1d1",
+          "use_allocation_table": true,
+          "allows_fixed_artifact": true,
+          "min_dun_level": 5,
+        },
+      ],
     },
     {
       "id": 909,
@@ -65495,6 +65528,17 @@
         "FORCE_MAXHP",
         "IM_ELEC",
         "IM_POIS",
+      ],
+      "drop_tval": [
+        {
+          "tval": 37,
+          "probability": "1_IN_1",
+          "grade": 0,
+          "dice": "1d1",
+          "use_allocation_table": true,
+          "allows_fixed_artifact": true,
+          "min_dun_level": 20,
+        },
       ],
     },
     {
@@ -80329,6 +80373,17 @@
         "list": ["HOLD", "BR_ACID", "BR_DISE", "BR_NEXU", "BR_GRAV"],
         "probability": "1_IN_7",
       },
+      "drop_tval": [
+        {
+          "tval": 30,
+          "probability": "1_IN_1",
+          "grade": 0,
+          "dice": "1d1",
+          "use_allocation_table": true,
+          "allows_fixed_artifact": true,
+          "min_dun_level": 20,
+        },
+      ],
     },
     {
       "id": 1265,
@@ -83216,6 +83271,17 @@
         "IM_POIS",
         "IM_FIRE",
         "IM_POIS",
+      ],
+      "drop_tval": [
+        {
+          "tval": 37,
+          "probability": "1_IN_1",
+          "grade": 0,
+          "dice": "1d1",
+          "use_allocation_table": true,
+          "allows_fixed_artifact": true,
+          "min_dun_level": 20,
+        },
       ],
     },
     {
@@ -131709,6 +131775,17 @@
           "dice": "720d1",
         },
       ],
+      "drop_tval": [
+        {
+          "tval": 30,
+          "probability": "1_IN_1",
+          "grade": 0,
+          "dice": "1d1",
+          "use_allocation_table": true,
+          "allows_fixed_artifact": true,
+          "min_dun_level": 20,
+        },
+      ],
     },
     {
       "id": 2081,
@@ -132423,6 +132500,17 @@
         "ja": "アナニー用グローブに化けている奇妙な生物でそれはお前を…ケツイキへと誘う……",
       },
       "flags": ["NEVER_MOVE", "EMPTY_MIND", "COLD_BLOOD", "NO_CONF", "NO_SLEEP", "NO_FEAR"],
+      "drop_tval": [
+        {
+          "tval": 30,
+          "probability": "1_IN_1",
+          "grade": 0,
+          "dice": "1d1",
+          "use_allocation_table": true,
+          "allows_fixed_artifact": true,
+          "min_dun_level": 20,
+        },
+      ],
     },
     {
       "id": 2093,
@@ -134870,6 +134958,17 @@
           "dice": "1d1",
         },
       ],
+      "drop_tval": [
+        {
+          "tval": 35,
+          "probability": "1_IN_1",
+          "grade": 0,
+          "dice": "1d1",
+          "use_allocation_table": true,
+          "allows_fixed_artifact": true,
+          "min_dun_level": 1,
+        },
+      ],
     },
     {
       "id": 2134,
@@ -134928,6 +135027,17 @@
           "probability": "1_IN_1",
           "grade": 0,
           "dice": "1d1",
+        },
+      ],
+      "drop_tval": [
+        {
+          "tval": 35,
+          "probability": "1_IN_1",
+          "grade": 0,
+          "dice": "1d1",
+          "use_allocation_table": true,
+          "allows_fixed_artifact": true,
+          "min_dun_level": 1,
         },
       ],
     },
