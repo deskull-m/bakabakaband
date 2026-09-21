@@ -41,6 +41,7 @@
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
 #include "view/display-messages.h"
+#include <set>
 
 /*!
  * @brief 死亡召喚に使用するモード選択
@@ -77,27 +78,25 @@ static BIT_FLAGS dead_mode(MonsterDeath *md_ptr)
  */
 static void drop_fixed_items_on_death(CreatureEntity &killer, MonsterDeath *md_ptr, const std::vector<MonraceDropKind> &entries, bool is_itemkind)
 {
+    // 排他グループ (exclusive_group) は 1 リストの中で閉じる。
+    std::set<int> fired_groups;
     for (const auto &entry : entries) {
         if ((entry.kill_interval > 1) && ((md_ptr->monrace->r_akills % entry.kill_interval) != 0)) {
             continue;
         }
 
-        if (randint1(entry.denominator) > entry.numerator) {
+        if (!roll_fixed_item_entry(entry, fired_groups)) {
             continue;
         }
 
         const auto drop_nums = entry.dice.roll();
         for (auto i = 0; i < drop_nums; i++) {
-            // 深度加重抽選 (use_allocation_table) で候補が無かった場合は 0 が返るので生成しない。
-            const auto bi_id = resolve_fixed_item_bi_id(killer, entry, is_itemkind);
-            if (bi_id == 0) {
+            auto item = generate_fixed_item(killer, entry, is_itemkind);
+            if (!item) {
                 continue;
             }
 
-            ItemEntity item;
-            item.generate(bi_id);
-            apply_drop_kind_magic(killer, item, entry.grade);
-            (void)drop_near(killer, item, md_ptr->get_position());
+            (void)drop_near(killer, *item, md_ptr->get_position());
         }
     }
 }
@@ -292,16 +291,6 @@ static void on_dead_serpent(CreatureEntity &killer, MonsterDeath *md_ptr)
     (void)drop_near(killer, item_chaos, md_ptr->get_position());
 }
 
-static void on_dead_death_sword(CreatureEntity &killer, MonsterDeath *md_ptr)
-{
-    if (!md_ptr->drop_chosen_item) {
-        return;
-    }
-
-    ItemEntity item({ ItemKindType::SWORD, randint1(2) });
-    (void)drop_near(killer, item, md_ptr->get_position());
-}
-
 /*!
  * @brief 装備品の生成を試みる
  * @param creature クリーチャーへの参照
@@ -389,6 +378,14 @@ static void drop_specific_item_on_dead(CreatureEntity &killer, MonsterDeath *md_
 static void on_dead_mimics(CreatureEntity &killer, MonsterDeath *md_ptr)
 {
     if (!md_ptr->drop_chosen_item) {
+        return;
+    }
+
+    // JSON で死亡時ドロップを明示した種族は、シンボル由来の暗黙ドロップを行わない。
+    // 「折れたデスソード」のようにハードコーディングされた個別ドロップを 4 キーへ
+    // 移行した種族が、case 削除によって本処理へ落ちて二重にドロップするのを防ぐ。
+    // 生成時装備 (equip_*) は死亡時ドロップではないため抑止条件に含めない。
+    if (!md_ptr->monrace->drop_kinds.empty() || !md_ptr->monrace->drop_tvals.empty()) {
         return;
     }
 
@@ -500,9 +497,6 @@ void switch_special_death(CreatureEntity &creature, MonsterDeath *md_ptr, Attrib
         return;
     case MonraceId::SERPENT:
         on_dead_serpent(creature, md_ptr);
-        return;
-    case MonraceId::B_DEATH_SWORD:
-        on_dead_death_sword(creature, md_ptr);
         return;
     case MonraceId::ROLENTO:
         (void)project(creature, md_ptr->m_idx, 3, md_ptr->md_y, md_ptr->md_x, Dice::roll(20, 10), AttributeType::FIRE, PROJECT_GRID | PROJECT_ITEM | PROJECT_KILL);
