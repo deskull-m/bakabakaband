@@ -131,12 +131,14 @@ tl::optional<ItemEntity> generate_fixed_item(CreatureEntity &creature, const Mon
  * @brief 排他グループ (`exclusive_group`) を考慮して 1 件分の発火可否を判定する
  * @param entry 固定アイテム指定
  * @param fired_groups 既に発火したグループ番号の集合 (発火時に更新する)
+ * @param dun_level 生成階 (`min_dun_level` の浅階ガード判定に使う)
  * @return 発火させるなら true
  * @details 同じグループ番号のエントリはリスト順に評価し、最初に確率抽選が当たった
  *          ものだけを採用する (先勝ちカスケード)。グループ番号 0 は従来どおり
  *          エントリごとに独立して抽選する。
+ *          `min_dun_level` で弾かれたエントリはグループを消費しない。
  */
-bool roll_fixed_item_entry(const MonraceDropKind &entry, std::set<int> &fired_groups);
+bool roll_fixed_item_entry(const MonraceDropKind &entry, std::set<int> &fired_groups, int dun_level);
 
 /*!
  * @brief 生成時装備指定 (`equip_kinds` / `equip_tvals`) のアイテムをモンスターに持たせる。

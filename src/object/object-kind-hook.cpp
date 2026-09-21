@@ -20,26 +20,6 @@
 static const int SV_BOOK_MIN_GOOD = 2;
 
 /*!
- * @brief オブジェクトがクロークかどうかを判定する /
- * @param bi_id 判定したいオブジェクトのベースアイテムID
- * @return オブジェクトがクロークならばTRUEを返す
- */
-bool kind_is_cloak(short bi_id)
-{
-    return BaseitemList::get_instance().get_baseitem(bi_id).bi_key.tval() == ItemKindType::CLOAK;
-}
-
-/*!
- * @brief オブジェクトが竿状武器かどうかを判定する /
- * @param bi_id 判定したいオブジェクトのベースアイテムID
- * @return オブジェクトが竿状武器ならばTRUEを返す
- */
-bool kind_is_polearm(short bi_id)
-{
-    return BaseitemList::get_instance().get_baseitem(bi_id).bi_key.tval() == ItemKindType::POLEARM;
-}
-
-/*!
  * @brief オブジェクトが剣かどうかを判定する /
  * @param bi_id 判定したいオブジェクトのベースアイテムID
  * @return オブジェクトが剣ならばTRUEを返す
@@ -73,26 +53,6 @@ bool kind_is_good_book(short bi_id)
 }
 
 /*!
- * @brief オブジェクトが鎧かどうかを判定する /
- * @param bi_id 判定したいオブジェクトのベースアイテムID
- * @return オブジェクトが鎧ならばTRUEを返す
- */
-bool kind_is_armor(short bi_id)
-{
-    return BaseitemList::get_instance().get_baseitem(bi_id).bi_key.tval() == ItemKindType::HARD_ARMOR;
-}
-
-/*!
- * @brief オブジェクトが打撃武器かどうかを判定する /
- * @param bi_id 判定したいオブジェクトのベースアイテムID
- * @return オブジェクトが打撃武器ならばTRUEを返す
- */
-bool kind_is_hafted(short bi_id)
-{
-    return BaseitemList::get_instance().get_baseitem(bi_id).bi_key.tval() == ItemKindType::HAFTED;
-}
-
-/*!
  * @brief オブジェクトが薬かどうかを判定する /
  * @param bi_id 判定したいオブジェクトのベースアイテムID
  * @return オブジェクトが薬ならばTRUEを返す
@@ -100,16 +60,6 @@ bool kind_is_hafted(short bi_id)
 bool kind_is_potion(short bi_id)
 {
     return BaseitemList::get_instance().get_baseitem(bi_id).bi_key.tval() == ItemKindType::POTION;
-}
-
-/*!
- * @brief オブジェクトが靴かどうかを判定する /
- * @param bi_id 判定したいオブジェクトのベースアイテムID
- * @return オブジェクトが靴ならばTRUEを返す
- */
-bool kind_is_boots(short bi_id)
-{
-    return BaseitemList::get_instance().get_baseitem(bi_id).bi_key.tval() == ItemKindType::BOOTS;
 }
 
 /*!

@@ -601,6 +601,12 @@
                                 "allows_fixed_artifact": {
                                     "type": "boolean",
                                     "description": "魔法的強化で固定アーティファクト化を許すか。省略時は false = AM_NO_FIXED_ART 付きで強化するため固定アーティファクトにはならない。true にすると通常のアイテム生成と同じく固定アーティファクト化を試みる"
+                                },
+                                "min_dun_level": {
+                                    "type": "integer",
+                                    "description": "発火に必要な最小の階層。生成階 (dun_level) がこの値未満なら発火しない。省略時は 0 = 制限なし",
+                                    "minimum": 0,
+                                    "maximum": 128
                                 }
                             }
                         }
@@ -663,6 +669,12 @@
                                     "description": "品目選定で候補として許す最小 sval。当該種別のうち sval >= この値の品だけを候補にする。省略時は 0 = 下限なし。*_tval 専用",
                                     "minimum": 0,
                                     "maximum": 255
+                                },
+                                "min_dun_level": {
+                                    "type": "integer",
+                                    "description": "発火に必要な最小の階層。生成階 (dun_level) がこの値未満なら発火しない。省略時は 0 = 制限なし",
+                                    "minimum": 0,
+                                    "maximum": 128
                                 }
                             }
                         }
@@ -721,6 +733,12 @@
                                 "allows_fixed_artifact": {
                                     "type": "boolean",
                                     "description": "魔法的強化で固定アーティファクト化を許すか。省略時は false = AM_NO_FIXED_ART 付きで強化するため固定アーティファクトにはならない。true にすると通常のアイテム生成と同じく固定アーティファクト化を試みる"
+                                },
+                                "min_dun_level": {
+                                    "type": "integer",
+                                    "description": "発火に必要な最小の階層。生成階 (dun_level) がこの値未満なら発火しない。省略時は 0 = 制限なし",
+                                    "minimum": 0,
+                                    "maximum": 128
                                 }
                             }
                         }
@@ -789,6 +807,12 @@
                                     "description": "品目選定で候補として許す最小 sval。当該種別のうち sval >= この値の品だけを候補にする。省略時は 0 = 下限なし。*_tval 専用",
                                     "minimum": 0,
                                     "maximum": 255
+                                },
+                                "min_dun_level": {
+                                    "type": "integer",
+                                    "description": "発火に必要な最小の階層。生成階 (dun_level) がこの値未満なら発火しない。省略時は 0 = 制限なし",
+                                    "minimum": 0,
+                                    "maximum": 128
                                 }
                             }
                         }

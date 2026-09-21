@@ -662,8 +662,13 @@ tl::optional<ItemEntity> generate_fixed_item(CreatureEntity &creature, const Mon
     return item;
 }
 
-bool roll_fixed_item_entry(const MonraceDropKind &entry, std::set<int> &fired_groups)
+bool roll_fixed_item_entry(const MonraceDropKind &entry, std::set<int> &fired_groups, int dun_level)
 {
+    // 浅階ガード。弾かれたエントリは抽選自体を行わないのでグループも消費しない。
+    if (dun_level < entry.min_dun_level) {
+        return false;
+    }
+
     // 同グループの先行エントリが既に当たっていれば、このエントリは抽選せず見送る。
     if ((entry.exclusive_group > 0) && fired_groups.contains(entry.exclusive_group)) {
         return false;
@@ -691,8 +696,9 @@ static void equip_monster_fixed_entries(CreatureEntity &player, CreatureEntity &
 {
     // 排他グループ (exclusive_group) は 1 リストの中で閉じる。
     std::set<int> fired_groups;
+    const auto dun_level = player.get_floor()->dun_level;
     for (const auto &entry : entries) {
-        if (!roll_fixed_item_entry(entry, fired_groups)) {
+        if (!roll_fixed_item_entry(entry, fired_groups, dun_level)) {
             continue;
         }
 

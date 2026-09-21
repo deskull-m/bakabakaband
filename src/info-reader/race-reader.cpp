@@ -1377,8 +1377,8 @@ static errr validate_exclusive_groups(const std::vector<MonraceDropKind> &drops,
  *          任意の "kill_interval" は累計撃破数を参照するため drop_* 専用、
  *          任意の "use_allocation_table" は品目抽選の設定なので *_tval 専用。
  *          任意の "sval_min" も品目抽選の設定なので *_tval 専用。
- *          任意の "exclusive_group" / "apply_magic" / "allows_fixed_artifact" は
- *          4 キー共通で指定できる。
+ *          任意の "exclusive_group" / "apply_magic" / "allows_fixed_artifact" /
+ *          "min_dun_level" は 4 キー共通で指定できる。
  */
 static errr set_mon_drop_entries(const nlohmann::json &drop_data, std::string_view id_key, const Range &id_range, std::vector<MonraceDropKind> &drops, bool allows_kill_interval, bool is_itemkind)
 {
@@ -1525,10 +1525,18 @@ static errr set_mon_drop_entries(const nlohmann::json &drop_data, std::string_vi
             allows_fixed_artifact = value.get<bool>();
         }
 
+        // 浅い階では発火させない任意指定。4 キーいずれでも指定できる。
+        auto min_dun_level = 0;
+        if (drop_item.contains("min_dun_level")) {
+            if (auto err = info_set_integer(drop_item["min_dun_level"], min_dun_level, true, Range(0, 128))) {
+                return err;
+            }
+        }
+
         // 分子、分母、対象 (アイテムID or アイテム種別)、グレード、ドロップ個数ダイス ("XdY")、
         // 撃破数間隔、深度加重抽選の有無、排他グループ、魔法的強化の有無、
-        // 最小 sval、固定アーティファクト許可を設定
-        drops.push_back({ numerator, denominator, target_id, grade, Dice(dice_num, dice_side), kill_interval, use_allocation_table, exclusive_group, apply_magic, sval_min, allows_fixed_artifact });
+        // 最小 sval、固定アーティファクト許可、最小階層を設定
+        drops.push_back({ numerator, denominator, target_id, grade, Dice(dice_num, dice_side), kill_interval, use_allocation_table, exclusive_group, apply_magic, sval_min, allows_fixed_artifact, min_dun_level });
     }
 
     return validate_exclusive_groups(drops, first_added);
