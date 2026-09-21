@@ -41,6 +41,7 @@ private:
     errr set_mon_extended_slots(const nlohmann::json &slots_data, MonraceDefinition &monrace);
     errr set_mon_artifacts(nlohmann::json &artifact_data, MonraceDefinition &monrace);
     errr set_mon_death_explosion(const nlohmann::json &explosion_data, MonraceDefinition &monrace);
+    errr set_mon_death_random_artifact(const nlohmann::json &artifact_data, MonraceDefinition &monrace);
     errr set_mon_escorts(nlohmann::json &escort_data, MonraceDefinition &monrace);
     errr set_mon_blows(nlohmann::json &blow_data, MonraceDefinition &monrace);
     errr set_mon_flags(const nlohmann::json &flag_data, MonraceDefinition &monrace);

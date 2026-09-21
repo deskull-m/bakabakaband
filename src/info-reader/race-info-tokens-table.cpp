@@ -15,6 +15,7 @@
 #include "monster-race/race-visual-flags.h"
 #include "monster-race/race-wilderness-flags.h"
 #include "system/material-type-definition.h"
+#include "system/monrace/monrace-definition.h"
 
 /*!
  * モンスター特性トークンの定義9 /
@@ -1187,4 +1188,12 @@ const std::unordered_map<std::string_view, AttributeType> r_info_attribute = {
     { "QUANTUM_VANISH", AttributeType::QUANTUM_VANISH },
     { "SPIDER_STRING", AttributeType::SPIDER_STRING },
     { "SOCIAL_GENOCIDE", AttributeType::SOCIAL_GENOCIDE },
+};
+
+/*!
+ * @brief `*_tval` の分類指定トークン
+ */
+const std::unordered_map<std::string_view, MonraceDropCategory> r_info_drop_category = {
+    { "SPELL_BOOK", MonraceDropCategory::SPELL_BOOK },
+    { "HIGH_LEVEL_BOOK", MonraceDropCategory::HIGH_LEVEL_BOOK },
 };
