@@ -43,6 +43,7 @@ enum class MonsterPopulationType;
 enum class MonsterResistanceType;
 enum class MonsterSex;
 enum class MonsterSpeakType;
+enum class AttributeType : int;
 enum class MonsterMessageType;
 enum class MonsterSpecialType;
 enum class MonsterVisualType;
@@ -79,3 +80,4 @@ extern const std::unordered_map<std::string_view, PlayerRaceType> r_info_player_
 extern const std::unordered_map<std::string_view, PlayerClassType> r_info_player_class;
 extern const std::unordered_map<std::string_view, PlayerMutationType> r_info_mutation;
 extern const std::unordered_map<std::string_view, RealmType> r_info_realm;
+extern const std::unordered_map<std::string_view, AttributeType> r_info_attribute;
