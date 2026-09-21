@@ -561,24 +561,29 @@ void equip_monster_by_armament_budget(CreatureEntity &monster)
     }
 }
 
-void apply_drop_kind_magic(CreatureEntity &creature, ItemEntity &item, int grade)
+void apply_drop_kind_magic(CreatureEntity &creature, ItemEntity &item, const MonraceDropKind &entry)
 {
     const auto level = creature.get_floor()->dun_level;
-    switch (grade) {
+
+    // allows_fixed_artifact が立つ指定では AM_NO_FIXED_ART を外し、通常の
+    // アイテム生成 (make_object) と同様に固定アーティファクト化を許す。
+    // grade 3 は元から AM_NO_FIXED_ART を付けないため影響しない。
+    const BIT_FLAGS no_fixed_art = entry.allows_fixed_artifact ? 0U : AM_NO_FIXED_ART;
+    switch (entry.grade) {
     case -2:
-        ItemMagicApplier(creature, &item, level, AM_NO_FIXED_ART | AM_GOOD | AM_GREAT | AM_CURSED).execute();
+        ItemMagicApplier(creature, &item, level, no_fixed_art | AM_GOOD | AM_GREAT | AM_CURSED).execute();
         return;
     case -1:
-        ItemMagicApplier(creature, &item, level, AM_NO_FIXED_ART | AM_GOOD | AM_CURSED).execute();
+        ItemMagicApplier(creature, &item, level, no_fixed_art | AM_GOOD | AM_CURSED).execute();
         return;
     case 0:
-        ItemMagicApplier(creature, &item, level, AM_NO_FIXED_ART).execute();
+        ItemMagicApplier(creature, &item, level, no_fixed_art).execute();
         return;
     case 1:
-        ItemMagicApplier(creature, &item, level, AM_NO_FIXED_ART | AM_GOOD).execute();
+        ItemMagicApplier(creature, &item, level, no_fixed_art | AM_GOOD).execute();
         return;
     case 2:
-        ItemMagicApplier(creature, &item, level, AM_NO_FIXED_ART | AM_GOOD | AM_GREAT).execute();
+        ItemMagicApplier(creature, &item, level, no_fixed_art | AM_GOOD | AM_GREAT).execute();
         return;
     case 3:
         ItemMagicApplier(creature, &item, level, AM_GOOD | AM_GREAT | AM_SPECIAL).execute();
@@ -598,16 +603,36 @@ short resolve_fixed_item_bi_id(CreatureEntity &creature, const MonraceDropKind &
     }
 
     const auto tval = i2enum<ItemKindType>(entry.id);
+    const auto sval_min = entry.sval_min;
     if (entry.use_allocation_table) {
         // 通常のアイテム生成 (make_object) と同じ深度加重抽選を使う。
         // 生成階を超える深度の品は選ばれないため、浅い階で高級品が出ない。
         // 候補が 1 つも無い深度では 0 (= 生成しない) が返る。
         auto &table = BaseitemAllocationTable::get_instance();
-        table.set_restriction([tval](short bi_id) { return BaseitemList::get_instance().get_baseitem(bi_id).bi_key.tval() == tval; });
+        table.set_restriction([tval, sval_min](short bi_id) {
+            const auto &bi_key = BaseitemList::get_instance().get_baseitem(bi_id).bi_key;
+            return (bi_key.tval() == tval) && (bi_key.sval() >= sval_min);
+        });
         const auto &floor = *creature.get_floor();
         const auto bi_id = floor.select_baseitem_id(floor.object_level, 0);
         table.reset_restriction();
         return bi_id;
+    }
+
+    if (sval_min > 0) {
+        // 下限付きの一様抽選。lookup_baseitem_id() は種別内の全 sval から選ぶため
+        // 使えず、候補を自前で絞ってから等確率で選ぶ。
+        const auto &baseitems = BaseitemList::get_instance();
+        std::vector<short> candidates;
+        for (const auto bi_id : baseitems.collect_valid_bi_ids()) {
+            const auto &bi_key = baseitems.get_baseitem(bi_id).bi_key;
+            if ((bi_key.tval() == tval) && (bi_key.sval() >= sval_min)) {
+                candidates.push_back(bi_id);
+            }
+        }
+
+        // 候補ゼロは reader が弾いているため、ここで空にはならない。
+        return candidates.empty() ? 0 : rand_choice(candidates);
     }
 
     // sval を省略 (tl::nullopt) すると当該種別の中から無作為にベースアイテムが選ばれる。
@@ -631,7 +656,7 @@ tl::optional<ItemEntity> generate_fixed_item(CreatureEntity &creature, const Mon
     // apply_magic: false はハードコーディング由来の「素のアイテム」指定。
     // grade を無視し、エゴ・アーティファクト化・呪いのいずれも起こさない。
     if (entry.apply_magic) {
-        apply_drop_kind_magic(creature, item, entry.grade);
+        apply_drop_kind_magic(creature, item, entry);
     }
 
     return item;

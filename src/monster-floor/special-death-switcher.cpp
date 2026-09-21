@@ -418,13 +418,6 @@ static void on_dead_mimics(CreatureEntity &killer, MonsterDeath *md_ptr)
 
         drop_specific_item_on_dead(killer, md_ptr, kind_is_hafted);
         return;
-    case '|':
-        if (md_ptr->m_ptr->get_r_idx() == MonraceId::STORMBRINGER) {
-            return;
-        }
-
-        drop_specific_item_on_dead(killer, md_ptr, kind_is_sword);
-        return;
     case ']':
         if (killer.get_floor()->dun_level <= 19) {
             return;
