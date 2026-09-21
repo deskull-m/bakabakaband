@@ -637,7 +637,23 @@ errr RaceReader::set_mon_artifacts(nlohmann::json &artifact_data, MonraceDefinit
             return err;
         }
 
-        monrace.drop_artifacts.emplace_back(fa_id, prob);
+        // 「この属性で止めを刺したときだけ落ちる」任意指定。
+        tl::optional<AttributeType> required_attribute;
+        if (artifact.contains("required_attribute")) {
+            const auto &attribute_str = artifact["required_attribute"];
+            if (!attribute_str.is_string()) {
+                return PARSE_ERROR_INVALID_FLAG;
+            }
+
+            const auto attribute = r_info_attribute.find(attribute_str.get<std::string>());
+            if (attribute == r_info_attribute.end()) {
+                return PARSE_ERROR_INVALID_FLAG;
+            }
+
+            required_attribute = attribute->second;
+        }
+
+        monrace.drop_artifacts.emplace_back(fa_id, prob, required_attribute);
     }
     return PARSE_ERROR_NONE;
 }
@@ -680,6 +696,37 @@ errr RaceReader::set_mon_death_explosion(const nlohmann::json &explosion_data, M
     }
 
     monrace.death_explosion = MonraceDeathExplosion{ attribute->second, radius, damage_dice };
+    return PARSE_ERROR_NONE;
+}
+
+/*!
+ * @brief JSON Objectからモンスターの死亡時ランダムアーティファクト情報をセットする
+ * @param artifact_data 情報の格納されたJSON Object
+ * @param monrace 保管先のモンスター種族構造体
+ * @return エラーコード
+ */
+errr RaceReader::set_mon_death_random_artifact(const nlohmann::json &artifact_data, MonraceDefinition &monrace)
+{
+    if (artifact_data.is_null()) {
+        return PARSE_ERROR_NONE;
+    }
+    if (!artifact_data.is_object()) {
+        return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+    }
+
+    short tval;
+    if (auto err = info_set_integer(artifact_data["tval"], tval, true, Range(0, 128))) {
+        return err;
+    }
+
+    auto sval_min = 0;
+    if (artifact_data.contains("sval_min")) {
+        if (auto err = info_set_integer(artifact_data["sval_min"], sval_min, true, Range(0, 255))) {
+            return err;
+        }
+    }
+
+    monrace.death_random_artifact = MonraceDeathRandomArtifact{ tval, sval_min };
     return PARSE_ERROR_NONE;
 }
 
@@ -1433,13 +1480,17 @@ static errr set_mon_drop_entries(const nlohmann::json &drop_data, std::string_vi
 
     const auto first_added = drops.size();
     for (const auto &drop_item : drop_data) {
-        if (!drop_item.contains(id_key) || !drop_item.contains("probability") || !drop_item.contains("grade") || !drop_item.contains("dice")) {
+        // category 指定時は tval を省略できる (分類が候補を決めるため)。
+        const auto has_category = is_itemkind && drop_item.contains("category");
+        if ((!drop_item.contains(id_key) && !has_category) || !drop_item.contains("probability") || !drop_item.contains("grade") || !drop_item.contains("dice")) {
             return PARSE_ERROR_TOO_FEW_ARGUMENTS;
         }
 
-        short target_id;
-        if (auto err = info_set_integer(drop_item[std::string(id_key)], target_id, true, id_range)) {
-            return err;
+        short target_id = 0;
+        if (drop_item.contains(id_key)) {
+            if (auto err = info_set_integer(drop_item[std::string(id_key)], target_id, true, id_range)) {
+                return err;
+            }
         }
 
         const auto &probability_str = drop_item["probability"].get<std::string>();
@@ -1574,10 +1625,30 @@ static errr set_mon_drop_entries(const nlohmann::json &drop_data, std::string_vi
             }
         }
 
+        // tval を跨ぐ分類指定。`*_tval` 専用。
+        auto category = MonraceDropCategory::NONE;
+        if (drop_item.contains("category")) {
+            if (!is_itemkind) {
+                return PARSE_ERROR_INVALID_FLAG;
+            }
+
+            const auto &category_str = drop_item["category"];
+            if (!category_str.is_string()) {
+                return PARSE_ERROR_INVALID_FLAG;
+            }
+
+            const auto found = r_info_drop_category.find(category_str.get<std::string>());
+            if (found == r_info_drop_category.end()) {
+                return PARSE_ERROR_INVALID_FLAG;
+            }
+
+            category = found->second;
+        }
+
         // 分子、分母、対象 (アイテムID or アイテム種別)、グレード、ドロップ個数ダイス ("XdY")、
         // 撃破数間隔、深度加重抽選の有無、排他グループ、魔法的強化の有無、
-        // 最小 sval、固定アーティファクト許可、最小階層を設定
-        drops.push_back({ numerator, denominator, target_id, grade, Dice(dice_num, dice_side), kill_interval, use_allocation_table, exclusive_group, apply_magic, sval_min, allows_fixed_artifact, min_dun_level });
+        // 最小 sval、固定アーティファクト許可、最小階層、分類を設定
+        drops.push_back({ numerator, denominator, target_id, grade, Dice(dice_num, dice_side), kill_interval, use_allocation_table, exclusive_group, apply_magic, sval_min, allows_fixed_artifact, min_dun_level, category });
     }
 
     return validate_exclusive_groups(drops, first_added);
@@ -1632,7 +1703,12 @@ static errr set_mon_itemkind_entries(const nlohmann::json &json_data, std::vecto
     }
 
     // 候補の無い種別を指定されるとアイテム生成時に例外を投げるため、読込時に弾く。
+    // category 指定は tval を見ないので検査対象外。
     for (auto i = first_added; i < entries.size(); i++) {
+        if (entries[i].category != MonraceDropCategory::NONE) {
+            continue;
+        }
+
         if (!has_any_baseitem_of_kind(i2enum<ItemKindType>(entries[i].id), entries[i].sval_min)) {
             return PARSE_ERROR_INVALID_FLAG;
         }
@@ -1913,6 +1989,11 @@ errr RaceReader::read()
         msg_format(_("モンスターMP消費フラグ読込失敗。ID: '%d'。", "Failed to load monster consumes_mp. ID: '%d'."), error_idx);
         return err;
     }
+    err = info_set_bool(mon_data["drops_sacred_treasures"], monrace.drops_sacred_treasures, false);
+    if (err) {
+        msg_format(_("モンスター三種の神器ドロップフラグ読込失敗。ID: '%d'。", "Failed to load monster drops_sacred_treasures. ID: '%d'."), error_idx);
+        return err;
+    }
     err = set_mon_mutations(mon_data["mutations"], monrace);
     if (err) {
         msg_format(_("モンスター突然変異読込失敗。ID: '%d'。", "Failed to load monster mutations. ID: '%d'."), error_idx);
@@ -2055,6 +2136,12 @@ errr RaceReader::read()
         msg_format(_("モンスターアライアンス情報読込失敗。ID: '%d'。", "Failed to load monster alliance: '%d'."), error_idx);
         return err;
     }
+    err = set_mon_death_random_artifact(mon_data["death_random_artifact"], monrace);
+    if (err) {
+        msg_format(_("モンスター死亡時ランダムアーティファクト情報読み込みに失敗しました。 : %s", "Failed to load monster death random artifact info. : %s"), monrace.name.data());
+        return err;
+    }
+
     err = set_mon_death_explosion(mon_data["death_explosion"], monrace);
     if (err) {
         msg_format(_("モンスター死亡時爆発情報読み込みに失敗しました。 : %s", "Failed to load monster death explosion info. : %s"), monrace.name.data());

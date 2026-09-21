@@ -1336,6 +1336,26 @@ per-turn で発火しない（切り傷・毒の inflict 経路が無い）」�
 - **`*_kind` には指定できない**。品目を名指しする指定では意味を持たないため、
   指定すると読込時エラーになる。
 
+**分類指定 (`category`, `*_tval` 専用)**: tval 単体ではなくベースアイテムの分類で
+候補を絞る。魔法書のように複数 tval に跨る指定に使う。
+
+```jsonc
+"drop_tval": [
+  { "category": "SPELL_BOOK", "probability": "1_IN_1", "grade": 0, "dice": "1d1" },
+],
+```
+
+- 指定できるのは `SPELL_BOOK` (`BaseitemKey::is_spell_book`) と
+  `HIGH_LEVEL_BOOK` (`BaseitemKey::is_high_level_book`)。それぞれ旧
+  `kind_is_book` / `kind_is_good_book` と同じ判定。**`HIGH_LEVEL_BOOK` は
+  sval >= 2 かつ ARCANE_BOOK を除く**点に注意。
+- **`category` 指定時は必ず深度加重抽選**になる (`make_object` と同じ経路)。
+  `tval` は省略でき、書いても無視される。`use_allocation_table` の指定も不要。
+- トークンは `r_info_drop_category` (`race-info-tokens-table.cpp`)。
+- **移行済み**: ラアルの破壊集大成 (557)。旧実装の
+  「10 階未満は無し / 50 階以上は 1/5 で高位書 / それ以外は通常書」を
+  `min_dun_level` + `exclusive_group` の 2 エントリで表現している。
+
 **固定アーティファクト化の許可 (`allows_fixed_artifact`, 4 キー共通)**:
 `true` で `AM_NO_FIXED_ART` を外し、通常のアイテム生成と同じく固定
 アーティファクト化を試みる。
@@ -1735,6 +1755,65 @@ id 47 = 折れた剣 `1_IN_1`。いずれも grade 0, `1d1`, `exclusive_group: 1
   共通する一括挙動で、「サヨナラ！」「%sは哀れ爆発四散した！」の 2 行メッセージも
   kind 全体の flavor のため、12 種族へデータ複製するのは保守性の後退になる。
   爆発そのものは共通ヘルパ `explode_on_death()` を `death_explosion` と共用する。
+
+### モンスターの固定アーティファクトドロップ (`artifacts`)
+
+`MonraceDefinition::drop_artifacts` (JSON キー `artifacts`) は元から配線済みだったが
+実データでの使用種族は 0 だった。`switch_special_death()` の個別 `case` を移行する
+にあたり、2 点を拡張して実用化した。
+
+```jsonc
+"artifacts": [
+  { "drop_artifact_id": 111, "drop_probability": 100 },
+  { "drop_artifact_id": 34, "drop_probability": 100 },
+],
+```
+
+- **各エントリは独立に抽選する**。旧実装は `drop_artifact_from_unique()` が最初の
+  1 個をドロップした時点で `return` していたため、『混沌のサーペント』のように
+  グロンドと混沌の王冠を**同時に**落とす種族を表現できなかった。使用種族 0 だった
+  ため互換性の問題なく変更している。
+- **`required_attribute`** (任意): その属性で止めを刺したときだけ落とす。
+  トークンは `r_info_attribute`。メカジキを冷気で倒したときだけ
+  『フローズン・ソードフィッシュ』が出る、といった条件用。**確率抽選より先に**
+  判定するので、条件を満たさない場合は乱数を消費しない。
+- 既に生成済みのアーティファクトは `drop_single_artifact()` が弾く。
+- 発火は `monster_death()` の `drop_artifacts()` で、`drop_chosen_item` ガード配下。
+  `switch_special_death()` より**後**に走る。
+- **ウィザードモードでは確率抽選を飛ばす** (`is_wizard` なら `evaluate_percent` を
+  スキップ)。デバッグ時に「確率を上げたのに出ない」と悩んだら生成済みフラグを疑うこと。
+- **移行済み**: 『混沌のサーペント』(862) のグロンド + 混沌の王冠、
+  メカジキ (88) の『フローズン・ソードフィッシュ』(`required_attribute: "COLD"`,
+  確率 9 = 旧 `randint1(100) >= 10` と同値)。
+
+### モンスターの死亡時ランダムアーティファクト (`death_random_artifact`)
+
+```jsonc
+"death_random_artifact": { "tval": 23, "sval_min": 3 },
+```
+
+- 指定種別の装備品を「まともな☆になるまで振り直して」1 個落とす
+  (`on_dead_random_artifact()`)。呪われている / 修正値が 0 以下の☆は捨てて振り直す。
+- `sval_min` は `*_tval` と同じ意味。旧 `kind_is_sword` の `sval > 2` に対応。
+- カメレオンは旧 `case` と同じく除外する。
+- 発火は `switch_special_death()` 内で、**死亡時爆発より後**
+  (爆発の `PROJECT_ITEM` で☆を壊さないため)。
+- **移行済み**: 『イェンダーの魔法使い』(1360) のアミュレット (tval 40)、
+  『ロストリンギル大佐』(1383) の剣 (tval 23, `sval_min: 3`)。
+
+### 三種の神器ドロップ (`drops_sacred_treasures`)
+
+```jsonc
+"drops_sacred_treasures": true,
+```
+
+- 撃破者の性格が**「なまけもの」のときだけ**、未生成のナマケ装備
+  (`NAMAKE_HAMMER` / `NAMAKE_BOW` / `NAMAKE_ARMOR`) から 1 つを無作為に落とす。
+- **条件が撃破者 (プレイヤー) 側にある**ため処理自体は `on_dead_sacred_treasures()`
+  として C++ に残す。JSON へ出したのは**対象種族の指定だけ**で、これにより
+  `switch_special_death()` の `switch` 文が丸ごと不要になり、ハードコードされた
+  `MonraceId` 参照が 3 つ減った (`UNICORN_ORD` / `MORGOTH` / `ONE_RING`)。
+- `NINJA` 種族フラグ由来の爆発と同じ「振り分けはデータ、挙動は C++」の形。
 
 ### モンスターの死亡時メッセージ (`SPEAK_DEATH`)
 

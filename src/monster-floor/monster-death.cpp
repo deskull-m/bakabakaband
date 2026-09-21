@@ -174,17 +174,27 @@ static void drop_corpse(CreatureEntity &creature, MonsterDeath *md_ptr)
  * @param md_ptr モンスター死亡構造体への参照ポインタ
  * @return 何かドロップするならドロップしたアーティファクトのID、何もドロップしないなら0
  */
-static void drop_artifact_from_unique(CreatureEntity &creature, MonsterDeath *md_ptr)
+/*!
+ * @brief JSON の `artifacts` 指定に従って固定アーティファクトを落とす
+ * @details 各エントリは**独立に**確率抽選する (当たったものは全て落ちる)。
+ *          『混沌のサーペント』のようにグロンドと混沌の王冠を同時に落とす種族が
+ *          あるため、最初の 1 個で打ち切らない。既に生成済みの
+ *          アーティファクトは `drop_single_artifact()` が弾く。
+ */
+static void drop_artifact_from_unique(CreatureEntity &creature, MonsterDeath *md_ptr, AttributeFlags attribute_flags)
 {
     const auto is_wizard = AngbandWorld::get_instance().wizard;
-    for (const auto &[a_idx, chance] : md_ptr->monrace->get_drop_artifacts()) {
-        if (!is_wizard && !evaluate_percent(chance)) {
+    for (const auto &drop : md_ptr->monrace->get_drop_artifacts()) {
+        // 属性条件は確率抽選より先に見る (条件を満たさない場合に乱数を消費しない)。
+        if (drop.required_attribute && attribute_flags.has_not(*drop.required_attribute)) {
             continue;
         }
 
-        if (drop_single_artifact(creature, md_ptr, a_idx)) {
-            return;
+        if (!is_wizard && !evaluate_percent(drop.chance)) {
+            continue;
         }
+
+        (void)drop_single_artifact(creature, md_ptr, drop.fa_id);
     }
 }
 
@@ -222,13 +232,13 @@ static tl::optional<short> drop_dungeon_final_artifact(CreatureEntity &creature,
     return dungeon.final_object ? tl::make_optional<short>(bi_id) : tl::nullopt;
 }
 
-static void drop_artifacts(CreatureEntity &creature, MonsterDeath *md_ptr)
+static void drop_artifacts(CreatureEntity &creature, MonsterDeath *md_ptr, AttributeFlags attribute_flags)
 {
     if (!md_ptr->drop_chosen_item) {
         return;
     }
 
-    drop_artifact_from_unique(creature, md_ptr);
+    drop_artifact_from_unique(creature, md_ptr, attribute_flags);
     const auto &floor = *creature.get_floor();
     const auto &dungeon = floor.get_dungeon_definition();
     if (md_ptr->monrace->misc_flags.has_not(MonsterMiscType::GUARDIAN) || (dungeon.final_guardian != md_ptr->m_ptr->get_r_idx())) {
@@ -359,8 +369,8 @@ void monster_death(CreatureEntity &creature, MONSTER_IDX m_idx, bool drop_item, 
         md.m_ptr->drop_all_inventory(creature);
     }
 
-    switch_special_death(creature, &md, attribute_flags);
-    drop_artifacts(creature, &md);
+    switch_special_death(creature, &md);
+    drop_artifacts(creature, &md, attribute_flags);
     if ((md.monrace->misc_flags.has_not(MonsterMiscType::QUESTOR)) || AngbandSystem::get_instance().is_phase_out() || (md.m_ptr->get_r_idx() != MonraceId::SERPENT) || md.cloned) {
         return;
     }

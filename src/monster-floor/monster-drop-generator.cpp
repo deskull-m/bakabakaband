@@ -602,6 +602,28 @@ short resolve_fixed_item_bi_id(CreatureEntity &creature, const MonraceDropKind &
         return entry.id;
     }
 
+    // 分類指定は tval を跨ぐので、tval 一致ではなく述語で絞る。
+    // kind_is_book / kind_is_good_book と同じ判定で、必ず深度加重抽選になる。
+    if (entry.category != MonraceDropCategory::NONE) {
+        const auto category = entry.category;
+        auto &table = BaseitemAllocationTable::get_instance();
+        table.set_restriction([category](short bi_id) {
+            const auto &bi_key = BaseitemList::get_instance().get_baseitem(bi_id).bi_key;
+            switch (category) {
+            case MonraceDropCategory::SPELL_BOOK:
+                return bi_key.is_spell_book();
+            case MonraceDropCategory::HIGH_LEVEL_BOOK:
+                return bi_key.is_high_level_book();
+            default:
+                return false;
+            }
+        });
+        const auto &floor = *creature.get_floor();
+        const auto bi_id = floor.select_baseitem_id(floor.object_level, 0);
+        table.reset_restriction();
+        return bi_id;
+    }
+
     const auto tval = i2enum<ItemKindType>(entry.id);
     const auto sval_min = entry.sval_min;
     if (entry.use_allocation_table) {

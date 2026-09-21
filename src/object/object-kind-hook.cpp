@@ -20,39 +20,6 @@
 static const int SV_BOOK_MIN_GOOD = 2;
 
 /*!
- * @brief オブジェクトが剣かどうかを判定する /
- * @param bi_id 判定したいオブジェクトのベースアイテムID
- * @return オブジェクトが剣ならばTRUEを返す
- */
-bool kind_is_sword(short bi_id)
-{
-    const auto &baseitem = BaseitemList::get_instance().get_baseitem(bi_id);
-    return (baseitem.bi_key.tval() == ItemKindType::SWORD) && (baseitem.bi_key.sval() > 2);
-}
-
-/*!
- * @brief オブジェクトが魔法書かどうかを判定する
- * @param bi_id 判定したいオブジェクトのベースアイテムID
- * @return オブジェクトが魔法書ならばTRUEを返す
- */
-bool kind_is_book(short bi_id)
-{
-    const auto &baseitem = BaseitemList::get_instance().get_baseitem(bi_id);
-    return baseitem.bi_key.is_spell_book();
-}
-
-/*!
- * @brief オブジェクトがベースアイテム時点でGOODかどうかを判定する
- * @param bi_id 判定したいオブジェクトのベースアイテムID
- * @return オブジェクトがベースアイテム時点でGOODなアイテムならばTRUEを返す
- */
-bool kind_is_good_book(short bi_id)
-{
-    const auto &baseitem = BaseitemList::get_instance().get_baseitem(bi_id);
-    return baseitem.bi_key.is_high_level_book();
-}
-
-/*!
  * @brief オブジェクトが薬かどうかを判定する /
  * @param bi_id 判定したいオブジェクトのベースアイテムID
  * @return オブジェクトが薬ならばTRUEを返す
@@ -60,16 +27,6 @@ bool kind_is_good_book(short bi_id)
 bool kind_is_potion(short bi_id)
 {
     return BaseitemList::get_instance().get_baseitem(bi_id).bi_key.tval() == ItemKindType::POTION;
-}
-
-/*!
- * @brief オブジェクトがアミュレットかどうかを判定する /
- * @param bi_id 判定したいオブジェクトのベースアイテムID
- * @return オブジェクトがアミュレットならばTRUEを返す
- */
-bool kind_is_amulet(short bi_id)
-{
-    return BaseitemList::get_instance().get_baseitem(bi_id).bi_key.tval() == ItemKindType::AMULET;
 }
 
 bool kind_is_nasty(short bi_id)
