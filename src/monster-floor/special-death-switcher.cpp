@@ -78,6 +78,15 @@ static BIT_FLAGS dead_mode(MonsterDeath *md_ptr)
  */
 static void drop_fixed_items_on_death(CreatureEntity &killer, MonsterDeath *md_ptr, const std::vector<MonraceDropKind> &entries, bool is_itemkind)
 {
+    // クローン体・カメレオン・闘技場・モンスター闘技場・ペット討伐、および
+    // drop_item が false の死 (量子消失・モンスター同士の戦闘・ペットの効果死) では
+    // 落とさない。固定アーティファクト (drop_artifacts) や、4 キーへ移行する前の
+    // 個別ハードコーディング (on_dead_can_angel 等) と同じ判定で、高額品の
+    // クローン量産・闘技場量産を防ぐ。
+    if (!md_ptr->drop_chosen_item) {
+        return;
+    }
+
     // 排他グループ (exclusive_group) は 1 リストの中で閉じる。
     std::set<int> fired_groups;
     const auto dun_level = killer.get_floor()->dun_level;
