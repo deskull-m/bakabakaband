@@ -102,6 +102,24 @@ public:
      * 忠実に移行するための指定。
      */
     bool apply_magic = true;
+
+    /*!
+     * @brief `*_tval` の品目選定で許す最小 sval (0 = 下限なし)
+     * @details 当該種別のうち `sval >= sval_min` の品だけを候補にする。
+     * 「折れていない剣」(`kind_is_sword` の `sval > 2`) のように、種別の中の
+     * 一部を除きたいハードコーディングを忠実に移行するための指定。
+     * 品目を名指しする **`*_kind` では意味を持たない**ため読込時に弾く。
+     */
+    int sval_min = 0;
+
+    /*!
+     * @brief 魔法的強化で固定アーティファクト化を許すか
+     * @details 既定 (false) は `AM_NO_FIXED_ART` 付きで強化するため固定
+     * アーティファクトにはならない。true にするとこのフラグを外し、通常の
+     * アイテム生成 (`make_object`) と同じく power 2 で 1 回だけ固定
+     * アーティファクト化を試みる。`apply_magic` が false なら無意味。
+     */
+    bool allows_fixed_artifact = false;
 };
 
 class DropArtifact {

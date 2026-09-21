@@ -1314,6 +1314,56 @@ per-turn で発火しない（切り傷・毒の inflict 経路が無い）」�
 - `grade` は必須項目のままなので、`apply_magic: false` のときは値が無視される
   (慣例として `0` を書く)。
 
+**種別内の絞り込み (`sval_min`, `*_tval` 専用)**: 当該種別のうち
+`sval >= sval_min` の品だけを候補にする。
+
+```jsonc
+"drop_tval": [
+  { "tval": 23, "probability": "1_IN_1", "grade": 0, "dice": "1d1",
+    "use_allocation_table": true, "sval_min": 3 },
+],
+```
+
+- 「折れていない剣」(`kind_is_sword` の `sval > 2`) のように、種別の中の一部を
+  除きたいハードコーディングを忠実に移行するための指定。SWORD の sval は
+  1 = 折れたダガー / 2 = 折れた剣 / 4 以降が実用品なので `sval_min: 3` で一致する。
+- `use_allocation_table` の有無どちらでも効く。深度加重抽選では制約関数に、
+  一様抽選では候補列挙時に `sval >= sval_min` を課す。
+- 省略時は 0 (下限なし) で従来と完全に同じ。**下限なしの既存エントリは
+  `lookup_baseitem_id()` の従来経路をそのまま通る**ため挙動は不変。
+- 候補が 1 つも無くなる指定は**読込時エラー**になる (`has_any_baseitem_of_kind()`
+  が sval_min 込みで検査する)。
+- **`*_kind` には指定できない**。品目を名指しする指定では意味を持たないため、
+  指定すると読込時エラーになる。
+
+**固定アーティファクト化の許可 (`allows_fixed_artifact`, 4 キー共通)**:
+`true` で `AM_NO_FIXED_ART` を外し、通常のアイテム生成と同じく固定
+アーティファクト化を試みる。
+
+```jsonc
+"drop_tval": [
+  { "tval": 40, "probability": "1_IN_1", "grade": 0, "dice": "1d1",
+    "use_allocation_table": true, "allows_fixed_artifact": true },
+],
+```
+
+- **`make_object()` からの移行では原則必要**。`make_object(killer, mo_mode, restrict)`
+  は `ItemMagicApplier` に **`AM_NO_FIXED_ART` を渡さない**ので、power 2 になれば
+  `calculate_rolls()` が 1 を返し `try_become_artifact()` で固定アーティファクトに
+  なりうる。対して `grade` 0〜2 は `AM_NO_FIXED_ART` 付きなので `rolls = 0` に
+  固定され、**固定アーティファクトが一切出なくなる**。
+- 省略時は false (従来どおり固定アーティファクト化しない) で既存エントリの挙動は不変。
+- `grade: 3` は元から `AM_NO_FIXED_ART` を付けないため本キーの影響を受けない。
+  `apply_magic: false` のときも無意味 (強化自体を行わないため)。
+
+**生成基準階について (`object_level` と `dun_level`)**: `make_object()` は
+`floor.object_level`、`apply_drop_kind_magic()` は `floor.dun_level` を渡すが、
+**死亡時ドロップの時点では両者は一致する**。`process_dungeon()` が毎回
+`base_level = dun_level` → `object_level = base_level` と設定しており、
+`object_level` が上振れするのはフロア生成中の金庫部屋・vault と箱の開封時
+(`chest.cpp`) だけで、いずれも `switch_special_death()` が走る文脈ではない。
+よって `make_object()` からの移行で生成基準階の差は生じない。
+
 **この 2 系統の区別は意味論上重要**:
 
 - `equip_*` = 「その個体が身に着けている / 持っている」。生成時に materialize され、
@@ -1390,8 +1440,8 @@ NONE / GOLD / BOTTLE / NO_AMMO は総称「アイテム」へフォールバッ�
 - **装備化により近接ダメージが上がる**(カオス・ブレード 6d5)。旧実装では死亡時に
   湧くだけで生存中の戦闘力には影響しなかったため、これは意図的なバランス変更。
   死亡時に落ちる点は所持品経由で従来どおり。
-- 生成基準階が `object_level` から `dun_level` に変わる (`apply_drop_kind_magic()` が
-  後者を使う) 微差はある。
+- 生成基準階は `object_level` から `dun_level` に変わるが、死亡時ドロップの時点では
+  両者は一致するので差は無い (上記「生成基準階について」参照)。
 
 **ハードコーディングからの移行例 (ボトルのノーム)**: `on_dead_bottle_gnome()` が
 死亡時に必ず「致命傷の治癒」の薬を生成していたものを `drop_kind`
@@ -1434,12 +1484,12 @@ NONE / GOLD / BOTTLE / NO_AMMO は総称「アイテム」へフォールバッ�
   両エンゼルの種族解説文「金なら1匹、銀なら5匹で**もれなく**おもちゃの
   カンヅメが当たります。」を満たす (当初 `1_IN_5` の確率近似で入れたが、
   「もれなく」の保証を破るため `kill_interval` を新設して置き換えた)。
-- **等級適用は完全等価**: 旧実装の
-  `ItemMagicApplier(..., object_level, AM_NO_FIXED_ART)` に対し grade 0 は
-  `dun_level` を渡すが、CHEST の enchanter (`generate_chest()`) は渡された
-  `lev` も `power` も使わず `get_baseitem_level()` と `dun_level` を直接読むため
-  差が出ない。`AM_NO_FIXED_ART` で `calculate_rolls()` は 0、当該ベースアイテムは
-  `gen_flags` 空・価値 500000G (非 worthless) なので `apply_cursed()` も無効果。
+- **等級適用は完全等価**: 旧実装も `AM_NO_FIXED_ART` を渡していたので grade 0 と
+  一致する (`calculate_rolls()` は 0)。生成基準階も死亡時ドロップでは
+  `object_level == dun_level` で差が無く、そもそも CHEST の enchanter
+  (`generate_chest()`) は渡された `lev` も `power` も使わず `get_baseitem_level()` と
+  `dun_level` を直接読む。当該ベースアイテムは `gen_flags` 空・価値 500000G
+  (非 worthless) なので `apply_cursed()` も無効果。
 - **⚠️ 振舞いの差 (要注意)**: 旧実装は `drop_chosen_item` ガード下だったが、
   `drop_fixed_items_on_death()` にはこのガードが無いため**クローン体・カメレオン・
   闘技場・ペット討伐でも落ちる**。価値 500000G の高額品なので、クローン命令や
@@ -1461,8 +1511,11 @@ NONE / GOLD / BOTTLE / NO_AMMO は総称「アイテム」へフォールバッ�
   地上のケット・シーや化けたカメレオンからも靴が出る。
 - 旧実装は `make_object` が `tl::nullopt` を返すと何も落ちなかったが、
   `use_allocation_table` の 0 スキップで同じ振舞いになる。
-- 等級適用は grade 0 (= `AM_NO_FIXED_ART`)。CAIT_SITH は `DROP_GOOD` / `DROP_GREAT` /
-  `DROP_NASTY` を持たず `mo_mode == 0` なので旧実装と同じ。
+- 等級適用は grade 0 + **`allows_fixed_artifact: true`**。CAIT_SITH は `DROP_GOOD` /
+  `DROP_GREAT` / `DROP_NASTY` を持たず `mo_mode == 0` なので強化の強さは grade 0 と
+  一致するが、`make_object` は `AM_NO_FIXED_ART` を渡さないため固定アーティファクトの
+  ブーツが出うる。当初この点を見落として grade 0 のみで移行しており、
+  `|` グループの移行 (後述) で `allows_fixed_artifact` を新設した際に補った。
 
 **ハードコーディングからの移行例 (『イェンダーの魔法使い』第二形態)**: `YENDOR_WIZARD_2`
 (id 1361) の case が `drop_specific_item_on_dead(kind_is_amulet)` でアミュレットを
@@ -1479,6 +1532,8 @@ NONE / GOLD / BOTTLE / NO_AMMO は総称「アイテム」へフォールバッ�
   `select_baseitem_id()` の深度ブースト (`CHANCE_BASEITEM_LEVEL_BOOST`) で稀に出る。
   これもバニラのアイテム生成と同じ振舞い。
 - 失われたガードはケット・シーと同じ 2 つ (`dun_level <= 0` / `is_chameleon`)。
+- 等級適用もケット・シーと同じく grade 0 + **`allows_fixed_artifact: true`**
+  (固定アーティファクトのアミュレットが出うる点を後から補った)。
 - **検証上の注意**: YENDOR_WIZARD_2 は UNIQUE なので一度倒すと同じセーブで再召喚
   できない (`cur_num`/`mob_num` の制約)。テスト時は新規キャラが必要。
 
@@ -1502,6 +1557,39 @@ id 47 = 折れた剣 `1_IN_1`。いずれも grade 0, `1d1`, `exclusive_group: 1
 - `next_mon` でデスソード (id 107) に進化する個体だが、進化は死亡処理を経ないので
   ドロップには影響しない。
 
+**ハードコーディングからの移行例 (`|` グループ = デスソードの類)**: `on_dead_mimics()` の
+`case '|':` が `drop_specific_item_on_dead(kind_is_sword)` で剣を生成していたものを
+`drop_tval` へ移し、**`case '|':` ブロックごと削除**した。対象は表示シンボル `|` の
+4 体で、移行後の姿は次のとおり。
+
+| id | 種族 | Lv | 移行後 |
+|---|---|---|---|
+| 107 | デスソード | 8 | `drop_tval` (tval 23) |
+| 420 | ヘルブレード | 27 | `drop_tval` (tval 23) |
+| 698 | 『ストームブリンガー』 | 45 | 指定なし = 何も落とさない |
+| 953 | 折れたデスソード | 4 | `drop_kind` 2 件 (前述) |
+
+- **デスソード / ヘルブレード**の指定は
+  `{ tval: 23, 1_IN_1, grade 0, 1d1, use_allocation_table: true, sval_min: 3,
+  allows_fixed_artifact: true }`。旧 `make_object(killer, mo_mode, kind_is_sword)` を
+  3 つの任意キーで分解して再現している:
+  - `use_allocation_table` … `make_object` と同じ深度加重抽選
+  - `sval_min: 3` … `kind_is_sword` の `sval > 2` (折れたダガー / 折れた剣を除く)
+  - `allows_fixed_artifact` … `make_object` が `AM_NO_FIXED_ART` を渡さないこと
+- **`mo_mode` は常に 0**。`MonsterDeath::mo_mode` はどこからも代入されておらず
+  初期値 0 のままなので、`drop_specific_item_on_dead()` は全種族で
+  `make_object(killer, 0, restrict)` と等価だった。よって grade 0 で一致する。
+- **『ストームブリンガー』は JSON に何も書かない**のが正解。旧実装は `case '|':` の
+  冒頭で `MonraceId::STORMBRINGER` を名指しして `return` していた (自分自身が
+  唯一無二の魔剣なので剣を落とさない) が、`case '|':` を消せばこの除外も一緒に
+  消え、指定の無い種族は何も落とさないという既定に吸収される。**ハードコードされた
+  MonraceId 参照が 1 つ減る。**
+- **失われたガード**: 旧実装の `if (!md_ptr->drop_chosen_item) return;` が無くなるため、
+  クローン体・カメレオン・闘技場・ペット討伐でも落ちる (他の `drop_*` と同じ)。
+  デスソード系は剣 1 本なので実害は小さいが、ヘルブレードは Lv27 相当の剣が出る。
+- `case '|':` の削除により、`on_dead_mimics()` に残るシンボル分岐は
+  `( / [ \\ ]` の 5 種になった。
+
 **移行時の注意 — `switch_special_death()` の `default:`**: 個別 `case` を削除すると
 その種族は `default: on_dead_mimics()` に落ちる。`on_dead_mimics()` は**表示シンボル
 文字**で分岐し `( / [ \ | ]` のいずれかならミミック相当の装備をドロップするため、
@@ -1517,6 +1605,11 @@ id 47 = 折れた剣 `1_IN_1`。いずれも grade 0, `1d1`, `exclusive_group: 1
 従来どおりミミックのマント也ドロップも行う)。追加時点で `drop_kind` /
 `drop_tval` とミミックシンボルを併せ持つ種族は折れたデスソードのみなので、
 **既存種族の挙動は変わらない**。
+
+なお `|` グループを移行した現在、この抑止規則に実際に掛かる種族はいない
+(`|` の分岐自体を削除したため)。残る 5 シンボルを同様に移行していけば
+`on_dead_mimics()` ごと削除でき、その時点でこの抑止も不要になる。それまでは
+移行途中の種族が二重ドロップしないための安全網として残す。
 
 - プレイヤーがモンスターとして開始する経路 (`player_birth_as_monster`) は従来どおり
   固定アイテムを付与しない。
