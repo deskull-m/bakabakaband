@@ -741,6 +741,7 @@ const std::unordered_map<std::string_view, BodyStructureType> r_info_body_struct
     { "INCORPOREAL", BodyStructureType::INCORPOREAL },
     { "DRACONIC", BodyStructureType::DRACONIC },
     { "FORMLESS", BodyStructureType::FORMLESS },
+    { "GASEOUS", BodyStructureType::GASEOUS },
 };
 
 const std::unordered_map<std::string_view, ExtendedSlotType> r_info_extended_slot = {

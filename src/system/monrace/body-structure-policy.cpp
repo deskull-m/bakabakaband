@@ -61,6 +61,9 @@ const std::array<BodySlotPolicy, enum2i(BodyStructureType::MAX)> body_slot_polic
 
     // FORMLESS: 決まった形を持たない塊・雲・霧。装備枠一切なし (擬足の指輪も無い)
     BodySlotPolicy(BodySlotPolicy::SlotMask{}, {}),
+
+    // GASEOUS: 毒ガス・煙・蒸気。実体が希薄で装備枠一切なし
+    BodySlotPolicy(BodySlotPolicy::SlotMask{}, {}),
 };
 
 }
@@ -84,6 +87,8 @@ std::string_view body_structure_name(BodyStructureType type)
         return _("竜体", "draconic");
     case BodyStructureType::FORMLESS:
         return _("不定形", "formless");
+    case BodyStructureType::GASEOUS:
+        return _("気体", "gaseous");
     case BodyStructureType::MAX:
         break;
     }
@@ -104,6 +109,7 @@ TERM_COLOR body_structure_color(BodyStructureType type)
     case BodyStructureType::SERPENTINE:
     case BodyStructureType::AMORPHOUS:
     case BodyStructureType::FORMLESS:
+    case BodyStructureType::GASEOUS:
     case BodyStructureType::MAX:
         break;
     }

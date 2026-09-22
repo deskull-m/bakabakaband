@@ -17,5 +17,6 @@ enum class BodyStructureType : uint8_t {
     INCORPOREAL = 5, //!< 幽霊・ベクター: 装備一切不可
     DRACONIC = 6, //!< ドラゴン: HUMANOID 装備可能 + 拡張スロット (尾の指輪)
     FORMLESS = 7, //!< 不定形: 決まった形を持たない塊・雲・霧。装備枠一切なし
+    GASEOUS = 8, //!< 気体: 毒ガス・煙・蒸気。実体が希薄で装備枠一切なし
     MAX,
 };
