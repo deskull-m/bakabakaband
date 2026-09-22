@@ -27611,5 +27611,40 @@
         "en": "A hat folded from aluminum foil. Some swear it wards off mind control and the rays of 'them,' though its effectiveness is, at best, unproven.",
       },
     },
+    {
+      "id": 830,
+      "name": {
+        "ja": "赤いベレー帽",
+        "en": "& Red Beret~",
+      },
+      "symbol": {
+        "character": "]",
+        "color": "Red",
+      },
+      "itemkind": {
+        "type_value": 32,
+        "subtype_value": 28,
+      },
+      "parameter_value": 0,
+      "level": 25,
+      "weight": 10,
+      "cost": 30,
+      "base_ac": 3,
+      "base_dice": "0d0",
+      "hit_bonus": 0,
+      "damage_bonus": 0,
+      "ac_bonus": 0,
+      "allocations": [
+        {
+          "depth": 25,
+          "rarity": 2,
+        },
+      ],
+      "flags": [],
+      "flavor": {
+        "ja": "精鋭部隊の証として被られる赤いベレー帽だ。防具としては軍帽と大差ないが、これを被る者がどれほどの修羅場をくぐってきたかを物語っている。",
+        "en": "A red beret worn as the mark of an elite unit. As armour it is little better than a military cap, but it speaks volumes of the battles its wearer has survived.",
+      },
+    },
   ],
 }
