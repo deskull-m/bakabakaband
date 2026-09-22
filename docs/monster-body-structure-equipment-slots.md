@@ -161,6 +161,14 @@ enum class BodyStructureType : uint8_t {
 INCORPOREAL を対象とし、後 4 種は Phase 2 (extended slots) で
 追加する。
 
+**実装状況 (現行)**: 上記のうち INSECTOID / AVIAN / AQUATIC は未実装で、
+実際の enum は `HUMANOID(0)` 〜 `DRACONIC(6)` に **`FORMLESS(7)`** を
+加えた 8 種。`FORMLESS` (不定形) は「決まった形を持たない塊・雲・霧」用で
+**装備枠が一切ない** (`AMORPHOUS` が持つ擬足の指輪すら無い)。
+`AMORPHOUS` の表示名は `FORMLESS` 追加にあわせて「不定形」から
+**「粘体型」** に変更した (スライム・ゼリー・モルド等 114 体が該当し、
+enum コメントの「スライム・ジェル」という実態に沿わせたもの)。
+
 ### 1.2 スロット可否ポリシー
 
 新規ファイル: `src/system/monrace/body-structure-policy.h/.cpp`
@@ -184,6 +192,7 @@ const BodySlotPolicy &get_body_slot_policy(BodyStructureType type);
 | SERPENTINE | × | × | × | × | ○ | × | ○ | × | × | × | × |
 | AMORPHOUS | × | × | × | ○ | × | × | × | × | × | × | × |
 | INCORPOREAL | × | × | × | × | × | × | × | × | × | × | × |
+| FORMLESS | × | × | × | × | × | × | × | × | × | × | × |
 
 `ASSHOLE` スロット (尻穴) は HUMANOID 以外は基本的に無効
 (独自仕様だが SERPENTINE は example として有効でもよい)。

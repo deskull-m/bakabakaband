@@ -13,8 +13,9 @@ enum class BodyStructureType : uint8_t {
     BIPEDAL = 1, //!< 鳥型・恐竜型: 翼/前肢で武器装備不可、首/光源/胴体/頭/脚のみ
     QUADRUPED = 2, //!< 四足獣: 首/胴体/頭のみ
     SERPENTINE = 3, //!< ヘビ・うなぎ型: 首と胴体のみ
-    AMORPHOUS = 4, //!< スライム・ジェル: リングのみ (擬足にはめる)
+    AMORPHOUS = 4, //!< 粘体型 (スライム・ジェル): リングのみ (擬足にはめる)
     INCORPOREAL = 5, //!< 幽霊・ベクター: 装備一切不可
     DRACONIC = 6, //!< ドラゴン: HUMANOID 装備可能 + 拡張スロット (尾の指輪)
+    FORMLESS = 7, //!< 不定形: 決まった形を持たない塊・雲・霧。装備枠一切なし
     MAX,
 };
