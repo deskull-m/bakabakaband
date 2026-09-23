@@ -322,7 +322,7 @@
       "equip_kind": [
         {
           "id": 533,
-          "probability": "1_IN_5",
+          "probability": "1_IN_1",
           "grade": 0,
           "dice": "1d1",
         },
@@ -27797,6 +27797,14 @@
         "SELF_LITE_2",
         "ANGEL",
       ],
+      "equip_kind": [
+        {
+          "id": 55,
+          "probability": "1_IN_1",
+          "grade": 0,
+          "dice": "1d1",
+        },
+      ],
       "skill": {
         "list": ["HEAL", "HASTE", "BLIND", "SCARE", "MIND_BLAST", "BO_FIRE", "S_MONSTERS"],
         "probability": "1_IN_3",
@@ -35654,6 +35662,14 @@
         "NO_SLEEP",
         "NO_FEAR",
       ],
+      "equip_kind": [
+        {
+          "id": 32,
+          "probability": "1_IN_1",
+          "grade": 0,
+          "dice": "1d1",
+        },
+      ],
     },
     {
       "id": 632,
@@ -36006,6 +36022,14 @@
         "NO_CONF",
         "NO_SLEEP",
         "PRIEST",
+      ],
+      "equip_kind": [
+        {
+          "id": 52,
+          "probability": "1_IN_1",
+          "grade": 0,
+          "dice": "1d1",
+        },
       ],
       "skill": {
         "list": ["HEAL", "BLIND", "HOLD", "CONF", "CAUSE_3", "ANIM_DEAD", "S_MONSTER", "S_UNDEAD"],
@@ -36724,6 +36748,14 @@
         "IM_FIRE",
         "NO_CONF",
         "NO_SLEEP",
+      ],
+      "equip_kind": [
+        {
+          "id": 542,
+          "probability": "1_IN_1",
+          "grade": 0,
+          "dice": "1d1",
+        },
       ],
       "skill": {
         "list": ["BLIND", "CONF"],
@@ -56728,6 +56760,14 @@
         "HAS_LITE_1",
         "SAMURAI",
       ],
+      "equip_kind": [
+        {
+          "id": 41,
+          "probability": "1_IN_1",
+          "grade": 0,
+          "dice": "1d1",
+        },
+      ],
     },
     {
       "id": 902,
@@ -71310,6 +71350,14 @@
         "NO_FEAR",
         "DROP_60",
       ],
+      "equip_kind": [
+        {
+          "id": 68,
+          "probability": "1_IN_1",
+          "grade": 0,
+          "dice": "1d1",
+        },
+      ],
       "skill": {
         "list": ["SCARE", "BLIND", "CONF", "HOLD", "BO_PLAS", "BO_ICEE", "BO_NETH"],
         "probability": "1_IN_9",
@@ -73779,6 +73827,14 @@
         "RES_SOUN",
         "NO_STUN",
       ],
+      "equip_kind": [
+        {
+          "id": 542,
+          "probability": "1_IN_1",
+          "grade": 0,
+          "dice": "1d1",
+        },
+      ],
     },
     {
       "id": 1167,
@@ -73886,6 +73942,14 @@
         "DROP_GOOD",
         "RES_SOUN",
         "NO_STUN",
+      ],
+      "equip_kind": [
+        {
+          "id": 75,
+          "probability": "1_IN_1",
+          "grade": 0,
+          "dice": "1d1",
+        },
       ],
     },
     {
@@ -89832,6 +89896,14 @@
         "RES_LITE",
         "BERSERK",
       ],
+      "equip_kind": [
+        {
+          "id": 68,
+          "probability": "1_IN_1",
+          "grade": 0,
+          "dice": "1d1",
+        },
+      ],
       "skill": {
         "list": ["DISPEL"],
         "probability": "1_IN_7",
@@ -94533,6 +94605,14 @@
         "EAT_GIVE_STR",
         "EAT_LOSE_INT",
         "EAT_LOSE_WIS",
+      ],
+      "equip_kind": [
+        {
+          "id": 41,
+          "probability": "1_IN_1",
+          "grade": 0,
+          "dice": "1d1",
+        },
       ],
     },
     {
@@ -113640,6 +113720,14 @@
         "NO_CONF",
         "NO_SLEEP",
       ],
+      "equip_kind": [
+        {
+          "id": 67,
+          "probability": "1_IN_1",
+          "grade": 0,
+          "dice": "1d1",
+        },
+      ],
     },
     {
       "id": 1788,
@@ -120605,6 +120693,14 @@
         "IM_ELEC",
         "RES_DARK",
       ],
+      "equip_kind": [
+        {
+          "id": 68,
+          "probability": "1_IN_1",
+          "grade": 0,
+          "dice": "1d1",
+        },
+      ],
     },
     {
       "id": 1899,
@@ -121598,6 +121694,14 @@
         "IM_FIRE",
         "IM_COLD",
         "IM_POIS",
+      ],
+      "equip_kind": [
+        {
+          "id": 399,
+          "probability": "1_IN_1",
+          "grade": 0,
+          "dice": "1d1",
+        },
       ],
       "skill": {
         "list": ["HEAL", "BA_LITE", "CAUSE_3"],
@@ -134323,7 +134427,7 @@
       "equip_kind": [
         {
           "id": 64,
-          "probability": "1_IN_5",
+          "probability": "1_IN_1",
           "grade": 0,
           "dice": "1d1",
         },
