@@ -67,6 +67,9 @@ const std::array<BodySlotPolicy, enum2i(BodyStructureType::MAX)> body_slot_polic
 
     // VORTEX: 渦・竜巻・奔流。回転する現象そのもので装備枠一切なし
     BodySlotPolicy(BodySlotPolicy::SlotMask{}, {}),
+
+    // XAREN: 岩を泳ぐ多腕多脚の異形。手足の形が人型と異なり装備枠一切なし
+    BodySlotPolicy(BodySlotPolicy::SlotMask{}, {}),
 };
 
 }
@@ -94,6 +97,8 @@ std::string_view body_structure_name(BodyStructureType type)
         return _("気体", "gaseous");
     case BodyStructureType::VORTEX:
         return _("ボルテックス", "vortex");
+    case BodyStructureType::XAREN:
+        return _("ザレン型", "xaren");
     case BodyStructureType::MAX:
         break;
     }
@@ -116,6 +121,7 @@ TERM_COLOR body_structure_color(BodyStructureType type)
     case BodyStructureType::FORMLESS:
     case BodyStructureType::GASEOUS:
     case BodyStructureType::VORTEX:
+    case BodyStructureType::XAREN:
     case BodyStructureType::MAX:
         break;
     }
