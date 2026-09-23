@@ -163,9 +163,11 @@ INCORPOREAL を対象とし、後 4 種は Phase 2 (extended slots) で
 
 **実装状況 (現行)**: 上記のうち INSECTOID / AVIAN / AQUATIC は未実装で、
 実際の enum は `HUMANOID(0)` 〜 `DRACONIC(6)` に **`FORMLESS(7)`** /
-**`GASEOUS(8)`** / **`VORTEX(9)`** を加えた 10 種。`FORMLESS` (不定形) は
-「決まった形を持たない塊・雲・霧」用、`GASEOUS` (気体) は「毒ガス・煙・蒸気」用、
-`VORTEX` (ボルテックス) は「渦・竜巻・奔流」用で、
+**`GASEOUS(8)`** / **`VORTEX(9)`** / **`XAREN(10)`** を加えた 11 種。
+`FORMLESS` (不定形) は「決まった形を持たない塊・雲・霧」用、
+`GASEOUS` (気体) は「毒ガス・煙・蒸気」用、
+`VORTEX` (ボルテックス) は「渦・竜巻・奔流」用、
+`XAREN` (ザレン型) は「岩を泳ぐ多腕多脚の異形」用で、
 **いずれも装備枠が一切ない** (`AMORPHOUS` が持つ擬足の指輪すら無い)。
 `AMORPHOUS` の表示名は `FORMLESS` 追加にあわせて「不定形」から
 **「粘体型」** に変更した (スライム・ゼリー・モルド等 114 体が該当し、
@@ -197,6 +199,7 @@ const BodySlotPolicy &get_body_slot_policy(BodyStructureType type);
 | FORMLESS | × | × | × | × | × | × | × | × | × | × | × |
 | GASEOUS | × | × | × | × | × | × | × | × | × | × | × |
 | VORTEX | × | × | × | × | × | × | × | × | × | × | × |
+| XAREN | × | × | × | × | × | × | × | × | × | × | × |
 
 `ASSHOLE` スロット (尻穴) は HUMANOID 以外は基本的に無効
 (独自仕様だが SERPENTINE は example として有効でもよい)。
