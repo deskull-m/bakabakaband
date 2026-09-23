@@ -5691,6 +5691,14 @@
         "OPEN_DOOR",
         "BASH_DOOR",
       ],
+      "equip_kind": [
+        {
+          "id": 73,
+          "probability": "1_IN_1",
+          "grade": 0,
+          "dice": "1d1",
+        },
+      ],
     },
     {
       "id": 117,
@@ -9100,6 +9108,14 @@
         "RES_DARK",
         "EAT_BERSERKER",
       ],
+      "equip_kind": [
+        {
+          "id": 42,
+          "probability": "1_IN_1",
+          "grade": 0,
+          "dice": "1d1",
+        },
+      ],
       "skill": {
         "list": ["MISSILE"],
         "probability": "1_IN_12",
@@ -11320,6 +11336,14 @@
         "BASH_DOOR",
         "DROP_SKELETON",
         "DROP_CORPSE",
+      ],
+      "equip_kind": [
+        {
+          "id": 101,
+          "probability": "1_IN_1",
+          "grade": 0,
+          "dice": "1d1",
+        },
       ],
       "skill": {
         "list": ["HEAL", "SCARE", "CAUSE_2", "S_MONSTER"],
@@ -14499,6 +14523,14 @@
         "ORC",
         "RES_DARK",
         "SPEAK_ALL",
+      ],
+      "equip_kind": [
+        {
+          "id": 556,
+          "probability": "1_IN_1",
+          "grade": 0,
+          "dice": "1d1",
+        },
       ],
     },
     {
@@ -17896,6 +17928,14 @@
         "EVIL",
         "HURT_LITE",
         "RES_DARK",
+      ],
+      "equip_kind": [
+        {
+          "id": 556,
+          "probability": "1_IN_1",
+          "grade": 0,
+          "dice": "1d1",
+        },
       ],
       "skill": {
         "list": ["HASTE", "BLIND", "CONF", "DARKNESS", "BO_FIRE", "BO_COLD", "MISSILE"],
@@ -22705,6 +22745,14 @@
         "EVIL",
         "GIANT",
         "MAGE",
+      ],
+      "equip_kind": [
+        {
+          "id": 101,
+          "probability": "1_IN_1",
+          "grade": 0,
+          "dice": "1d1",
+        },
       ],
       "skill": {
         "list": ["HEAL", "HOLD", "TRAPS", "BA_COLD", "S_MONSTER"],
@@ -57098,6 +57146,14 @@
         "OGRE",
         "WILD_WASTE",
       ],
+      "equip_kind": [
+        {
+          "id": 108,
+          "probability": "1_IN_1",
+          "grade": 0,
+          "dice": "1d1",
+        },
+      ],
     },
     {
       "id": 908,
@@ -60483,6 +60539,14 @@
         "EVIL",
         "RES_DARK",
         "SOLDIER",
+      ],
+      "equip_kind": [
+        {
+          "id": 75,
+          "probability": "1_IN_1",
+          "grade": 0,
+          "dice": "1d1",
+        },
       ],
     },
     {
@@ -65852,6 +65916,20 @@
       },
       "sex": "MALE",
       "flags": ["HUMAN", "DROP_1D2", "TAKE_ITEM", "OPEN_DOOR", "BASH_DOOR", "RANGER"],
+      "equip_kind": [
+        {
+          "id": 42,
+          "probability": "1_IN_1",
+          "grade": 0,
+          "dice": "1d1",
+        },
+        {
+          "id": 73,
+          "probability": "1_IN_1",
+          "grade": 0,
+          "dice": "1d1",
+        },
+      ],
     },
     {
       "id": 1040,
@@ -83480,6 +83558,14 @@
         "OPEN_DOOR",
         "BASH_DOOR",
       ],
+      "equip_kind": [
+        {
+          "id": 131,
+          "probability": "1_IN_1",
+          "grade": 0,
+          "dice": "1d1",
+        },
+      ],
       "spawn_creature": [
         {
           "id": 1311,
@@ -93523,6 +93609,14 @@
         "GOOD",
         "HOMO_SEXUAL",
         "PALADIN",
+      ],
+      "equip_kind": [
+        {
+          "id": 42,
+          "probability": "1_IN_1",
+          "grade": 0,
+          "dice": "1d1",
+        },
       ],
     },
     {
@@ -106572,6 +106666,14 @@
         "ja": "葦名の谷底、落ち谷に住む猿だ。恐るべき賢さで、刃物や銃器まで扱う。",
       },
       "flags": ["DROP_60", "ANIMAL", "DROP_SKELETON", "DROP_CORPSE", "FRIENDS", "ONLY_ITEM"],
+      "equip_kind": [
+        {
+          "id": 43,
+          "probability": "1_IN_1",
+          "grade": 0,
+          "dice": "1d1",
+        },
+      ],
     },
     {
       "id": 1676,
@@ -112585,6 +112687,20 @@
         "RES_NETH",
         "NO_STUN",
       ],
+      "equip_kind": [
+        {
+          "id": 42,
+          "probability": "1_IN_1",
+          "grade": 0,
+          "dice": "1d1",
+        },
+        {
+          "id": 73,
+          "probability": "1_IN_1",
+          "grade": 0,
+          "dice": "1d1",
+        },
+      ],
     },
     {
       "id": 1769,
@@ -117718,6 +117834,14 @@
         "EAT_GIVE_DEX",
         "EAT_POISONOUS",
       ],
+      "equip_kind": [
+        {
+          "id": 43,
+          "probability": "1_IN_1",
+          "grade": 0,
+          "dice": "1d1",
+        },
+      ],
     },
     {
       "id": 1849,
@@ -118840,6 +118964,14 @@
         "OPEN_DOOR",
         "DROP_CORPSE",
         "DROP_SKELETON",
+      ],
+      "equip_kind": [
+        {
+          "id": 533,
+          "probability": "1_IN_1",
+          "grade": 0,
+          "dice": "1d1",
+        },
       ],
     },
     {
@@ -122280,6 +122412,14 @@
         "WARRIOR",
         "ELF",
       ],
+      "equip_kind": [
+        {
+          "id": 73,
+          "probability": "1_IN_1",
+          "grade": 0,
+          "dice": "1d1",
+        },
+      ],
     },
     {
       "id": 1924,
@@ -122803,6 +122943,14 @@
         "IM_ACID",
         "RES_LITE",
       ],
+      "equip_kind": [
+        {
+          "id": 101,
+          "probability": "1_IN_1",
+          "grade": 0,
+          "dice": "1d1",
+        },
+      ],
       "skill": {
         "list": ["BLIND", "CONF", "MISSILE", "SLOW"],
         "probability": "1_IN_6",
@@ -123014,6 +123162,14 @@
         "NO_CONF",
         "NO_FEAR",
         "HUMAN",
+      ],
+      "equip_kind": [
+        {
+          "id": 563,
+          "probability": "1_IN_1",
+          "grade": 0,
+          "dice": "1d1",
+        },
       ],
     },
     {
@@ -133638,6 +133794,14 @@
         "EVIL",
         "TURTLE",
       ],
+      "equip_kind": [
+        {
+          "id": 101,
+          "probability": "1_IN_1",
+          "grade": 0,
+          "dice": "1d1",
+        },
+      ],
       "skill": {
         "list": [
           "TPORT",
@@ -140146,6 +140310,20 @@
         "ja": "一部の世界では極なじみ深い半人半馬の種族だ。弓と槍に長けている。",
       },
       "flags": ["CAN_FLY", "DROP_CORPSE", "BASH_DOOR", "HUMAN", "RIDING"],
+      "equip_kind": [
+        {
+          "id": 73,
+          "probability": "1_IN_1",
+          "grade": 0,
+          "dice": "1d1",
+        },
+        {
+          "id": 64,
+          "probability": "1_IN_1",
+          "grade": 0,
+          "dice": "1d1",
+        },
+      ],
     },
     {
       "id": 2213,
@@ -142999,6 +143177,14 @@
         "WARRIOR",
         "FRIENDS",
         "CAN_SWIM",
+      ],
+      "equip_kind": [
+        {
+          "id": 558,
+          "probability": "1_IN_1",
+          "grade": 0,
+          "dice": "1d1",
+        },
       ],
     },
     {
@@ -148705,6 +148891,14 @@
         },
       ],
       "flags": ["DROP_60", "OPEN_DOOR", "IM_ACID"],
+      "equip_kind": [
+        {
+          "id": 73,
+          "probability": "1_IN_1",
+          "grade": 0,
+          "dice": "1d1",
+        },
+      ],
       "skill": {
         "probability": "1_IN_4",
         "shoot": "1d6",
