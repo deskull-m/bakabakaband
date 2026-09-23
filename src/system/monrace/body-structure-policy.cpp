@@ -64,6 +64,9 @@ const std::array<BodySlotPolicy, enum2i(BodyStructureType::MAX)> body_slot_polic
 
     // GASEOUS: 毒ガス・煙・蒸気。実体が希薄で装備枠一切なし
     BodySlotPolicy(BodySlotPolicy::SlotMask{}, {}),
+
+    // VORTEX: 渦・竜巻・奔流。回転する現象そのもので装備枠一切なし
+    BodySlotPolicy(BodySlotPolicy::SlotMask{}, {}),
 };
 
 }
@@ -89,6 +92,8 @@ std::string_view body_structure_name(BodyStructureType type)
         return _("不定形", "formless");
     case BodyStructureType::GASEOUS:
         return _("気体", "gaseous");
+    case BodyStructureType::VORTEX:
+        return _("ボルテックス", "vortex");
     case BodyStructureType::MAX:
         break;
     }
@@ -110,6 +115,7 @@ TERM_COLOR body_structure_color(BodyStructureType type)
     case BodyStructureType::AMORPHOUS:
     case BodyStructureType::FORMLESS:
     case BodyStructureType::GASEOUS:
+    case BodyStructureType::VORTEX:
     case BodyStructureType::MAX:
         break;
     }
