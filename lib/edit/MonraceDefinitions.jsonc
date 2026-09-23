@@ -42310,6 +42310,14 @@
         "IM_FIRE",
         "FORCE_MAXHP",
       ],
+      "equip_kind": [
+        {
+          "id": 55,
+          "probability": "1_IN_1",
+          "grade": 0,
+          "dice": "1d1",
+        },
+      ],
       "skill": {
         "list": ["BO_PLAS", "BA_FIRE"],
         "probability": "1_IN_5",
@@ -42750,6 +42758,14 @@
         "NO_CONF",
         "NO_SLEEP",
       ],
+      "equip_kind": [
+        {
+          "id": 67,
+          "probability": "1_IN_1",
+          "grade": 0,
+          "dice": "1d1",
+        },
+      ],
       "skill": {
         "list": ["SLOW", "SHOOT", "BO_MANA", "BO_PLAS", "BA_ELEC", "BR_FORC"],
         "probability": "1_IN_6",
@@ -42821,6 +42837,20 @@
         "OPEN_DOOR",
         "BASH_DOOR",
         "EVIL",
+      ],
+      "equip_kind": [
+        {
+          "id": 116,
+          "probability": "1_IN_1",
+          "grade": 0,
+          "dice": "1d1",
+        },
+        {
+          "id": 95,
+          "probability": "1_IN_1",
+          "grade": 0,
+          "dice": "1d1",
+        },
       ],
       "skill": {
         "list": ["BLIND", "SCARE", "CAUSE_3", "BA_NETH", "BA_FIRE", "BO_PLAS", "S_MONSTERS"],
@@ -45024,6 +45054,20 @@
         "NO_SLEEP",
         "NO_FEAR",
       ],
+      "equip_kind": [
+        {
+          "id": 67,
+          "probability": "1_IN_1",
+          "grade": 0,
+          "dice": "1d1",
+        },
+        {
+          "id": 49,
+          "probability": "1_IN_1",
+          "grade": 0,
+          "dice": "1d1",
+        },
+      ],
     },
     {
       "id": 759,
@@ -46039,6 +46083,14 @@
         "IM_POIS",
         "NO_CONF",
         "NO_SLEEP",
+      ],
+      "equip_kind": [
+        {
+          "id": 36,
+          "probability": "1_IN_1",
+          "grade": 0,
+          "dice": "1d1",
+        },
       ],
       "skill": {
         "list": [
@@ -47647,6 +47699,14 @@
         "OPEN_DOOR",
         "BASH_DOOR",
       ],
+      "equip_kind": [
+        {
+          "id": 42,
+          "probability": "1_IN_1",
+          "grade": 0,
+          "dice": "1d1",
+        },
+      ],
       "skill": {
         "list": [
           "SCARE",
@@ -48110,6 +48170,14 @@
         "OPEN_DOOR",
         "BASH_DOOR",
       ],
+      "equip_kind": [
+        {
+          "id": 115,
+          "probability": "1_IN_1",
+          "grade": 0,
+          "dice": "1d1",
+        },
+      ],
     },
     {
       "id": 795,
@@ -48567,6 +48635,14 @@
         "IM_COLD",
         "SMART",
         "REGENERATE",
+      ],
+      "equip_kind": [
+        {
+          "id": 43,
+          "probability": "1_IN_1",
+          "grade": 0,
+          "dice": "1d1",
+        },
       ],
       "skill": {
         "list": [
@@ -49658,6 +49734,20 @@
         "IM_ELEC",
         "REGENERATE",
       ],
+      "equip_kind": [
+        {
+          "id": 536,
+          "probability": "1_IN_1",
+          "grade": 0,
+          "dice": "1d1",
+        },
+        {
+          "id": 123,
+          "probability": "1_IN_1",
+          "grade": 0,
+          "dice": "1d1",
+        },
+      ],
       "skill": {
         "list": [
           "BLIND",
@@ -50300,6 +50390,20 @@
         "IM_ELEC",
         "REGENERATE",
       ],
+      "equip_kind": [
+        {
+          "id": 42,
+          "probability": "1_IN_1",
+          "grade": 0,
+          "dice": "1d1",
+        },
+        {
+          "id": 123,
+          "probability": "1_IN_1",
+          "grade": 0,
+          "dice": "1d1",
+        },
+      ],
       "skill": {
         "list": [
           "SCARE",
@@ -50602,6 +50706,14 @@
         "IM_ELEC",
         "IM_FIRE",
         "REGENERATE",
+      ],
+      "equip_kind": [
+        {
+          "id": 66,
+          "probability": "1_IN_1",
+          "grade": 0,
+          "dice": "1d1",
+        },
       ],
       "skill": {
         "list": [
@@ -51766,6 +51878,14 @@
         "IM_POIS",
         "HURT_COLD",
         "GIANT",
+      ],
+      "equip_kind": [
+        {
+          "id": 524,
+          "probability": "1_IN_1",
+          "grade": 0,
+          "dice": "1d1",
+        },
       ],
       "skill": {
         "list": [
@@ -53004,6 +53124,20 @@
         "POWERFUL",
         "GREAT_OLD_ONE",
       ],
+      "equip_kind": [
+        {
+          "id": 101,
+          "probability": "1_IN_1",
+          "grade": 0,
+          "dice": "1d1",
+        },
+        {
+          "id": 99,
+          "probability": "1_IN_1",
+          "grade": 0,
+          "dice": "1d1",
+        },
+      ],
       "skill": {
         "list": [
           "TELE_AWAY",
@@ -53433,6 +53567,14 @@
         "NO_CONF",
         "NO_SLEEP",
         "NO_STUN",
+      ],
+      "equip_kind": [
+        {
+          "id": 49,
+          "probability": "1_IN_1",
+          "grade": 0,
+          "dice": "1d1",
+        },
       ],
       "skill": {
         "list": ["BR_FIRE", "BR_NETH", "S_KIN", "S_DEMON"],
@@ -53871,6 +54013,14 @@
         "NO_SLEEP",
         "NO_FEAR",
       ],
+      "equip_kind": [
+        {
+          "id": 37,
+          "probability": "1_IN_1",
+          "grade": 0,
+          "dice": "1d1",
+        },
+      ],
       "skill": {
         "list": [
           "TPORT",
@@ -53983,6 +54133,20 @@
         "IM_ELEC",
         "IM_POIS",
         "RES_DARK",
+      ],
+      "equip_kind": [
+        {
+          "id": 498,
+          "probability": "1_IN_1",
+          "grade": 0,
+          "dice": "1d1",
+        },
+        {
+          "id": 98,
+          "probability": "1_IN_1",
+          "grade": 0,
+          "dice": "1d1",
+        },
       ],
       "skill": {
         "list": [
@@ -63789,6 +63953,20 @@
         "EVIL",
         "MAGE",
       ],
+      "equip_kind": [
+        {
+          "id": 101,
+          "probability": "1_IN_1",
+          "grade": 0,
+          "dice": "1d1",
+        },
+        {
+          "id": 581,
+          "probability": "1_IN_1",
+          "grade": 0,
+          "dice": "1d1",
+        },
+      ],
       "skill": {
         "list": [
           "CAUSE_3",
@@ -65081,6 +65259,14 @@
         "EVIL",
         "NO_CONF",
         "NO_SLEEP",
+      ],
+      "equip_kind": [
+        {
+          "id": 101,
+          "probability": "1_IN_1",
+          "grade": 0,
+          "dice": "1d1",
+        },
       ],
       "skill": {
         "list": [
@@ -67137,6 +67323,14 @@
         "HURT_LITE",
         "NO_CONF",
         "NO_SLEEP",
+      ],
+      "equip_kind": [
+        {
+          "id": 101,
+          "probability": "1_IN_1",
+          "grade": 0,
+          "dice": "1d1",
+        },
       ],
       "skill": {
         "list": [
@@ -69504,6 +69698,14 @@
         "NO_CONF",
         "DROP_CORPSE",
         "DROP_SKELETON",
+      ],
+      "equip_kind": [
+        {
+          "id": 588,
+          "probability": "1_IN_1",
+          "grade": 0,
+          "dice": "1d1",
+        },
       ],
     },
     {
@@ -108639,6 +108841,14 @@
         "IM_ELEC",
         "IM_POIS",
       ],
+      "equip_kind": [
+        {
+          "id": 627,
+          "probability": "1_IN_1",
+          "grade": 0,
+          "dice": "1d1",
+        },
+      ],
       "skill": {
         "list": ["HASTE", "HEAL"],
         "probability": "1_IN_3",
@@ -117511,6 +117721,14 @@
         "POWERFUL",
         "CAN_FLY",
       ],
+      "equip_kind": [
+        {
+          "id": 29,
+          "probability": "1_IN_1",
+          "grade": 0,
+          "dice": "1d1",
+        },
+      ],
     },
     {
       "id": 1844,
@@ -121427,6 +121645,14 @@
         "IM_FIRE",
         "REGENERATE",
       ],
+      "equip_kind": [
+        {
+          "id": 524,
+          "probability": "1_IN_1",
+          "grade": 0,
+          "dice": "1d1",
+        },
+      ],
       "skill": {
         "list": ["SCARE", "HASTE", "HEAL"],
         "probability": "1_IN_4",
@@ -124608,6 +124834,14 @@
         "NO_CONF",
         "NO_FEAR",
         "SAMURAI",
+      ],
+      "equip_kind": [
+        {
+          "id": 41,
+          "probability": "1_IN_1",
+          "grade": 0,
+          "dice": "1d1",
+        },
       ],
       "skill": {
         "list": ["BR_FORC"],
