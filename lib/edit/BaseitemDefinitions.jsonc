@@ -27646,5 +27646,40 @@
         "en": "A red beret worn as the mark of an elite unit. As armour it is little better than a military cap, but it speaks volumes of the battles its wearer has survived.",
       },
     },
+    {
+      "id": 831,
+      "name": {
+        "ja": "黄金の槍",
+        "en": "& Golden Spear~",
+      },
+      "symbol": {
+        "character": "/",
+        "color": "Yellow",
+      },
+      "itemkind": {
+        "type_value": 22,
+        "subtype_value": 31,
+      },
+      "parameter_value": 0,
+      "level": 55,
+      "weight": 300,
+      "cost": 1800,
+      "base_ac": 0,
+      "base_dice": "2d9",
+      "hit_bonus": 0,
+      "damage_bonus": 0,
+      "ac_bonus": 0,
+      "allocations": [
+        {
+          "depth": 55,
+          "rarity": 8,
+        },
+      ],
+      "flags": ["SHOW_MODS", "RIDING"],
+      "flavor": {
+        "ja": "黄金に輝く穂先を持つ長大な槍だ。金は武具の材としては柔らかすぎるはずだが、この槍はそれを感じさせない不気味な重みを備えている。",
+        "en": "A great spear with a head of shining gold.  Gold should be far too soft for a weapon, yet this one carries an uncanny weight that says otherwise.",
+      },
+    },
   ],
 }
