@@ -25,17 +25,18 @@
 | 分類調整 | D → DRACONIC、n → HUMANOID リファインメント | ✅ |
 
 **現状分類分布**:
-- HUMANOID:    1344 (フル装備可能)
+- HUMANOID:    1310 (フル装備可能)
 - DRACONIC:      77 (フル装備 + TAIL_RING + WING_L + WING_R)
 - QUADRUPED:    293 (首/胴体/頭のみ)
 - INSECTOID:     67 (首/胴体/頭のみ。QUADRUPED と同一構成)
 - INCORPOREAL:  317 (装備不可)
 - AMORPHOUS:    109 (リング 2 個のみ)
 - WORM:          47 (首/胴体 + TAIL_RING)
+- WINGED_HUMANOID: 46 (HUMANOID から体の上を除く + WING_L + WING_R)
 - AVIAN:         39 (首/胴体/頭/脚 + WING_L + WING_R)
 - SERPENTINE:     1 (首/胴体 + TAIL_RING。コカトリスのみ)
 - VORTEX:        20 (装備不可)
-- BIPEDAL:       14 (首/光源/胴体/頭/脚)
+- BIPEDAL:       11 (首/光源/胴体/頭/脚)
 - FORMLESS:      12 (装備不可)
 - GASEOUS:       10 (装備不可)
 - XAREN:          3 (装備不可)
@@ -171,7 +172,7 @@ INCORPOREAL を対象とし、後 4 種は Phase 2 (extended slots) で
 **実装状況 (現行)**: 上記のうち AQUATIC のみ未実装で、
 実際の enum は `HUMANOID(0)` 〜 `DRACONIC(6)` に **`FORMLESS(7)`** /
 **`GASEOUS(8)`** / **`VORTEX(9)`** / **`XAREN(10)`** / **`AVIAN(11)`** /
-**`WORM(12)`** / **`INSECTOID(13)`** を加えた 14 種
+**`WORM(12)`** / **`INSECTOID(13)`** / **`WINGED_HUMANOID(14)`** を加えた 15 種
 (当初案と異なり `AVIAN` は 11 番、`INSECTOID` は 13 番)。
 `FORMLESS` (不定形) は「決まった形を持たない塊・雲・霧」用、
 `GASEOUS` (気体) は「毒ガス・煙・蒸気」用、
@@ -190,6 +191,10 @@ INCORPOREAL を対象とし、後 4 種は Phase 2 (extended slots) で
 `SERPENTINE` に残っていた多足類はここへ移り、**`SERPENTINE` には
 コカトリス 1 体だけが残っている** (鶏の体に蛇の尾という構成上、
 首・胴体 + 尾の指輪が適合するため据え置き)。
+`WINGED_HUMANOID` (有翼人) は「有翼のデーモン・天使のように、人型の体に
+翼が生えた存在」用で、スロット構成は **`HUMANOID` から体の上 (クローク) だけを
+除いた全スロット** + 両翼の装飾。背の翼が邪魔でマントの類を羽織れない一方、
+手も脚も人型なので武器・防具は通常どおり扱える。
 `AMORPHOUS` の表示名は `FORMLESS` 追加にあわせて「不定形」から
 **「粘体型」** に変更した (スライム・ゼリー・モルド等 114 体が該当し、
 enum コメントの「スライム・ジェル」という実態に沿わせたもの)。
@@ -224,6 +229,7 @@ const BodySlotPolicy &get_body_slot_policy(BodyStructureType type);
 | AVIAN | × | × | × | × | ○ | × | ○ | × | ○ | × | ○ |
 | WORM | × | × | × | × | ○ | × | ○ | × | × | × | × |
 | INSECTOID | × | × | × | × | ○ | × | ○ | × | ○ | × | × |
+| WINGED_HUMANOID | ○ | ○ | ○ | ○ | ○ | ○ | ○ | × | ○ | ○ | ○ |
 
 `ASSHOLE` スロット (尻穴) は HUMANOID 以外は基本的に無効
 (独自仕様だが SERPENTINE は example として有効でもよい)。
