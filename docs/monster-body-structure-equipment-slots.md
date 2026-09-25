@@ -30,8 +30,9 @@
 - QUADRUPED:    345 (首/胴体/頭のみ)
 - INCORPOREAL:  317 (装備不可)
 - AMORPHOUS:    109 (リング 2 個のみ)
-- SERPENTINE:    63 (首/胴体 + TAIL_RING)
+- WORM:          47 (首/胴体 + TAIL_RING)
 - AVIAN:         39 (首/胴体/頭/脚 + WING_L + WING_R)
+- SERPENTINE:    16 (首/胴体 + TAIL_RING。多足類の暫定置き場)
 - VORTEX:        20 (装備不可)
 - BIPEDAL:       14 (首/光源/胴体/頭/脚)
 - FORMLESS:      12 (装備不可)
@@ -168,8 +169,8 @@ INCORPOREAL を対象とし、後 4 種は Phase 2 (extended slots) で
 
 **実装状況 (現行)**: 上記のうち INSECTOID / AQUATIC は未実装で、
 実際の enum は `HUMANOID(0)` 〜 `DRACONIC(6)` に **`FORMLESS(7)`** /
-**`GASEOUS(8)`** / **`VORTEX(9)`** / **`XAREN(10)`** / **`AVIAN(11)`** を
-加えた 12 種 (当初案と異なり `AVIAN` は末尾の 11 番)。
+**`GASEOUS(8)`** / **`VORTEX(9)`** / **`XAREN(10)`** / **`AVIAN(11)`** /
+**`WORM(12)`** を加えた 13 種 (当初案と異なり `AVIAN` は末尾の 11 番)。
 `FORMLESS` (不定形) は「決まった形を持たない塊・雲・霧」用、
 `GASEOUS` (気体) は「毒ガス・煙・蒸気」用、
 `VORTEX` (ボルテックス) は「渦・竜巻・奔流」用、
@@ -177,6 +178,11 @@ INCORPOREAL を対象とし、後 4 種は Phase 2 (extended slots) で
 **この 4 種はいずれも装備枠が一切ない** (`AMORPHOUS` が持つ擬足の指輪すら無い)。
 `AVIAN` (鳥型) は「前肢が完全な翼になった鳥類」用で、
 **首・胴体・頭・脚 + 両翼の装飾** を持つ (`BIPEDAL` から光源を除いた形)。
+`WORM` (長胴型) は「ミミズ〜蛇〜東洋竜のような、手足を持たない長い胴が
+身体の主体である生き物」用で、スロット構成は `SERPENTINE` と同一
+(**首・胴体 + 尾の指輪**)。**`SERPENTINE` が担っていた意味論の実体は
+こちらへ移り**、`SERPENTINE` には多足類 (ムカデ等) 16 体だけが残っている
+(`INSECTOID` を実装する際に再仕分けする暫定状態)。
 `AMORPHOUS` の表示名は `FORMLESS` 追加にあわせて「不定形」から
 **「粘体型」** に変更した (スライム・ゼリー・モルド等 114 体が該当し、
 enum コメントの「スライム・ジェル」という実態に沿わせたもの)。
@@ -209,6 +215,7 @@ const BodySlotPolicy &get_body_slot_policy(BodyStructureType type);
 | VORTEX | × | × | × | × | × | × | × | × | × | × | × |
 | XAREN | × | × | × | × | × | × | × | × | × | × | × |
 | AVIAN | × | × | × | × | ○ | × | ○ | × | ○ | × | ○ |
+| WORM | × | × | × | × | ○ | × | ○ | × | × | × | × |
 
 `ASSHOLE` スロット (尻穴) は HUMANOID 以外は基本的に無効
 (独自仕様だが SERPENTINE は example として有効でもよい)。

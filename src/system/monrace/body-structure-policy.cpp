@@ -73,6 +73,9 @@ const std::array<BodySlotPolicy, enum2i(BodyStructureType::MAX)> body_slot_polic
 
     // AVIAN: 鳥型。前肢が完全な翼で武器も光源も持てない。首・胴体・頭・脚 + 両翼の装飾
     BodySlotPolicy(make_mask({ INVEN_NECK, INVEN_BODY, INVEN_HEAD, INVEN_FEET }), { ExtendedSlotType::WING_LEFT, ExtendedSlotType::WING_RIGHT }),
+
+    // WORM: 長胴型。手足を持たない長い胴が身体の主体。首・胴体 + 尾の指輪
+    BodySlotPolicy(make_mask({ INVEN_NECK, INVEN_BODY }), { ExtendedSlotType::TAIL_RING }),
 };
 
 }
@@ -104,6 +107,8 @@ std::string_view body_structure_name(BodyStructureType type)
         return _("ザレン型", "xaren");
     case BodyStructureType::AVIAN:
         return _("鳥型", "avian");
+    case BodyStructureType::WORM:
+        return _("長胴型", "worm");
     case BodyStructureType::MAX:
         break;
     }
@@ -128,6 +133,7 @@ TERM_COLOR body_structure_color(BodyStructureType type)
     case BodyStructureType::VORTEX:
     case BodyStructureType::XAREN:
     case BodyStructureType::AVIAN:
+    case BodyStructureType::WORM:
     case BodyStructureType::MAX:
         break;
     }
