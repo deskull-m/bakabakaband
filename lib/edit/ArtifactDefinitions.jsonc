@@ -9914,11 +9914,11 @@
       },
       "base_item": {
         "type_value": 22,
-        "subtype_value": 2,
+        "subtype_value": 31,
       },
       "parameter_value": 3,
       "level": 110,
-      "rarity": 100,
+      "rarity": 255,
       "weight": 800,
       "cost": 190000,
       "base_ac": 0,
@@ -9928,6 +9928,7 @@
       "ac_bonus": -10,
       "flags": [
         "FULL_NAME",
+        "INSTA_ART",
         "SPEED",
         "STR",
         "INT",

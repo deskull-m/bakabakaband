@@ -27669,13 +27669,7 @@
       "hit_bonus": 0,
       "damage_bonus": 0,
       "ac_bonus": 0,
-      "allocations": [
-        {
-          "depth": 55,
-          "rarity": 8,
-        },
-      ],
-      "flags": ["SHOW_MODS", "RIDING"],
+      "flags": ["SHOW_MODS", "INSTA_ART", "RIDING"],
       "flavor": {
         "ja": "黄金に輝く穂先を持つ長大な槍だ。金は武具の材としては柔らかすぎるはずだが、この槍はそれを感じさせない不気味な重みを備えている。",
         "en": "A great spear with a head of shining gold.  Gold should be far too soft for a weapon, yet this one carries an uncanny weight that says otherwise.",

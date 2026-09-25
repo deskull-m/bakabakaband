@@ -54136,16 +54136,16 @@
       ],
       "equip_kind": [
         {
-          "id": 831,
-          "probability": "1_IN_1",
-          "grade": 0,
-          "dice": "1d1",
-        },
-        {
           "id": 98,
           "probability": "1_IN_1",
           "grade": 0,
           "dice": "1d1",
+        },
+      ],
+      "artifacts": [
+        {
+          "drop_artifact_id": 269,
+          "drop_probability": 100,
         },
       ],
       "skill": {
