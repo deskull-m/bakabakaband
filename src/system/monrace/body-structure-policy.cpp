@@ -70,6 +70,9 @@ const std::array<BodySlotPolicy, enum2i(BodyStructureType::MAX)> body_slot_polic
 
     // XAREN: 岩を泳ぐ多腕多脚の異形。手足の形が人型と異なり装備枠一切なし
     BodySlotPolicy(BodySlotPolicy::SlotMask{}, {}),
+
+    // AVIAN: 鳥型。前肢が完全な翼で武器も光源も持てない。首・胴体・頭・脚 + 両翼の装飾
+    BodySlotPolicy(make_mask({ INVEN_NECK, INVEN_BODY, INVEN_HEAD, INVEN_FEET }), { ExtendedSlotType::WING_LEFT, ExtendedSlotType::WING_RIGHT }),
 };
 
 }
@@ -99,6 +102,8 @@ std::string_view body_structure_name(BodyStructureType type)
         return _("ボルテックス", "vortex");
     case BodyStructureType::XAREN:
         return _("ザレン型", "xaren");
+    case BodyStructureType::AVIAN:
+        return _("鳥型", "avian");
     case BodyStructureType::MAX:
         break;
     }
@@ -122,6 +127,7 @@ TERM_COLOR body_structure_color(BodyStructureType type)
     case BodyStructureType::GASEOUS:
     case BodyStructureType::VORTEX:
     case BodyStructureType::XAREN:
+    case BodyStructureType::AVIAN:
     case BodyStructureType::MAX:
         break;
     }
