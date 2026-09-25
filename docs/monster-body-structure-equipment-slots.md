@@ -25,13 +25,18 @@
 | 分類調整 | D → DRACONIC、n → HUMANOID リファインメント | ✅ |
 
 **現状分類分布**:
-- HUMANOID:    1326 (フル装備可能)
-- DRACONIC:      76 (フル装備 + TAIL_RING + WING_L + WING_R)
-- QUADRUPED:    366 (首/胴体/頭のみ)
-- INCORPOREAL:  350 (装備不可)
-- AMORPHOUS:    114 (リング 2 個のみ)
+- HUMANOID:    1344 (フル装備可能)
+- DRACONIC:      77 (フル装備 + TAIL_RING + WING_L + WING_R)
+- QUADRUPED:    345 (首/胴体/頭のみ)
+- INCORPOREAL:  317 (装備不可)
+- AMORPHOUS:    109 (リング 2 個のみ)
 - SERPENTINE:    63 (首/胴体 + TAIL_RING)
-- BIPEDAL:       52 (首/光源/胴体/頭/脚)
+- AVIAN:         39 (首/胴体/頭/脚 + WING_L + WING_R)
+- VORTEX:        20 (装備不可)
+- BIPEDAL:       14 (首/光源/胴体/頭/脚)
+- FORMLESS:      12 (装備不可)
+- GASEOUS:       10 (装備不可)
+- XAREN:          3 (装備不可)
 
 **実装ファイル一覧**:
 - `src/system/monrace/body-structure-types.h` (新規)
@@ -161,14 +166,17 @@ enum class BodyStructureType : uint8_t {
 INCORPOREAL を対象とし、後 4 種は Phase 2 (extended slots) で
 追加する。
 
-**実装状況 (現行)**: 上記のうち INSECTOID / AVIAN / AQUATIC は未実装で、
+**実装状況 (現行)**: 上記のうち INSECTOID / AQUATIC は未実装で、
 実際の enum は `HUMANOID(0)` 〜 `DRACONIC(6)` に **`FORMLESS(7)`** /
-**`GASEOUS(8)`** / **`VORTEX(9)`** / **`XAREN(10)`** を加えた 11 種。
+**`GASEOUS(8)`** / **`VORTEX(9)`** / **`XAREN(10)`** / **`AVIAN(11)`** を
+加えた 12 種 (当初案と異なり `AVIAN` は末尾の 11 番)。
 `FORMLESS` (不定形) は「決まった形を持たない塊・雲・霧」用、
 `GASEOUS` (気体) は「毒ガス・煙・蒸気」用、
 `VORTEX` (ボルテックス) は「渦・竜巻・奔流」用、
 `XAREN` (ザレン型) は「岩を泳ぐ多腕多脚の異形」用で、
-**いずれも装備枠が一切ない** (`AMORPHOUS` が持つ擬足の指輪すら無い)。
+**この 4 種はいずれも装備枠が一切ない** (`AMORPHOUS` が持つ擬足の指輪すら無い)。
+`AVIAN` (鳥型) は「前肢が完全な翼になった鳥類」用で、
+**首・胴体・頭・脚 + 両翼の装飾** を持つ (`BIPEDAL` から光源を除いた形)。
 `AMORPHOUS` の表示名は `FORMLESS` 追加にあわせて「不定形」から
 **「粘体型」** に変更した (スライム・ゼリー・モルド等 114 体が該当し、
 enum コメントの「スライム・ジェル」という実態に沿わせたもの)。
@@ -200,6 +208,7 @@ const BodySlotPolicy &get_body_slot_policy(BodyStructureType type);
 | GASEOUS | × | × | × | × | × | × | × | × | × | × | × |
 | VORTEX | × | × | × | × | × | × | × | × | × | × | × |
 | XAREN | × | × | × | × | × | × | × | × | × | × | × |
+| AVIAN | × | × | × | × | ○ | × | ○ | × | ○ | × | ○ |
 
 `ASSHOLE` スロット (尻穴) は HUMANOID 以外は基本的に無効
 (独自仕様だが SERPENTINE は example として有効でもよい)。
