@@ -33,6 +33,20 @@ BodySlotPolicy::SlotMask make_all_mask()
 }
 
 /*!
+ * @brief 指定スロット群だけを除いた全スロット有効な SlotMask
+ */
+BodySlotPolicy::SlotMask make_all_mask_except(std::initializer_list<inventory_slot_type> slots)
+{
+    auto mask = make_all_mask();
+    for (auto slot : slots) {
+        if (slot >= INVEN_MAIN_HAND && slot < INVEN_TOTAL) {
+            mask.reset(slot - INVEN_MAIN_HAND);
+        }
+    }
+    return mask;
+}
+
+/*!
  * @brief 体構造別ポリシー定義
  * @details docs/monster-body-structure-equipment-slots.md の表に対応。
  *          HUMANOID は全許可、その他は構造ごとに減算した個別マスクを定義。
@@ -79,6 +93,9 @@ const std::array<BodySlotPolicy, enum2i(BodyStructureType::MAX)> body_slot_polic
 
     // INSECTOID: 節足型。外骨格と多数の脚で人間用の武具が合わない。首・胴体・頭のみ
     BodySlotPolicy(make_mask({ INVEN_NECK, INVEN_BODY, INVEN_HEAD }), {}),
+
+    // WINGED_HUMANOID: 有翼人。背の翼が邪魔でクローク (体の上) だけ装備できない + 両翼の装飾
+    BodySlotPolicy(make_all_mask_except({ INVEN_OUTER }), { ExtendedSlotType::WING_LEFT, ExtendedSlotType::WING_RIGHT }),
 };
 
 }
@@ -114,6 +131,8 @@ std::string_view body_structure_name(BodyStructureType type)
         return _("長胴型", "worm");
     case BodyStructureType::INSECTOID:
         return _("節足型", "insectoid");
+    case BodyStructureType::WINGED_HUMANOID:
+        return _("有翼人", "winged humanoid");
     case BodyStructureType::MAX:
         break;
     }
@@ -140,6 +159,7 @@ TERM_COLOR body_structure_color(BodyStructureType type)
     case BodyStructureType::AVIAN:
     case BodyStructureType::WORM:
     case BodyStructureType::INSECTOID:
+    case BodyStructureType::WINGED_HUMANOID:
     case BodyStructureType::MAX:
         break;
     }
