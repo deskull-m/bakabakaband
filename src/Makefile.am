@@ -1611,6 +1611,8 @@ hengband_test_SOURCES = \
 	test/info-reader/test-info-reader-util.cpp \
 	test/info-reader/test-json-reader-util.cpp \
 	\
+	test/io/test-macro-configurations-store.cpp \
+	\
 	test/system/monrace/test-armament-level.cpp \
 	test/system/monrace/test-body-structure-policy.cpp \
 	test/system/monrace/test-monrace-max-level.cpp \
