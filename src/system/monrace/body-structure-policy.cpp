@@ -76,6 +76,9 @@ const std::array<BodySlotPolicy, enum2i(BodyStructureType::MAX)> body_slot_polic
 
     // WORM: 長胴型。手足を持たない長い胴が身体の主体。首・胴体 + 尾の指輪
     BodySlotPolicy(make_mask({ INVEN_NECK, INVEN_BODY }), { ExtendedSlotType::TAIL_RING }),
+
+    // INSECTOID: 節足型。外骨格と多数の脚で人間用の武具が合わない。首・胴体・頭のみ
+    BodySlotPolicy(make_mask({ INVEN_NECK, INVEN_BODY, INVEN_HEAD }), {}),
 };
 
 }
@@ -109,6 +112,8 @@ std::string_view body_structure_name(BodyStructureType type)
         return _("鳥型", "avian");
     case BodyStructureType::WORM:
         return _("長胴型", "worm");
+    case BodyStructureType::INSECTOID:
+        return _("節足型", "insectoid");
     case BodyStructureType::MAX:
         break;
     }
@@ -134,6 +139,7 @@ TERM_COLOR body_structure_color(BodyStructureType type)
     case BodyStructureType::XAREN:
     case BodyStructureType::AVIAN:
     case BodyStructureType::WORM:
+    case BodyStructureType::INSECTOID:
     case BodyStructureType::MAX:
         break;
     }
