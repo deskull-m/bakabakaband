@@ -41,7 +41,7 @@
  */
 static void autopick_delayed_alter_aux(CreatureEntity &creature, INVENTORY_IDX i_idx)
 {
-    const auto &item = ref_item(creature, i_idx);
+    const auto item = ref_item(creature, i_idx);
     if (!item->is_valid() || item->marked.has_not(OmType::AUTODESTROY)) {
         return;
     }
