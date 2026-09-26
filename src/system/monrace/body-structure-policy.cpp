@@ -96,6 +96,9 @@ const std::array<BodySlotPolicy, enum2i(BodyStructureType::MAX)> body_slot_polic
 
     // WINGED_HUMANOID: 有翼人。背の翼が邪魔でクローク (体の上) だけ装備できない + 両翼の装飾
     BodySlotPolicy(make_all_mask_except({ INVEN_OUTER }), { ExtendedSlotType::WING_LEFT, ExtendedSlotType::WING_RIGHT }),
+
+    // WING_ARMED_HUMANOID: 翼腕人。両腕が翼なので利き手・逆手が無い。体の上は羽織れる + 両翼の装飾
+    BodySlotPolicy(make_all_mask_except({ INVEN_MAIN_HAND, INVEN_SUB_HAND }), { ExtendedSlotType::WING_LEFT, ExtendedSlotType::WING_RIGHT }),
 };
 
 }
@@ -133,6 +136,8 @@ std::string_view body_structure_name(BodyStructureType type)
         return _("節足型", "insectoid");
     case BodyStructureType::WINGED_HUMANOID:
         return _("有翼人", "winged humanoid");
+    case BodyStructureType::WING_ARMED_HUMANOID:
+        return _("翼腕人", "wing-armed humanoid");
     case BodyStructureType::MAX:
         break;
     }
@@ -160,6 +165,7 @@ TERM_COLOR body_structure_color(BodyStructureType type)
     case BodyStructureType::WORM:
     case BodyStructureType::INSECTOID:
     case BodyStructureType::WINGED_HUMANOID:
+    case BodyStructureType::WING_ARMED_HUMANOID:
     case BodyStructureType::MAX:
         break;
     }

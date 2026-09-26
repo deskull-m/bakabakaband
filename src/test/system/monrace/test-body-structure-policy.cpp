@@ -39,6 +39,7 @@ constexpr BodyStructureType ALL_BODY_STRUCTURES[] = {
     BodyStructureType::WORM,
     BodyStructureType::INSECTOID,
     BodyStructureType::WINGED_HUMANOID,
+    BodyStructureType::WING_ARMED_HUMANOID,
 };
 
 //! 装備スロットのうち許可されているものを列挙する
@@ -166,6 +167,34 @@ TEST_CASE("WINGED_HUMANOID is HUMANOID minus the cloak slot")
     SUBCASE("winged humanoid has both wings as extended slots")
     {
         const auto &slots = get_body_slot_policy(BodyStructureType::WINGED_HUMANOID).get_extended_slots();
+        REQUIRE(slots.size() == 2);
+        CHECK(slots[0] == ExtendedSlotType::WING_LEFT);
+        CHECK(slots[1] == ExtendedSlotType::WING_RIGHT);
+    }
+}
+
+TEST_CASE("WING_ARMED_HUMANOID is HUMANOID minus both hands")
+{
+    // 翼腕人は両腕が翼なので利き手・逆手が無い。背に翼を負うわけではないので
+    // 体の上 (クローク) は有翼人と違って羽織れる。
+    const auto allowed = collect_allowed_slots(BodyStructureType::WING_ARMED_HUMANOID);
+    const auto humanoid = collect_allowed_slots(BodyStructureType::HUMANOID);
+    CHECK(allowed.size() == humanoid.size() - 2);
+    CHECK_FALSE(contains_slot(allowed, INVEN_MAIN_HAND));
+    CHECK_FALSE(contains_slot(allowed, INVEN_SUB_HAND));
+    CHECK(contains_slot(allowed, INVEN_OUTER));
+    for (const auto slot : humanoid) {
+        if ((slot == INVEN_MAIN_HAND) || (slot == INVEN_SUB_HAND)) {
+            continue;
+        }
+
+        CAPTURE(slot);
+        CHECK(contains_slot(allowed, slot));
+    }
+
+    SUBCASE("wing-armed humanoid has both wings as extended slots")
+    {
+        const auto &slots = get_body_slot_policy(BodyStructureType::WING_ARMED_HUMANOID).get_extended_slots();
         REQUIRE(slots.size() == 2);
         CHECK(slots[0] == ExtendedSlotType::WING_LEFT);
         CHECK(slots[1] == ExtendedSlotType::WING_RIGHT);
