@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
+    <Filter Include="autopick">
+      <UniqueIdentifier>{062e1002-646c-4166-a99d-f3ed5b508575}</UniqueIdentifier>
+    </Filter>
     <Filter Include="info-reader">
       <UniqueIdentifier>{0a4fac22-0e6b-422b-9f88-49ee79b2f2f1}</UniqueIdentifier>
     </Filter>
@@ -21,6 +24,9 @@
     <ClCompile Include="..\..\src\stdafx.cpp" />
     <ClCompile Include="..\..\src\test\test-main.cpp" />
     <ClCompile Include="..\..\src\test\test-win-stubs.cpp" />
+    <ClCompile Include="..\..\src\test\autopick\test-autopick-editor-util.cpp">
+      <Filter>autopick</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\src\test\info-reader\test-info-reader-util.cpp">
       <Filter>info-reader</Filter>
     </ClCompile>

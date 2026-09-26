@@ -1604,6 +1604,8 @@ hengband_test_SOURCES = \
 	test/test-win-stubs.cpp \
 	test/scoped-rng.h \
 	\
+	test/autopick/test-autopick-editor-util.cpp \
+	\
 	test/info-reader/test-info-reader-util.cpp \
 	test/info-reader/test-json-reader-util.cpp \
 	\
