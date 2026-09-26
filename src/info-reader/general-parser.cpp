@@ -54,6 +54,13 @@ std::tuple<errr, int, std::string> init_info_txt(std::ifstream &ifs, DefinitionH
     util::SHA256 sha256;
     std::string line;
     while (std::getline(ifs, line)) {
+        // CRLF 改行のデータファイルにも対応する。
+        // ifstream のテキストモードが CRLF を除去するのは Windows のみで、
+        // それ以外の環境では行末に '\r' が残り解析エラーになってしまう。
+        if (line.ends_with('\r')) {
+            line.pop_back();
+        }
+
         line = utf8_to_local(line);
         const std::string_view sv = line;
         error_line++;
