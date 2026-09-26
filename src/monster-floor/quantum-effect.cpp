@@ -29,9 +29,10 @@ static void vanish_nonunique(CreatureEntity &creature, MONSTER_IDX m_idx, bool s
         msg_format(_("%sは消え去った！", "%s^ disappears!"), m_name.data());
     }
 
+    const auto sad = monster.is_pet() && !monster.is_visible_on_map();
     monster_death(creature, m_idx, false, AttributeType::QUANTUM_VANISH);
     delete_monster_idx(creature, m_idx);
-    if (monster.is_pet() && !(monster.is_visible_on_map())) {
+    if (sad) {
         msg_print(_("少しの間悲しい気分になった。", "You feel sad for a moment."));
     }
 }
