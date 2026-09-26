@@ -40,6 +40,7 @@ constexpr BodyStructureType ALL_BODY_STRUCTURES[] = {
     BodyStructureType::INSECTOID,
     BodyStructureType::WINGED_HUMANOID,
     BodyStructureType::WING_ARMED_HUMANOID,
+    BodyStructureType::SPHERE,
 };
 
 //! 装備スロットのうち許可されているものを列挙する
@@ -199,6 +200,14 @@ TEST_CASE("WING_ARMED_HUMANOID is HUMANOID minus both hands")
         CHECK(slots[0] == ExtendedSlotType::WING_LEFT);
         CHECK(slots[1] == ExtendedSlotType::WING_RIGHT);
     }
+}
+
+TEST_CASE("SPHERE allows no equipment slot at all")
+{
+    // 球体は手足も頭も首も無いため、装備できる部位が 1 つも存在しない。
+    // INCORPOREAL / FORMLESS / GASEOUS / VORTEX / XAREN と同じ構成 (意味論のみ異なる)。
+    CHECK(collect_allowed_slots(BodyStructureType::SPHERE).empty());
+    CHECK(get_body_slot_policy(BodyStructureType::SPHERE).get_extended_slots().empty());
 }
 
 TEST_CASE("out of range body structure falls back to HUMANOID policy")

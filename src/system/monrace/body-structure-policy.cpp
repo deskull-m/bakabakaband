@@ -99,6 +99,9 @@ const std::array<BodySlotPolicy, enum2i(BodyStructureType::MAX)> body_slot_polic
 
     // WING_ARMED_HUMANOID: 翼腕人。両腕が翼なので利き手・逆手が無い。体の上は羽織れる + 両翼の装飾
     BodySlotPolicy(make_all_mask_except({ INVEN_MAIN_HAND, INVEN_SUB_HAND }), { ExtendedSlotType::WING_LEFT, ExtendedSlotType::WING_RIGHT }),
+
+    // SPHERE: 球体そのもの。手足も頭も首も無く、身に着けられる部位が存在しない
+    BodySlotPolicy(BodySlotPolicy::SlotMask{}, {}),
 };
 
 }
@@ -138,6 +141,8 @@ std::string_view body_structure_name(BodyStructureType type)
         return _("有翼人", "winged humanoid");
     case BodyStructureType::WING_ARMED_HUMANOID:
         return _("翼腕人", "wing-armed humanoid");
+    case BodyStructureType::SPHERE:
+        return _("球体", "sphere");
     case BodyStructureType::MAX:
         break;
     }
@@ -166,6 +171,7 @@ TERM_COLOR body_structure_color(BodyStructureType type)
     case BodyStructureType::INSECTOID:
     case BodyStructureType::WINGED_HUMANOID:
     case BodyStructureType::WING_ARMED_HUMANOID:
+    case BodyStructureType::SPHERE:
     case BodyStructureType::MAX:
         break;
     }

@@ -749,6 +749,7 @@ const std::unordered_map<std::string_view, BodyStructureType> r_info_body_struct
     { "INSECTOID", BodyStructureType::INSECTOID },
     { "WINGED_HUMANOID", BodyStructureType::WINGED_HUMANOID },
     { "WING_ARMED_HUMANOID", BodyStructureType::WING_ARMED_HUMANOID },
+    { "SPHERE", BodyStructureType::SPHERE },
 };
 
 const std::unordered_map<std::string_view, ExtendedSlotType> r_info_extended_slot = {
