@@ -31,6 +31,14 @@ constexpr BodyStructureType ALL_BODY_STRUCTURES[] = {
     BodyStructureType::AMORPHOUS,
     BodyStructureType::INCORPOREAL,
     BodyStructureType::DRACONIC,
+    BodyStructureType::FORMLESS,
+    BodyStructureType::GASEOUS,
+    BodyStructureType::VORTEX,
+    BodyStructureType::XAREN,
+    BodyStructureType::AVIAN,
+    BodyStructureType::WORM,
+    BodyStructureType::INSECTOID,
+    BodyStructureType::WINGED_HUMANOID,
 };
 
 //! 装備スロットのうち許可されているものを列挙する
@@ -135,6 +143,32 @@ TEST_CASE("extended slots are defined per body structure")
         CHECK(slots[0] == ExtendedSlotType::TAIL_RING);
         CHECK(slots[1] == ExtendedSlotType::WING_LEFT);
         CHECK(slots[2] == ExtendedSlotType::WING_RIGHT);
+    }
+}
+
+TEST_CASE("WINGED_HUMANOID is HUMANOID minus the cloak slot")
+{
+    // 有翼人は背の翼が邪魔でクローク (体の上) だけ羽織れない。
+    // それ以外は人型と同じなので、武器・盾・鎧・兜・篭手・靴は通常どおり扱える。
+    const auto allowed = collect_allowed_slots(BodyStructureType::WINGED_HUMANOID);
+    const auto humanoid = collect_allowed_slots(BodyStructureType::HUMANOID);
+    CHECK(allowed.size() == humanoid.size() - 1);
+    CHECK_FALSE(contains_slot(allowed, INVEN_OUTER));
+    for (const auto slot : humanoid) {
+        if (slot == INVEN_OUTER) {
+            continue;
+        }
+
+        CAPTURE(slot);
+        CHECK(contains_slot(allowed, slot));
+    }
+
+    SUBCASE("winged humanoid has both wings as extended slots")
+    {
+        const auto &slots = get_body_slot_policy(BodyStructureType::WINGED_HUMANOID).get_extended_slots();
+        REQUIRE(slots.size() == 2);
+        CHECK(slots[0] == ExtendedSlotType::WING_LEFT);
+        CHECK(slots[1] == ExtendedSlotType::WING_RIGHT);
     }
 }
 
