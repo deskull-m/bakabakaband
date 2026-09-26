@@ -1957,6 +1957,34 @@ NONE / GOLD / BOTTLE / NO_AMMO は総称「アイテム」へフォールバッ�
 - **sval の enum 登録は C++ から名前で参照する場合のみ**。`sv-protector-types.h` の
   `sv_helm_type` には軍帽 (23) すら載っておらず、コードが個別に判定しないアイテムは
   登録不要。
+- **第 2 弾: アライアンス `FRIEZA-CLAN` の全 3 種**
+  (下級惑星戦士 1551 / 惑星戦士『ラディッツ』1653 / サイヤ人『ナッパ』1022) に
+  **惑星戦士用戦闘ジャケット (id 771, tval 36 SOFT_ARMOR, sval 22, AC15, 3200G)** を
+  `1_IN_1` / grade 0 / `1d1` / `apply_magic: false` で付与した。3 種とも
+  `body_structure` は `HUMANOID` なので `wield_slot()` が `INVEN_BODY` を返し確実に
+  装備される。
+  - **ベースアイテムは新設不要だった**。id 771 は既に存在し、`"alliance": "FRIEZA-CLAN"`
+    と `STANDARDIZED` フラグ・flavor「フリーザ軍が制式装備している超質ラバー製の鎧だ。」
+    を持ちながら、**どのモンスターからも参照されていなかった**。新規データを足す前に
+    まず既存ベースアイテムを名前で検索すること。
+  - **`STANDARDIZED` (`TR_STANDARDIZED`) は `apply_magic: false` と実質同義**。
+    `ItemMagicApplier::execute()` は `try_make_artifact()` の直後にこのフラグで
+    early return するため、エゴ・呪い・修正値が一切付かない。本件では house rule に
+    合わせて `apply_magic: false` も明示したが動作上は冗長 (実測でも素の
+    `惑星戦士用戦闘ジャケット [15]` が出る)。
+  - **武装度予算を食い潰す点が GOLAN (軍服 3G) と対照的**。ジャケットは 3200G で
+    3 種の予算 (`level * 50` = 700 / 1200 / 2500) を全て上回るため、
+    `equip_monster_by_armament_budget()` が `budget <= 0` で即 return し
+    **胴以外の充填装備 (頭・逆手・脚・腕・体の上) が無くなる**。
+  - **役割装備は予算外なので残る**。`equip_armed_monster_initial_weapon()` は
+    武装度予算を参照しないため、`WARRIOR` を持つ 1551 / 1653 は近接武器を保持する。
+    役割フラグを持たない 1022 (ナッパ) はジャケットのみの素手になる。3 種とも
+    `blows` に強力な PUNCH / KICK を持つ素手戦闘型なので、**原作どおりの
+    「戦闘ジャケット 1 枚で素手で戦う」姿になる意図的なバランス変更**。
+  - **同じドラゴンボール系でも対象外にした 3 体**: 栽培マン (1650、フリーザ軍が
+    用いる植物人造人間だが原作で防具を着けない) / 原始サイヤ人 (1938、解説文が
+    「フリーザの旗下に入る**前**」と明言) / ナメック星人の若者 (2304、フリーザの
+    侵略に抗う側)。いずれも `alliance` が `FRIEZA-CLAN` ではない点でも一致する。
 - **固定アーティファクト専用のベースアイテムは `INSTA_ART` + `allocations` 省略**。
   「冥王メルコールの大槍」(artifact 269) のために新設した **黄金の槍
   (id 831, tval 22 POLEARM, sval 31, 2d9, weight 300, cost 1800, level 55)** は、
