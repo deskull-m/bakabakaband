@@ -32,7 +32,8 @@
 - INCORPOREAL:  317 (装備不可)
 - AMORPHOUS:    109 (リング 2 個のみ)
 - WORM:          47 (首/胴体 + TAIL_RING)
-- WINGED_HUMANOID: 46 (HUMANOID から体の上を除く + WING_L + WING_R)
+- WINGED_HUMANOID: 43 (HUMANOID から体の上を除く + WING_L + WING_R)
+- WING_ARMED_HUMANOID: 3 (HUMANOID から利き手・逆手を除く + WING_L + WING_R)
 - AVIAN:         39 (首/胴体/頭/脚 + WING_L + WING_R)
 - SERPENTINE:     1 (首/胴体 + TAIL_RING。コカトリスのみ)
 - VORTEX:        20 (装備不可)
@@ -172,7 +173,8 @@ INCORPOREAL を対象とし、後 4 種は Phase 2 (extended slots) で
 **実装状況 (現行)**: 上記のうち AQUATIC のみ未実装で、
 実際の enum は `HUMANOID(0)` 〜 `DRACONIC(6)` に **`FORMLESS(7)`** /
 **`GASEOUS(8)`** / **`VORTEX(9)`** / **`XAREN(10)`** / **`AVIAN(11)`** /
-**`WORM(12)`** / **`INSECTOID(13)`** / **`WINGED_HUMANOID(14)`** を加えた 15 種
+**`WORM(12)`** / **`INSECTOID(13)`** / **`WINGED_HUMANOID(14)`** /
+**`WING_ARMED_HUMANOID(15)`** を加えた 16 種
 (当初案と異なり `AVIAN` は 11 番、`INSECTOID` は 13 番)。
 `FORMLESS` (不定形) は「決まった形を持たない塊・雲・霧」用、
 `GASEOUS` (気体) は「毒ガス・煙・蒸気」用、
@@ -195,6 +197,10 @@ INCORPOREAL を対象とし、後 4 種は Phase 2 (extended slots) で
 翼が生えた存在」用で、スロット構成は **`HUMANOID` から体の上 (クローク) だけを
 除いた全スロット** + 両翼の装飾。背の翼が邪魔でマントの類を羽織れない一方、
 手も脚も人型なので武器・防具は通常どおり扱える。
+`WING_ARMED_HUMANOID` (翼腕人) は「ハーピー・鴉人のように、両腕そのものが翼に
+なった存在」用で、スロット構成は **`HUMANOID` から利き手・逆手を除いた全スロット**
++ 両翼の装飾。武器も盾も持てない代わり、背に翼を負うわけではないので
+**体の上 (クローク) は `WINGED_HUMANOID` と違って羽織れる**。
 `AMORPHOUS` の表示名は `FORMLESS` 追加にあわせて「不定形」から
 **「粘体型」** に変更した (スライム・ゼリー・モルド等 114 体が該当し、
 enum コメントの「スライム・ジェル」という実態に沿わせたもの)。
@@ -230,6 +236,7 @@ const BodySlotPolicy &get_body_slot_policy(BodyStructureType type);
 | WORM | × | × | × | × | ○ | × | ○ | × | × | × | × |
 | INSECTOID | × | × | × | × | ○ | × | ○ | × | ○ | × | × |
 | WINGED_HUMANOID | ○ | ○ | ○ | ○ | ○ | ○ | ○ | × | ○ | ○ | ○ |
+| WING_ARMED_HUMANOID | × | × | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
 
 `ASSHOLE` スロット (尻穴) は HUMANOID 以外は基本的に無効
 (独自仕様だが SERPENTINE は example として有効でもよい)。
