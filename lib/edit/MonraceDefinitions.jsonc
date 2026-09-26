@@ -65000,6 +65000,15 @@
         "BASH_DOOR",
         "RES_WALL",
       ],
+      "equip_kind": [
+        {
+          "id": 771,
+          "probability": "1_IN_1",
+          "grade": 0,
+          "dice": "1d1",
+          "apply_magic": false,
+        },
+      ],
       "skill": {
         "list": ["TELE_TO", "BO_MANA"],
         "probability": "1_IN_8",
@@ -98876,6 +98885,15 @@
         "EVIL",
         "ALIEN",
       ],
+      "equip_kind": [
+        {
+          "id": 771,
+          "probability": "1_IN_1",
+          "grade": 0,
+          "dice": "1d1",
+          "apply_magic": false,
+        },
+      ],
       "skill": {
         "list": ["MISSILE"],
         "probability": "1_IN_3",
@@ -105426,6 +105444,15 @@
         "CAN_FLY",
         "WARRIOR",
         "EVIL",
+      ],
+      "equip_kind": [
+        {
+          "id": 771,
+          "probability": "1_IN_1",
+          "grade": 0,
+          "dice": "1d1",
+          "apply_magic": false,
+        },
       ],
       "skill": {
         "list": ["MISSILE", "BO_MANA"],
