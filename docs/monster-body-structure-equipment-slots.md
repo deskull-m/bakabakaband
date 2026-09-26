@@ -25,11 +25,11 @@
 | 分類調整 | D → DRACONIC、n → HUMANOID リファインメント | ✅ |
 
 **現状分類分布**:
-- HUMANOID:    1310 (フル装備可能)
+- HUMANOID:    1311 (フル装備可能)
 - DRACONIC:      77 (フル装備 + TAIL_RING + WING_L + WING_R)
 - QUADRUPED:    293 (首/胴体/頭のみ)
 - INSECTOID:     67 (首/胴体/頭のみ。QUADRUPED と同一構成)
-- INCORPOREAL:  317 (装備不可)
+- INCORPOREAL:  300 (装備不可)
 - AMORPHOUS:    109 (リング 2 個のみ)
 - WORM:          47 (首/胴体 + TAIL_RING)
 - WINGED_HUMANOID: 43 (HUMANOID から体の上を除く + WING_L + WING_R)
@@ -37,6 +37,7 @@
 - AVIAN:         39 (首/胴体/頭/脚 + WING_L + WING_R)
 - SERPENTINE:     1 (首/胴体 + TAIL_RING。コカトリスのみ)
 - VORTEX:        20 (装備不可)
+- SPHERE:        17 (装備不可)
 - BIPEDAL:       11 (首/光源/胴体/頭/脚)
 - FORMLESS:      12 (装備不可)
 - GASEOUS:       10 (装備不可)
@@ -174,7 +175,7 @@ INCORPOREAL を対象とし、後 4 種は Phase 2 (extended slots) で
 実際の enum は `HUMANOID(0)` 〜 `DRACONIC(6)` に **`FORMLESS(7)`** /
 **`GASEOUS(8)`** / **`VORTEX(9)`** / **`XAREN(10)`** / **`AVIAN(11)`** /
 **`WORM(12)`** / **`INSECTOID(13)`** / **`WINGED_HUMANOID(14)`** /
-**`WING_ARMED_HUMANOID(15)`** を加えた 16 種
+**`WING_ARMED_HUMANOID(15)`** / **`SPHERE(16)`** を加えた 17 種
 (当初案と異なり `AVIAN` は 11 番、`INSECTOID` は 13 番)。
 `FORMLESS` (不定形) は「決まった形を持たない塊・雲・霧」用、
 `GASEOUS` (気体) は「毒ガス・煙・蒸気」用、
@@ -201,6 +202,10 @@ INCORPOREAL を対象とし、後 4 種は Phase 2 (extended slots) で
 なった存在」用で、スロット構成は **`HUMANOID` から利き手・逆手を除いた全スロット**
 + 両翼の装飾。武器も盾も持てない代わり、背に翼を負うわけではないので
 **体の上 (クローク) は `WINGED_HUMANOID` と違って羽織れる**。
+`SPHERE` (球体) は「手足も頭も首も無い、球そのものが身体である存在」用で、
+`INCORPOREAL` / `FORMLESS` / `GASEOUS` / `VORTEX` / `XAREN` と同じく**装備枠が
+一切ない**。五者の関係は `INCORPOREAL` = 実体なし / `FORMLESS` = 実体あり・形が不定 /
+`GASEOUS` = 実体が気体 / `VORTEX` = 回転・流動する現象 / `SPHERE` = 形の定まった球体。
 `AMORPHOUS` の表示名は `FORMLESS` 追加にあわせて「不定形」から
 **「粘体型」** に変更した (スライム・ゼリー・モルド等 114 体が該当し、
 enum コメントの「スライム・ジェル」という実態に沿わせたもの)。
@@ -237,6 +242,7 @@ const BodySlotPolicy &get_body_slot_policy(BodyStructureType type);
 | INSECTOID | × | × | × | × | ○ | × | ○ | × | ○ | × | × |
 | WINGED_HUMANOID | ○ | ○ | ○ | ○ | ○ | ○ | ○ | × | ○ | ○ | ○ |
 | WING_ARMED_HUMANOID | × | × | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
+| SPHERE | × | × | × | × | × | × | × | × | × | × | × |
 
 `ASSHOLE` スロット (尻穴) は HUMANOID 以外は基本的に無効
 (独自仕様だが SERPENTINE は example として有効でもよい)。
