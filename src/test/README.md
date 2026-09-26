@@ -276,6 +276,18 @@ const auto restore_hoge = util::make_finalizer([&system, backup = system.get_hog
 オブジェクト（`main-win.cpp` にしか定義のないシンボルを参照するもの）まで引き込んで
 リンクエラーになるため、こちらでは使えません。
 
+## doctest の C4866 警告について
+
+`CHECK(式)` は `ExpressionDecomposer(...) << 式` に展開されるため、式に暗黙の型変換を伴う引数
+（文字列リテラルを `std::string_view` の引数へ渡すものなど）があると、MSVC がオーバーロードされた
+`<<` の左→右の評価順序を保証できないとして評価順序の警告 **C4866** を出します。展開先は
+テストファイルなので、`ExternalWarningLevel` では抑止できません。
+
+左辺の `ExpressionDecomposer` の構築には副作用がなく、評価順序はテストの結果に影響しないため、
+`BakabakabandTest.vcxproj` の `DisableSpecificWarnings` で **テストプロジェクトに限って** C4866 を
+無効化しています（ゲーム本体では無効化していません）。
+**検証したい式は、結果を一旦変数で受けずに `CHECK` / `REQUIRE` へ直接書いて構いません。**
+
 ## テストしにくいコードをどう確かめるか
 
 冒頭の判断基準でシナリオテスト側に振り分けたもの
