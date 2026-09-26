@@ -19,12 +19,14 @@
 #include "object/object-value.h"
 #include "object/tval-types.h"
 #include "perception/identification.h"
+#include "store/articles-on-sale.h"
 #include "store/black-market.h"
 #include "store/service-checker.h"
 #include "store/store-owners.h"
 #include "store/store-util.h"
 #include "sv-definition/sv-lite-types.h"
 #include "sv-definition/sv-scroll-types.h"
+#include "system/baseitem/baseitem-list.h"
 #include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/floor/town-info.h"
@@ -296,7 +298,8 @@ static void store_create(CreatureEntity &creature, short fix_k_idx, StoreSaleTyp
             bi_id = fix_k_idx;
             level = rand_range(1, ow_ptr->level);
         } else {
-            bi_id = rand_choice(st_ptr->table);
+            // svalの無いキーは、仕入れのたびにここで種類を選ぶ
+            bi_id = BaseitemList::get_instance().lookup_baseitem_id(rand_choice(store_sale_table.at(store_num)));
             level = rand_range(1, ow_ptr->level);
         }
 
