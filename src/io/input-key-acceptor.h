@@ -1,6 +1,7 @@
 #pragma once
 
 #include "system/angband.h"
+#include <string>
 
 /*
  * Special key code used for inkey_special()
@@ -19,6 +20,9 @@
 #define SKEY_HOME 0xf007
 #define SKEY_END 0xf008
 
+//! マクロのトリガーとして扱うキー列の最大の長さ
+constexpr size_t MAX_MACRO_TRIGGER_LENGTH = 1023;
+
 extern bool inkey_base;
 extern bool inkey_xtra;
 extern bool inkey_scan;
@@ -30,6 +34,7 @@ extern concptr inkey_next;
 char inkey(bool do_all_term_refresh = false);
 char inkey_for_image();
 int inkey_special(bool numpad_cursor);
+std::string inkey_macro_trigger();
 void start_term_fresh(void);
 void stop_term_fresh(void);
 bool macro_running(void);
