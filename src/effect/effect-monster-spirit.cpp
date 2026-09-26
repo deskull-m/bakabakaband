@@ -76,7 +76,7 @@ ProcessResult effect_monster_mind_blast(CreatureEntity &creature, EffectMonster 
     if (has_immute) {
         if (em_ptr->monrace->resistance_flags.has(MonsterResistanceType::NO_CONF)) {
             if (is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
-                em_ptr->monrace->resistance_flags.set(MonsterResistanceType::NO_CONF);
+                em_ptr->monrace->r_resistance_flags.set(MonsterResistanceType::NO_CONF);
             }
         }
 
@@ -124,7 +124,7 @@ ProcessResult effect_monster_brain_smash(CreatureEntity &creature, EffectMonster
     if (has_immute) {
         if (em_ptr->monrace->resistance_flags.has(MonsterResistanceType::NO_CONF)) {
             if (is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
-                em_ptr->monrace->resistance_flags.set(MonsterResistanceType::NO_CONF);
+                em_ptr->monrace->r_resistance_flags.set(MonsterResistanceType::NO_CONF);
             }
         }
 

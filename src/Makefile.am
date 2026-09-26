@@ -1616,6 +1616,7 @@ hengband_test_SOURCES = \
 	\
 	test/system/monrace/test-armament-level.cpp \
 	test/system/monrace/test-body-structure-policy.cpp \
+	test/system/monrace/test-monrace-definition.cpp \
 	test/system/monrace/test-monrace-max-level.cpp \
 	\
 	test/timed-effect/test-player-cut.cpp \
