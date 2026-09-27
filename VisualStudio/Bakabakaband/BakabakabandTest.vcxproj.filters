@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
+    <Filter Include="info-reader">
+      <UniqueIdentifier>{0a4fac22-0e6b-422b-9f88-49ee79b2f2f1}</UniqueIdentifier>
+    </Filter>
     <Filter Include="system">
       <UniqueIdentifier>{da617f35-e903-420f-a3c2-35c05c34635e}</UniqueIdentifier>
     </Filter>
@@ -18,6 +21,12 @@
     <ClCompile Include="..\..\src\stdafx.cpp" />
     <ClCompile Include="..\..\src\test\test-main.cpp" />
     <ClCompile Include="..\..\src\test\test-win-stubs.cpp" />
+    <ClCompile Include="..\..\src\test\info-reader\test-info-reader-util.cpp">
+      <Filter>info-reader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\test\info-reader\test-json-reader-util.cpp">
+      <Filter>info-reader</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\src\test\system\monrace\test-armament-level.cpp">
       <Filter>system\monrace</Filter>
     </ClCompile>

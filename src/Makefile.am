@@ -1604,6 +1604,9 @@ hengband_test_SOURCES = \
 	test/test-win-stubs.cpp \
 	test/scoped-rng.h \
 	\
+	test/info-reader/test-info-reader-util.cpp \
+	test/info-reader/test-json-reader-util.cpp \
+	\
 	test/system/monrace/test-armament-level.cpp \
 	test/system/monrace/test-body-structure-policy.cpp \
 	test/system/monrace/test-monrace-max-level.cpp \
