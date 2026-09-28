@@ -126,8 +126,11 @@ void do_cmd_colors(CreatureEntity &creature)
                 auto_dump_printf(auto_dump_stream, "V:%d:0x%02X:0x%02X:0x%02X:0x%02X\n\n", i, kv, rv, gv, bv);
             }
 
-            close_auto_dump(&auto_dump_stream, mark);
-            msg_print(_("カラーの設定をファイルに書き出しました。", "Dumped color redefinitions."));
+            // 書き出せなかった場合は close_auto_dump() がその旨を表示するので、成功したときだけ知らせる
+            if (close_auto_dump(&auto_dump_stream, mark)) {
+                msg_print(_("カラーの設定をファイルに書き出しました。", "Dumped color redefinitions."));
+            }
+
             break;
         }
         case '3': {

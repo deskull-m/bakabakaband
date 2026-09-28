@@ -15,6 +15,6 @@ bool read_histpref(CreatureEntity &creature);
 
 void auto_dump_printf(FILE *auto_dump_stream, const char *fmt, ...);
 bool open_auto_dump(FILE **fpp, const std::filesystem::path &path, std::string_view mark);
-void close_auto_dump(FILE **fpp, std::string_view mark);
+bool close_auto_dump(FILE **fpp, std::string_view mark);
 
 void load_all_pref_files(CreatureEntity &creature);

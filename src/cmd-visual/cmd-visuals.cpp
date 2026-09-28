@@ -137,8 +137,11 @@ void do_cmd_visuals(CreatureEntity &creature)
                 auto_dump_printf(auto_dump_stream, "R:%d:0x%02X/0x%02X\n\n", enum2i(monrace_id), symbol_config.color, static_cast<uint8_t>(symbol_config.character));
             }
 
-            close_auto_dump(&auto_dump_stream, mark);
-            msg_print(_("モンスターの[色/文字]をファイルに書き出しました。", "Dumped monster attr/chars."));
+            // 書き出せなかった場合は close_auto_dump() がその旨を表示するので、成功したときだけ知らせる
+            if (close_auto_dump(&auto_dump_stream, mark)) {
+                msg_print(_("モンスターの[色/文字]をファイルに書き出しました。", "Dumped monster attr/chars."));
+            }
+
             break;
         }
         case '2': {
@@ -174,8 +177,11 @@ void do_cmd_visuals(CreatureEntity &creature)
                 auto_dump_printf(auto_dump_stream, "K:%d:0x%02X/0x%02X\n\n", bi_id, baseitem_config.get_color(), static_cast<uint8_t>(baseitem_config.get_character()));
             }
 
-            close_auto_dump(&auto_dump_stream, mark);
-            msg_print(_("アイテムの[色/文字]をファイルに書き出しました。", "Dumped object attr/chars."));
+            // 書き出せなかった場合は close_auto_dump() がその旨を表示するので、成功したときだけ知らせる
+            if (close_auto_dump(&auto_dump_stream, mark)) {
+                msg_print(_("アイテムの[色/文字]をファイルに書き出しました。", "Dumped object attr/chars."));
+            }
+
             break;
         }
         case '3': {
@@ -210,8 +216,11 @@ void do_cmd_visuals(CreatureEntity &creature)
                     symbol_dark.color, static_cast<uint8_t>(symbol_dark.character));
             }
 
-            close_auto_dump(&auto_dump_stream, mark);
-            msg_print(_("地形の[色/文字]をファイルに書き出しました。", "Dumped feature attr/chars."));
+            // 書き出せなかった場合は close_auto_dump() がその旨を表示するので、成功したときだけ知らせる
+            if (close_auto_dump(&auto_dump_stream, mark)) {
+                msg_print(_("地形の[色/文字]をファイルに書き出しました。", "Dumped feature attr/chars."));
+            }
+
             break;
         }
         case '4': {

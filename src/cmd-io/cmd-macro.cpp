@@ -22,7 +22,7 @@
 /*!
  * @brief マクロ情報をprefファイルに保存する
  * @param filename ファイル名
- * @return 書き出せた場合はtrue、ファイルを開けなかった場合はfalse
+ * @return 書き出せた場合はtrue、ファイルを開けなかった場合や書き出しに失敗した場合はfalse
  */
 static bool macro_dump(std::string_view filename)
 {
@@ -44,8 +44,7 @@ static bool macro_dump(std::string_view filename)
         auto_dump_printf(auto_dump_stream, "\n");
     }
 
-    close_auto_dump(&auto_dump_stream, mark);
-    return true;
+    return close_auto_dump(&auto_dump_stream, mark);
 }
 
 /*!
@@ -103,7 +102,7 @@ static void do_cmd_macro_aux_keymap(char *buf)
 /*!
  * @brief キーマップをprefファイルにダンプする
  * @param filename ファイルネーム
- * @return 書き出せた場合はtrue、ファイルを開けなかった場合はfalse
+ * @return 書き出せた場合はtrue、ファイルを開けなかった場合や書き出しに失敗した場合はfalse
  */
 static bool keymap_dump(std::string_view filename)
 {
@@ -131,8 +130,7 @@ static bool keymap_dump(std::string_view filename)
         auto_dump_printf(auto_dump_stream, "C:%d:%s\n", enum2i(mode), key);
     }
 
-    close_auto_dump(&auto_dump_stream, mark);
-    return true;
+    return close_auto_dump(&auto_dump_stream, mark);
 }
 
 /*!
