@@ -239,7 +239,7 @@ bool open_auto_dump(FILE **fpp, const std::filesystem::path &path, std::string_v
     const auto header_mark_str = format(auto_dump_header, mark.data());
     remove_auto_dump(path, mark);
     *fpp = angband_fopen(path, FileOpenMode::APPEND);
-    if (!fpp) {
+    if (!*fpp) {
         const auto &path_str = path.string();
         msg_format(_("%s を開くことができませんでした。", "Failed to open %s."), path_str.data());
         msg_erase();
@@ -257,15 +257,30 @@ bool open_auto_dump(FILE **fpp, const std::filesystem::path &path, std::string_v
 /*!
  * @brief prfファイルをファイルクローズする /
  * Append foot part and close auto dump.
+ * @return 書き出しとクローズの両方に成功したらtrue
+ * @details 書き込み自体は auto_dump_printf() / fprintf() が個別に結果を返さないため、
+ * ストリームに蓄積されたエラー (ディスク満杯等) を ferror() でまとめて検査する。
+ * 失敗した場合はここでその旨を表示するので、呼出元は成功時のメッセージだけを出せばよい
+ * (開けなかった場合に open_auto_dump() が表示するのと同じ方針)。
  */
-void close_auto_dump(FILE **fpp, std::string_view mark)
+bool close_auto_dump(FILE **fpp, std::string_view mark)
 {
     const auto footer_mark_str = format(auto_dump_footer, mark.data());
     auto_dump_printf(*fpp, _("# *警告!!* 以降の行は自動生成されたものです。\n", "# *Warning!*  The lines below are an automatic dump.\n"));
     auto_dump_printf(
         *fpp, _("# *警告!!* 後で自動的に削除されるので編集しないでください。\n", "# Don't edit them; changes will be deleted and replaced automatically.\n"));
     fprintf(*fpp, "%s (%d)\n", footer_mark_str.data(), auto_dump_line_num);
-    angband_fclose(*fpp);
+
+    // クローズ時にもバッファのフラッシュで書き込みが発生しうるため、両方の結果を見る
+    const auto is_write_failed = ferror(*fpp) != 0;
+    const auto is_close_failed = angband_fclose(*fpp) != 0;
+    if (is_write_failed || is_close_failed) {
+        msg_print(_("ファイルへの書き出しに失敗しました。", "Failed to write the dump."));
+        msg_erase();
+        return false;
+    }
+
+    return true;
 }
 
 /*!
