@@ -71,6 +71,7 @@
     <ClCompile Include="..\..\src\test\io\test-macro-configurations-store.cpp" />
     <ClCompile Include="..\..\src\test\system\monrace\test-armament-level.cpp" />
     <ClCompile Include="..\..\src\test\system\monrace\test-body-structure-policy.cpp" />
+    <ClCompile Include="..\..\src\test\system\monrace\test-monrace-definition.cpp" />
     <ClCompile Include="..\..\src\test\system\monrace\test-monrace-max-level.cpp" />
     <ClCompile Include="..\..\src\test\timed-effect\test-player-cut.cpp" />
     <ClCompile Include="..\..\src\test\timed-effect\test-player-stun.cpp" />
