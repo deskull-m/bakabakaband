@@ -107,7 +107,7 @@ static void aura_fire_by_melee(CreatureEntity &creature, mam_type *mam_ptr)
 
     // 種族由来 (native) オーラのみ思い出フラグを記録する (mutation 由来は monrace 固有でないため記録しない)
     if (has_native_aura && mam_ptr->m_ptr->is_visible_on_map() && is_original_ap_and_seen(creature, *mam_ptr->t_ptr)) {
-        monrace_target.aura_flags.set(MonsterAuraType::FIRE);
+        monrace_target.r_aura_flags.set(MonsterAuraType::FIRE);
     }
 
     const auto dam = Dice::roll(1 + ((monrace_target.level) / 26), 1 + ((monrace_target.level) / 17));
@@ -134,7 +134,7 @@ static void aura_cold_by_melee(CreatureEntity &creature, mam_type *mam_ptr)
     }
 
     if (monster.is_visible_on_map() && is_original_ap_and_seen(creature, *mam_ptr->t_ptr)) {
-        monrace_target.aura_flags.set(MonsterAuraType::COLD);
+        monrace_target.r_aura_flags.set(MonsterAuraType::COLD);
     }
 
     const auto dam = Dice::roll(1 + ((monrace_target.level) / 26), 1 + ((monrace_target.level) / 17));
@@ -164,7 +164,7 @@ static void aura_elec_by_melee(CreatureEntity &creature, mam_type *mam_ptr)
 
     // 種族由来 (native) オーラのみ思い出フラグを記録する (mutation 由来は monrace 固有でないため記録しない)
     if (has_native_aura && monster.is_visible_on_map() && is_original_ap_and_seen(creature, *mam_ptr->t_ptr)) {
-        monrace_target.aura_flags.set(MonsterAuraType::ELEC);
+        monrace_target.r_aura_flags.set(MonsterAuraType::ELEC);
     }
 
     const auto dam = Dice::roll(1 + ((monrace_target.level) / 26), 1 + ((monrace_target.level) / 17));

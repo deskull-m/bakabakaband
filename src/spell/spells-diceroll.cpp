@@ -37,7 +37,7 @@ static bool common_saving_throw_impl(CreatureEntity &creature, int pow, const Cr
 
     if (check_no_conf && monrace.resistance_flags.has(MonsterResistanceType::NO_CONF)) {
         if (is_original_ap_and_seen(creature, target)) {
-            monrace.resistance_flags.set(MonsterResistanceType::NO_CONF);
+            monrace.r_resistance_flags.set(MonsterResistanceType::NO_CONF);
         }
         return true;
     }
