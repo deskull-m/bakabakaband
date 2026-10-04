@@ -96,8 +96,11 @@ static void aura_fire_by_melee(CreatureEntity &creature, mam_type *mam_ptr)
         return;
     }
 
-    if (monrace.resistance_flags.has_any_of(RFR_EFF_IM_FIRE_MASK) && is_original_ap_and_seen(creature, *mam_ptr->m_ptr)) {
-        monrace.r_resistance_flags.set(monrace.resistance_flags & RFR_EFF_IM_FIRE_MASK);
+    if (monrace.resistance_flags.has_any_of(RFR_EFF_IM_FIRE_MASK)) {
+        if (is_original_ap_and_seen(creature, *mam_ptr->m_ptr)) {
+            monrace.r_resistance_flags.set(monrace.resistance_flags & RFR_EFF_IM_FIRE_MASK);
+        }
+
         return;
     }
 
@@ -124,8 +127,11 @@ static void aura_cold_by_melee(CreatureEntity &creature, mam_type *mam_ptr)
         return;
     }
 
-    if (monrace.resistance_flags.has_any_of(RFR_EFF_IM_COLD_MASK) && is_original_ap_and_seen(creature, monster)) {
-        monrace.r_resistance_flags.set(monrace.resistance_flags & RFR_EFF_IM_COLD_MASK);
+    if (monrace.resistance_flags.has_any_of(RFR_EFF_IM_COLD_MASK)) {
+        if (is_original_ap_and_seen(creature, monster)) {
+            monrace.r_resistance_flags.set(monrace.resistance_flags & RFR_EFF_IM_COLD_MASK);
+        }
+
         return;
     }
 
@@ -153,8 +159,11 @@ static void aura_elec_by_melee(CreatureEntity &creature, mam_type *mam_ptr)
         return;
     }
 
-    if (monrace.resistance_flags.has_any_of(RFR_EFF_IM_ELEC_MASK) && is_original_ap_and_seen(creature, monster)) {
-        monrace.r_resistance_flags.set(monrace.resistance_flags & RFR_EFF_IM_ELEC_MASK);
+    if (monrace.resistance_flags.has_any_of(RFR_EFF_IM_ELEC_MASK)) {
+        if (is_original_ap_and_seen(creature, monster)) {
+            monrace.r_resistance_flags.set(monrace.resistance_flags & RFR_EFF_IM_ELEC_MASK);
+        }
+
         return;
     }
 
