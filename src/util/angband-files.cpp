@@ -94,7 +94,7 @@ std::filesystem::path path_parse(const std::filesystem::path &path)
     constexpr auto user_size = 128;
     char user[user_size]{};
     if ((s != nullptr) && (s >= u + user_size)) {
-        THROW_EXCEPTION(std::runtime_error, "User name is too long!");
+        return {};
     }
 
     if (s != nullptr) {
@@ -118,7 +118,7 @@ std::filesystem::path path_parse(const std::filesystem::path &path)
     }
 
     if (pw == nullptr) {
-        THROW_EXCEPTION(std::runtime_error, "Failed to get User ID!");
+        return {};
     }
 
     if (s == nullptr) {
@@ -171,6 +171,11 @@ std::filesystem::path path_build(const std::filesystem::path &path, std::string_
     }
 
     auto parsed_path = path_parse(path);
+    if (parsed_path.empty()) {
+        // 基点のディレクトリを展開できない場合は、ファイル名だけの相対パスにせず開けないパスとして扱う
+        return {};
+    }
+
 #ifdef WINDOWS
     // システムロケールがUTF-8の場合、appendによるUTF-16への変換時に
     // Shift-JISをUTF-8とみなしてしまい変換に失敗するので、自前でUTF-16に変換してからappendする
@@ -221,6 +226,10 @@ static std::string make_file_mode(const FileOpenMode mode, const bool is_binary)
 FILE *angband_fopen(const std::filesystem::path &path, const FileOpenMode mode, const bool is_binary)
 {
     const auto &parsed_path = path_parse(path);
+    if (parsed_path.empty()) {
+        return nullptr;
+    }
+
     const auto &open_mode = make_file_mode(mode, is_binary);
     return fopen(parsed_path.string().data(), open_mode.data());
 }
