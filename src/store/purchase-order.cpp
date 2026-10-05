@@ -44,9 +44,9 @@
  * @return プレイヤーの価格に対して店主が不服ならばTRUEを返す /
  * Return TRUE if purchase is NOT successful
  */
-static tl::optional<PRICE> prompt_to_buy(CreatureEntity &creature, ItemEntity *o_ptr, StoreSaleType store_num)
+static tl::optional<PRICE> prompt_to_buy(CreatureEntity &creature, ItemEntity *o_ptr)
 {
-    auto price_ask = price_item(creature, o_ptr, ot_ptr->inflate, false, store_num);
+    auto price_ask = price_item(creature, o_ptr, *st_ptr, false);
 
     price_ask *= o_ptr->number;
     const auto s = fmt::format(_("買値 ${} で買いますか？", "Do you buy for ${}? "), price_ask);
@@ -192,7 +192,7 @@ void store_purchase(CreatureEntity &creature, StoreSaleType store_num)
         return;
     }
 
-    const auto best = price_item(creature, &item, ot_ptr->inflate, false, store_num);
+    const auto best = price_item(creature, &item, *st_ptr, false);
     if (item_store.number > 1) {
         if (store_num != StoreSaleType::HOME) {
             msg_format(_("一つにつき $%dです。", "That costs %d gold per item."), best);
@@ -237,7 +237,7 @@ void store_purchase(CreatureEntity &creature, StoreSaleType store_num)
     msg_erase();
 
     const auto &world = AngbandWorld::get_instance();
-    auto res = prompt_to_buy(creature, &item, store_num);
+    auto res = prompt_to_buy(creature, &item);
     if (st_ptr->store_open >= world.game_turn) {
         return;
     }
