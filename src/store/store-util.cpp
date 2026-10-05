@@ -13,8 +13,6 @@
 #include "system/item-entity.h"
 #include <algorithm>
 
-Store *st_ptr = nullptr;
-
 /*!
  * @brief 店舗を生成する
  * @param sale_type 店舗の種類
