@@ -1608,6 +1608,7 @@ hengband_test_SOURCES = \
 	\
 	test/cmd-io/test-cmd-autopick.cpp \
 	\
+	test/info-reader/test-ego-reader.cpp \
 	test/info-reader/test-info-reader-util.cpp \
 	test/info-reader/test-json-reader-util.cpp \
 	\
