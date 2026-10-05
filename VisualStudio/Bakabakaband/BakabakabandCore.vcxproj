@@ -353,6 +353,7 @@
     <ClCompile Include="..\..\src\info-reader\spell-reader.cpp" />
     <ClCompile Include="..\..\src\info-reader\terrain-reader.cpp" />
     <ClCompile Include="..\..\src\info-reader\vault-reader.cpp" />
+    <ClCompile Include="..\..\src\info-reader\wilderness-reader.cpp" />
     <ClCompile Include="..\..\src\inventory\floor-item-getter.cpp" />
     <ClCompile Include="..\..\src\inventory\item-selection-util.cpp" />
     <ClCompile Include="..\..\src\inventory\inventory-describer.cpp" />
@@ -1274,6 +1275,7 @@
     <ClInclude Include="..\..\src\info-reader\spell-reader.h" />
     <ClInclude Include="..\..\src\info-reader\terrain-reader.h" />
     <ClInclude Include="..\..\src\info-reader\vault-reader.h" />
+    <ClInclude Include="..\..\src\info-reader\wilderness-reader.h" />
     <ClInclude Include="..\..\src\inventory\floor-item-getter.h" />
     <ClInclude Include="..\..\src\inventory\inventory-slot-types.h" />
     <ClInclude Include="..\..\src\inventory\item-selection-util.h" />

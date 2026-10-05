@@ -26,7 +26,8 @@ schema_files = \
 	schema/Quest.schema.json \
 	schema/QuestPreferences.schema.json \
 	schema/SpellDefinitions.schema.json \
-	schema/TerrainDefinitions.schema.json
+	schema/TerrainDefinitions.schema.json \
+	schema/WildernessDefinition.schema.json
 
 EXTRA_DIST = \
 	autopick.txt \
