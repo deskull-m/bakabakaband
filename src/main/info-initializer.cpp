@@ -123,7 +123,7 @@ static void init_info(std::string_view filename, DefinitionHashDataType dhdt, In
  * even if the string happens to be empty (everyone has a unique '\0').
  */
 template <typename InfoType>
-static void init_json(std::string_view filename, std::string_view keyname, DefinitionHashDataType dhdt, InfoType &info, JSONParser parser, std::function<void()> retouch = nullptr)
+static void init_json(std::string_view filename, std::string_view keyname, DefinitionHashDataType dhdt, InfoType &info, JSONParser parser, std::function<void()> retouch = nullptr, bool allow_empty = true)
 {
     const auto path = path_build(ANGBAND_DIR_EDIT, filename);
     std::ifstream ifs(path);
@@ -135,6 +135,14 @@ static void init_json(std::string_view filename, std::string_view keyname, Defin
     std::istreambuf_iterator<char> ifs_iter(ifs);
     std::istreambuf_iterator<char> ifs_end;
     auto json_object = nlohmann::json::parse(ifs_iter, ifs_end, nullptr, true, true, true);
+
+    const auto array_it = json_object.find(keyname);
+    if ((array_it == json_object.end()) || !array_it->is_array()) {
+        quit(fmt::format(_("'{}'ファイルのルートに配列 '{}' が必要です。", "'{}' file must have a root array '{}'."), filename, keyname));
+    }
+    if (!allow_empty && array_it->empty()) {
+        quit(fmt::format(_("'{}'ファイルの配列 '{}' が空です。", "Array '{}' in '{}' file is empty."), keyname, filename));
+    }
 
     error_idx = -1;
 
@@ -165,10 +173,10 @@ static void init_json(std::string_view filename, std::string_view keyname, Defin
  * 与える処理を共通化したもの。SpellReader は捕捉メンバを取るため現状維持。
  */
 template <typename Reader, typename InfoType>
-static void init_json_reader(std::string_view filename, std::string_view keyname, DefinitionHashDataType dhdt, InfoType &info, std::function<void()> retouch = nullptr)
+static void init_json_reader(std::string_view filename, std::string_view keyname, DefinitionHashDataType dhdt, InfoType &info, std::function<void()> retouch = nullptr, bool allow_empty = true)
 {
     auto parser = [](nlohmann::json &element) { return Reader(element).read(); };
-    init_json(filename, keyname, dhdt, info, parser, retouch);
+    init_json(filename, keyname, dhdt, info, parser, retouch, allow_empty);
 }
 
 /*!
@@ -218,7 +226,7 @@ void init_dungeons_info()
  */
 void init_egos_info()
 {
-    init_info("EgoDefinitions.txt", DefinitionHashDataType::EGOS, egos_info, parse_egos_info);
+    init_json_reader<EgoReader>("EgoDefinitions.jsonc", "egos", DefinitionHashDataType::EGOS, egos_info, nullptr, false);
 }
 
 /*!

@@ -20,6 +20,7 @@ schema_files = \
 	schema/ClassMagicDefinitions.schema.json \
 	schema/CreatureParty.schema.json \
 	schema/DungeonDefinitions.schema.json \
+	schema/EgoDefinitions.schema.json \
 	schema/MonraceDefinitions.schema.json \
 	schema/MonsterMessages.schema.json \
 	schema/Quest.schema.json \
