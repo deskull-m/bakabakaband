@@ -24,9 +24,9 @@ extern bool allow_inc;
 
 class CreatureEntity;
 int16_t store_get_stock_max(StoreSaleType sst, bool powerup = true);
-void store_maintenance(CreatureEntity &creature, int town_num, StoreSaleType store_num, int chance);
+void store_maintenance(CreatureEntity &creature, Store &store, int chance);
 void store_init(int town_num, StoreSaleType store_num);
 void store_examine(CreatureEntity &creature, StoreSaleType store_num);
-int store_check_num(const ItemEntity *o_ptr, StoreSaleType store_num);
+int store_check_num(const ItemEntity *o_ptr, const Store &store);
 int store_level(StoreSaleType store_num);
 tl::optional<short> input_stock(std::string_view fmt, int min, int max, StoreSaleType store_num);
