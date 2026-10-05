@@ -22,6 +22,9 @@
     <Filter Include="system\monrace">
       <UniqueIdentifier>{92ff44d3-839e-4000-9ff0-d6cdefda0a83}</UniqueIdentifier>
     </Filter>
+    <Filter Include="term">
+      <UniqueIdentifier>{8a4e1d2c-6b3f-4a7e-9c2d-1e5f7a0b3c9d}</UniqueIdentifier>
+    </Filter>
     <Filter Include="timed-effect">
       <UniqueIdentifier>{966ee29c-0d64-440a-93da-4ae9a23bbdb4}</UniqueIdentifier>
     </Filter>
@@ -71,6 +74,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\test\system\monrace\test-monrace-max-level.cpp">
       <Filter>system\monrace</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\test\term\test-z-form.cpp">
+      <Filter>term</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\test\timed-effect\test-player-cut.cpp">
       <Filter>timed-effect</Filter>
