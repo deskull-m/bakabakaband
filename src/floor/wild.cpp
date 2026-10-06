@@ -14,8 +14,7 @@
 #include "game-option/birth-options.h"
 #include "game-option/map-screen-options.h"
 #include "info-reader/fixed-map-parser.h"
-#include "info-reader/parse-error-types.h"
-#include "io/tokenizer.h"
+#include "info-reader/wilderness-reader.h"
 #include "market/building-initializer.h"
 #include "monster-floor/monster-generator.h"
 #include "monster-floor/monster-remover.h"
@@ -440,8 +439,7 @@ void wilderness_gen(CreatureEntity &creature)
     panel_row_min = floor.height;
     panel_col_min = floor.width;
     const auto &wilderness = WildernessGrids::get_instance();
-    const auto &area = wilderness.get_area();
-    parse_fixed_map(creature, WILDERNESS_DEFINITION, 0, 0, area.height(), area.width());
+    apply_wilderness_definition();
 
     const auto &pos_wilderness = wilderness.get_player_position();
     get_mon_num_prep_enum(creature, floor.get_monrace_hook());
@@ -622,7 +620,7 @@ void wilderness_gen_small(CreatureEntity &creature)
     const auto &world = AngbandWorld::get_instance();
     const auto &wilderness = WildernessGrids::get_instance();
     const auto &area = wilderness.get_area();
-    parse_fixed_map(creature, WILDERNESS_DEFINITION, 0, 0, area.height(), area.width());
+    apply_wilderness_definition();
     for (const auto &pos : area) {
         auto &grid = floor.get_grid(pos);
         const auto &wg = wilderness.get_grid(pos);
@@ -665,123 +663,6 @@ void wilderness_gen_small(CreatureEntity &creature)
     panel_col_min = floor.width;
     creature.set_position(wilderness.get_player_position());
     creature.set_town_num(0);
-}
-
-/*!
- * @brief WildernessDefinition.txt を1行読み取って解析する
- * @param line 読み取ったデータ行のバッファ
- * @param xmin 広域地形マップを読み込みたいx座標の開始位置
- * @param xmax 広域地形マップを読み込みたいx座標の終了位置
- * @param pos_parsing 解析対象の座標
- * @return 解析結果の座標。解析エラー時はエラーの種類。座標はDタグの時だけ更新の可能性があり、それ以外はpos_parsingをそのまま返却する。
- */
-tl::expected<Pos2D, parse_error_type> parse_line_wilderness(char *line, int xmin, int xmax, const Pos2D &pos_parsing)
-{
-    auto &letters = WildernessLetters::get_instance();
-    letters.initialize();
-    if (!std::string_view(line).starts_with("W:")) {
-        return tl::unexpected(PARSE_ERROR_GENERIC);
-    }
-
-    Pos2D pos = pos_parsing;
-    auto &wilderness = WildernessGrids::get_instance();
-    switch (line[2]) {
-        /* Process "W:F:<letter>:<terrain>:<town>:<road>:<name> */
-#ifdef JP
-    case 'E':
-        return pos_parsing;
-    case 'F':
-    case 'J':
-#else
-    case 'J':
-        return pos_parsing;
-    case 'F':
-    case 'E':
-#endif
-    {
-        const auto tokens = tokenize(line + 4, 6);
-        if (tokens.size() <= 1) {
-            return tl::unexpected(PARSE_ERROR_TOO_FEW_ARGUMENTS);
-        }
-
-        const auto index = tokens.at(0).at(0);
-        auto &letter = letters.get_grid(index);
-        if (tokens.size() > 1) {
-            letter.set_terrain(i2enum<WildernessTerrain>(std::stoi(tokens.at(1))));
-        }
-
-        if (tokens.size() > 2) {
-            letter.set_level(std::stoi(tokens.at(2)));
-        }
-
-        if (tokens.size() > 3) {
-            letter.set_town(static_cast<short>(std::stoi(tokens.at(3))));
-        }
-
-        if (tokens.size() > 4) {
-            letter.set_road(std::stoi(tokens.at(4)));
-        }
-
-        if (tokens.size() > 5) {
-            letter.set_name(tokens.at(5));
-        }
-
-        break;
-    }
-
-    /* Process "W:D:<layout> */
-    /* Layout of the wilderness */
-    case 'D': {
-        pos.x = xmin;
-        char *s = line + 4;
-        int len = strlen(s);
-        for (auto i = 0; ((pos.x < xmax) && (i < len)); pos.x++, s++, i++) {
-            int id = s[0];
-            const auto &letter = letters.get_grid(id);
-            wilderness.get_grid(pos).initialize(letter);
-            TownList::get_instance().get_town(letter.get_town()).init_name(letter.get_name());
-        }
-
-        pos.y++;
-        break;
-    }
-
-    /* Process "W:P:<x>:<y> - starting position in the wilderness */
-    case 'P': {
-        if (wilderness.has_player_located()) {
-            break;
-        }
-
-        const auto tokens = tokenize(line + 4, 2);
-        if (tokens.size() != 2) {
-            return tl::unexpected(PARSE_ERROR_TOO_FEW_ARGUMENTS);
-        }
-
-        wilderness.set_starting_player_position({ std::stoi(tokens.at(0)), std::stoi(tokens.at(1)) });
-        wilderness.initialize_position();
-        if (!wilderness.is_player_in_bounds()) {
-            return tl::unexpected(PARSE_ERROR_OUT_OF_BOUNDS);
-        }
-
-        break;
-    }
-    default:
-        return tl::unexpected(PARSE_ERROR_UNDEFINED_DIRECTIVE);
-    }
-
-    for (const auto &[dungeon_id, dungeon] : DungeonList::get_instance()) {
-        if (dungeon_id == DungeonId::WILDERNESS) {
-            continue;
-        }
-
-        auto &wg = wilderness.get_grid(dungeon->get_position());
-        wg.set_entrance(dungeon_id);
-        if (!wg.has_town()) {
-            wg.set_level(dungeon->mindepth);
-        }
-    }
-
-    return pos;
 }
 
 /*!

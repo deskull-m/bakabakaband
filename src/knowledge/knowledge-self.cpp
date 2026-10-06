@@ -10,6 +10,7 @@
 #include "core/show-file.h"
 #include "flavor/flavor-describer.h"
 #include "info-reader/fixed-map-parser.h"
+#include "info-reader/wilderness-reader.h"
 #include "io-dump/dump-util.h"
 #include "player-info/alignment.h"
 #include "player-info/class-info.h"
@@ -21,7 +22,6 @@
 #include "system/creature-entity.h"
 #include "system/floor/town-info.h"
 #include "system/floor/town-list.h"
-#include "system/floor/wilderness-grid.h"
 #include "system/inner-game-data.h"
 #include "system/item-entity.h"
 #include "util/angband-files.h"
@@ -190,8 +190,7 @@ void do_cmd_knowledge_stat(CreatureEntity &creature)
  */
 void do_cmd_knowledge_home(CreatureEntity &creature)
 {
-    const auto &area = WildernessGrids::get_instance().get_area();
-    parse_fixed_map(creature, WILDERNESS_DEFINITION, 0, 0, area.height(), area.width());
+    apply_wilderness_definition();
 
     FILE *fff = nullptr;
     GAME_TEXT file_name[FILE_NAME_SIZE];
