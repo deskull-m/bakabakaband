@@ -2147,6 +2147,9 @@
     <ClCompile Include="..\..\src\store\store-key-processor.cpp">
       <Filter>store</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\store\store-screen.cpp">
+      <Filter>store</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\src\main\scene-table-floor.cpp">
       <Filter>main</Filter>
     </ClCompile>
@@ -5294,6 +5297,9 @@
       <Filter>store</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\store\store-key-processor.h">
+      <Filter>store</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\store\store-screen.h">
       <Filter>store</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\main-win\main-win-utils.h">

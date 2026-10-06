@@ -1,5 +1,5 @@
 #pragma once
 
 class CreatureEntity;
-class Store;
-bool store_process_command(CreatureEntity &creature, Store &store);
+class StoreScreen;
+bool store_process_command(CreatureEntity &creature, StoreScreen &screen);
