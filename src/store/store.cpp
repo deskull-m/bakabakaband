@@ -41,9 +41,6 @@
 #include "world/world.h"
 #include <tl/optional.hpp>
 
-int16_t old_town_num = 0;
-int16_t inner_town_num = 0;
-
 /*!
  * @brief 店舗の最大スロット数を返す
  * @param store_idx 店舗ID
@@ -252,6 +249,7 @@ void store_examine(CreatureEntity &creature, const StoreScreen &screen)
  * @brief 店舗の品揃え変化のためにアイテムを追加する /
  * Creates a random item and gives it to a store
  * @param creature クリーチャーへの参照
+ * @param town_num 店舗がある町のID
  * @param store アイテムを追加する店舗
  * @param fix_k_idx 追加するベースアイテムのID (0ならばランダムに選ぶ)
  * @details
@@ -264,7 +262,7 @@ void store_examine(CreatureEntity &creature, const StoreScreen &screen)
  * Should we check for "permission" to have the given item?
  * </pre>
  */
-static void store_create(CreatureEntity &creature, Store &store, short fix_k_idx)
+static void store_create(CreatureEntity &creature, size_t town_num, Store &store, short fix_k_idx)
 {
     const auto store_num = store.get_sale_type();
     if (store.stock_num >= store.stock_size) {
@@ -326,7 +324,7 @@ static void store_create(CreatureEntity &creature, Store &store, short fix_k_idx
         }
 
         if (store_num == StoreSaleType::BLACK) {
-            if (black_market_crap(creature.get_town_num(), *q_ptr) || (q_ptr->calc_price() < 10)) {
+            if (black_market_crap(town_num, *q_ptr) || (q_ptr->calc_price() < 10)) {
                 continue;
             }
         } else {
@@ -345,10 +343,11 @@ static void store_create(CreatureEntity &creature, Store &store, short fix_k_idx
  * @brief 店の品揃えを変化させる /
  * Maintain the inventory at the stores.
  * @param creature クリーチャーへの参照
+ * @param town_num 店舗がある町のID
  * @param store 品揃えを変化させる店舗
  * @param chance 更新商品数
  */
-void store_maintenance(CreatureEntity &creature, Store &store, int chance)
+void store_maintenance(CreatureEntity &creature, size_t town_num, Store &store, int chance)
 {
     const auto store_num = store.get_sale_type();
     if ((store_num == StoreSaleType::HOME) || (store_num == StoreSaleType::MUSEUM)) {
@@ -359,7 +358,7 @@ void store_maintenance(CreatureEntity &creature, Store &store, int chance)
     if (store_num == StoreSaleType::BLACK) {
         for (INVENTORY_IDX j = store.stock_num - 1; j >= 0; j--) {
             auto &item = *store.stock[j];
-            if (black_market_crap(creature.get_town_num(), item)) {
+            if (black_market_crap(town_num, item)) {
                 store.increase_item(j, 0 - item.number);
                 store.optimize_item(j);
             }
@@ -413,14 +412,14 @@ void store_maintenance(CreatureEntity &creature, Store &store, int chance)
     }
 
     for (size_t k = 0; k < store.regular.size(); k++) {
-        store_create(creature, store, store.regular[k]);
+        store_create(creature, town_num, store, store.regular[k]);
         if (store.stock_num >= store_max_keep) {
             break;
         }
     }
 
     while (store.stock_num < j) {
-        store_create(creature, store, 0);
+        store_create(creature, town_num, store, 0);
     }
 }
 

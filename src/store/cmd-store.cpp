@@ -35,6 +35,28 @@
 #include "world/world.h"
 
 /*!
+ * @brief 入った店舗がある町のIDを決める
+ * @param creature クリーチャーへの参照
+ * @param floor 現在のフロア
+ * @param store_num 店舗の種類
+ * @return 町のID
+ * @details 我が家と博物館は全ての町で内容を共有するため、辺境の地の店舗を使う。
+ * ダンジョン内の店舗は、ダンジョン用の町 (VALID_TOWNS) の店舗を使う。
+ */
+static size_t decide_store_town_index(const CreatureEntity &creature, const FloorType &floor, StoreSaleType store_num)
+{
+    if (floor.is_underground()) {
+        return VALID_TOWNS;
+    }
+
+    if ((store_num == StoreSaleType::HOME) || (store_num == StoreSaleType::MUSEUM)) {
+        return 1;
+    }
+
+    return creature.get_town_num();
+}
+
+/*!
  * @brief 店舗処理全体のメインルーチン /
  * Enter a store, and interact with it. *
  * @param creature クリーチャーへの参照
@@ -70,29 +92,11 @@ void do_cmd_store(CreatureEntity &creature, std::optional<StoreSaleType> specifi
         store_num = grid.get_terrain().store_sale_type;
     }
 
-    // TODO:
-    //   施設の種類により、一時的に現在地 (creature.get_town_num()) を違う値に偽装して処理している。
-    //   我が家および博物館は全ての町で内容を共有するため、現在地を辺境の地 (1) にしている。
-    //   ダンジョン内の店の場合、現在地を NO_TOWN にしている。
-    //   inner_town_num は、施設内で C コマンドなどを使ったときにそのままでは現在地の偽装がバレる
-    //   ため、それを糊塗するためのグローバル変数。
-    //   この辺はリファクタしたい。
-    old_town_num = creature.get_town_num();
-    if ((store_num == StoreSaleType::HOME) || (store_num == StoreSaleType::MUSEUM)) {
-        creature.set_town_num(1);
-    }
-
-    if (floor.is_underground()) {
-        creature.set_town_num(VALID_TOWNS);
-    }
-
-    inner_town_num = creature.get_town_num();
-    auto &town = TownList::get_instance().get_town(creature.get_town_num());
-    auto &store = town.get_store(store_num);
+    const auto town_index = decide_store_town_index(creature, floor, store_num);
+    auto &store = TownList::get_instance().get_town(town_index).get_store(store_num);
     auto &world = AngbandWorld::get_instance();
     if ((store.store_open >= world.game_turn) || ironman_shops) {
         msg_print(_("ドアに鍵がかかっている。", "The doors are locked."));
-        creature.set_town_num(old_town_num);
         return;
     }
 
@@ -102,7 +106,7 @@ void do_cmd_store(CreatureEntity &creature, std::optional<StoreSaleType> specifi
     }
 
     if (maintain_num > 0) {
-        store_maintenance(creature, store, maintain_num);
+        store_maintenance(creature, town_index, store, maintain_num);
         store.last_visit = world.game_turn;
     }
 
@@ -113,7 +117,7 @@ void do_cmd_store(CreatureEntity &creature, std::optional<StoreSaleType> specifi
     command_rep = 0;
     command_new = 0;
     get_com_no_macros = true;
-    StoreScreen screen(store, grid.feat, term_get_size().second);
+    StoreScreen screen(store, town_index, grid.feat, term_get_size().second);
 
     // 店舗に入ったインシデントを記録
     creature.plus_incident_tree("STORE/ENTER", 1);
@@ -199,9 +203,6 @@ void do_cmd_store(CreatureEntity &creature, std::optional<StoreSaleType> specifi
             should_leave = true;
         }
     }
-
-    // 現在地の偽装を解除。
-    creature.set_town_num(old_town_num);
 
     select_floor_music(creature);
     PlayerEnergy(creature).set_player_turn_energy(100);

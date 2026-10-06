@@ -125,7 +125,7 @@ static void switch_store_stock(CreatureEntity &creature, StoreScreen &screen, co
     auto &store = screen.get_store();
     if (store.stock_num == 0) {
         msg_print(_("店主は新たな在庫を取り出した。", "The shopkeeper brings out some new stock."));
-        store_maintenance(creature, store, 10);
+        store_maintenance(creature, screen.get_town_index(), store, 10);
 
         screen.reset_page();
         display_store_inventory(creature, screen);
