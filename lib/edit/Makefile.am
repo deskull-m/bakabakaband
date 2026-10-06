@@ -8,7 +8,7 @@ angband_files = \
 	MonraceDefinitions.jsonc MonsterMessages.jsonc QuestPreferences.jsonc \
 	SpellDefinitions.jsonc TerrainDefinitions.jsonc \
 	TownDefinitionList.txt TownPreferences.txt VaultDefinitions.txt \
-	WildernessDefinition.txt
+	WildernessDefinition.jsonc
 
 EXTRA_DIST = \
   $(angband_files)

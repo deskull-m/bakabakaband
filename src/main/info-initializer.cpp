@@ -21,9 +21,9 @@
 #include "info-reader/spell-reader.h"
 #include "info-reader/terrain-reader.h"
 #include "info-reader/vault-reader.h"
+#include "info-reader/wilderness-reader.h"
 #include "io/files-util.h"
 #include "io/uid-checker.h"
-#include "locale/character-encoding.h"
 #include "main/init-error-messages-table.h"
 #include "object-enchant/object-ego.h"
 #include "player-info/class-info.h"
@@ -37,15 +37,12 @@
 #include "system/creature-party/creature-party-list.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/dungeon/dungeon-list.h"
-#include "system/floor/town-list.h"
-#include "system/floor/wilderness-grid.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
 #include "system/spell-info-list.h"
 #include "system/terrain/terrain-definition.h"
 #include "system/terrain/terrain-list.h"
 #include "util/angband-files.h"
-#include "util/string-processor.h"
 #include "view/display-messages.h"
 #include <fmt/format.h>
 #include <fstream>
@@ -286,54 +283,14 @@ void init_vaults_info()
     init_info("VaultDefinitions.txt", DefinitionHashDataType::VAULTS, vaults_info, parse_vaults_info);
 }
 
-static bool read_wilderness_definition(std::ifstream &ifs)
-{
-    auto &wilderness = WildernessGrids::get_instance();
-    std::string line;
-    while (!ifs.eof()) {
-        if (!std::getline(ifs, line)) {
-            return false;
-        }
-
-        if (line.empty() || line.starts_with('#')) {
-            continue;
-        }
-
-        const auto &splits = str_split(line, ':');
-        if ((splits.size() != 3) || (splits[0] != "M")) {
-            continue;
-        }
-
-        if (splits[1] == "WX") {
-            wilderness.initialize_width(std::stoi(splits[2]));
-        } else if (splits[1] == "WY") {
-            wilderness.initialize_height(std::stoi(splits[2]));
-        } else {
-            return false;
-        }
-
-        if (wilderness.is_height_initialized() && wilderness.is_width_initialized()) {
-            wilderness.initialize_grids();
-            init_wilderness_encounter();
-            return true;
-        }
-    }
-
-    return false;
-}
-
 /*!
  * @brief 荒野情報読み込み処理
  */
 void init_wilderness()
 {
-    const auto path = path_build(ANGBAND_DIR_EDIT, WILDERNESS_DEFINITION);
-    std::ifstream ifs(path);
-    if (!ifs) {
-        quit_fmt(_("'%s'ファイルをオープンできません。", "Cannot open '%s' file."), WILDERNESS_DEFINITION);
-    }
-
-    if (!read_wilderness_definition(ifs)) {
+    if (!initialize_wilderness_definition()) {
         quit(_("荒野を初期化できません", "Cannot initialize wilderness"));
     }
+
+    init_wilderness_encounter();
 }

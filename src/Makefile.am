@@ -737,6 +737,7 @@ libhengband_a_SOURCES = \
 	info-reader/terrain-reader.cpp info-reader/terrain-reader.h \
 	info-reader/vault-reader.cpp info-reader/vault-reader.h \
 	info-reader/vault-info-tokens-table.h \
+	info-reader/wilderness-reader.cpp info-reader/wilderness-reader.h \
 	\
 	inventory/floor-item-getter.cpp inventory/floor-item-getter.h \
 	inventory/inventory-curse.cpp inventory/inventory-curse.h \
@@ -1611,6 +1612,7 @@ hengband_test_SOURCES = \
 	test/info-reader/test-ego-reader.cpp \
 	test/info-reader/test-info-reader-util.cpp \
 	test/info-reader/test-json-reader-util.cpp \
+	test/info-reader/test-wilderness-reader.cpp \
 	\
 	test/io/test-interpret-pref-file.cpp \
 	test/io/test-macro-configurations-store.cpp \
