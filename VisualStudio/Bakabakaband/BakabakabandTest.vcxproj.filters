@@ -13,6 +13,9 @@
     <Filter Include="io">
       <UniqueIdentifier>{c8b717ff-2016-4112-a724-c2a1d4bd249b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="mspell">
+      <UniqueIdentifier>{f4dbdb43-4dbe-4518-b1ac-3429da4d19b8}</UniqueIdentifier>
+    </Filter>
     <Filter Include="store">
       <UniqueIdentifier>{2f858fe4-6c1a-425e-8310-085e4dcf1f4c}</UniqueIdentifier>
     </Filter>
@@ -59,6 +62,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\test\io\test-macro-configurations-store.cpp">
       <Filter>io</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\test\mspell\test-mspell-projection-table.cpp">
+      <Filter>mspell</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\test\store\test-pricing.cpp">
       <Filter>store</Filter>
