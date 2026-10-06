@@ -47,7 +47,7 @@
  */
 static tl::optional<PRICE> prompt_to_buy(CreatureEntity &creature, const Store &store, ItemEntity *o_ptr)
 {
-    auto price_ask = price_item(creature, o_ptr, store, false);
+    auto price_ask = price_item(creature, o_ptr, store, StoreTradeType::PLAYER_BUYS);
 
     price_ask *= o_ptr->number;
     const auto s = fmt::format(_("買値 ${} で買いますか？", "Do you buy for ${}? "), price_ask);
@@ -186,7 +186,7 @@ void store_purchase(CreatureEntity &creature, StoreScreen &screen)
         return;
     }
 
-    const auto best = price_item(creature, &item, store, false);
+    const auto best = price_item(creature, &item, store, StoreTradeType::PLAYER_BUYS);
     if (item_store.number > 1) {
         if (store_num != StoreSaleType::HOME) {
             msg_format(_("一つにつき $%dです。", "That costs %d gold per item."), best);

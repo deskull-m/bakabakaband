@@ -8,81 +8,123 @@
 #include "system/creature-entity.h"
 #include "system/item-entity.h"
 #include "util/enum-converter.h"
+#include <algorithm>
+#include <array>
+
+namespace {
+constexpr auto BLACK_MARKET_LEVEL_LIMIT = 200; //!< 闇市の倍率が上がり続けるレベルの上限
 
 /*!
- * @brief 店舗価格を決定する. 無料にはならない /
- * Determine the price of an item (qty one) in a store.
- * @param o_ptr 店舗に並べるオブジェクト構造体の参照ポインタ
- * @param store 価格を決める店舗
- * @param flip TRUEならば店主にとっての買取価格、FALSEなら売出価格を計算
- * @return アイテムの店舗価格
- * @details
- * <pre>
- * This function takes into account the player's charisma, and the
- * shop-keepers friendliness, and the shop-keeper's base greed, but
- * never lets a shop-keeper lose money in a transaction.
- * The "greed" value should exceed 100 when the player is "buying" the
- * item, and should be less than 100 when the player is "selling" it.
- * Hack -- the black market always charges twice as much as it should.
- * Charisma adjustment runs from 80 to 130
- * Racial adjustment runs from 95 to 130
- * Since greed/charisma/racial adjustments are centered at 100, we need
- * to adjust (by 200) to extract a usable multiplier.  Note that the
- * "greed" value is always something (?).
- * </pre>
+ * @brief 指定レベルの闇市倍率を計算する
+ * @param level 闇市のレベル
+ * @return 倍率 (10000 で等倍)
+ * @details レベル1で2倍とし、2レベルごとに1.01倍して切り捨てる (bakaba 独自の緩い上昇率)。
  */
-int price_item(CreatureEntity &creature, const ItemEntity *o_ptr, const Store &store, bool flip)
+constexpr uint64_t calc_black_market_multiplier(int level)
 {
-    auto price = o_ptr->calc_price();
-    if (price <= 0) {
-        return 0L;
+    uint64_t multiplier = 20000;
+    for (auto i = 1; i < std::min(level, BLACK_MARKET_LEVEL_LIMIT); i += 2) {
+        multiplier = multiplier * 101 / 100;
     }
 
-    const auto &owner = store.get_owner();
-    const int greed = owner.inflate;
-    const auto store_num = store.get_sale_type();
-    int factor = rgold_adj[enum2i(owner.owner_race)][enum2i(creature.prace)] - std::min(creature.get_prestige() / 10, 30);
-    factor += adj_chr_gold[creature.get_stat_index(A_CHR)];
-    int adjust;
-    if (flip) {
-        adjust = 100 + (300 - (greed + factor));
-        if (adjust > 100) {
-            adjust = 100;
-        }
+    return multiplier;
+}
 
-        if (store_num == StoreSaleType::BLACK) {
+/*!
+ * @brief 闇市の倍率の表を作る
+ * @return レベルごとの倍率 (10000 で等倍)。添字はレベル - 1
+ */
+constexpr std::array<uint64_t, BLACK_MARKET_LEVEL_LIMIT> make_black_market_multipliers()
+{
+    std::array<uint64_t, BLACK_MARKET_LEVEL_LIMIT> multipliers{};
+    for (auto level = 1; level <= BLACK_MARKET_LEVEL_LIMIT; ++level) {
+        multipliers[level - 1] = calc_black_market_multiplier(level);
+    }
+
+    return multipliers;
+}
+
+constexpr auto BLACK_MARKET_MULTIPLIERS = make_black_market_multipliers();
+static_assert(BLACK_MARKET_MULTIPLIERS[0] == 20000);
+static_assert(BLACK_MARKET_MULTIPLIERS[1] == 20200);
+}
+
+/*!
+ * @brief 闇市で売る品物の価格の倍率を返す
+ * @param level 闇市のレベル
+ * @return 倍率 (10000 で等倍)。レベル1以下で2倍になり、BLACK_MARKET_LEVEL_LIMIT 以上では変わらない
+ */
+uint64_t get_black_market_multiplier(int level)
+{
+    const auto index = std::clamp(level, 1, BLACK_MARKET_LEVEL_LIMIT) - 1;
+    return BLACK_MARKET_MULTIPLIERS[index];
+}
+
+/*!
+ * @brief 店舗価格を計算する
+ * @param price アイテムの基本価格
+ * @param markup 店主の強欲さと、種族の相性・魅力・名声による補正の和
+ * @param black_market_level 闇市ならそのレベル、闇市でなければ nullopt
+ * @param trade_type 取引の向き (買うなら店の売出価格、売るなら店の買取価格を計算する)
+ * @return アイテムの店舗価格。基本価格が0以下なら0、それ以外は1以上になる
+ * @details
+ * markup が 300 のとき補正は 100% になる。買うときの補正は 100% 以上、売るときの補正は
+ * 100% 以下にして、店主が損をしないようにする。
+ * 闇市では、売るときは半額にし、買うときはレベルに応じた倍率 (2倍以上) を掛ける。
+ * 価格が LOW_PRICE_THRESHOLD 以上なら、さらに買うときは1割増し、売るときは1割引きにする。
+ */
+int calc_store_price(int price, int markup, tl::optional<int> black_market_level, StoreTradeType trade_type)
+{
+    if (price <= 0) {
+        return 0;
+    }
+
+    const auto player_sells = trade_type == StoreTradeType::PLAYER_SELLS;
+    if (player_sells) {
+        const auto adjust = std::min(100 + (300 - markup), 100);
+        if (black_market_level) {
             price = price / 2;
         }
 
         price = (price * adjust + 50L) / 100L;
     } else {
-        adjust = 100 + ((greed + factor) - 300);
-        if (adjust < 100) {
-            adjust = 100;
-        }
+        const auto adjust = std::max(100 + (markup - 300), 100);
         uint64_t p = price;
-        if (store_num == StoreSaleType::BLACK) {
-            const auto level = store_level(store_num);
-            auto mult = 20000UL;
-            const auto BM_LIMIT = 200;
-            for (int i = 1; i < std::min(level, BM_LIMIT); i += 2) {
-                mult = mult * 101 / 100;
-            }
-            p = p * mult / 10000UL;
+        if (black_market_level) {
+            p = p * get_black_market_multiplier(*black_market_level) / 10000UL;
         }
-        p = (p * (uint64_t)adjust + 50UL) / 100UL;
-        p = p < INT32_MAX ? p : INT32_MAX;
 
-        price = (int)p;
+        p = (p * adjust + 50) / 100;
+        price = static_cast<int>(std::min<uint64_t>(p, INT32_MAX));
     }
 
-    if (price <= 0L) {
-        return 1L;
+    if (price <= 0) {
+        return 1;
     }
 
     if (price >= LOW_PRICE_THRESHOLD) {
-        price += (flip ? -1 : 1) * price / 10;
+        price += (player_sells ? -1 : 1) * price / 10;
     }
 
     return price;
+}
+
+/*!
+ * @brief 店舗でのアイテム1個の価格を決定する /
+ * Determine the price of an item (qty one) in a store.
+ * @param creature クリーチャーへの参照
+ * @param o_ptr 店舗に並べるオブジェクト構造体の参照ポインタ
+ * @param store 価格を決める店舗
+ * @param trade_type 取引の向き (買うなら店の売出価格、売るなら店の買取価格を計算する)
+ * @return アイテムの店舗価格
+ * @details 店主の強欲さ、店主とプレイヤーの種族の相性、プレイヤーの魅力・名声、闇市のレベルを
+ * 集めて calc_store_price() で計算する。
+ */
+int price_item(CreatureEntity &creature, const ItemEntity *o_ptr, const Store &store, StoreTradeType trade_type)
+{
+    const auto &owner = store.get_owner();
+    const auto markup = owner.inflate + rgold_adj[enum2i(owner.owner_race)][enum2i(creature.prace)] - std::min(creature.get_prestige() / 10, 30) + adj_chr_gold[creature.get_stat_index(A_CHR)];
+    const auto is_black_market = store.get_sale_type() == StoreSaleType::BLACK;
+    const auto black_market_level = is_black_market ? tl::make_optional(store_level(StoreSaleType::BLACK)) : tl::nullopt;
+    return calc_store_price(o_ptr->calc_price(), markup, black_market_level, trade_type);
 }
