@@ -1624,6 +1624,8 @@ hengband_test_SOURCES = \
 	test/system/monrace/test-monrace-definition.cpp \
 	test/system/monrace/test-monrace-max-level.cpp \
 	\
+	test/term/test-z-form.cpp \
+	\
 	test/timed-effect/test-player-cut.cpp \
 	test/timed-effect/test-player-stun.cpp \
 	\
