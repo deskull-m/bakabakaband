@@ -119,7 +119,6 @@ void do_cmd_store(CreatureEntity &creature, std::optional<StoreSaleType> specifi
     command_new = 0;
     get_com_no_macros = true;
     cur_store_feat = grid.feat;
-    st_ptr = &TownList::get_instance().get_town(creature.get_town_num()).get_store(store_num);
     store_top = 0;
 
     // 店舗に入ったインシデントを記録
@@ -128,14 +127,14 @@ void do_cmd_store(CreatureEntity &creature, std::optional<StoreSaleType> specifi
     creature.plus_incident_tree("STORE/ENTER/" + store_tag, 1);
 
     play_music(TERM_XTRA_MUSIC_BASIC, MUSIC_BASIC_BUILD);
-    display_store(creature, store_num);
+    display_store(creature, store);
     leave_store = false;
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     while (!leave_store) {
         prt("", 1, 0);
         clear_from(20 + xtra_stock);
         prt(_(" ESC) 建物から出る", " ESC) Exit from Building."), 21 + xtra_stock, 0);
-        if (st_ptr->stock_num > store_bottom) {
+        if (store.stock_num > store_bottom) {
             prt(_(" -)前ページ", " -) Previous page"), 22 + xtra_stock, 0);
             prt(_(" スペース) 次ページ", " SPACE) Next page"), 23 + xtra_stock, 0);
         }
@@ -162,9 +161,9 @@ void do_cmd_store(CreatureEntity &creature, std::optional<StoreSaleType> specifi
         }
 
         prt(_("コマンド:", "You may: "), 20 + xtra_stock, 0);
-        output_bot_json_store_snapshot(creature, store_num);
+        output_bot_json_store_snapshot(creature, store);
         InputKeyRequestor(creature, true).request_command();
-        store_process_command(creature, store_num);
+        store_process_command(creature, store);
 
         const auto should_redraw_store_inventory = rfu.has(StatusRecalculatingFlag::BONUS);
         world.character_icky_depth = 1;
@@ -190,19 +189,19 @@ void do_cmd_store(CreatureEntity &creature, std::optional<StoreSaleType> specifi
                 msg_format(_("%sが落ちた。(%c)", "You drop %s (%c)."), item_name.data(), index_to_label(i_idx));
                 vary_item(creature, i_idx, -255);
                 handle_stuff(creature);
-                const auto item_pos = home_carry(creature, &item, store_num);
+                const auto item_pos = home_carry(creature, store, &item);
                 if (item_pos >= 0) {
                     store_top = (item_pos / store_bottom) * store_bottom;
-                    display_store_inventory(creature, store_num);
+                    display_store_inventory(creature, store);
                 }
             }
         }
 
         if (should_redraw_store_inventory) {
-            display_store_inventory(creature, store_num);
+            display_store_inventory(creature, store);
         }
 
-        if (st_ptr->store_open >= world.game_turn) {
+        if (store.store_open >= world.game_turn) {
             leave_store = true;
         }
     }

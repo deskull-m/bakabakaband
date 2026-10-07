@@ -49,6 +49,4 @@ private:
     StoreSaleType sale_type; //!< 店舗の種類
 };
 
-extern Store *st_ptr;
-
 std::string get_store_sale_type_tag(StoreSaleType store_type);

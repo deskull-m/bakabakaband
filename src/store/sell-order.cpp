@@ -29,7 +29,6 @@
 #include "store/store.h"
 #include "system/creature-entity.h"
 #include "system/floor/town-info.h"
-#include "system/floor/town-list.h"
 #include "system/redrawing-flags-updater.h"
 #include "view/display-messages.h"
 #include "view/display-store.h"
@@ -40,14 +39,15 @@
 /*!
  * @brief プレイヤーが売却する時の確認プロンプト / Prompt to sell for the price
  * @param creature クリーチャーへの参照
+ * @param store 売却先の店舗
  * @param o_ptr オブジェクトの構造体参照ポインタ
  * @return 売るなら(true,売値)、売らないなら(false,0)のタプル
  */
-static tl::optional<int> prompt_to_sell(CreatureEntity &creature, ItemEntity *o_ptr)
+static tl::optional<int> prompt_to_sell(CreatureEntity &creature, const Store &store, ItemEntity *o_ptr)
 {
-    auto price_ask = price_item(creature, o_ptr, *st_ptr, true);
+    auto price_ask = price_item(creature, o_ptr, store, true);
 
-    price_ask = std::min(price_ask, st_ptr->get_owner().max_cost);
+    price_ask = std::min(price_ask, store.get_owner().max_cost);
     price_ask *= o_ptr->number;
     const auto s = fmt::format(_("売値 ${} で売りますか？", "Do you sell for ${}? "), price_ask);
     if (input_check_strict(creature, s, UserCheck::DEFAULT_Y)) {
@@ -61,9 +61,11 @@ static tl::optional<int> prompt_to_sell(CreatureEntity &creature, ItemEntity *o_
  * @brief 店からの売却処理のメインルーチン /
  * Sell an item to the store (or home)
  * @param creature クリーチャーへの参照
+ * @param store 売却先の店舗
  */
-void store_sell(CreatureEntity &creature, StoreSaleType store_num)
+void store_sell(CreatureEntity &creature, Store &store)
 {
+    const auto store_num = store.get_sale_type();
     concptr q; //!< @note プロンプトメッセージ
     concptr s_none; //!< @note 売る/置くものがない場合のメッセージ
     concptr s_full; //!< @note もう置けない場合のメッセージ
@@ -116,7 +118,7 @@ void store_sell(CreatureEntity &creature, StoreSaleType store_num)
         selling_item.feeling = FEEL_NONE;
     }
 
-    if (!store_check_num(&selling_item, *st_ptr)) {
+    if (!store_check_num(&selling_item, store)) {
         msg_print(s_full);
         return;
     }
@@ -127,7 +129,7 @@ void store_sell(CreatureEntity &creature, StoreSaleType store_num)
         msg_format(_("%s(%c)を売却する。", "Selling %s (%c)."), item_name.data(), index_to_label(i_idx));
         msg_erase();
 
-        auto res = prompt_to_sell(creature, &selling_item);
+        auto res = prompt_to_sell(creature, store, &selling_item);
         placed = res.has_value();
         if (placed) {
             const auto price = res.value();
@@ -179,16 +181,15 @@ void store_sell(CreatureEntity &creature, StoreSaleType store_num)
             }
 
             inven_item_optimize(creature, i_idx);
-            auto &store = TownList::get_instance().get_town(creature.get_town_num()).get_store(store_num);
             const auto item_pos = store.carry(sold_item);
             if (item_pos) {
                 store_top = (*item_pos / store_bottom) * store_bottom;
-                display_store_inventory(creature, store_num);
+                display_store_inventory(creature, store);
             }
         }
     } else if (store_num == StoreSaleType::MUSEUM) {
         const auto museum_item_name = describe_flavor(creature, selling_item, OD_NAME_ONLY);
-        if (-1 == store_check_num(&selling_item, *st_ptr)) {
+        if (-1 == store_check_num(&selling_item, store)) {
             msg_print(_("それと同じ品物は既に博物館にあるようです。", "The Museum already has one of those items."));
         } else {
             msg_print(_("博物館に寄贈したものは取り出すことができません！！", "You cannot take back items which have been donated to the Museum!!"));
@@ -207,10 +208,10 @@ void store_sell(CreatureEntity &creature, StoreSaleType store_num)
 
         vary_item(creature, i_idx, -amt);
 
-        int item_pos = home_carry(creature, &selling_item, store_num);
+        int item_pos = home_carry(creature, store, &selling_item);
         if (item_pos >= 0) {
             store_top = (item_pos / store_bottom) * store_bottom;
-            display_store_inventory(creature, store_num);
+            display_store_inventory(creature, store);
         }
     } else {
         distribute_charges(item.get(), &selling_item, amt);
@@ -218,10 +219,10 @@ void store_sell(CreatureEntity &creature, StoreSaleType store_num)
         msg_format(_("%sを置いた。(%c)", "You drop %s (%c)."), item_name.data(), index_to_label(i_idx));
         placed = true;
         vary_item(creature, i_idx, -amt);
-        int item_pos = home_carry(creature, &selling_item, store_num);
+        int item_pos = home_carry(creature, store, &selling_item);
         if (item_pos >= 0) {
             store_top = (item_pos / store_bottom) * store_bottom;
-            display_store_inventory(creature, store_num);
+            display_store_inventory(creature, store);
         }
     }
 
