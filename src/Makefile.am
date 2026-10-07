@@ -1611,6 +1611,8 @@ hengband_test_SOURCES = \
 	\
 	test/cmd-io/test-cmd-autopick.cpp \
 	\
+	test/game-option/test-runtime-arguments.cpp \
+	\
 	test/info-reader/test-ego-reader.cpp \
 	test/info-reader/test-info-reader-util.cpp \
 	test/info-reader/test-json-reader-util.cpp \
@@ -1640,7 +1642,9 @@ hengband_test_SOURCES = \
 	test/util/test-finalizer.cpp \
 	test/util/test-flag-group.cpp \
 	test/util/test-probability-table.cpp \
-	test/util/test-sha256.cpp
+	test/util/test-sha256.cpp \
+	\
+	test/view/test-map-terrain-visibility.cpp
 
 hengband_test_LDADD = libhengband.a
 
