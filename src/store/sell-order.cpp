@@ -26,6 +26,7 @@
 #include "store/say-comments.h"
 #include "store/service-checker.h"
 #include "store/store-owners.h"
+#include "store/store-screen.h"
 #include "store/store.h"
 #include "system/creature-entity.h"
 #include "system/floor/town-info.h"
@@ -61,10 +62,11 @@ static tl::optional<int> prompt_to_sell(CreatureEntity &creature, const Store &s
  * @brief 店からの売却処理のメインルーチン /
  * Sell an item to the store (or home)
  * @param creature クリーチャーへの参照
- * @param store 売却先の店舗
+ * @param screen 売却先の店舗の画面
  */
-void store_sell(CreatureEntity &creature, Store &store)
+void store_sell(CreatureEntity &creature, StoreScreen &screen)
 {
+    auto &store = screen.get_store();
     const auto store_num = store.get_sale_type();
     concptr q; //!< @note プロンプトメッセージ
     concptr s_none; //!< @note 売る/置くものがない場合のメッセージ
@@ -146,7 +148,7 @@ void store_sell(CreatureEntity &creature, Store &store)
             }
 
             creature.add_au(price);
-            store_prt_gold(creature.get_au());
+            store_prt_gold(screen, creature.get_au());
             const auto dummy = selling_item.calc_price() * selling_item.number;
 
             identify_item(creature, item.get());
@@ -183,8 +185,8 @@ void store_sell(CreatureEntity &creature, Store &store)
             inven_item_optimize(creature, i_idx);
             const auto item_pos = store.carry(sold_item);
             if (item_pos) {
-                store_top = (*item_pos / store_bottom) * store_bottom;
-                display_store_inventory(creature, store);
+                screen.show_page_containing(*item_pos);
+                display_store_inventory(creature, screen);
             }
         }
     } else if (store_num == StoreSaleType::MUSEUM) {
@@ -210,8 +212,8 @@ void store_sell(CreatureEntity &creature, Store &store)
 
         int item_pos = home_carry(creature, store, &selling_item);
         if (item_pos >= 0) {
-            store_top = (item_pos / store_bottom) * store_bottom;
-            display_store_inventory(creature, store);
+            screen.show_page_containing(item_pos);
+            display_store_inventory(creature, screen);
         }
     } else {
         distribute_charges(item.get(), &selling_item, amt);
@@ -221,8 +223,8 @@ void store_sell(CreatureEntity &creature, Store &store)
         vary_item(creature, i_idx, -amt);
         int item_pos = home_carry(creature, store, &selling_item);
         if (item_pos >= 0) {
-            store_top = (item_pos / store_bottom) * store_bottom;
-            display_store_inventory(creature, store);
+            screen.show_page_containing(item_pos);
+            display_store_inventory(creature, screen);
         }
     }
 
