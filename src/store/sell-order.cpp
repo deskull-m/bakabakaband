@@ -46,7 +46,7 @@
  */
 static tl::optional<int> prompt_to_sell(CreatureEntity &creature, const Store &store, ItemEntity *o_ptr)
 {
-    auto price_ask = price_item(creature, o_ptr, store, true);
+    auto price_ask = price_item(creature, o_ptr, store, StoreTradeType::PLAYER_SELLS);
 
     price_ask = std::min(price_ask, store.get_owner().max_cost);
     price_ask *= o_ptr->number;
