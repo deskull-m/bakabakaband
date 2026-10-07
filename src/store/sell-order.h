@@ -1,5 +1,5 @@
 #pragma once
 
 class CreatureEntity;
-class Store;
-void store_sell(CreatureEntity &creature, Store &store);
+class StoreScreen;
+void store_sell(CreatureEntity &creature, StoreScreen &screen);
