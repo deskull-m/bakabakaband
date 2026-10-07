@@ -1138,9 +1138,9 @@ MonsterSpellResult spell_RF6_S_DEAD_UNIQUE(CreatureEntity &creature, POSITION y,
     auto see_either = see_monster(creature, m_idx) || see_monster(creature, t_idx);
     auto known = monster_near_player(creature, m_idx, t_idx);
 
-    mspell_cast_msg_blind msg(_("%^sが何かをつぶやいた。", "%^s mumbles."),
-        _("%s^が魔法で特別な強敵を蘇らせた！", "%^s magically animates special opponents!"),
-        _("%s^が魔法で特別な強敵を蘇らせた！", "%^s magically animates special opponents!"));
+    mspell_cast_msg_blind msg(_("%s^が何かをつぶやいた。", "%s^ mumbles."),
+        _("%s^が魔法で特別な強敵を蘇らせた！", "%s^ magically animates special opponents!"),
+        _("%s^が魔法で特別な強敵を蘇らせた！", "%s^ magically animates special opponents!"));
 
     monspell_message(creature, m_idx, t_idx, msg, target_type);
     summon_disturb(creature, target_type, known, see_either);
