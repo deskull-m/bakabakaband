@@ -43,7 +43,6 @@
 int store_top = 0;
 int store_bottom = 0;
 int xtra_stock = 0;
-const owner_type *ot_ptr = nullptr;
 int16_t old_town_num = 0;
 int16_t inner_town_num = 0;
 
@@ -283,7 +282,7 @@ static void store_create(CreatureEntity &creature, short fix_k_idx, StoreSaleTyp
     }
 
     const int bm_boost = 25 + store_level(store_num) / 4;
-    const owner_type *ow_ptr = &owners.at(store_num)[st_ptr->owner];
+    const owner_type *ow_ptr = &st_ptr->get_owner();
     for (int tries = 0; tries < 4; tries++) {
         short bi_id;
         DEPTH level;
@@ -367,7 +366,6 @@ void store_maintenance(CreatureEntity &creature, int town_num, StoreSaleType sto
     }
 
     st_ptr = &TownList::get_instance().get_town(town_num).get_store(store_num);
-    ot_ptr = &owners.at(store_num)[st_ptr->owner];
     st_ptr->insult_cur = 0;
     if (store_num == StoreSaleType::BLACK) {
         for (INVENTORY_IDX j = st_ptr->stock_num - 1; j >= 0; j--) {
@@ -470,7 +468,6 @@ void store_init(int town_num, StoreSaleType store_num)
         }
     }
 
-    ot_ptr = &owners.at(store_num)[st_ptr->owner];
     st_ptr->store_open = 0;
     st_ptr->insult_cur = 0;
     st_ptr->good_buy = 0;

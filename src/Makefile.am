@@ -1617,6 +1617,8 @@ hengband_test_SOURCES = \
 	test/io/test-interpret-pref-file.cpp \
 	test/io/test-macro-configurations-store.cpp \
 	\
+	test/store/test-store-util.cpp \
+	\
 	test/system/monrace/test-armament-level.cpp \
 	test/system/monrace/test-body-structure-policy.cpp \
 	test/system/monrace/test-monrace-definition.cpp \

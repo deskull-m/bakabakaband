@@ -71,6 +71,7 @@
     <ClCompile Include="..\..\src\test\info-reader\test-wilderness-reader.cpp" />
     <ClCompile Include="..\..\src\test\io\test-interpret-pref-file.cpp" />
     <ClCompile Include="..\..\src\test\io\test-macro-configurations-store.cpp" />
+    <ClCompile Include="..\..\src\test\store\test-store-util.cpp" />
     <ClCompile Include="..\..\src\test\system\monrace\test-armament-level.cpp" />
     <ClCompile Include="..\..\src\test\system\monrace\test-body-structure-policy.cpp" />
     <ClCompile Include="..\..\src\test\system\monrace\test-monrace-definition.cpp" />
