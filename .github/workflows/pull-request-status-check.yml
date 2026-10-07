@@ -97,7 +97,7 @@ jobs:
       runner: ubuntu-24.04
       cxx: g++-14
       cxx-flags: "-pipe -O3 -Werror -Wall -Wextra"
-      configure-opts: "--disable-pch --disable-japanese"
+      configure-opts: "--disable-pch --disable-japanese --disable-assert"
       use-ccache: true
 
   build_test_with_msvc:
