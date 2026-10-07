@@ -126,7 +126,7 @@ static void switch_store_stock(CreatureEntity &creature, const int i, const COMM
 {
     if (st_ptr->stock_num == 0) {
         msg_print(_("店主は新たな在庫を取り出した。", "The shopkeeper brings out some new stock."));
-        store_maintenance(creature, creature.get_town_num(), store_num, 10);
+        store_maintenance(creature, *st_ptr, 10);
 
         store_top = 0;
         display_store_inventory(creature, store_num);
