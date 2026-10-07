@@ -44,6 +44,7 @@ bool leave_store = false;
  * @brief 店舗処理コマンド選択のメインルーチン /
  * Process a command in a store
  * @param creature クリーチャーへの参照
+ * @param store コマンドの対象となる店舗
  * @note
  * <pre>
  * Note that we must allow the use of a few "special" commands
@@ -52,8 +53,9 @@ bool leave_store = false;
  * but not in the stores, to prevent chaos.
  * </pre>
  */
-void store_process_command(CreatureEntity &creature, StoreSaleType store_num)
+void store_process_command(CreatureEntity &creature, Store &store)
 {
+    const auto store_num = store.get_sale_type();
     repeat_check();
     if (rogue_like_commands && (command_cmd == 'l')) {
         command_cmd = 'x';
@@ -67,12 +69,12 @@ void store_process_command(CreatureEntity &creature, StoreSaleType store_num)
     case '-': {
         /* 日本語版追加 */
         /* 1 ページ戻るコマンド: 我が家のページ数が多いので重宝するはず By BUG */
-        if (st_ptr->stock_num <= store_bottom) {
+        if (store.stock_num <= store_bottom) {
             msg_print(_("これで全部です。", "Entire inventory is shown."));
         } else {
             store_top -= store_bottom;
             if (store_top < 0) {
-                store_top = ((st_ptr->stock_num - 1) / store_bottom) * store_bottom;
+                store_top = ((store.stock_num - 1) / store_bottom) * store_bottom;
             }
 
             if ((store_num == StoreSaleType::HOME) && !powerup_home) {
@@ -81,13 +83,13 @@ void store_process_command(CreatureEntity &creature, StoreSaleType store_num)
                 }
             }
 
-            display_store_inventory(creature, store_num);
+            display_store_inventory(creature, store);
         }
 
         break;
     }
     case ' ': {
-        if (st_ptr->stock_num <= store_bottom) {
+        if (store.stock_num <= store_bottom) {
             msg_print(_("これで全部です。", "Entire inventory is shown."));
         } else {
             store_top += store_bottom;
@@ -97,30 +99,30 @@ void store_process_command(CreatureEntity &creature, StoreSaleType store_num)
              * 我が家では 2 ページまでしか表示しない
              */
             auto inven_max = store_get_stock_max(store_num, powerup_home);
-            if (store_top >= st_ptr->stock_num || store_top >= inven_max) {
+            if (store_top >= store.stock_num || store_top >= inven_max) {
                 store_top = 0;
             }
 
-            display_store_inventory(creature, store_num);
+            display_store_inventory(creature, store);
         }
 
         break;
     }
     case KTRL('R'): {
         do_cmd_redraw(creature);
-        display_store(creature, store_num);
+        display_store(creature, store);
         break;
     }
     case 'g': {
-        store_purchase(creature, store_num);
+        store_purchase(creature, store);
         break;
     }
     case 'd': {
-        store_sell(creature, store_num);
+        store_sell(creature, store);
         break;
     }
     case 'x': {
-        store_examine(creature, store_num);
+        store_examine(creature, store);
         break;
     }
     case '\r': {
@@ -192,7 +194,7 @@ void store_process_command(CreatureEntity &creature, StoreSaleType store_num)
         creature.set_town_num(old_town_num);
         do_cmd_player_status(creature);
         creature.set_town_num(inner_town_num);
-        display_store(creature, store_num);
+        display_store(creature, store);
         break;
     }
     case '!':
@@ -226,7 +228,7 @@ void store_process_command(CreatureEntity &creature, StoreSaleType store_num)
         do_cmd_options(creature);
         (void)combine_and_reorder_home(creature, StoreSaleType::HOME);
         do_cmd_redraw(creature);
-        display_store(creature, store_num);
+        display_store(creature, store);
         break;
     }
     case ':': {
@@ -267,7 +269,7 @@ void store_process_command(CreatureEntity &creature, StoreSaleType store_num)
     }
     default: {
         if ((store_num == StoreSaleType::MUSEUM) && (command_cmd == 'r')) {
-            museum_remove_object(creature);
+            museum_remove_object(creature, store);
         } else {
             msg_print(_("そのコマンドは店の中では使えません。", "That command does not work in stores."));
         }

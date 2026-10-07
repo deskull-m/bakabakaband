@@ -1,5 +1,5 @@
 #pragma once
 
-enum class StoreSaleType;
 class CreatureEntity;
-void store_purchase(CreatureEntity &creature, StoreSaleType store_num);
+class Store;
+void store_purchase(CreatureEntity &creature, Store &store);
