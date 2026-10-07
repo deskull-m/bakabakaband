@@ -7,7 +7,7 @@ angband_files = \
 	ClassSkillDefinitions.txt DungeonDefinitions.jsonc EgoDefinitions.jsonc \
 	MonraceDefinitions.jsonc MonsterMessages.jsonc QuestPreferences.jsonc \
 	SpellDefinitions.jsonc TerrainDefinitions.jsonc \
-	TownDefinitionList.jsonc TownPreferences.jsonc VaultDefinitions.txt \
+	TownDefinitionList.jsonc TownPreferences.jsonc VaultDefinitions.jsonc \
 	WildernessDefinition.jsonc
 
 EXTRA_DIST = \
