@@ -168,9 +168,7 @@ bool store_process_command(CreatureEntity &creature, StoreScreen &screen)
         return false;
     }
     case 'C': {
-        creature.set_town_num(old_town_num);
         do_cmd_player_status(creature);
-        creature.set_town_num(inner_town_num);
         display_store(creature, screen);
         return false;
     }
@@ -178,27 +176,19 @@ bool store_process_command(CreatureEntity &creature, StoreScreen &screen)
         term_user();
         return false;
     case '"': {
-        creature.set_town_num(old_town_num);
         do_cmd_pref(creature);
-        creature.set_town_num(inner_town_num);
         return false;
     }
     case '@': {
-        creature.set_town_num(old_town_num);
         do_cmd_macros(creature);
-        creature.set_town_num(inner_town_num);
         return false;
     }
     case '%': {
-        creature.set_town_num(old_town_num);
         do_cmd_visuals(creature);
-        creature.set_town_num(inner_town_num);
         return false;
     }
     case '&': {
-        creature.set_town_num(old_town_num);
         do_cmd_colors(creature);
-        creature.set_town_num(inner_town_num);
         return false;
     }
     case '=': {

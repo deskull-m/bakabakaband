@@ -13,13 +13,10 @@
 #define STORE_SHUFFLE 21 /* 1/Chance (per day) of an owner changing */
 #define STORE_TICKS 1000 /* Number of ticks between turnovers */
 
-extern int16_t old_town_num;
-extern int16_t inner_town_num;
-
 class CreatureEntity;
 class StoreScreen;
 int16_t store_get_stock_max(StoreSaleType sst, bool powerup = true);
-void store_maintenance(CreatureEntity &creature, Store &store, int chance);
+void store_maintenance(CreatureEntity &creature, size_t town_num, Store &store, int chance);
 void store_init(int town_num, StoreSaleType store_num);
 void store_examine(CreatureEntity &creature, const StoreScreen &screen);
 int store_check_num(const ItemEntity *o_ptr, const Store &store);
