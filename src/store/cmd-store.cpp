@@ -15,7 +15,6 @@
 #include "player-status/player-energy.h"
 #include "store/home.h"
 #include "store/store-key-processor.h"
-#include "store/store-owners.h"
 #include "store/store-util.h"
 #include "store/store.h"
 #include "system/creature-entity.h"
@@ -121,7 +120,6 @@ void do_cmd_store(CreatureEntity &creature, std::optional<StoreSaleType> specifi
     get_com_no_macros = true;
     cur_store_feat = grid.feat;
     st_ptr = &TownList::get_instance().get_town(creature.get_town_num()).get_store(store_num);
-    ot_ptr = &owners.at(store_num)[st_ptr->owner];
     store_top = 0;
 
     // 店舗に入ったインシデントを記録
