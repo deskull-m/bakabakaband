@@ -183,8 +183,6 @@ libhengband_a_SOURCES = \
 	birth/auto-roller.cpp birth/auto-roller.h \
 	birth/birth-wizard.cpp birth/birth-wizard.h \
 	\
-	blue-magic/blue-magic-ball-bolt.cpp blue-magic/blue-magic-ball-bolt.h \
-	blue-magic/blue-magic-breath.cpp blue-magic/blue-magic-breath.h \
 	blue-magic/blue-magic-caster.cpp blue-magic/blue-magic-caster.h \
 	blue-magic/blue-magic-checker.cpp blue-magic/blue-magic-checker.h \
 	blue-magic/blue-magic-spirit-curse.cpp blue-magic/blue-magic-spirit-curse.h \
@@ -1008,6 +1006,7 @@ libhengband_a_SOURCES = \
 	mspell/high-resistance-checker.cpp mspell/high-resistance-checker.h \
 	mspell/improper-mspell-remover.cpp mspell/improper-mspell-remover.h \
 	mspell/monster-power-table.cpp mspell/monster-power-table.h \
+	mspell/mspell-projection-table.cpp mspell/mspell-projection-table.h \
 	mspell/mspell-attack.cpp mspell/mspell-attack.h \
 	mspell/mspell-attack-util.cpp mspell/mspell-attack-util.h \
 	mspell/mspell-checker.cpp mspell/mspell-checker.h \
@@ -1617,6 +1616,8 @@ hengband_test_SOURCES = \
 	\
 	test/io/test-interpret-pref-file.cpp \
 	test/io/test-macro-configurations-store.cpp \
+	\
+	test/mspell/test-mspell-projection-table.cpp \
 	\
 	test/store/test-pricing.cpp \
 	test/store/test-store-screen.cpp \
