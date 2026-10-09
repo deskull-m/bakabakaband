@@ -11,7 +11,9 @@
 #include "floor/fixed-map-generator.h"
 #include "game-option/birth-options.h"
 #include "game-option/runtime-arguments.h"
+#include "info-reader/general-parser.h"
 #include "info-reader/parse-error-types.h"
+#include "info-reader/quest-reader.h"
 #include "io/files-util.h"
 #include "locale/character-encoding.h"
 #include "main/init-error-messages-table.h"
@@ -22,17 +24,101 @@
 #include "system/angband-system.h"
 #include "system/creature-entity.h"
 #include "system/dungeon/quest-definition.h"
+#include "system/dungeon/quest-fixed-map.h"
 #include "system/floor/floor-info.h"
+#include "system/gamevalue.h"
 #include "util/angband-files.h"
+#include "util/enum-converter.h"
 #include "util/string-processor.h"
 #include "view/display-messages.h"
 #include "world/world-collapsion.h"
 #include <algorithm>
+#include <cstdint>
+#include <iterator>
+#include <limits>
+#include <nlohmann/json.hpp>
 #include <sstream>
 #include <string>
+#include <utility>
+#include <vector>
 
 static char tmp[8];
 static concptr variant = "ZANGBAND";
+
+/*!
+ * @brief 街の凡例セルの special 値が int16_t の範囲に収まる整数かを判定する
+ * @param value JSON 値
+ * @return 範囲内の整数なら true
+ */
+static bool is_valid_town_special(const nlohmann::json &value)
+{
+    if (!value.is_number_integer()) {
+        return false;
+    }
+
+    constexpr auto minimum = std::numeric_limits<int16_t>::min();
+    constexpr auto maximum = std::numeric_limits<int16_t>::max();
+    if (value.is_number_unsigned()) {
+        return value.get<uint64_t>() <= static_cast<uint64_t>(maximum);
+    }
+
+    const auto special = value.get<int64_t>();
+    return special >= minimum && special <= maximum;
+}
+
+/*!
+ * @brief 街の地形凡例 (TownPreferences.jsonc) を読み込み、共通の凡例テーブルに反映する
+ * @return エラーコード
+ * @details 個別の街定義はこの凡例を上書きできる。INIT_ONLY_BUILDINGS 時は読み込まない。
+ */
+static parse_error_type load_town_preferences()
+{
+    if (init_flags & INIT_ONLY_BUILDINGS) {
+        return PARSE_ERROR_NONE;
+    }
+
+    std::ifstream ifs(path_build(ANGBAND_DIR_EDIT, TOWN_PREFERENCES));
+    if (!ifs) {
+        return PARSE_ERROR_GENERIC;
+    }
+
+    try {
+        const auto data = nlohmann::json::parse(std::istreambuf_iterator<char>(ifs), std::istreambuf_iterator<char>(), nullptr, true, true, true);
+        if (!data.is_object() || !data.contains("version") || !data["version"].is_number_integer() || data["version"] != 1 ||
+            !data.contains("legend") || !data["legend"].is_object() || data["legend"].empty()) {
+            return PARSE_ERROR_INVALID_TYPE;
+        }
+
+        std::vector<std::pair<unsigned char, dungeon_grid>> legend;
+        for (const auto &[symbol, cell_data] : data["legend"].items()) {
+            if (symbol.size() != 1 || symbol.front() < '!' || symbol.front() > '~' || !cell_data.is_object() ||
+                !cell_data.contains("terrain") || !cell_data["terrain"].is_string() || !cell_data.contains("caveInfo") || !cell_data["caveInfo"].is_array()) {
+                return PARSE_ERROR_INVALID_TYPE;
+            }
+            for (const auto &flag : cell_data["caveInfo"]) {
+                if (!flag.is_string()) {
+                    return PARSE_ERROR_INVALID_TYPE;
+                }
+            }
+            if (cell_data.contains("special") && !is_valid_town_special(cell_data["special"])) {
+                return PARSE_ERROR_INVALID_VALUE;
+            }
+
+            QuestLegendCell cell;
+            if (const auto err = parse_quest_legend_cell(cell_data, cell); err != PARSE_ERROR_NONE) {
+                return err;
+            }
+            legend.emplace_back(static_cast<unsigned char>(symbol.front()), cell.grid);
+        }
+
+        for (const auto &[symbol, grid] : legend) {
+            letter[symbol] = grid;
+        }
+        return PARSE_ERROR_NONE;
+    } catch (const nlohmann::json::exception &) {
+        return PARSE_ERROR_INVALID_VALUE;
+    }
+}
 
 /*!
  * @brief 固定マップ (クエスト＆街＆広域マップ)生成時の分岐処理
@@ -250,6 +336,15 @@ static std::string parse_fixed_map_expression(CreatureEntity &creature, char **s
  */
 parse_error_type parse_fixed_map(CreatureEntity &creature, std::string_view name, int ymin, int xmin, int ymax, int xmax)
 {
+    if (name == TOWN_DEFINITION_LIST) {
+        if (const auto err = load_town_preferences(); err != PARSE_ERROR_NONE) {
+            const auto oops = (((err > 0) && (err < PARSE_ERROR_MAX)) ? err_str[err] : "unknown");
+            msg_print(format("Error %d (%s) loading '%s'.", enum2i(err), oops, TOWN_PREFERENCES));
+            msg_erase();
+            return err;
+        }
+    }
+
     const auto path = path_build(ANGBAND_DIR_EDIT, name);
     auto *fp = angband_fopen(path, FileOpenMode::READ);
     if (fp == nullptr) {
