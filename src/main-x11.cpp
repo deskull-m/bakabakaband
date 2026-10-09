@@ -2298,7 +2298,7 @@ static void game_term_nuke_x11(term_type *)
 {
     for (auto i = 0; i < MAX_TERM_DATA; i++) {
         infofnt *ifnt = data[i].fnt.get();
-        infowin *iwin = data[i].win.get();
+        [[maybe_unused]] infowin *iwin = data[i].win.get();
         if (ifnt) {
 #ifdef USE_XFT
             if (ifnt->xft_info) {
