@@ -70,6 +70,7 @@
 #include "system/redrawing-flags-updater.h"
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
+#include "term/z-rand.h"
 #include "util/bit-flags-calculator.h"
 #include "util/enum-converter.h"
 #include "util/string-processor.h"
@@ -686,8 +687,9 @@ void PlayerType::on_death(std::string_view cause)
     term_clear();
 
     /* 桜散る */
+    auto &rng = get_external_rng();
     for (auto i = 0; i < 40; i++) {
-        term_putstr(randint0(w / 2) * 2, randint0(h), 2, TERM_VIOLET, "υ");
+        term_putstr(randint0(rng, w / 2) * 2, randint0(rng, h), 2, TERM_VIOLET, "υ");
     }
 
     auto str = death_message.data();

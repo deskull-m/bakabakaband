@@ -35,6 +35,7 @@
 #include "term/gameterm.h"
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
+#include "term/z-rand.h"
 #include "util/angband-files.h"
 #include "util/int-char-converter.h"
 #include "view/display-messages.h"
@@ -312,8 +313,10 @@ void do_cmd_time(CreatureEntity &creature)
     std::string day_buf = (day < MAX_DAYS) ? std::to_string(day) : "*****";
     constexpr auto mes = _("%s日目, 時刻は%d:%02d %sです。", "This is day %s. The time is %d:%02d %s.");
     msg_format(mes, day_buf.data(), (hour % 12 == 0) ? 12 : (hour % 12), min, (hour < 12) ? "AM" : "PM");
+    // ゲームの時間が経過しない操作なので、ゲームの乱数生成器は使わない
+    auto &rng = get_external_rng();
     std::filesystem::path path;
-    if (!randint0(10) || creature.is_hallucinated()) {
+    if (!randint0(rng, 10) || creature.is_hallucinated()) {
         path = path_build(ANGBAND_DIR_FILE, _("timefun_j.txt", "timefun.txt"));
     } else {
         path = path_build(ANGBAND_DIR_FILE, _("timenorm_j.txt", "timenorm.txt"));
@@ -359,7 +362,7 @@ void do_cmd_time(CreatureEntity &creature)
 
         if (buf[0] == 'D') {
             num++;
-            if (!randint0(num)) {
+            if (!randint0(rng, num)) {
                 desc = buf + 2;
             }
 

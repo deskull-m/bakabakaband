@@ -43,12 +43,12 @@ void BaseitemService::reset_all_visuals()
     });
 }
 
-const BaseitemConfig &BaseitemService::pick_one_at_random()
+const BaseitemConfig &BaseitemService::pick_one_at_random(xso::rng32 &rng)
 {
     const auto &baseitems = BaseitemList::get_instance();
     const auto &baseitem_configs = BaseitemConfigs::get_instance();
     while (true) {
-        const auto bi_id = randnum1<short>(baseitems.size() - 1); // 0は無効値なので最初から選ばない
+        const auto bi_id = randnum1<short>(rng, baseitems.size() - 1); // 0は無効値なので最初から選ばない
         if (baseitems.is_valid(bi_id)) {
             return baseitem_configs.get_config(bi_id);
         }

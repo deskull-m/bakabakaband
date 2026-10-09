@@ -2,6 +2,7 @@
 #include "effect/attribute-types.h"
 #include "system/system-variables.h"
 #include "term/term-color-types.h"
+#include "term/z-rand.h"
 #include "util/string-processor.h"
 #include "view/display-symbol.h"
 #include <span>
@@ -398,7 +399,7 @@ static TERM_COLOR mh_attr(int max)
     };
 
     auto candidates = std::span(colors).first(max);
-    return rand_choice(candidates);
+    return rand_choice(get_external_rng(), candidates);
 }
 
 /*!
@@ -525,7 +526,7 @@ static TERM_COLOR spell_color(AttributeType type)
         }
 
         /* Pick a random color */
-        auto c = color[randint0(color.size())];
+        auto c = color[randint0(get_external_rng(), color.size())];
 
         /* Lookup this color */
         a = angband_strchr(color_char, c) - color_char;
