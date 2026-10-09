@@ -5723,6 +5723,9 @@
     <ClInclude Include="..\..\src\util\stack-trace.h">
       <Filter>util</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\util\type-concepts.h">
+      <Filter>util</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\src\system\angband-system.h">
       <Filter>system</Filter>
     </ClInclude>

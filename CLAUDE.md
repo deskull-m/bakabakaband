@@ -118,6 +118,74 @@ tl::optional<MonraceId> select_pit_nest_monrace_id(CreatureEntity &creature, uin
 tl::optional<MonraceId> select_pit_nest_monrace_id(CreatureEntity &creature, uint8_t &sub_align, int boost);
 ```
 
+### CI コンパイラ固有の注意事項
+
+CI (`.github/workflows/pull-request-status-check.yml`) は **clang++-15 (`-stdlib=libc++`) /
+clang++-14 / g++-14 / MSVC** の 4 系統を回す。いずれも `-Werror` 相当なので、
+手元のコンパイラで通っても CI だけで落ちるパターンがある。以下は実際に踏んだもの。
+
+#### `std::ranges` のアルゴリズム・イテレータ操作 (libc++-15)
+
+libc++-15 は `std::ranges` の大部分を `_LIBCPP_HAS_NO_INCOMPLETE_RANGES` で封じており、
+`-fexperimental-library` なしでは使えない。**range concepts と CPO は使えるが、
+アルゴリズムとイテレータ操作は使えない**という半半の状態なので注意。
+
+| 分類 | 例 | libc++-15 |
+|---|---|---|
+| range concepts | `std::ranges::forward_range` / `sized_range` / `borrowed_range` / `random_access_range` | 利用可 |
+| CPO | `std::ranges::begin` / `end` / `size` | 利用可 |
+| イテレータ操作 | `std::ranges::next` / `prev` / `advance` / `distance` | **使用不可** |
+| アルゴリズム | `std::ranges::find` / `find_if` / `all_of` / `sort` 等 | **使用不可** |
+
+- アルゴリズムは `std::find(first, last, value)` 等の従来形を使う。
+- イテレータを n 個進める処理では **`std::advance` / `std::next` も避けること**。
+  これらは `std::iterator_traits` に依存し、`EnumRange::iterator`
+  (`src/util/enum-range.h`) のように `iterator_category` を持たず `iterator_concept`
+  のみを持つ C++20 イテレータでは libc++ の制約を満たず、別のエラーに化ける。
+  `if constexpr (std::ranges::random_access_range<R>)` で分岐して `+= n` と `++` を
+  書き分ける (`src/term/z-rand.h` の `rand_choice()` が実例)。
+- clang++-14 ジョブは libstdc++ なので `std::ranges` は揃っている。**libc++ 固有の制約**。
+
+#### 構造化束縛をラムダへ取り込まない (clang 14 / 15)
+
+構造化束縛で導入した名前のラムダキャプチャは P1091 で許可されたが、実装は
+**clang 16 以降**。clang 14 / 15 ではエラーになる。doctest の `CAPTURE()` は内部で
+ラムダを展開するため、以下は MSVC では通るのに CI だけで落ちる。
+
+```cpp
+// NG: "reference to local binding 'key' declared in enclosing function"
+for (const auto &[key, value] : map) {
+    CAPTURE(key);
+}
+
+// OK: 通常の変数で受けてから渡す
+for (const auto &entry : map) {
+    const auto key = entry.first;
+    const auto &value = entry.second;
+    CAPTURE(key);
+}
+```
+
+#### ヘッダでの `std::numeric_limits<T>::max()` (MSVC)
+
+**ヘッダ**に `std::numeric_limits<T>::max()` を素で書くと、`windows.h` を先に読んだ TU で
+`max` が関数形式マクロとして展開され、`C4003` / `C2589` になる (MSVC ビルドは
+`-warnAsError` なので即失敗)。**括弧で囲んで展開を抑止すること**。
+
+```cpp
+// NG: windows.h の後に読まれる TU で壊れる
+if (total > std::numeric_limits<int>::max()) {
+
+// OK: マクロ展開されない
+if (total > (std::numeric_limits<int>::max)()) {
+```
+
+- `.cpp` は自身の include 順を制御できるので従来形のままでよい
+  (`src/info-reader/` 等の既存コードは素で書いている)。
+- vendor の `fmt` / `nlohmann` も同じ理由で括弧形を採っている。
+  なお `src/external-lib/include/xoshiro.h` は素で書いているが、
+  現行の include 経路では `windows.h` より先に読まれるため顕在化していない。
+
 ---
 
 ## 統合ロードマップ進捗
