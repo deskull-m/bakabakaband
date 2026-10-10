@@ -260,7 +260,9 @@ void wild_magic(CreatureEntity &creature, int spell)
     }
 
     const auto &floor = *creature.get_floor();
-    switch (randint1(spell) + randint1(8) + 1) {
+    auto roll = randint1(spell);
+    roll += randint1(8) + 1;
+    switch (roll) {
     case 1:
     case 2:
     case 3:

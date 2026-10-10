@@ -225,10 +225,14 @@ static void build_cave_vault(CreatureEntity &creature, const Pos2D &center, cons
         const auto grd = 1 << randint0(4);
 
         /* want average of about 16 */
-        const auto roug = randint1(8) * randint1(4);
+        auto roug = randint1(8);
+        roug *= randint1(4);
 
         /* about size/2 */
-        const auto cutoff = randint1(xsize / 4) + randint1(ysize / 4) + randint1(xsize / 4) + randint1(ysize / 4);
+        auto cutoff = randint1(xsize / 4);
+        cutoff += randint1(ysize / 4);
+        cutoff += randint1(xsize / 4);
+        cutoff += randint1(ysize / 4);
 
         /* make it */
         generate_hmap(floor, center.y, center.x, xsize, ysize, grd, roug, cutoff);
@@ -686,7 +690,8 @@ static void build_elemental_vault(CreatureEntity &creature, const Pos2D &center,
         const auto grd = 1 << (randint0(3));
 
         /* want average of about 16 */
-        const auto roug = randint1(8) * randint1(4);
+        auto roug = randint1(8);
+        roug *= randint1(4);
 
         /* Make up size of various componants */
         /* Floor */
@@ -713,7 +718,9 @@ static void build_elemental_vault(CreatureEntity &creature, const Pos2D &center,
 
     /* make a few rooms in the vault */
     for (auto i = 1; i <= (xsize * ysize) / 50; i++) {
-        build_small_room(creature, center.x + randint0(xsize - 4) - xsize / 2 + 2, center.y + randint0(ysize - 4) - ysize / 2 + 2);
+        const auto x = center.x + randint0(xsize - 4) - xsize / 2 + 2;
+        const auto y = center.y + randint0(ysize - 4) - ysize / 2 + 2;
+        build_small_room(creature, x, y);
     }
 
     /* Fill with monsters and treasure, low difficulty */

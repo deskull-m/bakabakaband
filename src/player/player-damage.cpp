@@ -689,7 +689,9 @@ void PlayerType::on_death(std::string_view cause)
     /* 桜散る */
     auto &rng = get_external_rng();
     for (auto i = 0; i < 40; i++) {
-        term_putstr(randint0(rng, w / 2) * 2, randint0(rng, h), 2, TERM_VIOLET, "υ");
+        const auto x = randint0(rng, w / 2) * 2;
+        const auto y = randint0(rng, h);
+        term_putstr(x, y, 2, TERM_VIOLET, "υ");
     }
 
     auto str = death_message.data();

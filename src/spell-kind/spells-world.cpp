@@ -251,7 +251,13 @@ bool teleport_level_other(CreatureEntity &creature)
     msg_format(_("%s^の足を指さした。", "You gesture at %s^'s feet."), m_name.data());
 
     auto has_immune = monrace.resistance_flags.has_any_of(RFR_EFF_RESIST_NEXUS_MASK) || monrace.resistance_flags.has(MonsterResistanceType::RESIST_TELEPORT);
-    if (has_immune || (monrace.misc_flags.has(MonsterMiscType::QUESTOR)) || (monrace.level + randint1(50) > creature.get_level() + randint1(60))) {
+    auto is_unaffected = has_immune || monrace.misc_flags.has(MonsterMiscType::QUESTOR);
+    if (!is_unaffected) {
+        const auto resistance_power = monrace.level + randint1(50);
+        is_unaffected = resistance_power > creature.get_level() + randint1(60);
+    }
+
+    if (is_unaffected) {
         msg_print(_("しかし効果がなかった！", format("%s^ is unaffected!", m_name.data())));
     } else {
         teleport_level(creature, target_m_idx);
