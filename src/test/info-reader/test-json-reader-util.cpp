@@ -26,6 +26,7 @@
 #include <nlohmann/json.hpp>
 
 #include <cstdint>
+#include <limits>
 #include <string>
 #include <vector>
 
@@ -320,6 +321,67 @@ TEST_CASE("info_set_integer checks the value range")
         CHECK(valid_result == PARSE_ERROR_NONE);
         CHECK(uint8_data == 255);
     }
+}
+
+TEST_CASE("info_set_integer checks signed int boundaries before conversion")
+{
+    constexpr auto minimum = std::numeric_limits<int>::min();
+    constexpr auto maximum = std::numeric_limits<int>::max();
+    auto data = SENTINEL;
+
+    const auto minimum_result = info_set_integer(nlohmann::json(minimum), data, true, Range(minimum, maximum));
+    CHECK(minimum_result == PARSE_ERROR_NONE);
+    CHECK(data == minimum);
+    const auto maximum_result = info_set_integer(nlohmann::json(maximum), data, true, Range(minimum, maximum));
+    CHECK(maximum_result == PARSE_ERROR_NONE);
+    CHECK(data == maximum);
+
+    const auto below = static_cast<std::int64_t>(minimum) - 1;
+    const auto above = static_cast<std::int64_t>(maximum) + 1;
+    const auto below_result = info_set_integer(nlohmann::json(below), data, true, Range(minimum, maximum));
+    CHECK(below_result == PARSE_ERROR_INVALID_FLAG);
+    CHECK(data == maximum);
+    const auto above_result = info_set_integer(nlohmann::json(above), data, true, Range(minimum, maximum));
+    CHECK(above_result == PARSE_ERROR_INVALID_FLAG);
+    CHECK(data == maximum);
+}
+
+TEST_CASE("info_set_integer checks unsigned JSON values and numeric types")
+{
+    auto data = SENTINEL;
+    constexpr auto maximum = std::numeric_limits<int>::max();
+    const auto unsigned_maximum = nlohmann::json(static_cast<std::uint64_t>(maximum));
+    const auto unsigned_above = nlohmann::json(static_cast<std::uint64_t>(maximum) + 1);
+
+    const auto maximum_result = info_set_integer(unsigned_maximum, data, true, Range(0, maximum));
+    CHECK(maximum_result == PARSE_ERROR_NONE);
+    CHECK(data == maximum);
+    const auto above_result = info_set_integer(unsigned_above, data, true, Range(0, maximum));
+    CHECK(above_result == PARSE_ERROR_INVALID_FLAG);
+    CHECK(data == maximum);
+    const auto type_result = info_set_integer(nlohmann::json(1.0), data, true, Range(0, maximum));
+    CHECK(type_result == PARSE_ERROR_INVALID_TYPE);
+    CHECK(data == maximum);
+}
+
+TEST_CASE("info_set_integer checks large unsigned JSON range and storage")
+{
+    const auto largest = std::numeric_limits<std::uint64_t>::max();
+    const auto json = nlohmann::json::parse("18446744073709551615");
+    REQUIRE(json.is_number_unsigned());
+    auto data = SENTINEL;
+
+    const auto small_range_result = info_set_integer(json, data, true, Range(-1, 1));
+    CHECK(small_range_result == PARSE_ERROR_INVALID_FLAG);
+    CHECK(data == SENTINEL);
+    const auto int_range_result = info_set_integer(json, data, false, Range(std::numeric_limits<int>::min(), std::numeric_limits<int>::max()));
+    CHECK(int_range_result == PARSE_ERROR_INVALID_FLAG);
+    CHECK(data == SENTINEL);
+
+    std::uint64_t unsigned_data = 0;
+    const auto unsigned_result = info_set_integer(json, unsigned_data, true);
+    CHECK(unsigned_result == PARSE_ERROR_NONE);
+    CHECK(unsigned_data == largest);
 }
 
 TEST_CASE("info_set_string picks the string of the language of the build")
