@@ -71,8 +71,8 @@ void ObjectReadEntity::execute(bool known)
     };
     rfu.set_flags(flags_swrf);
     static constexpr auto flags_srf = {
-        StatusRecalculatingFlag::COMBINATION,
-        StatusRecalculatingFlag::REORDER,
+        InventoryArrangementFlag::COMBINATION,
+        InventoryArrangementFlag::REORDER,
     };
     rfu.set_flags(flags_srf);
     if (!used_up) {

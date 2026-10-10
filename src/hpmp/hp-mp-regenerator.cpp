@@ -350,7 +350,7 @@ void regenerate_captured_monsters(CreatureEntity &creature)
     }
 
     if (heal) {
-        RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::COMBINATION);
+        RedrawingFlagsUpdater::get_instance().set_flag(InventoryArrangementFlag::COMBINATION);
 
         /*!
          * @todo FIXME 広域マップ移動で1歩毎に何度も再描画されて重くなる.
