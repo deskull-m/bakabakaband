@@ -1328,7 +1328,7 @@ void term_draw(int x, int y, const DisplaySymbol &symbol)
     }
 
     /* Paranoia -- illegal char */
-    if (symbol.has_character()) {
+    if (!symbol.has_character()) {
         return;
     }
 
