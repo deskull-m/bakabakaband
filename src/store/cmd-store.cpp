@@ -165,7 +165,7 @@ void do_cmd_store(CreatureEntity &creature, std::optional<StoreSaleType> specifi
 
         const auto should_redraw_store_inventory = rfu.has(StatusRecalculatingFlag::BONUS);
         world.character_icky_depth = 1;
-        handle_stuff(creature);
+        handle_stuff_with_inventory_arrangement(creature);
         if (creature.inventory[INVEN_PACK]->bi_id) {
             INVENTORY_IDX i_idx = INVEN_PACK;
             const auto &item_inventory = *creature.inventory[i_idx];
@@ -186,7 +186,7 @@ void do_cmd_store(CreatureEntity &creature, std::optional<StoreSaleType> specifi
                 const auto item_name = describe_flavor(creature, item, 0);
                 msg_format(_("%sが落ちた。(%c)", "You drop %s (%c)."), item_name.data(), index_to_label(i_idx));
                 vary_item(creature, i_idx, -255);
-                handle_stuff(creature);
+                handle_stuff_with_inventory_arrangement(creature);
                 const auto item_pos = home_carry(creature, store, &item);
                 if (item_pos >= 0) {
                     screen.show_page_containing(item_pos);

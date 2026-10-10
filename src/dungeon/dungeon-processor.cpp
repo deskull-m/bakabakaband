@@ -153,7 +153,7 @@ void process_dungeon(CreatureEntity &creature, bool load_game)
         StatusRecalculatingFlag::REORDER,
     };
     RedrawingFlagsUpdater::get_instance().set_flags(flags_srf);
-    handle_stuff(creature);
+    handle_stuff_with_inventory_arrangement(creature);
     term_fresh();
 
     auto no_feeling_quest = (quest_id == QuestId::MELKO);
@@ -229,7 +229,7 @@ void process_dungeon(CreatureEntity &creature, bool load_game)
 
         process_player(creature);
         process_upkeep_with_speed(creature);
-        handle_stuff(creature);
+        handle_stuff_with_inventory_arrangement(creature);
 
         move_cursor_relative(creature.y, creature.x);
         if (fresh_after) {
@@ -241,7 +241,7 @@ void process_dungeon(CreatureEntity &creature, bool load_game)
         }
 
         process_monsters(creature);
-        handle_stuff(creature);
+        handle_stuff_with_inventory_arrangement(creature);
 
         move_cursor_relative(creature.y, creature.x);
         if (fresh_after) {
@@ -253,7 +253,7 @@ void process_dungeon(CreatureEntity &creature, bool load_game)
         }
 
         WorldTurnProcessor(creature).process_world();
-        handle_stuff(creature);
+        handle_stuff_with_inventory_arrangement(creature);
 
         move_cursor_relative(creature.y, creature.x);
         if (fresh_after) {
