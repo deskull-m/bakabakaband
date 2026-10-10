@@ -4,6 +4,7 @@
 #include "room/rooms-vault.h"
 #include "room/vault-flag-types.h"
 #include "system/enums/monrace/monrace-id.h"
+#include "system/monrace/monrace-list.h"
 #include "util/enum-converter.h"
 #include "util/finalizer.h"
 #include <doctest/doctest.h>
@@ -61,7 +62,10 @@ TEST_CASE("VaultReader reads bakabakaband extensions (depth, rarity, flags, feat
     data["max_depth"] = 60;
     data["rarity"] = 2;
     data["flags"] = { "NO_ROTATION" };
-    // Numeric monster ids avoid depending on a loaded MonraceList in unit tests.
+    // A numeric monster id is only accepted when it is present in the loaded list,
+    // so seed the one this case uses. MonraceDefinition::tag defaults to empty and
+    // therefore never matches the token, which keeps the numeric path under test.
+    MonraceList::get_instance().emplace(i2enum<MonraceId>(5));
     data["features"] = { { { "symbol", "G" }, { "feat", 1 }, { "monster", "5" } },
         { { "symbol", ";" }, { "feat", 327 }, { "appearance", 1 } } };
     REQUIRE(VaultReader(data).read() == PARSE_ERROR_NONE);
@@ -156,4 +160,25 @@ TEST_CASE("VaultReader rejects duplicate and descending IDs and permits retry")
     CHECK(reader.read() == PARSE_ERROR_NONE);
     CHECK_FALSE(reader.error().has_value());
     CHECK(error_idx == 3);
+}
+
+TEST_CASE("VaultReader ignores a monster token which is not a usable monrace id")
+{
+    const auto restore = preserve_vaults();
+    vaults_info.clear();
+    error_idx = -1;
+    MonraceList::get_instance().emplace(i2enum<MonraceId>(5));
+    // Every token below is silently ignored: the record still loads, but the symbol
+    // gets no entry in place_monster_list.
+    for (const auto *const monster : { "5abc", "99999", "-5", "6", "NO-SUCH-TAG", " 5", "+5" }) {
+        CAPTURE(monster);
+        auto data = make_vault();
+        data["features"] = { { { "symbol", "G" }, { "feat", 1 }, { "monster", monster } } };
+        vaults_info.clear();
+        error_idx = -1;
+        REQUIRE(VaultReader(data).read() == PARSE_ERROR_NONE);
+        const auto &vault = vaults_info.at(0);
+        CHECK(vault.feature_list.at('G') == 1);
+        CHECK(vault.place_monster_list.count('G') == 0);
+    }
 }
