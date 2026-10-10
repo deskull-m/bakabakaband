@@ -13,8 +13,10 @@
 #include "util/flag-group.h"
 #include <algorithm>
 #include <array>
+#include <charconv>
 #include <fmt/format.h>
 #include <limits>
+#include <type_traits>
 #include <utility>
 
 VaultReader::VaultReader(const nlohmann::json &data)
@@ -125,10 +127,20 @@ int VaultReader::read_features(vault_type &vault)
                 // Fall back to a numeric monrace id. An unresolvable token (neither a
                 // known tag nor a number) is silently ignored, matching the former
                 // text reader which left such MONSTER_ directives without effect.
-                try {
-                    vault.place_monster_list[symbol] = i2enum<MonraceId>(std::stoi(monster));
-                } catch (const std::exception &) {
-                    // leave place_monster_list untouched for this symbol
+                // std::from_chars parses the whole token, so one that merely starts with
+                // digits ("12abc") is rejected instead of being silently truncated the way
+                // std::stoi would, and a value too large for MonraceId is reported as an
+                // error instead of being narrowed into an unrelated id.
+                std::underlying_type_t<MonraceId> parsed_id = 0;
+                const auto *const first = monster.data();
+                const auto *const last = first + monster.size();
+                const auto [parse_end, ec] = std::from_chars(first, last, parsed_id);
+                if ((ec == std::errc{}) && (parse_end == last)) {
+                    // An id outside the loaded list would make place_specific_monster()
+                    // throw from get_monrace()'s at(), so drop it here.
+                    if (const auto monrace_id = i2enum<MonraceId>(parsed_id); monraces.contains(monrace_id)) {
+                        vault.place_monster_list[symbol] = monrace_id;
+                    }
                 }
             }
         }
