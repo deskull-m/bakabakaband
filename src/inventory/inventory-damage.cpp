@@ -14,6 +14,7 @@
 #include "system/item-entity.h"
 #include "view/display-messages.h"
 #include <range/v3/view.hpp>
+#include <vector>
 
 /*!
  * @brief 手持ちのアイテムを指定確率で破損させる /
@@ -32,6 +33,8 @@ void inventory_damage(CreatureEntity &creature, const ObjectBreaker &breaker, in
     if (check_multishadow(creature) || creature.get_floor()->inside_arena) {
         return;
     }
+
+    std::vector<short> smashed_potions;
 
     /* Scan through the slots backwards */
     for (const auto i_idx : INVEN_PACK_SLOTS | ranges::views::reverse) {
@@ -87,9 +90,8 @@ void inventory_damage(CreatureEntity &creature, const ObjectBreaker &breaker, in
 
 #endif
 
-        /* Potions smash open */
         if (item.is_potion()) {
-            (void)potion_smash_effect(creature, 0, creature.y, creature.x, item.bi_id);
+            smashed_potions.push_back(item.bi_id);
         }
 
         /* Reduce the charges of rods/wands */
@@ -99,5 +101,11 @@ void inventory_damage(CreatureEntity &creature, const ObjectBreaker &breaker, in
 
         inven_item_increase(creature, i_idx, -amt);
         inven_item_optimize(creature, i_idx);
+    }
+
+    // 薬の効果の最中に所持品の結合やモンスターの爆発による再入が起きると所持品の番号がずれるため、
+    // 割れた薬の効果は所持品を減らし終えてから起こす。
+    for (const auto bi_id : smashed_potions) {
+        (void)potion_smash_effect(creature, 0, creature.y, creature.x, bi_id);
     }
 }
