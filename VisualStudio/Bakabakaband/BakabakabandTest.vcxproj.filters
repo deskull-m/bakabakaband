@@ -25,6 +25,9 @@
     <Filter Include="system">
       <UniqueIdentifier>{da617f35-e903-420f-a3c2-35c05c34635e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="system\baseitem">
+      <UniqueIdentifier>{63f1fcb4-e1f1-4aba-89a5-c8689b1a54f9}</UniqueIdentifier>
+    </Filter>
     <Filter Include="system\monrace">
       <UniqueIdentifier>{92ff44d3-839e-4000-9ff0-d6cdefda0a83}</UniqueIdentifier>
     </Filter>
@@ -90,6 +93,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\test\system\monrace\test-body-structure-policy.cpp">
       <Filter>system\monrace</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\test\system\baseitem\test-baseitem-definition.cpp">
+      <Filter>system\baseitem</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\test\system\monrace\test-monrace-definition.cpp">
       <Filter>system\monrace</Filter>

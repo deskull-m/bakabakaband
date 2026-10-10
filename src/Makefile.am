@@ -1628,6 +1628,8 @@ hengband_test_SOURCES = \
 	test/store/test-store-screen.cpp \
 	test/store/test-store-util.cpp \
 	\
+	test/system/baseitem/test-baseitem-definition.cpp \
+	\
 	test/system/monrace/test-armament-level.cpp \
 	test/system/monrace/test-body-structure-policy.cpp \
 	test/system/monrace/test-monrace-definition.cpp \
