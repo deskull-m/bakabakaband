@@ -7,7 +7,7 @@
 #include "market/arena.h"
 #include "core/asking-player.h"
 #include "core/show-file.h"
-#include "core/stuff-handler.h"
+#include "core/window-redrawer.h"
 #include "floor/floor-mode-changer.h"
 #include "market/arena-entry.h"
 #include "market/building-actions-table.h"
@@ -127,7 +127,7 @@ bool arena_comm(CreatureEntity &creature, int cmd)
 
         const auto &monrace = entries.get_monrace();
         LoreTracker::get_instance().set_trackee(monrace.idx);
-        handle_stuff(creature);
+        window_stuff(creature);
         return false;
     }
     case BACT_ARENA_RULES:

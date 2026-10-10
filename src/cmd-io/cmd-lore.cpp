@@ -1,6 +1,6 @@
 #include "cmd-io/cmd-lore.h"
 #include "core/asking-player.h"
-#include "core/stuff-handler.h"
+#include "core/window-redrawer.h"
 #include "game-option/cheat-options.h"
 #include "game-option/game-play-options.h"
 #include "io/input-key-acceptor.h"
@@ -127,7 +127,7 @@ void do_cmd_query_symbol(CreatureEntity &creature)
     while (true) {
         const auto monrace_id = monrace_ids[i];
         tracker.set_trackee(monrace_id);
-        handle_stuff(creature);
+        window_stuff(creature);
         while (true) {
             if (recall) {
                 screen_save();

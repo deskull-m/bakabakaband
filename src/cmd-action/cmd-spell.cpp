@@ -378,7 +378,7 @@ static int get_spell(CreatureEntity &creature, SPELL_IDX *sn, std::string_view p
     auto redraw = false;
 
     RedrawingFlagsUpdater::get_instance().set_flag(SubWindowRedrawingFlag::SPELL);
-    handle_stuff(creature);
+    window_stuff(creature);
 
     const auto spell_category = spell_category_name(mp_ptr->spell_book);
     constexpr auto fmt = _("(%s^:%c-%c, '*'で一覧, ESCで中断) どの%sを%s^ますか? ", "(%s^s %c-%c, *=List, ESC=exit) %s^ which %s? ");
@@ -501,7 +501,7 @@ static int get_spell(CreatureEntity &creature, SPELL_IDX *sn, std::string_view p
     }
 
     RedrawingFlagsUpdater::get_instance().set_flag(SubWindowRedrawingFlag::SPELL);
-    handle_stuff(creature);
+    window_stuff(creature);
 
     /* Abort if needed */
     if (!flag) {
@@ -616,7 +616,7 @@ void do_cmd_browse(CreatureEntity &creature)
     const auto use_realm = PlayerRealm::get_realm_of_book(tval);
 
     item->track_baseitem();
-    handle_stuff(creature);
+    window_stuff(creature);
 
     /* Extract spells */
     std::vector<SPELL_IDX> spells;
@@ -762,7 +762,7 @@ void do_cmd_study(CreatureEntity &creature)
     }
 
     item->track_baseitem();
-    handle_stuff(creature);
+    window_stuff(creature);
 
     /* Mage -- Learn a selected spell */
     if (mp_ptr->spell_book != ItemKindType::LIFE_BOOK) {

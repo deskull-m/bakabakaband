@@ -2,6 +2,7 @@
 #include "action/travel-execution.h"
 #include "cmd-visual/cmd-draw.h"
 #include "core/stuff-handler.h"
+#include "core/window-redrawer.h"
 #include "dungeon/quest.h"
 #include "flavor/flavor-describer.h"
 #include "floor/geometry.h"
@@ -327,7 +328,8 @@ static short describe_grid(CreatureEntity &creature, GridExamination *ge_ptr)
     ge_ptr->boring = false;
     LoreTracker::get_instance().set_trackee(ge_ptr->m_ptr->get_ap_r_idx());
     health_track(creature, ge_ptr->g_ptr->m_idx);
-    handle_stuff(creature);
+    redraw_stuff(creature);
+    window_stuff(creature);
     describe_grid_monster(creature, ge_ptr);
     if ((ge_ptr->query != '\r') && (ge_ptr->query != '\n') && (ge_ptr->query != ' ') && (ge_ptr->query != 'x')) {
         return ge_ptr->query;

@@ -7,7 +7,6 @@
 #include "blue-magic/blue-magic-checker.h"
 #include "blue-magic/learnt-info.h"
 #include "core/asking-player.h"
-#include "core/stuff-handler.h"
 #include "core/window-redrawer.h"
 #include "game-option/text-display-options.h"
 #include "io/command-repeater.h"
@@ -670,7 +669,7 @@ tl::optional<MonsterAbilityType> get_learned_power(CreatureEntity &creature)
                               : select_learnt_spells_by_symbol(creature, *bluemage_data, spells.value());
 
     RedrawingFlagsUpdater::get_instance().set_flag(SubWindowRedrawingFlag::SPELL);
-    handle_stuff(creature);
+    window_stuff(creature);
 
     if (!selected_spell) {
         return tl::nullopt;

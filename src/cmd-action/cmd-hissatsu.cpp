@@ -282,7 +282,7 @@ static int get_hissatsu_power(CreatureEntity &creature, SPELL_IDX *sn)
     }
 
     RedrawingFlagsUpdater::get_instance().set_flag(SubWindowRedrawingFlag::SPELL);
-    handle_stuff(creature);
+    window_stuff(creature);
 
     /* Abort if needed */
     if (!flag) {

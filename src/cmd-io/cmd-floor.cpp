@@ -46,7 +46,7 @@ void do_cmd_look(CreatureEntity &creature)
         SubWindowRedrawingFlag::FLOOR_ITEMS,
     };
     RedrawingFlagsUpdater::get_instance().set_flags(flags);
-    handle_stuff(creature);
+    window_stuff(creature);
     output_bot_json_look_snapshot(creature);
     if (target_set(creature, TARGET_LOOK).is_okay()) {
         msg_print(_("ターゲット決定。", "Target Selected."));
