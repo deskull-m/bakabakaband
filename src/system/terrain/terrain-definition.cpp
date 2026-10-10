@@ -25,12 +25,6 @@ const std::unordered_map<TerrainCharacteristics, EnumClassFlagGroup<TerrainActio
 constexpr auto CONVERSION_STREAM_BEGIN = 5;
 }
 
-TerrainType::TerrainType()
-    : symbol_definitions(DEFAULT_SYMBOLS)
-    , symbol_configs(DEFAULT_SYMBOLS)
-{
-}
-
 bool TerrainType::has(TerrainCharacteristics tc, TerrainAction ta)
 {
     static const auto begin = TERRAIN_ACTIONS_TABLE.begin();
@@ -137,7 +131,7 @@ void TerrainType::reset_lighting(bool is_config)
     this->reset_lighting_graphics(symbols);
 }
 
-void TerrainType::reset_lighting_ascii(std::map<int, DisplaySymbol> &symbols)
+void TerrainType::reset_lighting_ascii(TerrainSymbols &symbols)
 {
     const auto color_standard = symbols[F_LIT_STANDARD].color;
     const auto character_standard = symbols[F_LIT_STANDARD].character;
@@ -148,7 +142,7 @@ void TerrainType::reset_lighting_ascii(std::map<int, DisplaySymbol> &symbols)
     }
 }
 
-void TerrainType::reset_lighting_graphics(std::map<int, DisplaySymbol> &symbols)
+void TerrainType::reset_lighting_graphics(TerrainSymbols &symbols)
 {
     const auto color_standard = symbols[F_LIT_STANDARD].color;
     const auto character_standard = symbols[F_LIT_STANDARD].character;

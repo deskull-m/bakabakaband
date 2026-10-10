@@ -90,10 +90,11 @@ void print_map(CreatureEntity &creature)
         term_erase(COL_MAP, y, wid);
     }
 
+    const auto monochrome_color = get_monochrome_display_color(creature);
     for (auto y = ymin; y <= ymax; y++) {
         for (auto x = xmin; x <= xmax; x++) {
             auto symbol_pair = map_info(creature, { y, x });
-            symbol_pair.symbol_foreground.color = get_monochrome_display_color(creature).value_or(symbol_pair.symbol_foreground.color);
+            symbol_pair.symbol_foreground.color = monochrome_color.value_or(symbol_pair.symbol_foreground.color);
 
             term_queue_bigchar(panel_col_of(x), y - panel_row_prt, symbol_pair);
         }
@@ -247,11 +248,12 @@ void display_map(CreatureEntity &creature, int *cy, int *cx)
         mc[y][0] = mc[y][x] = '|';
     }
 
+    const auto monochrome_color = get_monochrome_display_color(creature);
     for (y = 0; y < hgt + 2; ++y) {
         term_gotoxy(COL_MAP, y);
         for (x = 0; x < wid + 2; ++x) {
             DisplaySymbol symbol_foreground(ma[y][x], mc[y][x]);
-            symbol_foreground.color = get_monochrome_display_color(creature).value_or(symbol_foreground.color);
+            symbol_foreground.color = monochrome_color.value_or(symbol_foreground.color);
 
             term_add_bigch(symbol_foreground);
         }
