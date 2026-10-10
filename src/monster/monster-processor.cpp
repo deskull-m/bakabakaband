@@ -1244,7 +1244,8 @@ bool explode_grenade(CreatureEntity &creature, MONSTER_IDX m_idx)
         return false;
     }
 
-    bool fear, dead;
+    auto fear = false;
+    auto dead = false;
     mon_take_hit_mon(creature, m_idx, 1, &dead, &fear, _("は爆発して粉々になった。", " explodes into tiny shreds."), m_idx);
     return dead;
 }
