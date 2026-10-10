@@ -11,6 +11,7 @@
 #include "view/display-map.h"
 #include "world/world.h"
 #include <doctest/doctest.h>
+#include <memory>
 
 TEST_CASE("Map terrain observations do not disclose stale knowledge or darkness")
 {
@@ -37,11 +38,13 @@ TEST_CASE("Map terrain observations do not disclose stale knowledge or darkness"
     wall.flags.set(TerrainCharacteristics::WALL).set(TerrainCharacteristics::REMEMBER);
     world.set_wild_mode(false);
     view_hidden_walls = false;
-    FloorType floor;
-    floor.width = 5;
-    floor.height = 5;
-    PlayerType player;
-    player.set_floor(&floor);
+    auto floor_ptr = std::make_unique<FloorType>();
+    floor_ptr->width = 5;
+    floor_ptr->height = 5;
+    auto &floor = *floor_ptr;
+    auto player_ptr = std::make_unique<PlayerType>();
+    auto &player = *player_ptr;
+    player.set_floor(floor_ptr.get());
     for (const auto &pos : floor.get_area()) {
         auto &grid = floor.get_grid(pos);
         grid.feat = floor_id;
