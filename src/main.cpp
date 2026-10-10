@@ -16,6 +16,7 @@
 #include "io/record-play-movie.h"
 #include "io/signal-handlers.h"
 #include "io/uid-checker.h"
+#include "locale/character-encoding.h"
 #include "main-unix/unix-user-ids.h"
 #include "main/angband-initializer.h"
 #include "player/process-name.h"
@@ -383,7 +384,9 @@ int main(int argc, char *argv[])
 
             {
                 auto &creature = PlayerType::get_instance();
-                creature.name = &argv[i][2];
+                // Unix版のフロントエンドは端末の入出力を UTF-8 として扱うので、引数も UTF-8 とみなしてシステムの文字コードに変換する。
+                // UTF-8 として不正なバイト列は変換できないので、これまでどおりそのまま使う
+                creature.name = utf8_to_sys(&argv[i][2]).value_or(&argv[i][2]);
                 if (creature.name.length() > 40) {
                     creature.name.resize(40);
                 }
