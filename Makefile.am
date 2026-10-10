@@ -29,9 +29,11 @@ schema_files = \
 	schema/TerrainDefinitions.schema.json \
 	schema/TownDefinitionList.schema.json \
 	schema/TownPreferences.schema.json \
+	schema/VaultDefinitions.schema.json \
 	schema/WildernessDefinition.schema.json
 
 EXTRA_DIST = \
+	lib/edit/VaultDefinitions.md \
 	autopick.txt \
 	autopick_eng.txt \
 	bootstrap \

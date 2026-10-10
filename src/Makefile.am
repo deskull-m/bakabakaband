@@ -1616,6 +1616,7 @@ hengband_test_SOURCES = \
 	test/info-reader/test-ego-reader.cpp \
 	test/info-reader/test-info-reader-util.cpp \
 	test/info-reader/test-json-reader-util.cpp \
+	test/info-reader/test-vault-reader.cpp \
 	test/info-reader/test-wilderness-reader.cpp \
 	\
 	test/io/test-interpret-pref-file.cpp \

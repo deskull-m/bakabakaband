@@ -200,6 +200,31 @@ def validate_town_definition_list_semantics(data: dict, schema_path: Path) -> No
                 raise ValidationError("town map file does not exist", path=path)
 
 
+def validate_vault_semantics(data: dict) -> None:
+    """Check VaultReader constraints that draft-07 cannot express across fields.
+
+    Call after schema validation, which checks required fields and container types.
+    """
+    previous_id = -1
+    for index, vault in enumerate(data["vaults"]):
+        path = ["vaults", index]
+        for field in ("id", "type", "rating", "height", "width"):
+            # JSON Schema accepts 1.0 as an integer; the C++ reader does not.
+            if type(vault[field]) is not int:
+                raise ValidationError("expected an integer JSON value", path=path + [field])
+        if vault["id"] <= previous_id:
+            raise ValidationError("IDs must be unique and in increasing order", path=path + ["id"])
+        previous_id = vault["id"]
+        if len(vault["layout"]) != vault["height"]:
+            raise ValidationError("row count must equal height", path=path + ["layout"])
+        for row_index, row in enumerate(vault["layout"]):
+            row_path = path + ["layout", row_index]
+            if any(ord(c) < 0x20 or ord(c) > 0x7e for c in row):
+                raise ValidationError("layout must contain printable ASCII characters", path=row_path)
+            if len(row) != vault["width"]:
+                raise ValidationError("row byte length must equal width", path=row_path)
+
+
 def validate_one(pair: tuple[Path, Path, dict]) -> tuple[bool, str]:
     data_path, schema_path, schema = pair
     try:
@@ -213,6 +238,8 @@ def validate_one(pair: tuple[Path, Path, dict]) -> tuple[bool, str]:
             validate_town_preferences_semantics(data, schema_path)
         elif schema_path.name == "TownDefinitionList.schema.json":
             validate_town_definition_list_semantics(data, schema_path)
+        elif schema_path.name == "VaultDefinitions.schema.json":
+            validate_vault_semantics(data)
         return True, f"Succeeded: {data_path.name} <= {schema_path.name}"
     except ValidationError as e:
         msg = [f"Failed: {data_path.name}", f"Reason: {e.message}"]
