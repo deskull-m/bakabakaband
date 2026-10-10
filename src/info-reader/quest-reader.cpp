@@ -124,6 +124,9 @@ parse_error_type parse_quest_legend_cell(const nlohmann::json &cell_data, QuestL
             return PARSE_ERROR_INVALID_TYPE;
         }
         for (const auto &flag : cave_info) {
+            if (!flag.is_string()) {
+                return PARSE_ERROR_INVALID_TYPE;
+            }
             const auto it = CAVE_FLAG_TOKENS.find(flag.get<std::string>());
             if (it == CAVE_FLAG_TOKENS.end()) {
                 return PARSE_ERROR_INVALID_FLAG;
@@ -286,6 +289,9 @@ int QuestReader::set_definition() const
             return PARSE_ERROR_INVALID_TYPE;
         }
         for (const auto &flag : flags) {
+            if (!flag.is_string()) {
+                return PARSE_ERROR_INVALID_TYPE;
+            }
             const auto it = QUEST_FLAG_TOKENS.find(flag.get<std::string>());
             if (it == QUEST_FLAG_TOKENS.end()) {
                 return PARSE_ERROR_INVALID_FLAG;
