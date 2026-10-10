@@ -11,6 +11,7 @@ void inven_item_optimize(CreatureEntity &creature, INVENTORY_IDX i_idx);
 void drop_from_inventory(CreatureEntity &creature, INVENTORY_IDX i_idx, ITEM_NUMBER amt);
 void combine_pack(CreatureEntity &creature);
 void reorder_pack(CreatureEntity &creature);
+void request_inventory_arrangement();
 void update_inventory_arrangement(CreatureEntity &creature);
 int16_t store_item_to_inventory(CreatureEntity &creature, ItemEntity *o_ptr);
 bool check_store_item_to_inventory(const CreatureEntity &creature, const ItemEntity *o_ptr);

@@ -183,7 +183,6 @@ static void desc_obj_fake(CreatureEntity &creature, short bi_id)
     o_ptr->generate(bi_id);
 
     o_ptr->ident.set(IdentificationFlag::KNOWN);
-    handle_stuff(creature);
 
     if (screen_object(creature, *o_ptr, SCROBJ_FAKE_OBJECT | SCROBJ_FORCE_DETAIL)) {
         return;
