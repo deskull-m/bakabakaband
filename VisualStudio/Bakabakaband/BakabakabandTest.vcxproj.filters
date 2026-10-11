@@ -88,6 +88,9 @@
     <ClCompile Include="..\..\src\test\io\test-macro-configurations-store.cpp">
       <Filter>io</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\test\io\test-pref-file-expressor.cpp">
+      <Filter>io</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\src\test\mspell\test-mspell-projection-table.cpp">
       <Filter>mspell</Filter>
     </ClCompile>
