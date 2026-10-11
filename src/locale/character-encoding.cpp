@@ -326,34 +326,24 @@ const std::vector<EncodingConverter> encoding_characters = {
  * 文字をLinux/UNIX環境のものに置き換えてから変換を行う。
  *
  * @param str コードポイントの置き換えを行う文字列へのポインタ
+ * @param len 置き換えを行う範囲の長さ (バイト数)。途中に '\0' があっても、この長さまで置き換える
  */
-static void ms_to_jis_unicode(char *str)
+static void ms_to_jis_unicode(char *str, size_t len)
 {
-    for (auto *p = (unsigned char *)str; *p; p++) {
-        auto subseq_num = 0;
-        if (0x00 < *p && *p <= 0x7f) {
-            continue;
-        }
-
-        if ((*p & 0xe0) == 0xc0) {
-            subseq_num = 1;
-        }
-
-        if ((*p & 0xf0) == 0xe0) {
+    const std::string_view view(str, len);
+    for (size_t i = 0; i < view.length();) {
+        // UTF-8 として不正なバイトや途中で切れた文字は 1 バイトずつ進め、終端を越えて読まないようにする
+        const auto byte_length = std::max(utf8_next_char_byte_length(view.substr(i)), 1);
+        if (byte_length == ENCODING_LENGTH) {
+            auto *p = reinterpret_cast<unsigned char *>(str + i);
             for (const auto &converter : encoding_characters) {
                 if (converter.equals(p)) {
                     converter.replace(p);
                 }
             }
-
-            subseq_num = 2;
         }
 
-        if ((*p & 0xf8) == 0xf0) {
-            subseq_num = 3;
-        }
-
-        p += subseq_num;
+        i += byte_length;
     }
 }
 
@@ -362,6 +352,9 @@ static void ms_to_jis_unicode(char *str)
 #ifdef EUC
 /*!
  * @brief 文字列の文字コードをUTF-8からEUC-JPに変換する
+ * @details 変愚蛮怒は全角文字を2バイト固定として扱うため、EUC-JP で3バイトになる JIS X 0212 の文字
+ *          (8F xx xx、é など) を正しく表示できない。そうした文字は '?' に置き換える
+ *          (Windows 版でも CP932 に無い文字は '?' などに置き換わる)。
  * @param utf8_str 変換元の文字列へのポインタ
  * @param utf8_str_len 変換元の文字列の長さ(文字数ではなくバイト数)
  * @param euc_buf 変換した文字列を格納するバッファへのポインタ
@@ -376,18 +369,36 @@ int utf8_to_euc(char *utf8_str, size_t utf8_str_len, char *euc_buf, size_t euc_b
         cd = iconv_open("EUC-JP", "UTF-8");
     }
 
-    ms_to_jis_unicode(utf8_str);
+    ms_to_jis_unicode(utf8_str, utf8_str_len);
 
+    // JIS X 0212 の文字は UTF-8 の2バイトが EUC-JP の3バイトになるので、'?' に置き換える前の変換結果は一時バッファで受ける
+    std::vector<char> converted(utf8_str_len * 2);
     size_t inlen_left = utf8_str_len;
-    size_t outlen_left = euc_buf_len;
+    size_t outlen_left = converted.size();
     char *in = utf8_str;
-    char *out = euc_buf;
+    char *out = converted.data();
 
     if (iconv(cd, &in, &inlen_left, &out, &outlen_left) == (size_t)-1) {
         return -1;
     }
 
-    return euc_buf_len - outlen_left;
+    // EUC-JP の2バイト目以降は A1 以上なので、0x8F は JIS X 0212 の文字の先頭にしか現れない
+    const auto converted_len = converted.size() - outlen_left;
+    size_t euc_len = 0;
+    for (size_t i = 0; i < converted_len; euc_len++) {
+        if (euc_len >= euc_buf_len) {
+            return -1;
+        }
+
+        if (static_cast<unsigned char>(converted[i]) == 0x8f) {
+            euc_buf[euc_len] = '?';
+            i += 3;
+        } else {
+            euc_buf[euc_len] = converted[i++];
+        }
+    }
+
+    return euc_len;
 }
 
 /*!
@@ -502,7 +513,8 @@ tl::optional<std::string> sys_to_utf8(std::string_view str)
  */
 tl::optional<std::string> utf8_to_sys(std::string_view str)
 {
-    // UTF-8 -> SJIS or EUC でバイト長が増えることはないので、終端文字分を含めて元の文字列と同じ長さを確保しておけばよい
+    // UTF-8 -> SJIS or EUC でバイト長が増えることはない (EUC-JP で3バイトになる JIS X 0212 の文字は '?' に置き換わる) ので、
+    // 終端文字分を含めて元の文字列と同じ長さを確保しておけばよい
     std::vector<char> sys_str_buf(str.length() + 1);
 
     if (!utf8_to_sys(str, sys_str_buf.data(), sys_str_buf.size())) {
@@ -516,7 +528,7 @@ tl::optional<std::string> utf8_to_sys(std::string_view str)
  * @brief 受け取った文字列の文字コードを推定し、システムの文字コードへ変換する
  * @param strbuf 変換する文字列を格納したバッファへのポインタ。
  *               バッファは変換した文字列で上書きされる。
- *               UTF-8からSJISもしくはEUCへの変換を想定しているのでバッファの長さが足りなくなることはない。
+ *               変換した文字列がバッファに収まらない場合は変換せず、警告を表示する。
  * @param buflen バッファの長さ。
  * @return 変換後の文字列の長さ（終端文字は含まない）
  */
