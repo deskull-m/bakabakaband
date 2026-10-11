@@ -169,6 +169,9 @@
     <ClCompile Include="..\..\src\test\util\test-angband-files.cpp">
       <Filter>util</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\test\util\test-buffer-shaper.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\src\test\util\test-dice.cpp">
       <Filter>util</Filter>
     </ClCompile>
