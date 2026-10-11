@@ -73,6 +73,7 @@
     <ClCompile Include="..\..\src\test\info-reader\test-ego-reader.cpp" />
     <ClCompile Include="..\..\src\test\info-reader\test-general-parser.cpp" />
     <ClCompile Include="..\..\src\test\info-reader\test-info-reader-util.cpp" />
+    <ClCompile Include="..\..\src\test\info-reader\test-baseitem-reader.cpp" />
     <ClCompile Include="..\..\src\test\info-reader\test-json-reader-util.cpp" />
     <ClCompile Include="..\..\src\test\info-reader\test-quest-reader.cpp" />
     <ClCompile Include="..\..\src\test\info-reader\test-skill-reader.cpp" />
@@ -89,8 +90,11 @@
     <ClCompile Include="..\..\src\test\store\test-pricing.cpp" />
     <ClCompile Include="..\..\src\test\store\test-store-screen.cpp" />
     <ClCompile Include="..\..\src\test\store\test-store-util.cpp" />
+    <ClCompile Include="..\..\src\test\save\test-item-writer.cpp" />
     <ClCompile Include="..\..\src\test\system\test-dungeon-record.cpp" />
+    <ClCompile Include="..\..\src\test\system\baseitem\test-baseitem-allocation.cpp" />
     <ClCompile Include="..\..\src\test\system\baseitem\test-baseitem-definition.cpp" />
+    <ClCompile Include="..\..\src\test\system\baseitem\test-baseitem-list.cpp" />
     <ClCompile Include="..\..\src\test\system\floor\test-floor-info.cpp" />
     <ClCompile Include="..\..\src\test\system\monrace\test-armament-level.cpp" />
     <ClCompile Include="..\..\src\test\system\monrace\test-body-structure-policy.cpp" />
