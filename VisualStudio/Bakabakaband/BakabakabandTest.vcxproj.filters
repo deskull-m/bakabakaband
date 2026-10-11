@@ -7,6 +7,9 @@
     <Filter Include="cmd-io">
       <UniqueIdentifier>{e069960f-7c8e-4a93-b43d-36b2f719cb12}</UniqueIdentifier>
     </Filter>
+    <Filter Include="flavor">
+      <UniqueIdentifier>{27234def-7b61-4fe4-87e9-ea3c9d42f09d}</UniqueIdentifier>
+    </Filter>
     <Filter Include="game-option">
       <UniqueIdentifier>{ce56653b-fbe2-4e12-af06-489721a95644}</UniqueIdentifier>
     </Filter>
@@ -54,6 +57,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\test\game-option\test-runtime-arguments.cpp">
       <Filter>game-option</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\test\flavor\test-flavor-util.cpp">
+      <Filter>flavor</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\test\cmd-io\test-cmd-autopick.cpp">
       <Filter>cmd-io</Filter>
@@ -146,5 +152,6 @@
   <ItemGroup>
     <ClInclude Include="..\..\src\stdafx.h" />
     <ClInclude Include="..\..\src\test\scoped-rng.h" />
+    <ClInclude Include="..\..\src\test\string-helpers.h" />
   </ItemGroup>
 </Project>
