@@ -109,3 +109,39 @@ TEST_CASE("QuestReader preserves empty, ragged, and skipped map row behavior")
     REQUIRE(QuestReader(data, quest, fixed_map_full).read() == PARSE_ERROR_NONE);
     CHECK(fixed_map_full.maps[0].size() == MAX_HGT);
 }
+
+TEST_CASE("QuestReader checks every declared start against every map before publishing")
+{
+    // hengband#5774 相当。開始位置がマップ候補の範囲外なら読み込みを拒否する。
+    // bakaba は失敗時の旧出力保持 (staging) を持たないため、エラーコードのみ検証する。
+    const std::vector<nlohmann::json> invalid = {
+        { { "start", { { "y", 0 }, { "x", 0 } } } }, // マップ無し
+        { { "map", { "..." } }, { "start", { { "y", 1 }, { "x", 0 } } } }, // 行数超過
+        { { "map", { "..." } }, { "start", { { "y", 0 }, { "x", 3 } } } }, // 行幅超過
+        { { "mapVariants", { { "..." }, { "." } } }, { "start", { { "y", 0 }, { "x", 1 } } } }, // 一部のマップ候補で範囲外
+        { { "map", { "..." } }, { "startVariants", { { { "y", 0 }, { "x", 0 } }, { { "leavingQuest", 49 }, { "y", 0 }, { "x", 3 } } } } }, // 後続バリアントが範囲外
+    };
+    for (const auto &fields : invalid) {
+        CAPTURE(fields);
+        auto data = make_quest_with_description("Description");
+        data.update(fields);
+        QuestType quest;
+        QuestFixedMap fixed_map;
+        CHECK(QuestReader(data, quest, fixed_map).read() == PARSE_ERROR_OUT_OF_BOUNDS);
+    }
+}
+
+TEST_CASE("QuestReader accepts starts within every map candidate")
+{
+    auto data = make_quest_with_description("Description");
+    data["mapVariants"] = { { ".....", "....." }, { "...", "...", "..." } };
+    // 全候補で y<行数 かつ x<先頭行幅 を満たす座標 (y<=1, x<=2)
+    data["startVariants"] = { { { "y", 0 }, { "x", 0 } }, { { "leavingQuest", 49 }, { "y", 1 }, { "x", 2 } } };
+    QuestType quest;
+    QuestFixedMap fixed_map;
+    REQUIRE(QuestReader(data, quest, fixed_map).read() == PARSE_ERROR_NONE);
+    REQUIRE(fixed_map.starts.size() == 2);
+    CHECK(fixed_map.starts[1].leaving_quest == 49);
+    CHECK(fixed_map.starts[1].y == 1);
+    CHECK(fixed_map.starts[1].x == 2);
+}

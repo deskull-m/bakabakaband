@@ -12,6 +12,7 @@
 #include "system/grid-type-definition.h"
 #include "system/terrain/terrain-list.h"
 #include "util/enum-converter.h"
+#include <cstddef>
 #include <limits>
 #include <nlohmann/json.hpp>
 #include <string>
@@ -101,6 +102,23 @@ int read_map_rows(const nlohmann::json &array_data, std::vector<std::string> &ou
         out.push_back(row);
     }
 
+    return PARSE_ERROR_NONE;
+}
+
+/*!
+ * @brief 条件に関係なく、開始位置がすべてのマップ候補の範囲内か確認する
+ * @return マップが無い / 座標が負 / いずれかのマップ候補の範囲外なら PARSE_ERROR_OUT_OF_BOUNDS
+ */
+int validate_quest_start(const QuestFixedMap &fixed_map, const QuestStartPosition &position)
+{
+    if (fixed_map.maps.empty() || position.y < 0 || position.x < 0) {
+        return PARSE_ERROR_OUT_OF_BOUNDS;
+    }
+    for (const auto &rows : fixed_map.maps) {
+        if (rows.empty() || static_cast<std::size_t>(position.y) >= rows.size() || static_cast<std::size_t>(position.x) >= rows.front().size()) {
+            return PARSE_ERROR_OUT_OF_BOUNDS;
+        }
+    }
     return PARSE_ERROR_NONE;
 }
 
@@ -501,6 +519,9 @@ int QuestReader::set_starts() const
         if (const auto err = info_set_integer(get_json_value(start, "x"), position.x, true); err != PARSE_ERROR_NONE) {
             return err;
         }
+        if (const auto err = validate_quest_start(this->fixed_map, position); err != PARSE_ERROR_NONE) {
+            return err;
+        }
         this->fixed_map.starts.push_back(position);
         return PARSE_ERROR_NONE;
     }
@@ -520,6 +541,9 @@ int QuestReader::set_starts() const
                 return err;
             }
             if (const auto err = info_set_integer(get_json_value(variant, "x"), position.x, true); err != PARSE_ERROR_NONE) {
+                return err;
+            }
+            if (const auto err = validate_quest_start(this->fixed_map, position); err != PARSE_ERROR_NONE) {
                 return err;
             }
             this->fixed_map.starts.push_back(position);
