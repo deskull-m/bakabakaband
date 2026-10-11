@@ -1621,6 +1621,7 @@ hengband_test_SOURCES = \
 	test/info-reader/test-general-parser.cpp \
 	test/info-reader/test-info-reader-util.cpp \
 	test/info-reader/test-json-reader-util.cpp \
+	test/info-reader/test-quest-reader.cpp \
 	test/info-reader/test-skill-reader.cpp \
 	test/info-reader/test-vault-reader.cpp \
 	test/info-reader/test-wilderness-reader.cpp \
