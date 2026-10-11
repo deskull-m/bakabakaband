@@ -143,3 +143,28 @@ void get_name(CreatureEntity &creature)
         creature.name = "PLAYER";
     }
 }
+
+/*!
+ * @brief 条件式の $PLAYER で使うプレイヤー名を作る
+ * @param name プレイヤー名
+ * @return 空白と括弧を「_」に置き換えた名前
+ * @details 2バイト文字は、後半バイトが空白や括弧と同じ値でもそのまま残す。
+ */
+std::string make_player_name_for_expression(std::string_view name)
+{
+    std::string result;
+    for (size_t i = 0; i < name.length();) {
+#ifdef JP
+        if (is_multibyte_char_at(name, i)) {
+            result += name.substr(i, 2);
+            i += 2;
+            continue;
+        }
+#endif
+        const auto c = name[i];
+        result += (std::string_view(" []").find(c) != std::string_view::npos) ? '_' : c;
+        ++i;
+    }
+
+    return result;
+}

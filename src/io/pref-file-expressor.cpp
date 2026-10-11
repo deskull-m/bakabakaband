@@ -1,205 +1,82 @@
 #include "io/pref-file-expressor.h"
 #include "game-option/runtime-arguments.h"
+#include "io/condition-expression.h"
 #include "player-info/class-info.h"
 #include "player-info/race-info.h"
 #include "player/player-realm.h"
+#include "player/process-name.h"
 #include "system/creature-entity.h"
 #include "system/system-variables.h"
 #include "term/z-form.h"
-#include "util/string-processor.h"
 
 /*!
- * @brief process_pref_fileのサブルーチンとして条件分岐処理の解釈と結果を返す
- * Helper function for "process_pref_file()"
+ * @brief 設定ファイルと町のマップの条件式に共通の変数の値を返す
  * @param creature クリーチャーへの参照
- * @param sp テキスト文字列の参照ポインタ
- * @param fp 再帰中のポインタ参照
- * @return
- * @details
- * かなり長いが、エンバグすると非常に危険な関数なので一旦放置する
- * <pre>
- * Input:
- *   v: output buffer array
- *   f: final character
- * Output:
- *   result
- * </pre>
+ * @param name 先頭の「$」を除いた変数名
+ * @return 変数の値。共通の変数でなければ tl::nullopt
  */
-std::string process_pref_file_expr(CreatureEntity &creature, char **sp, char *fp)
+tl::optional<std::string> resolve_common_expression_variable(CreatureEntity &creature, std::string_view name)
 {
-    char *s = (*sp);
-    while (iswspace(*s)) {
-        s++;
+    if (name == "SYS") {
+        return std::string(ANGBAND_SYS);
+    }
+    if (name == "GRAF") {
+        return std::string(ANGBAND_GRAF);
+    }
+    if (name == "MONOCHROME") {
+        return arg_monochrome ? "ON" : "OFF";
+    }
+    if (name == "RACE") {
+        return creature.get_race_info()->title.en_string();
+    }
+    if (name == "CLASS") {
+        return (*creature.get_class_info()).title.en_string();
+    }
+    if (name == "PLAYER") {
+        return make_player_name_for_expression(creature.name);
+    }
+    if (name == "REALM1") {
+        return PlayerRealm(creature).realm1().get_name().en_string();
+    }
+    if (name == "REALM2") {
+        return PlayerRealm(creature).realm2().get_name().en_string();
     }
 
-    char *b = s;
+    return tl::nullopt;
+}
 
-    std::string v = "?o?o?";
-
-    constexpr auto b1 = '[';
-    constexpr auto b2 = ']';
-    auto f = ' ';
-    if (*s == b1) {
-        std::string t;
-
-        /* Skip b1 */
-        s++;
-
-        /* First */
-        t = process_pref_file_expr(creature, &s, &f);
-
-        if (t.empty()) {
-        } else if (t == "IOR") {
-            v = "0";
-            while (*s && (f != b2)) {
-                t = process_pref_file_expr(creature, &s, &f);
-                if (!t.empty() && t != "0") {
-                    v = "1";
-                }
-            }
-        } else if (t == "AND") {
-            v = "1";
-            while (*s && (f != b2)) {
-                t = process_pref_file_expr(creature, &s, &f);
-                if (!t.empty() && t == "0") {
-                    v = "0";
-                }
-            }
-        } else if (t == "NOT") {
-            v = "1";
-            while (*s && (f != b2)) {
-                t = process_pref_file_expr(creature, &s, &f);
-                if (!t.empty() && t == "1") {
-                    v = "0";
-                }
-            }
-        } else if (t == "EQU") {
-            v = "0";
-            if (*s && (f != b2)) {
-                t = process_pref_file_expr(creature, &s, &f);
-            }
-            while (*s && (f != b2)) {
-                auto p = process_pref_file_expr(creature, &s, &f);
-                if (t == p) {
-                    v = "1";
-                }
-            }
-        } else if (t == "LEQ") {
-            v = "1";
-            if (*s && (f != b2)) {
-                t = process_pref_file_expr(creature, &s, &f);
-            }
-            while (*s && (f != b2)) {
-                auto p = process_pref_file_expr(creature, &s, &f);
-                if (!p.empty() && atoi(t.data()) > atoi(p.data())) {
-                    v = "0";
-                }
-            }
-        } else if (t == "GEQ") {
-            v = "1";
-            if (*s && (f != b2)) {
-                t = process_pref_file_expr(creature, &s, &f);
-            }
-            while (*s && (f != b2)) {
-                auto p = process_pref_file_expr(creature, &s, &f);
-                if (!p.empty() && atoi(t.data()) < atoi(p.data())) {
-                    v = "0";
-                }
-            }
-        } else {
-            while (*s && (f != b2)) {
-                t = process_pref_file_expr(creature, &s, &f);
-            }
-        }
-
-        if (f != b2) {
-            v = "?x?x?";
-        }
-
-        if ((f = *s) != '\0') {
-            *s++ = '\0';
-        }
-
-        *fp = f;
-        *sp = s;
-        return v;
+/*!
+ * @brief 設定ファイルの条件式の変数の値を返す
+ * @param creature クリーチャーへの参照
+ * @param name 先頭の「$」を除いた変数名
+ * @return 変数の値。知らない変数なら tl::nullopt
+ */
+static tl::optional<std::string> resolve_pref_file_variable(CreatureEntity &creature, std::string_view name)
+{
+    if (name == "KEYBOARD") {
+        return std::string(ANGBAND_KEYBOARD);
+    }
+    if (name == "LEVEL") {
+        return format("%02d", creature.get_level());
+    }
+    if (name == "AUTOREGISTER") {
+        return creature.is_autopick_autoregister() ? "1" : "0";
+    }
+    if (name == "MONEY") {
+        return format("%09ld", (long int)creature.get_au());
     }
 
-    /* Accept all printables except spaces and brackets */
-#ifdef JP
-    while (iskanji(*s) || (isprint(*s) && !angband_strchr(" []", *s))) {
-        if (is_multibyte_char_at(s)) {
-            s++;
-        }
-        s++;
-    }
-#else
-    while (isprint(*s) && !angband_strchr(" []", *s)) {
-        ++s;
-    }
-#endif
+    return resolve_common_expression_variable(creature, name);
+}
 
-    if ((f = *s) != '\0') {
-        *s++ = '\0';
-    }
-
-    if (*b != '$') {
-        v = b;
-        *fp = f;
-        *sp = s;
-        return v;
-    }
-
-    if (streq(b + 1, "SYS")) {
-        v = ANGBAND_SYS;
-    } else if (streq(b + 1, "KEYBOARD")) {
-        v = ANGBAND_KEYBOARD;
-    } else if (streq(b + 1, "GRAF")) {
-        v = ANGBAND_GRAF;
-    } else if (streq(b + 1, "MONOCHROME")) {
-        if (arg_monochrome) {
-            v = "ON";
-        } else {
-            v = "OFF";
-        }
-    } else if (streq(b + 1, "RACE")) {
-        v = creature.get_race_info()->title.en_string();
-    } else if (streq(b + 1, "CLASS")) {
-        v = (*creature.get_class_info()).title.en_string();
-    } else if (streq(b + 1, "PLAYER")) {
-        static char tmp_player_name[64];
-        const char *pn = creature.name.c_str();
-        char *tpn = tmp_player_name;
-        for (; *pn; pn++, tpn++) {
-#ifdef JP
-            if (iskanji(*pn)) {
-                *(tpn++) = *(pn++);
-                *tpn = *pn;
-                continue;
-            }
-#endif
-            *tpn = angband_strchr(" []", *pn) ? '_' : *pn;
-        }
-
-        *tpn = '\0';
-        v = tmp_player_name;
-    } else if (streq(b + 1, "REALM1")) {
-        v = PlayerRealm(creature).realm1().get_name().en_string();
-    } else if (streq(b + 1, "REALM2")) {
-        v = PlayerRealm(creature).realm2().get_name().en_string();
-    } else if (streq(b + 1, "LEVEL")) {
-        v = format("%02d", creature.get_level());
-    } else if (streq(b + 1, "AUTOREGISTER")) {
-        if (creature.is_autopick_autoregister()) {
-            v = "1";
-        } else {
-            v = "0";
-        }
-    } else if (streq(b + 1, "MONEY")) {
-        v = format("%09ld", (long int)creature.get_au());
-    }
-
-    *fp = f;
-    *sp = s;
-    return v;
+/*!
+ * @brief 設定ファイルの条件式 (「?:」の行) を評価する
+ * @param creature クリーチャーへの参照
+ * @param expr 条件式
+ * @return 評価の結果。条件を満たさなければ "0"
+ * @details 書式と返す値は evaluate_condition_expression() を参照。
+ */
+std::string process_pref_file_expr(CreatureEntity &creature, std::string_view expr)
+{
+    return evaluate_condition_expression(expr, [&creature](std::string_view name) { return resolve_pref_file_variable(creature, name); });
 }

@@ -14,7 +14,9 @@
 #include "info-reader/general-parser.h"
 #include "info-reader/parse-error-types.h"
 #include "info-reader/quest-reader.h"
+#include "io/condition-expression.h"
 #include "io/files-util.h"
+#include "io/pref-file-expressor.h"
 #include "locale/character-encoding.h"
 #include "main/init-error-messages-table.h"
 #include "player-info/class-info.h"
@@ -174,207 +176,63 @@ static parse_error_type load_town_definition_file(CreatureEntity &creature, std:
 }
 
 /*!
- * @brief 固定マップ (クエスト＆街＆広域マップ)生成時の分岐処理
- * Helper function for "parse_fixed_map()"
+ * @brief 町のマップの条件式の変数の値を返す
  * @param creature クリーチャーへの参照
- * @param sp
- * @param fp
- * @return エラーコード
+ * @param name 先頭の「$」を除いた変数名
+ * @return 変数の値。知らない変数なら tl::nullopt
  */
-static std::string parse_fixed_map_expression(CreatureEntity &creature, char **sp, char *fp)
+static tl::optional<std::string> resolve_town_map_variable(CreatureEntity &creature, std::string_view name)
 {
-    constexpr char b1 = '[';
-    constexpr char b2 = ']';
-
-    char f = ' ';
-
-    char *s = (*sp);
-
-    while (iswspace(*s)) {
-        s++;
+    if (name == "TOWN") {
+        return std::to_string(creature.get_town_num());
     }
-
-    char *b = s;
-    std::string v = "?o?o?";
-    if (*s == b1) {
-        std::string t;
-        s++;
-        t = parse_fixed_map_expression(creature, &s, &f);
-        if (t.empty()) {
-            /* Nothing */
-        } else if (t == "IOR") {
-            v = "0";
-            while (*s && (f != b2)) {
-                t = parse_fixed_map_expression(creature, &s, &f);
-                if (!t.empty() && t != "0") {
-                    v = "1";
-                }
-            }
-        } else if (t == "AND") {
-            v = "1";
-            while (*s && (f != b2)) {
-                t = parse_fixed_map_expression(creature, &s, &f);
-                if (!t.empty() && t == "0") {
-                    v = "0";
-                }
-            }
-        } else if (t == "NOT") {
-            v = "1";
-            while (*s && (f != b2)) {
-                t = parse_fixed_map_expression(creature, &s, &f);
-                if (!t.empty() && t == "1") {
-                    v = "0";
-                }
-            }
-        } else if (t == "EQU") {
-            v = "0";
-            if (*s && (f != b2)) {
-                t = parse_fixed_map_expression(creature, &s, &f);
-            }
-
-            while (*s && (f != b2)) {
-                auto p = parse_fixed_map_expression(creature, &s, &f);
-                if (t == p) {
-                    v = "1";
-                }
-            }
-        } else if (t == "LEQ") {
-            v = "1";
-            if (*s && (f != b2)) {
-                t = parse_fixed_map_expression(creature, &s, &f);
-            }
-
-            while (*s && (f != b2)) {
-                auto p = parse_fixed_map_expression(creature, &s, &f);
-                if (!p.empty() && atoi(t.data()) > atoi(p.data())) {
-                    v = "0";
-                }
-            }
-        } else if (t == "GEQ") {
-            v = "1";
-            if (*s && (f != b2)) {
-                t = parse_fixed_map_expression(creature, &s, &f);
-            }
-
-            while (*s && (f != b2)) {
-                auto p = parse_fixed_map_expression(creature, &s, &f);
-                if (!p.empty() && atoi(t.data()) < atoi(p.data())) {
-                    v = "0";
-                }
-            }
-        } else {
-            while (*s && (f != b2)) {
-                t = parse_fixed_map_expression(creature, &s, &f);
-            }
-        }
-
-        if (f != b2) {
-            v = "?x?x?";
-        }
-        if ((f = *s) != '\0') {
-            *s++ = '\0';
-        }
-
-        (*fp) = f;
-        (*sp) = s;
-        return v;
+    if (name == "LEVEL") {
+        return std::to_string(creature.get_level());
     }
-
-#ifdef JP
-    while (iskanji(*s) || (isprint(*s) && !angband_strchr(" []", *s))) {
-        if (is_multibyte_char_at(s)) {
-            s++;
-        }
-        s++;
+    if (name == "QUEST_NUMBER") {
+        return std::to_string(enum2i(creature.get_floor()->quest_number));
     }
-#else
-    while (isprint(*s) && !angband_strchr(" []", *s)) {
-        ++s;
+    if (name == "LEAVING_QUEST") {
+        return std::to_string(enum2i(leaving_quest));
     }
-#endif
-    if ((f = *s) != '\0') {
-        *s++ = '\0';
+    // 接頭辞の後ろの番号のクエストを返す
+    const auto get_quest_after = [name](std::string_view prefix) -> const QuestType & {
+        const std::string number(name.substr(prefix.length()));
+        return QuestList::get_instance().get_quest(i2enum<QuestId>(atoi(number.data())));
+    };
+    constexpr std::string_view quest_type_prefix = "QUEST_TYPE";
+    if (name.starts_with(quest_type_prefix)) {
+        return std::to_string(enum2i(get_quest_after(quest_type_prefix).type));
     }
-
-    if (*b != '$') {
-        v = b;
-        (*fp) = f;
-        (*sp) = s;
-        return v;
+    constexpr std::string_view quest_prefix = "QUEST";
+    if (name.starts_with(quest_prefix)) {
+        return std::to_string(enum2i(get_quest_after(quest_prefix).status));
     }
-
-    if (streq(b + 1, "SYS")) {
-        v = ANGBAND_SYS;
-    } else if (streq(b + 1, "GRAF")) {
-        v = ANGBAND_GRAF;
-    } else if (streq(b + 1, "MONOCHROME")) {
-        if (arg_monochrome) {
-            v = "ON";
-        } else {
-            v = "OFF";
-        }
-    } else if (streq(b + 1, "RACE")) {
-        v = creature.get_race_info()->title.en_string();
-    } else if (streq(b + 1, "CLASS")) {
-        v = (*creature.get_class_info()).title.en_string();
-    } else if (streq(b + 1, "REALM1")) {
-        v = PlayerRealm(creature).realm1().get_name().en_string();
-    } else if (streq(b + 1, "REALM2")) {
-        v = PlayerRealm(creature).realm2().get_name().en_string();
-    } else if (streq(b + 1, "PLAYER")) {
-        char tmp_player_name[64]{};
-        const char *pn = creature.name.c_str();
-        char *tpn = tmp_player_name;
-        for (; *pn; pn++, tpn++) {
-#ifdef JP
-            if (iskanji(*pn)) {
-                *(tpn++) = *(pn++);
-                *tpn = *pn;
-                continue;
-            }
-#endif
-            *tpn = angband_strchr(" []", *pn) ? '_' : *pn;
-        }
-
-        *tpn = '\0';
-        v = tmp_player_name;
-    } else if (streq(b + 1, "TOWN")) {
-        v = std::to_string(creature.get_town_num());
-    } else if (streq(b + 1, "LEVEL")) {
-        v = std::to_string(creature.get_level());
-    } else if (streq(b + 1, "QUEST_NUMBER")) {
-        v = std::to_string(enum2i(creature.get_floor()->quest_number));
-    } else if (streq(b + 1, "LEAVING_QUEST")) {
-        v = std::to_string(enum2i(leaving_quest));
-    } else if (prefix(b + 1, "QUEST_TYPE")) {
-        const auto &quests = QuestList::get_instance();
-        v = std::to_string(enum2i(quests.get_quest(i2enum<QuestId>(atoi(b + 11))).type));
-    } else if (prefix(b + 1, "QUEST")) {
-        const auto &quests = QuestList::get_instance();
-        v = std::to_string(enum2i(quests.get_quest(i2enum<QuestId>(atoi(b + 6))).status));
-    } else if (prefix(b + 1, "RANDOM")) {
+    constexpr std::string_view random_prefix = "RANDOM";
+    if (name.starts_with(random_prefix)) {
         const auto &system = AngbandSystem::get_instance();
-        v = std::to_string((static_cast<int>(system.get_seed_town()) % std::stoi(b + 7)));
-    } else if (streq(b + 1, "VARIANT")) {
-        v = variant;
-    } else if (streq(b + 1, "WILDERNESS")) {
+        return std::to_string(static_cast<int>(system.get_seed_town()) % std::stoi(std::string(name.substr(random_prefix.length()))));
+    }
+    if (name == "VARIANT") {
+        return variant;
+    }
+    if (name == "WILDERNESS") {
         if (vanilla_town) {
-            sprintf(tmp, "NONE");
-        } else if (lite_town) {
-            sprintf(tmp, "LITE");
-        } else {
-            sprintf(tmp, "NORMAL");
+            return "NONE";
         }
-        v = tmp;
-    } else if (streq(b + 1, "WORLD_COLLAPSE")) {
-        v = std::to_string(wc_ptr->collapse_degree);
-    } else if (streq(b + 1, "IRONMAN_DOWNWARD")) {
-        v = (ironman_downward ? "1" : "0");
+        if (lite_town) {
+            return "LITE";
+        }
+        return "NORMAL";
+    }
+    if (name == "WORLD_COLLAPSE") {
+        return std::to_string(wc_ptr->collapse_degree);
+    }
+    if (name == "IRONMAN_DOWNWARD") {
+        return ironman_downward ? "1" : "0";
     }
 
-    (*fp) = f;
-    (*sp) = s;
-    return v;
+    return resolve_common_expression_variable(creature, name);
 }
 
 /*!
@@ -440,10 +298,8 @@ parse_error_type parse_fixed_map(CreatureEntity &creature, std::string_view name
         }
 
         if (line_str->starts_with("?:")) {
-            char f;
-            auto *s = line_str->data() + 2;
-            auto v = parse_fixed_map_expression(creature, &s, &f);
-            bypass = v == "0";
+            const auto resolve = [&creature](std::string_view name) { return resolve_town_map_variable(creature, name); };
+            bypass = evaluate_condition_expression(std::string_view(*line_str).substr(2), resolve) == "0";
             continue;
         }
 

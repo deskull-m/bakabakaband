@@ -44,11 +44,7 @@ static void process_dirty_expression(CreatureEntity &creature, text_body_type *t
             state |= LSTAT_AUTOREGISTER;
         }
 
-        std::string s_keep(s);
-        auto ss = s_keep.data();
-        char f;
-        auto v = process_pref_file_expr(creature, &ss, &f);
-        if (v == "0") {
+        if (process_pref_file_expr(creature, s) == "0") {
             state |= LSTAT_BYPASS;
         } else {
             state &= ~LSTAT_BYPASS;
