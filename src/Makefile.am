@@ -1627,6 +1627,8 @@ hengband_test_SOURCES = \
 	test/io/test-macro-configurations-store.cpp \
 	test/io/test-pref-file-expressor.cpp \
 	\
+	test/locale/test-character-encoding.cpp \
+	\
 	test/mspell/test-mspell-projection-table.cpp \
 	\
 	test/object/test-object-info.cpp \
