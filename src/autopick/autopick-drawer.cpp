@@ -72,26 +72,14 @@ void draw_text_editor(CreatureEntity &creature, text_body_type *tb)
      */
     tb->hgt -= 2 + DESCRIPT_HGT;
 
-#ifdef JP
-    /* Don't let cursor at second byte of kanji */
-    for (int i = 0; (*tb->lines_list[tb->cy])[i]; i++) {
-        if (iskanji((*tb->lines_list[tb->cy])[i])) {
-            i++;
-            if (i == tb->cx) {
-                /*
-                 * Move to a correct position in the
-                 * left or right
-                 */
-                if (i & 1) {
-                    tb->cx--;
-                } else {
-                    tb->cx++;
-                }
-                break;
-            }
+    // カーソルを2バイト文字の2バイト目に置かないよう、左右どちらかの文字の境界へ動かす
+    if (tb->is_cursor_on_second_byte_of_kanji()) {
+        if (tb->cx & 1) {
+            tb->cx--;
+        } else {
+            tb->cx++;
         }
     }
-#endif
     if (tb->cy < tb->upper || tb->upper + tb->hgt <= tb->cy) {
         tb->upper = tb->cy - (tb->hgt) / 2;
     }
