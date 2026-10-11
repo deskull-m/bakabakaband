@@ -131,6 +131,9 @@ void process_dungeon(CreatureEntity &creature, bool load_game)
     }
 
     auto &dungeon_record = DungeonRecords::get_instance().get_record(floor.dungeon_id);
+    if (floor.is_underground() && !floor.is_in_quest()) {
+        dungeon_record.mark_visited();
+    }
     if ((dungeon_record.get_max_level() < floor.dun_level) && !floor.is_in_quest()) {
         dungeon_record.set_max_level(floor.dun_level);
         if (record_maxdepth) {

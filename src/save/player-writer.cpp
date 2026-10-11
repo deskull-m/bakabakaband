@@ -26,6 +26,19 @@
 #include <variant>
 
 /*!
+ * @brief 各ダンジョンの帰還深度と訪問履歴をセーブデータに書き込む
+ */
+void wr_dungeons()
+{
+    const auto &records = DungeonRecords::get_instance();
+    wr_byte(static_cast<uint8_t>(records.size()));
+    for (const auto &[_, record] : records) {
+        wr_s16b(static_cast<int16_t>(record->get_max_level()));
+        wr_bool(record->has_visited());
+    }
+}
+
+/*!
  * @brief セーブデータに領域情報を書き込む / Write player realms
  * @param creature クリーチャーへの参照
  */
@@ -152,12 +165,7 @@ void wr_player(CreatureEntity &creature)
     // wr_creature_common() で保存済み (hp_frac/max_mp/current_mp/current_mp_frac は v52 拡張)
     wr_s16b(creature.get_max_plv());
 
-    const auto &dungeon_records = DungeonRecords::get_instance();
-    auto tmp8u = static_cast<uint8_t>(dungeon_records.size());
-    wr_byte(tmp8u);
-    for (const auto &[_, dungeon_record] : dungeon_records) {
-        wr_s16b(static_cast<int16_t>(dungeon_record->get_max_level()));
-    }
+    wr_dungeons();
 
     wr_s16b(0);
     wr_s16b(0);
