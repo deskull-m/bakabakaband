@@ -17,6 +17,7 @@
 #include "term/term-color-types.h"
 #include "view/display-map.h"
 #include "view/display-symbol.h"
+#include "window/overview-map-cache.h"
 #include "world/world.h"
 #include <string>
 #include <string_view>
@@ -69,6 +70,10 @@ void print_field(std::string_view info, TERM_LEN row, TERM_LEN col)
  */
 void print_map(CreatureEntity &creature)
 {
+    // マップ全体を描き直すような変化は、ダンジョン全体図でも全グリッドを求め直す。
+    // 画面の保存中に残った描き直しの要求は、OverviewMapCache::update() の側で拾う
+    OverviewMapCache::get_instance().mark_all_dirty();
+
     auto [wid, hgt] = term_get_size();
     wid -= COL_MAP + 2;
     hgt -= ROW_MAP + 2;
@@ -193,24 +198,23 @@ void display_map(CreatureEntity &creature, int *cy, int *cx)
     vector<vector<char>> bigmc(floor.height + 2, vector<char>(floor.width + 2, ' '));
     vector<vector<byte>> bigmp(floor.height + 2, vector<byte>(floor.width + 2, 0));
 
+    auto &overview_map_cache = OverviewMapCache::get_instance();
+    overview_map_cache.update(creature);
     for (i = 0; i < floor.width; ++i) {
         for (j = 0; j < floor.height; ++j) {
             x = i / xrat + 1;
             y = j / yrat + 1;
 
-            match_autopick = -1;
-            autopick_obj = nullptr;
-            feat_priority = -1;
-            const auto symbol_pair = map_info(creature, { j, i });
-            tp = (byte)feat_priority;
-            if (match_autopick != -1 && (match_autopick_yx[y][x] == -1 || match_autopick_yx[y][x] > match_autopick)) {
-                match_autopick_yx[y][x] = match_autopick;
-                object_autopick_yx[y][x] = autopick_obj;
+            const auto &cached_grid = overview_map_cache.get_grid({ j, i });
+            tp = static_cast<byte>(cached_grid.priority);
+            if (cached_grid.autopick && (match_autopick_yx[y][x] == -1 || match_autopick_yx[y][x] > cached_grid.autopick->rule_index)) {
+                match_autopick_yx[y][x] = cached_grid.autopick->rule_index;
+                object_autopick_yx[y][x] = cached_grid.autopick->item;
                 tp = 0x7f;
             }
 
-            bigma[j + 1][i + 1] = symbol_pair.symbol_foreground.color;
-            bigmc[j + 1][i + 1] = symbol_pair.symbol_foreground.character;
+            bigma[j + 1][i + 1] = cached_grid.symbol.color;
+            bigmc[j + 1][i + 1] = cached_grid.symbol.character;
             bigmp[j + 1][i + 1] = tp;
         }
     }

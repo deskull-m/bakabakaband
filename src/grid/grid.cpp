@@ -40,6 +40,7 @@
 #include "view/display-map.h"
 #include "view/display-messages.h"
 #include "window/main-window-util.h"
+#include "window/overview-map-cache.h"
 #include "world/world.h"
 #include <algorithm>
 #include <queue>
@@ -87,6 +88,7 @@ void set_terrain_id_to_grid(CreatureEntity &creature, const Pos2D &pos, short te
     }
 
     const auto old_los = floor.has_terrain_characteristics(pos, TerrainCharacteristics::LOS);
+    const auto old_wall = grid.has(TerrainCharacteristics::WALL);
     const auto old_mirror = grid.is_mirror();
     grid.set_terrain_id(terrain_id);
     grid.set_terrain_id(TerrainTag::NONE, TerrainKind::MIMIC);
@@ -110,6 +112,14 @@ void set_terrain_id_to_grid(CreatureEntity &creature, const Pos2D &pos, short te
 
     note_spot(creature, pos);
     lite_spot(creature, pos);
+
+    // 壁は周りに壁でないグリッドがあるときだけ表示する (is_revealed_wall()) ので、周りの壁の表示も変わりうる
+    if (old_wall != terrain.flags.has(TerrainCharacteristics::WALL)) {
+        for (const auto &d : Direction::directions_8()) {
+            lite_spot(creature, pos + d.vec());
+        }
+    }
+
     if (old_los ^ terrain.flags.has(TerrainCharacteristics::LOS)) {
         static constexpr auto flags = {
             StatusRecalculatingFlag::VIEW,
@@ -442,17 +452,24 @@ void note_spot(CreatureEntity &creature, const Pos2D &pos)
  */
 void lite_spot(CreatureEntity &creature, const Pos2D &pos)
 {
-    if (panel_contains(pos) && creature.get_floor()->contains(pos, FloorBoundary::OUTER_WALL_INCLUSIVE)) {
+    if (!creature.get_floor()->contains(pos, FloorBoundary::OUTER_WALL_INCLUSIVE)) {
+        return;
+    }
+
+    OverviewMapCache::get_instance().mark_dirty(pos);
+    if (panel_contains(pos)) {
         auto symbol_pair = map_info(creature, pos);
         symbol_pair.symbol_foreground.color = get_monochrome_display_color(creature).value_or(symbol_pair.symbol_foreground.color);
 
         term_queue_bigchar(panel_col_of(pos.x), pos.y - panel_row_prt, symbol_pair);
-        static constexpr auto flags = {
-            SubWindowRedrawingFlag::OVERHEAD,
-            SubWindowRedrawingFlag::DUNGEON,
-        };
-        RedrawingFlagsUpdater::get_instance().set_flags(flags);
     }
+
+    // メイン画面の外のグリッドは表示が変わったか分からないので、地図のサブウィンドウを描き直す
+    static constexpr auto flags = {
+        SubWindowRedrawingFlag::OVERHEAD,
+        SubWindowRedrawingFlag::DUNGEON,
+    };
+    RedrawingFlagsUpdater::get_instance().set_flags(flags);
 }
 
 /*
