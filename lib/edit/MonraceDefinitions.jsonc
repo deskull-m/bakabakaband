@@ -2656,6 +2656,14 @@
         "IM_ACID",
         "YEEK",
       ],
+      "equip_kind": [
+        {
+          "id": 43,
+          "probability": "3_IN_4",
+          "grade": 0,
+          "dice": "1d1",
+        },
+      ],
     },
     {
       "id": 53,
@@ -7018,6 +7026,14 @@
         "IM_ACID",
         "YEEK",
       ],
+      "equip_kind": [
+        {
+          "id": 43,
+          "probability": "3_IN_4",
+          "grade": 0,
+          "dice": "1d1",
+        },
+      ],
     },
     {
       "id": 142,
@@ -9015,6 +9031,14 @@
         "IM_ACID",
         "YEEK",
         "NOBLE",
+      ],
+      "equip_kind": [
+        {
+          "id": 43,
+          "probability": "3_IN_4",
+          "grade": 0,
+          "dice": "1d1",
+        },
       ],
       "skill": {
         "list": ["HEAL", "BLINK", "TELE_TO", "SLOW", "CONF", "S_MONSTER"],
@@ -11305,6 +11329,14 @@
         "EAT_NEXUS",
         "YEEK",
       ],
+      "equip_kind": [
+        {
+          "id": 43,
+          "probability": "3_IN_4",
+          "grade": 0,
+          "dice": "1d1",
+        },
+      ],
       "skill": {
         "list": ["BLINK", "TPORT", "BLIND", "SLOW", "BA_POIS", "S_MONSTER"],
         "probability": "1_IN_4",
@@ -12012,6 +12044,14 @@
         "IM_ACID",
         "YEEK",
         "NOBLE",
+      ],
+      "equip_kind": [
+        {
+          "id": 43,
+          "probability": "3_IN_4",
+          "grade": 0,
+          "dice": "1d1",
+        },
       ],
       "skill": {
         "list": ["HEAL", "BLINK", "TPORT", "BLIND", "SLOW", "S_KIN"],
@@ -67430,6 +67470,14 @@
         "RES_NETH",
         "NO_CONF",
         "NO_SLEEP",
+      ],
+      "equip_kind": [
+        {
+          "id": 43,
+          "probability": "3_IN_4",
+          "grade": 0,
+          "dice": "1d1",
+        },
       ],
       "skill": {
         "list": ["TELE_AWAY"],
@@ -131206,6 +131254,14 @@
         "NO_FEAR",
         "YEEK",
       ],
+      "equip_kind": [
+        {
+          "id": 43,
+          "probability": "3_IN_4",
+          "grade": 0,
+          "dice": "1d1",
+        },
+      ],
     },
     {
       "id": 2057,
@@ -149248,6 +149304,12 @@
           "grade": 0,
           "dice": "1d1",
         },
+        {
+          "id": 43,
+          "probability": "3_IN_4",
+          "grade": 0,
+          "dice": "1d1",
+        },
       ],
       "skill": {
         "probability": "1_IN_4",
@@ -149284,6 +149346,14 @@
         },
       ],
       "flags": ["DROP_60", "DROP_90", "DROP_1D2", "ONLY_GOLD", "OPEN_DOOR", "IM_ACID"],
+      "equip_kind": [
+        {
+          "id": 43,
+          "probability": "3_IN_4",
+          "grade": 0,
+          "dice": "1d1",
+        },
+      ],
       "skill": {
         "probability": "1_IN_10",
         "list": ["BLINK", "BO_ELEC", "HEAL"],
