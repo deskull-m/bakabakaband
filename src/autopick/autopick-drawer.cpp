@@ -13,6 +13,7 @@
 #include "system/creature-entity.h"
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
+#include "util/string-processor.h"
 #include "view/display-util.h"
 #include <tuple>
 
@@ -158,7 +159,7 @@ void draw_text_editor(CreatureEntity &creature, text_body_type *tb)
                 leftcol = 1;
                 break;
             }
-            if (iskanji(msg.front())) {
+            if (is_multibyte_char_at(msg)) {
                 msg.remove_prefix(1);
                 j++;
             }
