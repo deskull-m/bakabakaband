@@ -418,7 +418,11 @@ void generate_monster_drop_items(CreatureEntity &player, CreatureEntity &monster
     do_item |= monrace.drop_flags.has_any_of({ MonsterDropType::DROP_GOOD, MonsterDropType::DROP_GREAT });
 
     auto drop_numbers = decide_drop_numbers(monster, monrace, floor.inside_arena);
-    if (!do_item && !monrace.symbol_char_is_any_of("$")) {
+
+    // 金も品物も生成できない指定 (ONLY_GOLD と ONLY_ITEM の同時指定等の矛盾データ) ならドロップ枠を潰す。
+    // 旧実装はここが `!do_item && !symbol_char_is_any_of("$")` となっており、ONLY_GOLD を持つ
+    // 非 `$` 種族のドロップ個数指定を丸ごと無効化していた (判定対象とシンボル条件がどちらも反転していた)。
+    if (!do_gold && !do_item) {
         drop_numbers = 0;
     }
     if (drop_numbers <= 0) {
