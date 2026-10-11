@@ -18,6 +18,7 @@ schema_files = \
 	schema/ArtifactDefinitions.schema.json \
 	schema/BaseitemDefinitions.schema.json \
 	schema/ClassMagicDefinitions.schema.json \
+	schema/ClassSkillDefinitions.schema.json \
 	schema/CreatureParty.schema.json \
 	schema/DungeonDefinitions.schema.json \
 	schema/EgoDefinitions.schema.json \
@@ -33,6 +34,7 @@ schema_files = \
 	schema/WildernessDefinition.schema.json
 
 EXTRA_DIST = \
+	lib/edit/ClassSkillDefinitions.md \
 	lib/edit/VaultDefinitions.md \
 	autopick.txt \
 	autopick_eng.txt \
@@ -45,6 +47,7 @@ EXTRA_DIST = \
 	tools/bot/hbctl.py \
 	tools/bot/README.md \
 	tools/tests/main-window-wipe-probe.cpp \
+	tools/verify-class-skill-migration.py \
 	$(visual_studio_files) \
 	$(schema_files)
 
