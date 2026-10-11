@@ -1641,6 +1641,8 @@ hengband_test_SOURCES = \
 	\
 	test/system/baseitem/test-baseitem-definition.cpp \
 	\
+	test/system/floor/test-floor-info.cpp \
+	\
 	test/system/monrace/test-armament-level.cpp \
 	test/system/monrace/test-body-structure-policy.cpp \
 	test/system/monrace/test-monrace-definition.cpp \
