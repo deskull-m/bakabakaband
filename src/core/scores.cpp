@@ -152,8 +152,11 @@ bool send_world_score(CreatureEntity &creature, bool do_send)
         return true;
     }
 
+    // 送信内容は公開ランキングに掲載される。何が公開されるかを尋ねる前に示す
+    prt(_("キャラクター名・遺言・キャラクターダンプ・画面はスコアサーバで公開されます。", "Your character name, last words, character dump and screen will be published."), 1, 0);
     auto is_registration = input_check_strict(
         creature, _("スコアをスコア・サーバに登録しますか? ", "Do you send score to the world score server? "), { UserCheck::NO_ESCAPE, UserCheck::NO_HISTORY });
+    prt("", 1, 0);
     if (!is_registration) {
         return true;
     }
