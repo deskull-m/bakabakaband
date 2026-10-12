@@ -179,7 +179,6 @@
     <ClCompile Include="..\..\src\core\score-util.cpp" />
     <ClCompile Include="..\..\src\info-reader\party-reader.cpp" />
     <ClCompile Include="..\..\src\io-dump\player-status-dump-json.cpp" />
-    <ClCompile Include="..\..\src\io-dump\score-sender.cpp" />
     <ClCompile Include="..\..\src\knowledge\knowledge-alliance.cpp" />
     <ClCompile Include="..\..\src\knowledge\knowledge-incident.cpp" />
     <ClCompile Include="..\..\src\external-lib\fmt\format.cc" />
@@ -1021,7 +1020,6 @@
     <ClInclude Include="..\..\src\combat\martial-arts-style.h" />
     <ClInclude Include="..\..\src\info-reader\party-reader.h" />
     <ClInclude Include="..\..\src\io-dump\player-status-dump-json.h" />
-    <ClInclude Include="..\..\src\io-dump\score-sender.h" />
     <ClInclude Include="..\..\src\knowledge\knowledge-alliance.h" />
     <ClInclude Include="..\..\src\io\macro-configurations-store.h" />
     <ClInclude Include="..\..\src\load\alliance-loader.h" />
@@ -1835,6 +1833,7 @@
     <ClCompile Include="..\..\src\realm\realm-life.cpp" />
     <ClCompile Include="..\..\src\realm\realm-trump.cpp" />
     <ClCompile Include="..\..\src\io\report.cpp" />
+    <ClCompile Include="..\..\src\io\score-submission.cpp" />
     <ClCompile Include="..\..\src\room\rooms-city.cpp" />
     <ClCompile Include="..\..\src\room\rooms-fractal.cpp" />
     <ClCompile Include="..\..\src\room\rooms-normal.cpp" />
@@ -2135,6 +2134,7 @@
     <ClInclude Include="..\..\src\realm\realm-sorcery.h" />
     <ClInclude Include="..\..\src\realm\realm-trump.h" />
     <ClInclude Include="..\..\src\io\report.h" />
+    <ClInclude Include="..\..\src\io\score-submission.h" />
     <ClInclude Include="..\..\src\room\rooms-city.h" />
     <ClInclude Include="..\..\src\room\rooms-fractal.h" />
     <ClInclude Include="..\..\src\room\rooms-normal.h" />

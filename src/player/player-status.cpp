@@ -2946,15 +2946,13 @@ int16_t modify_stat_value(int value, int amount)
 }
 
 /*!
- * @brief スコアを計算する /
- * Hack -- Calculates the total number of points earned		-JWT-
- * @details
+ * @brief 出生オプションによるスコア乗数を計算する
+ * @return 乗数 (100 が基準、下限 5)
+ * @details スコアサーバ側でも同じ式で再計算するので、変更時は
+ * bakabakaband-score の src/score.js と合わせること。
  */
-uint32_t calc_score(CreatureEntity &creature)
+int calc_score_multiplier()
 {
-    const auto &entries = ArenaEntryList::get_instance();
-    const auto current_entry = entries.get_current_entry();
-    const auto arena_win = std::min(current_entry, entries.get_max_entries());
     auto mult = 100;
     if (!preserve_mode) {
         mult += 10;
@@ -2991,6 +2989,20 @@ uint32_t calc_score(CreatureEntity &creature)
         mult = 5;
     }
 
+    return mult;
+}
+
+/*!
+ * @brief スコアを計算する /
+ * Hack -- Calculates the total number of points earned		-JWT-
+ * @details
+ */
+uint32_t calc_score(CreatureEntity &creature)
+{
+    const auto &entries = ArenaEntryList::get_instance();
+    const auto current_entry = entries.get_current_entry();
+    const auto arena_win = std::min(current_entry, entries.get_max_entries());
+    const auto mult = calc_score_multiplier();
     const auto max_dungeon_level = DungeonService::find_max_level();
     uint32_t point_l = (creature.get_max_max_exp() + (100 * max_dungeon_level));
     uint32_t point_h = point_l / 0x10000L;

@@ -1,0 +1,388 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/deskull-m/bakabakaband-score/schema/ScoreSubmission.schema.json",
+  "title": "Bakabakaband score submission",
+  "description": "馬鹿馬鹿蛮怒からスコアサーバへ送信されるスコア登録データ。character にはゲーム側の dump_player_status_json() の出力をそのまま格納する。",
+  "type": "object",
+  "required": [
+    "format",
+    "format_version",
+    "game",
+    "score",
+    "progress",
+    "character"
+  ],
+  "properties": {
+    "format": {
+      "const": "bakabakaband-score-submission"
+    },
+    "format_version": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1
+    },
+    "submission_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "クライアントが送信内容を組み立てた時点で生成する UUID。再送時も同じ値を使う。サーバはこの値で重複登録を抑止する。"
+    },
+    "game": {
+      "type": "object",
+      "required": [
+        "version"
+      ],
+      "properties": {
+        "version": {
+          "$ref": "#/definitions/shortString"
+        },
+        "platform": {
+          "type": "string",
+          "enum": [
+            "win",
+            "unix",
+            "x11",
+            "gcu",
+            "cap",
+            "godot",
+            "headless",
+            "other"
+          ],
+          "description": "ビルド/フロントエンドの種別。UNIX 系はフロントエンドを実行時に選ぶので unix とする"
+        },
+        "locale": {
+          "type": "string",
+          "enum": [
+            "ja",
+            "en"
+          ]
+        }
+      },
+      "additionalProperties": true
+    },
+    "score": {
+      "type": "object",
+      "required": [
+        "points"
+      ],
+      "properties": {
+        "points": {
+          "$ref": "#/definitions/uint32"
+        },
+        "multiplier": {
+          "type": "integer",
+          "minimum": 5,
+          "maximum": 1000
+        },
+        "options": {
+          "type": "object",
+          "description": "calc_score() の乗数に影響するオプション群。真偽値のみ。",
+          "additionalProperties": {
+            "type": "boolean"
+          }
+        },
+        "arena_wins": {
+          "type": "integer",
+          "minimum": -1,
+          "maximum": 1000
+        },
+        "spectre_berserker": {
+          "type": "boolean"
+        },
+        "munchkin": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": true
+    },
+    "progress": {
+      "type": "object",
+      "required": [
+        "max_level",
+        "real_turns"
+      ],
+      "properties": {
+        "max_level": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 999
+        },
+        "max_max_experience": {
+          "$ref": "#/definitions/uint32"
+        },
+        "real_turns": {
+          "$ref": "#/definitions/uint32"
+        },
+        "play_time_sec": {
+          "$ref": "#/definitions/uint32"
+        },
+        "max_depth_overall": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999
+        },
+        "max_depth": {
+          "type": "object",
+          "description": "ダンジョン名(または ID) ごとの最深到達階",
+          "additionalProperties": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 999
+          },
+          "maxProperties": 64
+        },
+        "death_count": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100000
+        },
+        "total_winner": {
+          "type": "boolean"
+        },
+        "true_winner": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": true
+    },
+    "character": {
+      "$ref": "#/definitions/creatureStatus"
+    },
+    "attachments": {
+      "type": "object",
+      "properties": {
+        "character_dump": {
+          "type": "string",
+          "maxLength": 262144
+        },
+        "screen_dump": {
+          "type": "string",
+          "maxLength": 262144
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false,
+  "definitions": {
+    "uint32": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 4294967295
+    },
+    "int32": {
+      "type": "integer",
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "shortString": {
+      "type": "string",
+      "maxLength": 128
+    },
+    "text": {
+      "type": "string",
+      "maxLength": 1024
+    },
+    "creatureStatus": {
+      "type": "object",
+      "description": "ゲーム側 dump_player_status_json() の出力 (format: bakabakaband-creature-status)",
+      "required": [
+        "version",
+        "basic",
+        "status"
+      ],
+      "properties": {
+        "version": {
+          "type": "object",
+          "required": [
+            "format",
+            "version"
+          ],
+          "properties": {
+            "format": {
+              "const": "bakabakaband-creature-status"
+            },
+            "version": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        },
+        "basic": {
+          "type": "object",
+          "required": [
+            "name",
+            "level"
+          ],
+          "properties": {
+            "name": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 64
+            },
+            "level": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 999
+            },
+            "experience": {
+              "$ref": "#/definitions/int32"
+            },
+            "max_experience": {
+              "$ref": "#/definitions/int32"
+            },
+            "age": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100000
+            },
+            "height": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100000
+            },
+            "weight": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100000
+            },
+            "prestige": {
+              "$ref": "#/definitions/int32"
+            },
+            "race": {
+              "$ref": "#/definitions/shortString"
+            },
+            "class": {
+              "$ref": "#/definitions/shortString"
+            },
+            "monrace": {
+              "$ref": "#/definitions/shortString"
+            },
+            "sex": {
+              "$ref": "#/definitions/shortString"
+            },
+            "personality": {
+              "$ref": "#/definitions/shortString"
+            },
+            "mimic_form": {
+              "$ref": "#/definitions/shortString"
+            },
+            "realm1": {
+              "$ref": "#/definitions/shortString"
+            },
+            "realm2": {
+              "$ref": "#/definitions/shortString"
+            }
+          },
+          "additionalProperties": true
+        },
+        "stats": {
+          "type": "array",
+          "maxItems": 16,
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "maxLength": 16
+              },
+              "current": {
+                "$ref": "#/definitions/int32"
+              },
+              "max": {
+                "$ref": "#/definitions/int32"
+              },
+              "use": {
+                "$ref": "#/definitions/int32"
+              },
+              "top": {
+                "$ref": "#/definitions/int32"
+              }
+            },
+            "additionalProperties": true
+          }
+        },
+        "status": {
+          "type": "object",
+          "properties": {
+            "hitpoints": {
+              "$ref": "#/definitions/int32"
+            },
+            "max_hitpoints": {
+              "$ref": "#/definitions/int32"
+            },
+            "mana": {
+              "$ref": "#/definitions/int32"
+            },
+            "max_mana": {
+              "$ref": "#/definitions/int32"
+            },
+            "armor_class": {
+              "$ref": "#/definitions/int32"
+            },
+            "display_armor_class": {
+              "$ref": "#/definitions/int32"
+            },
+            "gold": {
+              "$ref": "#/definitions/int32"
+            },
+            "dungeon_level": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999
+            },
+            "max_dungeon_level": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999
+            },
+            "game_turn": {
+              "$ref": "#/definitions/int32"
+            }
+          },
+          "additionalProperties": true
+        },
+        "combat": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/int32"
+          }
+        },
+        "skills": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/int32"
+          }
+        },
+        "death": {
+          "type": "object",
+          "properties": {
+            "is_dead": {
+              "type": "boolean"
+            },
+            "cause": {
+              "$ref": "#/definitions/text"
+            },
+            "killer_id": {
+              "$ref": "#/definitions/int32"
+            },
+            "last_message": {
+              "$ref": "#/definitions/text"
+            },
+            "is_winner": {
+              "type": "boolean"
+            }
+          },
+          "additionalProperties": true
+        },
+        "history": {
+          "type": "array",
+          "maxItems": 8,
+          "items": {
+            "$ref": "#/definitions/text"
+          }
+        }
+      },
+      "additionalProperties": true
+    }
+  }
+}

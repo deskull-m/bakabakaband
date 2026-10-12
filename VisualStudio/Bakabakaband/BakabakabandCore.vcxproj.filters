@@ -472,6 +472,9 @@
     <ClCompile Include="..\..\src\io\report.cpp">
       <Filter>io</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\io\score-submission.cpp">
+      <Filter>io</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\src\floor\geometry.cpp">
       <Filter>floor</Filter>
     </ClCompile>
@@ -2889,9 +2892,6 @@
     <ClCompile Include="..\..\src\io-dump\player-status-dump-json.cpp">
       <Filter>io-dump</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\io-dump\score-sender.cpp">
-      <Filter>io-dump</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\util\png-displayer.cpp" />
     <ClCompile Include="..\..\src\system\creature-party\creature-party-definition.cpp">
       <Filter>system\creature-party</Filter>
@@ -3394,6 +3394,9 @@
       <Filter>floor</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\io\report.h">
+      <Filter>io</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\io\score-submission.h">
       <Filter>io</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\floor\geometry.h">
@@ -6248,9 +6251,6 @@
       <Filter>achivement</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\io-dump\player-status-dump-json.h">
-      <Filter>io-dump</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\io-dump\score-sender.h">
       <Filter>io-dump</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\util\png-displayer.h" />

@@ -769,6 +769,7 @@ libhengband_a_SOURCES = \
 	io/read-pref-file.cpp io/read-pref-file.h \
 	io/record-play-movie.cpp io/record-play-movie.h \
 	io/report.cpp io/report.h \
+	io/score-submission.cpp io/score-submission.h \
 	io/screen-util.cpp io/screen-util.h \
 	io/signal-handlers.cpp io/signal-handlers.h \
 	io/temp-file.cpp io/temp-file.h \
@@ -782,7 +783,6 @@ libhengband_a_SOURCES = \
 	io-dump/player-status-dump.cpp io-dump/player-status-dump.h \
 	io-dump/player-status-dump-json.cpp io-dump/player-status-dump-json.h \
 	io-dump/random-art-info-dumper.cpp io-dump/random-art-info-dumper.h \
-	io-dump/score-sender.cpp io-dump/score-sender.h \
 	io-dump/special-class-dump.cpp io-dump/special-class-dump.h \
 	\
 	knowledge/knowledge-alliance.cpp knowledge/knowledge-alliance.h \
