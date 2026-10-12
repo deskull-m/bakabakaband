@@ -44,6 +44,7 @@ EXTRA_DIST = \
 	hengband.spec \
 	tools/bot/hbctl.py \
 	tools/bot/README.md \
+	tools/tests/main-window-wipe-probe.cpp \
 	$(visual_studio_files) \
 	$(schema_files)
 
