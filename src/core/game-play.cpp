@@ -392,7 +392,7 @@ static void process_game_turn(CreatureEntity &creature)
     while (true) {
         process_dungeon(creature, load_game);
         world.character_xtra = true;
-        handle_stuff(creature);
+        handle_stuff_with_inventory_arrangement(creature);
         world.character_xtra = false;
         Target::clear_last_target();
         health_track(creature, 0);

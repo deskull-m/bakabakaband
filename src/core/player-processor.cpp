@@ -265,7 +265,7 @@ void process_player(CreatureEntity &creature)
         creature.set_now_damaged(false);
 
         update_monsters(creature, false);
-        handle_stuff(creature);
+        handle_stuff_with_inventory_arrangement(creature);
         move_cursor_relative(creature.y, creature.x);
         if (fresh_before) {
             term_fresh_force();

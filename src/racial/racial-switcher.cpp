@@ -225,7 +225,7 @@ bool switch_class_racial_execution(CreatureEntity &creature, const int32_t comma
         }
 
         if (!creature.is_paralyzed() && !cmd_limit_cast(creature)) {
-            handle_stuff(creature);
+            handle_stuff_with_inventory_arrangement(creature);
             command_dir = Direction::none();
             (void)do_cmd_cast(creature);
         }

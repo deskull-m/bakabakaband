@@ -23,6 +23,7 @@
 #include "object/object-info.h"
 #include "object/object-mark-types.h"
 #include "player/player-move.h"
+#include "player/player-status.h"
 #include "spell-kind/spells-perception.h"
 #include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
@@ -153,6 +154,9 @@ static void py_pickup_multiple_items(CreatureEntity &creature, bool pickup)
             break;
         }
         process_player_pickup_item(creature, -i_idx);
+
+        // 拾ったときの鑑定で自動破壊の印が付いたアイテムを、次を選ぶ前に壊してザックの空きを作る。
+        update_inventory_arrangement(creature);
     }
 }
 
@@ -276,6 +280,10 @@ void carry(CreatureEntity &creature, bool pickup)
     const auto &grid = creature.get_floor()->grid_array[creature.y][creature.x];
     autopick_pickup_items(creature, grid);
 
+    // 自動拾いや拾ったときの鑑定で自動破壊の印が付いたアイテムを、拾う候補を数える前に壊す。
+    // carry() は移動のコマンドからだけ呼ばれ、所持品の番号を持たない。
+    update_inventory_arrangement(creature);
+
     if (!grid.o_idx_list.empty()) {
         disturb(creature, false, false);
     }
@@ -313,5 +321,9 @@ void carry(CreatureEntity &creature, bool pickup)
         }
 
         py_pickup_single_item(creature, this_o_idx, pickup);
+
+        // 拾ったときの鑑定で自動破壊の印が付いたアイテムを、次を調べる前に壊してザックの空きを作る。
+        // 床のアイテムの印はループの前に処理済みなので、ここで床の一覧の要素が消えることはない。
+        update_inventory_arrangement(creature);
     }
 }

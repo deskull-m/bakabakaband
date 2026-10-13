@@ -438,7 +438,7 @@ void show_death_info(CreatureEntity &creature)
     home_aware(creature);
 
     RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
-    handle_stuff(creature);
+    handle_stuff_with_inventory_arrangement(creature);
     flush();
     msg_erase();
 
