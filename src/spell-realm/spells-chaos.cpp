@@ -192,7 +192,7 @@ void cast_meteor(CreatureEntity &creature, int dam, POSITION rad)
         Pos2D pos(0, 0);
         int count;
         for (count = 0; count <= 20; count++) {
-            const Pos2DVec vec(randint0(17) - 8, randint0(17) - 8);
+            const Pos2DVec vec{ randint0(17) - 8, randint0(17) - 8 };
             pos = p_pos + vec;
             const auto dx = std::abs(creature.x - pos.x);
             const auto dy = std::abs(creature.y - pos.y);

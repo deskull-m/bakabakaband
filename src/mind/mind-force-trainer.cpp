@@ -226,7 +226,8 @@ bool shock_power(CreatureEntity &creature)
     const auto &monrace = monster.get_monrace();
     const auto m_name = monster_desc(creature, monster, 0);
 
-    if (randint1(monrace.level * 3 / 2) > randint0(dam / 2) + dam / 2) {
+    const auto resistance_power = randint1(monrace.level * 3 / 2);
+    if (resistance_power > randint0(dam / 2) + dam / 2) {
         msg_format(_("%sは飛ばされなかった。", "%s^ was not blown away."), m_name.data());
         return true;
     }
