@@ -47,6 +47,7 @@ void print_path(CreatureEntity &creature, POSITION y, POSITION x)
     ProjectionPath path_g(floor, range, p_pos, p_pos, pos, PROJECT_PATH | PROJECT_THRU);
     RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::MAP);
     handle_stuff(creature);
+    const auto monochrome_color = get_monochrome_display_color(creature);
     for (const auto &pos_path : path_g) {
         const auto &grid = floor.get_grid(pos_path);
         if (panel_contains(pos_path)) {
@@ -63,7 +64,7 @@ void print_path(CreatureEntity &creature, POSITION y, POSITION x)
                 }
             }
 
-            symbol_pair.symbol_foreground.color = get_monochrome_display_color(creature).value_or(symbol_pair.symbol_foreground.color);
+            symbol_pair.symbol_foreground.color = monochrome_color.value_or(symbol_pair.symbol_foreground.color);
             symbol_pair.symbol_foreground.character = '*';
             term_queue_bigchar(panel_col_of(pos_path.x), pos_path.y - panel_row_prt, symbol_pair);
         }
