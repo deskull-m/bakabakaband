@@ -689,7 +689,11 @@ void PlayerType::on_death(std::string_view cause)
     /* 桜散る */
     auto &rng = get_external_rng();
     for (auto i = 0; i < 40; i++) {
-        term_putstr(randint0(rng, w / 2) * 2, randint0(rng, h), 2, TERM_VIOLET, "υ");
+        // 変数名に x / y を使うと CreatureEntity の同名メンバを隠し MSVC が C4458 を出す。
+        // また Pos2D にまとめると引数の評価順が未規定に戻るため、2 文のまま扱う。
+        const auto petal_x = randint0(rng, w / 2) * 2;
+        const auto petal_y = randint0(rng, h);
+        term_putstr(petal_x, petal_y, 2, TERM_VIOLET, "υ");
     }
 
     auto str = death_message.data();

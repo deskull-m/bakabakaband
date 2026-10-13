@@ -800,11 +800,9 @@ tl::optional<MONSTER_IDX> place_monster_one(CreatureEntity &player, POSITION y, 
         (void)set_monster_fast(floor, g_ptr->m_idx, 100);
     }
 
-    if (!ironman_nightmare) {
-        m_ptr->set_energy_need(ENERGY_NEED() - randnum0<short>(100));
-    } else {
-        m_ptr->set_energy_need(ENERGY_NEED() - randnum0<short>(100) * 2);
-    }
+    auto energy_need = ENERGY_NEED();
+    energy_need -= randnum0<short>(100) * (ironman_nightmare ? 2 : 1);
+    m_ptr->set_energy_need(energy_need);
 
     if (!ironman_nightmare) {
         m_ptr->set_temporary_flag(MonsterTemporaryFlagType::PREVENT_MAGIC);

@@ -96,7 +96,7 @@ static bool process_bolt_reflection(CreatureEntity &creature, EffectPlayerType *
         const auto &floor = *creature.get_floor();
         const auto &monster = floor.get_monster(ep_ptr->src_idx);
         do {
-            const Pos2DVec vec(randint1(3) - 1, randint1(3) - 1);
+            const Pos2DVec vec{ randint1(3) - 1, randint1(3) - 1 };
             pos = monster.get_position() + vec;
             max_attempts--;
         } while (max_attempts && floor.contains(pos, FloorBoundary::OUTER_WALL_INCLUSIVE) && !projectable(floor, p_pos, pos));
@@ -105,7 +105,7 @@ static bool process_bolt_reflection(CreatureEntity &creature, EffectPlayerType *
             pos = monster.get_position();
         }
     } else {
-        const Pos2DVec vec(randint1(3) - 1, randint1(3) - 1);
+        const Pos2DVec vec{ randint1(3) - 1, randint1(3) - 1 };
         pos = p_pos + vec;
     }
 

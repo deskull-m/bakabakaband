@@ -410,7 +410,7 @@ bool alloc_guardian(CreatureEntity &creature, bool def_val)
     const auto p_pos = creature.get_position();
     auto try_count = 4000;
     while (try_count > 0) {
-        const auto pos = Pos2D(randint1(floor.height - 4), randint1(floor.width - 4)) + Pos2DVec(2, 2);
+        const auto pos = Pos2D{ randint1(floor.height - 4), randint1(floor.width - 4) } + Pos2DVec(2, 2);
         if (!floor.can_generate_monster_at(pos) || (p_pos == pos)) {
             try_count++;
             continue;
