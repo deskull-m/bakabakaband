@@ -445,7 +445,7 @@ void do_cmd_building(CreatureEntity &creature)
         }
 
         const auto should_leave = is_valid_command ? bldg_process_command(creature, bldg, i) : false;
-        handle_stuff(creature);
+        handle_stuff_with_inventory_arrangement(creature);
         if (should_leave) {
             break;
         }

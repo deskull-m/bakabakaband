@@ -147,7 +147,7 @@ static void kingly(CreatureEntity &creature)
  */
 void close_game(CreatureEntity &creature)
 {
-    handle_stuff(creature);
+    handle_stuff_with_inventory_arrangement(creature);
     msg_erase();
     flush();
     signals_ignore_tstp();

@@ -20,7 +20,7 @@ void pack_overflow(CreatureEntity &creature)
         return;
     }
 
-    update_creature(creature);
+    update_inventory_arrangement(creature);
     if (!creature.inventory[INVEN_PACK]->is_valid()) {
         return;
     }
@@ -34,5 +34,5 @@ void pack_overflow(CreatureEntity &creature)
     (void)drop_near(creature, item, creature.get_position(), false);
 
     vary_item(creature, INVEN_PACK, -255);
-    handle_stuff(creature);
+    handle_stuff_with_inventory_arrangement(creature);
 }

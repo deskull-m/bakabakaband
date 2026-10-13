@@ -260,7 +260,7 @@ bool set_monster_timewalk(CreatureEntity &creature, MONSTER_IDX m_idx, int num, 
 
         process_monster(creature, world.timewalk_m_idx);
         monster.reset_target();
-        handle_stuff(creature);
+        handle_stuff_with_inventory_arrangement(creature);
         if (vs_player) {
             term_xtra(TERM_XTRA_DELAY, 500);
         }

@@ -9,6 +9,7 @@
 
 /*!
  * @brief 全更新処理をチェックして処理していく
+ * @details 所持品の自動破壊・結合・並べ替えは行わない (handle_stuff_with_inventory_arrangement() で行う)。
  */
 void handle_stuff(CreatureEntity &creature)
 {
@@ -24,6 +25,16 @@ void handle_stuff(CreatureEntity &creature)
     if (rfu.any_sub()) {
         window_stuff(creature);
     }
+}
+
+/*!
+ * @brief 所持品の自動破壊・結合・並べ替えを行ってから、全更新処理を行う
+ * @details メインループや店のループなど、コマンドの区切りにあたる位置で呼ぶ (update_inventory_arrangement() を参照)。
+ */
+void handle_stuff_with_inventory_arrangement(CreatureEntity &creature)
+{
+    update_inventory_arrangement(creature);
+    handle_stuff(creature);
 }
 
 /*
