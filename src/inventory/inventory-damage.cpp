@@ -103,7 +103,7 @@ void inventory_damage(CreatureEntity &creature, const ObjectBreaker &breaker, in
         inven_item_optimize(creature, i_idx);
     }
 
-    // 薬の効果の最中に所持品の結合やモンスターの爆発による再入が起きると所持品の番号がずれるため、
+    // 薬の効果の最中にモンスターの爆発による再入が起きると所持品の番号がずれるため、
     // 割れた薬の効果は所持品を減らし終えてから起こす。
     for (const auto bi_id : smashed_potions) {
         (void)potion_smash_effect(creature, 0, creature.y, creature.x, bi_id);
