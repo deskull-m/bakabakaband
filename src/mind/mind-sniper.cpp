@@ -9,7 +9,6 @@
 #include "action/action-limited.h"
 #include "cmd-action/cmd-shoot.h"
 #include "core/asking-player.h"
-#include "core/stuff-handler.h"
 #include "core/window-redrawer.h"
 #include "floor/geometry.h"
 #include "game-option/text-display-options.h"
@@ -382,7 +381,7 @@ static int get_snipe_power(CreatureEntity &creature, COMMAND_CODE *sn, bool only
     }
 
     RedrawingFlagsUpdater::get_instance().set_flag(SubWindowRedrawingFlag::SPELL);
-    handle_stuff(creature);
+    window_stuff(creature);
 
     /* Abort if needed */
     if (!flag) {

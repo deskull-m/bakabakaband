@@ -1,6 +1,5 @@
 #include "spell-kind/spells-sight.h"
 #include "avatar/avatar.h"
-#include "core/stuff-handler.h"
 #include "core/window-redrawer.h"
 #include "effect/attribute-types.h"
 #include "effect/effect-characteristics.h"
@@ -464,7 +463,7 @@ bool probing(CreatureEntity &creature)
 
         message_add(probe_result);
         rfu.set_flag(SubWindowRedrawingFlag::MESSAGE);
-        handle_stuff(creature);
+        window_stuff(creature);
         move_cursor_relative(monster.y, monster.x);
         inkey();
         term_erase(0, 0);

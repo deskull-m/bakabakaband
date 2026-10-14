@@ -348,7 +348,7 @@ tl::optional<short> get_item_floor(CreatureEntity &creature, std::string_view pm
         }
 
         rfu.set_flags(flags);
-        handle_stuff(creature);
+        window_stuff(creature);
         COMMAND_CODE get_item_label = 0;
         if (command_wrk == USE_INVEN) {
             fis.n1 = I2A(fis.i1);
@@ -906,7 +906,7 @@ tl::optional<short> get_item_floor(CreatureEntity &creature, std::string_view pm
     }
 
     rfu.set_flags(flags);
-    handle_stuff(creature);
+    window_stuff(creature);
     prt("", 0, 0);
     if (fis.oops && !str.empty()) {
         msg_print(str);
