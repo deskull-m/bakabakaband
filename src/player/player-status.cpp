@@ -2595,30 +2595,6 @@ int calc_weight_limit(CreatureEntity &creature)
 }
 
 /*!
- * @brief フラグに応じて所持品の自動破壊・結合・並べ替えを行う
- * @details 所持品のスロット番号が変わるため、アイテムの番号を保持している処理の途中では呼ばない。
- * 通常は handle_stuff_with_inventory_arrangement() を通じて呼ぶ。
- */
-void update_inventory_arrangement(CreatureEntity &creature)
-{
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    if (rfu.has(StatusRecalculatingFlag::AUTO_DESTRUCTION)) {
-        rfu.reset_flag(StatusRecalculatingFlag::AUTO_DESTRUCTION);
-        autopick_delayed_alter(creature);
-    }
-
-    if (rfu.has(StatusRecalculatingFlag::COMBINATION)) {
-        rfu.reset_flag(StatusRecalculatingFlag::COMBINATION);
-        combine_pack(creature);
-    }
-
-    if (rfu.has(StatusRecalculatingFlag::REORDER)) {
-        rfu.reset_flag(StatusRecalculatingFlag::REORDER);
-        reorder_pack(creature);
-    }
-}
-
-/*!
  * @brief update のフラグに応じた更新をまとめて行う / Handle "update"
  * @details 更新処理の対象はプレイヤーの能力修正/光源寿命/HP/MP/魔法の学習状態、他多数の外界の状態判定。
  * 所持品の自動破壊・結合・並べ替えは行わない (update_inventory_arrangement() で行う)。

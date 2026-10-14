@@ -1,5 +1,6 @@
 #include "core/stuff-handler.h"
 #include "core/window-redrawer.h"
+#include "inventory/inventory-object.h"
 #include "player/player-status.h"
 #include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
@@ -77,8 +78,8 @@ bool update_player()
 {
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     static constexpr auto flags_srf = {
-        StatusRecalculatingFlag::COMBINATION,
-        StatusRecalculatingFlag::REORDER,
+        InventoryArrangementFlag::COMBINATION,
+        InventoryArrangementFlag::REORDER,
     };
     rfu.set_flags(flags_srf);
     rfu.set_flag(SubWindowRedrawingFlag::INVENTORY);
@@ -94,8 +95,8 @@ bool redraw_player(CreatureEntity &creature)
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(MainWindowRedrawingFlag::MP);
     static constexpr auto flags_srf = {
-        StatusRecalculatingFlag::COMBINATION,
-        StatusRecalculatingFlag::REORDER,
+        InventoryArrangementFlag::COMBINATION,
+        InventoryArrangementFlag::REORDER,
     };
     rfu.set_flags(flags_srf);
     rfu.set_flag(SubWindowRedrawingFlag::INVENTORY);

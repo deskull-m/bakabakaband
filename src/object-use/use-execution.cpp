@@ -91,8 +91,8 @@ void ObjectUseEntity::execute()
         item->ident.set(IdentificationFlag::EMPTY);
         auto &rfu = RedrawingFlagsUpdater::get_instance();
         static constexpr auto flags = {
-            StatusRecalculatingFlag::COMBINATION,
-            StatusRecalculatingFlag::REORDER,
+            InventoryArrangementFlag::COMBINATION,
+            InventoryArrangementFlag::REORDER,
         };
         rfu.set_flags(flags);
         rfu.set_flag(SubWindowRedrawingFlag::INVENTORY);
@@ -116,8 +116,8 @@ void ObjectUseEntity::execute()
 
     rfu.set_item_related_sub_window_flags();
     static constexpr auto flags_srf = {
-        StatusRecalculatingFlag::COMBINATION,
-        StatusRecalculatingFlag::REORDER,
+        InventoryArrangementFlag::COMBINATION,
+        InventoryArrangementFlag::REORDER,
     };
     rfu.set_flags(flags_srf);
     if (!use_charge) {

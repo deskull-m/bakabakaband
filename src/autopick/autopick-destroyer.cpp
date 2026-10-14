@@ -145,5 +145,5 @@ void auto_destroy_item(CreatureEntity &creature, ItemEntity *o_ptr, int autopick
 
     autopick_last_destroyed_object = o_ptr->clone();
     o_ptr->marked.set(OmType::AUTODESTROY);
-    RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::AUTO_DESTRUCTION);
+    RedrawingFlagsUpdater::get_instance().set_flag(InventoryArrangementFlag::AUTO_DESTRUCTION);
 }
