@@ -31,7 +31,7 @@ bool activate_resistance_elements(CreatureEntity &creature)
  */
 bool activate_acid_ball_and_resistance(CreatureEntity &creature, std::string_view name)
 {
-    msg_format(_("%sが黒く輝いた...", "The %s grows black."), name.data());
+    msg_print(_("{}が黒く輝いた...", "The {} glows black."), name);
 
     const auto dir = get_aim_dir(creature);
     if (!dir) {
@@ -52,7 +52,7 @@ bool activate_acid_ball_and_resistance(CreatureEntity &creature, std::string_vie
  */
 bool activate_elec_ball_and_resistance(CreatureEntity &creature, std::string_view name)
 {
-    msg_format(_("%sが青く輝いた...", "The %s grows blue."), name.data());
+    msg_print(_("{}が青く輝いた...", "The {} glows blue."), name);
 
     const auto dir = get_aim_dir(creature);
     if (!dir) {
@@ -73,7 +73,7 @@ bool activate_elec_ball_and_resistance(CreatureEntity &creature, std::string_vie
  */
 bool activate_fire_ball_and_resistance(CreatureEntity &creature, std::string_view name)
 {
-    msg_format(_("%sが赤く輝いた...", "The %s grows red."), name.data());
+    msg_print(_("{}が赤く輝いた...", "The {} glows red."), name);
 
     const auto dir = get_aim_dir(creature);
     if (!dir) {
@@ -94,7 +94,7 @@ bool activate_fire_ball_and_resistance(CreatureEntity &creature, std::string_vie
  */
 bool activate_cold_ball_and_resistance(CreatureEntity &creature, std::string_view name)
 {
-    msg_format(_("%sが白く輝いた...", "The %s grows white."), name.data());
+    msg_print(_("{}が白く輝いた...", "The {} glows white."), name);
 
     const auto dir = get_aim_dir(creature);
     if (!dir) {
@@ -115,7 +115,7 @@ bool activate_cold_ball_and_resistance(CreatureEntity &creature, std::string_vie
  */
 bool activate_pois_ball_and_resistance(CreatureEntity &creature, std::string_view name)
 {
-    msg_format(_("%sが緑に輝いた...", "The %s grows green."), name.data());
+    msg_print(_("{}が緑に輝いた...", "The {} glows green."), name);
 
     const auto dir = get_aim_dir(creature);
     if (!dir) {
@@ -136,7 +136,7 @@ bool activate_pois_ball_and_resistance(CreatureEntity &creature, std::string_vie
  */
 bool activate_resistance_acid(CreatureEntity &creature, std::string_view name)
 {
-    msg_format(_("%sが黒く輝いた...", "The %s grows black."), name.data());
+    msg_print(_("{}が黒く輝いた...", "The {} glows black."), name);
     (void)set_oppose_acid(creature, randint1(20) + 20, false);
     return true;
 }
@@ -149,7 +149,7 @@ bool activate_resistance_acid(CreatureEntity &creature, std::string_view name)
  */
 bool activate_resistance_elec(CreatureEntity &creature, std::string_view name)
 {
-    msg_format(_("%sが青く輝いた...", "The %s grows blue."), name.data());
+    msg_print(_("{}が青く輝いた...", "The {} glows blue."), name);
     (void)set_oppose_elec(creature, randint1(20) + 20, false);
     return true;
 }
@@ -162,7 +162,7 @@ bool activate_resistance_elec(CreatureEntity &creature, std::string_view name)
  */
 bool activate_resistance_fire(CreatureEntity &creature, std::string_view name)
 {
-    msg_format(_("%sが赤く輝いた...", "The %s grows red."), name.data());
+    msg_print(_("{}が赤く輝いた...", "The {} glows red."), name);
     (void)set_oppose_fire(creature, randint1(20) + 20, false);
     return true;
 }
@@ -175,7 +175,7 @@ bool activate_resistance_fire(CreatureEntity &creature, std::string_view name)
  */
 bool activate_resistance_cold(CreatureEntity &creature, std::string_view name)
 {
-    msg_format(_("%sが白く輝いた...", "The %s grows white."), name.data());
+    msg_print(_("{}が白く輝いた...", "The {} glows white."), name);
     (void)set_oppose_cold(creature, randint1(20) + 20, false);
     return true;
 }
@@ -188,7 +188,7 @@ bool activate_resistance_cold(CreatureEntity &creature, std::string_view name)
  */
 bool activate_resistance_pois(CreatureEntity &creature, std::string_view name)
 {
-    msg_format(_("%sが緑に輝いた...", "The %s grows green."), name.data());
+    msg_print(_("{}が緑に輝いた...", "The {} glows green."), name);
     (void)set_oppose_pois(creature, randint1(20) + 20, false);
     return true;
 }
