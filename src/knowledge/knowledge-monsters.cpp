@@ -8,7 +8,7 @@
 
 #include "knowledge/knowledge-monsters.h"
 #include "core/show-file.h"
-#include "core/stuff-handler.h"
+#include "core/window-redrawer.h"
 #include "game-option/cheat-options.h"
 #include "game-option/special-options.h"
 #include "io-dump/dump-util.h"
@@ -437,7 +437,7 @@ void do_cmd_knowledge_monsters(CreatureEntity &creature, bool *need_redraw, bool
             symbol_ptr = &monrace.symbol_config;
             if (!visual_only) {
                 tracker.set_trackee(monrace_ids[mon_cur]);
-                handle_stuff(creature);
+                window_stuff(creature);
             }
 
             if (visual_list) {

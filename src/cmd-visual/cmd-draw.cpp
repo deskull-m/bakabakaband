@@ -213,7 +213,7 @@ void do_cmd_player_status(CreatureEntity &creature)
     // ステータス画面はモンスターの inspect にも使われる (target-describer の 'c')。
     // 終了後のメインウィンドウ (画面左のパラメータ表示等) は常にプレイヤーで復元し、
     // inspect したモンスターの値が左枠に残らないようにする。
-    handle_stuff(PlayerType::get_instance());
+    redraw_stuff(PlayerType::get_instance());
 }
 
 /*!
