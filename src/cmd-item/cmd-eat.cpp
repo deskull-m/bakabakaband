@@ -592,11 +592,6 @@ void exe_eat_food(CreatureEntity &creature, INVENTORY_IDX i_idx)
     }
 
     auto &rfu = RedrawingFlagsUpdater::get_instance();
-    static constexpr auto flags_srf = {
-        StatusRecalculatingFlag::COMBINATION,
-        StatusRecalculatingFlag::REORDER,
-    };
-    rfu.set_flags(flags_srf);
     static constexpr auto flags_swrf = {
         SubWindowRedrawingFlag::INVENTORY,
         SubWindowRedrawingFlag::EQUIPMENT,
@@ -670,6 +665,15 @@ void exe_eat_food(CreatureEntity &creature, INVENTORY_IDX i_idx)
         msg_print("流石に食べるのを躊躇した。");
         return;
     }
+
+    // 所持品の整理は実際に食べた場合だけ予約する。これより前に抜ける 2 経路
+    // (魔法道具の充填吸収・バルログの死体焼却) では、所持数を変える
+    // store_item() / inven_item_increase() が必要なフラグを自分で立てる。
+    static constexpr auto flags_iaf = {
+        InventoryArrangementFlag::COMBINATION,
+        InventoryArrangementFlag::REORDER,
+    };
+    rfu.set_flags(flags_iaf);
 
     creature.plus_incident_tree("EAT", 1);
 

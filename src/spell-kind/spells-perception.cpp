@@ -71,12 +71,12 @@ bool identify_item(CreatureEntity &creature, ItemEntity *o_ptr)
     o_ptr->marked.set(OmType::TOUCHED);
 
     auto &rfu = RedrawingFlagsUpdater::get_instance();
-    static constexpr auto flags_srf = {
-        StatusRecalculatingFlag::BONUS,
-        StatusRecalculatingFlag::COMBINATION,
-        StatusRecalculatingFlag::REORDER,
+    rfu.set_flag(StatusRecalculatingFlag::BONUS);
+    static constexpr auto flags_iaf = {
+        InventoryArrangementFlag::COMBINATION,
+        InventoryArrangementFlag::REORDER,
     };
-    rfu.set_flags(flags_srf);
+    rfu.set_flags(flags_iaf);
     rfu.set_item_related_sub_window_flags();
     record_item_name = known_item_name;
     record_turn = AngbandWorld::get_instance().game_turn;

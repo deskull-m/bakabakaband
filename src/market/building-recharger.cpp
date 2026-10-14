@@ -149,8 +149,8 @@ void building_recharge(CreatureEntity &creature)
 #endif
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     static constexpr auto flags = {
-        StatusRecalculatingFlag::COMBINATION,
-        StatusRecalculatingFlag::REORDER,
+        InventoryArrangementFlag::COMBINATION,
+        InventoryArrangementFlag::REORDER,
     };
     rfu.set_flags(flags);
     rfu.set_flag(SubWindowRedrawingFlag::INVENTORY);
@@ -267,8 +267,8 @@ void building_recharge_all(CreatureEntity &creature)
     msg_erase();
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     static constexpr auto flags = {
-        StatusRecalculatingFlag::COMBINATION,
-        StatusRecalculatingFlag::REORDER,
+        InventoryArrangementFlag::COMBINATION,
+        InventoryArrangementFlag::REORDER,
     };
     rfu.set_flags(flags);
     rfu.set_flag(SubWindowRedrawingFlag::INVENTORY);

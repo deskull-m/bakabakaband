@@ -119,8 +119,8 @@ static void sense_inventory_aux(CreatureEntity &creature, INVENTORY_IDX slot, bo
     autopick_alter_item(creature, slot, destroy_feeling);
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     static constexpr auto flags_srf = {
-        StatusRecalculatingFlag::COMBINATION,
-        StatusRecalculatingFlag::REORDER,
+        InventoryArrangementFlag::COMBINATION,
+        InventoryArrangementFlag::REORDER,
     };
     rfu.set_flags(flags_srf);
     static constexpr auto flags_swrf = {
