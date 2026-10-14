@@ -6,6 +6,7 @@
 #include "floor/floor-object.h"
 #include "game-option/disturbance-options.h"
 #include "game-option/input-options.h"
+#include "inventory/inventory-object.h"
 #include "main/sound-definitions-table.h"
 #include "main/sound-of-music.h"
 #include "object-enchant/special-object-flags.h"
@@ -93,12 +94,7 @@ void ObjectZapWandEntity::execute(INVENTORY_IDX i_idx)
 
         msg_print(_("この魔法棒にはもう魔力が残っていない。", "The wand has no charges left."));
         item->ident.set(IdentificationFlag::EMPTY);
-        static constexpr auto flags = {
-            InventoryArrangementFlag::COMBINATION,
-            InventoryArrangementFlag::REORDER,
-        };
-        rfu.set_flags(flags);
-        rfu.set_flag(SubWindowRedrawingFlag::INVENTORY);
+        request_inventory_arrangement();
         return;
     }
 

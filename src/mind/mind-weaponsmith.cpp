@@ -7,6 +7,7 @@
 #include "flavor/object-flavor-types.h"
 #include "floor/floor-object.h"
 #include "game-option/text-display-options.h"
+#include "inventory/inventory-object.h"
 #include "io/command-repeater.h"
 #include "io/input-key-acceptor.h"
 #include "io/input-key-requester.h"
@@ -20,7 +21,6 @@
 #include "smith/smith-types.h"
 #include "system/creature-entity.h"
 #include "system/item-entity.h"
-#include "system/redrawing-flags-updater.h"
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
 #include "util/bit-flags-calculator.h"
@@ -103,17 +103,6 @@ static void display_essence(CreatureEntity &creature)
     screen_load();
 }
 
-static void set_smith_redrawing_flags()
-{
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    static constexpr auto flags = {
-        InventoryArrangementFlag::COMBINATION,
-        InventoryArrangementFlag::REORDER,
-    };
-    rfu.set_flags(flags);
-    rfu.set_flag(SubWindowRedrawingFlag::INVENTORY);
-}
-
 /*!
  * @brief エッセンスの抽出処理
  * @param creature クリーチャーへの参照
@@ -153,7 +142,7 @@ static void drain_essence(CreatureEntity &creature)
 
     /* Apply autodestroy/inscription to the drained item */
     autopick_alter_item(creature, i_idx, true);
-    set_smith_redrawing_flags();
+    request_inventory_arrangement();
 }
 
 /*!
@@ -506,7 +495,7 @@ static void add_essence(CreatureEntity &creature, SmithCategoryType mode)
     auto effect_name = Smith::get_effect_name(effect);
 
     _(msg_format("%sに%sの能力を付加しました。", item_name.data(), effect_name), msg_format("You have added ability of %s to %s.", effect_name, item_name.data()));
-    set_smith_redrawing_flags();
+    request_inventory_arrangement();
 }
 
 /*!
@@ -531,7 +520,7 @@ static void erase_essence(CreatureEntity &creature)
     Smith(creature).erase_essence(item.get());
 
     msg_print(_("エッセンスを取り去った。", "You removed all essence you have added."));
-    set_smith_redrawing_flags();
+    request_inventory_arrangement();
 }
 
 /*!

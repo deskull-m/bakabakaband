@@ -73,32 +73,3 @@ void health_track(CreatureEntity &creature, short m_idx)
 
     HealthBarTracker::get_instance().set_trackee(m_idx);
 }
-
-bool update_player()
-{
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    static constexpr auto flags_srf = {
-        InventoryArrangementFlag::COMBINATION,
-        InventoryArrangementFlag::REORDER,
-    };
-    rfu.set_flags(flags_srf);
-    rfu.set_flag(SubWindowRedrawingFlag::INVENTORY);
-    return true;
-}
-
-bool redraw_player(CreatureEntity &creature)
-{
-    if (creature.get_current_mp() > creature.get_max_mp()) {
-        creature.set_current_mp(creature.get_max_mp());
-    }
-
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.set_flag(MainWindowRedrawingFlag::MP);
-    static constexpr auto flags_srf = {
-        InventoryArrangementFlag::COMBINATION,
-        InventoryArrangementFlag::REORDER,
-    };
-    rfu.set_flags(flags_srf);
-    rfu.set_flag(SubWindowRedrawingFlag::INVENTORY);
-    return true;
-}
