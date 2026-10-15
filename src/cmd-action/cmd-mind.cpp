@@ -41,6 +41,7 @@
 #include "player/player-status-table.h"
 #include "player/player-status.h"
 #include "spell-kind/spells-teleport.h"
+#include "spell/spell-info.h"
 #include "status/bad-status-setter.h"
 #include "status/base-status.h"
 #include "system/creature-entity.h"
@@ -356,7 +357,7 @@ static void mind_reflection(CreatureEntity &creature, cm_type *cm_ptr)
 
     creature.set_current_mp(std::max(0, creature.get_current_mp() - cm_ptr->mana_cost));
     msg_print(_(format("%sを集中しすぎて気を失ってしまった！", cm_ptr->mind_explanation), "You faint from the effort!"));
-    (void)BadStatusSetter(creature).mod_paralysis(randnum1<short>(5 * oops + 1));
+    (void)BadStatusSetter(creature).mod_paralysis(roll_spell_over_exertion_duration(oops));
     if (one_in_(2)) {
         return;
     }

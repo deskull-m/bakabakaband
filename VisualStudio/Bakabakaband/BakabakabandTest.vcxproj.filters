@@ -31,6 +31,9 @@
     <Filter Include="object">
       <UniqueIdentifier>{87da8058-8e9d-4abf-be22-43ca8b0bc0a1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="spell">
+      <UniqueIdentifier>{7c3e9a21-4b5d-4e6f-9a1b-2c3d4e5f6a7b}</UniqueIdentifier>
+    </Filter>
     <Filter Include="store">
       <UniqueIdentifier>{2f858fe4-6c1a-425e-8310-085e4dcf1f4c}</UniqueIdentifier>
     </Filter>
@@ -147,6 +150,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\test\save\test-item-writer.cpp">
       <Filter>save</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\test\spell\test-spell-info.cpp">
+      <Filter>spell</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\test\system\test-dungeon-record.cpp">
       <Filter>system</Filter>
