@@ -445,6 +445,10 @@ void do_cmd_building(CreatureEntity &creature)
         }
 
         const auto should_leave = is_valid_command ? bldg_process_command(creature, bldg, i) : false;
+
+        // 建物の中ではプレイヤーのターンの処理 (process_player()) が行われず、ターンごとの描き直しの要求が来ないので、
+        // 支払いや報酬で変わる所持金などを反映するよう、コマンドごとにプレイヤーの情報のサブウィンドウを描き直す
+        RedrawingFlagsUpdater::get_instance().set_flag(SubWindowRedrawingFlag::PLAYER);
         handle_stuff_with_inventory_arrangement(creature);
         if (should_leave) {
             break;
