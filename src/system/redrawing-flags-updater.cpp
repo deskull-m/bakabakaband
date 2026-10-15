@@ -109,10 +109,22 @@ void RedrawingFlagsUpdater::set_item_related_sub_window_flags()
         SubWindowRedrawingFlag::INVENTORY,
         SubWindowRedrawingFlag::EQUIPMENT,
         SubWindowRedrawingFlag::PLAYER,
+    };
+    this->sub_window_flags.set(flags);
+    this->request_floor_item_lists_redrawing();
+}
+
+/*!
+ * @brief 床のアイテム (置いた・拾った・数が変わったなど) が変わったときの、床のアイテムを表示するサブウィンドウの描き直しを予約する
+ * @details 足元のアイテムと発見済みのアイテムの一覧を描き直す。
+ */
+void RedrawingFlagsUpdater::request_floor_item_lists_redrawing()
+{
+    static constexpr auto flags_swrf = {
         SubWindowRedrawingFlag::FLOOR_ITEMS,
         SubWindowRedrawingFlag::FOUND_ITEMS,
     };
-    this->sub_window_flags.set(flags);
+    this->sub_window_flags.set(flags_swrf);
 }
 
 /*!

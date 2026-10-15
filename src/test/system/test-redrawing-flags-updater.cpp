@@ -85,3 +85,25 @@ TEST_CASE("RedrawingFlagsUpdater::set_item_related_sub_window_flags requests red
         CHECK(rfu.has(flag));
     }
 }
+
+TEST_CASE("RedrawingFlagsUpdater::request_floor_item_lists_redrawing requests redrawing the windows showing floor items")
+{
+    auto &rfu = RedrawingFlagsUpdater::get_instance();
+    const auto restore = util::make_finalizer([&rfu,
+                                                  floor_items = rfu.has(SubWindowRedrawingFlag::FLOOR_ITEMS),
+                                                  found_items = rfu.has(SubWindowRedrawingFlag::FOUND_ITEMS)] {
+        restore_flag(rfu, SubWindowRedrawingFlag::FLOOR_ITEMS, floor_items);
+        restore_flag(rfu, SubWindowRedrawingFlag::FOUND_ITEMS, found_items);
+    });
+    static constexpr auto flags_swrf = {
+        SubWindowRedrawingFlag::FLOOR_ITEMS,
+        SubWindowRedrawingFlag::FOUND_ITEMS,
+    };
+    rfu.reset_flags(flags_swrf);
+
+    rfu.request_floor_item_lists_redrawing();
+
+    for (const auto flag : flags_swrf) {
+        CHECK(rfu.has(flag));
+    }
+}

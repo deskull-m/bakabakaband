@@ -236,7 +236,7 @@ void exe_movement(CreatureEntity &creature, const Direction &dir, bool do_pickup
     } else if (terrain.flags.has_not(TerrainCharacteristics::MOVE) && terrain.flags.has(TerrainCharacteristics::CAN_FLY) && !creature.has_levitation()) {
         msg_format(_("空を飛ばないと%sの上には行けない。", "You need to fly to go through the %s."), grid.get_terrain(TerrainKind::MIMIC).name.data());
         energy.reset_player_turn();
-        creature.set_running(0);
+        stop_running(creature);
         can_move = false;
     } else if (terrain.flags.has(TerrainCharacteristics::TREE) && !p_can_kill_walls) {
         const auto riding_wild_wood = creature.get_riding() && riding_monrace.wilderness_flags.has(MonsterWildernessType::WILD_WOOD);

@@ -142,7 +142,9 @@ static void drain_essence(CreatureEntity &creature)
 
     /* Apply autodestroy/inscription to the drained item */
     autopick_alter_item(creature, i_idx, true);
-    RedrawingFlagsUpdater::get_instance().request_inventory_arrangement();
+    auto &rfu = RedrawingFlagsUpdater::get_instance();
+    rfu.request_inventory_arrangement();
+    rfu.set_item_related_sub_window_flags();
 }
 
 /*!
@@ -495,7 +497,9 @@ static void add_essence(CreatureEntity &creature, SmithCategoryType mode)
     auto effect_name = Smith::get_effect_name(effect);
 
     _(msg_format("%sに%sの能力を付加しました。", item_name.data(), effect_name), msg_format("You have added ability of %s to %s.", effect_name, item_name.data()));
-    RedrawingFlagsUpdater::get_instance().request_inventory_arrangement();
+    auto &rfu = RedrawingFlagsUpdater::get_instance();
+    rfu.request_inventory_arrangement();
+    rfu.set_item_related_sub_window_flags();
 }
 
 /*!
@@ -520,7 +524,9 @@ static void erase_essence(CreatureEntity &creature)
     Smith(creature).erase_essence(item.get());
 
     msg_print(_("エッセンスを取り去った。", "You removed all essence you have added."));
-    RedrawingFlagsUpdater::get_instance().request_inventory_arrangement();
+    auto &rfu = RedrawingFlagsUpdater::get_instance();
+    rfu.request_inventory_arrangement();
+    rfu.set_item_related_sub_window_flags();
 }
 
 /*!

@@ -20,6 +20,7 @@
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
+#include "system/redrawing-flags-updater.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
 #include <set>
@@ -208,6 +209,7 @@ bool affect_item(CreatureEntity &creature, MONSTER_IDX src_idx, POSITION r, POSI
 
             item.pval = (0 - item.pval);
             item.mark_as_known();
+            RedrawingFlagsUpdater::get_instance().request_floor_item_lists_redrawing();
             if (known && item.marked.has(OmType::FOUND)) {
                 msg_print(_("カチッと音がした！", "Click!"));
                 is_item_affected = true;

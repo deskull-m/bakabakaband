@@ -147,7 +147,9 @@ void building_recharge(CreatureEntity &creature)
 #else
     msg_format("%s^ %s recharged for %d gold.", item_name.data(), ((item->number > 1) ? "were" : "was"), price);
 #endif
-    RedrawingFlagsUpdater::get_instance().request_inventory_arrangement();
+    auto &rfu = RedrawingFlagsUpdater::get_instance();
+    rfu.request_inventory_arrangement();
+    rfu.set_item_related_sub_window_flags();
     creature.sub_au(price);
 }
 

@@ -229,6 +229,7 @@ bool detect_objects_normal(CreatureEntity &creature, POSITION range)
     }
 
     auto detect = false;
+    auto is_newly_found = false;
     for (const auto &item_ptr : floor.o_list) {
         if (!item_ptr->is_valid()) {
             continue;
@@ -243,17 +244,23 @@ bool detect_objects_normal(CreatureEntity &creature, POSITION range)
         }
 
         if (item_ptr->bi_key.tval() != ItemKindType::GOLD) {
+            is_newly_found |= item_ptr->marked.has_not(OmType::FOUND);
             item_ptr->marked.set(OmType::FOUND);
             lite_spot(creature, i_pos);
             detect = true;
         }
     }
 
+    // 歌い続けている間は毎ターン感知するので、新しく見つけたときだけ描き直す
+    if (is_newly_found) {
+        RedrawingFlagsUpdater::get_instance().request_floor_item_lists_redrawing();
+    }
+
+    // 歌い続けている間は、メッセージを最初の数回だけ出す
     if (music_singing(creature, MUSIC_DETECT) && get_singing_count(creature) > 6) {
         detect = false;
     }
     if (detect) {
-        RedrawingFlagsUpdater::get_instance().set_flag(SubWindowRedrawingFlag::FOUND_ITEMS);
         msg_print(_("アイテムの存在を感じとった！", "You sense the presence of objects!"));
     }
 
@@ -295,6 +302,7 @@ bool detect_objects_magic(CreatureEntity &creature, POSITION range)
     }
 
     auto detect = false;
+    auto is_newly_found = false;
     for (const auto &item_ptr : floor.o_list) {
         if (!item_ptr->is_valid() || item_ptr->is_held_by_monster()) {
             continue;
@@ -308,14 +316,18 @@ bool detect_objects_magic(CreatureEntity &creature, POSITION range)
         auto has_bonus = item_ptr->to_a > 0;
         has_bonus |= item_ptr->to_h + item_ptr->to_d > 0;
         if (item_ptr->is_fixed_or_random_artifact() || item_ptr->is_ego() || is_object_magically(item_ptr->bi_key.tval()) || item_ptr->is_spell_book() || has_bonus) {
+            is_newly_found |= item_ptr->marked.has_not(OmType::FOUND);
             item_ptr->marked.set(OmType::FOUND);
             lite_spot(creature, i_pos);
             detect = true;
         }
     }
 
+    if (is_newly_found) {
+        RedrawingFlagsUpdater::get_instance().request_floor_item_lists_redrawing();
+    }
+
     if (detect) {
-        RedrawingFlagsUpdater::get_instance().set_flag(SubWindowRedrawingFlag::FOUND_ITEMS);
         msg_print(_("魔法のアイテムの存在を感じとった！", "You sense the presence of magic objects!"));
     }
 
