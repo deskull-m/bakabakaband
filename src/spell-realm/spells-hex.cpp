@@ -50,6 +50,10 @@ SpellHex::SpellHex(CreatureEntity &creature)
  */
 void SpellHex::stop_all_spells()
 {
+    if (!this->spell_hex_data) {
+        return;
+    }
+
     for (auto spell : this->casting_spells) {
         exe_spell(this->creature, RealmType::HEX, spell, SpellProcessType::STOP);
     }
@@ -73,6 +77,31 @@ void SpellHex::stop_all_spells()
         MainWindowRedrawingFlag::MP,
     };
     rfu.set_flags(flags_mwrf);
+}
+
+/*!
+ * @brief 中断後に再開待ちとなっている呪術を破棄する
+ */
+void SpellHex::discard_interrupted_spells()
+{
+    if (this->spell_hex_data) {
+        this->spell_hex_data->interrupting_spells.clear();
+    }
+}
+
+/*!
+ * @brief 詠唱フラグとは別に継続する我慢・復讐を解除する
+ */
+void SpellHex::clear_revenge()
+{
+    if (!this->spell_hex_data) {
+        return;
+    }
+
+    this->spell_hex_data->revenge_type = SpellHexRevengeType::NONE;
+    this->spell_hex_data->revenge_power = 0;
+    this->spell_hex_data->revenge_turn = 0;
+    RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
 }
 
 /*!

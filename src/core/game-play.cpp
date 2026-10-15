@@ -378,7 +378,7 @@ static void decide_arena_death(CreatureEntity &creature)
     creature.set_leaving(true);
 
     world.set_arena(true);
-    reset_tim_flags(creature);
+    reset_arena_buffs(creature);
     FloorChangeModesStore::get_instace()->set({ FloorChangeMode::SAVE_FLOORS, FloorChangeMode::RANDOM_CONNECT });
     leave_floor(creature);
 }
