@@ -239,7 +239,7 @@ AutopickSearch get_string_for_search(CreatureEntity &creature, const AutopickSea
 /*!
  * @brief Search next line matches for o_ptr
  */
-void search_for_object(CreatureEntity &creature, text_body_type *tb, const ItemEntity *o_ptr, bool forward)
+void search_for_object(CreatureEntity &creature, AutopickTextBody *tb, const ItemEntity *o_ptr, bool forward)
 {
     autopick_type an_entry;
     int bypassed_cy = -1;
@@ -295,7 +295,7 @@ void search_for_object(CreatureEntity &creature, text_body_type *tb, const ItemE
 /*!
  * @brief Search next line matches to the string
  */
-void search_for_string(text_body_type *tb, std::string_view search_str, bool forward)
+void search_for_string(AutopickTextBody *tb, std::string_view search_str, bool forward)
 {
     int bypassed_cy = -1;
     int bypassed_cx = 0;

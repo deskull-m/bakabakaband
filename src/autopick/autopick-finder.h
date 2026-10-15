@@ -6,10 +6,10 @@
 
 class CreatureEntity;
 class ItemEntity;
-struct text_body_type;
+class AutopickTextBody;
 int find_autopick_list(CreatureEntity &creature, const ItemEntity *o_ptr);
-void search_for_object(CreatureEntity &creature, text_body_type *tb, const ItemEntity *o_ptr, bool forward);
-void search_for_string(text_body_type *tb, std::string_view search_str, bool forward);
+void search_for_object(CreatureEntity &creature, AutopickTextBody *tb, const ItemEntity *o_ptr, bool forward);
+void search_for_string(AutopickTextBody *tb, std::string_view search_str, bool forward);
 
 enum class AutopickSearchResult {
     BACK = -1,
