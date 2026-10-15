@@ -288,16 +288,8 @@ void wiz_identify_full_inventory(CreatureEntity &creature)
     }
 
     auto &rfu = RedrawingFlagsUpdater::get_instance();
-    static constexpr auto flags_srf = {
-        InventoryArrangementFlag::COMBINATION,
-        InventoryArrangementFlag::REORDER,
-    };
-    rfu.set_flags(flags_srf);
-    static constexpr auto flags_swrf = {
-        SubWindowRedrawingFlag::INVENTORY,
-        SubWindowRedrawingFlag::EQUIPMENT,
-    };
-    rfu.set_flags(flags_swrf);
+    rfu.request_inventory_arrangement();
+    rfu.set_flag(SubWindowRedrawingFlag::EQUIPMENT);
 }
 
 /*!
@@ -659,13 +651,8 @@ static void wiz_reroll_item(CreatureEntity &creature, ItemEntity *o_ptr)
     *o_ptr = std::move(item);
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(StatusRecalculatingFlag::BONUS);
-    static constexpr auto flags_iaf = {
-        InventoryArrangementFlag::COMBINATION,
-        InventoryArrangementFlag::REORDER,
-    };
-    rfu.set_flags(flags_iaf);
+    rfu.request_inventory_arrangement();
     static constexpr auto flags_swrf = {
-        SubWindowRedrawingFlag::INVENTORY,
         SubWindowRedrawingFlag::EQUIPMENT,
         SubWindowRedrawingFlag::SPELL,
         SubWindowRedrawingFlag::PLAYER,
@@ -797,13 +784,8 @@ void wiz_modify_item(CreatureEntity &creature)
         *item = std::move(modified_item);
         auto &rfu = RedrawingFlagsUpdater::get_instance();
         rfu.set_flag(StatusRecalculatingFlag::BONUS);
-        static constexpr auto flags_iaf = {
-            InventoryArrangementFlag::COMBINATION,
-            InventoryArrangementFlag::REORDER,
-        };
-        rfu.set_flags(flags_iaf);
+        rfu.request_inventory_arrangement();
         static constexpr auto flags_swrf = {
-            SubWindowRedrawingFlag::INVENTORY,
             SubWindowRedrawingFlag::EQUIPMENT,
             SubWindowRedrawingFlag::SPELL,
             SubWindowRedrawingFlag::PLAYER,

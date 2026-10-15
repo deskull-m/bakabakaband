@@ -72,11 +72,7 @@ bool identify_item(CreatureEntity &creature, ItemEntity *o_ptr)
 
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(StatusRecalculatingFlag::BONUS);
-    static constexpr auto flags_iaf = {
-        InventoryArrangementFlag::COMBINATION,
-        InventoryArrangementFlag::REORDER,
-    };
-    rfu.set_flags(flags_iaf);
+    rfu.request_inventory_arrangement();
     rfu.set_item_related_sub_window_flags();
     record_item_name = known_item_name;
     record_turn = AngbandWorld::get_instance().game_turn;

@@ -243,7 +243,7 @@ bool process_un_power(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr)
     }
 
     monap_ptr->o_ptr->pval = !is_magic_mastery || (monap_ptr->o_ptr->pval == 1) ? 0 : monap_ptr->o_ptr->pval - drain;
-    request_inventory_arrangement();
+    RedrawingFlagsUpdater::get_instance().request_inventory_arrangement();
     return true;
 }
 
