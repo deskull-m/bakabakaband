@@ -401,13 +401,7 @@ void process_player(CreatureEntity &creature)
             }
 
             if (creature.is_timewalking() && (creature.get_energy_need() > -1000)) {
-                rfu.set_flag(MainWindowRedrawingFlag::MAP);
-                rfu.set_flag(StatusRecalculatingFlag::MONSTER_STATUSES);
-                static constexpr auto flags_swrf = {
-                    SubWindowRedrawingFlag::OVERHEAD,
-                    SubWindowRedrawingFlag::DUNGEON,
-                };
-                rfu.set_flags(flags_swrf);
+                rfu.request_monster_update_and_map_redrawing();
                 msg_print(_("「時は動きだす…」", "You feel time flowing around you once more."));
                 msg_erase();
                 creature.set_timewalking(false);
