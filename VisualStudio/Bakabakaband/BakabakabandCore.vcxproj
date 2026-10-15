@@ -598,6 +598,7 @@
     <ClCompile Include="..\..\src\monster-floor\monster-drop-generator.cpp" />
     <ClCompile Include="..\..\src\monster\monster-compaction.cpp" />
     <ClCompile Include="..\..\src\monster-floor\monster-death.cpp" />
+    <ClCompile Include="..\..\src\lore\monster-lore-snapshot.cpp" />
     <ClCompile Include="..\..\src\lore\monster-lore.cpp" />
     <ClCompile Include="..\..\src\monster\monster-describer.cpp" />
     <ClCompile Include="..\..\src\monster-floor\monster-generator.cpp" />
@@ -1551,6 +1552,7 @@
     <ClInclude Include="..\..\src\monster-floor\monster-drop-generator.h" />
     <ClInclude Include="..\..\src\monster\monster-compaction.h" />
     <ClInclude Include="..\..\src\monster-floor\monster-death.h" />
+    <ClInclude Include="..\..\src\lore\monster-lore-snapshot.h" />
     <ClInclude Include="..\..\src\lore\monster-lore.h" />
     <ClInclude Include="..\..\src\monster-race\race-flags8.h" />
     <ClInclude Include="..\..\src\monster-race\race-flags-resistance.h" />

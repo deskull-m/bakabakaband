@@ -28,6 +28,9 @@
     <Filter Include="locale">
       <UniqueIdentifier>{b12e46f4-8b51-438b-8c32-54972ab14e8f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="lore">
+      <UniqueIdentifier>{8ca43536-f921-5018-9314-5ef95d1231f2}</UniqueIdentifier>
+    </Filter>
     <Filter Include="mspell">
       <UniqueIdentifier>{f4dbdb43-4dbe-4518-b1ac-3429da4d19b8}</UniqueIdentifier>
     </Filter>
@@ -133,6 +136,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\test\locale\test-character-encoding.cpp">
       <Filter>locale</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\test\lore\test-monster-lore-snapshot.cpp">
+      <Filter>lore</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\test\mspell\test-mspell-projection-table.cpp">
       <Filter>mspell</Filter>
