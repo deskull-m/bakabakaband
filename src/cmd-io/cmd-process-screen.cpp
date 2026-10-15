@@ -354,14 +354,7 @@ static bool update_use_graphics(CreatureEntity &creature)
 
     use_graphics = false;
     reset_visuals(creature);
-    static constexpr auto flags = {
-        MainWindowRedrawingFlag::WIPE,
-        MainWindowRedrawingFlag::BASIC,
-        MainWindowRedrawingFlag::EXTRA,
-        MainWindowRedrawingFlag::MAP,
-        MainWindowRedrawingFlag::EQUIPPY,
-    };
-    RedrawingFlagsUpdater::get_instance().set_flags(flags);
+    RedrawingFlagsUpdater::get_instance().request_whole_main_window_redrawing();
     redraw_stuff(creature);
     return false;
 }
@@ -394,14 +387,7 @@ void do_cmd_save_screen(CreatureEntity &creature)
 
     use_graphics = true;
     reset_visuals(creature);
-    static constexpr auto flags = {
-        MainWindowRedrawingFlag::WIPE,
-        MainWindowRedrawingFlag::BASIC,
-        MainWindowRedrawingFlag::EXTRA,
-        MainWindowRedrawingFlag::MAP,
-        MainWindowRedrawingFlag::EQUIPPY,
-    };
-    RedrawingFlagsUpdater::get_instance().set_flags(flags);
+    RedrawingFlagsUpdater::get_instance().request_whole_main_window_redrawing();
     redraw_stuff(creature);
 }
 
