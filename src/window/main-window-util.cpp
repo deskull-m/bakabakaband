@@ -2,7 +2,6 @@
 #include "flavor/flavor-describer.h"
 #include "flavor/object-flavor-types.h"
 #include "floor/geometry.h"
-#include "game-option/map-screen-options.h"
 #include "game-option/special-options.h"
 #include "grid/grid.h"
 #include "player/player-status.h"
@@ -168,9 +167,6 @@ void display_map(CreatureEntity &creature, int *cy, int *cx)
 
     byte tp;
 
-    bool old_view_special_lite = view_special_lite;
-    bool old_view_granite_lite = view_granite_lite;
-
     auto border_width = use_bigtile ? 2 : 1; //!< @note 枠線幅
     auto [wid, hgt] = term_get_size();
     hgt -= 2;
@@ -190,8 +186,6 @@ void display_map(CreatureEntity &creature, int *cy, int *cx)
     const auto &floor = *creature.get_floor();
     const auto yrat = (floor.height + hgt - 1) / hgt;
     const auto xrat = (floor.width + wid - 1) / wid;
-    view_special_lite = false;
-    view_granite_lite = false;
 
     using std::vector;
     vector<vector<TERM_COLOR>> ma(hgt + 2, vector<TERM_COLOR>(wid + 2, TERM_WHITE));
@@ -298,9 +292,6 @@ void display_map(CreatureEntity &creature, int *cy, int *cx)
     } else {
         (*cx) = (creature.x / xrat + 1) * 2 + COL_MAP;
     }
-
-    view_special_lite = old_view_special_lite;
-    view_granite_lite = old_view_granite_lite;
 }
 
 DisplaySymbol set_term_color(CreatureEntity &creature, const Pos2D &pos, const DisplaySymbol &symbol_orig)

@@ -18,6 +18,7 @@
 #include "term/term-color-types.h"
 #include "util/bit-flags-calculator.h"
 #include "util/finalizer.h"
+#include "view/display-map.h"
 #include "view/display-messages.h"
 #include "view/display-player.h"
 #include "window/display-sub-windows.h"
@@ -25,6 +26,7 @@
 #include "window/main-window-row-column.h"
 #include "window/main-window-stat-poster.h"
 #include "window/main-window-util.h"
+#include "window/overview-map-cache.h"
 #include "world/world-turn-processor.h"
 #include "world/world.h"
 
@@ -278,17 +280,53 @@ void redraw_stuff(CreatureEntity &creature)
 }
 
 /*!
+ * @brief ダンジョン全体図の表示が変わっていたら、描き直しを要求する
+ * @param creature クリーチャーへの参照
+ * @details
+ * lite_spot() は全体図のグリッドに印を付けるだけなので、印を付けたグリッドを求め直して比べる。
+ * 縮小するときは優先度で記号を選ぶので、メイン画面の記号が変わらなくても全体図の表示が変わることがある
+ * (透明なモンスターが現れて、記号はそのまま優先度だけ変わったときなど)。
+ * 次の場合は求め直さない。
+ * - フロアを作っている (作り終えたら全てのサブウィンドウの描き直しを要求する)
+ * - すでに要求されている (描くときに求め直す)
+ * - 自動拾いの対象を表示している (M コマンドの間は、サブウィンドウの全体図を通常の表示のままにする)
+ * - マップ全体の描き直しの要求が残っている (描くときに全グリッドを求め直すので、二度求めないようにする)。
+ *   画面の保存中は print_map() が呼ばれずに要求が残るので、印を付けたグリッドがあるか、
+ *   表示が変わったと覚えていれば描き直しを要求する
+ */
+static void request_overhead_redrawing_if_changed(CreatureEntity &creature)
+{
+    if (!AngbandWorld::get_instance().character_dungeon) {
+        return;
+    }
+
+    auto &rfu = RedrawingFlagsUpdater::get_instance();
+    if (rfu.has(SubWindowRedrawingFlag::OVERHEAD) || display_autopick.any()) {
+        return;
+    }
+
+    auto &overview_map_cache = OverviewMapCache::get_instance();
+    if (rfu.has(MainWindowRedrawingFlag::MAP)) {
+        if (overview_map_cache.has_dirty_grids() || overview_map_cache.has_changed()) {
+            rfu.set_flag(SubWindowRedrawingFlag::OVERHEAD);
+        }
+
+        return;
+    }
+
+    overview_map_cache.update(creature);
+    if (overview_map_cache.has_changed()) {
+        rfu.set_flag(SubWindowRedrawingFlag::OVERHEAD);
+    }
+}
+
+/*!
  * @brief SubWindowRedrawingFlag のフラグに応じた更新をまとめて行う
  * @param creature クリーチャーへの参照
  * @param include_deferred defer_map_subwindows で遅らせている地図のサブウィンドウも更新するならtrue
  */
 static void update_sub_windows(CreatureEntity &creature, bool include_deferred)
 {
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    if (!rfu.any_sub()) {
-        return;
-    }
-
     EnumClassFlagGroup<SubWindowRedrawingFlag> target_flags{};
     for (auto i = 0U; i < angband_terms.size(); ++i) {
         if ((angband_terms[i] == nullptr) || angband_terms[i]->never_fresh) {
@@ -298,8 +336,19 @@ static void update_sub_windows(CreatureEntity &creature, bool include_deferred)
         target_flags.set(g_window_flags[i]);
     }
 
+    // 地図はフロア全体を描き直すため重い。フラグは残し、ターンの区切りか入力待ちでまとめて描く
+    const auto is_map_deferred = defer_map_subwindows && !include_deferred;
+    if (!is_map_deferred && target_flags.has(SubWindowRedrawingFlag::OVERHEAD)) {
+        request_overhead_redrawing_if_changed(creature);
+    }
+
+    auto &rfu = RedrawingFlagsUpdater::get_instance();
+    if (!rfu.any_sub()) {
+        return;
+    }
+
     auto window_flags = rfu.get_sub_intersection(target_flags);
-    if (defer_map_subwindows && !include_deferred) {
+    if (is_map_deferred) {
         // 地図はフロア全体を描き直すため重い。フラグは残し、ターンの区切りか入力待ちでまとめて描く
         window_flags.reset(SubWindowRedrawingFlag::OVERHEAD).reset(SubWindowRedrawingFlag::DUNGEON);
     }

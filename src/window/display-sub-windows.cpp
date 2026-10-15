@@ -51,6 +51,7 @@
 #include "view/object-describer.h"
 #include "window/main-window-equipments.h"
 #include "window/main-window-util.h"
+#include "window/overview-map-cache.h"
 #include "world/world.h"
 #include <algorithm>
 #include <concepts>
@@ -465,6 +466,7 @@ void fix_overhead(CreatureEntity &creature)
                 display_map(creature, &cy, &cx);
             }
         });
+    OverviewMapCache::get_instance().reset_changed();
 }
 
 /*!
