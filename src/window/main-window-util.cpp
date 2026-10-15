@@ -17,6 +17,7 @@
 #include "term/term-color-types.h"
 #include "view/display-map.h"
 #include "view/display-symbol.h"
+#include "view/map-info-cache.h"
 #include "window/overview-map-cache.h"
 #include "world/world.h"
 #include <string>
@@ -70,9 +71,13 @@ void print_field(std::string_view info, TERM_LEN row, TERM_LEN col)
  */
 void print_map(CreatureEntity &creature)
 {
-    // マップ全体を描き直すような変化は、ダンジョン全体図でも全グリッドを求め直す。
-    // 画面の保存中に残った描き直しの要求は、OverviewMapCache::update() の側で拾う
+    // マップ全体を描き直すような変化は、ダンジョン全体図などでも全グリッドを求め直す。
+    // 画面の保存中に残った描き直しの要求は、OverviewMapCache::update() や MapInfoCache::prepare() の側で拾う
     OverviewMapCache::get_instance().mark_all_dirty();
+    // 描いたグリッドの結果を覚えられるよう、覚える配列もフロアの大きさに合わせておく
+    auto &map_info_cache = MapInfoCache::get_instance();
+    map_info_cache.prepare(creature);
+    map_info_cache.invalidate_all();
 
     auto [wid, hgt] = term_get_size();
     wid -= COL_MAP + 2;
@@ -99,6 +104,7 @@ void print_map(CreatureEntity &creature)
     for (auto y = ymin; y <= ymax; y++) {
         for (auto x = xmin; x <= xmax; x++) {
             auto symbol_pair = map_info(creature, { y, x });
+            map_info_cache.store({ y, x }, symbol_pair);
             symbol_pair.symbol_foreground.color = monochrome_color.value_or(symbol_pair.symbol_foreground.color);
 
             term_queue_bigchar(panel_col_of(x), y - panel_row_prt, symbol_pair);

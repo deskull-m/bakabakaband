@@ -47,6 +47,7 @@
 #include "view/display-map.h"
 #include "view/display-messages.h"
 #include "view/display-player.h"
+#include "view/map-info-cache.h"
 #include "view/object-describer.h"
 #include "window/main-window-equipments.h"
 #include "window/main-window-util.h"
@@ -475,6 +476,7 @@ static void display_dungeon(CreatureEntity &creature)
     const auto &floor = *creature.get_floor();
     const auto p_pos = creature.get_position();
     const auto monochrome_color = get_monochrome_display_color(creature);
+    auto &map_info_cache = MapInfoCache::get_instance();
     for (auto x = p_pos.x - game_term->wid / 2 + 1; x <= p_pos.x + game_term->wid / 2; x++) {
         for (auto y = p_pos.y - game_term->hgt / 2 + 1; y <= p_pos.y + game_term->hgt / 2; y++) {
             const Pos2D pos(y, x);
@@ -486,7 +488,7 @@ static void display_dungeon(CreatureEntity &creature)
                 continue;
             }
 
-            auto symbol_pair = map_info(creature, pos);
+            auto symbol_pair = map_info_cache.get(creature, pos);
             symbol_pair.symbol_foreground.color = monochrome_color.value_or(symbol_pair.symbol_foreground.color);
             term_queue_char(pos_drawing.x, pos_drawing.y, symbol_pair);
         }
@@ -499,6 +501,8 @@ static void display_dungeon(CreatureEntity &creature)
  */
 void fix_dungeon(CreatureEntity &creature)
 {
+    // 自分の周囲を表示するサブウィンドウが複数あっても、確かめるのは 1 回にする
+    MapInfoCache::get_instance().prepare(creature);
     display_sub_windows(SubWindowRedrawingFlag::DUNGEON,
         [&creature] {
             display_dungeon(creature);

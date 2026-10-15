@@ -71,6 +71,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\src\stdafx.cpp" />
     <ClCompile Include="..\..\src\test\test-main.cpp" />
+    <ClCompile Include="..\..\src\test\view\test-map-info-cache.cpp" />
     <ClCompile Include="..\..\src\test\view\test-map-terrain-visibility.cpp" />
     <ClCompile Include="..\..\src\test\window\test-overview-map-cache.cpp">
       <Filter>window</Filter>
