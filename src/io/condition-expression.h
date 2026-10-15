@@ -19,5 +19,6 @@ enum class ConditionExpressionError {
     INVALID_NUMBER,
 };
 
+tl::optional<int> parse_condition_expression_integer(std::string_view text);
 tl::expected<std::string, ConditionExpressionError> evaluate_condition_expression_checked(std::string_view expr, const ExpressionVariableResolver &resolve);
 std::string evaluate_condition_expression(std::string_view expr, const ExpressionVariableResolver &resolve);

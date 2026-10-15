@@ -134,14 +134,7 @@ int ConditionExpressionEvaluator::parse_number(std::string_view arg)
         return 0;
     }
 
-    if (arg.starts_with('+')) {
-        arg.remove_prefix(1);
-        if (arg.empty() || arg.starts_with('-') || arg.starts_with('+')) {
-            this->record_error(ConditionExpressionError::INVALID_NUMBER);
-            return 0;
-        }
-    }
-    const auto number = str_to_num<int>(arg);
+    const auto number = parse_condition_expression_integer(arg);
     if (!number) {
         this->record_error(ConditionExpressionError::INVALID_NUMBER);
     }
@@ -270,4 +263,20 @@ tl::expected<std::string, ConditionExpressionError> evaluate_condition_expressio
 std::string evaluate_condition_expression(std::string_view expr, const ExpressionVariableResolver &resolve)
 {
     return evaluate_condition_expression_checked(expr, resolve).value_or("0");
+}
+
+/*!
+ * @brief 条件式と変数の数値部分で共有する10進整数の文法
+ * @details intの範囲・文字列全体を要求する。先頭の0・負数・単独の先頭+を許す。
+ * 空文字列、空白、余分な符号や末尾の文字は拒否する。
+ */
+tl::optional<int> parse_condition_expression_integer(std::string_view text)
+{
+    if (text.starts_with('+')) {
+        text.remove_prefix(1);
+        if (text.starts_with('-') || text.starts_with('+')) {
+            return tl::nullopt;
+        }
+    }
+    return str_to_num<int>(text);
 }

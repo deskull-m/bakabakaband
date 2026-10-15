@@ -343,3 +343,15 @@ TEST_CASE("evaluate_condition_expression reads a two-byte character whose trail 
     CHECK(evaluate(cat("a", DAME_KANA_ZO, "b")) == cat("a", DAME_KANA_ZO, "b"));
 }
 #endif
+
+TEST_CASE("condition integer grammar is shared by expressions and variable suffixes")
+{
+    for (const auto *text : { "0", "0001", "+0001", "-1", "2147483647", "-2147483648" }) {
+        CAPTURE(text);
+        CHECK(parse_condition_expression_integer(text));
+    }
+    for (const auto *text : { "", "+", "++1", "+-1", " 1", "1 ", "1x", "2147483648", "-2147483649" }) {
+        CAPTURE(text);
+        CHECK_FALSE(parse_condition_expression_integer(text));
+    }
+}
