@@ -1606,10 +1606,13 @@ hengband_test_SOURCES = \
 	test/test-main.cpp \
 	test/test-win-stubs.cpp \
 	test/scoped-rng.h \
+	test/string-helpers.h \
 	\
 	test/autopick/test-autopick-editor-util.cpp \
 	\
 	test/cmd-io/test-cmd-autopick.cpp \
+	\
+	test/flavor/test-flavor-util.cpp \
 	\
 	test/game-option/test-runtime-arguments.cpp \
 	\
