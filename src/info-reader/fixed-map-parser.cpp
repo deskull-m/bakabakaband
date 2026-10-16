@@ -229,7 +229,8 @@ static tl::optional<std::string> resolve_town_map_variable(CreatureEntity &creat
             return tl::nullopt;
         }
         const auto &system = AngbandSystem::get_instance();
-        return std::to_string(static_cast<int>(system.get_seed_town()) % *divisor);
+        // 符号付きへ変換すると seed の最上位ビットが立つ場合に剰余が負になるため、符号なしのまま剰余を取る
+        return std::to_string(system.get_seed_town() % static_cast<uint32_t>(*divisor));
     }
     if (name == "VARIANT") {
         return variant;
