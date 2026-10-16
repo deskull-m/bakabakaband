@@ -266,6 +266,9 @@ void wiz_modify_item_activation(CreatureEntity &creature)
     auto act_idx = *act_id;
     item->art_flags.set(TR_ACTIVATE);
     item->activation_id = act_idx;
+    auto &rfu = RedrawingFlagsUpdater::get_instance();
+    rfu.request_inventory_arrangement();
+    rfu.set_item_related_sub_window_flags();
 }
 
 /*!

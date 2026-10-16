@@ -2620,6 +2620,14 @@ void update_creature(CreatureEntity &creature)
     auto &floor = *creature.get_floor();
     if (rfu.has(StatusRecalculatingFlag::BONUS)) {
         rfu.reset_flag(StatusRecalculatingFlag::BONUS);
+
+        // 矢弾・投擲の威力、運搬中・両手持ちの表示、騎乗中のランスのダイスは、能力の修正 (能力値・射撃・騎乗・集中度など) で変わる
+        static constexpr auto flags_swrf = {
+            SubWindowRedrawingFlag::INVENTORY,
+            SubWindowRedrawingFlag::EQUIPMENT,
+        };
+        rfu.set_flags(flags_swrf);
+
         PlayerAlignment(creature).update_alignment();
         PlayerSkill ps(creature);
         ps.apply_special_weapon_skill_max_values();
