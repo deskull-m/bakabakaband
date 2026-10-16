@@ -1624,6 +1624,8 @@ hengband_test_SOURCES = \
 	\
 	test/mspell/test-mspell-projection-table.cpp \
 	\
+	test/object/test-object-info.cpp \
+	\
 	test/store/test-pricing.cpp \
 	test/store/test-store-screen.cpp \
 	test/store/test-store-util.cpp \

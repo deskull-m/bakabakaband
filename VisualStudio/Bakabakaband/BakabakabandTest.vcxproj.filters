@@ -19,6 +19,9 @@
     <Filter Include="mspell">
       <UniqueIdentifier>{f4dbdb43-4dbe-4518-b1ac-3429da4d19b8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="object">
+      <UniqueIdentifier>{87da8058-8e9d-4abf-be22-43ca8b0bc0a1}</UniqueIdentifier>
+    </Filter>
     <Filter Include="store">
       <UniqueIdentifier>{2f858fe4-6c1a-425e-8310-085e4dcf1f4c}</UniqueIdentifier>
     </Filter>
@@ -75,6 +78,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\test\mspell\test-mspell-projection-table.cpp">
       <Filter>mspell</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\test\object\test-object-info.cpp">
+      <Filter>object</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\test\store\test-pricing.cpp">
       <Filter>store</Filter>
