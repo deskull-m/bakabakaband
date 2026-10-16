@@ -77,6 +77,7 @@
     <ClCompile Include="..\..\src\test\info-reader\test-wilderness-reader.cpp" />
     <ClCompile Include="..\..\src\test\io\test-interpret-pref-file.cpp" />
     <ClCompile Include="..\..\src\test\io\test-macro-configurations-store.cpp" />
+    <ClCompile Include="..\..\src\test\io\test-pref-file-expressor.cpp" />
     <ClCompile Include="..\..\src\test\mspell\test-mspell-projection-table.cpp" />
     <ClCompile Include="..\..\src\test\object\test-object-info.cpp" />
     <ClCompile Include="..\..\src\test\store\test-pricing.cpp" />
