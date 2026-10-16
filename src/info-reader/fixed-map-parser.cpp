@@ -282,7 +282,8 @@ static std::string parse_fixed_map_expression(CreatureEntity &creature, char **s
 
 #ifdef JP
     while (iskanji(*s) || (isprint(*s) && !angband_strchr(" []", *s))) {
-        if (iskanji(*s)) {
+        // 文字列が全角文字の前半バイトで終わっている場合は、後半バイトが無いので1バイトだけ進める
+        if (iskanji(*s) && (s[1] != '\0')) {
             s++;
         }
         s++;

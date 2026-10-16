@@ -134,7 +134,9 @@ char *angband_strchr(const char *ptr, char ch)
         }
 
 #ifdef JP
-        if (iskanji(*ptr)) {
+        // 文字列が全角文字の前半バイトで終わっている場合、後半バイトを読み飛ばすと
+        // NUL 終端を越えて範囲外を読んでしまうので、終端でないことを確かめる
+        if (iskanji(*ptr) && (*(ptr + 1) != '\0')) {
             ptr++;
         }
 #endif

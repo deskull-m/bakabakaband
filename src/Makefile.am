@@ -1625,6 +1625,7 @@ hengband_test_SOURCES = \
 	\
 	test/io/test-interpret-pref-file.cpp \
 	test/io/test-macro-configurations-store.cpp \
+	test/io/test-pref-file-expressor.cpp \
 	\
 	test/mspell/test-mspell-projection-table.cpp \
 	\
