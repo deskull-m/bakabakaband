@@ -168,6 +168,14 @@ void display_map(CreatureEntity &creature, int *cy, int *cx)
         wid = wid / 2 - 1;
     }
 
+    // 枠の内側に 1 マスも描けないほど狭い端末には描かない (2 倍幅のタイルで幅 15〜19 桁のサブウィンドウなど)。
+    // wid が 0 だと縮小比率の割り算がゼロ除算になり、負だと作業領域の範囲外に書き込む。
+    if ((wid < 1) || (hgt < 1)) {
+        *cy = ROW_MAP;
+        *cx = COL_MAP;
+        return;
+    }
+
     const auto &floor = *creature.get_floor();
     const auto yrat = (floor.height + hgt - 1) / hgt;
     const auto xrat = (floor.width + wid - 1) / wid;
