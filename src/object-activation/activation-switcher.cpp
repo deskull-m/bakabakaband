@@ -65,7 +65,7 @@ std::pair<bool, std::shared_ptr<ItemEntity>> switch_activation(CreatureEntity &c
     case RandomArtActType::BA_COLD_2:
         return { activate_ball_cold_2(creature), nullptr };
     case RandomArtActType::BA_COLD_3:
-        return { activate_ball_cold_2(creature), nullptr };
+        return { activate_ball_cold_3(creature), nullptr };
     case RandomArtActType::BA_FIRE_1:
         return { activate_ball_fire_1(creature), nullptr };
     case RandomArtActType::BA_FIRE_2:
