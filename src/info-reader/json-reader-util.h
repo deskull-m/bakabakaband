@@ -7,6 +7,7 @@
 #include <nlohmann/json.hpp>
 #include <string_view>
 #include <tl/optional.hpp>
+#include <type_traits>
 #include <utility>
 
 class Dice;
@@ -29,6 +30,7 @@ errr info_validate_json_array(const nlohmann::json &root, std::string_view key, 
  * @param is_required 必須かどうか。
  * 必須でJSON Objectがnullの場合はエラーを返す。必須でない場合は何もせずに終了する。
  * @param range 取得した値の範囲を指定する。範囲外の値が取得された場合はエラーを返す。
+ * range の指定にかかわらず格納先の型 (enum は基底型) の表現範囲も検証する。
  * @return エラーコード
  */
 template <IntegralOrEnum T>
@@ -44,9 +46,16 @@ errr info_set_integer(const nlohmann::json &json, T &data, bool is_required, tl:
     // 範囲チェックは格納先の型へ変換する前に行う。変換してから比べると、
     // 格納先の型で表現できない値が切り詰められて範囲内に収まり、チェックをすり抜ける
     // (例: uint8_t への 300 は 44 になり Range(0, 255) を通ってしまう)
+    const auto fits_destination = [](auto value) {
+        if constexpr (std::is_enum_v<T>) {
+            return std::in_range<std::underlying_type_t<T>>(value);
+        } else {
+            return std::in_range<T>(value);
+        }
+    };
     if (json.is_number_unsigned()) {
         const auto value = json.get<nlohmann::json::number_unsigned_t>();
-        if (range && (std::cmp_less(value, range->first) || std::cmp_greater(value, range->second))) {
+        if (!fits_destination(value) || (range && (std::cmp_less(value, range->first) || std::cmp_greater(value, range->second)))) {
             return PARSE_ERROR_INVALID_FLAG;
         }
 
@@ -55,7 +64,7 @@ errr info_set_integer(const nlohmann::json &json, T &data, bool is_required, tl:
     }
 
     const auto value = json.get<nlohmann::json::number_integer_t>();
-    if (range && (value < range->first || value > range->second)) {
+    if (!fits_destination(value) || (range && (value < range->first || value > range->second))) {
         return PARSE_ERROR_INVALID_FLAG;
     }
 
