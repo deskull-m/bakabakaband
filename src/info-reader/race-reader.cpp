@@ -183,7 +183,15 @@ errr RaceReader::set_mon_symbol(const nlohmann::json &symbol_data, MonraceDefini
         return PARSE_ERROR_GENERIC;
     }
 
-    monrace.symbol_definition = { color->second, character_obj.get<std::string>().front() };
+    const auto character = character_obj.get<std::string>();
+    if (character.empty()) {
+        return PARSE_ERROR_GENERIC;
+    }
+    if (character.size() != 1) {
+        return PARSE_ERROR_INVALID_VALUE;
+    }
+
+    monrace.symbol_definition = { color->second, character.front() };
     return PARSE_ERROR_NONE;
 }
 
@@ -1857,7 +1865,10 @@ errr RaceReader::read()
         return PARSE_ERROR_TOO_FEW_ARGUMENTS;
     }
 
-    const auto monrace_id_int = mon_data["id"].get<int>();
+    int monrace_id_int;
+    if (const auto err = info_set_integer(mon_data["id"], monrace_id_int, true, Range(0, 9999))) {
+        return err;
+    }
     if (monrace_id_int < error_idx) {
         return PARSE_ERROR_NON_SEQUENTIAL_RECORDS;
     }
