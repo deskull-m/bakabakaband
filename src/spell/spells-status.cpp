@@ -490,11 +490,7 @@ bool restore_mana(CreatureEntity &creature, bool magic_eater)
     creature.current_mp_frac = 0;
     msg_print(_("頭がハッキリとした。", "You feel your head clear."));
     rfu.set_flag(MainWindowRedrawingFlag::MP);
-    static constexpr auto flags_swrf = {
-        SubWindowRedrawingFlag::SPELL,
-        SubWindowRedrawingFlag::PLAYER,
-    };
-    rfu.set_flags(flags_swrf);
+    rfu.set_flag(SubWindowRedrawingFlag::PLAYER);
     return true;
 }
 

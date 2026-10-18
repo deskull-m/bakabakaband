@@ -250,8 +250,6 @@ void RedrawingFlagsUpdater::fill_up_sub_flags()
 void RedrawingFlagsUpdater::request_autopick_inscription()
 {
     static constexpr auto flags_swrf = {
-        SubWindowRedrawingFlag::INVENTORY,
-        SubWindowRedrawingFlag::EQUIPMENT,
         SubWindowRedrawingFlag::FLOOR_ITEMS,
         SubWindowRedrawingFlag::FOUND_ITEMS,
     };

@@ -641,11 +641,7 @@ void do_cmd_snipe(CreatureEntity &creature)
         MainWindowRedrawingFlag::MP,
     };
     rfu.set_flags(flags_mwrf);
-    static constexpr auto flags_swrf = {
-        SubWindowRedrawingFlag::PLAYER,
-        SubWindowRedrawingFlag::SPELL,
-    };
-    rfu.set_flags(flags_swrf);
+    rfu.set_flag(SubWindowRedrawingFlag::PLAYER);
 }
 
 /*!

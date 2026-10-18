@@ -39,7 +39,6 @@ static int exe_curse_removal(CreatureEntity &creature, int all)
         o_ptr->ident.set(IdentificationFlag::SENSE);
         o_ptr->feeling = FEEL_NONE;
         rfu.set_flag(StatusRecalculatingFlag::BONUS);
-        rfu.set_flag(SubWindowRedrawingFlag::EQUIPMENT);
         count++;
     }
 

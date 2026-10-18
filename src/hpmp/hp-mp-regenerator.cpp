@@ -198,11 +198,7 @@ void regenmana(CreatureEntity &creature, MANA_POINT upkeep_factor, MANA_POINT re
     if (old_current_mp != creature.get_current_mp()) {
         auto &rfu = RedrawingFlagsUpdater::get_instance();
         rfu.set_flag(MainWindowRedrawingFlag::MP);
-        static constexpr auto flags = {
-            SubWindowRedrawingFlag::PLAYER,
-            SubWindowRedrawingFlag::SPELL,
-        };
-        rfu.set_flags(flags);
+        rfu.set_flag(SubWindowRedrawingFlag::PLAYER);
         wild_regen = 20;
     }
 }

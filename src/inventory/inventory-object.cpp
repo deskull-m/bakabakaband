@@ -65,11 +65,6 @@ void inven_item_increase(CreatureEntity &creature, INVENTORY_IDX i_idx, ITEM_NUM
     };
     rfu.set_flags(flags_srf);
     rfu.set_flag(InventoryArrangementFlag::COMBINATION);
-    static constexpr auto flags_swrf = {
-        SubWindowRedrawingFlag::INVENTORY,
-        SubWindowRedrawingFlag::EQUIPMENT,
-    };
-    rfu.set_flags(flags_swrf);
     if (o_ptr->number || !creature.get_timed_effect(CreatureTimedEffect::ELE_ATTACK)) {
         return;
     }
@@ -110,11 +105,7 @@ void inven_item_optimize(CreatureEntity &creature, INVENTORY_IDX i_idx)
             StatusRecalculatingFlag::MP,
         };
         rfu.set_flags(flags_srf);
-        static constexpr auto flags_swrf = {
-            SubWindowRedrawingFlag::EQUIPMENT,
-            SubWindowRedrawingFlag::SPELL,
-        };
-        rfu.set_flags(flags_swrf);
+        rfu.set_flag(SubWindowRedrawingFlag::SPELL);
         return;
     }
 
@@ -295,10 +286,6 @@ int16_t store_item_to_inventory(CreatureEntity &creature, ItemEntity *o_ptr)
 
     ItemEntity *j_ptr;
     auto &rfu = RedrawingFlagsUpdater::get_instance();
-    static constexpr auto flags_swrf = {
-        SubWindowRedrawingFlag::INVENTORY,
-        SubWindowRedrawingFlag::PLAYER,
-    };
     for (const auto i_idx : INVEN_PACK_SLOTS) {
         j_ptr = creature.inventory[i_idx].get();
         if (!j_ptr->is_valid()) {
@@ -309,7 +296,7 @@ int16_t store_item_to_inventory(CreatureEntity &creature, ItemEntity *o_ptr)
         if (j_ptr->is_similar(*o_ptr)) {
             j_ptr->absorb(*o_ptr);
             rfu.set_flag(StatusRecalculatingFlag::BONUS);
-            rfu.set_flags(flags_swrf);
+            rfu.set_flag(SubWindowRedrawingFlag::PLAYER);
             return enum2i(i_idx);
         }
     }
@@ -344,7 +331,7 @@ int16_t store_item_to_inventory(CreatureEntity &creature, ItemEntity *o_ptr)
 
     rfu.set_flag(StatusRecalculatingFlag::BONUS);
     rfu.request_inventory_arrangement();
-    rfu.set_flags(flags_swrf);
+    rfu.set_flag(SubWindowRedrawingFlag::PLAYER);
     return i;
 }
 

@@ -425,11 +425,7 @@ void do_cmd_mind(CreatureEntity &creature)
     creature.plus_incident_tree("USE_MIND", 1);
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(MainWindowRedrawingFlag::MP);
-    static constexpr auto flags = {
-        SubWindowRedrawingFlag::PLAYER,
-        SubWindowRedrawingFlag::SPELL,
-    };
-    rfu.set_flags(flags);
+    rfu.set_flag(SubWindowRedrawingFlag::PLAYER);
 }
 
 static MindKindType decide_use_mind_browse(CreatureEntity &creature)
