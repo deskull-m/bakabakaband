@@ -42,6 +42,7 @@
 #include "player/eldritch-horror.h"
 #include "player/player-skill.h"
 #include "player/special-defense-types.h"
+#include "realm/realm-song.h"
 #include "spell-kind/spells-random.h"
 #include "spell-realm/spells-crusade.h"
 #include "spell-realm/spells-hex.h"
@@ -341,8 +342,9 @@ void process_player(CreatureEntity &creature)
                 rfu.set_flag(MainWindowRedrawingFlag::MAP);
             }
 
-            // 感知の印は下で行動ごとに外すので、途切れないよう外す前に感知し直す
+            // 感知の印は下で行動ごとに外すので、途切れないよう外す前に感知し直すか、印を保つ
             check_emission(creature);
+            keep_detection_song_marks(creature);
             for (MONSTER_IDX m_idx = 1; m_idx < creature.get_floor()->m_max; m_idx++) {
                 auto &monster = creature.get_floor()->m_list[m_idx];
                 if (!monster.is_valid()) {
