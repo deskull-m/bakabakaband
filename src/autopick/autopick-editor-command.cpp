@@ -94,17 +94,10 @@ ape_quittance do_editor_command(CreatureEntity &creature, text_body_type *tb, in
             if (len < tb->cx) {
                 tb->cx = len;
             }
-#ifdef JP
-            for (auto i = 0; (*tb->lines_list[tb->cy])[i] != '\0'; i++) {
-                if (iskanji((*tb->lines_list[tb->cy])[i])) {
-                    i++;
-                    if (i == tb->cx) {
-                        tb->cx--;
-                        break;
-                    }
-                }
+
+            if (tb->is_cursor_on_second_byte_of_kanji()) {
+                tb->cx--;
             }
-#endif
         } else if (tb->cy > 0) {
             tb->cy--;
             tb->cx = tb->lines_list[tb->cy]->length();
@@ -272,8 +265,8 @@ ape_quittance do_editor_command(CreatureEntity &creature, text_body_type *tb, in
 
         for (auto i = 0U; i < tb->yank.size(); ++i) {
             const std::string_view line(*tb->lines_list[tb->cy]);
-            std::string buf(line.substr(0, tb->cx));
-            buf.append(tb->yank[i], 0, MAX_LINELEN - buf.length() - 1);
+            // 行の上限を超える分は、2バイト文字を分断しないように切り詰める
+            auto buf = str_substr(std::string(line.substr(0, tb->cx)) + tb->yank[i], 0, MAX_LINELEN - 1);
 
             const auto is_last_line = i + 1 == tb->yank.size();
             if (!is_last_line || tb->yank_eol) {
@@ -289,9 +282,8 @@ ape_quittance do_editor_command(CreatureEntity &creature, text_body_type *tb, in
 
             const auto rest = line.substr(tb->cx);
             tb->cx = buf.length();
-            buf.append(rest, 0, MAX_LINELEN - buf.length() - 1);
-
-            tb->lines_list[tb->cy] = std::make_unique<std::string>(std::move(buf));
+            buf.append(rest);
+            tb->lines_list[tb->cy] = std::make_unique<std::string>(str_substr(std::move(buf), 0, MAX_LINELEN - 1));
             break;
         }
 
@@ -418,8 +410,7 @@ ape_quittance do_editor_command(CreatureEntity &creature, text_body_type *tb, in
             break;
         }
 
-        const auto mb_chars = str_find_all_multibyte_chars(*tb->lines_list[tb->cy]);
-        const auto delete_bytes = mb_chars.contains(tb->cx - 2) ? 2 : 1;
+        const auto delete_bytes = is_second_byte_of_kanji(*tb->lines_list[tb->cy], tb->cx - 1) ? 2 : 1;
         tb->cx -= delete_bytes;
         tb->lines_list[tb->cy]->erase(tb->cx, delete_bytes);
         tb->dirty_line = tb->cy;
