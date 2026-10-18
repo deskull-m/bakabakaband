@@ -1,6 +1,7 @@
 #pragma once
 
 #include "mind/drs-types.h"
+#include "mspell/mspell-util.h"
 #include "system/angband.h"
 #include <functional>
 #include <type_traits>
@@ -20,7 +21,7 @@ public:
         static_assert(std::is_invocable_r<bool, decltype(output), CreatureEntity &, MONSTER_IDX, MONSTER_IDX, int>::value);
     }
     MSpellMessageData(const mspell_cast_msg_blind &msg_string);
-    MSpellMessageData(const std::string_view &blind, const std::string_view &to_player, const std::string_view &to_monster);
+    MSpellMessageData(MSpellMessageFormat blind, MSpellMessageFormat to_player, MSpellMessageFormat to_monster);
     std::function<bool(CreatureEntity &, MONSTER_IDX, MONSTER_IDX, int)> output;
 };
 
