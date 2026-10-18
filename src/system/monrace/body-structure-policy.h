@@ -26,9 +26,10 @@ public:
     static constexpr int SLOT_COUNT = INVEN_TOTAL - INVEN_MAIN_HAND;
     using SlotMask = std::bitset<SLOT_COUNT>;
 
-    BodySlotPolicy(SlotMask mask = SlotMask{}, std::vector<ExtendedSlotType> extended = {})
+    BodySlotPolicy(SlotMask mask = SlotMask{}, std::vector<ExtendedSlotType> extended = {}, bool armament_capable = false)
         : allowed_slots(mask)
         , extended_slots(std::move(extended))
+        , armament_capable(armament_capable)
     {
     }
 
@@ -47,9 +48,23 @@ public:
         return this->extended_slots;
     }
 
+    /*!
+     * @brief 武具を自ら調えて身に着ける体か
+     * @details 「スロットが構造上存在するか」(is_allowed) とは別の軸で、
+     *          「道具を扱える手を持ち、武具を調達して身に着ける生き物か」を表す。
+     *          獣・鳥・蟲・蠕虫は首輪や装具を着けられる部位こそあるが、自分で
+     *          防具を買い揃えて着込むわけではないため false。武装度 (armament_level)
+     *          による装備充填の対象をこの軸で絞る。
+     */
+    bool is_armament_capable() const
+    {
+        return this->armament_capable;
+    }
+
 private:
     SlotMask allowed_slots;
     std::vector<ExtendedSlotType> extended_slots; //!< 拡張装備スロット (Phase 2)
+    bool armament_capable; //!< 武具を自ら調えて身に着ける体か (武装度充填の対象か)
 };
 
 /*!
