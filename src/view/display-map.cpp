@@ -23,6 +23,7 @@
 #include "world/world.h"
 #include <algorithm>
 #include <span>
+#include <tl/optional.hpp>
 
 EnumClassFlagGroup<AutopickMethod> display_autopick{}; /*!< 自動拾い状態の設定フラグ */
 
@@ -35,12 +36,11 @@ const std::string image_monsters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQR
 
 /*!
  * @brief オブジェクトの表示を幻覚状態に差し替える
+ * @param rng 乱数生成器
  * @return 差し替えたシンボルと色
- * @details 描画の回数は環境によって変わるため、ゲームの乱数生成器は使わない (以下同様)
  */
-DisplaySymbol image_object()
+DisplaySymbol image_object(xso::rng32 &rng)
 {
-    auto &rng = get_external_rng();
     if (use_graphics) {
         return BaseitemService::pick_one_at_random(rng).get_symbol();
     }
@@ -52,11 +52,11 @@ DisplaySymbol image_object()
 
 /*!
  * @brief モンスターの表示を幻覚状態に差し替える
+ * @param rng 乱数生成器
  * @return 差し替えたシンボルと色
  */
-DisplaySymbol image_monster()
+DisplaySymbol image_monster(xso::rng32 &rng)
 {
-    auto &rng = get_external_rng();
     if (use_graphics) {
         const auto &monraces = MonraceList::get_instance();
         const auto &monrace = monraces.pick_monrace_at_random(rng);
@@ -70,14 +70,15 @@ DisplaySymbol image_monster()
 
 /*!
  * @brief オブジェクト＆モンスターの表示を幻覚状態に差し替える
+ * @param rng 乱数生成器
  * @return 差し替えたシンボルと色
  */
-DisplaySymbol image_random()
+DisplaySymbol image_random(xso::rng32 &rng)
 {
-    if (evaluate_percent(get_external_rng(), 75)) {
-        return image_monster();
+    if (evaluate_percent(rng, 75)) {
+        return image_monster(rng);
     } else {
-        return image_object();
+        return image_object(rng);
     }
 }
 }
@@ -218,9 +219,21 @@ DisplaySymbolPair map_info(CreatureEntity &creature, const Pos2D &pos)
     }
 
     DisplaySymbolPair symbol_pair(symbol_config, symbol_config);
+
+    // 描画の回数は環境によって変わるため、ゲームのターンと座標から作った乱数生成器を使い、表示をゲームの状態だけで決める。
+    // 作るのは乱数が要る場合 (幻覚・万色など) だけにする
+    tl::optional<xso::rng32> display_rng;
+    const auto get_display_rng = [&display_rng, &pos]() -> xso::rng32 & {
+        if (!display_rng) {
+            display_rng = make_keyed_rng(KeyedRngPurpose::MAP_SYMBOL, { static_cast<int>(AngbandWorld::get_instance().game_turn), pos.y, pos.x });
+        }
+
+        return *display_rng;
+    };
+
     const auto is_hallucinated = creature.is_hallucinated();
-    if (is_hallucinated && one_in_(get_external_rng(), 256)) {
-        symbol_pair.symbol_foreground = image_random();
+    if (is_hallucinated && one_in_(get_display_rng(), 256)) {
+        symbol_pair.symbol_foreground = image_random(get_display_rng());
     }
 
     for (const auto this_o_idx : grid.o_idx_list) {
@@ -247,7 +260,7 @@ DisplaySymbolPair map_info(CreatureEntity &creature, const Pos2D &pos)
         symbol_pair.symbol_foreground = item.get_symbol();
         feat_priority = 20;
         if (is_hallucinated) {
-            symbol_pair.symbol_foreground = image_object();
+            symbol_pair.symbol_foreground = image_object(get_display_rng());
         }
 
         break;
@@ -268,7 +281,7 @@ DisplaySymbolPair map_info(CreatureEntity &creature, const Pos2D &pos)
     feat_priority = 30;
     if (is_hallucinated) {
         if (!monrace_ap.visual_flags.has_all_of({ MonsterVisualType::CLEAR, MonsterVisualType::CLEAR_COLOR })) {
-            symbol_pair.symbol_foreground = image_monster();
+            symbol_pair.symbol_foreground = image_monster(get_display_rng());
         }
 
         symbol_pair.symbol_foreground = set_term_color(creature, pos, symbol_pair.symbol_foreground);
@@ -290,7 +303,7 @@ DisplaySymbolPair map_info(CreatureEntity &creature, const Pos2D &pos)
         /* Do nothing */
     } else if (monrace_ap.visual_flags.has(MonsterVisualType::MULTI_COLOR) && !use_graphics) {
         if (monrace_ap.visual_flags.has(MonsterVisualType::ANY_COLOR)) {
-            symbol_pair.symbol_foreground.color = randnum1<uint8_t>(get_external_rng(), 15);
+            symbol_pair.symbol_foreground.color = randnum1<uint8_t>(get_display_rng(), 15);
         } else {
             constexpr static auto colors = {
                 TERM_RED,
@@ -302,7 +315,7 @@ DisplaySymbolPair map_info(CreatureEntity &creature, const Pos2D &pos)
                 TERM_GREEN,
             };
 
-            symbol_pair.symbol_foreground.color = rand_choice(get_external_rng(), colors);
+            symbol_pair.symbol_foreground.color = rand_choice(get_display_rng(), colors);
         }
     } else if (monrace_ap.visual_flags.has(MonsterVisualType::RANDOM_COLOR) && !use_graphics) {
         symbol_pair.symbol_foreground.color = grid.m_idx % 15 + 1;
@@ -316,7 +329,7 @@ DisplaySymbolPair map_info(CreatureEntity &creature, const Pos2D &pos)
     }
 
     if (monrace_ap.visual_flags.has(MonsterVisualType::SHAPECHANGER)) {
-        auto &rng = get_external_rng();
+        auto &rng = get_display_rng();
         if (use_graphics) {
             const auto &monraces = MonraceList::get_instance();
             const auto &monrace = monraces.pick_monrace_at_random(rng);
