@@ -750,6 +750,7 @@ libhengband_a_SOURCES = \
 	inventory/recharge-processor.cpp inventory/recharge-processor.h \
 	\
 	io/command-repeater.cpp io/command-repeater.h \
+	io/condition-expression.cpp io/condition-expression.h \
 	io/cursor.cpp io/cursor.h \
 	io/exit-panic.cpp io/exit-panic.h \
 	io/files-util.cpp io/files-util.h \
@@ -845,6 +846,7 @@ libhengband_a_SOURCES = \
 	lore/lore-calculator.cpp lore/lore-calculator.h \
 	lore/lore-util.cpp lore/lore-util.h \
 	lore/magic-types-setter.cpp lore/magic-types-setter.h \
+	lore/monster-lore-snapshot.cpp lore/monster-lore-snapshot.h \
 	lore/monster-lore.cpp lore/monster-lore.h \
 	\
 	main-x11.cpp main-gcu.cpp \
@@ -1540,6 +1542,7 @@ libhengband_a_SOURCES = \
 	view/display-store.cpp view/display-store.h \
 	view/display-symbol.h \
 	view/display-util.cpp view/display-util.h \
+	view/map-info-cache.cpp view/map-info-cache.h \
 	view/object-describer.cpp view/object-describer.h \
 	view/status-first-page.cpp view/status-first-page.h \
 	view/status-bars-table.cpp view/status-bars-table.h \
@@ -1550,6 +1553,8 @@ libhengband_a_SOURCES = \
 	window/main-window-stat-poster.cpp window/main-window-stat-poster.h \
 	window/main-window-util.cpp window/main-window-util.h \
 	window/main-window-equipments.cpp window/main-window-equipments.h \
+	window/overview-map-cache.cpp window/overview-map-cache.h \
+	window/shrunk-overview-map.cpp window/shrunk-overview-map.h \
 	\
 	wizard/artifact-analyzer.cpp wizard/artifact-analyzer.h \
 	wizard/artifact-bias-table.cpp wizard/artifact-bias-table.h \
@@ -1605,30 +1610,66 @@ check_PROGRAMS = hengband-test
 hengband_test_SOURCES = \
 	test/test-main.cpp \
 	test/test-win-stubs.cpp \
+	test/scoped-restore.h \
 	test/scoped-rng.h \
+	test/scoped-vector-wrapper.h \
+	test/string-helpers.h \
+	test/info-reader/scoped-reader-state.h \
+	test/save/scoped-save-io.h \
 	\
 	test/autopick/test-autopick-editor-util.cpp \
 	\
 	test/cmd-io/test-cmd-autopick.cpp \
 	\
+	test/flavor/test-flavor-util.cpp \
+	\
+	test/floor/test-floor-events.cpp \
+	\
 	test/game-option/test-runtime-arguments.cpp \
 	\
 	test/info-reader/test-ego-reader.cpp \
+	test/info-reader/test-general-parser.cpp \
 	test/info-reader/test-info-reader-util.cpp \
+	test/info-reader/test-baseitem-reader.cpp \
 	test/info-reader/test-json-reader-util.cpp \
+	test/info-reader/test-quest-reader.cpp \
+	test/info-reader/test-skill-reader.cpp \
 	test/info-reader/test-vault-reader.cpp \
 	test/info-reader/test-wilderness-reader.cpp \
 	\
+	test/io/test-condition-expression.cpp \
 	test/io/test-interpret-pref-file.cpp \
 	test/io/test-macro-configurations-store.cpp \
+	test/io/test-pref-file-expressor.cpp \
+	test/io/test-tokenizer.cpp \
+	\
+	test/locale/test-character-encoding.cpp \
+	\
+	test/lore/test-monster-lore-snapshot.cpp \
 	\
 	test/mspell/test-mspell-projection-table.cpp \
+	\
+	test/object/test-object-info.cpp \
+	test/object/test-object-value.cpp \
+	\
+	test/racial/test-racial-android.cpp \
+	\
+	test/save/test-item-writer.cpp \
+	\
+	test/spell/test-spell-info.cpp \
 	\
 	test/store/test-pricing.cpp \
 	test/store/test-store-screen.cpp \
 	test/store/test-store-util.cpp \
 	\
+	test/system/test-dungeon-record.cpp \
+	test/system/test-redrawing-flags-updater.cpp \
+	\
+	test/system/baseitem/test-baseitem-allocation.cpp \
 	test/system/baseitem/test-baseitem-definition.cpp \
+	test/system/baseitem/test-baseitem-list.cpp \
+	\
+	test/system/floor/test-floor-info.cpp \
 	\
 	test/system/monrace/test-armament-level.cpp \
 	test/system/monrace/test-body-structure-policy.cpp \
@@ -1642,13 +1683,19 @@ hengband_test_SOURCES = \
 	test/timed-effect/test-player-stun.cpp \
 	\
 	test/util/test-angband-files.cpp \
+	test/util/test-buffer-shaper.cpp \
 	test/util/test-dice.cpp \
 	test/util/test-finalizer.cpp \
 	test/util/test-flag-group.cpp \
 	test/util/test-probability-table.cpp \
 	test/util/test-sha256.cpp \
+	test/util/test-string-processor.cpp \
 	\
-	test/view/test-map-terrain-visibility.cpp
+	test/view/test-map-info-cache.cpp \
+	test/view/test-map-terrain-visibility.cpp \
+	\
+	test/window/test-overview-map-cache.cpp \
+	test/window/test-shrunk-overview-map.cpp
 
 hengband_test_LDADD = libhengband.a
 

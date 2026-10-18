@@ -64,22 +64,46 @@
     </ClCompile>
     <ClCompile Include="..\..\src\test\test-main.cpp" />
     <ClCompile Include="..\..\src\test\util\test-angband-files.cpp" />
+    <ClCompile Include="..\..\src\test\view\test-map-info-cache.cpp" />
     <ClCompile Include="..\..\src\test\view\test-map-terrain-visibility.cpp" />
+    <ClCompile Include="..\..\src\test\window\test-overview-map-cache.cpp" />
+    <ClCompile Include="..\..\src\test\window\test-shrunk-overview-map.cpp" />
     <ClCompile Include="..\..\src\test\autopick\test-autopick-editor-util.cpp" />
     <ClCompile Include="..\..\src\test\game-option\test-runtime-arguments.cpp" />
     <ClCompile Include="..\..\src\test\cmd-io\test-cmd-autopick.cpp" />
+    <ClCompile Include="..\..\src\test\flavor\test-flavor-util.cpp" />
     <ClCompile Include="..\..\src\test\info-reader\test-ego-reader.cpp" />
+    <ClCompile Include="..\..\src\test\info-reader\test-general-parser.cpp" />
     <ClCompile Include="..\..\src\test\info-reader\test-info-reader-util.cpp" />
+    <ClCompile Include="..\..\src\test\info-reader\test-baseitem-reader.cpp" />
     <ClCompile Include="..\..\src\test\info-reader\test-json-reader-util.cpp" />
+    <ClCompile Include="..\..\src\test\info-reader\test-quest-reader.cpp" />
+    <ClCompile Include="..\..\src\test\info-reader\test-skill-reader.cpp" />
     <ClCompile Include="..\..\src\test\info-reader\test-vault-reader.cpp" />
     <ClCompile Include="..\..\src\test\info-reader\test-wilderness-reader.cpp" />
+    <ClCompile Include="..\..\src\test\io\test-condition-expression.cpp" />
     <ClCompile Include="..\..\src\test\io\test-interpret-pref-file.cpp" />
     <ClCompile Include="..\..\src\test\io\test-macro-configurations-store.cpp" />
+    <ClCompile Include="..\..\src\test\io\test-pref-file-expressor.cpp" />
+    <ClCompile Include="..\..\src\test\io\test-tokenizer.cpp" />
+    <ClCompile Include="..\..\src\test\locale\test-character-encoding.cpp" />
+    <ClCompile Include="..\..\src\test\lore\test-monster-lore-snapshot.cpp" />
     <ClCompile Include="..\..\src\test\mspell\test-mspell-projection-table.cpp" />
+    <ClCompile Include="..\..\src\test\floor\test-floor-events.cpp" />
+    <ClCompile Include="..\..\src\test\object\test-object-info.cpp" />
+    <ClCompile Include="..\..\src\test\object\test-object-value.cpp" />
+    <ClCompile Include="..\..\src\test\racial\test-racial-android.cpp" />
     <ClCompile Include="..\..\src\test\store\test-pricing.cpp" />
     <ClCompile Include="..\..\src\test\store\test-store-screen.cpp" />
     <ClCompile Include="..\..\src\test\store\test-store-util.cpp" />
+    <ClCompile Include="..\..\src\test\save\test-item-writer.cpp" />
+    <ClCompile Include="..\..\src\test\spell\test-spell-info.cpp" />
+    <ClCompile Include="..\..\src\test\system\test-dungeon-record.cpp" />
+    <ClCompile Include="..\..\src\test\system\test-redrawing-flags-updater.cpp" />
+    <ClCompile Include="..\..\src\test\system\baseitem\test-baseitem-allocation.cpp" />
     <ClCompile Include="..\..\src\test\system\baseitem\test-baseitem-definition.cpp" />
+    <ClCompile Include="..\..\src\test\system\baseitem\test-baseitem-list.cpp" />
+    <ClCompile Include="..\..\src\test\system\floor\test-floor-info.cpp" />
     <ClCompile Include="..\..\src\test\system\monrace\test-armament-level.cpp" />
     <ClCompile Include="..\..\src\test\system\monrace\test-body-structure-policy.cpp" />
     <ClCompile Include="..\..\src\test\system\monrace\test-monrace-definition.cpp" />
@@ -88,16 +112,23 @@
     <ClCompile Include="..\..\src\test\term\test-z-rand.cpp" />
     <ClCompile Include="..\..\src\test\timed-effect\test-player-cut.cpp" />
     <ClCompile Include="..\..\src\test\timed-effect\test-player-stun.cpp" />
+    <ClCompile Include="..\..\src\test\util\test-buffer-shaper.cpp" />
     <ClCompile Include="..\..\src\test\util\test-dice.cpp" />
     <ClCompile Include="..\..\src\test\util\test-finalizer.cpp" />
     <ClCompile Include="..\..\src\test\util\test-flag-group.cpp" />
     <ClCompile Include="..\..\src\test\util\test-probability-table.cpp" />
     <ClCompile Include="..\..\src\test\util\test-sha256.cpp" />
+    <ClCompile Include="..\..\src\test\util\test-string-processor.cpp" />
     <ClCompile Include="..\..\src\test\test-win-stubs.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\stdafx.h" />
+    <ClInclude Include="..\..\src\test\scoped-restore.h" />
     <ClInclude Include="..\..\src\test\scoped-rng.h" />
+    <ClInclude Include="..\..\src\test\scoped-vector-wrapper.h" />
+    <ClInclude Include="..\..\src\test\info-reader\scoped-reader-state.h" />
+    <ClInclude Include="..\..\src\test\save\scoped-save-io.h" />
+    <ClInclude Include="..\..\src\test\string-helpers.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="BakabakabandCore.vcxproj">
