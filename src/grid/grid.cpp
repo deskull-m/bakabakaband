@@ -36,6 +36,7 @@
 #include "system/terrain/terrain-definition.h"
 #include "system/terrain/terrain-list.h"
 #include "term/gameterm.h"
+#include "term/z-rand.h"
 #include "util/enum-converter.h"
 #include "view/display-map.h"
 #include "view/display-messages.h"
@@ -318,7 +319,10 @@ void print_rel(CreatureEntity &creature, const DisplaySymbol &symbol, const Pos2
 
 void print_bolt_pict(CreatureEntity &creature, const Pos2D &pos_src, const Pos2D &pos_dst, AttributeType typ)
 {
-    const auto &symbol = bolt_pict(pos_src, pos_dst, typ);
+    // 描画の回数は環境によって変わるため、ゲームのターンと座標から作った乱数生成器で色を選ぶ
+    const auto turn = AngbandWorld::get_instance().game_turn;
+    auto rng = make_keyed_rng(KeyedRngPurpose::BOLT_COLOR, { static_cast<int>(turn), pos_src.y, pos_src.x, pos_dst.y, pos_dst.x, enum2i(typ) });
+    const auto &symbol = bolt_pict(rng, pos_src, pos_dst, typ);
     print_rel(creature, symbol, pos_dst);
 }
 

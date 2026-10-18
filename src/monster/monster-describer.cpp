@@ -15,6 +15,7 @@
 #include "util/bit-flags-calculator.h"
 #include "util/string-processor.h"
 #include "view/display-messages.h"
+#include "world/world.h"
 #include <fmt/format.h>
 #include <sstream>
 #include <string>
@@ -129,8 +130,9 @@ static std::string get_describing_monster_name(const CreatureEntity &monster, co
     }
 
     // 幻覚中の名前は表示専用で、ペット一覧のサブウィンドウなど呼び出される回数が環境によって変わる
-    // 場面でも使われるため、ゲームの乱数生成器は使わない
-    auto &rng = get_external_rng();
+    // 場面でも使われるため、ゲームのターンとモンスターの位置・種族から作った乱数生成器を使い、名前をゲームの状態だけで決める
+    const auto m_pos = monster.get_position();
+    auto rng = make_keyed_rng(KeyedRngPurpose::MONSTER_NAME, { static_cast<int>(AngbandWorld::get_instance().game_turn), m_pos.y, m_pos.x, enum2i(monster.get_r_idx()) });
     if (one_in_(rng, 2)) {
         constexpr auto filename = _("silly_j.txt", "silly.txt");
         const auto silly_name = get_random_line(rng, filename, enum2i(monster.get_r_idx()));
