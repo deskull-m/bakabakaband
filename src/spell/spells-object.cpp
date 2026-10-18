@@ -235,8 +235,10 @@ bool curse_armor(CreatureEntity &creature)
     item.curse_flags.set(CurseTraitType::CURSED);
     item.ident.set(IdentificationFlag::BROKEN);
     auto &rfu = RedrawingFlagsUpdater::get_instance();
+    // エゴ・アーティファクトの能力 (光源の明るさなども) が無くなる
     static constexpr auto flags_srf = {
         StatusRecalculatingFlag::BONUS,
+        StatusRecalculatingFlag::TORCH,
         StatusRecalculatingFlag::MP,
     };
     rfu.set_flags(flags_srf);
@@ -246,6 +248,7 @@ bool curse_armor(CreatureEntity &creature)
         SubWindowRedrawingFlag::PLAYER,
     };
     rfu.set_flags(flags_swrf);
+    calc_android_exp(creature);
     return true;
 }
 
@@ -289,8 +292,10 @@ bool curse_weapon_object(CreatureEntity &creature, bool force, ItemEntity &item)
     item.curse_flags.set(CurseTraitType::CURSED);
     item.ident.set(IdentificationFlag::BROKEN);
     auto &rfu = RedrawingFlagsUpdater::get_instance();
+    // エゴ・アーティファクトの能力 (光源の明るさなども) が無くなる
     static constexpr auto flags_srf = {
         StatusRecalculatingFlag::BONUS,
+        StatusRecalculatingFlag::TORCH,
         StatusRecalculatingFlag::MP,
     };
     rfu.set_flags(flags_srf);
@@ -300,6 +305,7 @@ bool curse_weapon_object(CreatureEntity &creature, bool force, ItemEntity &item)
         SubWindowRedrawingFlag::PLAYER,
     };
     rfu.set_flags(flags_swrf);
+    calc_android_exp(creature);
     return true;
 }
 

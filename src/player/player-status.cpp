@@ -2802,11 +2802,13 @@ void check_experience(CreatureEntity &creature)
     CreatureRace pr(&creature);
     bool android = pr.equals(PlayerRaceType::ANDROID);
     PLAYER_LEVEL old_lev = creature.get_level();
+    // 一時的な発光の明るさもレベルで決まる
     static constexpr auto flags_srf = {
         StatusRecalculatingFlag::BONUS,
         StatusRecalculatingFlag::HP,
         StatusRecalculatingFlag::MP,
         StatusRecalculatingFlag::SPELLS,
+        StatusRecalculatingFlag::TORCH,
     };
     while ((creature.get_level() > 1) && (creature.get_exp() < ((android ? player_exp_a : player_exp)[creature.get_level() - 2] * creature.expfact / 100L))) {
         creature.set_level(creature.get_level() - 1);
