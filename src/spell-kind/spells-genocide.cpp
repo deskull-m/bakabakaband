@@ -26,8 +26,10 @@
 #include "system/monrace/monrace-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "util/bit-flags-calculator.h"
+#include "util/string-processor.h"
 #include "view/display-messages.h"
 #include "world/world-collapsion.h"
+#include <fmt/format.h>
 
 /*!
  * @brief モンスターへの単体抹殺処理サブルーチン / Delete a non-unique/non-quest monster
@@ -76,19 +78,19 @@ bool genocide_aux(CreatureEntity &creature, MONSTER_IDX m_idx, int power, bool p
         const auto see_m = is_seen(creature, monster);
         const auto m_name = monster_desc(creature, monster, 0);
         if (see_m) {
-            msg_format(_("%s^には効果がなかった。", "%s^ is unaffected."), m_name.data());
+            msg_print(_("{}には効果がなかった。", "{} is unaffected."), str_upcase_first(m_name));
         }
 
         if (monster.is_asleep()) {
             (void)set_monster_csleep(*creature.get_floor(), m_idx, 0);
             if (monster.is_visible_on_map()) {
-                msg_format(_("%s^が目を覚ました。", "%s^ wakes up."), m_name.data());
+                msg_print(_("{}が目を覚ました。", "{} wakes up."), str_upcase_first(m_name));
             }
         }
 
         if (monster.is_friendly() && !monster.is_pet()) {
             if (see_m) {
-                msg_format(_("%sは怒った！", "%s^ gets angry!"), m_name.data());
+                msg_print(_("{}は怒った！", "{} gets angry!"), str_upcase_first(m_name));
             }
 
             monster.set_hostile();

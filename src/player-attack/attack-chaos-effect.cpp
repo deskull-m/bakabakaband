@@ -57,12 +57,12 @@ static void attack_confuse(CreatureEntity &creature, player_attack_type *pa_ptr,
         if (is_original_ap_and_seen(creature, *pa_ptr->m_ptr)) {
             monrace.r_resistance_flags.set(MonsterResistanceType::NO_CONF);
         }
-        msg_format(_("%s^には効果がなかった。", "%s^ is unaffected."), pa_ptr->m_name);
+        msg_print(_("{}には効果がなかった。", "{} is unaffected."), str_upcase_first(pa_ptr->m_name));
 
     } else if (can_resist && evaluate_percent(monrace.level)) {
-        msg_format(_("%s^には効果がなかった。", "%s^ is unaffected."), pa_ptr->m_name);
+        msg_print(_("{}には効果がなかった。", "{} is unaffected."), str_upcase_first(pa_ptr->m_name));
     } else {
-        msg_format(_("%s^は混乱したようだ。", "%s^ appears confused."), pa_ptr->m_name);
+        msg_print(_("{}は混乱したようだ。", "{} appears confused."), str_upcase_first(pa_ptr->m_name));
         (void)set_monster_confused(*creature.get_floor(), pa_ptr->m_idx, pa_ptr->m_ptr->get_remaining_confusion() + 10 + randint0(creature.get_level()) / 5);
     }
 }
@@ -82,11 +82,11 @@ static void attack_stun(CreatureEntity &creature, player_attack_type *pa_ptr, bo
         if (is_original_ap_and_seen(creature, *pa_ptr->m_ptr)) {
             monrace.r_resistance_flags.set(MonsterResistanceType::NO_STUN);
         }
-        msg_format(_("%s^には効果がなかった。", "%s^ is unaffected."), pa_ptr->m_name);
+        msg_print(_("{}には効果がなかった。", "{} is unaffected."), str_upcase_first(pa_ptr->m_name));
     } else if (can_resist && evaluate_percent(monrace.level)) {
-        msg_format(_("%s^には効果がなかった。", "%s^ is unaffected."), pa_ptr->m_name);
+        msg_print(_("{}には効果がなかった。", "{} is unaffected."), str_upcase_first(pa_ptr->m_name));
     } else {
-        msg_format(_("%s^は朦朧としたようだ。", "%s^ appears stunned."), pa_ptr->m_name);
+        msg_print(_("{}は朦朧としたようだ。", "{} appears stunned."), str_upcase_first(pa_ptr->m_name));
         (void)set_monster_stunned(*creature.get_floor(), pa_ptr->m_idx, pa_ptr->m_ptr->get_remaining_stun() + 10 + randint0(creature.get_level()) / 5);
     }
 }
@@ -106,11 +106,11 @@ static void attack_scare(CreatureEntity &creature, player_attack_type *pa_ptr, b
         if (is_original_ap_and_seen(creature, *pa_ptr->m_ptr)) {
             monrace.r_resistance_flags.set(MonsterResistanceType::NO_FEAR);
         }
-        msg_format(_("%s^には効果がなかった。", "%s^ is unaffected."), pa_ptr->m_name);
+        msg_print(_("{}には効果がなかった。", "{} is unaffected."), str_upcase_first(pa_ptr->m_name));
     } else if (can_resist && evaluate_percent(monrace.level)) {
-        msg_format(_("%s^には効果がなかった。", "%s^ is unaffected."), pa_ptr->m_name);
+        msg_print(_("{}には効果がなかった。", "{} is unaffected."), str_upcase_first(pa_ptr->m_name));
     } else {
-        msg_format(_("%s^は恐怖して逃げ出した！", "%s^ flees in terror!"), pa_ptr->m_name);
+        msg_print(_("{}は恐怖して逃げ出した！", "{} flees in terror!"), str_upcase_first(pa_ptr->m_name));
         (void)set_monster_monfear(*creature.get_floor(), pa_ptr->m_idx, pa_ptr->m_ptr->get_remaining_fear() + 10 + randint0(creature.get_level()) / 5);
     }
 }
@@ -185,7 +185,7 @@ static bool judge_tereprt_resistance(CreatureEntity &creature, player_attack_typ
             monrace.r_resistance_flags.set(MonsterResistanceType::RESIST_TELEPORT);
         }
 
-        msg_format(_("%s^には効果がなかった。", "%s^ is unaffected!"), pa_ptr->m_name);
+        msg_print(_("{}には効果がなかった。", "{} is unaffected!"), str_upcase_first(pa_ptr->m_name));
         return true;
     }
 
@@ -194,7 +194,7 @@ static bool judge_tereprt_resistance(CreatureEntity &creature, player_attack_typ
             monrace.r_resistance_flags.set(MonsterResistanceType::RESIST_TELEPORT);
         }
 
-        msg_format(_("%s^は抵抗力を持っている！", "%s^ resists!"), pa_ptr->m_name);
+        msg_print(_("{}は抵抗力を持っている！", "{} resists!"), str_upcase_first(pa_ptr->m_name));
         return true;
     }
 
@@ -213,7 +213,7 @@ static void attack_teleport_away(CreatureEntity &creature, player_attack_type *p
         return;
     }
 
-    msg_format(_("％s^は消えた！", "%s^ disappears!"), pa_ptr->m_name);
+    msg_print(_("{}は消えた！", "{} disappears!"), str_upcase_first(pa_ptr->m_name));
     teleport_away(creature, pa_ptr->m_idx, 50, TELEPORT_PASSIVE);
     *num = pa_ptr->num_blow + 1;
     *(pa_ptr->mdeath) = true;
@@ -234,11 +234,11 @@ static void attack_polymorph(CreatureEntity &creature, player_attack_type *pa_pt
     }
 
     if (polymorph_monster(creature, y, x)) {
-        msg_format(_("%s^は変化した！", "%s^ changes!"), pa_ptr->m_name);
+        msg_print(_("{}は変化した！", "{} changes!"), str_upcase_first(pa_ptr->m_name));
         *(pa_ptr->fear) = false;
         pa_ptr->weak = false;
     } else {
-        msg_format(_("%s^には効果がなかった。", "%s^ is unaffected."), pa_ptr->m_name);
+        msg_print(_("{}には効果がなかった。", "{} is unaffected."), str_upcase_first(pa_ptr->m_name));
     }
 
     pa_ptr->m_ptr = &creature.get_floor()->get_monster(pa_ptr->m_idx);
@@ -275,7 +275,7 @@ static void attack_golden_hammer(CreatureEntity &creature, player_attack_type *p
     item_in_pack.wipe();
     if (monster.get_inven_cnt() > 0) {
     }
-    msg_format(_("%sを奪った。", "You snatched %s."), item_name.data());
+    msg_print(_("{}を奪った。", "You snatched {}."), item_name);
     creature.store_item(stolen);
 }
 

@@ -162,7 +162,7 @@ bool process_attack_hit(CreatureEntity &creature, player_attack_type *pa_ptr, in
         process_death_scythe_reflection(creature, pa_ptr);
     } else {
         sound(SoundKind::MISS);
-        msg_format(_("ミス！ %sにかわされた。", "You miss %s."), pa_ptr->m_name);
+        msg_print(_("ミス！ {}にかわされた。", "You miss {}."), pa_ptr->m_name);
     }
 
     return false;

@@ -11,6 +11,7 @@
 #include "system/creature-entity.h"
 #include "system/redrawing-flags-updater.h"
 #include "tracking/health-bar-tracker.h"
+#include "util/string-processor.h"
 #include "view/display-messages.h"
 #include "world/world.h"
 
@@ -28,7 +29,7 @@ void effect_player_drain_mana(CreatureEntity &creature, EffectPlayerType *ep_ptr
     }
 
     if (ep_ptr->is_monster()) {
-        msg_format(_("%s^に精神エネルギーを吸い取られてしまった！", "%s^ draws psychic energy from you!"), ep_ptr->m_name.data());
+        msg_print(_("{}に精神エネルギーを吸い取られてしまった！", "{} draws psychic energy from you!"), str_upcase_first(ep_ptr->m_name));
     } else {
         msg_print(_("精神エネルギーを吸い取られてしまった！", "Your psychic energy is drained!"));
     }
@@ -60,7 +61,7 @@ void effect_player_drain_mana(CreatureEntity &creature, EffectPlayerType *ep_ptr
     }
 
     if (ep_ptr->m_ptr->is_visible_on_map()) {
-        msg_format(_("%s^は気分が良さそうだ。", "%s^ appears healthier."), ep_ptr->m_name.data());
+        msg_print(_("{}は気分が良さそうだ。", "{} appears healthier."), str_upcase_first(ep_ptr->m_name));
     }
 
     ep_ptr->dam = 0;

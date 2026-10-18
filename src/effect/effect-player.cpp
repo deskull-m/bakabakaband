@@ -212,7 +212,7 @@ bool affect_player(MONSTER_IDX src_idx, CreatureEntity &creature, concptr src_na
     SpellHex(creature).store_vengeful_damage(ep_ptr->get_damage);
     if ((creature.get_timed_effect(CreatureTimedEffect::TIM_EYEEYE) || SpellHex(creature).is_spelling_specific(HEX_EYE_FOR_EYE)) && (ep_ptr->get_damage > 0) && !creature.is_dead() && ep_ptr->is_monster()) {
         const auto m_name_self = monster_desc(creature, *ep_ptr->m_ptr, MD_PRON_VISIBLE | MD_POSSESSIVE | MD_OBJECTIVE);
-        msg_print(_(format("攻撃が%s自身を傷つけた！", ep_ptr->m_name.data()), format("The attack of %s has wounded %s!", ep_ptr->m_name.data(), m_name_self.data())));
+        msg_print(_("攻撃が{}自身を傷つけた！", "The attack of {} has wounded {}!"), ep_ptr->m_name, m_name_self);
         (*project)(creature, 0, 0, ep_ptr->m_ptr->y, ep_ptr->m_ptr->x, ep_ptr->get_damage, AttributeType::MISSILE, PROJECT_KILL, tl::nullopt);
         if (creature.get_timed_effect(CreatureTimedEffect::TIM_EYEEYE)) {
             set_tim_eyeeye(creature, creature.get_timed_effect(CreatureTimedEffect::TIM_EYEEYE) - 5, true);

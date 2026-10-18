@@ -173,11 +173,11 @@ static tl::optional<std::string> get_fake_monster_name(const CreatureEntity &cre
     }
 
     if (monster.is_chameleon() && none_bits(mode, MD_TRUE_NAME)) {
-        return _(replace_monster_name_undefined(name), format("%s?", name.data()));
+        return _(replace_monster_name_undefined(name), fmt::format("{}?", name));
     }
 
     if (AngbandSystem::get_instance().is_phase_out() && !monster.is_riding()) {
-        return format(_("%sもどき", "fake %s"), name.data());
+        return fmt::format(_("{}もどき", "fake {}"), name);
     }
 
     return name;
@@ -328,7 +328,7 @@ std::string monster_desc(CreatureEntity &subject, const CreatureEntity &monster,
     }
 
     if (monster.is_pet() && !monster.is_original_ap()) {
-        ss << _(replace_monster_name_undefined(name), format("%s?", name.data()));
+        ss << _(replace_monster_name_undefined(name), fmt::format("{}?", name));
     } else {
         ss << describe_non_pet(subject, monster, name, mode);
     }

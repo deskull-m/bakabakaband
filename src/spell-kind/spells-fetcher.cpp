@@ -20,6 +20,7 @@
 #include "target/target-setter.h"
 #include "target/target-types.h"
 #include "tracking/lore-tracker.h"
+#include "util/string-processor.h"
 #include "view/display-messages.h"
 
 /*!
@@ -103,7 +104,7 @@ void fetch_item(CreatureEntity &creature, const Direction &dir, WEIGHT wgt, bool
     item.set_position(p_pos);
 
     const auto item_name = describe_flavor(creature, item, OD_NAME_ONLY);
-    msg_format(_("%s^があなたの足元に飛んできた。", "%s^ flies through the air to your feet."), item_name.data());
+    msg_print(_("{}があなたの足元に飛んできた。", "{} flies through the air to your feet."), str_upcase_first(item_name));
     note_spot(creature, p_pos);
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(MainWindowRedrawingFlag::MAP);

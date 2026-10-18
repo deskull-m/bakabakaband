@@ -26,7 +26,9 @@
 #include "system/redrawing-flags-updater.h"
 #include "system/terrain/terrain-definition.h"
 #include "util/probability-table.h"
+#include "util/string-processor.h"
 #include "view/display-messages.h"
+#include <fmt/format.h>
 #include <functional>
 #include <optional>
 #include <range/v3/algorithm.hpp>
@@ -98,9 +100,9 @@ std::string build_killer_on_earthquake(CreatureEntity &creature, int m_idx)
         return _("地震", "an earthquake");
     }
 
-    const auto &monster = creature.get_floor()->get_monster(static_cast<MONSTER_IDX>(m_idx));
+    const auto &monster = creature.get_floor()->m_list[m_idx];
     const auto m_name = monster_desc(creature, monster, MD_WRONGDOER_NAME);
-    return format(_("%sの起こした地震", "an earthquake caused by %s"), m_name.data());
+    return fmt::format(_("{}の起こした地震", "an earthquake caused by {}"), m_name);
 }
 
 void process_player_damage_undodged(CreatureEntity &creature, int m_idx)
@@ -191,7 +193,7 @@ bool process_monster_damage(CreatureEntity &creature, CreatureEntity &monster, b
 
     if (!ignore_unview || is_seen(creature, monster)) {
         const auto m_name = monster_desc(creature, monster, 0);
-        msg_format(_("%s^は岩石に埋もれてしまった！", "%s^ is embedded in the rock!"), m_name.data());
+        msg_print(_("{}は岩石に埋もれてしまった！", "{} is embedded in the rock!"), str_upcase_first(m_name));
     }
 
     if (record_named_pet && monster.is_named_pet()) {
@@ -209,7 +211,7 @@ void process_hit_to_monster(CreatureEntity &creature, CreatureEntity &monster, s
     const auto pos_dodge = decide_monster_dodge_position(floor, creature.get_position(), monster, pos_collapses);
     const auto m_name = monster_desc(creature, monster, 0);
     if (!ignore_unview || is_seen(creature, monster)) {
-        msg_format(_("% s^は苦痛で泣きわめいた！", "%s^ wails out in pain!"), m_name.data());
+        msg_print(_("{}は苦痛で泣きわめいた！", "{} wails out in pain!"), str_upcase_first(m_name));
     }
 
     if (process_monster_damage(creature, monster, pos_dodge.has_value())) {

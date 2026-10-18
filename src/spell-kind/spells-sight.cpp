@@ -27,6 +27,7 @@
 #include "target/projection-path-calculator.h"
 #include "term/screen-processor.h"
 #include "view/display-messages.h"
+#include <fmt/format.h>
 
 /*!
  * @brief 視界内モンスターに魔法効果を与える / Apply a "project()" directly to all viewable monsters
@@ -399,11 +400,11 @@ std::string probed_monster_info(CreatureEntity &creature, CreatureEntity &target
     }
 
     const auto speed = target.get_temporary_speed() - STANDARD_SPEED;
-    constexpr auto mes = _("%s ... 属性:%s HP:%d/%d AC:%d 速度:%s%d 経験:", "%s ... align:%s HP:%d/%d AC:%d speed:%s%d exp:");
-    auto result = format(mes, m_name.data(), align, (int)target.hp, (int)target.maxhp, target.get_ac(), (speed > 0) ? "+" : "", speed);
+    constexpr auto mes = _("{} ... 属性:{} HP:{}/{} AC:{} 速度:{}{} 経験:", "{} ... align:{} HP:{}/{} AC:{} speed:{}{} exp:");
+    auto result = fmt::format(mes, m_name, align, target.hp, target.maxhp, target.get_ac(), (speed > 0) ? "+" : "", speed);
 
     if (monrace.get_next().is_valid()) {
-        result.append(format("%d/%d ", target.get_exp(), monrace.next_exp));
+        result.append(fmt::format("{}/{} ", target.get_exp(), monrace.next_exp));
     } else {
         result.append("xxx ");
     }

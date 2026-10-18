@@ -367,7 +367,7 @@ bool teleport_player_aux(CreatureEntity &creature, POSITION dis, bool is_quantum
     sound(SoundKind::TELEPORT);
 #ifdef JP
     if (creature.is_echizen()) {
-        msg_format("『こっちだぁ、%s』", creature.name.data());
+        msg_print("『こっちだぁ、{}』", creature.name);
     }
 #endif
     (void)move_player_effect(creature, pos.y, pos.x, MPE_FORGET_FLOW | MPE_HANDLE_STUFF | MPE_DONT_PICKUP);
