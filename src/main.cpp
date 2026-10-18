@@ -35,6 +35,7 @@
 #include "wizard/spoiler-util.h"
 #include "wizard/wizard-spoiler.h"
 #include <filesystem>
+#include <fmt/format.h>
 #include <string>
 #include <string_view>
 
@@ -179,7 +180,7 @@ static void change_path(concptr info)
 static void display_usage(const char *program)
 {
     /* Dump usage information */
-    printf("Usage: %s [options] [-- subopts]\n", program);
+    fmt::println("Usage: {} [options] [-- subopts]", program);
     puts("  -n       Start a new character");
     puts("  -f       Request fiddle mode");
     puts("  -w       Request wizard mode");
