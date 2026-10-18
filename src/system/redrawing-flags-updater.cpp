@@ -158,6 +158,29 @@ void RedrawingFlagsUpdater::request_whole_main_window_redrawing()
 }
 
 /*!
+ * @brief 画面全体を描き直すときの、表示の元になる値の再計算を予約する
+ * @details 能力・光源の明るさ・HP・MP・呪文と、視界・明るさ (一度消してから計算し直す)、モンスターの光と見え方を計算し直す。
+ * 画面の描き直しのコマンドや、画面の大きさを変えたときに、メインウィンドウの全体の描き直し (request_whole_main_window_redrawing()) と合わせて呼ぶ。
+ */
+void RedrawingFlagsUpdater::request_whole_status_recalculation()
+{
+    static constexpr auto flags_srf = {
+        StatusRecalculatingFlag::TORCH,
+        StatusRecalculatingFlag::BONUS,
+        StatusRecalculatingFlag::HP,
+        StatusRecalculatingFlag::MP,
+        StatusRecalculatingFlag::SPELLS,
+        StatusRecalculatingFlag::UN_VIEW,
+        StatusRecalculatingFlag::UN_LITE,
+        StatusRecalculatingFlag::VIEW,
+        StatusRecalculatingFlag::LITE,
+        StatusRecalculatingFlag::MONSTER_LITE,
+        StatusRecalculatingFlag::MONSTER_STATUSES,
+    };
+    this->status_flags.set(flags_srf);
+}
+
+/*!
  * @brief マップの描き直しを予約する
  * @details メインウィンドウのマップに加え、マップを表示するサブウィンドウ (周辺の光景・ダンジョンの地形) も描き直す。
  */
@@ -236,16 +259,36 @@ void RedrawingFlagsUpdater::request_inventory_arrangement()
     this->sub_window_flags.set(SubWindowRedrawingFlag::INVENTORY);
 }
 
+/*!
+ * @brief アイテムの銘を変えたときの更新を予約する
+ * @details 銘によって能力が変わる ({$} で警告を止める、{.} でランダムテレポートを止める) ので能力を計算し直す
+ * (持ち物・装備の一覧の描き直しも、能力の再計算が要求する)。銘が揃うと束にまとめられるので、持ち物をまとめ直す。
+ */
+void RedrawingFlagsUpdater::request_inscription_change_updates()
+{
+    this->set_flag(StatusRecalculatingFlag::BONUS);
+    this->set_flag(InventoryArrangementFlag::COMBINATION);
+}
+
+/*!
+ * @brief 装備 (または装備の能力) が変わったときの更新を予約する
+ * @details 装備の修正値や能力でプレイヤーの能力を、光源の能力で光源の明るさを、装備の重さや籠手 (能力や修正値によっては最大 MP が減らない) で最大 MP を計算し直す。
+ * 装備の品が入れ替わったとき (装備する・外す・無くなるなど) と、装備品の能力が変わったとき (アーティファクト生成・凡庸化・呪縛など) に呼ぶ。
+ */
+void RedrawingFlagsUpdater::request_equipment_change_updates()
+{
+    static constexpr auto flags_srf = {
+        StatusRecalculatingFlag::BONUS,
+        StatusRecalculatingFlag::TORCH,
+        StatusRecalculatingFlag::MP,
+    };
+    this->status_flags.set(flags_srf);
+}
+
 void RedrawingFlagsUpdater::fill_up_sub_flags()
 {
     constexpr auto all_sub_window_flags = EnumRange(SubWindowRedrawingFlag::INVENTORY, SubWindowRedrawingFlag::MAX);
     this->sub_window_flags.set(all_sub_window_flags);
-}
-
-void RedrawingFlagsUpdater::request_autopick_inscription()
-{
-    this->set_flag(StatusRecalculatingFlag::BONUS);
-    this->set_flag(InventoryArrangementFlag::COMBINATION);
 }
 
 EnumClassFlagGroup<SubWindowRedrawingFlag> RedrawingFlagsUpdater::get_sub_intersection(const EnumClassFlagGroup<SubWindowRedrawingFlag> &flags) const

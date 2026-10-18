@@ -99,13 +99,7 @@ void inven_item_optimize(CreatureEntity &creature, INVENTORY_IDX i_idx)
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     if (i_idx >= INVEN_MAIN_HAND) {
         creature.inventory[i_idx]->wipe();
-        static constexpr auto flags_srf = {
-            StatusRecalculatingFlag::BONUS,
-            StatusRecalculatingFlag::TORCH,
-            StatusRecalculatingFlag::MP,
-        };
-        rfu.set_flags(flags_srf);
-        rfu.set_flag(SubWindowRedrawingFlag::SPELL);
+        rfu.request_equipment_change_updates();
         return;
     }
 

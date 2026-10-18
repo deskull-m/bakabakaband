@@ -125,6 +125,9 @@ public:
     //! メインウィンドウの消去と全体の描き直し (WIPE/BASIC/EXTRA/EQUIPPY/MAP) をまとめてセットする
     void request_whole_main_window_redrawing();
 
+    //! 画面全体を描き直すときの、表示の元になる値の再計算をまとめてセットする
+    void request_whole_status_recalculation();
+
     //! マップ (メインウィンドウ MAP + サブウィンドウ OVERHEAD/DUNGEON) の描き直しをまとめてセットする
     void request_map_redrawing();
 
@@ -144,8 +147,9 @@ public:
     void reset_flags(const EnumClassFlagGroup<StatusRecalculatingFlag> &flags);
     void reset_flags(const EnumClassFlagGroup<InventoryArrangementFlag> &flags);
 
+    void request_inscription_change_updates();
+    void request_equipment_change_updates();
     void fill_up_sub_flags();
-    void request_autopick_inscription();
     EnumClassFlagGroup<SubWindowRedrawingFlag> get_sub_intersection(const EnumClassFlagGroup<SubWindowRedrawingFlag> &flags) const;
 
 private:
