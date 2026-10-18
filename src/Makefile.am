@@ -1554,6 +1554,7 @@ libhengband_a_SOURCES = \
 	window/main-window-util.cpp window/main-window-util.h \
 	window/main-window-equipments.cpp window/main-window-equipments.h \
 	window/overview-map-cache.cpp window/overview-map-cache.h \
+	window/shrunk-overview-map.cpp window/shrunk-overview-map.h \
 	\
 	wizard/artifact-analyzer.cpp wizard/artifact-analyzer.h \
 	wizard/artifact-bias-table.cpp wizard/artifact-bias-table.h \
@@ -1693,7 +1694,8 @@ hengband_test_SOURCES = \
 	test/view/test-map-info-cache.cpp \
 	test/view/test-map-terrain-visibility.cpp \
 	\
-	test/window/test-overview-map-cache.cpp
+	test/window/test-overview-map-cache.cpp \
+	test/window/test-shrunk-overview-map.cpp
 
 hengband_test_LDADD = libhengband.a
 
