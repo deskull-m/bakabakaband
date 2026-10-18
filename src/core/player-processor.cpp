@@ -341,6 +341,8 @@ void process_player(CreatureEntity &creature)
                 rfu.set_flag(MainWindowRedrawingFlag::MAP);
             }
 
+            // 感知の印は下で行動ごとに外すので、途切れないよう外す前に感知し直す
+            check_emission(creature);
             for (MONSTER_IDX m_idx = 1; m_idx < creature.get_floor()->m_max; m_idx++) {
                 auto &monster = creature.get_floor()->m_list[m_idx];
                 if (!monster.is_valid()) {
@@ -445,10 +447,6 @@ void process_upkeep_with_speed(CreatureEntity &creature)
     while (creature.get_enchant_energy_need() <= 0) {
         if (!load) {
             check_music(creature);
-        }
-
-        if (!load) {
-            check_emission(creature);
         }
 
         if (!load) {
