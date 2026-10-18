@@ -278,7 +278,7 @@ void store_purchase(CreatureEntity &creature, StoreScreen &screen)
 
     const auto idx = find_autopick_list(creature, &item);
     if (auto_inscribe_item(item, idx)) {
-        RedrawingFlagsUpdater::get_instance().request_autopick_inscription();
+        RedrawingFlagsUpdater::get_instance().request_inscription_change_updates();
     }
 
     item_new = creature.store_item(item);

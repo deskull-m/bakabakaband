@@ -359,13 +359,8 @@ void do_cmd_wield(CreatureEntity &creature)
     }
 
     calc_android_exp(creature);
-    static constexpr auto flags_srf = {
-        StatusRecalculatingFlag::BONUS,
-        StatusRecalculatingFlag::TORCH,
-        StatusRecalculatingFlag::MP,
-    };
     auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.set_flags(flags_srf);
+    rfu.request_equipment_change_updates();
     rfu.set_flag(MainWindowRedrawingFlag::EQUIPPY);
     rfu.set_flag(SubWindowRedrawingFlag::PLAYER);
 }
@@ -412,12 +407,7 @@ void do_cmd_takeoff(CreatureEntity &creature)
     (void)inven_takeoff(creature, i_idx, 255);
     verify_equip_slot(creature, i_idx);
     calc_android_exp(creature);
-    static constexpr auto flags_srf = {
-        StatusRecalculatingFlag::BONUS,
-        StatusRecalculatingFlag::TORCH,
-        StatusRecalculatingFlag::MP,
-    };
-    rfu.set_flags(flags_srf);
+    rfu.request_equipment_change_updates();
     rfu.set_flag(MainWindowRedrawingFlag::EQUIPPY);
     rfu.set_flag(SubWindowRedrawingFlag::PLAYER);
 }

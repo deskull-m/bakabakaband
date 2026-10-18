@@ -107,3 +107,87 @@ TEST_CASE("RedrawingFlagsUpdater::request_floor_item_lists_redrawing requests re
         CHECK(rfu.has(flag));
     }
 }
+
+TEST_CASE("RedrawingFlagsUpdater::request_inscription_change_updates requests recalculating the bonuses and combining the inventory")
+{
+    auto &rfu = RedrawingFlagsUpdater::get_instance();
+    const auto restore = util::make_finalizer([&rfu,
+                                                  bonus = rfu.has(StatusRecalculatingFlag::BONUS),
+                                                  combination = rfu.has(InventoryArrangementFlag::COMBINATION),
+                                                  reorder = rfu.has(InventoryArrangementFlag::REORDER)] {
+        restore_flag(rfu, StatusRecalculatingFlag::BONUS, bonus);
+        restore_flag(rfu, InventoryArrangementFlag::COMBINATION, combination);
+        restore_flag(rfu, InventoryArrangementFlag::REORDER, reorder);
+    });
+    rfu.reset_flag(StatusRecalculatingFlag::BONUS);
+    rfu.reset_flag(InventoryArrangementFlag::COMBINATION);
+    rfu.reset_flag(InventoryArrangementFlag::REORDER);
+
+    rfu.request_inscription_change_updates();
+
+    CHECK(rfu.has(StatusRecalculatingFlag::BONUS));
+    CHECK(rfu.has(InventoryArrangementFlag::COMBINATION));
+    CHECK_FALSE(rfu.has(InventoryArrangementFlag::REORDER));
+}
+
+TEST_CASE("RedrawingFlagsUpdater::request_equipment_change_updates requests recalculating the bonuses, the light radius and the max MP")
+{
+    auto &rfu = RedrawingFlagsUpdater::get_instance();
+    const auto restore = util::make_finalizer([&rfu,
+                                                  bonus = rfu.has(StatusRecalculatingFlag::BONUS),
+                                                  torch = rfu.has(StatusRecalculatingFlag::TORCH),
+                                                  mp = rfu.has(StatusRecalculatingFlag::MP),
+                                                  hp = rfu.has(StatusRecalculatingFlag::HP)] {
+        restore_flag(rfu, StatusRecalculatingFlag::BONUS, bonus);
+        restore_flag(rfu, StatusRecalculatingFlag::TORCH, torch);
+        restore_flag(rfu, StatusRecalculatingFlag::MP, mp);
+        restore_flag(rfu, StatusRecalculatingFlag::HP, hp);
+    });
+    rfu.reset_flag(StatusRecalculatingFlag::BONUS);
+    rfu.reset_flag(StatusRecalculatingFlag::TORCH);
+    rfu.reset_flag(StatusRecalculatingFlag::MP);
+    rfu.reset_flag(StatusRecalculatingFlag::HP);
+
+    rfu.request_equipment_change_updates();
+
+    CHECK(rfu.has(StatusRecalculatingFlag::BONUS));
+    CHECK(rfu.has(StatusRecalculatingFlag::TORCH));
+    CHECK(rfu.has(StatusRecalculatingFlag::MP));
+    CHECK_FALSE(rfu.has(StatusRecalculatingFlag::HP));
+}
+
+TEST_CASE("RedrawingFlagsUpdater::request_whole_status_recalculation requests recalculating the status, the view and the lights")
+{
+    auto &rfu = RedrawingFlagsUpdater::get_instance();
+    static constexpr auto flags_srf = {
+        StatusRecalculatingFlag::TORCH,
+        StatusRecalculatingFlag::BONUS,
+        StatusRecalculatingFlag::HP,
+        StatusRecalculatingFlag::MP,
+        StatusRecalculatingFlag::SPELLS,
+        StatusRecalculatingFlag::UN_VIEW,
+        StatusRecalculatingFlag::UN_LITE,
+        StatusRecalculatingFlag::VIEW,
+        StatusRecalculatingFlag::LITE,
+        StatusRecalculatingFlag::MONSTER_LITE,
+        StatusRecalculatingFlag::MONSTER_STATUSES,
+    };
+    const auto restore = util::make_finalizer([&rfu,
+                                                  flow = rfu.has(StatusRecalculatingFlag::FLOW),
+                                                  distance = rfu.has(StatusRecalculatingFlag::DISTANCE)] {
+        restore_flag(rfu, StatusRecalculatingFlag::FLOW, flow);
+        restore_flag(rfu, StatusRecalculatingFlag::DISTANCE, distance);
+    });
+    rfu.reset_flags(flags_srf);
+    rfu.reset_flag(StatusRecalculatingFlag::FLOW);
+    rfu.reset_flag(StatusRecalculatingFlag::DISTANCE);
+
+    rfu.request_whole_status_recalculation();
+
+    for (const auto flag : flags_srf) {
+        CHECK(rfu.has(flag));
+    }
+
+    CHECK_FALSE(rfu.has(StatusRecalculatingFlag::FLOW));
+    CHECK_FALSE(rfu.has(StatusRecalculatingFlag::DISTANCE));
+}
