@@ -47,6 +47,7 @@
 #include "player-info/race-types.h"
 #include "player-info/self-info.h"
 #include "player-status/player-energy.h"
+#include "player/attack-defense-types.h"
 #include "player/digestion-processor.h"
 #include "player/player-realm.h"
 #include "player/player-skill.h"
@@ -56,6 +57,7 @@
 #include "player/race-info-table.h"
 #include "spell-kind/spells-world.h"
 #include "spell/spells-status.h"
+#include "status/action-setter.h"
 #include "status/bad-status-setter.h"
 #include "system/artifact-type-definition.h"
 #include "system/artifact/artifact-record.h"
@@ -554,7 +556,10 @@ static tl::optional<RealmType> wiz_select_realm(const RealmChoices &choices, con
     return (choice != candidates.end()) ? tl::make_optional(*choice) : tl::nullopt;
 }
 
-static tl::optional<std::tuple<RealmType, RealmType, ElementRealmType>> wiz_select_realms(PlayerClassType pclass)
+//! デバッグコマンドで選んだ領域 (第 1 領域・第 2 領域・元素の領域)
+using WizChosenRealms = std::tuple<RealmType, RealmType, ElementRealmType>;
+
+static tl::optional<WizChosenRealms> wiz_select_realms(PlayerClassType pclass)
 {
     if (pclass == PlayerClassType::ELEMENTALIST) {
         const auto realm = wiz_select_element_realm();
@@ -608,8 +613,37 @@ void wiz_reset_race(CreatureEntity &creature)
 }
 
 /*!
+ * @brief 選んだ領域をプレイヤーに設定し、呪文の習得状況を初期化する
+ * @param creature クリーチャーへの参照
+ * @param chosen_realms 選んだ領域
+ * @param should_init_specific_data 職業固有のデータを作り直すならtrue
+ */
+static void wiz_apply_realms(CreatureEntity &creature, const WizChosenRealms &chosen_realms, bool should_init_specific_data)
+{
+    PlayerRealm pr(creature);
+    pr.reset();
+    const auto &[realm1, realm2, element_realm] = chosen_realms;
+    if (realm1 != RealmType::NONE) {
+        pr.set(realm1, realm2);
+    }
+    creature.set_element_realm(element_realm);
+
+    // 職業固有のデータは領域によって変わる (呪術のハイ=メイジ) ので、領域を決めた後に作り直す
+    if (should_init_specific_data) {
+        CreatureClass(creature).init_specific_data();
+    }
+
+    PlayerSpellStatus pss(creature);
+    pss.realm1().initialize();
+    pss.realm2().initialize();
+    creature.set_learned_spells(0);
+    change_birth_flags();
+    handle_stuff(creature);
+}
+
+/*!
  * @brief プレイヤーの職業を変更する
- * @todo 魔法領域の再選択などがまだ不完全、要実装。
+ * @todo 呪文の熟練度 (spell_exp) は前の職業・領域のものが残る
  */
 void wiz_reset_class(CreatureEntity &creature)
 {
@@ -627,24 +661,13 @@ void wiz_reset_class(CreatureEntity &creature)
         return;
     }
 
+    // 歌・呪術の詠唱・構えなどは、今の職業固有のデータで止めてから職業を変える
+    set_action(creature, ACTION_NONE);
     creature.pclass = *chosen_class;
     cp_ptr = &class_info.at(creature.pclass);
     creature.pclass_ref = &class_info.at(creature.pclass);
     mp_ptr = &class_magics_info[enum2i(creature.pclass)];
-    CreatureClass(creature).init_specific_data();
-    PlayerRealm pr(creature);
-    pr.reset();
-    const auto &[realm1, realm2, element_realm] = *chosen_realms;
-    if (realm1 != RealmType::NONE) {
-        pr.set(realm1, realm2);
-    }
-    creature.set_element_realm(element_realm);
-    PlayerSpellStatus pss(creature);
-    pss.realm1().initialize();
-    pss.realm2().initialize();
-    creature.set_learned_spells(0);
-    change_birth_flags();
-    handle_stuff(creature);
+    wiz_apply_realms(creature, *chosen_realms, true);
 }
 
 /*!
@@ -658,19 +681,15 @@ void wiz_reset_realms(CreatureEntity &creature)
         return;
     }
 
-    PlayerRealm pr(creature);
-    pr.reset();
-    const auto &[realm1, realm2, element_realm] = *chosen_realms;
-    if (realm1 != RealmType::NONE) {
-        pr.set(realm1, realm2);
+    // 呪術を使う・使っていたハイ=メイジだけ職業固有のデータを作り直すので、そのときは先に今のデータで詠唱などを止める
+    const auto &[new_realm1, new_realm2, new_element_realm] = *chosen_realms;
+    const auto is_hex_involved = PlayerRealm(creature).is_realm_hex() || (new_realm1 == RealmType::HEX);
+    const auto should_init_specific_data = CreatureClass(creature).equals(PlayerClassType::HIGH_MAGE) && is_hex_involved;
+    if (should_init_specific_data) {
+        set_action(creature, ACTION_NONE);
     }
-    creature.set_element_realm(element_realm);
-    PlayerSpellStatus pss(creature);
-    pss.realm1().initialize();
-    pss.realm2().initialize();
-    creature.set_learned_spells(0);
-    change_birth_flags();
-    handle_stuff(creature);
+
+    wiz_apply_realms(creature, *chosen_realms, should_init_specific_data);
 }
 
 /*!
