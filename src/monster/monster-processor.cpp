@@ -90,7 +90,6 @@
 #include "system/terrain/terrain-definition.h"
 #include "system/terrain/terrain-list.h"
 #include "target/projection-path-calculator.h"
-#include "tracking/lore-tracker.h"
 #include "view/display-messages.h"
 #include "world/world.h"
 #include <algorithm>
@@ -1603,16 +1602,8 @@ bool process_monster_fear(CreatureEntity &creature, turn_flags *turn_flags_ptr, 
  */
 void process_monsters(CreatureEntity &creature)
 {
-    const auto &tracker = LoreTracker::get_instance();
-    const auto old_monrace_id = tracker.get_trackee();
-    OldRaceFlags flags(old_monrace_id);
     creature.get_floor()->monster_noise = false;
     sweep_monster_process(creature);
-    if (!tracker.is_tracking() || !tracker.is_tracking(old_monrace_id)) {
-        return;
-    }
-
-    flags.update_lore_window_flag(tracker.get_tracking_monrace());
 }
 
 /*!

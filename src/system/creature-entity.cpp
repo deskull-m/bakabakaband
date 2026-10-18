@@ -59,7 +59,6 @@
 #include "term/z-util.h"
 #include "timed-effect/player-cut.h"
 #include "timed-effect/player-stun.h"
-#include "tracking/lore-tracker.h"
 #include "util/bit-flags-calculator.h"
 #include "util/enum-converter.h"
 #include "view/display-messages.h"
@@ -927,9 +926,6 @@ void CreatureEntity::make_lore_treasure(int num_item, int num_gold) const
     }
 
     monrace.make_lore_treasure(num_item, num_gold);
-    if (LoreTracker::get_instance().is_tracking(this->r_idx)) {
-        RedrawingFlagsUpdater::get_instance().set_flag(SubWindowRedrawingFlag::MONSTER_LORE);
-    }
 }
 
 bool CreatureEntity::is_valid() const
