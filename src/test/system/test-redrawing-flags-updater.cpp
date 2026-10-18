@@ -191,3 +191,39 @@ TEST_CASE("RedrawingFlagsUpdater::request_whole_status_recalculation requests re
     CHECK_FALSE(rfu.has(StatusRecalculatingFlag::FLOW));
     CHECK_FALSE(rfu.has(StatusRecalculatingFlag::DISTANCE));
 }
+
+TEST_CASE("RedrawingFlagsUpdater::request_sight_recalculation requests forgetting and recalculating the view and the lights")
+{
+    auto &rfu = RedrawingFlagsUpdater::get_instance();
+    static constexpr auto flags_srf = {
+        StatusRecalculatingFlag::UN_VIEW,
+        StatusRecalculatingFlag::UN_LITE,
+        StatusRecalculatingFlag::VIEW,
+        StatusRecalculatingFlag::LITE,
+        StatusRecalculatingFlag::MONSTER_LITE,
+    };
+    const auto restore = util::make_finalizer([&rfu,
+                                                  un_view = rfu.has(StatusRecalculatingFlag::UN_VIEW),
+                                                  un_lite = rfu.has(StatusRecalculatingFlag::UN_LITE),
+                                                  view = rfu.has(StatusRecalculatingFlag::VIEW),
+                                                  lite = rfu.has(StatusRecalculatingFlag::LITE),
+                                                  monster_lite = rfu.has(StatusRecalculatingFlag::MONSTER_LITE),
+                                                  flow = rfu.has(StatusRecalculatingFlag::FLOW)] {
+        restore_flag(rfu, StatusRecalculatingFlag::UN_VIEW, un_view);
+        restore_flag(rfu, StatusRecalculatingFlag::UN_LITE, un_lite);
+        restore_flag(rfu, StatusRecalculatingFlag::VIEW, view);
+        restore_flag(rfu, StatusRecalculatingFlag::LITE, lite);
+        restore_flag(rfu, StatusRecalculatingFlag::MONSTER_LITE, monster_lite);
+        restore_flag(rfu, StatusRecalculatingFlag::FLOW, flow);
+    });
+    rfu.reset_flags(flags_srf);
+    rfu.reset_flag(StatusRecalculatingFlag::FLOW);
+
+    rfu.request_sight_recalculation();
+
+    for (const auto flag : flags_srf) {
+        CHECK(rfu.has(flag));
+    }
+
+    CHECK_FALSE(rfu.has(StatusRecalculatingFlag::FLOW));
+}

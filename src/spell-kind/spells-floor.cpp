@@ -144,14 +144,7 @@ void wiz_dark(CreatureEntity &creature)
 
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.request_monster_update_and_map_redrawing();
-    static constexpr auto flags_srf = {
-        StatusRecalculatingFlag::UN_VIEW,
-        StatusRecalculatingFlag::UN_LITE,
-        StatusRecalculatingFlag::VIEW,
-        StatusRecalculatingFlag::LITE,
-        StatusRecalculatingFlag::MONSTER_LITE,
-    };
-    rfu.set_flags(flags_srf);
+    rfu.request_sight_recalculation();
     rfu.request_floor_item_lists_redrawing();
 }
 
@@ -435,15 +428,8 @@ bool destroy_area(CreatureEntity &creature, const POSITION y1, const POSITION x1
     forget_flow(floor);
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.request_monster_update_and_map_redrawing();
-    static constexpr auto flags_srf = {
-        StatusRecalculatingFlag::UN_VIEW,
-        StatusRecalculatingFlag::UN_LITE,
-        StatusRecalculatingFlag::VIEW,
-        StatusRecalculatingFlag::LITE,
-        StatusRecalculatingFlag::FLOW,
-        StatusRecalculatingFlag::MONSTER_LITE,
-    };
-    rfu.set_flags(flags_srf);
+    rfu.request_sight_recalculation();
+    rfu.set_flag(StatusRecalculatingFlag::FLOW);
     if (floor.grid_array[creature.y][creature.x].info & CAVE_GLOW) {
         set_superstealth(creature, false);
     }
