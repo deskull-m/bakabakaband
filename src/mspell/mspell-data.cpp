@@ -48,9 +48,9 @@ MSpellMessageData::MSpellMessageData(const mspell_cast_msg_blind &msg_string)
 {
 }
 
-MSpellMessageData::MSpellMessageData(const std::string_view &blind, const std::string_view &to_player, const std::string_view &to_monster)
+MSpellMessageData::MSpellMessageData(MSpellMessageFormat blind, MSpellMessageFormat to_player, MSpellMessageFormat to_monster)
     : output([blind, to_player, to_monster](CreatureEntity &creature, auto m_idx, auto t_idx, int target_type) {
-        return monspell_message(creature, m_idx, t_idx, { blind.data(), to_player.data(), to_monster.data() }, target_type);
+        return monspell_message(creature, m_idx, t_idx, { blind, to_player, to_monster }, target_type);
     })
 {
 }

@@ -39,6 +39,7 @@
 #include "util/bit-flags-calculator.h"
 #include "util/string-processor.h"
 #include "view/display-messages.h"
+#include <fmt/base.h>
 
 /*!
  * @brief RF4_SHRIEKの処理。叫び。 /
@@ -51,8 +52,8 @@
  */
 MonsterSpellResult spell_RF4_SHRIEK(MONSTER_IDX m_idx, CreatureEntity &creature, MONSTER_IDX t_idx, int target_type)
 {
-    mspell_cast_msg_simple msg(_("%s^がかん高い金切り声をあげた。", "%s^ makes a high pitched shriek."),
-        _("%s^が%sに向かって叫んだ。", "%s^ shrieks at %s."));
+    mspell_cast_msg_simple msg(_("{}がかん高い金切り声をあげた。", "{} makes a high pitched shriek."),
+        _("{}が{}に向かって叫んだ。", "{} shrieks at {}."));
 
     simple_monspell_message(creature, m_idx, t_idx, msg, target_type);
 
@@ -176,8 +177,8 @@ MonsterSpellResult spell_RF6_TELE_TO(CreatureEntity &creature, MONSTER_IDX m_idx
     const auto &monster_target = floor.get_monster(t_idx);
     auto &monrace_target = monster_target.get_monrace();
 
-    mspell_cast_msg_simple msg(_("%s^があなたを引き戻した。", "%s^ commands you to return."),
-        _("%s^が%sを引き戻した。", "%s^ commands %s to return."));
+    mspell_cast_msg_simple msg(_("{}があなたを引き戻した。", "{} commands you to return."),
+        _("{}が{}を引き戻した。", "{} commands {} to return."));
 
     simple_monspell_message(creature, m_idx, t_idx, msg, target_type);
 
@@ -246,8 +247,8 @@ MonsterSpellResult spell_RF6_TELE_AWAY(CreatureEntity &creature, MONSTER_IDX m_i
     const auto &monster_target = floor.get_monster(t_idx);
     auto &monrace_target = monster_target.get_monrace();
 
-    mspell_cast_msg_simple msg(_("%s^にテレポートさせられた。", "%s^ teleports you away."),
-        _("%s^は%sをテレポートさせた。", "%s^ teleports %s away."));
+    mspell_cast_msg_simple msg(_("{}にテレポートさせられた。", "{} teleports you away."),
+        _("{}は{}をテレポートさせた。", "{} teleports {} away."));
 
     simple_monspell_message(creature, m_idx, t_idx, msg, target_type);
 
@@ -333,8 +334,8 @@ MonsterSpellResult spell_RF6_TELE_LEVEL(CreatureEntity &creature, MONSTER_IDX m_
         resist = (creature.has_resist_shard() != 0);
         saving_throw = (creature.does_save_against(rlev));
 
-        mspell_cast_msg_bad_status_to_player msg(_("%s^が何か奇妙な言葉をつぶやいた。", "%s^ mumbles strangely."),
-            _("%s^があなたの足を指さした。", "%s^ gestures at your feet."), _("しかし効果がなかった！", "You are unaffected!"),
+        mspell_cast_msg_bad_status_to_player msg(_("{}が何か奇妙な言葉をつぶやいた。", "{} mumbles strangely."),
+            _("{}があなたの足を指さした。", "{} gestures at your feet."), _("しかし効果がなかった！", "You are unaffected!"),
             _("しかし効力を跳ね返した！", "You resist the effects!"));
 
         spell_badstatus_message_to_player(creature, m_idx, msg, resist, saving_throw);
@@ -354,8 +355,8 @@ MonsterSpellResult spell_RF6_TELE_LEVEL(CreatureEntity &creature, MONSTER_IDX m_
     resist = monrace_target.resistance_flags.has_any_of(RFR_EFF_RESIST_NEXUS_MASK) || monrace_target.resistance_flags.has(MonsterResistanceType::RESIST_TELEPORT);
     saving_throw = (monrace_target.misc_flags.has(MonsterMiscType::QUESTOR)) || (monrace_target.level > randint1((rlev - 10) < 1 ? 1 : (rlev - 10)) + 10);
 
-    mspell_cast_msg_bad_status_to_monster msg(_("%s^が%sの足を指さした。", "%s^ gestures at %s's feet."),
-        _("%s^には効果がなかった。", "%s^ is unaffected!"), _("%s^は効力を跳ね返した！", "%s^ resist the effects!"), "");
+    mspell_cast_msg_bad_status_to_monster msg(_("{}が{}の足を指さした。", "{} gestures at {}'s feet."),
+        _("{}には効果がなかった。", "{} is unaffected!"), _("{}は効力を跳ね返した！", "{} resist the effects!"), "");
 
     spell_badstatus_message_to_mons(creature, m_idx, t_idx, msg, resist, saving_throw);
 
@@ -381,7 +382,6 @@ MonsterSpellResult spell_RF6_DARKNESS(CreatureEntity &creature, POSITION y, POSI
 {
     const Pos2D pos(y, x);
     mspell_cast_msg_blind msg;
-    concptr msg_done;
     const auto &floor = *creature.get_floor();
     const auto &monster = floor.get_monster(m_idx);
     const auto &monrace = monster.get_monrace();
@@ -406,23 +406,21 @@ MonsterSpellResult spell_RF6_DARKNESS(CreatureEntity &creature, POSITION y, POSI
     res.learnable = monster_to_player && !can_use_lite_area;
 
     if (can_use_lite_area) {
-        msg.blind = _("%s^が何かをつぶやいた。", "%s^ mumbles.");
-        msg.to_player = _("%s^が辺りを明るく照らした。", "%s^ cast a spell to light up.");
-        msg.to_mons = _("%s^が辺りを明るく照らした。", "%s^ cast a spell to light up.");
-
-        msg_done = _("%s^は白い光に包まれた。", "%s^ is surrounded by a white light.");
+        msg.blind = _("{}が何かをつぶやいた。", "{} mumbles.");
+        msg.to_player = _("{}が辺りを明るく照らした。", "{} cast a spell to light up.");
+        msg.to_mons = _("{}が辺りを明るく照らした。", "{} cast a spell to light up.");
     } else {
-        msg.blind = _("%s^が何かをつぶやいた。", "%s^ mumbles.");
-        msg.to_player = _("%s^が暗闇の中で手を振った。", "%s^ gestures in shadow.");
-        msg.to_mons = _("%s^が暗闇の中で手を振った。", "%s^ gestures in shadow.");
-
-        msg_done = _("%s^は暗闇に包まれた。", "%s^ is surrounded by darkness.");
+        msg.blind = _("{}が何かをつぶやいた。", "{} mumbles.");
+        msg.to_player = _("{}が暗闇の中で手を振った。", "{} gestures in shadow.");
+        msg.to_mons = _("{}が暗闇の中で手を振った。", "{} gestures in shadow.");
     }
 
     monspell_message(creature, m_idx, t_idx, msg, target_type);
 
+    using DoneFormat = fmt::format_string<std::string_view>;
+    const auto msg_done = can_use_lite_area ? DoneFormat(_("{}は白い光に包まれた。", "{} is surrounded by a white light.")) : DoneFormat(_("{}は暗闇に包まれた。", "{} is surrounded by darkness."));
     if (see_monster(creature, t_idx) && monster_to_monster) {
-        msg_format(msg_done, t_name.data());
+        msg_print(msg_done, std::string_view(str_upcase_first(t_name)));
     }
 
     if (monster_to_player) {
@@ -484,8 +482,8 @@ MonsterSpellResult spell_RF6_TRAPS(CreatureEntity &creature, POSITION y, POSITIO
 MonsterSpellResult spell_RF6_RAISE_DEAD(CreatureEntity &creature, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
 {
     const auto &monster = creature.get_floor()->get_monster(m_idx);
-    mspell_cast_msg_blind msg(_("%s^が何かをつぶやいた。", "%s^ mumbles."),
-        _("%s^が死者復活の呪文を唱えた。", "%s^ casts a spell to revive corpses."), _("%s^が死者復活の呪文を唱えた。", "%s^ casts a spell to revive corpses."));
+    mspell_cast_msg_blind msg(_("{}が何かをつぶやいた。", "{} mumbles."),
+        _("{}が死者復活の呪文を唱えた。", "{} casts a spell to revive corpses."), _("{}が死者復活の呪文を唱えた。", "{} casts a spell to revive corpses."));
 
     monspell_message(creature, m_idx, t_idx, msg, target_type);
 

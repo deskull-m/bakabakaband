@@ -111,9 +111,9 @@ static void decide_summon_kin_caster(
     bool mon_to_player = target_type == MONSTER_TO_PLAYER;
 
     if (monster.get_r_idx() == MonraceId::SERPENT || monster.get_r_idx() == MonraceId::ZOMBI_SERPENT) {
-        mspell_cast_msg_blind msg(_("%s^が何かをつぶやいた。", "%s^ mumbles."),
-            _("%s^がダンジョンの主を召喚した。", "%s^ magically summons guardians of dungeons."),
-            _("%s^がダンジョンの主を召喚した。", "%s^ magically summons guardians of dungeons."));
+        mspell_cast_msg_blind msg(_("{}が何かをつぶやいた。", "{} mumbles."),
+            _("{}がダンジョンの主を召喚した。", "{} magically summons guardians of dungeons."),
+            _("{}がダンジョンの主を召喚した。", "{} magically summons guardians of dungeons."));
 
         monspell_message(creature, m_idx, t_idx, msg, target_type);
         return;
@@ -268,9 +268,9 @@ MonsterSpellResult spell_RF6_S_CYBER(CreatureEntity &creature, POSITION y, POSIT
     bool mon_to_player = (target_type == MONSTER_TO_PLAYER);
     bool see_either = see_monster(creature, m_idx) || see_monster(creature, t_idx);
     bool known = monster_near_player(creature, m_idx, t_idx);
-    mspell_cast_msg_blind msg(_("%s^が何かをつぶやいた。", "%s^ mumbles."),
-        _("%s^がサイバーデーモンを召喚した！", "%s^ magically summons Cyberdemons!"),
-        _("%s^がサイバーデーモンを召喚した！", "%s^ magically summons Cyberdemons!"));
+    mspell_cast_msg_blind msg(_("{}が何かをつぶやいた。", "{} mumbles."),
+        _("{}がサイバーデーモンを召喚した！", "{} magically summons Cyberdemons!"),
+        _("{}がサイバーデーモンを召喚した！", "{} magically summons Cyberdemons!"));
 
     monspell_message(creature, m_idx, t_idx, msg, target_type);
     summon_disturb(creature, target_type, known, see_either);
@@ -313,8 +313,8 @@ MonsterSpellResult spell_RF6_S_MONSTER(CreatureEntity &creature, POSITION y, POS
     bool see_either = see_monster(creature, m_idx) || see_monster(creature, t_idx);
     bool known = monster_near_player(creature, m_idx, t_idx);
 
-    mspell_cast_msg_blind msg(_("%s^が何かをつぶやいた。", "%s^ mumbles."), _("%s^が魔法で仲間を召喚した！", "%s^ magically summons help!"),
-        _("%s^が魔法で仲間を召喚した！", "%s^ magically summons help!"));
+    mspell_cast_msg_blind msg(_("{}が何かをつぶやいた。", "{} mumbles."), _("{}が魔法で仲間を召喚した！", "{} magically summons help!"),
+        _("{}が魔法で仲間を召喚した！", "{} magically summons help!"));
 
     monspell_message(creature, m_idx, t_idx, msg, target_type);
     summon_disturb(creature, target_type, known, see_either);
@@ -361,8 +361,8 @@ MonsterSpellResult spell_RF6_S_MONSTERS(CreatureEntity &creature, POSITION y, PO
     bool see_either = see_monster(creature, m_idx) || see_monster(creature, t_idx);
     bool known = monster_near_player(creature, m_idx, t_idx);
 
-    mspell_cast_msg_blind msg(_("%s^が何かをつぶやいた。", "%s^ mumbles."),
-        _("%s^が魔法でモンスターを召喚した！", "%s^ magically summons monsters!"), _("%s^が魔法でモンスターを召喚した！", "%s^ magically summons monsters!"));
+    mspell_cast_msg_blind msg(_("{}が何かをつぶやいた。", "{} mumbles."),
+        _("{}が魔法でモンスターを召喚した！", "{} magically summons monsters!"), _("{}が魔法でモンスターを召喚した！", "{} magically summons monsters!"));
 
     monspell_message(creature, m_idx, t_idx, msg, target_type);
     summon_disturb(creature, target_type, known, see_either);
@@ -409,8 +409,8 @@ MonsterSpellResult spell_RF6_S_ANT(CreatureEntity &creature, POSITION y, POSITIO
     bool see_either = see_monster(creature, m_idx) || see_monster(creature, t_idx);
     bool known = monster_near_player(creature, m_idx, t_idx);
 
-    mspell_cast_msg_blind msg(_("%s^が何かをつぶやいた。", "%s^ mumbles."), _("%s^が魔法でアリを召喚した。", "%s^ magically summons ants."),
-        _("%s^が魔法でアリを召喚した。", "%s^ magically summons ants."));
+    mspell_cast_msg_blind msg(_("{}が何かをつぶやいた。", "{} mumbles."), _("{}が魔法でアリを召喚した。", "{} magically summons ants."),
+        _("{}が魔法でアリを召喚した。", "{} magically summons ants."));
 
     monspell_message(creature, m_idx, t_idx, msg, target_type);
     summon_disturb(creature, target_type, known, see_either);
@@ -451,8 +451,8 @@ MonsterSpellResult spell_RF6_S_SPIDER(CreatureEntity &creature, POSITION y, POSI
     bool see_either = see_monster(creature, m_idx) || see_monster(creature, t_idx);
     bool known = monster_near_player(creature, m_idx, t_idx);
 
-    mspell_cast_msg_blind msg(_("%s^が何かをつぶやいた。", "%s^ mumbles."), _("%s^が魔法でクモを召喚した。", "%s^ magically summons spiders."),
-        _("%s^が魔法でクモを召喚した。", "%s^ magically summons spiders."));
+    mspell_cast_msg_blind msg(_("{}が何かをつぶやいた。", "{} mumbles."), _("{}が魔法でクモを召喚した。", "{} magically summons spiders."),
+        _("{}が魔法でクモを召喚した。", "{} magically summons spiders."));
 
     monspell_message(creature, m_idx, t_idx, msg, target_type);
     summon_disturb(creature, target_type, known, see_either);
@@ -493,8 +493,8 @@ MonsterSpellResult spell_RF6_S_HOUND(CreatureEntity &creature, POSITION y, POSIT
     bool see_either = see_monster(creature, m_idx) || see_monster(creature, t_idx);
     bool known = monster_near_player(creature, m_idx, t_idx);
 
-    mspell_cast_msg_blind msg(_("%s^が何かをつぶやいた。", "%s^ mumbles."),
-        _("%s^が魔法でハウンドを召喚した。", "%s^ magically summons hounds."), _("%s^が魔法でハウンドを召喚した。", "%s^ magically summons hounds."));
+    mspell_cast_msg_blind msg(_("{}が何かをつぶやいた。", "{} mumbles."),
+        _("{}が魔法でハウンドを召喚した。", "{} magically summons hounds."), _("{}が魔法でハウンドを召喚した。", "{} magically summons hounds."));
 
     monspell_message(creature, m_idx, t_idx, msg, target_type);
     summon_disturb(creature, target_type, known, see_either);
@@ -535,8 +535,8 @@ MonsterSpellResult spell_RF6_S_HYDRA(CreatureEntity &creature, POSITION y, POSIT
     bool see_either = see_monster(creature, m_idx) || see_monster(creature, t_idx);
     bool known = monster_near_player(creature, m_idx, t_idx);
 
-    mspell_cast_msg_blind msg(_("%s^が何かをつぶやいた。", "%s^ mumbles."),
-        _("%s^が魔法でヒドラを召喚した。", "%s^ magically summons hydras."), _("%s^が魔法でヒドラを召喚した。", "%s^ magically summons hydras."));
+    mspell_cast_msg_blind msg(_("{}が何かをつぶやいた。", "{} mumbles."),
+        _("{}が魔法でヒドラを召喚した。", "{} magically summons hydras."), _("{}が魔法でヒドラを召喚した。", "{} magically summons hydras."));
 
     monspell_message(creature, m_idx, t_idx, msg, target_type);
     summon_disturb(creature, target_type, known, see_either);
@@ -702,8 +702,8 @@ MonsterSpellResult spell_RF6_S_ANGEL(CreatureEntity &creature, POSITION y, POSIT
     bool see_either = see_monster(creature, m_idx) || see_monster(creature, t_idx);
     bool known = monster_near_player(creature, m_idx, t_idx);
 
-    mspell_cast_msg_blind msg(_("%s^が何かをつぶやいた。", "%s^ mumbles."),
-        _("%s^が魔法で天使を召喚した！", "%s^ magically summons an angel!"), _("%s^が魔法で天使を召喚した！", "%s^ magically summons an angel!"));
+    mspell_cast_msg_blind msg(_("{}が何かをつぶやいた。", "{} mumbles."),
+        _("{}が魔法で天使を召喚した！", "{} magically summons an angel!"), _("{}が魔法で天使を召喚した！", "{} magically summons an angel!"));
 
     monspell_message(creature, m_idx, t_idx, msg, target_type);
     summon_disturb(creature, target_type, known, see_either);
@@ -757,9 +757,9 @@ MonsterSpellResult spell_RF6_S_DEMON(CreatureEntity &creature, POSITION y, POSIT
     bool see_either = see_monster(creature, m_idx) || see_monster(creature, t_idx);
     bool known = monster_near_player(creature, m_idx, t_idx);
 
-    mspell_cast_msg_blind msg(_("%s^が何かをつぶやいた。", "%s^ mumbles."),
-        _("%s^は魔法で混沌の宮廷から悪魔を召喚した！", "%s^ magically summons a demon from the Courts of Chaos!"),
-        _("%s^は魔法で混沌の宮廷から悪魔を召喚した！", "%s^ magically summons a demon from the Courts of Chaos!"));
+    mspell_cast_msg_blind msg(_("{}が何かをつぶやいた。", "{} mumbles."),
+        _("{}は魔法で混沌の宮廷から悪魔を召喚した！", "{} magically summons a demon from the Courts of Chaos!"),
+        _("{}は魔法で混沌の宮廷から悪魔を召喚した！", "{} magically summons a demon from the Courts of Chaos!"));
 
     monspell_message(creature, m_idx, t_idx, msg, target_type);
     summon_disturb(creature, target_type, known, see_either);
@@ -799,9 +799,9 @@ MonsterSpellResult spell_RF6_S_UNDEAD(CreatureEntity &creature, POSITION y, POSI
     bool see_either = see_monster(creature, m_idx) || see_monster(creature, t_idx);
     bool known = monster_near_player(creature, m_idx, t_idx);
 
-    mspell_cast_msg_blind msg(_("%s^が何かをつぶやいた。", "%s^ mumbles."),
-        _("%s^が魔法でアンデッドの強敵を召喚した！", "%s^ magically summons an undead adversary!"),
-        _("%sが魔法でアンデッドを召喚した。", "%s^ magically summons undead."));
+    mspell_cast_msg_blind msg(_("{}が何かをつぶやいた。", "{} mumbles."),
+        _("{}が魔法でアンデッドの強敵を召喚した！", "{} magically summons an undead adversary!"),
+        _("{}が魔法でアンデッドを召喚した。", "{} magically summons undead."));
 
     monspell_message(creature, m_idx, t_idx, msg, target_type);
     summon_disturb(creature, target_type, known, see_either);
@@ -842,8 +842,8 @@ MonsterSpellResult spell_RF6_S_DRAGON(CreatureEntity &creature, POSITION y, POSI
     bool see_either = see_monster(creature, m_idx) || see_monster(creature, t_idx);
     bool known = monster_near_player(creature, m_idx, t_idx);
 
-    mspell_cast_msg_blind msg(_("%s^が何かをつぶやいた。", "%s^ mumbles."),
-        _("%s^が魔法でドラゴンを召喚した！", "%s^ magically summons a dragon!"), _("%s^が魔法でドラゴンを召喚した！", "%s^ magically summons a dragon!"));
+    mspell_cast_msg_blind msg(_("{}が何かをつぶやいた。", "{} mumbles."),
+        _("{}が魔法でドラゴンを召喚した！", "{} magically summons a dragon!"), _("{}が魔法でドラゴンを召喚した！", "{} magically summons a dragon!"));
 
     monspell_message(creature, m_idx, t_idx, msg, target_type);
     summon_disturb(creature, target_type, known, see_either);
@@ -895,9 +895,9 @@ MonsterSpellResult spell_RF6_S_HI_UNDEAD(CreatureEntity &creature, POSITION y, P
     if (monster.can_ring_boss_call_nazgul() && mon_to_player) {
         count += summon_NAZGUL(creature, y, x, m_idx);
     } else {
-        mspell_cast_msg_blind msg(_("%s^が何かをつぶやいた。", "%s^ mumbles."),
-            _("%s^が魔法で強力なアンデッドを召喚した！", "%s^ magically summons greater undead!"),
-            _("%sが魔法でアンデッドを召喚した。", "%s^ magically summons undead."));
+        mspell_cast_msg_blind msg(_("{}が何かをつぶやいた。", "{} mumbles."),
+            _("{}が魔法で強力なアンデッドを召喚した！", "{} magically summons greater undead!"),
+            _("{}が魔法でアンデッドを召喚した。", "{} magically summons undead."));
 
         monspell_message(creature, m_idx, t_idx, msg, target_type);
 
@@ -943,9 +943,9 @@ MonsterSpellResult spell_RF6_S_HI_DRAGON(CreatureEntity &creature, POSITION y, P
     bool see_either = see_monster(creature, m_idx) || see_monster(creature, t_idx);
     bool known = monster_near_player(creature, m_idx, t_idx);
 
-    mspell_cast_msg_blind msg(_("%s^が何かをつぶやいた。", "%s^ mumbles."),
-        _("%s^が魔法で古代ドラゴンを召喚した！", "%s^ magically summons ancient dragons!"),
-        _("%s^が魔法で古代ドラゴンを召喚した！", "%s^ magically summons ancient dragons!"));
+    mspell_cast_msg_blind msg(_("{}が何かをつぶやいた。", "{} mumbles."),
+        _("{}が魔法で古代ドラゴンを召喚した！", "{} magically summons ancient dragons!"),
+        _("{}が魔法で古代ドラゴンを召喚した！", "{} magically summons ancient dragons!"));
 
     monspell_message(creature, m_idx, t_idx, msg, target_type);
     summon_disturb(creature, target_type, known, see_either);
@@ -992,9 +992,9 @@ MonsterSpellResult spell_RF6_S_AMBERITES(CreatureEntity &creature, POSITION y, P
     bool see_either = see_monster(creature, m_idx) || see_monster(creature, t_idx);
     bool known = monster_near_player(creature, m_idx, t_idx);
 
-    mspell_cast_msg_blind msg(_("%s^が何かをつぶやいた。", "%s^ mumbles."),
-        _("%s^がアンバーの王族を召喚した！", "%s^ magically summons Lords of Amber!"),
-        _("%s^がアンバーの王族を召喚した！", "%s^ magically summons Lords of Amber!"));
+    mspell_cast_msg_blind msg(_("{}が何かをつぶやいた。", "{} mumbles."),
+        _("{}がアンバーの王族を召喚した！", "{} magically summons Lords of Amber!"),
+        _("{}がアンバーの王族を召喚した！", "{} magically summons Lords of Amber!"));
 
     monspell_message(creature, m_idx, t_idx, msg, target_type);
     summon_disturb(creature, target_type, known, see_either);
@@ -1078,9 +1078,9 @@ MonsterSpellResult spell_RF6_S_UNIQUE(CreatureEntity &creature, POSITION y, POSI
     bool see_either = see_monster(creature, m_idx) || see_monster(creature, t_idx);
     bool known = monster_near_player(creature, m_idx, t_idx);
 
-    mspell_cast_msg_blind msg(_("%s^が何かをつぶやいた。", "%s^ mumbles."),
-        _("%s^が魔法で特別な強敵を召喚した！", "%s^ magically summons special opponents!"),
-        _("%s^が魔法で特別な強敵を召喚した！", "%s^ magically summons special opponents!"));
+    mspell_cast_msg_blind msg(_("{}が何かをつぶやいた。", "{} mumbles."),
+        _("{}が魔法で特別な強敵を召喚した！", "{} magically summons special opponents!"),
+        _("{}が魔法で特別な強敵を召喚した！", "{} magically summons special opponents!"));
 
     monspell_message(creature, m_idx, t_idx, msg, target_type);
     summon_disturb(creature, target_type, known, see_either);
@@ -1138,9 +1138,9 @@ MonsterSpellResult spell_RF6_S_DEAD_UNIQUE(CreatureEntity &creature, POSITION y,
     auto see_either = see_monster(creature, m_idx) || see_monster(creature, t_idx);
     auto known = monster_near_player(creature, m_idx, t_idx);
 
-    mspell_cast_msg_blind msg(_("%s^が何かをつぶやいた。", "%s^ mumbles."),
-        _("%s^が魔法で特別な強敵を蘇らせた！", "%s^ magically animates special opponents!"),
-        _("%s^が魔法で特別な強敵を蘇らせた！", "%s^ magically animates special opponents!"));
+    mspell_cast_msg_blind msg(_("{}が何かをつぶやいた。", "{} mumbles."),
+        _("{}が魔法で特別な強敵を蘇らせた！", "{} magically animates special opponents!"),
+        _("{}が魔法で特別な強敵を蘇らせた！", "{} magically animates special opponents!"));
 
     monspell_message(creature, m_idx, t_idx, msg, target_type);
     summon_disturb(creature, target_type, known, see_either);

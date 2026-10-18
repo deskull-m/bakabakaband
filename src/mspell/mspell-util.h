@@ -1,6 +1,8 @@
 #pragma once
 
 #include "system/angband.h"
+#include <fmt/base.h>
+#include <string_view>
 
 /* Spell Type flag */
 #define MONSTER_TO_PLAYER 0x01
@@ -13,35 +15,38 @@
 
 class CreatureEntity;
 
+/*!
+ * @brief モンスターが呪文を唱えるときのメッセージの書式
+ * @details 書式の引数は次のとおり。
+ * - {0}: 唱えたモンスターの名前 (先頭を大文字にする)
+ * - {1}: 対象のモンスターの名前
+ * - {2}: 唱えたモンスターの名前 (先頭を大文字にしない)
+ * - {3}: 唱えたモンスターの所有格 (英語版の "his" など)
+ */
+using MSpellMessageFormat = fmt::format_string<std::string_view, std::string_view, std::string_view, std::string_view>;
+
 struct mspell_cast_msg {
-    template <typename T, typename U, typename V, typename W>
-    mspell_cast_msg(T &&to_player_true, U &&to_mons_true, V &&to_player_false, W &&to_mons_false)
-        : to_player_true(std::forward<T>(to_player_true))
-        , to_mons_true(std::forward<U>(to_mons_true))
-        , to_player_false(std::forward<V>(to_player_false))
-        , to_mons_false(std::forward<W>(to_mons_false))
-    {
-    }
-    mspell_cast_msg() = default;
-    std::string to_player_true; /*!< msg_flagがTRUEかつプレイヤー対象*/
-    std::string to_mons_true; /*!< msg_flagがTRUEかつモンスター対象*/
-    std::string to_player_false; /*!< msg_flagがFALSEかつプレイヤー対象*/
-    std::string to_mons_false; /*!< msg_flagがFALSEかつモンスター対象*/
+    mspell_cast_msg(MSpellMessageFormat to_player_true, MSpellMessageFormat to_mons_true, MSpellMessageFormat to_player_false, MSpellMessageFormat to_mons_false);
+    mspell_cast_msg();
+    MSpellMessageFormat to_player_true; /*!< msg_flagがTRUEかつプレイヤー対象*/
+    MSpellMessageFormat to_mons_true; /*!< msg_flagがTRUEかつモンスター対象*/
+    MSpellMessageFormat to_player_false; /*!< msg_flagがFALSEかつプレイヤー対象*/
+    MSpellMessageFormat to_mons_false; /*!< msg_flagがFALSEかつモンスター対象*/
 };
 
 struct mspell_cast_msg_blind {
-    mspell_cast_msg_blind(concptr blind, concptr to_player, concptr to_mons);
-    mspell_cast_msg_blind() = default;
-    concptr blind; /*!< 盲目時*/
-    concptr to_player; /*!< 対プレイヤーかつ非盲目時*/
-    concptr to_mons; /*!< 対モンスター*/
+    mspell_cast_msg_blind(MSpellMessageFormat blind, MSpellMessageFormat to_player, MSpellMessageFormat to_mons);
+    mspell_cast_msg_blind();
+    MSpellMessageFormat blind; /*!< 盲目時*/
+    MSpellMessageFormat to_player; /*!< 対プレイヤーかつ非盲目時*/
+    MSpellMessageFormat to_mons; /*!< 対モンスター*/
 };
 
 struct mspell_cast_msg_simple {
-    mspell_cast_msg_simple(concptr to_player, concptr to_mons);
-    mspell_cast_msg_simple() = default;
-    concptr to_player; /*!< プレイヤー対象*/
-    concptr to_mons; /*!< モンスター対象*/
+    mspell_cast_msg_simple(MSpellMessageFormat to_player, MSpellMessageFormat to_mons);
+    mspell_cast_msg_simple();
+    MSpellMessageFormat to_player; /*!< プレイヤー対象*/
+    MSpellMessageFormat to_mons; /*!< モンスター対象*/
 };
 
 bool see_monster(CreatureEntity &creature, MONSTER_IDX m_idx);
