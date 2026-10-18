@@ -641,7 +641,6 @@ void do_cmd_snipe(CreatureEntity &creature)
         MainWindowRedrawingFlag::MP,
     };
     rfu.set_flags(flags_mwrf);
-    rfu.set_flag(SubWindowRedrawingFlag::PLAYER);
 }
 
 /*!

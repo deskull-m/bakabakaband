@@ -106,7 +106,6 @@ bool genocide_aux(CreatureEntity &creature, MONSTER_IDX m_idx, int power, bool p
     move_cursor_relative(creature.y, creature.x);
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(MainWindowRedrawingFlag::HP);
-    rfu.set_flag(SubWindowRedrawingFlag::PLAYER);
     handle_stuff(creature);
     term_fresh();
     term_xtra(TERM_XTRA_DELAY, delay_factor);

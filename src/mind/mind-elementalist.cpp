@@ -882,7 +882,6 @@ static bool try_cast_element_spell(CreatureEntity &creature, SPELL_IDX spell_idx
         PlayerEnergy(creature).set_player_turn_energy(100);
         auto &rfu = RedrawingFlagsUpdater::get_instance();
         rfu.set_flag(MainWindowRedrawingFlag::MP);
-        rfu.set_flag(SubWindowRedrawingFlag::PLAYER);
         return false;
     }
 
@@ -931,7 +930,6 @@ void do_cmd_element(CreatureEntity &creature)
     PlayerEnergy(creature).set_player_turn_energy(100);
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(MainWindowRedrawingFlag::MP);
-    rfu.set_flag(SubWindowRedrawingFlag::PLAYER);
 }
 
 /*!

@@ -90,6 +90,5 @@ bool do_cmd_cast_learned(CreatureEntity &creature)
     PlayerEnergy(creature).set_player_turn_energy(100);
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(MainWindowRedrawingFlag::MP);
-    rfu.set_flag(SubWindowRedrawingFlag::PLAYER);
     return true;
 }
