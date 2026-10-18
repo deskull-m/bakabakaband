@@ -407,23 +407,21 @@ int calculate_blue_magic_failure_probability(CreatureEntity &creature, const mon
  * 記号で選択する場合、" 記号)" が出力される
  * コマンドメニューで選択する場合、選択中の青魔法にはカーソルが、そうでない青魔法には空白が出力される
  *
- * @param buf 出力するバッファ
- * @param buf_size バッファのサイズ
  * @param index 選択する青魔法のリスト上の番号
  * @param menu_line コマンドメニューで選択する場合、選択中の行。記号で選択する場合は使用されない。
+ * @return 青魔法の先頭のヘッダ
  */
-static void close_blue_magic_name(char *buf, size_t buf_size, int index, int menu_line)
+static std::string close_blue_magic_name(int index, int menu_line)
 {
     if (!use_menu) {
-        snprintf(buf, buf_size, "  %c)", I2A(index));
-        return;
+        return fmt::format("  {})", I2A(index));
     }
 
     if (index == menu_line - 1) {
-        snprintf(buf, buf_size, _("  》", "  > "));
-    } else {
-        snprintf(buf, buf_size, "    ");
+        return _("  》", "  > ");
     }
+
+    return "    ";
 }
 
 /*!
@@ -463,10 +461,9 @@ static void describe_blue_magic_name(CreatureEntity &creature, const bluemage_da
         const auto &mp = monster_powers.at(spell);
         auto need_mana = mod_need_mana(creature, mp.smana, 0, RealmType::NONE);
         auto chance = calculate_blue_magic_failure_probability(creature, mp, need_mana);
-        char header[80];
-        close_blue_magic_name(header, sizeof(header), i, menu_line);
+        const auto header = close_blue_magic_name(i, menu_line);
         const auto info = learnt_info(creature, spell);
-        const auto psi_desc = format("%s %-26s %3d %3d%%%s", header, mp.name, need_mana, chance, info.data());
+        const auto psi_desc = fmt::format("{} {:<26} {:3} {:3}%{}", header, fmt::bytes(mp.name), need_mana, chance, info);
         prt(psi_desc, row, x_base);
     }
 }

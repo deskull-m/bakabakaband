@@ -40,6 +40,7 @@
 #include "view/display-messages.h"
 #include "view/display-scores.h"
 #include "world/world.h"
+#include <fmt/format.h>
 
 /*!
  * @brief 所定ポインタへスコア情報を書き込む / Write one score to the highscore file
@@ -188,16 +189,13 @@ bool send_world_score(CreatureEntity &creature, bool do_send)
 errr top_twenty(CreatureEntity &creature)
 {
     high_score the_score = {};
-    snprintf(the_score.what, sizeof(the_score.what), "%u.%u.%u", H_VER_MAJOR, H_VER_MINOR, H_VER_PATCH);
-    snprintf(the_score.pts, sizeof(the_score.pts), "%9u", calc_score(creature));
-    the_score.pts[9] = '\0';
+    angband_strcpy(the_score.what, fmt::format("{}.{}.{}", H_VER_MAJOR, H_VER_MINOR, H_VER_PATCH), sizeof(the_score.what));
+    angband_strcpy(the_score.pts, fmt::format("{:9}", calc_score(creature)), sizeof(the_score.pts));
 
-    snprintf(the_score.gold, sizeof(the_score.gold), "%9d", creature.get_au());
-    the_score.gold[9] = '\0';
+    angband_strcpy(the_score.gold, fmt::format("{:9}", creature.get_au()), sizeof(the_score.gold));
 
     const auto &igd = InnerGameData::get_instance();
-    snprintf(the_score.turns, sizeof(the_score.turns), "%9d", igd.get_real_turns(AngbandWorld::get_instance().game_turn));
-    the_score.turns[9] = '\0';
+    angband_strcpy(the_score.turns, fmt::format("{:9}", igd.get_real_turns(AngbandWorld::get_instance().game_turn)), sizeof(the_score.turns));
 
     auto ct = time((time_t *)0);
 
@@ -255,10 +253,10 @@ errr predict_score(CreatureEntity &creature)
     }
 
     const auto &igd = InnerGameData::get_instance();
-    snprintf(the_score.what, sizeof(the_score.what), "%u.%u.%u", H_VER_MAJOR, H_VER_MINOR, H_VER_PATCH);
-    snprintf(the_score.pts, sizeof(the_score.pts), "%9u", calc_score(creature));
-    snprintf(the_score.gold, sizeof(the_score.gold), "%9d", creature.get_au());
-    snprintf(the_score.turns, sizeof(the_score.turns), "%9d", igd.get_real_turns(AngbandWorld::get_instance().game_turn));
+    angband_strcpy(the_score.what, fmt::format("{}.{}.{}", H_VER_MAJOR, H_VER_MINOR, H_VER_PATCH), sizeof(the_score.what));
+    angband_strcpy(the_score.pts, fmt::format("{:9}", calc_score(creature)), sizeof(the_score.pts));
+    angband_strcpy(the_score.gold, fmt::format("{:9}", creature.get_au()), sizeof(the_score.gold));
+    angband_strcpy(the_score.turns, fmt::format("{:9}", igd.get_real_turns(AngbandWorld::get_instance().game_turn)), sizeof(the_score.turns));
     angband_strcpy(the_score.day, _("今日", "TODAY"), sizeof(the_score.day));
     the_score.copy_info(creature);
     strcpy(the_score.how, _("yet", "nobody (yet!)"));
@@ -303,7 +301,6 @@ void show_highclass(CreatureEntity &creature)
     int j = 0;
     PLAYER_LEVEL clev = 0;
     int pr;
-    char out_val[256];
     while ((m < 9) && (j < MAX_HISCORES)) {
         if (highscore_seek(j)) {
             break;
@@ -314,24 +311,14 @@ void show_highclass(CreatureEntity &creature)
         pr = atoi(the_score.p_r);
         clev = (PLAYER_LEVEL)atoi(the_score.cur_lev);
 
-#ifdef JP
-        snprintf(out_val, sizeof(out_val), "   %3d) %sの%s (レベル %2d)", (m + 1), race_info[pr].title.data(), the_score.who, clev);
-#else
-        snprintf(out_val, sizeof(out_val), "%3d) %s the %s (Level %2d)", (m + 1), the_score.who, race_info[pr].title.data(), clev);
-#endif
-
-        prt(out_val, (m + 7), 0);
+        constexpr auto fmt = _("   {0:3}) {2}の{1} (レベル {3:2})", "{0:3}) {1} the {2} (Level {3:2})");
+        prt(fmt::format(fmt, m + 1, the_score.who, race_info[pr].title, clev), m + 7, 0);
         m++;
         j++;
     }
 
-#ifdef JP
-    snprintf(out_val, sizeof(out_val), "あなた) %sの%s (レベル %2d)", race_info[enum2i(creature.prace)].title.data(), creature.name.data(), creature.get_level());
-#else
-    snprintf(out_val, sizeof(out_val), "You) %s the %s (Level %2d)", creature.name.data(), race_info[enum2i(creature.prace)].title.data(), creature.get_level());
-#endif
-
-    prt(out_val, (m + 8), 0);
+    constexpr auto fmt = _("あなた) {1}の{0} (レベル {2:2})", "You) {0} the {1} (Level {2:2})");
+    prt(fmt::format(fmt, creature.name, race_info[enum2i(creature.prace)].title, creature.get_level()), m + 8, 0);
 
     (void)fd_close(highscore_fd);
     highscore_fd = -1;
@@ -391,14 +378,8 @@ void race_score(CreatureEntity &creature, int race_num)
         clev = atoi(the_score.cur_lev);
 
         if (pr == race_num) {
-            char out_val[256];
-#ifdef JP
-            snprintf(out_val, sizeof(out_val), "   %3d) %sの%s (レベル %2d)", (m + 1), race_info[pr].title.data(), the_score.who, clev);
-#else
-            snprintf(out_val, sizeof(out_val), "%3d) %s the %s (Level %3d)", (m + 1), the_score.who, race_info[pr].title.data(), clev);
-#endif
-
-            prt(out_val, (m + 7), 0);
+            constexpr auto fmt = _("   {0:3}) {2}の{1} (レベル {3:2})", "{0:3}) {1} the {2} (Level {3:3})");
+            prt(fmt::format(fmt, m + 1, the_score.who, race_info[pr].title, clev), m + 7, 0);
             m++;
             lastlev = clev;
         }
@@ -407,14 +388,8 @@ void race_score(CreatureEntity &creature, int race_num)
 
     /* add player if qualified */
     if ((enum2i(creature.prace) == race_num) && (creature.get_level() >= lastlev)) {
-        char out_val[256];
-#ifdef JP
-        snprintf(out_val, sizeof(out_val), "あなた) %sの%s (レベル %2d)", race_info[enum2i(creature.prace)].title.data(), creature.name.data(), creature.get_level());
-#else
-        snprintf(out_val, sizeof(out_val), "You) %s the %s (Level %3d)", creature.name.data(), race_info[enum2i(creature.prace)].title.data(), creature.get_level());
-#endif
-
-        prt(out_val, (m + 8), 0);
+        constexpr auto fmt = _("あなた) {1}の{0} (レベル {2:2})", "You) {0} the {1} (Level {2:3})");
+        prt(fmt::format(fmt, creature.name, race_info[enum2i(creature.prace)].title, creature.get_level()), m + 8, 0);
     }
 
     (void)fd_close(highscore_fd);
