@@ -16,6 +16,7 @@
 #include "system/creature-entity.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/floor/floor-info.h"
+#include "util/string-processor.h"
 #include "view/display-messages.h"
 
 /*!
@@ -59,7 +60,7 @@ static void message_breath(CreatureEntity &creature, MONSTER_IDX m_idx, MONSTER_
     if (!spell_RF4_BREATH_special_message(monster.get_r_idx(), GF_TYPE, m_name.data())) {
         if (creature.is_blind()) {
             if (mon_to_player || (mon_to_mon && known && see_either)) {
-                msg_format(_("%s^が何かのブレスを吐いた。", "%s^ breathes."), m_name.data());
+                msg_print(_("{}が何かのブレスを吐いた。", "{} breathes."), str_upcase_first(m_name));
             }
         } else {
             if (mon_to_player) {

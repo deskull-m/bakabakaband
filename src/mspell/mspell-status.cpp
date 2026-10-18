@@ -32,6 +32,7 @@
 #include "system/monrace/monrace-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "tracking/health-bar-tracker.h"
+#include "util/string-processor.h"
 #include "view/display-messages.h"
 
 mspell_cast_msg_bad_status_to_player::mspell_cast_msg_bad_status_to_player(concptr blind, concptr not_blind, concptr resist, concptr saved_throw)
@@ -143,7 +144,7 @@ MonsterSpellResult spell_RF5_DRAIN_MANA(CreatureEntity &creature, POSITION y, PO
         disturb(creature, true, true);
     } else if (target_type == MONSTER_TO_MONSTER && see_monster(creature, m_idx)) {
         /* Basic message */
-        msg_format(_("%s^は精神エネルギーを%sから吸いとった。", "%s^ draws psychic energy from %s."), m_name.data(), t_name.data());
+        msg_print(_("{}は精神エネルギーを{}から吸いとった。", "{} draws psychic energy from {}."), str_upcase_first(m_name), t_name);
     }
 
     const auto dam = monspell_damage(creature, MonsterAbilityType::DRAIN_MANA, m_idx, DAM_ROLL);
@@ -178,10 +179,10 @@ MonsterSpellResult spell_RF5_MIND_BLAST(CreatureEntity &creature, POSITION y, PO
         if (!seen) {
             msg_print(_("何かがあなたの精神に念を放っているようだ。", "You feel something focusing on your mind."));
         } else {
-            msg_format(_("%s^があなたの瞳をじっとにらんでいる。", "%s^ gazes deep into your eyes."), m_name.data());
+            msg_print(_("{}があなたの瞳をじっとにらんでいる。", "{} gazes deep into your eyes."), str_upcase_first(m_name));
         }
     } else if (target_type == MONSTER_TO_MONSTER && see_monster(creature, m_idx)) {
-        msg_format(_("%s^は%sをじっと睨んだ。", "%s^ gazes intently at %s."), m_name.data(), t_name.data());
+        msg_print(_("{}は{}をじっと睨んだ。", "{} gazes intently at {}."), str_upcase_first(m_name), t_name);
     }
 
     const auto dam = monspell_damage(creature, MonsterAbilityType::MIND_BLAST, m_idx, DAM_ROLL);
@@ -213,10 +214,10 @@ MonsterSpellResult spell_RF5_BRAIN_SMASH(CreatureEntity &creature, POSITION y, P
         if (!seen) {
             msg_print(_("何かがあなたの精神に念を放っているようだ。", "You feel something focusing on your mind."));
         } else {
-            msg_format(_("%s^があなたの瞳をじっとにらんでいる。", "%s^ gazes deep into your eyes."), m_name.data());
+            msg_print(_("{}があなたの瞳をじっとにらんでいる。", "{} gazes deep into your eyes."), str_upcase_first(m_name));
         }
     } else if (target_type == MONSTER_TO_MONSTER && see_monster(creature, m_idx)) {
-        msg_format(_("%s^は%sをじっと睨んだ。", "%s^ gazes intently at %s."), m_name.data(), t_name.data());
+        msg_print(_("{}は{}をじっと睨んだ。", "{} gazes intently at {}."), str_upcase_first(m_name), t_name);
     }
 
     const auto dam = monspell_damage(creature, MonsterAbilityType::BRAIN_SMASH, m_idx, DAM_ROLL);
@@ -478,15 +479,15 @@ MonsterSpellResult spell_RF6_HASTE(CreatureEntity &creature, MONSTER_IDX m_idx, 
     const auto m_poss = monster_desc(creature, monster, MD_PRON_VISIBLE | MD_POSSESSIVE);
 
     mspell_cast_msg msg(_("%s^が何かをつぶやいた。", "%s^ mumbles."),
-        _("%s^が自分の体に念を送った。", format("%%s^ concentrates on %s body.", m_poss.data())),
-        _("%s^が自分の体に念を送った。", format("%%s^ concentrates on %s body.", m_poss.data())),
-        _("%s^が自分の体に念を送った。", format("%%s^ concentrates on %s body.", m_poss.data())));
+        _("%s^が自分の体に念を送った。", fmt::format("%s^ concentrates on {} body.", m_poss)),
+        _("%s^が自分の体に念を送った。", fmt::format("%s^ concentrates on {} body.", m_poss)),
+        _("%s^が自分の体に念を送った。", fmt::format("%s^ concentrates on {} body.", m_poss)));
 
     monspell_message_base(creature, m_idx, t_idx, msg, creature.is_blind(), target_type);
 
     if (set_monster_fast(*creature.get_floor(), m_idx, monster.get_remaining_acceleration() + 100)) {
         if (target_type == MONSTER_TO_PLAYER || (target_type == MONSTER_TO_MONSTER && see_m)) {
-            msg_format(_("%s^の動きが速くなった。", "%s^ starts moving faster."), m_name.data());
+            msg_print(_("{}の動きが速くなった。", "{} starts moving faster."), str_upcase_first(m_name));
         }
     }
 
@@ -580,9 +581,9 @@ MonsterSpellResult spell_RF6_HEAL(CreatureEntity &creature, MONSTER_IDX m_idx, M
     const auto m_poss = monster_desc(creature, monster, MD_PRON_VISIBLE | MD_POSSESSIVE);
 
     msg.to_player_true = _("%s^が何かをつぶやいた。", "%s^ mumbles.");
-    msg.to_mons_true = _("%s^は自分の傷に念を集中した。", format("%%s^ concentrates on %s wounds.", m_poss.data()));
-    msg.to_player_false = _("%s^が自分の傷に集中した。", format("%%s^ concentrates on %s wounds.", m_poss.data()));
-    msg.to_mons_false = _("%s^は自分の傷に念を集中した。", format("%%s^ concentrates on %s wounds.", m_poss.data()));
+    msg.to_mons_true = _("%s^は自分の傷に念を集中した。", fmt::format("%s^ concentrates on {} wounds.", m_poss));
+    msg.to_player_false = _("%s^が自分の傷に集中した。", fmt::format("%s^ concentrates on {} wounds.", m_poss));
+    msg.to_mons_false = _("%s^は自分の傷に念を集中した。", fmt::format("%s^ concentrates on {} wounds.", m_poss));
 
     monspell_message_base(creature, m_idx, t_idx, msg, is_blind, target_type);
 
@@ -616,7 +617,7 @@ MonsterSpellResult spell_RF6_HEAL(CreatureEntity &creature, MONSTER_IDX m_idx, M
 
     if (see_monster(creature, m_idx)) {
         const auto m_name = monster_name(creature, m_idx);
-        msg_print(_(format("%s^は勇気を取り戻した。", m_name.data()), format("%s^ recovers %s courage.", m_name.data(), m_poss.data())));
+        msg_print(_("{}は勇気を取り戻した。", "{} recovers {} courage."), str_upcase_first(m_name), m_poss);
     }
 
     return res;
@@ -647,13 +648,13 @@ MonsterSpellResult spell_RF6_INVULNER(CreatureEntity &creature, MONSTER_IDX m_id
         switch (r_idx) {
         case MonraceId::MARIO:
         case MonraceId::LUIGI:
-            msg_format(_("%sはスターを取った！", "%s^ got a star!"), m_name.data());
+            msg_print(_("{}はスターを取った！", "{} got a star!"), str_upcase_first(m_name));
             break;
         case MonraceId::DIAVOLO:
             msg_print(_("『読める』………動きの『軌跡』が読める……", "'Read'......... I can read the 'trajectory' of movement..."));
             break;
         default:
-            msg_format(_("%sの身体がまばゆく輝き始めた！", "The body of %s^ began to shine dazzlingly!"), m_name.data());
+            msg_print(_("{}の身体がまばゆく輝き始めた！", "The body of {} began to shine dazzlingly!"), str_upcase_first(m_name));
             break;
         }
     }
@@ -679,7 +680,7 @@ MonsterSpellResult spell_RF6_FORGET(CreatureEntity &creature, MONSTER_IDX m_idx)
 
     disturb(creature, true, true);
 
-    msg_format(_("%s^があなたの記憶を消去しようとしている。", "%s^ tries to blank your mind."), m_name.data());
+    msg_print(_("{}があなたの記憶を消去しようとしている。", "{} tries to blank your mind."), str_upcase_first(m_name));
 
     if (creature.does_save_against(rlev)) {
         msg_print(_("しかし効力を跳ね返した！", "You resist the effects!"));
