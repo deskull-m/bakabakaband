@@ -46,6 +46,7 @@
 #include "tracking/health-bar-tracker.h"
 #include "util/string-processor.h"
 #include "view/display-messages.h"
+#include <fmt/format.h>
 
 static void heal_monster_by_melee(mam_type *mam_ptr)
 {
@@ -62,7 +63,7 @@ static void heal_monster_by_melee(mam_type *mam_ptr)
     }
 
     if (mam_ptr->see_m && did_heal) {
-        msg_format(_("%sは体力を回復したようだ。", "%s^ appears healthier."), mam_ptr->m_name);
+        msg_print(_("{}は体力を回復したようだ。", "{} appears healthier."), str_upcase_first(mam_ptr->m_name));
     }
 }
 
@@ -105,7 +106,7 @@ static void aura_fire_by_melee(CreatureEntity &creature, mam_type *mam_ptr)
     }
 
     if (mam_ptr->see_either) {
-        msg_format(_("%s^は突然熱くなった！", "%s^ is suddenly very hot!"), mam_ptr->m_name);
+        msg_print(_("{}は突然熱くなった！", "{} is suddenly very hot!"), str_upcase_first(mam_ptr->m_name));
     }
 
     // 種族由来 (native) オーラのみ思い出フラグを記録する (mutation 由来は monrace 固有でないため記録しない)
@@ -136,7 +137,7 @@ static void aura_cold_by_melee(CreatureEntity &creature, mam_type *mam_ptr)
     }
 
     if (mam_ptr->see_either) {
-        msg_format(_("%s^は突然寒くなった！", "%s^ is suddenly very cold!"), mam_ptr->m_name);
+        msg_print(_("{}は突然寒くなった！", "{} is suddenly very cold!"), str_upcase_first(mam_ptr->m_name));
     }
 
     if (monster.is_visible_on_map() && is_original_ap_and_seen(creature, *mam_ptr->t_ptr)) {
@@ -168,7 +169,7 @@ static void aura_elec_by_melee(CreatureEntity &creature, mam_type *mam_ptr)
     }
 
     if (mam_ptr->see_either) {
-        msg_format(_("%s^は電撃を食らった！", "%s^ gets zapped!"), mam_ptr->m_name);
+        msg_print(_("{}は電撃を食らった！", "{} gets zapped!"), str_upcase_first(mam_ptr->m_name));
     }
 
     // 種族由来 (native) オーラのみ思い出フラグを記録する (mutation 由来は monrace 固有でないため記録しない)
@@ -244,17 +245,17 @@ static void describe_silly_melee(mam_type *mam_ptr)
     }
 
     const auto temp = format(mam_ptr->act, mam_ptr->t_name);
-    msg_format("%s^は%s", mam_ptr->m_name, temp.data());
+    msg_print("{}は{}", str_upcase_first(mam_ptr->m_name), temp);
 #else
     std::string temp;
     if (mam_ptr->do_silly_attack) {
         mam_ptr->act = rand_choice(silly_attacks);
-        temp = format("%s %s.", mam_ptr->act, mam_ptr->t_name);
+        temp = fmt::format("{} {}.", mam_ptr->act, mam_ptr->t_name);
     } else {
         temp = format(mam_ptr->act, mam_ptr->t_name);
     }
 
-    msg_format("%s^ %s", mam_ptr->m_name, temp.data());
+    msg_print("{} {}", str_upcase_first(mam_ptr->m_name), temp);
 #endif
 }
 

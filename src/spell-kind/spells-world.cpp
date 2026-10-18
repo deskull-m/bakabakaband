@@ -46,9 +46,11 @@
 #include "term/z-form.h"
 #include "util/enum-converter.h"
 #include "util/int-char-converter.h"
+#include "util/string-processor.h"
 #include "view/display-messages.h"
 #include "world/world.h"
 #include <algorithm>
+#include <fmt/format.h>
 
 /*!
  * @brief プレイヤー及びモンスターをレベルテレポートさせる /
@@ -106,11 +108,11 @@ void teleport_level(CreatureEntity &creature, MONSTER_IDX m_idx)
     if ((ironman_downward && (m_idx <= 0)) || (floor.dun_level <= dungeon.mindepth)) {
 #ifdef JP
         if (see_m) {
-            msg_format("%s^は床を突き破って沈んでいく。", m_name.data());
+            msg_print("{}は床を突き破って沈んでいく。", str_upcase_first(m_name));
         }
 #else
         if (see_m) {
-            msg_format("%s^ sink%s through the floor.", m_name.data(), (m_idx <= 0) ? "" : "s");
+            msg_print("{} sink{} through the floor.", str_upcase_first(m_name), (m_idx <= 0) ? "" : "s");
         }
 #endif
         if (m_idx <= 0) {
@@ -139,11 +141,11 @@ void teleport_level(CreatureEntity &creature, MONSTER_IDX m_idx)
     } else if (inside_quest(floor.get_quest_id()) || (floor.dun_level >= dungeon.maxdepth)) {
 #ifdef JP
         if (see_m) {
-            msg_format("%s^は天井を突き破って宙へ浮いていく。", m_name.data());
+            msg_print("{}は天井を突き破って宙へ浮いていく。", str_upcase_first(m_name));
         }
 #else
         if (see_m) {
-            msg_format("%s^ rise%s up through the ceiling.", m_name.data(), (m_idx <= 0) ? "" : "s");
+            msg_print("{} rise{} up through the ceiling.", str_upcase_first(m_name), (m_idx <= 0) ? "" : "s");
         }
 #endif
 
@@ -164,11 +166,11 @@ void teleport_level(CreatureEntity &creature, MONSTER_IDX m_idx)
     } else if (go_up) {
 #ifdef JP
         if (see_m) {
-            msg_format("%s^は天井を突き破って宙へ浮いていく。", m_name.data());
+            msg_print("{}は天井を突き破って宙へ浮いていく。", str_upcase_first(m_name));
         }
 #else
         if (see_m) {
-            msg_format("%s^ rise%s up through the ceiling.", m_name.data(), (m_idx <= 0) ? "" : "s");
+            msg_print("{} rise{} up through the ceiling.", str_upcase_first(m_name), (m_idx <= 0) ? "" : "s");
         }
 #endif
 
@@ -187,11 +189,11 @@ void teleport_level(CreatureEntity &creature, MONSTER_IDX m_idx)
     } else {
 #ifdef JP
         if (see_m) {
-            msg_format("%s^は床を突き破って沈んでいく。", m_name.data());
+            msg_print("{}は床を突き破って沈んでいく。", str_upcase_first(m_name));
         }
 #else
         if (see_m) {
-            msg_format("%s^ sink%s through the floor.", m_name.data(), (m_idx <= 0) ? "" : "s");
+            msg_print("{} sink{} through the floor.", str_upcase_first(m_name), (m_idx <= 0) ? "" : "s");
         }
 #endif
 
@@ -248,7 +250,7 @@ bool teleport_level_other(CreatureEntity &creature)
     const auto &monster = floor.get_monster(target_m_idx);
     const auto &monrace = monster.get_monrace();
     const auto m_name = monster_desc(creature, monster, 0);
-    msg_format(_("%s^の足を指さした。", "You gesture at %s^'s feet."), m_name.data());
+    msg_print(_("{}の足を指さした。", "You gesture at {}'s feet."), str_upcase_first(m_name));
 
     auto has_immune = monrace.resistance_flags.has_any_of(RFR_EFF_RESIST_NEXUS_MASK) || monrace.resistance_flags.has(MonsterResistanceType::RESIST_TELEPORT);
     auto is_unaffected = has_immune || monrace.misc_flags.has(MonsterMiscType::QUESTOR);
@@ -258,7 +260,7 @@ bool teleport_level_other(CreatureEntity &creature)
     }
 
     if (is_unaffected) {
-        msg_print(_("しかし効果がなかった！", format("%s^ is unaffected!", m_name.data())));
+        msg_print(_("しかし効果がなかった！", "{} is unaffected!"), str_upcase_first(m_name));
     } else {
         teleport_level(creature, target_m_idx);
     }
@@ -297,7 +299,7 @@ bool tele_town(CreatureEntity &creature)
             continue;
         }
 
-        const auto buf = format("%c) %-20s", I2A(i - 1), TownList::get_instance().get_town(i).get_name().data());
+        const auto buf = fmt::format("{:c}) {:<20}", I2A(i - 1), fmt::bytes(TownList::get_instance().get_town(i).get_name()));
         prt(buf, 5 + i, 5);
         num++;
     }
@@ -388,8 +390,8 @@ static tl::optional<DungeonId> choose_dungeon(std::string_view note, int row, in
         }
 
         const auto &dungeons = DungeonList::get_instance();
-        constexpr auto fmt = _("まだ%sに入ったことはない。", "You haven't entered %s yet.");
-        msg_format(fmt, dungeons.get_dungeon(DungeonId::ANGBAND).name.data());
+        constexpr auto fmt = _("まだ{}に入ったことはない。", "You haven't entered {} yet.");
+        msg_print(fmt, dungeons.get_dungeon(DungeonId::ANGBAND).name);
         msg_erase();
         return tl::nullopt;
     }
@@ -506,8 +508,8 @@ bool free_level_recall(CreatureEntity &creature)
         }
     }
 
-    const auto mes = _("%sの何階にテレポートしますか？", "Teleport to which level of %s? ");
-    const auto amt = input_quantity(max_depth, format(mes, dungeon.name.data()));
+    constexpr auto fmt = _("{}の何階にテレポートしますか？", "Teleport to which level of {}? ");
+    const auto amt = input_quantity(max_depth, fmt::format(fmt, dungeon.name));
     if (amt <= 0) {
         return false;
     }
@@ -564,9 +566,9 @@ bool reset_recall(CreatureEntity &creature)
         exe_write_diary(*creature.get_floor(), DiaryKind::TRUMP, enum2i(*select_dungeon), note);
     }
 #ifdef JP
-    msg_format("%sの帰還レベルを %d 階にセット。", dungeon.name.data(), *reset_level);
+    msg_print("{}の帰還レベルを {} 階にセット。", dungeon.name, *reset_level);
 #else
-    msg_format("Recall depth of %s set to level %d (%d').", dungeon.name.data(), *reset_level, *reset_level * 50);
+    msg_print("Recall depth of {} set to level {} ({}').", dungeon.name, *reset_level, *reset_level * 50);
 #endif
     return true;
 }

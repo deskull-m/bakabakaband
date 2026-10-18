@@ -590,7 +590,7 @@ void exe_player_attack_to_monster(CreatureEntity &creature, POSITION y, POSITION
     }
 
     if (pa_ptr->weak && !(*mdeath)) {
-        msg_format(_("%sは弱くなったようだ。", "%s^ seems weakened."), pa_ptr->m_name);
+        msg_print(_("{}は弱くなったようだ。", "{} seems weakened."), str_upcase_first(pa_ptr->m_name));
     }
 
     if ((pa_ptr->drain_left != MAX_VAMPIRIC_DRAIN) && one_in_(4)) {

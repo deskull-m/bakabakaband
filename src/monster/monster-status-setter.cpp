@@ -21,6 +21,7 @@
 #include "system/redrawing-flags-updater.h"
 #include "target/projection-path-calculator.h"
 #include "tracking/health-bar-tracker.h"
+#include "util/string-processor.h"
 #include "view/display-messages.h"
 #include "world/world.h"
 #include <string>
@@ -52,7 +53,7 @@ void anger_monster(CreatureEntity &creature, CreatureEntity &target)
     }
 
     const auto m_name = monster_desc(creature, target, 0);
-    msg_format(_("%s^\u306f\u6012\u3063\u305f\uff01", "%s^ gets angry!"), m_name.data());
+    msg_print(_("{}は怒った！", "{} gets angry!"), str_upcase_first(m_name));
     target.set_hostile();
     chg_virtue(creature, Virtue::INDIVIDUALISM, 1);
     chg_virtue(creature, Virtue::HONOUR, -1);

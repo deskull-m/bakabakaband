@@ -23,6 +23,7 @@
 #include "system/dungeon/quest-definition.h"
 #include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"
+#include "util/string-processor.h"
 #include "view/display-messages.h"
 
 /*!
@@ -324,7 +325,7 @@ void decide_monster_attack_effect(CreatureEntity &creature, mam_type *mam_ptr)
         }
 
         if (!has_resist && one_in_(2)) {
-            msg_format(_("%s^は変化した！", "%s^ changes!"), mam_ptr->t_name);
+            msg_print(_("{}は変化した！", "{} changes!"), str_upcase_first(mam_ptr->t_name));
         }
     } break;
     case RaceBlowEffectType::FLAVOR:
@@ -360,9 +361,9 @@ void describe_monster_missed_monster(FloorType &floor, mam_type *mam_ptr)
         (void)set_monster_csleep(floor, mam_ptr->t_idx, 0);
         if (mam_ptr->see_m) {
 #ifdef JP
-            msg_format("%sは%s^の攻撃をかわした。", mam_ptr->t_name, mam_ptr->m_name);
+            msg_print("{}は{}の攻撃をかわした。", mam_ptr->t_name, str_upcase_first(mam_ptr->m_name));
 #else
-            msg_format("%s^ misses %s.", mam_ptr->m_name, mam_ptr->t_name);
+            msg_print("{} misses {}.", str_upcase_first(mam_ptr->m_name), mam_ptr->t_name);
 #endif
         }
 

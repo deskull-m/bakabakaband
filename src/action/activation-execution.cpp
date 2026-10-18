@@ -172,7 +172,7 @@ static void activate_artifact(CreatureEntity &creature, std::shared_ptr<ItemEnti
     case RandomArtActType::MURAMASA:
         return;
     default:
-        msg_format("Special timeout is not implemented: %d.", enum2i(it_activation->index));
+        msg_print("Special timeout is not implemented: {}.", enum2i(it_activation->index));
         return;
     }
 }

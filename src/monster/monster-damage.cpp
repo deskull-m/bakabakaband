@@ -111,7 +111,7 @@ bool MonsterDamageProcessor::mon_take_hit(std::string_view note)
     monster.apply_raw_damage(this->dam);
 
     if (AngbandWorld::get_instance().wizard) {
-        msg_format(_("合計%d/%dのダメージを与えた。", "You do %d (out of %d) damage."), monster.get_dealt_damage(), monster.maxhp);
+        msg_print(_("合計{}/{}のダメージを与えた。", "You do {} (out of {}) damage."), monster.get_dealt_damage(), monster.maxhp);
     }
 
     if (this->process_dead_exp_virtue(note, exp_mon)) {

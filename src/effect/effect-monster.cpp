@@ -183,7 +183,7 @@ static void effect_damage_killed_pet(CreatureEntity &creature, EffectMonster *em
     if (em_ptr->known && !em_ptr->note.empty()) {
         angband_strcpy(em_ptr->m_name, monster_desc(creature, *em_ptr->m_ptr, MD_TRUE_NAME), sizeof(em_ptr->m_name));
         if (em_ptr->see_s_msg) {
-            msg_format("%s^%s", em_ptr->m_name, em_ptr->note.data());
+            msg_print("{}{}", str_upcase_first(em_ptr->m_name), em_ptr->note);
         } else {
             creature.get_floor()->monster_noise = true;
         }
@@ -208,7 +208,7 @@ static void effect_damage_killed_pet(CreatureEntity &creature, EffectMonster *em
 static void effect_damage_makes_sleep(CreatureEntity &creature, EffectMonster *em_ptr)
 {
     if (!em_ptr->note.empty() && em_ptr->seen_msg) {
-        msg_format("%s^%s", em_ptr->m_name, em_ptr->note.data());
+        msg_print("{}{}", str_upcase_first(em_ptr->m_name), em_ptr->note);
     } else if (em_ptr->see_s_msg) {
         const auto m_name = monster_desc(creature, *em_ptr->m_ptr, 0);
         const auto pain_message = em_ptr->m_ptr->get_pain_message(m_name, em_ptr->dam);
@@ -300,7 +300,7 @@ static bool deal_effect_damage_from_player(CreatureEntity &creature, EffectMonst
     }
 
     if (!em_ptr->note.empty() && em_ptr->seen) {
-        msg_format(_("%s%s", "%s^%s"), em_ptr->m_name, em_ptr->note.data());
+        msg_print("{}{}", str_upcase_first(em_ptr->m_name), em_ptr->note);
     } else if (em_ptr->known && (em_ptr->dam || !em_ptr->do_fear)) {
         const auto m_name = monster_desc(creature, *em_ptr->m_ptr, 0);
         const auto pain_message = em_ptr->m_ptr->get_pain_message(m_name, em_ptr->dam);
@@ -315,7 +315,7 @@ static bool deal_effect_damage_from_player(CreatureEntity &creature, EffectMonst
 
     if ((fear || em_ptr->do_fear) && em_ptr->seen) {
         sound(SoundKind::FLEE);
-        msg_format(_("%s^は恐怖して逃げ出した！", "%s^ flees in terror!"), em_ptr->m_name);
+        msg_print(_("{}は恐怖して逃げ出した！", "{} flees in terror!"), str_upcase_first(em_ptr->m_name));
     }
 
     return false;

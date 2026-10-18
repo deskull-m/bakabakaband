@@ -16,6 +16,7 @@
 #include "system/redrawing-flags-updater.h"
 #include "system/terrain/terrain-definition.h"
 #include "target/projection-path-calculator.h"
+#include "util/string-processor.h"
 #include "view/display-messages.h"
 #include "world/world-collapsion.h"
 
@@ -63,11 +64,11 @@ void call_the_void(CreatureEntity &creature)
         return;
     }
 
+    const auto is_prayer = mp_ptr->spell_book == ItemKindType::LIFE_BOOK;
 #ifdef JP
-    msg_format("あなたは%sを壁に近すぎる場所で唱えてしまった！", ((mp_ptr->spell_book == ItemKindType::LIFE_BOOK) ? "祈り" : "呪文"));
+    msg_print("あなたは{}を壁に近すぎる場所で唱えてしまった！", is_prayer ? "祈り" : "呪文");
 #else
-    msg_format("You %s the %s too close to a wall!", ((mp_ptr->spell_book == ItemKindType::LIFE_BOOK) ? "recite" : "cast"),
-        ((mp_ptr->spell_book == ItemKindType::LIFE_BOOK) ? "prayer" : "spell"));
+    msg_print("You {} the {} too close to a wall!", is_prayer ? "recite" : "cast", is_prayer ? "prayer" : "spell");
 #endif
     msg_print(_("大きな爆発音があった！", "There is a loud explosion!"));
 
@@ -145,7 +146,7 @@ bool vanish_dungeon(CreatureEntity &creature)
             (void)set_monster_csleep(floor, grid.m_idx, 0);
             if (monster.is_visible_on_map()) {
                 const auto m_name = monster_desc(creature, monster, 0);
-                msg_format(_("%s^が目を覚ました。", "%s^ wakes up."), m_name.data());
+                msg_print(_("{}が目を覚ました。", "{} wakes up."), str_upcase_first(m_name));
             }
         }
 

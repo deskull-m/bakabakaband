@@ -90,6 +90,7 @@
 #include "system/terrain/terrain-definition.h"
 #include "system/terrain/terrain-list.h"
 #include "target/projection-path-calculator.h"
+#include "util/string-processor.h"
 #include "view/display-messages.h"
 #include "world/world.h"
 #include <algorithm>
@@ -285,7 +286,7 @@ static bool monster_quaff_potion(CreatureEntity &creature, CreatureEntity &monst
     const auto potion_name = describe_flavor(creature, potion, OD_OMIT_PREFIX);
     const auto m_name = monster_desc(creature, monster, MD_INDEF_VISIBLE);
     if (is_seen(creature, monster)) {
-        msg_format(_("%s^は%sを飲んだ。", "%s^ quaffs %s."), m_name.data(), potion_name.data());
+        msg_print(_("{}は{}を飲んだ。", "{} quaffs {}."), str_upcase_first(m_name), potion_name);
     }
 
     auto heal = [&](int amount) {
@@ -469,7 +470,7 @@ static bool monster_read_scroll(CreatureEntity &creature, CreatureEntity &monste
     const auto scroll_name = describe_flavor(creature, scroll, OD_OMIT_PREFIX);
     const auto m_name = monster_desc(creature, monster, MD_INDEF_VISIBLE);
     if (is_seen(creature, monster)) {
-        msg_format(_("%s^は%sを読んだ。", "%s^ reads %s."), m_name.data(), scroll_name.data());
+        msg_print(_("{}は{}を読んだ。", "{} reads {}."), str_upcase_first(m_name), scroll_name);
     }
 
     switch (action) {
@@ -679,9 +680,9 @@ static bool monster_use_wand_or_rod(CreatureEntity &creature, CreatureEntity &mo
     const bool is_wand = device.bi_key.tval() == ItemKindType::WAND;
     if (is_seen(creature, monster)) {
         if (is_wand) {
-            msg_format(_("%s^は%sを振った。", "%s^ aims %s."), m_name.data(), device_name.data());
+            msg_print(_("{}は{}を振った。", "{} aims {}."), str_upcase_first(m_name), device_name);
         } else {
-            msg_format(_("%s^は%sを振った。", "%s^ zaps %s."), m_name.data(), device_name.data());
+            msg_print(_("{}は{}を振った。", "{} zaps {}."), str_upcase_first(m_name), device_name);
         }
     }
 
@@ -873,11 +874,11 @@ void process_monster(CreatureEntity &creature, MONSTER_IDX m_idx)
         }
 
         if (turn_flags_ptr->is_riding_mon) {
-            msg_format(_("突然%sが変身した。", "Suddenly, %s transforms!"), old_m_name.data());
+            msg_print(_("突然{}が変身した。", "Suddenly, {} transforms!"), old_m_name);
             if (new_monrace.misc_flags.has_not(MonsterMiscType::RIDING)) {
                 if (process_fall_off_horse(creature, 0, true)) {
                     const auto m_name = monster_desc(creature, monster, 0);
-                    msg_print(_("地面に落とされた。", format("You have fallen from %s.", m_name.data())));
+                    msg_print(_("地面に落とされた。", "You have fallen from {}."), m_name);
                 }
             }
         }
@@ -1092,7 +1093,7 @@ void decide_drop_from_monster(CreatureEntity &creature, MONSTER_IDX m_idx, bool 
         msg_print("地面に落とされた。");
 #else
         const auto m_name = monster_desc(creature, creature.get_floor()->get_monster(creature.get_riding()), 0);
-        msg_format("You have fallen from %s.", m_name.data());
+        msg_print("You have fallen from {}.", m_name);
 #endif
     }
 }
@@ -1123,15 +1124,15 @@ bool vanish_summoned_children(CreatureEntity &creature, MONSTER_IDX m_idx, bool 
     const auto m_name = monster_desc(creature, monster, 0);
     if (monster.is_quylthlug_born()) {
         if (see_m) {
-            msg_format(_("%sは崩壊して朽ち果てた。", "%s^ crumbles into dust."), m_name.data());
+            msg_print(_("{}は崩壊して朽ち果てた。", "{} crumbles into dust."), str_upcase_first(m_name));
         }
     } else if (monrace.misc_flags.has(MonsterMiscType::BREAK_DOWN)) {
         if (see_m) {
-            msg_format(_("%sは主を失い消え去った。", "%s^ disappears without a master."), m_name.data());
+            msg_print(_("{}は主を失い消え去った。", "{} disappears without a master."), str_upcase_first(m_name));
         }
     } else if (monster.is_pet()) {
         if (see_m) {
-            msg_format(_("%sは消え去った。", "%s^ disappears."), m_name.data());
+            msg_print(_("{}は消え去った。", "{} disappears."), str_upcase_first(m_name));
         }
     } else {
         return false;
@@ -1172,7 +1173,7 @@ bool awake_monster(CreatureEntity &creature, MONSTER_IDX m_idx)
     (void)set_monster_csleep(*creature.get_floor(), m_idx, 0);
     if (monster.is_visible_on_map()) {
         const auto m_name = monster_desc(creature, monster, 0);
-        msg_format(_("%s^が目を覚ました。", "%s^ wakes up."), m_name.data());
+        msg_print(_("{}が目を覚ました。", "{} wakes up."), str_upcase_first(m_name));
     }
 
     if (is_original_ap_and_seen(creature, monster) && (monrace.r_wake < MAX_UCHAR)) {
@@ -1214,16 +1215,16 @@ void process_angar(CreatureEntity &creature, MONSTER_IDX m_idx, bool see_m)
             return;
         }
 
-        msg_format(_("%s^が突然暴れだした！", "%s^ suddenly begins unruly!"), m_name.data());
+        msg_print(_("{}が突然暴れだした！", "{} suddenly begins unruly!"), str_upcase_first(m_name));
         if (!process_fall_off_horse(creature, 1, true)) {
             return;
         }
 
-        msg_format(_("あなたは振り落とされた。", "You have fallen."));
+        msg_print(_("あなたは振り落とされた。", "You have fallen."));
     }
 
     if (monster.is_pet() || see_m) {
-        msg_format(_("%s^は突然敵にまわった！", "%s^ suddenly becomes hostile!"), m_name.data());
+        msg_print(_("{}は突然敵にまわった！", "{} suddenly becomes hostile!"), str_upcase_first(m_name));
     }
 
     monster.set_hostile();
@@ -1270,7 +1271,7 @@ void process_special(CreatureEntity &creature, MONSTER_IDX m_idx)
     if (monster.is_illegal_modified() && one_in_(50)) {
         const auto m_name = monster_desc(creature, monster, 0);
         const auto pos = monster.get_position();
-        msg_format(_("%sが突然機能停止し、爆発した！", "%s suddenly malfunctions and explodes!"), m_name.data());
+        msg_print(_("{}が突然機能停止し、爆発した！", "{} suddenly malfunctions and explodes!"), str_upcase_first(m_name));
 
         // 破片のボール攻撃
         project(creature, m_idx, 2, pos.y, pos.x, monrace.level + randint1(monrace.level), AttributeType::SHARDS,
@@ -1537,7 +1538,7 @@ bool process_monster_fear(CreatureEntity &creature, turn_flags *turn_flags_ptr, 
     const auto &monrace = m_ptr->get_monrace();
 
     if (monrace.resistance_flags.has_not(MonsterResistanceType::NO_DEFECATE) && !m_ptr->is_defecated() && m_ptr->is_fearful() && one_in_(20)) {
-        msg_format(_("%s^は恐怖のあまり脱糞した！", "%s^ was defecated because of fear!"), m_name.data());
+        msg_print(_("{}は恐怖のあまり脱糞した！", "{} was defecated because of fear!"), str_upcase_first(m_name));
         ItemEntity item;
         item.generate(baseitems.lookup_baseitem_id({ ItemKindType::JUNK, SV_JUNK_FECES }));
         (void)drop_near(creature, item, m_ptr->get_position());
@@ -1545,7 +1546,7 @@ bool process_monster_fear(CreatureEntity &creature, turn_flags *turn_flags_ptr, 
     }
 
     if (monrace.resistance_flags.has_not(MonsterResistanceType::NO_VOMIT) && !m_ptr->is_vomited() && m_ptr->is_fearful() && one_in_(20)) {
-        msg_format(_("%s^は恐怖のあまり嘔吐した！", "%s^ vomited in fear!"), m_name.data());
+        msg_print(_("{}は恐怖のあまり嘔吐した！", "{} vomited in fear!"), str_upcase_first(m_name));
         ItemEntity item;
         item.generate(baseitems.lookup_baseitem_id({ ItemKindType::JUNK, SV_JUNK_VOMITTING }));
         (void)drop_near(creature, item, m_ptr->get_position());
@@ -1563,7 +1564,7 @@ bool process_monster_fear(CreatureEntity &creature, turn_flags *turn_flags_ptr, 
         return true;
     }
 
-    msg_format(_("%s^は戦いを決意した！", "%s^ turns to fight!"), m_name.data());
+    msg_print(_("{}は戦いを決意した！", "{} turns to fight!"), str_upcase_first(m_name));
     return true;
 }
 
@@ -1673,25 +1674,25 @@ void sweep_monster_process(CreatureEntity &creature)
             }
             if (r_ptr.level < randint0(pow)) {
                 if (monster.is_visible_on_map()) {
-                    msg_format(_("%sは%sに絡めとられて動けなかった！", "%s wes entangled in the %s and could not move!"), m_name.data(), f_ptr.name.data());
+                    msg_print(_("{}は{}に絡めとられて動けなかった！", "{} wes entangled in the {} and could not move!"), m_name, f_ptr.name);
                 }
                 if (r_ptr.kind_flags.has(MonsterKindType::HENTAI)) {
                     switch (randint1(3)) {
                     case 1:
-                        msg_format(_("%s「んほぉ！」", "%s 'Nnhor!'"), m_name.data());
+                        msg_print(_("{}「んほぉ！」", "{} 'Nnhor!'"), str_upcase_first(m_name));
                         (void)set_monster_stunned(*creature.get_floor(), 0, monster.get_remaining_stun() + 10 + randint0(creature.get_level()) / 5);
                         break;
                     case 2:
-                        msg_format(_("%s「アへぇ！」", "%s 'Aherr!'"), m_name.data());
+                        msg_print(_("{}「アへぇ！」", "{} 'Aherr!'"), str_upcase_first(m_name));
                         (void)set_monster_slow(*creature.get_floor(), 0, monster.get_remaining_deceleration() + 10 + randint0(creature.get_level()) / 5);
                         break;
                     case 3: {
                         bool fear = false;
-                        msg_format(_("%s「イグゥ！」", "%s 'Igur!'"), m_name.data());
+                        msg_print(_("{}「イグゥ！」", "{} 'Igur!'"), str_upcase_first(m_name));
                         MonsterDamageProcessor mdp(creature, m_idx, Dice::roll(1, 4), &fear, AttributeType::ATTACK);
 
                         if (fear) {
-                            msg_format(_("%s「イッジャイましゅうう！」", "%s'I’m commingrrr!'"), m_name.data());
+                            msg_print(_("{}「イッジャイましゅうう！」", "{}'I’m commingrrr!'"), str_upcase_first(m_name));
                         }
                         mdp.mon_take_hit(_("は絶頂であの世に逝った。", " was passed to the other side with intense acme."));
                         break;
@@ -1777,7 +1778,7 @@ bool process_stalking(CreatureEntity &creature, MONSTER_IDX m_idx)
     // 呪術魔法によりテレポートが阻害されているならば寄ってこない
     if (SpellHex(creature).check_hex_barrier(m_idx, HEX_ANTI_TELE)) {
         if (see_monster(creature, m_idx)) {
-            msg_format(_("魔法のバリアが%s^のテレポートを邪魔した。", "Magic barrier obstructs teleporting of %s^."), m_name.data());
+            msg_print(_("魔法のバリアが{}のテレポートを邪魔した。", "Magic barrier obstructs teleporting of {}."), str_upcase_first(m_name));
         }
         return false;
     }

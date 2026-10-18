@@ -87,9 +87,8 @@ static bool reflects_psi_with_currupted_mind(CreatureEntity &creature, EffectMon
     }
 
     em_ptr->note.clear();
-    msg_format(_("%s^の堕落した精神は攻撃を跳ね返した！",
-                   (em_ptr->seen ? "%s^'s corrupted mind backlashes your attack!" : "%s^s corrupted mind backlashes your attack!")),
-        em_ptr->m_name);
+    const auto poss = em_ptr->seen ? "'s" : "s";
+    msg_print(_("{}の堕落した精神は攻撃を跳ね返した！", "{}{} corrupted mind backlashes your attack!"), str_upcase_first(em_ptr->m_name), poss);
     return true;
 }
 
@@ -212,7 +211,7 @@ ProcessResult effect_monster_psi(CreatureEntity &creature, EffectMonster *em_ptr
     }
     if (!los(*creature.get_floor(), em_ptr->m_ptr->get_position(), creature.get_position())) {
         if (em_ptr->seen_msg) {
-            msg_format(_("%sはあなたが見えないので影響されない！", "%s^ can't see you, and isn't affected!"), em_ptr->m_name);
+            msg_print(_("{}はあなたが見えないので影響されない！", "{} can't see you, and isn't affected!"), str_upcase_first(em_ptr->m_name));
         }
 
         em_ptr->skipped = true;
@@ -279,8 +278,8 @@ static void effect_monster_psi_drain_change_power(CreatureEntity &creature, Effe
 {
     int b = Dice::roll(5, em_ptr->dam) / 4;
     concptr str = CreatureClass(creature).equals(PlayerClassType::MINDCRAFTER) ? _("超能力パワー", "psychic energy") : _("魔力", "mana");
-    concptr msg = _("あなたは%sの苦痛を%sに変換した！", (em_ptr->seen ? "You convert %s's pain into %s!" : "You convert %ss pain into %s!"));
-    msg_format(msg, em_ptr->m_name, str);
+    const auto poss = em_ptr->seen ? "'s" : "s";
+    msg_print(_("あなたは{0}の苦痛を{2}に変換した！", "You convert {0}{1} pain into {2}!"), em_ptr->m_name, poss, str);
 
     b = std::min(creature.get_max_mp(), creature.get_current_mp() + b);
     creature.set_current_mp(b);

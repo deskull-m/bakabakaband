@@ -33,6 +33,7 @@
 #include "wizard/monrace-filter-debug-info.h"
 #include "world/world-collapsion.h"
 #include <algorithm>
+#include <fmt/format.h>
 #include <iterator>
 
 /**
@@ -257,7 +258,7 @@ static bool do_hook(CreatureEntity &creature, MonraceHook hook, MonraceId monrac
     case MonraceHook::LES:
         return is_suitable_for_dungeon && monrace.is_suitable_for_les_nest();
     default:
-        THROW_EXCEPTION(std::logic_error, format("Invalid monrace hook type is specified! %d", enum2i(hook)));
+        THROW_EXCEPTION(std::logic_error, fmt::format("Invalid monrace hook type is specified! {}", enum2i(hook)));
     }
 }
 

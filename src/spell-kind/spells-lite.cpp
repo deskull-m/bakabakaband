@@ -16,6 +16,7 @@
 #include "system/monrace/monrace-definition.h"
 #include "system/terrain/terrain-definition.h"
 #include "target/projection-path-calculator.h"
+#include "util/string-processor.h"
 #include "view/display-messages.h"
 #include "world/world.h"
 #include <range/v3/view.hpp>
@@ -62,7 +63,7 @@ static void cave_temp_room_lite(CreatureEntity &creature, const std::vector<Pos2
                 (void)set_monster_csleep(*creature.get_floor(), grid.m_idx, 0);
                 if (monster.is_visible_on_map()) {
                     const auto m_name = monster_desc(creature, monster, 0);
-                    msg_format(_("%s^が目を覚ました。", "%s^ wakes up."), m_name.data());
+                    msg_print(_("{}が目を覚ました。", "{} wakes up."), str_upcase_first(m_name));
                 }
             }
         }
