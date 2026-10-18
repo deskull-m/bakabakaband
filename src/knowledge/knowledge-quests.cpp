@@ -53,7 +53,7 @@ static void do_cmd_knowledge_quests_current(CreatureEntity &creature, FILE *fff)
     int rand_level = 100;
     int total = 0;
 
-    fprintf(fff, _("《遂行中のクエスト》\n", "< Current Quest >\n"));
+    fmt::println(fff, _("《遂行中のクエスト》", "< Current Quest >"));
     const auto &dungeon_records = DungeonRecords::get_instance();
     for (const auto &[quest_id, quest] : quests) {
         if (quest_id == QuestId::NONE) {
@@ -124,14 +124,14 @@ static void do_cmd_knowledge_quests_current(CreatureEntity &creature, FILE *fff)
                 }
             }
 
-            fprintf(fff, _("  %s (危険度:%d階相当)%s\n", "  %s (Danger level: %d)%s\n"), quest.name.data(), (int)quest.level, note.data());
+            fmt::println(fff, _("  {} (危険度:{}階相当){}", "  {} (Danger level: {}){}"), quest.name, (int)quest.level, note);
             if (quest.status == QuestStatusType::COMPLETED) {
                 fputs(_("    クエスト達成 - まだ報酬を受けとってない。\n", "    Quest Completed - Unrewarded\n"), fff);
                 continue;
             }
 
             for (const auto &line : quest_text_lines) {
-                fprintf(fff, "    %s\n", line.data());
+                fmt::println(fff, "    {}", line);
             }
 
             continue;
@@ -167,7 +167,7 @@ static void do_cmd_knowledge_quests_current(CreatureEntity &creature, FILE *fff)
     }
 
     if (!total) {
-        fprintf(fff, _("  なし\n", "  Nothing.\n"));
+        fmt::println(fff, _("  なし", "  Nothing."));
     }
 }
 
@@ -186,28 +186,28 @@ static bool do_cmd_knowledge_quests_aux([[maybe_unused]] CreatureEntity &creatur
     const auto playtime_str = format("%02d:%02d:%02d", quest.comptime / (60 * 60), (quest.comptime / 60) % 60, quest.comptime % 60);
     auto fputs_name_remain = [fff](const auto &name) {
         for (auto i = 1U; i < name.size(); ++i) {
-            fprintf(fff, "  %s\n", name[i].data());
+            fmt::println(fff, "  {}", name[i]);
         }
     };
 
     if (is_fixed_quest || !quest.get_bounty().is_valid()) {
         auto name = str_separate(quest.name, 35);
-        constexpr auto mes = _("  %-35s (危険度:%3d階相当) - レベル%2d - %s\n", "  %-35s (Danger  level: %3d) - level %2d - %s\n");
-        fprintf(fff, mes, name.front().data(), (int)quest.level, quest.complev, playtime_str.data());
+        constexpr auto mes = _("  {:<35} (危険度:{:3}階相当) - レベル{:2} - {}\n", "  {:<35} (Danger  level: {:3}) - level {:2} - {}\n");
+        fmt::print(fff, mes, fmt::bytes(name.front()), (int)quest.level, quest.complev, playtime_str);
         fputs_name_remain(name);
         return true;
     }
 
     const auto name = str_separate(quest.get_bounty().name, 35);
     if (quest.complev == 0) {
-        constexpr auto mes = _("  %-35s (%3d階)            -   不戦勝 - %s\n", "  %-35s (Dungeon level: %3d) - Unearned - %s\n");
-        fprintf(fff, mes, name.front().data(), (int)quest.level, playtime_str.data());
+        constexpr auto mes = _("  {:<35} ({:3}階)            -   不戦勝 - {}\n", "  {:<35} (Dungeon level: {:3}) - Unearned - {}\n");
+        fmt::print(fff, mes, fmt::bytes(name.front()), (int)quest.level, playtime_str);
         fputs_name_remain(name);
         return true;
     }
 
-    const auto mes = _("  %-35s (%3d階)            - レベル%2d - %s\n", "  %-35s (Dungeon level: %3d) - level %2d - %s\n");
-    fprintf(fff, mes, name.front().data(), (int)quest.level, quest.complev, playtime_str.data());
+    constexpr auto mes = _("  {:<35} ({:3}階)            - レベル{:2} - {}\n", "  {:<35} (Dungeon level: {:3}) - level {:2} - {}\n");
+    fmt::print(fff, mes, fmt::bytes(name.front()), (int)quest.level, quest.complev, playtime_str);
     fputs_name_remain(name);
     return true;
 }
@@ -220,7 +220,7 @@ static bool do_cmd_knowledge_quests_aux([[maybe_unused]] CreatureEntity &creatur
  */
 void do_cmd_knowledge_quests_completed(CreatureEntity &creature, FILE *fff, const std::vector<QuestId> &quest_ids)
 {
-    fprintf(fff, _("《達成したクエスト》\n", "< Completed Quest >\n"));
+    fmt::println(fff, _("《達成したクエスト》", "< Completed Quest >"));
     int16_t total = 0;
     for (const auto quest_id : quest_ids) {
         const auto &quests = QuestList::get_instance();
@@ -231,7 +231,7 @@ void do_cmd_knowledge_quests_completed(CreatureEntity &creature, FILE *fff, cons
     }
 
     if (total == 0) {
-        fprintf(fff, _("  なし\n", "  Nothing.\n"));
+        fmt::println(fff, _("  なし", "  Nothing."));
     }
 }
 
@@ -243,7 +243,7 @@ void do_cmd_knowledge_quests_completed(CreatureEntity &creature, FILE *fff, cons
  */
 void do_cmd_knowledge_quests_failed(CreatureEntity &creature, FILE *fff, const std::vector<QuestId> &quest_ids)
 {
-    fprintf(fff, _("《失敗したクエスト》\n", "< Failed Quest >\n"));
+    fmt::println(fff, _("《失敗したクエスト》", "< Failed Quest >"));
     int16_t total = 0;
     for (const auto quest_id : quest_ids) {
         const auto &quests = QuestList::get_instance();
@@ -254,7 +254,7 @@ void do_cmd_knowledge_quests_failed(CreatureEntity &creature, FILE *fff, const s
     }
 
     if (total == 0) {
-        fprintf(fff, _("  なし\n", "  Nothing.\n"));
+        fmt::println(fff, _("  なし", "  Nothing."));
     }
 }
 
@@ -263,7 +263,7 @@ void do_cmd_knowledge_quests_failed(CreatureEntity &creature, FILE *fff, const s
  */
 static void do_cmd_knowledge_quests_wiz_random(FILE *fff)
 {
-    fprintf(fff, _("《残りのランダムクエスト》\n", "< Remaining Random Quest >\n"));
+    fmt::println(fff, _("《残りのランダムクエスト》", "< Remaining Random Quest >"));
     const auto &quests = QuestList::get_instance();
     int16_t total = 0;
     for (const auto &[q_idx, quest] : quests) {
@@ -273,13 +273,13 @@ static void do_cmd_knowledge_quests_wiz_random(FILE *fff)
 
         if ((quest.type == QuestKindType::RANDOM) && (quest.status == QuestStatusType::TAKEN)) {
             total++;
-            constexpr auto mes = _("  %s (%d階, %s)\n", "  %s (%d, %s)\n");
-            fprintf(fff, mes, quest.name.data(), (int)quest.level, quest.get_bounty().name.data());
+            constexpr auto mes = _("  {} ({}階, {})\n", "  {} ({}, {})\n");
+            fmt::print(fff, mes, quest.name, (int)quest.level, quest.get_bounty().name);
         }
     }
 
     if (total == 0) {
-        fprintf(fff, _("  なし\n", "  Nothing.\n"));
+        fmt::println(fff, _("  なし", "  Nothing."));
     }
 }
 
