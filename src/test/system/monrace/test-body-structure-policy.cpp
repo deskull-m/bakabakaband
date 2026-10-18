@@ -210,6 +210,56 @@ TEST_CASE("SPHERE allows no equipment slot at all")
     CHECK(get_body_slot_policy(BodyStructureType::SPHERE).get_extended_slots().empty());
 }
 
+TEST_CASE("only humanoid-grade bodies outfit themselves with armament")
+{
+    // 武装度 (armament_level) による装備充填の対象は「武具を自ら調える体」だけ。
+    // 獣・鳥・蟲・蠕虫は首・胴・頭のスロットが構造上あっても、自分で防具を
+    // 買い揃えて着込む生き物ではないため対象外 (安物の鎧や兜を着た獣が
+    // 大量に出ないようにするための軸)。
+    SUBCASE("humanoid-grade and draconic bodies are armament capable")
+    {
+        CHECK(get_body_slot_policy(BodyStructureType::HUMANOID).is_armament_capable());
+        CHECK(get_body_slot_policy(BodyStructureType::WINGED_HUMANOID).is_armament_capable());
+        CHECK(get_body_slot_policy(BodyStructureType::WING_ARMED_HUMANOID).is_armament_capable());
+        CHECK(get_body_slot_policy(BodyStructureType::DRACONIC).is_armament_capable());
+    }
+
+    SUBCASE("beasts and bodiless structures are not armament capable")
+    {
+        constexpr BodyStructureType INCAPABLE[] = {
+            BodyStructureType::BIPEDAL,
+            BodyStructureType::QUADRUPED,
+            BodyStructureType::SERPENTINE,
+            BodyStructureType::AMORPHOUS,
+            BodyStructureType::INCORPOREAL,
+            BodyStructureType::FORMLESS,
+            BodyStructureType::GASEOUS,
+            BodyStructureType::VORTEX,
+            BodyStructureType::XAREN,
+            BodyStructureType::AVIAN,
+            BodyStructureType::WORM,
+            BodyStructureType::INSECTOID,
+            BodyStructureType::SPHERE,
+        };
+        for (const auto type : INCAPABLE) {
+            CAPTURE(enum2i(type));
+            CHECK_FALSE(get_body_slot_policy(type).is_armament_capable());
+        }
+    }
+
+    SUBCASE("a body with no slot at all is never armament capable")
+    {
+        // スロットが 1 つも無い体構造が充填対象になっていると、
+        // 予算を消費するだけで何も装備できない無駄な走査になる。
+        for (const auto type : ALL_BODY_STRUCTURES) {
+            CAPTURE(enum2i(type));
+            if (collect_allowed_slots(type).empty()) {
+                CHECK_FALSE(get_body_slot_policy(type).is_armament_capable());
+            }
+        }
+    }
+}
+
 TEST_CASE("out of range body structure falls back to HUMANOID policy")
 {
     const auto &fallback = get_body_slot_policy(BodyStructureType::MAX);

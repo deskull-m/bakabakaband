@@ -531,6 +531,15 @@ void equip_spellcaster_monster_initial_robe(CreatureEntity &monster)
 
 void equip_monster_by_armament_budget(CreatureEntity &monster)
 {
+    // 武具を自ら調えない体 (獣・鳥・蟲・蠕虫・不定形・非実体等) は対象外。
+    // これらは首・胴・頭のスロットが構造上あっても、自分で防具を買い揃えて
+    // 着込む生き物ではないため、武装度由来の装備を一切持たせない
+    // (獣が安物の鎧や兜を身に着けて落とすのを防ぐ)。種族定義で明示した
+    // equip_kind / equip_tval と役割装備は製作者の明示指定なので別経路で残る。
+    if (!monster.is_armament_capable()) {
+        return;
+    }
+
     // 役割装備で既に使った分を差し引いた残額が、この個体の購買力になる。
     auto budget = monster.get_monrace().get_armament_level() - calc_equipped_armament_cost(monster);
     if (budget <= 0) {
