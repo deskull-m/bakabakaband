@@ -37,6 +37,7 @@
 #include "system/monrace/monrace-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "util/bit-flags-calculator.h"
+#include "util/string-processor.h"
 #include "view/display-messages.h"
 
 /*!
@@ -106,13 +107,13 @@ MonsterSpellResult spell_RF6_BLINK(CreatureEntity &creature, MONSTER_IDX m_idx, 
 
     if (!is_quantum_effect && SpellHex(creature).check_hex_barrier(m_idx, HEX_ANTI_TELE)) {
         if (see_monster(creature, m_idx)) {
-            msg_format(_("魔法のバリアが%s^のテレポートを邪魔した。", "Magic barrier obstructs teleporting of %s^."), m_name.data());
+            msg_print(_("魔法のバリアが{}のテレポートを邪魔した。", "Magic barrier obstructs teleporting of {}."), str_upcase_first(m_name));
         }
         return res;
     }
 
     if (see_monster(creature, m_idx)) {
-        msg_format(_("%s^が瞬時に消えた。", "%s^ blinks away."), m_name.data());
+        msg_print(_("{}が瞬時に消えた。", "{} blinks away."), str_upcase_first(m_name));
     }
 
     teleport_away(creature, m_idx, 10, TELEPORT_SPONTANEOUS);
@@ -142,13 +143,13 @@ MonsterSpellResult spell_RF6_TPORT(CreatureEntity &creature, MONSTER_IDX m_idx, 
     }
     if (SpellHex(creature).check_hex_barrier(m_idx, HEX_ANTI_TELE)) {
         if (see_monster(creature, m_idx)) {
-            msg_format(_("魔法のバリアが%s^のテレポートを邪魔した。", "Magic barrier obstructs teleporting of %s^."), m_name.data());
+            msg_print(_("魔法のバリアが{}のテレポートを邪魔した。", "Magic barrier obstructs teleporting of {}."), str_upcase_first(m_name));
         }
         return res;
     }
 
     if (see_monster(creature, m_idx)) {
-        msg_format(_("%s^がテレポートした。", "%s^ teleports away."), m_name.data());
+        msg_print(_("{}がテレポートした。", "{} teleports away."), str_upcase_first(m_name));
     }
 
     teleport_away_followable(creature, m_idx);
@@ -198,7 +199,7 @@ MonsterSpellResult spell_RF6_TELE_TO(CreatureEntity &creature, MONSTER_IDX m_idx
                 monrace_target.r_resistance_flags.set(MonsterResistanceType::RESIST_TELEPORT);
             }
             if (see_monster(creature, t_idx)) {
-                msg_format(_("%s^には効果がなかった。", "%s^ is unaffected!"), t_name.data());
+                msg_print(_("{}には効果がなかった。", "{} is unaffected!"), str_upcase_first(t_name));
             }
             resists_tele = true;
         } else if (monrace_target.level > randint1(100)) {
@@ -206,7 +207,7 @@ MonsterSpellResult spell_RF6_TELE_TO(CreatureEntity &creature, MONSTER_IDX m_idx
                 monrace_target.r_resistance_flags.set(MonsterResistanceType::RESIST_TELEPORT);
             }
             if (see_monster(creature, t_idx)) {
-                msg_format(_("%s^は耐性を持っている！", "%s^ resists!"), t_name.data());
+                msg_print(_("{}は耐性を持っている！", "{} resists!"), str_upcase_first(t_name));
             }
             resists_tele = true;
         }
@@ -280,7 +281,7 @@ MonsterSpellResult spell_RF6_TELE_AWAY(CreatureEntity &creature, MONSTER_IDX m_i
                 monrace_target.r_resistance_flags.set(MonsterResistanceType::RESIST_TELEPORT);
             }
             if (see_monster(creature, t_idx)) {
-                msg_format(_("%s^には効果がなかった。", "%s^ is unaffected!"), t_name.data());
+                msg_print(_("{}には効果がなかった。", "{} is unaffected!"), str_upcase_first(t_name));
             }
             resists_tele = true;
         } else if (monrace_target.level > randint1(100)) {
@@ -288,7 +289,7 @@ MonsterSpellResult spell_RF6_TELE_AWAY(CreatureEntity &creature, MONSTER_IDX m_i
                 monrace_target.r_resistance_flags.set(MonsterResistanceType::RESIST_TELEPORT);
             }
             if (see_monster(creature, t_idx)) {
-                msg_format(_("%s^は耐性を持っている！", "%s^ resists!"), t_name.data());
+                msg_print(_("{}は耐性を持っている！", "{} resists!"), str_upcase_first(t_name));
             }
             resists_tele = true;
         }
@@ -458,9 +459,9 @@ MonsterSpellResult spell_RF6_TRAPS(CreatureEntity &creature, POSITION y, POSITIO
     disturb(creature, true, true);
 
     if (creature.is_blind()) {
-        msg_format(_("%s^が何かをつぶやいて邪悪に微笑んだ。", "%s^ mumbles, and then cackles evilly."), m_name.data());
+        msg_print(_("{}が何かをつぶやいて邪悪に微笑んだ。", "{} mumbles, and then cackles evilly."), str_upcase_first(m_name));
     } else {
-        msg_format(_("%s^が呪文を唱えて邪悪に微笑んだ。", "%s^ casts a spell and cackles evilly."), m_name.data());
+        msg_print(_("{}が呪文を唱えて邪悪に微笑んだ。", "{} casts a spell and cackles evilly."), str_upcase_first(m_name));
     }
 
     (void)trap_creation(creature, y, x);

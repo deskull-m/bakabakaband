@@ -16,6 +16,8 @@
 #include "system/creature-entity.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/floor/floor-info.h"
+#include "system/player-type-definition.h"
+#include "util/string-processor.h"
 #include "view/display-messages.h"
 
 static bool message_fire_ball(CreatureEntity &creature, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
@@ -50,9 +52,9 @@ static bool message_water_ball(CreatureEntity &creature, MONSTER_IDX m_idx, MONS
     auto result = monspell_message(creature, m_idx, t_idx, msg, target_type);
 
     if (mon_to_player) {
-        msg_format(_("あなたは渦巻きに飲み込まれた。", "You are engulfed in a whirlpool."));
+        msg_print(_("あなたは渦巻きに飲み込まれた。", "You are engulfed in a whirlpool."));
     } else if (mon_to_mon && known && see_either && !creature.is_blind()) {
-        msg_format(_("%s^は渦巻に飲み込まれた。", "%s^ is engulfed in a whirlpool."), t_name.data());
+        msg_print(_("{}は渦巻に飲み込まれた。", "{} is engulfed in a whirlpool."), str_upcase_first(t_name));
     }
     return result;
 }
