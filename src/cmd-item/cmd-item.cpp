@@ -213,7 +213,12 @@ void do_cmd_inscribe(CreatureEntity &creature)
         return;
     }
 
-    item->inscription.emplace(*input_inscription);
+    // 銘を空にしたら、銘を消したことにする
+    if (input_inscription->empty()) {
+        item->inscription.reset();
+    } else {
+        item->inscription.emplace(*input_inscription);
+    }
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(StatusRecalculatingFlag::BONUS);
     rfu.set_flag(InventoryArrangementFlag::COMBINATION);
