@@ -37,7 +37,7 @@ static void dump_player_status_with_screen_num(CreatureEntity &creature, FILE *f
             buf[--x] = '\0';
         }
 
-        fprintf(fff, "%s\n", buf);
+        fmt::println(fff, "{}", buf);
     }
 }
 
@@ -53,16 +53,16 @@ void dump_aux_player_status(CreatureEntity &creature, FILE *fff)
 
     // モンスターは mode 0 で共通フォーマットの簡易ステータス画面のみを描画するため、追加ページは出力しない
     if (!creature.is_player()) {
-        fprintf(fff, "\n");
+        fmt::print(fff, "\n");
         return;
     }
 
     dump_player_status_with_screen_num(creature, fff, 1, 10, 17, false);
-    fprintf(fff, "\n");
+    fmt::print(fff, "\n");
     dump_player_status_with_screen_num(creature, fff, 2, 2, 22, true);
-    fprintf(fff, "\n");
+    fmt::print(fff, "\n");
     dump_player_status_with_screen_num(creature, fff, 3, 1, 18, true);
-    fprintf(fff, "\n");
+    fmt::print(fff, "\n");
     dump_player_status_with_screen_num(creature, fff, 4, 1, 19, true);
-    fprintf(fff, "\n");
+    fmt::print(fff, "\n");
 }

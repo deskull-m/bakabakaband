@@ -64,7 +64,7 @@ static bool clear_auto_register(std::string_view player_base_name)
         if (streq(*buf, autoregister_header)) {
             autoregister = true;
         } else {
-            fprintf(tmp_fff, "%s\n", buf->data());
+            fmt::println(tmp_fff, "{}", *buf);
         }
     }
 
@@ -92,7 +92,7 @@ static bool clear_auto_register(std::string_view player_base_name)
             if (!buf) {
                 break;
             }
-            fprintf(pref_fff, "%s\n", buf->data());
+            fmt::println(pref_fff, "{}", *buf);
         }
 
         angband_fclose(pref_fff);
@@ -176,10 +176,10 @@ bool autopick_autoregister(CreatureEntity &creature, const ItemEntity *o_ptr)
     }
 
     if (!creature.is_autopick_autoregister()) {
-        fprintf(pref_fff, "%s\n", autoregister_header);
+        fmt::println(pref_fff, "{}", autoregister_header);
 
-        fprintf(pref_fff, "%s\n", _("# *警告!!* 以降の行は自動登録されたものです。", "# *Warning!* The lines below will be deleted later."));
-        fprintf(pref_fff, "%s\n",
+        fmt::println(pref_fff, "{}", _("# *警告!!* 以降の行は自動登録されたものです。", "# *Warning!* The lines below will be deleted later."));
+        fmt::println(pref_fff, "{}",
             _("# 後で自動的に削除されますので、必要な行は上の方へ移動しておいてください。",
                 "# Keep it by cut & paste if you need these lines for future characters."));
         creature.set_autopick_autoregister(true);
@@ -191,7 +191,7 @@ bool autopick_autoregister(CreatureEntity &creature, const ItemEntity *o_ptr)
     autopick_list.push_back(*entry);
 
     const auto line = autopick_line_from_entry(*entry);
-    fprintf(pref_fff, "%s\n", line.data());
+    fmt::println(pref_fff, "{}", line);
     fclose(pref_fff);
     return true;
 }
