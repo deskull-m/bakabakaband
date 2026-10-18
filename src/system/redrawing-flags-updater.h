@@ -134,6 +134,9 @@ public:
     //! モンスターの表示状態更新 (MONSTER_STATUSES) とマップの描き直しをまとめてセットする
     void request_monster_update_and_map_redrawing();
 
+    //! 視界と明るさの消去・計算し直し (UN_VIEW/UN_LITE/VIEW/LITE/MONSTER_LITE) をまとめてセットする
+    void request_sight_recalculation();
+
     //! 所持品の結合・並べ替え (COMBINATION/REORDER) と一覧の描き直し (INVENTORY) をまとめてセットする
     void request_inventory_arrangement();
 

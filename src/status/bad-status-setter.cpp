@@ -85,14 +85,7 @@ bool BadStatusSetter::set_blindness(const TIME_EFFECT tmp_v)
     }
 
     rfu.request_monster_update_and_map_redrawing();
-    static constexpr auto flags_srf = {
-        StatusRecalculatingFlag::UN_VIEW,
-        StatusRecalculatingFlag::UN_LITE,
-        StatusRecalculatingFlag::VIEW,
-        StatusRecalculatingFlag::LITE,
-        StatusRecalculatingFlag::MONSTER_LITE,
-    };
-    rfu.set_flags(flags_srf);
+    rfu.request_sight_recalculation();
     handle_stuff(this->creature);
     return true;
 }
