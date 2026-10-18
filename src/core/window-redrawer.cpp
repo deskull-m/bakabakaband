@@ -10,6 +10,7 @@
 #include "object/item-tester-hooker.h"
 #include "player-base/player-class.h"
 #include "player-info/race-info.h"
+#include "system/angband-system.h"
 #include "system/creature-entity.h"
 #include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
@@ -321,9 +322,29 @@ static void request_overhead_redrawing_if_changed(CreatureEntity &creature)
 }
 
 /*!
+ * @brief メッセージのサブウィンドウの描き直しを、ターンの区切りか入力待ちまで遅らせてよいか
+ * @return 遅らせてよいか
+ * @details
+ * メッセージは 1 件出るたびに全体を描き直すので、モンスターの攻撃などで続けて出ると重い。
+ * フラグは残し、ターンの区切りか入力待ち (-続く- を含む) で window_stuff_including_deferred() からまとめて描く。
+ * 次のときは遅らせると描かれないか、画面だけが先に進むので、今まで通りメッセージのたびに描く。
+ * - ダンジョンに入る前 (フロアの生成中など): 入力待ちでサブウィンドウを描かない
+ * - 闘技場の観戦中: プレイヤーのターンが来ず、ターンの区切りで描かない
+ * - fresh_message・fresh_after が有効: メッセージやモンスターの行動のたびに画面へ出すオプション
+ */
+static bool can_defer_message_window()
+{
+    if (!AngbandWorld::get_instance().character_dungeon || AngbandSystem::get_instance().is_phase_out()) {
+        return false;
+    }
+
+    return !fresh_message && !fresh_after;
+}
+
+/*!
  * @brief SubWindowRedrawingFlag のフラグに応じた更新をまとめて行う
  * @param creature クリーチャーへの参照
- * @param include_deferred defer_map_subwindows で遅らせている地図のサブウィンドウも更新するならtrue
+ * @param include_deferred 遅らせている地図 (defer_map_subwindows が有効なとき) とメッセージのサブウィンドウも更新するならtrue
  */
 static void update_sub_windows(CreatureEntity &creature, bool include_deferred)
 {
@@ -351,11 +372,20 @@ static void update_sub_windows(CreatureEntity &creature, bool include_deferred)
         return;
     }
 
-    auto window_flags = rfu.get_sub_intersection(target_flags);
+    // メッセージは 1 件ごとに全体を描き直すため重い。フラグは残し、ターンの区切りか入力待ちでまとめて描く
+    const auto is_message_deferred = !include_deferred && can_defer_message_window();
+    EnumClassFlagGroup<SubWindowRedrawingFlag> deferred_flags;
     if (is_map_deferred) {
         // 地図はフロア全体を描き直すため重い。フラグは残し、ターンの区切りか入力待ちでまとめて描く
-        window_flags.reset(SubWindowRedrawingFlag::OVERHEAD).reset(SubWindowRedrawingFlag::DUNGEON);
+        deferred_flags.set({ SubWindowRedrawingFlag::OVERHEAD, SubWindowRedrawingFlag::DUNGEON });
     }
+
+    if (is_message_deferred) {
+        deferred_flags.set(SubWindowRedrawingFlag::MESSAGE);
+    }
+
+    auto window_flags = rfu.get_sub_intersection(target_flags);
+    window_flags.reset(deferred_flags);
 
     if (window_flags.has(SubWindowRedrawingFlag::INVENTORY)) {
         rfu.reset_flag(SubWindowRedrawingFlag::INVENTORY);
