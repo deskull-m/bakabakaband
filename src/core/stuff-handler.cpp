@@ -23,9 +23,7 @@ void handle_stuff(CreatureEntity &creature)
         redraw_stuff(creature);
     }
 
-    if (rfu.any_sub()) {
-        window_stuff(creature);
-    }
+    window_stuff_if_needed(creature);
 }
 
 /*!

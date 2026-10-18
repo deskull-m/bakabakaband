@@ -141,7 +141,6 @@ void regenhp(CreatureEntity &creature, int percent)
     if (old_chp != creature.hp) {
         auto &rfu = RedrawingFlagsUpdater::get_instance();
         rfu.set_flag(MainWindowRedrawingFlag::HP);
-        rfu.set_flag(SubWindowRedrawingFlag::PLAYER);
         wild_regen = 20;
     }
 }
@@ -198,7 +197,6 @@ void regenmana(CreatureEntity &creature, MANA_POINT upkeep_factor, MANA_POINT re
     if (old_current_mp != creature.get_current_mp()) {
         auto &rfu = RedrawingFlagsUpdater::get_instance();
         rfu.set_flag(MainWindowRedrawingFlag::MP);
-        rfu.set_flag(SubWindowRedrawingFlag::PLAYER);
         wild_regen = 20;
     }
 }

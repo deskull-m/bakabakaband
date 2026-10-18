@@ -431,7 +431,6 @@ static void update_max_hitpoints(CreatureEntity &creature)
 
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(MainWindowRedrawingFlag::HP);
-    rfu.set_flag(SubWindowRedrawingFlag::PLAYER);
 }
 
 /*!
@@ -893,11 +892,7 @@ static void update_max_mana(CreatureEntity &creature)
         creature.set_max_mp(max_mp);
         auto &rfu = RedrawingFlagsUpdater::get_instance();
         rfu.set_flag(MainWindowRedrawingFlag::MP);
-        static constexpr auto flags = {
-            SubWindowRedrawingFlag::PLAYER,
-            SubWindowRedrawingFlag::SPELL,
-        };
-        rfu.set_flags(flags);
+        rfu.set_flag(SubWindowRedrawingFlag::SPELL);
     }
 
     if (AngbandWorld::get_instance().character_xtra) {

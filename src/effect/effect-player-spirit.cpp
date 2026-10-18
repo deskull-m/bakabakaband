@@ -43,7 +43,6 @@ void effect_player_drain_mana(CreatureEntity &creature, EffectPlayerType *ep_ptr
 
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(MainWindowRedrawingFlag::MP);
-    rfu.set_flag(SubWindowRedrawingFlag::PLAYER);
 
     if (!ep_ptr->is_monster() || (ep_ptr->m_ptr->hp >= ep_ptr->m_ptr->maxhp)) {
         ep_ptr->dam = 0;

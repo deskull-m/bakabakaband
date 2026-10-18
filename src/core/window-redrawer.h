@@ -5,5 +5,6 @@
 class CreatureEntity;
 void redraw_window();
 void window_stuff(CreatureEntity &creature);
+void window_stuff_if_needed(CreatureEntity &creature);
 void window_stuff_including_deferred(CreatureEntity &creature);
 void redraw_stuff(CreatureEntity &creature);

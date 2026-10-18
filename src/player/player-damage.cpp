@@ -375,7 +375,6 @@ int take_hit(CreatureEntity &creature, int damage_type, int damage, std::string_
 
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(MainWindowRedrawingFlag::HP);
-    rfu.set_flag(SubWindowRedrawingFlag::PLAYER);
     if (damage_type != DAMAGE_GENO && creature.hp == 0) {
         chg_virtue(creature, Virtue::SACRIFICE, 1);
         chg_virtue(creature, Virtue::CHANCE, 2);

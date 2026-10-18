@@ -413,6 +413,31 @@ void fix_equip(CreatureEntity &creature)
         });
 }
 
+namespace {
+/*!
+ * @brief プレイヤー情報のサブウィンドウに表示した HP・MP
+ * @details HP・MP は多くの箇所で変わり、変えるたびに描き直しを要求すると漏れやすいので、描いたときの値と比べる
+ */
+struct DisplayedPlayerPoints {
+    int chp;
+    int mhp;
+    int csp;
+    int msp;
+
+    explicit DisplayedPlayerPoints(const CreatureEntity &creature)
+        : chp(creature.get_current_hp())
+        , mhp(creature.get_max_hp())
+        , csp(creature.get_current_mp())
+        , msp(creature.get_max_mp())
+    {
+    }
+
+    bool operator==(const DisplayedPlayerPoints &other) const = default;
+};
+
+tl::optional<DisplayedPlayerPoints> displayed_player_points;
+}
+
 /*!
  * @brief 現在のプレイヤーステータスをサブウィンドウに表示する /
  * @param creature クリーチャーへの参照
@@ -425,6 +450,23 @@ void fix_player(CreatureEntity &creature)
         [&creature] {
             display_player(creature, 0);
         });
+    displayed_player_points = DisplayedPlayerPoints(creature);
+}
+
+/*!
+ * @brief プレイヤー情報のサブウィンドウを描いたときから HP・MP が変わっていたら描き直しを要求する
+ * @param creature クリーチャーへの参照
+ */
+void request_player_redraw_if_points_changed(const CreatureEntity &creature)
+{
+    auto &rfu = RedrawingFlagsUpdater::get_instance();
+    if (rfu.has(SubWindowRedrawingFlag::PLAYER) || !displayed_player_points) {
+        return;
+    }
+
+    if (*displayed_player_points != DisplayedPlayerPoints(creature)) {
+        rfu.set_flag(SubWindowRedrawingFlag::PLAYER);
+    }
 }
 
 /*!

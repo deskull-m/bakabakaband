@@ -484,7 +484,6 @@ bool hp_player(CreatureEntity &creature, int num)
 
         auto &rfu = RedrawingFlagsUpdater::get_instance();
         rfu.set_flag(MainWindowRedrawingFlag::HP);
-        rfu.set_flag(SubWindowRedrawingFlag::PLAYER);
         // [提案D2 第3弾] 回復メッセージは notify_self seam でプレイヤーは 2 人称、
         // モンスターは視認時のみ 3 人称で表示される。
         if (num < 5) {

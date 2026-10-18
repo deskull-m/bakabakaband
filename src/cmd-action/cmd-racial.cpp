@@ -519,5 +519,4 @@ void do_cmd_racial_power(CreatureEntity &creature)
         MainWindowRedrawingFlag::MP,
     };
     rfu.set_flags(flags_mwrf);
-    rfu.set_flag(SubWindowRedrawingFlag::PLAYER);
 }

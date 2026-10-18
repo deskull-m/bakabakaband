@@ -14,6 +14,7 @@ void fix_monster_list(CreatureEntity &creature);
 void fix_pet_list(CreatureEntity &creature);
 void fix_equip(CreatureEntity &creature);
 void fix_player(CreatureEntity &creature);
+void request_player_redraw_if_points_changed(const CreatureEntity &creature);
 void fix_message(void);
 void fix_overhead(CreatureEntity &creature);
 void fix_dungeon(CreatureEntity &creature);
