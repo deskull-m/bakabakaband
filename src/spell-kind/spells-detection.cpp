@@ -26,22 +26,32 @@
 #include "util/string-processor.h"
 #include "view/display-messages.h"
 
+namespace {
+/*!
+ * @brief 地形の感知の結果
+ */
+struct FeatDetectionResult {
+    bool detected = false; //!< 対象の地形が 1 つでもあったか
+    bool has_disclosed = false; //!< ほかの地形に見せかけていたものを暴いたか
+};
+}
+
 /*!
  * @brief プレイヤー周辺の地形を感知する
  * @param creature クリーチャーへの参照
  * @param range 効果範囲
  * @param flag 特定地形ID
  * @param known 地形から危険フラグを外すならTRUE
- * @return 効力があった場合TRUEを返す
+ * @return 感知の結果
  */
-static bool detect_feat_flag(CreatureEntity &creature, POSITION range, TerrainCharacteristics flag, bool known)
+static FeatDetectionResult detect_feat_flag(CreatureEntity &creature, POSITION range, TerrainCharacteristics flag, bool known)
 {
     auto &floor = *creature.get_floor();
     if (floor.get_dungeon_definition().flags.has(DungeonFeatureType::DARKNESS)) {
         range /= 3;
     }
 
-    auto detect = false;
+    FeatDetectionResult result;
     for (const auto &pos : floor.get_area(FloorBoundary::OUTER_WALL_EXCLUSIVE)) {
         auto dist = Grid::calc_distance(creature.get_position(), pos);
         if (dist > range) {
@@ -63,14 +73,18 @@ static bool detect_feat_flag(CreatureEntity &creature, POSITION range, TerrainCh
         }
 
         if (grid.has(flag)) {
+            if (grid.is_hidden()) {
+                result.has_disclosed = true;
+            }
+
             disclose_grid(creature, pos);
             grid.info |= (CAVE_MARK);
             lite_spot(creature, pos);
-            detect = true;
+            result.detected = true;
         }
     }
 
-    return detect;
+    return result;
 }
 
 /*!
@@ -82,9 +96,10 @@ static bool detect_feat_flag(CreatureEntity &creature, POSITION range, TerrainCh
  * @details
  * 吟遊詩人による感知についてはFALSEを返す
  */
-bool detect_traps(CreatureEntity &creature, POSITION range, bool known)
+bool detect_traps(CreatureEntity &creature, POSITION range, bool known, DetectionNotice notice)
 {
-    bool detect = detect_feat_flag(creature, range, TerrainCharacteristics::TRAP, known);
+    const auto result = detect_feat_flag(creature, range, TerrainCharacteristics::TRAP, known);
+    auto detect = result.detected;
     if (!known && detect) {
         detect_feat_flag(creature, range, TerrainCharacteristics::TRAP, true);
     }
@@ -97,7 +112,7 @@ bool detect_traps(CreatureEntity &creature, POSITION range, bool known)
         detect = false;
     }
 
-    if (detect) {
+    if (detect && ((notice == DetectionNotice::ALWAYS) || result.has_disclosed)) {
         msg_print(_("トラップの存在を感じとった！", "You sense the presence of traps!"));
     }
 
@@ -112,7 +127,7 @@ bool detect_traps(CreatureEntity &creature, POSITION range, bool known)
  */
 bool detect_doors(CreatureEntity &creature, POSITION range)
 {
-    bool detect = detect_feat_flag(creature, range, TerrainCharacteristics::DOOR, true);
+    auto detect = detect_feat_flag(creature, range, TerrainCharacteristics::DOOR, true).detected;
 
     if (music_singing(creature, MUSIC_DETECT) && get_singing_count(creature) > 0) {
         detect = false;
@@ -132,7 +147,7 @@ bool detect_doors(CreatureEntity &creature, POSITION range)
  */
 bool detect_stairs(CreatureEntity &creature, POSITION range)
 {
-    bool detect = detect_feat_flag(creature, range, TerrainCharacteristics::STAIRS, true);
+    auto detect = detect_feat_flag(creature, range, TerrainCharacteristics::STAIRS, true).detected;
 
     if (music_singing(creature, MUSIC_DETECT) && get_singing_count(creature) > 0) {
         detect = false;
@@ -152,7 +167,7 @@ bool detect_stairs(CreatureEntity &creature, POSITION range)
  */
 bool detect_treasure(CreatureEntity &creature, POSITION range)
 {
-    bool detect = detect_feat_flag(creature, range, TerrainCharacteristics::HAS_GOLD, true);
+    auto detect = detect_feat_flag(creature, range, TerrainCharacteristics::HAS_GOLD, true).detected;
 
     if (music_singing(creature, MUSIC_DETECT) && get_singing_count(creature) > 6) {
         detect = false;
@@ -424,7 +439,7 @@ bool detect_monsters_invis(CreatureEntity &creature, POSITION range)
  * @param range 効果範囲
  * @return 効力があった場合TRUEを返す
  */
-bool detect_monsters_evil(CreatureEntity &creature, POSITION range)
+bool detect_monsters_evil(CreatureEntity &creature, POSITION range, DetectionNotice notice)
 {
     auto &floor = *creature.get_floor();
     if (floor.get_dungeon_definition().flags.has(DungeonFeatureType::DARKNESS)) {
@@ -434,6 +449,7 @@ bool detect_monsters_evil(CreatureEntity &creature, POSITION range)
     const auto &tracker = LoreTracker::get_instance();
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     auto flag = false;
+    auto has_new = false;
     // [提案 14b]
     const auto p_pos = creature.get_position();
     const auto matched = creature.collect_creatures([&](const CreatureEntity &mon) {
@@ -451,12 +467,17 @@ bool detect_monsters_evil(CreatureEntity &creature, POSITION range)
                 rfu.set_flag(SubWindowRedrawingFlag::MONSTER_LORE);
             }
         }
+
+        if (!monster.has_constant_flag(MonsterConstantFlagType::MARK)) {
+            has_new = true;
+        }
+
         monster.set_constant_flags({ MonsterConstantFlagType::MARK, MonsterConstantFlagType::SHOW });
         update_monster(creature, i, false);
         flag = true;
     }
 
-    if (flag) {
+    if (flag && ((notice == DetectionNotice::ALWAYS) || has_new)) {
         msg_print(_("邪悪なる生物の存在を感じとった！", "You sense the presence of evil creatures!"));
     }
 

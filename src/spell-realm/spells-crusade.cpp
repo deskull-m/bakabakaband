@@ -138,10 +138,10 @@ void check_emission(CreatureEntity &creature)
             map_area(creature, creature.get_cur_lite());
         }
         if (creature.get_level() > 24) {
-            detect_traps(creature, creature.get_cur_lite(), true);
+            detect_traps(creature, creature.get_cur_lite(), true, DetectionNotice::NEW_ONLY);
         }
         if (creature.get_level() > 19) {
-            detect_monsters_evil(creature, creature.get_cur_lite());
+            detect_monsters_evil(creature, creature.get_cur_lite(), DetectionNotice::NEW_ONLY);
         }
     }
 }
