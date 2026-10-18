@@ -104,11 +104,7 @@ bool apply_disenchant(CreatureEntity &creature, BIT_FLAGS mode)
     chg_virtue(creature, Virtue::ENCHANT, -2);
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(StatusRecalculatingFlag::BONUS);
-    static constexpr auto flags = {
-        SubWindowRedrawingFlag::EQUIPMENT,
-        SubWindowRedrawingFlag::PLAYER,
-    };
-    rfu.set_flags(flags);
+    rfu.set_flag(SubWindowRedrawingFlag::PLAYER);
     calc_android_exp(creature);
     return true;
 }

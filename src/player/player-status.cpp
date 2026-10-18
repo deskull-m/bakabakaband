@@ -632,7 +632,6 @@ static void update_num_of_spells(CreatureEntity &creature)
     creature.set_old_spells(creature.new_spells);
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(MainWindowRedrawingFlag::STUDY);
-    rfu.set_flag(SubWindowRedrawingFlag::ITEM_KNOWLEDGE);
 }
 
 /*!
@@ -2852,12 +2851,7 @@ void check_experience(CreatureEntity &creature)
             MainWindowRedrawingFlag::EXP,
         };
         rfu.set_flags(flags_mwrf_levelup);
-        const auto &flags_swrf_levelup = {
-            SubWindowRedrawingFlag::PLAYER,
-            SubWindowRedrawingFlag::SPELL,
-            SubWindowRedrawingFlag::INVENTORY,
-        };
-        rfu.set_flags(flags_swrf_levelup);
+        rfu.set_flag(SubWindowRedrawingFlag::PLAYER);
         creature.set_level_up_message(true);
         handle_stuff(creature);
 
@@ -2922,11 +2916,7 @@ void check_experience(CreatureEntity &creature)
             MainWindowRedrawingFlag::TITLE,
         };
         rfu.set_flags(flags_mwrf);
-        static constexpr auto flags_swrf = {
-            SubWindowRedrawingFlag::PLAYER,
-            SubWindowRedrawingFlag::SPELL,
-        };
-        rfu.set_flags(flags_swrf);
+        rfu.set_flag(SubWindowRedrawingFlag::PLAYER);
         handle_stuff(creature);
     }
 

@@ -883,7 +883,6 @@ void do_cmd_study(CreatureEntity &creature)
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(StatusRecalculatingFlag::SPELLS);
     update_creature(creature);
-    rfu.set_flag(SubWindowRedrawingFlag::ITEM_KNOWLEDGE);
 }
 
 /*!
@@ -1129,7 +1128,6 @@ bool do_cmd_cast(CreatureEntity &creature)
             realm_status.set_worked(spell_id);
 
             gain_exp(creature, e * spell.slevel);
-            RedrawingFlagsUpdater::get_instance().set_flag(SubWindowRedrawingFlag::ITEM_KNOWLEDGE);
 
             switch (use_realm) {
             case RealmType::LIFE:
@@ -1308,10 +1306,6 @@ bool do_cmd_cast(CreatureEntity &creature)
         }
     }
 
-    static constexpr auto flags = {
-        SubWindowRedrawingFlag::PLAYER,
-        SubWindowRedrawingFlag::SPELL,
-    };
-    RedrawingFlagsUpdater::get_instance().set_flags(flags);
+    RedrawingFlagsUpdater::get_instance().set_flag(SubWindowRedrawingFlag::PLAYER);
     return true; //!< @note 詠唱した
 }

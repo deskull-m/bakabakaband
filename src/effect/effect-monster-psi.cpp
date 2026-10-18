@@ -266,7 +266,6 @@ static void effect_monster_psi_drain_resist(CreatureEntity &creature, EffectMons
 
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(MainWindowRedrawingFlag::MP);
-    rfu.set_flag(SubWindowRedrawingFlag::SPELL);
     take_hit(creature, DAMAGE_ATTACK, em_ptr->dam, em_ptr->killer);
     em_ptr->dam = 0;
 }
@@ -287,7 +286,6 @@ static void effect_monster_psi_drain_change_power(CreatureEntity &creature, Effe
     creature.set_current_mp(b);
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(MainWindowRedrawingFlag::MP);
-    rfu.set_flag(SubWindowRedrawingFlag::SPELL);
 }
 
 /*!
