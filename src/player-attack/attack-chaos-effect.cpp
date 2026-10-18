@@ -31,7 +31,6 @@
 #include "system/floor/floor-info.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/monrace/monrace-list.h"
 #include "system/redrawing-flags-updater.h"
 #include "util/bit-flags-calculator.h"
 #include "util/string-processor.h"
@@ -161,7 +160,7 @@ static void attack_probe(CreatureEntity &creature, player_attack_type *pa_ptr)
     msg_erase();
     msg_print(probed_monster_info(creature, *pa_ptr->m_ptr, *pa_ptr->monrace));
     msg_erase();
-    const auto mes = MonraceList::get_instance().probe_lore(pa_ptr->r_idx);
+    const auto mes = pa_ptr->monrace->probe_lore();
     if (mes) {
         msg_print(*mes);
         msg_erase();

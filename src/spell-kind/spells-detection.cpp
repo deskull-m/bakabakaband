@@ -19,7 +19,6 @@
 #include "system/monrace/monrace-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "system/terrain/terrain-definition.h"
-#include "tracking/lore-tracker.h"
 #include "util/string-processor.h"
 #include "view/display-messages.h"
 
@@ -402,8 +401,6 @@ bool detect_monsters_invis(CreatureEntity &creature, POSITION range, DetectionNo
         range /= 3;
     }
 
-    const auto &tracker = LoreTracker::get_instance();
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
     auto flag = false;
     auto has_new = false;
     // [提案 14b]
@@ -416,9 +413,6 @@ bool detect_monsters_invis(CreatureEntity &creature, POSITION range, DetectionNo
     });
     for (auto i : matched) {
         auto &monster = floor.m_list[i];
-        if (tracker.is_tracking(monster.get_r_idx())) {
-            rfu.set_flag(SubWindowRedrawingFlag::MONSTER_LORE);
-        }
         if (!monster.has_constant_flag(MonsterConstantFlagType::MARK)) {
             has_new = true;
         }
@@ -447,8 +441,6 @@ bool detect_monsters_evil(CreatureEntity &creature, POSITION range, DetectionNot
         range /= 3;
     }
 
-    const auto &tracker = LoreTracker::get_instance();
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
     auto flag = false;
     auto has_new = false;
     // [提案 14b]
@@ -464,9 +456,6 @@ bool detect_monsters_evil(CreatureEntity &creature, POSITION range, DetectionNot
         auto &monrace = monster.get_monrace();
         if (monster.is_original_ap()) {
             monrace.r_kind_flags.set(MonsterKindType::EVIL);
-            if (tracker.is_tracking(monster.get_r_idx())) {
-                rfu.set_flag(SubWindowRedrawingFlag::MONSTER_LORE);
-            }
         }
 
         if (!monster.has_constant_flag(MonsterConstantFlagType::MARK)) {
@@ -498,8 +487,6 @@ bool detect_monsters_nonliving(CreatureEntity &creature, POSITION range)
         range /= 3;
     }
 
-    const auto &tracker = LoreTracker::get_instance();
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
     auto flag = false;
     // [提案 14b]
     const auto p_pos = creature.get_position();
@@ -511,9 +498,6 @@ bool detect_monsters_nonliving(CreatureEntity &creature, POSITION range)
     });
     for (auto i : matched) {
         auto &monster = floor.m_list[i];
-        if (tracker.is_tracking(monster.get_r_idx())) {
-            rfu.set_flag(SubWindowRedrawingFlag::MONSTER_LORE);
-        }
         monster.set_constant_flags({ MonsterConstantFlagType::MARK, MonsterConstantFlagType::SHOW });
         update_monster(creature, i, false);
         flag = true;
@@ -539,8 +523,6 @@ bool detect_monsters_mind(CreatureEntity &creature, POSITION range)
         range /= 3;
     }
 
-    const auto &tracker = LoreTracker::get_instance();
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
     auto flag = false;
     // [提案 14b]
     const auto p_pos = creature.get_position();
@@ -552,9 +534,6 @@ bool detect_monsters_mind(CreatureEntity &creature, POSITION range)
     });
     for (auto i : matched) {
         auto &monster = floor.m_list[i];
-        if (tracker.is_tracking(monster.get_r_idx())) {
-            rfu.set_flag(SubWindowRedrawingFlag::MONSTER_LORE);
-        }
         monster.set_constant_flags({ MonsterConstantFlagType::MARK, MonsterConstantFlagType::SHOW });
         update_monster(creature, i, false);
         flag = true;
@@ -581,8 +560,6 @@ bool detect_monsters_string(CreatureEntity &creature, POSITION range, concptr Ma
         range /= 3;
     }
 
-    const auto &tracker = LoreTracker::get_instance();
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
     auto flag = false;
     auto has_new = false;
     // [提案 14b]
@@ -595,9 +572,6 @@ bool detect_monsters_string(CreatureEntity &creature, POSITION range, concptr Ma
     });
     for (auto i : matched) {
         auto &monster = floor.m_list[i];
-        if (tracker.is_tracking(monster.get_r_idx())) {
-            rfu.set_flag(SubWindowRedrawingFlag::MONSTER_LORE);
-        }
         if (!monster.has_constant_flag(MonsterConstantFlagType::MARK)) {
             has_new = true;
         }
