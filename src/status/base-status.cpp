@@ -13,6 +13,7 @@
 #include "system/redrawing-flags-updater.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
+#include <fmt/format.h>
 
 /* Array of stat "descriptions" */
 static concptr desc_stat_pos[] = {
@@ -246,14 +247,14 @@ bool do_dec_stat(CreatureEntity &creature, int stat)
     if (sust && (!ironman_nightmare || randint0(13))) {
         // [提案D2] 2人称メッセージはプレイヤーのみ (モンスターも安全に呼べるように)
         if (creature.is_player()) {
-            msg_format(_("%sなった気がしたが、すぐに元に戻った。", "You feel %s for a moment, but the feeling passes."), desc_stat_neg[stat]);
+            msg_print(_("{}なった気がしたが、すぐに元に戻った。", "You feel {} for a moment, but the feeling passes."), desc_stat_neg[stat]);
         }
         return true;
     }
 
     if (dec_stat(creature, stat, 10, (ironman_nightmare && !randint0(13)))) {
         if (creature.is_player()) {
-            msg_format(_("ひどく%sなった気がする。", "You feel %s."), desc_stat_neg[stat]);
+            msg_print(_("ひどく{}なった気がする。", "You feel {}."), desc_stat_neg[stat]);
         }
         return true;
     }
@@ -268,7 +269,7 @@ bool do_res_stat(CreatureEntity &creature, int stat)
 {
     if (res_stat(creature, stat)) {
         if (creature.is_player()) {
-            msg_format(_("元通りに%sなった気がする。", "You feel %s."), desc_stat_pos[stat]);
+            msg_print(_("元通りに{}なった気がする。", "You feel {}."), desc_stat_pos[stat]);
         }
         return true;
     }
@@ -294,14 +295,14 @@ bool do_inc_stat(CreatureEntity &creature, int stat)
         }
 
         if (creature.is_player()) {
-            msg_format(_("ワーオ！とても%sなった！", "Wow! You feel %s!"), desc_stat_pos[stat]);
+            msg_print(_("ワーオ！とても{}なった！", "Wow! You feel {}!"), desc_stat_pos[stat]);
         }
         return true;
     }
 
     if (res) {
         if (creature.is_player()) {
-            msg_format(_("元通りに%sなった気がする。", "You feel %s."), desc_stat_pos[stat]);
+            msg_print(_("元通りに{}なった気がする。", "You feel {}."), desc_stat_pos[stat]);
         }
         return true;
     }

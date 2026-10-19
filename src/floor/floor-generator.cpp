@@ -677,7 +677,7 @@ void generate_floor(CreatureEntity &creature)
             break;
         }
 
-        msg_format(_("生成やり直し(%s)", "Generation restarted (%s)"), why->data());
+        msg_print(_("生成やり直し({})", "Generation restarted ({})"), *why);
         wipe_o_list(floor);
         wipe_monsters_list(creature);
     }

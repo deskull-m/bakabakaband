@@ -24,6 +24,7 @@
 #include "timed-effect/player-stun.h"
 #include "view/display-messages.h"
 #include <algorithm>
+#include <fmt/format.h>
 
 BadStatusSetter::BadStatusSetter(CreatureEntity &creature)
     : creature(creature)

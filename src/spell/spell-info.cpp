@@ -21,6 +21,7 @@
 #include "world/world.h"
 #include <algorithm>
 #include <cstdint>
+#include <fmt/format.h>
 #include <limits>
 
 /*!
@@ -307,11 +308,11 @@ void print_spells(CreatureEntity &creature, SPELL_IDX target_spell_id, const SPE
                 out_val = "     ";
             }
         } else {
-            out_val = format("  %c) ", I2A(i));
+            out_val = fmt::format("  {:c}) ", I2A(i));
         }
 
         if (spell.slevel >= 99) {
-            out_val.append(format("%-30s", _("(判読不能)", "(illegible)")));
+            out_val.append(fmt::format("{:<30}", fmt::bytes(_("(判読不能)", "(illegible)"))));
             c_prt(TERM_L_DARK, out_val, y + i + 1, x);
             continue;
         }
@@ -345,10 +346,9 @@ void print_spells(CreatureEntity &creature, SPELL_IDX target_spell_id, const SPE
 
         const auto &spell_name = PlayerRealm::get_spell_name(use_realm, spell_id);
         if (use_realm == RealmType::HISSATSU) {
-            out_val.append(format("%-25s %2d %4d", spell_name.data(), spell.slevel, need_mana));
+            out_val.append(fmt::format("{:<25} {:2} {:4}", fmt::bytes(spell_name), spell.slevel, need_mana));
         } else {
-            out_val.append(format("%-25s%c%-4s %2d %4d %3d%% %s", spell_name.data(), (max ? '!' : ' '), ryakuji, spell.slevel,
-                need_mana, spell_chance(creature, spell_id, use_realm), comment));
+            out_val.append(fmt::format("{:<25}{:c}{:<4} {:2} {:4} {:3}% {}", fmt::bytes(spell_name), (max ? '!' : ' '), fmt::bytes(ryakuji), spell.slevel, need_mana, spell_chance(creature, spell_id, use_realm), comment));
         }
 
         c_prt(line_attr, out_val, y + i + 1, x);

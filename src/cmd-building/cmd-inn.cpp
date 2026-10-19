@@ -24,6 +24,7 @@
 #include "view/display-messages.h"
 #include "world/world-collapsion.h"
 #include "world/world.h"
+#include <fmt/format.h>
 
 /*!
  * @brief 宿屋で食事を摂る
@@ -151,12 +152,10 @@ static void display_stay_result(CreatureEntity &creature, int prev_hour)
 {
     const auto &floor = *creature.get_floor();
     if ((prev_hour >= 6) && (prev_hour < 18)) {
-#if JP
-        char refresh_message_jp[50];
-        sprintf(refresh_message_jp, "%s%s%s", "あなたはリフレッシュして目覚め、", is_player_undead(creature) ? "夜" : "夕方", "を迎えた。");
-        msg_print(refresh_message_jp);
+#ifdef JP
+        msg_print("あなたはリフレッシュして目覚め、{}を迎えた。", is_player_undead(creature) ? "夜" : "夕方");
 #else
-        msg_format("You awake refreshed for the %s.", is_player_undead(creature) ? "evening" : "twilight");
+        msg_print("You awake refreshed for the {}.", is_player_undead(creature) ? "evening" : "twilight");
 #endif
         const auto awake_message = _(is_player_undead(creature) ? "すがすがしい夜を迎えた。" : "夕方を迎えた。", "awoke refreshed.");
         exe_write_diary(floor, DiaryKind::DESCRIPTION, 0, awake_message);
