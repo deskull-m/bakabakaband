@@ -34,6 +34,9 @@
     <Filter Include="system">
       <UniqueIdentifier>{da617f35-e903-420f-a3c2-35c05c34635e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="system\floor">
+      <UniqueIdentifier>{5319352b-6cc4-4fdd-bb89-3f86dbe023fa}</UniqueIdentifier>
+    </Filter>
     <Filter Include="system\monrace">
       <UniqueIdentifier>{92ff44d3-839e-4000-9ff0-d6cdefda0a83}</UniqueIdentifier>
     </Filter>
@@ -120,6 +123,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\test\system\monrace\test-body-structure-policy.cpp">
       <Filter>system\monrace</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\test\system\floor\test-floor-info.cpp">
+      <Filter>system\floor</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\test\system\monrace\test-monrace-definition.cpp">
       <Filter>system\monrace</Filter>
