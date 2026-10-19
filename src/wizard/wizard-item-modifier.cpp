@@ -653,7 +653,7 @@ static void wiz_reroll_item(CreatureEntity &creature, ItemEntity *o_ptr)
 
     *o_ptr = std::move(item);
     auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.set_flag(StatusRecalculatingFlag::BONUS);
+    rfu.request_equipment_change_updates();
     rfu.request_inventory_arrangement();
     static constexpr auto flags_swrf = {
         SubWindowRedrawingFlag::EQUIPMENT,
@@ -786,7 +786,8 @@ void wiz_modify_item(CreatureEntity &creature)
 
         *item = std::move(modified_item);
         auto &rfu = RedrawingFlagsUpdater::get_instance();
-        rfu.set_flag(StatusRecalculatingFlag::BONUS);
+        // 装備品なら、修正値・エゴ・アーティファクトの能力が変わる
+        rfu.request_equipment_change_updates();
         rfu.request_inventory_arrangement();
         static constexpr auto flags_swrf = {
             SubWindowRedrawingFlag::EQUIPMENT,
