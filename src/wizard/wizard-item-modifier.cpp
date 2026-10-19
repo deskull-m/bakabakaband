@@ -632,16 +632,22 @@ static void wiz_reroll_item(CreatureEntity &creature, ItemEntity *o_ptr)
             break;
         }
 
+        // 今の固定アーティファクトも作り直しで選ばれうるように、生成していないことにしてから作り直す
         if (item.is_fixed_artifact()) {
             ArtifactRecords::get_instance().set_generated(item.fa_id, false);
-            item.fa_id = FixedArtifactId::NONE;
         }
 
         auto applied_item = wiz_apply_magic_to_item(creature, *command, o_ptr->bi_id);
-        if (applied_item) {
-            item = std::move(*applied_item);
+        if (!applied_item) {
+            // 作り直さないキーなら、今の品のまま
+            if (item.is_fixed_artifact()) {
+                ArtifactRecords::get_instance().set_generated(item.fa_id, true);
+            }
+
+            continue;
         }
 
+        item = std::move(*applied_item);
         item.iy = o_ptr->iy;
         item.ix = o_ptr->ix;
         item.marked = o_ptr->marked;
@@ -798,6 +804,12 @@ void wiz_modify_item(CreatureEntity &creature)
         };
         rfu.set_flags(flags_swrf);
     } else {
+        // 作り直しで作った固定アーティファクトは捨てるので、生成していないことにする。
+        // 元の品と同じアーティファクトなら、印は元の品のものなので残す
+        if (modified_item.is_fixed_artifact() && !item->is_specific_artifact(modified_item.fa_id)) {
+            ArtifactRecords::get_instance().set_generated(modified_item.fa_id, false);
+        }
+
         msg_print("Changes ignored.");
     }
 }
