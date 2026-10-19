@@ -141,7 +141,7 @@ static void natural_attack(CreatureEntity &creature, MONSTER_IDX m_idx, PlayerMu
     }
 
     k = mon_damage_mod(creature, monster, k, false);
-    msg_format_wizard(creature, CHEAT_MONSTER, _("%dのダメージを与えた。(残りHP %d/%d(%d))", "You do %d damage. (left HP %d/%d(%d))"), k, monster.hp - k,
+    msg_print_wizard(creature, CHEAT_MONSTER, _("{}のダメージを与えた。(残りHP {}/{}({}))", "You do {} damage. (left HP {}/{}({}))"), k, monster.hp - k,
         monster.maxhp, monster.max_maxhp);
     if (k > 0) {
         anger_monster(creature, monster);
@@ -230,7 +230,7 @@ static void headbutt_attack(CreatureEntity &creature, MONSTER_IDX m_idx, bool *f
     }
 
     k = mon_damage_mod(creature, monster, k, false);
-    msg_format_wizard(creature, CHEAT_MONSTER, _("%dのダメージを与えた。(残りHP %d/%d(%d))", "You do %d damage. (left HP %d/%d(%d))"), k, monster.hp - k,
+    msg_print_wizard(creature, CHEAT_MONSTER, _("{}のダメージを与えた。(残りHP {}/{}({}))", "You do {} damage. (left HP {}/{}({}))"), k, monster.hp - k,
         monster.maxhp, monster.max_maxhp);
 
     if (k > 0) {
@@ -324,7 +324,7 @@ static void bodyslam_attack(CreatureEntity &creature, MONSTER_IDX m_idx, bool *f
     }
 
     k = mon_damage_mod(creature, monster, k, false);
-    msg_format_wizard(creature, CHEAT_MONSTER, _("%dのダメージを与えた。(残りHP %d/%d(%d))", "You do %d damage. (left HP %d/%d(%d))"), k, monster.hp - k,
+    msg_print_wizard(creature, CHEAT_MONSTER, _("{}のダメージを与えた。(残りHP {}/{}({}))", "You do {} damage. (left HP {}/{}({}))"), k, monster.hp - k,
         monster.maxhp, monster.max_maxhp);
 
     if (k > 0) {
@@ -711,7 +711,7 @@ static void enema_attack(CreatureEntity &creature, MONSTER_IDX m_idx, bool *fear
     }
 
     k = mon_damage_mod(creature, monster, k, false);
-    msg_format_wizard(creature, CHEAT_MONSTER, _("%dのダメージを与えた。(残りHP %d/%d(%d))", "You do %d damage. (left HP %d/%d(%d))"), k, monster.hp - k,
+    msg_print_wizard(creature, CHEAT_MONSTER, _("{}のダメージを与えた。(残りHP {}/{}({}))", "You do {} damage. (left HP {}/{}({}))"), k, monster.hp - k,
         monster.maxhp, monster.max_maxhp);
 
     if (k > 0) {

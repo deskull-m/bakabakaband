@@ -343,8 +343,8 @@ static tl::optional<std::string> level_gen(CreatureEntity &creature, tl::optiona
         rng.get_state(original_state.begin()); // 現在の乱数状態を保存
         rng = xso::rng32(*seed); // 指定された種で乱数を初期化
         seed_was_fixed = true;
-        msg_format_wizard(creature, CHEAT_DUNGEON,
-            _("乱数種を固定してフロア生成: 0x%08X", "Generating floor with fixed seed: 0x%08X"),
+        msg_print_wizard(creature, CHEAT_DUNGEON,
+            _("乱数種を固定してフロア生成: 0x{:08X}", "Generating floor with fixed seed: 0x{:08X}"),
             *seed);
     }
 

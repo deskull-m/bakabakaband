@@ -831,7 +831,7 @@ void exe_fire(CreatureEntity &creature, INVENTORY_IDX i_idx, ItemEntity *j_ptr, 
                         tdam = mon_damage_mod(creature, monster, tdam, false);
                     }
 
-                    msg_format_wizard(creature, CHEAT_MONSTER, _("%dのダメージを与えた。(残りHP %d/%d(%d))", "You do %d damage. (left HP %d/%d(%d))"), tdam,
+                    msg_print_wizard(creature, CHEAT_MONSTER, _("{}のダメージを与えた。(残りHP {}/{}({}))", "You do {} damage. (left HP {}/{}({}))"), tdam,
                         monster.hp - tdam, monster.maxhp, monster.max_maxhp);
 
                     /* Sniper */

@@ -446,7 +446,7 @@ void ObjectThrowEntity::attack_racial_power()
 
     this->display_attack_racial_power();
     this->calc_racial_power_damage();
-    msg_format_wizard(creature, CHEAT_MONSTER, _("%dのダメージを与えた。(残りHP %d/%d(%d))", "You do %d damage. (left HP %d/%d(%d))"), this->tdam,
+    msg_print_wizard(creature, CHEAT_MONSTER, _("{}のダメージを与えた。(残りHP {}/{}({}))", "You do {} damage. (left HP {}/{}({}))"), this->tdam,
         monster.hp - this->tdam, monster.maxhp, monster.max_maxhp);
 
     auto fear = false;

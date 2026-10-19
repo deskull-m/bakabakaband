@@ -189,7 +189,7 @@ static bool decide_tunnel_planned_site(CreatureEntity &creature, DungeonData *dd
         dd_ptr->why = _("トンネル接続に失敗", "Failed to generate tunnels");
         return false;
     } else {
-        msg_format_wizard(creature, CHEAT_DUNGEON, _("トンネル失敗回数:%d ", "Failure Tunnels:%d "), dd_ptr->tunnel_fail_count);
+        msg_print_wizard(creature, CHEAT_DUNGEON, _("トンネル失敗回数:{} ", "Failure Tunnels:{} "), dd_ptr->tunnel_fail_count);
     }
 
     return true;
@@ -446,7 +446,7 @@ static void decide_dungeon_data_allocation(CreatureEntity &creature, DungeonData
     if (dd_ptr->alloc_monster_num > small_tester) {
         dd_ptr->alloc_monster_num = small_tester;
     } else {
-        msg_format_wizard(creature, CHEAT_DUNGEON, _("モンスター数基本値を %d から %d に減らします", "Reduced monsters base from %d to %d"), small_tester,
+        msg_print_wizard(creature, CHEAT_DUNGEON, _("モンスター数基本値を {} から {} に減らします", "Reduced monsters base from {} to {}"), small_tester,
             dd_ptr->alloc_monster_num);
     }
 }
@@ -553,7 +553,7 @@ tl::optional<std::string> cave_gen(CreatureEntity &creature, tl::optional<uint32
         rng.get_state(original_state.begin()); // 現在の乱数状態を保存
         rng = xso::rng32(*seed); // 指定された種で乱数を初期化
         seed_was_fixed = true;
-        msg_format_wizard(creature, CHEAT_DUNGEON,
+        msg_print_wizard(creature, CHEAT_DUNGEON,
             _("乱数種を固定してダンジョンを生成: 0x%08X", "Generating dungeon with fixed seed: 0x%08X"),
             *seed);
     }
@@ -568,8 +568,8 @@ tl::optional<std::string> cave_gen(CreatureEntity &creature, tl::optional<uint32
         if (auto random_dungeon_id = select_random_non_beginner_dungeon()) {
             floor.dungeon_generated_id = *random_dungeon_id;
             msg_print_wizard(creature, CHEAT_DUNGEON,
-                format(_("鉄獄で他ダンジョンの生成処理を使用: %s", "Using random dungeon generation in Angband: %s"),
-                    floor.get_generated_dungeon_definition().name.data()));
+                fmt::format(_("鉄獄で他ダンジョンの生成処理を使用: {}", "Using random dungeon generation in Angband: {}"),
+                    floor.get_generated_dungeon_definition().name));
         } else {
             floor.dungeon_generated_id = floor.dungeon_id;
         }
@@ -699,7 +699,7 @@ void apply_vestige_terrain_replacement(CreatureEntity &creature)
     }
 
     msg_print_wizard(creature, CHEAT_DUNGEON,
-        format(_("VESTIGE効果: %d箇所の地形を差し替えました", "VESTIGE effect: Replaced %d terrain features"),
+        fmt::format(_("VESTIGE効果: {}箇所の地形を差し替えました", "VESTIGE effect: Replaced {} terrain features"),
             replacement_count));
 }
 
@@ -762,8 +762,8 @@ void apply_void_terrain_placement(CreatureEntity &creature)
     }
 
     msg_print_wizard(creature, CHEAT_DUNGEON,
-        format(_("時空崩壊効果: %d箇所を虚空地形に置き換えました（崩壊度: %d.%06d%%、配置率: %d%%）",
-                   "World collapse effect: Replaced %d terrain features with void (collapse: %d.%06d%%, rate: %d%%)"),
+        fmt::format(_("時空崩壊効果: {}箇所を虚空地形に置き換えました（崩壊度: {}.{:06}%、配置率: {}%）",
+                        "World collapse effect: Replaced {} terrain features with void (collapse: {}.{:06}%, rate: {}%)"),
             placement_count,
             wc_ptr->collapse_degree / 1000000, wc_ptr->collapse_degree % 1000000,
             placement_rate_percent));
