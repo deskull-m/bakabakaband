@@ -68,6 +68,7 @@
 #include "util/int-char-converter.h"
 #include "view/display-messages.h"
 #include "view/display-util.h"
+#include <fmt/format.h>
 #include <string_view>
 #include <vector>
 
@@ -99,17 +100,17 @@ static std::string info_string_dice(concptr str, const Dice &dice, int base)
 {
     /* Fix value */
     if (!dice.is_valid()) {
-        return format("%s%d", str, base);
+        return fmt::format("{}{}", str, base);
     }
 
     /* Dice only */
     else if (!base) {
-        return format("%s%s", str, dice.to_string().data());
+        return fmt::format("{}{}", str, dice.to_string());
     }
 
     /* Dice plus base value */
     else {
-        return format("%s%s%+d", str, dice.to_string().data(), base);
+        return fmt::format("{}{}{:+}", str, dice.to_string(), base);
     }
 }
 
@@ -142,7 +143,7 @@ std::string info_damage(int base)
  */
 std::string info_duration(int base, const Dice &dice)
 {
-    return format(_("期間:%d+%s", "dur %d+%s"), base, dice.to_string().data());
+    return fmt::format(_("期間:{}+{}", "dur {}+{}"), base, dice.to_string());
 }
 
 /*!
@@ -152,7 +153,7 @@ std::string info_duration(int base, const Dice &dice)
  */
 std::string info_range(POSITION range)
 {
-    return format(_("範囲:%d", "range %d"), range);
+    return fmt::format(_("範囲:{}", "range {}"), range);
 }
 
 /*!
@@ -184,7 +185,7 @@ std::string info_heal(int base)
  */
 std::string info_delay(int base, const Dice &dice)
 {
-    return format(_("遅延:%d+%s", "delay %d+%s"), base, dice.to_string().data());
+    return fmt::format(_("遅延:{}+{}", "delay {}+{}"), base, dice.to_string());
 }
 
 /*!
@@ -194,7 +195,7 @@ std::string info_delay(int base, const Dice &dice)
  */
 std::string info_multi_damage(int dam)
 {
-    return format(_("損傷:各%d", "dam %d each"), dam);
+    return fmt::format(_("損傷:各{}", "dam {} each"), dam);
 }
 
 /*!
@@ -204,7 +205,7 @@ std::string info_multi_damage(int dam)
  */
 std::string info_multi_damage_dice(const Dice &dice)
 {
-    return format(_("損傷:各%s", "dam %s each"), dice.to_string().data());
+    return fmt::format(_("損傷:各{}", "dam {} each"), dice.to_string());
 }
 
 /*!
@@ -214,7 +215,7 @@ std::string info_multi_damage_dice(const Dice &dice)
  */
 std::string info_power(int power)
 {
-    return format(_("効力:%d", "power %d"), power);
+    return fmt::format(_("効力:{}", "power {}"), power);
 }
 
 /*!
@@ -224,7 +225,7 @@ std::string info_power(int power)
  */
 std::string info_power_dice(const Dice &dice)
 {
-    return format(_("効力:%s", "power %s"), dice.to_string().data());
+    return fmt::format(_("効力:{}", "power {}"), dice.to_string());
 }
 
 /*!
@@ -234,7 +235,7 @@ std::string info_power_dice(const Dice &dice)
  */
 std::string info_radius(POSITION rad)
 {
-    return format(_("半径:%d", "rad %d"), rad);
+    return fmt::format(_("半径:{}", "rad {}"), rad);
 }
 
 /*!
@@ -245,9 +246,9 @@ std::string info_radius(POSITION rad)
 std::string info_weight(WEIGHT weight)
 {
 #ifdef JP
-    return format("最大重量:%d.%dkg", lb_to_kg_integer(weight), lb_to_kg_fraction(weight));
+    return fmt::format("最大重量:{}.{}kg", lb_to_kg_integer(weight), lb_to_kg_fraction(weight));
 #else
-    return format("max wgt %d", weight / 10);
+    return fmt::format("max wgt {}", weight / 10);
 #endif
 }
 
@@ -682,8 +683,8 @@ static void change_realm2(CreatureEntity &creature, PlayerRealm &pr, RealmType n
         creature.set_spell_exp(i, PlayerSkill::spell_exp_at(PlayerSkillRank::UNSKILLED));
     }
 
-    constexpr auto fmt_realm = _("魔法の領域を%sから%sに変更した。", "changed magic realm from %s to %s.");
-    const auto mes = format(fmt_realm, pr.realm2().get_name().data(), PlayerRealm::get_name(next_realm).data());
+    constexpr auto fmt_realm = _("魔法の領域を{}から{}に変更した。", "changed magic realm from {} to {}.");
+    const auto mes = fmt::format(fmt_realm, pr.realm2().get_name(), PlayerRealm::get_name(next_realm));
     exe_write_diary(*creature.get_floor(), DiaryKind::DESCRIPTION, 0, mes);
     creature.set_old_realm(creature.get_old_realm() | (1U << (enum2i(pr.realm2().to_enum()) - 1)));
     pr.set(pr.realm1().to_enum(), next_realm);
@@ -719,7 +720,7 @@ void do_cmd_study(CreatureEntity &creature)
     }
 
     if (creature.new_spells == 0) {
-        msg_format(_("新しい%sを覚えることはできない！", "You cannot learn any new %ss!"), spell_category.data());
+        msg_print(_("新しい{}を覚えることはできない！", "You cannot learn any new {}s!"), spell_category);
         return;
     }
 
@@ -727,12 +728,12 @@ void do_cmd_study(CreatureEntity &creature)
 
 #ifdef JP
     if (creature.new_spells < 10) {
-        msg_format("あと %d つの%sを学べる。", creature.new_spells, spell_category.data());
+        msg_print("あと {} つの{}を学べる。", creature.new_spells, spell_category);
     } else {
-        msg_format("あと %d 個の%sを学べる。", creature.new_spells, spell_category.data());
+        msg_print("あと {} 個の{}を学べる。", creature.new_spells, spell_category);
     }
 #else
-    msg_format("You can learn %d new %s%s.", creature.new_spells, spell_category.data(), (creature.new_spells == 1 ? "" : "s"));
+    msg_print("You can learn {} new {}{}.", creature.new_spells, spell_category, (creature.new_spells == 1 ? "" : "s"));
 #endif
 
     msg_erase();
@@ -803,7 +804,7 @@ void do_cmd_study(CreatureEntity &creature)
 
     /* Nothing to study */
     if (spell < 0) {
-        msg_format(_("その本には学ぶべき%sがない。", "You cannot learn any %ss in that book."), spell_category.data());
+        msg_print(_("その本には学ぶべき{}がない。", "You cannot learn any {}s in that book."), spell_category);
 
         /* Abort */
         return;
@@ -824,20 +825,20 @@ void do_cmd_study(CreatureEntity &creature)
         const auto &spell_name = realm.get_spell_name(spell % 32);
 
         if (old_exp >= max_exp) {
-            msg_format(_("その%sは完全に使いこなせるので学ぶ必要はない。", "You don't need to study this %s anymore."), spell_category.data());
+            msg_print(_("その{}は完全に使いこなせるので学ぶ必要はない。", "You don't need to study this {} anymore."), spell_category);
             return;
         } else {
 #ifdef JP
-            if (!input_check(format("%sの%sをさらに学びます。よろしいですか？", spell_name.data(), spell_category.data())))
+            if (!input_check(fmt::format("{}の{}をさらに学びます。よろしいですか？", spell_name, spell_category)))
 #else
-            if (!input_check(format("You will study a %s of %s again. Are you sure? ", spell_category.data(), spell_name.data())))
+            if (!input_check(fmt::format("You will study a {} of {} again. Are you sure? ", spell_category, spell_name)))
 #endif
                 return;
         }
 
         auto new_rank = PlayerSkill(creature).gain_spell_skill_exp_over_learning(spell);
         auto new_rank_str = PlayerSkill::skill_rank_str(new_rank);
-        msg_format(_("%sの熟練度が%sに上がった。", "Your proficiency of %s is now %s rank."), spell_name.data(), new_rank_str);
+        msg_print(_("{}の熟練度が{}に上がった。", "Your proficiency of {} is now {} rank."), spell_name, new_rank_str);
     } else {
         realm_status.set_learned(spell % 32);
 
@@ -849,12 +850,12 @@ void do_cmd_study(CreatureEntity &creature)
         const auto &spell_name = realm.get_spell_name(spell % 32);
 #ifdef JP
         if (mp_ptr->spell_book == ItemKindType::MUSIC_BOOK) {
-            msg_format("%sを学んだ。", spell_name.data());
+            msg_print("{}を学んだ。", spell_name);
         } else {
-            msg_format("%sの%sを学んだ。", spell_name.data(), spell_category.data());
+            msg_print("{}の{}を学んだ。", spell_name, spell_category);
         }
 #else
-        msg_format("You have learned the %s of %s.", spell_category.data(), spell_name.data());
+        msg_print("You have learned the {} of {}.", spell_category, spell_name);
 #endif
     }
 
@@ -979,14 +980,14 @@ bool do_cmd_cast(CreatureEntity &creature)
                                                                    : "唱える"),
             sval, true, use_realm)) {
         if (spell_id == -2) {
-            msg_format("その本には知っている%sがない。", prayer.data());
+            msg_print("その本には知っている{}がない。", prayer);
         }
         return false;
     }
 #else
     if (!get_spell(creature, &spell_id, ((mp_ptr->spell_book == ItemKindType::LIFE_BOOK) ? "recite" : "cast"), sval, true, use_realm)) {
         if (spell_id == -2) {
-            msg_format("You don't know any %ss in that book.", prayer.data());
+            msg_print("You don't know any {}s in that book.", prayer);
         }
         return false;
     }
@@ -1012,12 +1013,11 @@ bool do_cmd_cast(CreatureEntity &creature)
 
         /* Warning */
 #ifdef JP
-        msg_format("その%sを%sのに十分なマジックポイントがない。", prayer.data(),
-            ((mp_ptr->spell_book == ItemKindType::LIFE_BOOK)      ? "詠唱する"
-                : (mp_ptr->spell_book == ItemKindType::LIFE_BOOK) ? "歌う"
-                                                                  : "唱える"));
+        const auto verb = (mp_ptr->spell_book == ItemKindType::LIFE_BOOK) ? "詠唱する" : (mp_ptr->spell_book == ItemKindType::LIFE_BOOK) ? "歌う"
+                                                                                                                                         : "唱える";
+        msg_print("その{}を{}のに十分なマジックポイントがない。", prayer, verb);
 #else
-        msg_format("You do not have enough mana to %s this %s.", ((mp_ptr->spell_book == ItemKindType::LIFE_BOOK) ? "recite" : "cast"), prayer.data());
+        msg_print("You do not have enough mana to {} this {}.", ((mp_ptr->spell_book == ItemKindType::LIFE_BOOK) ? "recite" : "cast"), prayer);
 #endif
 
         if (!over_exert) {
@@ -1039,7 +1039,7 @@ bool do_cmd_cast(CreatureEntity &creature)
             flush();
         }
 
-        msg_format(_("%sをうまく唱えられなかった！", "You failed to get the %s off!"), prayer.data());
+        msg_print(_("{}をうまく唱えられなかった！", "You failed to get the {} off!"), prayer);
         sound(SoundKind::FAIL);
 
         switch (use_realm) {

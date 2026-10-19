@@ -327,7 +327,7 @@ void do_cmd_spike(CreatureEntity &creature)
         attack_monster_in_the_way(creature, pos);
     } else {
         PlayerEnergy(creature).set_player_turn_energy(100);
-        msg_format(_("%sにくさびを打ち込んだ。", "You jam the %s with a spike."), terrain_mimic.name.data());
+        msg_print(_("{}にくさびを打ち込んだ。", "You jam the {} with a spike."), terrain_mimic.name);
         cave_alter_feat(creature, pos.y, pos.x, TerrainCharacteristics::SPIKE);
         vary_item(creature, i_idx, -1);
     }

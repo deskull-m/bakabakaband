@@ -267,7 +267,7 @@ tl::optional<std::string> do_hissatsu_spell(CreatureEntity &creature, SPELL_IDX 
                     }
                 }
                 if (pos_target != pos_origin) {
-                    msg_format(_("%sを吹き飛ばした！", "You blow %s away!"), m_name.data());
+                    msg_print(_("{}を吹き飛ばした！", "You blow {} away!"), m_name);
                     monster.set_target(creature.get_position());
                     move_monster_to(creature, monster, pos_target);
                     if (monster.get_monrace().brightness_flags.has_any_of(ld_mask)) {
@@ -435,7 +435,7 @@ tl::optional<std::string> do_hissatsu_spell(CreatureEntity &creature, SPELL_IDX 
                 }
 
                 const auto m_name = monster_desc(creature, monster, 0);
-                msg_format(_("%sには効果がない！", "%s is unharmed!"), m_name.data());
+                msg_print(_("{}には効果がない！", "{} is unharmed!"), m_name);
             }
         }
 

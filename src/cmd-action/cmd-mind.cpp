@@ -52,6 +52,7 @@
 #include "util/enum-converter.h"
 #include "view/display-messages.h"
 #include "view/display-util.h"
+#include <fmt/format.h>
 
 /*!
  * @brief 職業別特殊技能の処理用構造体
@@ -236,7 +237,7 @@ static void check_mind_mindcrafter(CreatureEntity &creature, cm_type *cm_ptr)
         return;
     }
 
-    msg_format(_("%sの力が制御できない氾流となって解放された！", "Your mind unleashes its power in an uncontrollable storm!"), cm_ptr->mind_explanation);
+    msg_print(_("{}の力が制御できない氾流となって解放された！", "Your mind unleashes its power in an uncontrollable storm!"), cm_ptr->mind_explanation);
     project(creature, PROJECT_WHO_UNCTRL_POWER, 2 + cm_ptr->plev / 10, creature.y, creature.x, cm_ptr->plev * 2, AttributeType::MANA,
         PROJECT_JUMP | PROJECT_KILL | PROJECT_GRID | PROJECT_ITEM);
     creature.set_current_mp(std::max(0, creature.get_current_mp() - cm_ptr->plev * std::max(1, cm_ptr->plev / 10)));
@@ -264,7 +265,7 @@ static void check_mind_mirror_master(CreatureEntity &creature, cm_type *cm_ptr)
         return;
     }
 
-    msg_format(_("%sの力が制御できない氾流となって解放された！", "Your mind unleashes its power in an uncontrollable storm!"), cm_ptr->mind_explanation);
+    msg_print(_("{}の力が制御できない氾流となって解放された！", "Your mind unleashes its power in an uncontrollable storm!"), cm_ptr->mind_explanation);
     project(creature, PROJECT_WHO_UNCTRL_POWER, 2 + cm_ptr->plev / 10, creature.y, creature.x, cm_ptr->plev * 2, AttributeType::MANA,
         PROJECT_JUMP | PROJECT_KILL | PROJECT_GRID | PROJECT_ITEM);
     creature.set_current_mp(std::max(0, creature.get_current_mp() - cm_ptr->plev * std::max(1, cm_ptr->plev / 10)));
@@ -313,7 +314,7 @@ static bool switch_mind_class(CreatureEntity &creature, cm_type *cm_ptr)
         cm_ptr->cast = cast_ninja_spell(creature, i2enum<MindNinjaType>(cm_ptr->n));
         return true;
     default:
-        msg_format(_("謎の能力:%d, %d", "Mystery power:%d, %d"), cm_ptr->use_mind, cm_ptr->n);
+        msg_print(_("謎の能力:{}, {}", "Mystery power:{}, {}"), enum2i(cm_ptr->use_mind), cm_ptr->n);
         return false;
     }
 }
@@ -342,7 +343,7 @@ static bool judge_mind_chance(CreatureEntity &creature, cm_type *cm_ptr)
         flush();
     }
 
-    msg_format(_("%sの集中に失敗した！", "You failed to concentrate hard enough for %s!"), cm_ptr->mind_explanation);
+    msg_print(_("{}の集中に失敗した！", "You failed to concentrate hard enough for {}!"), cm_ptr->mind_explanation);
     sound(SoundKind::FAIL);
     check_mind_class(creature, cm_ptr);
     return true;
@@ -356,7 +357,7 @@ static void mind_reflection(CreatureEntity &creature, cm_type *cm_ptr)
     }
 
     creature.set_current_mp(std::max(0, creature.get_current_mp() - cm_ptr->mana_cost));
-    msg_print(_(format("%sを集中しすぎて気を失ってしまった！", cm_ptr->mind_explanation), "You faint from the effort!"));
+    msg_print(_("{}を集中しすぎて気を失ってしまった！", "You faint from the effort!"), cm_ptr->mind_explanation);
     (void)BadStatusSetter(creature).mod_paralysis(roll_spell_over_exertion_duration(oops));
     if (one_in_(2)) {
         return;

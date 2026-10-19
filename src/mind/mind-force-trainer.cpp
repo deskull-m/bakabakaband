@@ -38,6 +38,7 @@
 #include "target/target-getter.h"
 #include "target/target-setter.h"
 #include "target/target-types.h"
+#include "util/string-processor.h"
 #include "view/display-messages.h"
 #include "world/world.h"
 
@@ -228,7 +229,7 @@ bool shock_power(CreatureEntity &creature)
 
     const auto resistance_power = randint1(monrace.level * 3 / 2);
     if (resistance_power > randint0(dam / 2) + dam / 2) {
-        msg_format(_("%sは飛ばされなかった。", "%s^ was not blown away."), m_name.data());
+        msg_print(_("{}は飛ばされなかった。", "{} was not blown away."), str_upcase_first(m_name));
         return true;
     }
 
@@ -246,7 +247,7 @@ bool shock_power(CreatureEntity &creature)
         return true;
     }
 
-    msg_format(_("%sを吹き飛ばした！", "You blow %s away!"), m_name.data());
+    msg_print(_("{}を吹き飛ばした！", "You blow {} away!"), m_name);
     monster.set_target(creature.get_position());
     move_monster_to(creature, monster, pos_target);
 

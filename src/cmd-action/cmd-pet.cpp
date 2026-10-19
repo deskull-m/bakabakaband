@@ -67,6 +67,7 @@
 #include "util/string-processor.h"
 #include "view/display-messages.h"
 #include "world/world.h"
+#include <fmt/format.h>
 #include <sstream>
 
 /*!
@@ -105,8 +106,8 @@ void do_cmd_pet_dismiss(CreatureEntity &creature)
         if (!all_pets) {
             health_track(creature, pet_ctr);
             handle_stuff(creature);
-            constexpr auto mes = _("%sを放しますか？ [Yes/No/Unnamed (%d体)]", "Dismiss %s? [Yes/No/Unnamed (%d remain)]");
-            msg_format(mes, friend_name.data(), num_pet_index - i);
+            constexpr auto mes = _("{}を放しますか？ [Yes/No/Unnamed ({}体)]", "Dismiss {}? [Yes/No/Unnamed ({} remain)]");
+            msg_print(mes, friend_name, num_pet_index - i);
             if (monster.is_visible_on_map()) {
                 move_cursor_relative(monster.y, monster.x);
             }
@@ -116,7 +117,7 @@ void do_cmd_pet_dismiss(CreatureEntity &creature)
                 if (ch == 'Y' || ch == 'y') {
                     delete_this = true;
                     if (should_ask) {
-                        msg_format(_("本当によろしいですか？ (%s) ", "Are you sure? (%s) "), friend_name.data());
+                        msg_print(_("本当によろしいですか？ ({}) ", "Are you sure? ({}) "), friend_name);
                         ch = inkey();
                         if (ch != 'Y' && ch != 'y') {
                             delete_this = false;
@@ -146,7 +147,7 @@ void do_cmd_pet_dismiss(CreatureEntity &creature)
             }
 
             if (monster.is_riding()) {
-                msg_format(_("%sから降りた。", "You dismount from %s. "), friend_name.data());
+                msg_print(_("{}から降りた。", "You dismount from {}. "), friend_name);
                 creature.ride_monster(0);
                 rfu.set_flag(StatusRecalculatingFlag::MONSTER_STATUSES);
                 static constexpr auto flags = {
@@ -156,7 +157,7 @@ void do_cmd_pet_dismiss(CreatureEntity &creature)
                 rfu.set_flags(flags);
             }
 
-            msg_format(_("%s を放した。", "Dismissed %s."), friend_name.data());
+            msg_print(_("{} を放した。", "Dismissed {}."), friend_name);
             rfu.set_flag(StatusRecalculatingFlag::BONUS);
             rfu.set_flag(SubWindowRedrawingFlag::MESSAGE);
             delete_monster_idx(creature, pet_ctr);
@@ -169,9 +170,9 @@ void do_cmd_pet_dismiss(CreatureEntity &creature)
     term_fresh();
 
 #ifdef JP
-    msg_format("%d 体のペットを放しました。", num_dismissed);
+    msg_print("{} 体のペットを放しました。", num_dismissed);
 #else
-    msg_format("You have dismissed %d pet%s.", num_dismissed, (num_dismissed == 1 ? "" : "s"));
+    msg_print("You have dismissed {} pet{}.", num_dismissed, (num_dismissed == 1 ? "" : "s"));
 #endif
     if ((num_dismissed == 0) && all_pets) {
         msg_print(_("'U'nnamed は、乗馬以外の名前のないペットだけを全て解放します。", "'U'nnamed means all your pets except named pets and your mount."));
@@ -254,11 +255,9 @@ bool do_cmd_riding(CreatureEntity &creature, bool force)
             const auto &terrain = grid.get_terrain(TerrainKind::MIMIC);
             using Tc = TerrainCharacteristics;
 #ifdef JP
-            msg_format("そのモンスターは%sの%sにいる。", terrain.name.data(),
-                (terrain.flags.has_none_of({ Tc::MOVE, Tc::CAN_FLY }) || terrain.flags.has_none_of({ Tc::LOS, Tc::TREE })) ? "中" : "上");
+            msg_print("そのモンスターは{}の{}にいる。", terrain.name, (terrain.flags.has_none_of({ Tc::MOVE, Tc::CAN_FLY }) || terrain.flags.has_none_of({ Tc::LOS, Tc::TREE })) ? "中" : "上");
 #else
-            msg_format("This monster is %s the %s.",
-                (terrain.flags.has_none_of({ Tc::MOVE, Tc::CAN_FLY }) || terrain.flags.has_none_of({ Tc::LOS, Tc::TREE })) ? "in" : "on", terrain.name.data());
+            msg_print("This monster is {} the {}.", (terrain.flags.has_none_of({ Tc::MOVE, Tc::CAN_FLY }) || terrain.flags.has_none_of({ Tc::LOS, Tc::TREE })) ? "in" : "on", terrain.name);
 #endif
 
             return false;
@@ -272,7 +271,7 @@ bool do_cmd_riding(CreatureEntity &creature, bool force)
         if (monster.is_asleep()) {
             const auto m_name = monster_desc(creature, monster, 0);
             (void)set_monster_csleep(*creature.get_floor(), grid.m_idx, 0);
-            msg_format(_("%sを起こした。", "You have woken %s up."), m_name.data());
+            msg_print(_("{}を起こした。", "You have woken {} up."), m_name);
         }
 
         if (creature.get_action() == ACTION_MONK_STANCE) {
@@ -335,7 +334,7 @@ static void do_name_pet(CreatureEntity &creature)
         return;
     }
 
-    msg_format(_("%sに名前をつける。", "Name %s."), monster_desc(creature, monster, 0).data());
+    msg_print(_("{}に名前をつける。", "Name {}."), monster_desc(creature, monster, 0));
     msg_erase();
 
     auto old_name = false;
@@ -450,9 +449,9 @@ void do_cmd_pet(CreatureEntity &creature)
     const auto is_hallucinated = creature.is_hallucinated();
     const auto taget_of_pet = creature.get_floor()->get_monster(creature.get_pet_t_m_idx()).get_apparent_monrace().name.data();
     const auto target_of_pet_appearance = is_hallucinated ? _("何か奇妙な物", "something strange") : taget_of_pet;
-    const auto mes = _("ペットのターゲットを指定 (現在：%s)", "specify a target of pet (now:%s)");
+    constexpr auto fmt_target = _("ペットのターゲットを指定 (現在：{})", "specify a target of pet (now:{})");
     const auto target_name = creature.get_pet_t_m_idx() > 0 ? target_of_pet_appearance : _("指定なし", "nothing");
-    const auto target_ask = format(mes, target_name);
+    const auto target_ask = fmt::format(fmt_target, target_name);
     power_desc[num] = target_ask;
     powers[num++] = PET_TARGET;
     power_desc[num] = _("近くにいろ", "stay close");
@@ -609,9 +608,8 @@ void do_cmd_pet(CreatureEntity &creature)
             screen_save();
             prompt = _("(コマンド、ESC=終了) コマンドを選んでください:", "(Command, ESC=exit) Choose command from menu.");
         } else {
-            constexpr auto fmt = _("(コマンド %c-%c、'*'=一覧、ESC=終了) コマンドを選んでください:",
-                "(Command %c-%c, *=List, ESC=exit) Select a command: ");
-            prompt = format(fmt, I2A(0), I2A(num - 1));
+            constexpr auto fmt = _("(コマンド {:c}-{:c}、'*'=一覧、ESC=終了) コマンドを選んでください:", "(Command {:c}-{:c}, *=List, ESC=exit) Select a command: ");
+            prompt = fmt::format(fmt, I2A(0), I2A(num - 1));
         }
 
         choice = (always_show_list || use_menu) ? ESCAPE : 1;
@@ -691,9 +689,9 @@ void do_cmd_pet(CreatureEntity &creature)
                         /* Letter/number for power selection */
                         std::stringstream ss;
                         if (use_menu) {
-                            ss << format("%c%s ", (control == command_idx) ? '*' : ' ', (control == (menu_line - 1)) ? _("》", "> ") : "  ");
+                            ss << fmt::format("{:c}{} ", (control == command_idx) ? '*' : ' ', (control == (menu_line - 1)) ? _("》", "> ") : "  ");
                         } else {
-                            ss << format("%c%c) ", (control == command_idx) ? '*' : ' ', I2A(control));
+                            ss << fmt::format("{:c}{:c}) ", (control == command_idx) ? '*' : ' ', I2A(control));
                         }
 
                         ss << power_desc[control];

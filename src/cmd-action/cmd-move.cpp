@@ -353,7 +353,7 @@ void do_cmd_go_down(CreatureEntity &creature)
         }
     } else {
         if (dungeon_id > DungeonId::WILDERNESS) {
-            msg_format(_("%sへ入った。", "You entered %s."), dungeon.text.data());
+            msg_print(_("{}へ入った。", "You entered {}."), dungeon.text);
         } else {
             if (creature.is_echizen()) {
                 msg_print(_("なんだこの階段は！", "What's this STAIRWAY!"));

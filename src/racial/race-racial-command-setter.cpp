@@ -3,7 +3,8 @@
 #include "player-info/race-info.h"
 #include "player/player-personality-types.h"
 #include "racial/racial-util.h"
-#include "system/creature-entity.h"
+#include "system/player-type-definition.h"
+#include <fmt/format.h>
 
 void set_mimic_racial_command(CreatureEntity &creature, rc_type *rc_ptr)
 {
@@ -14,7 +15,7 @@ void set_mimic_racial_command(CreatureEntity &creature, rc_type *rc_ptr)
     case MimicKindType::DEMON:
     case MimicKindType::DEMON_LORD:
         rpi = rpi_type(_("地獄/火炎のブレス", "Nether or Fire Breath"));
-        rpi.info = format("%s%d", KWD_DAM, rc_ptr->lvl * 3);
+        rpi.info = fmt::format("{}{}", KWD_DAM, rc_ptr->lvl * 3);
         rpi.text = _("火炎または地獄のブレスを放つ。", "Fires a breath of fire or nether.");
         rpi.min_level = 15;
         rpi.cost = 10 + rc_ptr->lvl / 3;
@@ -24,7 +25,7 @@ void set_mimic_racial_command(CreatureEntity &creature, rc_type *rc_ptr)
         return;
     case MimicKindType::VAMPIRE:
         rpi = rpi_type(_("吸血", "Vampiric Drain"));
-        rpi.info = format("%s%d", KWD_DAM, rc_ptr->lvl * 2);
+        rpi.info = fmt::format("{}{}", KWD_DAM, rc_ptr->lvl * 2);
         rpi.text = _("隣接したモンスター1体から生命力を吸い取る。吸い取った生命力によって満腹度があがる。",
             "Drains and transfers HP from an adjacent monster. You will also gain nutritional sustenance from this.");
         rpi.min_level = 2;
@@ -75,7 +76,7 @@ void set_race_racial_command(CreatureEntity &creature, rc_type *rc_ptr)
         break;
     case PlayerRaceType::GNOME:
         rpi = rpi_type(_("ショート・テレポート", "Blink"));
-        rpi.info = format("%s%d", KWD_SPHERE, 10);
+        rpi.info = fmt::format("{}{}", KWD_SPHERE, 10);
         rpi.text = _("近距離のテレポートをする。", "Teleports you a short distance.");
         rpi.min_level = 5;
         rpi.cost = 5;
@@ -94,7 +95,7 @@ void set_race_racial_command(CreatureEntity &creature, rc_type *rc_ptr)
         break;
     case PlayerRaceType::HALF_TROLL:
         rpi = rpi_type(_("狂戦士化", "Berserk"));
-        rpi.info = format("%s%d+d%d", KWD_DURATION, 10, rc_ptr->lvl);
+        rpi.info = fmt::format("{}{}+d{}", KWD_DURATION, 10, rc_ptr->lvl);
         rpi.text = _("狂戦士化し、恐怖を除去する。防御力が少し低下する。", "Gives a bonus to hit and HP, immunity to fear for a while. But decreases AC.");
         rpi.min_level = 10;
         rpi.cost = 12;
@@ -104,7 +105,7 @@ void set_race_racial_command(CreatureEntity &creature, rc_type *rc_ptr)
         break;
     case PlayerRaceType::BARBARIAN:
         rpi = rpi_type(_("狂戦士化", "Berserk"));
-        rpi.info = format("%s%d+d%d", KWD_DURATION, 10, rc_ptr->lvl);
+        rpi.info = fmt::format("{}{}+d{}", KWD_DURATION, 10, rc_ptr->lvl);
         rpi.text = _("狂戦士化し、恐怖を除去する。防御力が少し低下する。", "Gives a bonus to hit and HP, immunity to fear for a while. But decreases AC.");
         rpi.min_level = 8;
         rpi.cost = 10;
@@ -159,7 +160,7 @@ void set_race_racial_command(CreatureEntity &creature, rc_type *rc_ptr)
         break;
     case PlayerRaceType::CYCLOPS:
         rpi = rpi_type(_("岩石投げ", "Throw Boulder"));
-        rpi.info = format("%s%d", KWD_DAM, rc_ptr->lvl * 3 / 2);
+        rpi.info = fmt::format("{}{}", KWD_DAM, rc_ptr->lvl * 3 / 2);
         rpi.text = _("弱い魔法のボールを放つ", "Fires a weak ball of magic.");
         rpi.min_level = 20;
         rpi.cost = 15;
@@ -187,7 +188,7 @@ void set_race_racial_command(CreatureEntity &creature, rc_type *rc_ptr)
         break;
     case PlayerRaceType::KLACKON:
         rpi = rpi_type(_("酸の唾", "Spit Acid"));
-        rpi.info = format("%s%d", KWD_DAM, rc_ptr->lvl);
+        rpi.info = fmt::format("{}{}", KWD_DAM, rc_ptr->lvl);
         if (rc_ptr->lvl >= 25) {
             rpi.text = _("酸のボールを放つ", "Fires a ball of acid.");
         } else {
@@ -201,7 +202,7 @@ void set_race_racial_command(CreatureEntity &creature, rc_type *rc_ptr)
         break;
     case PlayerRaceType::KOBOLD:
         rpi = rpi_type(_("毒のダーツ", "Poison Dart"));
-        rpi.info = format("%s%d", KWD_DAM, rc_ptr->lvl);
+        rpi.info = fmt::format("{}{}", KWD_DAM, rc_ptr->lvl);
         rpi.text = _("毒の矢を放つ", "Fires a bolt of poison.");
         rpi.min_level = 12;
         rpi.cost = 8;
@@ -211,7 +212,7 @@ void set_race_racial_command(CreatureEntity &creature, rc_type *rc_ptr)
         break;
     case PlayerRaceType::DARK_ELF:
         rpi = rpi_type(_("マジック・ミサイル", "Magic Missile"));
-        rpi.info = format("%s%dd%d", KWD_DAM, 3 + ((rc_ptr->lvl - 1) / 5), 4);
+        rpi.info = fmt::format("{}{}d{}", KWD_DAM, 3 + ((rc_ptr->lvl - 1) / 5), 4);
         rpi.text = _("弱い魔法の矢を放つ。", "Fires a weak bolt of magic.");
         rpi.min_level = 2;
         rpi.cost = 2;
@@ -221,7 +222,7 @@ void set_race_racial_command(CreatureEntity &creature, rc_type *rc_ptr)
         break;
     case PlayerRaceType::DRACONIAN:
         rpi = rpi_type(_("ブレス", "Breath Weapon"));
-        rpi.info = format("%s%d", KWD_DAM, rc_ptr->lvl * 2);
+        rpi.info = fmt::format("{}{}", KWD_DAM, rc_ptr->lvl * 2);
         rpi.text = _("元素のブレスを放つ", "Fires a breath of an element.");
         rpi.min_level = 1;
         rpi.cost = rc_ptr->lvl;
@@ -231,7 +232,7 @@ void set_race_racial_command(CreatureEntity &creature, rc_type *rc_ptr)
         break;
     case PlayerRaceType::MIND_FLAYER:
         rpi = rpi_type(_("精神攻撃", "Mind Blast"));
-        rpi.info = format("%s%d", KWD_DAM, rc_ptr->lvl);
+        rpi.info = fmt::format("{}{}", KWD_DAM, rc_ptr->lvl);
         rpi.text = _("モンスター1体に精神攻撃を行う。", "Deals PSI damage to a monster.");
         rpi.min_level = 15;
         rpi.cost = 12;
@@ -247,7 +248,7 @@ void set_race_racial_command(CreatureEntity &creature, rc_type *rc_ptr)
             rpi = rpi_type(_("ファイア・ボルト", "Fire Bolt"));
             rpi.text = _("火炎の矢を放つ。", "Fires a bolt of fire.");
         }
-        rpi.info = format("%s%d", KWD_DAM, rc_ptr->lvl);
+        rpi.info = fmt::format("{}{}", KWD_DAM, rc_ptr->lvl);
         rpi.min_level = 9;
         rpi.cost = 15;
         rpi.stat = A_WIS;
@@ -256,7 +257,7 @@ void set_race_racial_command(CreatureEntity &creature, rc_type *rc_ptr)
         break;
     case PlayerRaceType::GOLEM:
         rpi = rpi_type(_("肌石化", "Stone Skin"));
-        rpi.info = format("%s%d+d%d", KWD_DURATION, 30, 20);
+        rpi.info = fmt::format("{}{}+d{}", KWD_DURATION, 30, 20);
         rpi.text = _("一定期間防御力を高める。", "Increases your AC temporary");
         rpi.min_level = 20;
         rpi.cost = 15;
@@ -276,7 +277,7 @@ void set_race_racial_command(CreatureEntity &creature, rc_type *rc_ptr)
         break;
     case PlayerRaceType::VAMPIRE:
         rpi = rpi_type(_("吸血", "Vampiric Drain"));
-        rpi.info = format("%s%d", KWD_DAM, rc_ptr->lvl * 2);
+        rpi.info = fmt::format("{}{}", KWD_DAM, rc_ptr->lvl * 2);
         rpi.text = _("隣接したモンスター1体から生命力を吸い取る。吸い取った生命力によって満腹度があがる。",
             "Drains and transfers HP from an adjacent monster. You will also gain nutritional sustenance from this.");
         rpi.min_level = 2;
@@ -287,7 +288,7 @@ void set_race_racial_command(CreatureEntity &creature, rc_type *rc_ptr)
         break;
     case PlayerRaceType::SPRITE:
         rpi = rpi_type(_("眠り粉", "Sleeping Dust"));
-        rpi.info = format("%s%d", KWD_POWER, rc_ptr->lvl);
+        rpi.info = fmt::format("{}{}", KWD_POWER, rc_ptr->lvl);
         rpi.text = _("モンスター1体を眠らせる。抵抗されると無効。", "Attempts to put a monster to sleep.");
         rpi.min_level = 12;
         rpi.cost = 12;
@@ -297,7 +298,7 @@ void set_race_racial_command(CreatureEntity &creature, rc_type *rc_ptr)
         break;
     case PlayerRaceType::BALROG:
         rpi = rpi_type(_("地獄/火炎のブレス", "Nether or Fire Breath"));
-        rpi.info = format("%s%d", KWD_DAM, rc_ptr->lvl * 3);
+        rpi.info = fmt::format("{}{}", KWD_DAM, rc_ptr->lvl * 3);
         rpi.text = _("火炎または地獄のブレスを放つ。", "Fires a breath of fire or nether.");
         rpi.min_level = 15;
         rpi.cost = 10 + rc_ptr->lvl / 3;
@@ -307,7 +308,7 @@ void set_race_racial_command(CreatureEntity &creature, rc_type *rc_ptr)
         break;
     case PlayerRaceType::KUTAR:
         rpi = rpi_type(_("横に伸びる", "Expand Horizontally"));
-        rpi.info = format("%s%d+d%d", KWD_DURATION, 30, 20);
+        rpi.info = fmt::format("{}{}+d{}", KWD_DURATION, 30, 20);
         rpi.text = _("横に伸びて防御力を高める。魔法防御力は低下する。",
             "Expands your body horizontally then increases AC, but decreases your magic resistance for curses.");
         rpi.min_level = 20;
@@ -319,35 +320,35 @@ void set_race_racial_command(CreatureEntity &creature, rc_type *rc_ptr)
     case PlayerRaceType::ANDROID:
         if (creature.get_level() < 10) {
             rpi = rpi_type(_("レイガン", "Ray Gun"));
-            rpi.info = format("%s%d", KWD_DAM, (rc_ptr->lvl + 1) / 2);
+            rpi.info = fmt::format("{}{}", KWD_DAM, (rc_ptr->lvl + 1) / 2);
             rpi.text = _("弱い魔法の矢を放つ。", "Fires a weak bolt of magic.");
             rpi.min_level = 1;
             rpi.cost = 7;
             rpi.fail = 8;
         } else if (creature.get_level() < 25) {
             rpi = rpi_type(_("ブラスター", "Blaster"));
-            rpi.info = format("%s%d", KWD_DAM, rc_ptr->lvl);
+            rpi.info = fmt::format("{}{}", KWD_DAM, rc_ptr->lvl);
             rpi.text = _("弱い魔法の矢を放つ。", "Fires a weak bolt of magic.");
             rpi.min_level = 10;
             rpi.cost = 13;
             rpi.fail = 10;
         } else if (creature.get_level() < 35) {
             rpi = rpi_type(_("バズーカ", "Bazooka"));
-            rpi.info = format("%s%d", KWD_DAM, rc_ptr->lvl * 2);
+            rpi.info = fmt::format("{}{}", KWD_DAM, rc_ptr->lvl * 2);
             rpi.text = _("弱い魔法のボールを放つ。", "Fires a weak ball of magic.");
             rpi.min_level = 25;
             rpi.cost = 26;
             rpi.fail = 12;
         } else if (creature.get_level() < 45) {
             rpi = rpi_type(_("ビームキャノン", "Beam Cannon"));
-            rpi.info = format("%s%d", KWD_DAM, rc_ptr->lvl * 2);
+            rpi.info = fmt::format("{}{}", KWD_DAM, rc_ptr->lvl * 2);
             rpi.text = _("弱い魔法のビームを放つ。", "Fires a beam of magic.");
             rpi.min_level = 35;
             rpi.cost = 40;
             rpi.fail = 15;
         } else {
             rpi = rpi_type(_("ロケット", "Rocket"));
-            rpi.info = format("%s%d", KWD_DAM, rc_ptr->lvl * 5);
+            rpi.info = fmt::format("{}{}", KWD_DAM, rc_ptr->lvl * 5);
             rpi.text = _("ロケットを放つ。", "Fires a magic rocket.");
             rpi.min_level = 45;
             rpi.cost = 60;
