@@ -492,13 +492,13 @@ static bool exe_eat_charge_of_magic_device(CreatureEntity &creature, ItemEntity 
 
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     if (o_ptr->pval == 0) {
-        msg_format(_("この%sにはもう魔力が残っていない。", "The %s has no charges left."), staff);
+        msg_print(_("この{}にはもう魔力が残っていない。", "The {} has no charges left."), staff);
         o_ptr->ident.set(IdentificationFlag::EMPTY);
         rfu.set_flag(SubWindowRedrawingFlag::INVENTORY);
         return true;
     }
 
-    msg_format(_("あなたは%sの魔力をエネルギー源として吸収した。", "You absorb mana of the %s as your energy."), staff);
+    msg_print(_("あなたは{}の魔力をエネルギー源として吸収した。", "You absorb mana of the {} as your energy."), staff);
 
     /* Use a single charge */
     o_ptr->pval--;
@@ -517,7 +517,7 @@ static bool exe_eat_charge_of_magic_device(CreatureEntity &creature, ItemEntity 
         /* Unstack the used item */
         o_ptr->number--;
         i_idx = creature.store_item(item);
-        msg_format(_("杖をまとめなおした。", "You unstack your staff."));
+        msg_print(_("杖をまとめなおした。", "You unstack your staff."));
     }
 
     if (i_idx >= 0) {
@@ -606,7 +606,7 @@ void exe_eat_food(CreatureEntity &creature, INVENTORY_IDX i_idx)
     if (food_type == PlayerRaceFoodType::CORPSE) {
         if (item->is_corpse() && item->get_monrace().is_human()) {
             const auto item_name = describe_flavor(creature, *item, (OD_OMIT_PREFIX | OD_NAME_ONLY));
-            msg_format(_("%sは燃え上り灰になった。精力を吸収した気がする。", "%s^ is burnt to ashes.  You absorb its vitality!"), item_name.data());
+            msg_print(_("{}は燃え上り灰になった。精力を吸収した気がする。", "{} is burnt to ashes.  You absorb its vitality!"), str_upcase_first(item_name));
             (void)set_food(creature, PY_FOOD_MAX - 1);
             vary_item(creature, i_idx, -1);
             return;
@@ -666,7 +666,7 @@ void exe_eat_food(CreatureEntity &creature, INVENTORY_IDX i_idx)
 
     // 死体を食べた場合は詳細情報を記録
     if (item->bi_key.tval() == ItemKindType::MONSTER_REMAINS && item->bi_key.sval() == SV_CORPSE) {
-        auto incident_key = format("EAT/CORPSE/%d/%d/%d",
+        auto incident_key = fmt::format("EAT/CORPSE/{}/{}/{}",
             static_cast<int>(item->bi_key.tval()),
             item->bi_key.sval().value_or(0),
             item->pval);

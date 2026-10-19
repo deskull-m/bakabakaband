@@ -222,11 +222,11 @@ std::pair<bool, std::shared_ptr<ItemEntity>> switch_activation(CreatureEntity &c
         (void)cure_critical_wounds(creature, 1000);
         return { true, nullptr };
     case RandomArtActType::CURING:
-        msg_format(_("%sの優しさに癒される...", "the %s cures you affectionately ..."), name.data());
+        msg_print(_("{}の優しさに癒される...", "the {} cures you affectionately ..."), name);
         true_healing(creature, 0);
         return { true, nullptr };
     case RandomArtActType::CURE_MANA_FULL:
-        msg_format(_("%sが青白く光った．．．", "The %s glows palely..."), name.data());
+        msg_print(_("{}が青白く光った．．．", "The {} glows palely..."), name);
         restore_mana(creature, true);
         return { true, nullptr };
     case RandomArtActType::ESP:
@@ -236,7 +236,7 @@ std::pair<bool, std::shared_ptr<ItemEntity>> switch_activation(CreatureEntity &c
         (void)berserk(creature, randint1(25) + 25);
         return { true, nullptr };
     case RandomArtActType::PROT_EVIL:
-        msg_format(_("%sから鋭い音が流れ出た...", "The %s lets out a shrill wail..."), name.data());
+        msg_print(_("{}から鋭い音が流れ出た...", "The {} lets out a shrill wail..."), name);
         BodyImprovement(creature).set_protection(randint1(25) + creature.get_level() * 3);
         return { true, nullptr };
     case RandomArtActType::RESIST_ALL:
@@ -332,7 +332,7 @@ std::pair<bool, std::shared_ptr<ItemEntity>> switch_activation(CreatureEntity &c
     case RandomArtActType::DISP_CURSE_XTRA:
         return { activate_dispel_curse(creature, name), nullptr };
     case RandomArtActType::BRAND_FIRE_BOLTS:
-        msg_format(_("%sが深紅に輝いた...", "Your %s glows deep red..."), name.data());
+        msg_print(_("{}が深紅に輝いた...", "Your {} glows deep red..."), name);
         brand_bolts(creature);
         return { true, nullptr };
     case RandomArtActType::RECHARGE_XTRA:
@@ -364,7 +364,7 @@ std::pair<bool, std::shared_ptr<ItemEntity>> switch_activation(CreatureEntity &c
     case RandomArtActType::TELEPORT_LEVEL:
         return { activate_teleport_level(creature), nullptr };
     case RandomArtActType::STRAIN_HASTE:
-        msg_format(_("%sはあなたの体力を奪った...", "The %s drains your vitality..."), name.data());
+        msg_print(_("{}はあなたの体力を奪った...", "The {} drains your vitality..."), name);
         take_hit(creature, DAMAGE_LOSELIFE, Dice::roll(3, 8), _("加速した疲労", "the strain of haste"));
         (void)mod_acceleration(creature, 25 + randint1(25), false);
         return { true, nullptr };
@@ -392,7 +392,7 @@ std::pair<bool, std::shared_ptr<ItemEntity>> switch_activation(CreatureEntity &c
     case RandomArtActType::CAPTURE_MONSTER:
         return { exe_monster_capture(creature, item), nullptr };
     default:
-        msg_format(_("Unknown activation effect: %d.", "Unknown activation effect: %d."), enum2i(index));
+        msg_print("Unknown activation effect: {}.", enum2i(index));
         return { false, nullptr };
     }
 }

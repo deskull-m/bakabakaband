@@ -184,7 +184,7 @@ void do_cmd_store(CreatureEntity &creature, std::optional<StoreSaleType> specifi
                 msg_print(_("ザックからアイテムがあふれてしまった！", "Your pack overflows!"));
                 auto item = item_inventory.clone();
                 const auto item_name = describe_flavor(creature, item, 0);
-                msg_format(_("%sが落ちた。(%c)", "You drop %s (%c)."), item_name.data(), index_to_label(i_idx));
+                msg_print(_("{}が落ちた。({:c})", "You drop {} ({:c})."), item_name, index_to_label(i_idx));
                 vary_item(creature, i_idx, -255);
                 handle_stuff_with_inventory_arrangement(creature);
                 const auto item_pos = home_carry(creature, store, &item);

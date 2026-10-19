@@ -225,12 +225,12 @@ static void curse_teleport(CreatureEntity &creature)
 
     const auto &item = *creature.inventory[i_keep];
     const auto item_name = describe_flavor(creature, item, (OD_OMIT_PREFIX | OD_NAME_ONLY));
-    msg_format(_("%sがテレポートの能力を発動させようとしている。", "Your %s tries to teleport you."), item_name.data());
+    msg_print(_("{}がテレポートの能力を発動させようとしている。", "Your {} tries to teleport you."), item_name);
     if (input_check_strict(creature, _("テレポートしますか？", "Teleport? "), UserCheck::OKAY_CANCEL)) {
         disturb(creature, false, true);
         teleport_player(creature, 50, TELEPORT_SPONTANEOUS);
     } else {
-        msg_format(_("%sに{.}(ピリオド)と銘を刻むと発動を抑制できます。", "You can inscribe {.} on your %s to disable random teleportation. "), item_name.data());
+        msg_print(_("{}に{{.}}(ピリオド)と銘を刻むと発動を抑制できます。", "You can inscribe {{.}} on your {} to disable random teleportation. "), item_name);
         disturb(creature, true, true);
     }
 }
@@ -286,7 +286,7 @@ static void multiply_low_curse(CreatureEntity &creature)
 
     const auto item_name = describe_flavor(creature, *o_ptr, (OD_OMIT_PREFIX | OD_NAME_ONLY));
     o_ptr->curse_flags.set(new_curse);
-    msg_format(_("悪意に満ちた黒いオーラが%sをとりまいた...", "There is a malignant black aura surrounding your %s..."), item_name.data());
+    msg_print(_("悪意に満ちた黒いオーラが{}をとりまいた...", "There is a malignant black aura surrounding your {}..."), item_name);
     o_ptr->feeling = FEEL_NONE;
     RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
 }
@@ -305,7 +305,7 @@ static void multiply_high_curse(CreatureEntity &creature)
 
     const auto item_name = describe_flavor(creature, *o_ptr, (OD_OMIT_PREFIX | OD_NAME_ONLY));
     o_ptr->curse_flags.set(new_curse);
-    msg_format(_("悪意に満ちた黒いオーラが%sをとりまいた...", "There is a malignant black aura surrounding your %s..."), item_name.data());
+    msg_print(_("悪意に満ちた黒いオーラが{}をとりまいた...", "There is a malignant black aura surrounding your {}..."), item_name);
     o_ptr->feeling = FEEL_NONE;
     RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
 }
@@ -323,7 +323,7 @@ static void persist_curse(CreatureEntity &creature)
 
     const auto item_name = describe_flavor(creature, *o_ptr, (OD_OMIT_PREFIX | OD_NAME_ONLY));
     o_ptr->curse_flags.set(CurseTraitType::HEAVY_CURSE);
-    msg_format(_("悪意に満ちた黒いオーラが%sをとりまいた...", "There is a malignant black aura surrounding your %s..."), item_name.data());
+    msg_print(_("悪意に満ちた黒いオーラが{}をとりまいた...", "There is a malignant black aura surrounding your {}..."), item_name);
     o_ptr->feeling = FEEL_NONE;
     RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
 }
@@ -336,7 +336,7 @@ static void curse_call_monster(CreatureEntity &creature)
     if (creature.get_cursed_flags().has(CurseTraitType::CALL_ANIMAL) && one_in_(2500)) {
         if (summon_specific(creature, creature.y, creature.x, floor.dun_level, SUMMON_ANIMAL, call_type)) {
             const auto item_name = describe_flavor(creature, *choose_cursed_obj_name(creature, CurseTraitType::CALL_ANIMAL), obj_desc_type);
-            msg_format(_("%sが動物を引き寄せた！", "Your %s has attracted an animal!"), item_name.data());
+            msg_print(_("{}が動物を引き寄せた！", "Your {} has attracted an animal!"), item_name);
             disturb(creature, false, true);
         }
     }
@@ -344,7 +344,7 @@ static void curse_call_monster(CreatureEntity &creature)
     if (creature.get_cursed_flags().has(CurseTraitType::CALL_DEMON) && one_in_(1111)) {
         if (summon_specific(creature, creature.y, creature.x, floor.dun_level, SUMMON_DEMON, call_type)) {
             const auto item_name = describe_flavor(creature, *choose_cursed_obj_name(creature, CurseTraitType::CALL_DEMON), obj_desc_type);
-            msg_format(_("%sが悪魔を引き寄せた！", "Your %s has attracted a demon!"), item_name.data());
+            msg_print(_("{}が悪魔を引き寄せた！", "Your {} has attracted a demon!"), item_name);
             disturb(creature, false, true);
         }
     }
@@ -352,7 +352,7 @@ static void curse_call_monster(CreatureEntity &creature)
     if (creature.get_cursed_flags().has(CurseTraitType::CALL_DRAGON) && one_in_(800)) {
         if (summon_specific(creature, creature.y, creature.x, floor.dun_level, SUMMON_DRAGON, call_type)) {
             const auto item_name = describe_flavor(creature, *choose_cursed_obj_name(creature, CurseTraitType::CALL_DRAGON), obj_desc_type);
-            msg_format(_("%sがドラゴンを引き寄せた！", "Your %s has attracted a dragon!"), item_name.data());
+            msg_print(_("{}がドラゴンを引き寄せた！", "Your {} has attracted a dragon!"), item_name);
             disturb(creature, false, true);
         }
     }
@@ -360,7 +360,7 @@ static void curse_call_monster(CreatureEntity &creature)
     if (creature.get_cursed_flags().has(CurseTraitType::CALL_UNDEAD) && one_in_(1111)) {
         if (summon_specific(creature, creature.y, creature.x, floor.dun_level, SUMMON_UNDEAD, call_type)) {
             const auto item_name = describe_flavor(creature, *choose_cursed_obj_name(creature, CurseTraitType::CALL_UNDEAD), obj_desc_type);
-            msg_format(_("%sが死霊を引き寄せた！", "Your %s has attracted an undead!"), item_name.data());
+            msg_print(_("{}が死霊を引き寄せた！", "Your {} has attracted an undead!"), item_name);
             disturb(creature, false, true);
         }
     }
@@ -427,7 +427,7 @@ static void curse_drain_hp(CreatureEntity &creature)
 
     const auto *item_ptr = choose_cursed_obj_name(creature, CurseTraitType::DRAIN_HP);
     const auto item_name = describe_flavor(creature, *item_ptr, (OD_OMIT_PREFIX | OD_NAME_ONLY));
-    msg_format(_("%sはあなたの体力を吸収した！", "Your %s drains HP from you!"), item_name.data());
+    msg_print(_("{}はあなたの体力を吸収した！", "Your {} drains HP from you!"), item_name);
     take_hit(creature, DAMAGE_LOSELIFE, std::min(creature.get_level() * 2, 100), item_name);
 }
 
@@ -439,7 +439,7 @@ static void curse_drain_mp(CreatureEntity &creature)
 
     const auto *item_ptr = choose_cursed_obj_name(creature, CurseTraitType::DRAIN_MANA);
     const auto item_name = describe_flavor(creature, *item_ptr, (OD_OMIT_PREFIX | OD_NAME_ONLY));
-    msg_format(_("%sはあなたの魔力を吸収した！", "Your %s drains mana from you!"), item_name.data());
+    msg_print(_("{}はあなたの魔力を吸収した！", "Your {} drains mana from you!"), item_name);
     creature.sub_current_mp(std::min<short>(creature.get_level(), 50));
     if (creature.get_current_mp() < 0) {
         creature.set_current_mp(0);
