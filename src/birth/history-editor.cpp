@@ -45,12 +45,11 @@ void edit_history(CreatureEntity &creature)
             put_str(creature.history[i], i + 12, 10);
         }
 #ifdef JP
-        if (iskanji2(creature.history[y], x)) {
-            char kanji[3] = { creature.history[y][x], creature.history[y][x + 1], '\0' };
-            c_put_str(TERM_L_BLUE, format("%s", kanji), y + 12, x + 10);
-        } else
+        const auto char_len = iskanji2(creature.history[y], x) ? 2 : 1;
+#else
+        const auto char_len = 1;
 #endif
-            c_put_str(TERM_L_BLUE, format("%c", creature.history[y][x]), y + 12, x + 10);
+        c_put_str(TERM_L_BLUE, std::string_view(&creature.history[y][x], char_len), y + 12, x + 10);
 
         term_gotoxy(x + 10, y + 12);
         int skey = inkey_special(true);

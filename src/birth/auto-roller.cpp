@@ -16,6 +16,7 @@
 #include "term/term-color-types.h"
 #include "term/z-form.h"
 #include "util/int-char-converter.h"
+#include <fmt/format.h>
 #include <string>
 #include <vector>
 
@@ -174,12 +175,12 @@ static std::string cursor_of_adjusted_stat(CreatureEntity &creature, const int *
     auto j = creature.get_race_info()->r_adj[cs] + (*creature.get_class_info()).c_adj[cs] + (*creature.get_personality_info()).a_adj[cs];
     // cval は整数 3〜17 の基本能力値。内部表現は 10 倍 (17.0 = 170) なので変換して合計・最大値を求める
     auto m = adjust_stat(17 * 10, j);
-    auto maxv = format("%4.1f", m / 10.0);
+    auto maxv = fmt::format("{:4.1f}", m / 10.0);
 
     m = adjust_stat(cval[cs] * 10, j);
-    auto inp = format("%4.1f", m / 10.0);
+    auto inp = fmt::format("{:4.1f}", m / 10.0);
 
-    return format("%6s     %4d   %+3d  %+3d  %+3d  =  %6s  %6s", stat_names[cs], cval[cs], creature.get_race_info()->r_adj[cs], (*creature.get_class_info()).c_adj[cs], (*creature.get_personality_info()).a_adj[cs], inp.data(), maxv.data());
+    return fmt::format("{:>6}     {:4}   {:+3}  {:+3}  {:+3}  =  {:>6}  {:>6}", fmt::bytes(stat_names[cs]), cval[cs], creature.get_race_info()->r_adj[cs], (*creature.get_class_info()).c_adj[cs], (*creature.get_personality_info()).a_adj[cs], fmt::bytes(inp), fmt::bytes(maxv));
 }
 
 /*!
@@ -195,7 +196,7 @@ static void display_autoroller_chance(int *cval)
     } else if (autoroll_chance < 1) {
         buf = _("確率: 非常に容易(1/10000以上)", "Prob: Quite Easy(>1/10000)     ");
     } else {
-        buf = format(_("確率: 約 1/%8d00             ", "Prob: ~ 1/%8d00                "), autoroll_chance);
+        buf = fmt::format(_("確率: 約 1/{:8}00             ", "Prob: ~ 1/{:8}00                "), autoroll_chance);
     }
     put_str(buf, 23, 25);
 }
@@ -444,10 +445,10 @@ bool get_chara_limits(CreatureEntity &creature, chara_limit_type *chara_limit_pt
     }
 
     for (int i = 0; i < 4; i++) {
-        auto buf = format("%-12s (%3d - %3d)", item_names[i].data(), mval[i * 2], mval[i * 2 + 1]);
+        auto buf = fmt::format("{:<12} ({:3} - {:3})", fmt::bytes(item_names[i]), mval[i * 2], mval[i * 2 + 1]);
         put_str(buf, 14 + i, 20);
         for (int j = 0; j < 2; j++) {
-            buf = format("     %3d", cval[i * 2 + j]);
+            buf = fmt::format("     {:3}", cval[i * 2 + j]);
             put_str(buf, 14 + i, 45 + 8 * j);
         }
     }
@@ -467,7 +468,7 @@ bool get_chara_limits(CreatureEntity &creature, chara_limit_type *chara_limit_pt
             if (cs == max_items) {
                 c_put_str(TERM_YELLOW, accept, 19, 35);
             } else {
-                cur = format("     %3d", cval[cs]);
+                cur = fmt::format("     {:3}", cval[cs]);
                 c_put_str(TERM_YELLOW, cur, 14 + cs / 2, 45 + 8 * (cs % 2));
             }
 

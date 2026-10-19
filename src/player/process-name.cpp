@@ -13,6 +13,7 @@
 #include "util/string-processor.h"
 #include "view/display-player-misc-info.h"
 #include "world/world.h"
+#include <fmt/format.h>
 #include <sstream>
 #ifdef SAVEFILE_USE_UID
 #include "main-unix/unix-user-ids.h"
@@ -44,7 +45,7 @@ void process_player_name(CreatureEntity &creature, bool is_new_savefile)
 #else
         if (iscntrl(name_c_str[i])) {
 #endif
-            quit_fmt(_("'%s' という名前は不正なコントロールコードを含んでいます。", "The name '%s' contains control chars!"), name_c_str);
+            quit(fmt::format(_("'{}' という名前は不正なコントロールコードを含んでいます。", "The name '{}' contains control chars!"), creature.name));
         }
     }
 

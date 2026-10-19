@@ -32,6 +32,7 @@
 #include "term/screen-processor.h"
 #include "term/z-form.h"
 #include "view/display-self-info.h"
+#include <fmt/format.h>
 
 static void set_bad_status_info(const CreatureEntity &subject, self_info_type *self_ptr)
 {
@@ -423,8 +424,8 @@ void report_magics(CreatureEntity &subject)
     const int size = std::ssize(info);
     auto k = 2;
     for (int j = 0; j < size; j++) {
-        constexpr auto fmt = _("%-28s : 期間 - %s ", "%s %s.");
-        const auto mes = format(fmt, info[j].second.data(), report_magic_durations[info[j].first].data());
+        constexpr auto fmt = _("{:<28} : 期間 - {} ", "{} {}.");
+        const auto mes = fmt::format(fmt, fmt::bytes(info[j].second), report_magic_durations[info[j].first]);
         prt(mes, k++, 15);
 
         /* Every 20 entries (lines 2 to 21), start over */

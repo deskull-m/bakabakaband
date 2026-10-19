@@ -149,15 +149,15 @@ static void show_dead_place(CreatureEntity &creature, int extra_line)
     if (!creature.get_floor()->is_underground()) {
         concptr field_name = creature.get_town_num() ? "街" : "荒野";
         if (streq(creature.died_from, "途中終了")) {
-            place = format("%sで死んで飽きた", field_name);
+            place = fmt::format("{}で死んで飽きた", field_name);
         } else {
-            place = format("に%sで殺されて飽きた", field_name);
+            place = fmt::format("に{}で殺されて飽きた", field_name);
         }
     } else {
         if (streq(creature.died_from, "途中終了")) {
-            place = format("地下 %d 階で死んで飽きた", (int)creature.get_floor()->dun_level);
+            place = fmt::format("地下 {} 階で死んで飽きた", creature.get_floor()->dun_level);
         } else {
-            place = format("に地下 %d 階で殺されて飽きた", (int)creature.get_floor()->dun_level);
+            place = fmt::format("に地下 {} 階で殺されて飽きた", creature.get_floor()->dun_level);
         }
     }
 
@@ -192,9 +192,9 @@ static void show_tomb_detail(CreatureEntity &creature)
  */
 static void show_tomb_detail(CreatureEntity &creature)
 {
-    show_tomb_line(format("Killed on Level %d", creature.get_floor()->dun_level), GRAVE_DEAD_PLACE_ROW);
+    show_tomb_line(fmt::format("Killed on Level {}", creature.get_floor()->dun_level), GRAVE_DEAD_PLACE_ROW);
 
-    auto lines = shape_buffer(format("by %s.", creature.died_from.data()).data(), GRAVE_LINE_WIDTH + 1);
+    auto lines = shape_buffer(fmt::format("by {}.", creature.died_from), GRAVE_LINE_WIDTH + 1);
     show_tomb_line(lines[0], GRAVE_KILLER_NAME_ROW);
     if (lines.size() == 1) {
         return;
@@ -245,9 +245,10 @@ void print_tomb(CreatureEntity &creature)
     }
 
     time_t ct = time((time_t *)0);
-    show_tomb_line(format("%-.24s", ctime(&ct)), GRAVE_DEAD_DATETIME_ROW);
+    const auto *datetime_str = ctime(&ct);
+    show_tomb_line(datetime_str ? std::string_view(datetime_str).substr(0, 24) : std::string_view(), GRAVE_DEAD_DATETIME_ROW);
     if (wc_ptr->is_blown_away()) {
-        msg_format(_("世 界 こ わ れ る", "The world had *b*r*o*k*e*n*."));
+        msg_print(_("世 界 こ わ れ る", "The world had *b*r*o*k*e*n*."));
     } else {
 #ifdef WINDOWS
         // 墓石画像を描画リストに登録
@@ -255,7 +256,7 @@ void print_tomb(CreatureEntity &creature)
         (void)register_png_image(tomb_path.string());
 #endif
 
-        msg_format(_("さようなら、%s!", "Goodbye, %s!"), creature.name.data());
+        msg_print(_("さようなら、{}!", "Goodbye, {}!"), creature.name);
 
 #ifdef WINDOWS
         /*
@@ -286,11 +287,12 @@ void print_monster_tomb(CreatureEntity &creature, CreatureEntity &target)
     show_tomb_line("Monster", GRAVE_PLAYER_TITLE_ROW);
 #endif
 
-    show_tomb_line(format(_("レベル: %d", "Level: %d"), target.get_level()), GRAVE_LEVEL_ROW);
-    show_tomb_line(format(_("HP: %d/%d", "HP: %d/%d"), target.hp, target.maxhp), GRAVE_EXP_ROW);
+    show_tomb_line(fmt::format(_("レベル: {}", "Level: {}"), target.get_level()), GRAVE_LEVEL_ROW);
+    show_tomb_line(fmt::format(_("HP: {}/{}", "HP: {}/{}"), target.hp, target.maxhp), GRAVE_EXP_ROW);
 
     time_t ct = time((time_t *)0);
-    show_tomb_line(format("%-.24s", ctime(&ct)), GRAVE_DEAD_DATETIME_ROW);
+    const auto *datetime_str = ctime(&ct);
+    show_tomb_line(datetime_str ? std::string_view(datetime_str).substr(0, 24) : std::string_view(), GRAVE_DEAD_DATETIME_ROW);
 }
 
 /*!
@@ -378,7 +380,7 @@ static void show_dead_home_items(CreatureEntity &creature)
             term_clear();
             for (int j = 0; (j < 12) && (i < store.stock_num); j++, i++) {
                 const auto &item = *store.stock[i];
-                prt(format("%c) ", I2A(j)), j + 2, 4);
+                prt(fmt::format("{:c}) ", I2A(j)), j + 2, 4);
                 const auto item_name = describe_flavor(creature, item, 0);
                 c_put_str(tval_to_attr[enum2i(item.bi_key.tval())], item_name, j + 2, 7);
             }
@@ -425,7 +427,7 @@ static void file_character_auto(CreatureEntity &creature)
     char datetime[32];
     strftime(datetime, sizeof(datetime), "%Y-%m-%d_%H%M%S", now_tm);
     screen_save();
-    const auto filename = format("%s_Autodump_%s.txt", creature.name.data(), datetime);
+    const auto filename = fmt::format("{}_Autodump_{}.txt", creature.name, datetime);
     file_character(creature, filename);
     screen_load();
 }
