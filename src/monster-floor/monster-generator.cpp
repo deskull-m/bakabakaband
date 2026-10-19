@@ -249,7 +249,7 @@ tl::optional<MONSTER_IDX> place_specific_monster(CreatureEntity &creature, POSIT
                 }
             }
             if (d > scatter_max) {
-                msg_format_wizard(creature, CHEAT_MONSTER, _("護衛の指定生成に失敗しました。", "Failed fixed escorts."));
+                msg_print_wizard(creature, CHEAT_MONSTER, _("護衛の指定生成に失敗しました。", "Failed fixed escorts."));
             }
         }
     }

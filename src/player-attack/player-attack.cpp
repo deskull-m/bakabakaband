@@ -498,7 +498,7 @@ static void apply_actual_attack(
     const auto is_berserker = CreatureClass(creature).equals(PlayerClassType::BERSERKER);
     pa_ptr->attack_damage = mon_damage_mod(creature, *pa_ptr->m_ptr, pa_ptr->attack_damage, is_death_scythe || (is_berserker && one_in_(2)));
     critical_attack(creature, pa_ptr);
-    msg_format_wizard(creature, CHEAT_MONSTER, _("%dのダメージを与えた。(残hp %d/%d(%d))", "You do %d damage. (left HP %d/%d(%d))"),
+    msg_print_wizard(creature, CHEAT_MONSTER, _("{}のダメージを与えた。(残hp {}/{}({}))", "You do {} damage. (left HP {}/{}({}))"),
         pa_ptr->attack_damage, pa_ptr->m_ptr->hp - pa_ptr->attack_damage, pa_ptr->m_ptr->maxhp, pa_ptr->m_ptr->max_maxhp);
 }
 

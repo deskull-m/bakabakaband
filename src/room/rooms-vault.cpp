@@ -980,7 +980,7 @@ bool build_fixed_room(CreatureEntity &creature, DungeonData *dd_ptr, int typ, bo
         return false;
     }
 
-    msg_format_wizard(creature, CHEAT_DUNGEON, _("固定部屋(%s)を生成しました。", "Fixed room (%s)."), vault.name.data());
+    msg_print_wizard(creature, CHEAT_DUNGEON, _("固定部屋({})を生成しました。", "Fixed room ({})."), vault.name);
     build_vault(vault, creature, center->y, center->x, vault.hgt, vault.wid, vault.text.data(), x_offset, y_offset, num_transformation);
 
     return true;
