@@ -22,6 +22,7 @@
 #include "util/angband-files.h"
 #include "view/display-messages.h"
 #include "view/display-symbol.h"
+#include <fmt/format.h>
 #include <string>
 #include <string_view>
 #include <tl/optional.hpp>
@@ -163,7 +164,7 @@ static bool check_screen_html_can_open(FILE *fff, const std::filesystem::path &p
     }
 
     const auto &path_str = path.string();
-    const auto mes = format(_("ファイル %s を開けませんでした。", "Failed to open file %s."), path_str.data());
+    const auto mes = fmt::format(_("ファイル {} を開けませんでした。", "Failed to open file {}."), path_str);
     THROW_EXCEPTION(std::runtime_error, mes);
 }
 
@@ -480,7 +481,7 @@ void do_cmd_load_screen(void)
     auto *fff = angband_fopen(path, FileOpenMode::READ);
     if (!fff) {
         const auto filename = path.string();
-        msg_format(_("%s を開くことができませんでした。", "Failed to open %s."), filename.data());
+        msg_print(_("{} を開くことができませんでした。", "Failed to open {}."), filename);
         msg_erase();
         return;
     }

@@ -5,6 +5,7 @@
 #include "system/spell-info-list.h"
 #include "util/enum-converter.h"
 #include "view/display-messages.h"
+#include <fmt/format.h>
 #include <nlohmann/json.hpp>
 
 SpellReader::SpellReader(const nlohmann::json &realm_data, SpellInfoList &spell_info_list)
@@ -23,12 +24,12 @@ int SpellReader::read() const
 
     RealmType realm_id;
     if (auto err = this->set_realm(realm_id)) {
-        msg_format(_("領域名読込失敗。ID: '%d'。", "Failed to load realm name. ID: '%d'."), error_idx);
+        msg_print(_("領域名読込失敗。ID: '{}'。", "Failed to load realm name. ID: '{}'."), error_idx);
         return err;
     }
 
     if (auto err = this->set_book_data(realm_id)) {
-        msg_format(_("呪文詳細読込失敗。ID: '%d'。", "Failed to load spell data. ID: '%d'."), error_idx);
+        msg_print(_("呪文詳細読込失敗。ID: '{}'。", "Failed to load spell data. ID: '{}'."), error_idx);
         return err;
     }
 
@@ -81,7 +82,7 @@ int SpellReader::set_spell_data(const nlohmann::json &spell_data, RealmType real
 
     const auto &tag_obj = get_json_value(spell_data, "spell_tag");
     if (!tag_obj.is_string()) {
-        msg_format(_("呪文タグ読込失敗。ID: '%d'。", "Failed to load spell tag. ID: '%d'."), error_idx);
+        msg_print(_("呪文タグ読込失敗。ID: '{}'。", "Failed to load spell tag. ID: '{}'."), error_idx);
         return PARSE_ERROR_TOO_FEW_ARGUMENTS;
     }
     info.tag = tag_obj.get<std::string>();

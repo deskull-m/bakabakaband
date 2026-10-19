@@ -6,6 +6,7 @@
 #include "locale/character-encoding.h"
 #include "system/monrace/monrace-message.h"
 #include "view/display-messages.h"
+#include <fmt/format.h>
 #include <nlohmann/json.hpp>
 #include <string>
 
@@ -21,7 +22,7 @@ MessageReader::MessageReader(const nlohmann::json &message_data)
 int MessageReader::read() const
 {
     if (auto err = this->set_mon_message()) {
-        msg_format(_("モンスターメッセージ読込失敗。", "Failed to load monster message."));
+        msg_print(_("モンスターメッセージ読込失敗。", "Failed to load monster message."));
         return err;
     }
 

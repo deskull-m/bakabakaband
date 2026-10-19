@@ -7,6 +7,7 @@
 #include "system/spell-info-list.h"
 #include "util/enum-converter.h"
 #include "view/display-messages.h"
+#include <fmt/format.h>
 #include <limits>
 #include <nlohmann/json.hpp>
 
@@ -90,7 +91,7 @@ int MagicReader::read() const
 
     int class_id;
     if (auto err = this->set_class_id(class_id)) {
-        msg_format(_("職業ID読込失敗。ID: '%d'。", "Failed to load class id. ID: '%d'."), error_idx);
+        msg_print(_("職業ID読込失敗。ID: '{}'。", "Failed to load class id. ID: '{}'."), error_idx);
         return err;
     }
 
@@ -101,11 +102,11 @@ int MagicReader::read() const
     player_magic &magics_info = class_magics_info[class_id];
 
     if (auto err = this->set_spell_type(magics_info)) {
-        msg_format(_("呪文タイプ読込失敗。ID: '%d'。", "Failed to load spell type. ID: '%d'."), error_idx);
+        msg_print(_("呪文タイプ読込失敗。ID: '{}'。", "Failed to load spell type. ID: '{}'."), error_idx);
         return err;
     }
     if (auto err = this->set_magic_status(magics_info)) {
-        msg_format(_("呪文行使に使用する能力値読込失敗。ID: '%d'。", "Failed to load magic status. ID: '%d'."), error_idx);
+        msg_print(_("呪文行使に使用する能力値読込失敗。ID: '{}'。", "Failed to load magic status. ID: '{}'."), error_idx);
         return err;
     }
     if (const auto err = info_set_bool(get_json_value(this->class_data, "has_glove_mp_penalty"), magics_info.has_glove_mp_penalty, true); !err) {
@@ -129,7 +130,7 @@ int MagicReader::read() const
         return err.error();
     }
     if (auto err = this->set_realm_data(magics_info)) {
-        msg_format(_("呪文データ読込失敗。ID: '%d'。", "Failed to load spell data. ID: '%d'."), error_idx);
+        msg_print(_("呪文データ読込失敗。ID: '{}'。", "Failed to load spell data. ID: '{}'."), error_idx);
         return err;
     }
 
@@ -272,7 +273,7 @@ int MagicReader::set_realm_data(player_magic &magics_info) const
 
         for (const auto &spell : spells_info_obj) {
             if (auto err = this->set_spell_data(spell, magics_info, realm_id)) {
-                msg_format(_("呪文データ読込失敗。ID: '%d'。", "Failed to load spell data. ID: '%d'."), error_idx);
+                msg_print(_("呪文データ読込失敗。ID: '{}'。", "Failed to load spell data. ID: '{}'."), error_idx);
                 return err;
             }
         }

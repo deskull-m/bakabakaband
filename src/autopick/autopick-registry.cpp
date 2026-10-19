@@ -20,6 +20,7 @@
 #include "system/item-entity.h"
 #include "util/angband-files.h"
 #include "view/display-messages.h"
+#include <fmt/format.h>
 
 static const char autoregister_header[] = "?:$AUTOREGISTER";
 
@@ -41,7 +42,7 @@ static bool clear_auto_register(std::string_view player_base_name)
     auto *tmp_fff = angband_fopen_temp(tmp_file, sizeof(tmp_file));
     if (!tmp_fff) {
         fclose(pref_fff);
-        msg_format(_("一時ファイル %s を作成できませんでした。", "Failed to create temporary file %s."), tmp_file);
+        msg_print(_("一時ファイル {} を作成できませんでした。", "Failed to create temporary file {}."), tmp_file);
         msg_erase();
         return false;
     }
@@ -73,7 +74,7 @@ static bool clear_auto_register(std::string_view player_base_name)
 
     bool okay = true;
     if (num) {
-        msg_format(_("以前のキャラクター用の自動設定(%d行)が残っています。", "Auto registered lines (%d lines) for previous character are remaining."), num);
+        msg_print(_("以前のキャラクター用の自動設定({}行)が残っています。", "Auto registered lines ({} lines) for previous character are remaining."), num);
         constexpr auto mes = _("古い設定行は削除します。よろしいですか？", "These lines will be deleted.  Are you sure? ");
 
         if (!input_check(mes)) {
@@ -129,7 +130,7 @@ bool autopick_autoregister(CreatureEntity &creature, const ItemEntity *o_ptr)
 
     if ((o_ptr->is_known() && o_ptr->is_fixed_or_random_artifact()) || ((o_ptr->ident.has(IdentificationFlag::SENSE)) && (o_ptr->feeling == FEEL_TERRIBLE || o_ptr->feeling == FEEL_SPECIAL))) {
         const auto item_name = describe_flavor(creature, *o_ptr, 0);
-        msg_format(_("%sは破壊不能だ。", "You cannot auto-destroy %s."), item_name.data());
+        msg_print(_("{}は破壊不能だ。", "You cannot auto-destroy {}."), item_name);
         return false;
     }
 
@@ -170,7 +171,7 @@ bool autopick_autoregister(CreatureEntity &creature, const ItemEntity *o_ptr)
     pref_fff = angband_fopen(path_pref_append, FileOpenMode::APPEND);
     if (!pref_fff) {
         const auto filename_pref = path_pref_append.string();
-        msg_format(_("%s を開くことができませんでした。", "Failed to open %s."), filename_pref.data());
+        msg_print(_("{} を開くことができませんでした。", "Failed to open {}."), filename_pref);
         msg_erase();
         return false;
     }

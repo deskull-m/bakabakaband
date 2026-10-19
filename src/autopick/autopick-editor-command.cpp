@@ -517,9 +517,7 @@ ape_quittance do_editor_command(CreatureEntity &creature, AutopickTextBody *tb, 
         if (!can_insert_line(tb, 2)) {
             break;
         }
-        const auto expression = format("?:[AND [EQU $RACE %s] [EQU $CLASS %s] [GEQ $LEVEL %02d]]",
-            creature.get_race_info()->title.en_string().data(), (*creature.get_class_info()).title.en_string().data(),
-            creature.get_level());
+        const auto expression = fmt::format("?:[AND [EQU $RACE {}] [EQU $CLASS {}] [GEQ $LEVEL {:02}]]", creature.get_race_info()->title.en_string(), (*creature.get_class_info()).title.en_string(), creature.get_level());
         tb->cx = 0;
         insert_return_code(tb);
         tb->lines_list[tb->cy] = std::make_unique<std::string>(expression);

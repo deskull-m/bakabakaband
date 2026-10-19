@@ -30,9 +30,9 @@ static void display_diary(CreatureEntity &creature)
     const auto choice = Rand_external(subtitle_candidates.size());
     const auto &subtitle = subtitle_candidates[choice];
 #ifdef JP
-    const auto diary_title = format("「%s%s%sの伝説 -%s-」", (*creature.get_personality_info()).title.data(), (*creature.get_personality_info()).no ? "の" : "", creature.name.data(), subtitle.data());
+    const auto diary_title = fmt::format("「{}{}{}の伝説 -{}-」", (*creature.get_personality_info()).title, (*creature.get_personality_info()).no ? "の" : "", creature.name, subtitle);
 #else
-    const auto diary_title = format("Legend of %s %s '%s'", (*creature.get_personality_info()).title.data(), creature.name.data(), subtitle.data());
+    const auto diary_title = fmt::format("Legend of {} {} '{}'", (*creature.get_personality_info()).title, creature.name, subtitle);
 #endif
 
     std::stringstream ss;
@@ -91,10 +91,10 @@ static void do_cmd_erase_diary()
     auto *fff = angband_fopen(path, FileOpenMode::WRITE);
     if (fff) {
         angband_fclose(fff);
-        msg_format(_("記録を消去しました。", "deleted record."));
+        msg_print(_("記録を消去しました。", "deleted record."));
     } else {
         const auto &filename = path.string();
-        msg_format(_("%s の消去に失敗しました。", "failed to delete %s."), filename.data());
+        msg_print(_("{} の消去に失敗しました。", "failed to delete {}."), filename);
     }
 
     msg_erase();

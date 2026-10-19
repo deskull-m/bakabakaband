@@ -12,6 +12,7 @@
 #include "util/enum-converter.h"
 #include "util/string-processor.h"
 #include "view/display-messages.h"
+#include <fmt/format.h>
 #include <nlohmann/json.hpp>
 
 ArtifactReader::ArtifactReader(const nlohmann::json &art_data)
@@ -139,7 +140,7 @@ errr ArtifactReader::read() const
         return err.error();
     }
     if (auto err = this->set_art_baseitem(artifact)) {
-        msg_format(_("アーティファクトのベースアイテム読込失敗。ID: '%d'。", "Failed to load base item of artifact. ID: '%d'."), error_idx);
+        msg_print(_("アーティファクトのベースアイテム読込失敗。ID: '{}'。", "Failed to load base item of artifact. ID: '{}'."), error_idx);
         return err;
     }
     if (const auto err = info_set_integer(get_json_value(this->art_data, "parameter_value"), artifact.pval, false, Range(-128, 128)); !err) {
@@ -183,11 +184,11 @@ errr ArtifactReader::read() const
         return err.error();
     }
     if (auto err = this->set_art_activate(artifact)) {
-        msg_format(_("アーティファクトの発動能力読込失敗。ID: '%d'。", "Failed to load activate ability of artifact. ID: '%d'."), error_idx);
+        msg_print(_("アーティファクトの発動能力読込失敗。ID: '{}'。", "Failed to load activate ability of artifact. ID: '{}'."), error_idx);
         return err;
     }
     if (auto err = this->set_art_flags(artifact)) {
-        msg_format(_("アーティファクトの能力フラグ読込失敗。ID: '%d'。", "Failed to load ability flags of artifact. ID: '%d'."), error_idx);
+        msg_print(_("アーティファクトの能力フラグ読込失敗。ID: '{}'。", "Failed to load ability flags of artifact. ID: '{}'."), error_idx);
         return err;
     }
     if (const auto err = info_set_string(get_json_value(this->art_data, "flavor"), artifact.text, false); !err) {

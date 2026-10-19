@@ -18,6 +18,7 @@
 #include "util/int-char-converter.h"
 #include "util/string-processor.h"
 #include "view/display-messages.h"
+#include <fmt/format.h>
 
 /*!
  * @brief マクロ情報をprefファイルに保存する
@@ -148,7 +149,7 @@ void do_cmd_macros(CreatureEntity &creature)
     };
     print_macro_menu();
 
-    const auto initial_filename = format("%s.prf", creature.base_name.data());
+    const auto initial_filename = fmt::format("{}.prf", creature.base_name);
     while (true) {
         msg_print(_("コマンド: ", "Command: "));
         const auto key = inkey();
@@ -168,13 +169,12 @@ void do_cmd_macros(CreatureEntity &creature)
             }
 
             const auto err = process_pref_file(creature, *ask_result, true);
-            const auto *mes = ask_result->data();
             if (-2 == err) {
-                msg_format(_("標準の設定ファイル'%s'を読み込みました。", "Loaded default '%s'."), mes);
+                msg_print(_("標準の設定ファイル'{}'を読み込みました。", "Loaded default '{}'."), *ask_result);
             } else if (err) {
-                msg_format(_("'%s'の読み込みに失敗しました！", "Failed to load '%s'!"), mes);
+                msg_print(_("'{}'の読み込みに失敗しました！", "Failed to load '{}'!"), *ask_result);
             } else {
-                msg_format(_("'%s'を読み込みました。", "Loaded '%s'."), mes);
+                msg_print(_("'{}'を読み込みました。", "Loaded '{}'."), *ask_result);
             }
 
             break;
