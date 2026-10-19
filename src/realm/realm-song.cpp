@@ -28,6 +28,7 @@
 #include "target/target-getter.h"
 #include "util/dice.h"
 #include "view/display-messages.h"
+#include <fmt/format.h>
 
 /*!
  * @brief 歌の開始を処理する / Start singing if the player is a Bard
@@ -674,7 +675,7 @@ tl::optional<std::string> do_music_spell(CreatureEntity &creature, SPELL_IDX spe
             const Dice e_dice(1, plev * 3);
 
             if (info) {
-                return format("%s%s+%s", KWD_DAM, m_dice.to_string().data(), e_dice.to_string().data());
+                return fmt::format("{}{}+{}", KWD_DAM, m_dice.to_string(), e_dice.to_string());
             }
 
             if (cont) {

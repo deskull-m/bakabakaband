@@ -35,6 +35,7 @@
 #include "util/dice.h"
 #include "view/display-messages.h"
 #include "world/world.h"
+#include <fmt/format.h>
 
 /*!
  * @brief 破邪領域魔法の各処理を行う
@@ -230,7 +231,7 @@ tl::optional<std::string> do_crusade_spell(CreatureEntity &creature, SPELL_IDX s
         const auto dam_sides = plev * 6;
         const auto heal = 100;
         if (info) {
-            return format(_("損:1d%d/回%d", "dam:d%d/h%d"), dam_sides, heal);
+            return fmt::format(_("損:1d{}/回{}", "dam:d{}/h{}"), dam_sides, heal);
         }
         if (cast) {
             BadStatusSetter bss(creature);
@@ -419,7 +420,7 @@ tl::optional<std::string> do_crusade_spell(CreatureEntity &creature, SPELL_IDX s
         const auto heal = 100;
         const auto power = plev * 4;
         if (info) {
-            return format(_("回%d/損%d+%d", "h%d/dm%d+%d"), heal, d_dam, b_dam / 2);
+            return fmt::format(_("回{}/損{}+{}", "h{}/dm{}+{}"), heal, d_dam, b_dam / 2);
         }
         if (cast) {
             project(creature, 0, 1, creature.y, creature.x, b_dam, AttributeType::HOLY_FIRE, PROJECT_KILL);

@@ -64,7 +64,9 @@
 #include "term/z-form.h"
 #include "util/enum-converter.h"
 #include "util/int-char-converter.h"
+#include "util/string-processor.h"
 #include "view/display-messages.h"
+#include <fmt/format.h>
 #include <iterator>
 #include <unordered_set>
 
@@ -109,23 +111,23 @@ static std::string mane_info(CreatureEntity &creature, MonsterAbilityType power,
         Mat::PSY_SPEAR, Mat::BO_VOID, Mat::BO_ABYSS, Mat::BA_VOID, Mat::BA_ABYSS, Mat::BR_VOID, Mat::BR_ABYSS, Mat::BR_FECES
     };
     if ((power_int > 2 && power_int < 41) || (power_int > 41 && power_int < 59) || flags.has(power)) {
-        return format(" %s%d", KWD_DAM, (int)dam);
+        return fmt::format(" {}{}", KWD_DAM, dam);
     }
     switch (power) {
     case MonsterAbilityType::DRAIN_MANA:
-        return format(" %sd%d+%d", KWD_HEAL, plev * 3, plev);
+        return fmt::format(" {}d{}+{}", KWD_HEAL, plev * 3, plev);
     case MonsterAbilityType::HASTE:
-        return format(" %sd%d+%d", KWD_DURATION, 20 + plev, plev);
+        return fmt::format(" {}d{}+{}", KWD_DURATION, 20 + plev, plev);
     case MonsterAbilityType::HEAL:
-        return format(" %s%d", KWD_HEAL, plev * 6);
+        return fmt::format(" {}{}", KWD_HEAL, plev * 6);
     case MonsterAbilityType::INVULNER:
-        return format(" %sd7+7", KWD_DURATION);
+        return fmt::format(" {}d7+7", KWD_DURATION);
     case MonsterAbilityType::BLINK:
-        return format(" %s10", KWD_SPHERE);
+        return fmt::format(" {}10", KWD_SPHERE);
     case MonsterAbilityType::TPORT:
-        return format(" %s%d", KWD_SPHERE, plev * 5);
+        return fmt::format(" {}{}", KWD_SPHERE, plev * 5);
     case MonsterAbilityType::RAISE_DEAD:
-        return format(" %s5", KWD_SPHERE);
+        return fmt::format(" {}5", KWD_SPHERE);
     default:
         return std::string();
     }
@@ -176,7 +178,7 @@ static int get_mane_power(CreatureEntity &creature, int *sn, bool baigaesi)
 
     /* Build a prompt (accept all spells) */
     constexpr auto fmt = _("(%c-%c, '*'で一覧, ESC) どの%sをまねますか？", "(%c-%c, *=List, ESC=exit) Use which %s? ");
-    const auto prompt = format(fmt, I2A(0), I2A(num - 1), p);
+    const auto prompt = fmt::format(fmt, I2A(0), I2A(num - 1), p);
 
     choice = always_show_list ? ESCAPE : 1;
     while (!flag) {
@@ -246,7 +248,7 @@ static int get_mane_power(CreatureEntity &creature, int *sn, bool baigaesi)
                     const auto comment = mane_info(creature, mane.spell, (baigaesi ? mane.damage * 2 : mane.damage));
 
                     /* Dump the spell --(-- */
-                    prt(format("  %c) %-30s %3d%%%s", I2A(i), spell.name, chance, comment.data()), y + i + 1, x);
+                    prt(fmt::format("  {:c}) {:<30} {:3}%{}", I2A(i), fmt::bytes(spell.name), chance, comment), y + i + 1, x);
                 }
 
                 /* Clear the bottom line */
@@ -474,19 +476,19 @@ static bool use_mane(CreatureEntity &creature, MonsterAbilityType spell)
                 if (is_original_ap_and_seen(creature, monster)) {
                     monrace.r_resistance_flags.set(MonsterResistanceType::RESIST_TELEPORT);
                 }
-                msg_format(_("%sには効果がなかった！", "%s is unaffected!"), m_name.data());
+                msg_print(_("{}には効果がなかった！", "{} is unaffected!"), m_name);
 
                 break;
             } else if (monrace.level > randint1(100)) {
                 if (is_original_ap_and_seen(creature, monster)) {
                     monrace.r_resistance_flags.set(MonsterResistanceType::RESIST_TELEPORT);
                 }
-                msg_format(_("%sには耐性がある！", "%s resists!"), m_name.data());
+                msg_print(_("{}には耐性がある！", "{} resists!"), m_name);
 
                 break;
             }
         }
-        msg_format(_("%sを引き戻した。", "You command %s to return."), m_name.data());
+        msg_print(_("{}を引き戻した。", "You command {} to return."), m_name);
 
         teleport_monster_to(creature, grid_target.m_idx, creature.y, creature.x, 100, TELEPORT_PASSIVE);
         break;

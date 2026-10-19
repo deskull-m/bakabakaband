@@ -135,10 +135,10 @@ static int select_blow(CreatureEntity &creature, player_attack_type *pa_ptr, int
 static int process_monk_additional_effect(player_attack_type *pa_ptr, int *stun_effect)
 {
     int special_effect = 0;
-    auto *r_ptr = &pa_ptr->m_ptr->get_monrace();
+    const auto &monrace = pa_ptr->m_ptr->get_monrace();
     if (pa_ptr->ma_ptr->effect == MA_KNEE) {
-        if (r_ptr->is_male()) {
-            msg_format(_("%sに金的膝蹴りをくらわした！", "You hit %s in the groin with your knee!"), pa_ptr->m_name);
+        if (monrace.is_male()) {
+            msg_print(_("{}に金的膝蹴りをくらわした！", "You hit {} in the groin with your knee!"), pa_ptr->m_name);
             sound(SoundKind::PAIN);
             special_effect = MA_KNEE;
         } else {
@@ -147,8 +147,8 @@ static int process_monk_additional_effect(player_attack_type *pa_ptr, int *stun_
     }
 
     else if (pa_ptr->ma_ptr->effect == MA_SLOW) {
-        if (!(r_ptr->behavior_flags.has(MonsterBehaviorType::NEVER_MOVE) || r_ptr->symbol_char_is_any_of("~#{}.UjmeEv$,DdsbBFIJQSXclnw!=?"))) {
-            msg_format(_("%sの足首に関節蹴りをくらわした！", "You kick %s in the ankle."), pa_ptr->m_name);
+        if (!(monrace.behavior_flags.has(MonsterBehaviorType::NEVER_MOVE) || monrace.symbol_char_is_any_of("~#{}.UjmeEv$,DdsbBFIJQSXclnw!=?"))) {
+            msg_print(_("{}の足首に関節蹴りをくらわした！", "You kick {} in the ankle."), pa_ptr->m_name);
             special_effect = MA_SLOW;
         } else {
             msg_format(pa_ptr->ma_ptr->desc, pa_ptr->m_name);
@@ -199,7 +199,7 @@ static void process_attack_vital_spot(CreatureEntity &creature, player_attack_ty
 {
     const auto &monrace = pa_ptr->m_ptr->get_monrace();
     if ((special_effect == MA_KNEE) && ((pa_ptr->attack_damage + creature.get_to_d(pa_ptr->hand)) < pa_ptr->m_ptr->hp)) {
-        msg_format(_("%s^は苦痛にうめいている！", "%s^ moans in agony!"), pa_ptr->m_name);
+        msg_print(_("{}は苦痛にうめいている！", "{} moans in agony!"), str_upcase_first(pa_ptr->m_name));
         *stun_effect = 7 + randint1(13);
         *resist_stun /= 3;
         return;
@@ -208,7 +208,7 @@ static void process_attack_vital_spot(CreatureEntity &creature, player_attack_ty
     if ((special_effect == MA_SLOW) && ((pa_ptr->attack_damage + creature.get_to_d(pa_ptr->hand)) < pa_ptr->m_ptr->hp)) {
         const auto is_unique = monrace.kind_flags.has_not(MonsterKindType::UNIQUE);
         if (is_unique && (randint1(creature.get_level()) > monrace.level) && (pa_ptr->m_ptr->speed > STANDARD_SPEED - 50)) {
-            msg_format(_("%s^は足をひきずり始めた。", "You've hobbled %s."), pa_ptr->m_name);
+            msg_print(_("{}は足をひきずり始めた。", "You've hobbled {}."), pa_ptr->m_name);
             pa_ptr->m_ptr->speed -= 10;
         }
     }
@@ -228,9 +228,9 @@ static void print_stun_effect(CreatureEntity &creature, player_attack_type *pa_p
     if (stun_effect && ((pa_ptr->attack_damage + creature.get_to_d(pa_ptr->hand)) < pa_ptr->m_ptr->hp)) {
         if (creature.get_level() > randint1(monrace.level + resist_stun + 10)) {
             if (set_monster_stunned(*creature.get_floor(), pa_ptr->g_ptr->m_idx, stun_effect + pa_ptr->m_ptr->get_remaining_stun())) {
-                msg_format(_("%s^はフラフラになった。", "%s^ is stunned."), pa_ptr->m_name);
+                msg_print(_("{}はフラフラになった。", "{} is stunned."), str_upcase_first(pa_ptr->m_name));
             } else {
-                msg_format(_("%s^はさらにフラフラになった。", "%s^ is more stunned."), pa_ptr->m_name);
+                msg_print(_("{}はさらにフラフラになった。", "{} is more stunned."), str_upcase_first(pa_ptr->m_name));
             }
         }
     }

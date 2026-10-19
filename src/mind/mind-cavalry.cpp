@@ -37,7 +37,7 @@ bool rodeo(CreatureEntity &creature)
     auto &monster = creature.get_floor()->get_monster(creature.get_riding());
     const auto &monrace = monster.get_monrace();
     const auto m_name = monster_desc(creature, monster, 0);
-    msg_format(_("%sに乗った。", "You ride on %s."), m_name.data());
+    msg_print(_("{}に乗った。", "You ride on {}."), m_name);
 
     if (monster.is_pet()) {
         return true;
@@ -51,13 +51,13 @@ bool rodeo(CreatureEntity &creature)
     if (rlev > 60) {
         rlev = 60 + (rlev - 60) / 2;
     }
-    if ((randint1(creature.get_skill_exp(PlayerSkillKindType::RIDING) / 120 + creature.get_level() * 2 / 3) > rlev) && one_in_(2) &&
+    if ((randint1(creature.skill_exp[PlayerSkillKindType::RIDING] / 120 + creature.get_level() * 2 / 3) > rlev) && one_in_(2) &&
         !creature.get_floor()->inside_arena && !AngbandSystem::get_instance().is_phase_out() && monrace.misc_flags.has_not(MonsterMiscType::GUARDIAN) && monrace.misc_flags.has_not(MonsterMiscType::QUESTOR) &&
         (rlev < creature.get_level() * 3 / 2 + randint0(creature.get_level() / 5))) {
-        msg_format(_("%sを手なずけた。", "You tame %s."), m_name.data());
+        msg_print(_("{}を手なずけた。", "You tame {}."), m_name);
         set_pet(creature, monster);
     } else {
-        msg_format(_("%sに振り落とされた！", "You have been thrown off by %s."), m_name.data());
+        msg_print(_("{}に振り落とされた！", "You have been thrown off by {}."), m_name);
         process_fall_off_horse(creature, 1, true);
 
         /* 落馬処理に失敗してもとにかく乗馬解除 */
