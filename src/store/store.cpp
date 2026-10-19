@@ -39,6 +39,7 @@
 #include "util/int-char-converter.h"
 #include "view/display-messages.h"
 #include "world/world.h"
+#include <fmt/format.h>
 #include <tl/optional.hpp>
 
 /*!
@@ -168,9 +169,9 @@ tl::optional<short> input_stock(std::string_view fmt, int min, int max, [[maybe_
     const auto hi = (max > 25) ? toupper(I2A(max - 26)) : I2A(max);
 #ifdef JP
     const auto title = (store_num == StoreSaleType::HOME) || (store_num == StoreSaleType::MUSEUM) ? "アイテム" : "商品";
-    const auto prompt = format("(%s:%c-%c, ESCで中断) %s", title, lo, hi, fmt.data());
+    const auto prompt = fmt::format("({}:{:c}-{:c}, ESCで中断) {}", title, lo, hi, fmt);
 #else
-    const auto prompt = format("(Items %c-%c, ESC to exit) %s", lo, hi, fmt.data());
+    const auto prompt = fmt::format("(Items {:c}-{:c}, ESC to exit) {}", lo, hi, fmt);
 #endif
 
     tl::optional<char> command;
@@ -239,7 +240,7 @@ void store_examine(CreatureEntity &creature, const StoreScreen &screen)
     }
 
     const auto item_name = describe_flavor(creature, item, 0);
-    msg_format(_("%sを調べている...", "Examining %s..."), item_name.data());
+    msg_print(_("{}を調べている...", "Examining {}..."), item_name);
     if (!screen_object(creature, item, SCROBJ_FORCE_DETAIL)) {
         msg_print(_("特に変わったところはないようだ。", "You see nothing special."));
     }

@@ -25,6 +25,7 @@
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
 #include "world/world.h"
+#include <fmt/format.h>
 
 /*!
  * @brief 武器の各条件毎のダメージ期待値を表示する。
@@ -46,11 +47,9 @@
 static void show_weapon_dmg(int r, int c, int mindice, int maxdice, int blows, int dam_bonus, concptr attr, byte color)
 {
     c_put_str(color, attr, r, c);
-    GAME_TEXT tmp_str[80];
     int mindam = blows * (mindice + dam_bonus);
     int maxdam = blows * (maxdice + dam_bonus);
-    sprintf(tmp_str, _("１ターン: %d-%d ダメージ", "Attack: %d-%d damage"), mindam, maxdam);
-    put_str(tmp_str, r, c + 8);
+    put_str(fmt::format(_("１ターン: {}-{} ダメージ", "Attack: {}-{} damage"), mindam, maxdam), r, c + 8);
 }
 
 /*!
@@ -264,26 +263,17 @@ static void list_weapon(CreatureEntity &creature, const ItemEntity &item, TERM_L
     const auto hit_reliability = creature.get_skill_to_hit_melee() + (creature.get_to_h(0) + item.to_h) * BTH_PLUS_ADJ;
     const auto item_name = describe_flavor(creature, item, OD_NAME_ONLY);
     c_put_str(TERM_YELLOW, item_name, row, col);
-    put_str(format(_("攻撃回数: %d", "Number of Blows: %d"), creature.get_num_blow(0)), row + 1, col);
+    put_str(fmt::format(_("攻撃回数: {}", "Number of Blows: {}"), creature.get_num_blow(0)), row + 1, col);
 
     put_str(_("命中率:  0  50 100 150 200 (敵のAC)", "To Hit:  0  50 100 150 200 (AC)"), row + 2, col);
-    put_str(format("        %2d  %2d  %2d  %2d  %2d (%%)",
-                (int)hit_chance(creature, hit_reliability, 0),
-                (int)hit_chance(creature, hit_reliability, 50),
-                (int)hit_chance(creature, hit_reliability, 100),
-                (int)hit_chance(creature, hit_reliability, 150),
-                (int)hit_chance(creature, hit_reliability, 200)),
+    put_str(fmt::format("        {:2}  {:2}  {:2}  {:2}  {:2} (%)", hit_chance(creature, hit_reliability, 0), hit_chance(creature, hit_reliability, 50), hit_chance(creature, hit_reliability, 100), hit_chance(creature, hit_reliability, 150), hit_chance(creature, hit_reliability, 200)),
         row + 3, col);
     c_put_str(TERM_YELLOW, _("可能なダメージ:", "Possible Damage:"), row + 5, col);
 
-    put_str(format(_("攻撃一回につき %d-%d", "One Strike: %d-%d damage"),
-                (int)(eff_dd + item.to_d + creature.get_to_d(0)),
-                (int)(eff_ds * eff_dd + item.to_d + creature.get_to_d(0))),
+    put_str(fmt::format(_("攻撃一回につき {}-{}", "One Strike: {}-{} damage"), eff_dd + item.to_d + creature.get_to_d(0), eff_ds * eff_dd + item.to_d + creature.get_to_d(0)),
         row + 6, col + 1);
 
-    put_str(format(_("１ターンにつき %d-%d", "One Attack: %d-%d damage"),
-                (int)(creature.get_num_blow(0) * (eff_dd + item.to_d + creature.get_to_d(0))),
-                (int)(creature.get_num_blow(0) * (eff_ds * eff_dd + item.to_d + creature.get_to_d(0)))),
+    put_str(fmt::format(_("１ターンにつき {}-{}", "One Attack: {}-{} damage"), creature.get_num_blow(0) * (eff_dd + item.to_d + creature.get_to_d(0)), creature.get_num_blow(0) * (eff_ds * eff_dd + item.to_d + creature.get_to_d(0))),
         row + 7, col + 1);
 }
 
@@ -349,11 +339,11 @@ PRICE compare_weapons(CreatureEntity &creature, PRICE bcost)
 
         world.character_xtra = old_character_xtra;
 #ifdef JP
-        put_str(format("[ 比較対象: 's'で変更 ($%d) ]", cost), 1, (wid + mgn));
+        put_str(fmt::format("[ 比較対象: 's'で変更 (${}) ]", cost), 1, (wid + mgn));
         put_str("(一番高いダメージが適用されます。複数の倍打効果は足し算されません。)", row + 4, 0);
         prt("現在の技量から判断すると、あなたの武器は以下のような威力を発揮します:", 0, 0);
 #else
-        put_str(format("[ 's' Select secondary weapon($%d) ]", cost), 1, (wid + mgn));
+        put_str(fmt::format("[ 's' Select secondary weapon(${}) ]", cost), 1, (wid + mgn));
         put_str("(Only highest damage applies per monster. Special damage not cumulative.)", row + 4, 0);
         prt("Based on your current abilities, here is what your weapons will do", 0, 0);
 #endif

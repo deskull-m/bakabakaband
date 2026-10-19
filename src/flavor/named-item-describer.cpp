@@ -155,7 +155,7 @@ static std::string describe_fake_artifact_name_after_body_ja(const ItemEntity &i
         return "";
     }
 
-    return format("『%s』", str + 1);
+    return fmt::format("『{}』", str + 1);
 }
 
 /*!
@@ -400,14 +400,14 @@ std::string describe_named_item(CreatureEntity &creature, const ItemEntity &item
 
 #ifdef JP
     if (item.is_smith() && none_bits(opt.mode, OD_BASE_NAME)) {
-        ss << format("鍛冶師%sの", creature.name.data());
+        ss << fmt::format("鍛冶師{}の", creature.name);
     }
 
     ss << describe_unique_name_before_body_ja(item, opt);
 #endif
     if (item.is_spell_book()) {
         // svalは0から数えているので表示用に+1している
-        ss << format("Lv%d ", item.bi_key.sval().value() + 1);
+        ss << fmt::format("Lv{} ", item.bi_key.sval().value() + 1);
     }
 
     ss << describe_body(item, opt, basename_sv, modstr);
@@ -416,7 +416,7 @@ std::string describe_named_item(CreatureEntity &creature, const ItemEntity &item
     ss << describe_unique_name_after_body_ja(item, opt);
 #else
     if (item.is_smith() && none_bits(opt.mode, OD_BASE_NAME)) {
-        ss << format(" of %s the Smith", creature.name.data());
+        ss << fmt::format(" of {} the Smith", creature.name);
     }
 
     ss << describe_unique_name_after_body_en(item, opt);
