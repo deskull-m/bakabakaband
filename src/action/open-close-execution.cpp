@@ -299,10 +299,15 @@ bool exe_disarm(CreatureEntity &creature, POSITION y, POSITION x, const Directio
 
     auto more = false;
     if (evaluate_percent(j)) {
+        ItemEntity item;
+        item.generate(baseitems.lookup_baseitem_id({ ItemKindType::TRAP, 0 }));
+        item.pval = grid.feat;
         msg_print(_("{}を解除した。", "You have disarmed the {}."), name);
         gain_exp(creature, power);
         cave_alter_feat(creature, y, x, TerrainCharacteristics::DISARM);
         exe_movement(creature, dir, easy_disarm, false);
+
+        (void)drop_near(creature, item, pos);
     } else if ((i > 5) && (randint1(i) > 5)) {
         if (flush_failure) {
             flush();
