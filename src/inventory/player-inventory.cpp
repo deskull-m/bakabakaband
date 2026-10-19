@@ -274,7 +274,6 @@ void carry(CreatureEntity &creature, bool pickup)
     verify_panel(creature);
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(StatusRecalculatingFlag::MONSTER_STATUSES);
-    rfu.set_flag(MainWindowRedrawingFlag::MAP);
     rfu.set_flag(SubWindowRedrawingFlag::OVERHEAD);
     handle_stuff(creature);
     const auto &grid = creature.get_floor()->grid_array[creature.y][creature.x];
