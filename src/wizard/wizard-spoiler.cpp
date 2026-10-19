@@ -37,6 +37,7 @@
 #include "wizard/spoiler-util.h"
 #include <algorithm>
 #include <array>
+#include <fmt/format.h>
 #include <iterator>
 #include <set>
 #include <sstream>
@@ -184,13 +185,13 @@ static SpoilerOutputResultType spoil_player_spell()
         return SpoilerOutputResultType::FILE_OPEN_FAILED;
     }
 
-    spoil_out(format("Player spells for %s\n", AngbandSystem::get_instance().build_version_expression(VersionExpression::FULL).data()));
+    spoil_out(fmt::format("Player spells for {}\n", AngbandSystem::get_instance().build_version_expression(VersionExpression::FULL)));
     spoil_out("------------------------------------------\n\n");
 
     PlayerType dummy_p;
     dummy_p.set_level(1);
     for (const auto pclass : EnumRange(PlayerClassType::WARRIOR, PlayerClassType::MAX)) {
-        spoil_out(format("[[Class: %s]]\n", class_info.at(pclass).title.data()));
+        spoil_out(fmt::format("[[Class: {}]]\n", class_info.at(pclass).title));
 
         const auto *magic_ptr = &class_magics_info[enum2i(pclass)];
         std::string book_name = _("なし", "None");
@@ -203,13 +204,13 @@ static SpoilerOutputResultType spoil_player_spell()
             }
         }
 
-        constexpr auto mes = "BookType:%s Stat:%s %s%s%sType:%d Weight:%d\n";
+        constexpr auto mes = "BookType:{} Stat:{} {}{}{}Type:{} Weight:{}\n";
         const auto &spell_stat_txt = wiz_spell_stat[magic_ptr->spell_stat];
         auto trainable = magic_ptr->is_spell_trainable ? "Trainable " : "";
         auto glove = magic_ptr->has_glove_mp_penalty ? "GlovePenalty " : "";
         auto failcap = magic_ptr->has_magic_fail_rate_cap ? "5%FailCap " : "";
         auto spell_type = enum2i(magic_ptr->spell_book);
-        spoil_out(format(mes, book_name.data(), spell_stat_txt.data(), glove, failcap, trainable, spell_type, magic_ptr->spell_weight));
+        spoil_out(fmt::format(mes, book_name, spell_stat_txt, glove, failcap, trainable, spell_type, magic_ptr->spell_weight));
         if (magic_ptr->spell_book == ItemKindType::NONE) {
             spoil_out(_("呪文なし\n\n", "No spells.\n\n"));
             continue;
@@ -222,12 +223,12 @@ static SpoilerOutputResultType spoil_player_spell()
                 continue;
             }
 
-            spoil_out(format("[Realm: %s]\n", PlayerRealm::get_name(realm).data()));
+            spoil_out(fmt::format("[Realm: {}]\n", PlayerRealm::get_name(realm)));
             spoil_out("Name                     Lv  Cst Dif  Exp\n");
             for (SPELL_IDX i = 0; i < 32; i++) {
                 const auto &spell = PlayerRealm::get_spell_info(realm, i, pclass);
                 const auto &spell_name = PlayerRealm::get_spell_name(realm, i);
-                spoil_out(format("%-24s %2d %4d %3d %4d\n", spell_name.data(), spell.slevel, spell.smana, spell.sfail, spell.sexp));
+                spoil_out(fmt::format("{:<24} {:2} {:4} {:3} {:4}\n", fmt::bytes(spell_name), spell.slevel, spell.smana, spell.sfail, spell.sexp));
             }
             spoil_out("\n");
         }
