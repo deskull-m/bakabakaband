@@ -52,6 +52,7 @@
 #include "wizard/wizard-messages.h"
 #include "world/world.h"
 #include <algorithm>
+#include <fmt/format.h>
 #include <range/v3/algorithm.hpp>
 #include <time.h>
 
@@ -310,9 +311,9 @@ static void warn_unique_generation(CreatureEntity &creature, MonraceId r_idx)
     const auto &item = choose_warning_item(creature);
     if (item) {
         const auto item_name = describe_flavor(creature, *item, (OD_OMIT_PREFIX | OD_NAME_ONLY));
-        msg_format(_("%sは%s光った。", "%s glows %s."), item_name.data(), color.data());
+        msg_print(_("{}は{}光った。", "{} glows {}."), item_name, color);
     } else {
-        msg_format(_("%s光る物が頭に浮かんだ。", "A %s image forms in your mind."), color.data());
+        msg_print(_("{}光る物が頭に浮かんだ。", "A {} image forms in your mind."), color);
     }
 }
 
@@ -841,7 +842,7 @@ tl::optional<MONSTER_IDX> place_monster_one(CreatureEntity &player, POSITION y, 
 
     if (any_bits(mode, PM_AMBUSH)) {
         auto m_name = monster_desc(player, *m_ptr, 0);
-        msg_format(_("突如%sがあなたに襲い掛かってきた！", "Suddenly %s has ambushed you!"), m_name.data());
+        msg_print(_("突如{}があなたに襲い掛かってきた！", "Suddenly {} has ambushed you!"), m_name);
         disturb(player, false, true);
         MonsterAttackPlayer(player, g_ptr->m_idx).make_attack_normal();
     }

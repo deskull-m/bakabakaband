@@ -54,6 +54,7 @@
 #include "world/world-collapsion.h"
 #include "world/world.h"
 #include <algorithm>
+#include <fmt/format.h>
 
 static void write_pet_death(CreatureEntity &creature, MonsterDeath *md_ptr)
 {
@@ -155,7 +156,7 @@ static void drop_corpse(CreatureEntity &creature, MonsterDeath *md_ptr)
             (void)drop_near(creature, item, md_ptr->get_position());
         }
     } catch (const std::exception &e) {
-        msg_format(_("エラー:ソウルドロップの処理に失敗", "Error: Failed to drop a soul."), e.what());
+        msg_print(_("エラー:ソウルドロップの処理に失敗", "Error: Failed to drop a soul."));
 #ifndef WIN_DEBUG
         throw;
 #endif
@@ -252,7 +253,7 @@ static void drop_artifacts(CreatureEntity &creature, MonsterDeath *md_ptr, Attri
         (void)drop_near(creature, item, md_ptr->get_position());
     }
 
-    msg_format(_("あなたは%sを制覇した！", "You have conquered %s!"), dungeon.name.data());
+    msg_print(_("あなたは{}を制覇した！", "You have conquered {}!"), dungeon.name);
 }
 
 /*!

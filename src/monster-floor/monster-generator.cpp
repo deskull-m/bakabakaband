@@ -32,6 +32,7 @@
 #include "util/string-processor.h"
 #include "view/display-messages.h"
 #include "wizard/wizard-messages.h"
+#include <fmt/format.h>
 #include <optional>
 
 #define MON_SCAT_MAXD 15 /*!< mon_scatter()関数によるモンスター配置で許される中心からの最大距離 */
@@ -381,7 +382,7 @@ bool alloc_horde(CreatureEntity &creature, POSITION y, POSITION x, summon_specif
     }
 
     const auto &monrace = monentity.is_chameleon() ? monentity.get_monrace() : MonraceList::get_instance().get_monrace(*monrace_id);
-    msg_format(_("モンスターの大群(%c)", "Monster horde (%c)."), monrace.symbol_definition.character);
+    msg_print(_("モンスターの大群({:c})", "Monster horde ({:c})."), monrace.symbol_definition.character);
     return true;
 }
 

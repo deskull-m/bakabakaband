@@ -50,6 +50,7 @@
 #include "window/main-window-util.h"
 #include "world/world.h"
 #include <algorithm>
+#include <fmt/format.h>
 #include <range/v3/view.hpp>
 
 /*!
@@ -161,7 +162,7 @@ static void place_pet(CreatureEntity &creature)
         } else {
             const auto &monster = party_monsters[current_monster];
             auto &monrace = monster.get_real_monrace();
-            msg_format(_("%sとはぐれてしまった。", "You have lost sight of %s."), monster_desc(creature, monster, 0).data());
+            msg_print(_("{}とはぐれてしまった。", "You have lost sight of {}."), monster_desc(creature, monster, 0));
             if (record_named_pet && monster.is_named()) {
                 exe_write_diary(floor, DiaryKind::NAMED_PET, RECORD_NAMED_PET_LOST_SIGHT, monster_desc(creature, monster, MD_INDEF_VISIBLE));
             }

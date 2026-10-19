@@ -476,7 +476,7 @@ void dump_virtues(CreatureEntity &creature, FILE *out_file)
 
     for (const auto &[virtue_type, value] : creature.virtues) {
         const auto &vir_name = virtue_names.at(virtue_type);
-        const auto vir_val_str = format(" (%d)", value);
+        const auto vir_val_str = fmt::format(" ({})", value);
         const auto vir_val = show_actual_value ? vir_val_str.data() : "";
         if ((virtue_type == Virtue::NONE) || (virtue_type >= Virtue::MAX)) {
             fmt::print(out_file, _("おっと。{}の情報なし。", "Oops. No info about {}."), vir_name);

@@ -38,9 +38,11 @@
 #include "system/terrain/terrain-definition.h"
 #include "target/projection-path-calculator.h"
 #include "util/bit-flags-calculator.h"
+#include "util/string-processor.h"
 #include "view/display-messages.h"
 #include "wizard/wizard-messages.h"
 #include "world/world.h"
+#include <fmt/format.h>
 
 static void check_riding_preservation(CreatureEntity &creature)
 {
@@ -144,7 +146,7 @@ static void preserve_pet(CreatureEntity &creature)
 
         if (is_seen(creature, monster)) {
             const auto m_name = monster_desc(creature, monster, 0);
-            msg_format(_("%sは消え去った！", "%s^ disappears!"), m_name.data());
+            msg_print(_("{}は消え去った！", "{} disappears!"), str_upcase_first(m_name));
         }
 
         delete_monster_idx(creature, i);
@@ -496,9 +498,9 @@ void jump_floor(CreatureEntity &creature, DungeonId dun_idx, DEPTH depth)
     leave_quest_check(creature);
     auto to = !floor.is_underground()
                   ? _("地上", "the surface")
-                  : format(_("%d階(%s)", "level %d of %s"), floor.dun_level, floor.get_dungeon_definition().name.data());
-    constexpr auto mes = _("%sへとウィザード・テレポートで移動した。\n", "You wizard-teleported to %s.\n");
-    msg_print_wizard(creature, 2, format(mes, to.data()));
+                  : fmt::format(_("{}階({})", "level {} of {}"), floor.dun_level, floor.get_dungeon_definition().name);
+    constexpr auto mes = _("{}へとウィザード・テレポートで移動した。\n", "You wizard-teleported to {}.\n");
+    msg_print_wizard(creature, 2, fmt::format(mes, to));
     floor.quest_number = QuestId::NONE;
     PlayerEnergy(creature).reset_player_turn();
     creature.set_energy_need(0);

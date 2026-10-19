@@ -25,6 +25,7 @@
 #include "target/target-checker.h"
 #include "view/display-messages.h"
 #include "world/world.h"
+#include <fmt/format.h>
 #include <tl/optional.hpp>
 
 /*!
@@ -40,7 +41,7 @@ void check_fall_off_horse(CreatureEntity &creature, MonsterAttackPlayer *monap_p
 
     const auto m_steed_name = monster_desc(creature, creature.get_floor()->get_monster(creature.get_riding()), 0);
     if (process_fall_off_horse(creature, (monap_ptr->damage > 200) ? 200 : monap_ptr->damage, false)) {
-        msg_format(_("%s^から落ちてしまった！", "You have fallen from %s."), m_steed_name.data());
+        msg_print(_("{}から落ちてしまった！", "You have fallen from {}."), m_steed_name);
     }
 }
 
@@ -134,7 +135,7 @@ bool process_fall_off_horse(CreatureEntity &creature, int dam, bool force)
 
         if (!pos_fall_off) {
             const auto m_name = monster_desc(creature, monster, 0);
-            msg_format(_("%sから振り落とされそうになって、壁にぶつかった。", "You have nearly fallen from %s but bumped into a wall."), m_name.data());
+            msg_print(_("{}から振り落とされそうになって、壁にぶつかった。", "You have nearly fallen from {} but bumped into a wall."), m_name);
             take_hit(creature, DAMAGE_NOESCAPE, monrace.level + 3, _("壁への衝突", "bumping into a wall"));
             return false;
         }
@@ -173,7 +174,7 @@ bool process_fall_off_horse(CreatureEntity &creature, int dam, bool force)
     auto fall_dam = false;
     if (creature.has_levitation() && !force) {
         const auto m_name = monster_desc(creature, monster, 0);
-        msg_format(_("%sから落ちたが、空中でうまく体勢を立て直して着地した。", "You are thrown from %s but make a good landing."), m_name.data());
+        msg_print(_("{}から落ちたが、空中でうまく体勢を立て直して着地した。", "You are thrown from {} but make a good landing."), m_name);
     } else {
         take_hit(creature, DAMAGE_NOESCAPE, monrace.level + 3, _("落馬", "Falling from riding"));
         fall_dam = true;

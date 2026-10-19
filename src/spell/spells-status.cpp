@@ -50,7 +50,9 @@
 #include "system/redrawing-flags-updater.h"
 #include "target/target-getter.h"
 #include "util/bit-flags-calculator.h"
+#include "util/string-processor.h"
 #include "view/display-messages.h"
+#include <fmt/format.h>
 
 /*!
  * @brief モンスター回復処理
@@ -247,7 +249,7 @@ void roll_hitdice(CreatureEntity &creature, spell_operation options)
     }
 
     if (options & SPOP_DEBUG) {
-        msg_format(_("現在の体力ランクは %d/100 です。", "Your life rate is %d/100 now."), creature.calc_life_rating());
+        msg_print(_("現在の体力ランクは {}/100 です。", "Your life rate is {}/100 now."), creature.calc_life_rating());
         creature.add_knowledge(KNOW_HPRATE);
         return;
     }
@@ -540,7 +542,7 @@ bool fishing(CreatureEntity &creature)
     const auto &grid = floor.get_grid(pos);
     if (grid.has_monster()) {
         const auto m_name = monster_desc(creature, floor.get_monster(grid.m_idx), 0);
-        msg_format(_("%sが邪魔だ！", "%s^ is standing in your way."), m_name.data());
+        msg_print(_("{}が邪魔だ！", "{} is standing in your way."), str_upcase_first(m_name));
         PlayerEnergy(creature).reset_player_turn();
         return false;
     }
@@ -581,7 +583,7 @@ std::shared_ptr<ItemEntity> cosmic_cast_off(CreatureEntity &creature, const Item
 
     const auto old_o_idx = drop_near(creature, item, creature.get_position());
     const auto item_name = describe_flavor(creature, item, OD_NAME_ONLY);
-    msg_format(_("%sを脱ぎ捨てた。", "You cast off %s."), item_name.data());
+    msg_print(_("{}を脱ぎ捨てた。", "You cast off {}."), item_name);
     sound(SoundKind::TAKE_OFF);
 
     /* Get effects */
