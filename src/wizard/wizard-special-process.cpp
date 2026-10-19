@@ -23,6 +23,7 @@
 #include "floor/floor-object.h"
 #include "floor/object-allocator.h"
 #include "game-option/birth-options.h"
+#include "game-option/cheat-types.h"
 #include "game-option/option-types-table.h"
 #include "game-option/play-record-options.h"
 #include "game-option/special-options.h"
@@ -87,6 +88,7 @@
 #include "wizard/wizard-messages.h"
 #include "world/world.h"
 #include <algorithm>
+#include <fmt/format.h>
 #include <fstream>
 #include <span>
 #include <sstream>
@@ -129,7 +131,7 @@ static tl::optional<short> wiz_select_sval(const tval_desc &td)
         bi_ids.push_back(bi_id);
     }
 
-    const auto prompt = format(_("%s群の具体的なアイテムを選んで下さい", "What Kind of %s? "), td.desc);
+    const auto prompt = fmt::format(_("{}群の具体的なアイテムを選んで下さい", "What Kind of {}? "), td.desc);
 
     CandidateSelector cs(prompt, 15);
     const auto choice = cs.select(bi_ids,
@@ -488,7 +490,7 @@ void wiz_jump_to_dungeon(CreatureEntity &creature)
         return;
     }
 
-    msg_format("You jump to dungeon level %d.", *level);
+    msg_print("You jump to dungeon level {}.", *level);
     if (autosave_l) {
         do_cmd_save_game(creature, true);
     }
@@ -701,7 +703,7 @@ void wiz_dump_options()
     const auto &filename = path.string();
     std::ofstream ofs(path);
     if (ofs.bad()) {
-        msg_format(_("ファイル %s を開けませんでした。", "Failed to open file %s."), filename.data());
+        msg_print(_("ファイル {} を開けませんでした。", "Failed to open file {}."), filename);
         msg_erase();
         return;
     }
@@ -724,16 +726,16 @@ void wiz_dump_options()
             if (exist[i][j]) {
                 const auto &option = option_info[exist[i][j] - 1];
                 const auto page = option.page ? enum2i(*option.page) : 255; //!< @details かつてnulloptではなかった頃の値.
-                ofs << format("  %d -  %02d (%4d) %s\n", i, j, page, option.text.data());
+                ofs << fmt::format("  {} -  {:02} ({:4}) {}\n", i, j, page, option.text);
             } else {
-                ofs << format("  %d -  %02d\n", i, j);
+                ofs << fmt::format("  {} -  {:02}\n", i, j);
             }
         }
 
         ofs << '\n';
     }
 
-    msg_format(_("オプションbit使用状況をファイル %s に書き出しました。", "Option bits usage dump saved to file %s."), filename.data());
+    msg_print(_("オプションbit使用状況をファイル {} に書き出しました。", "Option bits usage dump saved to file {}."), filename);
 }
 
 /*!
