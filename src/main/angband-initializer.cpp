@@ -43,6 +43,7 @@
 #include "world/world.h"
 #include <exception>
 #include <fmt/format.h>
+#include <string_view>
 #include <time.h>
 #ifdef WINDOWS
 #include "util/png-displayer.h"
@@ -197,7 +198,7 @@ void init_angband(CreatureEntity &creature, bool no_term)
         init_terrains_info();
         init_feat_variables();
     } catch (const std::exception &e) {
-        quit_fmt("地形初期化不能: %s", e.what());
+        quit(fmt::format("地形初期化不能: {}", e.what()));
     }
 
     init_note(_("[データの初期化中... (アイテム)]", "[Initializing arrays... (objects)]"));
