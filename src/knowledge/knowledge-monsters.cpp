@@ -224,8 +224,7 @@ void do_cmd_knowledge_kill_count(CreatureEntity &creature)
             if (monrace.is_dead_unique()) {
                 std::string details;
                 if (monrace.defeat_level && monrace.defeat_time) {
-                    details = format(_(" - レベル%2d - %d:%02d:%02d", " - level %2d - %d:%02d:%02d"), monrace.defeat_level, monrace.defeat_time / (60 * 60),
-                        (monrace.defeat_time / 60) % 60, monrace.defeat_time % 60);
+                    details = fmt::format(_(" - レベル{:2} - {}:{:02}:{:02}", " - level {:2} - {}:{:02}:{:02}"), monrace.defeat_level, monrace.defeat_time / (60 * 60), (monrace.defeat_time / 60) % 60, monrace.defeat_time % 60);
                 }
 
                 fmt::println(fff, "     {}{}", monrace.name, details);
@@ -283,11 +282,11 @@ static void display_monster_list(int col, int row, int per_page, const std::vect
         c_prt(color, (monrace.name.data()), row + i, col);
         const auto &symbol_config = monrace.symbol_config;
         if (per_page == 1) {
-            c_prt(color, format("%02x/%02x", symbol_config.color, static_cast<uint8_t>(symbol_config.character)), row + i, (is_wizard || visual_only) ? 56 : 61);
+            c_prt(color, fmt::format("{:02x}/{:02x}", symbol_config.color, static_cast<uint8_t>(symbol_config.character)), row + i, (is_wizard || visual_only) ? 56 : 61);
         }
 
         if (is_wizard || visual_only) {
-            c_prt(color, format("%d", enum2i(monrace_id)), row + i, 62);
+            c_prt(color, fmt::format("{}", enum2i(monrace_id)), row + i, 62);
         }
 
         term_erase(69, row + i);
@@ -298,9 +297,9 @@ static void display_monster_list(int col, int row, int per_page, const std::vect
                                                                                                                                                 : _("生存", " alive")),
                     row + i, 74);
                 c_put_str(TERM_WHITE, _("撃破回数:", "Kill Count:"), row + i, 80);
-                c_put_str(TERM_WHITE, format("%4d", monrace.r_pkills), row + i, 90);
+                c_put_str(TERM_WHITE, fmt::format("{:4}", monrace.r_pkills), row + i, 90);
             } else {
-                put_str(format("%4d(%4d)", monrace.r_pkills, monrace.mob_num), row + i, 73);
+                put_str(fmt::format("{:4}({:4})", monrace.r_pkills, monrace.mob_num), row + i, 73);
             }
         }
     }
@@ -366,8 +365,8 @@ void do_cmd_knowledge_monsters(CreatureEntity &creature, bool *need_redraw, bool
     while (!flag) {
         if (redraw) {
             clear_from(0);
-            prt(format(_("%s - モンスター", "%s - monsters"), !visual_only ? _("知識", "Knowledge") : _("表示", "Visuals")), 2, 0);
-            if (!direct_r_idx.has_value()) {
+            prt(fmt::format(_("{} - モンスター", "{} - monsters"), !visual_only ? _("知識", "Knowledge") : _("表示", "Visuals")), 2, 0);
+            if (!direct_r_idx) {
                 prt(_("グループ", "Group"), 4, 0);
             }
             prt(_("名前", "Name"), 4, max + 3);
@@ -425,9 +424,7 @@ void do_cmd_knowledge_monsters(CreatureEntity &creature, bool *need_redraw, bool
         }
 
         prt(fmt::format(_("{} 種", "{} Races"), monrace_ids.size()), 3, 26);
-        prt(format(_("<方向>%s%s%s, ESC", "<dir>%s%s%s, ESC"), (!visual_list && !visual_only) ? _(", 'r'で思い出を見る", ", 'r' to recall") : "",
-                visual_list ? _(", ENTERで決定", ", ENTER to accept") : _(", 'v'でシンボル変更", ", 'v' for visuals"),
-                (symbols_cb.symbol != DisplaySymbol()) ? _(", 'c', 'p'でペースト", ", 'c', 'p' to paste") : _(", 'c'でコピー", ", 'c' to copy")),
+        prt(fmt::format(_("<方向>{}{}{}, ESC", "<dir>{}{}{}, ESC"), (!visual_list && !visual_only) ? _(", 'r'で思い出を見る", ", 'r' to recall") : "", visual_list ? _(", ENTERで決定", ", ENTER to accept") : _(", 'v'でシンボル変更", ", 'v' for visuals"), (symbols_cb.symbol != DisplaySymbol()) ? _(", 'c', 'p'でペースト", ", 'c', 'p' to paste") : _(", 'c'でコピー", ", 'c' to copy")),
             hgt - 1, 0);
 
         DisplaySymbol symbol_dummy;

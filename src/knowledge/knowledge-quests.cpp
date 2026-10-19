@@ -28,6 +28,7 @@
 #include "util/enum-converter.h"
 #include "util/string-processor.h"
 #include "world/world.h"
+#include <fmt/format.h>
 #include <numeric>
 
 /*!
@@ -81,13 +82,13 @@ static void do_cmd_knowledge_quests_current(CreatureEntity &creature, FILE *fff)
                     const auto &monrace = quest.get_bounty();
                     if (quest.max_num > 1) {
 #ifdef JP
-                        note = format(" - %d 体の%sを倒す。(あと %d 体)", (int)quest.max_num, monrace.name.data(), (int)(quest.max_num - quest.cur_num));
+                        note = fmt::format(" - {} 体の{}を倒す。(あと {} 体)", quest.max_num, monrace.name, quest.max_num - quest.cur_num);
 #else
                         const auto monster_name = pluralize(monrace.name);
-                        note = format(" - kill %d %s, have killed %d.", (int)quest.max_num, monster_name.data(), (int)quest.cur_num);
+                        note = fmt::format(" - kill {} {}, have killed {}.", quest.max_num, monster_name, quest.cur_num);
 #endif
                     } else {
-                        note = format(_(" - %sを倒す。", " - kill %s."), monrace.name.data());
+                        note = fmt::format(_(" - {}を倒す。", " - kill {}."), monrace.name);
                     }
 
                     break;
@@ -101,23 +102,23 @@ static void do_cmd_knowledge_quests_current(CreatureEntity &creature, FILE *fff)
                         item_name = describe_flavor(creature, item, OD_NAME_ONLY);
                     }
 
-                    note = format(_("\n   - %sを見つけ出す。", "\n   - Find %s."), item_name.data());
+                    note = fmt::format(_("\n   - {}を見つけ出す。", "\n   - Find {}."), item_name);
                     break;
                 }
                 case QuestKindType::FIND_EXIT:
-                    note = format(_(" - 出口に到達する。", " - Reach exit."));
+                    note = _(" - 出口に到達する。", " - Reach exit.");
                     break;
                 case QuestKindType::KILL_NUMBER:
 #ifdef JP
-                    note = format(" - %d 体のモンスターを倒す。(あと %d 体)", (int)quest.max_num, (int)(quest.max_num - quest.cur_num));
+                    note = fmt::format(" - {} 体のモンスターを倒す。(あと {} 体)", quest.max_num, quest.max_num - quest.cur_num);
 #else
-                    note = format(" - Kill %d monsters, have killed %d.", (int)quest.max_num, (int)quest.cur_num);
+                    note = fmt::format(" - Kill {} monsters, have killed {}.", quest.max_num, quest.cur_num);
 #endif
                     break;
 
                 case QuestKindType::KILL_ALL:
                 case QuestKindType::TOWER:
-                    note = format(_(" - 全てのモンスターを倒す。", " - Kill all monsters."));
+                    note = _(" - 全てのモンスターを倒す。", " - Kill all monsters.");
                     break;
                 default:
                     break;
@@ -147,18 +148,16 @@ static void do_cmd_knowledge_quests_current(CreatureEntity &creature, FILE *fff)
 
         const auto &monrace = quest.get_bounty();
         if (quest.max_num <= 1) {
-            constexpr auto mes = _("  %s (%d 階) - %sを倒す。\n", "  %s (Dungeon level: %d)\n  Kill %s.\n");
-            rand_tmp_str = format(mes, quest.name.data(), (int)quest.level, monrace.name.data());
+            constexpr auto mes = _("  {} ({} 階) - {}を倒す。\n", "  {} (Dungeon level: {})\n  Kill {}.\n");
+            rand_tmp_str = fmt::format(mes, quest.name, quest.level, monrace.name);
             continue;
         }
 
 #ifdef JP
-        rand_tmp_str = format("  %s (%d 階) - %d 体の%sを倒す。(あと %d 体)\n", quest.name.data(), (int)quest.level, (int)quest.max_num, monrace.name.data(),
-            (int)(quest.max_num - quest.cur_num));
+        rand_tmp_str = fmt::format("  {} ({} 階) - {} 体の{}を倒す。(あと {} 体)\n", quest.name, quest.level, quest.max_num, monrace.name, quest.max_num - quest.cur_num);
 #else
         const auto monster_name = pluralize(monrace.name);
-        rand_tmp_str = format("  %s (Dungeon level: %d)\n  Kill %d %s, have killed %d.\n", quest.name.data(), (int)quest.level, (int)quest.max_num,
-            monster_name.data(), (int)quest.cur_num);
+        rand_tmp_str = fmt::format("  {} (Dungeon level: {})\n  Kill {} {}, have killed {}.\n", quest.name, quest.level, quest.max_num, monster_name, quest.cur_num);
 #endif
     }
 
@@ -183,7 +182,7 @@ static bool do_cmd_knowledge_quests_aux([[maybe_unused]] CreatureEntity &creatur
         }
     }
 
-    const auto playtime_str = format("%02d:%02d:%02d", quest.comptime / (60 * 60), (quest.comptime / 60) % 60, quest.comptime % 60);
+    const auto playtime_str = fmt::format("{:02}:{:02}:{:02}", quest.comptime / (60 * 60), (quest.comptime / 60) % 60, quest.comptime % 60);
     auto fputs_name_remain = [fff](const auto &name) {
         for (auto i = 1U; i < name.size(); ++i) {
             fmt::println(fff, "  {}", name[i]);
@@ -340,7 +339,7 @@ void do_cmd_knowledge_death_history(CreatureEntity &creature)
             if (MonraceList::is_valid(record.killer_monrace_id) && record.killer_monrace_id != MonraceId::PLAYER) {
                 const auto &monrace = MonraceList::get_instance().get_monrace(record.killer_monrace_id);
                 if (!cause_name.empty() && cause_name != monrace.name.string()) {
-                    cause_name = format(_("%s(%s)", "%s(%s)"), cause_name.data(), monrace.name.data());
+                    cause_name = fmt::format(_("{}({})", "{}({})"), cause_name, monrace.name);
                 }
             }
 

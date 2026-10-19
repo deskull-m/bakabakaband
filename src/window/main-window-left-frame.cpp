@@ -46,7 +46,7 @@ void print_title(CreatureEntity &creature)
  */
 void print_level(CreatureEntity &creature)
 {
-    const auto tmp = format("%5d", creature.get_level());
+    const auto tmp = fmt::format("{:5}", creature.get_level());
     if (creature.get_level() >= creature.get_max_plv()) {
         put_str(_("レベル ", "LEVEL "), ROW_LEVEL, 0);
         c_put_str(TERM_L_GREEN, tmp, ROW_LEVEL, COL_LEVEL + 7);
@@ -67,14 +67,14 @@ void print_exp(CreatureEntity &creature)
     if (!creature.is_player()) {
         // モンスターは player_exp 表に該当エントリを持たないため、
         // 現在経験値のみ表示する。
-        out_val = format("%8d", creature.get_exp());
+        out_val = fmt::format("{:8}", creature.get_exp());
     } else if ((!exp_need) || pr.equals(PlayerRaceType::ANDROID)) {
-        out_val = format("%8d", creature.get_exp());
+        out_val = fmt::format("{:8}", creature.get_exp());
     } else {
         if (creature.get_level() >= PY_MAX_LEVEL) {
-            (void)sprintf(out_val.data(), "********");
+            out_val = "********";
         } else {
-            out_val = format("%8d", player_exp[creature.get_level() - 1] * creature.expfact / 100 - creature.get_exp());
+            out_val = fmt::format("{:8}", player_exp[creature.get_level() - 1] * creature.expfact / 100 - creature.get_exp());
         }
     }
 
@@ -96,17 +96,13 @@ void print_exp(CreatureEntity &creature)
  */
 void print_ac(CreatureEntity &creature)
 {
-    char tmp[32];
-
 #ifdef JP
     /* AC の表示方式を変更している */
     put_str(" ＡＣ(     )", ROW_AC, COL_AC);
-    sprintf(tmp, "%5d", creature.get_dis_ac() + creature.get_dis_to_a());
-    c_put_str(TERM_L_GREEN, tmp, ROW_AC, COL_AC + 6);
+    c_put_str(TERM_L_GREEN, fmt::format("{:5}", creature.get_dis_ac() + creature.get_dis_to_a()), ROW_AC, COL_AC + 6);
 #else
     put_str("Cur AC ", ROW_AC, COL_AC);
-    sprintf(tmp, "%5d", creature.get_dis_ac() + creature.get_dis_to_a());
-    c_put_str(TERM_L_GREEN, tmp, ROW_AC, COL_AC + 7);
+    c_put_str(TERM_L_GREEN, fmt::format("{:5}", creature.get_dis_ac() + creature.get_dis_to_a()), ROW_AC, COL_AC + 7);
 #endif
 }
 
@@ -116,9 +112,7 @@ void print_ac(CreatureEntity &creature)
  */
 void print_hp(CreatureEntity &creature)
 {
-    char tmp[32];
     put_str("HP", ROW_CURHP, COL_CURHP);
-    sprintf(tmp, "%4ld", (long int)creature.hp);
     TERM_COLOR color;
     if (creature.hp >= creature.maxhp) {
         color = TERM_L_GREEN;
@@ -128,11 +122,10 @@ void print_hp(CreatureEntity &creature)
         color = TERM_RED;
     }
 
-    c_put_str(color, format("%4d", creature.hp), ROW_CURHP, COL_CURHP + 3);
+    c_put_str(color, fmt::format("{:4}", creature.hp), ROW_CURHP, COL_CURHP + 3);
     put_str("/", ROW_CURHP, COL_CURHP + 7);
-    sprintf(tmp, "%4ld", (long int)creature.maxhp);
     color = TERM_L_GREEN;
-    c_put_str(color, format("%4d", creature.maxhp), ROW_CURHP, COL_CURHP + 8);
+    c_put_str(color, fmt::format("{:4}", creature.maxhp), ROW_CURHP, COL_CURHP + 8);
 }
 
 /*!
@@ -143,11 +136,9 @@ void print_hp(CreatureEntity &creature)
  */
 void print_sp(CreatureEntity &creature)
 {
-    char tmp[32];
     byte color;
 
     put_str(_("MP", "SP"), ROW_CURSP, COL_CURSP);
-    sprintf(tmp, "%4ld", (long int)creature.get_current_mp());
     if (creature.get_max_mp() <= 0) {
         color = TERM_SLATE;
     } else if (creature.get_current_mp() >= creature.get_max_mp()) {
@@ -158,11 +149,10 @@ void print_sp(CreatureEntity &creature)
         color = TERM_RED;
     }
 
-    c_put_str(color, format("%4d", creature.get_current_mp()), ROW_CURSP, COL_CURSP + 3);
+    c_put_str(color, fmt::format("{:4}", creature.get_current_mp()), ROW_CURSP, COL_CURSP + 3);
     put_str("/", ROW_CURSP, COL_CURSP + 7);
-    sprintf(tmp, "%4ld", (long int)creature.get_max_mp());
     color = (creature.get_max_mp() <= 0) ? TERM_SLATE : TERM_L_GREEN;
-    c_put_str(color, format("%4d", creature.get_max_mp()), ROW_CURSP, COL_CURSP + 8);
+    c_put_str(color, fmt::format("{:4}", creature.get_max_mp()), ROW_CURSP, COL_CURSP + 8);
 }
 
 /*!
@@ -172,7 +162,7 @@ void print_sp(CreatureEntity &creature)
 void print_gold(CreatureEntity &creature)
 {
     put_str(_("＄ ", "AU "), ROW_GOLD, COL_GOLD);
-    c_put_str(TERM_L_GREEN, format("%9d", creature.get_au()), ROW_GOLD, COL_GOLD + 3);
+    c_put_str(TERM_L_GREEN, fmt::format("{:9}", creature.get_au()), ROW_GOLD, COL_GOLD + 3);
 }
 
 /*!
@@ -192,7 +182,7 @@ void print_depth(CreatureEntity &creature)
     const auto row_depth = hgt + ROW_DEPTH;
     const auto &floor = *creature.get_floor();
     if (!floor.is_underground()) {
-        c_prt(attr, format("%7s", _("地上", "Surf.")), row_depth, col_depth);
+        c_prt(attr, fmt::format("{:>7}", fmt::bytes(_("地上", "Surf."))), row_depth, col_depth);
         return;
     }
 
@@ -238,7 +228,7 @@ void print_depth(CreatureEntity &creature)
         break; /* Boring place */
     }
 
-    c_prt(attr, depths.c_str(), row_depth, col_depth);
+    c_prt(attr, fmt::format("{:>7}", fmt::bytes(depths)), row_depth, col_depth);
 #endif // GODOT_RICH_UI
 }
 
@@ -298,9 +288,9 @@ static void print_health_monster_in_arena_for_wizard(CreatureEntity &creature)
         if (monster.is_valid()) {
             const auto &monrace = monster.get_monrace();
             const auto &symbol_config = monrace.symbol_config;
-            term_putstr(col - 2, row + row_offset, 2, symbol_config.color, format("%c", symbol_config.character));
-            term_putstr(col - 1, row + row_offset, 5, TERM_WHITE, format("%5d", monster.hp));
-            term_putstr(col + 5, row + row_offset, 6, TERM_WHITE, format("%5d", monster.max_maxhp));
+            term_putstr(col - 2, row + row_offset, 2, symbol_config.color, fmt::format("{:c}", symbol_config.character));
+            term_putstr(col - 1, row + row_offset, 5, TERM_WHITE, fmt::format("{:5}", monster.hp));
+            term_putstr(col + 5, row + row_offset, 6, TERM_WHITE, fmt::format("{:5}", monster.max_maxhp));
         }
     }
 }

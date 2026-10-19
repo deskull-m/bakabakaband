@@ -46,6 +46,7 @@
 #include "term/z-form.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-util.h"
+#include <fmt/format.h>
 
 /*!
  * @brief
@@ -170,7 +171,7 @@ static std::pair<std::string, TERM_COLOR> likert(int x, int y)
     std::string desc;
 
     if (show_actual_value) {
-        desc = format("%3d-", x);
+        desc = fmt::format("{:3}-", x);
     }
 
     if (x < 0) {
@@ -217,7 +218,7 @@ static std::pair<std::string, TERM_COLOR> likert(int x, int y)
         return make_pair(desc.append(_("英雄的", "Heroic")), TERM_BLUE);
     }
     default: {
-        desc.append(format(_("伝説的[%d]", "Legendary[%d]"), (int)((((x / y) - 17) * 5) / 2)));
+        desc.append(fmt::format(_("伝説的[{}]", "Legendary[{}]"), (int)((((x / y) - 17) * 5) / 2)));
         return make_pair(desc, TERM_VIOLET);
     }
     }
@@ -400,31 +401,31 @@ static void display_first_page(CreatureEntity &creature, int xthb, int *damage, 
     display_player_one_line(ENTRY_SKILL_DIG, sd.first, sd.second);
 
     if (!muta_att) {
-        display_player_one_line(ENTRY_BLOWS, format("%d+%d", blows1, blows2), TERM_L_BLUE);
+        display_player_one_line(ENTRY_BLOWS, fmt::format("{}+{}", blows1, blows2), TERM_L_BLUE);
     } else {
-        display_player_one_line(ENTRY_BLOWS, format("%d+%d+%d", blows1, blows2, muta_att), TERM_L_BLUE);
+        display_player_one_line(ENTRY_BLOWS, fmt::format("{}+{}+{}", blows1, blows2, muta_att), TERM_L_BLUE);
     }
 
-    display_player_one_line(ENTRY_SHOTS, format("%d.%02d", shots, shot_frac), TERM_L_BLUE);
+    display_player_one_line(ENTRY_SHOTS, fmt::format("{}.{:02}", shots, shot_frac), TERM_L_BLUE);
 
     std::string desc;
     if ((damage[0] + damage[1]) == 0) {
         desc = "nil!";
     } else {
-        desc = format("%d+%d", blows1 * damage[0] / 100, blows2 * damage[1] / 100);
+        desc = fmt::format("{}+{}", blows1 * damage[0] / 100, blows2 * damage[1] / 100);
     }
 
     display_player_one_line(ENTRY_AVG_DMG, desc, TERM_L_BLUE);
-    display_player_one_line(ENTRY_INFRA, format("%d feet", creature.get_infravision() * 10), TERM_WHITE);
+    display_player_one_line(ENTRY_INFRA, fmt::format("{} feet", creature.get_infravision() * 10), TERM_WHITE);
 
     // HP回復量/100ターンの計算
     int hp_regen_amount = calculate_hp_regen_rate(creature);
-    std::string hp_regen_desc = format("%+d.%05d", hp_regen_amount / 100000, hp_regen_amount % 100000);
+    std::string hp_regen_desc = fmt::format("{:+}.{:05}", hp_regen_amount / 100000, hp_regen_amount % 100000);
     display_player_one_line(ENTRY_HP_REGEN, hp_regen_desc, TERM_L_BLUE);
 
     // MP回復量/100ターンの計算
     int mp_regen_amount = calculate_mp_regen_rate(creature);
-    std::string mp_regen_desc = format("%+d.%05d", mp_regen_amount / 100000, mp_regen_amount % 100000);
+    std::string mp_regen_desc = fmt::format("{:+}.{:05}", mp_regen_amount / 100000, mp_regen_amount % 100000);
     display_player_one_line(ENTRY_MP_REGEN, mp_regen_desc, TERM_L_BLUE);
 }
 
@@ -626,11 +627,11 @@ static void display_monster_first_page(CreatureEntity &creature)
 
     // HP/MP 回復量はプレイヤーと共通の calculate_*_regen_rate() 経由で算出 (compute_regen_amount を共有)。
     int hp_regen_amount = calculate_hp_regen_rate(creature);
-    std::string hp_regen_desc = format("%+d.%05d", hp_regen_amount / 100000, hp_regen_amount % 100000);
+    std::string hp_regen_desc = fmt::format("{:+}.{:05}", hp_regen_amount / 100000, hp_regen_amount % 100000);
     display_player_one_line(ENTRY_HP_REGEN, hp_regen_desc, TERM_L_BLUE);
 
     int mp_regen_amount = calculate_mp_regen_rate(creature);
-    std::string mp_regen_desc = format("%+d.%05d", mp_regen_amount / 100000, mp_regen_amount % 100000);
+    std::string mp_regen_desc = fmt::format("{:+}.{:05}", mp_regen_amount / 100000, mp_regen_amount % 100000);
     display_player_one_line(ENTRY_MP_REGEN, mp_regen_desc, TERM_L_BLUE);
 }
 

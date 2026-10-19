@@ -24,9 +24,11 @@
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
 #include "term/z-form.h"
+#include "util/string-processor.h"
 #include "view/status-bars-table.h"
 #include "window/main-window-row-column.h"
 #include "world/world.h"
+#include <fmt/format.h>
 
 /*!
  * @brief 32ビット変数配列の指定位置のビットフラグを1にする。
@@ -151,12 +153,12 @@ void print_state(CreatureEntity &creature)
     std::string text;
     if (command_rep) {
         if (command_rep > 999) {
-            text = format("%2d00", command_rep / 100);
+            text = fmt::format("{:2}00", command_rep / 100);
         } else {
-            text = format("  %2d", command_rep);
+            text = fmt::format("  {:2}", command_rep);
         }
 
-        c_put_str(attr, format("%5.5s", text.data()), ROW_STATE, COL_STATE);
+        c_put_str(attr, fmt::format("{:>5}", fmt::bytes(str_substr(text, 0, 5))), ROW_STATE, COL_STATE);
         return;
     }
 
@@ -167,7 +169,7 @@ void print_state(CreatureEntity &creature)
     }
     case ACTION_REST:
         if (creature.get_resting() > 0) {
-            text = format("%4d", creature.get_resting());
+            text = fmt::format("{:4}", creature.get_resting());
         } else if (creature.get_resting() == COMMAND_ARG_REST_FULL_HEALING) {
             text = "****";
         } else if (creature.get_resting() == COMMAND_ARG_REST_UNTIL_DONE) {
@@ -238,7 +240,7 @@ void print_state(CreatureEntity &creature)
     }
     }
 
-    c_put_str(attr, format("%5.5s", text.data()), ROW_STATE, COL_STATE);
+    c_put_str(attr, fmt::format("{:>5}", fmt::bytes(str_substr(text, 0, 5))), ROW_STATE, COL_STATE);
 }
 
 /*!
@@ -302,7 +304,7 @@ void print_speed(CreatureEntity &creature)
         strcpy(buf, _("乗馬中", "Riding"));
     }
 
-    c_put_str(attr, format("%-9s", buf), row_speed, col_speed);
+    c_put_str(attr, fmt::format("{:<9}", fmt::bytes(buf)), row_speed, col_speed);
 #endif // GODOT_RICH_UI
 }
 

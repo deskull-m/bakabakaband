@@ -24,6 +24,7 @@
 #include "util/bit-flags-calculator.h"
 #include "view/display-symbol.h"
 #include "view/display-util.h"
+#include <fmt/format.h>
 
 /*!
  * @brief プレイヤーのパラメータ基礎値 (腕力等)を18以下になるようにして返す
@@ -108,15 +109,13 @@ static void display_basic_stat_name(CreatureEntity &creature, int stat_num, int 
  */
 static void display_basic_stat_value(CreatureEntity &creature, int stat_num, int r_adj, int e_adj, int row, int stat_col)
 {
-    c_put_str(TERM_L_BLUE, format("%3d", r_adj), row + stat_num + 1, stat_col + 13);
+    c_put_str(TERM_L_BLUE, fmt::format("{:3}", r_adj), row + stat_num + 1, stat_col + 13);
 
-    const auto class_adj = (creature.pclass_ref != nullptr) ? (int)(*creature.get_class_info()).c_adj[stat_num] : 0;
-    c_put_str(TERM_L_BLUE, format("%3d", class_adj), row + stat_num + 1, stat_col + 16);
+    c_put_str(TERM_L_BLUE, fmt::format("{:3}", cp_ptr->c_adj[stat_num]), row + stat_num + 1, stat_col + 16);
 
-    const auto personality_adj = (creature.personality != nullptr) ? (int)(*creature.get_personality_info()).a_adj[stat_num] : 0;
-    c_put_str(TERM_L_BLUE, format("%3d", personality_adj), row + stat_num + 1, stat_col + 19);
+    c_put_str(TERM_L_BLUE, fmt::format("{:3}", (*creature.get_personality_info()).a_adj[stat_num]), row + stat_num + 1, stat_col + 19);
 
-    c_put_str(TERM_L_BLUE, format("%3d", (int)e_adj), row + stat_num + 1, stat_col + 22);
+    c_put_str(TERM_L_BLUE, fmt::format("{:3}", e_adj), row + stat_num + 1, stat_col + 22);
 
     c_put_str(TERM_L_GREEN, cnv_stat(creature.get_stat_top(stat_num)), row + stat_num + 1, stat_col + 26);
 
