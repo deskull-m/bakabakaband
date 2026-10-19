@@ -8,6 +8,7 @@
 #include "system/creature-entity.h"
 #include "system/system-variables.h"
 #include "term/z-form.h"
+#include <fmt/format.h>
 
 /*!
  * @brief 設定ファイルと町のマップの条件式に共通の変数の値を返す
@@ -57,13 +58,13 @@ static tl::optional<std::string> resolve_pref_file_variable(CreatureEntity &crea
         return std::string(ANGBAND_KEYBOARD);
     }
     if (name == "LEVEL") {
-        return format("%02d", creature.get_level());
+        return fmt::format("{:02}", creature.get_level());
     }
     if (name == "AUTOREGISTER") {
         return creature.is_autopick_autoregister() ? "1" : "0";
     }
     if (name == "MONEY") {
-        return format("%09ld", (long int)creature.get_au());
+        return fmt::format("{:09}", creature.get_au());
     }
 
     return resolve_common_expression_variable(creature, name);

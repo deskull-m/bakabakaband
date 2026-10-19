@@ -100,6 +100,7 @@
 #include "wizard/cmd-wizard.h"
 #include "wizard/wizard-mutation.h"
 #include "world/world.h"
+#include <fmt/format.h>
 #include <string>
 #include <tl/optional.hpp>
 
@@ -468,13 +469,13 @@ void process_command(CreatureEntity &creature)
                 break;
             }
 
-            msg_format(_("反魔法バリアが%sを邪魔した！", "An anti-magic shell disrupts your %s!"), which_power);
+            msg_print(_("反魔法バリアが{}を邪魔した！", "An anti-magic shell disrupts your {}!"), which_power);
             PlayerEnergy(creature).reset_player_turn();
             break;
         }
 
         if (creature.is_shero() && !pc.equals(PlayerClassType::BERSERKER)) {
-            msg_format(_("狂戦士化していて頭が回らない！", "You cannot think directly!"));
+            msg_print(_("狂戦士化していて頭が回らない！", "You cannot think directly!"));
             PlayerEnergy(creature).reset_player_turn();
             break;
         }

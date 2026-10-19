@@ -48,6 +48,7 @@
 #include "util/bit-flags-calculator.h"
 #include "util/enum-converter.h"
 #include "world/world.h"
+#include <fmt/format.h>
 
 /* Old hidden trap flag */
 // static const BIT_FLAGS CAVE_TRAP = 0x8000;

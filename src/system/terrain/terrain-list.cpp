@@ -10,6 +10,7 @@
 #include "system/terrain/terrain-definition.h"
 #include "util/enum-converter.h"
 #include <algorithm>
+#include <fmt/format.h>
 
 TerrainList TerrainList::instance{};
 
@@ -87,7 +88,7 @@ short TerrainList::get_terrain_id(TerrainTag tag) const
     const auto tag_value = enum2i(tag);
     const auto index = static_cast<size_t>(tag_value);
     if ((index >= this->tags.size()) || (this->tags[index] == UNASSIGNED_TERRAIN_ID)) {
-        THROW_EXCEPTION(std::out_of_range, format("Terrain tag %d is not assigned to any terrain.", tag_value));
+        THROW_EXCEPTION(std::out_of_range, fmt::format("Terrain tag {} is not assigned to any terrain.", tag_value));
     }
 
     return this->tags[index];
@@ -106,7 +107,7 @@ short TerrainList::get_terrain_id(std::string_view tag) const
             return terrain.tag == tag;
         });
     if (it == this->terrains.end()) {
-        THROW_EXCEPTION(std::runtime_error, format(_("未定義のタグ '%s'。", "%s is undefined."), tag.data()));
+        THROW_EXCEPTION(std::runtime_error, fmt::format(_("未定義のタグ '{}'。", "{} is undefined."), tag));
     }
 
     return static_cast<short>(std::distance(this->terrains.begin(), it));

@@ -11,6 +11,7 @@
 #include "util/enum-converter.h"
 #include "world/world.h"
 #include <algorithm>
+#include <fmt/format.h>
 #ifndef JP
 #include "locale/english.h"
 #endif
@@ -361,8 +362,8 @@ int MonraceDefinition::calc_capture_value() const
 std::string MonraceDefinition::build_eldritch_horror_message(std::string_view description) const
 {
     const auto &horror_message = this->decide_horror_message();
-    constexpr auto fmt = _("%s%sの顔を見てしまった！", "You behold the %s visage of %s!");
-    return format(fmt, horror_message.data(), description.data());
+    constexpr auto fmt = _("{}{}の顔を見てしまった！", "You behold the {} visage of {}!");
+    return fmt::format(fmt, horror_message, description);
 }
 
 bool MonraceDefinition::has_reinforce() const
@@ -855,14 +856,14 @@ tl::optional<std::string> MonraceDefinition::probe_lore()
     }
 
 #ifdef JP
-    return format("%sについてさらに詳しくなった気がする。", this->name.data());
+    return fmt::format("{}についてさらに詳しくなった気がする。", this->name);
 #else
     const char *preamble = "You now know more about ";
     if (this->kind_flags.has(MonsterKindType::UNIQUE)) {
-        return format("%s%s.", preamble, this->name.data());
+        return fmt::format("{}{}.", preamble, this->name);
     }
     const auto nm = pluralize(this->name);
-    return format("%s%s.", preamble, nm.data());
+    return fmt::format("{}{}.", preamble, nm);
 #endif
 }
 

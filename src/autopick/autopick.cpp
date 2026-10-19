@@ -34,6 +34,7 @@
 #include "term/screen-processor.h"
 #include "view/display-messages.h"
 #include "window/display-sub-windows.h"
+#include <fmt/format.h>
 #include <range/v3/view.hpp>
 #include <sstream>
 
@@ -55,7 +56,7 @@ static void autopick_delayed_alter_aux(CreatureEntity &creature, INVENTORY_IDX i
         delete_object_idx(creature, 0 - i_idx);
     }
 
-    msg_format(_("%sを自動破壊します。", "Auto-destroying %s."), item_name.data());
+    msg_print(_("{}を自動破壊します。", "Auto-destroying {}."), item_name);
 }
 
 /*!
@@ -122,13 +123,13 @@ void autopick_pickup_items(CreatureEntity &creature, const Grid &grid)
         const auto item_name = describe_flavor(creature, item, 0);
 
         if (!check_get_item(&item)) {
-            msg_format(_("%sを持ち運ぶことはできない。", "You can't carry %s."), item_name.data());
+            msg_print(_("{}を持ち運ぶことはできない。", "You can't carry {}."), item_name);
             item.marked.set(OmType::SUPRESS_MESSAGE);
             continue;
         }
 
         if (!creature.can_store_item(item)) {
-            msg_format(_("ザックには%sを入れる隙間がない。", "You have no room for %s."), item_name.data());
+            msg_print(_("ザックには{}を入れる隙間がない。", "You have no room for {}."), item_name);
             item.marked.set(OmType::SUPRESS_MESSAGE);
             continue;
         }

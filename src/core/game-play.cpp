@@ -100,6 +100,7 @@
 #include "world/world-collapsion.h"
 #include "world/world.h"
 #include <ctime>
+#include <fmt/format.h>
 
 static void restore_windows(CreatureEntity &creature)
 {
@@ -306,7 +307,7 @@ static void generate_world(CreatureEntity &creature, bool new_game)
         return;
     }
 
-    const auto mes = format(_("%%sに降り立った。", "arrived in %%s."), map_name(creature).data());
+    const auto mes = fmt::format(_("{}に降り立った。", "arrived in {}."), map_name(creature));
     exe_write_diary(floor, DiaryKind::DESCRIPTION, 0, mes);
 }
 
