@@ -3,6 +3,7 @@
 #include "player-info/self-info-util.h"
 #include "system/creature-entity.h"
 #include "term/z-form.h"
+#include <fmt/format.h>
 
 /*!
  * @brief レイシャルパワーの説明文を表示する
@@ -86,9 +87,9 @@ void set_race_ability_info(CreatureEntity &creature, self_info_type *self_ptr)
         break;
     case PlayerRaceType::CYCLOPS:
         if (creature.get_level() >= 20) {
-            constexpr auto fmt = _("あなたは %d ダメージの岩石を投げることができる。(15 MP)", "You can throw a boulder, dam. %d (cost 15).");
+            constexpr auto fmt = _("あなたは {} ダメージの岩石を投げることができる。(15 MP)", "You can throw a boulder, dam. {} (cost 15).");
             const auto dam = (3 * creature.get_level()) / 2;
-            self_ptr->info_list.push_back(format(fmt, dam));
+            self_ptr->info_list.push_back(fmt::format(fmt, dam));
         }
 
         break;
@@ -100,55 +101,55 @@ void set_race_ability_info(CreatureEntity &creature, self_info_type *self_ptr)
         break;
     case PlayerRaceType::KLACKON:
         if (creature.get_level() >= 9) {
-            constexpr auto fmt = _("あなたは %d ダメージの酸を吹きかけることができる。(9 MP)", "You can spit acid, dam. %d (cost 9).");
+            constexpr auto fmt = _("あなたは {} ダメージの酸を吹きかけることができる。(9 MP)", "You can spit acid, dam. {} (cost 9).");
             const auto dam = creature.get_level();
-            self_ptr->info_list.push_back(format(fmt, dam));
+            self_ptr->info_list.push_back(fmt::format(fmt, dam));
         }
 
         break;
     case PlayerRaceType::KOBOLD:
         if (creature.get_level() >= 12) {
-            constexpr auto fmt = _("あなたは %d ダメージの毒矢を投げることができる。(8 MP)", "You can throw a dart of poison, dam. %d (cost 8).");
+            constexpr auto fmt = _("あなたは {} ダメージの毒矢を投げることができる。(8 MP)", "You can throw a dart of poison, dam. {} (cost 8).");
             const auto dam = creature.get_level();
-            self_ptr->info_list.push_back(format(fmt, dam));
+            self_ptr->info_list.push_back(fmt::format(fmt, dam));
         }
 
         break;
     case PlayerRaceType::DARK_ELF:
         if (creature.get_level() >= 2) {
-            constexpr auto fmt = _("あなたは %d ダメージのマジック・ミサイルの呪文を使える。(2 MP)", "You can cast a Magic Missile, dam %d (cost 2).");
+            constexpr auto fmt = _("あなたは {} ダメージのマジック・ミサイルの呪文を使える。(2 MP)", "You can cast a Magic Missile, dam {} (cost 2).");
             const auto dam = 3 + ((creature.get_level() - 1) / 5);
-            self_ptr->info_list.push_back(format(fmt, dam));
+            self_ptr->info_list.push_back(fmt::format(fmt, dam));
         }
 
         break;
     case PlayerRaceType::DRACONIAN: {
-        constexpr auto fmt = _("あなたは %d ダメージのブレスを吐くことができる。(%d MP)", "You can breathe, dam. %d (cost %d).");
+        constexpr auto fmt = _("あなたは {} ダメージのブレスを吐くことができる。({} MP)", "You can breathe, dam. {} (cost {}).");
         const auto dam = 2 * creature.get_level();
         const auto cost = creature.get_level();
-        self_ptr->info_list.push_back(format(fmt, dam, cost));
+        self_ptr->info_list.push_back(fmt::format(fmt, dam, cost));
         break;
     }
     case PlayerRaceType::MIND_FLAYER:
         if (creature.get_level() >= 15) {
-            constexpr auto fmt = _("あなたは %d ダメージの精神攻撃をすることができる。(12 MP)", "You can mind blast your enemies, dam %d (cost 12).");
+            constexpr auto fmt = _("あなたは {} ダメージの精神攻撃をすることができる。(12 MP)", "You can mind blast your enemies, dam {} (cost 12).");
             const auto dam = creature.get_level();
-            self_ptr->info_list.push_back(format(fmt, dam));
+            self_ptr->info_list.push_back(fmt::format(fmt, dam));
         }
 
         break;
     case PlayerRaceType::IMP:
         if (creature.get_level() >= 30) {
-            constexpr auto fmt = _("あなたは %d ダメージのファイア・ボールの呪文を使える。(15 MP)", "You can cast a Fire Ball, dam. %d (cost 15).");
+            constexpr auto fmt = _("あなたは {} ダメージのファイア・ボールの呪文を使える。(15 MP)", "You can cast a Fire Ball, dam. {} (cost 15).");
             const auto dam = creature.get_level();
-            self_ptr->info_list.push_back(format(fmt, dam));
+            self_ptr->info_list.push_back(fmt::format(fmt, dam));
             break;
         }
 
         if (creature.get_level() >= 9) {
-            constexpr auto fmt = _("あなたは %d ダメージのファイア・ボルトの呪文を使える。(15 MP)", "You can cast a Fire Bolt, dam. %d (cost 15).");
+            constexpr auto fmt = _("あなたは {} ダメージのファイア・ボルトの呪文を使える。(15 MP)", "You can cast a Fire Bolt, dam. {} (cost 15).");
             const auto dam = creature.get_level();
-            self_ptr->info_list.push_back(format(fmt, dam));
+            self_ptr->info_list.push_back(fmt::format(fmt, dam));
         }
 
         break;
@@ -167,10 +168,10 @@ void set_race_ability_info(CreatureEntity &creature, self_info_type *self_ptr)
         break;
     case PlayerRaceType::VAMPIRE:
         if (creature.get_level() >= 2) {
-            constexpr auto fmt = _("あなたは敵から %d HP の生命力を吸収できる。(%d MP)", "You can steal life from a foe, dam. %d (cost %d).");
+            constexpr auto fmt = _("あなたは敵から {} HP の生命力を吸収できる。({} MP)", "You can steal life from a foe, dam. {} (cost {}).");
             const auto dam = creature.get_level() * 2;
             const auto cost = 1 + (creature.get_level() / 3);
-            self_ptr->info_list.push_back(format(fmt, dam, cost));
+            self_ptr->info_list.push_back(fmt::format(fmt, dam, cost));
         }
 
         break;
@@ -187,10 +188,10 @@ void set_race_ability_info(CreatureEntity &creature, self_info_type *self_ptr)
 
         break;
     case PlayerRaceType::BALROG: {
-        constexpr auto fmt = _("あなたは %d ダメージの地獄か火炎のブレスを吐くことができる。(%d MP)", "You can breathe nether, dam. %d (cost %d).");
+        constexpr auto fmt = _("あなたは {} ダメージの地獄か火炎のブレスを吐くことができる。({} MP)", "You can breathe nether, dam. {} (cost {}).");
         const auto dam = 3 * creature.get_level();
         const auto cost = 10 + creature.get_level() / 3;
-        self_ptr->info_list.push_back(format(fmt, dam, cost));
+        self_ptr->info_list.push_back(fmt::format(fmt, dam, cost));
         break;
     }
     case PlayerRaceType::KUTAR:
@@ -201,25 +202,25 @@ void set_race_ability_info(CreatureEntity &creature, self_info_type *self_ptr)
         break;
     case PlayerRaceType::ANDROID:
         if (creature.get_level() < 10) {
-            constexpr auto fmt = _("あなたは %d ダメージのレイガンを撃つことができる。(7 MP)", "You can fire a ray gun with damage %d (cost 7).");
+            constexpr auto fmt = _("あなたは {} ダメージのレイガンを撃つことができる。(7 MP)", "You can fire a ray gun with damage {} (cost 7).");
             const auto dam = (creature.get_level() + 1) / 2;
-            self_ptr->info_list.push_back(format(fmt, dam));
+            self_ptr->info_list.push_back(fmt::format(fmt, dam));
         } else if (creature.get_level() < 25) {
-            constexpr auto fmt = _("あなたは %d ダメージのブラスターを撃つことができる。(13 MP)", "You can fire a blaster with damage %d (cost 13).");
+            constexpr auto fmt = _("あなたは {} ダメージのブラスターを撃つことができる。(13 MP)", "You can fire a blaster with damage {} (cost 13).");
             const auto dam = creature.get_level();
-            self_ptr->info_list.push_back(format(fmt, dam));
+            self_ptr->info_list.push_back(fmt::format(fmt, dam));
         } else if (creature.get_level() < 35) {
-            constexpr auto fmt = _("あなたは %d ダメージのバズーカを撃つことができる。(26 MP)", "You can fire a bazooka with damage %d (cost 26).");
+            constexpr auto fmt = _("あなたは {} ダメージのバズーカを撃つことができる。(26 MP)", "You can fire a bazooka with damage {} (cost 26).");
             const auto dam = creature.get_level() * 2;
-            self_ptr->info_list.push_back(format(fmt, dam));
+            self_ptr->info_list.push_back(fmt::format(fmt, dam));
         } else if (creature.get_level() < 45) {
-            constexpr auto fmt = _("あなたは %d ダメージのビームキャノンを撃つことができる。(40 MP)", "You can fire a beam cannon with damage %d (cost 40).");
+            constexpr auto fmt = _("あなたは {} ダメージのビームキャノンを撃つことができる。(40 MP)", "You can fire a beam cannon with damage {} (cost 40).");
             const auto dam = creature.get_level() * 2;
-            self_ptr->info_list.push_back(format(fmt, dam));
+            self_ptr->info_list.push_back(fmt::format(fmt, dam));
         } else {
-            constexpr auto fmt = _("あなたは %d ダメージのロケットを撃つことができる。(60 MP)", "You can fire a rocket with damage %d (cost 60).");
+            constexpr auto fmt = _("あなたは {} ダメージのロケットを撃つことができる。(60 MP)", "You can fire a rocket with damage {} (cost 60).");
             const auto dam = creature.get_level() * 5;
-            self_ptr->info_list.push_back(format(fmt, dam));
+            self_ptr->info_list.push_back(fmt::format(fmt, dam));
         }
 
         break;

@@ -111,6 +111,7 @@
 #include "util/string-processor.h"
 #include "view/display-messages.h"
 #include "world/world.h"
+#include <fmt/format.h>
 
 static bool is_martial_arts_mode(CreatureEntity &creature);
 
@@ -422,7 +423,7 @@ static void update_max_hitpoints(CreatureEntity &creature)
 
 #ifdef JP
     if (creature.has_level_up_message() && (mhp > old_maxhp)) {
-        msg_format("最大ヒット・ポイントが %d 増加した！", (mhp - old_maxhp));
+        msg_print("最大ヒット・ポイントが {} 増加した！", (mhp - old_maxhp));
     }
 #endif
 
@@ -516,11 +517,7 @@ static void update_num_of_spells(CreatureEntity &creature)
         realm_status.set_learned(spell_id, false);
 
         const auto &spell_name = realm.get_spell_name(spell_id);
-#ifdef JP
-        msg_format("%sの%sを忘れてしまった。", spell_name.data(), spell_category.data());
-#else
-        msg_format("You have forgotten the %s of %s.", spell_category.data(), spell_name.data());
-#endif
+        msg_print(_("{0}の{1}を忘れてしまった。", "You have forgotten the {1} of {0}."), spell_name, spell_category);
         creature.new_spells++;
     }
 
@@ -543,11 +540,7 @@ static void update_num_of_spells(CreatureEntity &creature)
 
         const auto &realm = is_realm1 ? pr.realm1() : pr.realm2();
         const auto &spell_name = realm.get_spell_name(spell_id);
-#ifdef JP
-        msg_format("%sの%sを忘れてしまった。", spell_name.data(), spell_category.data());
-#else
-        msg_format("You have forgotten the %s of %s.", spell_category.data(), spell_name.data());
-#endif
+        msg_print(_("{0}の{1}を忘れてしまった。", "You have forgotten the {1} of {0}."), spell_name, spell_category);
         creature.new_spells++;
     }
 
@@ -576,11 +569,7 @@ static void update_num_of_spells(CreatureEntity &creature)
         realm_status.set_learned(spell_id);
 
         const auto &spell_name = realm.get_spell_name(spell_id);
-#ifdef JP
-        msg_format("%sの%sを思い出した。", spell_name.data(), spell_category.data());
-#else
-        msg_format("You have remembered the %s of %s.", spell_category.data(), spell_name.data());
-#endif
+        msg_print(_("{0}の{1}を思い出した。", "You have remembered the {1} of {0}."), spell_name, spell_category);
         creature.new_spells--;
     }
 
@@ -619,12 +608,12 @@ static void update_num_of_spells(CreatureEntity &creature)
     if (creature.new_spells) {
 #ifdef JP
         if (creature.new_spells < 10) {
-            msg_format("あと %d つの%sを学べる。", creature.new_spells, spell_category.data());
+            msg_print("あと {} つの{}を学べる。", creature.new_spells, spell_category);
         } else {
-            msg_format("あと %d 個の%sを学べる。", creature.new_spells, spell_category.data());
+            msg_print("あと {} 個の{}を学べる。", creature.new_spells, spell_category);
         }
 #else
-        msg_format("You can learn %d more %s%s.", creature.new_spells, spell_category.data(), (creature.new_spells != 1) ? "s" : "");
+        msg_print("You can learn {} more {}{}.", creature.new_spells, spell_category, (creature.new_spells != 1) ? "s" : "");
 #endif
     }
 
@@ -886,7 +875,7 @@ static void update_max_mana(CreatureEntity &creature)
 
 #ifdef JP
         if (creature.has_level_up_message() && (max_mp > creature.get_max_mp())) {
-            msg_format("最大マジック・ポイントが %d 増加した！", (max_mp - creature.get_max_mp()));
+            msg_print("最大マジック・ポイントが {} 増加した！", (max_mp - creature.get_max_mp()));
         }
 #endif
         creature.set_max_mp(max_mp);
@@ -1989,13 +1978,13 @@ void put_equipment_warning(CreatureEntity &creature)
     if (creature.get_riding() && (creature.was_riding_ryoute() != creature.is_riding_ryoute())) {
         if (creature.is_riding_ryoute()) {
 #ifdef JP
-            msg_format("%s馬を操れない。", (empty_hands(creature, false) == EMPTY_HAND_NONE) ? "両手がふさがっていて" : "");
+            msg_print("{}馬を操れない。", (empty_hands(creature, false) == EMPTY_HAND_NONE) ? "両手がふさがっていて" : "");
 #else
             msg_print("You are using both hand for fighting, and you can't control the pet you're riding.");
 #endif
         } else {
 #ifdef JP
-            msg_format("%s馬を操れるようになった。", (empty_hands(creature, false) == EMPTY_HAND_NONE) ? "手が空いて" : "");
+            msg_print("{}馬を操れるようになった。", (empty_hands(creature, false) == EMPTY_HAND_NONE) ? "手が空いて" : "");
 #else
             msg_print("You began to control the pet you're riding with one hand.");
 #endif
@@ -2838,7 +2827,7 @@ void check_experience(CreatureEntity &creature)
         }
 
         sound(SoundKind::LEVEL);
-        msg_format(_("レベル %d にようこそ。", "Welcome to level %d."), creature.get_level());
+        msg_print(_("レベル {} にようこそ。", "Welcome to level {}."), creature.get_level());
         rfu.set_flags(flags_srf);
         const auto flags_mwrf_levelup = {
             MainWindowRedrawingFlag::LEVEL,
@@ -2858,12 +2847,12 @@ void check_experience(CreatureEntity &creature)
                 while (true) {
                     int n;
 
-                    prt(format(_("        a) 腕力 (現在値 %s)", "        a) Str (cur %s)"), cnv_stat(creature.get_stat_max(0)).data()), 2, 14);
-                    prt(format(_("        b) 知能 (現在値 %s)", "        b) Int (cur %s)"), cnv_stat(creature.get_stat_max(1)).data()), 3, 14);
-                    prt(format(_("        c) 賢さ (現在値 %s)", "        c) Wis (cur %s)"), cnv_stat(creature.get_stat_max(2)).data()), 4, 14);
-                    prt(format(_("        d) 器用 (現在値 %s)", "        d) Dex (cur %s)"), cnv_stat(creature.get_stat_max(3)).data()), 5, 14);
-                    prt(format(_("        e) 耐久 (現在値 %s)", "        e) Con (cur %s)"), cnv_stat(creature.get_stat_max(4)).data()), 6, 14);
-                    prt(format(_("        f) 魅力 (現在値 %s)", "        f) Chr (cur %s)"), cnv_stat(creature.get_stat_max(5)).data()), 7, 14);
+                    prt(fmt::format(_("        a) 腕力 (現在値 {})", "        a) Str (cur {})"), cnv_stat(creature.get_stat_max(0))), 2, 14);
+                    prt(fmt::format(_("        b) 知能 (現在値 {})", "        b) Int (cur {})"), cnv_stat(creature.get_stat_max(1))), 3, 14);
+                    prt(fmt::format(_("        c) 賢さ (現在値 {})", "        c) Wis (cur {})"), cnv_stat(creature.get_stat_max(2))), 4, 14);
+                    prt(fmt::format(_("        d) 器用 (現在値 {})", "        d) Dex (cur {})"), cnv_stat(creature.get_stat_max(3))), 5, 14);
+                    prt(fmt::format(_("        e) 耐久 (現在値 {})", "        e) Con (cur {})"), cnv_stat(creature.get_stat_max(4))), 6, 14);
+                    prt(fmt::format(_("        f) 魅力 (現在値 {})", "        f) Chr (cur {})"), cnv_stat(creature.get_stat_max(5))), 7, 14);
 
                     prt("", 8, 14);
                     prt(_("        どの能力値を上げますか？", "        Which stat do you want to raise?"), 1, 14);
@@ -2934,7 +2923,7 @@ std::string cnv_stat(int val)
 
     const int integer_part = val / 10;
     const int decimal_part = val % 10;
-    return format("%3d.%d", integer_part, decimal_part);
+    return fmt::format("{:3}.{}", integer_part, decimal_part);
 }
 
 /*!

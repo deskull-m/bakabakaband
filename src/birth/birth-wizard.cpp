@@ -47,6 +47,7 @@
 #include "view/display-symbol.h"
 #include "view/display-util.h"
 #include "world/world.h"
+#include <fmt/format.h>
 #include <sstream>
 
 static void display_initial_birth_message(CreatureEntity &creature)
@@ -120,7 +121,7 @@ static bool get_player_sex(CreatureEntity &creature)
             break;
         }
 
-        const auto buf = format(_("性別を選んで下さい (%c-%c) ('='初期オプション設定): ", "Choose a sex (%c-%c) ('=' for options): "), I2A(0), I2A(1));
+        const auto buf = fmt::format(_("性別を選んで下さい ({:c}-{:c}) ('='初期オプション設定): ", "Choose a sex ({:c}-{:c}) ('=' for options): "), I2A(0), I2A(1));
         put_str(buf, 10, 10);
         char c = inkey();
         if (c == 'Q') {
@@ -304,11 +305,11 @@ static void display_initial_options(CreatureEntity &creature)
     put_str("                                   ", 3, 40);
     put_str(_("修正の合計値", "Your total modification"), 3, 40);
     put_str(_("腕力 知能 賢さ 器用 耐久 魅力 経験 ", "Str  Int  Wis  Dex  Con  Chr   EXP "), 4, 40);
-    const auto stats = format("%+3d  %+3d  %+3d  %+3d  %+3d  %+3d %+4d%% ", adj[0], adj[1], adj[2], adj[3], adj[4], adj[5], expfact_mod);
+    const auto stats = fmt::format("{:+3}  {:+3}  {:+3}  {:+3}  {:+3}  {:+3} {:+4}% ", adj[0], adj[1], adj[2], adj[3], adj[4], adj[5], expfact_mod);
     c_put_str(TERM_L_BLUE, stats, 5, 40);
 
     put_str("HD ", 6, 40);
-    const auto hd = format("%2d", creature.get_race_info()->r_mhp + (*creature.get_class_info()).c_mhp + (*creature.get_personality_info()).a_mhp);
+    const auto hd = fmt::format("{:2}", creature.get_race_info()->r_mhp + (*creature.get_class_info()).c_mhp + (*creature.get_personality_info()).a_mhp);
     c_put_str(TERM_L_BLUE, hd, 6, 43);
 
     put_str(_("隠密", "Stealth"), 6, 47);
@@ -316,12 +317,12 @@ static void display_initial_options(CreatureEntity &creature)
     if (CreatureClass(creature).equals(PlayerClassType::BERSERKER)) {
         stealth = "xx";
     } else {
-        stealth = format("%+2d", creature.get_race_info()->r_stl + (*creature.get_class_info()).c_stl + (*creature.get_personality_info()).a_stl);
+        stealth = fmt::format("{:+2}", creature.get_race_info()->r_stl + (*creature.get_class_info()).c_stl + (*creature.get_personality_info()).a_stl);
     }
     c_put_str(TERM_L_BLUE, stealth, 6, _(52, 55));
 
     put_str(_("赤外線視力", "Infra"), 6, _(56, 59));
-    const auto infra = format(_("%%2dft", "%%2dft"), 10 * creature.get_race_info()->infra);
+    const auto infra = fmt::format("{:2}ft", 10 * creature.get_race_info()->infra);
     c_put_str(TERM_L_BLUE, infra, 6, _(67, 65));
 
     clear_from(10);
@@ -342,7 +343,7 @@ static void display_auto_roller_success_rate(CreatureEntity &creature, const int
     std::string prob;
 
     if (autoroll_chance >= 1) {
-        prob = format(_("確率 :  1/%8d00", "Prob :  1/%8d00"), autoroll_chance);
+        prob = fmt::format(_("確率 :  1/{:8}00", "Prob :  1/{:8}00"), autoroll_chance);
     } else if (autoroll_chance == -999) {
         prob = _("確率 :     不可能", "Prob :     Impossible");
     } else {
@@ -435,9 +436,9 @@ static bool display_auto_roller_count(CreatureEntity &creature, const int col)
 
     birth_put_stats(creature);
     if (auto_upper_round) {
-        put_str(format("%ld%09ld", auto_upper_round, auto_round), 10, col + 20);
+        put_str(fmt::format("{}{:09}", auto_upper_round, auto_round), 10, col + 20);
     } else {
-        put_str(format("%10ld", auto_round), 10, col + 20);
+        put_str(fmt::format("{:10}", auto_round), 10, col + 20);
     }
     term_fresh();
     inkey_scan = true;
