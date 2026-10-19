@@ -48,6 +48,7 @@
 #include "view/display-util.h"
 #include "view/status-first-page.h"
 #include "world/world.h"
+#include <fmt/format.h>
 #include <sstream>
 #include <string>
 #include <tl/optional.hpp>
@@ -152,51 +153,51 @@ static void display_phisique(CreatureEntity &creature)
     constexpr auto unset_numeric = "----";
 #ifdef JP
     if (is_player) {
-        display_player_one_line(ENTRY_AGE, format("%d才", (int)creature.get_age()), TERM_L_BLUE);
+        display_player_one_line(ENTRY_AGE, fmt::format("{}才", creature.get_age()), TERM_L_BLUE);
     } else {
         display_player_one_line(ENTRY_AGE, unset_numeric, TERM_SLATE);
     }
     if (is_player || creature.get_ht() > 0) {
-        display_player_one_line(ENTRY_HEIGHT, format("%dcm", inch_to_cm(creature.get_ht())), TERM_L_BLUE);
+        display_player_one_line(ENTRY_HEIGHT, fmt::format("{}cm", inch_to_cm(creature.get_ht())), TERM_L_BLUE);
     } else {
         display_player_one_line(ENTRY_HEIGHT, unset_numeric, TERM_SLATE);
     }
     if (is_player || creature.get_wt() > 0) {
-        display_player_one_line(ENTRY_WEIGHT, format("%dkg", lb_to_kg(creature.get_wt())), TERM_L_BLUE);
+        display_player_one_line(ENTRY_WEIGHT, fmt::format("{}kg", lb_to_kg(creature.get_wt())), TERM_L_BLUE);
     } else {
         display_player_one_line(ENTRY_WEIGHT, unset_numeric, TERM_SLATE);
     }
     if (is_player) {
-        display_player_one_line(ENTRY_SOCIAL, format("%d  ", (int)creature.get_prestige()), TERM_L_BLUE);
+        display_player_one_line(ENTRY_SOCIAL, fmt::format("{}  ", creature.get_prestige()), TERM_L_BLUE);
     } else {
         display_player_one_line(ENTRY_SOCIAL, unset_numeric, TERM_SLATE);
     }
 #else
     if (is_player) {
-        display_player_one_line(ENTRY_AGE, format("%d", (int)creature.get_age()), TERM_L_BLUE);
+        display_player_one_line(ENTRY_AGE, fmt::format("{}", creature.get_age()), TERM_L_BLUE);
     } else {
         display_player_one_line(ENTRY_AGE, unset_numeric, TERM_SLATE);
     }
     if (is_player || creature.get_ht() > 0) {
-        display_player_one_line(ENTRY_HEIGHT, format("%d", (int)creature.get_ht()), TERM_L_BLUE);
+        display_player_one_line(ENTRY_HEIGHT, fmt::format("{}", creature.get_ht()), TERM_L_BLUE);
     } else {
         display_player_one_line(ENTRY_HEIGHT, unset_numeric, TERM_SLATE);
     }
     if (is_player || creature.get_wt() > 0) {
-        display_player_one_line(ENTRY_WEIGHT, format("%d", (int)creature.get_wt()), TERM_L_BLUE);
+        display_player_one_line(ENTRY_WEIGHT, fmt::format("{}", creature.get_wt()), TERM_L_BLUE);
     } else {
         display_player_one_line(ENTRY_WEIGHT, unset_numeric, TERM_SLATE);
     }
     if (is_player) {
-        display_player_one_line(ENTRY_SOCIAL, format("%d", (int)creature.get_prestige()), TERM_L_BLUE);
+        display_player_one_line(ENTRY_SOCIAL, fmt::format("{}", creature.get_prestige()), TERM_L_BLUE);
     } else {
         display_player_one_line(ENTRY_SOCIAL, unset_numeric, TERM_SLATE);
     }
 #endif
     std::string alg = PlayerAlignment(creature).get_alignment_description();
-    display_player_one_line(ENTRY_ALIGN, format("%s", alg.data()), TERM_L_BLUE);
+    display_player_one_line(ENTRY_ALIGN, alg, TERM_L_BLUE);
     if (is_player) {
-        display_player_one_line(ENTRY_DEATH_COUNT, format("%d  ", (int)creature.death_count), TERM_L_BLUE);
+        display_player_one_line(ENTRY_DEATH_COUNT, fmt::format("{}  ", creature.death_count), TERM_L_BLUE);
     } else {
         display_player_one_line(ENTRY_DEATH_COUNT, unset_numeric, TERM_SLATE);
     }
@@ -240,37 +241,24 @@ static tl::optional<std::string> search_death_cause(CreatureEntity &creature)
     }
 
     if (AngbandWorld::get_instance().total_winner) {
-        return format(_("…あなたは勝利の後%sした。", "...You %s after winning."),
-            streq(creature.died_from, "Seppuku") ? _("切腹", "committed seppuku") : _("引退", "retired from the adventure"));
+        return fmt::format(_("…あなたは勝利の後{}した。", "...You {} after winning."), streq(creature.died_from, "Seppuku") ? _("切腹", "committed seppuku") : _("引退", "retired from the adventure"));
     }
 
     if (!floor.is_underground()) {
-        constexpr auto killed_monster = _("…あなたは%sで%sに殺されて飽きた。", "...You were killed by %s in %s and got tired..");
-#ifdef JP
-        return format(killed_monster, map_name(creature).data(), creature.died_from.data());
-#else
-        return format(killed_monster, creature.died_from.data(), map_name(creature).data());
-#endif
+        constexpr auto killed_monster = _("…あなたは{1}で{0}に殺されて飽きた。", "...You were killed by {0} in {1} and got tired..");
+        return fmt::format(killed_monster, creature.died_from, map_name(creature));
     }
 
     if (floor.is_in_quest() && QuestType::is_fixed(floor.quest_number)) {
         const auto &quests = QuestList::get_instance();
 
         const auto &quest = quests.get_quest(floor.quest_number);
-        constexpr auto killed_quest = _("…あなたは、クエスト「%s」で%sに殺されて飽きた。", "...You were killed by %s in the quest '%s' and god tired..");
-#ifdef JP
-        return format(killed_quest, quest.name.data(), creature.died_from.data());
-#else
-        return format(killed_quest, creature.died_from.data(), quest.name.data());
-#endif
+        constexpr auto killed_quest = _("…あなたは、クエスト「{1}」で{0}に殺されて飽きた。", "...You were killed by {0} in the quest '{1}' and god tired..");
+        return fmt::format(killed_quest, creature.died_from, quest.name);
     }
 
-    constexpr auto killed_floor = _("…あなたは、%sの%d階で%sに殺されて飽きた。", "...You were killed by %s on level %d of %s and got tired..");
-#ifdef JP
-    return format(killed_floor, map_name(creature).data(), floor.dun_level, creature.died_from.data());
-#else
-    return format(killed_floor, creature.died_from.data(), floor.dun_level, map_name(creature).data());
-#endif
+    constexpr auto killed_floor = _("…あなたは、{2}の{1}階で{0}に殺されて飽きた。", "...You were killed by {0} on level {1} of {2} and got tired..");
+    return fmt::format(killed_floor, creature.died_from, floor.dun_level, map_name(creature));
 }
 
 /*!
@@ -287,7 +275,7 @@ static tl::optional<std::string> decide_death_in_quest(CreatureEntity &creature)
     }
 
     const auto &quests = QuestList::get_instance();
-    return format(_("…あなたは現在、 クエスト「%s」を遂行中だ。", "...Now, you are in the quest '%s'."), quests.get_quest(floor.quest_number).name.data());
+    return fmt::format(_("…あなたは現在、 クエスト「{}」を遂行中だ。", "...Now, you are in the quest '{}'."), quests.get_quest(floor.quest_number).name);
 }
 
 /*!
@@ -304,19 +292,15 @@ static std::string decide_current_floor(CreatureEntity &creature)
 
     const auto &floor = *creature.get_floor();
     if (!floor.is_underground()) {
-        return format(_("…あなたは現在、 %s にいる。", "...Now, you are in %s."), map_name(creature).data());
+        return fmt::format(_("…あなたは現在、 {} にいる。", "...Now, you are in {}."), map_name(creature));
     }
 
     if (auto decision = decide_death_in_quest(creature); decision.has_value()) {
         return decision.value();
     }
 
-    constexpr auto mes = _("…あなたは現在、 %s の %d 階で探索している。", "...Now, you are exploring level %d of %s.");
-#ifdef JP
-    return format(mes, map_name(creature).data(), floor.dun_level);
-#else
-    return format(mes, floor.dun_level, map_name(creature).data());
-#endif
+    constexpr auto fmt = _("…あなたは現在、 {0} の {1} 階で探索している。", "...Now, you are exploring level {1} of {0}.");
+    return fmt::format(fmt, map_name(creature), floor.dun_level);
 }
 
 /*!
