@@ -227,3 +227,44 @@ TEST_CASE("RedrawingFlagsUpdater::request_sight_recalculation requests forgettin
 
     CHECK_FALSE(rfu.has(StatusRecalculatingFlag::FLOW));
 }
+
+TEST_CASE("RedrawingFlagsUpdater::request_riding_status_redrawing requests redrawing the riding status and the mount's health")
+{
+    auto &rfu = RedrawingFlagsUpdater::get_instance();
+    const auto restore = util::make_finalizer([&rfu,
+                                                  extra = rfu.has(MainWindowRedrawingFlag::EXTRA),
+                                                  uhealth = rfu.has(MainWindowRedrawingFlag::UHEALTH),
+                                                  health = rfu.has(MainWindowRedrawingFlag::HEALTH),
+                                                  map = rfu.has(MainWindowRedrawingFlag::MAP),
+                                                  bonus = rfu.has(StatusRecalculatingFlag::BONUS),
+                                                  overhead = rfu.has(SubWindowRedrawingFlag::OVERHEAD),
+                                                  dungeon = rfu.has(SubWindowRedrawingFlag::DUNGEON)] {
+        restore_flag(rfu, MainWindowRedrawingFlag::EXTRA, extra);
+        restore_flag(rfu, MainWindowRedrawingFlag::UHEALTH, uhealth);
+        restore_flag(rfu, MainWindowRedrawingFlag::HEALTH, health);
+        restore_flag(rfu, MainWindowRedrawingFlag::MAP, map);
+        restore_flag(rfu, StatusRecalculatingFlag::BONUS, bonus);
+        restore_flag(rfu, SubWindowRedrawingFlag::OVERHEAD, overhead);
+        restore_flag(rfu, SubWindowRedrawingFlag::DUNGEON, dungeon);
+    });
+    rfu.reset_flag(MainWindowRedrawingFlag::EXTRA);
+    rfu.reset_flag(MainWindowRedrawingFlag::UHEALTH);
+    rfu.reset_flag(MainWindowRedrawingFlag::HEALTH);
+    rfu.reset_flag(MainWindowRedrawingFlag::MAP);
+    rfu.reset_flag(StatusRecalculatingFlag::BONUS);
+    rfu.reset_flag(SubWindowRedrawingFlag::OVERHEAD);
+    rfu.reset_flag(SubWindowRedrawingFlag::DUNGEON);
+
+    rfu.request_riding_status_redrawing();
+
+    CHECK(rfu.has(MainWindowRedrawingFlag::EXTRA));
+    CHECK(rfu.has(MainWindowRedrawingFlag::UHEALTH));
+    // 追跡しているモンスターの体力や、乗っているモンスターで変わる能力の再計算は、それぞれの箇所で要求する
+    CHECK_FALSE(rfu.has(MainWindowRedrawingFlag::HEALTH));
+    CHECK_FALSE(rfu.has(StatusRecalculatingFlag::BONUS));
+    // 乗り降りのコマンドで一緒に要求するメイン画面の地図 (MAP) と、落馬で一緒に要求するサブウィンドウの地図
+    // (OVERHEAD・DUNGEON) の描き直しも、それぞれの箇所で要求する
+    CHECK_FALSE(rfu.has(MainWindowRedrawingFlag::MAP));
+    CHECK_FALSE(rfu.has(SubWindowRedrawingFlag::OVERHEAD));
+    CHECK_FALSE(rfu.has(SubWindowRedrawingFlag::DUNGEON));
+}

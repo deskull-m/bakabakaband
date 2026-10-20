@@ -17,7 +17,8 @@ int total_friends = 0;
 /*!
  * @brief プレイヤーの騎乗/下馬処理判定
  * @param grid プレイヤーの移動先グリッドへの参照
- * @param now_riding trueなら下馬処理、falseならば騎乗処理
+ * @param creature クリーチャーへの参照
+ * @param now_riding trueなら乗った状態、falseなら降りた状態で判定する
  * @return 可能ならばtrueを返す
  */
 bool can_player_ride_pet(CreatureEntity &creature, const Grid &grid, bool now_riding)
@@ -33,10 +34,7 @@ bool can_player_ride_pet(CreatureEntity &creature, const Grid &grid, bool now_ri
     if (now_riding) {
         creature.ride_monster(grid.m_idx);
     } else {
-        creature.ride_monster(0);
-        creature.remove_pet_extra_flag(PF_TWO_HANDS);
-        creature.set_was_riding_ryoute(false);
-        creature.set_riding_ryoute(false);
+        creature.dismount();
     }
 
     // 騎乗状態を仮に変えた能力値で判定する。仮の状態を画面に描かないよう、再計算だけを行う。

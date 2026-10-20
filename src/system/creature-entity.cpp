@@ -23,6 +23,7 @@
 #include "monster/monster-util.h"
 #include "object-enchant/tr-types.h"
 #include "object/object-info.h"
+#include "pet/pet-util.h"
 #include "player-ability/player-ability-types.h"
 #include "player-base/player-race.h"
 #include "player-info/bard-data-type.h"
@@ -137,6 +138,20 @@ void CreatureEntity::ride_monster(MONSTER_IDX m_idx)
     if (is_monster(m_idx)) {
         this->get_floor()->get_monster(m_idx).set_constant_flag(MonsterConstantFlagType::RIDING);
     }
+}
+
+/*!
+ * @brief モンスターから降り、乗馬中の両手持ちの設定を戻す
+ * @details 能力の再計算や乗馬中の表示の描き直しは要求しないので、必要なら呼び出し元で要求する。
+ * 騎乗・下馬の判定 (can_player_ride_pet()) は、ここで変える状態を覚えておいて一時的に降り、後で戻す。
+ * ここで変える状態を増やしたら、そちらでも戻すこと。
+ */
+void CreatureEntity::dismount()
+{
+    this->ride_monster(0);
+    this->remove_pet_extra_flag(PF_TWO_HANDS);
+    this->set_riding_ryoute(false);
+    this->set_was_riding_ryoute(false);
 }
 
 void CreatureEntity::consume_energy_by_speed(int speed_value)
