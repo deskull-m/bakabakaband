@@ -250,7 +250,7 @@ bool teleport_level_other(CreatureEntity &creature)
     const auto &monster = floor.get_monster(target_m_idx);
     const auto &monrace = monster.get_monrace();
     const auto m_name = monster_desc(creature, monster, 0);
-    msg_print(_("{}の足を指さした。", "You gesture at {}'s feet."), str_upcase_first(m_name));
+    msg_print(_("{}の足を指さした。", "You gesture at {} feet."), _(m_name, monster_desc(creature, monster, MD_POSSESSIVE)));
 
     auto has_immune = monrace.resistance_flags.has_any_of(RFR_EFF_RESIST_NEXUS_MASK) || monrace.resistance_flags.has(MonsterResistanceType::RESIST_TELEPORT);
     auto is_unaffected = has_immune || monrace.misc_flags.has(MonsterMiscType::QUESTOR);

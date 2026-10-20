@@ -439,7 +439,7 @@ static void effect_monster_captured(CreatureEntity &creature, EffectMonster *em_
         em_ptr->m_ptr->reset_chameleon_polymorph();
     }
 
-    msg_print(_("{}を捕えた！", "You capture {}!"), str_upcase_first(em_ptr->m_name));
+    msg_print(_("{}を捕えた！", "You capture {}!"), em_ptr->m_name);
     auto cap_mon_ptr = *tmp_cap_mon_ptr;
     cap_mon_ptr->r_idx = em_ptr->m_ptr->get_r_idx();
     cap_mon_ptr->speed = static_cast<byte>(em_ptr->m_ptr->speed);

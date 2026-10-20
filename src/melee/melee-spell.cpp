@@ -49,7 +49,7 @@ static bool disturb_melee_spell(CreatureEntity &creature, melee_spell_type *ms_p
     }
 
     if (ms_ptr->see_m) {
-        msg_print(_("反魔法バリアが{}の呪文をかき消した。", "Anti magic barrier cancels the spell which {} casts."), str_upcase_first(ms_ptr->m_name));
+        msg_print(_("反魔法バリアが{}の呪文をかき消した。", "Anti-magic barrier cancels the spell which {} casts."), ms_ptr->m_name);
     }
 
     return true;
