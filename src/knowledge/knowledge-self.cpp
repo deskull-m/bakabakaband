@@ -80,7 +80,7 @@ static void dump_yourself(CreatureEntity &creature, FILE *fff)
     dump_explanation(class_explanations[short_pclass].data(), fff);
 
     fmt::print(fff, "\n");
-    fmt::println(fff, _("性格: {}", "Pesonality: {}"), personality_info[creature.ppersonality].title);
+    fmt::println(fff, _("性格: {}", "Personality: {}"), personality_info[creature.ppersonality].title);
     dump_explanation(personality_explanations[creature.ppersonality], fff);
 
     fmt::print(fff, "\n");
@@ -105,8 +105,11 @@ static void dump_winner_classes(FILE *fff)
 {
     const auto &igd = InnerGameData::get_instance();
     const int n = static_cast<int>(igd.get_won_classes_count());
-    std::string ss = n > 1 ? _("", "s") : "";
-    fmt::println(fff, _("*勝利*済みの職業{} : {}", "Class of *Winner{}* : {}"), ss, n);
+#ifdef JP
+    fmt::println(fff, "*勝利*済みの職業 : {}", n);
+#else
+    fmt::println(fff, "Class{} of *Winner* : {}", (n == 1) ? "" : "es", n);
+#endif
     if (n == 0) {
         return;
     }

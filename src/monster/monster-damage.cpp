@@ -165,7 +165,7 @@ bool MonsterDamageProcessor::process_dead_exp_virtue(std::string_view note, cons
 
     sound(SoundKind::KILL);
     this->show_kill_message(note, m_name);
-    this->show_bounty_message(m_name);
+    this->show_bounty_message();
     monster_death(creature, this->m_idx, true, this->attribute_flags);
     delete_monster_idx(creature, this->m_idx);
     this->get_exp_from_mon(exp_target, exp_target.max_maxhp * 2);
@@ -380,7 +380,7 @@ void MonsterDamageProcessor::show_explosion_message(std::string_view died_mes, s
     return;
 }
 
-void MonsterDamageProcessor::show_bounty_message(std::string_view m_name)
+void MonsterDamageProcessor::show_bounty_message()
 {
     auto &floor = *creature.get_floor();
     auto &monster = floor.get_monster(this->m_idx);
@@ -394,7 +394,8 @@ void MonsterDamageProcessor::show_bounty_message(std::string_view m_name)
     }
 
     if (monrace.is_bounty(true)) {
-        msg_format(_("%sの首には賞金がかかっている。", "There is a price on %s's head."), m_name.data());
+        const auto m_name = monster_desc(creature, monster, MD_TRUE_NAME | _(0, MD_POSSESSIVE));
+        msg_print(_("{}の首には賞金がかかっている。", "There is a price on {} head."), m_name);
     }
 }
 
