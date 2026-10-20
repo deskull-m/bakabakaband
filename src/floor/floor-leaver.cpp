@@ -16,7 +16,6 @@
 #include "monster/monster-description-types.h"
 #include "monster/monster-info.h"
 #include "monster/monster-status.h"
-#include "pet/pet-util.h"
 #include "player-status/player-energy.h"
 #include "player/player-status.h"
 #include "player/special-defense-types.h"
@@ -52,10 +51,7 @@ static void check_riding_preservation(CreatureEntity &creature)
 
     const auto &monster = creature.get_floor()->m_list[creature.get_riding()];
     if (monster.has_parent()) {
-        creature.ride_monster(0);
-        creature.remove_pet_extra_flag(PF_TWO_HANDS);
-        creature.set_was_riding_ryoute(false);
-        creature.set_riding_ryoute(false);
+        creature.dismount();
     } else {
         party_monsters[0] = monster;
         delete_monster_idx(creature, creature.get_riding());

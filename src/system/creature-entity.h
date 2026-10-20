@@ -398,6 +398,7 @@ public:
     bool is_true_winner() const;
     bool try_resist_eldritch_horror() const;
     void ride_monster(MONSTER_IDX m_idx);
+    void dismount();
     void plus_incident(INCIDENT incidentID, int num);
 
     /*!

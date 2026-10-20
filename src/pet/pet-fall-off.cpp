@@ -145,10 +145,7 @@ bool process_fall_off_horse(CreatureEntity &creature, int dam, bool force)
         verify_panel(creature);
     }
 
-    creature.ride_monster(0);
-    creature.remove_pet_extra_flag(PF_TWO_HANDS);
-    creature.set_was_riding_ryoute(false);
-    creature.set_riding_ryoute(false);
+    creature.dismount();
 
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     static constexpr auto flags_srf = {
@@ -166,11 +163,7 @@ bool process_fall_off_horse(CreatureEntity &creature, int dam, bool force)
         SubWindowRedrawingFlag::DUNGEON,
     };
     rfu.set_flags(flags_swrf);
-    static constexpr auto flags_mwrf = {
-        MainWindowRedrawingFlag::EXTRA,
-        MainWindowRedrawingFlag::UHEALTH,
-    };
-    rfu.set_flags(flags_mwrf);
+    rfu.request_riding_status_redrawing();
     auto fall_dam = false;
     if (creature.has_levitation() && !force) {
         const auto m_name = monster_desc(creature, monster, 0);
