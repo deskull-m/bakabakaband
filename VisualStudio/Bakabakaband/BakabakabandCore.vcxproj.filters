@@ -1225,6 +1225,9 @@
     <ClCompile Include="..\..\src\io\command-repeater.cpp">
       <Filter>io</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\io\condition-expression.cpp">
+      <Filter>io</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\src\game-option\keymap-directory-getter.cpp">
       <Filter>game-option</Filter>
     </ClCompile>
@@ -4282,6 +4285,9 @@
       <Filter>io</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\io\command-repeater.h">
+      <Filter>io</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\io\condition-expression.h">
       <Filter>io</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\game-option\cheat-types.h">
