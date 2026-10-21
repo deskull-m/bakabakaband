@@ -6,19 +6,19 @@
 
 #pragma once
 
-#define SV_PHOTO 50
+constexpr auto SV_PHOTO = 50;
 
 /* The "sval" codes for ItemKindType::MONSTER_REMAINS */
-#define SV_SKELETON 0
-#define SV_CORPSE 1
-#define SV_SOUL 2
-#define SV_JUNK 6
+constexpr auto SV_SKELETON = 0;
+constexpr auto SV_CORPSE = 1;
+constexpr auto SV_SOUL = 2;
+constexpr auto SV_JUNK = 6;
 
 /* The "sval" codes for TV_SHOT/TV_ARROW/TV_BOLT */
-#define SV_AMMO_LIGHT 0 /* pebbles */
-#define SV_AMMO_NORMAL 1 /* shots, arrows, bolts */
+constexpr auto SV_AMMO_LIGHT = 0; /* pebbles */
+constexpr auto SV_AMMO_NORMAL = 1; /* shots, arrows, bolts */
 
-#define SV_CHEST_KANDUME 50 /*!< 箱アイテムの小項目ID: おもちゃのカンヅメ */
+constexpr auto SV_CHEST_KANDUME = 50; /*!< 箱アイテムの小項目ID: おもちゃのカンヅメ */
 
 /* The "sval" codes for TV_FLASK */
 constexpr int SV_FLASK_OIL = 0;
