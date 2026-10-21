@@ -166,17 +166,16 @@ tl::optional<std::string> do_hex_spell(CreatureEntity &creature, spell_hex_type 
             } else {
                 int curse_rank = 0;
                 msg_print(_("恐怖の暗黒オーラがあなたの{}を包み込んだ！", "A terrible black aura blasts your {}!"), item_name);
-                item->curse_flags.set(CurseTraitType::CURSED);
-
+                EnumClassFlagGroup<CurseTraitType> curses{ CurseTraitType::CURSED };
                 if (item->is_fixed_or_random_artifact() || item->is_ego()) {
 
                     if (one_in_(3)) {
-                        item->curse_flags.set(CurseTraitType::HEAVY_CURSE);
+                        curses.set(CurseTraitType::HEAVY_CURSE);
                     }
                     if (one_in_(666)) {
-                        item->curse_flags.set(CurseTraitType::TY_CURSE);
+                        curses.set(CurseTraitType::TY_CURSE);
                         if (one_in_(666)) {
-                            item->curse_flags.set(CurseTraitType::PERMA_CURSE);
+                            curses.set(CurseTraitType::PERMA_CURSE);
                         }
 
                         item->art_flags.set(TR_AGGRAVATE);
@@ -187,7 +186,8 @@ tl::optional<std::string> do_hex_spell(CreatureEntity &creature, spell_hex_type 
                     }
                 }
 
-                item->curse_flags.set(get_curse(curse_rank, item.get()));
+                curses.set(get_curse(curse_rank, item.get()));
+                item->add_curses(curses);
             }
 
             RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
@@ -422,17 +422,16 @@ tl::optional<std::string> do_hex_spell(CreatureEntity &creature, spell_hex_type 
             } else {
                 int curse_rank = 0;
                 msg_print(_("恐怖の暗黒オーラがあなたの{}を包み込んだ！", "A terrible black aura blasts your {}!"), item_name);
-                item->curse_flags.set(CurseTraitType::CURSED);
-
+                EnumClassFlagGroup<CurseTraitType> curses{ CurseTraitType::CURSED };
                 if (item->is_fixed_or_random_artifact() || item->is_ego()) {
 
                     if (one_in_(3)) {
-                        item->curse_flags.set(CurseTraitType::HEAVY_CURSE);
+                        curses.set(CurseTraitType::HEAVY_CURSE);
                     }
                     if (one_in_(666)) {
-                        item->curse_flags.set(CurseTraitType::TY_CURSE);
+                        curses.set(CurseTraitType::TY_CURSE);
                         if (one_in_(666)) {
-                            item->curse_flags.set(CurseTraitType::PERMA_CURSE);
+                            curses.set(CurseTraitType::PERMA_CURSE);
                         }
 
                         item->art_flags.set(TR_AGGRAVATE);
@@ -444,7 +443,8 @@ tl::optional<std::string> do_hex_spell(CreatureEntity &creature, spell_hex_type 
                     }
                 }
 
-                item->curse_flags.set(get_curse(curse_rank, item.get()));
+                curses.set(get_curse(curse_rank, item.get()));
+                item->add_curses(curses);
             }
 
             RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);

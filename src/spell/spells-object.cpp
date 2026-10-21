@@ -197,6 +197,26 @@ void acquirement(CreatureEntity &creature, POSITION y1, POSITION x1, int num, bo
 }
 
 /*!
+ * @brief 防具呪縛・武器呪縛で呪われたエゴにした品の、擬似鑑定の感触を呪いに合わせる
+ * @param item 呪縛した品
+ * @details 呪いを付けたときと同じく感触を呪いに合わせる (ItemEntity::match_feeling_to_curses())。
+ * 呪縛した品は呪われたエゴ (BLASTED・SHATTERED) になるので、次の感触は重い擬似鑑定で感じ直したときと同じ {無価値} にする。
+ * - {恐ろしい}: 固定アーティファクトはアーティファクトでなくなる (ランダムアーティファクトは名前が残り、アーティファクトのまま)
+ * - {上質}・{並} から求めた {呪われている}: 重い擬似鑑定でしか付かず、アーティファクトでもエゴでもないと分かっていた品
+ * ({呪われていない}・感触なしはランダムアーティファクトのことがあるので {呪われている} のまま)
+ */
+static void update_feeling_on_blasting(ItemEntity &item)
+{
+    const auto was_ordinary = (item.feeling == FEEL_GOOD) || (item.feeling == FEEL_AVERAGE);
+    item.match_feeling_to_curses();
+    const auto is_blasted_artifact = (item.feeling == FEEL_TERRIBLE) && !item.is_fixed_or_random_artifact();
+    const auto is_blasted_ordinary = was_ordinary && (item.feeling == FEEL_CURSED);
+    if (is_blasted_artifact || is_blasted_ordinary) {
+        item.feeling = FEEL_WORTHLESS;
+    }
+}
+
+/*!
  * @brief 防具呪縛処理 /
  * Curse the players armor
  * @param creature クリーチャーへの参照
@@ -235,6 +255,7 @@ bool curse_armor(CreatureEntity &creature)
     item.art_flags.clear();
     item.curse_flags.set(CurseTraitType::CURSED);
     item.ident.set(IdentificationFlag::BROKEN);
+    update_feeling_on_blasting(item);
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     // エゴ・アーティファクトの能力が無くなる
     rfu.request_equipment_change_updates();
@@ -282,6 +303,7 @@ bool curse_weapon_object(CreatureEntity &creature, bool force, ItemEntity &item)
     item.art_flags.clear();
     item.curse_flags.set(CurseTraitType::CURSED);
     item.ident.set(IdentificationFlag::BROKEN);
+    update_feeling_on_blasting(item);
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     // エゴ・アーティファクトの能力が無くなる
     rfu.request_equipment_change_updates();

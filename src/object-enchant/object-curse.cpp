@@ -88,35 +88,20 @@ void curse_equipment(CreatureEntity &creature, PERCENTAGE chance, PERCENTAGE hea
         return;
     }
 
-    auto changed = false;
+    EnumClassFlagGroup<CurseTraitType> curses{ CurseTraitType::CURSED };
     auto curse_power = 0;
     if ((randint1(100) <= heavy_chance) && (item.is_fixed_or_random_artifact() || item.is_ego())) {
-        if (item.curse_flags.has_not(CurseTraitType::HEAVY_CURSE)) {
-            changed = true;
-        }
-        item.curse_flags.set(CurseTraitType::HEAVY_CURSE);
-        item.curse_flags.set(CurseTraitType::CURSED);
+        curses.set(CurseTraitType::HEAVY_CURSE);
         curse_power++;
-    } else {
-        if (!item.is_cursed()) {
-            changed = true;
-        }
-        item.curse_flags.set(CurseTraitType::CURSED);
     }
 
     if (heavy_chance >= 50) {
         curse_power++;
     }
 
-    auto new_curse = get_curse(curse_power, &item);
-    if (item.curse_flags.has_not(new_curse)) {
-        changed = true;
-        item.curse_flags.set(new_curse);
-    }
-
-    if (changed) {
+    curses.set(get_curse(curse_power, &item));
+    if (item.add_curses(curses)) {
         msg_print(_("悪意に満ちた黒いオーラが{}をとりまいた...", "There is a malignant black aura surrounding {}..."), item_name);
-        item.feeling = FEEL_NONE;
     }
 
     RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);

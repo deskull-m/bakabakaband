@@ -280,14 +280,12 @@ static void multiply_low_curse(CreatureEntity &creature)
 
     auto *o_ptr = choose_cursed_obj_name(creature, CurseTraitType::ADD_L_CURSE);
     auto new_curse = get_curse(0, o_ptr);
-    if (o_ptr->curse_flags.has(new_curse)) {
+    if (!o_ptr->add_curses({ new_curse })) {
         return;
     }
 
     const auto item_name = describe_flavor(creature, *o_ptr, (OD_OMIT_PREFIX | OD_NAME_ONLY));
-    o_ptr->curse_flags.set(new_curse);
     msg_print(_("悪意に満ちた黒いオーラが{}をとりまいた...", "There is a malignant black aura surrounding your {}..."), item_name);
-    o_ptr->feeling = FEEL_NONE;
     RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
 }
 
@@ -299,14 +297,12 @@ static void multiply_high_curse(CreatureEntity &creature)
 
     auto *o_ptr = choose_cursed_obj_name(creature, CurseTraitType::ADD_H_CURSE);
     auto new_curse = get_curse(1, o_ptr);
-    if (o_ptr->curse_flags.has(new_curse)) {
+    if (!o_ptr->add_curses({ new_curse })) {
         return;
     }
 
     const auto item_name = describe_flavor(creature, *o_ptr, (OD_OMIT_PREFIX | OD_NAME_ONLY));
-    o_ptr->curse_flags.set(new_curse);
     msg_print(_("悪意に満ちた黒いオーラが{}をとりまいた...", "There is a malignant black aura surrounding your {}..."), item_name);
-    o_ptr->feeling = FEEL_NONE;
     RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
 }
 
@@ -317,14 +313,12 @@ static void persist_curse(CreatureEntity &creature)
     }
 
     auto *o_ptr = choose_cursed_obj_name(creature, CurseTraitType::PERSISTENT_CURSE);
-    if (o_ptr->curse_flags.has(CurseTraitType::HEAVY_CURSE)) {
+    if (!o_ptr->add_curses({ CurseTraitType::HEAVY_CURSE })) {
         return;
     }
 
     const auto item_name = describe_flavor(creature, *o_ptr, (OD_OMIT_PREFIX | OD_NAME_ONLY));
-    o_ptr->curse_flags.set(CurseTraitType::HEAVY_CURSE);
     msg_print(_("悪意に満ちた黒いオーラが{}をとりまいた...", "There is a malignant black aura surrounding your {}..."), item_name);
-    o_ptr->feeling = FEEL_NONE;
     RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
 }
 
