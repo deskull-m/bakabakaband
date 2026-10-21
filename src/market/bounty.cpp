@@ -66,9 +66,7 @@ bool exchange_cash(CreatureEntity &creature)
         const auto reward_money = 1000000 * item.number;
         msg_print(fmt_reward, reward_money);
         creature.add_au(reward_money);
-        rfu.set_flag(MainWindowRedrawingFlag::GOLD);
-        // 所持金を変えたらプレイヤーの情報のサブウィンドウも描き直す (店の中ではターンごとの要求が来ない)
-        rfu.set_flag(SubWindowRedrawingFlag::PLAYER);
+        rfu.request_gold_redrawing();
         vary_item(creature, i, -item.number);
     }
 
@@ -91,8 +89,7 @@ bool exchange_cash(CreatureEntity &creature)
         const auto reward_money = 200000 * item.number;
         msg_print(fmt_reward, reward_money);
         creature.add_au(reward_money);
-        rfu.set_flag(MainWindowRedrawingFlag::GOLD);
-        rfu.set_flag(SubWindowRedrawingFlag::PLAYER);
+        rfu.request_gold_redrawing();
         vary_item(creature, i_idx, -item.number);
     }
 
@@ -115,8 +112,7 @@ bool exchange_cash(CreatureEntity &creature)
         const auto reward_money = 100000 * item.number;
         msg_print(fmt_reward, reward_money);
         creature.add_au(reward_money);
-        rfu.set_flag(MainWindowRedrawingFlag::GOLD);
-        rfu.set_flag(SubWindowRedrawingFlag::PLAYER);
+        rfu.request_gold_redrawing();
         vary_item(creature, i_idx, -item.number);
     }
 
@@ -137,8 +133,7 @@ bool exchange_cash(CreatureEntity &creature)
         const auto reward_money = (monrace.level * 50 + 100) * item.number;
         msg_print(fmt_reward, reward_money);
         creature.add_au(reward_money);
-        rfu.set_flag(MainWindowRedrawingFlag::GOLD);
-        rfu.set_flag(SubWindowRedrawingFlag::PLAYER);
+        rfu.request_gold_redrawing();
         vary_item(creature, i_idx, -item.number);
     }
 
@@ -158,8 +153,7 @@ bool exchange_cash(CreatureEntity &creature)
         const auto reward_money = (monrace.level * 30 + 60) * item.number;
         msg_print(fmt_reward, reward_money);
         creature.add_au(reward_money);
-        rfu.set_flag(MainWindowRedrawingFlag::GOLD);
-        rfu.set_flag(SubWindowRedrawingFlag::PLAYER);
+        rfu.request_gold_redrawing();
         vary_item(creature, i_idx, -item.number);
     }
 

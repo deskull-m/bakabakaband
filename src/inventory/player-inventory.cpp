@@ -96,9 +96,7 @@ static void py_pickup_all_golds_on_floor(CreatureEntity &creature, const Grid &g
 
         delete_object_idx(creature, i_idx);
 
-        auto &rfu = RedrawingFlagsUpdater::get_instance();
-        rfu.set_flag(MainWindowRedrawingFlag::GOLD);
-        rfu.set_flag(SubWindowRedrawingFlag::PLAYER);
+        RedrawingFlagsUpdater::get_instance().request_gold_redrawing();
     }
 }
 
