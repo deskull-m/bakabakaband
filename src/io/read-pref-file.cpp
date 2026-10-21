@@ -25,6 +25,7 @@
 #include <algorithm>
 #include <filesystem>
 #include <fmt/format.h>
+#include <stdexcept>
 #include <string>
 
 //!< @todo コールバック関数に変更するので、いずれ消す.
@@ -39,6 +40,7 @@ char auto_dump_footer[] = "# ^^^^^^^== %s ==^^^^^^^";
 
 // Variables for auto dump
 static int auto_dump_line_num;
+static int pref_include_depth;
 
 /*!
  * @brief process_pref_fileのサブルーチン /
@@ -49,12 +51,19 @@ static int auto_dump_line_num;
  * @return エラーコード
  * @todo 関数名を変更する
  */
-static errr process_pref_file_aux(CreatureEntity &creature, const std::filesystem::path &name, int preftype)
+static errr process_pref_file_aux(CreatureEntity &creature, const std::filesystem::path &name, int preftype, bool conditions_only = false)
 {
+    if (conditions_only) {
+        std::error_code error;
+        if (!std::filesystem::is_regular_file(path_parse(name), error)) {
+            return -1;
+        }
+    }
     auto *fp = angband_fopen(name, FileOpenMode::READ);
     if (!fp) {
         return -1;
     }
+    const auto close_file = util::make_finalizer([fp] { angband_fclose(fp); });
 
     int line = -1;
     errr err = 0;
@@ -84,7 +93,12 @@ static errr process_pref_file_aux(CreatureEntity &creature, const std::filesyste
 
         /* Process "?:<expr>" */
         if (line_str->starts_with("?:")) {
-            bypass = process_pref_file_expr(creature, std::string_view(*line_str).substr(2)) == "0";
+            const auto result = process_pref_file_expr_checked(creature, std::string_view(*line_str).substr(2));
+            if (!result) {
+                err = PREF_EXPRESSION_ERROR;
+                break;
+            }
+            bypass = *result == "0";
             continue;
         }
 
@@ -94,30 +108,46 @@ static errr process_pref_file_aux(CreatureEntity &creature, const std::filesyste
 
         /* Process "%:<file>" */
         if (line_str->starts_with("%:")) {
-            static int depth_count = 0;
-            if (depth_count > 20) {
+            if (pref_include_depth > 20) {
                 continue;
             }
 
-            depth_count++;
+            pref_include_depth++;
             std::string_view file(*line_str);
             file.remove_prefix(2);
-            switch (preftype) {
-            case PREF_TYPE_AUTOPICK:
-                (void)process_autopick_file(creature, file);
-                break;
-            case PREF_TYPE_HISTPREF:
-                (void)process_histpref_file(creature, file);
-                break;
-            default:
-                (void)process_pref_file(creature, file);
-                break;
+            if (conditions_only) {
+                try {
+                    err = process_pref_file_aux(creature, path_build(ANGBAND_DIR_USER, file), PREF_TYPE_AUTOPICK, true);
+                } catch (const std::runtime_error &) {
+                    // 読めない取り込み先だけを無視し、親の後続条件式は確認する。
+                    err = -1;
+                }
+            } else {
+                switch (preftype) {
+                case PREF_TYPE_AUTOPICK:
+                    err = process_autopick_file(creature, file);
+                    break;
+                case PREF_TYPE_HISTPREF:
+                    err = process_histpref_file(creature, file);
+                    break;
+                default:
+                    err = process_pref_file(creature, file);
+                    break;
+                }
             }
 
-            depth_count--;
+            pref_include_depth--;
+            if (err == PREF_EXPRESSION_ERROR) {
+                break;
+            }
+            // 条件式以外の取り込みエラーと存在しない任意のファイルは従来どおり無視する。
+            err = 0;
             continue;
         }
 
+        if (conditions_only) {
+            continue;
+        }
         err = interpret_pref_file(creature, *line_str);
         if (err != 0) {
             if (preftype != PREF_TYPE_AUTOPICK) {
@@ -129,7 +159,7 @@ static errr process_pref_file_aux(CreatureEntity &creature, const std::filesyste
         }
     }
 
-    if (err != 0) {
+    if ((err != 0) && !conditions_only) {
         /* Print error message */
         /* ToDo: Add better error messages */
         const auto &name_str = name.string();
@@ -138,8 +168,23 @@ static errr process_pref_file_aux(CreatureEntity &creature, const std::filesyste
         msg_erase();
     }
 
-    angband_fclose(fp);
     return err;
+}
+
+/*!
+ * @brief 自動拾いエディタ用に、ルートから1段取り込んだファイルの条件式を設定へ反映せず確認する
+ * @return 条件式が不正なら PREF_EXPRESSION_ERROR、ファイルが無ければ負数、それ以外は0
+ */
+errr check_autopick_file_conditions(CreatureEntity &creature, std::string_view name)
+{
+    const auto restore_depth = util::make_finalizer([depth = pref_include_depth] { pref_include_depth = depth; });
+    pref_include_depth++;
+    try {
+        return process_pref_file_aux(creature, path_build(ANGBAND_DIR_USER, name), PREF_TYPE_AUTOPICK, true);
+    } catch (const std::runtime_error &) {
+        // 編集中の不完全なパスや読めないファイルでエディタを終了させない。
+        return -1;
+    }
 }
 
 /*!

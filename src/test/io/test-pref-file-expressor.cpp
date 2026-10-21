@@ -43,7 +43,17 @@ TEST_CASE("process_pref_file_expr compares words with EQU")
     CHECK(parse("[EQU abc abd]") == "0");
 }
 
-TEST_CASE("process_pref_file_expr returns an unknown marker for an unknown variable")
+TEST_CASE("process_pref_file_expr rejects an unknown variable")
 {
-    CHECK(parse("$FOO") == "?o?o?");
+    CHECK(parse("$FOO") == "0");
+}
+
+TEST_CASE("process_pref_file_expr_checked distinguishes errors from a false condition")
+{
+    const auto valid = process_pref_file_expr_checked(PlayerType::get_instance(), "[EQU a b]");
+    REQUIRE(valid.has_value());
+    CHECK(*valid == "0");
+    const auto invalid = process_pref_file_expr_checked(PlayerType::get_instance(), "[LEQ 0 2O]");
+    REQUIRE_FALSE(invalid.has_value());
+    CHECK(invalid.error() == ConditionExpressionError::INVALID_NUMBER);
 }
