@@ -84,10 +84,7 @@ static errr process_pref_file_aux(CreatureEntity &creature, const std::filesyste
 
         /* Process "?:<expr>" */
         if (line_str->starts_with("?:")) {
-            char f;
-            char *s = line_str->data() + 2;
-            auto v = process_pref_file_expr(creature, &s, &f);
-            bypass = v == "0";
+            bypass = process_pref_file_expr(creature, std::string_view(*line_str).substr(2)) == "0";
             continue;
         }
 
