@@ -78,5 +78,14 @@ static tl::optional<std::string> resolve_pref_file_variable(CreatureEntity &crea
  */
 std::string process_pref_file_expr(CreatureEntity &creature, std::string_view expr)
 {
-    return evaluate_condition_expression(expr, [&creature](std::string_view name) { return resolve_pref_file_variable(creature, name); });
+    return process_pref_file_expr_checked(creature, expr).value_or("0");
+}
+
+/*!
+ * @brief 設定ファイルの条件式を評価し、読込側へエラーを返す
+ * @details 書式とエラー分類は evaluate_condition_expression_checked() を参照
+ */
+tl::expected<std::string, ConditionExpressionError> process_pref_file_expr_checked(CreatureEntity &creature, std::string_view expr)
+{
+    return evaluate_condition_expression_checked(expr, [&creature](std::string_view name) { return resolve_pref_file_variable(creature, name); });
 }
