@@ -192,6 +192,11 @@ bool ItemEntity::is_weapon_armour_ammo() const
  * @brief 近接武器として装備できるかを判定する
  * @return 近接武器として使えるか否か
  */
+bool ItemEntity::can_be_sensed() const
+{
+    return this->is_equipment() || (this->bi_key.tval() == ItemKindType::FIGURINE);
+}
+
 bool ItemEntity::is_melee_weapon() const
 {
     return this->bi_key.is_melee_weapon();
@@ -1376,6 +1381,28 @@ void ItemEntity::mark_as_known()
     this->ident.reset(IdentificationFlag::SENSE);
     this->ident.reset(IdentificationFlag::EMPTY);
     this->ident.set(IdentificationFlag::KNOWN);
+}
+
+/*!
+ * @brief 擬似鑑定で得た感触を付け、簡易鑑定済みにする
+ * @param feel 感触
+ */
+void ItemEntity::sense(item_feel_type feel)
+{
+    this->feeling = feel;
+    this->ident.set(IdentificationFlag::SENSE);
+}
+
+/*!
+ * @brief 呪いを全て解き、擬似鑑定の感触を消す
+ * @details 呪いが解けると感触が実際の品と合わなくなるので、呪いと関係の無い感触 ({特別製} など) も消す。
+ * 呪いの無くなった品をもう一度擬似鑑定で感じられるよう、簡易鑑定済みの印 (SENSE) も外す。
+ */
+void ItemEntity::remove_curses()
+{
+    this->curse_flags.clear();
+    this->ident.reset(IdentificationFlag::SENSE);
+    this->feeling = FEEL_NONE;
 }
 
 /*!

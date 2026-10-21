@@ -601,11 +601,8 @@ tl::optional<std::string> do_hex_spell(CreatureEntity &creature, spell_hex_type 
                 is_drained = true;
             }
 
-            // 解呪と同じく、呪われているという感触も消す
             if (is_drained) {
-                item->curse_flags.clear();
-                item->ident.set(IdentificationFlag::SENSE);
-                item->feeling = FEEL_NONE;
+                item->remove_curses();
                 RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
             }
 

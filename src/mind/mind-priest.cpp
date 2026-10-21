@@ -57,9 +57,7 @@ bool bless_weapon(CreatureEntity &creature)
 #else
         msg_print("A malignant aura leaves {} {}.", ((i_idx >= 0) ? "your" : "the"), item_name);
 #endif
-        item->curse_flags.clear();
-        item->ident.set(IdentificationFlag::SENSE);
-        item->feeling = FEEL_NONE;
+        item->remove_curses();
         rfu.set_flag(StatusRecalculatingFlag::BONUS);
         rfu.set_item_related_sub_window_flags();
     }

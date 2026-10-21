@@ -344,9 +344,7 @@ static void break_curse(ItemEntity &item)
     }
 
     msg_print(_("かけられていた呪いが打ち破られた！", "The curse is broken!"));
-    item.curse_flags.clear();
-    item.ident.set(IdentificationFlag::SENSE);
-    item.feeling = FEEL_NONE;
+    item.remove_curses();
 }
 
 /*!

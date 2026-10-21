@@ -1649,6 +1649,8 @@ hengband_test_SOURCES = \
 	\
 	test/mspell/test-mspell-projection-table.cpp \
 	\
+	test/object-enchant/test-item-feeling.cpp \
+	\
 	test/object/test-object-info.cpp \
 	test/object/test-object-value.cpp \
 	\

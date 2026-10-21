@@ -8,6 +8,7 @@
  */
 
 #include "monster/monster-flag-types.h"
+#include "object-enchant/item-feeling.h"
 #include "object-enchant/object-ego.h"
 #include "object-enchant/tr-flags.h"
 #include "object-enchant/trc-types.h"
@@ -101,6 +102,7 @@ public:
     bool is_weapon() const;
     bool is_weapon_ammo() const;
     bool is_weapon_armour_ammo() const;
+    bool can_be_sensed() const;
     bool is_melee_weapon() const;
     bool is_melee_ammo() const;
     bool is_wearable() const;
@@ -189,6 +191,8 @@ public:
     bool has_knowledge(ItemKindType tval) const;
 
     void mark_as_known();
+    void sense(item_feel_type feel);
+    void remove_curses();
     void mark_as_tried() const;
     std::string build_activation_description() const;
 
