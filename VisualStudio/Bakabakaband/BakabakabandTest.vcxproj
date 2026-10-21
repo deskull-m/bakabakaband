@@ -90,6 +90,7 @@
     <ClCompile Include="..\..\src\test\lore\test-monster-lore-snapshot.cpp" />
     <ClCompile Include="..\..\src\test\mspell\test-mspell-projection-table.cpp" />
     <ClCompile Include="..\..\src\test\floor\test-floor-events.cpp" />
+    <ClCompile Include="..\..\src\test\object-enchant\test-item-feeling.cpp" />
     <ClCompile Include="..\..\src\test\object\test-object-info.cpp" />
     <ClCompile Include="..\..\src\test\object\test-object-value.cpp" />
     <ClCompile Include="..\..\src\test\racial\test-racial-android.cpp" />
