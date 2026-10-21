@@ -35,9 +35,9 @@
  */
 MANA_POINT mod_need_mana(CreatureEntity &creature, MANA_POINT need_mana, SPELL_IDX spell_id, RealmType realm)
 {
-#define MANA_CONST 2400
-#define MANA_DIV 4
-#define DEC_MANA_DIV 3
+    constexpr auto MANA_CONST = 2400;
+    constexpr auto MANA_DIV = 4;
+    constexpr auto DEC_MANA_DIV = 3;
     if (PlayerRealm::is_magic(realm) || PlayerRealm::is_technic(realm)) {
         need_mana = need_mana * (MANA_CONST + PlayerSkill::spell_exp_at(PlayerSkillRank::EXPERT) - PlayerSkill(creature).exp_of_spell(realm, spell_id)) + (MANA_CONST - 1);
         need_mana *= creature.has_dec_mana() ? DEC_MANA_DIV : MANA_DIV;
@@ -50,10 +50,6 @@ MANA_POINT mod_need_mana(CreatureEntity &creature, MANA_POINT need_mana, SPELL_I
             need_mana = (need_mana + 1) * DEC_MANA_DIV / MANA_DIV;
         }
     }
-
-#undef DEC_MANA_DIV
-#undef MANA_DIV
-#undef MANA_CONST
 
     return need_mana;
 }

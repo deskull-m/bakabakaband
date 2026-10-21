@@ -73,8 +73,8 @@ BIT_FLAGS common_cause_flags(CreatureEntity &creature, tr_type tr_flag)
 
 }
 
-#define SPELL_SW 22
-#define SPELL_WALL 20
+constexpr auto SPELL_SW = 22;
+constexpr auto SPELL_WALL = 20;
 
 BIT_FLAGS convert_inventory_slot_type_to_flag_cause(inventory_slot_type inventory_slot)
 {
