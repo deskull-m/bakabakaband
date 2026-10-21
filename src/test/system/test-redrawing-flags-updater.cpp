@@ -268,3 +268,93 @@ TEST_CASE("RedrawingFlagsUpdater::request_riding_status_redrawing requests redra
     CHECK_FALSE(rfu.has(SubWindowRedrawingFlag::OVERHEAD));
     CHECK_FALSE(rfu.has(SubWindowRedrawingFlag::DUNGEON));
 }
+
+TEST_CASE("RedrawingFlagsUpdater::request_hp_mp_redrawing requests redrawing the HP and the MP")
+{
+    auto &rfu = RedrawingFlagsUpdater::get_instance();
+    const auto restore = util::make_finalizer([&rfu,
+                                                  hp = rfu.has(MainWindowRedrawingFlag::HP),
+                                                  mp = rfu.has(MainWindowRedrawingFlag::MP),
+                                                  basic = rfu.has(MainWindowRedrawingFlag::BASIC),
+                                                  extra = rfu.has(MainWindowRedrawingFlag::EXTRA),
+                                                  spell = rfu.has(SubWindowRedrawingFlag::SPELL),
+                                                  item_knowledge = rfu.has(SubWindowRedrawingFlag::ITEM_KNOWLEDGE),
+                                                  player = rfu.has(SubWindowRedrawingFlag::PLAYER)] {
+        restore_flag(rfu, MainWindowRedrawingFlag::HP, hp);
+        restore_flag(rfu, MainWindowRedrawingFlag::MP, mp);
+        restore_flag(rfu, MainWindowRedrawingFlag::BASIC, basic);
+        restore_flag(rfu, MainWindowRedrawingFlag::EXTRA, extra);
+        restore_flag(rfu, SubWindowRedrawingFlag::SPELL, spell);
+        restore_flag(rfu, SubWindowRedrawingFlag::ITEM_KNOWLEDGE, item_knowledge);
+        restore_flag(rfu, SubWindowRedrawingFlag::PLAYER, player);
+    });
+    rfu.reset_flag(MainWindowRedrawingFlag::HP);
+    rfu.reset_flag(MainWindowRedrawingFlag::MP);
+    rfu.reset_flag(MainWindowRedrawingFlag::BASIC);
+    rfu.reset_flag(MainWindowRedrawingFlag::EXTRA);
+    rfu.reset_flag(SubWindowRedrawingFlag::SPELL);
+    rfu.reset_flag(SubWindowRedrawingFlag::ITEM_KNOWLEDGE);
+    rfu.reset_flag(SubWindowRedrawingFlag::PLAYER);
+
+    rfu.request_hp_mp_redrawing();
+
+    CHECK(rfu.has(MainWindowRedrawingFlag::HP));
+    CHECK(rfu.has(MainWindowRedrawingFlag::MP));
+    // 基本ステータスの全体や拡張ステータスは描き直さない
+    CHECK_FALSE(rfu.has(MainWindowRedrawingFlag::BASIC));
+    CHECK_FALSE(rfu.has(MainWindowRedrawingFlag::EXTRA));
+    // 呪文の情報は HP・MP を描き直すときに、プレイヤーの情報は前に描いた HP・MP と比べて要求される
+    CHECK_FALSE(rfu.has(SubWindowRedrawingFlag::SPELL));
+    CHECK_FALSE(rfu.has(SubWindowRedrawingFlag::ITEM_KNOWLEDGE));
+    CHECK_FALSE(rfu.has(SubWindowRedrawingFlag::PLAYER));
+}
+
+TEST_CASE("RedrawingFlagsUpdater::request_gold_redrawing requests redrawing the gold and the player window")
+{
+    auto &rfu = RedrawingFlagsUpdater::get_instance();
+    const auto restore = util::make_finalizer([&rfu,
+                                                  gold = rfu.has(MainWindowRedrawingFlag::GOLD),
+                                                  basic = rfu.has(MainWindowRedrawingFlag::BASIC),
+                                                  player = rfu.has(SubWindowRedrawingFlag::PLAYER)] {
+        restore_flag(rfu, MainWindowRedrawingFlag::GOLD, gold);
+        restore_flag(rfu, MainWindowRedrawingFlag::BASIC, basic);
+        restore_flag(rfu, SubWindowRedrawingFlag::PLAYER, player);
+    });
+    rfu.reset_flag(MainWindowRedrawingFlag::GOLD);
+    rfu.reset_flag(MainWindowRedrawingFlag::BASIC);
+    rfu.reset_flag(SubWindowRedrawingFlag::PLAYER);
+
+    rfu.request_gold_redrawing();
+
+    CHECK(rfu.has(MainWindowRedrawingFlag::GOLD));
+    CHECK(rfu.has(SubWindowRedrawingFlag::PLAYER));
+    // 所持金のほかの基本ステータスは描き直さない
+    CHECK_FALSE(rfu.has(MainWindowRedrawingFlag::BASIC));
+}
+
+TEST_CASE("RedrawingFlagsUpdater::request_light_fuel_change_updates requests recalculating the light and redrawing the equipment")
+{
+    auto &rfu = RedrawingFlagsUpdater::get_instance();
+    const auto restore = util::make_finalizer([&rfu,
+                                                  torch = rfu.has(StatusRecalculatingFlag::TORCH),
+                                                  bonus = rfu.has(StatusRecalculatingFlag::BONUS),
+                                                  equipment = rfu.has(SubWindowRedrawingFlag::EQUIPMENT),
+                                                  inventory = rfu.has(SubWindowRedrawingFlag::INVENTORY)] {
+        restore_flag(rfu, StatusRecalculatingFlag::TORCH, torch);
+        restore_flag(rfu, StatusRecalculatingFlag::BONUS, bonus);
+        restore_flag(rfu, SubWindowRedrawingFlag::EQUIPMENT, equipment);
+        restore_flag(rfu, SubWindowRedrawingFlag::INVENTORY, inventory);
+    });
+    rfu.reset_flag(StatusRecalculatingFlag::TORCH);
+    rfu.reset_flag(StatusRecalculatingFlag::BONUS);
+    rfu.reset_flag(SubWindowRedrawingFlag::EQUIPMENT);
+    rfu.reset_flag(SubWindowRedrawingFlag::INVENTORY);
+
+    rfu.request_light_fuel_change_updates();
+
+    CHECK(rfu.has(StatusRecalculatingFlag::TORCH));
+    CHECK(rfu.has(SubWindowRedrawingFlag::EQUIPMENT));
+    // 能力 (燃料には依らない) の再計算や、所持品の一覧の描き直しは要求しない
+    CHECK_FALSE(rfu.has(StatusRecalculatingFlag::BONUS));
+    CHECK_FALSE(rfu.has(SubWindowRedrawingFlag::INVENTORY));
+}

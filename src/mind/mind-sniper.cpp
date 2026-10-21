@@ -634,12 +634,7 @@ void do_cmd_snipe(CreatureEntity &creature)
         return;
     }
 
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    static constexpr auto flags_mwrf = {
-        MainWindowRedrawingFlag::HP,
-        MainWindowRedrawingFlag::MP,
-    };
-    rfu.set_flags(flags_mwrf);
+    RedrawingFlagsUpdater::get_instance().request_hp_mp_redrawing();
 }
 
 /*!

@@ -65,9 +65,7 @@ void process_eat_gold(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr)
         chg_virtue(creature, Virtue::SACRIFICE, 2);
     }
 
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.set_flag(MainWindowRedrawingFlag::GOLD);
-    rfu.set_flag(SubWindowRedrawingFlag::PLAYER);
+    RedrawingFlagsUpdater::get_instance().request_gold_redrawing();
     monap_ptr->blinked = true;
 }
 

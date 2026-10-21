@@ -518,10 +518,6 @@ void process_world_aux_mutation(CreatureEntity &creature)
         (void)set_invuln(creature, randint1(8) + 8, false);
     }
 
-    static constexpr auto flags = {
-        MainWindowRedrawingFlag::HP,
-        MainWindowRedrawingFlag::MP,
-    };
     if (creature.get_mutations().has(PlayerMutationType::SP_TO_HP) && one_in_(2000)) {
         MANA_POINT wounds = (MANA_POINT)(creature.maxhp - creature.hp);
         if (wounds > 0) {
@@ -532,7 +528,7 @@ void process_world_aux_mutation(CreatureEntity &creature)
 
             hp_player(creature, healing);
             creature.sub_current_mp(healing);
-            RedrawingFlagsUpdater::get_instance().set_flags(flags);
+            RedrawingFlagsUpdater::get_instance().request_hp_mp_redrawing();
         }
     }
 
@@ -545,7 +541,7 @@ void process_world_aux_mutation(CreatureEntity &creature)
             }
 
             creature.add_current_mp(healing);
-            RedrawingFlagsUpdater::get_instance().set_flags(flags);
+            RedrawingFlagsUpdater::get_instance().request_hp_mp_redrawing();
             take_hit(creature, DAMAGE_LOSELIFE, healing, _("頭に昇った血", "blood rushing to the head"));
         }
     }
