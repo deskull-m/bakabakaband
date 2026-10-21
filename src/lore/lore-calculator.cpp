@@ -7,56 +7,10 @@
 #include "system/monrace/monrace-definition.h"
 #include "util/string-processor.h"
 #include <fmt/format.h>
-#include <sstream>
-
-/*!
- * @brief ダイス目を文字列に変換する
- * @param base_damage 固定値
- * @param dice_num ダイス数
- * @param dice_side ダイス面
- * @param dice_mult ダイス倍率
- * @param dice_div ダイス除数
- * @return std::string サイコロ式の印刷可能なバージョン
- */
-std::string dice_to_string(int base_damage, int dice_num, int dice_side, int dice_mult, int dice_div)
-{
-    if (dice_num == 0) {
-        return std::to_string(base_damage);
-    }
-
-    std::stringstream ss;
-    if (base_damage != 0) {
-        ss << base_damage << '+';
-    }
-
-    if (dice_num != 1) {
-        ss << dice_num;
-    }
-    ss << 'd' << dice_side;
-
-    if (dice_mult != 1 || dice_div != 1) {
-        ss << '*';
-        if (dice_div == 1) {
-            ss << dice_mult;
-        } else {
-            ss << '(' << dice_mult << '/' << dice_div << ')';
-        }
-    }
-
-    return ss.str();
-}
 
 std::string get_skill_damage(CreatureEntity &creature, lore_type *lore_ptr, MonsterAbilityType ms_type)
 {
-    const auto monrace_id = lore_ptr->monrace_id;
-    const auto base_damage = monspell_race_damage(creature, ms_type, monrace_id, BASE_DAM);
-    const auto dice_num = monspell_race_damage(creature, ms_type, monrace_id, DICE_NUM);
-    const auto dice_side = monspell_race_damage(creature, ms_type, monrace_id, DICE_SIDE);
-    const auto dice_mult = monspell_race_damage(creature, ms_type, monrace_id, DICE_MULT);
-    const auto dice_div = monspell_race_damage(creature, ms_type, monrace_id, DICE_DIV);
-    std::stringstream dam_info;
-    dam_info << '(' << dice_to_string(base_damage, dice_num, dice_side, dice_mult, dice_div) << ')';
-    return dam_info.str();
+    return fmt::format("({})", describe_monspell_race_damage(creature, ms_type, lore_ptr->monrace_id));
 }
 
 /*!
@@ -74,14 +28,6 @@ void add_lore_of_damage_skill(CreatureEntity &creature, lore_type *lore_ptr, Mon
         return;
     }
 
-    const auto monrace_id = lore_ptr->monrace_id;
-    const auto base_damage = monspell_race_damage(creature, ms_type, monrace_id, BASE_DAM);
-    const auto dice_num = monspell_race_damage(creature, ms_type, monrace_id, DICE_NUM);
-    const auto dice_side = monspell_race_damage(creature, ms_type, monrace_id, DICE_SIDE);
-    const auto dice_mult = monspell_race_damage(creature, ms_type, monrace_id, DICE_MULT);
-    const auto dice_div = monspell_race_damage(creature, ms_type, monrace_id, DICE_DIV);
-    std::stringstream dam_info;
-    dam_info << '(' << dice_to_string(base_damage, dice_num, dice_side, dice_mult, dice_div) << ')';
     lore_ptr->lore_msgs.emplace_back(fmt::format(msg, std::string_view(get_skill_damage(creature, lore_ptr, ms_type))), color);
 }
 
