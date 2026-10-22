@@ -1,11 +1,9 @@
 #include "lore/lore-calculator.h"
-#include "game-option/cheat-options.h"
 #include "lore/lore-util.h"
 #include "monster-race/race-ability-flags.h"
 #include "mspell/mspell-damage-calculator.h"
 #include "system/creature-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "util/string-processor.h"
 #include <fmt/format.h>
 
 std::string get_skill_damage(CreatureEntity &creature, lore_type *lore_ptr, MonsterAbilityType ms_type)
