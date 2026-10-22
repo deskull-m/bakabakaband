@@ -100,6 +100,7 @@
     <ClCompile Include="..\..\src\test\store\test-store-util.cpp" />
     <ClCompile Include="..\..\src\test\save\test-item-writer.cpp" />
     <ClCompile Include="..\..\src\test\spell\test-spell-info.cpp" />
+    <ClCompile Include="..\..\src\test\spell-realm\test-spells-hex.cpp" />
     <ClCompile Include="..\..\src\test\system\test-dungeon-record.cpp" />
     <ClCompile Include="..\..\src\test\system\test-deferred-update-requests.cpp" />
     <ClCompile Include="..\..\src\test\system\baseitem\test-baseitem-allocation.cpp" />

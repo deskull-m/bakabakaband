@@ -47,6 +47,20 @@ SpellHex::SpellHex(CreatureEntity &creature)
 }
 
 /*!
+ * @brief 維持している呪術が変わったときの更新を予約する
+ * @details 呪術の効果で変わる能力 (最大 HP・最大 MP・覚えられる呪文の数を含む) を計算し直し、
+ * 拡張ステータスと HP・MP の表示を描き直す。呪術を唱えたとき (途中で取りやめたときを除く)・失敗したとき・止めたときに呼ばれる。
+ * 維持している間も、do_hex_spell() の CONTNUATION を通るたびに呼ばれる。
+ */
+void SpellHex::request_casting_change_updates()
+{
+    auto &dur = DeferredUpdateRequests::get_instance();
+    dur.request_player_status_recalculation();
+    dur.set_flag(MainWindowRedrawingFlag::EXTRA);
+    dur.request_hp_mp_redrawing();
+}
+
+/*!
  * @brief プレイヤーが詠唱中の全呪術を停止する
  */
 void SpellHex::stop_all_spells()
@@ -64,10 +78,7 @@ void SpellHex::stop_all_spells()
         set_action(this->creature, ACTION_NONE);
     }
 
-    auto &dur = DeferredUpdateRequests::get_instance();
-    dur.request_player_status_recalculation();
-    dur.set_flag(MainWindowRedrawingFlag::EXTRA);
-    dur.request_hp_mp_redrawing();
+    request_casting_change_updates();
 }
 
 /*!
@@ -127,10 +138,7 @@ bool SpellHex::stop_spells_with_selection()
         this->reset_casting_flag(i2enum<spell_hex_type>(n));
     }
 
-    auto &dur = DeferredUpdateRequests::get_instance();
-    dur.request_player_status_recalculation();
-    dur.set_flag(MainWindowRedrawingFlag::EXTRA);
-    dur.request_hp_mp_redrawing();
+    request_casting_change_updates();
     return choice.has_value();
 }
 
