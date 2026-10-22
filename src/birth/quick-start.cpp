@@ -67,11 +67,7 @@ bool ask_quick_start(CreatureEntity &creature)
     creature.personality = &personality_info[creature.ppersonality];
 
     get_extra(creature, false);
-    static constexpr auto flags = {
-        StatusRecalculatingFlag::BONUS,
-        StatusRecalculatingFlag::HP,
-    };
-    RedrawingFlagsUpdater::get_instance().set_flags(flags);
+    RedrawingFlagsUpdater::get_instance().request_bonus_and_max_hp_recalculation();
     update_creature(creature);
     creature.hp = creature.maxhp;
     creature.set_current_mp(creature.get_max_mp());

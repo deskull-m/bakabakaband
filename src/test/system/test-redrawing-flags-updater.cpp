@@ -358,3 +358,86 @@ TEST_CASE("RedrawingFlagsUpdater::request_light_fuel_change_updates requests rec
     CHECK_FALSE(rfu.has(StatusRecalculatingFlag::BONUS));
     CHECK_FALSE(rfu.has(SubWindowRedrawingFlag::INVENTORY));
 }
+
+TEST_CASE("RedrawingFlagsUpdater::request_bonus_and_max_hp_recalculation requests recalculating the bonuses and the max HP")
+{
+    auto &rfu = RedrawingFlagsUpdater::get_instance();
+    const auto restore = util::make_finalizer([&rfu,
+                                                  bonus = rfu.has(StatusRecalculatingFlag::BONUS),
+                                                  hp = rfu.has(StatusRecalculatingFlag::HP),
+                                                  mp = rfu.has(StatusRecalculatingFlag::MP),
+                                                  spells = rfu.has(StatusRecalculatingFlag::SPELLS)] {
+        restore_flag(rfu, StatusRecalculatingFlag::BONUS, bonus);
+        restore_flag(rfu, StatusRecalculatingFlag::HP, hp);
+        restore_flag(rfu, StatusRecalculatingFlag::MP, mp);
+        restore_flag(rfu, StatusRecalculatingFlag::SPELLS, spells);
+    });
+    rfu.reset_flag(StatusRecalculatingFlag::BONUS);
+    rfu.reset_flag(StatusRecalculatingFlag::HP);
+    rfu.reset_flag(StatusRecalculatingFlag::MP);
+    rfu.reset_flag(StatusRecalculatingFlag::SPELLS);
+
+    rfu.request_bonus_and_max_hp_recalculation();
+
+    CHECK(rfu.has(StatusRecalculatingFlag::BONUS));
+    CHECK(rfu.has(StatusRecalculatingFlag::HP));
+    CHECK_FALSE(rfu.has(StatusRecalculatingFlag::MP));
+    CHECK_FALSE(rfu.has(StatusRecalculatingFlag::SPELLS));
+}
+
+TEST_CASE("RedrawingFlagsUpdater::request_max_mp_and_spells_recalculation requests recalculating the max MP and the spells")
+{
+    auto &rfu = RedrawingFlagsUpdater::get_instance();
+    const auto restore = util::make_finalizer([&rfu,
+                                                  bonus = rfu.has(StatusRecalculatingFlag::BONUS),
+                                                  hp = rfu.has(StatusRecalculatingFlag::HP),
+                                                  mp = rfu.has(StatusRecalculatingFlag::MP),
+                                                  spells = rfu.has(StatusRecalculatingFlag::SPELLS)] {
+        restore_flag(rfu, StatusRecalculatingFlag::BONUS, bonus);
+        restore_flag(rfu, StatusRecalculatingFlag::HP, hp);
+        restore_flag(rfu, StatusRecalculatingFlag::MP, mp);
+        restore_flag(rfu, StatusRecalculatingFlag::SPELLS, spells);
+    });
+    rfu.reset_flag(StatusRecalculatingFlag::BONUS);
+    rfu.reset_flag(StatusRecalculatingFlag::HP);
+    rfu.reset_flag(StatusRecalculatingFlag::MP);
+    rfu.reset_flag(StatusRecalculatingFlag::SPELLS);
+
+    rfu.request_max_mp_and_spells_recalculation();
+
+    CHECK_FALSE(rfu.has(StatusRecalculatingFlag::BONUS));
+    CHECK_FALSE(rfu.has(StatusRecalculatingFlag::HP));
+    CHECK(rfu.has(StatusRecalculatingFlag::MP));
+    CHECK(rfu.has(StatusRecalculatingFlag::SPELLS));
+}
+
+TEST_CASE("RedrawingFlagsUpdater::request_player_status_recalculation requests recalculating the bonuses, the max HP, the max MP and the spells")
+{
+    auto &rfu = RedrawingFlagsUpdater::get_instance();
+    const auto restore = util::make_finalizer([&rfu,
+                                                  bonus = rfu.has(StatusRecalculatingFlag::BONUS),
+                                                  hp = rfu.has(StatusRecalculatingFlag::HP),
+                                                  mp = rfu.has(StatusRecalculatingFlag::MP),
+                                                  spells = rfu.has(StatusRecalculatingFlag::SPELLS),
+                                                  torch = rfu.has(StatusRecalculatingFlag::TORCH)] {
+        restore_flag(rfu, StatusRecalculatingFlag::BONUS, bonus);
+        restore_flag(rfu, StatusRecalculatingFlag::HP, hp);
+        restore_flag(rfu, StatusRecalculatingFlag::MP, mp);
+        restore_flag(rfu, StatusRecalculatingFlag::SPELLS, spells);
+        restore_flag(rfu, StatusRecalculatingFlag::TORCH, torch);
+    });
+    rfu.reset_flag(StatusRecalculatingFlag::BONUS);
+    rfu.reset_flag(StatusRecalculatingFlag::HP);
+    rfu.reset_flag(StatusRecalculatingFlag::MP);
+    rfu.reset_flag(StatusRecalculatingFlag::SPELLS);
+    rfu.reset_flag(StatusRecalculatingFlag::TORCH);
+
+    rfu.request_player_status_recalculation();
+
+    CHECK(rfu.has(StatusRecalculatingFlag::BONUS));
+    CHECK(rfu.has(StatusRecalculatingFlag::HP));
+    CHECK(rfu.has(StatusRecalculatingFlag::MP));
+    CHECK(rfu.has(StatusRecalculatingFlag::SPELLS));
+    // 光源の明るさは含めない
+    CHECK_FALSE(rfu.has(StatusRecalculatingFlag::TORCH));
+}

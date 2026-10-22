@@ -386,11 +386,7 @@ bool set_hero(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
         disturb(creature, false, true);
     }
 
-    static constexpr auto flags = {
-        StatusRecalculatingFlag::BONUS,
-        StatusRecalculatingFlag::HP,
-    };
-    RedrawingFlagsUpdater::get_instance().set_flags(flags);
+    RedrawingFlagsUpdater::get_instance().request_bonus_and_max_hp_recalculation();
     handle_stuff(creature);
     return true;
 }
@@ -452,11 +448,7 @@ bool set_mimic(CreatureEntity &creature, TIME_EFFECT v, MimicKindType mimic_race
         MainWindowRedrawingFlag::TIMED_EFFECT,
     };
     rfu.set_flags(flags_mwrf);
-    static constexpr auto flags_srf = {
-        StatusRecalculatingFlag::BONUS,
-        StatusRecalculatingFlag::HP,
-    };
-    rfu.set_flags(flags_srf);
+    rfu.request_bonus_and_max_hp_recalculation();
     handle_stuff(creature);
     return true;
 }
@@ -510,11 +502,7 @@ bool set_berserk(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
         disturb(creature, false, true);
     }
 
-    static constexpr auto flags = {
-        StatusRecalculatingFlag::BONUS,
-        StatusRecalculatingFlag::HP,
-    };
-    RedrawingFlagsUpdater::get_instance().set_flags(flags);
+    RedrawingFlagsUpdater::get_instance().request_bonus_and_max_hp_recalculation();
     handle_stuff(creature);
     return true;
 }
@@ -624,11 +612,7 @@ bool set_tsuyoshi(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
         disturb(creature, false, true);
     }
 
-    static constexpr auto flags = {
-        StatusRecalculatingFlag::BONUS,
-        StatusRecalculatingFlag::HP,
-    };
-    rfu.set_flags(flags);
+    rfu.request_bonus_and_max_hp_recalculation();
     handle_stuff(creature);
     return true;
 }
