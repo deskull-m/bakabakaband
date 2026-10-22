@@ -1,4 +1,5 @@
 #include "game-option/runtime-arguments.h"
+#include "test/scoped-restore.h"
 #include "util/finalizer.h"
 #include <array>
 #include <doctest/doctest.h>
@@ -42,7 +43,7 @@ TEST_CASE("Bot JSON timing is an explicit independent switch")
 
 TEST_CASE("Headless terminal size is parsed for each terminal")
 {
-    const auto restore = util::make_finalizer([saved = arg_headless_term_sizes] { arg_headless_term_sizes = saved; });
+    const auto restore = test::scoped_restore(arg_headless_term_sizes);
     arg_headless_term_sizes = {};
 
     SUBCASE("Valid sizes are stored for the specified terminals")
