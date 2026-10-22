@@ -5,10 +5,10 @@
 #include "player/player-realm.h"
 #include "sv-definition/sv-weapon-types.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/floor/floor-info.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/redrawing-flags-updater.h"
 #include "util/bit-flags-calculator.h"
 
 /* Proficiency of weapons and misc. skills (except riding) */
@@ -59,7 +59,7 @@ void gain_attack_skill_exp(CreatureEntity &creature, short &exp, const GainAmoun
     }
 
     exp += static_cast<short>(gain_amount);
-    RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
+    DeferredUpdateRequests::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
 }
 
 void gain_spell_skill_exp_aux(CreatureEntity &creature, short &exp, const GainAmountList &gain_amount_list, int spell_level)
@@ -89,7 +89,7 @@ void gain_spell_skill_exp_aux(CreatureEntity &creature, short &exp, const GainAm
     }
 
     exp += static_cast<short>(gain_amount);
-    RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
+    DeferredUpdateRequests::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
 }
 
 }
@@ -353,7 +353,7 @@ void PlayerSkill::gain_riding_skill_exp_on_melee_attack(const MonraceDefinition 
     }
 
     this->creature_ptr->skill_exp[PlayerSkillKindType::RIDING] = std::min<SUB_EXP>(max_exp, now_exp + inc);
-    RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
+    DeferredUpdateRequests::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
 }
 
 void PlayerSkill::gain_riding_skill_exp_on_range_attack()
@@ -369,7 +369,7 @@ void PlayerSkill::gain_riding_skill_exp_on_range_attack()
     const auto &monrace = monster.get_monrace();
     if (((this->creature_ptr->skill_exp[PlayerSkillKindType::RIDING] - (RIDING_EXP_BEGINNER * 2)) / 200 < monrace.level) && one_in_(2)) {
         this->creature_ptr->skill_exp[PlayerSkillKindType::RIDING] += 1;
-        RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
+        DeferredUpdateRequests::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
     }
 }
 
@@ -395,7 +395,7 @@ void PlayerSkill::gain_riding_skill_exp_on_fall_off_check(int dam)
     }
 
     this->creature_ptr->skill_exp[PlayerSkillKindType::RIDING] = std::min<SUB_EXP>(max_exp, now_exp + inc);
-    RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
+    DeferredUpdateRequests::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
 }
 
 void PlayerSkill::gain_spell_skill_exp(RealmType realm, int spell_idx)
@@ -456,7 +456,7 @@ PlayerSkillRank PlayerSkill::gain_spell_skill_exp_over_learning(int spell_idx)
         exp = SPELL_EXP_BEGINNER + exp / 3;
     }
 
-    RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
+    DeferredUpdateRequests::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
     return PlayerSkill::spell_skill_rank(exp);
 }
 

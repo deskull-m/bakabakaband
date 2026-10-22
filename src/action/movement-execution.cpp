@@ -32,13 +32,13 @@
 #include "player/player-status-flags.h"
 #include "player/player-status.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/floor/floor-info.h"
 #include "system/floor/wilderness-grid.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/redrawing-flags-updater.h"
 #include "system/terrain/terrain-definition.h"
 #include "tracking/lore-tracker.h"
 #include "util/bit-flags-calculator.h"
@@ -345,7 +345,7 @@ void exe_movement(CreatureEntity &creature, const Direction &dir, bool do_pickup
 
     if (p_can_kill_walls) {
         cave_alter_feat(creature, pos.y, pos.x, TerrainCharacteristics::CAN_DISINTEGRATE);
-        RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::FLOW);
+        DeferredUpdateRequests::get_instance().set_flag(StatusRecalculatingFlag::FLOW);
     }
 
     uint32_t mpe_mode = MPE_ENERGY_USE;

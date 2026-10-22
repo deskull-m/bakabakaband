@@ -13,11 +13,11 @@
 #include "room/door-definition.h"
 #include "spell-class/spells-mirror-master.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/enums/terrain/terrain-tag.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
-#include "system/redrawing-flags-updater.h"
 #include "system/terrain/terrain-definition.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
@@ -240,7 +240,7 @@ bool affect_feature(CreatureEntity &creature, MONSTER_IDX src_idx, POSITION r, P
         }
 
         cave_alter_feat(creature, y, x, TerrainCharacteristics::STONE);
-        RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::FLOW);
+        DeferredUpdateRequests::get_instance().set_flag(StatusRecalculatingFlag::FLOW);
         break;
     }
     case AttributeType::MAKE_DOOR:
@@ -419,7 +419,7 @@ bool affect_feature(CreatureEntity &creature, MONSTER_IDX src_idx, POSITION r, P
         }
 
         cave_alter_feat(creature, y, x, TerrainCharacteristics::STONE);
-        RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::FLOW);
+        DeferredUpdateRequests::get_instance().set_flag(StatusRecalculatingFlag::FLOW);
         break;
     }
     case AttributeType::SOUND: {
@@ -441,7 +441,7 @@ bool affect_feature(CreatureEntity &creature, MONSTER_IDX src_idx, POSITION r, P
         }
 
         cave_alter_feat(creature, y, x, TerrainCharacteristics::STONE);
-        RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::FLOW);
+        DeferredUpdateRequests::get_instance().set_flag(StatusRecalculatingFlag::FLOW);
         break;
     }
     case AttributeType::DISINTEGRATE: {
@@ -454,7 +454,7 @@ bool affect_feature(CreatureEntity &creature, MONSTER_IDX src_idx, POSITION r, P
         }
 
         cave_alter_feat(creature, y, x, TerrainCharacteristics::CAN_DISINTEGRATE);
-        RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::FLOW);
+        DeferredUpdateRequests::get_instance().set_flag(StatusRecalculatingFlag::FLOW);
         break;
     }
     case AttributeType::DIRT: {

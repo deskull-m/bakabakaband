@@ -9,11 +9,11 @@
 #include "player/special-defense-types.h"
 #include "sv-definition/sv-lite-types.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
-#include "system/redrawing-flags-updater.h"
 #include "util/bit-flags-calculator.h"
 #include "util/point-2d.h"
 #include <vector>
@@ -128,7 +128,7 @@ void update_lite_radius(CreatureEntity &creature)
         StatusRecalculatingFlag::MONSTER_LITE,
         StatusRecalculatingFlag::MONSTER_STATUSES,
     };
-    RedrawingFlagsUpdater::get_instance().set_flags(flags);
+    DeferredUpdateRequests::get_instance().set_flags(flags);
     creature.set_old_lite(cur_lite);
     if (cur_lite > 0) {
         set_superstealth(creature, false);
@@ -278,5 +278,5 @@ void update_lite(CreatureEntity &creature)
         floor.set_redraw_at(pos);
     }
 
-    RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::DELAY_VISIBILITY);
+    DeferredUpdateRequests::get_instance().set_flag(StatusRecalculatingFlag::DELAY_VISIBILITY);
 }

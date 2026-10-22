@@ -21,8 +21,8 @@
 #include "player-status/player-energy.h"
 #include "status/experience.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/item-entity.h"
-#include "system/redrawing-flags-updater.h"
 #include "term/screen-processor.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
@@ -89,9 +89,9 @@ void ObjectUseEntity::execute()
 
         msg_print(_("この杖にはもう魔力が残っていない。", "The staff has no charges left."));
         item->ident.set(IdentificationFlag::EMPTY);
-        auto &rfu = RedrawingFlagsUpdater::get_instance();
-        rfu.request_inventory_arrangement();
-        rfu.set_item_related_sub_window_flags();
+        auto &dur = DeferredUpdateRequests::get_instance();
+        dur.request_inventory_arrangement();
+        dur.set_item_related_sub_window_flags();
         return;
     }
 
@@ -103,15 +103,15 @@ void ObjectUseEntity::execute()
         chg_virtue(creature, Virtue::KNOWLEDGE, -1);
     }
 
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
+    auto &dur = DeferredUpdateRequests::get_instance();
     item->mark_as_tried();
     if (ident && !item->is_aware()) {
         object_aware(creature, *item);
         gain_exp(creature, (item_level + (creature.get_level() >> 1)) / creature.get_level());
     }
 
-    rfu.set_item_related_sub_window_flags();
-    rfu.request_inventory_arrangement();
+    dur.set_item_related_sub_window_flags();
+    dur.request_inventory_arrangement();
     if (!use_charge) {
         return;
     }

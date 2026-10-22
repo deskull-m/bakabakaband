@@ -37,12 +37,12 @@
 #include "spell-realm/spells-song.h"
 #include "status/action-setter.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/dungeon/quest-definition.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
-#include "system/redrawing-flags-updater.h"
 #include "system/terrain/terrain-definition.h"
 #include "system/terrain/terrain-list.h"
 #include "target/target-checker.h"
@@ -86,7 +86,7 @@ static void discover_hidden_things(CreatureEntity &creature, const Pos2D &pos)
         if (!item.is_known()) {
             msg_print(_("箱に仕掛けられたトラップを発見した！", "You have discovered a trap on the chest!"));
             item.mark_as_known();
-            RedrawingFlagsUpdater::get_instance().request_floor_item_lists_redrawing();
+            DeferredUpdateRequests::get_instance().request_floor_item_lists_redrawing();
             disturb(creature, false, false);
         }
     }
@@ -131,7 +131,7 @@ bool move_player_effect(CreatureEntity &creature, POSITION ny, POSITION nx, BIT_
     auto &grid_old = floor.get_grid(pos_old);
     const auto &terrain_new = grid_new.get_terrain();
     const auto &terrain_old = grid_old.get_terrain();
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
+    auto &dur = DeferredUpdateRequests::get_instance();
     if (!(mpe_mode & MPE_STAYING)) {
         const auto om_idx = grid_old.m_idx;
         const auto nm_idx = grid_new.m_idx;
@@ -166,8 +166,8 @@ bool move_player_effect(CreatureEntity &creature, POSITION ny, POSITION nx, BIT_
         verify_panel(creature);
         if (mpe_mode & MPE_FORGET_FLOW) {
             forget_flow(floor);
-            rfu.set_flag(StatusRecalculatingFlag::UN_VIEW);
-            rfu.set_flag(MainWindowRedrawingFlag::MAP);
+            dur.set_flag(StatusRecalculatingFlag::UN_VIEW);
+            dur.set_flag(MainWindowRedrawingFlag::MAP);
         }
 
         static constexpr auto flags_srf = {
@@ -177,12 +177,12 @@ bool move_player_effect(CreatureEntity &creature, POSITION ny, POSITION nx, BIT_
             StatusRecalculatingFlag::MONSTER_LITE,
             StatusRecalculatingFlag::DISTANCE,
         };
-        rfu.set_flags(flags_srf);
+        dur.set_flags(flags_srf);
         static constexpr auto flags_swrf = {
             SubWindowRedrawingFlag::OVERHEAD,
             SubWindowRedrawingFlag::DUNGEON,
         };
-        rfu.set_flags(flags_swrf);
+        dur.set_flags(flags_swrf);
         if ((!creature.is_blind() && !no_lite(creature)) || !floor.has_trap_at(pos_new)) {
             grid_new.info &= ~(CAVE_UNSAFE);
         }
@@ -211,13 +211,13 @@ bool move_player_effect(CreatureEntity &creature, POSITION ny, POSITION nx, BIT_
 
         if (CreatureRace(&creature).equals(PlayerRaceType::MERFOLK)) {
             if (terrain_new.flags.has(Tc::WATER) ^ terrain_old.flags.has(Tc::WATER)) {
-                rfu.set_flag(StatusRecalculatingFlag::BONUS);
+                dur.set_flag(StatusRecalculatingFlag::BONUS);
                 update_creature(creature);
             }
         }
 
         if (terrain_new.flags.has(TerrainCharacteristics::SLOW) ^ terrain_old.flags.has(TerrainCharacteristics::SLOW)) {
-            rfu.set_flag(StatusRecalculatingFlag::BONUS);
+            dur.set_flag(StatusRecalculatingFlag::BONUS);
             update_creature(creature);
         }
     }
@@ -247,7 +247,7 @@ bool move_player_effect(CreatureEntity &creature, POSITION ny, POSITION nx, BIT_
     // 自動拾い/自動破壊により床上のアイテムリストが変化した可能性があるので表示を更新。
     // 走っている間やトラベル中は描き直すと重いので、止まったとき (stop_running()・Travel::stop()) に要求する
     if (!creature.get_running() && !Travel::get_instance().is_ongoing()) {
-        rfu.request_floor_item_lists_redrawing();
+        dur.request_floor_item_lists_redrawing();
         window_stuff(creature);
     }
 

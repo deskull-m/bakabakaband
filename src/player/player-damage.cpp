@@ -59,6 +59,7 @@
 #include "system/baseitem/baseitem-list.h"
 #include "system/building-type-definition.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/dungeon/quest-definition.h"
 #include "system/enums/monrace/monrace-id.h"
@@ -67,7 +68,6 @@
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/player-type-definition.h"
-#include "system/redrawing-flags-updater.h"
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
 #include "term/z-rand.h"
@@ -124,9 +124,9 @@ static bool acid_minus_ac(CreatureEntity &creature)
 
     msg_print(_("{}が酸で腐食した！", "Your {} is corroded!"), item_name);
     item.to_a--;
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.set_flag(StatusRecalculatingFlag::BONUS);
-    rfu.set_flag(SubWindowRedrawingFlag::PLAYER);
+    auto &dur = DeferredUpdateRequests::get_instance();
+    dur.set_flag(StatusRecalculatingFlag::BONUS);
+    dur.set_flag(SubWindowRedrawingFlag::PLAYER);
     calc_android_exp(creature);
     return true;
 }
@@ -373,8 +373,8 @@ int take_hit(CreatureEntity &creature, int damage_type, int damage, std::string_
         creature.apply_raw_damage(damage);
     }
 
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.set_flag(MainWindowRedrawingFlag::HP);
+    auto &dur = DeferredUpdateRequests::get_instance();
+    dur.set_flag(MainWindowRedrawingFlag::HP);
     if (damage_type != DAMAGE_GENO && creature.hp == 0) {
         chg_virtue(creature, Virtue::SACRIFICE, 1);
         chg_virtue(creature, Virtue::CHANCE, 2);

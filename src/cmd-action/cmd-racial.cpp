@@ -29,7 +29,7 @@
 #include "racial/racial-util.h"
 #include "status/action-setter.h"
 #include "system/creature-entity.h"
-#include "system/redrawing-flags-updater.h"
+#include "system/deferred-update-requests.h"
 #include "term/screen-processor.h"
 #include "util/bit-flags-calculator.h"
 #include "util/int-char-converter.h"
@@ -504,5 +504,5 @@ void do_cmd_racial_power(CreatureEntity &creature)
     }
 
     creature.plus_incident_tree("USE_RACIAL", 1);
-    RedrawingFlagsUpdater::get_instance().request_hp_mp_redrawing();
+    DeferredUpdateRequests::get_instance().request_hp_mp_redrawing();
 }

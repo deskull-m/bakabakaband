@@ -10,7 +10,7 @@
 #include "spell/spell-info.h"
 #include "status/bad-status-setter.h"
 #include "system/creature-entity.h"
-#include "system/redrawing-flags-updater.h"
+#include "system/deferred-update-requests.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
 
@@ -54,10 +54,10 @@ void StoneOfLore::consume_mp()
         return;
     }
 
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
+    auto &dur = DeferredUpdateRequests::get_instance();
     if (this->creature_ptr->get_current_mp() >= 20) {
         this->creature_ptr->sub_current_mp(20);
-        rfu.set_flag(MainWindowRedrawingFlag::MP);
+        dur.set_flag(MainWindowRedrawingFlag::MP);
         return;
     }
 
@@ -68,5 +68,5 @@ void StoneOfLore::consume_mp()
     BadStatusSetter bss(*this->creature_ptr);
     (void)bss.mod_paralysis(roll_spell_over_exertion_duration(oops));
     (void)bss.mod_confusion(roll_spell_over_exertion_duration(oops));
-    rfu.set_flag(MainWindowRedrawingFlag::MP);
+    dur.set_flag(MainWindowRedrawingFlag::MP);
 }

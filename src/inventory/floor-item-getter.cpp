@@ -24,10 +24,10 @@
 #include "object/object-info.h"
 #include "player/player-status-flags.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
-#include "system/redrawing-flags-updater.h"
 #include "term/gameterm.h"
 #include "term/screen-processor.h"
 #include "term/z-form.h"
@@ -320,7 +320,7 @@ tl::optional<short> get_item_floor(CreatureEntity &creature, std::string_view pm
         screen_save();
     }
 
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
+    auto &dur = DeferredUpdateRequests::get_instance();
     while (!fis.done) {
         int ni = 0;
         int ne = 0;
@@ -343,7 +343,7 @@ tl::optional<short> get_item_floor(CreatureEntity &creature, std::string_view pm
             fis.toggle = !fis.toggle;
         }
 
-        rfu.request_carried_item_lists_redrawing();
+        dur.request_carried_item_lists_redrawing();
         window_stuff(creature);
         COMMAND_CODE get_item_label = 0;
         if (command_wrk == USE_INVEN) {
@@ -676,7 +676,7 @@ tl::optional<short> get_item_floor(CreatureEntity &creature, std::string_view pm
                 grid.o_idx_list.rotate(*creature.get_floor());
             }
 
-            rfu.set_flag(SubWindowRedrawingFlag::FLOOR_ITEMS);
+            dur.set_flag(SubWindowRedrawingFlag::FLOOR_ITEMS);
             window_stuff(creature);
             const auto &floor = *creature.get_floor();
             fis.floor_item_index = scan_floor_items(floor, creature.get_position(), { ScanFloorMode::ITEM_TESTER, ScanFloorMode::ONLY_MARKED }, item_tester);
@@ -901,7 +901,7 @@ tl::optional<short> get_item_floor(CreatureEntity &creature, std::string_view pm
         toggle_inventory_equipment();
     }
 
-    rfu.request_carried_item_lists_redrawing();
+    dur.request_carried_item_lists_redrawing();
     window_stuff(creature);
     prt("", 0, 0);
     if (fis.oops && !str.empty()) {

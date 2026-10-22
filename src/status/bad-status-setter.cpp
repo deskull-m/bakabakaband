@@ -19,7 +19,7 @@
 #include "system/angband-exceptions.h"
 #include "system/creature-entity.h"
 #include "system/creature-timed-effect-types.h"
-#include "system/redrawing-flags-updater.h"
+#include "system/deferred-update-requests.h"
 #include "timed-effect/player-cut.h"
 #include "timed-effect/player-stun.h"
 #include "view/display-messages.h"
@@ -75,8 +75,8 @@ bool BadStatusSetter::set_blindness(const TIME_EFFECT tmp_v)
     }
 
     this->creature.set_timed_effect(CreatureTimedEffect::BLINDNESS, v);
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
+    auto &dur = DeferredUpdateRequests::get_instance();
+    dur.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
     if (!notice) {
         return false;
     }
@@ -85,8 +85,8 @@ bool BadStatusSetter::set_blindness(const TIME_EFFECT tmp_v)
         disturb(this->creature, false, false);
     }
 
-    rfu.request_monster_update_and_map_redrawing();
-    rfu.request_sight_recalculation();
+    dur.request_monster_update_and_map_redrawing();
+    dur.request_sight_recalculation();
     handle_stuff(this->creature);
     return true;
 }
@@ -109,7 +109,7 @@ bool BadStatusSetter::set_confusion(const TIME_EFFECT tmp_v)
         return false;
     }
 
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
+    auto &dur = DeferredUpdateRequests::get_instance();
     const auto is_confused = this->creature.is_confused();
     if (v > 0) {
         if (!is_confused) {
@@ -118,14 +118,14 @@ bool BadStatusSetter::set_confusion(const TIME_EFFECT tmp_v)
                 this->creature.notify_self(_("学習が続けられない！", "You cannot continue learning!"));
                 auto bluemage_data = CreatureClass(this->creature).get_specific_data<bluemage_data_type>();
                 bluemage_data->new_magic_learned = false;
-                rfu.set_flag(MainWindowRedrawingFlag::ACTION);
+                dur.set_flag(MainWindowRedrawingFlag::ACTION);
                 this->creature.set_action(ACTION_NONE);
             }
             if (this->creature.get_action() == ACTION_MONK_STANCE) {
                 this->creature.notify_self(_("構えがとけた。", "You lose your stance."));
                 CreatureClass(this->creature).set_monk_stance(MonkStanceType::NONE);
-                rfu.set_flag(StatusRecalculatingFlag::BONUS);
-                rfu.set_flag(MainWindowRedrawingFlag::ACTION);
+                dur.set_flag(StatusRecalculatingFlag::BONUS);
+                dur.set_flag(MainWindowRedrawingFlag::ACTION);
                 this->creature.set_action(ACTION_NONE);
             } else if (this->creature.get_action() == ACTION_SAMURAI_STANCE) {
                 this->creature.notify_self(_("型が崩れた。", "You lose your stance."));
@@ -153,7 +153,7 @@ bool BadStatusSetter::set_confusion(const TIME_EFFECT tmp_v)
     }
 
     this->creature.set_timed_effect(CreatureTimedEffect::CONFUSION, v);
-    rfu.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
+    dur.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
     if (!notice) {
         return false;
     }
@@ -198,7 +198,7 @@ bool BadStatusSetter::set_poison(const TIME_EFFECT tmp_v)
     }
 
     this->creature.set_timed_effect(CreatureTimedEffect::POISON, v);
-    RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
+    DeferredUpdateRequests::get_instance().set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
     if (!notice) {
         return false;
     }
@@ -249,7 +249,7 @@ bool BadStatusSetter::set_fear(const TIME_EFFECT tmp_v)
     }
 
     this->creature.set_timed_effect(CreatureTimedEffect::FEAR, v);
-    RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
+    DeferredUpdateRequests::get_instance().set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
     if (!notice) {
         return false;
     }
@@ -302,7 +302,7 @@ bool BadStatusSetter::set_paralysis(const TIME_EFFECT tmp_v)
     }
 
     this->creature.set_timed_effect(CreatureTimedEffect::PARALYSIS, v);
-    RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
+    DeferredUpdateRequests::get_instance().set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
     if (!notice) {
         return false;
     }
@@ -311,7 +311,7 @@ bool BadStatusSetter::set_paralysis(const TIME_EFFECT tmp_v)
         disturb(this->creature, false, false);
     }
 
-    RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::ACTION);
+    DeferredUpdateRequests::get_instance().set_flag(MainWindowRedrawingFlag::ACTION);
     handle_stuff(this->creature);
     return true;
 }
@@ -357,8 +357,8 @@ bool BadStatusSetter::hallucination(const TIME_EFFECT tmp_v)
     }
 
     this->creature.set_timed_effect(CreatureTimedEffect::HALLUCINATION, v);
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
+    auto &dur = DeferredUpdateRequests::get_instance();
+    dur.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
     if (!notice) {
         return false;
     }
@@ -367,15 +367,15 @@ bool BadStatusSetter::hallucination(const TIME_EFFECT tmp_v)
         disturb(this->creature, false, true);
     }
 
-    rfu.request_monster_update_and_map_redrawing();
+    dur.request_monster_update_and_map_redrawing();
     static constexpr auto flags_mwrf = {
         MainWindowRedrawingFlag::HEALTH,
         MainWindowRedrawingFlag::UHEALTH,
     };
-    rfu.set_flags(flags_mwrf);
+    dur.set_flags(flags_mwrf);
 
     // 足元のアイテムの一覧は、幻覚の間は全て「何か奇妙な物」と表示する
-    rfu.set_flag(SubWindowRedrawingFlag::FLOOR_ITEMS);
+    dur.set_flag(SubWindowRedrawingFlag::FLOOR_ITEMS);
     handle_stuff(this->creature);
     return true;
 }
@@ -425,7 +425,7 @@ bool BadStatusSetter::set_deceleration(const TIME_EFFECT tmp_v, bool do_dec)
         disturb(this->creature, false, false);
     }
 
-    RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
+    DeferredUpdateRequests::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
     handle_stuff(this->creature);
     return true;
 }
@@ -463,9 +463,9 @@ bool BadStatusSetter::set_stun(const TIME_EFFECT tmp_v)
         disturb(this->creature, false, false);
     }
 
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.set_flag(StatusRecalculatingFlag::BONUS);
-    rfu.set_flag(MainWindowRedrawingFlag::STUN);
+    auto &dur = DeferredUpdateRequests::get_instance();
+    dur.set_flag(StatusRecalculatingFlag::BONUS);
+    dur.set_flag(MainWindowRedrawingFlag::STUN);
     handle_stuff(this->creature);
     return true;
 }
@@ -503,9 +503,9 @@ bool BadStatusSetter::set_cut(const TIME_EFFECT tmp_v)
         disturb(this->creature, false, false);
     }
 
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.set_flag(StatusRecalculatingFlag::BONUS);
-    rfu.set_flag(MainWindowRedrawingFlag::CUT);
+    auto &dur = DeferredUpdateRequests::get_instance();
+    dur.set_flag(StatusRecalculatingFlag::BONUS);
+    dur.set_flag(MainWindowRedrawingFlag::CUT);
     handle_stuff(this->creature);
     return true;
 }

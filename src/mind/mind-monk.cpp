@@ -8,7 +8,7 @@
 #include "player/special-defense-types.h"
 #include "status/action-setter.h"
 #include "system/creature-entity.h"
-#include "system/redrawing-flags-updater.h"
+#include "system/deferred-update-requests.h"
 #include "term/screen-processor.h"
 #include "term/z-form.h"
 #include "util/int-char-converter.h"
@@ -24,9 +24,9 @@ static void set_stance(CreatureEntity &creature, const MonkStanceType new_stance
         return;
     }
 
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.set_flag(StatusRecalculatingFlag::BONUS);
-    rfu.set_flag(MainWindowRedrawingFlag::ACTION);
+    auto &dur = DeferredUpdateRequests::get_instance();
+    dur.set_flag(StatusRecalculatingFlag::BONUS);
+    dur.set_flag(MainWindowRedrawingFlag::ACTION);
     msg_print(_("{}の構えをとった。", "You assume the {} stance."), monk_stances[enum2i(new_stance) - 1].desc);
     pc.set_monk_stance(new_stance);
 }
@@ -87,7 +87,7 @@ bool choose_monk_stance(CreatureEntity &creature)
     }
 
     set_stance(creature, new_stance);
-    RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::ACTION);
+    DeferredUpdateRequests::get_instance().set_flag(MainWindowRedrawingFlag::ACTION);
     screen_load();
     return true;
 }

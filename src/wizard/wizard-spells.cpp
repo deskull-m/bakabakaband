@@ -36,13 +36,13 @@
 #include "spell/spells-status.h"
 #include "spell/summon-types.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
 #include "system/monrace/monrace-service.h"
 #include "system/player-type-definition.h"
-#include "system/redrawing-flags-updater.h"
 #include "target/grid-selector.h"
 #include "target/target-checker.h"
 #include "target/target-getter.h"
@@ -342,15 +342,15 @@ void wiz_generate_room(CreatureEntity &creature, int v_idx)
 
         const auto flags = { StatusRecalculatingFlag::MONSTER_LITE, StatusRecalculatingFlag::UN_VIEW, StatusRecalculatingFlag::UN_LITE, StatusRecalculatingFlag::VIEW, StatusRecalculatingFlag::LITE,
             StatusRecalculatingFlag::FLOW, StatusRecalculatingFlag::MONSTER_LITE, StatusRecalculatingFlag::MONSTER_STATUSES };
-        RedrawingFlagsUpdater::get_instance().set_flags(flags);
+        DeferredUpdateRequests::get_instance().set_flags(flags);
 
         const auto flags2 = {
             MainWindowRedrawingFlag::MAP,
         };
-        RedrawingFlagsUpdater::get_instance().set_flags(flags2);
-        auto &rfu = RedrawingFlagsUpdater::get_instance();
+        DeferredUpdateRequests::get_instance().set_flags(flags2);
+        auto &dur = DeferredUpdateRequests::get_instance();
         const auto flags3 = { SubWindowRedrawingFlag::OVERHEAD, SubWindowRedrawingFlag::DUNGEON };
-        rfu.set_flags(flags3);
+        dur.set_flags(flags3);
     }
 }
 

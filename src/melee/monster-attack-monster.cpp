@@ -38,11 +38,11 @@
 #include "spell-kind/spells-teleport.h"
 #include "spell-realm/spells-hex.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/floor/floor-info.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/redrawing-flags-updater.h"
 #include "tracking/health-bar-tracker.h"
 #include "util/string-processor.h"
 #include "view/display-messages.h"
@@ -59,7 +59,7 @@ static void heal_monster_by_melee(mam_type *mam_ptr)
 
     HealthBarTracker::get_instance().set_flag_if_tracking(mam_ptr->m_idx);
     if (mam_ptr->m_ptr->is_riding()) {
-        RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::UHEALTH);
+        DeferredUpdateRequests::get_instance().set_flag(MainWindowRedrawingFlag::UHEALTH);
     }
 
     if (mam_ptr->see_m && did_heal) {
@@ -229,7 +229,7 @@ static void redraw_health_bar(mam_type *mam_ptr)
 
     HealthBarTracker::get_instance().set_flag_if_tracking(mam_ptr->t_idx);
     if (mam_ptr->t_ptr->is_riding()) {
-        RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::UHEALTH);
+        DeferredUpdateRequests::get_instance().set_flag(MainWindowRedrawingFlag::UHEALTH);
     }
 }
 
@@ -342,7 +342,7 @@ static void process_melee(CreatureEntity &creature, mam_type *mam_ptr)
         if (drained > 0) {
             HealthBarTracker::get_instance().set_flag_if_tracking(mam_ptr->m_idx);
             if (mam_ptr->m_ptr->is_riding()) {
-                RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::UHEALTH);
+                DeferredUpdateRequests::get_instance().set_flag(MainWindowRedrawingFlag::UHEALTH);
             }
             if (mam_ptr->see_m && did_heal) {
                 msg_format(_("%sは%sから生命力を吸い取った！", "%s^ drains life from %s^!"), mam_ptr->m_name, mam_ptr->t_name);

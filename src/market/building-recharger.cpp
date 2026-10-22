@@ -10,8 +10,8 @@
 #include "object/item-use-flags.h"
 #include "spell-kind/spells-perception.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/item-entity.h"
-#include "system/redrawing-flags-updater.h"
 #include "term/screen-processor.h"
 #include "util/string-processor.h"
 #include "view/display-messages.h"
@@ -149,9 +149,9 @@ void building_recharge(CreatureEntity &creature)
 #else
     msg_print("{} {} recharged for {} gold.", str_upcase_first(item_name), ((item->number > 1) ? "were" : "was"), price);
 #endif
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.request_inventory_arrangement();
-    rfu.set_item_related_sub_window_flags();
+    auto &dur = DeferredUpdateRequests::get_instance();
+    dur.request_inventory_arrangement();
+    dur.set_item_related_sub_window_flags();
     creature.sub_au(price);
 }
 
@@ -263,6 +263,6 @@ void building_recharge_all(CreatureEntity &creature)
 
     msg_print(_("＄{} で再充填しました。", "You pay {} gold."), total_cost);
     msg_erase();
-    RedrawingFlagsUpdater::get_instance().request_inventory_arrangement();
+    DeferredUpdateRequests::get_instance().request_inventory_arrangement();
     creature.sub_au(total_cost);
 }

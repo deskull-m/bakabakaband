@@ -7,8 +7,8 @@
 #include "racial/racial-android.h"
 #include "system/artifact-type-definition.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/item-entity.h"
-#include "system/redrawing-flags-updater.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
 
@@ -97,6 +97,6 @@ bool activate_bloody_moon(CreatureEntity &creature, ItemEntity &item)
         calc_android_exp(creature);
     }
 
-    RedrawingFlagsUpdater::get_instance().request_bonus_and_max_hp_recalculation();
+    DeferredUpdateRequests::get_instance().request_bonus_and_max_hp_recalculation();
     return true;
 }

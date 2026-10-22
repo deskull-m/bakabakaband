@@ -14,7 +14,7 @@
 #include "player-info/equipment-info.h"
 #include "player/player-status-table.h"
 #include "system/creature-entity.h"
-#include "system/redrawing-flags-updater.h"
+#include "system/deferred-update-requests.h"
 #include "term/screen-processor.h"
 #include "term/z-form.h"
 #include "util/enum-converter.h"
@@ -77,7 +77,7 @@ bool MindPowerGetter::get_mind_power(SPELL_IDX *sn, bool only_browse)
         screen_load();
     }
 
-    RedrawingFlagsUpdater::get_instance().set_flag(SubWindowRedrawingFlag::SPELL);
+    DeferredUpdateRequests::get_instance().set_flag(SubWindowRedrawingFlag::SPELL);
     window_stuff(*this->creature_ptr);
     if (!this->flag) {
         return false;

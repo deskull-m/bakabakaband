@@ -2,9 +2,9 @@
 #include "floor/line-of-sight.h"
 #include "game-option/map-screen-options.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
-#include "system/redrawing-flags-updater.h"
 #include "util/point-2d.h"
 #include <vector>
 
@@ -350,5 +350,5 @@ void update_view(CreatureEntity &creature)
         floor.set_redraw_at(pos);
     }
 
-    RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::DELAY_VISIBILITY);
+    DeferredUpdateRequests::get_instance().set_flag(StatusRecalculatingFlag::DELAY_VISIBILITY);
 }

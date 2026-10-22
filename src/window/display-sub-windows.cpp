@@ -28,13 +28,13 @@
 #include "spell/spells-execution.h"
 #include "system/baseitem/baseitem-service.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/enums/terrain/terrain-tag.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/redrawing-flags-updater.h"
 #include "system/terrain/terrain-definition.h"
 #include "system/terrain/terrain-list.h"
 #include "target/target-preparation.h"
@@ -82,7 +82,7 @@ FixItemTesterSetter::~FixItemTesterSetter()
     fix_item_tester = std::make_unique<AllMatchItemTester>();
 
     // 選べるアイテムだけに記号を付けていた表示を元に戻す
-    RedrawingFlagsUpdater::get_instance().request_carried_item_lists_redrawing();
+    DeferredUpdateRequests::get_instance().request_carried_item_lists_redrawing();
 }
 
 /*!
@@ -456,13 +456,13 @@ void fix_player(CreatureEntity &creature)
  */
 void request_player_redraw_if_points_changed(const CreatureEntity &creature)
 {
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    if (rfu.has(SubWindowRedrawingFlag::PLAYER) || !displayed_player_points) {
+    auto &dur = DeferredUpdateRequests::get_instance();
+    if (dur.has(SubWindowRedrawingFlag::PLAYER) || !displayed_player_points) {
         return;
     }
 
     if (*displayed_player_points != DisplayedPlayerPoints(creature)) {
-        rfu.set_flag(SubWindowRedrawingFlag::PLAYER);
+        dur.set_flag(SubWindowRedrawingFlag::PLAYER);
     }
 }
 
@@ -590,14 +590,14 @@ void fix_monster(CreatureEntity &creature)
  */
 void request_monster_lore_redraw_if_changed(const CreatureEntity &creature)
 {
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
+    auto &dur = DeferredUpdateRequests::get_instance();
     const auto &tracker = LoreTracker::get_instance();
-    if (rfu.has(SubWindowRedrawingFlag::MONSTER_LORE) || !displayed_monster_lore || !tracker.is_tracking()) {
+    if (dur.has(SubWindowRedrawingFlag::MONSTER_LORE) || !displayed_monster_lore || !tracker.is_tracking()) {
         return;
     }
 
     if (*displayed_monster_lore != MonsterLoreSnapshot(creature, tracker.get_tracking_monrace())) {
-        rfu.set_flag(SubWindowRedrawingFlag::MONSTER_LORE);
+        dur.set_flag(SubWindowRedrawingFlag::MONSTER_LORE);
     }
 }
 
@@ -964,7 +964,7 @@ void fix_spell(CreatureEntity &creature)
  */
 void toggle_inventory_equipment()
 {
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
+    auto &dur = DeferredUpdateRequests::get_instance();
     for (auto i = 0U; i < angband_terms.size(); ++i) {
         if (!angband_terms[i]) {
             continue;
@@ -973,14 +973,14 @@ void toggle_inventory_equipment()
         if (g_window_flags[i].has(SubWindowRedrawingFlag::INVENTORY)) {
             g_window_flags[i].reset(SubWindowRedrawingFlag::INVENTORY);
             g_window_flags[i].set(SubWindowRedrawingFlag::EQUIPMENT);
-            rfu.set_flag(SubWindowRedrawingFlag::EQUIPMENT);
+            dur.set_flag(SubWindowRedrawingFlag::EQUIPMENT);
             continue;
         }
 
         if (g_window_flags[i].has(SubWindowRedrawingFlag::EQUIPMENT)) {
             g_window_flags[i].reset(SubWindowRedrawingFlag::EQUIPMENT);
             g_window_flags[i].set(SubWindowRedrawingFlag::INVENTORY);
-            rfu.set_flag(SubWindowRedrawingFlag::INVENTORY);
+            dur.set_flag(SubWindowRedrawingFlag::INVENTORY);
         }
     }
 }

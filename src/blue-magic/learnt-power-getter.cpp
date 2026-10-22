@@ -23,7 +23,7 @@
 #include "realm/realm-types.h"
 #include "spell/spell-info.h"
 #include "system/creature-entity.h"
-#include "system/redrawing-flags-updater.h"
+#include "system/deferred-update-requests.h"
 #include "term/screen-processor.h"
 #include "util/enum-converter.h"
 #include "util/flag-group.h"
@@ -666,7 +666,7 @@ tl::optional<MonsterAbilityType> get_learned_power(CreatureEntity &creature)
                               ? select_learnt_spells_by_menu(creature, *bluemage_data, spells.value())
                               : select_learnt_spells_by_symbol(creature, *bluemage_data, spells.value());
 
-    RedrawingFlagsUpdater::get_instance().set_flag(SubWindowRedrawingFlag::SPELL);
+    DeferredUpdateRequests::get_instance().set_flag(SubWindowRedrawingFlag::SPELL);
     window_stuff(creature);
 
     if (!selected_spell) {

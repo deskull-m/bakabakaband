@@ -37,8 +37,8 @@
 #include "sv-definition/sv-potion-types.h"
 #include "system/angband.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/item-entity.h"
-#include "system/redrawing-flags-updater.h"
 #include "util/bit-flags-calculator.h"
 #include "util/dice.h"
 #include "view/display-messages.h"
@@ -551,7 +551,7 @@ bool QuaffEffects::new_life()
 {
     roll_hitdice(this->creature, SPOP_NONE);
     get_max_stats(this->creature);
-    RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
+    DeferredUpdateRequests::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
     lose_all_mutations(this->creature);
     return true;
 }
@@ -631,16 +631,16 @@ bool QuaffEffects::mesudachi()
         msg_print(_("あなたは本当に女の子になってしまった！", "You have really become a girl!"));
 
         static constexpr auto flags = { StatusRecalculatingFlag::BONUS, StatusRecalculatingFlag::HP, StatusRecalculatingFlag::MP, StatusRecalculatingFlag::SPELLS };
-        RedrawingFlagsUpdater::get_instance().set_flags(flags);
+        DeferredUpdateRequests::get_instance().set_flags(flags);
         static constexpr auto flags2 = {
             MainWindowRedrawingFlag::BASIC,
             MainWindowRedrawingFlag::HP,
             MainWindowRedrawingFlag::MP,
             MainWindowRedrawingFlag::ABILITY_SCORE,
         };
-        RedrawingFlagsUpdater::get_instance().set_flags(flags2);
+        DeferredUpdateRequests::get_instance().set_flags(flags2);
         static constexpr auto flags3 = { SubWindowRedrawingFlag::PLAYER };
-        RedrawingFlagsUpdater::get_instance().set_flags(flags3);
+        DeferredUpdateRequests::get_instance().set_flags(flags3);
     }
 
     return true;

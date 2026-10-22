@@ -15,13 +15,13 @@
 #include "monster/monster-update.h"
 #include "system/angband-system.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
 #include "system/monrace/monrace-service.h"
 #include "system/player-type-definition.h"
-#include "system/redrawing-flags-updater.h"
 #include "tracking/health-bar-tracker.h"
 #include "util/bit-flags-calculator.h"
 #include "util/string-processor.h"
@@ -428,13 +428,13 @@ void monster_gain_exp(CreatureEntity &creature, MONSTER_IDX m_idx, MonraceId mon
     // 蓄積経験値に応じてレベルアップ (HP成長) する。進化先の有無に関わらず発火する。
     const auto leveled_up = try_monster_level_up(creature, monster);
 
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
+    auto &dur = DeferredUpdateRequests::get_instance();
 
     // レベルアップで最大HP等が変化した場合は、進化しなくても騎乗中ならボーナス再計算、
     // 視認中なら再描画を行う (進化パスと同じ共有更新)。
     if (leveled_up) {
         if (monster.is_riding()) {
-            rfu.set_flag(StatusRecalculatingFlag::BONUS);
+            dur.set_flag(StatusRecalculatingFlag::BONUS);
         }
 
         update_monster(creature, m_idx, false);
@@ -448,7 +448,7 @@ void monster_gain_exp(CreatureEntity &creature, MONSTER_IDX m_idx, MonraceId mon
 
     if (monster.get_exp() < old_monrace.next_exp) {
         if (monster.is_riding()) {
-            rfu.set_flag(StatusRecalculatingFlag::BONUS);
+            dur.set_flag(StatusRecalculatingFlag::BONUS);
         }
 
         return;
@@ -535,6 +535,6 @@ void monster_gain_exp(CreatureEntity &creature, MONSTER_IDX m_idx, MonraceId mon
     lite_spot(creature, monster.get_position());
 
     if (monster.is_riding()) {
-        rfu.set_flag(StatusRecalculatingFlag::BONUS);
+        dur.set_flag(StatusRecalculatingFlag::BONUS);
     }
 }

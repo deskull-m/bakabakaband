@@ -24,6 +24,7 @@
 #include "monster/monster-description-types.h"
 #include "system/angband-system.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/dungeon/dungeon-list.h"
 #include "system/dungeon/dungeon-record.h"
@@ -36,7 +37,6 @@
 #include "system/floor/wilderness-grid.h"
 #include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/redrawing-flags-updater.h"
 #include "system/services/dungeon-service.h"
 #include "target/projection-path-calculator.h"
 #include "target/target-checker.h"
@@ -361,17 +361,17 @@ void reserve_alter_reality(CreatureEntity &creature, TIME_EFFECT turns)
         return;
     }
 
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
+    auto &dur = DeferredUpdateRequests::get_instance();
     if (creature.get_timed_effect(CreatureTimedEffect::ALTER_REALITY) || turns == 0) {
         creature.set_timed_effect(CreatureTimedEffect::ALTER_REALITY, 0);
         msg_print(_("景色が元に戻った...", "The view around you returns to normal..."));
-        rfu.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
+        dur.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
         return;
     }
 
     creature.set_timed_effect(CreatureTimedEffect::ALTER_REALITY, turns);
     msg_print(_("回りの景色が変わり始めた...", "The view around you begins to change..."));
-    rfu.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
+    dur.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
 }
 
 /*!
@@ -459,11 +459,11 @@ bool recall_player(CreatureEntity &creature, TIME_EFFECT turns)
         }
     }
 
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
+    auto &dur = DeferredUpdateRequests::get_instance();
     if (creature.get_timed_effect(CreatureTimedEffect::WORD_RECALL) || turns == 0) {
         creature.set_timed_effect(CreatureTimedEffect::WORD_RECALL, 0);
         msg_print(_("張りつめた大気が流れ去った...", "A tension leaves the air around you..."));
-        rfu.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
+        dur.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
         return true;
     }
 
@@ -484,7 +484,7 @@ bool recall_player(CreatureEntity &creature, TIME_EFFECT turns)
 
     creature.set_timed_effect(CreatureTimedEffect::WORD_RECALL, turns);
     msg_print(_("回りの大気が張りつめてきた...", "The air about you becomes charged..."));
-    rfu.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
+    dur.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
     return true;
 }
 
@@ -525,7 +525,7 @@ bool free_level_recall(CreatureEntity &creature)
     }
 
     msg_print(_("回りの大気が張りつめてきた...", "The air about you becomes charged..."));
-    RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
+    DeferredUpdateRequests::get_instance().set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
     return true;
 }
 

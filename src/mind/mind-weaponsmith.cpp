@@ -19,8 +19,8 @@
 #include "smith/object-smith.h"
 #include "smith/smith-types.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/item-entity.h"
-#include "system/redrawing-flags-updater.h"
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
 #include "util/bit-flags-calculator.h"
@@ -142,9 +142,9 @@ static void drain_essence(CreatureEntity &creature)
 
     /* Apply autodestroy/inscription to the drained item */
     autopick_alter_item(creature, i_idx, true);
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.request_inventory_arrangement();
-    rfu.set_item_related_sub_window_flags();
+    auto &dur = DeferredUpdateRequests::get_instance();
+    dur.request_inventory_arrangement();
+    dur.set_item_related_sub_window_flags();
 }
 
 /*!
@@ -496,9 +496,9 @@ static void add_essence(CreatureEntity &creature, SmithCategoryType mode)
     auto effect_name = Smith::get_effect_name(effect);
 
     msg_print(_("{0}に{1}の能力を付加しました。", "You have added ability of {1} to {0}."), item_name, effect_name);
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.request_inventory_arrangement();
-    rfu.set_item_related_sub_window_flags();
+    auto &dur = DeferredUpdateRequests::get_instance();
+    dur.request_inventory_arrangement();
+    dur.set_item_related_sub_window_flags();
 }
 
 /*!
@@ -523,9 +523,9 @@ static void erase_essence(CreatureEntity &creature)
     Smith(creature).erase_essence(item.get());
 
     msg_print(_("エッセンスを取り去った。", "You removed all essence you have added."));
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.request_inventory_arrangement();
-    rfu.set_item_related_sub_window_flags();
+    auto &dur = DeferredUpdateRequests::get_instance();
+    dur.request_inventory_arrangement();
+    dur.set_item_related_sub_window_flags();
 }
 
 /*!

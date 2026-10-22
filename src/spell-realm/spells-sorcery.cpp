@@ -10,8 +10,8 @@
 #include "object/item-use-flags.h"
 #include "object/object-value.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/item-entity.h"
-#include "system/redrawing-flags-updater.h"
 #include "term/z-form.h"
 #include "view/display-messages.h"
 #include <fmt/format.h>
@@ -82,7 +82,7 @@ bool alchemy(CreatureEntity &creature)
 
     msg_print(_("{}を＄{} の金に変えた。", "You turn {} to {} coins worth of gold."), item_name, price);
     creature.add_au(price);
-    RedrawingFlagsUpdater::get_instance().request_gold_redrawing();
+    DeferredUpdateRequests::get_instance().request_gold_redrawing();
     vary_item(creature, i_idx, -amt);
     return true;
 }

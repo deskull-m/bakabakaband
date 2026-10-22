@@ -24,8 +24,8 @@
 #include "spell-realm/spells-song.h"
 #include "status/experience.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/item-entity.h"
-#include "system/redrawing-flags-updater.h"
 #include "term/screen-processor.h"
 #include "view/display-messages.h"
 
@@ -65,8 +65,8 @@ void ObjectQuaffEntity::execute(INVENTORY_IDX i_idx, bool is_rectal)
         InventoryArrangementFlag::COMBINATION,
         InventoryArrangementFlag::REORDER,
     };
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.set_flags(flags_srf);
+    auto &dur = DeferredUpdateRequests::get_instance();
+    dur.set_flags(flags_srf);
     this->change_virtue_as_quaff(item);
     item.mark_as_tried();
     if (ident && !item.is_aware()) {
@@ -74,7 +74,7 @@ void ObjectQuaffEntity::execute(INVENTORY_IDX i_idx, bool is_rectal)
         gain_exp(this->creature, (item.get_baseitem_level() + (this->creature.get_level() >> 1)) / this->creature.get_level());
     }
 
-    rfu.set_item_related_sub_window_flags();
+    dur.set_item_related_sub_window_flags();
     if (CreatureRace(&this->creature).equals(PlayerRaceType::SKELETON)) {
         return;
     }

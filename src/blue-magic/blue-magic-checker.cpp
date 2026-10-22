@@ -21,7 +21,7 @@
 #include "status/experience.h"
 #include "system/angband.h"
 #include "system/creature-entity.h"
-#include "system/redrawing-flags-updater.h"
+#include "system/deferred-update-requests.h"
 #include "view/display-messages.h"
 
 /*!
@@ -55,7 +55,7 @@ void learn_spell(CreatureEntity &creature, MonsterAbilityType monspell)
         gain_exp(creature, monster_power.level * monster_power.smana);
         sound(SoundKind::STUDY);
         bluemage_data->new_magic_learned = true;
-        RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::ACTION);
+        DeferredUpdateRequests::get_instance().set_flag(MainWindowRedrawingFlag::ACTION);
     }
 }
 

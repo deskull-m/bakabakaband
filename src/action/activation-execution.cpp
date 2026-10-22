@@ -46,9 +46,9 @@
 #include "system/baseitem/baseitem-key.h"
 #include "system/baseitem/baseitem-list.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/floor/floor-info.h"
 #include "system/item-entity.h"
-#include "system/redrawing-flags-updater.h"
 #include "target/target-getter.h"
 #include "term/screen-processor.h"
 #include "view/display-messages.h"
@@ -321,7 +321,7 @@ void exe_activate(CreatureEntity &creature, INVENTORY_IDX i_idx)
     sound(SoundKind::ZAP);
     if (ae.item->has_activation()) {
         activate_artifact(creature, ae.item);
-        RedrawingFlagsUpdater::get_instance().request_carried_item_lists_redrawing();
+        DeferredUpdateRequests::get_instance().request_carried_item_lists_redrawing();
         return;
     }
 

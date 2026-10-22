@@ -3,8 +3,8 @@
 #include "object/tval-types.h"
 #include "sv-definition/sv-lite-types.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/item-entity.h"
-#include "system/redrawing-flags-updater.h"
 #include "view/display-messages.h"
 
 /*!
@@ -37,5 +37,5 @@ void phlogiston(CreatureEntity &creature)
         msg_print(_("照明用アイテムは満タンになった。", "Your light is full."));
     }
 
-    RedrawingFlagsUpdater::get_instance().request_light_fuel_change_updates();
+    DeferredUpdateRequests::get_instance().request_light_fuel_change_updates();
 }

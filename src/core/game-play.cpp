@@ -77,6 +77,7 @@
 #include "system/angband-version.h"
 #include "system/baseitem/baseitem-service.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/dungeon/quest-definition.h"
 #include "system/dungeon/quest-fixed-map.h"
 #include "system/enums/monrace/monrace-id.h"
@@ -85,7 +86,6 @@
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/redrawing-flags-updater.h"
 #include "system/system-variables.h"
 #include "target/target-checker.h"
 #include "term/gameterm.h"
@@ -128,7 +128,7 @@ static void send_waiting_record(CreatureEntity &creature)
         quit("");
     }
 
-    RedrawingFlagsUpdater::get_instance().request_player_status_recalculation();
+    DeferredUpdateRequests::get_instance().request_player_status_recalculation();
     update_creature(creature);
     creature.is_dead_ = true;
     auto &world = AngbandWorld::get_instance();
@@ -308,7 +308,7 @@ static void generate_world(CreatureEntity &creature, bool new_game)
 static void init_io(CreatureEntity &creature)
 {
     term_xtra(TERM_XTRA_REACT, 0);
-    RedrawingFlagsUpdater::get_instance().fill_up_sub_flags();
+    DeferredUpdateRequests::get_instance().fill_up_sub_flags();
     handle_stuff(creature);
     if (arg_force_original) {
         rogue_like_commands = false;

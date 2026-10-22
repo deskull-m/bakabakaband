@@ -24,7 +24,7 @@
 #include "status/bad-status-setter.h"
 #include "status/experience.h"
 #include "system/creature-entity.h"
-#include "system/redrawing-flags-updater.h"
+#include "system/deferred-update-requests.h"
 #include "target/target-getter.h"
 #include "util/dice.h"
 #include "view/display-messages.h"
@@ -46,9 +46,9 @@ static void start_singing(CreatureEntity &creature, SPELL_IDX spell, int32_t son
     /* Now the player is singing */
     set_action(creature, ACTION_SING);
 
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.set_flag(StatusRecalculatingFlag::BONUS);
-    rfu.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
+    auto &dur = DeferredUpdateRequests::get_instance();
+    dur.set_flag(StatusRecalculatingFlag::BONUS);
+    dur.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
 }
 
 namespace {
@@ -317,7 +317,7 @@ tl::optional<std::string> do_music_spell(CreatureEntity &creature, SPELL_IDX spe
 
             (void)hp_player(creature, 10);
             (void)BadStatusSetter(creature).set_fear(0);
-            RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::HP);
+            DeferredUpdateRequests::get_instance().set_flag(StatusRecalculatingFlag::HP);
             start_singing(creature, spell, MUSIC_HERO);
         }
 
@@ -325,7 +325,7 @@ tl::optional<std::string> do_music_spell(CreatureEntity &creature, SPELL_IDX spe
             if (!creature.get_timed_effect(CreatureTimedEffect::HERO)) {
                 msg_print(_("ヒーローの気分が消え失せた。", "The heroism wears off."));
                 sound(SoundKind::BUFF_EXPIRE);
-                RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::HP);
+                DeferredUpdateRequests::get_instance().set_flag(StatusRecalculatingFlag::HP);
             }
         }
 
@@ -824,7 +824,7 @@ tl::optional<std::string> do_music_spell(CreatureEntity &creature, SPELL_IDX spe
             msg_print(_("英雄の歌を口ずさんだ．．．", "You chant a powerful, heroic call to arms..."));
             (void)hp_player(creature, 10);
             (void)BadStatusSetter(creature).set_fear(0);
-            RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::HP);
+            DeferredUpdateRequests::get_instance().set_flag(StatusRecalculatingFlag::HP);
             start_singing(creature, spell, MUSIC_SHERO);
         }
 
@@ -834,7 +834,7 @@ tl::optional<std::string> do_music_spell(CreatureEntity &creature, SPELL_IDX spe
                 msg_print(_("ヒーローの気分が消え失せた。", "The heroism wears off."));
                 sound(SoundKind::BUFF_EXPIRE);
                 sound_played = true;
-                RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::HP);
+                DeferredUpdateRequests::get_instance().set_flag(StatusRecalculatingFlag::HP);
             }
 
             if (!creature.is_fast()) {
@@ -926,7 +926,7 @@ tl::optional<std::string> do_music_spell(CreatureEntity &creature, SPELL_IDX spe
 
         if (cast) {
             msg_print(_("フィンゴルフィンの冥王への挑戦を歌った．．．", "You recall the valor of Fingolfin's challenge to the Dark Lord..."));
-            RedrawingFlagsUpdater::get_instance().request_monster_update_and_map_redrawing();
+            DeferredUpdateRequests::get_instance().request_monster_update_and_map_redrawing();
             start_singing(creature, spell, MUSIC_INVULN);
         }
 
@@ -934,7 +934,7 @@ tl::optional<std::string> do_music_spell(CreatureEntity &creature, SPELL_IDX spe
             if (!creature.get_timed_effect(CreatureTimedEffect::INVULNERABILITY)) {
                 msg_print(_("無敵ではなくなった。", "The invulnerability wears off."));
                 sound(SoundKind::BUFF_EXPIRE);
-                RedrawingFlagsUpdater::get_instance().request_monster_update_and_map_redrawing();
+                DeferredUpdateRequests::get_instance().request_monster_update_and_map_redrawing();
             }
         }
 

@@ -4,12 +4,12 @@
 #include "core/stuff-handler.h"
 #include "game-option/disturbance-options.h"
 #include "system/creature-entity.h"
-#include "system/redrawing-flags-updater.h"
+#include "system/deferred-update-requests.h"
 
 bool notice_bonus_status_change(CreatureEntity &creature, bool notice)
 {
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
+    auto &dur = DeferredUpdateRequests::get_instance();
+    dur.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
     if (!notice) {
         return false;
     }
@@ -18,7 +18,7 @@ bool notice_bonus_status_change(CreatureEntity &creature, bool notice)
         disturb(creature, false, true);
     }
 
-    rfu.set_flag(StatusRecalculatingFlag::BONUS);
+    dur.set_flag(StatusRecalculatingFlag::BONUS);
     handle_stuff(creature);
     return true;
 }

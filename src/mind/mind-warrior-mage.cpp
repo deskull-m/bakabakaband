@@ -2,17 +2,17 @@
 #include "hpmp/hp-mp-processor.h"
 #include "player/player-damage.h"
 #include "system/creature-entity.h"
-#include "system/redrawing-flags-updater.h"
+#include "system/deferred-update-requests.h"
 #include "view/display-messages.h"
 
 bool comvert_hp_to_mp(CreatureEntity &creature)
 {
     constexpr auto mes = _("ＨＰからＭＰへの無謀な変換", "thoughtless conversion from HP to SP");
     auto gain_sp = take_hit(creature, DAMAGE_USELIFE, creature.get_level(), mes) / 5;
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
+    auto &dur = DeferredUpdateRequests::get_instance();
     if (!gain_sp) {
         msg_print(_("変換に失敗した。", "You failed to convert."));
-        rfu.request_hp_mp_redrawing();
+        dur.request_hp_mp_redrawing();
         return true;
     }
 
@@ -22,7 +22,7 @@ bool comvert_hp_to_mp(CreatureEntity &creature)
         creature.current_mp_frac = 0;
     }
 
-    rfu.request_hp_mp_redrawing();
+    dur.request_hp_mp_redrawing();
     return true;
 }
 
@@ -35,6 +35,6 @@ bool comvert_mp_to_hp(CreatureEntity &creature)
         msg_print(_("変換に失敗した。", "You failed to convert."));
     }
 
-    RedrawingFlagsUpdater::get_instance().request_hp_mp_redrawing();
+    DeferredUpdateRequests::get_instance().request_hp_mp_redrawing();
     return true;
 }

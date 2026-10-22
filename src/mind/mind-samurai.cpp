@@ -27,11 +27,11 @@
 #include "player/attack-defense-types.h"
 #include "status/action-setter.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/redrawing-flags-updater.h"
 #include "term/screen-processor.h"
 #include "term/z-form.h"
 #include "util/bit-flags-calculator.h"
@@ -361,7 +361,7 @@ void concentration(CreatureEntity &creature)
         creature.current_mp_frac = 0;
     }
 
-    RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::MP);
+    DeferredUpdateRequests::get_instance().set_flag(MainWindowRedrawingFlag::MP);
 }
 
 /*!
@@ -429,7 +429,7 @@ bool choose_samurai_stance(CreatureEntity &creature)
     }
 
     set_action(creature, ACTION_SAMURAI_STANCE);
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
+    auto &dur = DeferredUpdateRequests::get_instance();
     if (CreatureClass(creature).samurai_stance_is(new_stance)) {
         msg_print(_("構え直した。", "You reassume a stance."));
     } else {
@@ -437,7 +437,7 @@ bool choose_samurai_stance(CreatureEntity &creature)
             StatusRecalculatingFlag::BONUS,
             StatusRecalculatingFlag::MONSTER_STATUSES,
         };
-        rfu.set_flags(flags_srf);
+        dur.set_flags(flags_srf);
         msg_print(_("{}の型で構えた。", "You assume the {} stance."), samurai_stances[enum2i(new_stance) - 1].desc);
         CreatureClass(creature).set_samurai_stance(new_stance);
     }
@@ -446,7 +446,7 @@ bool choose_samurai_stance(CreatureEntity &creature)
         MainWindowRedrawingFlag::ACTION,
         MainWindowRedrawingFlag::TIMED_EFFECT,
     };
-    rfu.set_flags(flags);
+    dur.set_flags(flags);
     screen_load();
     return true;
 }
@@ -530,5 +530,5 @@ void musou_counterattack(CreatureEntity &creature, MonsterAttackPlayer *monap_pt
     msg_print(_("{}に反撃した！", "You counterattacked {}!"), m_target_name);
     do_cmd_attack(creature, monap_ptr->m_ptr->y, monap_ptr->m_ptr->x, HISSATSU_COUNTER);
     monap_ptr->fear = false;
-    RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::MP);
+    DeferredUpdateRequests::get_instance().set_flag(MainWindowRedrawingFlag::MP);
 }

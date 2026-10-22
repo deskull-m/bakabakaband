@@ -34,7 +34,7 @@
 #include "player/player-status.h"
 #include "player/process-name.h"
 #include "system/creature-entity.h"
-#include "system/redrawing-flags-updater.h"
+#include "system/deferred-update-requests.h"
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
 #include "term/z-form.h"
@@ -471,9 +471,9 @@ static void exe_auto_roller(CreatureEntity &creature, chara_limit_type chara_lim
 static bool display_auto_roller_result(CreatureEntity &creature, bool prev, char *c)
 {
     BIT_FLAGS mode = 0;
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
+    auto &dur = DeferredUpdateRequests::get_instance();
     while (true) {
-        rfu.request_bonus_and_max_hp_recalculation();
+        dur.request_bonus_and_max_hp_recalculation();
         update_creature(creature);
         creature.hp = creature.maxhp;
         creature.set_current_mp(creature.get_max_mp());

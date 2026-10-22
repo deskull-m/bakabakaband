@@ -14,8 +14,8 @@
 #include "object/item-use-flags.h"
 #include "racial/racial-android.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/item-entity.h"
-#include "system/redrawing-flags-updater.h"
 #include "term/screen-processor.h"
 #include "view/display-messages.h"
 #include <memory>
@@ -96,7 +96,7 @@ bool artifact_scroll(CreatureEntity &creature)
     }
 
     // 装備品なら、アーティファクトの能力が付く
-    RedrawingFlagsUpdater::get_instance().request_equipment_change_updates();
+    DeferredUpdateRequests::get_instance().request_equipment_change_updates();
 
     if (record_rand_art) {
         const auto diary_item_name = describe_flavor(creature, *item, OD_NAME_ONLY);
@@ -161,12 +161,12 @@ bool mundane_spell(CreatureEntity &creature, bool only_equip)
     }
 
     // 装備品なら、修正値・エゴ・アーティファクトの能力が無くなる
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.request_equipment_change_updates();
+    auto &dur = DeferredUpdateRequests::get_instance();
+    dur.request_equipment_change_updates();
 
     // 鑑定の状態・エゴ・修正値が変わるので、並び順や束をまとめられるかも変わる
-    rfu.request_inventory_arrangement();
-    rfu.set_item_related_sub_window_flags();
+    dur.request_inventory_arrangement();
+    dur.set_item_related_sub_window_flags();
     calc_android_exp(creature);
     return true;
 }

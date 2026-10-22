@@ -17,8 +17,8 @@
 #include "status/experience.h"
 #include "sv-definition/sv-wand-types.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/item-entity.h"
-#include "system/redrawing-flags-updater.h"
 #include "target/target-getter.h"
 #include "term/screen-processor.h"
 #include "util/bit-flags-calculator.h"
@@ -85,7 +85,7 @@ void ObjectZapWandEntity::execute(INVENTORY_IDX i_idx)
         return;
     }
 
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
+    auto &dur = DeferredUpdateRequests::get_instance();
     if (item->pval <= 0) {
         if (flush_failure) {
             flush();
@@ -93,8 +93,8 @@ void ObjectZapWandEntity::execute(INVENTORY_IDX i_idx)
 
         msg_print(_("この魔法棒にはもう魔力が残っていない。", "The wand has no charges left."));
         item->ident.set(IdentificationFlag::EMPTY);
-        rfu.request_inventory_arrangement();
-        rfu.set_item_related_sub_window_flags();
+        dur.request_inventory_arrangement();
+        dur.set_item_related_sub_window_flags();
         return;
     }
 
@@ -112,8 +112,8 @@ void ObjectZapWandEntity::execute(INVENTORY_IDX i_idx)
         gain_exp(this->creature, (item_level + (this->creature.get_level() >> 1)) / this->creature.get_level());
     }
 
-    rfu.set_item_related_sub_window_flags();
-    rfu.request_inventory_arrangement();
+    dur.set_item_related_sub_window_flags();
+    dur.request_inventory_arrangement();
     item->pval--;
     if (i_idx >= 0) {
         inven_item_charges(*this->creature.inventory[i_idx]);

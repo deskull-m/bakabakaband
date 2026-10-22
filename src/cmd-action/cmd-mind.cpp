@@ -45,9 +45,9 @@
 #include "status/bad-status-setter.h"
 #include "status/base-status.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
-#include "system/redrawing-flags-updater.h"
 #include "term/screen-processor.h"
 #include "util/enum-converter.h"
 #include "view/display-messages.h"
@@ -372,7 +372,7 @@ static void process_hard_concentration(CreatureEntity &creature, cm_type *cm_ptr
 {
     if ((cm_ptr->use_mind == MindKindType::BERSERKER) || (cm_ptr->use_mind == MindKindType::NINJUTSU)) {
         take_hit(creature, DAMAGE_USELIFE, cm_ptr->mana_cost, _("過度の集中", "concentrating too hard"));
-        RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::HP);
+        DeferredUpdateRequests::get_instance().set_flag(MainWindowRedrawingFlag::HP);
         return;
     }
 
@@ -424,8 +424,8 @@ void do_cmd_mind(CreatureEntity &creature)
     mind_turn_passing(creature, cm_ptr);
     process_hard_concentration(creature, cm_ptr);
     creature.plus_incident_tree("USE_MIND", 1);
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.set_flag(MainWindowRedrawingFlag::MP);
+    auto &dur = DeferredUpdateRequests::get_instance();
+    dur.set_flag(MainWindowRedrawingFlag::MP);
 }
 
 static MindKindType decide_use_mind_browse(CreatureEntity &creature)

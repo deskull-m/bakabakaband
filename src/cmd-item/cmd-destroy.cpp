@@ -32,8 +32,8 @@
 #include "status/experience.h"
 #include "system/baseitem/baseitem-key.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/item-entity.h"
-#include "system/redrawing-flags-updater.h"
 #include "term/screen-processor.h"
 #include "term/z-form.h"
 #include "util/int-char-converter.h"
@@ -55,7 +55,7 @@ static bool check_destory_item(CreatureEntity &creature, const ItemEntity &destr
     const auto msg = fmt::format(fmt, item_name);
     msg_erase();
     message_add(msg);
-    RedrawingFlagsUpdater::get_instance().set_flag(SubWindowRedrawingFlag::MESSAGE);
+    DeferredUpdateRequests::get_instance().set_flag(SubWindowRedrawingFlag::MESSAGE);
     window_stuff(creature);
     while (true) {
         prt(msg, 0, 0);

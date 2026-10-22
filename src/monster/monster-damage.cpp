@@ -40,13 +40,13 @@
 #include "status/experience.h"
 #include "system/angband-system.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
 #include "system/monrace/monrace-records.h"
 #include "system/player-type-definition.h"
-#include "system/redrawing-flags-updater.h"
 #include "tracking/health-bar-tracker.h"
 #include "tracking/lore-tracker.h"
 #include "view/display-messages.h"
@@ -480,7 +480,7 @@ void MonsterDamageProcessor::set_redraw()
     auto &monster = creature.get_floor()->get_monster(this->m_idx);
     HealthBarTracker::get_instance().set_flag_if_tracking(this->m_idx);
     if (monster.is_riding()) {
-        RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::UHEALTH);
+        DeferredUpdateRequests::get_instance().set_flag(MainWindowRedrawingFlag::UHEALTH);
     }
 }
 
@@ -639,7 +639,7 @@ bool MonsterDamageProcessor::check_and_process_hp_transform()
 
     // 再描画フラグを設定
     this->set_redraw();
-    RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::MAP);
+    DeferredUpdateRequests::get_instance().set_flag(MainWindowRedrawingFlag::MAP);
 
     // モンスターの情報を更新
     update_monster(creature, this->m_idx, true);

@@ -19,13 +19,13 @@
 #include "perception/object-perception.h"
 #include "sv-definition/sv-other-types.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/enums/dungeon/dungeon-id.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/floor/floor-info.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/redrawing-flags-updater.h"
 #include "system/services/dungeon-service.h"
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
@@ -44,7 +44,7 @@
 bool exchange_cash(CreatureEntity &creature)
 {
     auto change = false;
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
+    auto &dur = DeferredUpdateRequests::get_instance();
     constexpr auto fmt_convert = _("{} を換金しますか？", "Convert {} into money? ");
     constexpr auto fmt_reward = _("賞金 {}＄を手に入れた。", "You get {}gp.");
     for (INVENTORY_IDX i = 0; i <= INVEN_SUB_HAND; i++) {
@@ -66,7 +66,7 @@ bool exchange_cash(CreatureEntity &creature)
         const auto reward_money = 1000000 * item.number;
         msg_print(fmt_reward, reward_money);
         creature.add_au(reward_money);
-        rfu.request_gold_redrawing();
+        dur.request_gold_redrawing();
         vary_item(creature, i, -item.number);
     }
 
@@ -89,7 +89,7 @@ bool exchange_cash(CreatureEntity &creature)
         const auto reward_money = 200000 * item.number;
         msg_print(fmt_reward, reward_money);
         creature.add_au(reward_money);
-        rfu.request_gold_redrawing();
+        dur.request_gold_redrawing();
         vary_item(creature, i_idx, -item.number);
     }
 
@@ -112,7 +112,7 @@ bool exchange_cash(CreatureEntity &creature)
         const auto reward_money = 100000 * item.number;
         msg_print(fmt_reward, reward_money);
         creature.add_au(reward_money);
-        rfu.request_gold_redrawing();
+        dur.request_gold_redrawing();
         vary_item(creature, i_idx, -item.number);
     }
 
@@ -133,7 +133,7 @@ bool exchange_cash(CreatureEntity &creature)
         const auto reward_money = (monrace.level * 50 + 100) * item.number;
         msg_print(fmt_reward, reward_money);
         creature.add_au(reward_money);
-        rfu.request_gold_redrawing();
+        dur.request_gold_redrawing();
         vary_item(creature, i_idx, -item.number);
     }
 
@@ -153,7 +153,7 @@ bool exchange_cash(CreatureEntity &creature)
         const auto reward_money = (monrace.level * 30 + 60) * item.number;
         msg_print(fmt_reward, reward_money);
         creature.add_au(reward_money);
-        rfu.request_gold_redrawing();
+        dur.request_gold_redrawing();
         vary_item(creature, i_idx, -item.number);
     }
 

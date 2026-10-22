@@ -7,8 +7,8 @@
 #include "object/tval-types.h"
 #include "sv-definition/sv-lite-types.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/item-entity.h"
-#include "system/redrawing-flags-updater.h"
 #include "view/display-messages.h"
 #include "world/world.h"
 
@@ -45,8 +45,8 @@ void reduce_lite_life(CreatureEntity &creature)
 void notice_lite_change(CreatureEntity &creature, ItemEntity *o_ptr)
 {
     // 装備の一覧に残りターン数を表示している
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.set_flag(SubWindowRedrawingFlag::EQUIPMENT);
+    auto &dur = DeferredUpdateRequests::get_instance();
+    dur.set_flag(SubWindowRedrawingFlag::EQUIPMENT);
 
     if (creature.is_blind()) {
         if (o_ptr->fuel == 0) {
@@ -59,7 +59,7 @@ void notice_lite_change(CreatureEntity &creature, ItemEntity *o_ptr)
             StatusRecalculatingFlag::TORCH,
             StatusRecalculatingFlag::BONUS,
         };
-        rfu.set_flags(flags);
+        dur.set_flags(flags);
     } else if (o_ptr->ego_idx == EgoType::LITE_LONG) {
         if ((o_ptr->fuel < 50) && (!(o_ptr->fuel % 5))) {
             if (disturb_minor) {

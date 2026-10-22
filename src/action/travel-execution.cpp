@@ -13,9 +13,9 @@
 #include "player/player-move.h"
 #include "player/player-status-flags.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
-#include "system/redrawing-flags-updater.h"
 #include "system/terrain/terrain-definition.h"
 #include "view/display-messages.h"
 #include <queue>
@@ -256,7 +256,7 @@ bool Travel::is_ongoing() const
 void Travel::stop()
 {
     if (this->is_ongoing()) {
-        RedrawingFlagsUpdater::get_instance().request_floor_item_lists_redrawing();
+        DeferredUpdateRequests::get_instance().request_floor_item_lists_redrawing();
     }
 
     this->state = TravelState::STOP;

@@ -26,7 +26,7 @@
 #include "status/status-change-notice.h"
 #include "system/creature-entity.h"
 #include "system/creature-timed-effect-types.h"
-#include "system/redrawing-flags-updater.h"
+#include "system/deferred-update-requests.h"
 #include "view/display-messages.h"
 
 /*!
@@ -125,10 +125,10 @@ void reset_tim_flags(CreatureEntity &creature)
  */
 void reset_ki_and_kawarimi(CreatureEntity &creature, bool notify)
 {
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
+    auto &dur = DeferredUpdateRequests::get_instance();
     if (get_current_ki(creature) > 0) {
         set_current_ki(creature, true, 0);
-        rfu.set_flag(StatusRecalculatingFlag::BONUS);
+        dur.set_flag(StatusRecalculatingFlag::BONUS);
         if (notify) {
             msg_print(_("練気が消えた。", "Your stored Force dissipates."));
         }
@@ -137,7 +137,7 @@ void reset_ki_and_kawarimi(CreatureEntity &creature, bool notify)
     auto ninja_data = CreatureClass(creature).get_specific_data<ninja_data_type>();
     if (ninja_data && ninja_data->kawarimi) {
         ninja_data->kawarimi = false;
-        rfu.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
+        dur.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
         if (notify) {
             msg_print(_("変わり身の備えが消えた。", "You are no longer prepared to evade attacks."));
         }
@@ -167,9 +167,9 @@ void reset_arena_buffs(CreatureEntity &creature)
     set_tsuyoshi(creature, 0, true);
     reset_ki_and_kawarimi(creature, false);
     reset_tim_flags(creature);
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.set_flag(StatusRecalculatingFlag::BONUS);
-    rfu.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
+    auto &dur = DeferredUpdateRequests::get_instance();
+    dur.set_flag(StatusRecalculatingFlag::BONUS);
+    dur.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
 }
 
 /*!
@@ -221,7 +221,7 @@ bool set_acceleration(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
     if (disturb_state || Travel::get_instance().is_ongoing()) {
         disturb(creature, false, true);
     }
-    RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
+    DeferredUpdateRequests::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
     handle_stuff(creature);
     return true;
 }
@@ -376,8 +376,8 @@ bool set_hero(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
     }
 
     creature.set_timed_effect(CreatureTimedEffect::HERO, v);
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
+    auto &dur = DeferredUpdateRequests::get_instance();
+    dur.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
     if (!notice) {
         return false;
     }
@@ -386,7 +386,7 @@ bool set_hero(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
         disturb(creature, false, true);
     }
 
-    RedrawingFlagsUpdater::get_instance().request_bonus_and_max_hp_recalculation();
+    DeferredUpdateRequests::get_instance().request_bonus_and_max_hp_recalculation();
     handle_stuff(creature);
     return true;
 }
@@ -442,13 +442,13 @@ bool set_mimic(CreatureEntity &creature, TIME_EFFECT v, MimicKindType mimic_race
         disturb(creature, false, true);
     }
 
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
+    auto &dur = DeferredUpdateRequests::get_instance();
     static constexpr auto flags_mwrf = {
         MainWindowRedrawingFlag::BASIC,
         MainWindowRedrawingFlag::TIMED_EFFECT,
     };
-    rfu.set_flags(flags_mwrf);
-    rfu.request_bonus_and_max_hp_recalculation();
+    dur.set_flags(flags_mwrf);
+    dur.request_bonus_and_max_hp_recalculation();
     handle_stuff(creature);
     return true;
 }
@@ -492,8 +492,8 @@ bool set_berserk(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
     }
 
     creature.set_timed_effect(CreatureTimedEffect::BERSERK, v);
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
+    auto &dur = DeferredUpdateRequests::get_instance();
+    dur.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
     if (!notice) {
         return false;
     }
@@ -502,7 +502,7 @@ bool set_berserk(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
         disturb(creature, false, true);
     }
 
-    RedrawingFlagsUpdater::get_instance().request_bonus_and_max_hp_recalculation();
+    DeferredUpdateRequests::get_instance().request_bonus_and_max_hp_recalculation();
     handle_stuff(creature);
     return true;
 }
@@ -523,7 +523,7 @@ bool set_wraith_form(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
         return false;
     }
 
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
+    auto &dur = DeferredUpdateRequests::get_instance();
     if (v) {
         if (creature.get_timed_effect(CreatureTimedEffect::WRAITH_FORM) && !do_dec) {
             if (creature.get_timed_effect(CreatureTimedEffect::WRAITH_FORM) > v) {
@@ -536,19 +536,19 @@ bool set_wraith_form(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
             chg_virtue(creature, Virtue::HONOUR, -2);
             chg_virtue(creature, Virtue::SACRIFICE, -2);
             chg_virtue(creature, Virtue::VALOUR, -5);
-            rfu.request_monster_update_and_map_redrawing();
+            dur.request_monster_update_and_map_redrawing();
         }
     } else {
         if (creature.get_timed_effect(CreatureTimedEffect::WRAITH_FORM)) {
             creature.notify_self(_("不透明になった感じがする。", "You feel opaque."), _("%s^は不透明になった。", "%s^ becomes opaque."));
             sound(SoundKind::BUFF_EXPIRE);
             notice = true;
-            rfu.request_monster_update_and_map_redrawing();
+            dur.request_monster_update_and_map_redrawing();
         }
     }
 
     creature.set_timed_effect(CreatureTimedEffect::WRAITH_FORM, v);
-    rfu.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
+    dur.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
     if (!notice) {
         return false;
     }
@@ -557,7 +557,7 @@ bool set_wraith_form(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
         disturb(creature, false, true);
     }
 
-    rfu.set_flag(StatusRecalculatingFlag::BONUS);
+    dur.set_flag(StatusRecalculatingFlag::BONUS);
     handle_stuff(creature);
     return true;
 }
@@ -602,8 +602,8 @@ bool set_tsuyoshi(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
     }
 
     creature.set_timed_effect(CreatureTimedEffect::TSUYOSHI, v);
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
+    auto &dur = DeferredUpdateRequests::get_instance();
+    dur.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
     if (!notice) {
         return false;
     }
@@ -612,7 +612,7 @@ bool set_tsuyoshi(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
         disturb(creature, false, true);
     }
 
-    rfu.request_bonus_and_max_hp_recalculation();
+    dur.request_bonus_and_max_hp_recalculation();
     handle_stuff(creature);
     return true;
 }

@@ -27,12 +27,12 @@
 #include "spell-realm/spells-crusade.h"
 #include "system/angband-system.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/redrawing-flags-updater.h"
 #include "view/display-messages.h"
 #include <algorithm>
 #include <range/v3/view.hpp>
@@ -193,7 +193,7 @@ static MonsterSpellResult spell_RF6_SPECIAL_B(CreatureEntity &creature, POSITION
         simple_monspell_message(creature, m_idx, t_idx, msg, target_type);
 
         teleport_away(creature, m_idx, 10, TELEPORT_NONMAGICAL);
-        RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::MONSTER_STATUSES);
+        DeferredUpdateRequests::get_instance().set_flag(StatusRecalculatingFlag::MONSTER_STATUSES);
         return MonsterSpellResult::make_valid();
     }
 

@@ -25,9 +25,9 @@
 #include "sv-definition/sv-other-types.h"
 #include "sv-definition/sv-wand-types.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/redrawing-flags-updater.h"
 #include "util/string-processor.h"
 #include "view/display-messages.h"
 #include <fmt/format.h>
@@ -146,5 +146,5 @@ void auto_destroy_item(CreatureEntity &creature, ItemEntity *o_ptr, int autopick
 
     autopick_last_destroyed_object = o_ptr->clone();
     o_ptr->marked.set(OmType::AUTODESTROY);
-    RedrawingFlagsUpdater::get_instance().set_flag(InventoryArrangementFlag::AUTO_DESTRUCTION);
+    DeferredUpdateRequests::get_instance().set_flag(InventoryArrangementFlag::AUTO_DESTRUCTION);
 }

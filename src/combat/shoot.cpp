@@ -48,13 +48,13 @@
 #include "system/artifact-type-definition.h"
 #include "system/baseitem/baseitem-key.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/enums/terrain/terrain-characteristics.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/redrawing-flags-updater.h"
 #include "target/projection-path-calculator.h"
 #include "target/target-checker.h"
 #include "target/target-getter.h"
@@ -467,7 +467,7 @@ static MULTIPLY calc_shot_damage_with_slay(
 
         if ((flags.has(TR_FORCE_WEAPON)) && (creature.get_current_mp() > (creature.get_max_mp() / 30))) {
             creature.sub_current_mp((1 + (creature.get_max_mp() / 30)));
-            RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::MP);
+            DeferredUpdateRequests::get_instance().set_flag(MainWindowRedrawingFlag::MP);
             mult = mult * 5 / 2;
         }
         break;
@@ -666,7 +666,7 @@ void exe_fire(CreatureEntity &creature, INVENTORY_IDX i_idx, ItemEntity *j_ptr, 
                         StatusRecalculatingFlag::FLOW,
                         StatusRecalculatingFlag::MONSTER_LITE,
                     };
-                    RedrawingFlagsUpdater::get_instance().set_flags(flags);
+                    DeferredUpdateRequests::get_instance().set_flags(flags);
 
                     /* Destroy the wall */
                     cave_alter_feat(creature, pos_impact.y, pos_impact.x, TerrainCharacteristics::STONE);

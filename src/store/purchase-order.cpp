@@ -24,7 +24,7 @@
 #include "store/store-screen.h"
 #include "store/store.h"
 #include "system/creature-entity.h"
-#include "system/redrawing-flags-updater.h"
+#include "system/deferred-update-requests.h"
 #include "system/terrain/terrain-definition.h"
 #include "system/terrain/terrain-list.h"
 #include "term/screen-processor.h"
@@ -278,7 +278,7 @@ void store_purchase(CreatureEntity &creature, StoreScreen &screen)
 
     const auto idx = find_autopick_list(creature, &item);
     if (auto_inscribe_item(item, idx)) {
-        RedrawingFlagsUpdater::get_instance().request_inscription_change_updates();
+        DeferredUpdateRequests::get_instance().request_inscription_change_updates();
     }
 
     item_new = creature.store_item(item);

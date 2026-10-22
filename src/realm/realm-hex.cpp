@@ -40,10 +40,10 @@
 #include "spell/technic-info-table.h"
 #include "status/action-setter.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
-#include "system/redrawing-flags-updater.h"
 #include "target/grid-selector.h"
 #include "target/target-getter.h"
 #include "term/screen-processor.h"
@@ -190,7 +190,7 @@ tl::optional<std::string> do_hex_spell(CreatureEntity &creature, spell_hex_type 
                 item->add_curses(curses);
             }
 
-            RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
+            DeferredUpdateRequests::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
             should_continue = false;
         }
         break;
@@ -449,7 +449,7 @@ tl::optional<std::string> do_hex_spell(CreatureEntity &creature, spell_hex_type 
                 item->add_curses(curses);
             }
 
-            RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
+            DeferredUpdateRequests::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
             should_continue = false;
         }
         break;
@@ -531,7 +531,7 @@ tl::optional<std::string> do_hex_spell(CreatureEntity &creature, spell_hex_type 
                 flag = true;
             }
 
-            auto &rfu = RedrawingFlagsUpdater::get_instance();
+            auto &dur = DeferredUpdateRequests::get_instance();
             for (i = A_STR; i < A_MAX; i++) {
                 if (creature.get_stat_cur(i) < creature.get_stat_max(i)) {
                     if (creature.get_stat_cur(i) < 180) {
@@ -544,7 +544,7 @@ tl::optional<std::string> do_hex_spell(CreatureEntity &creature, spell_hex_type 
                         creature.set_stat_cur(i, creature.get_stat_max(i));
                     }
 
-                    rfu.set_flag(StatusRecalculatingFlag::BONUS);
+                    dur.set_flag(StatusRecalculatingFlag::BONUS);
                     flag = true;
                 }
             }
@@ -558,8 +558,8 @@ tl::optional<std::string> do_hex_spell(CreatureEntity &creature, spell_hex_type 
                     set_action(creature, ACTION_NONE);
                 }
 
-                rfu.request_player_status_recalculation();
-                rfu.set_flag(MainWindowRedrawingFlag::EXTRA);
+                dur.request_player_status_recalculation();
+                dur.set_flag(MainWindowRedrawingFlag::EXTRA);
                 return "";
             }
         }
@@ -597,7 +597,7 @@ tl::optional<std::string> do_hex_spell(CreatureEntity &creature, spell_hex_type 
 
             if (is_drained) {
                 item->remove_curses();
-                RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
+                DeferredUpdateRequests::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
             }
 
             should_continue = false;
@@ -748,10 +748,10 @@ tl::optional<std::string> do_hex_spell(CreatureEntity &creature, spell_hex_type 
     }
 
     if (!info) {
-        auto &rfu = RedrawingFlagsUpdater::get_instance();
-        rfu.request_player_status_recalculation();
-        rfu.set_flag(MainWindowRedrawingFlag::EXTRA);
-        rfu.request_hp_mp_redrawing();
+        auto &dur = DeferredUpdateRequests::get_instance();
+        dur.request_player_status_recalculation();
+        dur.set_flag(MainWindowRedrawingFlag::EXTRA);
+        dur.request_hp_mp_redrawing();
     }
 
     return "";

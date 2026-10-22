@@ -19,13 +19,13 @@
 #include "store/store-util.h"
 #include "store/store.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/floor/floor-info.h"
 #include "system/floor/town-info.h"
 #include "system/floor/town-list.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
-#include "system/redrawing-flags-updater.h"
 #include "system/terrain/terrain-definition.h"
 #include "term/gameterm.h"
 #include "term/screen-processor.h"
@@ -127,7 +127,7 @@ void do_cmd_store(CreatureEntity &creature, std::optional<StoreSaleType> specifi
     play_music(TERM_XTRA_MUSIC_BASIC, MUSIC_BASIC_BUILD);
     display_store(creature, screen);
     auto should_leave = false;
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
+    auto &dur = DeferredUpdateRequests::get_instance();
     while (!should_leave) {
         prt("", 1, 0);
         clear_from(screen.get_command_row(0));
@@ -163,7 +163,7 @@ void do_cmd_store(CreatureEntity &creature, std::optional<StoreSaleType> specifi
         InputKeyRequestor(creature, true).request_command();
         should_leave = store_process_command(creature, screen);
 
-        const auto should_redraw_store_inventory = rfu.has(StatusRecalculatingFlag::BONUS);
+        const auto should_redraw_store_inventory = dur.has(StatusRecalculatingFlag::BONUS);
         world.character_icky_depth = 1;
         handle_stuff_with_inventory_arrangement(creature);
         if (creature.inventory[INVEN_PACK]->bi_id) {
@@ -214,17 +214,17 @@ void do_cmd_store(CreatureEntity &creature, std::optional<StoreSaleType> specifi
     msg_erase();
     term_clear();
 
-    rfu.request_monster_update_and_map_redrawing();
+    dur.request_monster_update_and_map_redrawing();
     static constexpr auto flags_srf = {
         StatusRecalculatingFlag::VIEW,
         StatusRecalculatingFlag::LITE,
         StatusRecalculatingFlag::MONSTER_LITE,
     };
-    rfu.set_flags(flags_srf);
+    dur.set_flags(flags_srf);
     static constexpr auto flags_mwrf = {
         MainWindowRedrawingFlag::BASIC,
         MainWindowRedrawingFlag::EXTRA,
         MainWindowRedrawingFlag::EQUIPPY,
     };
-    rfu.set_flags(flags_mwrf);
+    dur.set_flags(flags_mwrf);
 }

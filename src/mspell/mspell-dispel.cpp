@@ -26,8 +26,8 @@
 #include "status/sight-setter.h"
 #include "status/temporary-resistance.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/floor/floor-info.h"
-#include "system/redrawing-flags-updater.h"
 #include "view/display-messages.h"
 
 /*!
@@ -103,14 +103,14 @@ static void dispel_player(CreatureEntity &creature)
         }
 
         creature.set_action(ACTION_NONE);
-        auto &rfu = RedrawingFlagsUpdater::get_instance();
-        rfu.request_monster_update_and_map_redrawing();
-        rfu.request_bonus_and_max_hp_recalculation();
+        auto &dur = DeferredUpdateRequests::get_instance();
+        dur.request_monster_update_and_map_redrawing();
+        dur.request_bonus_and_max_hp_recalculation();
         static constexpr auto flags_mwrf = {
             MainWindowRedrawingFlag::TIMED_EFFECT,
             MainWindowRedrawingFlag::ACTION,
         };
-        rfu.set_flags(flags_mwrf);
+        dur.set_flags(flags_mwrf);
         creature.add_energy_need(ENERGY_NEED());
     }
 }

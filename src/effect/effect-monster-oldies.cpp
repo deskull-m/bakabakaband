@@ -9,11 +9,11 @@
 #include "mutation/mutation-flag-types.h"
 #include "object-enchant/tr-types.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/redrawing-flags-updater.h"
 #include "tracking/health-bar-tracker.h"
 #include "util/bit-flags-calculator.h"
 #include "util/string-processor.h"
@@ -86,7 +86,7 @@ ProcessResult effect_monster_star_heal(CreatureEntity &creature, EffectMonster *
     if (!em_ptr->dam) {
         HealthBarTracker::get_instance().set_flag_if_tracking(em_ptr->g_ptr->m_idx);
         if (em_ptr->m_ptr->is_riding()) {
-            RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::UHEALTH);
+            DeferredUpdateRequests::get_instance().set_flag(MainWindowRedrawingFlag::UHEALTH);
         }
 
         return ProcessResult::PROCESS_FALSE;
@@ -176,7 +176,7 @@ ProcessResult effect_monster_old_heal(CreatureEntity &creature, EffectMonster *e
 
     HealthBarTracker::get_instance().set_flag_if_tracking(em_ptr->g_ptr->m_idx);
     if (em_ptr->m_ptr->is_riding()) {
-        RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::UHEALTH);
+        DeferredUpdateRequests::get_instance().set_flag(MainWindowRedrawingFlag::UHEALTH);
     }
 
     em_ptr->note = _("は体力を回復したようだ。", " looks healthier.");

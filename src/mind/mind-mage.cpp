@@ -15,8 +15,8 @@
 #include "object/item-use-flags.h"
 #include "player-base/player-class.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/item-entity.h"
-#include "system/redrawing-flags-updater.h"
 #include "view/display-messages.h"
 
 /*!
@@ -28,10 +28,10 @@ static void finish_eating_magic(CreatureEntity &creature)
         creature.set_current_mp(creature.get_max_mp());
     }
 
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.set_flag(MainWindowRedrawingFlag::MP);
-    rfu.request_inventory_arrangement();
-    rfu.set_item_related_sub_window_flags();
+    auto &dur = DeferredUpdateRequests::get_instance();
+    dur.set_flag(MainWindowRedrawingFlag::MP);
+    dur.request_inventory_arrangement();
+    dur.set_item_related_sub_window_flags();
 }
 
 /*!

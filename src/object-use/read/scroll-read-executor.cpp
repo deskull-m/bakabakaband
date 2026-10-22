@@ -40,9 +40,9 @@
 #include "store/rumor.h"
 #include "sv-definition/sv-scroll-types.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/floor/floor-info.h"
 #include "system/item-entity.h"
-#include "system/redrawing-flags-updater.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
 
@@ -318,7 +318,7 @@ bool ScrollReadExecutor::read()
 
         msg_print(_("手が輝き始めた。", "Your hands begin to glow."));
         this->creature.add_special_attack(ATTACK_CONFUSE);
-        RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
+        DeferredUpdateRequests::get_instance().set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
         this->ident = true;
         break;
     case SV_SCROLL_PROTECTION_FROM_EVIL: {
@@ -361,7 +361,7 @@ bool ScrollReadExecutor::read()
         }
 
         this->creature.set_add_spells(this->creature.get_add_spells() + 1);
-        RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::SPELLS);
+        DeferredUpdateRequests::get_instance().set_flag(StatusRecalculatingFlag::SPELLS);
         this->ident = true;
         break;
     case SV_SCROLL_GENOCIDE:

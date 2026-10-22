@@ -255,7 +255,7 @@
     <ClCompile Include="..\..\src\system\floor\town-records.cpp" />
     <ClCompile Include="..\..\src\system\inner-game-data.cpp" />
     <ClCompile Include="..\..\src\system\monrace\monrace-list.cpp" />
-    <ClCompile Include="..\..\src\system\redrawing-flags-updater.cpp" />
+    <ClCompile Include="..\..\src\system\deferred-update-requests.cpp" />
     <ClCompile Include="..\..\src\system\floor\floor-info.cpp" />
     <ClCompile Include="..\..\src\system\grid-type-definition.cpp" />
     <ClCompile Include="..\..\src\main-win\commandline-win.cpp" />
@@ -1504,7 +1504,7 @@
     <ClInclude Include="..\..\src\system\enums\grid-flow.h" />
     <ClInclude Include="..\..\src\system\inner-game-data.h" />
     <ClInclude Include="..\..\src\system\monrace\monrace-list.h" />
-    <ClInclude Include="..\..\src\system\redrawing-flags-updater.h" />
+    <ClInclude Include="..\..\src\system\deferred-update-requests.h" />
     <ClInclude Include="..\..\src\system\dungeon\dungeon-data-definition.h" />
     <ClInclude Include="..\..\src\system\floor\floor-info.h" />
     <ClInclude Include="..\..\src\system\grid-type-definition.h" />

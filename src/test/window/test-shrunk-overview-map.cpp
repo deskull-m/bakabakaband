@@ -1,9 +1,9 @@
 #include "game-option/map-screen-options.h"
+#include "system/deferred-update-requests.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/player-type-definition.h"
-#include "system/redrawing-flags-updater.h"
 #include "system/terrain/terrain-definition.h"
 #include "system/terrain/terrain-list.h"
 #include "term/term-color-types.h"
@@ -38,14 +38,14 @@ TEST_CASE("ShrunkOverviewMap rebuilds only the cells around changed grids")
 {
     auto &terrains = TerrainList::get_instance();
     auto &world = AngbandWorld::get_instance();
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
+    auto &dur = DeferredUpdateRequests::get_instance();
     const auto old_size = terrains.size();
     const auto restore_options = test::scoped_restore(view_hidden_walls, view_unsafe_walls, view_unsafe_grids, view_special_lite, view_granite_lite, view_bright_lite);
     auto &cache = OverviewMapCache::get_instance();
-    const auto restore = util::make_finalizer([&terrains, &world, &rfu, &cache, old_size, wild = world.is_wild_mode()] {
+    const auto restore = util::make_finalizer([&terrains, &world, &dur, &cache, old_size, wild = world.is_wild_mode()] {
         terrains.resize(old_size);
         world.set_wild_mode(wild);
-        rfu.reset_flag(MainWindowRedrawingFlag::MAP);
+        dur.reset_flag(MainWindowRedrawingFlag::MAP);
 
         // このテストのフロアから求めた結果や表示の変化を、ほかのテストで使わせない
         cache.mark_all_dirty();
@@ -79,7 +79,7 @@ TEST_CASE("ShrunkOverviewMap rebuilds only the cells around changed grids")
     view_special_lite = false;
     view_granite_lite = false;
     world.set_wild_mode(false);
-    rfu.reset_flag(MainWindowRedrawingFlag::MAP);
+    dur.reset_flag(MainWindowRedrawingFlag::MAP);
 
     // 9x8 のフロアを 3x3 に縮める (1 マスが 3x3 グリッドの区画になる。下の 1 行のマスは区画が 2 行しかない)
     auto floor_ptr = std::make_unique<FloorType>();

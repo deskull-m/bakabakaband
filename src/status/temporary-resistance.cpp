@@ -7,7 +7,7 @@
 #include "main/sound-of-music.h"
 #include "status/status-change-notice.h"
 #include "system/creature-entity.h"
-#include "system/redrawing-flags-updater.h"
+#include "system/deferred-update-requests.h"
 #include "view/display-messages.h"
 
 /*!
@@ -196,15 +196,15 @@ bool set_tim_res_fear(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
         }
     }
     creature.set_timed_effect(CreatureTimedEffect::TIM_RES_FEAR, v);
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
+    auto &dur = DeferredUpdateRequests::get_instance();
+    dur.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
     if (!notice) {
         return false;
     }
     if (disturb_state || Travel::get_instance().is_ongoing()) {
         disturb(creature, false, true);
     }
-    rfu.set_flag(StatusRecalculatingFlag::BONUS);
+    dur.set_flag(StatusRecalculatingFlag::BONUS);
     handle_stuff(creature);
     return true;
 }
@@ -264,15 +264,15 @@ bool set_tim_imm_dark(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
         }
     }
     creature.set_timed_effect(CreatureTimedEffect::TIM_IMM_DARK, v);
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
+    auto &dur = DeferredUpdateRequests::get_instance();
+    dur.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
     if (!notice) {
         return false;
     }
     if (disturb_state || Travel::get_instance().is_ongoing()) {
         disturb(creature, false, true);
     }
-    rfu.set_flag(StatusRecalculatingFlag::BONUS);
+    dur.set_flag(StatusRecalculatingFlag::BONUS);
     handle_stuff(creature);
     return true;
 }

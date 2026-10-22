@@ -13,8 +13,8 @@
 #include "player-info/equipment-info.h"
 #include "spell-realm/spells-craft.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/item-entity.h"
-#include "system/redrawing-flags-updater.h"
 #include "util/enum-converter.h"
 #include "util/object-sort.h"
 #include "view/display-messages.h"
@@ -58,13 +58,13 @@ void inven_item_increase(CreatureEntity &creature, INVENTORY_IDX i_idx, ITEM_NUM
     }
 
     o_ptr->number += num;
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
+    auto &dur = DeferredUpdateRequests::get_instance();
     static constexpr auto flags_srf = {
         StatusRecalculatingFlag::BONUS,
         StatusRecalculatingFlag::MP,
     };
-    rfu.set_flags(flags_srf);
-    rfu.set_flag(InventoryArrangementFlag::COMBINATION);
+    dur.set_flags(flags_srf);
+    dur.set_flag(InventoryArrangementFlag::COMBINATION);
     if (o_ptr->number || !creature.get_timed_effect(CreatureTimedEffect::ELE_ATTACK)) {
         return;
     }
@@ -96,10 +96,10 @@ void inven_item_optimize(CreatureEntity &creature, INVENTORY_IDX i_idx)
         return;
     }
 
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
+    auto &dur = DeferredUpdateRequests::get_instance();
     if (i_idx >= INVEN_MAIN_HAND) {
         creature.inventory[i_idx]->wipe();
-        rfu.request_equipment_change_updates();
+        dur.request_equipment_change_updates();
         return;
     }
 
@@ -112,7 +112,7 @@ void inven_item_optimize(CreatureEntity &creature, INVENTORY_IDX i_idx)
         SubWindowRedrawingFlag::INVENTORY,
         SubWindowRedrawingFlag::SPELL,
     };
-    rfu.set_flags(flags);
+    dur.set_flags(flags);
 }
 
 /*!
@@ -203,7 +203,7 @@ void combine_pack(CreatureEntity &creature)
                     }
                 }
 
-                RedrawingFlagsUpdater::get_instance().set_flag(SubWindowRedrawingFlag::INVENTORY);
+                DeferredUpdateRequests::get_instance().set_flag(SubWindowRedrawingFlag::INVENTORY);
                 combined = true;
                 break;
             }
@@ -238,7 +238,7 @@ void reorder_pack(CreatureEntity &creature)
     }
 
     std::stable_sort(first, last, comp);
-    RedrawingFlagsUpdater::get_instance().set_flag(SubWindowRedrawingFlag::INVENTORY);
+    DeferredUpdateRequests::get_instance().set_flag(SubWindowRedrawingFlag::INVENTORY);
 
     msg_print(_("ザックの中のアイテムを並べ直した。", "You reorder some items in your pack."));
 }
@@ -250,19 +250,19 @@ void reorder_pack(CreatureEntity &creature)
  */
 void update_inventory_arrangement(CreatureEntity &creature)
 {
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    if (rfu.has(InventoryArrangementFlag::AUTO_DESTRUCTION)) {
-        rfu.reset_flag(InventoryArrangementFlag::AUTO_DESTRUCTION);
+    auto &dur = DeferredUpdateRequests::get_instance();
+    if (dur.has(InventoryArrangementFlag::AUTO_DESTRUCTION)) {
+        dur.reset_flag(InventoryArrangementFlag::AUTO_DESTRUCTION);
         autopick_delayed_alter(creature);
     }
 
-    if (rfu.has(InventoryArrangementFlag::COMBINATION)) {
-        rfu.reset_flag(InventoryArrangementFlag::COMBINATION);
+    if (dur.has(InventoryArrangementFlag::COMBINATION)) {
+        dur.reset_flag(InventoryArrangementFlag::COMBINATION);
         combine_pack(creature);
     }
 
-    if (rfu.has(InventoryArrangementFlag::REORDER)) {
-        rfu.reset_flag(InventoryArrangementFlag::REORDER);
+    if (dur.has(InventoryArrangementFlag::REORDER)) {
+        dur.reset_flag(InventoryArrangementFlag::REORDER);
         reorder_pack(creature);
     }
 }
@@ -279,7 +279,7 @@ int16_t store_item_to_inventory(CreatureEntity &creature, ItemEntity *o_ptr)
     INVENTORY_IDX n = -1;
 
     ItemEntity *j_ptr;
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
+    auto &dur = DeferredUpdateRequests::get_instance();
     for (const auto i_idx : INVEN_PACK_SLOTS) {
         j_ptr = creature.inventory[i_idx].get();
         if (!j_ptr->is_valid()) {
@@ -289,8 +289,8 @@ int16_t store_item_to_inventory(CreatureEntity &creature, ItemEntity *o_ptr)
         n = enum2i(i_idx);
         if (j_ptr->is_similar(*o_ptr)) {
             j_ptr->absorb(*o_ptr);
-            rfu.set_flag(StatusRecalculatingFlag::BONUS);
-            rfu.set_flag(SubWindowRedrawingFlag::PLAYER);
+            dur.set_flag(StatusRecalculatingFlag::BONUS);
+            dur.set_flag(SubWindowRedrawingFlag::PLAYER);
             return enum2i(i_idx);
         }
     }
@@ -323,9 +323,9 @@ int16_t store_item_to_inventory(CreatureEntity &creature, ItemEntity *o_ptr)
     j_ptr->iy = j_ptr->ix = 0;
     j_ptr->marked.clear().set(OmType::TOUCHED);
 
-    rfu.set_flag(StatusRecalculatingFlag::BONUS);
-    rfu.request_inventory_arrangement();
-    rfu.set_flag(SubWindowRedrawingFlag::PLAYER);
+    dur.set_flag(StatusRecalculatingFlag::BONUS);
+    dur.request_inventory_arrangement();
+    dur.set_flag(SubWindowRedrawingFlag::PLAYER);
     return i;
 }
 
