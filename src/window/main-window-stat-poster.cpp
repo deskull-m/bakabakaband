@@ -436,15 +436,13 @@ static void add_hex_status_flags(CreatureEntity &creature, BIT_FLAGS *bar_flags)
         ADD_BAR_FLAG(BAR_CURE);
     }
 
-    if (spell_hex.get_revenge_turn() > 0) {
-        auto revenge_type = spell_hex.get_revenge_type();
-        if (revenge_type == SpellHexRevengeType::PATIENCE) {
-            ADD_BAR_FLAG(BAR_PATIENCE);
-        }
+    const auto revenge_type = spell_hex.get_shown_revenge_type();
+    if (revenge_type == SpellHexRevengeType::PATIENCE) {
+        ADD_BAR_FLAG(BAR_PATIENCE);
+    }
 
-        if (revenge_type == SpellHexRevengeType::REVENGE) {
-            ADD_BAR_FLAG(BAR_REVENGE);
-        }
+    if (revenge_type == SpellHexRevengeType::REVENGE) {
+        ADD_BAR_FLAG(BAR_REVENGE);
     }
 }
 
