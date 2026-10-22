@@ -50,58 +50,62 @@ BodySlotPolicy::SlotMask make_all_mask_except(std::initializer_list<inventory_sl
  * @brief 体構造別ポリシー定義
  * @details docs/monster-body-structure-equipment-slots.md の表に対応。
  *          HUMANOID は全許可、その他は構造ごとに減算した個別マスクを定義。
+ *          第 3 引数は「武具を自ら調えて身に着ける体か」(武装度充填の対象か)。
+ *          **スロットの有無とは別軸**で、獣・鳥・蟲・蠕虫は首輪や装具を着けられる
+ *          部位こそあるが、自分で防具を買い揃えて着込むわけではないため false。
+ *          人型 (人型・有翼人・翼腕人) と、武具を手にする設定の竜体のみ true。
  */
 const std::array<BodySlotPolicy, enum2i(BodyStructureType::MAX)> body_slot_policies = {
     // HUMANOID: 全 13 スロット有効、拡張なし
-    BodySlotPolicy(make_all_mask(), {}),
+    BodySlotPolicy(make_all_mask(), {}, true),
 
     // BIPEDAL: 武器/弓/指輪/腕装備なし。首・光源・胴体・頭・脚のみ
-    BodySlotPolicy(make_mask({ INVEN_NECK, INVEN_LITE, INVEN_BODY, INVEN_HEAD, INVEN_FEET }), {}),
+    BodySlotPolicy(make_mask({ INVEN_NECK, INVEN_LITE, INVEN_BODY, INVEN_HEAD, INVEN_FEET }), {}, false),
 
     // QUADRUPED: 四足獣。首・胴体・頭のみ
-    BodySlotPolicy(make_mask({ INVEN_NECK, INVEN_BODY, INVEN_HEAD }), {}),
+    BodySlotPolicy(make_mask({ INVEN_NECK, INVEN_BODY, INVEN_HEAD }), {}, false),
 
     // SERPENTINE: ヘビ型。首・胴体のみ + 尾の指輪
-    BodySlotPolicy(make_mask({ INVEN_NECK, INVEN_BODY }), { ExtendedSlotType::TAIL_RING }),
+    BodySlotPolicy(make_mask({ INVEN_NECK, INVEN_BODY }), { ExtendedSlotType::TAIL_RING }, false),
 
     // AMORPHOUS: スライム型。リング 2 個のみ装備可
-    BodySlotPolicy(make_mask({ INVEN_MAIN_RING, INVEN_SUB_RING }), {}),
+    BodySlotPolicy(make_mask({ INVEN_MAIN_RING, INVEN_SUB_RING }), {}, false),
 
     // INCORPOREAL: 装備一切不可
-    BodySlotPolicy(BodySlotPolicy::SlotMask{}, {}),
+    BodySlotPolicy(BodySlotPolicy::SlotMask{}, {}, false),
 
     // DRACONIC: HUMANOID 装備可能 + 尾の指輪 + 両翼の装飾
-    BodySlotPolicy(make_all_mask(), { ExtendedSlotType::TAIL_RING, ExtendedSlotType::WING_LEFT, ExtendedSlotType::WING_RIGHT }),
+    BodySlotPolicy(make_all_mask(), { ExtendedSlotType::TAIL_RING, ExtendedSlotType::WING_LEFT, ExtendedSlotType::WING_RIGHT }, true),
 
     // FORMLESS: 決まった形を持たない塊・雲・霧。装備枠一切なし (擬足の指輪も無い)
-    BodySlotPolicy(BodySlotPolicy::SlotMask{}, {}),
+    BodySlotPolicy(BodySlotPolicy::SlotMask{}, {}, false),
 
     // GASEOUS: 毒ガス・煙・蒸気。実体が希薄で装備枠一切なし
-    BodySlotPolicy(BodySlotPolicy::SlotMask{}, {}),
+    BodySlotPolicy(BodySlotPolicy::SlotMask{}, {}, false),
 
     // VORTEX: 渦・竜巻・奔流。回転する現象そのもので装備枠一切なし
-    BodySlotPolicy(BodySlotPolicy::SlotMask{}, {}),
+    BodySlotPolicy(BodySlotPolicy::SlotMask{}, {}, false),
 
     // XAREN: 岩を泳ぐ多腕多脚の異形。手足の形が人型と異なり装備枠一切なし
-    BodySlotPolicy(BodySlotPolicy::SlotMask{}, {}),
+    BodySlotPolicy(BodySlotPolicy::SlotMask{}, {}, false),
 
     // AVIAN: 鳥型。前肢が完全な翼で武器も光源も持てない。首・胴体・頭・脚 + 両翼の装飾
-    BodySlotPolicy(make_mask({ INVEN_NECK, INVEN_BODY, INVEN_HEAD, INVEN_FEET }), { ExtendedSlotType::WING_LEFT, ExtendedSlotType::WING_RIGHT }),
+    BodySlotPolicy(make_mask({ INVEN_NECK, INVEN_BODY, INVEN_HEAD, INVEN_FEET }), { ExtendedSlotType::WING_LEFT, ExtendedSlotType::WING_RIGHT }, false),
 
     // WORM: 長胴型。手足を持たない長い胴が身体の主体。首・胴体 + 尾の指輪
-    BodySlotPolicy(make_mask({ INVEN_NECK, INVEN_BODY }), { ExtendedSlotType::TAIL_RING }),
+    BodySlotPolicy(make_mask({ INVEN_NECK, INVEN_BODY }), { ExtendedSlotType::TAIL_RING }, false),
 
     // INSECTOID: 節足型。外骨格と多数の脚で人間用の武具が合わない。首・胴体・頭のみ
-    BodySlotPolicy(make_mask({ INVEN_NECK, INVEN_BODY, INVEN_HEAD }), {}),
+    BodySlotPolicy(make_mask({ INVEN_NECK, INVEN_BODY, INVEN_HEAD }), {}, false),
 
     // WINGED_HUMANOID: 有翼人。背の翼が邪魔でクローク (体の上) だけ装備できない + 両翼の装飾
-    BodySlotPolicy(make_all_mask_except({ INVEN_OUTER }), { ExtendedSlotType::WING_LEFT, ExtendedSlotType::WING_RIGHT }),
+    BodySlotPolicy(make_all_mask_except({ INVEN_OUTER }), { ExtendedSlotType::WING_LEFT, ExtendedSlotType::WING_RIGHT }, true),
 
     // WING_ARMED_HUMANOID: 翼腕人。両腕が翼なので利き手・逆手が無い。体の上は羽織れる + 両翼の装飾
-    BodySlotPolicy(make_all_mask_except({ INVEN_MAIN_HAND, INVEN_SUB_HAND }), { ExtendedSlotType::WING_LEFT, ExtendedSlotType::WING_RIGHT }),
+    BodySlotPolicy(make_all_mask_except({ INVEN_MAIN_HAND, INVEN_SUB_HAND }), { ExtendedSlotType::WING_LEFT, ExtendedSlotType::WING_RIGHT }, true),
 
     // SPHERE: 球体そのもの。手足も頭も首も無く、身に着けられる部位が存在しない
-    BodySlotPolicy(BodySlotPolicy::SlotMask{}, {}),
+    BodySlotPolicy(BodySlotPolicy::SlotMask{}, {}, false),
 };
 
 }

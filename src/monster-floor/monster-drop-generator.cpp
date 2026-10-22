@@ -418,7 +418,11 @@ void generate_monster_drop_items(CreatureEntity &player, CreatureEntity &monster
     do_item |= monrace.drop_flags.has_any_of({ MonsterDropType::DROP_GOOD, MonsterDropType::DROP_GREAT });
 
     auto drop_numbers = decide_drop_numbers(monster, monrace, floor.inside_arena);
-    if (!do_item && !monrace.symbol_char_is_any_of("$")) {
+
+    // 金も品物も生成できない指定 (ONLY_GOLD と ONLY_ITEM の同時指定等の矛盾データ) ならドロップ枠を潰す。
+    // 旧実装はここが `!do_item && !symbol_char_is_any_of("$")` となっており、ONLY_GOLD を持つ
+    // 非 `$` 種族のドロップ個数指定を丸ごと無効化していた (判定対象とシンボル条件がどちらも反転していた)。
+    if (!do_gold && !do_item) {
         drop_numbers = 0;
     }
     if (drop_numbers <= 0) {
@@ -527,6 +531,15 @@ void equip_spellcaster_monster_initial_robe(CreatureEntity &monster)
 
 void equip_monster_by_armament_budget(CreatureEntity &monster)
 {
+    // 武具を自ら調えない体 (獣・鳥・蟲・蠕虫・不定形・非実体等) は対象外。
+    // これらは首・胴・頭のスロットが構造上あっても、自分で防具を買い揃えて
+    // 着込む生き物ではないため、武装度由来の装備を一切持たせない
+    // (獣が安物の鎧や兜を身に着けて落とすのを防ぐ)。種族定義で明示した
+    // equip_kind / equip_tval と役割装備は製作者の明示指定なので別経路で残る。
+    if (!monster.is_armament_capable()) {
+        return;
+    }
+
     // 役割装備で既に使った分を差し引いた残額が、この個体の購買力になる。
     auto budget = monster.get_monrace().get_armament_level() - calc_equipped_armament_cost(monster);
     if (budget <= 0) {
