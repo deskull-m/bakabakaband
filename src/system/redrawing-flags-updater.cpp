@@ -105,13 +105,23 @@ void RedrawingFlagsUpdater::set_flags(const EnumClassFlagGroup<InventoryArrangem
 
 void RedrawingFlagsUpdater::set_item_related_sub_window_flags()
 {
-    static constexpr auto flags = {
+    this->request_carried_item_lists_redrawing();
+    this->request_floor_item_lists_redrawing();
+    this->sub_window_flags.set(SubWindowRedrawingFlag::PLAYER);
+}
+
+/*!
+ * @brief 所持品・装備品の一覧の描き直しを予約する
+ * @details 持ち物だけの表示が変わったとき (能力の再計算・装備品の発動・選べるアイテムの印など) に呼ぶ。
+ * 足元の品の表示も変わりうるとき (充填・使用回数・鑑定など) は set_item_related_sub_window_flags() を使う。
+ */
+void RedrawingFlagsUpdater::request_carried_item_lists_redrawing()
+{
+    static constexpr auto flags_swrf = {
         SubWindowRedrawingFlag::INVENTORY,
         SubWindowRedrawingFlag::EQUIPMENT,
-        SubWindowRedrawingFlag::PLAYER,
     };
-    this->sub_window_flags.set(flags);
-    this->request_floor_item_lists_redrawing();
+    this->sub_window_flags.set(flags_swrf);
 }
 
 /*!

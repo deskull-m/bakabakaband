@@ -400,13 +400,9 @@ static void generate_unnatural_random_artifact(
     msg_print_wizard(creature, CHEAT_OBJECT,
         _("パワー %d で 価値 %d のランダムアーティファクト生成 バイアスは「%s」", "Random artifact generated - Power:%d Value:%d Bias:%s."), max_powers,
         total_flags, ARTIFACT_BIAS_NAMES.at(o_ptr->artifact_bias).data());
-    static constexpr auto flags = {
-        SubWindowRedrawingFlag::INVENTORY,
-        SubWindowRedrawingFlag::EQUIPMENT,
-        SubWindowRedrawingFlag::FLOOR_ITEMS,
-        SubWindowRedrawingFlag::FOUND_ITEMS,
-    };
-    RedrawingFlagsUpdater::get_instance().set_flags(flags);
+    auto &rfu = RedrawingFlagsUpdater::get_instance();
+    rfu.request_carried_item_lists_redrawing();
+    rfu.request_floor_item_lists_redrawing();
 }
 
 /*!

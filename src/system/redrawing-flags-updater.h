@@ -117,6 +117,7 @@ public:
     void set_item_related_sub_window_flags();
 
     //! 床のアイテムを表示するサブウィンドウ (FLOOR_ITEMS/FOUND_ITEMS) の再描画をまとめてセットする
+    void request_carried_item_lists_redrawing();
     void request_floor_item_lists_redrawing();
 
     //! 呪文情報サブウィンドウ (SPELL/ITEM_KNOWLEDGE) の再描画をまとめてセットする

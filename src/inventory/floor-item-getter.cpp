@@ -350,10 +350,6 @@ tl::optional<short> get_item_floor(CreatureEntity &creature, std::string_view pm
     }
 
     auto &rfu = RedrawingFlagsUpdater::get_instance();
-    static constexpr auto flags = {
-        SubWindowRedrawingFlag::INVENTORY,
-        SubWindowRedrawingFlag::EQUIPMENT,
-    };
     while (!fis.done) {
         int ni = 0;
         int ne = 0;
@@ -376,7 +372,7 @@ tl::optional<short> get_item_floor(CreatureEntity &creature, std::string_view pm
             fis.toggle = !fis.toggle;
         }
 
-        rfu.set_flags(flags);
+        rfu.request_carried_item_lists_redrawing();
         window_stuff(creature);
         COMMAND_CODE get_item_label = 0;
         if (command_wrk == USE_INVEN) {
@@ -938,7 +934,7 @@ tl::optional<short> get_item_floor(CreatureEntity &creature, std::string_view pm
         toggle_inventory_equipment();
     }
 
-    rfu.set_flags(flags);
+    rfu.request_carried_item_lists_redrawing();
     window_stuff(creature);
     prt("", 0, 0);
     if (fis.oops && !str.empty()) {

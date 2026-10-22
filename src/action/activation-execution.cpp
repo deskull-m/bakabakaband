@@ -321,11 +321,7 @@ void exe_activate(CreatureEntity &creature, INVENTORY_IDX i_idx)
     sound(SoundKind::ZAP);
     if (ae.item->has_activation()) {
         activate_artifact(creature, ae.item);
-        static constexpr auto flags = {
-            SubWindowRedrawingFlag::INVENTORY,
-            SubWindowRedrawingFlag::EQUIPMENT,
-        };
-        RedrawingFlagsUpdater::get_instance().set_flags(flags);
+        RedrawingFlagsUpdater::get_instance().request_carried_item_lists_redrawing();
         return;
     }
 
