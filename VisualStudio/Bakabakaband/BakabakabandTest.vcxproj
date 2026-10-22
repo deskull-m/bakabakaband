@@ -86,6 +86,7 @@
     <ClCompile Include="..\..\src\test\io\test-macro-configurations-store.cpp" />
     <ClCompile Include="..\..\src\test\io\test-pref-file-expressor.cpp" />
     <ClCompile Include="..\..\src\test\io\test-tokenizer.cpp" />
+    <ClCompile Include="..\..\src\test\knowledge\test-knowledge-features.cpp" />
     <ClCompile Include="..\..\src\test\locale\test-character-encoding.cpp" />
     <ClCompile Include="..\..\src\test\lore\test-monster-lore-snapshot.cpp" />
     <ClCompile Include="..\..\src\test\mspell\test-mspell-projection-table.cpp" />

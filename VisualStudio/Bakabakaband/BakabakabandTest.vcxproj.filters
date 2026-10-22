@@ -25,6 +25,9 @@
     <Filter Include="io">
       <UniqueIdentifier>{c8b717ff-2016-4112-a724-c2a1d4bd249b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="knowledge">
+      <UniqueIdentifier>{3f7c1a28-9d64-4a1e-b2f0-7c5e1a9b4d60}</UniqueIdentifier>
+    </Filter>
     <Filter Include="locale">
       <UniqueIdentifier>{b12e46f4-8b51-438b-8c32-54972ab14e8f}</UniqueIdentifier>
     </Filter>
@@ -136,6 +139,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\test\io\test-tokenizer.cpp">
       <Filter>io</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\test\knowledge\test-knowledge-features.cpp">
+      <Filter>knowledge</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\test\locale\test-character-encoding.cpp">
       <Filter>locale</Filter>
