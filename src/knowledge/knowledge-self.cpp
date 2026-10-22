@@ -22,6 +22,7 @@
 #include "system/creature-entity.h"
 #include "system/floor/town-info.h"
 #include "system/floor/town-list.h"
+#include "system/floor/town-records.h"
 #include "system/inner-game-data.h"
 #include "system/item-entity.h"
 #include "util/angband-files.h"
@@ -202,7 +203,7 @@ void do_cmd_knowledge_home(CreatureEntity &creature)
     }
 
     constexpr auto home_inventory = _("我が家のアイテム", "Home Inventory");
-    const auto &store = TownList::get_instance().get_town(1).get_store(StoreSaleType::HOME);
+    const auto &store = TownList::get_instance().get_town(TownId::OUTPOST).get_store(StoreSaleType::HOME);
     if (store.stock_num == 0) {
         angband_fclose(fff);
         FileDisplayer(creature.name).display(true, file_name, 0, 0, home_inventory);

@@ -9,6 +9,7 @@
 #include "system/creature-entity.h"
 #include "system/floor/town-info.h"
 #include "system/floor/town-list.h"
+#include "system/floor/town-records.h"
 #include "system/item-entity.h"
 #include "util/object-sort.h"
 #include <algorithm>
@@ -203,6 +204,6 @@ bool combine_and_reorder_home(CreatureEntity &creature, Store &store)
  */
 bool combine_and_reorder_home(CreatureEntity &creature, const StoreSaleType store_num)
 {
-    auto &store = TownList::get_instance().get_town(1).get_store(store_num);
+    auto &store = TownList::get_instance().get_town(TownId::OUTPOST).get_store(store_num);
     return combine_and_reorder_home(creature, store);
 }
