@@ -27,13 +27,13 @@
 #include "sv-definition/sv-ring-types.h"
 #include "system/angband-system.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/dungeon/quest-definition.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/redrawing-flags-updater.h"
 #include "system/terrain/terrain-definition.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
@@ -43,9 +43,9 @@
 
 static void update_sun_light(CreatureEntity &creature)
 {
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.request_monster_update_and_map_redrawing();
-    rfu.set_flag(StatusRecalculatingFlag::MONSTER_LITE);
+    auto &dur = DeferredUpdateRequests::get_instance();
+    dur.request_monster_update_and_map_redrawing();
+    dur.set_flag(StatusRecalculatingFlag::MONSTER_LITE);
     if ((creature.get_floor()->grid_array[creature.y][creature.x].info & CAVE_GLOW) != 0) {
         set_superstealth(creature, false);
     }
@@ -310,7 +310,7 @@ void update_dungeon_feeling(CreatureEntity &creature)
     df.set_feeling(new_feeling);
     do_cmd_feeling(creature);
     select_floor_music(creature);
-    RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::DEPTH);
+    DeferredUpdateRequests::get_instance().set_flag(MainWindowRedrawingFlag::DEPTH);
     if (disturb_minor) {
         disturb(creature, false, false);
     }
@@ -342,12 +342,12 @@ void glow_deep_lava_and_bldg(CreatureEntity &creature)
         }
     }
 
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
+    auto &dur = DeferredUpdateRequests::get_instance();
     static constexpr auto flags_srf = {
         StatusRecalculatingFlag::VIEW,
         StatusRecalculatingFlag::LITE,
         StatusRecalculatingFlag::MONSTER_LITE,
     };
-    rfu.set_flags(flags_srf);
-    rfu.set_flag(MainWindowRedrawingFlag::MAP);
+    dur.set_flags(flags_srf);
+    dur.set_flag(MainWindowRedrawingFlag::MAP);
 }

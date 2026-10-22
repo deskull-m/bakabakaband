@@ -15,8 +15,8 @@
 #include "status/action-setter.h"
 #include "sv-definition/sv-lite-types.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/item-entity.h"
-#include "system/redrawing-flags-updater.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
 
@@ -52,7 +52,7 @@ static void do_cmd_refill_lamp(CreatureEntity &creature)
     }
 
     vary_item(creature, i_idx, -1);
-    RedrawingFlagsUpdater::get_instance().request_light_fuel_change_updates();
+    DeferredUpdateRequests::get_instance().request_light_fuel_change_updates();
 }
 
 /*!
@@ -89,7 +89,7 @@ static void do_cmd_refill_torch(CreatureEntity &creature)
     }
 
     vary_item(creature, i_idx, -1);
-    RedrawingFlagsUpdater::get_instance().request_light_fuel_change_updates();
+    DeferredUpdateRequests::get_instance().request_light_fuel_change_updates();
 }
 
 /*!

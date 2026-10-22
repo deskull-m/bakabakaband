@@ -22,7 +22,7 @@
 #include "spell/spells-summon.h"
 #include "status/shape-changer.h"
 #include "system/creature-entity.h"
-#include "system/redrawing-flags-updater.h"
+#include "system/deferred-update-requests.h"
 #include "target/target-getter.h"
 #include "util/dice.h"
 #include "view/display-messages.h"
@@ -90,7 +90,7 @@ tl::optional<std::string> do_chaos_spell(CreatureEntity &creature, SPELL_IDX spe
             if (!(creature.has_special_attack(ATTACK_CONFUSE))) {
                 msg_print(_("あなたの手は光り始めた。", "Your hands start glowing."));
                 creature.add_special_attack(ATTACK_CONFUSE);
-                RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
+                DeferredUpdateRequests::get_instance().set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
             }
         }
     } break;

@@ -9,8 +9,8 @@
 #include "player/player-status-flags.h"
 #include "spell-kind/spells-floor.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/item-entity.h"
-#include "system/redrawing-flags-updater.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
 #include <fmt/format.h>
@@ -72,7 +72,7 @@ bool inc_stat(CreatureEntity &creature, int stat)
         creature.set_stat_max(stat, value);
     }
 
-    RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
+    DeferredUpdateRequests::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
     return true;
 }
 
@@ -179,9 +179,9 @@ bool dec_stat(CreatureEntity &creature, int stat, int amount, int permanent)
     if (res) {
         creature.set_stat_cur(stat, cur);
         creature.set_stat_max(stat, max);
-        auto &rfu = RedrawingFlagsUpdater::get_instance();
-        rfu.set_flag(MainWindowRedrawingFlag::ABILITY_SCORE);
-        rfu.set_flag(StatusRecalculatingFlag::BONUS);
+        auto &dur = DeferredUpdateRequests::get_instance();
+        dur.set_flag(MainWindowRedrawingFlag::ABILITY_SCORE);
+        dur.set_flag(StatusRecalculatingFlag::BONUS);
     }
 
     return res;
@@ -196,9 +196,9 @@ bool res_stat(CreatureEntity &creature, int stat)
 {
     if (creature.get_stat_cur(stat) != creature.get_stat_max(stat)) {
         creature.set_stat_cur(stat, creature.get_stat_max(stat));
-        auto &rfu = RedrawingFlagsUpdater::get_instance();
-        rfu.set_flag(StatusRecalculatingFlag::BONUS);
-        rfu.set_flag(MainWindowRedrawingFlag::ABILITY_SCORE);
+        auto &dur = DeferredUpdateRequests::get_instance();
+        dur.set_flag(StatusRecalculatingFlag::BONUS);
+        dur.set_flag(MainWindowRedrawingFlag::ABILITY_SCORE);
         return true;
     }
 
@@ -329,10 +329,10 @@ bool lose_all_info(CreatureEntity &creature)
         o_ptr->ident.reset(IdentificationFlag::SENSE);
     }
 
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.set_flag(StatusRecalculatingFlag::BONUS);
-    rfu.request_inventory_arrangement();
-    rfu.set_item_related_sub_window_flags();
+    auto &dur = DeferredUpdateRequests::get_instance();
+    dur.set_flag(StatusRecalculatingFlag::BONUS);
+    dur.request_inventory_arrangement();
+    dur.set_item_related_sub_window_flags();
     wiz_dark(creature);
     return true;
 }

@@ -20,9 +20,9 @@
 #include "system/baseitem/baseitem-definition.h"
 #include "system/baseitem/baseitem-list.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/redrawing-flags-updater.h"
 #include "system/terrain/terrain-definition.h"
 #include "system/terrain/terrain-list.h"
 #include "term/gameterm.h"
@@ -623,6 +623,6 @@ int interpret_pref_file(CreatureEntity &creature, std::string_view buf)
     }
 
     // 記号や表示のオプションが変わると、マップの表示も変わりうる
-    RedrawingFlagsUpdater::get_instance().request_map_redrawing();
+    DeferredUpdateRequests::get_instance().request_map_redrawing();
     return 0;
 }

@@ -51,12 +51,12 @@
 #include "system/angband-system.h"
 #include "system/creature-entity.h"
 #include "system/creature-timed-effect-types.h"
+#include "system/deferred-update-requests.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/floor/floor-info.h"
 #include "system/floor/wilderness-grid.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/redrawing-flags-updater.h"
 #include "term/screen-processor.h"
 #include "timed-effect/player-stun.h"
 #include "tracking/health-bar-tracker.h"
@@ -226,14 +226,14 @@ void process_player(CreatureEntity &creature)
         set_lightspeed(creature, creature.get_timed_effect(CreatureTimedEffect::LIGHTSPEED) - 1, true);
     }
 
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
+    auto &dur = DeferredUpdateRequests::get_instance();
     if (CreatureClass(creature).equals(PlayerClassType::FORCETRAINER) && get_current_ki(creature)) {
         if (get_current_ki(creature) < 40) {
             set_current_ki(creature, true, 0);
         } else {
             set_current_ki(creature, false, -40);
         }
-        rfu.set_flag(StatusRecalculatingFlag::BONUS);
+        dur.set_flag(StatusRecalculatingFlag::BONUS);
     }
 
     if (creature.get_action() == ACTION_LEARN) {
@@ -248,7 +248,7 @@ void process_player(CreatureEntity &creature)
             creature.sub_current_mp_with_frac(cost, cost_frac);
         }
 
-        rfu.set_flag(MainWindowRedrawingFlag::MP);
+        dur.set_flag(MainWindowRedrawingFlag::MP);
     }
 
     if (CreatureClass(creature).samurai_stance_is(SamuraiStanceType::MUSOU)) {
@@ -256,13 +256,13 @@ void process_player(CreatureEntity &creature)
             set_action(creature, ACTION_NONE);
         } else {
             creature.sub_current_mp(2);
-            rfu.set_flag(MainWindowRedrawingFlag::MP);
+            dur.set_flag(MainWindowRedrawingFlag::MP);
         }
     }
 
     /*** Handle actual user input ***/
     while (creature.get_energy_need() <= 0) {
-        rfu.set_flag(SubWindowRedrawingFlag::PLAYER);
+        dur.set_flag(SubWindowRedrawingFlag::PLAYER);
         creature.set_sutemi(false);
         creature.set_counter(false);
         creature.set_now_damaged(false);
@@ -296,7 +296,7 @@ void process_player(CreatureEntity &creature)
                     set_action(creature, ACTION_NONE);
                 }
 
-                rfu.set_flag(MainWindowRedrawingFlag::ACTION);
+                dur.set_flag(MainWindowRedrawingFlag::ACTION);
             }
 
             energy.set_player_turn_energy(100);
@@ -308,7 +308,7 @@ void process_player(CreatureEntity &creature)
             travel.step(creature);
         } else if (command_rep) {
             command_rep--;
-            rfu.set_flag(MainWindowRedrawingFlag::ACTION);
+            dur.set_flag(MainWindowRedrawingFlag::ACTION);
             redraw_stuff(creature);
             msg_flag = false;
             prt("", 0, 0);
@@ -321,7 +321,7 @@ void process_player(CreatureEntity &creature)
                 SubWindowRedrawingFlag::SIGHT_MONSTERS,
                 SubWindowRedrawingFlag::PETS,
             };
-            rfu.set_flags(flags);
+            dur.set_flags(flags);
             window_stuff(creature);
 
             can_save = true;
@@ -341,7 +341,7 @@ void process_player(CreatureEntity &creature)
             }
 
             if (creature.is_hallucinated()) {
-                rfu.set_flag(MainWindowRedrawingFlag::MAP);
+                dur.set_flag(MainWindowRedrawingFlag::MAP);
             }
 
             // 感知の印は下で行動ごとに外すので、途切れないよう外す前に感知し直すか、印を保つ
@@ -381,7 +381,7 @@ void process_player(CreatureEntity &creature)
                         update_monster(creature, m_idx, false);
                         HealthBarTracker::get_instance().set_flag_if_tracking(m_idx);
                         if (monster.is_riding()) {
-                            rfu.set_flag(MainWindowRedrawingFlag::UHEALTH);
+                            dur.set_flag(MainWindowRedrawingFlag::UHEALTH);
                         }
 
                         lite_spot(creature, monster.get_position());
@@ -397,17 +397,17 @@ void process_player(CreatureEntity &creature)
                 }
 
                 mane_data->new_mane = false;
-                rfu.set_flag(MainWindowRedrawingFlag::IMITATION);
+                dur.set_flag(MainWindowRedrawingFlag::IMITATION);
             }
 
             if (creature.get_action() == ACTION_LEARN) {
                 auto mane_data = CreatureClass(creature).get_specific_data<bluemage_data_type>();
                 mane_data->new_magic_learned = false;
-                rfu.set_flag(MainWindowRedrawingFlag::ACTION);
+                dur.set_flag(MainWindowRedrawingFlag::ACTION);
             }
 
             if (creature.is_timewalking() && (creature.get_energy_need() > -1000)) {
-                rfu.request_monster_update_and_map_redrawing();
+                dur.request_monster_update_and_map_redrawing();
                 msg_print(_("「時は動きだす…」", "You feel time flowing around you once more."));
                 msg_erase();
                 creature.set_timewalking(false);

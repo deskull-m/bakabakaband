@@ -28,10 +28,10 @@
 #include "system/artifact/artifact-record.h"
 #include "system/baseitem/baseitem-allocation.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
-#include "system/redrawing-flags-updater.h"
 #include "target/projection-path-calculator.h"
 #include "util/finalizer.h"
 #include "view/display-messages.h"
@@ -218,7 +218,7 @@ void floor_item_increase(CreatureEntity &creature, INVENTORY_IDX i_idx, ITEM_NUM
 
     num -= o_ptr->number;
     o_ptr->number += num;
-    RedrawingFlagsUpdater::get_instance().request_floor_item_lists_redrawing();
+    DeferredUpdateRequests::get_instance().request_floor_item_lists_redrawing();
 }
 
 /*!
@@ -238,7 +238,7 @@ void floor_item_optimize(CreatureEntity &creature, INVENTORY_IDX i_idx)
     }
 
     delete_object_idx(creature, i_idx);
-    RedrawingFlagsUpdater::get_instance().request_floor_item_lists_redrawing();
+    DeferredUpdateRequests::get_instance().request_floor_item_lists_redrawing();
 }
 
 /*!
@@ -267,7 +267,7 @@ void delete_object_idx(CreatureEntity &creature, OBJECT_IDX o_idx)
 
     floor.prevent_repeat_floor_item_idx = true;
 
-    RedrawingFlagsUpdater::get_instance().request_floor_item_lists_redrawing();
+    DeferredUpdateRequests::get_instance().request_floor_item_lists_redrawing();
 }
 
 /*!
@@ -463,7 +463,7 @@ short drop_near(CreatureEntity &subject, ItemEntity &drop_item, const Pos2D &pos
 
     const auto is_located = subject.is_located_at(pos_drop);
     if (is_located) {
-        RedrawingFlagsUpdater::get_instance().request_floor_item_lists_redrawing();
+        DeferredUpdateRequests::get_instance().request_floor_item_lists_redrawing();
     }
 
     if (show_drop_message && is_located) {

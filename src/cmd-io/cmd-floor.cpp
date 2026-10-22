@@ -9,7 +9,7 @@
 #include "io/screen-util.h"
 #include "main/sound-of-music.h"
 #include "system/creature-entity.h"
-#include "system/redrawing-flags-updater.h"
+#include "system/deferred-update-requests.h"
 #include "target/target-checker.h"
 #include "target/target-setter.h"
 #include "target/target-types.h"
@@ -45,7 +45,7 @@ void do_cmd_look(CreatureEntity &creature)
         SubWindowRedrawingFlag::SIGHT_MONSTERS,
         SubWindowRedrawingFlag::FLOOR_ITEMS,
     };
-    RedrawingFlagsUpdater::get_instance().set_flags(flags);
+    DeferredUpdateRequests::get_instance().set_flags(flags);
     window_stuff(creature);
     output_bot_json_look_snapshot(creature);
     if (target_set(creature, TARGET_LOOK).is_okay()) {
@@ -97,6 +97,6 @@ void do_cmd_locate(CreatureEntity &creature)
     }
 
     verify_panel(creature);
-    RedrawingFlagsUpdater::get_instance().request_monster_update_and_map_redrawing();
+    DeferredUpdateRequests::get_instance().request_monster_update_and_map_redrawing();
     handle_stuff(creature);
 }

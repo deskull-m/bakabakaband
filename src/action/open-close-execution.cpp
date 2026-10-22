@@ -24,11 +24,11 @@
 #include "system/baseitem/baseitem-definition.h"
 #include "system/baseitem/baseitem-list.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
-#include "system/redrawing-flags-updater.h"
 #include "system/terrain/terrain-definition.h"
 #include "system/terrain/terrain-list.h"
 #include "term/screen-processor.h"
@@ -242,7 +242,7 @@ bool exe_disarm_chest(CreatureEntity &creature, POSITION y, POSITION x, OBJECT_I
         msg_print(_("箱に仕掛けられていたトラップを解除した。", "You have disarmed the chest."));
         gain_exp(creature, o_ptr->pval);
         o_ptr->pval = (0 - o_ptr->pval);
-        RedrawingFlagsUpdater::get_instance().request_floor_item_lists_redrawing();
+        DeferredUpdateRequests::get_instance().request_floor_item_lists_redrawing();
     } else if ((i > 5) && (randint1(i) > 5)) {
         more = true;
         if (flush_failure) {

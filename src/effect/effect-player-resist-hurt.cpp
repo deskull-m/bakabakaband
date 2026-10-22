@@ -26,10 +26,10 @@
 #include "status/experience.h"
 #include "status/shape-changer.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/item-entity.h"
 #include "system/player-type-definition.h"
-#include "system/redrawing-flags-updater.h"
 #include "view/display-messages.h"
 #include "world/world.h"
 
@@ -434,9 +434,9 @@ void effect_player_lite(CreatureEntity &creature, EffectPlayerType *ep_ptr)
     creature.set_timed_effect(CreatureTimedEffect::WRAITH_FORM, 0);
     msg_print(_("閃光のため非物質的な影の存在でいられなくなった。", "The light forces you out of your incorporeal shadow form."));
 
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.request_monster_update_and_map_redrawing();
-    rfu.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
+    auto &dur = DeferredUpdateRequests::get_instance();
+    dur.request_monster_update_and_map_redrawing();
+    dur.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
 }
 
 void effect_player_dark(CreatureEntity &creature, EffectPlayerType *ep_ptr)

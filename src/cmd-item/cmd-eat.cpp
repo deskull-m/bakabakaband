@@ -50,10 +50,10 @@
 #include "sv-definition/sv-junk-types.h"
 #include "sv-definition/sv-other-types.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/redrawing-flags-updater.h"
 #include "util/dice.h"
 #include "util/string-processor.h"
 #include "view/display-messages.h"
@@ -490,11 +490,11 @@ static bool exe_eat_charge_of_magic_device(CreatureEntity &creature, ItemEntity 
 
     const auto staff = is_staff ? _("杖", "staff") : _("魔法棒", "wand");
 
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
+    auto &dur = DeferredUpdateRequests::get_instance();
     if (o_ptr->pval == 0) {
         msg_print(_("この{}にはもう魔力が残っていない。", "The {} has no charges left."), staff);
         o_ptr->ident.set(IdentificationFlag::EMPTY);
-        rfu.set_item_related_sub_window_flags();
+        dur.set_item_related_sub_window_flags();
         return true;
     }
 
@@ -528,7 +528,7 @@ static bool exe_eat_charge_of_magic_device(CreatureEntity &creature, ItemEntity 
 
     // 充填が変わったので、足元の品も含めてアイテムの一覧の描き直しを予約する。
     // 呼び出し元での予約は、充填を変える前のメッセージの表示で使われることがあるので当てにしない
-    rfu.set_item_related_sub_window_flags();
+    dur.set_item_related_sub_window_flags();
     return true;
 }
 
@@ -589,9 +589,9 @@ void exe_eat_food(CreatureEntity &creature, INVENTORY_IDX i_idx)
         gain_exp(creature, (level + (creature.get_level() >> 1)) / creature.get_level());
     }
 
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.request_inventory_arrangement();
-    rfu.set_item_related_sub_window_flags();
+    auto &dur = DeferredUpdateRequests::get_instance();
+    dur.request_inventory_arrangement();
+    dur.set_item_related_sub_window_flags();
 
     /* Undeads drain recharge of magic device */
     if (exe_eat_charge_of_magic_device(creature, item.get(), i_idx)) {

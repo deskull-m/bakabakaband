@@ -26,6 +26,7 @@
 #include "system/artifact-type-definition.h"
 #include "system/artifact/artifact-record.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/dungeon/quest-definition.h"
 #include "system/enums/terrain/terrain-tag.h"
@@ -33,7 +34,6 @@
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/redrawing-flags-updater.h"
 #include "system/terrain/terrain-definition.h"
 #include "system/terrain/terrain-list.h"
 #include "view/display-messages.h"
@@ -97,9 +97,9 @@ void wiz_lite(CreatureEntity &creature, bool ninja)
         }
     }
 
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.request_monster_update_and_map_redrawing();
-    rfu.request_floor_item_lists_redrawing();
+    auto &dur = DeferredUpdateRequests::get_instance();
+    dur.request_monster_update_and_map_redrawing();
+    dur.request_floor_item_lists_redrawing();
     if (floor.grid_array[creature.y][creature.x].info & CAVE_GLOW) {
         set_superstealth(creature, false);
     }
@@ -142,10 +142,10 @@ void wiz_dark(CreatureEntity &creature)
     /* Forget travel route when we have forgotten map */
     Travel::get_instance().reset_goal();
 
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.request_monster_update_and_map_redrawing();
-    rfu.request_sight_recalculation();
-    rfu.request_floor_item_lists_redrawing();
+    auto &dur = DeferredUpdateRequests::get_instance();
+    dur.request_monster_update_and_map_redrawing();
+    dur.request_sight_recalculation();
+    dur.request_floor_item_lists_redrawing();
 }
 
 /*
@@ -196,7 +196,7 @@ void map_area(CreatureEntity &creature, POSITION range)
         }
     }
 
-    RedrawingFlagsUpdater::get_instance().request_map_redrawing();
+    DeferredUpdateRequests::get_instance().request_map_redrawing();
 }
 
 /*!
@@ -426,10 +426,10 @@ bool destroy_area(CreatureEntity &creature, const POSITION y1, const POSITION x1
     }
 
     forget_flow(floor);
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.request_monster_update_and_map_redrawing();
-    rfu.request_sight_recalculation();
-    rfu.set_flag(StatusRecalculatingFlag::FLOW);
+    auto &dur = DeferredUpdateRequests::get_instance();
+    dur.request_monster_update_and_map_redrawing();
+    dur.request_sight_recalculation();
+    dur.set_flag(StatusRecalculatingFlag::FLOW);
     if (floor.grid_array[creature.y][creature.x].info & CAVE_GLOW) {
         set_superstealth(creature, false);
     }

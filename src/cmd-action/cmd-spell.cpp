@@ -59,9 +59,9 @@
 #include "status/experience.h"
 #include "system/baseitem/baseitem-key.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/floor/floor-info.h"
 #include "system/item-entity.h"
-#include "system/redrawing-flags-updater.h"
 #include "term/screen-processor.h"
 #include "term/z-form.h"
 #include "util/bit-flags-calculator.h"
@@ -379,7 +379,7 @@ static int get_spell(CreatureEntity &creature, SPELL_IDX *sn, std::string_view p
     auto flag = false;
     auto redraw = false;
 
-    RedrawingFlagsUpdater::get_instance().set_flag(SubWindowRedrawingFlag::SPELL);
+    DeferredUpdateRequests::get_instance().set_flag(SubWindowRedrawingFlag::SPELL);
     window_stuff(creature);
 
     const auto spell_category = spell_category_name(mp_ptr->spell_book);
@@ -502,7 +502,7 @@ static int get_spell(CreatureEntity &creature, SPELL_IDX *sn, std::string_view p
         screen_load();
     }
 
-    RedrawingFlagsUpdater::get_instance().set_flag(SubWindowRedrawingFlag::SPELL);
+    DeferredUpdateRequests::get_instance().set_flag(SubWindowRedrawingFlag::SPELL);
     window_stuff(creature);
 
     /* Abort if needed */
@@ -691,9 +691,9 @@ static void change_realm2(CreatureEntity &creature, PlayerRealm &pr, RealmType n
     creature.set_old_realm(creature.get_old_realm() | (1U << (enum2i(pr.realm2().to_enum()) - 1)));
     pr.set(pr.realm1().to_enum(), next_realm);
 
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.set_flag(StatusRecalculatingFlag::SPELLS);
-    rfu.set_flag(InventoryArrangementFlag::REORDER);
+    auto &dur = DeferredUpdateRequests::get_instance();
+    dur.set_flag(StatusRecalculatingFlag::SPELLS);
+    dur.set_flag(InventoryArrangementFlag::REORDER);
     handle_stuff(creature);
 
     /* Load an autopick preference file */
@@ -883,8 +883,8 @@ void do_cmd_study(CreatureEntity &creature)
     /* One less spell available */
     creature.set_learned_spells(creature.get_learned_spells() + 1);
 
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.set_flag(StatusRecalculatingFlag::SPELLS);
+    auto &dur = DeferredUpdateRequests::get_instance();
+    dur.set_flag(StatusRecalculatingFlag::SPELLS);
     update_creature(creature);
 }
 
@@ -1268,7 +1268,7 @@ bool do_cmd_cast(CreatureEntity &creature)
         over_exerted = true;
     }
 
-    RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::MP);
+    DeferredUpdateRequests::get_instance().set_flag(MainWindowRedrawingFlag::MP);
 
     /* Over-exert the player */
     if (over_exerted) {
@@ -1308,6 +1308,6 @@ bool do_cmd_cast(CreatureEntity &creature)
         }
     }
 
-    RedrawingFlagsUpdater::get_instance().set_flag(SubWindowRedrawingFlag::PLAYER);
+    DeferredUpdateRequests::get_instance().set_flag(SubWindowRedrawingFlag::PLAYER);
     return true; //!< @note 詠唱した
 }

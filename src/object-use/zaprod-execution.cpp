@@ -20,8 +20,8 @@
 #include "sv-definition/sv-other-types.h"
 #include "sv-definition/sv-rod-types.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/item-entity.h"
-#include "system/redrawing-flags-updater.h"
 #include "target/target-getter.h"
 #include "term/screen-processor.h"
 #include "util/bit-flags-calculator.h"
@@ -126,8 +126,8 @@ void ObjectZapRodEntity::execute(INVENTORY_IDX i_idx)
         item->timeout += base_pval;
     }
 
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.request_inventory_arrangement();
+    auto &dur = DeferredUpdateRequests::get_instance();
+    dur.request_inventory_arrangement();
     if (!(item->is_aware())) {
         chg_virtue(creature, Virtue::PATIENCE, -1);
         chg_virtue(creature, Virtue::CHANCE, 1);
@@ -140,7 +140,7 @@ void ObjectZapRodEntity::execute(INVENTORY_IDX i_idx)
         gain_exp(creature, (item_level + (creature.get_level() >> 1)) / creature.get_level());
     }
 
-    rfu.set_item_related_sub_window_flags();
+    dur.set_item_related_sub_window_flags();
 }
 
 bool ObjectZapRodEntity::check_can_zap()

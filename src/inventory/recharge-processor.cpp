@@ -8,9 +8,9 @@
 #include "object/object-mark-types.h"
 #include "object/tval-types.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/floor/floor-info.h"
 #include "system/item-entity.h"
-#include "system/redrawing-flags-updater.h"
 #include "util/string-processor.h"
 #include "view/display-messages.h"
 
@@ -93,9 +93,9 @@ void recharge_magic_items(CreatureEntity &creature)
         }
     }
 
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
+    auto &dur = DeferredUpdateRequests::get_instance();
     if (changed) {
-        rfu.set_flag(SubWindowRedrawingFlag::EQUIPMENT);
+        dur.set_flag(SubWindowRedrawingFlag::EQUIPMENT);
         wild_regen = 20;
     }
 
@@ -135,7 +135,7 @@ void recharge_magic_items(CreatureEntity &creature)
     }
 
     if (changed) {
-        rfu.set_flag(SubWindowRedrawingFlag::INVENTORY);
+        dur.set_flag(SubWindowRedrawingFlag::INVENTORY);
         wild_regen = 20;
     }
 
@@ -154,7 +154,7 @@ void recharge_magic_items(CreatureEntity &creature)
             }
 
             if (is_listed && (calc_displayed_charging_count(*item_ptr) != old_charging_count)) {
-                rfu.request_floor_item_lists_redrawing();
+                dur.request_floor_item_lists_redrawing();
             }
         }
     }

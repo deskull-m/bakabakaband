@@ -15,12 +15,12 @@
 #include "player/player-sex.h"
 #include "system/angband-system.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/redrawing-flags-updater.h"
 #include "target/target-checker.h"
 #include "term/screen-processor.h"
 #include "tracking/health-bar-tracker.h"
@@ -201,16 +201,16 @@ bool trans_sex(CreatureEntity &creature)
 
     screen_load();
     const auto flags = { StatusRecalculatingFlag::BONUS, StatusRecalculatingFlag::HP, StatusRecalculatingFlag::MP, StatusRecalculatingFlag::SPELLS };
-    RedrawingFlagsUpdater::get_instance().set_flags(flags);
+    DeferredUpdateRequests::get_instance().set_flags(flags);
     const auto flags2 = {
         MainWindowRedrawingFlag::BASIC,
         MainWindowRedrawingFlag::HP,
         MainWindowRedrawingFlag::MP,
         MainWindowRedrawingFlag::ABILITY_SCORE,
     };
-    RedrawingFlagsUpdater::get_instance().set_flags(flags2);
+    DeferredUpdateRequests::get_instance().set_flags(flags2);
     const auto flags3 = { SubWindowRedrawingFlag::PLAYER };
-    RedrawingFlagsUpdater::get_instance().set_flags(flags3);
+    DeferredUpdateRequests::get_instance().set_flags(flags3);
 
     sp_ptr = &sex_info[creature.psex];
     handle_stuff(creature);

@@ -9,8 +9,8 @@
 #include "io/input-key-requester.h" //!< @todo 相互依存している、後で何とかする.
 #include "main/sound-of-music.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/player-type-definition.h"
-#include "system/redrawing-flags-updater.h"
 #include "term/gameterm.h"
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
@@ -257,9 +257,9 @@ bool input_check_strict(CreatureEntity &creature, std::string_view prompt, EnumC
     }
 
     const auto buf = ss.str();
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
+    auto &dur = DeferredUpdateRequests::get_instance();
     if (auto_more) {
-        rfu.set_flag(SubWindowRedrawingFlag::MESSAGE);
+        dur.set_flag(SubWindowRedrawingFlag::MESSAGE);
         window_stuff(creature);
         num_more = 0;
     }
@@ -269,7 +269,7 @@ bool input_check_strict(CreatureEntity &creature, std::string_view prompt, EnumC
     prt(buf, 0, 0);
     if (mode.has_not(UserCheck::NO_HISTORY) && creature.is_playing()) {
         message_add(buf);
-        rfu.set_flag(SubWindowRedrawingFlag::MESSAGE);
+        dur.set_flag(SubWindowRedrawingFlag::MESSAGE);
         window_stuff(creature);
     }
 

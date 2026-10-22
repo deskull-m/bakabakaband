@@ -22,8 +22,8 @@
 #include "player-base/player-class.h"
 #include "system/angband-exceptions.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/item-entity.h"
-#include "system/redrawing-flags-updater.h"
 #include "view/display-messages.h"
 
 /*!
@@ -56,7 +56,7 @@ bool recharge(CreatureEntity &creature, int power)
         return false;
     }
 
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
+    auto &dur = DeferredUpdateRequests::get_instance();
     const auto item_level = item->get_baseitem_level();
 
     TIME_EFFECT recharge_amount;
@@ -114,8 +114,8 @@ bool recharge(CreatureEntity &creature, int power)
     }
 
     if (is_recharge_successful) {
-        rfu.request_inventory_arrangement();
-        rfu.set_item_related_sub_window_flags();
+        dur.request_inventory_arrangement();
+        dur.set_item_related_sub_window_flags();
         return true;
     }
 
@@ -127,8 +127,8 @@ bool recharge(CreatureEntity &creature, int power)
         } else if (item->is_wand_staff()) {
             item->pval = 0;
         }
-        rfu.request_inventory_arrangement();
-        rfu.set_item_related_sub_window_flags();
+        dur.request_inventory_arrangement();
+        dur.set_item_related_sub_window_flags();
         return true;
     }
 
@@ -228,7 +228,7 @@ bool recharge(CreatureEntity &creature, int power)
         THROW_EXCEPTION(std::logic_error, "Invalid fail type!");
     }
 
-    rfu.request_inventory_arrangement();
-    rfu.set_item_related_sub_window_flags();
+    dur.request_inventory_arrangement();
+    dur.set_item_related_sub_window_flags();
     return true;
 }

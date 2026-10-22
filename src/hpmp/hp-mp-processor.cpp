@@ -32,12 +32,12 @@
 #include "status/bad-status-setter.h"
 #include "status/element-resistance.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/redrawing-flags-updater.h"
 #include "system/terrain/terrain-definition.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
@@ -483,8 +483,8 @@ bool hp_player(CreatureEntity &creature, int num)
             creature.hp_frac = 0;
         }
 
-        auto &rfu = RedrawingFlagsUpdater::get_instance();
-        rfu.set_flag(MainWindowRedrawingFlag::HP);
+        auto &dur = DeferredUpdateRequests::get_instance();
+        dur.set_flag(MainWindowRedrawingFlag::HP);
         // [提案D2 第3弾] 回復メッセージは notify_self seam でプレイヤーは 2 人称、
         // モンスターは視認時のみ 3 人称で表示される。
         if (num < 5) {

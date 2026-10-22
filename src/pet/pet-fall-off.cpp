@@ -17,10 +17,10 @@
 #include "player/player-move.h"
 #include "player/player-skill.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/redrawing-flags-updater.h"
 #include "system/terrain/terrain-definition.h"
 #include "target/target-checker.h"
 #include "view/display-messages.h"
@@ -147,7 +147,7 @@ bool process_fall_off_horse(CreatureEntity &creature, int dam, bool force)
 
     creature.dismount();
 
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
+    auto &dur = DeferredUpdateRequests::get_instance();
     static constexpr auto flags_srf = {
         StatusRecalculatingFlag::BONUS,
         StatusRecalculatingFlag::VIEW,
@@ -156,14 +156,14 @@ bool process_fall_off_horse(CreatureEntity &creature, int dam, bool force)
         StatusRecalculatingFlag::MONSTER_LITE,
         StatusRecalculatingFlag::MONSTER_STATUSES,
     };
-    rfu.set_flags(flags_srf);
+    dur.set_flags(flags_srf);
     handle_stuff(creature);
     static constexpr auto flags_swrf = {
         SubWindowRedrawingFlag::OVERHEAD,
         SubWindowRedrawingFlag::DUNGEON,
     };
-    rfu.set_flags(flags_swrf);
-    rfu.request_riding_status_redrawing();
+    dur.set_flags(flags_swrf);
+    dur.request_riding_status_redrawing();
     auto fall_dam = false;
     if (creature.has_levitation() && !force) {
         const auto m_name = monster_desc(creature, monster, 0);

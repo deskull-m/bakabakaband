@@ -39,11 +39,11 @@
 #include "realm/realm-types.h"
 #include "spell/spells-status.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/redrawing-flags-updater.h"
 #include "term/screen-processor.h"
 #include "term/z-form.h"
 #include "term/z-rand.h"
@@ -796,7 +796,7 @@ bool player_birth_as_monster(CreatureEntity &creature)
         StatusRecalculatingFlag::HP,
         StatusRecalculatingFlag::MP,
     };
-    RedrawingFlagsUpdater::get_instance().set_flags(flags);
+    DeferredUpdateRequests::get_instance().set_flags(flags);
     update_creature(creature);
     creature.hp = creature.maxhp;
     creature.set_current_mp(creature.get_max_mp());

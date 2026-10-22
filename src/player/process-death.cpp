@@ -22,10 +22,10 @@
 #include "perception/object-perception.h"
 #include "player-info/class-info.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/floor/floor-info.h"
 #include "system/floor/town-info.h"
 #include "system/floor/town-list.h"
-#include "system/redrawing-flags-updater.h"
 #include "term/gameterm.h"
 #include "term/screen-processor.h"
 #include "util/angband-files.h"
@@ -442,7 +442,7 @@ void show_death_info(CreatureEntity &creature)
     inventory_aware(creature);
     home_aware(creature);
 
-    RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
+    DeferredUpdateRequests::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
     handle_stuff_with_inventory_arrangement(creature);
     flush();
     msg_erase();

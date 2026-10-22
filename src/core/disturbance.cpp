@@ -6,7 +6,7 @@
 #include "player/attack-defense-types.h"
 #include "status/action-setter.h"
 #include "system/creature-entity.h"
-#include "system/redrawing-flags-updater.h"
+#include "system/deferred-update-requests.h"
 #include "target/target-checker.h"
 #include "term/screen-processor.h"
 
@@ -31,9 +31,9 @@ void stop_running(CreatureEntity &creature)
         StatusRecalculatingFlag::TORCH,
         StatusRecalculatingFlag::FLOW,
     };
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.set_flags(flags);
-    rfu.request_floor_item_lists_redrawing();
+    auto &dur = DeferredUpdateRequests::get_instance();
+    dur.set_flags(flags);
+    dur.request_floor_item_lists_redrawing();
 }
 
 /*
@@ -49,10 +49,10 @@ void disturb(CreatureEntity &creature, bool stop_search, bool stop_travel)
         return;
     }
 
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
+    auto &dur = DeferredUpdateRequests::get_instance();
     if (command_rep) {
         command_rep = 0;
-        rfu.set_flag(MainWindowRedrawingFlag::ACTION);
+        dur.set_flag(MainWindowRedrawingFlag::ACTION);
     }
 
     if ((creature.get_action() == ACTION_REST) || (creature.get_action() == ACTION_FISH) || (stop_search && (creature.get_action() == ACTION_SEARCH))) {
@@ -67,7 +67,7 @@ void disturb(CreatureEntity &creature, bool stop_search, bool stop_travel)
             verify_panel(creature);
         }
 
-        rfu.set_flag(StatusRecalculatingFlag::TORCH);
+        dur.set_flag(StatusRecalculatingFlag::TORCH);
     }
 
     if (flush_disturb) {

@@ -28,8 +28,8 @@
 #include "realm/realm-types.h"
 #include "status/action-setter.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/item-entity.h"
-#include "system/redrawing-flags-updater.h"
 #include "util/bit-flags-calculator.h"
 
 CreatureClass::CreatureClass(CreatureEntity &creature)
@@ -420,17 +420,17 @@ bool CreatureClass::lose_balance()
     }
 
     this->set_samurai_stance(SamuraiStanceType::NONE);
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
+    auto &dur = DeferredUpdateRequests::get_instance();
     static constexpr auto flags_srf = {
         StatusRecalculatingFlag::BONUS,
         StatusRecalculatingFlag::MONSTER_STATUSES,
     };
-    rfu.set_flags(flags_srf);
+    dur.set_flags(flags_srf);
     static constexpr auto flags_mwrf = {
         MainWindowRedrawingFlag::ACTION,
         MainWindowRedrawingFlag::TIMED_EFFECT,
     };
-    rfu.set_flags(flags_mwrf);
+    dur.set_flags(flags_mwrf);
     creature.set_action(ACTION_NONE);
     return true;
 }

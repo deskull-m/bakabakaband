@@ -13,8 +13,8 @@
 #include "player/process-name.h"
 #include "racial/racial-android.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/player-type-definition.h"
-#include "system/redrawing-flags-updater.h"
 #include "term/gameterm.h"
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
@@ -48,14 +48,14 @@ void do_cmd_redraw(CreatureEntity &creature)
 {
     term_xtra(TERM_XTRA_REACT, 0);
 
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.request_whole_status_recalculation();
+    auto &dur = DeferredUpdateRequests::get_instance();
+    dur.request_whole_status_recalculation();
     static constexpr auto flags_iaf = {
         InventoryArrangementFlag::COMBINATION,
         InventoryArrangementFlag::REORDER,
     };
-    rfu.set_flags(flags_iaf);
-    rfu.request_whole_main_window_redrawing();
+    dur.set_flags(flags_iaf);
+    dur.request_whole_main_window_redrawing();
     static constexpr auto flags_swrf = {
         SubWindowRedrawingFlag::INVENTORY,
         SubWindowRedrawingFlag::EQUIPMENT,
@@ -67,7 +67,7 @@ void do_cmd_redraw(CreatureEntity &creature)
         SubWindowRedrawingFlag::MONSTER_LORE,
         SubWindowRedrawingFlag::ITEM_KNOWLEDGE,
     };
-    rfu.set_flags(flags_swrf);
+    dur.set_flags(flags_swrf);
     AngbandWorld::get_instance().play_time.update();
     handle_stuff(creature);
     if (CreatureRace(&creature).equals(PlayerRaceType::ANDROID)) {
@@ -182,8 +182,8 @@ void do_cmd_player_status(CreatureEntity &creature)
     }
 
     screen_load();
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.request_whole_main_window_redrawing();
+    auto &dur = DeferredUpdateRequests::get_instance();
+    dur.request_whole_main_window_redrawing();
     // ステータス画面はモンスターの inspect にも使われる (target-describer の 'c')。
     // 終了後のメインウィンドウ (画面左のパラメータ表示等) は常にプレイヤーで復元し、
     // inspect したモンスターの値が左枠に残らないようにする。

@@ -21,9 +21,9 @@
 #include "status/bad-status-setter.h"
 #include "status/base-status.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/redrawing-flags-updater.h"
 #include "util/candidate-selector.h"
 #include "view/display-messages.h"
 #include <vector>
@@ -127,12 +127,12 @@ bool do_cmd_use_monster_ability(CreatureEntity &creature)
     }
 
     PlayerEnergy(creature).set_player_turn_energy(100);
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.set_flag(MainWindowRedrawingFlag::MP);
+    auto &dur = DeferredUpdateRequests::get_instance();
+    dur.set_flag(MainWindowRedrawingFlag::MP);
     static constexpr auto flags = {
         SubWindowRedrawingFlag::PLAYER,
         SubWindowRedrawingFlag::SPELL,
     };
-    rfu.set_flags(flags);
+    dur.set_flags(flags);
     return true;
 }

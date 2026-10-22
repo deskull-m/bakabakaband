@@ -42,11 +42,11 @@
 #include "specific-object/torch.h"
 #include "system/angband-exceptions.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/enums/terrain/terrain-characteristics.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
-#include "system/redrawing-flags-updater.h"
 #include "target/target-checker.h"
 #include "target/target-getter.h"
 #include "term/screen-processor.h"
@@ -308,7 +308,7 @@ void ObjectThrowEntity::process_boomerang_back()
 
         this->item = creature.inventory[this->i_idx];
         *this->item = this->q_ptr->clone();
-        RedrawingFlagsUpdater::get_instance().request_equipment_change_updates();
+        DeferredUpdateRequests::get_instance().request_equipment_change_updates();
         this->do_drop = false;
         return;
     }

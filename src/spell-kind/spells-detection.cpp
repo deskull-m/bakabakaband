@@ -12,12 +12,12 @@
 #include "object/object-mark-types.h"
 #include "object/tval-types.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/redrawing-flags-updater.h"
 #include "system/terrain/terrain-definition.h"
 #include "util/string-processor.h"
 #include "view/display-messages.h"
@@ -270,7 +270,7 @@ bool detect_objects_normal(CreatureEntity &creature, POSITION range, DetectionNo
 
     // 歌い続けている間は毎ターン感知するので、新しく見つけたときだけ描き直す
     if (is_newly_found) {
-        RedrawingFlagsUpdater::get_instance().request_floor_item_lists_redrawing();
+        DeferredUpdateRequests::get_instance().request_floor_item_lists_redrawing();
     }
 
     if (should_notify(notice, detect, is_newly_found)) {
@@ -337,7 +337,7 @@ bool detect_objects_magic(CreatureEntity &creature, POSITION range)
     }
 
     if (is_newly_found) {
-        RedrawingFlagsUpdater::get_instance().request_floor_item_lists_redrawing();
+        DeferredUpdateRequests::get_instance().request_floor_item_lists_redrawing();
     }
 
     if (detect) {

@@ -79,15 +79,15 @@ enum class InventoryArrangementFlag {
     MAX,
 };
 
-class RedrawingFlagsUpdater {
+class DeferredUpdateRequests {
 public:
-    RedrawingFlagsUpdater(const RedrawingFlagsUpdater &) = delete;
-    RedrawingFlagsUpdater(RedrawingFlagsUpdater &&) = delete;
-    RedrawingFlagsUpdater &operator=(const RedrawingFlagsUpdater &) = delete;
-    RedrawingFlagsUpdater &operator=(RedrawingFlagsUpdater &&) = delete;
-    ~RedrawingFlagsUpdater() = default;
+    DeferredUpdateRequests(const DeferredUpdateRequests &) = delete;
+    DeferredUpdateRequests(DeferredUpdateRequests &&) = delete;
+    DeferredUpdateRequests &operator=(const DeferredUpdateRequests &) = delete;
+    DeferredUpdateRequests &operator=(DeferredUpdateRequests &&) = delete;
+    ~DeferredUpdateRequests() = default;
 
-    static RedrawingFlagsUpdater &get_instance();
+    static DeferredUpdateRequests &get_instance();
 
     bool any_main() const;
     bool any_sub() const;
@@ -164,9 +164,9 @@ public:
     EnumClassFlagGroup<SubWindowRedrawingFlag> get_sub_intersection(const EnumClassFlagGroup<SubWindowRedrawingFlag> &flags) const;
 
 private:
-    RedrawingFlagsUpdater() = default;
+    DeferredUpdateRequests() = default;
 
-    static RedrawingFlagsUpdater instance;
+    static DeferredUpdateRequests instance;
 
     EnumClassFlagGroup<MainWindowRedrawingFlag> main_window_flags{};
     EnumClassFlagGroup<SubWindowRedrawingFlag> sub_window_flags{};

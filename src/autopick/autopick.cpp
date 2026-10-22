@@ -27,10 +27,10 @@
 #include "object/object-info.h"
 #include "object/object-mark-types.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
-#include "system/redrawing-flags-updater.h"
 #include "term/screen-processor.h"
 #include "view/display-messages.h"
 #include "window/display-sub-windows.h"
@@ -93,7 +93,7 @@ void autopick_alter_item(CreatureEntity &creature, INVENTORY_IDX i_idx, bool des
     auto item = ref_item(creature, i_idx);
     int idx = find_autopick_list(creature, item.get());
     if (auto_inscribe_item(*item, idx)) {
-        RedrawingFlagsUpdater::get_instance().request_inscription_change_updates();
+        DeferredUpdateRequests::get_instance().request_inscription_change_updates();
     }
 
     if (destroy && i_idx <= INVEN_PACK) {
@@ -111,7 +111,7 @@ void autopick_pickup_items(CreatureEntity &creature, const Grid &grid)
         auto &item = *creature.get_floor()->o_list[this_o_idx];
         int idx = find_autopick_list(creature, &item);
         if (auto_inscribe_item(item, idx)) {
-            RedrawingFlagsUpdater::get_instance().request_inscription_change_updates();
+            DeferredUpdateRequests::get_instance().request_inscription_change_updates();
         }
 
         if ((idx < 0) || (autopick_list[idx].action.has_none_of({ AutopickMethod::AUTOPICK, AutopickMethod::QUERY_AUTOPICK }))) {

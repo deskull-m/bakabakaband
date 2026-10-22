@@ -20,10 +20,10 @@
 #include "spell-realm/spells-hex.h"
 #include "sv-definition/sv-weapon-types.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/redrawing-flags-updater.h"
 #include "term/z-rand.h"
 #include "util/bit-flags-calculator.h"
 #include "util/dice.h"
@@ -333,7 +333,7 @@ int calc_attack_damage_with_slay(CreatureEntity &creature, ItemEntity *o_ptr, in
 
         if (!pc.equals(PlayerClassType::SAMURAI) && (flags.has(TR_FORCE_WEAPON)) && (creature.get_current_mp() > (o_ptr->damage_dice.maxroll() / 5))) {
             creature.sub_current_mp((1 + (o_ptr->damage_dice.maxroll() / 5)));
-            RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::MP);
+            DeferredUpdateRequests::get_instance().set_flag(MainWindowRedrawingFlag::MP);
             mult = mult * 3 / 2 + 20;
         }
 

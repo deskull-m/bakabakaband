@@ -9,9 +9,9 @@
 #include "player/player-status.h"
 #include "system/angband-system.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
-#include "system/redrawing-flags-updater.h"
 #include "system/terrain/terrain-definition.h"
 #include "target/projection-path-calculator.h"
 #include "term/term-color-types.h"
@@ -46,7 +46,7 @@ void print_path(CreatureEntity &creature, POSITION y, POSITION x)
     const auto p_pos = creature.get_position();
     const auto range = project_length != 0 ? project_length : AngbandSystem::get_instance().get_max_range();
     ProjectionPath path_g(floor, range, p_pos, p_pos, pos, PROJECT_PATH | PROJECT_THRU);
-    RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::MAP);
+    DeferredUpdateRequests::get_instance().set_flag(MainWindowRedrawingFlag::MAP);
     redraw_stuff(creature);
     const auto monochrome_color = get_monochrome_display_color(creature);
     for (const auto &pos_path : path_g) {
@@ -118,9 +118,9 @@ bool change_panel(CreatureEntity &creature, POSITION dy, POSITION dx)
     panel_row_min = y;
     panel_col_min = x;
     panel_bounds_center();
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.set_flag(StatusRecalculatingFlag::MONSTER_STATUSES);
-    rfu.set_flag(MainWindowRedrawingFlag::MAP);
+    auto &dur = DeferredUpdateRequests::get_instance();
+    dur.set_flag(StatusRecalculatingFlag::MONSTER_STATUSES);
+    dur.set_flag(MainWindowRedrawingFlag::MAP);
     handle_stuff(creature);
     return true;
 }

@@ -7,7 +7,7 @@
 #include "main/sound-of-music.h"
 #include "status/status-change-notice.h"
 #include "system/creature-entity.h"
-#include "system/redrawing-flags-updater.h"
+#include "system/deferred-update-requests.h"
 #include "view/display-messages.h"
 
 /*!

@@ -19,8 +19,8 @@
 #include "player/player-status-flags.h"
 #include "status/element-resistance.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/item-entity.h"
-#include "system/redrawing-flags-updater.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
 
@@ -112,7 +112,7 @@ static void compensate_death_scythe_reflection_magnification(CreatureEntity &cre
 
     if (!CreatureClass(creature).equals(PlayerClassType::SAMURAI) && (death_scythe_flags.has(TR_FORCE_WEAPON)) && (creature.get_current_mp() > (creature.get_max_mp() / 30))) {
         creature.sub_current_mp((1 + (creature.get_max_mp() / 30)));
-        RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::MP);
+        DeferredUpdateRequests::get_instance().set_flag(MainWindowRedrawingFlag::MP);
         *magnification = *magnification * 3 / 2 + 20;
     }
 }

@@ -5,8 +5,8 @@
  */
 
 #include "tracking/lore-tracker.h"
+#include "system/deferred-update-requests.h"
 #include "system/monrace/monrace-list.h"
-#include "system/redrawing-flags-updater.h"
 
 LoreTracker LoreTracker::instance{};
 

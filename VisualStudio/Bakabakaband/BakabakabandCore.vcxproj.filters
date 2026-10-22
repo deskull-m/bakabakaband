@@ -2448,7 +2448,7 @@
     <ClCompile Include="..\..\src\monster\monster-pain-describer.cpp">
       <Filter>monster</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\system\redrawing-flags-updater.cpp">
+    <ClCompile Include="..\..\src\system\deferred-update-requests.cpp">
       <Filter>system</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\alliance\alliance-megadeth.cpp">
@@ -5723,7 +5723,7 @@
     <ClInclude Include="..\..\src\monster\monster-pain-describer.h">
       <Filter>monster</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\system\redrawing-flags-updater.h">
+    <ClInclude Include="..\..\src\system\deferred-update-requests.h">
       <Filter>system</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\alliance\alliance-jural.h">

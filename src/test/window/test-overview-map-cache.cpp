@@ -1,10 +1,10 @@
 #include "game-option/map-screen-options.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/player-type-definition.h"
-#include "system/redrawing-flags-updater.h"
 #include "system/terrain/terrain-definition.h"
 #include "system/terrain/terrain-list.h"
 #include "term/term-color-types.h"
@@ -20,10 +20,10 @@ TEST_CASE("OverviewMapCache recomputes only the grids marked dirty")
 {
     auto &terrains = TerrainList::get_instance();
     auto &world = AngbandWorld::get_instance();
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
+    auto &dur = DeferredUpdateRequests::get_instance();
     const auto old_size = terrains.size();
     auto &cache = OverviewMapCache::get_instance();
-    const auto restore = util::make_finalizer([&terrains, &world, &rfu, &cache, old_size, wild = world.is_wild_mode(),
+    const auto restore = util::make_finalizer([&terrains, &world, &dur, &cache, old_size, wild = world.is_wild_mode(),
                                                   hidden = view_hidden_walls, unsafe_walls = view_unsafe_walls, unsafe_grids = view_unsafe_grids,
                                                   special_lite = view_special_lite, granite_lite = view_granite_lite, bright_lite = view_bright_lite] {
         terrains.resize(old_size);
@@ -34,7 +34,7 @@ TEST_CASE("OverviewMapCache recomputes only the grids marked dirty")
         view_special_lite = special_lite;
         view_granite_lite = granite_lite;
         view_bright_lite = bright_lite;
-        rfu.reset_flag(MainWindowRedrawingFlag::MAP);
+        dur.reset_flag(MainWindowRedrawingFlag::MAP);
 
         // このテストのフロアから求めた結果や表示の変化を、ほかのテストで使わせない
         cache.mark_all_dirty();
@@ -65,7 +65,7 @@ TEST_CASE("OverviewMapCache recomputes only the grids marked dirty")
     view_special_lite = false;
     view_granite_lite = false;
     world.set_wild_mode(false);
-    rfu.reset_flag(MainWindowRedrawingFlag::MAP);
+    dur.reset_flag(MainWindowRedrawingFlag::MAP);
 
     auto floor_ptr = std::make_unique<FloorType>();
     auto &floor = *floor_ptr;
@@ -176,7 +176,7 @@ TEST_CASE("OverviewMapCache recomputes only the grids marked dirty")
     SUBCASE("A pending map redraw request recomputes all grids")
     {
         floor.get_grid({ 0, 4 }).feat = wall_id;
-        rfu.set_flag(MainWindowRedrawingFlag::MAP);
+        dur.set_flag(MainWindowRedrawingFlag::MAP);
         cache.update(*player_ptr);
         CHECK(cache.get_grid({ 0, 4 }).symbol.character == '#');
     }

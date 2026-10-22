@@ -19,9 +19,9 @@
 #include "status/action-setter.h"
 #include "system/angband-exceptions.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/redrawing-flags-updater.h"
 #include "term/screen-processor.h"
 #include "util/bit-flags-calculator.h"
 #include "util/int-char-converter.h"
@@ -54,16 +54,16 @@ SpellHex::SpellHex(CreatureEntity &creature)
  */
 void SpellHex::request_casting_change_updates()
 {
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
+    auto &dur = DeferredUpdateRequests::get_instance();
     static constexpr auto flags_srf = {
         StatusRecalculatingFlag::BONUS,
         StatusRecalculatingFlag::HP,
         StatusRecalculatingFlag::MP,
         StatusRecalculatingFlag::SPELLS,
     };
-    rfu.set_flags(flags_srf);
-    rfu.set_flag(MainWindowRedrawingFlag::EXTRA);
-    rfu.request_hp_mp_redrawing();
+    dur.set_flags(flags_srf);
+    dur.set_flag(MainWindowRedrawingFlag::EXTRA);
+    dur.request_hp_mp_redrawing();
 }
 
 /*!
@@ -248,15 +248,15 @@ bool SpellHex::process_mana_cost(const bool need_restart)
     }
 
     this->creature.sub_current_mp_with_frac(need_mana, need_mana_frac);
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.set_flag(MainWindowRedrawingFlag::MP);
+    auto &dur = DeferredUpdateRequests::get_instance();
+    dur.set_flag(MainWindowRedrawingFlag::MP);
     if (!need_restart) {
         return true;
     }
 
     msg_print(_("詠唱を再開した。", "You restart casting."));
     this->creature.set_action(ACTION_SPELL);
-    rfu.request_monster_update_and_map_redrawing();
+    dur.request_monster_update_and_map_redrawing();
     // 中断していた呪術が戻り、維持している呪術の組が変わる (状態の表示と行動の表示は拡張ステータスに含まれる)
     request_casting_change_updates();
     return true;
@@ -447,7 +447,7 @@ void SpellHex::set_revenge_turn(byte turn, bool substitution)
     }
 
     if (shown_type != this->get_shown_revenge_type()) {
-        RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
+        DeferredUpdateRequests::get_instance().set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
     }
 }
 
@@ -461,7 +461,7 @@ void SpellHex::set_revenge_type(SpellHexRevengeType type)
     const auto shown_type = this->get_shown_revenge_type();
     this->spell_hex_data->revenge_type = type;
     if (shown_type != this->get_shown_revenge_type()) {
-        RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
+        DeferredUpdateRequests::get_instance().set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
     }
 }
 

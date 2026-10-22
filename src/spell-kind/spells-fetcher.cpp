@@ -10,12 +10,12 @@
 #include "monster/monster-update.h"
 #include "monster/monster-util.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/enums/terrain/terrain-characteristics.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/redrawing-flags-updater.h"
 #include "target/projection-path-calculator.h"
 #include "target/target-setter.h"
 #include "target/target-types.h"
@@ -106,9 +106,9 @@ void fetch_item(CreatureEntity &creature, const Direction &dir, WEIGHT wgt, bool
     const auto item_name = describe_flavor(creature, item, OD_NAME_ONLY);
     msg_print(_("{}があなたの足元に飛んできた。", "{} flies through the air to your feet."), str_upcase_first(item_name));
     note_spot(creature, p_pos);
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.set_flag(MainWindowRedrawingFlag::MAP);
-    rfu.request_floor_item_lists_redrawing();
+    auto &dur = DeferredUpdateRequests::get_instance();
+    dur.set_flag(MainWindowRedrawingFlag::MAP);
+    dur.request_floor_item_lists_redrawing();
 }
 
 bool fetch_monster(CreatureEntity &creature)
@@ -155,7 +155,7 @@ bool fetch_monster(CreatureEntity &creature)
     lite_spot(creature, *pos);
     lite_spot(creature, pos_target);
     if (monster.get_monrace().brightness_flags.has_any_of(ld_mask)) {
-        RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::MONSTER_LITE);
+        DeferredUpdateRequests::get_instance().set_flag(StatusRecalculatingFlag::MONSTER_LITE);
     }
 
     if (monster.is_visible_on_map()) {

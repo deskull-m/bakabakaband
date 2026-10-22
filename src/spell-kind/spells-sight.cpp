@@ -20,10 +20,10 @@
 #include "monster/monster-status.h"
 #include "monster/smart-learn-types.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/redrawing-flags-updater.h"
 #include "target/projection-path-calculator.h"
 #include "term/screen-processor.h"
 #include "view/display-messages.h"
@@ -249,7 +249,7 @@ void aggravate_monsters(CreatureEntity &creature, MONSTER_IDX src_idx)
     }
 
     if (creature.get_riding()) {
-        RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
+        DeferredUpdateRequests::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
     }
 }
 
@@ -439,7 +439,7 @@ bool probing(CreatureEntity &creature)
     game_term->scr->cv = 1;
 
     auto &floor = *creature.get_floor();
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
+    auto &dur = DeferredUpdateRequests::get_instance();
     auto probe = false;
     for (short i = 1; i < floor.m_max; i++) {
         auto &monster = floor.get_monster(i);
@@ -463,7 +463,7 @@ bool probing(CreatureEntity &creature)
         prt(probe_result, 0, 0);
 
         message_add(probe_result);
-        rfu.set_flag(SubWindowRedrawingFlag::MESSAGE);
+        dur.set_flag(SubWindowRedrawingFlag::MESSAGE);
         window_stuff(creature);
         move_cursor_relative(monster.y, monster.x);
         (void)input_key_with_context(InputKind::ANY_KEY, probe_result);

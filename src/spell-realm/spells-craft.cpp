@@ -21,8 +21,8 @@
 #include "spell/spells-object.h"
 #include "sv-definition/sv-protector-types.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/item-entity.h"
-#include "system/redrawing-flags-updater.h"
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
 #include "util/string-processor.h"
@@ -103,9 +103,9 @@ bool set_ele_attack(CreatureEntity &creature, uint32_t attack_type, TIME_EFFECT 
         disturb(creature, false, false);
     }
 
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
-    rfu.set_flag(StatusRecalculatingFlag::BONUS);
+    auto &dur = DeferredUpdateRequests::get_instance();
+    dur.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
+    dur.set_flag(StatusRecalculatingFlag::BONUS);
     handle_stuff(creature);
 
     return true;
@@ -185,9 +185,9 @@ bool set_ele_immune(CreatureEntity &creature, uint32_t immune_type, TIME_EFFECT 
         disturb(creature, false, true);
     }
 
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
-    rfu.set_flag(StatusRecalculatingFlag::BONUS);
+    auto &dur = DeferredUpdateRequests::get_instance();
+    dur.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
+    dur.set_flag(StatusRecalculatingFlag::BONUS);
     handle_stuff(creature);
 
     return true;
@@ -332,10 +332,10 @@ bool pulish_shield(CreatureEntity &creature)
         item->discount = 99;
 
         // 修正値の強化に失敗しても、エゴの能力は付いている
-        auto &rfu = RedrawingFlagsUpdater::get_instance();
-        rfu.set_flag(StatusRecalculatingFlag::BONUS);
-        rfu.request_inventory_arrangement();
-        rfu.set_item_related_sub_window_flags();
+        auto &dur = DeferredUpdateRequests::get_instance();
+        dur.set_flag(StatusRecalculatingFlag::BONUS);
+        dur.request_inventory_arrangement();
+        dur.set_item_related_sub_window_flags();
         chg_virtue(creature, Virtue::ENCHANT, 2);
         calc_android_exp(creature);
         return true;

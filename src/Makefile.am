@@ -1401,6 +1401,7 @@ libhengband_a_SOURCES = \
 	system/artifact/artifact-record.cpp system/artifact/artifact-record.h \
 	system/building-type-definition.cpp system/building-type-definition.h \
 	system/creature-entity.cpp system/creature-entity.h \
+	system/deferred-update-requests.cpp system/deferred-update-requests.h \
 	system/grid-type-definition.cpp system/grid-type-definition.h \
 	system/h-basic.h system/h-config.h \
 	system/h-system.h system/h-type.h \
@@ -1408,7 +1409,6 @@ libhengband_a_SOURCES = \
 	system/item-entity.cpp system/item-entity.h \
 	system/material-type-definition.h \
 	system/player-type-definition.cpp system/player-type-definition.h \
-	system/redrawing-flags-updater.cpp system/redrawing-flags-updater.h \
 	system/spell-info-list.cpp system/spell-info-list.h \
 	system/system-variables.cpp system/system-variables.h \
 	system/gamevalue.h \
@@ -1664,8 +1664,8 @@ hengband_test_SOURCES = \
 	test/store/test-store-screen.cpp \
 	test/store/test-store-util.cpp \
 	\
+	test/system/test-deferred-update-requests.cpp \
 	test/system/test-dungeon-record.cpp \
-	test/system/test-redrawing-flags-updater.cpp \
 	\
 	test/system/baseitem/test-baseitem-allocation.cpp \
 	test/system/baseitem/test-baseitem-definition.cpp \

@@ -18,7 +18,7 @@
 #include "player-info/race-types.h"
 #include "player/player-realm.h"
 #include "system/creature-entity.h"
-#include "system/redrawing-flags-updater.h"
+#include "system/deferred-update-requests.h"
 #include "util/enum-converter.h"
 #include "util/probability-table.h"
 #include <fmt/format.h>
@@ -446,7 +446,7 @@ void chg_virtue(CreatureEntity &creature, Virtue virtue_id, int amount)
         }
     }
 
-    RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
+    DeferredUpdateRequests::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
 }
 
 /*!

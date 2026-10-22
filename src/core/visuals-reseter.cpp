@@ -4,8 +4,8 @@
 #include "io/read-pref-file.h"
 #include "system/baseitem/baseitem-service.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/monrace/monrace-list.h"
-#include "system/redrawing-flags-updater.h"
 #include "system/terrain/terrain-definition.h"
 #include "system/terrain/terrain-list.h"
 #include <exception>
@@ -40,7 +40,7 @@ static void switch_graphics(CreatureEntity &creature, bool uses_graphics)
 {
     use_graphics = uses_graphics;
     reset_visuals(creature);
-    RedrawingFlagsUpdater::get_instance().request_whole_main_window_redrawing();
+    DeferredUpdateRequests::get_instance().request_whole_main_window_redrawing();
     redraw_stuff(creature);
 }
 

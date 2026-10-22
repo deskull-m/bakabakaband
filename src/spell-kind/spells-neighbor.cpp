@@ -6,9 +6,9 @@
 #include "grid/grid.h"
 #include "spell-kind/earthquake.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/enums/terrain/terrain-characteristics.h"
 #include "system/floor/floor-info.h"
-#include "system/redrawing-flags-updater.h"
 #include "util/bit-flags-calculator.h"
 
 /*!
@@ -77,9 +77,9 @@ bool wall_stone(CreatureEntity &creature)
 {
     BIT_FLAGS flg = PROJECT_GRID | PROJECT_ITEM | PROJECT_HIDE;
     bool dummy = project(creature, 0, 1, creature.y, creature.x, 0, AttributeType::STONE_WALL, flg).notice;
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.set_flag(StatusRecalculatingFlag::FLOW);
-    rfu.set_flag(MainWindowRedrawingFlag::MAP);
+    auto &dur = DeferredUpdateRequests::get_instance();
+    dur.set_flag(StatusRecalculatingFlag::FLOW);
+    dur.set_flag(MainWindowRedrawingFlag::MAP);
     return dummy;
 }
 

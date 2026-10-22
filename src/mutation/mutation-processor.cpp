@@ -45,12 +45,12 @@
 #include "system/angband-system.h"
 #include "system/creature-entity.h"
 #include "system/creature-timed-effect-types.h"
+#include "system/deferred-update-requests.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/redrawing-flags-updater.h"
 #include "target/target-checker.h"
 #include "target/target-getter.h"
 #include "target/target-setter.h"
@@ -159,7 +159,7 @@ void process_world_aux_mutation(CreatureEntity &creature)
     if (creature.get_mutations().has(PlayerMutationType::ALCOHOL) && (randint1(6400) == 321)) {
         if (!creature.has_resist_conf() && !creature.has_resist_chaos()) {
             disturb(creature, false, true);
-            RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::EXTRA);
+            DeferredUpdateRequests::get_instance().set_flag(MainWindowRedrawingFlag::EXTRA);
             msg_print(_("いひきがもーろーとひてきたきがふる...ヒック！", "You feel a SSSCHtupor cOmINg over yOu... *HIC*!"));
         }
 
@@ -191,7 +191,7 @@ void process_world_aux_mutation(CreatureEntity &creature)
     if (creature.get_mutations().has(PlayerMutationType::HALLU) && (randint1(6400) == 42)) {
         if (!creature.has_resist_chaos()) {
             disturb(creature, false, true);
-            RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::EXTRA);
+            DeferredUpdateRequests::get_instance().set_flag(MainWindowRedrawingFlag::EXTRA);
             (void)bss.mod_hallucination(randint0(50) + 20);
         }
     }
@@ -222,7 +222,7 @@ void process_world_aux_mutation(CreatureEntity &creature)
         const auto flags = {
             MainWindowRedrawingFlag::EXTRA,
         };
-        RedrawingFlagsUpdater::get_instance().set_flags(flags);
+        DeferredUpdateRequests::get_instance().set_flags(flags);
 
         (void)bss.mod_hallucination(randint0(10) + 20);
         (void)set_berserk(creature, 10 + randint1(creature.get_level()), false);
@@ -528,7 +528,7 @@ void process_world_aux_mutation(CreatureEntity &creature)
 
             hp_player(creature, healing);
             creature.sub_current_mp(healing);
-            RedrawingFlagsUpdater::get_instance().request_hp_mp_redrawing();
+            DeferredUpdateRequests::get_instance().request_hp_mp_redrawing();
         }
     }
 
@@ -541,7 +541,7 @@ void process_world_aux_mutation(CreatureEntity &creature)
             }
 
             creature.add_current_mp(healing);
-            RedrawingFlagsUpdater::get_instance().request_hp_mp_redrawing();
+            DeferredUpdateRequests::get_instance().request_hp_mp_redrawing();
             take_hit(creature, DAMAGE_LOSELIFE, healing, _("頭に昇った血", "blood rushing to the head"));
         }
     }

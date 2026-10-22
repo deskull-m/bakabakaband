@@ -31,13 +31,13 @@
 #include "system/angband-system.h"
 #include "system/building-type-definition.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/dungeon/dungeon-record.h"
 #include "system/dungeon/quest-definition.h"
 #include "system/enums/dungeon/dungeon-id.h"
 #include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/redrawing-flags-updater.h"
 #include "target/target-checker.h"
 #include "util/bit-flags-calculator.h"
 #include "util/string-processor.h"
@@ -51,7 +51,7 @@ static void redraw_character_xtra(CreatureEntity &creature)
 {
     auto &world = AngbandWorld::get_instance();
     world.character_xtra = true;
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
+    auto &dur = DeferredUpdateRequests::get_instance();
     static constexpr auto flags_swrf = {
         SubWindowRedrawingFlag::INVENTORY,
         SubWindowRedrawingFlag::EQUIPMENT,
@@ -61,9 +61,9 @@ static void redraw_character_xtra(CreatureEntity &creature)
         SubWindowRedrawingFlag::OVERHEAD,
         SubWindowRedrawingFlag::DUNGEON,
     };
-    rfu.set_flags(flags_swrf);
-    rfu.request_whole_main_window_redrawing();
-    rfu.request_player_status_recalculation();
+    dur.set_flags(flags_swrf);
+    dur.request_whole_main_window_redrawing();
+    dur.request_player_status_recalculation();
     static constexpr auto flags_srf = {
         StatusRecalculatingFlag::VIEW,
         StatusRecalculatingFlag::LITE,
@@ -73,7 +73,7 @@ static void redraw_character_xtra(CreatureEntity &creature)
         StatusRecalculatingFlag::DISTANCE,
         StatusRecalculatingFlag::FLOW,
     };
-    rfu.set_flags(flags_srf);
+    dur.set_flags(flags_srf);
     handle_stuff(creature);
     world.character_xtra = false;
 }
@@ -139,13 +139,13 @@ void process_dungeon(CreatureEntity &creature, bool load_game)
     msg_erase();
 
     redraw_character_xtra(creature);
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.request_player_status_recalculation();
+    auto &dur = DeferredUpdateRequests::get_instance();
+    dur.request_player_status_recalculation();
     static constexpr auto flags_iaf = {
         InventoryArrangementFlag::COMBINATION,
         InventoryArrangementFlag::REORDER,
     };
-    rfu.set_flags(flags_iaf);
+    dur.set_flags(flags_iaf);
     handle_stuff_with_inventory_arrangement(creature);
     term_fresh();
 

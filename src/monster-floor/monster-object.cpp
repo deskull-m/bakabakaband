@@ -22,12 +22,12 @@
 #include "object/object-info.h"
 #include "object/object-mark-types.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monrace/extended-slot.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/redrawing-flags-updater.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
 #include <string_view>
@@ -185,7 +185,7 @@ static void monster_pickup_object(CreatureEntity &creature, turn_flags *turn_fla
             }
         }
 
-        RedrawingFlagsUpdater::get_instance().set_flag(SubWindowRedrawingFlag::FOUND_ITEMS);
+        DeferredUpdateRequests::get_instance().set_flag(SubWindowRedrawingFlag::FOUND_ITEMS);
         return;
     }
 

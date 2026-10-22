@@ -8,8 +8,8 @@
 #include "object/object-info.h"
 #include "racial/racial-android.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/item-entity.h"
-#include "system/redrawing-flags-updater.h"
 #include "view/display-messages.h"
 
 /*!
@@ -102,9 +102,9 @@ bool apply_disenchant(CreatureEntity &creature, BIT_FLAGS mode)
 #endif
     chg_virtue(creature, Virtue::HARMONY, 1);
     chg_virtue(creature, Virtue::ENCHANT, -2);
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.set_flag(StatusRecalculatingFlag::BONUS);
-    rfu.set_flag(SubWindowRedrawingFlag::PLAYER);
+    auto &dur = DeferredUpdateRequests::get_instance();
+    dur.set_flag(StatusRecalculatingFlag::BONUS);
+    dur.set_flag(SubWindowRedrawingFlag::PLAYER);
     calc_android_exp(creature);
     return true;
 }

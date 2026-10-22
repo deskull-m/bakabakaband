@@ -7,8 +7,8 @@
 #include "object/tval-types.h"
 #include "sv-definition/sv-lite-types.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/item-entity.h"
-#include "system/redrawing-flags-updater.h"
 #include "view/display-messages.h"
 #include "world/world.h"
 
@@ -44,11 +44,11 @@ void reduce_lite_life(CreatureEntity &creature)
  */
 void notice_lite_change(CreatureEntity &creature, ItemEntity *o_ptr)
 {
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
+    auto &dur = DeferredUpdateRequests::get_instance();
     // 装備の一覧に残りターン数を出すが、盲目中に燃料を戻したときは表示が変わらない
     const auto is_fuel_restored = creature.is_blind() && (o_ptr->fuel == 0);
     if (!is_fuel_restored) {
-        rfu.set_flag(SubWindowRedrawingFlag::EQUIPMENT);
+        dur.set_flag(SubWindowRedrawingFlag::EQUIPMENT);
     }
 
     if (creature.is_blind()) {
@@ -62,7 +62,7 @@ void notice_lite_change(CreatureEntity &creature, ItemEntity *o_ptr)
             StatusRecalculatingFlag::TORCH,
             StatusRecalculatingFlag::BONUS,
         };
-        rfu.set_flags(flags);
+        dur.set_flags(flags);
     } else if (o_ptr->ego_idx == EgoType::LITE_LONG) {
         if ((o_ptr->fuel < 50) && (!(o_ptr->fuel % 5))) {
             if (disturb_minor) {

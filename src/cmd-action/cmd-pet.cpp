@@ -51,11 +51,11 @@
 #include "player/special-defense-types.h"
 #include "status/action-setter.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/redrawing-flags-updater.h"
 #include "system/terrain/terrain-definition.h"
 #include "target/target-checker.h"
 #include "target/target-getter.h"
@@ -96,7 +96,7 @@ void do_cmd_pet_dismiss(CreatureEntity &creature)
     /* Process the monsters (backwards) */
     auto all_pets = false;
     auto num_dismissed = 0;
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
+    auto &dur = DeferredUpdateRequests::get_instance();
     const int num_pet_index = std::ssize(pet_index);
     for (auto i = 0; i < num_pet_index; i++) {
         const auto pet_ctr = pet_index[i];
@@ -152,13 +152,13 @@ void do_cmd_pet_dismiss(CreatureEntity &creature)
             if (monster.is_riding()) {
                 msg_print(_("{}から降りた。", "You dismount from {}. "), friend_name);
                 creature.ride_monster(0);
-                rfu.set_flag(StatusRecalculatingFlag::MONSTER_STATUSES);
-                rfu.request_riding_status_redrawing();
+                dur.set_flag(StatusRecalculatingFlag::MONSTER_STATUSES);
+                dur.request_riding_status_redrawing();
             }
 
             msg_print(_("{} を放した。", "Dismissed {}."), friend_name);
-            rfu.set_flag(StatusRecalculatingFlag::BONUS);
-            rfu.set_flag(SubWindowRedrawingFlag::MESSAGE);
+            dur.set_flag(StatusRecalculatingFlag::BONUS);
+            dur.set_flag(SubWindowRedrawingFlag::MESSAGE);
             delete_monster_idx(creature, pet_ctr);
             num_dismissed++;
         }
@@ -282,15 +282,15 @@ bool do_cmd_riding(CreatureEntity &creature, bool force)
 
     PlayerEnergy(creature).set_player_turn_energy(100);
 
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
+    auto &dur = DeferredUpdateRequests::get_instance();
     static constexpr auto flags_srf = {
         StatusRecalculatingFlag::UN_VIEW,
         StatusRecalculatingFlag::UN_LITE,
         StatusRecalculatingFlag::BONUS,
     };
-    rfu.set_flags(flags_srf);
-    rfu.set_flag(MainWindowRedrawingFlag::MAP);
-    rfu.request_riding_status_redrawing();
+    dur.set_flags(flags_srf);
+    dur.set_flag(MainWindowRedrawingFlag::MAP);
+    dur.request_riding_status_redrawing();
     (void)move_player_effect(creature, pos.y, pos.x, MPE_HANDLE_STUFF | MPE_ENERGY_USE | MPE_DONT_PICKUP | MPE_DONT_SWAP_MON);
     return true;
 }
@@ -873,7 +873,7 @@ void do_cmd_pet(CreatureEntity &creature)
             creature.add_pet_extra_flag(PF_TWO_HANDS);
         }
 
-        RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
+        DeferredUpdateRequests::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
         handle_stuff(creature);
         break;
     }

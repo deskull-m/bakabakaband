@@ -22,7 +22,7 @@
 #include "status/bad-status-setter.h"
 #include "status/base-status.h"
 #include "system/creature-entity.h"
-#include "system/redrawing-flags-updater.h"
+#include "system/deferred-update-requests.h"
 #include "util/enum-converter.h"
 #include "view/display-messages.h"
 #include <fmt/format.h>
@@ -91,9 +91,9 @@ void change_race(CreatureEntity &creature, PlayerRaceType new_race, concptr effe
 
     roll_hitdice(creature, SPOP_NONE);
     check_experience(creature);
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.set_flag(MainWindowRedrawingFlag::BASIC);
-    rfu.set_flag(StatusRecalculatingFlag::BONUS);
+    auto &dur = DeferredUpdateRequests::get_instance();
+    dur.set_flag(MainWindowRedrawingFlag::BASIC);
+    dur.set_flag(StatusRecalculatingFlag::BONUS);
     handle_stuff(creature);
 
     if (old_race != creature.prace) {

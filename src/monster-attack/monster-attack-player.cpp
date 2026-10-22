@@ -53,12 +53,12 @@
 #include "status/bad-status-setter.h"
 #include "system/angband.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/redrawing-flags-updater.h"
 #include "timed-effect/player-cut.h"
 #include "timed-effect/player-stun.h"
 #include "tracking/health-bar-tracker.h"
@@ -601,7 +601,7 @@ void MonsterAttackPlayer::gain_armor_exp()
     }
 
     creature.set_skill_exp(PlayerSkillKindType::SHIELD, std::min<short>(max, cur + increment));
-    RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
+    DeferredUpdateRequests::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
 }
 
 void MonsterAttackPlayer::gain_evasion_exp()

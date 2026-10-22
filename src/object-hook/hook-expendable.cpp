@@ -13,9 +13,9 @@
 #include "sv-definition/sv-other-types.h"
 #include "system/baseitem/baseitem-key.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/redrawing-flags-updater.h"
 #include "util/string-processor.h"
 
 /*!
@@ -72,9 +72,9 @@ bool can_player_destroy_object(ItemEntity *o_ptr)
         o_ptr->sense(feel);
 
         // 感触を付ける処理 (apply_item_feeling()) と同じく、束の整理と一覧の描き直しを要求する。床の品のこともある
-        auto &rfu = RedrawingFlagsUpdater::get_instance();
-        rfu.request_inventory_arrangement();
-        rfu.set_item_related_sub_window_flags();
+        auto &dur = DeferredUpdateRequests::get_instance();
+        dur.request_inventory_arrangement();
+        dur.set_item_related_sub_window_flags();
         return false;
     }
 

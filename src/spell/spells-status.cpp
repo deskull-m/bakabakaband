@@ -42,12 +42,12 @@
 #include "system/baseitem/baseitem-definition.h"
 #include "system/baseitem/baseitem-list.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/enums/terrain/terrain-characteristics.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/player-type-definition.h"
-#include "system/redrawing-flags-updater.h"
 #include "target/target-getter.h"
 #include "util/bit-flags-calculator.h"
 #include "util/string-processor.h"
@@ -215,7 +215,7 @@ bool time_walk(CreatureEntity &creature)
     msg_erase();
 
     creature.sub_energy_need(1000 + (100 + creature.get_current_mp() - 50) * TURNS_PER_TICK / 10);
-    RedrawingFlagsUpdater::get_instance().request_monster_update_and_map_redrawing();
+    DeferredUpdateRequests::get_instance().request_monster_update_and_map_redrawing();
     handle_stuff(creature);
     return true;
 }
@@ -236,10 +236,10 @@ void roll_hitdice(CreatureEntity &creature, spell_operation options)
 
     creature.remove_knowledge(KNOW_HPRATE);
 
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.set_flag(StatusRecalculatingFlag::HP);
-    rfu.set_flag(MainWindowRedrawingFlag::HP);
-    rfu.set_flag(SubWindowRedrawingFlag::PLAYER);
+    auto &dur = DeferredUpdateRequests::get_instance();
+    dur.set_flag(StatusRecalculatingFlag::HP);
+    dur.set_flag(MainWindowRedrawingFlag::HP);
+    dur.set_flag(SubWindowRedrawingFlag::PLAYER);
     if (!(options & SPOP_NO_UPDATE)) {
         handle_stuff(creature);
     }
@@ -457,7 +457,7 @@ bool restore_mana(CreatureEntity &creature, bool magic_eater)
         return false;
     }
 
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
+    auto &dur = DeferredUpdateRequests::get_instance();
     if (CreatureClass(creature).equals(PlayerClassType::MAGIC_EATER) && magic_eater) {
         // 魔力復活による、魔道具術師の取り込んだ魔法の回復量
         // 取り込み数が10回未満: 3 回分回復
@@ -480,7 +480,7 @@ bool restore_mana(CreatureEntity &creature, bool magic_eater)
         }
 
         msg_print(_("頭がハッキリとした。", "You feel your head clear."));
-        rfu.set_flag(SubWindowRedrawingFlag::PLAYER);
+        dur.set_flag(SubWindowRedrawingFlag::PLAYER);
         return true;
     }
 
@@ -491,7 +491,7 @@ bool restore_mana(CreatureEntity &creature, bool magic_eater)
     creature.set_current_mp(creature.get_max_mp());
     creature.current_mp_frac = 0;
     msg_print(_("頭がハッキリとした。", "You feel your head clear."));
-    rfu.set_flag(MainWindowRedrawingFlag::MP);
+    dur.set_flag(MainWindowRedrawingFlag::MP);
     return true;
 }
 
@@ -548,7 +548,7 @@ bool fishing(CreatureEntity &creature)
     }
 
     set_action(creature, ACTION_FISH);
-    RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::ACTION);
+    DeferredUpdateRequests::get_instance().set_flag(MainWindowRedrawingFlag::ACTION);
     return true;
 }
 
@@ -691,5 +691,5 @@ void status_shuffle(CreatureEntity &creature)
         }
     }
 
-    RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
+    DeferredUpdateRequests::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
 }

@@ -22,8 +22,8 @@
 #include "perception/object-perception.h"
 #include "player/player-status-flags.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/item-entity.h"
-#include "system/redrawing-flags-updater.h"
 #include "view/display-messages.h"
 
 /*!
@@ -40,9 +40,9 @@ void apply_item_feeling(CreatureEntity &creature, INVENTORY_IDX i_idx, item_feel
     auto item = ref_item(creature, i_idx);
     item->sense(feel);
     autopick_alter_item(creature, i_idx, destroy_feeling);
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.request_inventory_arrangement();
-    rfu.set_item_related_sub_window_flags();
+    auto &dur = DeferredUpdateRequests::get_instance();
+    dur.request_inventory_arrangement();
+    dur.set_item_related_sub_window_flags();
 }
 
 /*!

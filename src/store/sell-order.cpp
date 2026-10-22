@@ -30,8 +30,8 @@
 #include "store/store-screen.h"
 #include "store/store.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/floor/town-info.h"
-#include "system/redrawing-flags-updater.h"
 #include "view/display-messages.h"
 #include "view/display-store.h"
 #include "view/object-describer.h"
@@ -229,9 +229,9 @@ void store_sell(CreatureEntity &creature, StoreScreen &screen)
         }
     }
 
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.set_flag(StatusRecalculatingFlag::BONUS);
-    rfu.set_flag(SubWindowRedrawingFlag::PLAYER);
+    auto &dur = DeferredUpdateRequests::get_instance();
+    dur.set_flag(StatusRecalculatingFlag::BONUS);
+    dur.set_flag(SubWindowRedrawingFlag::PLAYER);
     handle_stuff(creature);
 
     if (placed && (i_idx >= INVEN_MAIN_HAND)) {

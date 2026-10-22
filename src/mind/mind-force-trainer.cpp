@@ -29,10 +29,10 @@
 #include "spell/summon-types.h"
 #include "status/temporary-resistance.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/redrawing-flags-updater.h"
 #include "target/projection-path-calculator.h"
 #include "target/target-checker.h"
 #include "target/target-getter.h"
@@ -90,7 +90,7 @@ bool clear_mind(CreatureEntity &creature)
         creature.current_mp_frac = 0;
     }
 
-    RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::MP);
+    DeferredUpdateRequests::get_instance().set_flag(MainWindowRedrawingFlag::MP);
     return true;
 }
 
@@ -142,7 +142,7 @@ void set_lightspeed(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
         disturb(creature, false, false);
     }
 
-    RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
+    DeferredUpdateRequests::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
     handle_stuff(creature);
 }
 
@@ -179,7 +179,7 @@ bool set_tim_sh_force(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
     }
 
     creature.set_timed_effect(CreatureTimedEffect::TIM_SH_TOUKI, v);
-    RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
+    DeferredUpdateRequests::get_instance().set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
     if (!notice) {
         return false;
     }
@@ -252,7 +252,7 @@ bool shock_power(CreatureEntity &creature)
     move_monster_to(creature, monster, pos_target);
 
     if (monrace.brightness_flags.has_any_of(ld_mask)) {
-        RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::MONSTER_LITE);
+        DeferredUpdateRequests::get_instance().set_flag(StatusRecalculatingFlag::MONSTER_LITE);
     }
 
     return true;
@@ -272,7 +272,7 @@ bool cast_force_spell(CreatureEntity &creature, MindForceTrainerType spell)
         boost /= 2;
     }
 
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
+    auto &dur = DeferredUpdateRequests::get_instance();
     switch (spell) {
     case MindForceTrainerType::SMALL_FORCE_BALL: {
         const auto dir = get_aim_dir(creature);
@@ -305,7 +305,7 @@ bool cast_force_spell(CreatureEntity &creature, MindForceTrainerType spell)
     case MindForceTrainerType::IMPROVE_FORCE:
         msg_print(_("気を練った。", "You improved the Force."));
         set_current_ki(creature, false, 70 + plev);
-        rfu.set_flag(StatusRecalculatingFlag::BONUS);
+        dur.set_flag(StatusRecalculatingFlag::BONUS);
         if (randint1(get_current_ki(creature)) > (plev * 4 + 120)) {
             msg_print(_("気が暴走した！", "The Force exploded!"));
             fire_ball(creature, AttributeType::MANA, Direction::self(), get_current_ki(creature) / 2, 10);
@@ -385,6 +385,6 @@ bool cast_force_spell(CreatureEntity &creature, MindForceTrainerType spell)
     }
 
     set_current_ki(creature, true, 0);
-    rfu.set_flag(StatusRecalculatingFlag::BONUS);
+    dur.set_flag(StatusRecalculatingFlag::BONUS);
     return true;
 }

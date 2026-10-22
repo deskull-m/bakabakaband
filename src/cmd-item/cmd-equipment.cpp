@@ -43,8 +43,8 @@
 #include "status/action-setter.h"
 #include "status/shape-changer.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/item-entity.h"
-#include "system/redrawing-flags-updater.h"
 #include "term/screen-processor.h"
 #include "term/z-form.h"
 #include "util/bit-flags-calculator.h"
@@ -59,7 +59,7 @@
  */
 static void do_curse_on_equip(OBJECT_IDX slot, ItemEntity &item, CreatureEntity &creature)
 {
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
+    auto &dur = DeferredUpdateRequests::get_instance();
     if (set_anubis_and_chariot(creature) && ((slot == INVEN_MAIN_HAND) || (slot == INVEN_SUB_HAND))) {
 
         ItemEntity *anubis = creature.inventory[INVEN_MAIN_HAND].get();
@@ -69,7 +69,7 @@ static void do_curse_on_equip(OBJECT_IDX slot, ItemEntity &item, CreatureEntity 
         chariot->add_curses({ CurseTraitType::PERSISTENT_CURSE, CurseTraitType::HEAVY_CURSE, CurseTraitType::BERS_RAGE, CurseTraitType::VUL_CURSE });
 
         msg_print(_("『銀の戦車』プラス『アヌビス神』二刀流ッ！", "*Silver Chariot* plus *Anubis God* Two Swords!"));
-        rfu.set_flag(StatusRecalculatingFlag::BONUS);
+        dur.set_flag(StatusRecalculatingFlag::BONUS);
         return;
     }
 
@@ -80,7 +80,7 @@ static void do_curse_on_equip(OBJECT_IDX slot, ItemEntity &item, CreatureEntity 
 
     const auto item_name = describe_flavor(creature, item, (OD_OMIT_PREFIX | OD_NAME_ONLY));
     msg_print(_("悪意に満ちた黒いオーラが{}をとりまいた...", "There is a malignant black aura surrounding your {}..."), item_name);
-    rfu.set_flag(StatusRecalculatingFlag::BONUS);
+    dur.set_flag(StatusRecalculatingFlag::BONUS);
 }
 
 /*!
@@ -355,10 +355,10 @@ void do_cmd_wield(CreatureEntity &creature)
     }
 
     calc_android_exp(creature);
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.request_equipment_change_updates();
-    rfu.set_flag(MainWindowRedrawingFlag::EQUIPPY);
-    rfu.set_flag(SubWindowRedrawingFlag::PLAYER);
+    auto &dur = DeferredUpdateRequests::get_instance();
+    dur.request_equipment_change_updates();
+    dur.set_flag(MainWindowRedrawingFlag::EQUIPPY);
+    dur.set_flag(SubWindowRedrawingFlag::PLAYER);
 }
 
 /*!
@@ -377,7 +377,7 @@ void do_cmd_takeoff(CreatureEntity &creature)
     }
 
     PlayerEnergy energy(creature);
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
+    auto &dur = DeferredUpdateRequests::get_instance();
     if (item->is_cursed()) {
         if (item->curse_flags.has(CurseTraitType::PERMA_CURSE) || !pc.equals(PlayerClassType::BERSERKER)) {
             msg_print(_("ふーむ、どうやら呪われているようだ。", "Hmmm, it seems to be cursed."));
@@ -387,7 +387,7 @@ void do_cmd_takeoff(CreatureEntity &creature)
         if ((item->curse_flags.has(CurseTraitType::HEAVY_CURSE) && one_in_(7)) || one_in_(4)) {
             msg_print(_("呪われた装備を力づくで剥がした！", "You tore off a piece of cursed equipment by sheer strength!"));
             item->remove_curses();
-            rfu.set_flag(StatusRecalculatingFlag::BONUS);
+            dur.set_flag(StatusRecalculatingFlag::BONUS);
             msg_print(_("呪いを打ち破った。", "You break the curse."));
         } else {
             msg_print(_("装備を外せなかった。", "You couldn't remove the equipment."));
@@ -401,7 +401,7 @@ void do_cmd_takeoff(CreatureEntity &creature)
     (void)inven_takeoff(creature, i_idx, 255);
     verify_equip_slot(creature, i_idx);
     calc_android_exp(creature);
-    rfu.request_equipment_change_updates();
-    rfu.set_flag(MainWindowRedrawingFlag::EQUIPPY);
-    rfu.set_flag(SubWindowRedrawingFlag::PLAYER);
+    dur.request_equipment_change_updates();
+    dur.set_flag(MainWindowRedrawingFlag::EQUIPPY);
+    dur.set_flag(SubWindowRedrawingFlag::PLAYER);
 }

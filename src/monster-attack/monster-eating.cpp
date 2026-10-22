@@ -20,9 +20,9 @@
 #include "player/player-status-table.h"
 #include "status/experience.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/floor/floor-info.h"
 #include "system/item-entity.h"
-#include "system/redrawing-flags-updater.h"
 #include "tracking/health-bar-tracker.h"
 #include "util/string-processor.h"
 #include "view/display-messages.h"
@@ -65,7 +65,7 @@ void process_eat_gold(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr)
         chg_virtue(creature, Virtue::SACRIFICE, 2);
     }
 
-    RedrawingFlagsUpdater::get_instance().request_gold_redrawing();
+    DeferredUpdateRequests::get_instance().request_gold_redrawing();
     monap_ptr->blinked = true;
 }
 
@@ -195,7 +195,7 @@ void process_eat_lite(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr)
         monap_ptr->obvious = true;
     }
 
-    RedrawingFlagsUpdater::get_instance().set_flag(SubWindowRedrawingFlag::EQUIPMENT);
+    DeferredUpdateRequests::get_instance().set_flag(SubWindowRedrawingFlag::EQUIPMENT);
 }
 
 /*!
@@ -238,11 +238,11 @@ bool process_un_power(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr)
 
     HealthBarTracker::get_instance().set_flag_if_tracking(monap_ptr->m_idx);
     if (monap_ptr->m_ptr->is_riding()) {
-        RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::UHEALTH);
+        DeferredUpdateRequests::get_instance().set_flag(MainWindowRedrawingFlag::UHEALTH);
     }
 
     monap_ptr->o_ptr->pval = !is_magic_mastery || (monap_ptr->o_ptr->pval == 1) ? 0 : monap_ptr->o_ptr->pval - drain;
-    RedrawingFlagsUpdater::get_instance().request_inventory_arrangement();
+    DeferredUpdateRequests::get_instance().request_inventory_arrangement();
     return true;
 }
 
@@ -278,7 +278,7 @@ void process_drain_life(MonsterAttackPlayer *monap_ptr, const bool resist_drain)
 
     HealthBarTracker::get_instance().set_flag_if_tracking(monap_ptr->m_idx);
     if (monap_ptr->m_ptr->is_riding()) {
-        RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::UHEALTH);
+        DeferredUpdateRequests::get_instance().set_flag(MainWindowRedrawingFlag::UHEALTH);
     }
 
     if (monap_ptr->m_ptr->is_visible_on_map() && did_heal) {
@@ -300,7 +300,7 @@ void process_drain_mana(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr
         creature.current_mp_frac = 0;
     }
 
-    RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::MP);
+    DeferredUpdateRequests::get_instance().set_flag(MainWindowRedrawingFlag::MP);
 }
 
 /*!

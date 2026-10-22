@@ -22,8 +22,8 @@
 #include "perception/identification.h"
 #include "perception/object-perception.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/item-entity.h"
-#include "system/redrawing-flags-updater.h"
 #include "util/bit-flags-calculator.h"
 #include "util/string-processor.h"
 #include "view/display-messages.h"
@@ -70,10 +70,10 @@ bool identify_item(CreatureEntity &creature, ItemEntity *o_ptr)
     o_ptr->mark_as_known();
     o_ptr->marked.set(OmType::TOUCHED);
 
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.set_flag(StatusRecalculatingFlag::BONUS);
-    rfu.request_inventory_arrangement();
-    rfu.set_item_related_sub_window_flags();
+    auto &dur = DeferredUpdateRequests::get_instance();
+    dur.set_flag(StatusRecalculatingFlag::BONUS);
+    dur.request_inventory_arrangement();
+    dur.set_item_related_sub_window_flags();
     record_item_name = known_item_name;
     record_turn = AngbandWorld::get_instance().game_turn;
 

@@ -13,9 +13,9 @@
 #include "io/screen-util.h"
 #include "main/sound-of-music.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
-#include "system/redrawing-flags-updater.h"
 #include "target/projection-path-calculator.h"
 #include "target/target-checker.h"
 #include "target/target-describer.h"
@@ -326,10 +326,10 @@ Direction TargetSetter::switch_target_input()
         return Direction::none();
     case 'p': {
         verify_panel(this->player);
-        auto &rfu = RedrawingFlagsUpdater::get_instance();
-        rfu.set_flag(StatusRecalculatingFlag::MONSTER_STATUSES);
-        rfu.set_flag(MainWindowRedrawingFlag::MAP);
-        rfu.set_flag(SubWindowRedrawingFlag::OVERHEAD);
+        auto &dur = DeferredUpdateRequests::get_instance();
+        dur.set_flag(StatusRecalculatingFlag::MONSTER_STATUSES);
+        dur.set_flag(MainWindowRedrawingFlag::MAP);
+        dur.set_flag(SubWindowRedrawingFlag::OVERHEAD);
         handle_stuff(this->player);
         this->pos_interests = target_set_prepare(this->player, this->mode);
         this->pos_target = this->player.get_position();
@@ -400,10 +400,10 @@ tl::optional<int> TargetSetter::sweep_targets(const Direction &dir, int panel_ro
     panel_col_min = panel_col_min_initial;
     panel_bounds_center();
 
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.set_flag(StatusRecalculatingFlag::MONSTER_STATUSES);
-    rfu.set_flag(MainWindowRedrawingFlag::MAP);
-    rfu.set_flag(SubWindowRedrawingFlag::OVERHEAD);
+    auto &dur = DeferredUpdateRequests::get_instance();
+    dur.set_flag(StatusRecalculatingFlag::MONSTER_STATUSES);
+    dur.set_flag(MainWindowRedrawingFlag::MAP);
+    dur.set_flag(SubWindowRedrawingFlag::OVERHEAD);
     handle_stuff(this->player);
 
     this->pos_interests = target_set_prepare(this->player, this->mode);
@@ -499,10 +499,10 @@ tl::optional<std::pair<Direction, bool>> TargetSetter::switch_next_grid_command(
         return tl::nullopt;
     case 'p': {
         verify_panel(this->player);
-        auto &rfu = RedrawingFlagsUpdater::get_instance();
-        rfu.set_flag(StatusRecalculatingFlag::MONSTER_STATUSES);
-        rfu.set_flag(MainWindowRedrawingFlag::MAP);
-        rfu.set_flag(SubWindowRedrawingFlag::OVERHEAD);
+        auto &dur = DeferredUpdateRequests::get_instance();
+        dur.set_flag(StatusRecalculatingFlag::MONSTER_STATUSES);
+        dur.set_flag(MainWindowRedrawingFlag::MAP);
+        dur.set_flag(SubWindowRedrawingFlag::OVERHEAD);
         handle_stuff(this->player);
         this->pos_interests = target_set_prepare(this->player, this->mode);
         this->pos_target = this->player.get_position();
@@ -604,14 +604,14 @@ Target target_set(CreatureEntity &creature, target_type mode)
     ts.sweep_target_grids();
     prt("", 0, 0);
     verify_panel(creature);
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.set_flag(StatusRecalculatingFlag::MONSTER_STATUSES);
-    rfu.set_flag(MainWindowRedrawingFlag::MAP);
+    auto &dur = DeferredUpdateRequests::get_instance();
+    dur.set_flag(StatusRecalculatingFlag::MONSTER_STATUSES);
+    dur.set_flag(MainWindowRedrawingFlag::MAP);
     static constexpr auto flags = {
         SubWindowRedrawingFlag::OVERHEAD,
         SubWindowRedrawingFlag::FLOOR_ITEMS,
     };
-    rfu.set_flags(flags);
+    dur.set_flags(flags);
     handle_stuff(creature);
     Target::set_last_target(ts.get_target());
     return ts.get_target();

@@ -40,12 +40,12 @@
 #include "sv-definition/sv-other-types.h"
 #include "system/angband-system.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/redrawing-flags-updater.h"
 #include "tracking/health-bar-tracker.h"
 #include "util/bit-flags-calculator.h"
 #include "util/string-processor.h"
@@ -240,7 +240,7 @@ static bool deal_effect_damage_from_monster(CreatureEntity &creature, EffectMons
 
     HealthBarTracker::get_instance().set_flag_if_tracking(em_ptr->g_ptr->m_idx);
     if (em_ptr->m_ptr->is_riding()) {
-        RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::UHEALTH);
+        DeferredUpdateRequests::get_instance().set_flag(MainWindowRedrawingFlag::UHEALTH);
     }
 
     (void)set_monster_csleep(*creature.get_floor(), em_ptr->g_ptr->m_idx, 0);

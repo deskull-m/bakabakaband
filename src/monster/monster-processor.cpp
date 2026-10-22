@@ -80,13 +80,13 @@
 #include "system/baseitem/baseitem-key.h"
 #include "system/baseitem/baseitem-list.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/redrawing-flags-updater.h"
 #include "system/terrain/terrain-definition.h"
 #include "system/terrain/terrain-list.h"
 #include "target/projection-path-calculator.h"
@@ -870,7 +870,7 @@ void process_monster(CreatureEntity &creature, MONSTER_IDX m_idx)
         const auto &new_monrace = monster.get_monrace();
 
         if (new_monrace.brightness_flags.has_any_of(ld_mask) || monrace.brightness_flags.has_any_of(ld_mask)) {
-            RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::MONSTER_LITE);
+            DeferredUpdateRequests::get_instance().set_flag(StatusRecalculatingFlag::MONSTER_LITE);
         }
 
         if (turn_flags_ptr->is_riding_mon) {
@@ -960,7 +960,7 @@ void process_monster(CreatureEntity &creature, MONSTER_IDX m_idx)
     }
 
     if (turn_flags_ptr->is_riding_mon) {
-        RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
+        DeferredUpdateRequests::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
     }
 
     process_angar(creature, m_idx, turn_flags_ptr->see_m);

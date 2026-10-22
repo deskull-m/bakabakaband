@@ -18,8 +18,8 @@
 #include "spell-realm/spells-hex.h"
 #include "sv-definition/sv-weapon-types.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/item-entity.h"
-#include "system/redrawing-flags-updater.h"
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
 #include "util/bit-flags-calculator.h"
@@ -316,7 +316,7 @@ PRICE compare_weapons(CreatureEntity &creature, PRICE bcost)
 
     int n = 1;
     total = bcost;
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
+    auto &dur = DeferredUpdateRequests::get_instance();
     while (true) {
         clear_bldg(0, 22);
         world.character_xtra = true;
@@ -326,7 +326,7 @@ PRICE compare_weapons(CreatureEntity &creature, PRICE bcost)
                 *item_main_hand = items[i]->clone();
             }
 
-            rfu.set_flag(StatusRecalculatingFlag::BONUS);
+            dur.set_flag(StatusRecalculatingFlag::BONUS);
             handle_stuff(creature);
 
             list_weapon(creature, *items[i], row, col);
@@ -334,7 +334,7 @@ PRICE compare_weapons(CreatureEntity &creature, PRICE bcost)
             *item_main_hand = orig_weapon.clone();
         }
 
-        rfu.set_flag(StatusRecalculatingFlag::BONUS);
+        dur.set_flag(StatusRecalculatingFlag::BONUS);
         handle_stuff(creature);
 
         world.character_xtra = old_character_xtra;

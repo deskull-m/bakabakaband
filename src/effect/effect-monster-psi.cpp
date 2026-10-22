@@ -11,9 +11,9 @@
 #include "player/player-damage.h"
 #include "status/bad-status-setter.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/redrawing-flags-updater.h"
 #include "util/bit-flags-calculator.h"
 #include "util/string-processor.h"
 #include "view/display-messages.h"
@@ -263,8 +263,8 @@ static void effect_monster_psi_drain_resist(CreatureEntity &creature, EffectMons
         creature.set_current_mp(0);
     }
 
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.set_flag(MainWindowRedrawingFlag::MP);
+    auto &dur = DeferredUpdateRequests::get_instance();
+    dur.set_flag(MainWindowRedrawingFlag::MP);
     take_hit(creature, DAMAGE_ATTACK, em_ptr->dam, em_ptr->killer);
     em_ptr->dam = 0;
 }
@@ -283,8 +283,8 @@ static void effect_monster_psi_drain_change_power(CreatureEntity &creature, Effe
 
     b = std::min(creature.get_max_mp(), creature.get_current_mp() + b);
     creature.set_current_mp(b);
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.set_flag(MainWindowRedrawingFlag::MP);
+    auto &dur = DeferredUpdateRequests::get_instance();
+    dur.set_flag(MainWindowRedrawingFlag::MP);
 }
 
 /*!
