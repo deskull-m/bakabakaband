@@ -97,10 +97,6 @@ bool activate_bloody_moon(CreatureEntity &creature, ItemEntity &item)
         calc_android_exp(creature);
     }
 
-    static constexpr auto flags = {
-        StatusRecalculatingFlag::BONUS,
-        StatusRecalculatingFlag::HP,
-    };
-    RedrawingFlagsUpdater::get_instance().set_flags(flags);
+    RedrawingFlagsUpdater::get_instance().request_bonus_and_max_hp_recalculation();
     return true;
 }

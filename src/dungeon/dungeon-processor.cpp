@@ -63,11 +63,8 @@ static void redraw_character_xtra(CreatureEntity &creature)
     };
     rfu.set_flags(flags_swrf);
     rfu.request_whole_main_window_redrawing();
-    auto flags_srf = {
-        StatusRecalculatingFlag::BONUS,
-        StatusRecalculatingFlag::HP,
-        StatusRecalculatingFlag::MP,
-        StatusRecalculatingFlag::SPELLS,
+    rfu.request_player_status_recalculation();
+    static constexpr auto flags_srf = {
         StatusRecalculatingFlag::VIEW,
         StatusRecalculatingFlag::LITE,
         StatusRecalculatingFlag::MONSTER_LITE,
@@ -143,13 +140,7 @@ void process_dungeon(CreatureEntity &creature, bool load_game)
 
     redraw_character_xtra(creature);
     auto &rfu = RedrawingFlagsUpdater::get_instance();
-    static constexpr auto flags_srf = {
-        StatusRecalculatingFlag::BONUS,
-        StatusRecalculatingFlag::HP,
-        StatusRecalculatingFlag::MP,
-        StatusRecalculatingFlag::SPELLS,
-    };
-    rfu.set_flags(flags_srf);
+    rfu.request_player_status_recalculation();
     static constexpr auto flags_iaf = {
         InventoryArrangementFlag::COMBINATION,
         InventoryArrangementFlag::REORDER,

@@ -2781,17 +2781,13 @@ void check_experience(CreatureEntity &creature)
     CreatureRace pr(&creature);
     bool android = pr.equals(PlayerRaceType::ANDROID);
     PLAYER_LEVEL old_lev = creature.get_level();
-    // 一時的な発光の明るさもレベルで決まる
-    static constexpr auto flags_srf = {
-        StatusRecalculatingFlag::BONUS,
-        StatusRecalculatingFlag::HP,
-        StatusRecalculatingFlag::MP,
-        StatusRecalculatingFlag::SPELLS,
-        StatusRecalculatingFlag::TORCH,
+    const auto request_level_change_recalculation = [&rfu] {
+        rfu.request_player_status_recalculation();
+        rfu.set_flag(StatusRecalculatingFlag::TORCH); // 一時的な発光の明るさもレベルで決まる
     };
     while ((creature.get_level() > 1) && (creature.get_exp() < ((android ? player_exp_a : player_exp)[creature.get_level() - 2] * creature.expfact / 100L))) {
         creature.set_level(creature.get_level() - 1);
-        rfu.set_flags(flags_srf);
+        request_level_change_recalculation();
         static constexpr auto flags_mwrf = {
             MainWindowRedrawingFlag::LEVEL,
             MainWindowRedrawingFlag::TITLE,
@@ -2824,7 +2820,7 @@ void check_experience(CreatureEntity &creature)
 
         sound(SoundKind::LEVEL);
         msg_print(_("レベル {} にようこそ。", "Welcome to level {}."), creature.get_level());
-        rfu.set_flags(flags_srf);
+        request_level_change_recalculation();
         const auto flags_mwrf_levelup = {
             MainWindowRedrawingFlag::LEVEL,
             MainWindowRedrawingFlag::TITLE,
@@ -2892,7 +2888,7 @@ void check_experience(CreatureEntity &creature)
             level_reward = false;
         }
 
-        rfu.set_flags(flags_srf);
+        request_level_change_recalculation();
         static constexpr auto flags_mwrf = {
             MainWindowRedrawingFlag::LEVEL,
             MainWindowRedrawingFlag::TITLE,

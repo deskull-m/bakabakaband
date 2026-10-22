@@ -556,13 +556,7 @@ tl::optional<std::string> do_hex_spell(CreatureEntity &creature, spell_hex_type 
                     set_action(creature, ACTION_NONE);
                 }
 
-                static constexpr auto flags = {
-                    StatusRecalculatingFlag::BONUS,
-                    StatusRecalculatingFlag::HP,
-                    StatusRecalculatingFlag::MP,
-                    StatusRecalculatingFlag::SPELLS,
-                };
-                rfu.set_flags(flags);
+                rfu.request_player_status_recalculation();
                 rfu.set_flag(MainWindowRedrawingFlag::EXTRA);
                 return "";
             }
