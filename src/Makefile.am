@@ -1643,6 +1643,8 @@ hengband_test_SOURCES = \
 	test/io/test-pref-file-expressor.cpp \
 	test/io/test-tokenizer.cpp \
 	\
+	test/knowledge/test-knowledge-features.cpp \
+	\
 	test/locale/test-character-encoding.cpp \
 	\
 	test/lore/test-monster-lore-snapshot.cpp \
