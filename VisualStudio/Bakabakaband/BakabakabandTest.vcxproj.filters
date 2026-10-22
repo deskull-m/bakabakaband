@@ -16,6 +16,9 @@
     <Filter Include="info-reader">
       <UniqueIdentifier>{0a4fac22-0e6b-422b-9f88-49ee79b2f2f1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="save">
+      <UniqueIdentifier>{365c4e03-65f5-4590-91d9-a8a3664d4a80}</UniqueIdentifier>
+    </Filter>
     <Filter Include="io">
       <UniqueIdentifier>{c8b717ff-2016-4112-a724-c2a1d4bd249b}</UniqueIdentifier>
     </Filter>
@@ -181,7 +184,17 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\stdafx.h" />
+    <ClInclude Include="..\..\src\test\scoped-restore.h" />
     <ClInclude Include="..\..\src\test\scoped-rng.h" />
+    <ClInclude Include="..\..\src\test\scoped-vector-wrapper.h" />
     <ClInclude Include="..\..\src\test\string-helpers.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\src\test\info-reader\scoped-reader-state.h">
+      <Filter>info-reader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\test\save\scoped-save-io.h">
+      <Filter>save</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
