@@ -17,6 +17,32 @@ BaseitemDefinition::BaseitemDefinition()
 }
 
 /*!
+ * @brief 必須項目 (name / bi_key / symbol / level / weight / cost) を除いた複製を返す
+ * @return 省略可能な項目だけを引き継いだベースアイテム定義
+ * @details 同一IDを再読込する際、JSONC で省略された省略可能項目を元の定義から保つために使う。
+ * 必須項目は再読込で必ず指定されるため複製しない。alliance_idx は bakabakaband 独自の省略可能項目。
+ */
+BaseitemDefinition BaseitemDefinition::clone_without_required_fields() const
+{
+    BaseitemDefinition cloned;
+    cloned.flavor_name = this->flavor_name;
+    cloned.text = this->text;
+    cloned.pval = this->pval;
+    cloned.ac = this->ac;
+    cloned.damage_dice = this->damage_dice;
+    cloned.to_h = this->to_h;
+    cloned.to_d = this->to_d;
+    cloned.to_a = this->to_a;
+    cloned.alloc_tables = this->alloc_tables;
+    cloned.act_idx = this->act_idx;
+    cloned.flags = this->flags;
+    cloned.gen_flags = this->gen_flags;
+    cloned.easy_know = this->easy_know;
+    cloned.alliance_idx = this->alliance_idx;
+    return cloned;
+}
+
+/*!
  * @brief 正常なベースアイテムかを判定する
  * @return 正常なベースアイテムか否か
  * @details ID 0は「異常アイテム」という名前の文字通り異常アイテムであり、個別に弾く

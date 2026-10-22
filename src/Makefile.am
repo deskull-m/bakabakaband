@@ -1624,6 +1624,7 @@ hengband_test_SOURCES = \
 	test/info-reader/test-ego-reader.cpp \
 	test/info-reader/test-general-parser.cpp \
 	test/info-reader/test-info-reader-util.cpp \
+	test/info-reader/test-baseitem-reader.cpp \
 	test/info-reader/test-json-reader-util.cpp \
 	test/info-reader/test-quest-reader.cpp \
 	test/info-reader/test-skill-reader.cpp \
@@ -1642,11 +1643,16 @@ hengband_test_SOURCES = \
 	\
 	test/object/test-object-info.cpp \
 	\
+	test/save/test-item-writer.cpp \
+	\
 	test/store/test-pricing.cpp \
 	test/store/test-store-screen.cpp \
 	test/store/test-store-util.cpp \
 	\
 	test/system/test-dungeon-record.cpp \
+	\
+	test/system/baseitem/test-baseitem-allocation.cpp \
+	test/system/baseitem/test-baseitem-list.cpp \
 	\
 	test/system/floor/test-floor-info.cpp \
 	\

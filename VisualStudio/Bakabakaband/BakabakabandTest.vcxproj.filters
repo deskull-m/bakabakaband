@@ -79,6 +79,9 @@
     <ClCompile Include="..\..\src\test\info-reader\test-info-reader-util.cpp">
       <Filter>info-reader</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\test\info-reader\test-baseitem-reader.cpp">
+      <Filter>info-reader</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\src\test\info-reader\test-json-reader-util.cpp">
       <Filter>info-reader</Filter>
     </ClCompile>
@@ -133,8 +136,17 @@
     <ClCompile Include="..\..\src\test\system\monrace\test-body-structure-policy.cpp">
       <Filter>system\monrace</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\test\save\test-item-writer.cpp">
+      <Filter>save</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\src\test\system\test-dungeon-record.cpp">
       <Filter>system</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\test\system\baseitem\test-baseitem-allocation.cpp">
+      <Filter>system\baseitem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\test\system\baseitem\test-baseitem-list.cpp">
+      <Filter>system\baseitem</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\test\system\floor\test-floor-info.cpp">
       <Filter>system\floor</Filter>
