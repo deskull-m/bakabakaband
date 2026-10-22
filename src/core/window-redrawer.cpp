@@ -4,7 +4,6 @@
  * @author Hourier
  */
 #include "core/window-redrawer.h"
-#include "core/stuff-handler.h"
 #include "floor/floor-util.h"
 #include "game-option/map-screen-options.h"
 #include "game-option/option-flags.h"
@@ -33,6 +32,13 @@
  * @brief コンソールを再描画する /
  * Redraw a term when it is resized
  * @todo ここにPlayerType を追加するとz-termに影響が行くので保留
+ * @details
+ * サブウィンドウの大きさが変わった時に呼ばれ、サブウィンドウだけを描き直す。
+ * キー入力待ちの最中に呼ばれるため、入力を待つ前の inkey() と同じく
+ * window_stuff_including_deferred() だけを使う。handle_stuff() を呼ぶと、残っている
+ * メイン画面の再描画の要求を、有効になっているこのサブウィンドウへ描いてしまう。
+ * さらにメッセージの消去から -続く- の入力待ちに入ることもある。
+ * メイン画面の要求は、メインループの handle_stuff() に任せる。
  */
 void redraw_window()
 {
@@ -41,7 +47,6 @@ void redraw_window()
     }
 
     RedrawingFlagsUpdater::get_instance().fill_up_sub_flags();
-    handle_stuff(PlayerType::get_instance());
     window_stuff_including_deferred(PlayerType::get_instance());
     term_redraw();
 }
