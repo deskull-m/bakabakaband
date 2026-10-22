@@ -2605,11 +2605,7 @@ void update_creature(CreatureEntity &creature)
         rfu.reset_flag(StatusRecalculatingFlag::BONUS);
 
         // 矢弾・投擲の威力、運搬中・両手持ちの表示、騎乗中のランスのダイスは、能力の修正 (能力値・射撃・騎乗・集中度など) で変わる
-        static constexpr auto flags_swrf = {
-            SubWindowRedrawingFlag::INVENTORY,
-            SubWindowRedrawingFlag::EQUIPMENT,
-        };
-        rfu.set_flags(flags_swrf);
+        rfu.request_carried_item_lists_redrawing();
 
         PlayerAlignment(creature).update_alignment();
         PlayerSkill ps(creature);
