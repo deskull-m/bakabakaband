@@ -32,7 +32,7 @@ constexpr std::string_view VARIANT_NAME("Bakabaka");
  *     ものを統一 (s16b)。旧バージョンは各固有経路で読む (rd_creature_common /
  *     rd_base_info / rd_monster_v50 に older_than(54) ガード)。
  */
-constexpr uint32_t SAVEFILE_VERSION = 54;
+constexpr uint32_t SAVEFILE_VERSION = 55;
 
 /*!
  * @brief バージョンが開発版が安定版かを返す(廃止予定)

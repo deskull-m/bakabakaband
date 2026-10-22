@@ -24,6 +24,8 @@ static void rd_hengband_dungeons()
     const int max = rd_byte();
     for (auto i = 0; i < max; i++) {
         int tmp16s = rd_s16b();
+        // 古いセーブは帰還の解放と実際の訪問を区別しない
+        const auto visited = loading_savefile_version_is_older_than(55) ? tmp16s > 0 : rd_bool();
         if (i >= dungeons_size) {
             continue;
         }
@@ -31,8 +33,12 @@ static void rd_hengband_dungeons()
         const auto dungeon_id = i2enum<DungeonId>(i);
         const auto &dungeon = dungeons.get_dungeon(dungeon_id);
         auto &record = records.get_record(dungeon_id);
+        record.reset();
         if (tmp16s > 0) {
             record.set_max_level(tmp16s);
+            if (visited) {
+                record.mark_visited();
+            }
         }
 
         if (record.get_max_level() > dungeon.maxdepth) {

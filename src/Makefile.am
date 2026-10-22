@@ -1642,6 +1642,8 @@ hengband_test_SOURCES = \
 	test/store/test-store-screen.cpp \
 	test/store/test-store-util.cpp \
 	\
+	test/system/test-dungeon-record.cpp \
+	\
 	test/system/floor/test-floor-info.cpp \
 	\
 	test/system/monrace/test-armament-level.cpp \
