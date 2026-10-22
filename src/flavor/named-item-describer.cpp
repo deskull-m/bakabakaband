@@ -375,7 +375,7 @@ static std::string describe_body(const ItemEntity &item, [[maybe_unused]] const 
  */
 std::string describe_named_item(CreatureEntity &creature, const ItemEntity &item, const describe_option_type &opt)
 {
-    auto [basename, modstr] = switch_tval_description(item, opt);
+    auto [basename, modstr] = switch_tval_description(creature, item, opt);
     if (auto name = get_fullname_if_set(item, opt); !name.empty()) {
         basename = std::move(name);
     }
