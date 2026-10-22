@@ -24,6 +24,8 @@
 #include <exception>
 #include <nlohmann/json.hpp>
 #include <span>
+#include <type_traits>
+#include <utility>
 
 /*!
  * @brief テキストトークンを走査してフラグを一つ得る(ダンジョン用)
@@ -803,6 +805,11 @@ errr DungeonReader::set_dungeon_final_floor(DungeonDefinition &dungeon, const nl
 
     if (final_floor_obj.contains("guardian")) {
         const auto value = final_floor_obj["guardian"].get<int>();
+        // 格納先 (MonraceId の基底型 short) で表現できない値は、変換で別の ID へ折り返るため先に弾く
+        if (!std::in_range<std::underlying_type_t<MonraceId>>(value)) {
+            msg_format(_("不正な final_floor.guardian ID '%d'。", "Invalid final_floor.guardian ID '%d'."), value);
+            return PARSE_ERROR_INVALID_FLAG;
+        }
         const auto monrace_id = i2enum<MonraceId>(value);
         const auto &monraces = MonraceList::get_instance();
         if (!MonraceList::is_valid(monrace_id) || !monraces.contains(monrace_id)) {
@@ -813,6 +820,11 @@ errr DungeonReader::set_dungeon_final_floor(DungeonDefinition &dungeon, const nl
     }
     if (final_floor_obj.contains("object")) {
         const auto value = final_floor_obj["object"].get<int>();
+        // 格納先 (short) で表現できない値は、切り詰めで別のベースアイテムへ折り返るため先に弾く
+        if (!std::in_range<short>(value)) {
+            msg_format(_("不正な final_floor.object ID '%d'。", "Invalid final_floor.object ID '%d'."), value);
+            return PARSE_ERROR_INVALID_FLAG;
+        }
         const auto value_short = static_cast<short>(value);
         try {
             static_cast<void>(BaseitemList::get_instance().get_baseitem(value_short));
@@ -824,6 +836,11 @@ errr DungeonReader::set_dungeon_final_floor(DungeonDefinition &dungeon, const nl
     }
     if (final_floor_obj.contains("artifact")) {
         const auto value = final_floor_obj["artifact"].get<int>();
+        // 格納先 (FixedArtifactId の基底型 short) で表現できない値は、変換で別の ID へ折り返るため先に弾く
+        if (!std::in_range<std::underlying_type_t<FixedArtifactId>>(value)) {
+            msg_format(_("不正な final_floor.artifact ID '%d'。", "Invalid final_floor.artifact ID '%d'."), value);
+            return PARSE_ERROR_INVALID_FLAG;
+        }
         const auto artifact_id = i2enum<FixedArtifactId>(value);
         const auto &artifacts = ArtifactList::get_instance();
         if ((artifact_id != FixedArtifactId::NONE) && !artifacts.contains(artifact_id)) {
