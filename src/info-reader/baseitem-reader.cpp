@@ -22,6 +22,7 @@
 #include "view/display-messages.h"
 #include <limits>
 #include <nlohmann/json.hpp>
+#include <stdexcept>
 #include <utility>
 
 BaseitemReader::BaseitemReader(const nlohmann::json &baseitem_data)
@@ -69,11 +70,11 @@ int BaseitemReader::read() const
 
     auto &baseitems = BaseitemList::get_instance();
     error_idx = item_id;
-    if (item_id >= static_cast<int>(baseitems.size())) {
-        baseitems.resize(item_id + 1);
-    }
     const short short_id = static_cast<short>(item_id);
-    auto &baseitem = baseitems.get_baseitem(short_id);
+    // ベースアイテムをローカルに組み立て、全フィールドの読込に成功したら replace_baseitem() で
+    // 差し替える。これにより読込途中のエラーでも格納済みの定義が壊れず、name/bi_key 変更時に
+    // キャッシュも無効化される。既存IDの再読込では省略可能項目を引き継ぐため複製から始める。
+    auto baseitem = item_id < static_cast<int>(baseitems.size()) ? baseitems.get_baseitem(short_id).clone_without_required_fields() : BaseitemDefinition{};
     if (auto err = info_set_string(get_json_value(this->baseitem_data, "name"), baseitem.name, true)) {
         msg_print(_("アイテムの名称読込失敗。ID: '{}'。", "Failed to load item name. ID: '{}'."), error_idx);
         return err;
@@ -147,6 +148,10 @@ int BaseitemReader::read() const
         return err;
     }
 
+    if (item_id >= static_cast<int>(baseitems.size())) {
+        baseitems.resize(item_id + 1);
+    }
+    baseitems.replace_baseitem(short_id, std::move(baseitem));
     return PARSE_ERROR_NONE;
 }
 
@@ -313,7 +318,14 @@ int BaseitemReader::set_baseitem_activate(BaseitemDefinition &baseitem) const
         return PARSE_ERROR_INVALID_TYPE;
     }
 
-    auto activation = grab_one_activation_flag(act_data.get<std::string>());
+    RandomArtActType activation;
+    try {
+        activation = grab_one_activation_flag(act_data.get<std::string>());
+    } catch (const std::invalid_argument &) {
+        return PARSE_ERROR_INVALID_FLAG;
+    } catch (const std::out_of_range &) {
+        return PARSE_ERROR_INVALID_FLAG;
+    }
     if (activation <= RandomArtActType::NONE) {
         return PARSE_ERROR_INVALID_FLAG;
     }
