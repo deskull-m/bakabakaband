@@ -28,18 +28,18 @@
 static bool spell_RF4_BREATH_special_message(MonraceId r_idx, AttributeType GF_TYPE, concptr m_name)
 {
     if (r_idx == MonraceId::JAIAN && GF_TYPE == AttributeType::SOUND) {
-        msg_format(_("%s^「ボォエ～～～～～～」", "%s^ sings, 'Booooeeeeee'"), m_name);
+        msg_print(_("{}「ボォエ～～～～～～」", "{} sings, 'Booooeeeeee'"), str_upcase_first(m_name));
         return true;
     }
     if (r_idx == MonraceId::BOTEI && GF_TYPE == AttributeType::SHARDS) {
-        msg_format(_("%s^「ボ帝ビルカッター！！！」", "%s^ shouts, 'Boty-Build cutter!!!'"), m_name);
+        msg_print(_("{}「ボ帝ビルカッター！！！」", "{} shouts, 'Boty-Build cutter!!!'"), str_upcase_first(m_name));
         return true;
     }
     if (r_idx == MonraceId::RAOU && (GF_TYPE == AttributeType::FORCE)) {
         if (one_in_(2)) {
-            msg_format(_("%s^「北斗剛掌波！！」", "%s^ says, 'Hokuto Goh-Sho-Ha!!'"), m_name);
+            msg_print(_("{}「北斗剛掌波！！」", "{} says, 'Hokuto Goh-Sho-Ha!!'"), str_upcase_first(m_name));
         } else {
-            msg_format(_("%s^「受けてみい！！天将奔烈！！！」", "%s^ says, 'Tensho-Honretsu!!'"), m_name);
+            msg_print(_("{}「受けてみい！！天将奔烈！！！」", "{} says, 'Tensho-Honretsu!!'"), str_upcase_first(m_name));
         }
         return true;
     }
@@ -64,9 +64,9 @@ static void message_breath(CreatureEntity &creature, MONSTER_IDX m_idx, MONSTER_
             }
         } else {
             if (mon_to_player) {
-                msg_format(_("%s^が%s^のブレスを吐いた。", "%s^ breathes %s^."), m_name.data(), type_s.data());
+                msg_print(_("{}が{}のブレスを吐いた。", "{} breathes {}."), str_upcase_first(m_name), str_upcase_first(type_s));
             } else if (mon_to_mon && known && see_either) {
-                _(msg_format("%s^が%s^に%s^のブレスを吐いた。", m_name.data(), t_name.data(), type_s.data()), msg_format("%s^ breathes %s^ at %s^.", m_name.data(), type_s.data(), t_name.data()));
+                _(msg_print("{}が{}に{}のブレスを吐いた。", str_upcase_first(m_name), str_upcase_first(t_name), str_upcase_first(type_s)), msg_print("{} breathes {} at {}.", str_upcase_first(m_name), str_upcase_first(type_s), str_upcase_first(t_name)));
             }
         }
     }

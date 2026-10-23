@@ -616,5 +616,5 @@ void do_cmd_go_portal(CreatureEntity &creature)
     floor.set_dungeon_index(target_dungeon);
 
     const auto &target_dungeon_info = dungeons.get_dungeon(target_dungeon);
-    msg_format(_("%sに転移した！", "You are transferred to %s!"), target_dungeon_info.name.data());
+    msg_print(_("{}に転移した！", "You are transferred to {}!"), target_dungeon_info.name);
 }

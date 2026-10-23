@@ -91,7 +91,7 @@ void do_cmd_martial_arts_style(CreatureEntity &creature)
     creature.martial_arts_style = new_style;
 
     auto style_name = get_martial_arts_style_name(new_style);
-    msg_format("武術スタイルを%sに変更しました。", style_name);
+    msg_print("武術スタイルを{}に変更しました。", style_name);
 
     handle_stuff(creature);
 }

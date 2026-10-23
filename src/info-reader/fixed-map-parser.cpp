@@ -331,8 +331,8 @@ ParseErrorType parse_fixed_map(CreatureEntity &creature, std::string_view name, 
         err = generate_fixed_map_floor(creature, qg_ptr, parse_fixed_map);
         if (err != ParseErrorType::NONE) {
             concptr oops = (((err > ParseErrorType::NONE) && (err < ParseErrorType::MAX)) ? err_str[enum2i(err)] : "unknown");
-            msg_format("Error %d (%s) at line %d of '%s'.", err, oops, num, name.data());
-            msg_format(_("'%s'を解析中。", "Parsing '%s'."), line_str->data());
+            msg_print("Error {} ({}) at line {} of '{}'.", enum2i(err), oops, num, name);
+            msg_print(_("'{}'を解析中。", "Parsing '{}'."), line_str->data());
             msg_erase();
             break;
         }

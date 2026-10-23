@@ -1027,7 +1027,7 @@ bool test_hit_fire(CreatureEntity &creature, int chance, CreatureEntity &target,
     if (randint0(chance) < (ac * 3 / 4)) {
         if (target.get_r_idx() == MonraceId::GOEMON && !target.is_asleep()) {
             const auto m_name = monster_desc(creature, target, MD_IGNORE_HALLU | MD_INDEF_HIDDEN);
-            msg_format(_("%sは%sを斬り捨てた！", "%s cuts down %s!"), m_name.data(), item_name.data());
+            msg_print(_("{}は{}を斬り捨てた！", "{} cuts down {}!"), m_name, item_name);
         }
         return false;
     }

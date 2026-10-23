@@ -355,7 +355,7 @@ ParseErrorType BaseitemReader::set_baseitem_alliance(BaseitemDefinition &baseite
     }
 
     if (!found) {
-        msg_format(_("未知のアライアンスタグ '%s'。", "Unknown alliance tag '%s'."), alliance_tag.data());
+        msg_print(_("未知のアライアンスタグ '{}'。", "Unknown alliance tag '{}'."), alliance_tag);
         return ParseErrorType::INVALID_FLAG;
     }
 

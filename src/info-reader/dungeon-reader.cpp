@@ -39,7 +39,7 @@ bool DungeonReader::grab_one_dungeon_flag(DungeonDefinition &dungeon, std::strin
         return true;
     }
 
-    msg_format(_("未知のダンジョン・フラグ '%s'。", "Unknown dungeon type flag '%s'."), what.data());
+    msg_print(_("未知のダンジョン・フラグ '{}'。", "Unknown dungeon type flag '{}'."), what);
     return false;
 }
 
@@ -117,7 +117,7 @@ bool DungeonReader::grab_one_spell_monster_flag(DungeonDefinition &dungeon, std:
         return true;
     }
 
-    msg_format(_("未知のモンスター・フラグ '%s'。", "Unknown monster flag '%s'."), what.data());
+    msg_print(_("未知のモンスター・フラグ '{}'。", "Unknown monster flag '{}'."), what);
     return false;
 }
 
@@ -635,7 +635,7 @@ ParseErrorType DungeonReader::set_dungeon_generation(DungeonDefinition &dungeon,
                         continue;
                     }
                     if (!EnumClassFlagGroup<PitKind>::grab_one_flag(dungeon.pit, dungeon_pit_kinds, name)) {
-                        msg_format(_("未知のダンジョン pit 種別 '%s'。", "Unknown dungeon pit kind '%s'."), name.data());
+                        msg_print(_("未知のダンジョン pit 種別 '{}'。", "Unknown dungeon pit kind '{}'."), name);
                         return ParseErrorType::INVALID_FLAG;
                     }
                 }
@@ -659,7 +659,7 @@ ParseErrorType DungeonReader::set_dungeon_generation(DungeonDefinition &dungeon,
                         continue;
                     }
                     if (!EnumClassFlagGroup<NestKind>::grab_one_flag(dungeon.nest, dungeon_nest_kinds, name)) {
-                        msg_format(_("未知のダンジョン nest 種別 '%s'。", "Unknown dungeon nest kind '%s'."), name.data());
+                        msg_print(_("未知のダンジョン nest 種別 '{}'。", "Unknown dungeon nest kind '{}'."), name);
                         return ParseErrorType::INVALID_FLAG;
                     }
                 }
@@ -807,13 +807,13 @@ ParseErrorType DungeonReader::set_dungeon_final_floor(DungeonDefinition &dungeon
         const auto value = final_floor_obj["guardian"].get<int>();
         // 格納先 (MonraceId の基底型 short) で表現できない値は、変換で別の ID へ折り返るため先に弾く
         if (!std::in_range<std::underlying_type_t<MonraceId>>(value)) {
-            msg_format(_("不正な final_floor.guardian ID '%d'。", "Invalid final_floor.guardian ID '%d'."), value);
+            msg_print(_("不正な final_floor.guardian ID '{}'。", "Invalid final_floor.guardian ID '{}'."), value);
             return ParseErrorType::INVALID_FLAG;
         }
         const auto monrace_id = i2enum<MonraceId>(value);
         const auto &monraces = MonraceList::get_instance();
         if (!MonraceList::is_valid(monrace_id) || !monraces.contains(monrace_id)) {
-            msg_format(_("不正な final_floor.guardian ID '%d'。", "Invalid final_floor.guardian ID '%d'."), value);
+            msg_print(_("不正な final_floor.guardian ID '{}'。", "Invalid final_floor.guardian ID '{}'."), value);
             return ParseErrorType::INVALID_FLAG;
         }
         dungeon.final_guardian = monrace_id;
@@ -822,14 +822,14 @@ ParseErrorType DungeonReader::set_dungeon_final_floor(DungeonDefinition &dungeon
         const auto value = final_floor_obj["object"].get<int>();
         // 格納先 (short) で表現できない値は、切り詰めで別のベースアイテムへ折り返るため先に弾く
         if (!std::in_range<short>(value)) {
-            msg_format(_("不正な final_floor.object ID '%d'。", "Invalid final_floor.object ID '%d'."), value);
+            msg_print(_("不正な final_floor.object ID '{}'。", "Invalid final_floor.object ID '{}'."), value);
             return ParseErrorType::INVALID_FLAG;
         }
         const auto value_short = static_cast<short>(value);
         try {
             static_cast<void>(BaseitemList::get_instance().get_baseitem(value_short));
         } catch (const std::exception &) {
-            msg_format(_("不正な final_floor.object ID '%d'。", "Invalid final_floor.object ID '%d'."), value);
+            msg_print(_("不正な final_floor.object ID '{}'。", "Invalid final_floor.object ID '{}'."), value);
             return ParseErrorType::INVALID_FLAG;
         }
         dungeon.final_object = value_short;
@@ -838,13 +838,13 @@ ParseErrorType DungeonReader::set_dungeon_final_floor(DungeonDefinition &dungeon
         const auto value = final_floor_obj["artifact"].get<int>();
         // 格納先 (FixedArtifactId の基底型 short) で表現できない値は、変換で別の ID へ折り返るため先に弾く
         if (!std::in_range<std::underlying_type_t<FixedArtifactId>>(value)) {
-            msg_format(_("不正な final_floor.artifact ID '%d'。", "Invalid final_floor.artifact ID '%d'."), value);
+            msg_print(_("不正な final_floor.artifact ID '{}'。", "Invalid final_floor.artifact ID '{}'."), value);
             return ParseErrorType::INVALID_FLAG;
         }
         const auto artifact_id = i2enum<FixedArtifactId>(value);
         const auto &artifacts = ArtifactList::get_instance();
         if ((artifact_id != FixedArtifactId::NONE) && !artifacts.contains(artifact_id)) {
-            msg_format(_("不正な final_floor.artifact ID '%d'。", "Invalid final_floor.artifact ID '%d'."), value);
+            msg_print(_("不正な final_floor.artifact ID '{}'。", "Invalid final_floor.artifact ID '{}'."), value);
             return ParseErrorType::INVALID_FLAG;
         }
         dungeon.final_artifact = artifact_id;

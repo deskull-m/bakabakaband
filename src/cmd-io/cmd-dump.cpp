@@ -244,7 +244,7 @@ void do_cmd_feeling(CreatureEntity &creature)
     if (floor_ptr->allianceID != AllianceType::NONE) {
         auto a_ptr = alliance_list.find(floor_ptr->allianceID)->second;
         if (!a_ptr->isAnnihilated()) {
-            msg_format(_("ここは%sの支配下にある。", "This place is under %s's control."), a_ptr->name.c_str());
+            msg_print(_("ここは{}の支配下にある。", "This place is under {}'s control."), a_ptr->name);
         }
     }
 

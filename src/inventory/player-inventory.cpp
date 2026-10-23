@@ -111,7 +111,7 @@ static void py_pickup_single_item(CreatureEntity &creature, short i_idx, bool pi
     }
 
     if (!check_get_item(&item)) {
-        msg_format(_("%sを持ち運ぶことはできない。", "You can't carry %s."), item_name.data());
+        msg_print(_("{}を持ち運ぶことはできない。", "You can't carry {}."), item_name);
         return;
     }
 
@@ -303,17 +303,17 @@ void carry(CreatureEntity &creature, bool pickup)
         }
 
         if (!pickup) {
-            msg_format(_("%sがある。", "You see %s."), item_name.data());
+            msg_print(_("{}がある。", "You see {}."), item_name);
             continue;
         }
 
         if (!check_get_item(&item)) {
-            msg_format(_("%sを持ち運ぶことはできない。", "You can't carry %s."), item_name.data());
+            msg_print(_("{}を持ち運ぶことはできない。", "You can't carry {}."), item_name);
             continue;
         }
 
         if (!creature.can_store_item(item)) {
-            msg_format(_("ザックには%sを入れる隙間がない。", "You have no room for %s."), item_name.data());
+            msg_print(_("ザックには{}を入れる隙間がない。", "You have no room for {}."), item_name);
             continue;
         }
 

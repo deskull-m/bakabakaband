@@ -1189,7 +1189,7 @@ MonsterSpellResult spell_RF6_S_NASTY(CreatureEntity &creature, POSITION y, POSIT
     }
 
     if (monster_near_player(creature, m_idx, t_idx) && !see_monster(creature, t_idx) && count && mon_to_mon && mon_to_player) {
-        msg_format(_("クッソ汚いものが間近にひしめく音が聞こえる。", "You hear many nasty things crowding nearby."));
+        msg_print(_("クッソ汚いものが間近にひしめく音が聞こえる。", "You hear many nasty things crowding nearby."));
     }
 
     if (monster_near_player(creature, m_idx, t_idx) && !see_monster(creature, t_idx) && count && mon_to_mon) {
@@ -1229,7 +1229,7 @@ MonsterSpellResult spell_RF6_S_GOLEM(CreatureEntity &creature, POSITION y, POSIT
     }
 
     if (monster_near_player(creature, m_idx, t_idx) && !see_monster(creature, t_idx) && count && mon_to_mon && mon_to_player) {
-        msg_format(_("ゴーレムが間近にひしめく音が聞こえる。", "You hear many golems crowding nearby."));
+        msg_print(_("ゴーレムが間近にひしめく音が聞こえる。", "You hear many golems crowding nearby."));
     }
 
     if (monster_near_player(creature, m_idx, t_idx) && !see_monster(creature, t_idx) && count && mon_to_mon) {
@@ -1268,7 +1268,7 @@ MonsterSpellResult spell_RF6_S_CATS(CreatureEntity &creature, POSITION y, POSITI
     }
 
     if (monster_near_player(creature, m_idx, t_idx) && !see_monster(creature, t_idx) && count && mon_to_mon && mon_to_player) {
-        msg_format(_("猫が間近にたくさんいる音が聞こえる。", "You hear many cats crowding nearby."));
+        msg_print(_("猫が間近にたくさんいる音が聞こえる。", "You hear many cats crowding nearby."));
     }
 
     if (monster_near_player(creature, m_idx, t_idx) && !see_monster(creature, t_idx) && count && mon_to_mon) {
@@ -1308,7 +1308,7 @@ MonsterSpellResult spell_RF6_S_PERVERTS(CreatureEntity &creature, POSITION y, PO
     }
 
     if (monster_near_player(creature, m_idx, t_idx) && !see_monster(creature, t_idx) && count && mon_to_mon && mon_to_player) {
-        msg_format(_("変質者が間近にたくさんいる気配を感じる。", "You sense many perverts crowding nearby."));
+        msg_print(_("変質者が間近にたくさんいる気配を感じる。", "You sense many perverts crowding nearby."));
     }
 
     if (monster_near_player(creature, m_idx, t_idx) && !see_monster(creature, t_idx) && count && mon_to_mon) {
@@ -1348,7 +1348,7 @@ MonsterSpellResult spell_RF6_S_PUYO(CreatureEntity &creature, POSITION y, POSITI
     }
 
     if (monster_near_player(creature, m_idx, t_idx) && !see_monster(creature, t_idx) && count && mon_to_mon && mon_to_player) {
-        msg_format(_("ぷよが間近にたくさんいる音が聞こえる。", "You hear many puyo crowding nearby."));
+        msg_print(_("ぷよが間近にたくさんいる音が聞こえる。", "You hear many puyo crowding nearby."));
     }
 
     if (monster_near_player(creature, m_idx, t_idx) && !see_monster(creature, t_idx) && count && mon_to_mon) {

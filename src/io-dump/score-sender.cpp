@@ -117,14 +117,14 @@ bool send_score_json(CreatureEntity &creature)
             msg_print("Score successfully sent to world score server!");
             success = true;
         } else {
-            msg_format("Server returned error code: %ld", response_code);
+            msg_print("Server returned error code: {}", response_code);
             if (!response_string.empty()) {
-                msg_format("Server response: %s", response_string.c_str());
+                msg_print("Server response: {}", response_string);
             }
         }
     } else {
-        msg_format("Failed to send score: %s", error_buffer.c_str());
-        msg_format("Server URL: %s", score_server_url.c_str());
+        msg_print("Failed to send score: {}", error_buffer);
+        msg_print("Server URL: {}", score_server_url);
     }
 
     // クリーンアップ

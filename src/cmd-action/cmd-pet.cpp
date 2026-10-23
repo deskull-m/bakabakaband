@@ -899,7 +899,7 @@ void do_cmd_pet(CreatureEntity &creature)
         const auto pet_name = monster_desc(creature, pet_monster, MD_INDEF_VISIBLE);
         const auto item_name = describe_flavor(creature, given, OD_OMIT_PREFIX);
         if (pet_monster.acquire_item(given) >= 0) {
-            msg_format(_("%sに%sを渡した。", "You give %s to %s."), pet_name.data(), item_name.data());
+            msg_print(_("{}に{}を渡した。", "You give {} to {}."), pet_name, item_name);
             inven_item_increase(creature, i_idx, -1);
             inven_item_optimize(creature, i_idx);
         } else {
@@ -967,7 +967,7 @@ void do_cmd_pet(CreatureEntity &creature)
         received.held_m_idx = 0;
         received.iy = received.ix = 0;
         const auto item_name = describe_flavor(creature, received, OD_OMIT_PREFIX);
-        msg_format(_("%sから%sを受け取った。", "You receive %s from %s."), pet_name.data(), item_name.data());
+        msg_print(_("{}から{}を受け取った。", "You receive {} from {}."), pet_name, item_name);
         creature.store_item(received);
         item_in_slot.wipe();
         break;
