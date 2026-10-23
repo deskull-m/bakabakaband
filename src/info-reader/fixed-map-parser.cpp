@@ -41,6 +41,7 @@
 #include <nlohmann/json.hpp>
 #include <sstream>
 #include <string>
+#include <type_traits>
 #include <utility>
 #include <vector>
 
@@ -194,23 +195,40 @@ static tl::optional<std::string> resolve_town_map_variable(CreatureEntity &creat
     if (name == "LEAVING_QUEST") {
         return std::to_string(enum2i(leaving_quest));
     }
-    // 接頭辞の後ろの番号のクエストを返す
-    const auto get_quest_after = [name](std::string_view prefix) -> const QuestType & {
-        const std::string number(name.substr(prefix.length()));
-        return QuestList::get_instance().get_quest(i2enum<QuestId>(atoi(number.data())));
+    // 接頭辞の後ろの番号のクエストを返す。不正な番号・未定義のクエストは nullptr
+    const auto get_quest_after = [name](std::string_view prefix) -> const QuestType * {
+        const auto number = parse_condition_expression_integer(name.substr(prefix.length()));
+        if (!number || !std::in_range<std::underlying_type_t<QuestId>>(*number)) {
+            return nullptr;
+        }
+        const auto id = i2enum<QuestId>(*number);
+        const auto &quests = QuestList::get_instance();
+        return quests.contains(id) ? &quests.get_quest(id) : nullptr;
     };
     constexpr std::string_view quest_type_prefix = "QUEST_TYPE";
     if (name.starts_with(quest_type_prefix)) {
-        return std::to_string(enum2i(get_quest_after(quest_type_prefix).type));
+        const auto *quest = get_quest_after(quest_type_prefix);
+        if (quest == nullptr) {
+            return tl::nullopt;
+        }
+        return std::to_string(enum2i(quest->type));
     }
     constexpr std::string_view quest_prefix = "QUEST";
     if (name.starts_with(quest_prefix)) {
-        return std::to_string(enum2i(get_quest_after(quest_prefix).status));
+        const auto *quest = get_quest_after(quest_prefix);
+        if (quest == nullptr) {
+            return tl::nullopt;
+        }
+        return std::to_string(enum2i(quest->status));
     }
     constexpr std::string_view random_prefix = "RANDOM";
     if (name.starts_with(random_prefix)) {
+        const auto divisor = parse_condition_expression_integer(name.substr(random_prefix.length()));
+        if (!divisor || (*divisor <= 0)) {
+            return tl::nullopt;
+        }
         const auto &system = AngbandSystem::get_instance();
-        return std::to_string(static_cast<int>(system.get_seed_town()) % std::stoi(std::string(name.substr(random_prefix.length()))));
+        return std::to_string(static_cast<int>(system.get_seed_town()) % *divisor);
     }
     if (name == "VARIANT") {
         return variant;
