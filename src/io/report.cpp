@@ -10,7 +10,7 @@
 #include "core/visuals-reseter.h"
 #include "game-option/special-options.h"
 #include "io-dump/character-dump.h"
-#include "io/input-key-acceptor.h"
+#include "io/input-context.h"
 #include "mind/mind-elementalist.h"
 #include "player-base/player-class.h"
 #include "player-info/class-info.h"
@@ -242,8 +242,9 @@ bool report_score(CreatureEntity &creature)
         prt(_("スコア送信中...", "Sending the score..."), 0, 0);
         term_fresh();
 
-        prt(_("スコア・サーバへの送信に失敗しました。", "Failed to send to the score server."), 0, 0);
-        (void)inkey();
+        constexpr auto prompt = _("スコア・サーバへの送信に失敗しました。", "Failed to send to the score server.");
+        prt(prompt, 0, 0);
+        (void)input_key_with_context(InputKind::ANY_KEY, prompt);
         if (input_check_strict(creature, _("もう一度接続を試みますか? ", "Try again? "), UserCheck::NO_HISTORY)) {
             continue;
         }

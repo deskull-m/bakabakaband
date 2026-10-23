@@ -18,7 +18,7 @@
 #include "game-option/birth-options.h"
 #include "game-option/game-play-options.h"
 #include "io/files-util.h"
-#include "io/input-key-acceptor.h"
+#include "io/input-context.h"
 #include "io/report.h"
 #include "io/signal-handlers.h"
 #include "io/uid-checker.h"
@@ -168,8 +168,9 @@ bool send_world_score(CreatureEntity &creature, bool do_send)
         return false;
     }
 
-    prt(_("完了。何かキーを押してください。", "Completed.  Hit any key."), 0, 0);
-    (void)inkey();
+    constexpr auto prompt = _("完了。何かキーを押してください。", "Completed.  Hit any key.");
+    prt(prompt, 0, 0);
+    (void)input_key_with_context(InputKind::ANY_KEY, prompt);
 #else
     (void)creature;
     (void)do_send;
@@ -322,9 +323,10 @@ void show_highclass(CreatureEntity &creature)
 
     (void)fd_close(highscore_fd);
     highscore_fd = -1;
-    prt(_("何かキーを押すとゲームに戻ります", "Hit any key to continue"), 0, 0);
+    constexpr auto prompt = _("何かキーを押すとゲームに戻ります", "Hit any key to continue");
+    prt(prompt, 0, 0);
 
-    (void)inkey();
+    (void)input_key_with_context(InputKind::ANY_KEY, prompt);
 
     for (j = 5; j < 18; j++) {
         prt("", j, 0);

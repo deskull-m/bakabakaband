@@ -21,7 +21,7 @@
 #include "inventory/inventory-damage.h"
 #include "inventory/inventory-slot-types.h"
 #include "io/files-util.h"
-#include "io/input-key-acceptor.h"
+#include "io/input-context.h"
 #include "io/report.h"
 #include "io/write-diary.h"
 #include "main/music-definitions-table.h"
@@ -723,7 +723,8 @@ void PlayerType::on_death(std::string_view cause)
 #ifdef WORLD_SCORE
     screen_dump = make_screen_dump(*this);
 #endif
-    (void)inkey();
+    // 辞世の句などを画面に表示しただけで、プロンプトは表示していない
+    (void)input_key_with_context(InputKind::ANY_KEY, "");
     return;
 #else
     msg_print(death_message);
