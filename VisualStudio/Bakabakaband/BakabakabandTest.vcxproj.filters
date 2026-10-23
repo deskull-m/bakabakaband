@@ -10,6 +10,9 @@
     <Filter Include="flavor">
       <UniqueIdentifier>{27234def-7b61-4fe4-87e9-ea3c9d42f09d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="floor">
+      <UniqueIdentifier>{3b8f1d26-5a74-4c93-8e2a-6f1b7c4d9e05}</UniqueIdentifier>
+    </Filter>
     <Filter Include="game-option">
       <UniqueIdentifier>{ce56653b-fbe2-4e12-af06-489721a95644}</UniqueIdentifier>
     </Filter>
@@ -30,6 +33,9 @@
     </Filter>
     <Filter Include="object">
       <UniqueIdentifier>{87da8058-8e9d-4abf-be22-43ca8b0bc0a1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="racial">
+      <UniqueIdentifier>{9d2e4f71-6c38-4a5b-b1e7-3a8c0d5f2b64}</UniqueIdentifier>
     </Filter>
     <Filter Include="spell">
       <UniqueIdentifier>{7c3e9a21-4b5d-4e6f-9a1b-2c3d4e5f6a7b}</UniqueIdentifier>
@@ -123,6 +129,15 @@
     </ClCompile>
     <ClCompile Include="..\..\src\test\object\test-object-info.cpp">
       <Filter>object</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\test\object\test-object-value.cpp">
+      <Filter>object</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\test\floor\test-floor-events.cpp">
+      <Filter>floor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\test\racial\test-racial-android.cpp">
+      <Filter>racial</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\test\store\test-pricing.cpp">
       <Filter>store</Filter>

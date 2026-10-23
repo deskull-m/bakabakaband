@@ -19,6 +19,7 @@
 #include "object/item-use-flags.h"
 #include "object/object-info.h"
 #include "object/object-stack.h"
+#include "object/object-value.h"
 #include "racial/racial-android.h"
 #include "spell-kind/spells-perception.h"
 #include "store/home.h"
@@ -49,7 +50,7 @@ static tl::optional<int> prompt_to_sell(CreatureEntity &creature, const Store &s
     auto price_ask = price_item(creature, o_ptr, store, StoreTradeType::PLAYER_SELLS);
 
     price_ask = std::min(price_ask, store.get_owner().max_cost);
-    price_ask *= o_ptr->number;
+    price_ask = clamp_price(int64_t{ price_ask } * o_ptr->number);
     const auto s = fmt::format(_("売値 ${} で売りますか？", "Do you sell for ${}? "), price_ask);
     if (input_check_strict(creature, s, UserCheck::DEFAULT_Y)) {
         return price_ask;
@@ -147,9 +148,9 @@ void store_sell(CreatureEntity &creature, StoreScreen &screen)
                 chg_virtue(creature, Virtue::NATURE, 1);
             }
 
-            creature.add_au(price);
+            creature.set_au(clamp_price(int64_t{ creature.get_au() } + price));
             store_prt_gold(screen, creature.get_au());
-            const auto dummy = selling_item.calc_price() * selling_item.number;
+            const auto dummy = int64_t{ selling_item.calc_price() } * selling_item.number;
 
             identify_item(creature, item.get());
             auto sold_item = item->clone();
@@ -160,7 +161,7 @@ void store_sell(CreatureEntity &creature, StoreScreen &screen)
                 sold_item.pval = item->pval * amt / item->number;
             }
 
-            const auto value = sold_item.calc_price() * sold_item.number;
+            const auto value = int64_t{ sold_item.calc_price() } * sold_item.number;
             const auto sold_item_name = describe_flavor(creature, sold_item, 0);
             msg_format(_("%sを $%dで売却しました。", "You sold %s for %d gold."), sold_item_name.data(), price);
 

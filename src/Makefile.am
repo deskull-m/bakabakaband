@@ -1619,6 +1619,8 @@ hengband_test_SOURCES = \
 	\
 	test/flavor/test-flavor-util.cpp \
 	\
+	test/floor/test-floor-events.cpp \
+	\
 	test/game-option/test-runtime-arguments.cpp \
 	\
 	test/info-reader/test-ego-reader.cpp \
@@ -1642,6 +1644,9 @@ hengband_test_SOURCES = \
 	test/mspell/test-mspell-projection-table.cpp \
 	\
 	test/object/test-object-info.cpp \
+	test/object/test-object-value.cpp \
+	\
+	test/racial/test-racial-android.cpp \
 	\
 	test/save/test-item-writer.cpp \
 	\
