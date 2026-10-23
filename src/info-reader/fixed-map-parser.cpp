@@ -36,6 +36,7 @@
 #include "world/world-collapsion.h"
 #include <algorithm>
 #include <cstdint>
+#include <fmt/format.h>
 #include <iterator>
 #include <limits>
 #include <nlohmann/json.hpp>
@@ -269,7 +270,7 @@ ParseErrorType parse_fixed_map(CreatureEntity &creature, std::string_view name, 
     if (name == TOWN_DEFINITION_LIST) {
         if (const auto err = load_town_preferences(); err != ParseErrorType::NONE) {
             const auto oops = (((err > ParseErrorType::NONE) && (err < ParseErrorType::MAX)) ? err_str[enum2i(err)] : "unknown");
-            msg_print(format("Error %d (%s) loading '%s'.", enum2i(err), oops, TOWN_PREFERENCES));
+            msg_print(fmt::format("Error {} ({}) loading '{}'.", enum2i(err), oops, TOWN_PREFERENCES));
             msg_erase();
             return err;
         }
@@ -277,7 +278,7 @@ ParseErrorType parse_fixed_map(CreatureEntity &creature, std::string_view name, 
         std::string map_file;
         if (const auto err = load_town_definition_file(creature, map_file); err != ParseErrorType::NONE) {
             const auto oops = (((err > ParseErrorType::NONE) && (err < ParseErrorType::MAX)) ? err_str[enum2i(err)] : "unknown");
-            msg_print(format("Error %d (%s) loading '%s'.", enum2i(err), oops, TOWN_DEFINITION_LIST));
+            msg_print(fmt::format("Error {} ({}) loading '{}'.", enum2i(err), oops, TOWN_DEFINITION_LIST));
             msg_erase();
             return err;
         }
@@ -287,7 +288,7 @@ ParseErrorType parse_fixed_map(CreatureEntity &creature, std::string_view name, 
         const auto err = parse_fixed_map(creature, map_file, ymin, xmin, ymax, xmax);
         if (err != ParseErrorType::NONE) {
             const auto oops = (((err > ParseErrorType::NONE) && (err < ParseErrorType::MAX)) ? err_str[enum2i(err)] : "unknown");
-            msg_print(format("Error %d (%s) loading '%s'.", enum2i(err), oops, map_file.data()));
+            msg_print(fmt::format("Error {} ({}) loading '{}'.", enum2i(err), oops, map_file));
             msg_erase();
         }
         return err;

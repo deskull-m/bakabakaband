@@ -753,14 +753,14 @@ void wiz_dump_current_floor(CreatureEntity &creature)
     const auto height = floor.height;
     const auto width = floor.width;
     ofs << "# Current floor dump\n";
-    ofs << format("# Dungeon Level: %d\n", floor.dun_level);
-    ofs << format("# Size (rows x cols): %d x %d\n", height, width);
-    ofs << "# Player position (y, x): " << format("%d, %d\n", creature.y, creature.x);
+    ofs << fmt::format("# Dungeon Level: {}\n", floor.dun_level);
+    ofs << fmt::format("# Size (rows x cols): {} x {}\n", height, width);
+    ofs << "# Player position (y, x): " << fmt::format("{}, {}\n", creature.y, creature.x);
     ofs << "#\n";
     ofs << "# Vault 定義と同じ N:/X:/D: 形式で出力している。各文字は地形の標準表示文字。\n";
     ofs << "\n";
     ofs << "N:0:Floor Dump\n";
-    ofs << format("X:0:0:%d:%d\n", height, width);
+    ofs << fmt::format("X:0:0:{}:{}\n", height, width);
 
     for (auto y = 0; y < height; y++) {
         std::string row;
