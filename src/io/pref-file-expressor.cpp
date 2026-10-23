@@ -7,7 +7,6 @@
 #include "player/process-name.h"
 #include "system/creature-entity.h"
 #include "system/system-variables.h"
-#include "term/z-form.h"
 #include <fmt/format.h>
 
 /*!

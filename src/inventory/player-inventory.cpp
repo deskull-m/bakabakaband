@@ -31,7 +31,6 @@
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "target/target-checker.h"
-#include "term/z-form.h"
 #include "util/string-processor.h"
 #include "view/display-messages.h"
 #include "world/world.h"

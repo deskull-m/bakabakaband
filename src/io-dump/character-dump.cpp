@@ -40,7 +40,6 @@
 #include "system/monrace/monrace-list.h"
 #include "system/services/dungeon-service.h"
 #include "term/gameterm.h"
-#include "term/z-form.h"
 #include "util/buffer-shaper.h"
 #include "util/enum-converter.h"
 #include "util/int-char-converter.h"

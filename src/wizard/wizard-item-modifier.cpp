@@ -38,7 +38,6 @@
 #include "system/system-variables.h"
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
-#include "term/z-form.h"
 #include "term/z-rand.h"
 #include "util/bit-flags-calculator.h"
 #include "util/finalizer.h"

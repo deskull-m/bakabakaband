@@ -55,7 +55,6 @@
 #include "system/player-type-definition.h"
 #include "target/projection-path-calculator.h"
 #include "term/term-color-types.h"
-#include "term/z-form.h"
 #include "term/z-rand.h"
 #include "term/z-util.h"
 #include "timed-effect/player-cut.h"

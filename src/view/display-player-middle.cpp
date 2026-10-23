@@ -25,7 +25,6 @@
 #include "system/inner-game-data.h"
 #include "system/item-entity.h"
 #include "term/term-color-types.h"
-#include "term/z-form.h"
 #include "view/display-util.h"
 #include "view/status-first-page.h"
 #include "world/world-collapsion.h"

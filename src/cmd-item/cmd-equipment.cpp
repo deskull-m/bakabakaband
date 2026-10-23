@@ -46,7 +46,6 @@
 #include "system/deferred-update-requests.h"
 #include "system/item-entity.h"
 #include "term/screen-processor.h"
-#include "term/z-form.h"
 #include "util/bit-flags-calculator.h"
 #include "util/int-char-converter.h"
 #include "view/display-inventory.h"

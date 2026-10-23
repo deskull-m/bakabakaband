@@ -49,7 +49,6 @@
 #include "system/gamevalue.h"
 #include "term/gameterm.h"
 #include "term/screen-processor.h"
-#include "term/z-form.h"
 #include "util/enum-converter.h"
 #include "view/display-messages.h"
 #include "world/world.h"

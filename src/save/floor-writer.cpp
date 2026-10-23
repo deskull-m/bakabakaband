@@ -16,7 +16,6 @@
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
-#include "term/z-form.h"
 #include "util/angband-files.h"
 #include <fmt/format.h>
 #include <range/v3/view.hpp>

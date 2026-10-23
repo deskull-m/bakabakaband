@@ -12,7 +12,6 @@
 #include "system/creature-entity.h"
 #include "system/deferred-update-requests.h"
 #include "system/item-entity.h"
-#include "term/z-form.h"
 #include "view/display-messages.h"
 #include <fmt/format.h>
 

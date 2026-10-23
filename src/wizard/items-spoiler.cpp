@@ -11,7 +11,6 @@
 #include "system/baseitem/baseitem-service.h"
 #include "system/item-entity.h"
 #include "system/player-type-definition.h"
-#include "term/z-form.h"
 #include "util/angband-files.h"
 #include "view/display-messages.h"
 #include "wizard/spoiler-util.h"
