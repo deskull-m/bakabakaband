@@ -75,17 +75,17 @@ int BaseitemReader::read() const
     // 差し替える。これにより読込途中のエラーでも格納済みの定義が壊れず、name/bi_key 変更時に
     // キャッシュも無効化される。既存IDの再読込では省略可能項目を引き継ぐため複製から始める。
     auto baseitem = item_id < static_cast<int>(baseitems.size()) ? baseitems.get_baseitem(short_id).clone_without_required_fields() : BaseitemDefinition{};
-    if (auto err = info_set_string(get_json_value(this->baseitem_data, "name"), baseitem.name, true)) {
+    if (const auto err = info_set_string(get_json_value(this->baseitem_data, "name"), baseitem.name, true); !err) {
         msg_print(_("アイテムの名称読込失敗。ID: '{}'。", "Failed to load item name. ID: '{}'."), error_idx);
-        return err;
+        return err.error();
     }
-    if (auto err = info_set_string(get_json_value(this->baseitem_data, "flavor_name"), baseitem.flavor_name, false)) {
+    if (const auto err = info_set_string(get_json_value(this->baseitem_data, "flavor_name"), baseitem.flavor_name, false); !err) {
         msg_print(_("アイテム未識別名の読込失敗。ID: '{}'。", "Failed to load item unidentified name. ID: '{}'."), error_idx);
-        return err;
+        return err.error();
     }
-    if (auto err = info_set_string(get_json_value(this->baseitem_data, "flavor"), baseitem.text, false)) {
+    if (const auto err = info_set_string(get_json_value(this->baseitem_data, "flavor"), baseitem.text, false); !err) {
         msg_print(_("アイテムのフレーバーテキスト読込失敗。ID: '{}'。", "Failed to load flavor text of item. ID: '{}'."), error_idx);
-        return err;
+        return err.error();
     }
     if (auto err = this->set_baseitem_symbol(baseitem)) {
         msg_print(_("アイテムのシンボル読込失敗。ID: '{}'。", "Failed to load symbol of item. ID: '{}'."), error_idx);
@@ -99,37 +99,37 @@ int BaseitemReader::read() const
         msg_print(_("アイテムのパラメータ値読込失敗。ID: '{}'。", "Failed to load parameter value of item. ID: '{}'."), error_idx);
         return err;
     }
-    if (auto err = info_set_integer(get_json_value(this->baseitem_data, "level"), baseitem.level, true, Range(0, 128))) {
+    if (const auto err = info_set_integer(get_json_value(this->baseitem_data, "level"), baseitem.level, true, Range(0, 128)); !err) {
         msg_print(_("アイテムのレベル読込失敗。ID: '{}'。", "Failed to load level of item. ID: '{}'."), error_idx);
-        return err;
+        return err.error();
     }
-    if (auto err = info_set_integer(get_json_value(this->baseitem_data, "weight"), baseitem.weight, true, Range(0, 9999))) {
+    if (const auto err = info_set_integer(get_json_value(this->baseitem_data, "weight"), baseitem.weight, true, Range(0, 9999)); !err) {
         msg_print(_("アイテムの重量読込失敗。ID: '{}'。", "Failed to load weight of item. ID: '{}'."), error_idx);
-        return err;
+        return err.error();
     }
-    if (auto err = info_set_integer(get_json_value(this->baseitem_data, "cost"), baseitem.cost, true, Range(0, 99999999))) {
+    if (const auto err = info_set_integer(get_json_value(this->baseitem_data, "cost"), baseitem.cost, true, Range(0, 99999999)); !err) {
         msg_print(_("アイテムの売値読込失敗。ID: '{}'。", "Failed to load cost of item. ID: '{}'."), error_idx);
-        return err;
+        return err.error();
     }
-    if (auto err = info_set_integer(get_json_value(this->baseitem_data, "base_ac"), baseitem.ac, false, Range(-99, 99))) {
+    if (const auto err = info_set_integer(get_json_value(this->baseitem_data, "base_ac"), baseitem.ac, false, Range(-99, 99)); !err) {
         msg_print(_("アイテムのベースAC読込失敗。ID: '{}'。", "Failed to load base AC of item. ID: '{}'."), error_idx);
-        return err;
+        return err.error();
     }
-    if (auto err = info_set_dice(get_json_value(this->baseitem_data, "base_dice"), baseitem.damage_dice, false)) {
+    if (const auto err = info_set_dice(get_json_value(this->baseitem_data, "base_dice"), baseitem.damage_dice, false); !err) {
         msg_print(_("アイテムのベースダイス読込失敗。ID: '{}'。", "Failed to load base dice of item. ID: '{}'."), error_idx);
-        return err;
+        return err.error();
     }
-    if (auto err = info_set_integer(get_json_value(this->baseitem_data, "hit_bonus"), baseitem.to_h, false, Range(-99, 99))) {
+    if (const auto err = info_set_integer(get_json_value(this->baseitem_data, "hit_bonus"), baseitem.to_h, false, Range(-99, 99)); !err) {
         msg_print(_("アイテムの命中補正値読込失敗。ID: '{}'。", "Failed to load hit bonus of item. ID: '{}'."), error_idx);
-        return err;
+        return err.error();
     }
-    if (auto err = info_set_integer(get_json_value(this->baseitem_data, "damage_bonus"), baseitem.to_d, false, Range(-99, 99))) {
+    if (const auto err = info_set_integer(get_json_value(this->baseitem_data, "damage_bonus"), baseitem.to_d, false, Range(-99, 99)); !err) {
         msg_print(_("アイテムのダメージ補正値読込失敗。ID: '{}'。", "Failed to load damage bonus of item. ID: '{}'."), error_idx);
-        return err;
+        return err.error();
     }
-    if (auto err = info_set_integer(get_json_value(this->baseitem_data, "ac_bonus"), baseitem.to_a, false, Range(-99, 99))) {
+    if (const auto err = info_set_integer(get_json_value(this->baseitem_data, "ac_bonus"), baseitem.to_a, false, Range(-99, 99)); !err) {
         msg_print(_("アイテムのAC補正値読込失敗。ID: '{}'。", "Failed to load AC bonus of item. ID: '{}'."), error_idx);
-        return err;
+        return err.error();
     }
     if (auto err = this->set_baseitem_allocations(baseitem)) {
         msg_print(_("アイテムの生成情報読込失敗。ID: '{}'。", "Failed to load generation info of item. ID: '{}'."), error_idx);
@@ -234,12 +234,12 @@ int BaseitemReader::set_baseitem_kind(BaseitemDefinition &baseitem) const
     }
 
     ItemKindType type_value;
-    if (auto err = info_set_integer(get_json_value(itemkind_data, "type_value"), type_value, true, Range(0, 128))) {
-        return err;
+    if (const auto err = info_set_integer(get_json_value(itemkind_data, "type_value"), type_value, true, Range(0, 128)); !err) {
+        return err.error();
     }
     int subtype_value;
-    if (auto err = info_set_integer(get_json_value(itemkind_data, "subtype_value"), subtype_value, true, Range(0, 128))) {
-        return err;
+    if (const auto err = info_set_integer(get_json_value(itemkind_data, "subtype_value"), subtype_value, true, Range(0, 128)); !err) {
+        return err.error();
     }
 
     baseitem.bi_key = { type_value, subtype_value };
@@ -255,8 +255,8 @@ int BaseitemReader::set_baseitem_kind(BaseitemDefinition &baseitem) const
 int BaseitemReader::set_baseitem_parameter_value(BaseitemDefinition &baseitem) const
 {
     const auto &pval_data = get_json_value(this->baseitem_data, "parameter_value");
-    if (auto err = info_set_integer(pval_data, baseitem.pval, false, Range(-9999, 9999))) {
-        return err;
+    if (const auto err = info_set_integer(pval_data, baseitem.pval, false, Range(-9999, 9999)); !err) {
+        return err.error();
     }
     if ((baseitem.bi_key.tval() == ItemKindType::ROD) && (baseitem.pval <= 0)) {
         return PARSE_ERROR_INVALID_PVAL;
@@ -291,11 +291,11 @@ int BaseitemReader::set_baseitem_allocations(BaseitemDefinition &baseitem) const
         }
 
         auto &table = baseitem.alloc_tables[i];
-        if (auto err = info_set_integer(get_json_value(alloc, "depth"), table.level, true, Range(0, 128))) {
-            return err;
+        if (const auto err = info_set_integer(get_json_value(alloc, "depth"), table.level, true, Range(0, 128)); !err) {
+            return err.error();
         }
-        if (auto err = info_set_integer(get_json_value(alloc, "rarity"), table.chance, true, Range(0, 256))) {
-            return err;
+        if (const auto err = info_set_integer(get_json_value(alloc, "rarity"), table.chance, true, Range(0, 256)); !err) {
+            return err.error();
         }
         i++;
     }

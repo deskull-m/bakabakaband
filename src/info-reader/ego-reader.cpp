@@ -24,8 +24,8 @@ int EgoReader::read() const
     }
 
     int id;
-    if (auto err = info_set_integer(get_json_value(this->ego_data, "id"), id, true, Range(1, 32767))) {
-        return err;
+    if (const auto err = info_set_integer(get_json_value(this->ego_data, "id"), id, true, Range(1, 32767)); !err) {
+        return err.error();
     }
     if (egos_info.contains(i2enum<EgoType>(id))) {
         return PARSE_ERROR_NON_SEQUENTIAL_RECORDS;
@@ -33,23 +33,23 @@ int EgoReader::read() const
 
     EgoItemDefinition ego;
     ego.idx = i2enum<EgoType>(id);
-    if (auto err = info_set_string(get_json_value(this->ego_data, "name"), ego.name, true)) {
-        return err;
+    if (const auto err = info_set_string(get_json_value(this->ego_data, "name"), ego.name, true); !err) {
+        return err.error();
     }
-    if (auto err = info_set_integer(get_json_value(this->ego_data, "slot"), ego.slot, true, Range(0, 255))) {
-        return err;
+    if (const auto err = info_set_integer(get_json_value(this->ego_data, "slot"), ego.slot, true, Range(0, 255)); !err) {
+        return err.error();
     }
-    if (auto err = info_set_integer(get_json_value(this->ego_data, "rating"), ego.rating, true, Range(0, std::numeric_limits<int>::max()))) {
-        return err;
+    if (const auto err = info_set_integer(get_json_value(this->ego_data, "rating"), ego.rating, true, Range(0, std::numeric_limits<int>::max())); !err) {
+        return err.error();
     }
-    if (auto err = info_set_integer(get_json_value(this->ego_data, "level"), ego.level, true, Range(0, std::numeric_limits<DEPTH>::max()))) {
-        return err;
+    if (const auto err = info_set_integer(get_json_value(this->ego_data, "level"), ego.level, true, Range(0, std::numeric_limits<DEPTH>::max())); !err) {
+        return err.error();
     }
-    if (auto err = info_set_integer(get_json_value(this->ego_data, "rarity"), ego.rarity, true, Range(0, 255))) {
-        return err;
+    if (const auto err = info_set_integer(get_json_value(this->ego_data, "rarity"), ego.rarity, true, Range(0, 255)); !err) {
+        return err.error();
     }
-    if (auto err = info_set_integer(get_json_value(this->ego_data, "cost"), ego.cost, true, Range(0, std::numeric_limits<int>::max()))) {
-        return err;
+    if (const auto err = info_set_integer(get_json_value(this->ego_data, "cost"), ego.cost, true, Range(0, std::numeric_limits<int>::max())); !err) {
+        return err.error();
     }
 
     const auto &base = get_json_value(this->ego_data, "base_bonuses");
@@ -57,14 +57,14 @@ int EgoReader::read() const
         if (!base.is_object()) {
             return PARSE_ERROR_INVALID_TYPE;
         }
-        if (auto err = info_set_integer(get_json_value(base, "to_hit"), ego.base_to_h, true, Range(-32768, 32767))) {
-            return err;
+        if (const auto err = info_set_integer(get_json_value(base, "to_hit"), ego.base_to_h, true, Range(-32768, 32767)); !err) {
+            return err.error();
         }
-        if (auto err = info_set_integer(get_json_value(base, "to_damage"), ego.base_to_d, true, Range(-32768, 32767))) {
-            return err;
+        if (const auto err = info_set_integer(get_json_value(base, "to_damage"), ego.base_to_d, true, Range(-32768, 32767)); !err) {
+            return err.error();
         }
-        if (auto err = info_set_integer(get_json_value(base, "to_ac"), ego.base_to_a, true, Range(-32768, 32767))) {
-            return err;
+        if (const auto err = info_set_integer(get_json_value(base, "to_ac"), ego.base_to_a, true, Range(-32768, 32767)); !err) {
+            return err.error();
         }
     }
 
@@ -73,17 +73,17 @@ int EgoReader::read() const
         if (!maximum.is_object()) {
             return PARSE_ERROR_INVALID_TYPE;
         }
-        if (auto err = info_set_integer(get_json_value(maximum, "to_hit"), ego.max_to_h, true, Range(-32768, 32767))) {
-            return err;
+        if (const auto err = info_set_integer(get_json_value(maximum, "to_hit"), ego.max_to_h, true, Range(-32768, 32767)); !err) {
+            return err.error();
         }
-        if (auto err = info_set_integer(get_json_value(maximum, "to_damage"), ego.max_to_d, true, Range(-32768, 32767))) {
-            return err;
+        if (const auto err = info_set_integer(get_json_value(maximum, "to_damage"), ego.max_to_d, true, Range(-32768, 32767)); !err) {
+            return err.error();
         }
-        if (auto err = info_set_integer(get_json_value(maximum, "to_ac"), ego.max_to_a, true, Range(-32768, 32767))) {
-            return err;
+        if (const auto err = info_set_integer(get_json_value(maximum, "to_ac"), ego.max_to_a, true, Range(-32768, 32767)); !err) {
+            return err.error();
         }
-        if (auto err = info_set_integer(get_json_value(maximum, "pval"), ego.max_pval, true, Range(-32768, 32767))) {
-            return err;
+        if (const auto err = info_set_integer(get_json_value(maximum, "pval"), ego.max_pval, true, Range(-32768, 32767)); !err) {
+            return err.error();
         }
     }
 
@@ -154,11 +154,11 @@ int EgoReader::set_extra_flags(EgoItemDefinition &ego) const
             return PARSE_ERROR_INVALID_TYPE;
         }
         ego_generate_type extra;
-        if (auto err = info_set_integer(get_json_value(extra_data, "numerator"), extra.mul, true, Range(1, 32767))) {
-            return err;
+        if (const auto err = info_set_integer(get_json_value(extra_data, "numerator"), extra.mul, true, Range(1, 32767)); !err) {
+            return err.error();
         }
-        if (auto err = info_set_integer(get_json_value(extra_data, "denominator"), extra.dev, true, Range(1, 32767))) {
-            return err;
+        if (const auto err = info_set_integer(get_json_value(extra_data, "denominator"), extra.dev, true, Range(1, 32767)); !err) {
+            return err.error();
         }
         const auto &flags = get_json_value(extra_data, "flags");
         if (!flags.is_array()) {

@@ -204,8 +204,8 @@ errr RaceReader::set_mon_symbol(const nlohmann::json &symbol_data, MonraceDefini
 errr RaceReader::set_mon_speed(const nlohmann::json &speed_data, MonraceDefinition &monrace)
 {
     int speed;
-    if (auto err = info_set_integer(speed_data, speed, true, Range(-50, 99))) {
-        return err;
+    if (const auto err = info_set_integer(speed_data, speed, true, Range(-50, 99)); !err) {
+        return err.error();
     }
     monrace.speed = speed + STANDARD_SPEED;
     return PARSE_ERROR_NONE;
@@ -245,8 +245,8 @@ errr RaceReader::set_mon_stat_modifiers(const nlohmann::json &stat_data, Monrace
             continue;
         }
         int modifier = 0;
-        if (auto err = info_set_integer(stat_data[key_str], modifier, true, Range(-40, 40))) {
-            return err;
+        if (const auto err = info_set_integer(stat_data[key_str], modifier, true, Range(-40, 40)); !err) {
+            return err.error();
         }
         // 表示単位 (1.0) → 内部 10 単位
         monrace.stat_modifiers[idx] = modifier * 10;
@@ -267,11 +267,11 @@ errr RaceReader::set_mon_evolve(nlohmann::json &evolve_data, MonraceDefinition &
         return PARSE_ERROR_NONE;
     }
 
-    if (auto err = info_set_integer(evolve_data["need_exp"], monrace.next_exp, true, Range(0, 9999999))) {
-        return err;
+    if (const auto err = info_set_integer(evolve_data["need_exp"], monrace.next_exp, true, Range(0, 9999999)); !err) {
+        return err.error();
     }
-    if (auto err = info_set_integer(evolve_data["to"], monrace.next_r_idx, true, Range(0, 9999))) {
-        return err;
+    if (const auto err = info_set_integer(evolve_data["to"], monrace.next_r_idx, true, Range(0, 9999)); !err) {
+        return err.error();
     }
 
     return PARSE_ERROR_NONE;
@@ -289,11 +289,11 @@ errr RaceReader::set_mon_transform(nlohmann::json &transform_data, MonraceDefini
         return PARSE_ERROR_NONE;
     }
 
-    if (auto err = info_set_integer(transform_data["hp_threshold"], monrace.transform_hp_threshold, true, Range(0, 100))) {
-        return err;
+    if (const auto err = info_set_integer(transform_data["hp_threshold"], monrace.transform_hp_threshold, true, Range(0, 100)); !err) {
+        return err.error();
     }
-    if (auto err = info_set_integer(transform_data["to"], monrace.transform_r_idx, true, Range(0, 9999))) {
-        return err;
+    if (const auto err = info_set_integer(transform_data["to"], monrace.transform_r_idx, true, Range(0, 9999)); !err) {
+        return err.error();
     }
 
     return PARSE_ERROR_NONE;
@@ -413,9 +413,8 @@ errr RaceReader::set_mon_armament_level(const nlohmann::json &armament_data, Mon
     }
 
     auto armament_level = 0;
-    const auto err = info_set_integer(armament_data, armament_level, true, Range(0, MonraceDefinition::ARMAMENT_LEVEL_MAX));
-    if (err) {
-        return err;
+    if (const auto err = info_set_integer(armament_data, armament_level, true, Range(0, MonraceDefinition::ARMAMENT_LEVEL_MAX)); !err) {
+        return err.error();
     }
 
     monrace.armament_level = armament_level;
@@ -637,12 +636,12 @@ errr RaceReader::set_mon_artifacts(nlohmann::json &artifact_data, MonraceDefinit
 
     for (const auto &artifact : artifact_data) {
         FixedArtifactId fa_id;
-        if (auto err = info_set_integer(artifact["drop_artifact_id"], fa_id, true, Range(0, 1024))) {
-            return err;
+        if (const auto err = info_set_integer(artifact["drop_artifact_id"], fa_id, true, Range(0, 1024)); !err) {
+            return err.error();
         }
         int prob;
-        if (auto err = info_set_integer(artifact["drop_probability"], prob, true, Range(1, 100))) {
-            return err;
+        if (const auto err = info_set_integer(artifact["drop_probability"], prob, true, Range(1, 100)); !err) {
+            return err.error();
         }
 
         // 「この属性で止めを刺したときだけ落ちる」任意指定。
@@ -694,13 +693,13 @@ errr RaceReader::set_mon_death_explosion(const nlohmann::json &explosion_data, M
     }
 
     int radius;
-    if (auto err = info_set_integer(explosion_data["radius"], radius, true, Range(0, 20))) {
-        return err;
+    if (const auto err = info_set_integer(explosion_data["radius"], radius, true, Range(0, 20)); !err) {
+        return err.error();
     }
 
     Dice damage_dice;
-    if (auto err = info_set_dice(explosion_data["damage_dice"], damage_dice, true)) {
-        return err;
+    if (const auto err = info_set_dice(explosion_data["damage_dice"], damage_dice, true); !err) {
+        return err.error();
     }
 
     monrace.death_explosion = MonraceDeathExplosion{ attribute->second, radius, damage_dice };
@@ -723,14 +722,14 @@ errr RaceReader::set_mon_death_random_artifact(const nlohmann::json &artifact_da
     }
 
     short tval;
-    if (auto err = info_set_integer(artifact_data["tval"], tval, true, Range(0, 128))) {
-        return err;
+    if (const auto err = info_set_integer(artifact_data["tval"], tval, true, Range(0, 128)); !err) {
+        return err.error();
     }
 
     auto sval_min = 0;
     if (artifact_data.contains("sval_min")) {
-        if (auto err = info_set_integer(artifact_data["sval_min"], sval_min, true, Range(0, 255))) {
-            return err;
+        if (const auto err = info_set_integer(artifact_data["sval_min"], sval_min, true, Range(0, 255)); !err) {
+            return err.error();
         }
     }
 
@@ -755,13 +754,13 @@ errr RaceReader::set_mon_escorts(nlohmann::json &escort_data, MonraceDefinition 
 
     for (const auto &escort : escort_data) {
         MonraceId monrace_id;
-        if (auto err = info_set_integer(escort["escorts_id"], monrace_id, true, Range(0, 8192))) {
-            return err;
+        if (const auto err = info_set_integer(escort["escorts_id"], monrace_id, true, Range(0, 8192)); !err) {
+            return err.error();
         }
 
         Dice dice;
-        if (auto err = info_set_dice(escort["escort_num"], dice, true)) {
-            return err;
+        if (const auto err = info_set_dice(escort["escort_num"], dice, true); !err) {
+            return err.error();
         }
 
         monrace.emplace_reinforce(monrace_id, dice);
@@ -806,8 +805,8 @@ errr RaceReader::set_mon_blows(nlohmann::json &blow_data, MonraceDefinition &mon
         mon_blow.method = rbm->second;
         mon_blow.effect = rbe->second;
 
-        if (auto err = info_set_dice(get_json_value(blow, "damage_dice"), mon_blow.damage_dice, false)) {
-            return err;
+        if (const auto err = info_set_dice(get_json_value(blow, "damage_dice"), mon_blow.damage_dice, false); !err) {
+            return err.error();
         }
 
         monrace.blows.push_back(mon_blow);
@@ -1120,8 +1119,8 @@ errr RaceReader::set_mon_skills(const nlohmann::json &skill_data, MonraceDefinit
     const auto &shoot_dice = skill_data.find("shoot");
     const auto shoot = (shoot_dice != skill_data.end());
     if (shoot) {
-        if (auto ret = info_set_dice(shoot_dice->get<std::string>(), monrace.shoot_damage_dice, true)) {
-            return ret;
+        if (const auto ret = info_set_dice(shoot_dice->get<std::string>(), monrace.shoot_damage_dice, true); !ret) {
+            return ret.error();
         }
         monrace.ability_flags.set(MonsterAbilityType::SHOOT);
     }
@@ -1184,23 +1183,23 @@ errr RaceReader::set_mon_final_summons(const nlohmann::json &summon_data, Monrac
 
     for (auto &summon_item : summon_data) {
         int id, probability, min_num, max_num, radius;
-        if (auto err = info_set_integer(summon_item["id"], id, true, Range(1, 9999))) {
-            return err;
+        if (const auto err = info_set_integer(summon_item["id"], id, true, Range(1, 9999)); !err) {
+            return err.error();
         }
-        if (auto err = info_set_integer(summon_item["probability"], probability, true, Range(1, 100))) {
-            return err;
+        if (const auto err = info_set_integer(summon_item["probability"], probability, true, Range(1, 100)); !err) {
+            return err.error();
         }
-        if (auto err = info_set_integer(summon_item["min_num"], min_num, true, Range(0, 99))) {
-            return err;
+        if (const auto err = info_set_integer(summon_item["min_num"], min_num, true, Range(0, 99)); !err) {
+            return err.error();
         }
-        if (auto err = info_set_integer(summon_item["max_num"], max_num, true, Range(1, 99))) {
-            return err;
+        if (const auto err = info_set_integer(summon_item["max_num"], max_num, true, Range(1, 99)); !err) {
+            return err.error();
         }
         if (min_num > max_num) {
             return PARSE_ERROR_INVALID_VALUE;
         }
-        if (auto err = info_set_integer(summon_item["radius"], radius, true, Range(1, 20))) {
-            return err;
+        if (const auto err = info_set_integer(summon_item["radius"], radius, true, Range(1, 20)); !err) {
+            return err.error();
         }
         monrace.emplace_final_summon(i2enum<MonraceId>(id), probability, min_num, max_num, radius);
     }
@@ -1233,22 +1232,22 @@ errr RaceReader::set_mon_message(const nlohmann::json &message_data, MonraceDefi
         }
 
         int chance;
-        if (auto err = info_set_integer(message["chance"], chance, true, Range(1, 100))) {
-            return err;
+        if (const auto err = info_set_integer(message["chance"], chance, true, Range(1, 100)); !err) {
+            return err.error();
         }
 
         bool use_name = true;
         const auto use_name_iter = message.find("use_name");
         if (use_name_iter != message.end()) {
             const auto &use_name_data = use_name_iter.value();
-            if (auto err = info_set_bool(use_name_data, use_name, false)) {
-                return err;
+            if (const auto err = info_set_bool(use_name_data, use_name, false); !err) {
+                return err.error();
             }
         }
 
         std::string str;
-        if (auto err = info_set_string(message["message"], str, false)) {
-            return err;
+        if (const auto err = info_set_string(message["message"], str, false); !err) {
+            return err.error();
         }
 
         MonraceMessageList::get_instance().emplace((int)monrace.idx, action->second, chance, use_name, str);
@@ -1278,8 +1277,8 @@ errr RaceReader::set_mon_terrain_feature(const nlohmann::json &terrain_data, Mon
         }
 
         FEAT_IDX feature_id;
-        if (auto err = info_set_integer(terrain["id"], feature_id, true, Range(0, 9999))) {
-            return err;
+        if (const auto err = info_set_integer(terrain["id"], feature_id, true, Range(0, 9999)); !err) {
+            return err.error();
         }
 
         const auto &probability_str = terrain["probability"].get<std::string>();
@@ -1334,8 +1333,8 @@ errr RaceReader::set_mon_spawn_creature(const nlohmann::json &spawn_data, Monrac
         }
 
         MonraceId monrace_id;
-        if (auto err = info_set_integer(spawn["id"], monrace_id, true, Range(0, 9999))) {
-            return err;
+        if (const auto err = info_set_integer(spawn["id"], monrace_id, true, Range(0, 9999)); !err) {
+            return err.error();
         }
 
         const auto &probability_str = spawn["probability"].get<std::string>();
@@ -1390,8 +1389,8 @@ errr RaceReader::set_mon_spawn_item(const nlohmann::json &spawn_data, MonraceDef
         }
 
         short item_id;
-        if (auto err = info_set_integer(spawn["id"], item_id, true, Range(0, 9999))) {
-            return err;
+        if (const auto err = info_set_integer(spawn["id"], item_id, true, Range(0, 9999)); !err) {
+            return err.error();
         }
 
         const auto &probability_str = spawn["probability"].get<std::string>();
@@ -1496,8 +1495,8 @@ static errr set_mon_drop_entries(const nlohmann::json &drop_data, std::string_vi
 
         short target_id = 0;
         if (drop_item.contains(id_key)) {
-            if (auto err = info_set_integer(drop_item[std::string(id_key)], target_id, true, id_range)) {
-                return err;
+            if (const auto err = info_set_integer(drop_item[std::string(id_key)], target_id, true, id_range); !err) {
+                return err.error();
             }
         }
 
@@ -1525,8 +1524,8 @@ static errr set_mon_drop_entries(const nlohmann::json &drop_data, std::string_vi
         }
 
         int grade;
-        if (auto err = info_set_integer(drop_item["grade"], grade, true, Range(-2, 2))) {
-            return err;
+        if (const auto err = info_set_integer(drop_item["grade"], grade, true, Range(-2, 2)); !err) {
+            return err.error();
         }
 
         // ダイス情報の解析 ("XdY" 形式)
@@ -1559,8 +1558,8 @@ static errr set_mon_drop_entries(const nlohmann::json &drop_data, std::string_vi
                 return PARSE_ERROR_INVALID_FLAG;
             }
 
-            if (auto err = info_set_integer(drop_item["kill_interval"], kill_interval, true, Range(1, 1000))) {
-                return err;
+            if (const auto err = info_set_integer(drop_item["kill_interval"], kill_interval, true, Range(1, 1000)); !err) {
+                return err.error();
             }
         }
 
@@ -1584,8 +1583,8 @@ static errr set_mon_drop_entries(const nlohmann::json &drop_data, std::string_vi
         // 先勝ちカスケードで択一になる。4 キーいずれでも指定できる。
         auto exclusive_group = 0;
         if (drop_item.contains("exclusive_group")) {
-            if (auto err = info_set_integer(drop_item["exclusive_group"], exclusive_group, true, Range(1, 100))) {
-                return err;
+            if (const auto err = info_set_integer(drop_item["exclusive_group"], exclusive_group, true, Range(1, 100)); !err) {
+                return err.error();
             }
         }
 
@@ -1609,8 +1608,8 @@ static errr set_mon_drop_entries(const nlohmann::json &drop_data, std::string_vi
                 return PARSE_ERROR_INVALID_FLAG;
             }
 
-            if (auto err = info_set_integer(drop_item["sval_min"], sval_min, true, Range(0, 255))) {
-                return err;
+            if (const auto err = info_set_integer(drop_item["sval_min"], sval_min, true, Range(0, 255)); !err) {
+                return err.error();
             }
         }
 
@@ -1628,8 +1627,8 @@ static errr set_mon_drop_entries(const nlohmann::json &drop_data, std::string_vi
         // 浅い階では発火させない任意指定。4 キーいずれでも指定できる。
         auto min_dun_level = 0;
         if (drop_item.contains("min_dun_level")) {
-            if (auto err = info_set_integer(drop_item["min_dun_level"], min_dun_level, true, Range(0, 128))) {
-                return err;
+            if (const auto err = info_set_integer(drop_item["min_dun_level"], min_dun_level, true, Range(0, 128)); !err) {
+                return err.error();
             }
         }
 
@@ -1791,8 +1790,8 @@ errr RaceReader::set_mon_dead_spawns(const nlohmann::json &dead_spawn_data, Monr
         }
 
         MonraceId monrace_id;
-        if (auto err = info_set_integer(dead_spawn["id"], monrace_id, true, Range(0, 9999))) {
-            return err;
+        if (const auto err = info_set_integer(dead_spawn["id"], monrace_id, true, Range(0, 9999)); !err) {
+            return err.error();
         }
 
         const auto &probability_str = dead_spawn["probability"].get<std::string>();
@@ -1866,8 +1865,8 @@ errr RaceReader::read()
     }
 
     int monrace_id_int;
-    if (const auto err = info_set_integer(mon_data["id"], monrace_id_int, true, Range(0, 9999))) {
-        return err;
+    if (const auto err = info_set_integer(mon_data["id"], monrace_id_int, true, Range(0, 9999)); !err) {
+        return err.error();
     }
     if (monrace_id_int < error_idx) {
         return PARSE_ERROR_NON_SEQUENTIAL_RECORDS;
@@ -1895,42 +1894,35 @@ errr RaceReader::read()
         msg_format(_("モンスター速度読込失敗。ID: '%d'。", "Failed to load monster speed. ID: '%d'."), error_idx);
         return err;
     }
-    err = info_set_dice(mon_data["hit_point"], monrace.hit_dice, true);
-    if (err) {
+    if (const auto result = info_set_dice(mon_data["hit_point"], monrace.hit_dice, true); !result) {
         msg_format(_("モンスターHP読込失敗。ID: '%d'。", "Failed to load monster HP. ID: '%d'."), error_idx);
-        return err;
+        return result.error();
     }
     // レベル別HPテーブル用の1レベルあたりHPダイス (任意指定)。未指定なら hit_dice から既定値を算出する。
-    err = info_set_dice(mon_data["hit_point_per_level"], monrace.hit_dice_per_level, false);
-    if (err) {
+    if (const auto result = info_set_dice(mon_data["hit_point_per_level"], monrace.hit_dice_per_level, false); !result) {
         msg_format(_("モンスターレベル別HP読込失敗。ID: '%d'。", "Failed to load monster HP per level. ID: '%d'."), error_idx);
-        return err;
+        return result.error();
     }
-    err = info_set_integer(mon_data["vision"], monrace.aaf, true, Range(0, 999));
-    if (err) {
+    if (const auto result = info_set_integer(mon_data["vision"], monrace.aaf, true, Range(0, 999)); !result) {
         msg_format(_("モンスター感知範囲読込失敗。ID: '%d'。", "Failed to load monster vision. ID: '%d'."), error_idx);
-        return err;
+        return result.error();
     }
-    err = info_set_integer(mon_data["armor_class"], monrace.ac, true, Range(0, 10000));
-    if (err) {
+    if (const auto result = info_set_integer(mon_data["armor_class"], monrace.ac, true, Range(0, 10000)); !result) {
         msg_format(_("モンスターAC読込失敗。ID: '%d'。", "Failed to load monster AC. ID: '%d'."), error_idx);
-        return err;
+        return result.error();
     }
-    err = info_set_integer(mon_data["alertness"], monrace.sleep, true, Range(0, 255));
-    if (err) {
+    if (const auto result = info_set_integer(mon_data["alertness"], monrace.sleep, true, Range(0, 255)); !result) {
         msg_format(_("モンスター警戒度読込失敗。ID: '%d'。", "Failed to load monster alertness. ID: '%d'."), error_idx);
-        return err;
+        return result.error();
     }
-    err = info_set_integer(mon_data["level"], monrace.level, true, Range(0, 255));
-    if (err) {
+    if (const auto result = info_set_integer(mon_data["level"], monrace.level, true, Range(0, 255)); !result) {
         msg_format(_("モンスターレベル読込失敗。ID: '%d'。", "Failed to load monster level. ID: '%d'."), error_idx);
-        return err;
+        return result.error();
     }
     DEPTH max_level = 0;
-    err = info_set_integer(mon_data["max_level"], max_level, false, Range(0, MAX_DEPTH - 1));
-    if (err) {
+    if (const auto result = info_set_integer(mon_data["max_level"], max_level, false, Range(0, MAX_DEPTH - 1)); !result) {
         msg_format(_("モンスター生成上限階層読込失敗。ID: '%d'。", "Failed to load monster max level. ID: '%d'."), error_idx);
-        return err;
+        return result.error();
     }
     if (!mon_data["max_level"].is_null()) {
         if (max_level < monrace.level) {
@@ -1939,19 +1931,17 @@ errr RaceReader::read()
         }
         monrace.max_level = max_level;
     }
-    err = info_set_integer(mon_data["rarity"], monrace.rarity, true, Range(0, 255));
-    if (err) {
+    if (const auto result = info_set_integer(mon_data["rarity"], monrace.rarity, true, Range(0, 255)); !result) {
         msg_format(_("モンスター希少度読込失敗。ID: '%d'。", "Failed to load monster rarity. ID: '%d'."), error_idx);
-        return err;
+        return result.error();
     }
     if (err) {
         msg_format(_("モンスター希少度範囲外。ID: '%d'。", "Monster rarity is out of range. ID: '%d'."), error_idx);
         return err;
     }
-    err = info_set_integer(mon_data["exp"], monrace.mexp, true, Range(0, 9999999));
-    if (err) {
+    if (const auto result = info_set_integer(mon_data["exp"], monrace.mexp, true, Range(0, 9999999)); !result) {
         msg_format(_("モンスター経験値読込失敗。ID: '%d'。", "Failed to load monster exp. ID: '%d'."), error_idx);
-        return err;
+        return result.error();
     }
     err = set_mon_evolve(mon_data["evolve"], monrace);
     if (err) {
@@ -1990,20 +1980,17 @@ errr RaceReader::read()
         msg_format(_("モンスター武装度読込失敗。ID: '%d'。", "Failed to load monster armament_level. ID: '%d'."), error_idx);
         return err;
     }
-    err = info_set_bool(mon_data["grows_stats"], monrace.grows_stats, false);
-    if (err) {
+    if (const auto result = info_set_bool(mon_data["grows_stats"], monrace.grows_stats, false); !result) {
         msg_format(_("モンスター能力成長フラグ読込失敗。ID: '%d'。", "Failed to load monster grows_stats. ID: '%d'."), error_idx);
-        return err;
+        return result.error();
     }
-    err = info_set_bool(mon_data["consumes_mp"], monrace.consumes_mp, false);
-    if (err) {
+    if (const auto result = info_set_bool(mon_data["consumes_mp"], monrace.consumes_mp, false); !result) {
         msg_format(_("モンスターMP消費フラグ読込失敗。ID: '%d'。", "Failed to load monster consumes_mp. ID: '%d'."), error_idx);
-        return err;
+        return result.error();
     }
-    err = info_set_bool(mon_data["drops_sacred_treasures"], monrace.drops_sacred_treasures, false);
-    if (err) {
+    if (const auto result = info_set_bool(mon_data["drops_sacred_treasures"], monrace.drops_sacred_treasures, false); !result) {
         msg_format(_("モンスター三種の神器ドロップフラグ読込失敗。ID: '%d'。", "Failed to load monster drops_sacred_treasures. ID: '%d'."), error_idx);
-        return err;
+        return result.error();
     }
     err = set_mon_mutations(mon_data["mutations"], monrace);
     if (err) {
@@ -2030,55 +2017,45 @@ errr RaceReader::read()
         msg_format(_("モンスター魔導書番号読込失敗。ID: '%d'。", "Failed to load monster spellbook_indices. ID: '%d'."), error_idx);
         return err;
     }
-    err = info_set_bool(mon_data["suffers_poison_dot"], monrace.suffers_poison_dot, false);
-    if (err) {
+    if (const auto result = info_set_bool(mon_data["suffers_poison_dot"], monrace.suffers_poison_dot, false); !result) {
         msg_format(_("モンスター継続毒フラグ読込失敗。ID: '%d'。", "Failed to load monster suffers_poison_dot. ID: '%d'."), error_idx);
-        return err;
+        return result.error();
     }
-    err = info_set_bool(mon_data["applies_player_race_resistances"], monrace.applies_player_race_resistances, false);
-    if (err) {
+    if (const auto result = info_set_bool(mon_data["applies_player_race_resistances"], monrace.applies_player_race_resistances, false); !result) {
         msg_format(_("モンスター種族耐性反映フラグ読込失敗。ID: '%d'。", "Failed to load monster applies_player_race_resistances. ID: '%d'."), error_idx);
-        return err;
+        return result.error();
     }
-    err = info_set_bool(mon_data["applies_player_race_reflection"], monrace.applies_player_race_reflection, false);
-    if (err) {
+    if (const auto result = info_set_bool(mon_data["applies_player_race_reflection"], monrace.applies_player_race_reflection, false); !result) {
         msg_format(_("モンスター種族反射反映フラグ読込失敗。ID: '%d'。", "Failed to load monster applies_player_race_reflection. ID: '%d'."), error_idx);
-        return err;
+        return result.error();
     }
-    err = info_set_bool(mon_data["applies_player_race_regeneration"], monrace.applies_player_race_regeneration, false);
-    if (err) {
+    if (const auto result = info_set_bool(mon_data["applies_player_race_regeneration"], monrace.applies_player_race_regeneration, false); !result) {
         msg_format(_("モンスター種族再生反映フラグ読込失敗。ID: '%d'。", "Failed to load monster applies_player_race_regeneration. ID: '%d'."), error_idx);
-        return err;
+        return result.error();
     }
-    err = info_set_bool(mon_data["applies_player_race_speed"], monrace.applies_player_race_speed, false);
-    if (err) {
+    if (const auto result = info_set_bool(mon_data["applies_player_race_speed"], monrace.applies_player_race_speed, false); !result) {
         msg_format(_("モンスター種族加速反映フラグ読込失敗。ID: '%d'。", "Failed to load monster applies_player_race_speed. ID: '%d'."), error_idx);
-        return err;
+        return result.error();
     }
-    err = info_set_bool(mon_data["applies_player_race_telepathy"], monrace.applies_player_race_telepathy, false);
-    if (err) {
+    if (const auto result = info_set_bool(mon_data["applies_player_race_telepathy"], monrace.applies_player_race_telepathy, false); !result) {
         msg_format(_("モンスター種族テレパシー反映フラグ読込失敗。ID: '%d'。", "Failed to load monster applies_player_race_telepathy. ID: '%d'."), error_idx);
-        return err;
+        return result.error();
     }
-    err = info_set_bool(mon_data["grows_melee_proficiency"], monrace.grows_melee_proficiency, false);
-    if (err) {
+    if (const auto result = info_set_bool(mon_data["grows_melee_proficiency"], monrace.grows_melee_proficiency, false); !result) {
         msg_format(_("モンスター戦闘習熟フラグ読込失敗。ID: '%d'。", "Failed to load monster grows_melee_proficiency. ID: '%d'."), error_idx);
-        return err;
+        return result.error();
     }
-    err = info_set_bool(mon_data["applies_stat_combat_bonus"], monrace.applies_stat_combat_bonus, false);
-    if (err) {
+    if (const auto result = info_set_bool(mon_data["applies_stat_combat_bonus"], monrace.applies_stat_combat_bonus, false); !result) {
         msg_format(_("モンスター能力値戦闘反映フラグ読込失敗。ID: '%d'。", "Failed to load monster applies_stat_combat_bonus. ID: '%d'."), error_idx);
-        return err;
+        return result.error();
     }
-    err = info_set_integer(mon_data["odds_correction_ratio"], monrace.arena_ratio, false, Range(1, 9999));
-    if (err) {
+    if (const auto result = info_set_integer(mon_data["odds_correction_ratio"], monrace.arena_ratio, false, Range(1, 9999)); !result) {
         msg_format(_("モンスター賭け倍率読込失敗。ID: '%d'。", "Failed to load monster odds for arena. ID: '%d'."), error_idx);
-        return err;
+        return result.error();
     }
-    err = info_set_integer(mon_data["start_hp_percentage"], monrace.cur_hp_per, false, Range(0, 99));
-    if (err) {
+    if (const auto result = info_set_integer(mon_data["start_hp_percentage"], monrace.cur_hp_per, false, Range(0, 99)); !result) {
         msg_format(_("モンスター初期体力読込失敗。ID: '%d'。", "Failed to load monster starting HP. ID: '%d'."), error_idx);
-        return err;
+        return result.error();
     }
     err = set_mon_stat_modifiers(mon_data["stat_modifiers"], monrace);
     if (err) {
@@ -2100,10 +2077,9 @@ errr RaceReader::read()
         msg_format(_("モンスター拡張装備スロット読込失敗。ID: '%d'。", "Failed to load monster extended equipment slots. ID: '%d'."), error_idx);
         return err;
     }
-    err = info_set_integer(mon_data["mob"], monrace.mob_num, false, Range(0, 9999999));
-    if (err) {
+    if (const auto result = info_set_integer(mon_data["mob"], monrace.mob_num, false, Range(0, 9999999)); !result) {
         msg_format(_("モンスター基本モブ数読込失敗。ID: '%d'。", "Failed to load monster base mob number. ID: '%d'."), error_idx);
-        return err;
+        return result.error();
     } else {
         monrace.max_num = monrace.mob_num;
     }
@@ -2137,10 +2113,9 @@ errr RaceReader::read()
         msg_format(_("モンスター死亡時召喚情報読込失敗。ID: '%d'。", "Failed to load final summon data. ID: '%d'."), error_idx);
         return err;
     }
-    err = info_set_string(mon_data["flavor"], monrace.text, false);
-    if (err) {
+    if (const auto result = info_set_string(mon_data["flavor"], monrace.text, false); !result) {
         msg_format(_("モンスター説明文読込失敗。ID: '%d'。", "Failed to load monster flavor text. ID: '%d'."), error_idx);
-        return err;
+        return result.error();
     }
     err = set_mon_alliance(mon_data["alliance"], monrace);
     if (err) {
