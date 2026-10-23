@@ -35,6 +35,8 @@
  */
 static void dispel_player(CreatureEntity &creature)
 {
+    reset_ki_and_kawarimi(creature, true);
+
     (void)set_acceleration(creature, 0, true);
     set_lightspeed(creature, 0, true);
     (void)BadStatusSetter(creature).set_deceleration(0, true);
