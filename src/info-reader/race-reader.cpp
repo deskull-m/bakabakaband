@@ -91,7 +91,7 @@ bool RaceReader::grab_one_basic_flag(MonraceDefinition &monrace, std::string_vie
     if (EnumClassFlagGroup<MonsterMiscType>::grab_one_flag(monrace.misc_flags, r_info_misc_flags, what)) {
         return true;
     }
-    msg_format(_("モンスターフラグ読込失敗'%s'。", "Failed to load monster flag data.'%s'."), what.data());
+    msg_print(_("モンスターフラグ読込失敗'{}'。", "Failed to load monster flag data.'{}'."), what);
     return false;
 }
 
@@ -108,7 +108,7 @@ bool RaceReader::grab_one_spell_flag(MonraceDefinition &monrace, std::string_vie
         return true;
     }
 
-    msg_format(_("未知のモンスター・フラグ '%s'。", "Unknown monster flag '%s'."), what.data());
+    msg_print(_("未知のモンスター・フラグ '{}'。", "Unknown monster flag '{}'."), what);
     return false;
 }
 
@@ -1881,302 +1881,302 @@ ParseErrorType RaceReader::read()
     ParseErrorType err;
     err = set_mon_name(mon_data["name"], monrace);
     if (err != ParseErrorType::NONE) {
-        msg_format(_("モンスター名読込失敗。ID: '%d'。", "Failed to load monster name. ID: '%d'."), error_idx);
+        msg_print(_("モンスター名読込失敗。ID: '{}'。", "Failed to load monster name. ID: '{}'."), error_idx);
         return err;
     }
     err = set_mon_symbol(mon_data["symbol"], monrace);
     if (err != ParseErrorType::NONE) {
-        msg_format(_("モンスターシンボル読込失敗。ID: '%d'。", "Failed to load monster symbol. ID: '%d'."), error_idx);
+        msg_print(_("モンスターシンボル読込失敗。ID: '{}'。", "Failed to load monster symbol. ID: '{}'."), error_idx);
         return err;
     }
     err = set_mon_speed(mon_data["speed"], monrace);
     if (err != ParseErrorType::NONE) {
-        msg_format(_("モンスター速度読込失敗。ID: '%d'。", "Failed to load monster speed. ID: '%d'."), error_idx);
+        msg_print(_("モンスター速度読込失敗。ID: '{}'。", "Failed to load monster speed. ID: '{}'."), error_idx);
         return err;
     }
     if (const auto result = info_set_dice(mon_data["hit_point"], monrace.hit_dice, true); !result) {
-        msg_format(_("モンスターHP読込失敗。ID: '%d'。", "Failed to load monster HP. ID: '%d'."), error_idx);
+        msg_print(_("モンスターHP読込失敗。ID: '{}'。", "Failed to load monster HP. ID: '{}'."), error_idx);
         return result.error();
     }
     // レベル別HPテーブル用の1レベルあたりHPダイス (任意指定)。未指定なら hit_dice から既定値を算出する。
     if (const auto result = info_set_dice(mon_data["hit_point_per_level"], monrace.hit_dice_per_level, false); !result) {
-        msg_format(_("モンスターレベル別HP読込失敗。ID: '%d'。", "Failed to load monster HP per level. ID: '%d'."), error_idx);
+        msg_print(_("モンスターレベル別HP読込失敗。ID: '{}'。", "Failed to load monster HP per level. ID: '{}'."), error_idx);
         return result.error();
     }
     if (const auto result = info_set_integer(mon_data["vision"], monrace.aaf, true, Range(0, 999)); !result) {
-        msg_format(_("モンスター感知範囲読込失敗。ID: '%d'。", "Failed to load monster vision. ID: '%d'."), error_idx);
+        msg_print(_("モンスター感知範囲読込失敗。ID: '{}'。", "Failed to load monster vision. ID: '{}'."), error_idx);
         return result.error();
     }
     if (const auto result = info_set_integer(mon_data["armor_class"], monrace.ac, true, Range(0, 10000)); !result) {
-        msg_format(_("モンスターAC読込失敗。ID: '%d'。", "Failed to load monster AC. ID: '%d'."), error_idx);
+        msg_print(_("モンスターAC読込失敗。ID: '{}'。", "Failed to load monster AC. ID: '{}'."), error_idx);
         return result.error();
     }
     if (const auto result = info_set_integer(mon_data["alertness"], monrace.sleep, true, Range(0, 255)); !result) {
-        msg_format(_("モンスター警戒度読込失敗。ID: '%d'。", "Failed to load monster alertness. ID: '%d'."), error_idx);
+        msg_print(_("モンスター警戒度読込失敗。ID: '{}'。", "Failed to load monster alertness. ID: '{}'."), error_idx);
         return result.error();
     }
     if (const auto result = info_set_integer(mon_data["level"], monrace.level, true, Range(0, 255)); !result) {
-        msg_format(_("モンスターレベル読込失敗。ID: '%d'。", "Failed to load monster level. ID: '%d'."), error_idx);
+        msg_print(_("モンスターレベル読込失敗。ID: '{}'。", "Failed to load monster level. ID: '{}'."), error_idx);
         return result.error();
     }
     DEPTH max_level = 0;
     if (const auto result = info_set_integer(mon_data["max_level"], max_level, false, Range(0, MAX_DEPTH - 1)); !result) {
-        msg_format(_("モンスター生成上限階層読込失敗。ID: '%d'。", "Failed to load monster max level. ID: '%d'."), error_idx);
+        msg_print(_("モンスター生成上限階層読込失敗。ID: '{}'。", "Failed to load monster max level. ID: '{}'."), error_idx);
         return result.error();
     }
     if (!mon_data["max_level"].is_null()) {
         if (max_level < monrace.level) {
-            msg_format(_("モンスター生成上限階層が出現階層未満。ID: '%d'。", "Monster max level is lower than its level. ID: '%d'."), error_idx);
+            msg_print(_("モンスター生成上限階層が出現階層未満。ID: '{}'。", "Monster max level is lower than its level. ID: '{}'."), error_idx);
             return ParseErrorType::INVALID_FLAG;
         }
         monrace.max_level = max_level;
     }
     if (const auto result = info_set_integer(mon_data["rarity"], monrace.rarity, true, Range(0, 255)); !result) {
-        msg_format(_("モンスター希少度読込失敗。ID: '%d'。", "Failed to load monster rarity. ID: '%d'."), error_idx);
+        msg_print(_("モンスター希少度読込失敗。ID: '{}'。", "Failed to load monster rarity. ID: '{}'."), error_idx);
         return result.error();
     }
     if (err != ParseErrorType::NONE) {
-        msg_format(_("モンスター希少度範囲外。ID: '%d'。", "Monster rarity is out of range. ID: '%d'."), error_idx);
+        msg_print(_("モンスター希少度範囲外。ID: '{}'。", "Monster rarity is out of range. ID: '{}'."), error_idx);
         return err;
     }
     if (const auto result = info_set_integer(mon_data["exp"], monrace.mexp, true, Range(0, 9999999)); !result) {
-        msg_format(_("モンスター経験値読込失敗。ID: '%d'。", "Failed to load monster exp. ID: '%d'."), error_idx);
+        msg_print(_("モンスター経験値読込失敗。ID: '{}'。", "Failed to load monster exp. ID: '{}'."), error_idx);
         return result.error();
     }
     err = set_mon_evolve(mon_data["evolve"], monrace);
     if (err != ParseErrorType::NONE) {
-        msg_format(_("モンスター進化情報読込失敗。ID: '%d'。", "Failed to load monster evolve data. ID: '%d'."), error_idx);
+        msg_print(_("モンスター進化情報読込失敗。ID: '{}'。", "Failed to load monster evolve data. ID: '{}'."), error_idx);
         return err;
     }
 
     err = set_mon_transform(mon_data["transform"], monrace);
     if (err != ParseErrorType::NONE) {
-        msg_format(_("モンスター変身情報読込失敗。ID: '%d'。", "Failed to load monster transform data. ID: '%d'."), error_idx);
+        msg_print(_("モンスター変身情報読込失敗。ID: '{}'。", "Failed to load monster transform data. ID: '{}'."), error_idx);
         return err;
     }
     err = set_mon_sex(mon_data["sex"], monrace);
     if (err != ParseErrorType::NONE) {
-        msg_format(_("モンスター性別読込失敗。ID: '%d'。", "Failed to load monster sex. ID: '%d'."), error_idx);
+        msg_print(_("モンスター性別読込失敗。ID: '{}'。", "Failed to load monster sex. ID: '{}'."), error_idx);
         return err;
     }
 
     err = set_mon_personality(mon_data["personality"], monrace);
     if (err != ParseErrorType::NONE) {
-        msg_format(_("モンスター性格読込失敗。ID: '%d'。", "Failed to load monster personality. ID: '%d'."), error_idx);
+        msg_print(_("モンスター性格読込失敗。ID: '{}'。", "Failed to load monster personality. ID: '{}'."), error_idx);
         return err;
     }
     err = set_mon_player_race(mon_data["player_race"], monrace);
     if (err != ParseErrorType::NONE) {
-        msg_format(_("モンスター種族読込失敗。ID: '%d'。", "Failed to load monster player_race. ID: '%d'."), error_idx);
+        msg_print(_("モンスター種族読込失敗。ID: '{}'。", "Failed to load monster player_race. ID: '{}'."), error_idx);
         return err;
     }
     err = set_mon_player_class(mon_data["player_class"], monrace);
     if (err != ParseErrorType::NONE) {
-        msg_format(_("モンスター職業読込失敗。ID: '%d'。", "Failed to load monster player_class. ID: '%d'."), error_idx);
+        msg_print(_("モンスター職業読込失敗。ID: '{}'。", "Failed to load monster player_class. ID: '{}'."), error_idx);
         return err;
     }
     err = set_mon_armament_level(mon_data["armament_level"], monrace);
     if (err != ParseErrorType::NONE) {
-        msg_format(_("モンスター武装度読込失敗。ID: '%d'。", "Failed to load monster armament_level. ID: '%d'."), error_idx);
+        msg_print(_("モンスター武装度読込失敗。ID: '{}'。", "Failed to load monster armament_level. ID: '{}'."), error_idx);
         return err;
     }
     if (const auto result = info_set_bool(mon_data["grows_stats"], monrace.grows_stats, false); !result) {
-        msg_format(_("モンスター能力成長フラグ読込失敗。ID: '%d'。", "Failed to load monster grows_stats. ID: '%d'."), error_idx);
+        msg_print(_("モンスター能力成長フラグ読込失敗。ID: '{}'。", "Failed to load monster grows_stats. ID: '{}'."), error_idx);
         return result.error();
     }
     if (const auto result = info_set_bool(mon_data["consumes_mp"], monrace.consumes_mp, false); !result) {
-        msg_format(_("モンスターMP消費フラグ読込失敗。ID: '%d'。", "Failed to load monster consumes_mp. ID: '%d'."), error_idx);
+        msg_print(_("モンスターMP消費フラグ読込失敗。ID: '{}'。", "Failed to load monster consumes_mp. ID: '{}'."), error_idx);
         return result.error();
     }
     if (const auto result = info_set_bool(mon_data["drops_sacred_treasures"], monrace.drops_sacred_treasures, false); !result) {
-        msg_format(_("モンスター三種の神器ドロップフラグ読込失敗。ID: '%d'。", "Failed to load monster drops_sacred_treasures. ID: '%d'."), error_idx);
+        msg_print(_("モンスター三種の神器ドロップフラグ読込失敗。ID: '{}'。", "Failed to load monster drops_sacred_treasures. ID: '{}'."), error_idx);
         return result.error();
     }
     err = set_mon_mutations(mon_data["mutations"], monrace);
     if (err != ParseErrorType::NONE) {
-        msg_format(_("モンスター突然変異読込失敗。ID: '%d'。", "Failed to load monster mutations. ID: '%d'."), error_idx);
+        msg_print(_("モンスター突然変異読込失敗。ID: '{}'。", "Failed to load monster mutations. ID: '{}'."), error_idx);
         return err;
     }
     err = set_mon_realm_abilities(mon_data["realm_abilities"], monrace);
     if (err != ParseErrorType::NONE) {
-        msg_format(_("モンスター魔法領域読込失敗。ID: '%d'。", "Failed to load monster realm_abilities. ID: '%d'."), error_idx);
+        msg_print(_("モンスター魔法領域読込失敗。ID: '{}'。", "Failed to load monster realm_abilities. ID: '{}'."), error_idx);
         return err;
     }
     err = set_mon_realm_abilities2(mon_data["realm_abilities2"], monrace);
     if (err != ParseErrorType::NONE) {
-        msg_format(_("モンスター第2魔法領域読込失敗。ID: '%d'。", "Failed to load monster realm_abilities2. ID: '%d'."), error_idx);
+        msg_print(_("モンスター第2魔法領域読込失敗。ID: '{}'。", "Failed to load monster realm_abilities2. ID: '{}'."), error_idx);
         return err;
     }
     err = set_mon_spellbook_realm(mon_data["spellbook_realm"], monrace);
     if (err != ParseErrorType::NONE) {
-        msg_format(_("モンスター魔導書領域読込失敗。ID: '%d'。", "Failed to load monster spellbook_realm. ID: '%d'."), error_idx);
+        msg_print(_("モンスター魔導書領域読込失敗。ID: '{}'。", "Failed to load monster spellbook_realm. ID: '{}'."), error_idx);
         return err;
     }
     err = set_mon_spellbook_indices(mon_data["spellbook_indices"], monrace);
     if (err != ParseErrorType::NONE) {
-        msg_format(_("モンスター魔導書番号読込失敗。ID: '%d'。", "Failed to load monster spellbook_indices. ID: '%d'."), error_idx);
+        msg_print(_("モンスター魔導書番号読込失敗。ID: '{}'。", "Failed to load monster spellbook_indices. ID: '{}'."), error_idx);
         return err;
     }
     if (const auto result = info_set_bool(mon_data["suffers_poison_dot"], monrace.suffers_poison_dot, false); !result) {
-        msg_format(_("モンスター継続毒フラグ読込失敗。ID: '%d'。", "Failed to load monster suffers_poison_dot. ID: '%d'."), error_idx);
+        msg_print(_("モンスター継続毒フラグ読込失敗。ID: '{}'。", "Failed to load monster suffers_poison_dot. ID: '{}'."), error_idx);
         return result.error();
     }
     if (const auto result = info_set_bool(mon_data["applies_player_race_resistances"], monrace.applies_player_race_resistances, false); !result) {
-        msg_format(_("モンスター種族耐性反映フラグ読込失敗。ID: '%d'。", "Failed to load monster applies_player_race_resistances. ID: '%d'."), error_idx);
+        msg_print(_("モンスター種族耐性反映フラグ読込失敗。ID: '{}'。", "Failed to load monster applies_player_race_resistances. ID: '{}'."), error_idx);
         return result.error();
     }
     if (const auto result = info_set_bool(mon_data["applies_player_race_reflection"], monrace.applies_player_race_reflection, false); !result) {
-        msg_format(_("モンスター種族反射反映フラグ読込失敗。ID: '%d'。", "Failed to load monster applies_player_race_reflection. ID: '%d'."), error_idx);
+        msg_print(_("モンスター種族反射反映フラグ読込失敗。ID: '{}'。", "Failed to load monster applies_player_race_reflection. ID: '{}'."), error_idx);
         return result.error();
     }
     if (const auto result = info_set_bool(mon_data["applies_player_race_regeneration"], monrace.applies_player_race_regeneration, false); !result) {
-        msg_format(_("モンスター種族再生反映フラグ読込失敗。ID: '%d'。", "Failed to load monster applies_player_race_regeneration. ID: '%d'."), error_idx);
+        msg_print(_("モンスター種族再生反映フラグ読込失敗。ID: '{}'。", "Failed to load monster applies_player_race_regeneration. ID: '{}'."), error_idx);
         return result.error();
     }
     if (const auto result = info_set_bool(mon_data["applies_player_race_speed"], monrace.applies_player_race_speed, false); !result) {
-        msg_format(_("モンスター種族加速反映フラグ読込失敗。ID: '%d'。", "Failed to load monster applies_player_race_speed. ID: '%d'."), error_idx);
+        msg_print(_("モンスター種族加速反映フラグ読込失敗。ID: '{}'。", "Failed to load monster applies_player_race_speed. ID: '{}'."), error_idx);
         return result.error();
     }
     if (const auto result = info_set_bool(mon_data["applies_player_race_telepathy"], monrace.applies_player_race_telepathy, false); !result) {
-        msg_format(_("モンスター種族テレパシー反映フラグ読込失敗。ID: '%d'。", "Failed to load monster applies_player_race_telepathy. ID: '%d'."), error_idx);
+        msg_print(_("モンスター種族テレパシー反映フラグ読込失敗。ID: '{}'。", "Failed to load monster applies_player_race_telepathy. ID: '{}'."), error_idx);
         return result.error();
     }
     if (const auto result = info_set_bool(mon_data["grows_melee_proficiency"], monrace.grows_melee_proficiency, false); !result) {
-        msg_format(_("モンスター戦闘習熟フラグ読込失敗。ID: '%d'。", "Failed to load monster grows_melee_proficiency. ID: '%d'."), error_idx);
+        msg_print(_("モンスター戦闘習熟フラグ読込失敗。ID: '{}'。", "Failed to load monster grows_melee_proficiency. ID: '{}'."), error_idx);
         return result.error();
     }
     if (const auto result = info_set_bool(mon_data["applies_stat_combat_bonus"], monrace.applies_stat_combat_bonus, false); !result) {
-        msg_format(_("モンスター能力値戦闘反映フラグ読込失敗。ID: '%d'。", "Failed to load monster applies_stat_combat_bonus. ID: '%d'."), error_idx);
+        msg_print(_("モンスター能力値戦闘反映フラグ読込失敗。ID: '{}'。", "Failed to load monster applies_stat_combat_bonus. ID: '{}'."), error_idx);
         return result.error();
     }
     if (const auto result = info_set_integer(mon_data["odds_correction_ratio"], monrace.arena_ratio, false, Range(1, 9999)); !result) {
-        msg_format(_("モンスター賭け倍率読込失敗。ID: '%d'。", "Failed to load monster odds for arena. ID: '%d'."), error_idx);
+        msg_print(_("モンスター賭け倍率読込失敗。ID: '{}'。", "Failed to load monster odds for arena. ID: '{}'."), error_idx);
         return result.error();
     }
     if (const auto result = info_set_integer(mon_data["start_hp_percentage"], monrace.cur_hp_per, false, Range(0, 99)); !result) {
-        msg_format(_("モンスター初期体力読込失敗。ID: '%d'。", "Failed to load monster starting HP. ID: '%d'."), error_idx);
+        msg_print(_("モンスター初期体力読込失敗。ID: '{}'。", "Failed to load monster starting HP. ID: '{}'."), error_idx);
         return result.error();
     }
     err = set_mon_stat_modifiers(mon_data["stat_modifiers"], monrace);
     if (err != ParseErrorType::NONE) {
-        msg_format(_("モンスター能力値補正読込失敗。ID: '%d'。", "Failed to load monster stat modifiers. ID: '%d'."), error_idx);
+        msg_print(_("モンスター能力値補正読込失敗。ID: '{}'。", "Failed to load monster stat modifiers. ID: '{}'."), error_idx);
         return err;
     }
     err = set_mon_materials(mon_data["materials"], monrace);
     if (err != ParseErrorType::NONE) {
-        msg_format(_("モンスター材質読込失敗。ID: '%d'。", "Failed to load monster materials. ID: '%d'."), error_idx);
+        msg_print(_("モンスター材質読込失敗。ID: '{}'。", "Failed to load monster materials. ID: '{}'."), error_idx);
         return err;
     }
     err = set_mon_body_structure(mon_data["body_structure"], monrace);
     if (err != ParseErrorType::NONE) {
-        msg_format(_("モンスター体構造読込失敗。ID: '%d'。", "Failed to load monster body structure. ID: '%d'."), error_idx);
+        msg_print(_("モンスター体構造読込失敗。ID: '{}'。", "Failed to load monster body structure. ID: '{}'."), error_idx);
         return err;
     }
     err = set_mon_extended_slots(mon_data["extended_equipment_slots"], monrace);
     if (err != ParseErrorType::NONE) {
-        msg_format(_("モンスター拡張装備スロット読込失敗。ID: '%d'。", "Failed to load monster extended equipment slots. ID: '%d'."), error_idx);
+        msg_print(_("モンスター拡張装備スロット読込失敗。ID: '{}'。", "Failed to load monster extended equipment slots. ID: '{}'."), error_idx);
         return err;
     }
     if (const auto result = info_set_integer(mon_data["mob"], monrace.mob_num, false, Range(0, 9999999)); !result) {
-        msg_format(_("モンスター基本モブ数読込失敗。ID: '%d'。", "Failed to load monster base mob number. ID: '%d'."), error_idx);
+        msg_print(_("モンスター基本モブ数読込失敗。ID: '{}'。", "Failed to load monster base mob number. ID: '{}'."), error_idx);
         return result.error();
     } else {
         monrace.max_num = monrace.mob_num;
     }
     err = set_mon_artifacts(mon_data["artifacts"], monrace);
     if (err != ParseErrorType::NONE) {
-        msg_format(_("モンスター固定アーティファクトドロップ情報読込失敗。ID: '%d'。", "Failed to load monster artifact drop data. ID: '%d'."), error_idx);
+        msg_print(_("モンスター固定アーティファクトドロップ情報読込失敗。ID: '{}'。", "Failed to load monster artifact drop data. ID: '{}'."), error_idx);
         return err;
     }
     err = set_mon_escorts(mon_data["escorts"], monrace);
     if (err != ParseErrorType::NONE) {
-        msg_format(_("モンスター護衛情報読込失敗。ID: '%d'。", "Failed to load monster escorts. ID: '%d'."), error_idx);
+        msg_print(_("モンスター護衛情報読込失敗。ID: '{}'。", "Failed to load monster escorts. ID: '{}'."), error_idx);
         return err;
     }
     err = set_mon_blows(mon_data["blows"], monrace);
     if (err != ParseErrorType::NONE) {
-        msg_format(_("モンスター打撃情報読込失敗。ID: '%d'。", "Failed to load monster blow data. ID: '%d'."), error_idx);
+        msg_print(_("モンスター打撃情報読込失敗。ID: '{}'。", "Failed to load monster blow data. ID: '{}'."), error_idx);
         return err;
     }
     err = set_mon_flags(mon_data["flags"], monrace);
     if (err != ParseErrorType::NONE) {
-        msg_format(_("モンスターフラグ読込失敗。ID: '%d'。", "Failed to load monster flag data. ID: '%d'."), error_idx);
+        msg_print(_("モンスターフラグ読込失敗。ID: '{}'。", "Failed to load monster flag data. ID: '{}'."), error_idx);
         return err;
     }
     err = set_mon_skills(mon_data["skill"], monrace);
     if (err != ParseErrorType::NONE) {
-        msg_format(_("モンスター発動能力情報読込失敗。ID: '%d'。", "Failed to load monster skill data. ID: '%d'."), error_idx);
+        msg_print(_("モンスター発動能力情報読込失敗。ID: '{}'。", "Failed to load monster skill data. ID: '{}'."), error_idx);
         return err;
     }
     err = set_mon_final_summons(mon_data["final_summon"], monrace);
     if (err != ParseErrorType::NONE) {
-        msg_format(_("モンスター死亡時召喚情報読込失敗。ID: '%d'。", "Failed to load final summon data. ID: '%d'."), error_idx);
+        msg_print(_("モンスター死亡時召喚情報読込失敗。ID: '{}'。", "Failed to load final summon data. ID: '{}'."), error_idx);
         return err;
     }
     if (const auto result = info_set_string(mon_data["flavor"], monrace.text, false); !result) {
-        msg_format(_("モンスター説明文読込失敗。ID: '%d'。", "Failed to load monster flavor text. ID: '%d'."), error_idx);
+        msg_print(_("モンスター説明文読込失敗。ID: '{}'。", "Failed to load monster flavor text. ID: '{}'."), error_idx);
         return result.error();
     }
     err = set_mon_alliance(mon_data["alliance"], monrace);
     if (err != ParseErrorType::NONE) {
-        msg_format(_("モンスターアライアンス情報読込失敗。ID: '%d'。", "Failed to load monster alliance: '%d'."), error_idx);
+        msg_print(_("モンスターアライアンス情報読込失敗。ID: '{}'。", "Failed to load monster alliance: '{}'."), error_idx);
         return err;
     }
     err = set_mon_death_random_artifact(mon_data["death_random_artifact"], monrace);
     if (err != ParseErrorType::NONE) {
-        msg_format(_("モンスター死亡時ランダムアーティファクト情報読み込みに失敗しました。 : %s", "Failed to load monster death random artifact info. : %s"), monrace.name.data());
+        msg_print(_("モンスター死亡時ランダムアーティファクト情報読み込みに失敗しました。 : {}", "Failed to load monster death random artifact info. : {}"), monrace.name);
         return err;
     }
 
     err = set_mon_death_explosion(mon_data["death_explosion"], monrace);
     if (err != ParseErrorType::NONE) {
-        msg_format(_("モンスター死亡時爆発情報読み込みに失敗しました。 : %s", "Failed to load monster death explosion info. : %s"), monrace.name.data());
+        msg_print(_("モンスター死亡時爆発情報読み込みに失敗しました。 : {}", "Failed to load monster death explosion info. : {}"), monrace.name);
         return err;
     }
 
     err = set_mon_message(mon_data["message"], monrace);
     if (err != ParseErrorType::NONE) {
-        msg_format(_("モンスターメッセージ読込失敗。ID: '%d'。", "Failed to load monster message. ID: '%d'."), error_idx);
+        msg_print(_("モンスターメッセージ読込失敗。ID: '{}'。", "Failed to load monster message. ID: '{}'."), error_idx);
         return err;
     }
     err = set_mon_terrain_feature(mon_data["terrain_feature"], monrace);
     if (err != ParseErrorType::NONE) {
-        msg_format(_("モンスター地形変化情報読込失敗。ID: '%d'。", "Failed to load monster terrain feature data. ID: '%d'."), error_idx);
+        msg_print(_("モンスター地形変化情報読込失敗。ID: '{}'。", "Failed to load monster terrain feature data. ID: '{}'."), error_idx);
         return err;
     }
     err = set_mon_spawn_creature(mon_data["spawn_creature"], monrace);
     if (err != ParseErrorType::NONE) {
-        msg_format(_("モンスター自然生成情報読み込み失敗。ID: '%d'。", "Failed to load monster spawn creature data. ID: '%d'."), error_idx);
+        msg_print(_("モンスター自然生成情報読み込み失敗。ID: '{}'。", "Failed to load monster spawn creature data. ID: '{}'."), error_idx);
         return err;
     }
     err = set_mon_spawn_item(mon_data["spawn_item"], monrace);
     if (err != ParseErrorType::NONE) {
-        msg_format(_("モンスター自然生成アイテム情報読み込み失敗。ID: '%d'。", "Failed to load monster spawn item data. ID: '%d'."), error_idx);
+        msg_print(_("モンスター自然生成アイテム情報読み込み失敗。ID: '{}'。", "Failed to load monster spawn item data. ID: '{}'."), error_idx);
         return err;
     }
     err = set_mon_equip_kinds(mon_data["equip_kind"], monrace);
     if (err != ParseErrorType::NONE) {
-        msg_format(_("モンスター生成時装備情報読み込み失敗。ID: '%d'。", "Failed to load monster equip kind data. ID: '%d'."), error_idx);
+        msg_print(_("モンスター生成時装備情報読み込み失敗。ID: '{}'。", "Failed to load monster equip kind data. ID: '{}'."), error_idx);
         return err;
     }
     err = set_mon_equip_tvals(mon_data["equip_tval"], monrace);
     if (err != ParseErrorType::NONE) {
-        msg_format(_("モンスター生成時装備種別情報読み込み失敗。ID: '%d'。", "Failed to load monster equip tval data. ID: '%d'."), error_idx);
+        msg_print(_("モンスター生成時装備種別情報読み込み失敗。ID: '{}'。", "Failed to load monster equip tval data. ID: '{}'."), error_idx);
         return err;
     }
     err = set_mon_drop_kinds(mon_data["drop_kind"], monrace);
     if (err != ParseErrorType::NONE) {
-        msg_format(_("モンスタードロップアイテム情報読み込み失敗。ID: '%d'。", "Failed to load monster drop kind data. ID: '%d'."), error_idx);
+        msg_print(_("モンスタードロップアイテム情報読み込み失敗。ID: '{}'。", "Failed to load monster drop kind data. ID: '{}'."), error_idx);
         return err;
     }
     err = set_mon_drop_tvals(mon_data["drop_tval"], monrace);
     if (err != ParseErrorType::NONE) {
-        msg_format(_("モンスタードロップアイテム種別情報読み込み失敗。ID: '%d'。", "Failed to load monster drop tval data. ID: '%d'."), error_idx);
+        msg_print(_("モンスタードロップアイテム種別情報読み込み失敗。ID: '{}'。", "Failed to load monster drop tval data. ID: '{}'."), error_idx);
         return err;
     }
     err = set_mon_dead_spawns(mon_data["dead_spawn"], monrace);
     if (err != ParseErrorType::NONE) {
-        msg_format(_("モンスター死亡時召喚情報読み込み失敗。ID: '%d'。", "Failed to load monster dead spawn data. ID: '%d'."), error_idx);
+        msg_print(_("モンスター死亡時召喚情報読み込み失敗。ID: '{}'。", "Failed to load monster dead spawn data. ID: '{}'."), error_idx);
         return err;
     }
 

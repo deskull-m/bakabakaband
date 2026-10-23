@@ -487,9 +487,9 @@ static int get_spell(CreatureEntity &creature, SPELL_IDX *sn, std::string_view p
         if (!spell_okay(creature, spell, learned, false, use_realm)) {
             bell();
 #ifdef JP
-            msg_format("その%sを%sことはできません。", spell_category.data(), prompt_verb.data());
+            msg_print("その{}を{}ことはできません。", spell_category, prompt_verb);
 #else
-            msg_format("You may not %s that %s.", prompt_verb.data(), spell_category.data());
+            msg_print("You may not {} that {}.", prompt_verb, spell_category);
 #endif
 
             continue;

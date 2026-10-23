@@ -132,7 +132,7 @@ void AchievementTracker::show_achievement_notification([[maybe_unused]] Creature
 #endif
 
     msg_print("*** 実績解除! ***");
-    msg_format("『%s』", name.c_str());
-    msg_format("%s", description.c_str());
-    msg_format("(%dポイント獲得)", def->points);
+    msg_print("『{}』", name);
+    msg_print("{}", description);
+    msg_print("({}ポイント獲得)", def->points);
 }

@@ -296,7 +296,7 @@ ProcessResult effect_monster_social_genocide(CreatureEntity &creature, EffectMon
         std::string_view spell_name(_("社会的抹殺", "Social Genocide"));
         if (genocide_aux(creature, em_ptr->g_ptr->m_idx, dam, em_ptr->is_player(), (em_ptr->monrace->level + 1) / 2, spell_name.data())) {
             if (em_ptr->seen_msg) {
-                msg_format(_("%sは変質者として社会から完全に抹殺された！", "%s^ has been completely eliminated from society as a pervert!"), em_ptr->m_name);
+                msg_print(_("{}は変質者として社会から完全に抹殺された！", "{} has been completely eliminated from society as a pervert!"), str_upcase_first(em_ptr->m_name));
             }
             chg_virtue(creature, Virtue::VITALITY, -1);
             return ProcessResult::PROCESS_TRUE;
@@ -312,7 +312,7 @@ ProcessResult effect_monster_social_genocide(CreatureEntity &creature, EffectMon
     std::string_view spell_name(_("社会的抹殺", "Social Genocide"));
     if (genocide_aux(creature, em_ptr->g_ptr->m_idx, em_ptr->dam, em_ptr->is_player(), (em_ptr->monrace->level + 1) / 2, spell_name.data())) {
         if (em_ptr->seen_msg) {
-            msg_format(_("%sは社会から抹殺された！", "%s^ has been socially eliminated!"), em_ptr->m_name);
+            msg_print(_("{}は社会から抹殺された！", "{} has been socially eliminated!"), str_upcase_first(em_ptr->m_name));
         }
         chg_virtue(creature, Virtue::VITALITY, -1);
         return ProcessResult::PROCESS_TRUE;

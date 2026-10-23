@@ -37,7 +37,7 @@ bool ArtifactReader::grab_one_artifact_flag(ArtifactType &artifact, std::string_
         return true;
     }
 
-    msg_format(_("未知の伝説のアイテム・フラグ '%s'。", "Unknown artifact flag '%s'."), what.data());
+    msg_print(_("未知の伝説のアイテム・フラグ '{}'。", "Unknown artifact flag '{}'."), what);
     return false;
 }
 

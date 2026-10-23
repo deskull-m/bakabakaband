@@ -191,7 +191,7 @@ static void aura_dirt_by_melee(CreatureEntity &creature, mam_type *mam_ptr)
     }
 
     if (mam_ptr->see_either) {
-        msg_format(_("%s^は汚物にまみれた！", "%s^ is covered with filth!"), mam_ptr->m_name);
+        msg_print(_("{}は汚物にまみれた！", "{} is covered with filth!"), str_upcase_first(mam_ptr->m_name));
     }
 
     if (monster.is_visible_on_map() && is_original_ap_and_seen(creature, *mam_ptr->t_ptr)) {
@@ -271,11 +271,11 @@ static void describe_weapon_melee(mam_type *mam_ptr)
     }
 
     const auto weapon_name = describe_flavor(*mam_ptr->m_ptr, weapon, OD_NAME_ONLY | OD_OMIT_PREFIX | OD_NO_PLURAL);
-    msg_format(_("%s^は%sで%sを攻撃した。", "%s^ attacks %s with %s."),
+    msg_print(_("{}は{}で{}を攻撃した。", "{} attacks {} with {}."),
 #ifdef JP
-        mam_ptr->m_name, weapon_name.data(), mam_ptr->t_name);
+        str_upcase_first(mam_ptr->m_name), weapon_name, mam_ptr->t_name);
 #else
-        mam_ptr->m_name, mam_ptr->t_name, weapon_name.data());
+        str_upcase_first(mam_ptr->m_name), mam_ptr->t_name, weapon_name);
 #endif
 }
 
@@ -345,7 +345,7 @@ static void process_melee(CreatureEntity &creature, mam_type *mam_ptr)
                 DeferredUpdateRequests::get_instance().set_flag(MainWindowRedrawingFlag::UHEALTH);
             }
             if (mam_ptr->see_m && did_heal) {
-                msg_format(_("%sは%sから生命力を吸い取った！", "%s^ drains life from %s^!"), mam_ptr->m_name, mam_ptr->t_name);
+                msg_print(_("{}は{}から生命力を吸い取った！", "{} drains life from {}!"), str_upcase_first(mam_ptr->m_name), str_upcase_first(mam_ptr->t_name));
             }
         }
 

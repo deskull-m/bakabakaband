@@ -804,8 +804,8 @@ bool player_birth_as_monster(CreatureEntity &creature)
     init_turn(creature);
     init_dungeon_quests(creature);
 
-    msg_format(_("%s としてゲームを開始します。", "Starting game as %s."),
-        MonraceList::get_instance().get_monrace(*monrace_id).name.string().data());
+    msg_print(_("{} としてゲームを開始します。", "Starting game as {}."),
+        MonraceList::get_instance().get_monrace(*monrace_id).name.string());
 
     return true;
 }

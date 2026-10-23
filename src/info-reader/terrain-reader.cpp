@@ -24,7 +24,7 @@ static bool grab_one_feat_flag(TerrainType &terrain, std::string_view what)
         return true;
     }
 
-    msg_format(_("未知の地形フラグ '%s'。", "Unknown feature flag '%s'."), what.data());
+    msg_print(_("未知の地形フラグ '{}'。", "Unknown feature flag '{}'."), what);
     return false;
 }
 
@@ -65,7 +65,7 @@ static ParseErrorType set_terrain_symbol(const nlohmann::json &symbol_obj, Terra
     const auto color_name = color_obj.get<std::string>();
     const auto it = color_list.find(color_name);
     if (it == color_list.end()) {
-        msg_format(_("未知の色 '%s'。", "Unknown color '%s'."), color_name.c_str());
+        msg_print(_("未知の色 '{}'。", "Unknown color '{}'."), color_name);
         return ParseErrorType::INVALID_FLAG;
     }
     if (it->second > 127) {
@@ -339,7 +339,7 @@ ParseErrorType parse_terrains_json_info(nlohmann::json &element)
             if (auto val = parse_terrain_action(action)) {
                 terrain.state[idx_state].action = *val;
             } else {
-                msg_format(_("未知の地形アクション '%s'。", "Unknown feature action '%s'."), action.data());
+                msg_print(_("未知の地形アクション '{}'。", "Unknown feature action '{}'."), action);
                 return ParseErrorType::INVALID_FLAG;
             }
             terrain.state[idx_state].result_tag = result_tag;

@@ -82,6 +82,7 @@
 #include "util/candidate-selector.h"
 #include "util/dice.h"
 #include "util/int-char-converter.h"
+#include "util/string-processor.h"
 #include "view/display-messages.h"
 #include "wizard/spoiler-table.h"
 #include "wizard/tval-descriptions-table.h"
@@ -745,7 +746,7 @@ void wiz_dump_current_floor(CreatureEntity &creature)
     const auto &filename = path.string();
     std::ofstream ofs(path);
     if (ofs.bad()) {
-        msg_format(_("ファイル %s を開けませんでした。", "Failed to open file %s."), filename.data());
+        msg_print(_("ファイル {} を開けませんでした。", "Failed to open file {}."), filename);
         msg_erase();
         return;
     }
@@ -775,12 +776,12 @@ void wiz_dump_current_floor(CreatureEntity &creature)
     }
 
     if (ofs.bad()) {
-        msg_format(_("ファイル %s への書き込みに失敗しました。", "Failed to write to file %s."), filename.data());
+        msg_print(_("ファイル {} への書き込みに失敗しました。", "Failed to write to file {}."), filename);
         msg_erase();
         return;
     }
 
-    msg_format(_("現在のフロアをファイル %s に書き出しました。", "Current floor dump saved to file %s."), filename.data());
+    msg_print(_("現在のフロアをファイル {} に書き出しました。", "Current floor dump saved to file {}."), filename);
 }
 
 /*!
@@ -863,8 +864,8 @@ void wiz_level_up_target_monster(CreatureEntity &creature)
     monster.grow_hp_table_to_level(*input_level);
     update_monster(creature, grid.m_idx, false);
     DeferredUpdateRequests::get_instance().set_flag(MainWindowRedrawingFlag::HEALTH);
-    msg_format(_("%s^をレベル%dに成長させた (最大HP %d→%d)。", "%s^ grew to level %d (max HP %d -> %d)."),
-        m_name.data(), monster.get_level(), old_maxhp, monster.get_max_maxhp());
+    msg_print(_("{}をレベル{}に成長させた (最大HP {}→{})。", "{} grew to level {} (max HP {} -> {})."),
+        str_upcase_first(m_name), monster.get_level(), old_maxhp, monster.get_max_maxhp());
 }
 
 /* @brief 死を欺く仕様(馬鹿馬鹿蛮怒独自実装) */
@@ -885,8 +886,8 @@ void cheat_death(CreatureEntity &creature, bool no_penalty)
             creature.divide_au(2);
 
             msg_print(_("『ぬわああああん、疲れたなもおおおおん！』", "\"Aaaaaah! I'm hellish tireeeed!\""));
-            msg_format(_("あなたは死んだ罰として＠人墓場でイェンダーの魔法使い共に%d年間奴隷労働を強いられた！",
-                           "As a death penalry, you were forced to work like a slave by the wizards of Yendor at the '@' Stigmatic Graveyard for %d years!"),
+            msg_print(_("あなたは死んだ罰として＠人墓場でイェンダーの魔法使い共に{}年間奴隷労働を強いられた！",
+                          "As a death penalry, you were forced to work like a slave by the wizards of Yendor at the '@' Stigmatic Graveyard for {} years!"),
                 blank_years);
             break;
         }
@@ -896,8 +897,8 @@ void cheat_death(CreatureEntity &creature, bool no_penalty)
             creature.divide_prestige(2);
             creature.add_age(static_cast<int16_t>(blank_years));
             msg_print(_("『猿先生何も考えてないと思うよ』", "\"I think that Mr.Sawatari thinks nothing.\""));
-            msg_format(_("あなたは連載%d年の間猿空間に迷い込んでいた！ついでに死んだ設定も忘れ去られていた！",
-                           "You have been lost in the *S*A*R*U* space for %d years! By the way, the dead setting was also forgotten!"),
+            msg_print(_("あなたは連載{}年の間猿空間に迷い込んでいた！ついでに死んだ設定も忘れ去られていた！",
+                          "You have been lost in the *S*A*R*U* space for {} years! By the way, the dead setting was also forgotten!"),
                 blank_years);
             break;
         }
@@ -908,7 +909,7 @@ void cheat_death(CreatureEntity &creature, bool no_penalty)
             break;
 
         case 3:
-            msg_format(_("王大人『%s 死亡確認』", "\"Lord Wang confirmed that %s is dead.\""), creature.name.data());
+            msg_print(_("王大人『{} 死亡確認』", "\"Lord Wang confirmed that {} is dead.\""), creature.name);
             break;
 
         default:

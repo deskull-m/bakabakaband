@@ -858,7 +858,7 @@ static std::vector<FixedArtifactId> find_wishing_fixed_artifact(std::string_view
         //!< 先頭の「★」(日本語)、「The 」(英語)を除去する.
         const auto match_name = item_name.substr(_(2, 4));
         if (cheat_xtra) {
-            msg_format("Matching artifact No.%d %s(%s)", enum2i(fa_id), art_description.data(), match_name.data());
+            msg_print("Matching artifact No.{} {}({})", enum2i(fa_id), art_description, match_name);
         }
 
         std::vector<std::string> candidates = { match_name, artifact.name, art_description };

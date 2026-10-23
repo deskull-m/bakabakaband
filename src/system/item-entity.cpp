@@ -146,7 +146,7 @@ void ItemEntity::generate(short new_bi_id)
 #else
     } catch (const std::exception &e) {
 #endif
-        msg_format("*** Invalid Item ID: %d ***", new_bi_id);
+        msg_print("*** Invalid Item ID: {} ***", new_bi_id);
 #ifdef WIN_DEBUG
         this->generate(BaseitemKey(ItemKindType::JUNK));
         return;

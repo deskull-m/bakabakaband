@@ -323,7 +323,7 @@ bool MonsterAttackPlayer::process_monster_attack_hit()
         if (drained > 0) {
             HealthBarTracker::get_instance().set_flag_if_tracking(this->m_idx);
             if (this->m_ptr->is_visible_on_map() && did_heal) {
-                msg_format(_("%s^はあなたから生命力を吸い取った！", "%s^ drains life from you!"), this->m_name);
+                msg_print(_("{}はあなたから生命力を吸い取った！", "{} drains life from you!"), str_upcase_first(this->m_name));
             }
         }
 
@@ -434,7 +434,7 @@ void MonsterAttackPlayer::describe_weapon_attack()
     }
 
     const auto weapon_name = describe_flavor(*this->creature_ptr, weapon, OD_NAME_ONLY | OD_OMIT_PREFIX | OD_NO_PLURAL);
-    msg_format(_("%s^は%sで攻撃してきた。", "%s^ attacks you with %s."), this->m_name, weapon_name.data());
+    msg_print(_("{}は{}で攻撃してきた。", "{} attacks you with {}."), str_upcase_first(this->m_name), weapon_name);
 }
 
 /*!
@@ -707,7 +707,7 @@ void MonsterAttackPlayer::process_sadist_reaction()
         this->m_ptr->set_constant_flag(MonsterConstantFlagType::ANGER);
 
         if (this->m_ptr->is_visible_on_map()) {
-            msg_format(_("%s^は他者の苦痛に興奮している！", "%s^ gets excited by others' pain!"), this->m_name);
+            msg_print(_("{}は他者の苦痛に興奮している！", "{} gets excited by others' pain!"), str_upcase_first(this->m_name));
         }
     }
 }

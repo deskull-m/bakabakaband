@@ -264,7 +264,7 @@ void MonsterDamageProcessor::death_amberites(std::string_view m_name)
     auto curses = 1 + randint1(3);
     auto stop_ty = false;
     auto count = 0;
-    msg_format(_("％s^は恐ろしい血の呪いをあなたにかけた！", "％s^ puts a terrible blood curse on you!"), m_name.data());
+    msg_print(_("{}は恐ろしい血の呪いをあなたにかけた！", "{} puts a terrible blood curse on you!"), str_upcase_first(m_name));
     curse_equipment(this->creature, 100, 50);
     do {
         stop_ty = activate_ty_curse(this->creature, stop_ty, &count);
@@ -280,7 +280,7 @@ void MonsterDamageProcessor::death_choasians(std::string_view m_name)
     }
 
     auto chaos_effects = 2 + randint1(3);
-    msg_format(_("%s^は死の際に混沌の力を解き放った！", "%s^ unleashes chaotic forces upon death!"), m_name.data());
+    msg_print(_("{}は死の際に混沌の力を解き放った！", "{} unleashes chaotic forces upon death!"), str_upcase_first(m_name));
 
     // 混沌の効果：装備品の変化、テレポート、変身、突然変異など
     for (auto i = 0; i < chaos_effects; i++) {
@@ -337,7 +337,7 @@ void MonsterDamageProcessor::show_kill_message(std::string_view note, std::strin
     const auto &floor = *this->creature.get_floor();
     const auto &monster = floor.get_monster(this->m_idx);
     if (!note.empty()) {
-        msg_format("%s^%s", m_name.data(), note.data());
+        msg_print("{}{}", str_upcase_first(m_name), note);
         return;
     }
 
@@ -535,7 +535,7 @@ void MonsterDamageProcessor::process_masochist_reaction()
             monster.heal_hp(heal_amount);
 
             if (monster.is_visible_on_map()) {
-                msg_format(_("%s^は苦痛に悦んでいる！", "%s^ seems to enjoy the pain!"), monster.get_monrace().name.data());
+                msg_print(_("{}は苦痛に悦んでいる！", "{} seems to enjoy the pain!"), str_upcase_first(monster.get_monrace().name));
             }
         }
     }
@@ -563,7 +563,7 @@ void MonsterDamageProcessor::process_sadist_reaction()
         (void)set_monster_fast(*creature.get_floor(), this->m_idx, monster.get_remaining_acceleration() + 100);
 
         if (monster.is_visible_on_map()) {
-            msg_format(_("%s^は他者の苦痛に興奮している！", "%s^ gets excited by others' pain!"), monster.get_monrace().name.data());
+            msg_print(_("{}は他者の苦痛に興奮している！", "{} gets excited by others' pain!"), str_upcase_first(monster.get_monrace().name));
         }
     }
 }
@@ -634,8 +634,8 @@ bool MonsterDamageProcessor::check_and_process_hp_transform()
     // メッセージ表示
     if (monster.is_visible_on_map()) {
         const auto new_name = monster_desc(creature, monster, MD_INDEF_VISIBLE);
-        msg_format(_("％sは％sに変身した！", "％s^ transforms into ％s!"),
-            old_name.data(), new_name.data());
+        msg_print(_("{}は{}に変身した！", "{} transforms into {}!"),
+            str_upcase_first(old_name), new_name);
     }
 
     // 再描画フラグを設定

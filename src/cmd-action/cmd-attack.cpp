@@ -201,7 +201,7 @@ static void headbutt_attack(CreatureEntity &creature, MONSTER_IDX m_idx, bool *f
 
     if (!is_hit) {
         sound(SoundKind::MISS);
-        msg_format(_("ミス！ %sに頭突きをかわされた。", "You miss %s with your headbutt."), m_name.data());
+        msg_print(_("ミス！ {}に頭突きをかわされた。", "You miss {} with your headbutt."), m_name);
 
         // 頭突きを外した場合のペナルティ（少しふらつく）
         if (one_in_(4)) {
@@ -213,7 +213,7 @@ static void headbutt_attack(CreatureEntity &creature, MONSTER_IDX m_idx, bool *f
     }
 
     sound(SoundKind::HIT);
-    msg_format(_("%sに%sを決めた！", "You deliver a %s to %s!"), m_name.data(), atk_desc);
+    msg_print(_("{}に{}を決めた！", "You deliver a {} to {}!"), m_name, atk_desc);
 
     // クリティカル判定とダメージ計算
     auto k = critical_norm(creature, n_weight, bonus, dice.roll(), (int16_t)bonus, HISSATSU_NONE);
@@ -292,7 +292,7 @@ static void bodyslam_attack(CreatureEntity &creature, MONSTER_IDX m_idx, bool *f
 
     if (!is_hit) {
         sound(SoundKind::MISS);
-        msg_format(_("ミス！ %sに体当たりをかわされた。", "You miss %s with your body slam."), m_name.data());
+        msg_print(_("ミス！ {}に体当たりをかわされた。", "You miss {} with your body slam."), m_name);
 
         // 体当たりを外した場合のペナルティ（転倒リスク）
         if (one_in_(5)) {
@@ -304,7 +304,7 @@ static void bodyslam_attack(CreatureEntity &creature, MONSTER_IDX m_idx, bool *f
     }
 
     sound(SoundKind::HIT);
-    msg_format(_("%sに%sを叩き込んだ！", "You deliver a %s to %s!"), m_name.data(), atk_desc);
+    msg_print(_("{}に{}を叩き込んだ！", "You deliver a {} to {}!"), m_name, atk_desc);
 
     // クリティカル判定とダメージ計算
     auto k = critical_norm(creature, n_weight, bonus, dice.roll(), (int16_t)bonus, HISSATSU_NONE);
@@ -333,7 +333,7 @@ static void bodyslam_attack(CreatureEntity &creature, MONSTER_IDX m_idx, bool *f
 
     // 体当たりによる特殊効果（ノックバック可能性）
     if (k > 20 && one_in_(4) && !monrace.resistance_flags.has(MonsterResistanceType::NO_STUN)) {
-        msg_format(_("%sは体当たりでよろめいた！", "%s staggers from your body slam!"), m_name.data());
+        msg_print(_("{}は体当たりでよろめいた！", "{} staggers from your body slam!"), m_name);
         (void)set_monster_stunned(*creature.get_floor(), m_idx, monster.get_remaining_stun() + randint1(5) + 5);
     }
 
@@ -535,7 +535,7 @@ bool do_cmd_headbutt(CreatureEntity &creature)
     // 恐怖状態では攻撃できない
     if (creature.is_fearful()) {
         sound(SoundKind::ATTACK_FAILED);
-        msg_format(_("恐くて%sに頭突きできない！", "You are too fearful to headbutt %s!"), m_name.data());
+        msg_print(_("恐くて{}に頭突きできない！", "You are too fearful to headbutt {}!"), m_name);
         return false;
     }
 
@@ -552,7 +552,7 @@ bool do_cmd_headbutt(CreatureEntity &creature)
     if (!monster.is_hostile() && !(is_stunned || is_confused || is_hallucinated || creature.is_shero() || !monster.is_visible_on_map())) {
         if (!CreatureClass(creature).equals(PlayerClassType::BERSERKER)) {
             if (!input_check(_("本当に頭突きしますか？", "Really headbutt it? "))) {
-                msg_format(_("%sへの頭突きを止めた。", "You stop to avoid headbutting %s."), m_name.data());
+                msg_print(_("{}への頭突きを止めた。", "You stop to avoid headbutting {}."), m_name);
                 return false;
             }
         }
@@ -565,7 +565,7 @@ bool do_cmd_headbutt(CreatureEntity &creature)
     bool fear = false;
     bool mdeath = false;
 
-    msg_format(_("%sに向かって勢いよく頭突きした！", "You charge forward with a powerful headbutt at %s!"), m_name.data());
+    msg_print(_("{}に向かって勢いよく頭突きした！", "You charge forward with a powerful headbutt at {}!"), m_name);
     headbutt_attack(creature, grid.m_idx, &fear, &mdeath);
 
     if (fear && monster.is_visible_on_map() && !mdeath) {
@@ -575,10 +575,10 @@ bool do_cmd_headbutt(CreatureEntity &creature)
             current_monster.set_constant_flag(MonsterConstantFlagType::FRENZY);
             (void)set_monster_monfear(*creature.get_floor(), grid.m_idx, 0);
             sound(SoundKind::FLEE);
-            msg_format(_("%s^は恐怖を怒りに変えて狂乱状態になった！", "%s^ turns fear into rage and goes berserk!"), m_name.data());
+            msg_print(_("{}は恐怖を怒りに変えて狂乱状態になった！", "{} turns fear into rage and goes berserk!"), str_upcase_first(m_name));
         } else {
             sound(SoundKind::FLEE);
-            msg_format(_("%s^は恐怖して逃げ出した！", "%s^ flees in terror!"), m_name.data());
+            msg_print(_("{}は恐怖して逃げ出した！", "{} flees in terror!"), str_upcase_first(m_name));
         }
     }
 
@@ -622,7 +622,7 @@ void do_cmd_body_slam(CreatureEntity &creature)
     // 恐怖状態では攻撃できない
     if (creature.is_fearful()) {
         sound(SoundKind::ATTACK_FAILED);
-        msg_format(_("恐くて%sに体当たりできない！", "You are too fearful to body slam %s!"), m_name.data());
+        msg_print(_("恐くて{}に体当たりできない！", "You are too fearful to body slam {}!"), m_name);
         return;
     }
 
@@ -636,7 +636,7 @@ void do_cmd_body_slam(CreatureEntity &creature)
     bool fear = false;
     bool mdeath = false;
 
-    msg_format(_("%sに向かって全力で体当たりを仕掛けた！", "You charge at %s with a full body slam!"), m_name.data());
+    msg_print(_("{}に向かって全力で体当たりを仕掛けた！", "You charge at {} with a full body slam!"), m_name);
     bodyslam_attack(creature, m_idx, &fear, &mdeath);
 
     if (fear && monster.is_visible_on_map() && !mdeath) {
@@ -646,10 +646,10 @@ void do_cmd_body_slam(CreatureEntity &creature)
             current_monster.set_constant_flag(MonsterConstantFlagType::FRENZY);
             (void)set_monster_monfear(*creature.get_floor(), m_idx, 0);
             sound(SoundKind::FLEE);
-            msg_format(_("%s^は恐怖を怒りに変えて狂乱状態になった！", "%s^ turns fear into rage and goes berserk!"), m_name.data());
+            msg_print(_("{}は恐怖を怒りに変えて狂乱状態になった！", "{} turns fear into rage and goes berserk!"), str_upcase_first(m_name));
         } else {
             sound(SoundKind::FLEE);
-            msg_format(_("%s^は恐怖して逃げ出した！", "%s^ flees in terror!"), m_name.data());
+            msg_print(_("{}は恐怖して逃げ出した！", "{} flees in terror!"), str_upcase_first(m_name));
         }
     }
 }
@@ -683,11 +683,11 @@ static void enema_attack(CreatureEntity &creature, MONSTER_IDX m_idx, bool *fear
 
     if (!is_hit) {
         sound(SoundKind::MISS);
-        msg_format(_("ミス！ %sに浣腸をかわされた。", "You miss %s with your enema."), m_name.data());
+        msg_print(_("ミス！ {}に浣腸をかわされた。", "You miss {} with your enema."), m_name);
     }
 
     sound(SoundKind::HIT);
-    msg_format(_("%sに%sを叩き込んだ！", "You deliver a %s to %s!"), m_name.data(), atk_desc);
+    msg_print(_("{}に{}を叩き込んだ！", "You deliver a {} to {}!"), m_name, atk_desc);
 
     // クリティカル判定とダメージ計算
     auto k = critical_norm(creature, n_weight, bonus, dice.roll(), (int16_t)bonus, HISSATSU_NONE);
@@ -762,7 +762,7 @@ void do_cmd_enema(CreatureEntity &creature)
     // 恐怖状態では攻撃できない
     if (creature.is_fearful()) {
         sound(SoundKind::ATTACK_FAILED);
-        msg_format(_("恐くて%sに浣腸できない！", "You are too fearful to enema %s!"), m_name.data());
+        msg_print(_("恐くて{}に浣腸できない！", "You are too fearful to enema {}!"), m_name);
         return;
     }
 
@@ -776,7 +776,7 @@ void do_cmd_enema(CreatureEntity &creature)
     bool fear = false;
     bool mdeath = false;
 
-    msg_format(_("%sに向かって全力で浣腸を仕掛けた！", "You charge at %s with a full enema!"), m_name.data());
+    msg_print(_("{}に向かって全力で浣腸を仕掛けた！", "You charge at {} with a full enema!"), m_name);
     enema_attack(creature, m_idx, &fear, &mdeath);
 
     if (fear && monster.is_visible_on_map() && !mdeath) {
@@ -786,10 +786,10 @@ void do_cmd_enema(CreatureEntity &creature)
             current_monster.set_constant_flag(MonsterConstantFlagType::FRENZY);
             (void)set_monster_monfear(*creature.get_floor(), m_idx, 0);
             sound(SoundKind::FLEE);
-            msg_format(_("%s^は恐怖を怒りに変えて狂乱状態になった！", "%s^ turns fear into rage and goes berserk!"), m_name.data());
+            msg_print(_("{}は恐怖を怒りに変えて狂乱状態になった！", "{} turns fear into rage and goes berserk!"), str_upcase_first(m_name));
         } else {
             sound(SoundKind::FLEE);
-            msg_format(_("%s^は恐怖して逃げ出した！", "%s^ flees in terror!"), m_name.data());
+            msg_print(_("{}は恐怖して逃げ出した！", "{} flees in terror!"), str_upcase_first(m_name));
         }
     }
 }

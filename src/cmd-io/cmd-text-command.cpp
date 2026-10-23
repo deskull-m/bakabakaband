@@ -347,7 +347,7 @@ void do_cmd_text_command(CreatureEntity &creature)
     }
 
     if (!found) {
-        msg_format(_("'%s' は認識できないコマンドです。", "'%s' is not a recognized command."), buf.value().c_str());
+        msg_print(_("'{}' は認識できないコマンドです。", "'{}' is not a recognized command."), buf.value());
         msg_print(_("'ヘルプ' と入力すると利用可能なコマンドが表示されます。", "Type 'help' to see available commands."));
     }
 }

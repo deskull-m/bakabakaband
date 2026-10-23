@@ -255,7 +255,7 @@ static void on_dead_ninja(CreatureEntity &killer, MonsterDeath *md_ptr)
     if (is_seen(killer, *md_ptr->m_ptr)) {
         msg_print(_("「サヨナラ！」", "Sayonara!"));
         auto m_name = monster_desc(killer, *md_ptr->m_ptr, MD_NONE);
-        msg_format(_("%sは哀れ爆発四散した！ショッギョ・ムッジョ！", "%s explodes pitifully! Shogyomujo!"), m_name.data());
+        msg_print(_("{}は哀れ爆発四散した！ショッギョ・ムッジョ！", "{} explodes pitifully! Shogyomujo!"), m_name);
     }
 
     // NINJA は種族フラグ由来の一括挙動なので、メッセージと爆発諸元は 12 種族へ

@@ -140,7 +140,7 @@ bool move_player_effect(CreatureEntity &creature, POSITION ny, POSITION nx, BIT_
 
         // 地形に刻まれた説明があれば表示
         if (!grid_new.description().empty()) {
-            msg_format(_("%sにメッセージが刻まれている: ", "You see a message on %s: "), terrain_new.name.data());
+            msg_print(_("{}にメッセージが刻まれている: ", "You see a message on {}: "), terrain_new.name);
             msg_print(grid_new.description());
         }
 
