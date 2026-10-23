@@ -488,13 +488,13 @@ bool hp_player(CreatureEntity &creature, int num)
         // [提案D2 第3弾] 回復メッセージは notify_self seam でプレイヤーは 2 人称、
         // モンスターは視認時のみ 3 人称で表示される。
         if (num < 5) {
-            creature.notify_self(_("少し気分が良くなった。", "You feel a little better."), _("%s^は少し気分が良くなったようだ。", "%s^ looks a little better."));
+            creature.notify_self(_("少し気分が良くなった。", "You feel a little better."), _("{}は少し気分が良くなったようだ。", "{} looks a little better."));
         } else if (num < 15) {
-            creature.notify_self(_("気分が良くなった。", "You feel better."), _("%s^は気分が良くなったようだ。", "%s^ looks better."));
+            creature.notify_self(_("気分が良くなった。", "You feel better."), _("{}は気分が良くなったようだ。", "{} looks better."));
         } else if (num < 35) {
-            creature.notify_self(_("とても気分が良くなった。", "You feel much better."), _("%s^はとても気分が良くなったようだ。", "%s^ looks much better."));
+            creature.notify_self(_("とても気分が良くなった。", "You feel much better."), _("{}はとても気分が良くなったようだ。", "{} looks much better."));
         } else {
-            creature.notify_self(_("ひじょうに気分が良くなった。", "You feel very good."), _("%s^はひじょうに気分が良くなったようだ。", "%s^ looks very good."));
+            creature.notify_self(_("ひじょうに気分が良くなった。", "You feel very good."), _("{}はひじょうに気分が良くなったようだ。", "{} looks very good."));
         }
 
         return true;

@@ -265,7 +265,7 @@ bool life_stream(CreatureEntity &creature, bool message, bool virtue_change)
     }
 
     if (message) {
-        creature.notify_self(_("体中に生命力が満ちあふれてきた！", "You feel life flow through your body!"), _("%s^の体に生命力が満ちあふれた！", "%s^ is filled with life force!"));
+        creature.notify_self(_("体中に生命力が満ちあふれてきた！", "You feel life flow through your body!"), _("{}の体に生命力が満ちあふれた！", "{} is filled with life force!"));
     }
 
     restore_level(creature);
@@ -634,7 +634,7 @@ void apply_nexus(const CreatureEntity &attacker, CreatureEntity &creature)
 
     case 6: {
         if (evaluate_percent(creature.get_skill_save())) {
-            creature.notify_self(_("しかし効力を跳ね返した！", "You resist the effects!"), _("%s^は効力を跳ね返した！", "%s^ resists the effects!"));
+            creature.notify_self(_("しかし効力を跳ね返した！", "You resist the effects!"), _("{}は効力を跳ね返した！", "{} resists the effects!"));
             break;
         }
 
@@ -645,11 +645,11 @@ void apply_nexus(const CreatureEntity &attacker, CreatureEntity &creature)
 
     case 7: {
         if (evaluate_percent(creature.get_skill_save())) {
-            creature.notify_self(_("しかし効力を跳ね返した！", "You resist the effects!"), _("%s^は効力を跳ね返した！", "%s^ resists the effects!"));
+            creature.notify_self(_("しかし効力を跳ね返した！", "You resist the effects!"), _("{}は効力を跳ね返した！", "{} resists the effects!"));
             break;
         }
 
-        creature.notify_self(_("体がねじれ始めた...", "Your body starts to scramble..."), _("%s^の体がねじれ始めた...", "%s^'s body starts to scramble..."));
+        creature.notify_self(_("体がねじれ始めた...", "Your body starts to scramble..."), _("{}の体がねじれ始めた...", "{}'s body starts to scramble..."));
         status_shuffle(creature);
         break;
     }

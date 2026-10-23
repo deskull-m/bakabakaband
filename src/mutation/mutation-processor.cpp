@@ -57,9 +57,11 @@
 #include "target/target-types.h"
 #include "term/screen-processor.h"
 #include "tracking/health-bar-tracker.h"
+#include "util/string-processor.h"
 #include "view/display-messages.h"
 #include "world/world-collapsion.h"
 #include "world/world.h"
+#include <fmt/format.h>
 
 /*!
  * @brief 10ゲームターンが進行するごとに敵対的存在の襲撃を判定する処置
@@ -579,10 +581,10 @@ void process_monster_mutation(CreatureEntity &player, CreatureEntity &monster)
     const auto &muta = monster.get_mutations();
     const auto visible = monster.is_visible_on_map();
     const auto level = monster.get_level();
-    const auto notify = [&](concptr msg) {
+    const auto notify = [&](std::string_view msg) {
         if (visible) {
             const auto m_name = monster_desc(player, monster, 0);
-            msg_format(msg, m_name.data());
+            msg_print(fmt::format(fmt::runtime(msg), str_upcase_first(m_name)));
         }
     };
 
@@ -590,21 +592,21 @@ void process_monster_mutation(CreatureEntity &player, CreatureEntity &monster)
     if (muta.has(PlayerMutationType::BERS_RAGE) && one_in_(3000)) {
         set_monster_monfear(floor, m_idx, 0);
         set_monster_fast(floor, m_idx, monster.get_timed_effect(CreatureTimedEffect::ACCELERATION) + 10 + randint1(level));
-        notify(_("%sは激怒の発作に襲われた！", "%s^ is seized by a fit of rage!"));
+        notify(_("{}は激怒の発作に襲われた！", "{} is seized by a fit of rage!"));
     }
 
     // 臆病 (COWARDICE): 恐怖状態になる
     if (muta.has(PlayerMutationType::COWARDICE) && (randint1(3000) == 13)) {
         if (!monster.has_resist_fear()) {
             set_monster_monfear(floor, m_idx, monster.get_timed_effect(CreatureTimedEffect::FEAR) + 13 + randint1(26));
-            notify(_("%sは急に何かに怯えだした！", "%s^ is suddenly afraid!"));
+            notify(_("{}は急に何かに怯えだした！", "{} is suddenly afraid!"));
         }
     }
 
     // ランダムテレポート (RTELEPORT)
     if (muta.has(PlayerMutationType::RTELEPORT) && (randint1(5000) == 88)) {
         if (!monster.has_resist_shard() && muta.has_not(PlayerMutationType::VTELEPORT) && !monster.has_anti_tele()) {
-            notify(_("%sの位置は突然ひじょうに不確定になった...", "%s^'s position suddenly seems very uncertain..."));
+            notify(_("{}の位置は突然ひじょうに不確定になった...", "{}'s position suddenly seems very uncertain..."));
             // [提案D3] 統一プリミティブ経由。モンスターでは teleport_away() と等価。
             teleport_creature(monster, 40, TELEPORT_PASSIVE);
         }
@@ -617,13 +619,13 @@ void process_monster_mutation(CreatureEntity &player, CreatureEntity &monster)
         } else {
             set_monster_fast(floor, m_idx, monster.get_timed_effect(CreatureTimedEffect::ACCELERATION) + randint1(30) + 10);
         }
-        notify(_("%sの速度が急に変化した。", "%s^'s speed suddenly changes."));
+        notify(_("{}の速度が急に変化した。", "{}'s speed suddenly changes."));
     }
 
     // 一時的無敵 (INVULN)
     if (muta.has(PlayerMutationType::INVULN) && !monster.has_anti_magic() && one_in_(5000)) {
         set_monster_invulner(floor, m_idx, randint1(8) + 8, false);
-        notify(_("%sは無敵になった気がしているようだ！", "%s^ seems to feel invincible!"));
+        notify(_("{}は無敵になった気がしているようだ！", "{} seems to feel invincible!"));
     }
 
     // MP を HP へ変換して傷を癒す (SP_TO_HP)
