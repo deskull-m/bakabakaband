@@ -140,7 +140,7 @@ static void send_waiting_record(CreatureEntity &creature)
     highscore_fd = fd_open(path, O_RDWR);
 
     /* 町名消失バグ対策(#38205)のためここで世界マップ情報を読み出す */
-    apply_wilderness_definition();
+    (void)apply_wilderness_definition();
     bool success = send_world_score(creature, true);
     if (!success && !input_check_strict(creature, _("スコア登録を諦めますか？", "Do you give up score registration? "), UserCheck::NO_HISTORY)) {
         constexpr auto prompt = _("引き続き待機します。", "standing by for future registration...");
@@ -254,7 +254,7 @@ static void reset_world_info(CreatureEntity &creature)
 
 static void generate_wilderness(CreatureEntity &creature)
 {
-    apply_wilderness_definition();
+    (void)apply_wilderness_definition();
     init_flags = INIT_ONLY_BUILDINGS;
     parse_fixed_map(creature, TOWN_DEFINITION_LIST, 0, 0, MAX_HGT, MAX_WID);
     select_floor_music(creature);
