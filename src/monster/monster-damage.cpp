@@ -52,6 +52,7 @@
 #include "util/string-processor.h"
 #include "view/display-messages.h"
 #include "world/world.h"
+#include <fmt/format.h>
 #include <optional>
 #include <sstream>
 #include <string>
@@ -342,9 +343,9 @@ void MonsterDamageProcessor::show_kill_message(std::string_view note, std::strin
     }
 
     if (!monster.is_visible_on_map()) {
-        auto mes = this->creature.is_echizen() ? _("せっかくだから%sを殺した。", "Because it's time, you have killed %s.")
-                                               : _("%sを殺した。", "You have killed %s.");
-        msg_format(mes, m_name.data());
+        auto mes = this->creature.is_echizen() ? _("せっかくだから{}を殺した。", "Because it's time, you have killed {}.")
+                                               : _("{}を殺した。", "You have killed {}.");
+        msg_print(fmt::format(fmt::runtime(mes), m_name));
         return;
     }
 
@@ -356,9 +357,9 @@ void MonsterDamageProcessor::show_kill_message(std::string_view note, std::strin
             return;
         }
 
-        auto mes = this->creature.is_echizen() ? _("せっかくだから%sを葬り去った。", "Because it's time, you have slain %s.")
-                                               : _("%sを葬り去った。", "You have slain %s.");
-        msg_format(mes, m_name.data());
+        auto mes = this->creature.is_echizen() ? _("せっかくだから{}を葬り去った。", "Because it's time, you have slain {}.")
+                                               : _("{}を葬り去った。", "You have slain {}.");
+        msg_print(fmt::format(fmt::runtime(mes), m_name));
         return;
     }
 
@@ -367,9 +368,9 @@ void MonsterDamageProcessor::show_kill_message(std::string_view note, std::strin
         return;
     }
 
-    auto mes = this->creature.is_echizen() ? _("せっかくだから%sを倒した。", "Because it's time, you have destroyed %s.")
-                                           : _("%sを倒した。", "You have destroyed %s.");
-    msg_format(mes, m_name.data());
+    auto mes = this->creature.is_echizen() ? _("せっかくだから{}を倒した。", "Because it's time, you have destroyed {}.")
+                                           : _("{}を倒した。", "You have destroyed {}.");
+    msg_print(fmt::format(fmt::runtime(mes), m_name));
 }
 
 void MonsterDamageProcessor::show_explosion_message(std::string_view died_mes, std::string_view m_name)

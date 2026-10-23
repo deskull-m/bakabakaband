@@ -62,6 +62,7 @@
 #include "timed-effect/player-stun.h"
 #include "util/bit-flags-calculator.h"
 #include "util/enum-converter.h"
+#include "util/string-processor.h"
 #include "view/display-messages.h"
 #include "world/world.h"
 #include <algorithm>
@@ -172,7 +173,7 @@ void CreatureEntity::notify_self(std::string_view message) const
     }
 }
 
-void CreatureEntity::notify_self(std::string_view message, const char *others_format) const
+void CreatureEntity::notify_self(std::string_view message, std::string_view others_format) const
 {
     if (this->is_player()) {
         msg_print(message);
@@ -184,7 +185,7 @@ void CreatureEntity::notify_self(std::string_view message, const char *others_fo
     }
 
     const auto monster_name = monster_desc(PlayerType::get_instance(), *this, 0);
-    msg_format(others_format, monster_name.data());
+    msg_print(fmt::format(fmt::runtime(others_format), str_upcase_first(monster_name)));
 }
 
 void CreatureEntity::plus_incident(INCIDENT incidentID, int num)
