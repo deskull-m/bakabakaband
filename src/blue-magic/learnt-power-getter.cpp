@@ -477,7 +477,7 @@ static void describe_blue_magic_name(CreatureEntity &creature, const bluemage_da
  */
 static bool confirm_cast_blue_magic(MonsterAbilityType spell)
 {
-    const auto prompt = format(_("%sの魔法を唱えますか？", "Use %s? "), monster_powers.at(spell).name);
+    const auto prompt = fmt::format(_("{}の魔法を唱えますか？", "Use {}? "), monster_powers.at(spell).name);
     return input_check(prompt);
 }
 
