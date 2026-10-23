@@ -45,6 +45,7 @@
 #include "util/string-processor.h"
 #include "view/display-messages.h"
 #include "world/world.h"
+#include <fmt/format.h>
 
 /*!
  * Determine if a "boundary" grid is "floor mimic"
@@ -365,7 +366,7 @@ void exe_movement(CreatureEntity &creature, const Direction &dir, bool do_pickup
 
     const auto dir_id = dir.dir();
     if (dir_id >= 1 && dir_id <= 9 && dir_names[dir_id] != nullptr) {
-        const auto walk_dir = format("WALK/%s", dir_names[dir_id]);
+        const auto walk_dir = fmt::format("WALK/{}", dir_names[dir_id]);
         creature.plus_incident_tree(walk_dir.data(), 1);
     }
 
