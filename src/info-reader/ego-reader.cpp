@@ -10,7 +10,6 @@
 #include "util/enum-converter.h"
 #include <limits>
 #include <nlohmann/json.hpp>
-#include <stdexcept>
 
 EgoReader::EgoReader(const nlohmann::json &ego_data)
     : ego_data(ego_data)
@@ -186,12 +185,6 @@ ParseErrorType EgoReader::set_activation(EgoItemDefinition &ego) const
     if (!activation.is_string()) {
         return ParseErrorType::INVALID_TYPE;
     }
-    try {
-        ego.act_idx = grab_one_activation_flag(activation.get<std::string>());
-    } catch (const std::invalid_argument &) {
-        return ParseErrorType::INVALID_FLAG;
-    } catch (const std::out_of_range &) {
-        return ParseErrorType::INVALID_FLAG;
-    }
+    ego.act_idx = grab_one_activation_flag(activation.get<std::string>());
     return ego.act_idx > RandomArtActType::NONE ? ParseErrorType::NONE : ParseErrorType::INVALID_FLAG;
 }
