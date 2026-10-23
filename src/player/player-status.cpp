@@ -20,7 +20,7 @@
 #include "grid/grid.h"
 #include "inventory/inventory-object.h"
 #include "inventory/inventory-slot-types.h"
-#include "io/input-key-acceptor.h"
+#include "io/input-context.h"
 #include "io/write-diary.h"
 #include "main/sound-definitions-table.h"
 #include "main/sound-of-music.h"
@@ -2847,10 +2847,12 @@ void check_experience(CreatureEntity &creature)
                     prt(fmt::format(_("        f) 魅力 (現在値 {})", "        f) Chr (cur {})"), cnv_stat(creature.get_stat_max(5))), 7, 14);
 
                     prt("", 8, 14);
-                    prt(_("        どの能力値を上げますか？", "        Which stat do you want to raise?"), 1, 14);
+                    constexpr auto prompt = _("        どの能力値を上げますか？", "        Which stat do you want to raise?");
+                    prt(prompt, 1, 14);
 
+                    const auto context_prompt = str_trim(prompt);
                     while (true) {
-                        choice = inkey();
+                        choice = input_key_with_context(InputKind::COMMAND_CHAR, context_prompt);
                         if ((choice >= 'a') && (choice <= 'f')) {
                             break;
                         }
