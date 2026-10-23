@@ -28,14 +28,14 @@ const std::optional<VaultReadError> &VaultReader::error() const
     return this->diagnostic;
 }
 
-int VaultReader::fail(int code, std::string_view path, std::string_view reason)
+parse_error_type VaultReader::fail(parse_error_type code, std::string_view path, std::string_view reason)
 {
     const auto id = this->data.is_object() && this->data.contains("id") ? this->data["id"].dump() : "<unknown>";
     this->diagnostic = VaultReadError{ id, std::string(path), std::string(reason) };
     return code;
 }
 
-int VaultReader::read_integer(std::string_view key, int &value, int minimum, int maximum)
+parse_error_type VaultReader::read_integer(std::string_view key, int &value, int minimum, int maximum)
 {
     if (const auto err = info_set_integer(this->data[key], value, true, Range(minimum, maximum)); !err) {
         return this->fail(err.error(), fmt::format("$.{}", key), fmt::format(_("{}以上{}以下の整数が必要です", "expected an integer in [{}, {}]"), minimum, maximum));
@@ -43,7 +43,7 @@ int VaultReader::read_integer(std::string_view key, int &value, int minimum, int
     return PARSE_ERROR_NONE;
 }
 
-int VaultReader::read_optional_integer(std::string_view key, int &value, int minimum, int maximum)
+parse_error_type VaultReader::read_optional_integer(std::string_view key, int &value, int minimum, int maximum)
 {
     if (!this->data.contains(key)) {
         return PARSE_ERROR_NONE;
@@ -51,7 +51,7 @@ int VaultReader::read_optional_integer(std::string_view key, int &value, int min
     return this->read_integer(key, value, minimum, maximum);
 }
 
-int VaultReader::read_flags(vault_type &vault)
+parse_error_type VaultReader::read_flags(vault_type &vault)
 {
     if (!this->data.contains("flags")) {
         return PARSE_ERROR_NONE;
@@ -73,7 +73,7 @@ int VaultReader::read_flags(vault_type &vault)
     return PARSE_ERROR_NONE;
 }
 
-int VaultReader::read_features(vault_type &vault)
+parse_error_type VaultReader::read_features(vault_type &vault)
 {
     if (!this->data.contains("features")) {
         return PARSE_ERROR_NONE;
@@ -135,7 +135,7 @@ int VaultReader::read_features(vault_type &vault)
     return PARSE_ERROR_NONE;
 }
 
-int VaultReader::read()
+parse_error_type VaultReader::read()
 {
     this->diagnostic.reset();
     if (!this->data.is_object()) {

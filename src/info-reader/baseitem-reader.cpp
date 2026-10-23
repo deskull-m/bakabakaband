@@ -35,7 +35,7 @@ BaseitemReader::BaseitemReader(const nlohmann::json &baseitem_data)
  * @note BaseitemReader が保持する baseitem_data を参照する
  * @return エラーコード
  */
-int BaseitemReader::read() const
+parse_error_type BaseitemReader::read() const
 {
     if (!this->baseitem_data.is_object()) {
         return PARSE_ERROR_INVALID_TYPE;
@@ -51,7 +51,7 @@ int BaseitemReader::read() const
         return PARSE_ERROR_INVALID_TYPE;
     }
 
-    const auto validate_id = [](const auto id) -> int {
+    const auto validate_id = [](const auto id) -> parse_error_type {
         if (std::cmp_less_equal(id, error_idx)) {
             msg_print(_("ベースアイテムIDが非連番です。ID: '{}'、直前ID: '{}'。", "Baseitem ID is not sequential. ID: '{}', previous ID: '{}'."), id, error_idx);
             return PARSE_ERROR_NON_SEQUENTIAL_RECORDS;
@@ -181,7 +181,7 @@ bool BaseitemReader::grab_one_baseitem_flag(BaseitemDefinition &baseitem, std::s
  * @param baseitem 保管先のベースアイテム情報インスタンス
  * @return エラーコード
  */
-int BaseitemReader::set_baseitem_symbol(BaseitemDefinition &baseitem) const
+parse_error_type BaseitemReader::set_baseitem_symbol(BaseitemDefinition &baseitem) const
 {
     const auto &symbol_data = get_json_value(this->baseitem_data, "symbol");
     if (symbol_data.is_null()) {
@@ -223,7 +223,7 @@ int BaseitemReader::set_baseitem_symbol(BaseitemDefinition &baseitem) const
  * @param baseitem 保管先のベースアイテム情報インスタンス
  * @return エラーコード
  */
-int BaseitemReader::set_baseitem_kind(BaseitemDefinition &baseitem) const
+parse_error_type BaseitemReader::set_baseitem_kind(BaseitemDefinition &baseitem) const
 {
     const auto &itemkind_data = get_json_value(this->baseitem_data, "itemkind");
     if (itemkind_data.is_null()) {
@@ -252,7 +252,7 @@ int BaseitemReader::set_baseitem_kind(BaseitemDefinition &baseitem) const
  * @param baseitem 保管先のベースアイテム情報インスタンス
  * @return エラーコード
  */
-int BaseitemReader::set_baseitem_parameter_value(BaseitemDefinition &baseitem) const
+parse_error_type BaseitemReader::set_baseitem_parameter_value(BaseitemDefinition &baseitem) const
 {
     const auto &pval_data = get_json_value(this->baseitem_data, "parameter_value");
     if (const auto err = info_set_integer(pval_data, baseitem.pval, false, Range(-9999, 9999)); !err) {
@@ -271,7 +271,7 @@ int BaseitemReader::set_baseitem_parameter_value(BaseitemDefinition &baseitem) c
  * @param baseitem 保管先のベースアイテム情報インスタンス
  * @return エラーコード
  */
-int BaseitemReader::set_baseitem_allocations(BaseitemDefinition &baseitem) const
+parse_error_type BaseitemReader::set_baseitem_allocations(BaseitemDefinition &baseitem) const
 {
     const auto &allocations_data = get_json_value(this->baseitem_data, "allocations");
     if (allocations_data.is_null()) {
@@ -308,7 +308,7 @@ int BaseitemReader::set_baseitem_allocations(BaseitemDefinition &baseitem) const
  * @param baseitem 保管先のベースアイテム情報インスタンス
  * @return エラーコード
  */
-int BaseitemReader::set_baseitem_activate(BaseitemDefinition &baseitem) const
+parse_error_type BaseitemReader::set_baseitem_activate(BaseitemDefinition &baseitem) const
 {
     const auto &act_data = get_json_value(this->baseitem_data, "activate");
     if (act_data.is_null()) {
@@ -341,7 +341,7 @@ int BaseitemReader::set_baseitem_activate(BaseitemDefinition &baseitem) const
  * @param baseitem 保管先のベースアイテム情報インスタンス
  * @return エラーコード
  */
-int BaseitemReader::set_baseitem_alliance(BaseitemDefinition &baseitem) const
+parse_error_type BaseitemReader::set_baseitem_alliance(BaseitemDefinition &baseitem) const
 {
     const auto &alliance_data = get_json_value(this->baseitem_data, "alliance");
     if (alliance_data.is_null()) {
@@ -376,7 +376,7 @@ int BaseitemReader::set_baseitem_alliance(BaseitemDefinition &baseitem) const
  * @param baseitem 保管先のベースアイテム情報インスタンス
  * @return エラーコード
  */
-int BaseitemReader::set_baseitem_flags(BaseitemDefinition &baseitem) const
+parse_error_type BaseitemReader::set_baseitem_flags(BaseitemDefinition &baseitem) const
 {
     const auto &flag_data = get_json_value(this->baseitem_data, "flags");
     if (flag_data.is_null()) {

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "info-reader/parse-error-types.h"
+
 #include <nlohmann/json_fwd.hpp>
 
 enum class RealmType;
@@ -14,12 +16,12 @@ public:
     SpellReader &operator=(const SpellReader &) = delete;
     SpellReader &operator=(SpellReader &&) = delete;
 
-    int read() const;
+    parse_error_type read() const;
 
 private:
-    int set_realm(RealmType &realm) const;
-    int set_spell_data(const nlohmann::json &spell_data, RealmType realm) const;
-    int set_book_data(RealmType realm) const;
+    parse_error_type set_realm(RealmType &realm) const;
+    parse_error_type set_spell_data(const nlohmann::json &spell_data, RealmType realm) const;
+    parse_error_type set_book_data(RealmType realm) const;
 
     const nlohmann::json &realm_data;
     SpellInfoList &spell_info_list;

@@ -25,13 +25,13 @@ const std::optional<SkillReadError> &SkillReader::error() const
     return this->diagnostic;
 }
 
-int SkillReader::fail(int code, std::string_view path, std::string_view reason)
+parse_error_type SkillReader::fail(parse_error_type code, std::string_view path, std::string_view reason)
 {
     this->diagnostic = SkillReadError{ this->class_id, std::string(path), std::string(reason) };
     return code;
 }
 
-int SkillReader::check_keys(const nlohmann::json &data, std::string_view path, std::initializer_list<std::string_view> keys)
+parse_error_type SkillReader::check_keys(const nlohmann::json &data, std::string_view path, std::initializer_list<std::string_view> keys)
 {
     if (!data.is_object()) {
         return this->fail(PARSE_ERROR_INVALID_TYPE, path, _("オブジェクトが必要です", "expected an object"));
@@ -49,7 +49,7 @@ int SkillReader::check_keys(const nlohmann::json &data, std::string_view path, s
     return PARSE_ERROR_NONE;
 }
 
-int SkillReader::read_integer(const nlohmann::json &data, int &value, int maximum, std::string_view path)
+parse_error_type SkillReader::read_integer(const nlohmann::json &data, int &value, int maximum, std::string_view path)
 {
     if (const auto err = info_set_integer(data, value, true, Range(0, maximum)); !err) {
         const auto reason = data.is_number_integer() ? fmt::format(_("0以上{}以下の整数が必要です", "expected an integer in [0, {}]"), maximum) : _("整数が必要です", "expected an integer");
@@ -58,7 +58,7 @@ int SkillReader::read_integer(const nlohmann::json &data, int &value, int maximu
     return PARSE_ERROR_NONE;
 }
 
-int SkillReader::read()
+parse_error_type SkillReader::read()
 {
     this->diagnostic.reset();
     this->class_id = this->class_data.is_object() && this->class_data.contains("id") ? this->class_data["id"].dump() : "<unknown>";
@@ -87,7 +87,7 @@ int SkillReader::read()
     return PARSE_ERROR_NONE;
 }
 
-int SkillReader::read_weapons(skill_table &skills)
+parse_error_type SkillReader::read_weapons(skill_table &skills)
 {
     const auto &weapons = this->class_data["weapons"];
     if (const auto err = this->check_keys(weapons, "$.weapons", { "BOW", "DIGGING", "HAFTED", "POLEARM", "SWORD" })) {
@@ -133,7 +133,7 @@ int SkillReader::read_weapons(skill_table &skills)
     return PARSE_ERROR_NONE;
 }
 
-int SkillReader::read_skills(skill_table &skills)
+parse_error_type SkillReader::read_skills(skill_table &skills)
 {
     const auto &data = this->class_data["skills"];
     if (const auto err = this->check_keys(data, "$.skills", { "MARTIAL_ARTS", "TWO_WEAPON", "RIDING", "SHIELD", "GROSS_EATING", "SCATOLOGY", "ARMOR", "EVASION", "ASSHOLE" })) {

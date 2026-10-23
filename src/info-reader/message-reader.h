@@ -1,5 +1,7 @@
 #pragma once
 
+#include "info-reader/parse-error-types.h"
+
 #include <nlohmann/json_fwd.hpp>
 
 class MessageReader {
@@ -11,10 +13,10 @@ public:
     MessageReader &operator=(const MessageReader &) = delete;
     MessageReader &operator=(MessageReader &&) = delete;
 
-    int read() const;
+    parse_error_type read() const;
 
 private:
-    int set_mon_message() const;
+    parse_error_type set_mon_message() const;
 
     const nlohmann::json &message_data;
 };

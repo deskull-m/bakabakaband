@@ -46,7 +46,7 @@ bool ArtifactReader::grab_one_artifact_flag(ArtifactType &artifact, std::string_
  * @param artifact 保管先のアーティファクト
  * @return エラーコード
  */
-errr ArtifactReader::set_art_baseitem(ArtifactType &artifact) const
+parse_error_type ArtifactReader::set_art_baseitem(ArtifactType &artifact) const
 {
     const auto &baseitem_data = get_json_value(this->art_data, "base_item");
     if (baseitem_data.is_null()) {
@@ -72,7 +72,7 @@ errr ArtifactReader::set_art_baseitem(ArtifactType &artifact) const
  * @param artifact 保管先のアーティファクト
  * @return エラーコード
  */
-errr ArtifactReader::set_art_activate(ArtifactType &artifact) const
+parse_error_type ArtifactReader::set_art_activate(ArtifactType &artifact) const
 {
     const auto &act_data = get_json_value(this->art_data, "activate");
     if (!act_data.is_string()) {
@@ -94,7 +94,7 @@ errr ArtifactReader::set_art_activate(ArtifactType &artifact) const
  * @param artifact 保管先のアーティファクト
  * @return エラーコード
  */
-errr ArtifactReader::set_art_flags(ArtifactType &artifact) const
+parse_error_type ArtifactReader::set_art_flags(ArtifactType &artifact) const
 {
     const auto &flag_data = get_json_value(this->art_data, "flags");
     if (flag_data.is_null()) {
@@ -117,7 +117,7 @@ errr ArtifactReader::set_art_flags(ArtifactType &artifact) const
  * @note ArtifactReader が保持する art_data を参照する
  * @return エラーコード
  */
-errr ArtifactReader::read() const
+parse_error_type ArtifactReader::read() const
 {
     int int_id;
     if (const auto err = info_set_integer(get_json_value(this->art_data, "id"), int_id, true, Range(0, 9999)); !err) {

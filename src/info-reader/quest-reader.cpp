@@ -88,7 +88,7 @@ void read_string_lines(const nlohmann::json &array_data, std::vector<std::string
  * @return 行数または行のバイト数がフロアの上限を超える場合は PARSE_ERROR_OUT_OF_BOUNDS、
  * 行に NUL が含まれる場合は PARSE_ERROR_INVALID_VALUE
  */
-int read_map_rows(const nlohmann::json &array_data, std::vector<std::string> &out)
+parse_error_type read_map_rows(const nlohmann::json &array_data, std::vector<std::string> &out)
 {
     for (const auto &line : array_data) {
         if (!line.is_string()) {
@@ -117,7 +117,7 @@ int read_map_rows(const nlohmann::json &array_data, std::vector<std::string> &ou
  * @brief 条件に関係なく、開始位置がすべてのマップ候補の範囲内か確認する
  * @return マップが無い / 座標が負 / いずれかのマップ候補の範囲外なら PARSE_ERROR_OUT_OF_BOUNDS
  */
-int validate_quest_start(const QuestFixedMap &fixed_map, const QuestStartPosition &position)
+parse_error_type validate_quest_start(const QuestFixedMap &fixed_map, const QuestStartPosition &position)
 {
     if (fixed_map.maps.empty() || position.y < 0 || position.x < 0) {
         return PARSE_ERROR_OUT_OF_BOUNDS;
@@ -295,7 +295,7 @@ QuestReader::QuestReader(const nlohmann::json &quest_data, QuestType &quest, Que
 {
 }
 
-int QuestReader::read() const
+parse_error_type QuestReader::read() const
 {
     if (!this->quest_data.is_object()) {
         return PARSE_ERROR_INVALID_TYPE;
@@ -323,14 +323,14 @@ int QuestReader::read() const
     return PARSE_ERROR_NONE;
 }
 
-int QuestReader::set_name() const
+parse_error_type QuestReader::set_name() const
 {
     // info_set_string は {ja, en} オブジェクトを受け取り、ビルド言語に応じた文字列を格納する
     const auto result = info_set_string(get_json_value(this->quest_data, "name"), this->quest.name, true);
     return result ? PARSE_ERROR_NONE : result.error();
 }
 
-int QuestReader::set_definition() const
+parse_error_type QuestReader::set_definition() const
 {
     const auto &definition = get_json_value(this->quest_data, "definition");
     if (!definition.is_object()) {
@@ -406,7 +406,7 @@ int QuestReader::set_definition() const
     return PARSE_ERROR_NONE;
 }
 
-int QuestReader::set_descriptions() const
+parse_error_type QuestReader::set_descriptions() const
 {
     const auto &descriptions = get_json_value(this->quest_data, "descriptions");
     if (descriptions.is_null()) {
@@ -457,7 +457,7 @@ int QuestReader::set_descriptions() const
     return PARSE_ERROR_NONE;
 }
 
-int QuestReader::set_legend() const
+parse_error_type QuestReader::set_legend() const
 {
     const auto &legend = get_json_value(this->quest_data, "legend");
     if (legend.is_null()) {
@@ -482,7 +482,7 @@ int QuestReader::set_legend() const
     return PARSE_ERROR_NONE;
 }
 
-int QuestReader::set_maps() const
+parse_error_type QuestReader::set_maps() const
 {
     const auto &map = get_json_value(this->quest_data, "map");
     if (!map.is_null()) {
@@ -517,7 +517,7 @@ int QuestReader::set_maps() const
     return PARSE_ERROR_NONE;
 }
 
-int QuestReader::set_starts() const
+parse_error_type QuestReader::set_starts() const
 {
     const auto &start = get_json_value(this->quest_data, "start");
     if (!start.is_null()) {

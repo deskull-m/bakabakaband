@@ -1,5 +1,6 @@
 #pragma once
 
+#include "info-reader/parse-error-types.h"
 #include "system/angband.h"
 #include <nlohmann/json_fwd.hpp>
 #include <string_view>
@@ -15,13 +16,13 @@ public:
     ArtifactReader &operator=(const ArtifactReader &) = delete;
     ArtifactReader &operator=(ArtifactReader &&) = delete;
 
-    errr read() const;
+    parse_error_type read() const;
 
 private:
     bool grab_one_artifact_flag(ArtifactType &artifact, std::string_view what) const;
-    errr set_art_baseitem(ArtifactType &artifact) const;
-    errr set_art_activate(ArtifactType &artifact) const;
-    errr set_art_flags(ArtifactType &artifact) const;
+    parse_error_type set_art_baseitem(ArtifactType &artifact) const;
+    parse_error_type set_art_activate(ArtifactType &artifact) const;
+    parse_error_type set_art_flags(ArtifactType &artifact) const;
 
     const nlohmann::json &art_data;
 };

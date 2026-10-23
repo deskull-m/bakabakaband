@@ -17,7 +17,7 @@
  * @param party パーティ定義への参照
  * @return エラーコード
  */
-static errr set_party_name(nlohmann::json &name_data, CreaturePartyDefinition &party)
+static parse_error_type set_party_name(nlohmann::json &name_data, CreaturePartyDefinition &party)
 {
     if (!name_data.is_object()) {
         return PARSE_ERROR_GENERIC;
@@ -45,7 +45,7 @@ static errr set_party_name(nlohmann::json &name_data, CreaturePartyDefinition &p
  * @param party パーティ定義への参照
  * @return エラーコード
  */
-static errr set_party_members(nlohmann::json &members_data, CreaturePartyDefinition &party)
+static parse_error_type set_party_members(nlohmann::json &members_data, CreaturePartyDefinition &party)
 {
     if (!members_data.is_array()) {
         return PARSE_ERROR_GENERIC;
@@ -92,7 +92,7 @@ static errr set_party_members(nlohmann::json &members_data, CreaturePartyDefinit
  * @param party_data パーティデータの格納されたJSON Object
  * @return エラーコード
  */
-errr parse_creature_parties_info(nlohmann::json &party_data)
+parse_error_type parse_creature_parties_info(nlohmann::json &party_data)
 {
     if (!party_data["id"].is_number_integer()) {
         return PARSE_ERROR_TOO_FEW_ARGUMENTS;
@@ -109,7 +109,7 @@ errr parse_creature_parties_info(nlohmann::json &party_data)
     party.idx = party_id;
 
     // パーティ名の読み込み
-    errr err = set_party_name(party_data["name"], party);
+    parse_error_type err = set_party_name(party_data["name"], party);
     if (err) {
         msg_format(_("パーティ名読込失敗。ID: '%d'。", "Failed to load party name. ID: '%d'."), error_idx);
         return err;

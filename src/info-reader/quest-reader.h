@@ -28,15 +28,15 @@ public:
     QuestReader &operator=(const QuestReader &) = delete;
     QuestReader &operator=(QuestReader &&) = delete;
 
-    int read() const;
+    parse_error_type read() const;
 
 private:
-    int set_name() const;
-    int set_definition() const;
-    int set_descriptions() const;
-    int set_legend() const;
-    int set_maps() const;
-    int set_starts() const;
+    parse_error_type set_name() const;
+    parse_error_type set_definition() const;
+    parse_error_type set_descriptions() const;
+    parse_error_type set_legend() const;
+    parse_error_type set_maps() const;
+    parse_error_type set_starts() const;
 
     const nlohmann::json &quest_data;
     QuestType &quest;
