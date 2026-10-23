@@ -1489,7 +1489,7 @@ libhengband_a_SOURCES = \
 	term/gameterm.cpp term/gameterm.h \
 	term/screen-processor.cpp term/screen-processor.h \
 	term/term-color-types.h \
-	term/z-form.cpp term/z-form.h term/z-rand.cpp term/z-rand.h \
+	term/z-rand.cpp term/z-rand.h \
 	term/z-term.cpp term/z-term.h term/z-util.cpp term/z-util.h \
 	\
 	timed-effect/player-cut.cpp timed-effect/player-cut.h \
@@ -1680,7 +1680,6 @@ hengband_test_SOURCES = \
 	test/system/monrace/test-monrace-definition.cpp \
 	test/system/monrace/test-monrace-max-level.cpp \
 	\
-	test/term/test-z-form.cpp \
 	test/term/test-z-rand.cpp \
 	\
 	test/timed-effect/test-player-cut.cpp \

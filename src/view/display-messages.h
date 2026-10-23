@@ -19,7 +19,6 @@ void msg_erase(void);
 bool is_waiting_for_more();
 void redisplay_more_prompt();
 void msg_print(std::string_view msg);
-void msg_format(const char *fmt, ...);
 void wr_message_history();
 void rd_message_history();
 

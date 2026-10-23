@@ -13,7 +13,6 @@
 #include "locale/character-encoding.h"
 #include "system/creature-entity.h"
 #include "term/gameterm.h"
-#include "term/z-form.h"
 #include "util/angband-files.h"
 #include "util/string-processor.h"
 #include "view/display-messages.h"

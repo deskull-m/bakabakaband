@@ -1901,7 +1901,6 @@
     <ClCompile Include="..\..\src\world\world.cpp" />
     <ClCompile Include="..\..\src\world\world-movement-processor.cpp" />
     <ClCompile Include="..\..\src\world\world-turn-processor.cpp" />
-    <ClCompile Include="..\..\src\term\z-form.cpp" />
     <ClCompile Include="..\..\src\term\z-rand.cpp" />
     <ClCompile Include="..\..\src\term\z-term.cpp" />
     <ClCompile Include="..\..\src\term\z-util.cpp" />
@@ -2161,7 +2160,6 @@
     <ClInclude Include="..\..\src\object\warning.h" />
     <ClInclude Include="..\..\src\floor\wild.h" />
     <ClInclude Include="..\..\src\world\world.h" />
-    <ClInclude Include="..\..\src\term\z-form.h" />
     <ClInclude Include="..\..\src\term\z-rand.h" />
     <ClInclude Include="..\..\src\term\z-term.h" />
     <ClInclude Include="..\..\src\term\z-util.h" />

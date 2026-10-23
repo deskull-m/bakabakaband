@@ -91,7 +91,6 @@
 #include "target/target-checker.h"
 #include "term/gameterm.h"
 #include "term/screen-processor.h"
-#include "term/z-form.h"
 #include "term/z-rand.h"
 #include "util/angband-files.h"
 #include "view/display-messages.h"

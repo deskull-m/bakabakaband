@@ -454,9 +454,6 @@
     <ClCompile Include="..\..\src\term\gameterm.cpp">
       <Filter>term</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\term\z-form.cpp">
-      <Filter>term</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\term\z-rand.cpp">
       <Filter>term</Filter>
     </ClCompile>
@@ -3367,9 +3364,6 @@
       <Filter>inventory</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\term\gameterm.h">
-      <Filter>term</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\term\z-form.h">
       <Filter>term</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\term\z-rand.h">

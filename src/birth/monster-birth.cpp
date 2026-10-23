@@ -45,7 +45,6 @@
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
 #include "term/screen-processor.h"
-#include "term/z-form.h"
 #include "term/z-rand.h"
 #include "util/dice.h"
 #include "util/enum-converter.h"

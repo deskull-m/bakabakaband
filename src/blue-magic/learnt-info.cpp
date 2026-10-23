@@ -8,7 +8,6 @@
 #include "monster-race/race-ability-flags.h"
 #include "mspell/mspell-damage-calculator.h"
 #include "system/creature-entity.h"
-#include "term/z-form.h"
 #include <fmt/format.h>
 
 /*!

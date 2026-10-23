@@ -2,7 +2,6 @@
 #include "player-info/race-types.h"
 #include "player-info/self-info-util.h"
 #include "system/creature-entity.h"
-#include "term/z-form.h"
 #include <fmt/format.h>
 
 /*!

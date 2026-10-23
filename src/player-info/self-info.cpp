@@ -30,7 +30,6 @@
 #include "system/creature-timed-effect-types.h"
 #include "term/gameterm.h"
 #include "term/screen-processor.h"
-#include "term/z-form.h"
 #include "view/display-self-info.h"
 #include <fmt/format.h>
 
