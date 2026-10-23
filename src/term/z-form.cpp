@@ -393,39 +393,3 @@ std::string format(const char *fmt, ...)
     va_end(vp);
     return res;
 }
-
-/*
- * Vararg interface to plog()
- */
-void plog_fmt(const char *fmt, ...)
-{
-    va_list vp;
-    va_start(vp, fmt);
-    auto res = vformat(fmt, vp);
-    va_end(vp);
-    plog(res.data());
-}
-
-/*
- * Vararg interface to quit()
- */
-void quit_fmt(const char *fmt, ...)
-{
-    va_list vp;
-    va_start(vp, fmt);
-    auto res = vformat(fmt, vp);
-    va_end(vp);
-    quit(res.data());
-}
-
-/*
- * Vararg interface to core()
- */
-void core_fmt(const char *fmt, ...)
-{
-    va_list vp;
-    va_start(vp, fmt);
-    auto res = vformat(fmt, vp);
-    va_end(vp);
-    core(res.data());
-}
