@@ -83,29 +83,29 @@ MagicReader::MagicReader(const nlohmann::json &class_data)
  * @brief 職業魔法情報(ClassMagicDefinitions)のパース関数
  * @return エラーコード
  */
-parse_error_type MagicReader::read() const
+ParseErrorType MagicReader::read() const
 {
     if (!this->class_data.is_object()) {
-        return PARSE_ERROR_INVALID_TYPE;
+        return ParseErrorType::INVALID_TYPE;
     }
 
     int class_id;
-    if (auto err = this->set_class_id(class_id)) {
+    if (const auto err = this->set_class_id(class_id); err != ParseErrorType::NONE) {
         msg_print(_("職業ID読込失敗。ID: '{}'。", "Failed to load class id. ID: '{}'."), error_idx);
         return err;
     }
 
     if (class_id < error_idx) {
-        return PARSE_ERROR_NON_SEQUENTIAL_RECORDS;
+        return ParseErrorType::NON_SEQUENTIAL_RECORDS;
     }
     error_idx = class_id;
     player_magic &magics_info = class_magics_info[class_id];
 
-    if (auto err = this->set_spell_type(magics_info)) {
+    if (const auto err = this->set_spell_type(magics_info); err != ParseErrorType::NONE) {
         msg_print(_("呪文タイプ読込失敗。ID: '{}'。", "Failed to load spell type. ID: '{}'."), error_idx);
         return err;
     }
-    if (auto err = this->set_magic_status(magics_info)) {
+    if (const auto err = this->set_magic_status(magics_info); err != ParseErrorType::NONE) {
         msg_print(_("呪文行使に使用する能力値読込失敗。ID: '{}'。", "Failed to load magic status. ID: '{}'."), error_idx);
         return err;
     }
@@ -129,12 +129,12 @@ parse_error_type MagicReader::read() const
         msg_print(_("MP重量制限値読込失敗。ID: '{}'。", "Failed to load spell-weight value. ID: '{}'."), error_idx);
         return err.error();
     }
-    if (auto err = this->set_realm_data(magics_info)) {
+    if (const auto err = this->set_realm_data(magics_info); err != ParseErrorType::NONE) {
         msg_print(_("呪文データ読込失敗。ID: '{}'。", "Failed to load spell data. ID: '{}'."), error_idx);
         return err;
     }
 
-    return PARSE_ERROR_NONE;
+    return ParseErrorType::NONE;
 }
 
 /*!
@@ -142,19 +142,19 @@ parse_error_type MagicReader::read() const
  * @param class_id 職業ID
  * @return エラーコード
  */
-parse_error_type MagicReader::set_class_id(int &class_id) const
+ParseErrorType MagicReader::set_class_id(int &class_id) const
 {
     const auto &classname_obj = get_json_value(this->class_data, "name");
     if (!classname_obj.is_string()) {
-        return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+        return ParseErrorType::TOO_FEW_ARGUMENTS;
     }
 
     const auto player_class = class_list.find(classname_obj.get<std::string>());
     if (player_class == class_list.end()) {
-        return PARSE_ERROR_OUT_OF_BOUNDS;
+        return ParseErrorType::OUT_OF_BOUNDS;
     }
     class_id = enum2i(player_class->second);
-    return PARSE_ERROR_NONE;
+    return ParseErrorType::NONE;
 }
 
 /*!
@@ -162,19 +162,19 @@ parse_error_type MagicReader::set_class_id(int &class_id) const
  * @param magics_info 保存先の魔法情報構造体
  * @return エラーコード
  */
-parse_error_type MagicReader::set_spell_type(player_magic &magics_info) const
+ParseErrorType MagicReader::set_spell_type(player_magic &magics_info) const
 {
     const auto &spell_book = get_json_value(this->class_data, "spell_type");
     if (!spell_book.is_string()) {
-        return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+        return ParseErrorType::TOO_FEW_ARGUMENTS;
     }
 
     const auto tval = spelltype_to_tval.find(spell_book.get<std::string>());
     if (tval == spelltype_to_tval.end()) {
-        return PARSE_ERROR_INVALID_FLAG;
+        return ParseErrorType::INVALID_FLAG;
     }
     magics_info.spell_book = tval->second;
-    return PARSE_ERROR_NONE;
+    return ParseErrorType::NONE;
 }
 
 /*!
@@ -182,19 +182,19 @@ parse_error_type MagicReader::set_spell_type(player_magic &magics_info) const
  * @param magics_info 保存先の魔法情報構造体
  * @return エラーコード
  */
-parse_error_type MagicReader::set_magic_status(player_magic &magics_info) const
+ParseErrorType MagicReader::set_magic_status(player_magic &magics_info) const
 {
     const auto &magic_status = get_json_value(this->class_data, "magic_status");
     if (!magic_status.is_string()) {
-        return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+        return ParseErrorType::TOO_FEW_ARGUMENTS;
     }
 
     const auto status = name_to_stat.find(magic_status.get<std::string>());
     if (status == name_to_stat.end()) {
-        return PARSE_ERROR_INVALID_FLAG;
+        return ParseErrorType::INVALID_FLAG;
     }
     magics_info.spell_stat = status->second;
-    return PARSE_ERROR_NONE;
+    return ParseErrorType::NONE;
 }
 
 /*!
@@ -204,15 +204,15 @@ parse_error_type MagicReader::set_magic_status(player_magic &magics_info) const
  * @param realm 呪文の領域
  * @return エラーコード
  */
-parse_error_type MagicReader::set_spell_data(const nlohmann::json &spell_data, player_magic &magics_info, RealmType realm) const
+ParseErrorType MagicReader::set_spell_data(const nlohmann::json &spell_data, player_magic &magics_info, RealmType realm) const
 {
     const auto &spell_tag_obj = get_json_value(spell_data, "spell_tag");
     if (!spell_tag_obj.is_string()) {
-        return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+        return ParseErrorType::TOO_FEW_ARGUMENTS;
     }
     const auto spell_id = SpellInfoList::get_instance().get_spell_id(realm, spell_tag_obj.get<std::string>());
     if (!spell_id) {
-        return PARSE_ERROR_INVALID_FLAG;
+        return ParseErrorType::INVALID_FLAG;
     }
     auto &info = magics_info.info[enum2i(realm)][*spell_id];
 
@@ -233,7 +233,7 @@ parse_error_type MagicReader::set_spell_data(const nlohmann::json &spell_data, p
         return err.error();
     }
 
-    return PARSE_ERROR_NONE;
+    return ParseErrorType::NONE;
 }
 
 /*!
@@ -241,43 +241,43 @@ parse_error_type MagicReader::set_spell_data(const nlohmann::json &spell_data, p
  * @param magics_info 保存先の魔法情報構造体
  * @return エラーコード
  */
-parse_error_type MagicReader::set_realm_data(player_magic &magics_info) const
+ParseErrorType MagicReader::set_realm_data(player_magic &magics_info) const
 {
     const auto &realms_data = get_json_value(this->class_data, "realms");
     if (realms_data.is_null()) {
-        return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+        return ParseErrorType::TOO_FEW_ARGUMENTS;
     }
     if (!realms_data.is_array()) {
-        return PARSE_ERROR_INVALID_TYPE;
+        return ParseErrorType::INVALID_TYPE;
     }
 
     for (const auto &realm : realms_data) {
         const auto &realm_name_obj = get_json_value(realm, "name");
         if (!realm_name_obj.is_string()) {
-            return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+            return ParseErrorType::TOO_FEW_ARGUMENTS;
         }
 
         const auto realm_name = realms_list.find(realm_name_obj.get<std::string>());
         if (realm_name == realms_list.end()) {
-            return PARSE_ERROR_INVALID_FLAG;
+            return ParseErrorType::INVALID_FLAG;
         }
 
         const auto realm_id = realm_name->second;
         const auto &spells_info_obj = get_json_value(realm, "spells_info");
         if (spells_info_obj.is_null()) {
-            return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+            return ParseErrorType::TOO_FEW_ARGUMENTS;
         }
         if (!spells_info_obj.is_array()) {
-            return PARSE_ERROR_INVALID_TYPE;
+            return ParseErrorType::INVALID_TYPE;
         }
 
         for (const auto &spell : spells_info_obj) {
-            if (auto err = this->set_spell_data(spell, magics_info, realm_id)) {
+            if (const auto err = this->set_spell_data(spell, magics_info, realm_id); err != ParseErrorType::NONE) {
                 msg_print(_("呪文データ読込失敗。ID: '{}'。", "Failed to load spell data. ID: '{}'."), error_idx);
                 return err;
             }
         }
     }
 
-    return PARSE_ERROR_NONE;
+    return ParseErrorType::NONE;
 }

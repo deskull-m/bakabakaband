@@ -43,10 +43,10 @@ static std::optional<TerrainCharacteristics> parse_terrain_action(std::string_vi
 /*!
  * @brief JSON Objectから地形シンボルをセットする
  */
-static parse_error_type set_terrain_symbol(const nlohmann::json &symbol_obj, TerrainType &terrain)
+static ParseErrorType set_terrain_symbol(const nlohmann::json &symbol_obj, TerrainType &terrain)
 {
     if (symbol_obj.is_null() || !symbol_obj.is_object()) {
-        return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+        return ParseErrorType::TOO_FEW_ARGUMENTS;
     }
 
     const auto &ch_obj = symbol_obj["character"];
@@ -54,22 +54,22 @@ static parse_error_type set_terrain_symbol(const nlohmann::json &symbol_obj, Ter
     const auto &lit_obj = symbol_obj["lit"];
 
     if (!ch_obj.is_string() || !color_obj.is_string() || !lit_obj.is_boolean()) {
-        return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+        return ParseErrorType::TOO_FEW_ARGUMENTS;
     }
 
     const auto ch_str = ch_obj.get<std::string>();
     if (ch_str.empty()) {
-        return PARSE_ERROR_GENERIC;
+        return ParseErrorType::GENERIC;
     }
 
     const auto color_name = color_obj.get<std::string>();
     const auto it = color_list.find(color_name);
     if (it == color_list.end()) {
         msg_format(_("未知の色 '%s'。", "Unknown color '%s'."), color_name.c_str());
-        return PARSE_ERROR_INVALID_FLAG;
+        return ParseErrorType::INVALID_FLAG;
     }
     if (it->second > 127) {
-        return PARSE_ERROR_GENERIC;
+        return ParseErrorType::GENERIC;
     }
 
     const auto character = ch_str.front();
@@ -80,14 +80,14 @@ static parse_error_type set_terrain_symbol(const nlohmann::json &symbol_obj, Ter
     const bool lit = lit_obj.get<bool>();
     if (lit) {
         terrain.reset_lighting(false);
-        return PARSE_ERROR_NONE;
+        return ParseErrorType::NONE;
     }
 
     for (int j = F_LIT_NS_BEGIN; j < F_LIT_MAX; j++) {
         terrain.symbol_definitions[j] = { color, character };
     }
 
-    return PARSE_ERROR_NONE;
+    return ParseErrorType::NONE;
 }
 
 /*!
@@ -96,35 +96,35 @@ static parse_error_type set_terrain_symbol(const nlohmann::json &symbol_obj, Ter
  * @param terrain 地形情報への参照
  * @return エラーコード
  */
-static parse_error_type set_terrain_generation(const nlohmann::json &generation_obj, TerrainType &terrain)
+static ParseErrorType set_terrain_generation(const nlohmann::json &generation_obj, TerrainType &terrain)
 {
     if (generation_obj.is_null()) {
-        return PARSE_ERROR_NONE;
+        return ParseErrorType::NONE;
     }
     if (!generation_obj.is_object()) {
-        return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+        return ParseErrorType::TOO_FEW_ARGUMENTS;
     }
 
     const auto &changes_obj = generation_obj["changes"];
     if (!changes_obj.is_array()) {
-        return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+        return ParseErrorType::TOO_FEW_ARGUMENTS;
     }
 
     auto probability_sum = 0;
     for (const auto &change_obj : changes_obj) {
         if (!change_obj.is_object()) {
-            return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+            return ParseErrorType::TOO_FEW_ARGUMENTS;
         }
 
         const auto &terrain_obj = change_obj["terrain"];
         if (!terrain_obj.is_string()) {
-            return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+            return ParseErrorType::TOO_FEW_ARGUMENTS;
         }
 
         auto change = TerrainGenerationChange{};
         change.result_tag = terrain_obj.get<std::string>();
         if (change.result_tag.empty()) {
-            return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+            return ParseErrorType::TOO_FEW_ARGUMENTS;
         }
 
         if (const auto err = info_set_integer(change_obj["probability"], change.probability, true, Range(1, 100)); !err) {
@@ -133,13 +133,13 @@ static parse_error_type set_terrain_generation(const nlohmann::json &generation_
 
         probability_sum += change.probability;
         if (probability_sum > 100) {
-            return PARSE_ERROR_INVALID_FLAG;
+            return ParseErrorType::INVALID_FLAG;
         }
 
         terrain.generation_changes.push_back(change);
     }
 
-    return PARSE_ERROR_NONE;
+    return ParseErrorType::NONE;
 }
 
 /*!
@@ -147,10 +147,10 @@ static parse_error_type set_terrain_generation(const nlohmann::json &generation_
  * @param element 地形情報の JSON Object
  * @return エラーコード
  */
-parse_error_type parse_terrains_json_info(nlohmann::json &element)
+ParseErrorType parse_terrains_json_info(nlohmann::json &element)
 {
     if (element.is_null() || !element.is_object()) {
-        return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+        return ParseErrorType::TOO_FEW_ARGUMENTS;
     }
 
     int id = 0;
@@ -160,11 +160,11 @@ parse_error_type parse_terrains_json_info(nlohmann::json &element)
 
     const auto &key_obj = element["key"];
     if (!key_obj.is_string()) {
-        return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+        return ParseErrorType::TOO_FEW_ARGUMENTS;
     }
     const auto key = key_obj.get<std::string>();
     if (key.empty()) {
-        return PARSE_ERROR_GENERIC;
+        return ParseErrorType::GENERIC;
     }
 
     auto &terrains = TerrainList::get_instance();
@@ -201,14 +201,14 @@ parse_error_type parse_terrains_json_info(nlohmann::json &element)
         return err.error();
     }
 
-    if (auto err = set_terrain_symbol(element["symbol"], terrain)) {
+    if (const auto err = set_terrain_symbol(element["symbol"], terrain); err != ParseErrorType::NONE) {
         return err;
     }
 
     const auto &mimic_obj = element["mimic"];
     if (!mimic_obj.is_null()) {
         if (!mimic_obj.is_string()) {
-            return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+            return ParseErrorType::TOO_FEW_ARGUMENTS;
         }
         terrain.mimic_tag = mimic_obj.get<std::string>();
     }
@@ -222,14 +222,14 @@ parse_error_type parse_terrains_json_info(nlohmann::json &element)
 
     const auto &flags_obj = element["flags"];
     if (flags_obj.is_null() || !flags_obj.is_array()) {
-        return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+        return ParseErrorType::TOO_FEW_ARGUMENTS;
     }
 
     std::optional<uint8_t> specific_type;
     std::optional<uint8_t> terrain_power;
     for (const auto &f_obj : flags_obj) {
         if (!f_obj.is_string()) {
-            return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+            return ParseErrorType::TOO_FEW_ARGUMENTS;
         }
 
         const auto f = f_obj.get<std::string>();
@@ -260,11 +260,11 @@ parse_error_type parse_terrains_json_info(nlohmann::json &element)
         }
 
         if (!grab_one_feat_flag(terrain, f)) {
-            return PARSE_ERROR_INVALID_FLAG;
+            return ParseErrorType::INVALID_FLAG;
         }
     }
     if (specific_type && !terrain.set_specific_type(*specific_type)) {
-        return PARSE_ERROR_INVALID_FLAG;
+        return ParseErrorType::INVALID_FLAG;
     }
 
     // 単一の POWER 値を、地形が持つ特性フラグに応じて用途別 power へ割り当てる。
@@ -284,14 +284,14 @@ parse_error_type parse_terrains_json_info(nlohmann::json &element)
     const auto &random_change_obj = element["random_change"];
     if (!random_change_obj.is_null()) {
         if (!random_change_obj.is_object()) {
-            return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+            return ParseErrorType::TOO_FEW_ARGUMENTS;
         }
         if (const auto err = info_set_integer(random_change_obj["prob"], terrain.random_change_prob, true, Range(0, 99999)); !err) {
             return err.error();
         }
         const auto &tag_obj = random_change_obj["tag"];
         if (!tag_obj.is_string()) {
-            return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+            return ParseErrorType::TOO_FEW_ARGUMENTS;
         }
         terrain.random_change_tag = tag_obj.get<std::string>();
     }
@@ -302,25 +302,25 @@ parse_error_type parse_terrains_json_info(nlohmann::json &element)
     }
 
     // 生成時の確率的地形変化 (上流 #5393 相当)
-    if (auto err = set_terrain_generation(element["generation"], terrain)) {
+    if (const auto err = set_terrain_generation(element["generation"], terrain); err != ParseErrorType::NONE) {
         return err;
     }
 
     const auto &inter_obj = element["interactions"];
     if (!inter_obj.is_null()) {
         if (!inter_obj.is_object()) {
-            return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+            return ParseErrorType::TOO_FEW_ARGUMENTS;
         }
 
         for (auto it = inter_obj.begin(); it != inter_obj.end(); ++it) {
             const auto action = it.key();
             const auto &value_obj = it.value();
             if (!value_obj.is_string()) {
-                return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+                return ParseErrorType::TOO_FEW_ARGUMENTS;
             }
             const auto result_tag = value_obj.get<std::string>();
             if (result_tag.empty()) {
-                return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+                return ParseErrorType::TOO_FEW_ARGUMENTS;
             }
 
             if (action == "DESTROYED") {
@@ -331,7 +331,7 @@ parse_error_type parse_terrains_json_info(nlohmann::json &element)
             const auto state_it = std::find_if(std::begin(terrain.state), std::end(terrain.state),
                 [](const auto &s) { return s.action == TerrainCharacteristics::MAX; });
             if (state_it == std::end(terrain.state)) {
-                return PARSE_ERROR_GENERIC;
+                return ParseErrorType::GENERIC;
             }
 
             const auto idx_state = static_cast<int>(std::distance(std::begin(terrain.state), state_it));
@@ -340,11 +340,11 @@ parse_error_type parse_terrains_json_info(nlohmann::json &element)
                 terrain.state[idx_state].action = *val;
             } else {
                 msg_format(_("未知の地形アクション '%s'。", "Unknown feature action '%s'."), action.data());
-                return PARSE_ERROR_INVALID_FLAG;
+                return ParseErrorType::INVALID_FLAG;
             }
             terrain.state[idx_state].result_tag = result_tag;
         }
     }
 
-    return PARSE_ERROR_NONE;
+    return ParseErrorType::NONE;
 }

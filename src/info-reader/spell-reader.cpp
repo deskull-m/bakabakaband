@@ -18,22 +18,22 @@ SpellReader::SpellReader(const nlohmann::json &realm_data, SpellInfoList &spell_
  * @brief 呪文情報(SpellDefinitions)のパース関数
  * @return エラーコード
  */
-parse_error_type SpellReader::read() const
+ParseErrorType SpellReader::read() const
 {
     error_idx++; //!< @note 呪文領域は数値IDを持たないため、エラー表示用に要素の順序を用いる
 
     RealmType realm_id;
-    if (auto err = this->set_realm(realm_id)) {
+    if (const auto err = this->set_realm(realm_id); err != ParseErrorType::NONE) {
         msg_print(_("領域名読込失敗。ID: '{}'。", "Failed to load realm name. ID: '{}'."), error_idx);
         return err;
     }
 
-    if (auto err = this->set_book_data(realm_id)) {
+    if (const auto err = this->set_book_data(realm_id); err != ParseErrorType::NONE) {
         msg_print(_("呪文詳細読込失敗。ID: '{}'。", "Failed to load spell data. ID: '{}'."), error_idx);
         return err;
     }
 
-    return PARSE_ERROR_NONE;
+    return ParseErrorType::NONE;
 }
 
 /*!
@@ -41,23 +41,23 @@ parse_error_type SpellReader::read() const
  * @param realm 呪文領域
  * @return エラーコード
  */
-parse_error_type SpellReader::set_realm(RealmType &realm) const
+ParseErrorType SpellReader::set_realm(RealmType &realm) const
 {
     if (this->realm_data.is_null()) {
-        return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+        return ParseErrorType::TOO_FEW_ARGUMENTS;
     }
 
     const auto &realmname_obj = get_json_value(this->realm_data, "name");
     if (!realmname_obj.is_string()) {
-        return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+        return ParseErrorType::TOO_FEW_ARGUMENTS;
     }
 
     const auto it = realms_list.find(realmname_obj.get<std::string>());
     if (it == realms_list.end()) {
-        return PARSE_ERROR_OUT_OF_BOUNDS;
+        return ParseErrorType::OUT_OF_BOUNDS;
     }
     realm = it->second;
-    return PARSE_ERROR_NONE;
+    return ParseErrorType::NONE;
 }
 
 /*!
@@ -66,10 +66,10 @@ parse_error_type SpellReader::set_realm(RealmType &realm) const
  * @param realm 領域ID
  * @return エラーコード
  */
-parse_error_type SpellReader::set_spell_data(const nlohmann::json &spell_data, RealmType realm) const
+ParseErrorType SpellReader::set_spell_data(const nlohmann::json &spell_data, RealmType realm) const
 {
     if (spell_data.is_null()) {
-        return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+        return ParseErrorType::TOO_FEW_ARGUMENTS;
     }
 
     int spell_id;
@@ -83,7 +83,7 @@ parse_error_type SpellReader::set_spell_data(const nlohmann::json &spell_data, R
     const auto &tag_obj = get_json_value(spell_data, "spell_tag");
     if (!tag_obj.is_string()) {
         msg_print(_("呪文タグ読込失敗。ID: '{}'。", "Failed to load spell tag. ID: '{}'."), error_idx);
-        return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+        return ParseErrorType::TOO_FEW_ARGUMENTS;
     }
     info.tag = tag_obj.get<std::string>();
 
@@ -97,7 +97,7 @@ parse_error_type SpellReader::set_spell_data(const nlohmann::json &spell_data, R
     }
     this->spell_info_list.set_spell_info(realm, spell_id, std::move(info));
 
-    return PARSE_ERROR_NONE;
+    return ParseErrorType::NONE;
 }
 
 /*!
@@ -105,24 +105,24 @@ parse_error_type SpellReader::set_spell_data(const nlohmann::json &spell_data, R
  * @param realm 領域ID
  * @return エラーコード
  */
-parse_error_type SpellReader::set_book_data(RealmType realm) const
+ParseErrorType SpellReader::set_book_data(RealmType realm) const
 {
     const auto &book_obj = get_json_value(this->realm_data, "books");
     if (book_obj.is_null()) {
-        return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+        return ParseErrorType::TOO_FEW_ARGUMENTS;
     }
 
     for (const auto &book : book_obj) {
         const auto &spells_obj = get_json_value(book, "spells");
         if (spells_obj.is_null()) {
-            return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+            return ParseErrorType::TOO_FEW_ARGUMENTS;
         }
 
         for (const auto &spell : spells_obj) {
-            if (auto err = this->set_spell_data(spell, realm)) {
+            if (const auto err = this->set_spell_data(spell, realm); err != ParseErrorType::NONE) {
                 return err;
             }
         }
     }
-    return PARSE_ERROR_NONE;
+    return ParseErrorType::NONE;
 }

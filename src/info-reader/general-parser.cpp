@@ -47,7 +47,7 @@ void dungeon_grid::set_trap_id(TerrainTag tag)
  * @param parse_info_txt_line パース関数
  * @return エラーコード, エラー行番号, エラーが起きた行の内容
  */
-std::tuple<parse_error_type, int, std::string> init_info_txt(std::ifstream &ifs, DefinitionHashDataType dhdt, Parser parse_info_txt_line)
+std::tuple<ParseErrorType, int, std::string> init_info_txt(std::ifstream &ifs, DefinitionHashDataType dhdt, Parser parse_info_txt_line)
 {
     error_idx = -1;
     auto error_line = 0;
@@ -70,7 +70,7 @@ std::tuple<parse_error_type, int, std::string> init_info_txt(std::ifstream &ifs,
         }
 
         if (!sv.substr(1).starts_with(':')) {
-            return { PARSE_ERROR_GENERIC, error_line, line };
+            return { ParseErrorType::GENERIC, error_line, line };
         }
 
         if (sv.starts_with('V')) {
@@ -82,13 +82,13 @@ std::tuple<parse_error_type, int, std::string> init_info_txt(std::ifstream &ifs,
             sha256.update(sv);
         }
 
-        if (auto err = parse_info_txt_line(sv); err != 0) {
+        if (auto err = parse_info_txt_line(sv); err != ParseErrorType::NONE) {
             return { err, error_line, line };
         }
     }
 
     DefinitionHashData::get_instance().set_digest(dhdt, sha256.digest());
-    return { PARSE_ERROR_NONE, error_line, "" };
+    return { ParseErrorType::NONE, error_line, "" };
 }
 
 /*!
@@ -97,14 +97,14 @@ std::tuple<parse_error_type, int, std::string> init_info_txt(std::ifstream &ifs,
  * @param buf 解析文字列
  * @return エラーコード
  */
-parse_error_type parse_line_alliance(FloorType *floor_ptr, std::string_view buf)
+ParseErrorType parse_line_alliance(FloorType *floor_ptr, std::string_view buf)
 {
     const auto tokens = tokenize(buf.substr(2), 6);
     if (tokens.size() != 1) {
-        return PARSE_ERROR_GENERIC;
+        return ParseErrorType::GENERIC;
     }
     floor_ptr->allianceID = static_cast<AllianceType>(std::stoi(tokens.at(0)));
-    return PARSE_ERROR_NONE;
+    return ParseErrorType::NONE;
 }
 
 /*!
@@ -114,11 +114,11 @@ parse_error_type parse_line_alliance(FloorType *floor_ptr, std::string_view buf)
  * @param buf 解析文字列
  * @return エラーコード
  */
-parse_error_type parse_line_vault(FloorType *floor_ptr, std::string_view buf)
+ParseErrorType parse_line_vault(FloorType *floor_ptr, std::string_view buf)
 {
     const auto tokens = tokenize(buf.substr(2), 6);
     if (tokens.size() != 6) {
-        return PARSE_ERROR_GENERIC;
+        return ParseErrorType::GENERIC;
     }
 
     town_vault tv;
@@ -129,7 +129,7 @@ parse_error_type parse_line_vault(FloorType *floor_ptr, std::string_view buf)
     tv.xoffset = std::stoi(tokens.at(4));
     tv.transno = std::stoi(tokens.at(5));
     floor_ptr->vault_list.push_back(tv);
-    return PARSE_ERROR_NONE;
+    return ParseErrorType::NONE;
 }
 
 /*!
@@ -139,16 +139,16 @@ parse_error_type parse_line_vault(FloorType *floor_ptr, std::string_view buf)
  * @param buf 解析文字列
  * @return エラーコード
  */
-parse_error_type parse_line_feature(const FloorType &floor, std::string_view buf)
+ParseErrorType parse_line_feature(const FloorType &floor, std::string_view buf)
 {
     if (init_flags & INIT_ONLY_BUILDINGS) {
-        return PARSE_ERROR_NONE;
+        return ParseErrorType::NONE;
     }
 
     const auto tokens = tokenize(buf.substr(2), 9);
     const auto tokens_size = tokens.size();
     if (tokens_size <= 1) {
-        return PARSE_ERROR_GENERIC;
+        return ParseErrorType::GENERIC;
     }
 
     const auto &terrains = TerrainList::get_instance();
@@ -171,7 +171,7 @@ parse_error_type parse_line_feature(const FloorType &floor, std::string_view buf
             one_letter.cave_info = std::stoi(tokens.at(3));
             one_letter.force_monster_place = false;
             one_letter.feature = terrains.get_terrain_id(tokens.at(2));
-            return PARSE_ERROR_NONE;
+            return ParseErrorType::NONE;
         }
     }
 
@@ -187,7 +187,7 @@ parse_error_type parse_line_feature(const FloorType &floor, std::string_view buf
             try {
                 one_letter.trap = terrains.get_terrain_id(token);
             } catch (const std::exception &) {
-                return PARSE_ERROR_UNDEFINED_TERRAIN_TAG;
+                return ParseErrorType::UNDEFINED_TERRAIN_TAG;
             }
         }
     }
@@ -253,7 +253,7 @@ parse_error_type parse_line_feature(const FloorType &floor, std::string_view buf
             }
         } else if (token.starts_with('c')) {
             if (token.length() < 2) {
-                return PARSE_ERROR_GENERIC;
+                return ParseErrorType::GENERIC;
             }
             one_letter.monster = -std::stoi(token.substr(1));
         } else {
@@ -277,12 +277,12 @@ parse_error_type parse_line_feature(const FloorType &floor, std::string_view buf
             one_letter.feature = terrains.get_terrain_id(token);
             break;
         } catch (const std::exception &) {
-            return PARSE_ERROR_UNDEFINED_TERRAIN_TAG;
+            return ParseErrorType::UNDEFINED_TERRAIN_TAG;
         }
     }
     }
 
-    return PARSE_ERROR_NONE;
+    return ParseErrorType::NONE;
 }
 
 /*!
@@ -291,27 +291,27 @@ parse_error_type parse_line_feature(const FloorType &floor, std::string_view buf
  * @param buf 解析文字列
  * @return エラーコード
  */
-parse_error_type parse_line_building(std::string_view buf)
+ParseErrorType parse_line_building(std::string_view buf)
 {
     auto s = buf.substr(2);
 #ifdef JP
     if (s.starts_with('$')) {
-        return PARSE_ERROR_NONE;
+        return ParseErrorType::NONE;
     }
 #else
     if (!s.starts_with('$')) {
-        return PARSE_ERROR_NONE;
+        return ParseErrorType::NONE;
     }
     s.remove_prefix(1);
 #endif
     const auto index = std::stoi(std::string(s));
     const auto colon_pos = s.find(':');
     if (colon_pos == std::string_view::npos) {
-        return PARSE_ERROR_GENERIC;
+        return ParseErrorType::GENERIC;
     }
     s.remove_prefix(colon_pos + 1);
     if (s.empty()) {
-        return PARSE_ERROR_GENERIC;
+        return ParseErrorType::GENERIC;
     }
 
     // 指示子の後の「:」より後ろ。指示子だけで終わっている場合は空にする
@@ -327,7 +327,7 @@ parse_error_type parse_line_building(std::string_view buf)
             break;
         }
 
-        return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+        return ParseErrorType::TOO_FEW_ARGUMENTS;
     }
     case 'A': {
         const auto tokens = tokenize(args, 7);
@@ -343,7 +343,7 @@ parse_error_type parse_line_building(std::string_view buf)
             break;
         }
 
-        return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+        return ParseErrorType::TOO_FEW_ARGUMENTS;
     }
     case 'C': {
         const auto tokens = tokenize(args, PLAYER_CLASS_TYPE_MAX);
@@ -373,9 +373,9 @@ parse_error_type parse_line_building(std::string_view buf)
         break;
     }
     default: {
-        return PARSE_ERROR_UNDEFINED_DIRECTIVE;
+        return ParseErrorType::UNDEFINED_DIRECTIVE;
     }
     }
 
-    return PARSE_ERROR_NONE;
+    return ParseErrorType::NONE;
 }

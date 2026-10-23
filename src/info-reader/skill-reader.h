@@ -25,15 +25,15 @@ public:
     SkillReader &operator=(const SkillReader &) = delete;
     SkillReader &operator=(SkillReader &&) = delete;
 
-    parse_error_type read();
+    ParseErrorType read();
     const std::optional<SkillReadError> &error() const;
 
 private:
-    parse_error_type read_weapons(skill_table &skills);
-    parse_error_type read_skills(skill_table &skills);
-    parse_error_type check_keys(const nlohmann::json &data, std::string_view path, std::initializer_list<std::string_view> keys);
-    parse_error_type read_integer(const nlohmann::json &data, int &value, int maximum, std::string_view path);
-    parse_error_type fail(parse_error_type code, std::string_view path, std::string_view reason);
+    ParseErrorType read_weapons(skill_table &skills);
+    ParseErrorType read_skills(skill_table &skills);
+    ParseErrorType check_keys(const nlohmann::json &data, std::string_view path, std::initializer_list<std::string_view> keys);
+    ParseErrorType read_integer(const nlohmann::json &data, int &value, int maximum, std::string_view path);
+    ParseErrorType fail(ParseErrorType code, std::string_view path, std::string_view reason);
 
     const nlohmann::json &class_data;
     std::string class_id;

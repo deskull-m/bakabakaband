@@ -37,7 +37,7 @@ TEST_CASE("WildernessReader loads maps and localized levels")
 {
     const auto data = make_definition();
     WildernessDefinition definition;
-    REQUIRE(WildernessReader(data).read(definition) == PARSE_ERROR_NONE);
+    REQUIRE(WildernessReader(data).read(definition) == ParseErrorType::NONE);
     CHECK(definition.width == 3);
     CHECK(definition.height == 3);
     REQUIRE(definition.towns.size() == 1);
@@ -54,12 +54,12 @@ TEST_CASE("WildernessReader rejects duplicate IDs and symbols")
     auto data = make_definition();
     data["towns"].push_back(data["towns"][0]);
     WildernessDefinition definition;
-    CHECK(WildernessReader(data).read(definition) == PARSE_ERROR_NON_SEQUENTIAL_RECORDS);
+    CHECK(WildernessReader(data).read(definition) == ParseErrorType::NON_SEQUENTIAL_RECORDS);
 
     data = make_definition();
     data["maps"]["normal"]["letters"].push_back(data["maps"]["normal"]["letters"][0]);
     definition = {};
-    CHECK(WildernessReader(data).read(definition) == PARSE_ERROR_NON_SEQUENTIAL_RECORDS);
+    CHECK(WildernessReader(data).read(definition) == ParseErrorType::NON_SEQUENTIAL_RECORDS);
 }
 
 TEST_CASE("WildernessReader rejects undefined town references")
@@ -69,7 +69,7 @@ TEST_CASE("WildernessReader rejects undefined town references")
         data["maps"][map_name]["letters"][0]["town"] = 2;
         WildernessDefinition definition;
         CAPTURE(map_name);
-        CHECK(WildernessReader(data).read(definition) == PARSE_ERROR_INVALID_VALUE);
+        CHECK(WildernessReader(data).read(definition) == ParseErrorType::INVALID_VALUE);
     }
 }
 
@@ -78,15 +78,15 @@ TEST_CASE("WildernessReader validates layout dimensions and symbols")
     auto data = make_definition();
     data["maps"]["normal"]["layout"][1] = "##";
     WildernessDefinition definition;
-    CHECK(WildernessReader(data).read(definition) == PARSE_ERROR_INVALID_VALUE);
+    CHECK(WildernessReader(data).read(definition) == ParseErrorType::INVALID_VALUE);
 
     data = make_definition();
     data["maps"]["normal"]["layout"][1] = "#.#";
     definition = {};
-    CHECK(WildernessReader(data).read(definition) == PARSE_ERROR_INVALID_VALUE);
+    CHECK(WildernessReader(data).read(definition) == ParseErrorType::INVALID_VALUE);
 
     data = make_definition();
     data["maps"]["compact"]["starting_position"]["x"] = 3;
     definition = {};
-    CHECK(WildernessReader(data).read(definition) != PARSE_ERROR_NONE);
+    CHECK(WildernessReader(data).read(definition) != ParseErrorType::NONE);
 }

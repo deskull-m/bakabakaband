@@ -24,15 +24,15 @@ public:
     VaultReader &operator=(const VaultReader &) = delete;
     VaultReader &operator=(VaultReader &&) = delete;
 
-    parse_error_type read();
+    ParseErrorType read();
     const std::optional<VaultReadError> &error() const;
 
 private:
-    parse_error_type fail(parse_error_type code, std::string_view path, std::string_view reason);
-    parse_error_type read_integer(std::string_view key, int &value, int minimum, int maximum);
-    parse_error_type read_optional_integer(std::string_view key, int &value, int minimum, int maximum);
-    parse_error_type read_flags(vault_type &vault);
-    parse_error_type read_features(vault_type &vault);
+    ParseErrorType fail(ParseErrorType code, std::string_view path, std::string_view reason);
+    ParseErrorType read_integer(std::string_view key, int &value, int minimum, int maximum);
+    ParseErrorType read_optional_integer(std::string_view key, int &value, int minimum, int maximum);
+    ParseErrorType read_flags(vault_type &vault);
+    ParseErrorType read_features(vault_type &vault);
     const nlohmann::json &data;
     std::optional<VaultReadError> diagnostic;
 };

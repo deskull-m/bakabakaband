@@ -4,4 +4,4 @@
 #include "system/angband.h"
 #include <nlohmann/json_fwd.hpp>
 
-parse_error_type parse_terrains_json_info(nlohmann::json &element);
+ParseErrorType parse_terrains_json_info(nlohmann::json &element);

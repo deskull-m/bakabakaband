@@ -46,11 +46,11 @@ bool ArtifactReader::grab_one_artifact_flag(ArtifactType &artifact, std::string_
  * @param artifact 保管先のアーティファクト
  * @return エラーコード
  */
-parse_error_type ArtifactReader::set_art_baseitem(ArtifactType &artifact) const
+ParseErrorType ArtifactReader::set_art_baseitem(ArtifactType &artifact) const
 {
     const auto &baseitem_data = get_json_value(this->art_data, "base_item");
     if (baseitem_data.is_null()) {
-        return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+        return ParseErrorType::TOO_FEW_ARGUMENTS;
     }
 
     ItemKindType type_value;
@@ -64,7 +64,7 @@ parse_error_type ArtifactReader::set_art_baseitem(ArtifactType &artifact) const
     }
 
     artifact.bi_key = { type_value, subtype_value };
-    return PARSE_ERROR_NONE;
+    return ParseErrorType::NONE;
 }
 
 /*!
@@ -72,21 +72,21 @@ parse_error_type ArtifactReader::set_art_baseitem(ArtifactType &artifact) const
  * @param artifact 保管先のアーティファクト
  * @return エラーコード
  */
-parse_error_type ArtifactReader::set_art_activate(ArtifactType &artifact) const
+ParseErrorType ArtifactReader::set_art_activate(ArtifactType &artifact) const
 {
     const auto &act_data = get_json_value(this->art_data, "activate");
     if (!act_data.is_string()) {
-        return PARSE_ERROR_NONE;
+        return ParseErrorType::NONE;
     }
 
     auto activation = grab_one_activation_flag(act_data.get<std::string>());
     if (activation <= RandomArtActType::NONE) {
-        return PARSE_ERROR_INVALID_FLAG;
+        return ParseErrorType::INVALID_FLAG;
     }
 
     artifact.act_idx = activation;
     artifact.flags.set(tr_type::TR_ACTIVATE);
-    return PARSE_ERROR_NONE;
+    return ParseErrorType::NONE;
 }
 
 /*!
@@ -94,22 +94,22 @@ parse_error_type ArtifactReader::set_art_activate(ArtifactType &artifact) const
  * @param artifact 保管先のアーティファクト
  * @return エラーコード
  */
-parse_error_type ArtifactReader::set_art_flags(ArtifactType &artifact) const
+ParseErrorType ArtifactReader::set_art_flags(ArtifactType &artifact) const
 {
     const auto &flag_data = get_json_value(this->art_data, "flags");
     if (flag_data.is_null()) {
-        return PARSE_ERROR_NONE;
+        return ParseErrorType::NONE;
     }
     if (!flag_data.is_array()) {
-        return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+        return ParseErrorType::TOO_FEW_ARGUMENTS;
     }
 
     for (auto &flag : flag_data) {
         if (!this->grab_one_artifact_flag(artifact, flag.get<std::string>())) {
-            return PARSE_ERROR_INVALID_FLAG;
+            return ParseErrorType::INVALID_FLAG;
         }
     }
-    return PARSE_ERROR_NONE;
+    return ParseErrorType::NONE;
 }
 
 /*!
@@ -117,14 +117,14 @@ parse_error_type ArtifactReader::set_art_flags(ArtifactType &artifact) const
  * @note ArtifactReader が保持する art_data を参照する
  * @return エラーコード
  */
-parse_error_type ArtifactReader::read() const
+ParseErrorType ArtifactReader::read() const
 {
     int int_id;
     if (const auto err = info_set_integer(get_json_value(this->art_data, "id"), int_id, true, Range(0, 9999)); !err) {
         return err.error();
     }
     if (int_id < error_idx) {
-        return PARSE_ERROR_NON_SEQUENTIAL_RECORDS;
+        return ParseErrorType::NON_SEQUENTIAL_RECORDS;
     }
     const auto artifact_id = i2enum<FixedArtifactId>(int_id);
 
@@ -139,7 +139,7 @@ parse_error_type ArtifactReader::read() const
         msg_print(_("アーティファクトの名称読込失敗。ID: '{}'。", "Failed to load artifact name. ID: '{}'."), error_idx);
         return err.error();
     }
-    if (auto err = this->set_art_baseitem(artifact)) {
+    if (const auto err = this->set_art_baseitem(artifact); err != ParseErrorType::NONE) {
         msg_print(_("アーティファクトのベースアイテム読込失敗。ID: '{}'。", "Failed to load base item of artifact. ID: '{}'."), error_idx);
         return err;
     }
@@ -183,11 +183,11 @@ parse_error_type ArtifactReader::read() const
         msg_print(_("アーティファクトのAC補正値読込失敗。ID: '{}'。", "Failed to load AC bonus of artifact. ID: '{}'."), error_idx);
         return err.error();
     }
-    if (auto err = this->set_art_activate(artifact)) {
+    if (const auto err = this->set_art_activate(artifact); err != ParseErrorType::NONE) {
         msg_print(_("アーティファクトの発動能力読込失敗。ID: '{}'。", "Failed to load activate ability of artifact. ID: '{}'."), error_idx);
         return err;
     }
-    if (auto err = this->set_art_flags(artifact)) {
+    if (const auto err = this->set_art_flags(artifact); err != ParseErrorType::NONE) {
         msg_print(_("アーティファクトの能力フラグ読込失敗。ID: '{}'。", "Failed to load ability flags of artifact. ID: '{}'."), error_idx);
         return err;
     }
@@ -197,5 +197,5 @@ parse_error_type ArtifactReader::read() const
     }
 
     ArtifactList::get_instance().emplace(artifact_id, std::move(artifact));
-    return PARSE_ERROR_NONE;
+    return ParseErrorType::NONE;
 }
