@@ -65,6 +65,7 @@
 #include "view/display-messages.h"
 #include "world/world.h"
 #include <algorithm>
+#include <fmt/format.h>
 #include <range/v3/algorithm.hpp>
 
 /*!
@@ -1860,15 +1861,15 @@ std::string CreatureEntity::build_looking_description(bool needs_attitude) const
     const auto &apparent_monrace = this->get_apparent_monrace();
 
     const bool show_alliance = this->has_monster_profile() && !this->is_pet() && this->get_alliance_idx() != AllianceType::NONE;
-    const std::string alliance_part = show_alliance ? format("(%s)", alliance_list.at(this->get_alliance_idx())->name.data()) : "";
+    const std::string alliance_part = show_alliance ? fmt::format("({})", alliance_list.at(this->get_alliance_idx())->name) : "";
 
     if ((apparent_monrace.r_tkills > 0) && !this->is_kage()) {
-        constexpr auto fmt = _("レベル%d, %s%s%s%s", "Level %d, %s%s%s%s");
-        return format(fmt, apparent_monrace.level, description.data(), attitude.data(), clone.data(), alliance_part.data());
+        constexpr auto format_str = _("レベル{}, {}{}{}{}", "Level {}, {}{}{}{}");
+        return fmt::format(format_str, apparent_monrace.level, description, attitude, clone, alliance_part);
     }
 
-    constexpr auto fmt = _("レベル???, %s%s%s%s", "Level ???, %s%s%s%s");
-    return format(fmt, description.data(), attitude.data(), clone.data(), alliance_part.data());
+    constexpr auto format_str = _("レベル???, {}{}{}{}", "Level ???, {}{}{}{}");
+    return fmt::format(format_str, description, attitude, clone, alliance_part);
 }
 
 std::string CreatureEntity::build_damage_description() const
@@ -1946,7 +1947,7 @@ std::string CreatureEntity::decrease_ability_random()
     }
 
     DeferredUpdateRequests::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
-    return format(_("あなたは以前ほど%sなくなってしまった...。", "You're not as %s as you used to be..."), act.data());
+    return fmt::format(_("あなたは以前ほど{}なくなってしまった...。", "You're not as {} as you used to be..."), act);
 }
 
 std::string CreatureEntity::decrease_ability_all()

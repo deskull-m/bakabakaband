@@ -400,9 +400,9 @@ static MONSTER_IDX select_target_pet(CreatureEntity &creature)
         const auto name = monster_desc(creature, mon, MD_INDEF_VISIBLE);
         const char letter = static_cast<char>('a' + i);
         const char *prefix = (mon.is_riding()) ? _("(騎乗) ", "(riding) ") : "";
-        prt(format("%c) %s%s", letter, prefix, name.data()), line++, 2);
+        prt(fmt::format("{}) {}{}", letter, prefix, name), line++, 2);
     }
-    prt(format(_("a-%c を選択 (ESC でキャンセル):", "Choose a-%c (ESC to cancel):"),
+    prt(fmt::format(_("a-{} を選択 (ESC でキャンセル):", "Choose a-{} (ESC to cancel):"),
             static_cast<char>('a' + pet_indices.size() - 1)),
         line + 1, 0);
     const auto ch = inkey();
@@ -921,7 +921,7 @@ void do_cmd_pet(CreatureEntity &creature)
         std::vector<INVENTORY_IDX> selectable_slots;
         screen_save();
         const auto pet_name = monster_desc(creature, pet_monster, MD_INDEF_VISIBLE);
-        prt(format(_("%s から受け取るアイテム:", "Take which item from %s?"), pet_name.data()), 0, 0);
+        prt(fmt::format(_("{} から受け取るアイテム:", "Take which item from {}?"), pet_name), 0, 0);
         int line = 1;
         for (INVENTORY_IDX i = INVEN_MAIN_HAND; i < INVEN_TOTAL; i++) {
             if (!pet_monster.inventory[i]->is_valid()) {
@@ -930,7 +930,7 @@ void do_cmd_pet(CreatureEntity &creature)
             const auto name = describe_flavor(creature, *pet_monster.inventory[i], 0);
             const char letter = static_cast<char>('a' + selectable_slots.size());
             selectable_slots.push_back(i);
-            prt(format(_("%c) [装備] %s", "%c) [Equipped] %s"), letter, name.data()), line++, 2);
+            prt(fmt::format(_("{}) [装備] {}", "{}) [Equipped] {}"), letter, name), line++, 2);
         }
         for (INVENTORY_IDX i = 0; i < INVEN_PACK; i++) {
             if (!pet_monster.inventory[i]->is_valid()) {
@@ -939,7 +939,7 @@ void do_cmd_pet(CreatureEntity &creature)
             const auto name = describe_flavor(creature, *pet_monster.inventory[i], 0);
             const char letter = static_cast<char>('a' + selectable_slots.size());
             selectable_slots.push_back(i);
-            prt(format(_("%c) %s", "%c) %s"), letter, name.data()), line++, 2);
+            prt(fmt::format(_("{}) {}", "{}) {}"), letter, name), line++, 2);
         }
         if (selectable_slots.empty()) {
             prt(_("(何も持っていない)", "(nothing)"), 1, 2);
@@ -948,7 +948,7 @@ void do_cmd_pet(CreatureEntity &creature)
             screen_load();
             break;
         }
-        prt(format(_("a-%c を選択 (ESC でキャンセル):", "Choose a-%c (ESC to cancel):"),
+        prt(fmt::format(_("a-{} を選択 (ESC でキャンセル):", "Choose a-{} (ESC to cancel):"),
                 static_cast<char>('a' + selectable_slots.size() - 1)),
             line + 1, 0);
         const auto ch = inkey();
@@ -983,7 +983,7 @@ void do_cmd_pet(CreatureEntity &creature)
         auto &pet_monster = floor.get_monster(target_idx);
         const auto pet_name = monster_desc(creature, pet_monster, MD_INDEF_VISIBLE);
         screen_save();
-        prt(format(_("%s の所持品:", "%s's inventory:"), pet_name.data()), 0, 0);
+        prt(fmt::format(_("{} の所持品:", "{}'s inventory:"), pet_name), 0, 0);
         int line = 1;
         // 装備スロット
         for (size_t i = INVEN_MAIN_HAND; i < INVEN_TOTAL; i++) {
@@ -992,7 +992,7 @@ void do_cmd_pet(CreatureEntity &creature)
                 continue;
             }
             const auto name = describe_flavor(creature, item, 0);
-            prt(format(_("[装備] %s", "[Equipped] %s"), name.data()), line++, 2);
+            prt(fmt::format(_("[装備] {}", "[Equipped] {}"), name), line++, 2);
         }
         // パックスロット
         for (size_t i = 0; i < INVEN_PACK; i++) {
@@ -1001,7 +1001,7 @@ void do_cmd_pet(CreatureEntity &creature)
                 continue;
             }
             const auto name = describe_flavor(creature, item, 0);
-            prt(format(_("[%c] %s", "[%c] %s"), index_to_label(static_cast<INVENTORY_IDX>(i)), name.data()), line++, 2);
+            prt(fmt::format(_("[{}] {}", "[{}] {}"), index_to_label(static_cast<INVENTORY_IDX>(i)), name), line++, 2);
         }
         if (line == 1) {
             prt(_("(何も持っていない)", "(nothing)"), 1, 2);
