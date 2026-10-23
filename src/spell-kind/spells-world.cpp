@@ -408,7 +408,7 @@ static tl::optional<DungeonId> choose_dungeon(std::string_view note, int row, in
         prt(_("      選べるダンジョンがない。", "      No dungeon is available."), row, col);
     }
 
-    const auto prompt = format(_("どのダンジョン%sしますか:", "Which dungeon do you %s?: "), note.data());
+    const auto prompt = fmt::format(_("どのダンジョン{}しますか:", "Which dungeon do you {}?: "), note);
     prt(prompt, 0, 0);
     const auto ids = dungeon_records.collect_entered_dungeon_ids();
     while (true) {

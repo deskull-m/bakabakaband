@@ -5,6 +5,7 @@
 #include "mind/mind-types.h"
 #include "player-info/equipment-info.h"
 #include "system/creature-entity.h"
+#include <fmt/format.h>
 
 static std::string switch_mind_mindcrafter(CreatureEntity &creature, const PLAYER_LEVEL plev, const int power)
 {
@@ -39,7 +40,7 @@ static std::string switch_mind_mindcrafter(CreatureEntity &creature, const PLAYE
     case 12:
         return fmt::format(" {}d{}+{}", KWD_DAM, plev * 3, plev * 3);
     case 13:
-        return format(_(" 行動:%ld回", " %ld acts."), (long int)(creature.get_current_mp() + 100 - creature.get_energy_need() - 50) / 100);
+        return fmt::format(_(" 行動:{}回", " {} acts."), (creature.get_current_mp() + 100 - creature.get_energy_need() - 50) / 100);
     default:
         return std::string();
     }

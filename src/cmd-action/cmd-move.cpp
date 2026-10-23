@@ -49,6 +49,7 @@
 #include "view/display-messages.h"
 #include "world/world.h"
 #include <algorithm>
+#include <fmt/format.h>
 
 /*!
  * @brief フロア脱出時に出戻りが不可能だった場合に警告を加える処理
@@ -327,7 +328,7 @@ void do_cmd_go_down(CreatureEntity &creature)
         // ダンジョンに入った回数を記録
         creature.plus_incident_tree("ENTER_DUNGEON", 1);
         if (!dungeon.tag.empty()) {
-            const auto dungeon_key = format("ENTER_DUNGEON/%s", dungeon.tag.c_str());
+            const auto dungeon_key = fmt::format("ENTER_DUNGEON/{}", dungeon.tag);
             creature.plus_incident_tree(dungeon_key.data(), 1);
         }
     }
