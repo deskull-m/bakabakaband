@@ -1645,6 +1645,8 @@ hengband_test_SOURCES = \
 	\
 	test/save/test-item-writer.cpp \
 	\
+	test/spell/test-spell-info.cpp \
+	\
 	test/store/test-pricing.cpp \
 	test/store/test-store-screen.cpp \
 	test/store/test-store-util.cpp \
