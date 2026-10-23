@@ -67,6 +67,7 @@
 #include "util/bit-flags-calculator.h"
 #include "util/dice.h"
 #include "util/int-char-converter.h"
+#include "util/string-processor.h"
 #include "view/display-messages.h"
 #include "view/display-util.h"
 #include <fmt/format.h>
@@ -383,12 +384,12 @@ static int get_spell(CreatureEntity &creature, SPELL_IDX *sn, std::string_view p
     window_stuff(creature);
 
     const auto spell_category = spell_category_name(mp_ptr->spell_book);
-    constexpr auto fmt = _("(%s^:%c-%c, '*'で一覧, ESCで中断) どの%sを%s^ますか? ", "(%s^s %c-%c, *=List, ESC=exit) %s^ which %s? ");
+    constexpr auto format_str = _("({}:{}-{}, '*'で一覧, ESCで中断) どの{}を{}ますか? ", "({}s {}-{}, *=List, ESC=exit) {} which {}? ");
 #ifdef JP
     const auto verb = conjugate_jverb(prompt_verb, JVerbConjugationType::AND);
-    const auto prompt = format(fmt, spell_category.data(), I2A(0), I2A(num - 1), spell_category.data(), verb.data());
+    const auto prompt = fmt::format(format_str, str_upcase_first(spell_category), I2A(0), I2A(num - 1), spell_category, str_upcase_first(verb));
 #else
-    const auto prompt = format(fmt, spell_category.data(), I2A(0), I2A(num - 1), prompt_verb.data(), spell_category.data());
+    const auto prompt = fmt::format(format_str, str_upcase_first(spell_category), I2A(0), I2A(num - 1), str_upcase_first(prompt_verb), spell_category);
 #endif
 
     auto choice = (always_show_list || use_menu) ? ESCAPE : '\1';
