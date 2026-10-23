@@ -4,6 +4,7 @@
 #include "core/window-redrawer.h"
 #include "game-option/input-options.h"
 #include "io/command-repeater.h"
+#include "io/input-context.h"
 #include "io/input-key-acceptor.h"
 #include "io/input-key-requester.h" //!< @todo 相互依存している、後で何とかする.
 #include "main/sound-of-music.h"
@@ -25,6 +26,17 @@
 #include <sstream>
 #include <stdexcept>
 #include <string>
+#include <utility>
+#include <variant>
+
+/*!
+ * @brief 入力欄の開始位置と画面幅に合わせて文字列のバイト上限を求める
+ */
+static int get_input_length(int len, int x)
+{
+    const auto start = ((x < 0) || (x >= MAIN_TERM_MIN_COLS)) ? 0 : x;
+    return std::clamp(len, 1, MAIN_TERM_MIN_COLS - start);
+}
 
 /*
  * Get some string input at the cursor location.
@@ -53,17 +65,11 @@ tl::optional<std::string> askfor(int len, std::string_view initial_value, bool n
     auto color = TERM_YELLOW;
 
     auto [x, y] = term_locate();
-    if (len < 1) {
-        len = 1;
-    }
-
     if ((x < 0) || (x >= MAIN_TERM_MIN_COLS)) {
         x = 0;
     }
 
-    if (x + len > MAIN_TERM_MIN_COLS) {
-        len = MAIN_TERM_MIN_COLS - x;
-    }
+    len = get_input_length(len, x);
 
     std::string buf(initial_value);
     auto pos = 0;
@@ -181,13 +187,28 @@ tl::optional<std::string> askfor(int len, std::string_view initial_value, bool n
  *
  * We clear the input, and return false, on "ESCAPE".
  */
-tl::optional<std::string> input_string(std::string_view prompt, int len, std::string_view initial_value, bool numpad_cursor)
+/*!
+ * @brief 指定した文脈で文字列の入力を待つ
+ * @details 数量入力も同じ編集処理を利用するが、公開する文脈は数量のまま保つ。
+ */
+static tl::optional<std::string> input_string_with_context(InputContext input_context, int len, std::string_view initial_value, bool numpad_cursor)
 {
     msg_erase();
-    prt(prompt, 0, 0);
+    prt(input_context.prompt, 0, 0);
+    if (auto *details = std::get_if<StringInputDetails>(&input_context.details)) {
+        details->max_length = get_input_length(len, term_locate().first);
+    }
+
+    const InputContextScope context_scope(std::move(input_context));
     const auto ask_result = askfor(len, initial_value, numpad_cursor);
     prt("", 0, 0);
     return ask_result;
+}
+
+tl::optional<std::string> input_string(std::string_view prompt, int len, std::string_view initial_value, bool numpad_cursor)
+{
+    InputContext input_context{ InputKind::STRING, std::string(prompt), StringInputDetails{ len, std::string(initial_value) } };
+    return input_string_with_context(std::move(input_context), len, initial_value, numpad_cursor);
 }
 
 /*
@@ -252,6 +273,7 @@ bool input_check_strict(CreatureEntity &creature, std::string_view prompt, EnumC
         window_stuff(creature);
     }
 
+    const InputContextScope input_context(InputKind::CONFIRM, buf);
     bool flag = false;
     while (true) {
         int i = inkey();
@@ -302,13 +324,27 @@ bool input_check_strict(CreatureEntity &creature, std::string_view prompt, EnumC
  */
 tl::optional<char> input_command(std::string_view prompt)
 {
+    return input_command_with_context({ InputKind::COMMAND_CHAR, std::string(prompt), {} });
+}
+
+/*!
+ * @brief 入力待ちの文脈を指定して、1文字の入力を受け付ける
+ * @param input_context 入力待ちの間に公開する文脈。プロンプトは文脈のものを表示する
+ * @return 入力した文字。ESCで中断したらnullopt
+ * @details 1文字の入力のうち、方向の入力のように種類と詳細を公開したいものに使う。
+ */
+tl::optional<char> input_command_with_context(InputContext input_context)
+{
     msg_erase();
-    prt(prompt, 0, 0);
+    prt(input_context.prompt, 0, 0);
     char command;
-    if (get_com_no_macros) {
-        command = static_cast<char>(inkey_special(false));
-    } else {
-        command = inkey();
+    {
+        const InputContextScope context_scope(std::move(input_context));
+        if (get_com_no_macros) {
+            command = static_cast<char>(inkey_special(false));
+        } else {
+            command = inkey();
+        }
     }
 
     prt("", 0, 0);
@@ -317,6 +353,20 @@ tl::optional<char> input_command(std::string_view prompt)
     }
 
     return command;
+}
+
+/*!
+ * @brief 入力待ちの文脈を公開して、キーを1つ待つ
+ * @param kind 入力の種類
+ * @param prompt 公開するプロンプト (表示は呼び出し元が行う)
+ * @param do_all_term_refresh true なら inkey() と同じく、待つ前に全ての端末を描き直す
+ * @return 入力したキー
+ * @details 独自に表示した選択肢や確認に答えるキーや、何かキーを押す待ちのキーを読む処理に使う。
+ */
+char input_key_with_context(InputKind kind, std::string_view prompt, bool do_all_term_refresh)
+{
+    const InputContextScope input_context(kind, prompt);
+    return inkey(do_all_term_refresh);
 }
 
 /*
@@ -350,7 +400,8 @@ int input_quantity(int max, std::string_view initial_prompt)
     }
 
     msg_erase();
-    const auto input_amount = input_string(prompt, 6, "1", false);
+    InputContext input_context{ InputKind::QUANTITY, prompt, QuantityInputDetails{ max, 1 } };
+    const auto input_amount = input_string_with_context(std::move(input_context), 6, "1", false);
     if (!input_amount) {
         return 0;
     }
@@ -379,9 +430,10 @@ int input_quantity(int max, std::string_view initial_prompt)
 void pause_line(int row)
 {
     prt("", row, 0);
-    put_str(_("[ 何かキーを押して下さい ]", "[Press any key to continue]"), row, _(26, 23));
+    constexpr auto prompt = _("[ 何かキーを押して下さい ]", "[Press any key to continue]");
+    put_str(prompt, row, _(26, 23));
 
-    (void)inkey();
+    (void)input_key_with_context(InputKind::ANY_KEY, prompt);
     prt("", row, 0);
 }
 
