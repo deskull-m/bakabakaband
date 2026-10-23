@@ -33,8 +33,8 @@ constexpr auto PREF_TYPE_NORMAL = 0;
 constexpr auto PREF_TYPE_AUTOPICK = 1;
 constexpr auto PREF_TYPE_HISTPREF = 2;
 
-char auto_dump_header[] = "# vvvvvvv== %s ==vvvvvvv";
-char auto_dump_footer[] = "# ^^^^^^^== %s ==^^^^^^^";
+char auto_dump_header[] = "# vvvvvvv== {} ==vvvvvvv";
+char auto_dump_footer[] = "# ^^^^^^^== {} ==^^^^^^^";
 
 // Mark strings for auto dump
 
@@ -274,7 +274,7 @@ void auto_dump_print(FILE *auto_dump_stream, std::string_view str)
  */
 bool open_auto_dump(FILE **fpp, const std::filesystem::path &path, std::string_view mark)
 {
-    const auto header_mark_str = format(auto_dump_header, mark.data());
+    const auto header_mark_str = fmt::format(fmt::runtime(auto_dump_header), mark);
     remove_auto_dump(path, mark);
     *fpp = angband_fopen(path, FileOpenMode::APPEND);
     if (!*fpp) {
@@ -297,7 +297,7 @@ bool open_auto_dump(FILE **fpp, const std::filesystem::path &path, std::string_v
  */
 void close_auto_dump(FILE **fpp, std::string_view mark)
 {
-    const auto footer_mark_str = format(auto_dump_footer, mark.data());
+    const auto footer_mark_str = fmt::format(fmt::runtime(auto_dump_footer), mark);
     auto_dump_print(*fpp, _("# *警告!!* 以降の行は自動生成されたものです。\n", "# *Warning!*  The lines below are an automatic dump.\n"));
     auto_dump_print(*fpp, _("# *警告!!* 後で自動的に削除されるので編集しないでください。\n", "# Don't edit them; changes will be deleted and replaced automatically.\n"));
     fmt::println(*fpp, "{} ({})", footer_mark_str, auto_dump_line_num);
