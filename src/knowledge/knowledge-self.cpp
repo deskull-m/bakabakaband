@@ -194,7 +194,7 @@ void do_cmd_knowledge_stat(CreatureEntity &creature)
  */
 void do_cmd_knowledge_home(CreatureEntity &creature)
 {
-    apply_wilderness_definition();
+    (void)apply_wilderness_definition();
 
     FILE *fff = nullptr;
     GAME_TEXT file_name[FILE_NAME_SIZE];

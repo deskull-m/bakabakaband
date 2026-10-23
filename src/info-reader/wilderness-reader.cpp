@@ -255,11 +255,11 @@ bool initialize_wilderness_definition()
     return true;
 }
 
-parse_error_type apply_wilderness_definition()
+tl::expected<void, parse_error_type> apply_wilderness_definition()
 {
     const auto definition = load_wilderness_definition();
     if (!definition) {
-        return PARSE_ERROR_GENERIC;
+        return tl::make_unexpected(PARSE_ERROR_GENERIC);
     }
     const auto use_compact = vanilla_town || lite_town;
     const auto &map = use_compact ? definition->compact : definition->normal;
@@ -309,5 +309,5 @@ parse_error_type apply_wilderness_definition()
         }
     }
 
-    return PARSE_ERROR_NONE;
+    return {};
 }

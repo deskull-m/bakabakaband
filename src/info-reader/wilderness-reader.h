@@ -6,6 +6,7 @@
 #include <nlohmann/json_fwd.hpp>
 #include <optional>
 #include <string>
+#include <tl/expected.hpp>
 #include <vector>
 
 struct WildernessTownDefinition {
@@ -54,4 +55,4 @@ private:
 };
 
 bool initialize_wilderness_definition();
-parse_error_type apply_wilderness_definition();
+tl::expected<void, parse_error_type> apply_wilderness_definition();
