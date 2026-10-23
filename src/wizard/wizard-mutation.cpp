@@ -193,7 +193,7 @@ static void display_mutations_for_selection(CreatureEntity &creature)
 
             // Very compact truncation - 15 chars max
             auto truncated_name = name.length() > 15 ? name.substr(0, 15) : name;
-            const auto display_text = format("%02d:%-15.15s", id, truncated_name.c_str());
+            const auto display_text = fmt::format("{:02}:{:<15}", id, fmt::bytes(truncated_name));
 
             // Use color: white for owned, dark gray for unowned
             const auto color = has_mutation ? TERM_WHITE : TERM_SLATE;

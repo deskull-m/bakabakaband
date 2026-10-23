@@ -15,8 +15,8 @@
 #include "system/monrace/extended-slot.h"
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
-#include "term/z-form.h"
 #include "view/display-messages.h"
+#include <fmt/format.h>
 
 namespace {
 
@@ -40,7 +40,7 @@ void display_equipment_section(CreatureEntity &creature)
             continue;
         }
         const auto &item = *creature.inventory[slot];
-        const auto label = format("%-12s :", mention_use(creature, slot));
+        const auto label = fmt::format("{:<12} :", fmt::bytes(mention_use(creature, slot)));
         c_put_str(TERM_WHITE, label, row, EQUIPMENT_COL);
         if (!item.is_valid()) {
             c_put_str(TERM_L_DARK, _("(なし)", "(empty)"), row, EQUIPMENT_COL + 14);
@@ -56,7 +56,7 @@ void display_equipment_section(CreatureEntity &creature)
     for (size_t i = 0; i < slot_count; ++i) {
         const auto slot_type = creature.get_extended_slot_type(i);
         const auto name = get_extended_slot_name(slot_type);
-        const auto label = format("%-12s :", name.empty() ? "" : name.data());
+        const auto label = fmt::format("{:<12} :", fmt::bytes(name));
         c_put_str(TERM_WHITE, label, row, EQUIPMENT_COL);
         if (i >= creature.get_extended_inventory_size() || !creature.get_extended_item(i) || !creature.get_extended_item(i)->is_valid()) {
             c_put_str(TERM_L_DARK, _("(なし)", "(empty)"), row, EQUIPMENT_COL + 14);
@@ -81,7 +81,7 @@ void display_inventory_section(CreatureEntity &creature)
 
         const auto letter = static_cast<char>('a' + slot);
         const auto desc = describe_flavor(creature, item, 0);
-        const auto line = format("%c) %s", letter, desc.substr(0, 33).data());
+        const auto line = fmt::format("{}) {}", letter, desc.substr(0, 33));
         c_put_str(TERM_L_GREEN, line, row, INVENTORY_COL);
         ++item_count;
     }
@@ -98,7 +98,7 @@ void display_player_inventory_page(CreatureEntity &creature)
     put_str(_("装備品とインベントリ", "Equipment and Inventory"), 1, 1);
     const auto cnt_inven = creature.get_inven_cnt();
     const auto cnt_equip = creature.get_equip_cnt();
-    const auto summary = format(_(" - 所持: %d / 装備: %d", " - Carried: %d / Equipped: %d"), cnt_inven, cnt_equip);
+    const auto summary = fmt::format(_(" - 所持: {} / 装備: {}", " - Carried: {} / Equipped: {}"), cnt_inven, cnt_equip);
     c_put_str(TERM_SLATE, summary, 1, 25);
 
     display_equipment_section(creature);
