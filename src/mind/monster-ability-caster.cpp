@@ -26,6 +26,7 @@
 #include "system/monrace/monrace-definition.h"
 #include "util/candidate-selector.h"
 #include "view/display-messages.h"
+#include <fmt/format.h>
 #include <vector>
 
 namespace {
@@ -70,7 +71,7 @@ bool do_cmd_use_monster_ability(CreatureEntity &creature)
     auto describer = [&creature](MonsterAbilityType ability) {
         const auto &power = monster_powers.at(ability);
         const auto need_mana = mod_need_mana(creature, power.smana, 0, RealmType::NONE);
-        return format("%-30s MP:%2d", power.name, need_mana);
+        return fmt::format("{:<30} MP:{:2}", fmt::bytes(power.name), need_mana);
     };
     CandidateSelector cs(_("どの能力を行使しますか？", "Use which ability? "), 15);
     const auto choice = cs.select(abilities, describer);
