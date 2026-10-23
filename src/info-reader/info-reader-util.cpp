@@ -2,9 +2,7 @@
 #include "artifact/random-art-effects.h"
 #include "info-reader/parse-error-types.h"
 #include "object-enchant/activation-info-table.h"
-#include "util/enum-converter.h"
 #include "util/string-processor.h"
-#include "view/display-messages.h"
 
 /* Help give useful error messages */
 int error_idx; /*!< データ読み込み/初期化時に汎用的にエラーコードを保存するグローバル変数 */
@@ -12,7 +10,8 @@ int error_idx; /*!< データ読み込み/初期化時に汎用的にエラー�
 /*!
  * @brief テキストトークンを走査してフラグを一つ得る(発動能力用) /
  * Grab one activation index flag
- * @param what 参照元の文字列ポインタ
+ * @details 発動効果テーブルに登録された名前だけを受け入れる。番号は効果を足すとずれるため、番号での指定は受け付けない。
+ * @param what 発動の名前
  * @return 発動能力ID
  */
 RandomArtActType grab_one_activation_flag(std::string_view what)
@@ -23,12 +22,8 @@ RandomArtActType grab_one_activation_flag(std::string_view what)
         }
     }
 
-    auto j = std::stoi(what.data());
-    if (j > 0) {
-        return i2enum<RandomArtActType>(j);
-    }
-
-    msg_format(_("未知の発動・フラグ '%s'。", "Unknown activation flag '%s'."), what.data());
+    // 不明な発動名は NONE を返して呼出側の各リーダーが INVALID_FLAG として扱う
+    // (他のリーダー同様、個別メッセージは出さず読込エラーとして集約する)。
     return RandomArtActType::NONE;
 }
 
