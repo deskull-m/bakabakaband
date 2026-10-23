@@ -17,14 +17,14 @@
  * @param party パーティ定義への参照
  * @return エラーコード
  */
-static parse_error_type set_party_name(nlohmann::json &name_data, CreaturePartyDefinition &party)
+static ParseErrorType set_party_name(nlohmann::json &name_data, CreaturePartyDefinition &party)
 {
     if (!name_data.is_object()) {
-        return PARSE_ERROR_GENERIC;
+        return ParseErrorType::GENERIC;
     }
 
     if (!name_data.contains("ja") || !name_data["ja"].is_string()) {
-        return PARSE_ERROR_GENERIC;
+        return ParseErrorType::GENERIC;
     }
 
     std::string ja_name = name_data["ja"].get<std::string>();
@@ -36,7 +36,7 @@ static parse_error_type set_party_name(nlohmann::json &name_data, CreaturePartyD
 
     party.name = LocalizedString(ja_name, en_name);
 
-    return PARSE_ERROR_NONE;
+    return ParseErrorType::NONE;
 }
 
 /*!
@@ -45,21 +45,21 @@ static parse_error_type set_party_name(nlohmann::json &name_data, CreaturePartyD
  * @param party パーティ定義への参照
  * @return エラーコード
  */
-static parse_error_type set_party_members(nlohmann::json &members_data, CreaturePartyDefinition &party)
+static ParseErrorType set_party_members(nlohmann::json &members_data, CreaturePartyDefinition &party)
 {
     if (!members_data.is_array()) {
-        return PARSE_ERROR_GENERIC;
+        return ParseErrorType::GENERIC;
     }
 
     for (auto &member_data : members_data) {
         if (!member_data.is_object()) {
-            return PARSE_ERROR_GENERIC;
+            return ParseErrorType::GENERIC;
         }
 
         // monrace_idの読み込み
         if (!member_data.contains("monrace_id") || !member_data["monrace_id"].is_number_integer()) {
             msg_format(_("パーティメンバーのモンスターID読込失敗。", "Failed to load party member monster ID."));
-            return PARSE_ERROR_GENERIC;
+            return ParseErrorType::GENERIC;
         }
         const auto monrace_id = i2enum<MonraceId>(member_data["monrace_id"].get<int>());
 
@@ -73,18 +73,18 @@ static parse_error_type set_party_members(nlohmann::json &members_data, Creature
         // probabilityの読み込み
         if (!member_data.contains("probability") || !member_data["probability"].is_number_integer()) {
             msg_format(_("パーティメンバーの出現確率読込失敗。", "Failed to load party member probability."));
-            return PARSE_ERROR_GENERIC;
+            return ParseErrorType::GENERIC;
         }
         const auto probability = member_data["probability"].get<int>();
         if (probability < 0 || probability > 100) {
             msg_format(_("パーティメンバーの出現確率が範囲外: %d", "Party member probability out of range: %d"), probability);
-            return PARSE_ERROR_GENERIC;
+            return ParseErrorType::GENERIC;
         }
 
         party.add_member(monrace_id, count_dice, probability);
     }
 
-    return PARSE_ERROR_NONE;
+    return ParseErrorType::NONE;
 }
 
 /*!
@@ -92,15 +92,15 @@ static parse_error_type set_party_members(nlohmann::json &members_data, Creature
  * @param party_data パーティデータの格納されたJSON Object
  * @return エラーコード
  */
-parse_error_type parse_creature_parties_info(nlohmann::json &party_data)
+ParseErrorType parse_creature_parties_info(nlohmann::json &party_data)
 {
     if (!party_data["id"].is_number_integer()) {
-        return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+        return ParseErrorType::TOO_FEW_ARGUMENTS;
     }
 
     const auto party_id = party_data["id"].get<int>();
     if (party_id < error_idx) {
-        return PARSE_ERROR_NON_SEQUENTIAL_RECORDS;
+        return ParseErrorType::NON_SEQUENTIAL_RECORDS;
     }
 
     error_idx = party_id;
@@ -109,8 +109,8 @@ parse_error_type parse_creature_parties_info(nlohmann::json &party_data)
     party.idx = party_id;
 
     // パーティ名の読み込み
-    parse_error_type err = set_party_name(party_data["name"], party);
-    if (err) {
+    ParseErrorType err = set_party_name(party_data["name"], party);
+    if (err != ParseErrorType::NONE) {
         msg_format(_("パーティ名読込失敗。ID: '%d'。", "Failed to load party name. ID: '%d'."), error_idx);
         return err;
     }
@@ -145,14 +145,14 @@ parse_error_type parse_creature_parties_info(nlohmann::json &party_data)
     // パーティメンバーの読み込み
     if (!party_data.contains("members")) {
         msg_format(_("パーティメンバー情報なし。ID: '%d'。", "No party members. ID: '%d'."), error_idx);
-        return PARSE_ERROR_GENERIC;
+        return ParseErrorType::GENERIC;
     }
 
     err = set_party_members(party_data["members"], party);
-    if (err) {
+    if (err != ParseErrorType::NONE) {
         msg_format(_("パーティメンバー読込失敗。ID: '%d'。", "Failed to load party members. ID: '%d'."), error_idx);
         return err;
     }
 
-    return PARSE_ERROR_NONE;
+    return ParseErrorType::NONE;
 }

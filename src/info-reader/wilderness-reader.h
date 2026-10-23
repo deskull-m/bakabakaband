@@ -46,13 +46,13 @@ public:
     WildernessReader &operator=(const WildernessReader &) = delete;
     WildernessReader &operator=(WildernessReader &&) = delete;
 
-    parse_error_type read(WildernessDefinition &definition) const;
+    ParseErrorType read(WildernessDefinition &definition) const;
 
 private:
-    parse_error_type read_map(const nlohmann::json &data, int width, int height, WildernessMapDefinition &map) const;
+    ParseErrorType read_map(const nlohmann::json &data, int width, int height, WildernessMapDefinition &map) const;
 
     const nlohmann::json &data;
 };
 
 bool initialize_wilderness_definition();
-tl::expected<void, parse_error_type> apply_wilderness_definition();
+tl::expected<void, ParseErrorType> apply_wilderness_definition();

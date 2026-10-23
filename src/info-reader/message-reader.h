@@ -13,10 +13,10 @@ public:
     MessageReader &operator=(const MessageReader &) = delete;
     MessageReader &operator=(MessageReader &&) = delete;
 
-    parse_error_type read() const;
+    ParseErrorType read() const;
 
 private:
-    parse_error_type set_mon_message() const;
+    ParseErrorType set_mon_message() const;
 
     const nlohmann::json &message_data;
 };

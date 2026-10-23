@@ -4,11 +4,12 @@
  */
 
 #include "main/init-error-messages-table.h"
+#include "util/enum-converter.h"
 
 /*!
  * エラーメッセージの名称定義 / Standard error message text
  */
-concptr err_str[PARSE_ERROR_MAX] = {
+concptr err_str[enum2i(ParseErrorType::MAX)] = {
     nullptr,
     _("文法エラー", "parse error"),
     _("古いファイル", "obsolete file"),

@@ -6,7 +6,7 @@
 
 #include <nlohmann/json_fwd.hpp>
 
-enum parse_error_type : int;
+enum class ParseErrorType : int;
 class QuestType;
 struct QuestFixedMap;
 struct QuestLegendCell;
@@ -28,15 +28,15 @@ public:
     QuestReader &operator=(const QuestReader &) = delete;
     QuestReader &operator=(QuestReader &&) = delete;
 
-    parse_error_type read() const;
+    ParseErrorType read() const;
 
 private:
-    parse_error_type set_name() const;
-    parse_error_type set_definition() const;
-    parse_error_type set_descriptions() const;
-    parse_error_type set_legend() const;
-    parse_error_type set_maps() const;
-    parse_error_type set_starts() const;
+    ParseErrorType set_name() const;
+    ParseErrorType set_definition() const;
+    ParseErrorType set_descriptions() const;
+    ParseErrorType set_legend() const;
+    ParseErrorType set_maps() const;
+    ParseErrorType set_starts() const;
 
     const nlohmann::json &quest_data;
     QuestType &quest;
@@ -47,4 +47,4 @@ private:
  * @brief JSONC の gridDefinition 1件を凡例セルへ変換する (set_legend から使用)
  * @return エラーコード
  */
-parse_error_type parse_quest_legend_cell(const nlohmann::json &cell_data, QuestLegendCell &out);
+ParseErrorType parse_quest_legend_cell(const nlohmann::json &cell_data, QuestLegendCell &out);

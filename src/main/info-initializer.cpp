@@ -89,8 +89,8 @@ static void init_info(std::string_view filename, DefinitionHashDataType dhdt, In
     }
 
     const auto &[error_code, error_line, line] = init_info_txt(ifs, dhdt, parser);
-    if (error_code != PARSE_ERROR_NONE) {
-        const auto oops = (((error_code > 0) && (error_code < PARSE_ERROR_MAX)) ? err_str[error_code] : _("未知の", "unknown"));
+    if (error_code != ParseErrorType::NONE) {
+        const auto oops = (((error_code > ParseErrorType::NONE) && (error_code < ParseErrorType::MAX)) ? err_str[enum2i(error_code)] : _("未知の", "unknown"));
 #ifdef JP
         msg_print("'{}'ファイルの {} 行目にエラー。", filename, error_line);
 #else
@@ -147,7 +147,7 @@ static void init_json(std::string_view filename, std::string_view keyname, Defin
 
     for (auto &element : json_object[keyname]) {
         const auto error_code = parser(element);
-        if (error_code != PARSE_ERROR_NONE) {
+        if (error_code != ParseErrorType::NONE) {
             msg_erase();
             quit(fmt::format(_("'{}'ファイルにエラー", "Error in '{}' file."), filename));
         }
@@ -294,7 +294,7 @@ void init_vaults_info()
     auto parser = [](nlohmann::json &element) {
         VaultReader reader(element);
         const auto err = reader.read();
-        if (err != PARSE_ERROR_NONE) {
+        if (err != ParseErrorType::NONE) {
             const auto &diagnostic = reader.error().value();
             quit(fmt::format(_("VaultDefinitions.jsonc: Vault{}の{}: {}", "VaultDefinitions.jsonc: vault {} at {}: {}"), diagnostic.id, diagnostic.path, diagnostic.reason));
         }

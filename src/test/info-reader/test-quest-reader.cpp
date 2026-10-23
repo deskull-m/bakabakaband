@@ -62,7 +62,7 @@ TEST_CASE("QuestReader rejects map extent overflow")
         }
         QuestType quest;
         QuestFixedMap fixed_map;
-        CHECK(QuestReader(data, quest, fixed_map).read() == PARSE_ERROR_OUT_OF_BOUNDS);
+        CHECK(QuestReader(data, quest, fixed_map).read() == ParseErrorType::OUT_OF_BOUNDS);
     }
 }
 
@@ -82,7 +82,7 @@ TEST_CASE("QuestReader rejects map rows containing an embedded NUL")
         }
         QuestType quest;
         QuestFixedMap fixed_map;
-        CHECK(QuestReader(data, quest, fixed_map).read() == PARSE_ERROR_INVALID_VALUE);
+        CHECK(QuestReader(data, quest, fixed_map).read() == ParseErrorType::INVALID_VALUE);
     }
 }
 
@@ -99,7 +99,7 @@ TEST_CASE("QuestReader accepts map extents at the floor boundary")
         }
         QuestType quest;
         QuestFixedMap fixed_map;
-        REQUIRE(QuestReader(data, quest, fixed_map).read() == PARSE_ERROR_NONE);
+        REQUIRE(QuestReader(data, quest, fixed_map).read() == ParseErrorType::NONE);
         REQUIRE(fixed_map.maps.size() == (use_variants ? 2 : 1));
         CHECK(fixed_map.maps.back() == rows);
     }
@@ -112,21 +112,21 @@ TEST_CASE("QuestReader preserves empty, ragged, and skipped map row behavior")
     data["mapVariants"] = { nlohmann::json::array(), { "", nullptr, "...", 7, "." } };
     QuestType quest;
     QuestFixedMap fixed_map;
-    REQUIRE(QuestReader(data, quest, fixed_map).read() == PARSE_ERROR_NONE);
+    REQUIRE(QuestReader(data, quest, fixed_map).read() == ParseErrorType::NONE);
     CHECK(fixed_map.maps == std::vector<std::vector<std::string>>{ {}, ragged_rows });
 
     // map が存在すれば mapVariants は読まない。空の map も従来どおり保持する。
     QuestFixedMap fixed_map_empty;
     data["map"] = nlohmann::json::array();
     data["mapVariants"] = { { std::string(MAX_WID + 1, '.') } };
-    REQUIRE(QuestReader(data, quest, fixed_map_empty).read() == PARSE_ERROR_NONE);
+    REQUIRE(QuestReader(data, quest, fixed_map_empty).read() == ParseErrorType::NONE);
     CHECK(fixed_map_empty.maps == std::vector<std::vector<std::string>>{ {} });
 
     // 非文字列行は配置されないため、行数の上限に含めない。
     QuestFixedMap fixed_map_full;
     data["map"] = std::vector<std::string>(MAX_HGT, ".");
     data["map"].push_back(nullptr);
-    REQUIRE(QuestReader(data, quest, fixed_map_full).read() == PARSE_ERROR_NONE);
+    REQUIRE(QuestReader(data, quest, fixed_map_full).read() == ParseErrorType::NONE);
     CHECK(fixed_map_full.maps[0].size() == MAX_HGT);
 }
 
@@ -147,7 +147,7 @@ TEST_CASE("QuestReader checks every declared start against every map before publ
         data.update(fields);
         QuestType quest;
         QuestFixedMap fixed_map;
-        CHECK(QuestReader(data, quest, fixed_map).read() == PARSE_ERROR_OUT_OF_BOUNDS);
+        CHECK(QuestReader(data, quest, fixed_map).read() == ParseErrorType::OUT_OF_BOUNDS);
     }
 }
 
@@ -159,7 +159,7 @@ TEST_CASE("QuestReader accepts starts within every map candidate")
     data["startVariants"] = { { { "y", 0 }, { "x", 0 } }, { { "leavingQuest", 49 }, { "y", 1 }, { "x", 2 } } };
     QuestType quest;
     QuestFixedMap fixed_map;
-    REQUIRE(QuestReader(data, quest, fixed_map).read() == PARSE_ERROR_NONE);
+    REQUIRE(QuestReader(data, quest, fixed_map).read() == ParseErrorType::NONE);
     REQUIRE(fixed_map.starts.size() == 2);
     CHECK(fixed_map.starts[1].leaving_quest == 49);
     CHECK(fixed_map.starts[1].y == 1);
