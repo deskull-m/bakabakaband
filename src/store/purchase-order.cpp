@@ -45,11 +45,10 @@
  * @return プレイヤーの価格に対して店主が不服ならばTRUEを返す /
  * Return TRUE if purchase is NOT successful
  */
-static tl::optional<PRICE> prompt_to_buy(CreatureEntity &creature, const Store &store, ItemEntity *o_ptr)
+static tl::optional<int64_t> prompt_to_buy(CreatureEntity &creature, const Store &store, ItemEntity *o_ptr)
 {
-    auto price_ask = price_item(creature, o_ptr, store, StoreTradeType::PLAYER_BUYS);
-
-    price_ask *= o_ptr->number;
+    const auto unit_price = price_item(creature, o_ptr, store, StoreTradeType::PLAYER_BUYS);
+    const auto price_ask = int64_t{ unit_price } * o_ptr->number;
     const auto s = fmt::format(_("買値 ${} で買いますか？", "Do you buy for ${}? "), price_ask);
     if (input_check_strict(creature, s, UserCheck::DEFAULT_Y)) {
         return price_ask;
@@ -244,7 +243,8 @@ void store_purchase(CreatureEntity &creature, StoreScreen &screen)
         return;
     }
 
-    store_owner_says_comment(res.value(), store_num);
+    const auto price = static_cast<PRICE>(res.value());
+    store_owner_says_comment(price, store_num);
     if (store_num == StoreSaleType::BLACK) {
         chg_virtue(creature, Virtue::JUSTICE, -1);
     }
@@ -253,7 +253,7 @@ void store_purchase(CreatureEntity &creature, StoreScreen &screen)
     }
 
     sound(SoundKind::BUY);
-    creature.sub_au(res.value());
+    creature.sub_au(price);
     store_prt_gold(screen, creature.get_au());
     object_aware(creature, item);
     creature.plus_incident_tree("STORE_BUY", 1);
