@@ -49,6 +49,7 @@
 #include "system/player-type-definition.h"
 #include "tracking/health-bar-tracker.h"
 #include "tracking/lore-tracker.h"
+#include "util/string-processor.h"
 #include "view/display-messages.h"
 #include "world/world.h"
 #include <optional>
@@ -374,7 +375,7 @@ void MonsterDamageProcessor::show_kill_message(std::string_view note, std::strin
 void MonsterDamageProcessor::show_explosion_message(std::string_view died_mes, std::string_view m_name)
 {
     std::stringstream ss;
-    ss << _(m_name, format("%s^", m_name.data()));
+    ss << _(m_name, str_upcase_first(m_name));
     ss << died_mes;
     msg_print(ss.str());
     return;

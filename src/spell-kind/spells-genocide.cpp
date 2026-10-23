@@ -102,7 +102,7 @@ bool genocide_aux(CreatureEntity &creature, MONSTER_IDX m_idx, int power, bool p
     }
 
     if (player_cast) {
-        take_hit(creature, DAMAGE_GENO, randint1(dam_side), format(_("%s^の呪文を唱えた疲労", "the strain of casting %s^"), spell_name));
+        take_hit(creature, DAMAGE_GENO, randint1(dam_side), fmt::format(_("{}の呪文を唱えた疲労", "the strain of casting {}"), str_upcase_first(spell_name)));
     }
 
     move_cursor_relative(creature.y, creature.x);

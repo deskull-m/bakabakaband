@@ -374,7 +374,7 @@ void set_race_racial_command(CreatureEntity &creature, rc_type *rc_ptr)
     // 性格ベースのレイシャル能力
     if (creature.ppersonality == PERSONALITY_MESUGAKI) {
         rpi_type rpi_personality(_("社会的抹殺", "Social Genocide"));
-        rpi_personality.info = format("%s%d", KWD_DAM, rc_ptr->lvl * 2 + 30);
+        rpi_personality.info = fmt::format("{}{}", KWD_DAM, rc_ptr->lvl * 2 + 30);
         rpi_personality.text = _("男性の人間モンスターを社会的に抹殺するボルトを放つ。", "Fires a bolt that socially eliminates male human monsters.");
         rpi_personality.min_level = 1;
         rpi_personality.cost = 10;

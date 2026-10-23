@@ -8,6 +8,7 @@
 #include "term/z-form.h"
 #include "util/int-char-converter.h"
 #include "view/display-player-misc-info.h"
+#include <fmt/format.h>
 #include <sstream>
 
 static std::string birth_patron_label(int cs, concptr sym)
@@ -100,7 +101,7 @@ static bool select_patron(CreatureEntity &creature, int *k, concptr sym)
             break;
         }
 
-        const auto buf = format(_("パトロンを選んで下さい (%c-%c) ('='初期オプション設定): ", "Choose a patron (%c-%c) ('=' for options): "), sym[0], sym[MAX_PATRON - 1]);
+        const auto buf = fmt::format(_("パトロンを選んで下さい ({}-{}) ('='初期オプション設定): ", "Choose a patron ({}-{}) ('=' for options): "), sym[0], sym[MAX_PATRON - 1]);
         put_str(buf, 10, 10);
         char c = inkey();
         if (c == 'Q') {
