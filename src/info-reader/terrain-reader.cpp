@@ -43,7 +43,7 @@ static std::optional<TerrainCharacteristics> parse_terrain_action(std::string_vi
 /*!
  * @brief JSON Objectから地形シンボルをセットする
  */
-static errr set_terrain_symbol(const nlohmann::json &symbol_obj, TerrainType &terrain)
+static parse_error_type set_terrain_symbol(const nlohmann::json &symbol_obj, TerrainType &terrain)
 {
     if (symbol_obj.is_null() || !symbol_obj.is_object()) {
         return PARSE_ERROR_TOO_FEW_ARGUMENTS;
@@ -96,7 +96,7 @@ static errr set_terrain_symbol(const nlohmann::json &symbol_obj, TerrainType &te
  * @param terrain 地形情報への参照
  * @return エラーコード
  */
-static errr set_terrain_generation(const nlohmann::json &generation_obj, TerrainType &terrain)
+static parse_error_type set_terrain_generation(const nlohmann::json &generation_obj, TerrainType &terrain)
 {
     if (generation_obj.is_null()) {
         return PARSE_ERROR_NONE;
@@ -147,7 +147,7 @@ static errr set_terrain_generation(const nlohmann::json &generation_obj, Terrain
  * @param element 地形情報の JSON Object
  * @return エラーコード
  */
-errr parse_terrains_json_info(nlohmann::json &element)
+parse_error_type parse_terrains_json_info(nlohmann::json &element)
 {
     if (element.is_null() || !element.is_object()) {
         return PARSE_ERROR_TOO_FEW_ARGUMENTS;

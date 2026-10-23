@@ -17,7 +17,7 @@ EgoReader::EgoReader(const nlohmann::json &ego_data)
 {
 }
 
-int EgoReader::read() const
+parse_error_type EgoReader::read() const
 {
     if (!this->ego_data.is_object()) {
         return PARSE_ERROR_INVALID_TYPE;
@@ -129,7 +129,7 @@ bool EgoReader::grab_one_extra_flag(ego_generate_type &extra, const nlohmann::js
     return false;
 }
 
-int EgoReader::set_flags(EgoItemDefinition &ego) const
+parse_error_type EgoReader::set_flags(EgoItemDefinition &ego) const
 {
     const auto &flags = get_json_value(this->ego_data, "flags");
     if (!flags.is_array()) {
@@ -143,7 +143,7 @@ int EgoReader::set_flags(EgoItemDefinition &ego) const
     return PARSE_ERROR_NONE;
 }
 
-int EgoReader::set_extra_flags(EgoItemDefinition &ego) const
+parse_error_type EgoReader::set_extra_flags(EgoItemDefinition &ego) const
 {
     const auto &extras = get_json_value(this->ego_data, "extra_flags");
     if (!extras.is_array()) {
@@ -177,7 +177,7 @@ int EgoReader::set_extra_flags(EgoItemDefinition &ego) const
     return PARSE_ERROR_NONE;
 }
 
-int EgoReader::set_activation(EgoItemDefinition &ego) const
+parse_error_type EgoReader::set_activation(EgoItemDefinition &ego) const
 {
     const auto &activation = get_json_value(this->ego_data, "activation");
     if (activation.is_null()) {

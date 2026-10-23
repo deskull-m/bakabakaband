@@ -22,7 +22,7 @@
 #include <utility>
 
 namespace {
-int read_localized_integer(const nlohmann::json &value, int &destination, const Range &range)
+parse_error_type read_localized_integer(const nlohmann::json &value, int &destination, const Range &range)
 {
     if (value.is_number_integer()) {
         const auto result = info_set_integer(value, destination, true, range);
@@ -69,7 +69,7 @@ WildernessReader::WildernessReader(const nlohmann::json &data)
 {
 }
 
-int WildernessReader::read(WildernessDefinition &definition) const
+parse_error_type WildernessReader::read(WildernessDefinition &definition) const
 {
     if (!this->data.is_object()) {
         return PARSE_ERROR_INVALID_TYPE;
@@ -150,7 +150,7 @@ int WildernessReader::read(WildernessDefinition &definition) const
     return PARSE_ERROR_NONE;
 }
 
-int WildernessReader::read_map(const nlohmann::json &map_data, int width, int height, WildernessMapDefinition &map) const
+parse_error_type WildernessReader::read_map(const nlohmann::json &map_data, int width, int height, WildernessMapDefinition &map) const
 {
     if (!map_data.is_object()) {
         return map_data.is_null() ? PARSE_ERROR_TOO_FEW_ARGUMENTS : PARSE_ERROR_INVALID_TYPE;

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "info-reader/parse-error-types.h"
+
 #include <nlohmann/json_fwd.hpp>
 
 class EgoItemDefinition;
@@ -14,14 +16,14 @@ public:
     EgoReader &operator=(const EgoReader &) = delete;
     EgoReader &operator=(EgoReader &&) = delete;
 
-    int read() const;
+    parse_error_type read() const;
 
 private:
     bool grab_one_flag(EgoItemDefinition &ego, const nlohmann::json &flag) const;
     bool grab_one_extra_flag(ego_generate_type &extra, const nlohmann::json &flag) const;
-    int set_flags(EgoItemDefinition &ego) const;
-    int set_extra_flags(EgoItemDefinition &ego) const;
-    int set_activation(EgoItemDefinition &ego) const;
+    parse_error_type set_flags(EgoItemDefinition &ego) const;
+    parse_error_type set_extra_flags(EgoItemDefinition &ego) const;
+    parse_error_type set_activation(EgoItemDefinition &ego) const;
 
     const nlohmann::json &ego_data;
 };

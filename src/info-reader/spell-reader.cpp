@@ -18,7 +18,7 @@ SpellReader::SpellReader(const nlohmann::json &realm_data, SpellInfoList &spell_
  * @brief 呪文情報(SpellDefinitions)のパース関数
  * @return エラーコード
  */
-int SpellReader::read() const
+parse_error_type SpellReader::read() const
 {
     error_idx++; //!< @note 呪文領域は数値IDを持たないため、エラー表示用に要素の順序を用いる
 
@@ -41,7 +41,7 @@ int SpellReader::read() const
  * @param realm 呪文領域
  * @return エラーコード
  */
-int SpellReader::set_realm(RealmType &realm) const
+parse_error_type SpellReader::set_realm(RealmType &realm) const
 {
     if (this->realm_data.is_null()) {
         return PARSE_ERROR_TOO_FEW_ARGUMENTS;
@@ -66,7 +66,7 @@ int SpellReader::set_realm(RealmType &realm) const
  * @param realm 領域ID
  * @return エラーコード
  */
-int SpellReader::set_spell_data(const nlohmann::json &spell_data, RealmType realm) const
+parse_error_type SpellReader::set_spell_data(const nlohmann::json &spell_data, RealmType realm) const
 {
     if (spell_data.is_null()) {
         return PARSE_ERROR_TOO_FEW_ARGUMENTS;
@@ -105,7 +105,7 @@ int SpellReader::set_spell_data(const nlohmann::json &spell_data, RealmType real
  * @param realm 領域ID
  * @return エラーコード
  */
-int SpellReader::set_book_data(RealmType realm) const
+parse_error_type SpellReader::set_book_data(RealmType realm) const
 {
     const auto &book_obj = get_json_value(this->realm_data, "books");
     if (book_obj.is_null()) {

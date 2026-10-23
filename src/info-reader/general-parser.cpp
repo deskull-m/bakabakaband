@@ -47,7 +47,7 @@ void dungeon_grid::set_trap_id(TerrainTag tag)
  * @param parse_info_txt_line パース関数
  * @return エラーコード, エラー行番号, エラーが起きた行の内容
  */
-std::tuple<errr, int, std::string> init_info_txt(std::ifstream &ifs, DefinitionHashDataType dhdt, Parser parse_info_txt_line)
+std::tuple<parse_error_type, int, std::string> init_info_txt(std::ifstream &ifs, DefinitionHashDataType dhdt, Parser parse_info_txt_line)
 {
     error_idx = -1;
     auto error_line = 0;

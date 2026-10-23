@@ -83,7 +83,7 @@ MagicReader::MagicReader(const nlohmann::json &class_data)
  * @brief 職業魔法情報(ClassMagicDefinitions)のパース関数
  * @return エラーコード
  */
-int MagicReader::read() const
+parse_error_type MagicReader::read() const
 {
     if (!this->class_data.is_object()) {
         return PARSE_ERROR_INVALID_TYPE;
@@ -142,7 +142,7 @@ int MagicReader::read() const
  * @param class_id 職業ID
  * @return エラーコード
  */
-int MagicReader::set_class_id(int &class_id) const
+parse_error_type MagicReader::set_class_id(int &class_id) const
 {
     const auto &classname_obj = get_json_value(this->class_data, "name");
     if (!classname_obj.is_string()) {
@@ -162,7 +162,7 @@ int MagicReader::set_class_id(int &class_id) const
  * @param magics_info 保存先の魔法情報構造体
  * @return エラーコード
  */
-int MagicReader::set_spell_type(player_magic &magics_info) const
+parse_error_type MagicReader::set_spell_type(player_magic &magics_info) const
 {
     const auto &spell_book = get_json_value(this->class_data, "spell_type");
     if (!spell_book.is_string()) {
@@ -182,7 +182,7 @@ int MagicReader::set_spell_type(player_magic &magics_info) const
  * @param magics_info 保存先の魔法情報構造体
  * @return エラーコード
  */
-int MagicReader::set_magic_status(player_magic &magics_info) const
+parse_error_type MagicReader::set_magic_status(player_magic &magics_info) const
 {
     const auto &magic_status = get_json_value(this->class_data, "magic_status");
     if (!magic_status.is_string()) {
@@ -204,7 +204,7 @@ int MagicReader::set_magic_status(player_magic &magics_info) const
  * @param realm 呪文の領域
  * @return エラーコード
  */
-int MagicReader::set_spell_data(const nlohmann::json &spell_data, player_magic &magics_info, RealmType realm) const
+parse_error_type MagicReader::set_spell_data(const nlohmann::json &spell_data, player_magic &magics_info, RealmType realm) const
 {
     const auto &spell_tag_obj = get_json_value(spell_data, "spell_tag");
     if (!spell_tag_obj.is_string()) {
@@ -241,7 +241,7 @@ int MagicReader::set_spell_data(const nlohmann::json &spell_data, player_magic &
  * @param magics_info 保存先の魔法情報構造体
  * @return エラーコード
  */
-int MagicReader::set_realm_data(player_magic &magics_info) const
+parse_error_type MagicReader::set_realm_data(player_magic &magics_info) const
 {
     const auto &realms_data = get_json_value(this->class_data, "realms");
     if (realms_data.is_null()) {

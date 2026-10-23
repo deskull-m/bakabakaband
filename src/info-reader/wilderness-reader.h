@@ -46,10 +46,10 @@ public:
     WildernessReader &operator=(const WildernessReader &) = delete;
     WildernessReader &operator=(WildernessReader &&) = delete;
 
-    int read(WildernessDefinition &definition) const;
+    parse_error_type read(WildernessDefinition &definition) const;
 
 private:
-    int read_map(const nlohmann::json &data, int width, int height, WildernessMapDefinition &map) const;
+    parse_error_type read_map(const nlohmann::json &data, int width, int height, WildernessMapDefinition &map) const;
 
     const nlohmann::json &data;
 };

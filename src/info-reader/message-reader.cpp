@@ -19,7 +19,7 @@ MessageReader::MessageReader(const nlohmann::json &message_data)
  * @brief モンスターメッセージ情報(JSON Object)のパース関数
  * @return エラーコード
  */
-int MessageReader::read() const
+parse_error_type MessageReader::read() const
 {
     if (auto err = this->set_mon_message()) {
         msg_print(_("モンスターメッセージ読込失敗。", "Failed to load monster message."));
@@ -35,7 +35,7 @@ int MessageReader::read() const
  * @param id_list id群情報を保管するvector
  * @return エラーコード
  */
-static errr set_id_list(const nlohmann::json &id_list_data, std::vector<int> &id_list)
+static parse_error_type set_id_list(const nlohmann::json &id_list_data, std::vector<int> &id_list)
 {
     if (!id_list_data.is_array()) {
         return PARSE_ERROR_TOO_FEW_ARGUMENTS;
@@ -59,7 +59,7 @@ static errr set_id_list(const nlohmann::json &id_list_data, std::vector<int> &id
  * @param message_data メッセージ情報の格納されたJSON Object
  * @return エラーコード
  */
-int MessageReader::set_mon_message() const
+parse_error_type MessageReader::set_mon_message() const
 {
     const auto &group_data = this->message_data;
     const auto message_iter = group_data.find("message");
@@ -73,7 +73,7 @@ int MessageReader::set_mon_message() const
     const auto has_id_list = (id_list_iter != group_data.end());
 
     if (has_id_list) {
-        errr id_err = set_id_list(id_list_iter.value(), id_list);
+        parse_error_type id_err = set_id_list(id_list_iter.value(), id_list);
         if (id_err != PARSE_ERROR_NONE) {
             return id_err;
         }
