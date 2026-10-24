@@ -17,6 +17,7 @@
 #include "term/term-color-types.h"
 #include "view/display-map.h"
 #include "view/display-symbol.h"
+#include "view/map-info-cache.h"
 #include "world/world.h"
 #include <string>
 #include <string_view>
@@ -69,6 +70,12 @@ void print_field(std::string_view info, TERM_LEN row, TERM_LEN col)
  */
 void print_map(CreatureEntity &creature)
 {
+    // 画面の保存中に残った描き直しの要求は、MapInfoCache::prepare() の側で拾う
+    // 描いたグリッドの結果を覚えられるよう、覚える配列もフロアの大きさに合わせておく
+    auto &map_info_cache = MapInfoCache::get_instance();
+    map_info_cache.prepare(creature);
+    map_info_cache.invalidate_all();
+
     auto [wid, hgt] = term_get_size();
     wid -= COL_MAP + 2;
     hgt -= ROW_MAP + 2;
@@ -94,6 +101,7 @@ void print_map(CreatureEntity &creature)
     for (auto y = ymin; y <= ymax; y++) {
         for (auto x = xmin; x <= xmax; x++) {
             auto symbol_pair = map_info(creature, { y, x });
+            map_info_cache.store({ y, x }, symbol_pair);
             symbol_pair.symbol_foreground.color = monochrome_color.value_or(symbol_pair.symbol_foreground.color);
 
             term_queue_bigchar(panel_col_of(x), y - panel_row_prt, symbol_pair);

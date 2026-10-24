@@ -10,6 +10,9 @@
     <ClCompile Include="..\..\src\view\display-util.cpp">
       <Filter>view</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\view\map-info-cache.cpp">
+      <Filter>view</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\src\player\permanent-resistances.cpp">
       <Filter>player</Filter>
     </ClCompile>
@@ -4333,6 +4336,9 @@
       <Filter>cmd-visual</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\view\display-map.h">
+      <Filter>view</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\view\map-info-cache.h">
       <Filter>view</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\cmd-visual\cmd-draw.h">
