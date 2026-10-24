@@ -130,14 +130,7 @@ std::string make_screen_dump(CreatureEntity &creature)
         use_graphics = false;
         reset_visuals(creature);
 
-        static constexpr auto flags = {
-            MainWindowRedrawingFlag::WIPE,
-            MainWindowRedrawingFlag::BASIC,
-            MainWindowRedrawingFlag::EXTRA,
-            MainWindowRedrawingFlag::MAP,
-            MainWindowRedrawingFlag::EQUIPPY,
-        };
-        rfu.set_flags(flags);
+        rfu.request_whole_main_window_redrawing();
         redraw_stuff(creature);
     }
 
@@ -217,14 +210,7 @@ std::string make_screen_dump(CreatureEntity &creature)
 
     use_graphics = true;
     reset_visuals(creature);
-    static constexpr auto flags = {
-        MainWindowRedrawingFlag::WIPE,
-        MainWindowRedrawingFlag::BASIC,
-        MainWindowRedrawingFlag::EXTRA,
-        MainWindowRedrawingFlag::MAP,
-        MainWindowRedrawingFlag::EQUIPPY,
-    };
-    rfu.set_flags(flags);
+    rfu.request_whole_main_window_redrawing();
     redraw_stuff(creature);
     return ret;
 }
