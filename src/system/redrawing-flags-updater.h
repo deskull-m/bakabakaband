@@ -116,6 +116,9 @@ public:
     //! アイテム関連サブウィンドウ (INVENTORY/EQUIPMENT/PLAYER/FLOOR_ITEMS/FOUND_ITEMS) の再描画をまとめてセットする
     void set_item_related_sub_window_flags();
 
+    //! 呪文情報サブウィンドウ (SPELL/ITEM_KNOWLEDGE) の再描画をまとめてセットする
+    void request_spell_info_redrawing();
+
     void reset_flag(MainWindowRedrawingFlag flag);
     void reset_flag(SubWindowRedrawingFlag flag);
     void reset_flag(StatusRecalculatingFlag flag);

@@ -5,6 +5,7 @@
 #include "io/files-util.h"
 #include "player/player-personality.h"
 #include "system/creature-entity.h"
+#include "system/redrawing-flags-updater.h"
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
 #include "util/angband-files.h"
@@ -128,6 +129,8 @@ void get_name(CreatureEntity &creature)
 {
     const auto finalizer = util::make_finalizer([&creature]() {
         display_player_misc_info(creature);
+        // 名前を表示するプレイヤーの情報のサブウィンドウも描き直す (店の中ではプレイヤーのターンごとの要求が来ない)
+        RedrawingFlagsUpdater::get_instance().set_flag(SubWindowRedrawingFlag::PLAYER);
     });
 
     std::string initial_name = creature.name;

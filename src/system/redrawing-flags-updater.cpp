@@ -115,6 +115,20 @@ void RedrawingFlagsUpdater::set_item_related_sub_window_flags()
     this->sub_window_flags.set(flags);
 }
 
+/*!
+ * @brief 呪文の情報を表示するサブウィンドウの描き直しを予約する
+ * @details 呪文の一覧と、アイテムの知識 (魔法書を見たときの呪文の消費 MP・失敗率など) を描き直す。
+ * 失敗率や消費 MP は、MP・朦朧・能力値・装備・レベル・熟練度など多くの値で変わる。
+ */
+void RedrawingFlagsUpdater::request_spell_info_redrawing()
+{
+    static constexpr auto flags_swrf = {
+        SubWindowRedrawingFlag::SPELL,
+        SubWindowRedrawingFlag::ITEM_KNOWLEDGE,
+    };
+    this->sub_window_flags.set(flags_swrf);
+}
+
 void RedrawingFlagsUpdater::reset_flag(MainWindowRedrawingFlag flag)
 {
     this->main_window_flags.reset(flag);
