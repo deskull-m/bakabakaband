@@ -61,12 +61,18 @@
     <Filter Include="util">
       <UniqueIdentifier>{b5fce0ab-8f5f-40b9-86c9-a3b22374936b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="window">
+      <UniqueIdentifier>{65c86b54-9255-482c-ae0c-81d81c193fbb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\stdafx.cpp" />
     <ClCompile Include="..\..\src\test\test-main.cpp" />
     <ClCompile Include="..\..\src\test\view\test-map-info-cache.cpp" />
     <ClCompile Include="..\..\src\test\view\test-map-terrain-visibility.cpp" />
+    <ClCompile Include="..\..\src\test\window\test-overview-map-cache.cpp">
+      <Filter>window</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\src\test\test-win-stubs.cpp" />
     <ClCompile Include="..\..\src\test\autopick\test-autopick-editor-util.cpp">
       <Filter>autopick</Filter>
