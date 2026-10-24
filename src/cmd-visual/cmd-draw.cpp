@@ -67,14 +67,7 @@ void do_cmd_redraw(CreatureEntity &creature)
         InventoryArrangementFlag::REORDER,
     };
     rfu.set_flags(flags_iaf);
-    static constexpr auto flags_mwrf = {
-        MainWindowRedrawingFlag::WIPE,
-        MainWindowRedrawingFlag::BASIC,
-        MainWindowRedrawingFlag::EXTRA,
-        MainWindowRedrawingFlag::EQUIPPY,
-        MainWindowRedrawingFlag::MAP,
-    };
-    rfu.set_flags(flags_mwrf);
+    rfu.request_whole_main_window_redrawing();
     static constexpr auto flags_swrf = {
         SubWindowRedrawingFlag::INVENTORY,
         SubWindowRedrawingFlag::EQUIPMENT,
@@ -202,14 +195,7 @@ void do_cmd_player_status(CreatureEntity &creature)
 
     screen_load();
     auto &rfu = RedrawingFlagsUpdater::get_instance();
-    static constexpr auto flags_mwrf = {
-        MainWindowRedrawingFlag::WIPE,
-        MainWindowRedrawingFlag::BASIC,
-        MainWindowRedrawingFlag::EXTRA,
-        MainWindowRedrawingFlag::EQUIPPY,
-        MainWindowRedrawingFlag::MAP,
-    };
-    rfu.set_flags(flags_mwrf);
+    rfu.request_whole_main_window_redrawing();
     // ステータス画面はモンスターの inspect にも使われる (target-describer の 'c')。
     // 終了後のメインウィンドウ (画面左のパラメータ表示等) は常にプレイヤーで復元し、
     // inspect したモンスターの値が左枠に残らないようにする。

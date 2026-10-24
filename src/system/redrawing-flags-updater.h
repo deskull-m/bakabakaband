@@ -119,6 +119,9 @@ public:
     //! 呪文情報サブウィンドウ (SPELL/ITEM_KNOWLEDGE) の再描画をまとめてセットする
     void request_spell_info_redrawing();
 
+    //! メインウィンドウの消去と全体の描き直し (WIPE/BASIC/EXTRA/EQUIPPY/MAP) をまとめてセットする
+    void request_whole_main_window_redrawing();
+
     void reset_flag(MainWindowRedrawingFlag flag);
     void reset_flag(SubWindowRedrawingFlag flag);
     void reset_flag(StatusRecalculatingFlag flag);
