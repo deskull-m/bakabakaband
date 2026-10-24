@@ -66,6 +66,8 @@ bool exchange_cash(CreatureEntity &creature)
         msg_format(fmt_reward, reward_money);
         creature.add_au(reward_money);
         rfu.set_flag(MainWindowRedrawingFlag::GOLD);
+        // 所持金を変えたらプレイヤーの情報のサブウィンドウも描き直す (店の中ではターンごとの要求が来ない)
+        rfu.set_flag(SubWindowRedrawingFlag::PLAYER);
         vary_item(creature, i, -item.number);
     }
 
@@ -89,6 +91,7 @@ bool exchange_cash(CreatureEntity &creature)
         msg_format(fmt_reward, reward_money);
         creature.add_au(reward_money);
         rfu.set_flag(MainWindowRedrawingFlag::GOLD);
+        rfu.set_flag(SubWindowRedrawingFlag::PLAYER);
         vary_item(creature, i_idx, -item.number);
     }
 
@@ -112,6 +115,7 @@ bool exchange_cash(CreatureEntity &creature)
         msg_format(fmt_reward, reward_money);
         creature.add_au(reward_money);
         rfu.set_flag(MainWindowRedrawingFlag::GOLD);
+        rfu.set_flag(SubWindowRedrawingFlag::PLAYER);
         vary_item(creature, i_idx, -item.number);
     }
 
@@ -133,6 +137,7 @@ bool exchange_cash(CreatureEntity &creature)
         msg_format(fmt_reward, reward_money);
         creature.add_au(reward_money);
         rfu.set_flag(MainWindowRedrawingFlag::GOLD);
+        rfu.set_flag(SubWindowRedrawingFlag::PLAYER);
         vary_item(creature, i_idx, -item.number);
     }
 
@@ -153,6 +158,7 @@ bool exchange_cash(CreatureEntity &creature)
         msg_format(fmt_reward, reward_money);
         creature.add_au(reward_money);
         rfu.set_flag(MainWindowRedrawingFlag::GOLD);
+        rfu.set_flag(SubWindowRedrawingFlag::PLAYER);
         vary_item(creature, i_idx, -item.number);
     }
 
