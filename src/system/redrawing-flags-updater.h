@@ -122,6 +122,12 @@ public:
     //! メインウィンドウの消去と全体の描き直し (WIPE/BASIC/EXTRA/EQUIPPY/MAP) をまとめてセットする
     void request_whole_main_window_redrawing();
 
+    //! マップ (メインウィンドウ MAP + サブウィンドウ OVERHEAD/DUNGEON) の描き直しをまとめてセットする
+    void request_map_redrawing();
+
+    //! モンスターの表示状態更新 (MONSTER_STATUSES) とマップの描き直しをまとめてセットする
+    void request_monster_update_and_map_redrawing();
+
     void reset_flag(MainWindowRedrawingFlag flag);
     void reset_flag(SubWindowRedrawingFlag flag);
     void reset_flag(StatusRecalculatingFlag flag);

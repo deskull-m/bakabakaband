@@ -62,23 +62,17 @@ void check_music(CreatureEntity &creature)
         set_interrupting_song_effect(creature, MUSIC_NONE);
         msg_print(_("歌を再開した。", "You resume singing."));
         creature.set_action(ACTION_SING);
+        rfu.request_monster_update_and_map_redrawing();
         static constexpr auto flags_srf = {
             StatusRecalculatingFlag::BONUS,
             StatusRecalculatingFlag::HP,
-            StatusRecalculatingFlag::MONSTER_STATUSES,
         };
         rfu.set_flags(flags_srf);
         static constexpr auto flags_mwrf = {
-            MainWindowRedrawingFlag::MAP,
             MainWindowRedrawingFlag::TIMED_EFFECT,
             MainWindowRedrawingFlag::ACTION,
         };
         rfu.set_flags(flags_mwrf);
-        static constexpr auto flags_swrf = {
-            SubWindowRedrawingFlag::OVERHEAD,
-            SubWindowRedrawingFlag::DUNGEON,
-        };
-        rfu.set_flags(flags_swrf);
     }
 
     PlayerSkill(creature).gain_continuous_spell_skill_exp(RealmType::MUSIC, spell_id);

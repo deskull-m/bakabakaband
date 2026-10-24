@@ -97,10 +97,6 @@ bool set_invuln(CreatureEntity &creature, short v, bool do_dec)
     }
 
     auto &rfu = RedrawingFlagsUpdater::get_instance();
-    static constexpr auto flags_swrf = {
-        SubWindowRedrawingFlag::OVERHEAD,
-        SubWindowRedrawingFlag::DUNGEON,
-    };
     if (v) {
         if (creature.get_timed_effect(CreatureTimedEffect::INVULNERABILITY) && !do_dec) {
             if (creature.get_timed_effect(CreatureTimedEffect::INVULNERABILITY) > v) {
@@ -113,18 +109,14 @@ bool set_invuln(CreatureEntity &creature, short v, bool do_dec)
             chg_virtue(creature, Virtue::HONOUR, -2);
             chg_virtue(creature, Virtue::SACRIFICE, -3);
             chg_virtue(creature, Virtue::VALOUR, -5);
-            rfu.set_flag(MainWindowRedrawingFlag::MAP);
-            rfu.set_flag(StatusRecalculatingFlag::MONSTER_STATUSES);
-            rfu.set_flags(flags_swrf);
+            rfu.request_monster_update_and_map_redrawing();
         }
     } else {
         if (creature.get_timed_effect(CreatureTimedEffect::INVULNERABILITY) && !music_singing(creature, MUSIC_INVULN)) {
             msg_print(_("無敵ではなくなった。", "The invulnerability wears off."));
             sound(SoundKind::BUFF_EXPIRE);
             notice = true;
-            rfu.set_flag(MainWindowRedrawingFlag::MAP);
-            rfu.set_flag(StatusRecalculatingFlag::MONSTER_STATUSES);
-            rfu.set_flags(flags_swrf);
+            rfu.request_monster_update_and_map_redrawing();
             creature.add_energy_need(ENERGY_NEED());
         }
     }
