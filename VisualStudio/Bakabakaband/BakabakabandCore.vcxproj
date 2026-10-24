@@ -1865,6 +1865,7 @@
     <ClCompile Include="..\..\src\view\display-player-stat-info.cpp" />
     <ClCompile Include="..\..\src\view\display-player.cpp" />
     <ClCompile Include="..\..\src\view\display-util.cpp" />
+    <ClCompile Include="..\..\src\view\map-info-cache.cpp" />
     <ClCompile Include="..\..\src\player\process-death.cpp" />
     <ClCompile Include="..\..\src\view\display-player-misc-info.cpp" />
     <ClCompile Include="..\..\src\view\display-player-inventory-page.cpp" />
@@ -1948,6 +1949,7 @@
     <ClInclude Include="..\..\src\view\display-lore.h" />
     <ClInclude Include="..\..\src\view\display-map.h" />
     <ClInclude Include="..\..\src\view\display-messages.h" />
+    <ClInclude Include="..\..\src\view\map-info-cache.h" />
     <ClInclude Include="..\..\src\view\display-self-info.h" />
     <ClInclude Include="..\..\src\view\display-scores.h" />
     <ClInclude Include="..\..\src\window\display-sub-windows.h" />
