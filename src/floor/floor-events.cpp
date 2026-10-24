@@ -44,17 +44,8 @@
 static void update_sun_light(CreatureEntity &creature)
 {
     auto &rfu = RedrawingFlagsUpdater::get_instance();
-    static constexpr auto flags_srf = {
-        StatusRecalculatingFlag::MONSTER_STATUSES,
-        StatusRecalculatingFlag::MONSTER_LITE,
-    };
-    rfu.set_flags(flags_srf);
-    rfu.set_flag(MainWindowRedrawingFlag::MAP);
-    static constexpr auto flags = {
-        SubWindowRedrawingFlag::OVERHEAD,
-        SubWindowRedrawingFlag::DUNGEON,
-    };
-    rfu.set_flags(flags);
+    rfu.request_monster_update_and_map_redrawing();
+    rfu.set_flag(StatusRecalculatingFlag::MONSTER_LITE);
     if ((creature.get_floor()->grid_array[creature.y][creature.x].info & CAVE_GLOW) != 0) {
         set_superstealth(creature, false);
     }

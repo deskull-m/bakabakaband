@@ -123,12 +123,5 @@ void verify_panel(CreatureEntity &creature)
     }
 
     panel_bounds_center();
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.set_flag(StatusRecalculatingFlag::MONSTER_STATUSES);
-    rfu.set_flag(MainWindowRedrawingFlag::MAP);
-    static constexpr auto flags = {
-        SubWindowRedrawingFlag::OVERHEAD,
-        SubWindowRedrawingFlag::DUNGEON,
-    };
-    rfu.set_flags(flags);
+    RedrawingFlagsUpdater::get_instance().request_monster_update_and_map_redrawing();
 }
