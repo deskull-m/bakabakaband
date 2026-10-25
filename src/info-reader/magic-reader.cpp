@@ -95,7 +95,7 @@ ParseErrorType MagicReader::read() const
         return err;
     }
 
-    if (class_id < error_idx) {
+    if (class_id <= error_idx) {
         return ParseErrorType::NON_SEQUENTIAL_RECORDS;
     }
     error_idx = class_id;
