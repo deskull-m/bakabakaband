@@ -591,10 +591,12 @@ tl::optional<std::string> do_hex_spell(CreatureEntity &creature, spell_hex_type 
                 if (one_in_(7)) {
                     msg_print(_("呪いを全て吸い取った。", "A heavy curse vanished."));
                     item->curse_flags.clear();
+                    RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
                 }
             } else if (item->curse_flags.has(CurseTraitType::CURSED) && one_in_(3)) {
                 msg_print(_("呪いを全て吸い取った。", "A curse vanished."));
                 item->curse_flags.clear();
+                RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
             }
 
             should_continue = false;

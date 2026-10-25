@@ -95,6 +95,14 @@ bool artifact_scroll(CreatureEntity &creature)
         return true;
     }
 
+    // 装備品なら、アーティファクトの能力 (光源の明るさなども) が付く
+    static constexpr auto flags_srf = {
+        StatusRecalculatingFlag::BONUS,
+        StatusRecalculatingFlag::TORCH,
+        StatusRecalculatingFlag::MP,
+    };
+    RedrawingFlagsUpdater::get_instance().set_flags(flags_srf);
+
     if (record_rand_art) {
         const auto diary_item_name = describe_flavor(creature, *item, OD_NAME_ONLY);
         exe_write_diary(*creature.get_floor(), DiaryKind::ART_SCROLL, 0, diary_item_name);
@@ -139,7 +147,19 @@ bool mundane_spell(CreatureEntity &creature, bool only_equip)
     item->set_position(pos);
     item->marked = marked;
     item->inscription = std::move(inscription);
-    RedrawingFlagsUpdater::get_instance().set_item_related_sub_window_flags();
+
+    // 装備品なら、修正値・エゴ・アーティファクトの能力 (光源の明るさなども) が無くなる
+    static constexpr auto flags_srf = {
+        StatusRecalculatingFlag::BONUS,
+        StatusRecalculatingFlag::TORCH,
+        StatusRecalculatingFlag::MP,
+    };
+    auto &rfu = RedrawingFlagsUpdater::get_instance();
+    rfu.set_flags(flags_srf);
+
+    // 鑑定の状態・エゴ・修正値が変わるので、並び順や束をまとめられるかも変わる
+    rfu.request_inventory_arrangement();
+    rfu.set_item_related_sub_window_flags();
     calc_android_exp(creature);
     return true;
 }

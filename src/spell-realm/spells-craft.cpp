@@ -326,7 +326,12 @@ bool pulish_shield(CreatureEntity &creature)
         item->ego_idx = EgoType::REFLECTION;
         enchant_equipment(*item, randint0(3) + 4, ENCH_TOAC);
         item->discount = 99;
-        RedrawingFlagsUpdater::get_instance().set_item_related_sub_window_flags();
+
+        // 修正値の強化に失敗しても、エゴの能力は付いている
+        auto &rfu = RedrawingFlagsUpdater::get_instance();
+        rfu.set_flag(StatusRecalculatingFlag::BONUS);
+        rfu.request_inventory_arrangement();
+        rfu.set_item_related_sub_window_flags();
         chg_virtue(creature, Virtue::ENCHANT, 2);
         return true;
     }
