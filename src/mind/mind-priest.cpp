@@ -10,6 +10,7 @@
 #include "object-hook/hook-weapon.h"
 #include "object/item-tester-hooker.h"
 #include "object/item-use-flags.h"
+#include "perception/simple-perception.h"
 #include "racial/racial-android.h"
 #include "system/creature-entity.h"
 #include "system/deferred-update-requests.h"
@@ -48,7 +49,7 @@ bool bless_weapon(CreatureEntity &creature)
 #else
             msg_print("The black aura on {} {} disrupts the blessing!", ((i_idx >= 0) ? "your" : "the"), item_name);
 #endif
-
+            sense_curse(creature, i_idx);
             return true;
         }
 

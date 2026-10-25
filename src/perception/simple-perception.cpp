@@ -46,6 +46,20 @@ void apply_item_feeling(CreatureEntity &creature, INVENTORY_IDX i_idx, item_feel
 }
 
 /*!
+ * @brief 呪われていると分かった装備に、呪いに合わせた擬似鑑定の感触を付ける
+ * @param creature クリーチャーへの参照
+ * @param i_idx 持ち物の番号
+ * @details 装備・呪い感知・呪いが付いたときと同じ {呪われている} 系の感触で簡易鑑定済みにする。
+ * 鑑定済みの品と、呪いを表す感触で感じ済みの品は変えない (ItemEntity::find_curse_feeling())。
+ */
+void sense_curse(CreatureEntity &creature, INVENTORY_IDX i_idx)
+{
+    if (const auto feel = ref_item(creature, i_idx)->find_curse_feeling()) {
+        apply_item_feeling(creature, i_idx, *feel);
+    }
+}
+
+/*!
  * @brief 擬似鑑定を実際に行い判定を反映する
  * @param slot 擬似鑑定を行うプレイヤーの所持リストID
  * @param creature クリーチャーへの参照

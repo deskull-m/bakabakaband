@@ -46,6 +46,7 @@
 #include "object/item-use-flags.h"
 #include "perception/identification.h"
 #include "perception/object-perception.h"
+#include "perception/simple-perception.h"
 #include "player-base/player-class.h"
 #include "player-info/class-info.h"
 #include "player-info/race-types.h"
@@ -123,6 +124,7 @@ void do_cmd_drop(CreatureEntity &creature)
 
     if ((i_idx >= INVEN_MAIN_HAND) && item->is_cursed()) {
         msg_print(_("ふーむ、どうやら呪われているようだ。", "Hmmm, it seems to be cursed."));
+        sense_curse(creature, i_idx);
         return;
     }
 

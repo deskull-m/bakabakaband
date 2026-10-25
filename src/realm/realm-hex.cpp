@@ -25,6 +25,7 @@
 #include "object-hook/hook-armor.h"
 #include "object/item-tester-hooker.h"
 #include "object/item-use-flags.h"
+#include "perception/simple-perception.h"
 #include "player/attack-defense-types.h"
 #include "player/player-realm.h"
 #include "player/player-skill.h"
@@ -464,6 +465,7 @@ tl::optional<std::string> do_hex_spell(CreatureEntity &creature, spell_hex_type 
                 return tl::nullopt;
             } else {
                 msg_print(_("影のオーラを身にまとった。", "You are enveloped by a shadowy aura!"));
+                sense_curse(creature, INVEN_OUTER);
             }
         }
         if (continuation) {
@@ -596,6 +598,8 @@ tl::optional<std::string> do_hex_spell(CreatureEntity &creature, spell_hex_type 
             if (is_drained) {
                 item->remove_curses();
                 DeferredUpdateRequests::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
+            } else {
+                sense_curse(creature, i_idx);
             }
 
             should_continue = false;

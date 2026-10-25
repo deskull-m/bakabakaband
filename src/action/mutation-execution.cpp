@@ -161,11 +161,8 @@ bool exe_mutation_power(CreatureEntity &creature, PlayerMutationType power)
         (void)lite_area(creature, Dice::roll(2, (lvl / 2)), (lvl / 10) + 1);
         return true;
     case PlayerMutationType::DET_CURSE:
-        // 呪われた品を、呪いに合わせた感触で簡易鑑定済みにする
         for (const auto i_idx : INVEN_ALL_SLOTS) {
-            if (const auto feel = creature.inventory[i_idx]->find_curse_feeling()) {
-                apply_item_feeling(creature, i_idx, *feel);
-            }
+            sense_curse(creature, i_idx);
         }
 
         return true;
