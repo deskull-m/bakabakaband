@@ -1659,6 +1659,7 @@ hengband_test_SOURCES = \
 	test/store/test-store-util.cpp \
 	\
 	test/system/test-dungeon-record.cpp \
+	test/system/test-redrawing-flags-updater.cpp \
 	\
 	test/system/baseitem/test-baseitem-allocation.cpp \
 	test/system/baseitem/test-baseitem-list.cpp \

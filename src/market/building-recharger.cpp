@@ -4,7 +4,6 @@
 #include "flavor/flavor-describer.h"
 #include "flavor/object-flavor-types.h"
 #include "floor/floor-object.h"
-#include "inventory/inventory-object.h"
 #include "inventory/inventory-slot-types.h"
 #include "market/building-util.h"
 #include "object-enchant/special-object-flags.h"
@@ -12,6 +11,7 @@
 #include "spell-kind/spells-perception.h"
 #include "system/creature-entity.h"
 #include "system/item-entity.h"
+#include "system/redrawing-flags-updater.h"
 #include "term/screen-processor.h"
 #include "view/display-messages.h"
 
@@ -147,7 +147,7 @@ void building_recharge(CreatureEntity &creature)
 #else
     msg_format("%s^ %s recharged for %d gold.", item_name.data(), ((item->number > 1) ? "were" : "was"), price);
 #endif
-    request_inventory_arrangement();
+    RedrawingFlagsUpdater::get_instance().request_inventory_arrangement();
     creature.sub_au(price);
 }
 
@@ -259,6 +259,6 @@ void building_recharge_all(CreatureEntity &creature)
 
     msg_format(_("＄%d で再充填しました。", "You pay %d gold."), total_cost);
     msg_erase();
-    request_inventory_arrangement();
+    RedrawingFlagsUpdater::get_instance().request_inventory_arrangement();
     creature.sub_au(total_cost);
 }

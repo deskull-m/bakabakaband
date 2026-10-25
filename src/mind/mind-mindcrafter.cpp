@@ -82,11 +82,7 @@ bool psychometry(CreatureEntity &creature)
     item->marked.set(OmType::TOUCHED);
 
     auto &rfu = RedrawingFlagsUpdater::get_instance();
-    static constexpr auto flags_srf = {
-        InventoryArrangementFlag::COMBINATION,
-        InventoryArrangementFlag::REORDER,
-    };
-    rfu.set_flags(flags_srf);
+    rfu.request_inventory_arrangement();
     rfu.set_item_related_sub_window_flags();
 
     bool okay = false;
