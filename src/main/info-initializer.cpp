@@ -243,7 +243,9 @@ void init_egos_info()
 void init_terrains_info()
 {
     auto &terrains = TerrainList::get_instance();
-    init_json("TerrainDefinitions.jsonc", "terrains", DefinitionHashDataType::TERRAINS, terrains, parse_terrains_json_info, [&terrains] { terrains.retouch(); });
+    TerrainReaderSession session;
+    auto parser = [&session](nlohmann::json &element) { return parse_terrains_json_info(element, session); };
+    init_json("TerrainDefinitions.jsonc", "terrains", DefinitionHashDataType::TERRAINS, terrains, parser, [&terrains] { terrains.retouch(); });
 }
 
 /*!

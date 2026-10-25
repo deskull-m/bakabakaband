@@ -147,7 +147,7 @@ static ParseErrorType set_terrain_generation(const nlohmann::json &generation_ob
  * @param element 地形情報の JSON Object
  * @return エラーコード
  */
-ParseErrorType parse_terrains_json_info(nlohmann::json &element)
+ParseErrorType parse_terrains_json_info(nlohmann::json &element, TerrainReaderSession &session)
 {
     if (element.is_null() || !element.is_object()) {
         return ParseErrorType::TOO_FEW_ARGUMENTS;
@@ -165,6 +165,16 @@ ParseErrorType parse_terrains_json_info(nlohmann::json &element)
     const auto key = key_obj.get<std::string>();
     if (key.empty()) {
         return ParseErrorType::GENERIC;
+    }
+
+    // 同じ ID・タグを 2 つ書くと、エラーにならず上書き・取り違えになるので弾く
+    if (session.ids.contains(id)) {
+        msg_print(_("地形ID '{}' が重複しています。", "Duplicate terrain ID '{}'."), id);
+        return ParseErrorType::NON_SEQUENTIAL_RECORDS;
+    }
+    if (session.keys.contains(key)) {
+        msg_print(_("地形タグ '{}' が重複しています。", "Duplicate terrain tag '{}'."), key);
+        return ParseErrorType::INVALID_VALUE;
     }
 
     auto &terrains = TerrainList::get_instance();
@@ -346,5 +356,7 @@ ParseErrorType parse_terrains_json_info(nlohmann::json &element)
         }
     }
 
+    session.ids.insert(id);
+    session.keys.insert(key);
     return ParseErrorType::NONE;
 }
