@@ -182,3 +182,40 @@ TEST_CASE("QuestReader accepts starts within every map candidate")
     CHECK(fixed_map.starts[1].y == 1);
     CHECK(fixed_map.starts[1].x == 2);
 }
+
+TEST_CASE("QuestReader reports the first failing stage in declaration order")
+{
+    // hengband#5882 相当。名前・定義・説明・凡例・マップ・開始位置の順で最初の段階のエラーを返すことを、
+    // 隣り合う段階で異なるエラーコードになる誤りを 1 段ずつ直して確認する。
+    auto data = make_quest_with_description("New description");
+    const auto name = data["name"];
+    data.erase("name");
+    data["definition"]["type"] = "UNKNOWN";
+    const auto descriptions = data["descriptions"];
+    data["descriptions"] = 5;
+    data["legend"] = { { "##", nlohmann::json::object() } };
+    data["map"] = 5;
+    data["start"] = { { "y", 99 }, { "x", 0 } };
+    const auto read = [&data] {
+        QuestType quest;
+        QuestFixedMap fixed_map;
+        return QuestReader(data, quest, fixed_map).read();
+    };
+
+    CHECK(read() == ParseErrorType::TOO_FEW_ARGUMENTS);
+    data["name"] = name;
+    CHECK(read() == ParseErrorType::INVALID_FLAG);
+    data["definition"]["type"] = "KILL_ALL";
+    CHECK(read() == ParseErrorType::INVALID_TYPE);
+    data["descriptions"] = descriptions;
+    CHECK(read() == ParseErrorType::GENERIC);
+    data["legend"] = nlohmann::json::object();
+    CHECK(read() == ParseErrorType::INVALID_TYPE);
+    data["map"] = { "..." };
+    CHECK(read() == ParseErrorType::OUT_OF_BOUNDS);
+    data["start"]["y"] = 0;
+    QuestType quest;
+    QuestFixedMap fixed_map;
+    REQUIRE(QuestReader(data, quest, fixed_map).read() == ParseErrorType::NONE);
+    CHECK(fixed_map.starts.size() == 1);
+}

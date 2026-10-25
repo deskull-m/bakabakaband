@@ -4,9 +4,9 @@
  * @brief 1つの固定クエスト JSONC を QuestType(メタデータ) と QuestFixedMap(レイアウト) に読み込む
  */
 
+#include "info-reader/parse-error-types.h"
 #include <nlohmann/json_fwd.hpp>
-
-enum class ParseErrorType : int;
+#include <tl/expected.hpp>
 class QuestType;
 struct QuestFixedMap;
 struct QuestLegendCell;
@@ -31,12 +31,12 @@ public:
     ParseErrorType read() const;
 
 private:
-    ParseErrorType set_name() const;
-    ParseErrorType set_definition() const;
-    ParseErrorType set_descriptions() const;
-    ParseErrorType set_legend() const;
-    ParseErrorType set_maps() const;
-    ParseErrorType set_starts() const;
+    tl::expected<void, ParseErrorType> set_name() const;
+    tl::expected<void, ParseErrorType> set_definition() const;
+    tl::expected<void, ParseErrorType> set_descriptions() const;
+    tl::expected<void, ParseErrorType> set_legend() const;
+    tl::expected<void, ParseErrorType> set_maps() const;
+    tl::expected<void, ParseErrorType> set_starts() const;
 
     const nlohmann::json &quest_data;
     QuestType &quest;
