@@ -49,6 +49,7 @@
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
+#include "system/redrawing-flags-updater.h"
 #include "target/target-getter.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
@@ -160,7 +161,7 @@ bool exe_mutation_power(CreatureEntity &creature, PlayerMutationType power)
     case PlayerMutationType::ILLUMINE:
         (void)lite_area(creature, Dice::roll(2, (lvl / 2)), (lvl / 10) + 1);
         return true;
-    case PlayerMutationType::DET_CURSE:
+    case PlayerMutationType::DET_CURSE: {
         for (const auto i_idx : INVEN_ALL_SLOTS) {
             auto *o_ptr = creature.inventory[i_idx].get();
             if (!o_ptr->is_valid() || !o_ptr->is_cursed()) {
@@ -170,7 +171,12 @@ bool exe_mutation_power(CreatureEntity &creature, PlayerMutationType power)
             o_ptr->feeling = FEEL_CURSED;
         }
 
+        // 感触が変わると、持ち物の束をまとめられるかも変わる
+        auto &rfu = RedrawingFlagsUpdater::get_instance();
+        rfu.request_inventory_arrangement();
+        rfu.set_flag(SubWindowRedrawingFlag::EQUIPMENT);
         return true;
+    }
     case PlayerMutationType::BERSERK:
         (void)berserk(creature, randint1(25) + 25);
         return true;
