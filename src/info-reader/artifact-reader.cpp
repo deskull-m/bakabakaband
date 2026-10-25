@@ -12,6 +12,7 @@
 #include "util/enum-converter.h"
 #include "util/string-processor.h"
 #include "view/display-messages.h"
+#include <algorithm>
 #include <fmt/format.h>
 #include <nlohmann/json.hpp>
 
@@ -123,7 +124,9 @@ ParseErrorType ArtifactReader::read() const
     if (const auto err = info_set_integer(get_json_value(this->art_data, "id"), int_id, true, Range(0, 9999)); !err) {
         return err.error();
     }
-    if (int_id < error_idx) {
+    // 実行時の記録 (ArtifactRecords) は 1〜件数の ID だけを作るため、1 から欠番なく並んでいることを求める。
+    if (const auto previous_id = std::max(error_idx, 0); int_id != previous_id + 1) {
+        msg_print(_("アーティファクトIDが連番ではありません。ID: '{}'、直前ID: '{}'。", "Artifact ID is not sequential. ID: '{}', previous ID: '{}'."), int_id, previous_id);
         return ParseErrorType::NON_SEQUENTIAL_RECORDS;
     }
     const auto artifact_id = i2enum<FixedArtifactId>(int_id);
