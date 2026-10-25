@@ -424,10 +424,12 @@ void run_step(CreatureEntity &creature, const Direction &dir)
         }
     }
 
-    creature.set_running(creature.get_running() - 1);
-    if (creature.get_running() <= 0) {
+    if (creature.get_running() <= 1) {
+        stop_running(creature);
         return;
     }
+
+    creature.set_running(creature.get_running() - 1);
 
     PlayerEnergy(creature).set_player_turn_energy(100);
     exe_movement(creature, find_current, false, false);

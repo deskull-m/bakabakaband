@@ -289,7 +289,7 @@ void wiz_identify_full_inventory(CreatureEntity &creature)
 
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.request_inventory_arrangement();
-    rfu.set_flag(SubWindowRedrawingFlag::EQUIPMENT);
+    rfu.set_item_related_sub_window_flags();
 }
 
 /*!

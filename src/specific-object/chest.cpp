@@ -24,6 +24,7 @@
 #include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/item-entity.h"
+#include "system/redrawing-flags-updater.h"
 #include "view/display-messages.h"
 
 /*!< この値以降の小項目IDを持った箱は大型の箱としてドロップ数を増やす / Special "sval" limit -- first "large" chest */
@@ -105,6 +106,7 @@ void Chest::open(bool scatter, const Pos2D &pos, short item_idx)
     floor.object_level = floor.base_level;
     item.pval = 0;
     item.mark_as_known();
+    RedrawingFlagsUpdater::get_instance().request_floor_item_lists_redrawing();
 }
 
 /*!
@@ -292,6 +294,7 @@ void Chest::fire_trap(const Pos2D &pos, short item_idx)
         msg_print(_("突然、箱が爆発した！", "There is a sudden explosion!"));
         msg_print(_("箱の中の物はすべて粉々に砕け散った！", "Everything inside the chest is destroyed!"));
         o_ptr->pval = 0;
+        RedrawingFlagsUpdater::get_instance().request_floor_item_lists_redrawing();
         sound(SoundKind::EXPLODE);
         take_hit(*this->creature_ptr, DAMAGE_ATTACK, Dice::roll(5, 8), _("爆発する箱", "an exploding chest"));
     }

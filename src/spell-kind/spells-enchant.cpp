@@ -15,6 +15,7 @@
 #include "racial/racial-android.h"
 #include "system/creature-entity.h"
 #include "system/item-entity.h"
+#include "system/redrawing-flags-updater.h"
 #include "term/screen-processor.h"
 #include "view/display-messages.h"
 #include <memory>
@@ -138,6 +139,7 @@ bool mundane_spell(CreatureEntity &creature, bool only_equip)
     item->set_position(pos);
     item->marked = marked;
     item->inscription = std::move(inscription);
+    RedrawingFlagsUpdater::get_instance().set_item_related_sub_window_flags();
     calc_android_exp(creature);
     return true;
 }
