@@ -127,11 +127,7 @@ void ObjectZapRodEntity::execute(INVENTORY_IDX i_idx)
     }
 
     auto &rfu = RedrawingFlagsUpdater::get_instance();
-    static constexpr auto flags_srf = {
-        InventoryArrangementFlag::COMBINATION,
-        InventoryArrangementFlag::REORDER,
-    };
-    rfu.set_flags(flags_srf);
+    rfu.request_inventory_arrangement();
     if (!(item->is_aware())) {
         chg_virtue(creature, Virtue::PATIENCE, -1);
         chg_virtue(creature, Virtue::CHANCE, 1);
