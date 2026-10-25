@@ -42,7 +42,7 @@
  * @return
  * @details Execute a single editor command
  */
-ape_quittance do_editor_command(CreatureEntity &creature, text_body_type *tb, int com_id)
+ape_quittance do_editor_command(CreatureEntity &creature, AutopickTextBody *tb, int com_id)
 {
     switch (com_id) {
     case EC_QUIT: {
