@@ -23,6 +23,7 @@
 #include "system/angband-exceptions.h"
 #include "system/creature-entity.h"
 #include "system/item-entity.h"
+#include "system/redrawing-flags-updater.h"
 #include "view/display-messages.h"
 
 /*!
@@ -112,7 +113,7 @@ bool recharge(CreatureEntity &creature, int power)
     }
 
     if (is_recharge_successful) {
-        request_inventory_arrangement();
+        RedrawingFlagsUpdater::get_instance().request_inventory_arrangement();
         return true;
     }
 
@@ -124,7 +125,7 @@ bool recharge(CreatureEntity &creature, int power)
         } else if (item->is_wand_staff()) {
             item->pval = 0;
         }
-        request_inventory_arrangement();
+        RedrawingFlagsUpdater::get_instance().request_inventory_arrangement();
         return true;
     }
 
@@ -224,6 +225,6 @@ bool recharge(CreatureEntity &creature, int power)
         THROW_EXCEPTION(std::logic_error, "Invalid fail type!");
     }
 
-    request_inventory_arrangement();
+    RedrawingFlagsUpdater::get_instance().request_inventory_arrangement();
     return true;
 }

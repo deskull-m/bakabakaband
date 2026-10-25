@@ -330,11 +330,7 @@ bool lose_all_info(CreatureEntity &creature)
 
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(StatusRecalculatingFlag::BONUS);
-    static constexpr auto flags_iaf = {
-        InventoryArrangementFlag::COMBINATION,
-        InventoryArrangementFlag::REORDER,
-    };
-    rfu.set_flags(flags_iaf);
+    rfu.request_inventory_arrangement();
     rfu.set_item_related_sub_window_flags();
     wiz_dark(creature);
     return true;
