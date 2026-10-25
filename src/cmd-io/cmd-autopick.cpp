@@ -144,7 +144,6 @@ void do_cmd_edit_autopick(CreatureEntity &creature)
     static int cx_save = 0;
     static int cy_save = 0;
     autopick_type an_entry, *entry = &an_entry;
-    int i;
     int key = -1;
     static int32_t old_autosave_turn = 0L;
     ape_quittance quit = APE_QUIT;
@@ -174,11 +173,9 @@ void do_cmd_edit_autopick(CreatureEntity &creature)
     }
 
     tb->lines_list = read_pickpref_text_lines(creature.base_name, &tb->filename_mode);
-    for (i = 0; i < tb->cy; i++) {
-        if (!tb->lines_list[i]) {
-            tb->cy = tb->cx = 0;
-            break;
-        }
+    // 前回閉じたときのカーソルの行が、読み込み直したファイルに無ければ先頭に戻す
+    if (!tb->lines_list[tb->cy]) {
+        tb->cy = tb->cx = 0;
     }
 
     TermCenteredOffsetSetter tcos(tl::nullopt, tl::nullopt);
