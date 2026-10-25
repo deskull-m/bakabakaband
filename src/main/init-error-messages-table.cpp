@@ -7,6 +7,7 @@
 #include "locale/character-encoding.h"
 #include "util/enum-converter.h"
 #include <fmt/format.h>
+#include <span>
 
 /*!
  * エラーメッセージの名称定義 / Standard error message text
@@ -77,4 +78,24 @@ std::string format_json_syntax_error(std::string_view filename, std::string_view
     }
 
     return fmt::format(_("{}: JSONの構文エラー: {}", "{}: JSON syntax error: {}"), filename, *detail);
+}
+
+/*!
+ * @brief 読み込み中の診断を出力順に並べ、最後に終了理由を付ける
+ * @param diagnostics 読み込み中に集めた診断 (空の行は飛ばす)
+ * @param error 終了理由 (記録の位置とエラーの種類など)
+ * @return 診断を1行ずつ並べ、最後に終了理由を付けた文字列
+ * @details 診断は既にシステムの文字コードなので変換しない。
+ */
+std::string format_definition_load_error(std::span<const std::string> diagnostics, std::string_view error)
+{
+    std::string message;
+    for (const auto &diagnostic : diagnostics) {
+        if (!diagnostic.empty()) {
+            message.append(diagnostic);
+            message.push_back('\n');
+        }
+    }
+    message.append(error);
+    return message;
 }

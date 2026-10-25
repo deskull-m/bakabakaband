@@ -152,10 +152,11 @@ static void init_json(std::string_view filename, std::string_view keyname, Defin
 
     auto &elements = json_object[keyname];
     for (size_t index = 0; index < elements.size(); ++index) {
+        // 起動中は履歴に残らず、msg_print 自体も入力を待つため、レコード単位で診断を捕捉する。
+        ScopedMessageCapture diagnostics;
         const auto error_code = parser(elements[index]);
         if (error_code != ParseErrorType::NONE) {
-            msg_erase();
-            quit(format_record_parse_error(filename, keyname, index, error_code));
+            quit(format_definition_load_error(diagnostics.messages(), format_record_parse_error(filename, keyname, index, error_code)));
         }
     }
 
@@ -305,7 +306,8 @@ void init_vaults_info()
         const auto err = reader.read();
         if (err != ParseErrorType::NONE) {
             const auto &diagnostic = reader.error().value();
-            quit(fmt::format(_("VaultDefinitions.jsonc: Vault{}の{}: {}", "VaultDefinitions.jsonc: vault {} at {}: {}"), diagnostic.id, diagnostic.path, diagnostic.reason));
+            // init_json 側で捕捉し終了理由にまとめるため、ここでは quit せず診断を出力する。
+            msg_print(_("VaultDefinitions.jsonc: Vault{}の{}: {}", "VaultDefinitions.jsonc: vault {} at {}: {}"), diagnostic.id, diagnostic.path, diagnostic.reason);
         }
         return err;
     };
@@ -317,8 +319,12 @@ void init_vaults_info()
  */
 void init_wilderness()
 {
-    if (const auto result = initialize_wilderness_definition(); !result) {
-        quit(result.error());
+    {
+        // 起動中は履歴に残らず、msg_print 自体も入力を待つため、診断を捕捉して終了理由にまとめる。
+        ScopedMessageCapture diagnostics;
+        if (const auto result = initialize_wilderness_definition(); !result) {
+            quit(format_definition_load_error(diagnostics.messages(), result.error()));
+        }
     }
 
     init_wilderness_encounter();
