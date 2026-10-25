@@ -151,7 +151,7 @@ void do_cmd_pet_dismiss(CreatureEntity &creature)
 
             if (monster.is_riding()) {
                 msg_print(_("{}から降りた。", "You dismount from {}. "), friend_name);
-                creature.ride_monster(0);
+                creature.dismount();
                 dur.set_flag(StatusRecalculatingFlag::MONSTER_STATUSES);
                 dur.request_riding_status_redrawing();
             }
