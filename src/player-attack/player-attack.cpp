@@ -14,7 +14,6 @@
 #include "combat/martial-arts-table.h"
 #include "combat/slaying.h"
 #include "floor/geometry.h"
-#include "game-option/cheat-types.h"
 #include "inventory/inventory-slot-types.h"
 #include "main/sound-definitions-table.h"
 #include "main/sound-of-music.h"
@@ -498,8 +497,7 @@ static void apply_actual_attack(
     const auto is_berserker = CreatureClass(creature).equals(PlayerClassType::BERSERKER);
     pa_ptr->attack_damage = mon_damage_mod(creature, *pa_ptr->m_ptr, pa_ptr->attack_damage, is_death_scythe || (is_berserker && one_in_(2)));
     critical_attack(creature, pa_ptr);
-    msg_print_wizard(creature, CHEAT_MONSTER, _("{}のダメージを与えた。(残hp {}/{}({}))", "You do {} damage. (left HP {}/{}({}))"),
-        pa_ptr->attack_damage, pa_ptr->m_ptr->hp - pa_ptr->attack_damage, pa_ptr->m_ptr->maxhp, pa_ptr->m_ptr->max_maxhp);
+    msg_print_wizard_damage(creature, *pa_ptr->m_ptr, pa_ptr->attack_damage);
 }
 
 /*!

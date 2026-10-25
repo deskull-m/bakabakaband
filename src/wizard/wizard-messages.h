@@ -8,6 +8,7 @@
 class CreatureEntity;
 bool is_wizard_message_enabled(int cheat_type);
 void msg_print_wizard(CreatureEntity &creature, int cheat_type, std::string_view msg);
+void msg_print_wizard_damage(CreatureEntity &creature, const CreatureEntity &monster, int damage);
 
 template <typename... Args>
 void msg_print_wizard(CreatureEntity &creature, int cheat_type, fmt::format_string<Args...> fmt, Args &&...args)

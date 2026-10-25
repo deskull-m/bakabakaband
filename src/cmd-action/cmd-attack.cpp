@@ -17,7 +17,6 @@
 #include "effect/effect-characteristics.h"
 #include "effect/effect-processor.h"
 #include "floor/floor-object.h"
-#include "game-option/cheat-types.h"
 #include "inventory/inventory-slot-types.h"
 #include "io/input-key-requester.h"
 #include "main/sound-definitions-table.h"
@@ -141,8 +140,7 @@ static void natural_attack(CreatureEntity &creature, MONSTER_IDX m_idx, PlayerMu
     }
 
     k = mon_damage_mod(creature, monster, k, false);
-    msg_print_wizard(creature, CHEAT_MONSTER, _("{}のダメージを与えた。(残りHP {}/{}({}))", "You do {} damage. (left HP {}/{}({}))"), k, monster.hp - k,
-        monster.maxhp, monster.max_maxhp);
+    msg_print_wizard_damage(creature, monster, k);
     if (k > 0) {
         anger_monster(creature, monster);
     }
@@ -230,8 +228,7 @@ static void headbutt_attack(CreatureEntity &creature, MONSTER_IDX m_idx, bool *f
     }
 
     k = mon_damage_mod(creature, monster, k, false);
-    msg_print_wizard(creature, CHEAT_MONSTER, _("{}のダメージを与えた。(残りHP {}/{}({}))", "You do {} damage. (left HP {}/{}({}))"), k, monster.hp - k,
-        monster.maxhp, monster.max_maxhp);
+    msg_print_wizard_damage(creature, monster, k);
 
     if (k > 0) {
         anger_monster(creature, monster);
@@ -324,8 +321,7 @@ static void bodyslam_attack(CreatureEntity &creature, MONSTER_IDX m_idx, bool *f
     }
 
     k = mon_damage_mod(creature, monster, k, false);
-    msg_print_wizard(creature, CHEAT_MONSTER, _("{}のダメージを与えた。(残りHP {}/{}({}))", "You do {} damage. (left HP {}/{}({}))"), k, monster.hp - k,
-        monster.maxhp, monster.max_maxhp);
+    msg_print_wizard_damage(creature, monster, k);
 
     if (k > 0) {
         anger_monster(creature, monster);
@@ -711,8 +707,7 @@ static void enema_attack(CreatureEntity &creature, MONSTER_IDX m_idx, bool *fear
     }
 
     k = mon_damage_mod(creature, monster, k, false);
-    msg_print_wizard(creature, CHEAT_MONSTER, _("{}のダメージを与えた。(残りHP {}/{}({}))", "You do {} damage. (left HP {}/{}({}))"), k, monster.hp - k,
-        monster.maxhp, monster.max_maxhp);
+    msg_print_wizard_damage(creature, monster, k);
 
     if (k > 0) {
         anger_monster(creature, monster);

@@ -56,3 +56,17 @@ void msg_print_wizard(CreatureEntity &creature, int cheat_type, std::string_view
         exe_write_diary(*creature.get_floor(), DiaryKind::WIZARD_LOG, 0, mes);
     }
 }
+
+/*!
+ * @brief モンスターに与えるダメージと残りの HP を、ウィザードのメッセージで表示する
+ * @param creature 視点となるクリーチャー (プレイヤー)
+ * @param monster ダメージを受けるモンスター
+ * @param damage 表示するダメージ (まだ HP から引いていない値)
+ * @details 残りの HP は、モンスターの今の HP から damage を引いた値を表示する。
+ * 呼び出し元が後で属性の耐性などでダメージを変える場合は、実際に減る HP と食い違う。
+ */
+void msg_print_wizard_damage(CreatureEntity &creature, const CreatureEntity &monster, int damage)
+{
+    constexpr auto fmt = _("{}のダメージを与えた。(残りHP {}/{}({}))", "You do {} damage. (left HP {}/{}({}))");
+    msg_print_wizard(creature, CHEAT_MONSTER, fmt, damage, monster.hp - damage, monster.maxhp, monster.max_maxhp);
+}
