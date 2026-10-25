@@ -54,3 +54,34 @@ TEST_CASE("RedrawingFlagsUpdater::request_inventory_arrangement requests combini
     CHECK(rfu.has(SubWindowRedrawingFlag::INVENTORY));
     CHECK_FALSE(rfu.has(InventoryArrangementFlag::AUTO_DESTRUCTION));
 }
+
+TEST_CASE("RedrawingFlagsUpdater::set_item_related_sub_window_flags requests redrawing the windows showing items")
+{
+    auto &rfu = RedrawingFlagsUpdater::get_instance();
+    const auto restore = util::make_finalizer([&rfu,
+                                                  inventory = rfu.has(SubWindowRedrawingFlag::INVENTORY),
+                                                  equipment = rfu.has(SubWindowRedrawingFlag::EQUIPMENT),
+                                                  player = rfu.has(SubWindowRedrawingFlag::PLAYER),
+                                                  floor_items = rfu.has(SubWindowRedrawingFlag::FLOOR_ITEMS),
+                                                  found_items = rfu.has(SubWindowRedrawingFlag::FOUND_ITEMS)] {
+        restore_flag(rfu, SubWindowRedrawingFlag::INVENTORY, inventory);
+        restore_flag(rfu, SubWindowRedrawingFlag::EQUIPMENT, equipment);
+        restore_flag(rfu, SubWindowRedrawingFlag::PLAYER, player);
+        restore_flag(rfu, SubWindowRedrawingFlag::FLOOR_ITEMS, floor_items);
+        restore_flag(rfu, SubWindowRedrawingFlag::FOUND_ITEMS, found_items);
+    });
+    static constexpr auto flags_swrf = {
+        SubWindowRedrawingFlag::INVENTORY,
+        SubWindowRedrawingFlag::EQUIPMENT,
+        SubWindowRedrawingFlag::PLAYER,
+        SubWindowRedrawingFlag::FLOOR_ITEMS,
+        SubWindowRedrawingFlag::FOUND_ITEMS,
+    };
+    rfu.reset_flags(flags_swrf);
+
+    rfu.set_item_related_sub_window_flags();
+
+    for (const auto flag : flags_swrf) {
+        CHECK(rfu.has(flag));
+    }
+}

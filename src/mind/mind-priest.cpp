@@ -61,12 +61,7 @@ bool bless_weapon(CreatureEntity &creature)
         item->ident.set(IdentificationFlag::SENSE);
         item->feeling = FEEL_NONE;
         rfu.set_flag(StatusRecalculatingFlag::BONUS);
-        static constexpr auto flags = {
-            SubWindowRedrawingFlag::EQUIPMENT,
-            SubWindowRedrawingFlag::FLOOR_ITEMS,
-            SubWindowRedrawingFlag::FOUND_ITEMS,
-        };
-        rfu.set_flags(flags);
+        rfu.set_item_related_sub_window_flags();
     }
 
     /*
@@ -140,13 +135,7 @@ bool bless_weapon(CreatureEntity &creature)
     }
 
     rfu.set_flag(StatusRecalculatingFlag::BONUS);
-    static constexpr auto flags_swrf = {
-        SubWindowRedrawingFlag::EQUIPMENT,
-        SubWindowRedrawingFlag::PLAYER,
-        SubWindowRedrawingFlag::FLOOR_ITEMS,
-        SubWindowRedrawingFlag::FOUND_ITEMS,
-    };
-    rfu.set_flags(flags_swrf);
+    rfu.set_item_related_sub_window_flags();
     calc_android_exp(creature);
     return true;
 }
