@@ -97,11 +97,13 @@ function BuildPackage ($msbuild, $package_name, $package_unique_files, $build_co
         Remove-Item -Verbose -Exclude music.cfg, readme.txt, *.mp3 -Path (Join-Path $bakabakabandDirEsc 'lib\xtra\music\*')
 
         # zipアーカイブ作成
-        # -DestinationPath には -LiteralPath 相当の指定がないため、出力先に []
-        # が含まれる場合に備えてワイルドカードとして解釈されないようエスケープする
-        $package_path = Join-Path $outputDirFull "${package_name}.zip"
+        # -DestinationPath には -LiteralPath 相当の指定がない。親ディレクトリは
+        # ワイルドカードとして解決されるため [] を含む場合はエスケープが必要だが、
+        # ファイル名はそのまま使われるので、エスケープするとバッククォートが
+        # zip の名前に残ってしまう。よってディレクトリ側だけをエスケープする
+        $package_path = Join-Path ([System.Management.Automation.WildcardPattern]::Escape($outputDirFull)) "${package_name}.zip"
         Get-ChildItem -LiteralPath $tempDir |
-            Compress-Archive -Force -Verbose -DestinationPath ([System.Management.Automation.WildcardPattern]::Escape($package_path))
+            Compress-Archive -Force -Verbose -DestinationPath $package_path
     }
     finally {
         Remove-Item -Recurse -Force -LiteralPath $tempDir

@@ -1078,6 +1078,9 @@
     <ClCompile Include="..\..\src\monster\monster-list.cpp">
       <Filter>monster</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\lore\monster-lore-snapshot.cpp">
+      <Filter>lore</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\src\lore\monster-lore.cpp">
       <Filter>lore</Filter>
     </ClCompile>
@@ -4121,6 +4124,9 @@
     </ClInclude>
     <ClInclude Include="..\..\src\monster\monster-list.h">
       <Filter>monster</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\lore\monster-lore-snapshot.h">
+      <Filter>lore</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\lore\monster-lore.h">
       <Filter>lore</Filter>
