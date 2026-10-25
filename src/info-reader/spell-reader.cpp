@@ -8,9 +8,10 @@
 #include <fmt/format.h>
 #include <nlohmann/json.hpp>
 
-SpellReader::SpellReader(const nlohmann::json &realm_data, SpellInfoList &spell_info_list)
+SpellReader::SpellReader(const nlohmann::json &realm_data, SpellInfoList &spell_info_list, Session &session)
     : realm_data(realm_data)
     , spell_info_list(spell_info_list)
+    , session(session)
 {
 }
 
@@ -86,6 +87,17 @@ ParseErrorType SpellReader::set_spell_data(const nlohmann::json &spell_data, Rea
         return ParseErrorType::TOO_FEW_ARGUMENTS;
     }
     info.tag = tag_obj.get<std::string>();
+
+    // 同じ領域に同じ呪文ID・タグを 2 つ書くと、エラーにならず上書きされるので弾く
+    auto &record = this->session.realms[realm];
+    if (!record.ids.insert(info.idx).second) {
+        msg_print(_("呪文ID '{}' が領域内で重複しています。", "Duplicate spell ID '{}' in a realm."), spell_id);
+        return ParseErrorType::NON_SEQUENTIAL_RECORDS;
+    }
+    if (!record.tags.insert(info.tag).second) {
+        msg_print(_("呪文タグ '{}' が領域内で重複しています。", "Duplicate spell tag '{}' in a realm."), info.tag);
+        return ParseErrorType::INVALID_VALUE;
+    }
 
     if (const auto err = info_set_string(get_json_value(spell_data, "name"), info.name, true); !err) {
         msg_print(_("呪文名読込失敗。ID: '{}'。", "Failed to load spell name. ID: '{}'."), error_idx);
