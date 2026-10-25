@@ -4,6 +4,7 @@
 #include "info-reader/info-reader-util.h"
 #include "info-reader/json-reader-util.h"
 #include "io/files-util.h"
+#include "main/init-error-messages-table.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/dungeon/dungeon-list.h"
 #include "system/enums/dungeon/dungeon-id.h"
@@ -15,11 +16,13 @@
 #include "view/display-messages.h"
 #include <algorithm>
 #include <array>
+#include <fmt/format.h>
 #include <fstream>
 #include <iterator>
 #include <limits>
 #include <nlohmann/json.hpp>
 #include <set>
+#include <string>
 #include <utility>
 
 namespace {
@@ -41,12 +44,22 @@ ParseErrorType read_localized_integer(const nlohmann::json &value, int &destinat
     return result ? ParseErrorType::NONE : result.error();
 }
 
-std::optional<WildernessDefinition> load_wilderness_definition()
+//! 荒野の定義ファイルを読み込めなかった理由
+struct WildernessLoadError {
+    std::string message; //!< 起動時に表示する診断
+    ParseErrorType code = ParseErrorType::GENERIC; //!< 定義の誤りならその種類、ファイルを開けない・構文エラーなら GENERIC
+};
+
+/*!
+ * @brief 荒野の定義ファイルを読み込む
+ * @return 読み込んだ定義、失敗時はファイルを開けない・構文エラー・定義の誤りを区別した理由
+ */
+tl::expected<WildernessDefinition, WildernessLoadError> load_wilderness_definition()
 {
     const auto path = path_build(ANGBAND_DIR_EDIT, WILDERNESS_DEFINITION);
     std::ifstream ifs(path);
     if (!ifs) {
-        return std::nullopt;
+        return tl::make_unexpected(WildernessLoadError{ fmt::format(_("{}: ファイルを開けません", "{}: cannot open the file"), WILDERNESS_DEFINITION) });
     }
 
     try {
@@ -54,13 +67,14 @@ std::optional<WildernessDefinition> load_wilderness_definition()
         std::istreambuf_iterator<char> ifs_end;
         const auto json_object = nlohmann::json::parse(ifs_iter, ifs_end, nullptr, true, true, true);
         WildernessDefinition definition;
-        if (WildernessReader(json_object).read(definition) != ParseErrorType::NONE) {
-            return std::nullopt;
+        if (const auto code = WildernessReader(json_object).read(definition); code != ParseErrorType::NONE) {
+            return tl::make_unexpected(WildernessLoadError{
+                fmt::format(_("{}: {} (エラー{})", "{}: {} (error {})"), WILDERNESS_DEFINITION, describe_parse_error(code), enum2i(code)), code });
         }
 
         return definition;
-    } catch (const nlohmann::json::exception &) {
-        return std::nullopt;
+    } catch (const nlohmann::json::exception &e) {
+        return tl::make_unexpected(WildernessLoadError{ format_json_syntax_error(WILDERNESS_DEFINITION, e.what()) });
     }
 }
 }
@@ -244,25 +258,25 @@ ParseErrorType WildernessReader::read_map(const nlohmann::json &map_data, int wi
     return ParseErrorType::NONE;
 }
 
-bool initialize_wilderness_definition()
+tl::expected<void, std::string> initialize_wilderness_definition()
 {
     const auto definition = load_wilderness_definition();
     if (!definition) {
-        return false;
+        return tl::make_unexpected(definition.error().message);
     }
 
     auto &wilderness = WildernessGrids::get_instance();
     wilderness.initialize_width(definition->width);
     wilderness.initialize_height(definition->height);
     wilderness.initialize_grids();
-    return true;
+    return {};
 }
 
 tl::expected<void, ParseErrorType> apply_wilderness_definition()
 {
     const auto definition = load_wilderness_definition();
     if (!definition) {
-        return tl::make_unexpected(ParseErrorType::GENERIC);
+        return tl::make_unexpected(definition.error().code);
     }
     const auto use_compact = vanilla_town || lite_town;
     const auto &map = use_compact ? definition->compact : definition->normal;

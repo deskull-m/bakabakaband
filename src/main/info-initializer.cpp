@@ -133,7 +133,12 @@ static void init_json(std::string_view filename, std::string_view keyname, Defin
 
     std::istreambuf_iterator<char> ifs_iter(ifs);
     std::istreambuf_iterator<char> ifs_end;
-    auto json_object = nlohmann::json::parse(ifs_iter, ifs_end, nullptr, true, true, true);
+    nlohmann::json json_object;
+    try {
+        json_object = nlohmann::json::parse(ifs_iter, ifs_end, nullptr, true, true, true);
+    } catch (const nlohmann::json::exception &e) {
+        quit(format_json_syntax_error(filename, e.what()));
+    }
 
     const auto array_it = json_object.find(keyname);
     if ((array_it == json_object.end()) || !array_it->is_array()) {
@@ -145,11 +150,12 @@ static void init_json(std::string_view filename, std::string_view keyname, Defin
 
     error_idx = -1;
 
-    for (auto &element : json_object[keyname]) {
-        const auto error_code = parser(element);
+    auto &elements = json_object[keyname];
+    for (size_t index = 0; index < elements.size(); ++index) {
+        const auto error_code = parser(elements[index]);
         if (error_code != ParseErrorType::NONE) {
             msg_erase();
-            quit(fmt::format(_("'{}'ファイルにエラー", "Error in '{}' file."), filename));
+            quit(format_record_parse_error(filename, keyname, index, error_code));
         }
     }
 
@@ -311,8 +317,8 @@ void init_vaults_info()
  */
 void init_wilderness()
 {
-    if (!initialize_wilderness_definition()) {
-        quit(_("荒野を初期化できません", "Cannot initialize wilderness"));
+    if (const auto result = initialize_wilderness_definition(); !result) {
+        quit(result.error());
     }
 
     init_wilderness_encounter();
