@@ -5,6 +5,7 @@
 #include <string_view>
 #include <tl/optional.hpp>
 #include <utility>
+#include <vector>
 
 enum class SpellHexRevengeType : byte {
     NONE = 0,
@@ -51,7 +52,6 @@ public:
 
 private:
     CreatureEntity &creature;
-    std::vector<int> casting_spells;
     std::shared_ptr<spell_hex_data_type> spell_hex_data;
 
     std::pair<bool, tl::optional<char>> select_spell_stopping(std::string_view prompt);
@@ -60,4 +60,5 @@ private:
     bool check_restart();
     int calc_need_mana();
     void gain_exp();
+    std::vector<int> get_casting_spells() const;
 };
