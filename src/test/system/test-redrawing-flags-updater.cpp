@@ -85,3 +85,45 @@ TEST_CASE("RedrawingFlagsUpdater::set_item_related_sub_window_flags requests red
         CHECK(rfu.has(flag));
     }
 }
+
+TEST_CASE("RedrawingFlagsUpdater::request_autopick_inscription requests redrawing the windows showing the inscribed items")
+{
+    auto &rfu = RedrawingFlagsUpdater::get_instance();
+    const auto restore = util::make_finalizer([&rfu,
+                                                  inventory = rfu.has(SubWindowRedrawingFlag::INVENTORY),
+                                                  equipment = rfu.has(SubWindowRedrawingFlag::EQUIPMENT),
+                                                  floor_items = rfu.has(SubWindowRedrawingFlag::FLOOR_ITEMS),
+                                                  found_items = rfu.has(SubWindowRedrawingFlag::FOUND_ITEMS),
+                                                  player = rfu.has(SubWindowRedrawingFlag::PLAYER),
+                                                  bonus = rfu.has(StatusRecalculatingFlag::BONUS),
+                                                  combination = rfu.has(InventoryArrangementFlag::COMBINATION)] {
+        restore_flag(rfu, SubWindowRedrawingFlag::INVENTORY, inventory);
+        restore_flag(rfu, SubWindowRedrawingFlag::EQUIPMENT, equipment);
+        restore_flag(rfu, SubWindowRedrawingFlag::FLOOR_ITEMS, floor_items);
+        restore_flag(rfu, SubWindowRedrawingFlag::FOUND_ITEMS, found_items);
+        restore_flag(rfu, SubWindowRedrawingFlag::PLAYER, player);
+        restore_flag(rfu, StatusRecalculatingFlag::BONUS, bonus);
+        restore_flag(rfu, InventoryArrangementFlag::COMBINATION, combination);
+    });
+    static constexpr auto flags_swrf = {
+        SubWindowRedrawingFlag::INVENTORY,
+        SubWindowRedrawingFlag::EQUIPMENT,
+        SubWindowRedrawingFlag::FLOOR_ITEMS,
+        SubWindowRedrawingFlag::FOUND_ITEMS,
+    };
+    rfu.reset_flags(flags_swrf);
+    rfu.reset_flag(SubWindowRedrawingFlag::PLAYER);
+    rfu.reset_flag(StatusRecalculatingFlag::BONUS);
+    rfu.reset_flag(InventoryArrangementFlag::COMBINATION);
+
+    rfu.request_autopick_inscription();
+
+    for (const auto flag : flags_swrf) {
+        CHECK(rfu.has(flag));
+    }
+
+    CHECK(rfu.has(StatusRecalculatingFlag::BONUS));
+    CHECK(rfu.has(InventoryArrangementFlag::COMBINATION));
+    // アイテムの一覧ではないサブウィンドウは対象外
+    CHECK_FALSE(rfu.has(SubWindowRedrawingFlag::PLAYER));
+}

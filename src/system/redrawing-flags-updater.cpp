@@ -230,11 +230,18 @@ void RedrawingFlagsUpdater::fill_up_sub_flags()
     this->sub_window_flags.set(all_sub_window_flags);
 }
 
+/*!
+ * @brief 自動拾いの銘が書かれたときに、アイテムの一覧の描き直しなどを予約する
+ * @details 床のアイテムにも銘を書くため、床上・発見済みのアイテム一覧も描き直す
+ * (持ち運べない・ザックに隙間が無い・拾うのを断ったアイテムは、銘が付いたまま床に残る)。
+ */
 void RedrawingFlagsUpdater::request_autopick_inscription()
 {
     static constexpr auto flags_swrf = {
         SubWindowRedrawingFlag::INVENTORY,
         SubWindowRedrawingFlag::EQUIPMENT,
+        SubWindowRedrawingFlag::FLOOR_ITEMS,
+        SubWindowRedrawingFlag::FOUND_ITEMS,
     };
     this->set_flags(flags_swrf);
     this->set_flag(StatusRecalculatingFlag::BONUS);

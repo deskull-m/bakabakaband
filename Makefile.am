@@ -46,6 +46,7 @@ EXTRA_DIST = \
 	hengband.spec \
 	tools/bot/hbctl.py \
 	tools/bot/README.md \
+	tools/release/Build-Windows-Release-Package.ps1 \
 	tools/tests/main-window-wipe-probe.cpp \
 	tools/verify-class-skill-migration.py \
 	$(visual_studio_files) \
