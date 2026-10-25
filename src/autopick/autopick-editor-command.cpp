@@ -60,7 +60,9 @@ ape_quittance do_editor_command(CreatureEntity &creature, AutopickTextBody *tb, 
             break;
         }
 
-        tb->lines_list = read_pickpref_text_lines(creature.base_name, &tb->filename_mode);
+        auto [filename_mode, lines] = read_pickpref_text_lines(creature.base_name);
+        tb->filename_mode = filename_mode;
+        tb->lines_list = std::move(lines);
         tb->dirty_flags |= DIRTY_ALL | DIRTY_MODE | DIRTY_EXPRESSION;
         tb->cx = tb->cy = 0;
         tb->mark = 0;

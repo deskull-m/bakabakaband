@@ -151,7 +151,7 @@ void do_cmd_edit_autopick(CreatureEntity &creature)
     AutopickTextBody text_body(cx_save, cy_save);
     AutopickTextBody *tb = &text_body;
     tb->dirty_flags = DIRTY_ALL | DIRTY_MODE | DIRTY_EXPRESSION;
-    tb->filename_mode = PT_DEFAULT;
+    tb->filename_mode = PickType::DEFAULT;
     auto &world = AngbandWorld::get_instance();
     world.play_time.pause();
     const auto unpauser = util::make_finalizer([&world]() { world.play_time.unpause(); });
@@ -172,7 +172,9 @@ void do_cmd_edit_autopick(CreatureEntity &creature)
         tb->last_destroyed = autopick_line_from_entry(*entry);
     }
 
-    tb->lines_list = read_pickpref_text_lines(creature.base_name, &tb->filename_mode);
+    auto [filename_mode, lines] = read_pickpref_text_lines(creature.base_name);
+    tb->filename_mode = filename_mode;
+    tb->lines_list = std::move(lines);
     // 前回閉じたときのカーソルの行が、読み込み直したファイルに無ければ先頭に戻す
     if (!tb->lines_list[tb->cy]) {
         tb->cy = tb->cx = 0;
