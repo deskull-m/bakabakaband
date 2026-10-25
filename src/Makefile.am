@@ -1656,6 +1656,8 @@ hengband_test_SOURCES = \
 	test/object/test-object-info.cpp \
 	test/object/test-object-value.cpp \
 	\
+	test/player-status/test-player-speed.cpp \
+	\
 	test/racial/test-racial-android.cpp \
 	\
 	test/save/test-item-writer.cpp \

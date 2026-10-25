@@ -40,6 +40,9 @@
     <Filter Include="object">
       <UniqueIdentifier>{87da8058-8e9d-4abf-be22-43ca8b0bc0a1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="player-status">
+      <UniqueIdentifier>{7efa8aa2-e95f-51fc-a755-3cd80e7e70bf}</UniqueIdentifier>
+    </Filter>
     <Filter Include="racial">
       <UniqueIdentifier>{9d2e4f71-6c38-4a5b-b1e7-3a8c0d5f2b64}</UniqueIdentifier>
     </Filter>
@@ -157,6 +160,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\test\object\test-object-value.cpp">
       <Filter>object</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\test\player-status\test-player-speed.cpp">
+      <Filter>player-status</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\test\floor\test-floor-events.cpp">
       <Filter>floor</Filter>

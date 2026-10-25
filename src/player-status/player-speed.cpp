@@ -25,6 +25,28 @@
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
 #include "util/bit-flags-calculator.h"
+#include <algorithm>
+#include <limits>
+
+/*!
+ * @brief 所持品の重量による速度の増減分を計算する
+ * @param weight 所持品の重量
+ * @param limit 減速しない重量の上限
+ * @return 速度値の増減分 (0以下)
+ * @details 上限を超えた重量について、上限の1/5ごとに1減速する。
+ * 大量に持つと減速の値が int16_t に収まらず、回り込んで加速になるので、
+ * int で計算して int16_t の下限で抑える。
+ * limit は5以上であること (呼び出し元は500以上を渡す)。
+ */
+int16_t calc_speed_bonus_by_weight(int weight, int limit)
+{
+    if (weight <= limit) {
+        return 0;
+    }
+
+    const auto slowdown = (weight - limit) / (limit / 5);
+    return static_cast<int16_t>(std::max(-slowdown, int{ std::numeric_limits<int16_t>::min() }));
+}
 
 PlayerSpeed::PlayerSpeed(CreatureEntity &creature)
     : PlayerStatusBase(creature)
@@ -311,23 +333,14 @@ int16_t PlayerSpeed::riding_bonus()
  */
 int16_t PlayerSpeed::inventory_weight_bonus()
 {
-    int16_t bonus = 0;
-    auto weight = calc_inventory_weight(this->creature);
+    const auto weight = calc_inventory_weight(this->creature);
     if (this->creature.get_riding()) {
         const auto &monster = this->creature.get_floor()->get_monster(this->creature.get_riding());
         const auto &monrace = monster.get_monrace();
-        auto count = 1500 + monrace.level * 25;
-        if (weight > count) {
-            bonus -= ((weight - count) / (count / 5));
-        }
-    } else {
-        auto count = calc_weight_limit(this->creature);
-        if (weight > count) {
-            bonus -= ((weight - count) / (count / 5));
-        }
+        return calc_speed_bonus_by_weight(weight, 1500 + monrace.level * 25);
     }
 
-    return bonus;
+    return calc_speed_bonus_by_weight(weight, calc_weight_limit(this->creature));
 }
 
 /*!
