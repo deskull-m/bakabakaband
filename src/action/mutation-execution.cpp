@@ -24,7 +24,7 @@
 #include "monster/monster-info.h"
 #include "mutation/mutation-flag-types.h"
 #include "mutation/mutation-techniques.h"
-#include "object-enchant/item-feeling.h"
+#include "perception/simple-perception.h"
 #include "player-info/self-info.h"
 #include "player-status/player-energy.h"
 #include "player/player-damage.h"
@@ -45,7 +45,6 @@
 #include "status/element-resistance.h"
 #include "status/shape-changer.h"
 #include "system/creature-entity.h"
-#include "system/deferred-update-requests.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
@@ -161,22 +160,15 @@ bool exe_mutation_power(CreatureEntity &creature, PlayerMutationType power)
     case PlayerMutationType::ILLUMINE:
         (void)lite_area(creature, Dice::roll(2, (lvl / 2)), (lvl / 10) + 1);
         return true;
-    case PlayerMutationType::DET_CURSE: {
+    case PlayerMutationType::DET_CURSE:
+        // 呪われた品を、呪いに合わせた感触で簡易鑑定済みにする
         for (const auto i_idx : INVEN_ALL_SLOTS) {
-            auto *o_ptr = creature.inventory[i_idx].get();
-            if (!o_ptr->is_valid() || !o_ptr->is_cursed()) {
-                continue;
+            if (const auto feel = creature.inventory[i_idx]->find_curse_feeling()) {
+                apply_item_feeling(creature, i_idx, *feel);
             }
-
-            o_ptr->feeling = FEEL_CURSED;
         }
 
-        // 感触が変わると、持ち物の束をまとめられるかも変わる
-        auto &dur = DeferredUpdateRequests::get_instance();
-        dur.request_inventory_arrangement();
-        dur.set_flag(SubWindowRedrawingFlag::EQUIPMENT);
         return true;
-    }
     case PlayerMutationType::BERSERK:
         (void)berserk(creature, randint1(25) + 25);
         return true;

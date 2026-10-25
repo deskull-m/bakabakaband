@@ -195,6 +195,7 @@ public:
     void remove_curses();
     bool add_curses(const EnumClassFlagGroup<CurseTraitType> &curses);
     void match_feeling_to_curses();
+    tl::optional<item_feel_type> find_curse_feeling() const;
     void mark_as_tried() const;
     std::string build_activation_description() const;
 
