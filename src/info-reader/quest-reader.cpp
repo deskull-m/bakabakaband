@@ -92,7 +92,7 @@ ParseErrorType read_map_rows(const nlohmann::json &array_data, std::vector<std::
 {
     for (const auto &line : array_data) {
         if (!line.is_string()) {
-            continue;
+            return ParseErrorType::INVALID_TYPE;
         }
 
         const auto &row = line.get_ref<const std::string &>();
@@ -172,6 +172,8 @@ ParseErrorType parse_quest_legend_cell(const nlohmann::json &cell_data, QuestLeg
                 return ParseErrorType::UNDEFINED_TERRAIN_TAG;
             }
         }
+    } else if (!terrain.is_null()) {
+        return ParseErrorType::INVALID_TYPE;
     }
 
     const auto &cave_info = get_json_value(cell_data, "caveInfo");
