@@ -191,23 +191,21 @@ ParseErrorType parse_quest_legend_cell(const nlohmann::json &cell_data, QuestLeg
         }
     }
 
+    // 整数・オブジェクト以外の値 (5.0 などの整数でない数を含む) は黙って無視せず解析エラーにする。
     const auto &monster = get_json_value(cell_data, "monster");
-    if (monster.is_number_integer()) {
+    if (monster.is_number()) {
         if (const auto err = info_set_integer(monster, grid.monster, true, LEGEND_MONSTER_RANGE); !err) {
             return err.error();
         }
     } else if (monster.is_object()) {
         if (json_is_true(get_json_value(monster, "random"))) {
             grid.random |= RANDOM_MONSTER;
-            const auto &level = get_json_value(monster, "oodLevel");
-            if (level.is_number_integer()) {
-                if (const auto err = info_set_integer(level, grid.monster, true, LEGEND_SHORT_RANGE); !err) {
-                    return err.error();
-                }
+            if (const auto err = info_set_integer(get_json_value(monster, "oodLevel"), grid.monster, false, LEGEND_SHORT_RANGE); !err) {
+                return err.error();
             }
         } else {
             const auto &clone = get_json_value(monster, "cloneOf");
-            if (clone.is_number_integer()) {
+            if (!clone.is_null()) {
                 int clone_id = 0;
                 if (const auto err = info_set_integer(clone, clone_id, true, LEGEND_MONSTER_RANGE); !err) {
                     return err.error();
@@ -215,59 +213,58 @@ ParseErrorType parse_quest_legend_cell(const nlohmann::json &cell_data, QuestLeg
                 grid.monster = static_cast<MONSTER_IDX>(-clone_id);
             }
         }
+    } else if (!monster.is_null()) {
+        return ParseErrorType::INVALID_TYPE;
     }
 
     const auto &object = get_json_value(cell_data, "object");
-    if (object.is_number_integer()) {
+    if (object.is_number()) {
         if (const auto err = info_set_integer(object, grid.object, true, LEGEND_SHORT_RANGE); !err) {
             return err.error();
         }
     } else if (object.is_object()) {
         if (json_is_true(get_json_value(object, "random"))) {
             grid.random |= RANDOM_OBJECT;
-            const auto &level = get_json_value(object, "oodLevel");
-            if (level.is_number_integer()) {
-                if (const auto err = info_set_integer(level, grid.object, true, LEGEND_SHORT_RANGE); !err) {
-                    return err.error();
-                }
+            if (const auto err = info_set_integer(get_json_value(object, "oodLevel"), grid.object, false, LEGEND_SHORT_RANGE); !err) {
+                return err.error();
             }
         } else if (json_is_true(get_json_value(object, "questReward"))) {
             out.object_is_quest_reward = true;
         }
+    } else if (!object.is_null()) {
+        return ParseErrorType::INVALID_TYPE;
     }
 
     const auto &ego = get_json_value(cell_data, "ego");
-    if (ego.is_number_integer()) {
+    if (ego.is_number()) {
         if (const auto err = info_set_integer(ego, grid.ego, true, LEGEND_EGO_RANGE); !err) {
             return err.error();
         }
     } else if (ego.is_object() && json_is_true(get_json_value(ego, "random"))) {
         grid.random |= RANDOM_EGO;
-        const auto &id = get_json_value(ego, "id");
-        if (id.is_number_integer()) {
-            if (const auto err = info_set_integer(id, grid.ego, true, LEGEND_EGO_RANGE); !err) {
-                return err.error();
-            }
+        if (const auto err = info_set_integer(get_json_value(ego, "id"), grid.ego, false, LEGEND_EGO_RANGE); !err) {
+            return err.error();
         }
+    } else if (!ego.is_null() && !ego.is_object()) {
+        return ParseErrorType::INVALID_TYPE;
     }
 
     const auto &artifact = get_json_value(cell_data, "artifact");
-    if (artifact.is_number_integer()) {
+    if (artifact.is_number()) {
         if (const auto err = info_set_integer(artifact, grid.artifact, true, LEGEND_SHORT_RANGE); !err) {
             return err.error();
         }
     } else if (artifact.is_object()) {
         if (json_is_true(get_json_value(artifact, "random"))) {
             grid.random |= RANDOM_ARTIFACT;
-            const auto &id = get_json_value(artifact, "id");
-            if (id.is_number_integer()) {
-                if (const auto err = info_set_integer(id, grid.artifact, true, LEGEND_SHORT_RANGE); !err) {
-                    return err.error();
-                }
+            if (const auto err = info_set_integer(get_json_value(artifact, "id"), grid.artifact, false, LEGEND_SHORT_RANGE); !err) {
+                return err.error();
             }
         } else if (json_is_true(get_json_value(artifact, "questReward"))) {
             out.artifact_is_quest_reward = true;
         }
+    } else if (!artifact.is_null()) {
+        return ParseErrorType::INVALID_TYPE;
     }
 
     const auto &trap = get_json_value(cell_data, "trap");
@@ -385,8 +382,15 @@ ParseErrorType QuestReader::set_definition() const
 
     const auto &reward = get_json_value(definition, "reward");
     if (!reward.is_null()) {
+        // オブジェクトでない報酬や整数以外の値は、報酬無しとして黙って無視せず解析エラーにする。
+        if (!reward.is_object()) {
+            return ParseErrorType::INVALID_TYPE;
+        }
         const auto &artifact = get_json_value(reward, "artifact");
-        if (artifact.is_number_integer()) {
+        if (!artifact.is_null()) {
+            if (!artifact.is_number_integer()) {
+                return ParseErrorType::INVALID_TYPE;
+            }
             meta.reward_artifact = artifact.get<int>();
         }
 
@@ -396,9 +400,10 @@ ParseErrorType QuestReader::set_definition() const
                 return ParseErrorType::INVALID_TYPE;
             }
             for (const auto &candidate : artifacts) {
-                if (candidate.is_number_integer()) {
-                    this->fixed_map.reward_artifact_candidates.push_back(candidate.get<int>());
+                if (!candidate.is_number_integer()) {
+                    return ParseErrorType::INVALID_TYPE;
                 }
+                this->fixed_map.reward_artifact_candidates.push_back(candidate.get<int>());
             }
         }
     }
@@ -542,8 +547,12 @@ ParseErrorType QuestReader::set_starts() const
         }
         for (const auto &variant : variants) {
             QuestStartPosition position;
+            // 整数以外の値は黙って無視せず解析エラーにする (無視すると条件付きの開始位置が無条件になる)。
             const auto &leaving_quest = get_json_value(variant, "leavingQuest");
-            if (leaving_quest.is_number_integer()) {
+            if (!leaving_quest.is_null()) {
+                if (!leaving_quest.is_number_integer()) {
+                    return ParseErrorType::INVALID_TYPE;
+                }
                 position.leaving_quest = leaving_quest.get<int>();
             }
             if (const auto err = info_set_integer(get_json_value(variant, "y"), position.y, true); !err) {
