@@ -153,10 +153,13 @@ static void init_json(std::string_view filename, std::string_view keyname, Defin
     auto &elements = json_object[keyname];
     for (size_t index = 0; index < elements.size(); ++index) {
         // 起動中は履歴に残らず、msg_print 自体も入力を待つため、レコード単位で診断を捕捉する。
+        // 解析器が operator[] で無い項目を null として足すことがあるので、識別子の項目は解析の前に探しておく。
+        // 表記を作るのは失敗したときだけにする。
+        const auto identifier = find_record_identifier(elements[index]);
         ScopedMessageCapture diagnostics;
         const auto error_code = parser(elements[index]);
         if (error_code != ParseErrorType::NONE) {
-            quit(format_definition_load_error(diagnostics.messages(), format_record_parse_error(filename, keyname, index, error_code)));
+            quit(format_definition_load_error(diagnostics.messages(), format_record_parse_error(filename, keyname, index, describe_record_identifier(identifier), error_code)));
         }
     }
 
