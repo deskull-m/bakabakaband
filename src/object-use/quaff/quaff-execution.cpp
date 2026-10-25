@@ -28,6 +28,21 @@
 #include "system/item-entity.h"
 #include "term/screen-processor.h"
 #include "view/display-messages.h"
+#include <algorithm>
+
+/*!
+ * @brief 水分を栄養にする種族が薬を飲んだ後の満腹度を計算する
+ * @param food 飲む前の満腹度
+ * @param pval 薬の滋養
+ * @return 飲んだ後の満腹度 (0以上 PY_FOOD_MAX - 1 以下)
+ * @details 滋養の10倍や和を short で計算すると回り込むので、int で計算してから抑える。
+ * 滋養が負なら10倍の項は足さない。
+ */
+short calc_moistened_food(short food, short pval)
+{
+    const auto value = food + pval + std::max(0, pval * 10) + 2000;
+    return static_cast<short>(std::clamp(value, 0, PY_FOOD_MAX - 1));
+}
 
 /*!
  * @brief コンストラクタ
@@ -128,7 +143,7 @@ void ObjectQuaffEntity::moisten(const ItemEntity &o_ref)
     switch (CreatureRace(&this->creature).food()) {
     case PlayerRaceFoodType::WATER:
         msg_print(_("水分を取り込んだ。", "You are moistened."));
-        set_food(this->creature, std::min<short>(this->creature.get_food() + o_ref.pval + std::max<short>(0, o_ref.pval * 10) + 2000, PY_FOOD_MAX - 1));
+        set_food(this->creature, calc_moistened_food(this->creature.get_food(), o_ref.pval));
         return;
     case PlayerRaceFoodType::OIL:
         if (o_ref.bi_key.tval() != ItemKindType::FLASK) {

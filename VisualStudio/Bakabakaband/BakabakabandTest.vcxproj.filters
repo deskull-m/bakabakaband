@@ -34,11 +34,20 @@
     <Filter Include="lore">
       <UniqueIdentifier>{8ca43536-f921-5018-9314-5ef95d1231f2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="market">
+      <UniqueIdentifier>{3a7c9e51-2b64-4d18-9f0a-5c1e8b4d7a32}</UniqueIdentifier>
+    </Filter>
     <Filter Include="mspell">
       <UniqueIdentifier>{f4dbdb43-4dbe-4518-b1ac-3429da4d19b8}</UniqueIdentifier>
     </Filter>
     <Filter Include="object">
       <UniqueIdentifier>{87da8058-8e9d-4abf-be22-43ca8b0bc0a1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="object-use">
+      <UniqueIdentifier>{1d6f3b82-9a47-4e5c-b018-2f7a9c3e5d41}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="object-use\quaff">
+      <UniqueIdentifier>{9b2e7a14-5c83-4f6d-a927-3e1b8d0c4f56}</UniqueIdentifier>
     </Filter>
     <Filter Include="player-status">
       <UniqueIdentifier>{7efa8aa2-e95f-51fc-a755-3cd80e7e70bf}</UniqueIdentifier>
@@ -152,8 +161,14 @@
     <ClCompile Include="..\..\src\test\lore\test-monster-lore-snapshot.cpp">
       <Filter>lore</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\test\market\test-building-recharger.cpp">
+      <Filter>market</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\src\test\mspell\test-mspell-projection-table.cpp">
       <Filter>mspell</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\test\object-use\quaff\test-quaff-execution.cpp">
+      <Filter>object-use\quaff</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\test\object\test-object-info.cpp">
       <Filter>object</Filter>
@@ -192,6 +207,9 @@
       <Filter>spell</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\test\system\test-dungeon-record.cpp">
+      <Filter>system</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\test\system\test-building-type-definition.cpp">
       <Filter>system</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\test\system\test-deferred-update-requests.cpp">

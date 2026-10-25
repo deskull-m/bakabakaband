@@ -1649,9 +1649,13 @@ hengband_test_SOURCES = \
 	\
 	test/lore/test-monster-lore-snapshot.cpp \
 	\
+	test/market/test-building-recharger.cpp \
+	\
 	test/mspell/test-mspell-projection-table.cpp \
 	\
 	test/object-enchant/test-item-feeling.cpp \
+	\
+	test/object-use/quaff/test-quaff-execution.cpp \
 	\
 	test/object/test-object-info.cpp \
 	test/object/test-object-value.cpp \
@@ -1668,6 +1672,7 @@ hengband_test_SOURCES = \
 	test/store/test-store-screen.cpp \
 	test/store/test-store-util.cpp \
 	\
+	test/system/test-building-type-definition.cpp \
 	test/system/test-deferred-update-requests.cpp \
 	test/system/test-dungeon-record.cpp \
 	\

@@ -82,6 +82,7 @@
     <ClCompile Include="..\..\src\test\info-reader\test-vault-reader.cpp" />
     <ClCompile Include="..\..\src\test\info-reader\test-wilderness-reader.cpp" />
     <ClCompile Include="..\..\src\test\io\test-condition-expression.cpp" />
+    <ClCompile Include="..\..\src\test\io\test-input-context.cpp" />
     <ClCompile Include="..\..\src\test\io\test-interpret-pref-file.cpp" />
     <ClCompile Include="..\..\src\test\io\test-macro-configurations-store.cpp" />
     <ClCompile Include="..\..\src\test\io\test-pref-file-expressor.cpp" />
@@ -89,9 +90,11 @@
     <ClCompile Include="..\..\src\test\knowledge\test-knowledge-features.cpp" />
     <ClCompile Include="..\..\src\test\locale\test-character-encoding.cpp" />
     <ClCompile Include="..\..\src\test\lore\test-monster-lore-snapshot.cpp" />
+    <ClCompile Include="..\..\src\test\market\test-building-recharger.cpp" />
     <ClCompile Include="..\..\src\test\mspell\test-mspell-projection-table.cpp" />
     <ClCompile Include="..\..\src\test\floor\test-floor-events.cpp" />
     <ClCompile Include="..\..\src\test\object-enchant\test-item-feeling.cpp" />
+    <ClCompile Include="..\..\src\test\object-use\quaff\test-quaff-execution.cpp" />
     <ClCompile Include="..\..\src\test\object\test-object-info.cpp" />
     <ClCompile Include="..\..\src\test\object\test-object-value.cpp" />
     <ClCompile Include="..\..\src\test\player-status\test-player-speed.cpp" />
@@ -101,6 +104,8 @@
     <ClCompile Include="..\..\src\test\store\test-store-util.cpp" />
     <ClCompile Include="..\..\src\test\save\test-item-writer.cpp" />
     <ClCompile Include="..\..\src\test\spell\test-spell-info.cpp" />
+    <ClCompile Include="..\..\src\test\spell-realm\test-spells-hex.cpp" />
+    <ClCompile Include="..\..\src\test\system\test-building-type-definition.cpp" />
     <ClCompile Include="..\..\src\test\system\test-dungeon-record.cpp" />
     <ClCompile Include="..\..\src\test\system\test-deferred-update-requests.cpp" />
     <ClCompile Include="..\..\src\test\system\baseitem\test-baseitem-allocation.cpp" />
