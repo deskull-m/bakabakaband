@@ -15,6 +15,11 @@
 #include <string>
 #include <string_view>
 
+namespace {
+// 縮小マップの byte 変換で折り返さず、同順位の +1 後も自動拾い印の 127 未満にする。
+constexpr int MAX_TERRAIN_MAP_PRIORITY = 125;
+}
+
 /*!
  * @brief テキストトークンを走査してフラグを一つ得る
  */
@@ -225,7 +230,7 @@ ParseErrorType parse_terrains_json_info(nlohmann::json &element, TerrainReaderSe
 
     const auto &prio_obj = element["map_priority"];
     if (!prio_obj.is_null()) {
-        if (const auto err = info_set_integer(prio_obj, terrain.priority, true, Range(-9999, 9999)); !err) {
+        if (const auto err = info_set_integer(prio_obj, terrain.priority, true, Range(0, MAX_TERRAIN_MAP_PRIORITY)); !err) {
             return err.error();
         }
     }
