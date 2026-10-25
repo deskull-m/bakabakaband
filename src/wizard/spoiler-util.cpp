@@ -1,4 +1,5 @@
 #include "wizard/spoiler-util.h"
+#include "locale/japanese.h"
 #include "system/item-entity.h"
 #include <fstream>
 
@@ -229,7 +230,7 @@ void spoil_out(std::string_view sv, bool flush_buffer)
                 roff_s = roff_p;
             }
         } else {
-            if (iskanji_flag && strncmp(str, "。", 2) != 0 && strncmp(str, "、", 2) != 0 && strncmp(str, "ィ", 2) != 0 && strncmp(str, "ー", 2) != 0) {
+            if (iskanji_flag && !is_kinsoku(std::string_view(str, 2))) {
                 roff_s = roff_p;
             }
         }
