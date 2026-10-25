@@ -31,6 +31,7 @@ static void finish_eating_magic(CreatureEntity &creature)
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     rfu.set_flag(MainWindowRedrawingFlag::MP);
     rfu.request_inventory_arrangement();
+    rfu.set_item_related_sub_window_flags();
 }
 
 /*!

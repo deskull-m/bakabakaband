@@ -9,6 +9,7 @@
 #include "racial/racial-android.h"
 #include "system/creature-entity.h"
 #include "system/item-entity.h"
+#include "system/redrawing-flags-updater.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
 
@@ -43,6 +44,7 @@ bool rustproof(CreatureEntity &creature)
 #else
     msg_format("%s %s %s now protected against corrosion.", ((i_idx >= 0) ? "Your" : "The"), item_name.data(), ((item->number > 1) ? "are" : "is"));
 #endif
+    RedrawingFlagsUpdater::get_instance().set_item_related_sub_window_flags();
     calc_android_exp(creature);
     return true;
 }

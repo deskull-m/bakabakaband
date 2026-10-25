@@ -391,7 +391,13 @@ void note_spot(CreatureEntity &creature, const Pos2D &pos)
     for (const auto this_o_idx : grid.o_idx_list) {
         auto &item = *floor.o_list[this_o_idx];
         item.marked.set(OmType::FOUND);
-        RedrawingFlagsUpdater::get_instance().set_flag(SubWindowRedrawingFlag::FOUND_ITEMS);
+
+        // 足元のアイテムの一覧も、見つけたアイテムだけを出す。
+        // 見つけていたアイテムでも、置かれたアイテムが重なって数が変わったときなどに描き直す。
+        // 走っている間は描き直すと重いので、止まったとき (stop_running()) に要求する
+        if (!creature.get_running()) {
+            RedrawingFlagsUpdater::get_instance().request_floor_item_lists_redrawing();
+        }
     }
 
     /* Hack -- memorize grids */

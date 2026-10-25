@@ -56,6 +56,7 @@ bool recharge(CreatureEntity &creature, int power)
         return false;
     }
 
+    auto &rfu = RedrawingFlagsUpdater::get_instance();
     const auto item_level = item->get_baseitem_level();
 
     TIME_EFFECT recharge_amount;
@@ -113,7 +114,8 @@ bool recharge(CreatureEntity &creature, int power)
     }
 
     if (is_recharge_successful) {
-        RedrawingFlagsUpdater::get_instance().request_inventory_arrangement();
+        rfu.request_inventory_arrangement();
+        rfu.set_item_related_sub_window_flags();
         return true;
     }
 
@@ -125,7 +127,8 @@ bool recharge(CreatureEntity &creature, int power)
         } else if (item->is_wand_staff()) {
             item->pval = 0;
         }
-        RedrawingFlagsUpdater::get_instance().request_inventory_arrangement();
+        rfu.request_inventory_arrangement();
+        rfu.set_item_related_sub_window_flags();
         return true;
     }
 
@@ -225,6 +228,7 @@ bool recharge(CreatureEntity &creature, int power)
         THROW_EXCEPTION(std::logic_error, "Invalid fail type!");
     }
 
-    RedrawingFlagsUpdater::get_instance().request_inventory_arrangement();
+    rfu.request_inventory_arrangement();
+    rfu.set_item_related_sub_window_flags();
     return true;
 }

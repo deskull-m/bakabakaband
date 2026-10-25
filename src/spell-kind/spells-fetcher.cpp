@@ -105,7 +105,9 @@ void fetch_item(CreatureEntity &creature, const Direction &dir, WEIGHT wgt, bool
     const auto item_name = describe_flavor(creature, item, OD_NAME_ONLY);
     msg_format(_("%s^があなたの足元に飛んできた。", "%s^ flies through the air to your feet."), item_name.data());
     note_spot(creature, p_pos);
-    RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::MAP);
+    auto &rfu = RedrawingFlagsUpdater::get_instance();
+    rfu.set_flag(MainWindowRedrawingFlag::MAP);
+    rfu.request_floor_item_lists_redrawing();
 }
 
 bool fetch_monster(CreatureEntity &creature)

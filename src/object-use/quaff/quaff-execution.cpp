@@ -74,12 +74,7 @@ void ObjectQuaffEntity::execute(INVENTORY_IDX i_idx, bool is_rectal)
         gain_exp(this->creature, (item.get_baseitem_level() + (this->creature.get_level() >> 1)) / this->creature.get_level());
     }
 
-    static constexpr auto flags = {
-        SubWindowRedrawingFlag::INVENTORY,
-        SubWindowRedrawingFlag::EQUIPMENT,
-        SubWindowRedrawingFlag::PLAYER,
-    };
-    rfu.set_flags(flags);
+    rfu.set_item_related_sub_window_flags();
     if (CreatureRace(&this->creature).equals(PlayerRaceType::SKELETON)) {
         return;
     }

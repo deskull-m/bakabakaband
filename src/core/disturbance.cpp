@@ -10,6 +10,32 @@
 #include "target/target-checker.h"
 #include "term/screen-processor.h"
 
+/*!
+ * @brief 走っていれば走るのをやめる
+ * @param creature クリーチャーへの参照
+ * @details 走っている間は画面をプレイヤーに合わせない (center_running がオフのとき) ので、合わせ直す。
+ * 足元・発見済みのアイテムの一覧も描き直していないので、描き直しを要求する
+ */
+void stop_running(CreatureEntity &creature)
+{
+    if (!creature.get_running()) {
+        return;
+    }
+
+    creature.set_running(0);
+    if (center_player && !center_running) {
+        verify_panel(creature);
+    }
+
+    static constexpr auto flags = {
+        StatusRecalculatingFlag::TORCH,
+        StatusRecalculatingFlag::FLOW,
+    };
+    auto &rfu = RedrawingFlagsUpdater::get_instance();
+    rfu.set_flags(flags);
+    rfu.request_floor_item_lists_redrawing();
+}
+
 /*
  * Something has happened to disturb the player.
  * The first arg indicates a major disturbance, which affects search.
@@ -33,18 +59,7 @@ void disturb(CreatureEntity &creature, bool stop_search, bool stop_travel)
         set_action(creature, ACTION_NONE);
     }
 
-    if (creature.get_running()) {
-        creature.set_running(0);
-        if (center_player && !center_running) {
-            verify_panel(creature);
-        }
-
-        static constexpr auto flags = {
-            StatusRecalculatingFlag::TORCH,
-            StatusRecalculatingFlag::FLOW,
-        };
-        rfu.set_flags(flags);
-    }
+    stop_running(creature);
 
     if (stop_travel) {
         Travel::get_instance().stop();

@@ -5,6 +5,7 @@
 #include "flavor/object-flavor-types.h"
 #include "hpmp/hp-mp-regenerator.h"
 #include "inventory/inventory-slot-types.h"
+#include "object/object-mark-types.h"
 #include "object/tval-types.h"
 #include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
@@ -44,6 +45,30 @@ static void recharged_notice(CreatureEntity &creature, const ItemEntity &item)
 
         s = angband_strchr(s + 1, '!');
     }
+}
+
+/*!
+ * @brief 表示上の充填中の本数を求める (ロッドの一覧表示の「(n本 充填中)」に使う)
+ * @param item 対象のアイテム
+ * @return 表示上の充填中の本数
+ */
+static int calc_displayed_charging_count(const ItemEntity &item)
+{
+    if (item.timeout <= 0) {
+        return 0;
+    }
+
+    if (item.number <= 1) {
+        return 1;
+    }
+
+    const auto timeout_per_one = item.get_baseitem_pval();
+    auto num_of_charging = (item.timeout + (timeout_per_one - 1)) / timeout_per_one;
+    if (num_of_charging > item.number) {
+        num_of_charging = item.number;
+    }
+
+    return num_of_charging;
 }
 
 /*!
@@ -120,9 +145,16 @@ void recharge_magic_items(CreatureEntity &creature)
         }
 
         if ((item_ptr->bi_key.tval() == ItemKindType::ROD) && (item_ptr->timeout)) {
+            // 一覧に出るロッド (モンスターが拾うと FOUND は消える) の充填中の表示が変わったときだけ描き直す
+            const auto is_listed = item_ptr->marked.has(OmType::FOUND) && item_ptr->is_known();
+            const auto old_charging_count = is_listed ? calc_displayed_charging_count(*item_ptr) : 0;
             item_ptr->timeout -= (TIME_EFFECT)item_ptr->number;
             if (item_ptr->timeout < 0) {
                 item_ptr->timeout = 0;
+            }
+
+            if (is_listed && (calc_displayed_charging_count(*item_ptr) != old_charging_count)) {
+                rfu.request_floor_item_lists_redrawing();
             }
         }
     }
