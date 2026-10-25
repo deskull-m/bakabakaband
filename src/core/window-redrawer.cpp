@@ -342,6 +342,10 @@ static void update_sub_windows(CreatureEntity &creature, bool include_deferred)
         request_overhead_redrawing_if_changed(creature);
     }
 
+    if (target_flags.has(SubWindowRedrawingFlag::MONSTER_LORE)) {
+        request_monster_lore_redraw_if_changed(creature);
+    }
+
     auto &rfu = RedrawingFlagsUpdater::get_instance();
     if (!rfu.any_sub()) {
         return;

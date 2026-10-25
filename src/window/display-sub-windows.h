@@ -18,6 +18,7 @@ void fix_message(void);
 void fix_overhead(CreatureEntity &creature);
 void fix_dungeon(CreatureEntity &creature);
 void fix_monster(CreatureEntity &creature);
+void request_monster_lore_redraw_if_changed(const CreatureEntity &creature);
 void fix_object(CreatureEntity &creature);
 void fix_floor_item_list(CreatureEntity &creature, const Pos2D &pos);
 void fix_found_item_list(CreatureEntity &creature);
