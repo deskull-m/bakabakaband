@@ -90,7 +90,7 @@ static void init_info(std::string_view filename, DefinitionHashDataType dhdt, In
 
     const auto &[error_code, error_line, line] = init_info_txt(ifs, dhdt, parser);
     if (error_code != ParseErrorType::NONE) {
-        const auto oops = (((error_code > ParseErrorType::NONE) && (error_code < ParseErrorType::MAX)) ? err_str[enum2i(error_code)] : _("未知の", "unknown"));
+        const auto oops = describe_parse_error(error_code);
 #ifdef JP
         msg_print("'{}'ファイルの {} 行目にエラー。", filename, error_line);
 #else

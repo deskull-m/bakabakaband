@@ -12,6 +12,27 @@
 
 namespace {
 /*!
+ * エラーメッセージの名称定義 / Standard error message text
+ * @details 外からは describe_parse_error() を通して引く
+ */
+concptr err_str[enum2i(ParseErrorType::MAX)] = {
+    nullptr,
+    _("文法エラー", "parse error"),
+    _("古いファイル", "obsolete file"),
+    _("記録ヘッダがない", "missing record header"),
+    _("不連続レコード", "non-sequential records"),
+    _("おかしなフラグ存在", "invalid flag specification"),
+    _("未定義命令", "undefined directive"),
+    _("メモリ不足", "out of memory"),
+    _("座標範囲外", "coordinates out of bounds"),
+    _("引数不足", "too few arguments"),
+    _("未定義地形タグ", "undefined terrain tag"),
+    _("不正なpval", "invalid pval"),
+    _("不正な値", "invalid value"),
+    _("不正な型", "invalid type"),
+};
+
+/*!
  * 診断に出す記録の識別子の最大の文字数 (これより長いものは先頭だけ出す)
  */
 constexpr size_t RECORD_IDENTIFIER_MAX_CHARS = 40;
@@ -62,26 +83,6 @@ std::string truncate_utf8(std::string_view utf8, size_t max_chars)
     return fmt::format("{}...", utf8.substr(0, pos));
 }
 }
-
-/*!
- * エラーメッセージの名称定義 / Standard error message text
- */
-concptr err_str[enum2i(ParseErrorType::MAX)] = {
-    nullptr,
-    _("文法エラー", "parse error"),
-    _("古いファイル", "obsolete file"),
-    _("記録ヘッダがない", "missing record header"),
-    _("不連続レコード", "non-sequential records"),
-    _("おかしなフラグ存在", "invalid flag specification"),
-    _("未定義命令", "undefined directive"),
-    _("メモリ不足", "out of memory"),
-    _("座標範囲外", "coordinates out of bounds"),
-    _("引数不足", "too few arguments"),
-    _("未定義地形タグ", "undefined terrain tag"),
-    _("不正なpval", "invalid pval"),
-    _("不正な値", "invalid value"),
-    _("不正な型", "invalid type"),
-};
 
 /*!
  * @brief 解析エラーの名称を返す

@@ -13,8 +13,6 @@
 #include <string>
 #include <string_view>
 
-extern concptr err_str[enum2i(ParseErrorType::MAX)];
-
 /*!
  * @brief 定義の要素を見分けるための項目 (キーの名前と、要素の中の値を指すポインタ)
  * @details value が nullptr なら識別子は無い。指す先は要素が生きている間だけ有効。
