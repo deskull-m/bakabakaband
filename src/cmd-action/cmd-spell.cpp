@@ -22,7 +22,6 @@
 #include "inventory/inventory-slot-types.h"
 #include "io/command-repeater.h"
 #include "io/input-context.h"
-#include "io/input-key-acceptor.h"
 #include "io/input-key-requester.h"
 #include "io/write-diary.h"
 #include "locale/japanese.h"
@@ -531,10 +530,12 @@ static void confirm_use_force(CreatureEntity &creature, bool browse_only)
         return;
     }
 
-    prt(_("('w'練気術, ESC) 'w'かESCを押してください。 ", "(w for the Force, ESC) Hit 'w' or ESC. "), 0, 0);
+    constexpr auto prompt_line = _("('w'練気術, ESC) 'w'かESCを押してください。 ", "(w for the Force, ESC) Hit 'w' or ESC. ");
+    const auto prompt = str_trim(prompt_line);
+    prt(prompt_line, 0, 0);
     char which;
     while (true) {
-        which = inkey();
+        which = input_key_with_context(InputKind::COMMAND_CHAR, prompt);
         if (which == ESCAPE) {
             break;
         }
