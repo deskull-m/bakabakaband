@@ -62,9 +62,14 @@ static void racial_power_erase_cursor(rc_type *rc_ptr)
  * @param creature クリーチャーへの参照
  * @param rc_ptr レイシャルパワー情報への参照ポインタ
  * @return キャンセルしたらRC_CANCEL、それ以外ならRC_CONTINUE
+ * @details 一覧を表示していない (ページが -1) ときは何も描かない。
  */
 static void racial_power_display_list(CreatureEntity &creature, rc_type *rc_ptr)
 {
+    if (rc_ptr->page < 0) {
+        return;
+    }
+
     TERM_LEN x = 11;
     std::string dummy;
 
