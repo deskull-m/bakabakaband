@@ -138,26 +138,26 @@ static void decide_initial_stat(CreatureEntity &creature, int *cval)
     }
 
     if (cval[A_CON] == 0) {
-        cval[A_CON] = 170; // 17.0の新形式
+        cval[A_CON] = 17;
         if (is_magic_user) {
             num_17++;
         }
     }
 
     if (cval[A_STR] == 0) {
-        cval[A_STR] = num_17 == 2 ? 160 : 170; // 16.0 or 17.0の新形式
+        cval[A_STR] = num_17 == 2 ? 16 : 17;
         if (is_magic_user && num_17 < 2) {
             num_17++;
         }
     }
 
     if (cval[A_DEX] == 0) {
-        cval[A_DEX] = (17 - std::max(0, num_17 - 1)) * 10; // 新形式
+        cval[A_DEX] = 17 - std::max(0, num_17 - 1);
     }
 
     for (int i = 0; i < A_MAX; i++) {
         if (cval[i] == 0) {
-            cval[i] = 80; // 8.0の新形式
+            cval[i] = 8;
         }
     }
 }
@@ -172,13 +172,14 @@ static void decide_initial_stat(CreatureEntity &creature, int *cval)
 static std::string cursor_of_adjusted_stat(CreatureEntity &creature, const int *cval, int cs)
 {
     auto j = creature.get_race_info()->r_adj[cs] + (*creature.get_class_info()).c_adj[cs] + (*creature.get_personality_info()).a_adj[cs];
-    auto m = adjust_stat(170, j); // 17.0 の新形式
+    // cval は整数 3〜17 の基本能力値。内部表現は 10 倍 (17.0 = 170) なので変換して合計・最大値を求める
+    auto m = adjust_stat(17 * 10, j);
     auto maxv = format("%4.1f", m / 10.0);
 
-    m = adjust_stat(cval[cs], j);
+    m = adjust_stat(cval[cs] * 10, j);
     auto inp = format("%4.1f", m / 10.0);
 
-    return format("%6s     %4.1f   %+3d  %+3d  %+3d  =  %6s  %6s", stat_names[cs], cval[cs] / 10.0, creature.get_race_info()->r_adj[cs], (*creature.get_class_info()).c_adj[cs], (*creature.get_personality_info()).a_adj[cs], inp.data(), maxv.data());
+    return format("%6s     %4d   %+3d  %+3d  %+3d  =  %6s  %6s", stat_names[cs], cval[cs], creature.get_race_info()->r_adj[cs], (*creature.get_class_info()).c_adj[cs], (*creature.get_personality_info()).a_adj[cs], inp.data(), maxv.data());
 }
 
 /*!

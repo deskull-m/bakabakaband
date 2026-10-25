@@ -355,7 +355,8 @@ static void display_auto_roller_success_rate(CreatureEntity &creature, const int
     for (int i = 0; i < A_MAX; i++) {
         put_str(stat_names[i], 3 + i, col + 8);
         int j = creature.get_race_info()->r_adj[i] + (*creature.get_class_info()).c_adj[i] + (*creature.get_personality_info()).a_adj[i];
-        int m = adjust_stat(stat_limit[i], j);
+        // stat_limit は整数 3〜17 の基本能力値。内部表現 (10 倍) へ変換して補正後の値を表示する
+        int m = adjust_stat(stat_limit[i] * 10, j);
         c_put_str(TERM_L_BLUE, cnv_stat(m), 3 + i, col + 13);
     }
 }
@@ -382,7 +383,8 @@ static bool decide_initial_stat(CreatureEntity &creature)
 
     bool accept = true;
     for (int i = 0; i < A_MAX; i++) {
-        if (creature.get_stat_max(i) < stat_limit[i]) {
+        // stat_limit は整数 3〜17 の基本能力値。能力値の内部表現は 10 倍 (17.0 = 170) なので揃えて比較する
+        if (creature.get_stat_max(i) < stat_limit[i] * 10) {
             accept = false;
             break;
         }
