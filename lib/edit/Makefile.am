@@ -4,7 +4,7 @@ AUTOMAKE_OPTIONS = foreign
 
 angband_files = \
 	ArtifactDefinitions.jsonc BaseitemDefinitions.jsonc ClassMagicDefinitions.jsonc \
-	ClassSkillDefinitions.jsonc DungeonDefinitions.jsonc EgoDefinitions.jsonc \
+	ClassSkillDefinitions.jsonc CreatureParty.jsonc DungeonDefinitions.jsonc EgoDefinitions.jsonc \
 	MonraceDefinitions.jsonc MonsterMessages.jsonc QuestPreferences.jsonc \
 	SpellDefinitions.jsonc TerrainDefinitions.jsonc \
 	TownDefinitionList.jsonc TownPreferences.jsonc VaultDefinitions.jsonc \

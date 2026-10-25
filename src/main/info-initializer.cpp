@@ -27,6 +27,7 @@
 #include "main/init-error-messages-table.h"
 #include "object-enchant/object-ego.h"
 #include "player-info/class-info.h"
+#include "player-info/class-types.h"
 #include "player/player-skill.h"
 #include "room/rooms-vault.h"
 #include "system/angband-version.h"
@@ -43,6 +44,7 @@
 #include "system/terrain/terrain-definition.h"
 #include "system/terrain/terrain-list.h"
 #include "util/angband-files.h"
+#include "util/enum-converter.h"
 #include "view/display-messages.h"
 #include <fmt/format.h>
 #include <fstream>
@@ -208,7 +210,12 @@ void init_class_skills_info()
 {
     class_skills_info.assign(PLAYER_CLASS_TYPE_MAX, {});
     init_json_reader<SkillReader>("ClassSkillDefinitions.jsonc", "classes", DefinitionHashDataType::CLASS_SKILLS, class_skills_info, [] {
-        if (error_idx != PLAYER_CLASS_TYPE_MAX - 1) {
+        // SkillReader が職業IDの連続性を保証するので、ここでは末尾までの網羅だけを確かめる。
+        // 上流と異なり bakabakaband は ELEMENTALIST より後ろに独自の職業を持つが、
+        // これらは技能定義を持たず class_skills_info の既定値 (すべて0) で動くため、
+        // 全職業を要求すると起動できない。上流分を網羅しているかだけを見る。
+        constexpr auto last_required_class = enum2i(PlayerClassType::ELEMENTALIST);
+        if (error_idx < last_required_class) {
             quit("ClassSkillDefinitions.jsonc: missing class records");
         }
     });
