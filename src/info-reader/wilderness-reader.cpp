@@ -1,4 +1,5 @@
 #include "info-reader/wilderness-reader.h"
+#include "floor/floor-base-definitions.h"
 #include "game-option/birth-options.h"
 #include "info-reader/info-reader-util.h"
 #include "info-reader/json-reader-util.h"
@@ -186,7 +187,8 @@ ParseErrorType WildernessReader::read_map(const nlohmann::json &map_data, int wi
         }
         const auto &level_data = get_json_value(letter_data, "level");
         if (!level_data.is_null()) {
-            if (const auto err = read_localized_integer(level_data, letter.level, Range(0, std::numeric_limits<int>::max())); err != ParseErrorType::NONE) {
+            // 生成は階層を MAX_DEPTH - 1 で頭打ちにし、地上の階層はセーブで16ビットになるため、それより深い値は受け付けない。
+            if (const auto err = read_localized_integer(level_data, letter.level, Range(0, MAX_DEPTH - 1)); err != ParseErrorType::NONE) {
                 return err;
             }
         }
