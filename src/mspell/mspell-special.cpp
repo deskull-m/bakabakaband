@@ -221,10 +221,10 @@ static MonsterSpellResult spell_RF6_SPECIAL_B(CreatureEntity &creature, POSITION
     } else {
         msg.to_player = _("あなたは地面に叩きつけられた。", "You crashed into the ground.");
         msg.to_mons = _("{4}は地面に叩きつけられた。", "{4} crashed into the ground.");
+        dam += Dice::roll(6, 8);
     }
 
     simple_monspell_message(creature, m_idx, t_idx, msg, target_type);
-    dam += Dice::roll(6, 8);
 
     if (monster_to_player || (monster_to_monster && monster_target.is_riding())) {
         int get_damage = take_hit(creature, DAMAGE_NOESCAPE, dam, m_name);
