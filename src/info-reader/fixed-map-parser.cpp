@@ -42,6 +42,7 @@
 #include <nlohmann/json.hpp>
 #include <sstream>
 #include <string>
+#include <tl/expected.hpp>
 #include <type_traits>
 #include <utility>
 #include <vector>
@@ -74,42 +75,42 @@ static bool is_valid_town_special(const nlohmann::json &value)
  * @return エラーコード
  * @details 個別の街定義はこの凡例を上書きできる。INIT_ONLY_BUILDINGS 時は読み込まない。
  */
-static ParseErrorType load_town_preferences()
+static tl::expected<void, ParseErrorType> load_town_preferences()
 {
     if (init_flags & INIT_ONLY_BUILDINGS) {
-        return ParseErrorType::NONE;
+        return {};
     }
 
     std::ifstream ifs(path_build(ANGBAND_DIR_EDIT, TOWN_PREFERENCES));
     if (!ifs) {
-        return ParseErrorType::GENERIC;
+        return tl::make_unexpected(ParseErrorType::GENERIC);
     }
 
     try {
         const auto data = nlohmann::json::parse(std::istreambuf_iterator<char>(ifs), std::istreambuf_iterator<char>(), nullptr, true, true, true);
         if (!data.is_object() || !data.contains("version") || !data["version"].is_number_integer() || data["version"] != 1 ||
             !data.contains("legend") || !data["legend"].is_object() || data["legend"].empty()) {
-            return ParseErrorType::INVALID_TYPE;
+            return tl::make_unexpected(ParseErrorType::INVALID_TYPE);
         }
 
         std::vector<std::pair<unsigned char, dungeon_grid>> legend;
         for (const auto &[symbol, cell_data] : data["legend"].items()) {
             if (symbol.size() != 1 || symbol.front() < '!' || symbol.front() > '~' || !cell_data.is_object() ||
                 !cell_data.contains("terrain") || !cell_data["terrain"].is_string() || !cell_data.contains("caveInfo") || !cell_data["caveInfo"].is_array()) {
-                return ParseErrorType::INVALID_TYPE;
+                return tl::make_unexpected(ParseErrorType::INVALID_TYPE);
             }
             for (const auto &flag : cell_data["caveInfo"]) {
                 if (!flag.is_string()) {
-                    return ParseErrorType::INVALID_TYPE;
+                    return tl::make_unexpected(ParseErrorType::INVALID_TYPE);
                 }
             }
             if (cell_data.contains("special") && !is_valid_town_special(cell_data["special"])) {
-                return ParseErrorType::INVALID_VALUE;
+                return tl::make_unexpected(ParseErrorType::INVALID_VALUE);
             }
 
             QuestLegendCell cell;
             if (const auto err = parse_quest_legend_cell(cell_data, cell); err != ParseErrorType::NONE) {
-                return err;
+                return tl::make_unexpected(err);
             }
             legend.emplace_back(static_cast<unsigned char>(symbol.front()), cell.grid);
         }
@@ -117,9 +118,9 @@ static ParseErrorType load_town_preferences()
         for (const auto &[symbol, grid] : legend) {
             letter[symbol] = grid;
         }
-        return ParseErrorType::NONE;
+        return {};
     } catch (const nlohmann::json::exception &) {
-        return ParseErrorType::INVALID_VALUE;
+        return tl::make_unexpected(ParseErrorType::INVALID_VALUE);
     }
 }
 
@@ -132,24 +133,25 @@ static ParseErrorType load_town_preferences()
  * ({ lite / normal / none }) のオブジェクトで指定する。vanilla_town なら none、
  * lite_town なら lite、それ以外は normal を選ぶ。
  */
-static ParseErrorType load_town_definition_file(CreatureEntity &creature, std::string &map_file)
+static tl::expected<std::string, ParseErrorType> load_town_definition_file(CreatureEntity &creature)
 {
     std::ifstream ifs(path_build(ANGBAND_DIR_EDIT, TOWN_DEFINITION_LIST));
     if (!ifs) {
-        return ParseErrorType::GENERIC;
+        return tl::make_unexpected(ParseErrorType::GENERIC);
     }
 
     try {
         const auto data = nlohmann::json::parse(std::istreambuf_iterator<char>(ifs), std::istreambuf_iterator<char>(), nullptr, true, true, true);
         if (!data.is_object() || !data.contains("version") || !data["version"].is_number_integer() || data["version"] != 1 ||
             !data.contains("towns") || !data["towns"].is_object() || data["towns"].empty()) {
-            return ParseErrorType::INVALID_TYPE;
+            return tl::make_unexpected(ParseErrorType::INVALID_TYPE);
         }
 
         const auto &towns = data["towns"];
         const auto town = towns.find(std::to_string(creature.get_town_num()));
         if (town == towns.end()) {
-            return ParseErrorType::NONE;
+            // 現在の街に対応するマップ定義が無いときは空文字列を返す (エラーではない)
+            return std::string{};
         }
 
         const nlohmann::json *selected = &*town;
@@ -157,22 +159,22 @@ static ParseErrorType load_town_definition_file(CreatureEntity &creature, std::s
             const auto *mode = vanilla_town ? "none" : (lite_town ? "lite" : "normal");
             const auto file = selected->find(mode);
             if (file == selected->end()) {
-                return ParseErrorType::INVALID_TYPE;
+                return tl::make_unexpected(ParseErrorType::INVALID_TYPE);
             }
             selected = &*file;
         }
 
         if (!selected->is_string()) {
-            return ParseErrorType::INVALID_TYPE;
+            return tl::make_unexpected(ParseErrorType::INVALID_TYPE);
         }
-        map_file = selected->get<std::string>();
+        auto map_file = selected->get<std::string>();
         if (!map_file.starts_with("towns/") || !map_file.ends_with(".txt") || map_file.find("..") != std::string::npos ||
             map_file.find('\\') != std::string::npos) {
-            return ParseErrorType::INVALID_VALUE;
+            return tl::make_unexpected(ParseErrorType::INVALID_VALUE);
         }
-        return ParseErrorType::NONE;
+        return map_file;
     } catch (const nlohmann::json::exception &) {
-        return ParseErrorType::INVALID_VALUE;
+        return tl::make_unexpected(ParseErrorType::INVALID_VALUE);
     }
 }
 
@@ -267,20 +269,23 @@ static tl::optional<std::string> resolve_town_map_variable(CreatureEntity &creat
 ParseErrorType parse_fixed_map(CreatureEntity &creature, std::string_view name, int ymin, int xmin, int ymax, int xmax)
 {
     if (name == TOWN_DEFINITION_LIST) {
-        if (const auto err = load_town_preferences(); err != ParseErrorType::NONE) {
+        if (const auto result = load_town_preferences(); !result) {
+            const auto err = result.error();
             const auto oops = (((err > ParseErrorType::NONE) && (err < ParseErrorType::MAX)) ? err_str[enum2i(err)] : "unknown");
             msg_print(fmt::format("Error {} ({}) loading '{}'.", enum2i(err), oops, TOWN_PREFERENCES));
             msg_erase();
             return err;
         }
 
-        std::string map_file;
-        if (const auto err = load_town_definition_file(creature, map_file); err != ParseErrorType::NONE) {
+        const auto town_file = load_town_definition_file(creature);
+        if (!town_file) {
+            const auto err = town_file.error();
             const auto oops = (((err > ParseErrorType::NONE) && (err < ParseErrorType::MAX)) ? err_str[enum2i(err)] : "unknown");
             msg_print(fmt::format("Error {} ({}) loading '{}'.", enum2i(err), oops, TOWN_DEFINITION_LIST));
             msg_erase();
             return err;
         }
+        const auto &map_file = *town_file;
         if (map_file.empty()) {
             return ParseErrorType::NONE;
         }
