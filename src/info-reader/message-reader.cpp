@@ -58,6 +58,7 @@ static ParseErrorType set_id_list(const nlohmann::json &id_list_data, std::vecto
  * @brief JSON Objectからモンスターのメッセージをセットする
  * @param message_data メッセージ情報の格納されたJSON Object
  * @return エラーコード
+ * @details 選択言語が無く他言語だけがあるメッセージは読み飛ばし、後続のメッセージの解析を続ける。
  */
 ParseErrorType MessageReader::set_mon_message() const
 {
@@ -136,7 +137,7 @@ ParseErrorType MessageReader::set_mon_message() const
             if (en_list == language_list.end()) {
                 return ParseErrorType::TOO_FEW_ARGUMENTS;
             }
-            return ParseErrorType::NONE;
+            continue;
         }
         const auto &message_list = ja_list.value();
 #else
@@ -144,7 +145,7 @@ ParseErrorType MessageReader::set_mon_message() const
             if (ja_list == language_list.end()) {
                 return ParseErrorType::TOO_FEW_ARGUMENTS;
             }
-            return ParseErrorType::NONE;
+            continue;
         }
         const auto &message_list = en_list.value();
 #endif
