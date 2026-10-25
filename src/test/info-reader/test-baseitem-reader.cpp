@@ -293,3 +293,22 @@ TEST_CASE("BaseitemReader preserves ordering precedence and rejects negative ind
     CHECK(error_idx == previous);
     CHECK(BaseitemList::get_instance().empty());
 }
+
+TEST_CASE("BaseitemReader caps costs like egos and limits gold separately")
+{
+    // 通常は PRICE の上限の 1/32、金貨 (type_value 127) は 1024 を上限とする
+    for (const auto type_value : { 1, 127 }) {
+        const auto maximum = type_value == 127 ? 1024 : 67108863;
+        for (const auto cost : { -1, 0, maximum, maximum + 1 }) {
+            CAPTURE(type_value);
+            CAPTURE(cost);
+            BaseitemStateGuard guard;
+            auto data = make_baseitem();
+            data["itemkind"]["type_value"] = type_value;
+            data["cost"] = cost;
+            const auto valid = (cost >= 0) && (cost <= maximum);
+            const auto expected = valid ? ParseErrorType::NONE : ParseErrorType::INVALID_FLAG;
+            CHECK(BaseitemReader(data).read() == expected);
+        }
+    }
+}

@@ -107,9 +107,9 @@
                     },
                     "cost": {
                         "type": "integer",
-                        "description": "売値",
+                        "description": "売値。エゴと同じ INT_MAX / 32 以下 (金貨は 1024 以下、実行時に検証)",
                         "minimum": 0,
-                        "maximum": 99999999
+                        "maximum": 67108863
                     },
                     "base_ac": {
                         "type": "integer",

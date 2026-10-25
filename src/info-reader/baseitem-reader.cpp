@@ -24,6 +24,13 @@
 #include <nlohmann/json.hpp>
 #include <utility>
 
+namespace {
+// エゴと同じ価格上限 (PRICE の上限の 1/32) に揃える。
+constexpr auto BASEITEM_COST_MAX = std::numeric_limits<PRICE>::max() / 32;
+// 金貨は cost が生成する額 (基本価格の 3〜9 倍) の元になるため、十分小さく保つ。
+constexpr auto GOLD_COST_MAX = 1024;
+}
+
 BaseitemReader::BaseitemReader(const nlohmann::json &baseitem_data)
     : baseitem_data(baseitem_data)
 {
@@ -106,7 +113,8 @@ ParseErrorType BaseitemReader::read() const
         msg_print(_("アイテムの重量読込失敗。ID: '{}'。", "Failed to load weight of item. ID: '{}'."), error_idx);
         return err.error();
     }
-    if (const auto err = info_set_integer(get_json_value(this->baseitem_data, "cost"), baseitem.cost, true, Range(0, 99999999)); !err) {
+    const auto cost_max = baseitem.bi_key.tval() == ItemKindType::GOLD ? GOLD_COST_MAX : BASEITEM_COST_MAX;
+    if (const auto err = info_set_integer(get_json_value(this->baseitem_data, "cost"), baseitem.cost, true, Range(0, cost_max)); !err) {
         msg_print(_("アイテムの売値読込失敗。ID: '{}'。", "Failed to load cost of item. ID: '{}'."), error_idx);
         return err.error();
     }
