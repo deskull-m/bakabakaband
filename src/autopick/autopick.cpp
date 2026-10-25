@@ -30,6 +30,7 @@
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
+#include "system/redrawing-flags-updater.h"
 #include "term/screen-processor.h"
 #include "view/display-messages.h"
 #include "window/display-sub-windows.h"
@@ -90,7 +91,10 @@ void autopick_alter_item(CreatureEntity &creature, INVENTORY_IDX i_idx, bool des
 {
     auto item = ref_item(creature, i_idx);
     int idx = find_autopick_list(creature, item.get());
-    auto_inscribe_item(item.get(), idx);
+    if (auto_inscribe_item(*item, idx)) {
+        RedrawingFlagsUpdater::get_instance().request_autopick_inscription();
+    }
+
     if (destroy && i_idx <= INVEN_PACK) {
         auto_destroy_item(creature, item.get(), idx);
     }
@@ -105,7 +109,10 @@ void autopick_pickup_items(CreatureEntity &creature, const Grid &grid)
         OBJECT_IDX this_o_idx = *it++;
         auto &item = *creature.get_floor()->o_list[this_o_idx];
         int idx = find_autopick_list(creature, &item);
-        auto_inscribe_item(&item, idx);
+        if (auto_inscribe_item(item, idx)) {
+            RedrawingFlagsUpdater::get_instance().request_autopick_inscription();
+        }
+
         if ((idx < 0) || (autopick_list[idx].action.has_none_of({ AutopickMethod::AUTOPICK, AutopickMethod::QUERY_AUTOPICK }))) {
             auto_destroy_item(creature, &item, idx);
             continue;
