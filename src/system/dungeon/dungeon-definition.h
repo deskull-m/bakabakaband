@@ -6,6 +6,7 @@
 
 #include "alliance/alliance.h"
 #include "dungeon/dungeon-flag-types.h"
+#include "monster-race/monster-aura-types.h"
 #include "monster-race/race-ability-flags.h"
 #include "monster-race/race-behavior-flags.h"
 #include "monster-race/race-brightness-flags.h"
@@ -120,6 +121,7 @@ public:
 
     EnumClassFlagGroup<MonsterFeedType> mon_meat_feed_flags;
     EnumClassFlagGroup<MonsterAbilityType> mon_ability_flags;
+    EnumClassFlagGroup<MonsterAuraType> mon_aura_flags;
     EnumClassFlagGroup<MonsterBehaviorType> mon_behavior_flags;
     EnumClassFlagGroup<MonsterVisualType> mon_visual_flags;
     EnumClassFlagGroup<MonsterKindType> mon_kind_flags;
