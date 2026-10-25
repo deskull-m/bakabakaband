@@ -790,6 +790,9 @@ ParseErrorType RaceReader::set_mon_blows(nlohmann::json &blow_data, MonraceDefin
         if (blow_method.is_null() || blow_effect.is_null()) {
             return ParseErrorType::TOO_FEW_ARGUMENTS;
         }
+        if (!blow_method.is_string() || !blow_effect.is_string()) {
+            return ParseErrorType::INVALID_TYPE;
+        }
 
         const auto rbm = r_info_blow_method.find(blow_method.get<std::string>());
         if (rbm == r_info_blow_method.end()) {
@@ -1079,6 +1082,9 @@ ParseErrorType RaceReader::set_mon_flags(const nlohmann::json &flag_data, Monrac
                 return ParseErrorType::TOO_FEW_ARGUMENTS;
     */
     for (const auto &flag : flag_data) {
+        if (!flag.is_string()) {
+            return ParseErrorType::INVALID_TYPE;
+        }
         if (!grab_one_basic_flag(monrace, flag.get<std::string>())) {
             return ParseErrorType::INVALID_FLAG;
         }
@@ -1126,14 +1132,21 @@ ParseErrorType RaceReader::set_mon_skills(const nlohmann::json &skill_data, Monr
     }
 
     const auto &skill_list = skill_data.find("list");
-    if (skill_list == skill_data.end()) {
+    if ((skill_list == skill_data.end()) || skill_list->is_null()) {
         if (!shoot) {
             return ParseErrorType::TOO_FEW_ARGUMENTS;
         }
         return ParseErrorType::NONE;
     }
 
+    if (!skill_list->is_array()) {
+        return ParseErrorType::INVALID_TYPE;
+    }
+
     for (auto &skill : skill_list->items()) {
+        if (!skill.value().is_string()) {
+            return ParseErrorType::INVALID_TYPE;
+        }
         if (!grab_one_spell_flag(monrace, skill.value().get<std::string>())) {
             return ParseErrorType::INVALID_FLAG;
         }
