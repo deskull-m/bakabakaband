@@ -6,7 +6,6 @@
 #include "system/creature-entity.h"
 #include "system/floor/town-info.h"
 #include "system/floor/town-list.h"
-#include "system/floor/town-records.h"
 #include "system/item-entity.h"
 #include "util/angband-files.h"
 #include "util/finalizer.h"
@@ -94,13 +93,13 @@ void spoil_random_artifact(CreatureEntity &creature)
                 spoil_random_artifact_aux(creature, item, tval, ofs);
             }
 
-            const auto &home = TownList::get_instance().get_town(TownId::OUTPOST).get_store(StoreSaleType::HOME);
+            const auto &home = TownList::get_instance().get_home();
             for (int i = 0; i < home.stock_num; i++) {
                 auto &item = *home.stock[i];
                 spoil_random_artifact_aux(creature, item, tval, ofs);
             }
 
-            const auto &museum = TownList::get_instance().get_town(TownId::OUTPOST).get_store(StoreSaleType::MUSEUM);
+            const auto &museum = TownList::get_instance().get_museum();
             for (int i = 0; i < museum.stock_num; i++) {
                 auto &item = *museum.stock[i];
                 spoil_random_artifact_aux(creature, item, tval, ofs);
