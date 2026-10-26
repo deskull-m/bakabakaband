@@ -85,7 +85,8 @@ void read_string_lines(const nlohmann::json &array_data, std::vector<std::string
 /*!
  * @brief JSONの文字列配列をフロアに収まるマップ行として取り込む
  * @details マップ行のようなASCIIの記号列は文字コードの変換が不要なので、そのまま取り込む
- * @return 行数または行のバイト数がフロアの上限を超える場合は PARSE_ERROR_OUT_OF_BOUNDS
+ * @return 行数または行のバイト数がフロアの上限を超える場合は PARSE_ERROR_OUT_OF_BOUNDS、
+ * 行に NUL が含まれる場合は PARSE_ERROR_INVALID_VALUE
  */
 int read_map_rows(const nlohmann::json &array_data, std::vector<std::string> &out)
 {
@@ -99,6 +100,13 @@ int read_map_rows(const nlohmann::json &array_data, std::vector<std::string> &ou
         if (out.size() >= MAX_HGT || row.size() > MAX_WID) {
             return PARSE_ERROR_OUT_OF_BOUNDS;
         }
+
+        // parse_qtw_D() は行を C 文字列として strlen で扱うため、埋め込み NUL があると
+        // そこで行が黙って切り詰められ、以降のセルが欠落する。読み込み時に不正値として弾く。
+        if (row.find('\0') != std::string::npos) {
+            return PARSE_ERROR_INVALID_VALUE;
+        }
+
         out.push_back(row);
     }
 
