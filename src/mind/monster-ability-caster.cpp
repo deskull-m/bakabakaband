@@ -117,7 +117,7 @@ bool do_cmd_use_monster_ability(CreatureEntity &creature)
         creature.set_current_mp(0);
         creature.current_mp_frac = 0;
         msg_print(_("精神を集中しすぎて気を失ってしまった！", "You faint from the effort!"));
-        (void)BadStatusSetter(creature).mod_paralysis(randnum1<short>(5 * oops + 1));
+        (void)BadStatusSetter(creature).mod_paralysis(roll_spell_over_exertion_duration(oops));
         chg_virtue(creature, Virtue::KNOWLEDGE, -10);
         if (one_in_(2)) {
             const auto perm = one_in_(4);
