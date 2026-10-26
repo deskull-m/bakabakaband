@@ -66,6 +66,26 @@ TEST_CASE("QuestReader rejects map extent overflow")
     }
 }
 
+TEST_CASE("QuestReader rejects map rows containing an embedded NUL")
+{
+    // parse_qtw_D() は行を C 文字列として扱うため、埋め込み NUL があるとそこで黙って
+    // 切り詰められ、以降のセルが欠落する。読み込み時に不正値として弾くことを確認する。
+    auto data = make_quest_with_description("New description");
+    const std::vector<std::string> rows = { std::string("A\0B", 3) };
+    for (const auto use_variants : { false, true }) {
+        CAPTURE(use_variants);
+        if (use_variants) {
+            data.erase("map");
+            data["mapVariants"] = { std::vector<std::string>{ "." }, rows };
+        } else {
+            data["map"] = rows;
+        }
+        QuestType quest;
+        QuestFixedMap fixed_map;
+        CHECK(QuestReader(data, quest, fixed_map).read() == PARSE_ERROR_INVALID_VALUE);
+    }
+}
+
 TEST_CASE("QuestReader accepts map extents at the floor boundary")
 {
     const std::vector<std::string> rows(MAX_HGT, std::string(MAX_WID, '.'));
