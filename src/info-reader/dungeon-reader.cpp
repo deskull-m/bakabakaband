@@ -49,6 +49,11 @@ bool DungeonReader::grab_one_dungeon_flag(DungeonDefinition &dungeon, std::strin
  */
 bool DungeonReader::grab_one_basic_monster_flag(DungeonDefinition &dungeon, std::string_view what)
 {
+    // NONEは種族の性別未設定を表す値であり、出現条件のフラグにはしない。
+    if (what != "NONE" && EnumClassFlagGroup<MonsterSex>::grab_one_flag(dungeon.mon_sex, r_info_sex, what)) {
+        return true;
+    }
+
     if (EnumClassFlagGroup<MonsterAuraType>::grab_one_flag(dungeon.mon_aura_flags, r_info_aura_flags, what)) {
         return true;
     }
@@ -399,7 +404,10 @@ ParseErrorType DungeonReader::parse_dungeons_info(std::string_view buf)
                 return ParseErrorType::INVALID_FLAG;
             }
 
-            dungeon->mon_sex = static_cast<MonsterSex>(sex);
+            const auto sex_value = static_cast<MonsterSex>(sex);
+            if (sex_value != MonsterSex::NONE) {
+                dungeon->mon_sex.set(sex_value);
+            }
             return ParseErrorType::NONE;
         }
 
@@ -917,12 +925,6 @@ ParseErrorType DungeonReader::set_dungeon_monster_flags(DungeonDefinition &dunge
         const auto &m_tokens = str_split(f, '_');
         if (m_tokens.size() >= 3 && m_tokens[0] == "R" && m_tokens[1] == "CHAR") {
             dungeon.r_chars.insert(dungeon.r_chars.end(), m_tokens[2].begin(), m_tokens[2].end());
-            continue;
-        }
-
-        uint32_t sex;
-        if (info_grab_one_const(sex, r_info_sex, f)) {
-            dungeon.mon_sex = static_cast<MonsterSex>(sex);
             continue;
         }
 

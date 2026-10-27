@@ -17,6 +17,7 @@
 #include "monster-race/race-misc-flags.h"
 #include "monster-race/race-population-flags.h"
 #include "monster-race/race-resistance-mask.h"
+#include "monster-race/race-sex-const.h"
 #include "monster-race/race-speak-flags.h"
 #include "monster-race/race-special-flags.h"
 #include "monster-race/race-visual-flags.h"
@@ -60,7 +61,6 @@
 
 enum class FixedArtifactId : short;
 enum class MonraceId : int16_t;
-enum class MonsterSex;
 constexpr auto TERRAIN_PROBABILITY_NUM = 3;
 
 enum class DungeonMode {
@@ -84,7 +84,6 @@ struct FloorItemGenerationRule {
 enum class DoorKind;
 enum class FixedArtifactId : short;
 enum class MonraceId : short;
-enum class MonsterSex;
 enum class TerrainCharacteristics;
 enum class TerrainTag;
 class MonraceDefinition;
@@ -134,7 +133,7 @@ public:
     EnumClassFlagGroup<MonsterBrightnessType> mon_brightness_flags;
     EnumClassFlagGroup<MonsterSpecialType> mon_special_flags;
     EnumClassFlagGroup<MonsterMiscType> mon_misc_flags;
-    MonsterSex mon_sex{};
+    EnumClassFlagGroup<MonsterSex> mon_sex;
 
     std::vector<char> r_chars; /* Monster symbols allowed */
     short final_object{}; /* The object you'll find at the bottom */
