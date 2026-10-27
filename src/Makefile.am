@@ -1657,6 +1657,8 @@ hengband_test_SOURCES = \
 	\
 	test/spell/test-spell-info.cpp \
 	\
+	test/spell-realm/test-spells-hex.cpp \
+	\
 	test/store/test-pricing.cpp \
 	test/store/test-store-screen.cpp \
 	test/store/test-store-util.cpp \
