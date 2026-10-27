@@ -747,20 +747,7 @@ tl::optional<std::string> do_hex_spell(CreatureEntity &creature, spell_hex_type 
     }
 
     if (!info) {
-        auto &rfu = RedrawingFlagsUpdater::get_instance();
-        static constexpr auto flags_srf = {
-            StatusRecalculatingFlag::BONUS,
-            StatusRecalculatingFlag::HP,
-            StatusRecalculatingFlag::MP,
-            StatusRecalculatingFlag::SPELLS,
-        };
-        rfu.set_flags(flags_srf);
-        static constexpr auto flags_mwrf = {
-            MainWindowRedrawingFlag::EXTRA,
-            MainWindowRedrawingFlag::HP,
-            MainWindowRedrawingFlag::MP,
-        };
-        rfu.set_flags(flags_mwrf);
+        SpellHex::request_casting_change_updates();
     }
 
     return "";

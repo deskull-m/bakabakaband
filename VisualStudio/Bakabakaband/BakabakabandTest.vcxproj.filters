@@ -43,6 +43,9 @@
     <Filter Include="spell">
       <UniqueIdentifier>{7c3e9a21-4b5d-4e6f-9a1b-2c3d4e5f6a7b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="spell-realm">
+      <UniqueIdentifier>{8a4d2f19-6c7b-4e3a-b1d5-9e0f3a2c7b84}</UniqueIdentifier>
+    </Filter>
     <Filter Include="store">
       <UniqueIdentifier>{2f858fe4-6c1a-425e-8310-085e4dcf1f4c}</UniqueIdentifier>
     </Filter>
@@ -172,6 +175,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\test\spell\test-spell-info.cpp">
       <Filter>spell</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\test\spell-realm\test-spells-hex.cpp">
+      <Filter>spell-realm</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\test\system\test-dungeon-record.cpp">
       <Filter>system</Filter>
