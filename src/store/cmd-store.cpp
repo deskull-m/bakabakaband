@@ -33,6 +33,7 @@
 #include "view/display-messages.h"
 #include "view/display-store.h"
 #include "world/world.h"
+#include <optional>
 
 /*!
  * @brief 入った店舗がある町のIDを決める
@@ -118,6 +119,7 @@ void do_cmd_store(CreatureEntity &creature, std::optional<StoreSaleType> specifi
     command_new = 0;
     get_com_no_macros = true;
     StoreScreen screen(store, town_index, grid.feat, term_get_size().second);
+    std::optional<BotScreenScope> bot_screen(std::in_place, make_bot_store_screen(screen));
 
     // 店舗に入ったインシデントを記録
     creature.plus_incident_tree("STORE/ENTER", 1);
@@ -204,6 +206,7 @@ void do_cmd_store(CreatureEntity &creature, std::optional<StoreSaleType> specifi
         }
     }
 
+    bot_screen.reset();
     select_floor_music(creature);
     PlayerEnergy(creature).set_player_turn_energy(100);
     world.character_icky_depth = 0;
