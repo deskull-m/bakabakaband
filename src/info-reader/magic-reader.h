@@ -9,8 +9,8 @@ struct player_magic;
 
 class MagicReader {
 public:
-    explicit MagicReader(const nlohmann::json &class_data);
-    MagicReader(nlohmann::json &&) = delete;
+    MagicReader(const nlohmann::json &class_data, int &previous_id);
+    MagicReader(nlohmann::json &&, int &) = delete;
     MagicReader(const MagicReader &) = delete;
     MagicReader(MagicReader &&) = delete;
     MagicReader &operator=(const MagicReader &) = delete;
@@ -26,4 +26,5 @@ private:
     ParseErrorType set_realm_data(player_magic &magics_info) const;
 
     const nlohmann::json &class_data;
+    int &previous_id; //!< 直前に読み込んだ職業ID (昇順・重複の検証用。読み込み全体で共有)
 };
