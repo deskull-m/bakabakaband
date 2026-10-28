@@ -203,7 +203,9 @@ void init_artifacts_info()
  */
 void init_baseitems_info()
 {
-    init_json_reader<BaseitemReader>("BaseitemDefinitions.jsonc", "baseitems", DefinitionHashDataType::BASEITEMS, BaseitemList::get_instance());
+    auto previous_id = -1;
+    auto parser = [&previous_id](nlohmann::json &element) { return BaseitemReader(element, previous_id).read(); };
+    init_json("BaseitemDefinitions.jsonc", "baseitems", DefinitionHashDataType::BASEITEMS, BaseitemList::get_instance(), parser);
 }
 
 /*!

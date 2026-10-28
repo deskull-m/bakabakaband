@@ -9,8 +9,8 @@ class BaseitemDefinition;
 
 class BaseitemReader {
 public:
-    explicit BaseitemReader(const nlohmann::json &baseitem_data);
-    BaseitemReader(nlohmann::json &&) = delete;
+    BaseitemReader(const nlohmann::json &baseitem_data, int &previous_id);
+    BaseitemReader(nlohmann::json &&, int &) = delete;
     BaseitemReader(const BaseitemReader &) = delete;
     BaseitemReader(BaseitemReader &&) = delete;
     BaseitemReader &operator=(const BaseitemReader &) = delete;
@@ -29,4 +29,5 @@ private:
     ParseErrorType set_baseitem_flags(BaseitemDefinition &baseitem) const;
 
     const nlohmann::json &baseitem_data;
+    int &previous_id; //!< 直前に読み込んだベースアイテムID (昇順・重複の検証用。読み込み全体で共有)
 };

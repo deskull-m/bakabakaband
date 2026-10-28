@@ -31,8 +31,9 @@ constexpr auto BASEITEM_COST_MAX = std::numeric_limits<PRICE>::max() / 32;
 constexpr auto GOLD_COST_MAX = 1024;
 }
 
-BaseitemReader::BaseitemReader(const nlohmann::json &baseitem_data)
+BaseitemReader::BaseitemReader(const nlohmann::json &baseitem_data, int &previous_id)
     : baseitem_data(baseitem_data)
+    , previous_id(previous_id)
 {
 }
 
@@ -57,9 +58,9 @@ ParseErrorType BaseitemReader::read() const
         return ParseErrorType::INVALID_TYPE;
     }
 
-    const auto validate_id = [](const auto id) -> ParseErrorType {
-        if (std::cmp_less_equal(id, error_idx)) {
-            msg_print(_("ベースアイテムIDが非連番です。ID: '{}'、直前ID: '{}'。", "Baseitem ID is not sequential. ID: '{}', previous ID: '{}'."), id, error_idx);
+    const auto validate_id = [this](const auto id) -> ParseErrorType {
+        if (std::cmp_less_equal(id, this->previous_id)) {
+            msg_print(_("ベースアイテムIDが非連番です。ID: '{}'、直前ID: '{}'。", "Baseitem ID is not sequential. ID: '{}', previous ID: '{}'."), id, this->previous_id);
             return ParseErrorType::NON_SEQUENTIAL_RECORDS;
         }
         if (std::cmp_less(id, 0) || std::cmp_greater(id, std::numeric_limits<short>::max())) {
@@ -75,83 +76,83 @@ ParseErrorType BaseitemReader::read() const
     const auto item_id = id_data.get<int>();
 
     auto &baseitems = BaseitemList::get_instance();
-    error_idx = item_id;
+    this->previous_id = item_id;
     const short short_id = static_cast<short>(item_id);
     // ベースアイテムをローカルに組み立て、全フィールドの読込に成功したら replace_baseitem() で
     // 差し替える。これにより読込途中のエラーでも格納済みの定義が壊れず、name/bi_key 変更時に
     // キャッシュも無効化される。既存IDの再読込では省略可能項目を引き継ぐため複製から始める。
     auto baseitem = item_id < static_cast<int>(baseitems.size()) ? baseitems.get_baseitem(short_id).clone_without_required_fields() : BaseitemDefinition{};
     if (const auto err = info_set_string(get_json_value(this->baseitem_data, "name"), baseitem.name, true); !err) {
-        msg_print(_("アイテムの名称読込失敗。ID: '{}'。", "Failed to load item name. ID: '{}'."), error_idx);
+        msg_print(_("アイテムの名称読込失敗。ID: '{}'。", "Failed to load item name. ID: '{}'."), item_id);
         return err.error();
     }
     if (const auto err = info_set_string(get_json_value(this->baseitem_data, "flavor_name"), baseitem.flavor_name, false); !err) {
-        msg_print(_("アイテム未識別名の読込失敗。ID: '{}'。", "Failed to load item unidentified name. ID: '{}'."), error_idx);
+        msg_print(_("アイテム未識別名の読込失敗。ID: '{}'。", "Failed to load item unidentified name. ID: '{}'."), item_id);
         return err.error();
     }
     if (const auto err = info_set_string(get_json_value(this->baseitem_data, "flavor"), baseitem.text, false); !err) {
-        msg_print(_("アイテムのフレーバーテキスト読込失敗。ID: '{}'。", "Failed to load flavor text of item. ID: '{}'."), error_idx);
+        msg_print(_("アイテムのフレーバーテキスト読込失敗。ID: '{}'。", "Failed to load flavor text of item. ID: '{}'."), item_id);
         return err.error();
     }
     if (const auto err = this->set_baseitem_symbol(baseitem); err != ParseErrorType::NONE) {
-        msg_print(_("アイテムのシンボル読込失敗。ID: '{}'。", "Failed to load symbol of item. ID: '{}'."), error_idx);
+        msg_print(_("アイテムのシンボル読込失敗。ID: '{}'。", "Failed to load symbol of item. ID: '{}'."), item_id);
         return err;
     }
     if (const auto err = this->set_baseitem_kind(baseitem); err != ParseErrorType::NONE) {
-        msg_print(_("アイテム種別の読込失敗。ID: '{}'。", "Failed to load kind of item. ID: '{}'."), error_idx);
+        msg_print(_("アイテム種別の読込失敗。ID: '{}'。", "Failed to load kind of item. ID: '{}'."), item_id);
         return err;
     }
     if (const auto err = this->set_baseitem_parameter_value(baseitem); err != ParseErrorType::NONE) {
-        msg_print(_("アイテムのパラメータ値読込失敗。ID: '{}'。", "Failed to load parameter value of item. ID: '{}'."), error_idx);
+        msg_print(_("アイテムのパラメータ値読込失敗。ID: '{}'。", "Failed to load parameter value of item. ID: '{}'."), item_id);
         return err;
     }
     if (const auto err = info_set_integer(get_json_value(this->baseitem_data, "level"), baseitem.level, true, Range(0, 128)); !err) {
-        msg_print(_("アイテムのレベル読込失敗。ID: '{}'。", "Failed to load level of item. ID: '{}'."), error_idx);
+        msg_print(_("アイテムのレベル読込失敗。ID: '{}'。", "Failed to load level of item. ID: '{}'."), item_id);
         return err.error();
     }
     if (const auto err = info_set_integer(get_json_value(this->baseitem_data, "weight"), baseitem.weight, true, Range(0, 9999)); !err) {
-        msg_print(_("アイテムの重量読込失敗。ID: '{}'。", "Failed to load weight of item. ID: '{}'."), error_idx);
+        msg_print(_("アイテムの重量読込失敗。ID: '{}'。", "Failed to load weight of item. ID: '{}'."), item_id);
         return err.error();
     }
     const auto cost_max = baseitem.bi_key.tval() == ItemKindType::GOLD ? GOLD_COST_MAX : BASEITEM_COST_MAX;
     if (const auto err = info_set_integer(get_json_value(this->baseitem_data, "cost"), baseitem.cost, true, Range(0, cost_max)); !err) {
-        msg_print(_("アイテムの売値読込失敗。ID: '{}'。", "Failed to load cost of item. ID: '{}'."), error_idx);
+        msg_print(_("アイテムの売値読込失敗。ID: '{}'。", "Failed to load cost of item. ID: '{}'."), item_id);
         return err.error();
     }
     if (const auto err = info_set_integer(get_json_value(this->baseitem_data, "base_ac"), baseitem.ac, false, Range(-99, 99)); !err) {
-        msg_print(_("アイテムのベースAC読込失敗。ID: '{}'。", "Failed to load base AC of item. ID: '{}'."), error_idx);
+        msg_print(_("アイテムのベースAC読込失敗。ID: '{}'。", "Failed to load base AC of item. ID: '{}'."), item_id);
         return err.error();
     }
     if (const auto err = info_set_dice(get_json_value(this->baseitem_data, "base_dice"), baseitem.damage_dice, false); !err) {
-        msg_print(_("アイテムのベースダイス読込失敗。ID: '{}'。", "Failed to load base dice of item. ID: '{}'."), error_idx);
+        msg_print(_("アイテムのベースダイス読込失敗。ID: '{}'。", "Failed to load base dice of item. ID: '{}'."), item_id);
         return err.error();
     }
     if (const auto err = info_set_integer(get_json_value(this->baseitem_data, "hit_bonus"), baseitem.to_h, false, Range(-99, 99)); !err) {
-        msg_print(_("アイテムの命中補正値読込失敗。ID: '{}'。", "Failed to load hit bonus of item. ID: '{}'."), error_idx);
+        msg_print(_("アイテムの命中補正値読込失敗。ID: '{}'。", "Failed to load hit bonus of item. ID: '{}'."), item_id);
         return err.error();
     }
     if (const auto err = info_set_integer(get_json_value(this->baseitem_data, "damage_bonus"), baseitem.to_d, false, Range(-99, 99)); !err) {
-        msg_print(_("アイテムのダメージ補正値読込失敗。ID: '{}'。", "Failed to load damage bonus of item. ID: '{}'."), error_idx);
+        msg_print(_("アイテムのダメージ補正値読込失敗。ID: '{}'。", "Failed to load damage bonus of item. ID: '{}'."), item_id);
         return err.error();
     }
     if (const auto err = info_set_integer(get_json_value(this->baseitem_data, "ac_bonus"), baseitem.to_a, false, Range(-99, 99)); !err) {
-        msg_print(_("アイテムのAC補正値読込失敗。ID: '{}'。", "Failed to load AC bonus of item. ID: '{}'."), error_idx);
+        msg_print(_("アイテムのAC補正値読込失敗。ID: '{}'。", "Failed to load AC bonus of item. ID: '{}'."), item_id);
         return err.error();
     }
     if (const auto err = this->set_baseitem_allocations(baseitem); err != ParseErrorType::NONE) {
-        msg_print(_("アイテムの生成情報読込失敗。ID: '{}'。", "Failed to load generation info of item. ID: '{}'."), error_idx);
+        msg_print(_("アイテムの生成情報読込失敗。ID: '{}'。", "Failed to load generation info of item. ID: '{}'."), item_id);
         return err;
     }
     if (const auto err = this->set_baseitem_alliance(baseitem); err != ParseErrorType::NONE) {
-        msg_print(_("アイテムのアライアンス情報読込失敗。ID: '{}'。", "Failed to load alliance of item. ID: '{}'."), error_idx);
+        msg_print(_("アイテムのアライアンス情報読込失敗。ID: '{}'。", "Failed to load alliance of item. ID: '{}'."), item_id);
         return err;
     }
     if (const auto err = this->set_baseitem_activate(baseitem); err != ParseErrorType::NONE) {
-        msg_print(_("アイテムの発動能力読込失敗。ID: '{}'。", "Failed to load activation of item. ID: '{}'."), error_idx);
+        msg_print(_("アイテムの発動能力読込失敗。ID: '{}'。", "Failed to load activation of item. ID: '{}'."), item_id);
         return err;
     }
     if (const auto err = this->set_baseitem_flags(baseitem); err != ParseErrorType::NONE) {
-        msg_print(_("アイテムのフラグ読込失敗。ID: '{}'。", "Failed to load flags of item. ID: '{}'."), error_idx);
+        msg_print(_("アイテムのフラグ読込失敗。ID: '{}'。", "Failed to load flags of item. ID: '{}'."), item_id);
         return err;
     }
 

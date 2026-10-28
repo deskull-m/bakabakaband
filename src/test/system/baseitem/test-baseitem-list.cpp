@@ -90,7 +90,8 @@ TEST_CASE("BaseitemReader publication refreshes cached keys without changing the
         { "weight", 3 },
         { "cost", 4 },
     };
-    REQUIRE(BaseitemReader(data).read() == ParseErrorType::NONE);
+    auto previous_id = -1;
+    REQUIRE(BaseitemReader(data, previous_id).read() == ParseErrorType::NONE);
     CHECK(items.size() == 2);
     check_lookup(items, 1, ItemKindType::RING, 30);
     CHECK_THROWS_AS(items.lookup_baseitem_id({ ItemKindType::SWORD, 10 }), std::runtime_error);
