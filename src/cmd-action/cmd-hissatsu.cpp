@@ -167,16 +167,22 @@ static int get_hissatsu_power(CreatureEntity &creature, SPELL_IDX *sn)
                 } else {
                     menu_line += 16;
                 }
+                // menu_line を常に [1, 32] に保ち、端に達したら方向を反転する。
+                // (反転を越えて menu_line-- で 0、menu_line++ で 33 となり is_learned() を範囲外で呼ぶのを防ぐ)
                 while (!realm_status.is_learned(menu_line - 1)) {
                     if (reverse) {
-                        menu_line--;
-                        if (menu_line < 2) {
+                        if (menu_line <= 1) {
                             reverse = false;
+                            menu_line++;
+                        } else {
+                            menu_line--;
                         }
                     } else {
-                        menu_line++;
-                        if (menu_line > 31) {
+                        if (menu_line >= 32) {
                             reverse = true;
+                            menu_line--;
+                        } else {
+                            menu_line++;
                         }
                     }
                 }
