@@ -187,8 +187,6 @@ ParseErrorType parse_terrains_json_info(nlohmann::json &element, TerrainReaderSe
         terrains.resize(id + 1);
     }
 
-    error_idx = id;
-
     const auto s = static_cast<short>(id);
     auto &terrain = terrains.get_terrain(s);
 

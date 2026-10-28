@@ -15,22 +15,18 @@ const std::string EGO_NAME_JA_UTF8 = "\xe8\xa9\xa6\xe9\xa8\x93\xe3\x81\xae";
 class EgoStateGuard {
 public:
     EgoStateGuard()
-        : saved_error_idx(error_idx)
     {
         this->saved_egos.swap(egos_info);
-        error_idx = -1;
     }
 
     ~EgoStateGuard()
     {
         egos_info.clear();
         egos_info.swap(this->saved_egos);
-        error_idx = this->saved_error_idx;
     }
 
 private:
     std::map<EgoType, EgoItemDefinition> saved_egos;
-    int saved_error_idx;
 };
 
 nlohmann::json make_ego()
@@ -95,7 +91,6 @@ TEST_CASE("EgoReader rejects malformed records atomically")
     auto check_invalid = [&](const nlohmann::json &data) {
         CHECK(EgoReader(data).read() != ParseErrorType::NONE);
         CHECK(egos_info.empty());
-        CHECK(error_idx == -1);
     };
 
     auto data = original;
@@ -146,7 +141,6 @@ TEST_CASE("EgoReader requires unique IDs while preserving legacy ordering")
     CHECK(EgoReader(data).read() == ParseErrorType::NONE);
     data["id"] = 5;
     CHECK(EgoReader(data).read() == ParseErrorType::NONE);
-    CHECK(error_idx == 5);
     CHECK(egos_info.size() == 3);
 }
 

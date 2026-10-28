@@ -97,7 +97,6 @@ ParseErrorType EgoReader::read() const
     }
 
     egos_info.emplace(ego.idx, std::move(ego));
-    error_idx = id;
     return ParseErrorType::NONE;
 }
 
