@@ -1,4 +1,3 @@
-#include "info-reader/info-reader-util.h"
 #include "info-reader/parse-error-types.h"
 #include "info-reader/vault-reader.h"
 #include "room/rooms-vault.h"
@@ -23,9 +22,8 @@ nlohmann::json make_vault()
 
 auto preserve_vaults()
 {
-    return util::make_finalizer([saved = vaults_info, index = error_idx] {
+    return util::make_finalizer([saved = vaults_info] {
         vaults_info = saved;
-        error_idx = index;
     });
 }
 }
@@ -34,12 +32,12 @@ TEST_CASE("VaultReader preserves metadata and every layout byte")
 {
     const auto restore = preserve_vaults();
     vaults_info.clear();
-    error_idx = -1;
+    auto previous_id = -1;
     auto data = make_vault();
     for (const auto type : { 7, 8, 17, 18, 19, 20 }) {
         data["id"] = type; // Sparse IDs remain supported.
         data["type"] = type;
-        REQUIRE(VaultReader(data).read() == ParseErrorType::NONE);
+        REQUIRE(VaultReader(data, previous_id).read() == ParseErrorType::NONE);
         const auto &vault = vaults_info.at(type);
         CHECK(vault.idx == type);
         CHECK(vault.typ == type);
@@ -48,7 +46,7 @@ TEST_CASE("VaultReader preserves metadata and every layout byte")
         CHECK(vault.wid == 4);
         CHECK(vault.name == "Test vault");
         CHECK(vault.text == " %: \\\"# ");
-        CHECK(error_idx == type);
+        CHECK(previous_id == type);
     }
 }
 
@@ -56,7 +54,7 @@ TEST_CASE("VaultReader reads bakabakaband extensions (depth, rarity, flags, feat
 {
     const auto restore = preserve_vaults();
     vaults_info.clear();
-    error_idx = -1;
+    auto previous_id = -1;
     auto data = make_vault();
     data["min_depth"] = 10;
     data["max_depth"] = 60;
@@ -68,7 +66,7 @@ TEST_CASE("VaultReader reads bakabakaband extensions (depth, rarity, flags, feat
     MonraceList::get_instance().emplace(i2enum<MonraceId>(5));
     data["features"] = { { { "symbol", "G" }, { "feat", 1 }, { "monster", "5" } },
         { { "symbol", ";" }, { "feat", 327 }, { "appearance", 1 } } };
-    REQUIRE(VaultReader(data).read() == ParseErrorType::NONE);
+    REQUIRE(VaultReader(data, previous_id).read() == ParseErrorType::NONE);
     const auto &vault = vaults_info.at(0);
     CHECK(vault.min_depth == 10);
     CHECK(vault.max_depth == 60);
@@ -87,10 +85,10 @@ TEST_CASE("VaultReader rejects invalid records atomically with field diagnostics
     vaults_info.assign(1, {});
     vaults_info[0].name = "unchanged";
     vaults_info[0].text = "sentinel";
-    error_idx = -1;
+    auto previous_id = -1;
     const auto original = make_vault();
     auto check_invalid = [&](const nlohmann::json &data, std::string_view path) {
-        VaultReader reader(data);
+        VaultReader reader(data, previous_id);
         CHECK(reader.read() != ParseErrorType::NONE);
         REQUIRE(reader.error().has_value());
         CHECK(reader.error()->path == path);
@@ -98,7 +96,7 @@ TEST_CASE("VaultReader rejects invalid records atomically with field diagnostics
         REQUIRE(vaults_info.size() == 1);
         CHECK(vaults_info[0].name == "unchanged");
         CHECK(vaults_info[0].text == "sentinel");
-        CHECK(error_idx == -1);
+        CHECK(previous_id == -1);
     };
     check_invalid(nlohmann::json::array(), "$");
     for (const auto key : { "id", "name", "type", "rating", "height", "width", "layout" }) {
@@ -144,22 +142,22 @@ TEST_CASE("VaultReader rejects duplicate and descending IDs and permits retry")
 {
     const auto restore = preserve_vaults();
     vaults_info.clear();
-    error_idx = -1;
+    auto previous_id = -1;
     auto data = make_vault();
     data["id"] = 2;
-    REQUIRE(VaultReader(data).read() == ParseErrorType::NONE);
-    CHECK(VaultReader(data).read() == ParseErrorType::NON_SEQUENTIAL_RECORDS);
+    REQUIRE(VaultReader(data, previous_id).read() == ParseErrorType::NONE);
+    CHECK(VaultReader(data, previous_id).read() == ParseErrorType::NON_SEQUENTIAL_RECORDS);
     data["id"] = 1;
-    CHECK(VaultReader(data).read() == ParseErrorType::NON_SEQUENTIAL_RECORDS);
+    CHECK(VaultReader(data, previous_id).read() == ParseErrorType::NON_SEQUENTIAL_RECORDS);
     data["id"] = 3;
     data["layout"][0] = "bad";
-    VaultReader reader(data);
+    VaultReader reader(data, previous_id);
     CHECK(reader.read() != ParseErrorType::NONE);
-    CHECK(error_idx == 2);
+    CHECK(previous_id == 2);
     data["layout"][0] = "good";
     CHECK(reader.read() == ParseErrorType::NONE);
     CHECK_FALSE(reader.error().has_value());
-    CHECK(error_idx == 3);
+    CHECK(previous_id == 3);
 }
 
 TEST_CASE("VaultReader ignores a monster token which is not a usable monrace id")

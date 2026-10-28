@@ -17,8 +17,8 @@ struct VaultReadError {
 
 class VaultReader {
 public:
-    explicit VaultReader(const nlohmann::json &data);
-    VaultReader(nlohmann::json &&) = delete;
+    VaultReader(const nlohmann::json &data, int &previous_id);
+    VaultReader(nlohmann::json &&, int &) = delete;
     VaultReader(const VaultReader &) = delete;
     VaultReader(VaultReader &&) = delete;
     VaultReader &operator=(const VaultReader &) = delete;
@@ -34,5 +34,6 @@ private:
     ParseErrorType read_flags(vault_type &vault);
     ParseErrorType read_features(vault_type &vault);
     const nlohmann::json &data;
+    int &previous_id; //!< 直前に読み込んだレコードのID (昇順・重複の検証用。読み込み全体で共有)
     std::optional<VaultReadError> diagnostic;
 };

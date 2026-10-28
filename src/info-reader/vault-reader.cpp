@@ -19,8 +19,9 @@
 #include <type_traits>
 #include <utility>
 
-VaultReader::VaultReader(const nlohmann::json &data)
+VaultReader::VaultReader(const nlohmann::json &data, int &previous_id)
     : data(data)
+    , previous_id(previous_id)
 {
 }
 
@@ -169,7 +170,7 @@ ParseErrorType VaultReader::read()
     if (const auto err = this->read_integer("id", id, 0, std::numeric_limits<short>::max()); err != ParseErrorType::NONE) {
         return err;
     }
-    if (id <= error_idx) {
+    if (id <= this->previous_id) {
         return this->fail(ParseErrorType::NON_SEQUENTIAL_RECORDS, "$.id", _("IDは重複せず昇順に並べてください", "IDs must be unique and in increasing order"));
     }
     vault_type vault;
@@ -237,6 +238,6 @@ ParseErrorType VaultReader::read()
         vaults_info.resize(id + 1);
     }
     vaults_info[id] = std::move(vault);
-    error_idx = id;
+    this->previous_id = id;
     return ParseErrorType::NONE;
 }

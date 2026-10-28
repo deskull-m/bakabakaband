@@ -304,8 +304,9 @@ void init_spell_info()
  */
 void init_vaults_info()
 {
-    auto parser = [](nlohmann::json &element) {
-        VaultReader reader(element);
+    auto previous_id = -1;
+    auto parser = [&previous_id](nlohmann::json &element) {
+        VaultReader reader(element, previous_id);
         const auto err = reader.read();
         if (err != ParseErrorType::NONE) {
             const auto &diagnostic = reader.error().value();
