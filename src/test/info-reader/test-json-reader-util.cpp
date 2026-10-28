@@ -217,22 +217,22 @@ TEST_CASE("info_set_integer stores the value")
     SUBCASE("enum underlying type is checked before conversion")
     {
         auto kind = TestNarrowKind::FIRST;
-        CHECK(to_error_code(info_set_integer(nlohmann::json(257), kind, true)) == ParseErrorType::INVALID_FLAG);
+        CHECK(to_error_code(info_set_integer(nlohmann::json(257), kind, true)) == ParseErrorType::INVALID_VALUE);
         CHECK(kind == TestNarrowKind::FIRST);
-        CHECK(to_error_code(info_set_integer(nlohmann::json(-1), kind, true)) == ParseErrorType::INVALID_FLAG);
+        CHECK(to_error_code(info_set_integer(nlohmann::json(-1), kind, true)) == ParseErrorType::INVALID_VALUE);
         CHECK(kind == TestNarrowKind::FIRST);
     }
 
     SUBCASE("no range still checks the destination type")
     {
         std::uint8_t narrow_data = 123;
-        CHECK(to_error_code(info_set_integer(nlohmann::json(300), narrow_data, true)) == ParseErrorType::INVALID_FLAG);
+        CHECK(to_error_code(info_set_integer(nlohmann::json(300), narrow_data, true)) == ParseErrorType::INVALID_VALUE);
         CHECK(narrow_data == 123);
-        CHECK(to_error_code(info_set_integer(nlohmann::json(-1), narrow_data, false)) == ParseErrorType::INVALID_FLAG);
+        CHECK(to_error_code(info_set_integer(nlohmann::json(-1), narrow_data, false)) == ParseErrorType::INVALID_VALUE);
         CHECK(narrow_data == 123);
         CHECK(to_error_code(info_set_integer(nlohmann::json(255), narrow_data, true)) == ParseErrorType::NONE);
         CHECK(narrow_data == 255);
-        CHECK(to_error_code(info_set_integer(nlohmann::json(256), narrow_data, true, Range(0, 9999))) == ParseErrorType::INVALID_FLAG);
+        CHECK(to_error_code(info_set_integer(nlohmann::json(256), narrow_data, true, Range(0, 9999))) == ParseErrorType::INVALID_VALUE);
         CHECK(narrow_data == 255);
     }
 }
@@ -308,14 +308,14 @@ TEST_CASE("info_set_integer checks the value range")
     SUBCASE("below the range")
     {
         const auto result = info_set_integer(nlohmann::json(-1), data, true, Range(0, 128));
-        CHECK(to_error_code(result) == ParseErrorType::INVALID_FLAG);
+        CHECK(to_error_code(result) == ParseErrorType::INVALID_VALUE);
         CHECK(data == SENTINEL);
     }
 
     SUBCASE("above the range")
     {
         const auto result = info_set_integer(nlohmann::json(129), data, true, Range(0, 128));
-        CHECK(to_error_code(result) == ParseErrorType::INVALID_FLAG);
+        CHECK(to_error_code(result) == ParseErrorType::INVALID_VALUE);
         CHECK(data == SENTINEL);
     }
 
@@ -326,7 +326,7 @@ TEST_CASE("info_set_integer checks the value range")
         CHECK(data == -99);
 
         const auto invalid_result = info_set_integer(nlohmann::json(-100), data, true, Range(-99, 99));
-        CHECK(to_error_code(invalid_result) == ParseErrorType::INVALID_FLAG);
+        CHECK(to_error_code(invalid_result) == ParseErrorType::INVALID_VALUE);
         CHECK(data == -99);
     }
 
@@ -334,7 +334,7 @@ TEST_CASE("info_set_integer checks the value range")
     {
         auto kind = TestKind::NONE;
         const auto invalid_result = info_set_integer(nlohmann::json(11), kind, true, Range(0, 10));
-        CHECK(to_error_code(invalid_result) == ParseErrorType::INVALID_FLAG);
+        CHECK(to_error_code(invalid_result) == ParseErrorType::INVALID_VALUE);
         CHECK(kind == TestKind::NONE);
 
         const auto valid_result = info_set_integer(nlohmann::json(10), kind, true, Range(0, 10));
@@ -352,11 +352,11 @@ TEST_CASE("info_set_integer checks the value range")
         auto uint8_data = uint8_sentinel;
 
         const auto above_result = info_set_integer(nlohmann::json(300), uint8_data, true, Range(0, 255));
-        CHECK(to_error_code(above_result) == ParseErrorType::INVALID_FLAG);
+        CHECK(to_error_code(above_result) == ParseErrorType::INVALID_VALUE);
         CHECK(uint8_data == uint8_sentinel);
 
         const auto below_result = info_set_integer(nlohmann::json(-1), uint8_data, true, Range(0, 255));
-        CHECK(to_error_code(below_result) == ParseErrorType::INVALID_FLAG);
+        CHECK(to_error_code(below_result) == ParseErrorType::INVALID_VALUE);
         CHECK(uint8_data == uint8_sentinel);
 
         const auto valid_result = info_set_integer(nlohmann::json(255), uint8_data, true, Range(0, 255));
@@ -381,10 +381,10 @@ TEST_CASE("info_set_integer checks signed int boundaries before conversion")
     const auto below = static_cast<std::int64_t>(minimum) - 1;
     const auto above = static_cast<std::int64_t>(maximum) + 1;
     const auto below_result = info_set_integer(nlohmann::json(below), data, true, Range(minimum, maximum));
-    CHECK(to_error_code(below_result) == ParseErrorType::INVALID_FLAG);
+    CHECK(to_error_code(below_result) == ParseErrorType::INVALID_VALUE);
     CHECK(data == maximum);
     const auto above_result = info_set_integer(nlohmann::json(above), data, true, Range(minimum, maximum));
-    CHECK(to_error_code(above_result) == ParseErrorType::INVALID_FLAG);
+    CHECK(to_error_code(above_result) == ParseErrorType::INVALID_VALUE);
     CHECK(data == maximum);
 }
 
@@ -399,7 +399,7 @@ TEST_CASE("info_set_integer checks unsigned JSON values and numeric types")
     CHECK(to_error_code(maximum_result) == ParseErrorType::NONE);
     CHECK(data == maximum);
     const auto above_result = info_set_integer(unsigned_above, data, true, Range(0, maximum));
-    CHECK(to_error_code(above_result) == ParseErrorType::INVALID_FLAG);
+    CHECK(to_error_code(above_result) == ParseErrorType::INVALID_VALUE);
     CHECK(data == maximum);
     const auto type_result = info_set_integer(nlohmann::json(1.0), data, true, Range(0, maximum));
     CHECK(to_error_code(type_result) == ParseErrorType::INVALID_TYPE);
@@ -414,10 +414,10 @@ TEST_CASE("info_set_integer checks large unsigned JSON range and storage")
     auto data = SENTINEL;
 
     const auto small_range_result = info_set_integer(json, data, true, Range(-1, 1));
-    CHECK(to_error_code(small_range_result) == ParseErrorType::INVALID_FLAG);
+    CHECK(to_error_code(small_range_result) == ParseErrorType::INVALID_VALUE);
     CHECK(data == SENTINEL);
     const auto int_range_result = info_set_integer(json, data, false, Range(std::numeric_limits<int>::min(), std::numeric_limits<int>::max()));
-    CHECK(to_error_code(int_range_result) == ParseErrorType::INVALID_FLAG);
+    CHECK(to_error_code(int_range_result) == ParseErrorType::INVALID_VALUE);
     CHECK(data == SENTINEL);
 
     std::uint64_t unsigned_data = 0;
@@ -483,9 +483,9 @@ TEST_CASE("info_set_string preserves the language-specific embedded NUL behavior
 #ifdef JP
         // 埋め込みNULの扱いは変換層 (utf8_to_sys) 依存で、bakaba のシステム文字コード変換は
         // NUL で打ち切って成功するなど環境により結果が異なる。consolidation がこの既存挙動を
-        // 変えないことを見るため、期待値は utf8_to_sys から求める (upstream は INVALID_FLAG 固定)
+        // 変えないことを見るため、期待値は utf8_to_sys から求める (変換失敗は INVALID_VALUE)
         const auto converted = utf8_to_sys(value);
-        CHECK(to_error_code(info_set_string(json, data, is_required)) == (converted ? ParseErrorType::NONE : ParseErrorType::INVALID_FLAG));
+        CHECK(to_error_code(info_set_string(json, data, is_required)) == (converted ? ParseErrorType::NONE : ParseErrorType::INVALID_VALUE));
         CHECK(data == (converted ? *converted : "unchanged"));
 #else
         CHECK(to_error_code(info_set_string(json, data, is_required)) == ParseErrorType::NONE);
@@ -503,7 +503,7 @@ TEST_CASE("info_set_string leaves malformed UTF-8 handling to the existing conve
 #ifdef JP
         // Windows may replace invalid UTF-8, while iconv can reject it. Do not add a stricter policy here.
         const auto converted = utf8_to_sys(value);
-        CHECK(to_error_code(info_set_string(json, data, is_required)) == (converted ? ParseErrorType::NONE : ParseErrorType::INVALID_FLAG));
+        CHECK(to_error_code(info_set_string(json, data, is_required)) == (converted ? ParseErrorType::NONE : ParseErrorType::INVALID_VALUE));
         CHECK(data == (converted ? *converted : "unchanged"));
 #else
         CHECK(to_error_code(info_set_string(json, data, is_required)) == ParseErrorType::NONE);
@@ -570,10 +570,10 @@ TEST_CASE("info_set_string cannot convert a character missing from EUC-JP")
 
     // 変換失敗は必須かどうかによらずエラーになり、格納先は書き換えない
     const auto required_result = info_set_string(json, data, true);
-    CHECK(to_error_code(required_result) == ParseErrorType::INVALID_FLAG);
+    CHECK(to_error_code(required_result) == ParseErrorType::INVALID_VALUE);
 
     const auto optional_result = info_set_string(json, data, false);
-    CHECK(to_error_code(optional_result) == ParseErrorType::INVALID_FLAG);
+    CHECK(to_error_code(optional_result) == ParseErrorType::INVALID_VALUE);
 
     CHECK(data == "unchanged");
 
@@ -702,10 +702,10 @@ TEST_CASE("info_set_dice rejects an invalid dice notation")
             CAPTURE(dice_str);
 
             const auto required_result = info_set_dice(nlohmann::json(dice_str), dice, true);
-            CHECK(to_error_code(required_result) == ParseErrorType::TOO_FEW_ARGUMENTS);
+            CHECK(to_error_code(required_result) == ParseErrorType::INVALID_VALUE);
 
             const auto optional_result = info_set_dice(nlohmann::json(dice_str), dice, false);
-            CHECK(to_error_code(optional_result) == ParseErrorType::TOO_FEW_ARGUMENTS);
+            CHECK(to_error_code(optional_result) == ParseErrorType::INVALID_VALUE);
         }
     }
 

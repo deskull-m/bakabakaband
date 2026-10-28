@@ -59,7 +59,7 @@ TEST_CASE("WildernessReader rejects duplicate IDs and symbols")
     data = make_definition();
     data["maps"]["normal"]["letters"].push_back(data["maps"]["normal"]["letters"][0]);
     definition = {};
-    CHECK(WildernessReader(data).read(definition) == ParseErrorType::NON_SEQUENTIAL_RECORDS);
+    CHECK(WildernessReader(data).read(definition) == ParseErrorType::INVALID_VALUE);
 }
 
 TEST_CASE("WildernessReader rejects undefined town references")

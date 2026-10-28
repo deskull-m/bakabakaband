@@ -79,7 +79,7 @@ tl::expected<void, ParseErrorType> info_set_string(const nlohmann::json &json, s
 #ifdef JP
     auto str_sys = utf8_to_sys(str->get<std::string>());
     if (!str_sys) {
-        return tl::make_unexpected(ParseErrorType::INVALID_FLAG);
+        return tl::make_unexpected(ParseErrorType::INVALID_VALUE);
     }
     data = std::move(*str_sys);
 #else
@@ -113,7 +113,7 @@ tl::expected<void, ParseErrorType> info_set_dice(const nlohmann::json &json, Dic
         dice = Dice::parse(json.get<std::string>());
         return {};
     } catch (const std::runtime_error &) {
-        return tl::make_unexpected(ParseErrorType::TOO_FEW_ARGUMENTS);
+        return tl::make_unexpected(ParseErrorType::INVALID_VALUE);
     }
 }
 

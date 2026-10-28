@@ -151,7 +151,7 @@ ParseErrorType MagicReader::set_class_id(int &class_id) const
 
     const auto player_class = class_list.find(classname_obj.get<std::string>());
     if (player_class == class_list.end()) {
-        return ParseErrorType::OUT_OF_BOUNDS;
+        return ParseErrorType::INVALID_FLAG;
     }
     class_id = enum2i(player_class->second);
     return ParseErrorType::NONE;

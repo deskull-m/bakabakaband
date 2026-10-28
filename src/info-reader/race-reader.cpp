@@ -133,7 +133,7 @@ ParseErrorType RaceReader::set_mon_name(const nlohmann::json &name_data, Monrace
 #ifdef JP
     auto ja_name_sys = utf8_to_sys(ja_name);
     if (!ja_name_sys) {
-        return ParseErrorType::INVALID_FLAG;
+        return ParseErrorType::INVALID_VALUE;
     }
     monrace.name = { *ja_name_sys, en_name };
 #else

@@ -191,7 +191,7 @@ ParseErrorType WildernessReader::read_map(const nlohmann::json &map_data, int wi
         }
         const auto symbol_index = static_cast<unsigned char>(symbol[0]);
         if (defined_symbols[symbol_index]) {
-            return ParseErrorType::NON_SEQUENTIAL_RECORDS;
+            return ParseErrorType::INVALID_VALUE;
         }
         defined_symbols[symbol_index] = true;
 

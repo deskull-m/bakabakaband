@@ -138,7 +138,7 @@ static ParseErrorType set_terrain_generation(const nlohmann::json &generation_ob
 
         probability_sum += change.probability;
         if (probability_sum > 100) {
-            return ParseErrorType::INVALID_FLAG;
+            return ParseErrorType::INVALID_VALUE;
         }
 
         terrain.generation_changes.push_back(change);

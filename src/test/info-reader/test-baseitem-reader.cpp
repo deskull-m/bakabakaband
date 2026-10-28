@@ -183,7 +183,7 @@ TEST_CASE("BaseitemReader validates full-width integer IDs before narrowing or p
         data["cost"] = 91;
         error_idx = -1;
         const auto is_negative = !id.is_number_unsigned() && id.get<nlohmann::json::number_integer_t>() < 0;
-        const auto expected = is_negative ? ParseErrorType::NON_SEQUENTIAL_RECORDS : ParseErrorType::OUT_OF_BOUNDS;
+        const auto expected = is_negative ? ParseErrorType::NON_SEQUENTIAL_RECORDS : ParseErrorType::INVALID_VALUE;
         CHECK(BaseitemReader(data).read() == expected);
         REQUIRE(items.size() == 2);
         CHECK(std::addressof(items.get_baseitem(1)) == existing);
@@ -286,7 +286,7 @@ TEST_CASE("BaseitemReader preserves ordering precedence and rejects negative ind
     {
         data["id"] = -1;
         previous = -100;
-        expected = ParseErrorType::OUT_OF_BOUNDS;
+        expected = ParseErrorType::INVALID_VALUE;
     }
     error_idx = previous;
     CHECK(BaseitemReader(data).read() == expected);
@@ -307,7 +307,7 @@ TEST_CASE("BaseitemReader caps costs like egos and limits gold separately")
             data["itemkind"]["type_value"] = type_value;
             data["cost"] = cost;
             const auto valid = (cost >= 0) && (cost <= maximum);
-            const auto expected = valid ? ParseErrorType::NONE : ParseErrorType::INVALID_FLAG;
+            const auto expected = valid ? ParseErrorType::NONE : ParseErrorType::INVALID_VALUE;
             CHECK(BaseitemReader(data).read() == expected);
         }
     }

@@ -106,6 +106,9 @@ ParseErrorType ArtifactReader::set_art_flags(ArtifactType &artifact) const
     }
 
     for (auto &flag : flag_data) {
+        if (!flag.is_string()) {
+            return ParseErrorType::INVALID_TYPE;
+        }
         if (!this->grab_one_artifact_flag(artifact, flag.get<std::string>())) {
             return ParseErrorType::INVALID_FLAG;
         }

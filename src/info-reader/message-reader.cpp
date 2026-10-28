@@ -43,7 +43,7 @@ static ParseErrorType set_id_list(const nlohmann::json &id_list_data, std::vecto
 
     for (const auto &id_data : id_list_data) {
         if (!id_data.is_number()) {
-            return ParseErrorType::INVALID_FLAG;
+            return ParseErrorType::INVALID_TYPE;
         }
         int id{};
         if (const auto err = info_set_integer(id_data, id, true, Range(1, 9999)); !err) {
@@ -155,12 +155,12 @@ ParseErrorType MessageReader::set_mon_message() const
                 return ParseErrorType::TOO_FEW_ARGUMENTS;
             }
             if (!message_str.is_string()) {
-                return ParseErrorType::INVALID_FLAG;
+                return ParseErrorType::INVALID_TYPE;
             }
 #ifdef JP
             auto str_test = utf8_to_sys(message_str.get<std::string>());
             if (!str_test) {
-                return ParseErrorType::INVALID_FLAG;
+                return ParseErrorType::INVALID_VALUE;
             }
             auto str = std::move(*str_test);
 #else

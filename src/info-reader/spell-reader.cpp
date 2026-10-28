@@ -55,7 +55,7 @@ ParseErrorType SpellReader::set_realm(RealmType &realm) const
 
     const auto it = realms_list.find(realmname_obj.get<std::string>());
     if (it == realms_list.end()) {
-        return ParseErrorType::OUT_OF_BOUNDS;
+        return ParseErrorType::INVALID_FLAG;
     }
     realm = it->second;
     return ParseErrorType::NONE;
