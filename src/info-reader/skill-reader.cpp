@@ -15,8 +15,9 @@ constexpr auto weapon_names = std::to_array({ "BOW", "DIGGING", "HAFTED", "POLEA
 constexpr auto skill_names = std::to_array({ "MARTIAL_ARTS", "TWO_WEAPON", "RIDING", "SHIELD", "GROSS_EATING", "SCATOLOGY", "ARMOR", "EVASION", "ASSHOLE" });
 }
 
-SkillReader::SkillReader(const nlohmann::json &class_data)
+SkillReader::SkillReader(const nlohmann::json &class_data, int &previous_id)
     : class_data(class_data)
+    , previous_id(previous_id)
 {
 }
 
@@ -71,8 +72,8 @@ ParseErrorType SkillReader::read()
         return err;
     }
     // 職業IDは0から連続。重複と途中の欠落を拒否する。
-    if (id != error_idx + 1) {
-        return this->fail(ParseErrorType::NON_SEQUENTIAL_RECORDS, "$.id", fmt::format(_("職業ID {}が必要です（職業の重複または欠落）", "expected class id {} (duplicate or missing class)"), error_idx + 1));
+    if (id != this->previous_id + 1) {
+        return this->fail(ParseErrorType::NON_SEQUENTIAL_RECORDS, "$.id", fmt::format(_("職業ID {}が必要です（職業の重複または欠落）", "expected class id {} (duplicate or missing class)"), this->previous_id + 1));
     }
 
     skill_table skills{};
@@ -83,7 +84,7 @@ ParseErrorType SkillReader::read()
         return err;
     }
     class_skills_info[id] = std::move(skills);
-    error_idx = id;
+    this->previous_id = id;
     return ParseErrorType::NONE;
 }
 

@@ -1,7 +1,6 @@
 /*!
  * @brief 職業技能JSON Readerの境界値・原子性テスト
  */
-#include "info-reader/info-reader-util.h"
 #include "info-reader/parse-error-types.h"
 #include "info-reader/skill-reader.h"
 #include "locale/language-switcher.h"
@@ -27,9 +26,8 @@ nlohmann::json make_class()
 
 auto preserve_skills()
 {
-    return util::make_finalizer([saved = class_skills_info, index = error_idx] {
+    return util::make_finalizer([saved = class_skills_info] {
         class_skills_info = saved;
-        error_idx = index;
     });
 }
 }
@@ -38,16 +36,16 @@ TEST_CASE("SkillReader converts all weapon ranks and preserves raw skill experie
 {
     const auto restore = preserve_skills();
     class_skills_info.assign(29, {});
-    error_idx = -1;
+    auto previous_id = -1;
     auto data = make_class();
     for (int rank = 0; rank < 5; ++rank) {
         data["weapons"]["BOW"]["start_ranks"][rank] = rank;
         data["weapons"]["BOW"]["max_ranks"][rank] = rank;
     }
     data["skills"]["RIDING"] = { { "start_exp", 500 }, { "max_exp", 5000 } };
-    const auto err = SkillReader(data).read();
+    const auto err = SkillReader(data, previous_id).read();
     REQUIRE(err == ParseErrorType::NONE);
-    CHECK(error_idx == 0);
+    CHECK(previous_id == 0);
     constexpr int expected[] = { 0, 4000, 6000, 7000, 8000 };
     for (size_t rank = 0; rank < 5; ++rank) {
         CHECK(class_skills_info[0].w_start.at(ItemKindType::BOW)[rank] == expected[rank]);
@@ -68,7 +66,7 @@ TEST_CASE("SkillReader rejects malformed records without modifying the destinati
     const auto restore = preserve_skills();
     class_skills_info.assign(29, {});
     class_skills_info[0].s_start[PlayerSkillKindType::SHIELD] = 123;
-    error_idx = -1;
+    auto previous_id = -1;
     auto data = make_class();
     SUBCASE("non object")
     {
@@ -179,13 +177,13 @@ TEST_CASE("SkillReader rejects malformed records without modifying the destinati
     {
         data["skills"]["SHIELD"] = { { "start_exp", 500 }, { "max_exp", 499 } };
     }
-    SkillReader reader(data);
+    SkillReader reader(data, previous_id);
     const auto err = reader.read();
     CHECK(err != ParseErrorType::NONE);
     REQUIRE(reader.error().has_value());
     CHECK_FALSE(reader.error()->path.empty());
     CHECK_FALSE(reader.error()->reason.empty());
-    CHECK(error_idx == -1);
+    CHECK(previous_id == -1);
     CHECK(class_skills_info[0].w_start.empty());
     CHECK(class_skills_info[0].w_max.empty());
     CHECK(class_skills_info[0].s_start.size() == 1);
@@ -197,26 +195,26 @@ TEST_CASE("SkillReader rejects duplicate and missing class ids and can be reused
 {
     const auto restore = preserve_skills();
     class_skills_info.assign(29, {});
-    error_idx = -1;
+    auto previous_id = -1;
     auto data = make_class();
-    auto err = SkillReader(data).read();
+    auto err = SkillReader(data, previous_id).read();
     REQUIRE(err == ParseErrorType::NONE);
-    err = SkillReader(data).read();
+    err = SkillReader(data, previous_id).read();
     CHECK(err == ParseErrorType::NON_SEQUENTIAL_RECORDS);
     data["id"] = 2;
-    err = SkillReader(data).read();
+    err = SkillReader(data, previous_id).read();
     CHECK(err == ParseErrorType::NON_SEQUENTIAL_RECORDS);
-    CHECK(error_idx == 0);
+    CHECK(previous_id == 0);
     for (int id = 1; id < 29; ++id) {
         data["id"] = id;
-        err = SkillReader(data).read();
+        err = SkillReader(data, previous_id).read();
         CHECK(err == ParseErrorType::NONE);
     }
-    CHECK(error_idx == 28);
+    CHECK(previous_id == 28);
     class_skills_info.assign(29, {});
-    error_idx = -1;
+    previous_id = -1;
     data["id"] = 0;
-    err = SkillReader(data).read();
+    err = SkillReader(data, previous_id).read();
     CHECK(err == ParseErrorType::NONE);
 }
 
@@ -224,7 +222,7 @@ TEST_CASE("SkillReader diagnostics identify the class field and cause")
 {
     const auto restore = preserve_skills();
     class_skills_info.assign(29, {});
-    error_idx = 6;
+    auto previous_id = 6;
     auto data = make_class();
     data["id"] = 7;
     std::string path;
@@ -326,14 +324,14 @@ TEST_CASE("SkillReader diagnostics identify the class field and cause")
         path = "$";
         reason = _("オブジェクトが必要です", "expected an object");
     }
-    SkillReader reader(data);
+    SkillReader reader(data, previous_id);
     const auto err = reader.read();
     CHECK(err != ParseErrorType::NONE);
     REQUIRE(reader.error().has_value());
     CHECK(reader.error()->class_id == class_id);
     CHECK(reader.error()->path == path);
     CHECK(reader.error()->reason == reason);
-    CHECK(error_idx == 6);
+    CHECK(previous_id == 6);
     CHECK(class_skills_info[7].w_start.empty());
 }
 
@@ -341,9 +339,9 @@ TEST_CASE("SkillReader clears stale diagnostics before another read")
 {
     const auto restore = preserve_skills();
     class_skills_info.assign(29, {});
-    error_idx = -1;
+    auto previous_id = -1;
     auto data = make_class();
-    SkillReader reader(data);
+    SkillReader reader(data, previous_id);
     CHECK_FALSE(reader.error().has_value());
     data["skills"]["RIDING"]["max_exp"] = 8001;
     auto err = reader.read();

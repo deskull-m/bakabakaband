@@ -219,16 +219,19 @@ void init_class_magics_info()
 void init_class_skills_info()
 {
     class_skills_info.assign(PLAYER_CLASS_TYPE_MAX, {});
-    init_json_reader<SkillReader>("ClassSkillDefinitions.jsonc", "classes", DefinitionHashDataType::CLASS_SKILLS, class_skills_info, [] {
+    auto previous_id = -1;
+    auto parser = [&previous_id](nlohmann::json &element) { return SkillReader(element, previous_id).read(); };
+    auto retouch = [&previous_id] {
         // SkillReader が職業IDの連続性を保証するので、ここでは末尾までの網羅だけを確かめる。
         // 上流と異なり bakabakaband は ELEMENTALIST より後ろに独自の職業を持つが、
         // これらは技能定義を持たず class_skills_info の既定値 (すべて0) で動くため、
         // 全職業を要求すると起動できない。上流分を網羅しているかだけを見る。
         constexpr auto last_required_class = enum2i(PlayerClassType::ELEMENTALIST);
-        if (error_idx < last_required_class) {
+        if (previous_id < last_required_class) {
             quit("ClassSkillDefinitions.jsonc: missing class records");
         }
-    });
+    };
+    init_json("ClassSkillDefinitions.jsonc", "classes", DefinitionHashDataType::CLASS_SKILLS, class_skills_info, parser, retouch);
 }
 /*!
  * @brief ダンジョン情報読み込みのメインルーチン

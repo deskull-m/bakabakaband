@@ -18,8 +18,8 @@ struct SkillReadError {
 
 class SkillReader {
 public:
-    explicit SkillReader(const nlohmann::json &class_data);
-    SkillReader(nlohmann::json &&) = delete;
+    SkillReader(const nlohmann::json &class_data, int &previous_id);
+    SkillReader(nlohmann::json &&, int &) = delete;
     SkillReader(const SkillReader &) = delete;
     SkillReader(SkillReader &&) = delete;
     SkillReader &operator=(const SkillReader &) = delete;
@@ -36,6 +36,7 @@ private:
     ParseErrorType fail(ParseErrorType code, std::string_view path, std::string_view reason);
 
     const nlohmann::json &class_data;
+    int &previous_id; //!< 直前に読み込んだ職業ID (0 始まり連番・重複の検証用。読み込み全体で共有)
     std::string class_id;
     std::optional<SkillReadError> diagnostic;
 };
