@@ -1210,6 +1210,9 @@
     <ClCompile Include="..\..\src\main\sound-of-music.cpp">
       <Filter>main</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\io\input-context.cpp">
+      <Filter>io</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\src\io\input-key-acceptor.cpp">
       <Filter>io</Filter>
     </ClCompile>
@@ -4268,6 +4271,9 @@
     </ClInclude>
     <ClInclude Include="..\..\src\main\sound-of-music.h">
       <Filter>main</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\io\input-context.h">
+      <Filter>io</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\io\input-key-acceptor.h">
       <Filter>io</Filter>

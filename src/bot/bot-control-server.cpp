@@ -20,7 +20,9 @@
 #include "bot/bot-screen.h"
 #include "bot/bot-socket-server.h"
 #include "game-option/runtime-arguments.h"
+#include "io/input-context.h"
 #include "io/macro-configurations-store.h"
+#include "system/angband-exceptions.h"
 #include "system/angband-system.h"
 #include "system/angband-version.h"
 #include "system/player-type-definition.h"
@@ -35,12 +37,14 @@
 #include <iterator>
 #include <memory>
 #include <nlohmann/json.hpp>
+#include <stdexcept>
 #include <string>
 #include <string_view>
 #include <tl/expected.hpp>
 #include <tl/optional.hpp>
 #include <type_traits>
 #include <utility>
+#include <variant>
 
 namespace {
 
@@ -377,6 +381,144 @@ tl::expected<int, std::string> push_keys(const std::string &keys)
  * @param request リクエストのJSONオブジェクト
  * @return レスポンスのJSONオブジェクト
  */
+/*!
+ * @brief 入力の種類を応答で使う名前へ変換する
+ */
+std::string_view input_kind_name(InputKind kind)
+{
+    switch (kind) {
+    case InputKind::CONFIRM:
+        return "confirm";
+    case InputKind::COMMAND_CHAR:
+        return "command_char";
+    case InputKind::STRING:
+        return "string";
+    case InputKind::QUANTITY:
+        return "quantity";
+    case InputKind::MORE:
+        return "more";
+    case InputKind::COMMAND:
+        return "command";
+    case InputKind::ITEM:
+        return "item";
+    case InputKind::DIRECTION:
+        return "direction";
+    case InputKind::TARGET:
+        return "target";
+    case InputKind::POINT:
+        return "point";
+    case InputKind::ANY_KEY:
+        return "any_key";
+    }
+
+    THROW_EXCEPTION(std::logic_error, "Invalid InputKind was specified!");
+}
+
+/*!
+ * @brief アイテムを選ぶ区分を応答で使う名前へ変換する
+ */
+std::string_view item_selection_area_name(ItemSelectionArea area)
+{
+    switch (area) {
+    case ItemSelectionArea::INVENTORY:
+        return "inventory";
+    case ItemSelectionArea::EQUIPMENT:
+        return "equipment";
+    case ItemSelectionArea::FLOOR:
+        return "floor";
+    }
+
+    THROW_EXCEPTION(std::logic_error, "Invalid ItemSelectionArea was specified!");
+}
+
+/*!
+ * @brief 入力の種類ごとの詳細を、入力の文脈のJSONに足すキーへ変換する
+ * @details 詳細の型ごとに関数を分けてstd::visitで呼び分ける。詳細の型を足したときに変換を書き漏らすと、コンパイルが通らない。
+ */
+class InputDetailsJsonConverter {
+public:
+    nlohmann::json operator()(std::monostate) const
+    {
+        return nlohmann::json::object();
+    }
+
+    nlohmann::json operator()(const StringInputDetails &details) const
+    {
+        return { { "max_length", details.max_length }, { "initial", to_json_utf8(details.initial) } };
+    }
+
+    nlohmann::json operator()(const QuantityInputDetails &details) const
+    {
+        return { { "max", details.max }, { "initial", details.initial } };
+    }
+
+    nlohmann::json operator()(const CommandInputDetails &details) const
+    {
+        return { { "shopping", details.shopping } };
+    }
+
+    nlohmann::json operator()(const ItemInputDetails &details) const
+    {
+        auto areas = nlohmann::json::array();
+        if (details.inventory) {
+            areas.push_back(item_selection_area_name(ItemSelectionArea::INVENTORY));
+        }
+
+        if (details.equipment) {
+            areas.push_back(item_selection_area_name(ItemSelectionArea::EQUIPMENT));
+        }
+
+        if (details.floor) {
+            areas.push_back(item_selection_area_name(ItemSelectionArea::FLOOR));
+        }
+
+        return {
+            { "area", item_selection_area_name(details.area) },
+            { "areas", std::move(areas) },
+            { "first_label", std::string(1, details.first_label) },
+            { "last_label", std::string(1, details.last_label) },
+            { "force", details.force },
+            { "menu", details.menu },
+        };
+    }
+
+    nlohmann::json operator()(const DirectionInputDetails &details) const
+    {
+        return { { "can_choose_target", details.can_choose_target }, { "has_target", details.has_target }, { "at_feet", details.at_feet } };
+    }
+
+    nlohmann::json operator()(const TargetInputDetails &details) const
+    {
+        return {
+            { "look", details.look },
+            { "free", details.free_mode },
+            { "can_target", details.can_target },
+            { "y", details.pos.y },
+            { "x", details.pos.x },
+        };
+    }
+
+    nlohmann::json operator()(const PointInputDetails &details) const
+    {
+        return { { "y", details.pos.y }, { "x", details.pos.x } };
+    }
+};
+
+/*!
+ * @brief 現在の入力待ちの文脈をJSONへ変換する
+ */
+nlohmann::json make_input_context_json()
+{
+    const auto &context = get_input_context();
+    if (!context) {
+        return nullptr;
+    }
+
+    auto result = nlohmann::json{ { "kind", input_kind_name(context->kind) }, { "prompt", to_json_utf8(context->prompt) } };
+    result.update(std::visit(InputDetailsJsonConverter(), context->details));
+    return result;
+}
+
 nlohmann::json handle_screen_request(const nlohmann::json &id, const nlohmann::json &request)
 {
     const auto index = find_term_index(request);
@@ -391,6 +533,7 @@ nlohmann::json handle_screen_request(const nlohmann::json &id, const nlohmann::j
 
     auto screen = make_bot_screen_json(*angband_terms[*index], *with_attrs);
     screen["term"] = *index;
+    screen["input_context"] = make_input_context_json();
     return make_ok_response(id, std::move(screen));
 }
 
@@ -451,7 +594,9 @@ nlohmann::json handle_state_request(const nlohmann::json &id, const nlohmann::js
         return make_error_response(id, "\"map\" must be a boolean");
     }
 
-    return make_ok_response(id, make_bot_json_snapshot(*creature_ptr, *include_map));
+    auto state = make_bot_json_snapshot(*creature_ptr, *include_map);
+    state["input_context"] = make_input_context_json();
+    return make_ok_response(id, std::move(state));
 }
 
 /*!
