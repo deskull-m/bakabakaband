@@ -1948,6 +1948,51 @@ BotScreenScope::~BotScreenScope()
     current_bot_screen = this->previous;
 }
 
+namespace {
+BotDrawnScreenScope *current_bot_drawn_screen = nullptr; //!< いちばん内側の BotDrawnScreenScope
+}
+
+/*!
+ * @brief 描いた画面を登録するスコープを始める (まだ何も登録しない)
+ */
+BotDrawnScreenScope::BotDrawnScreenScope()
+    : previous(current_bot_drawn_screen)
+{
+    current_bot_drawn_screen = this;
+}
+
+/*!
+ * @brief 描いた画面の登録を外し、外側のスコープに戻す
+ * @details 始めたときとは逆の順に終えること
+ */
+BotDrawnScreenScope::~BotDrawnScreenScope()
+{
+    assert(current_bot_drawn_screen == this);
+    current_bot_drawn_screen = this->previous;
+}
+
+/*!
+ * @brief いちばん内側の BotDrawnScreenScope の登録を、描いた中身で登録し直す
+ * @param screen 描いた中身を足す処理と、地図を載せてよいか
+ * @pre BotDrawnScreenScope があること
+ */
+void show_bot_drawn_screen(BotScreen screen)
+{
+    assert(current_bot_drawn_screen != nullptr);
+    current_bot_drawn_screen->registered.emplace(std::move(screen));
+}
+
+/*!
+ * @brief 一覧を隠したときに、いちばん内側の BotDrawnScreenScope の登録を外す
+ * @details 描くときと同じく、いちばん内側のスコープに作用する。スコープが無ければ何もしない
+ */
+void hide_bot_drawn_screen()
+{
+    if (current_bot_drawn_screen != nullptr) {
+        current_bot_drawn_screen->registered.reset();
+    }
+}
+
 /*!
  * @brief 店の画面を登録するための BotScreen を作る
  * @param screen 店の画面 (登録するスコープより長く生きること)
