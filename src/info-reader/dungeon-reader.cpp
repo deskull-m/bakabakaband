@@ -164,11 +164,11 @@ ParseErrorType DungeonReader::parse_dungeons_info(std::string_view buf)
         }
 
         const auto i = std::stoi(tokens[1]);
-        if (i < error_idx) {
+        if (i < this->previous_id) {
             return ParseErrorType::NON_SEQUENTIAL_RECORDS;
         }
 
-        error_idx = i;
+        this->previous_id = i;
         DungeonDefinition dungeon;
 #ifdef JP
         dungeon.name = tokens[2];
@@ -1033,8 +1033,9 @@ void DungeonReader::set_dungeon_position(DungeonDefinition &dungeon, const nlohm
  *          (旧 token-emit 方式は提案 38 で廃止)。version 1 (lines 配列) は
  *          legacy `parse_dungeons_info()` トークンパーサを使う互換パスで継続。
  */
-DungeonReader::DungeonReader(nlohmann::json &dungeon_data)
+DungeonReader::DungeonReader(nlohmann::json &dungeon_data, int &previous_id)
     : dungeon_data(dungeon_data)
+    , previous_id(previous_id)
 {
 }
 
@@ -1063,10 +1064,10 @@ ParseErrorType DungeonReader::read()
         return ParseErrorType::TOO_FEW_ARGUMENTS;
     }
     const auto id = dungeon_data["id"].get<int>();
-    if (id < error_idx) {
+    if (id < this->previous_id) {
         return ParseErrorType::NON_SEQUENTIAL_RECORDS;
     }
-    error_idx = id;
+    this->previous_id = id;
 
     DungeonDefinition dungeon;
 

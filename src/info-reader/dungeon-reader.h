@@ -9,8 +9,8 @@ class DungeonDefinition;
 
 class DungeonReader {
 public:
-    explicit DungeonReader(nlohmann::json &dungeon_data);
-    DungeonReader(nlohmann::json &&) = delete;
+    DungeonReader(nlohmann::json &dungeon_data, int &previous_id);
+    DungeonReader(nlohmann::json &&, int &) = delete;
     DungeonReader(const DungeonReader &) = delete;
     DungeonReader(DungeonReader &&) = delete;
     DungeonReader &operator=(const DungeonReader &) = delete;
@@ -38,4 +38,5 @@ private:
     void set_dungeon_position(DungeonDefinition &dungeon, const nlohmann::json &pos_obj);
 
     nlohmann::json &dungeon_data;
+    int &previous_id; //!< 直前に読み込んだダンジョンID (昇順の検証用。読み込み全体で共有)
 };

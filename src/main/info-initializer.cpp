@@ -245,7 +245,9 @@ void init_class_skills_info()
 void init_dungeons_info()
 {
     auto &dungeons = DungeonList::get_instance();
-    init_json_reader<DungeonReader>("DungeonDefinitions.jsonc", "dungeons", DefinitionHashDataType::DUNGEONS, dungeons, [&dungeons] { dungeons.retouch(); });
+    auto previous_id = -1;
+    auto parser = [&previous_id](nlohmann::json &element) { return DungeonReader(element, previous_id).read(); };
+    init_json("DungeonDefinitions.jsonc", "dungeons", DefinitionHashDataType::DUNGEONS, dungeons, parser, [&dungeons] { dungeons.retouch(); });
 }
 
 /*!
