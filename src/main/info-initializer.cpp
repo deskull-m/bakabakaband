@@ -282,7 +282,9 @@ void init_monster_message_definitions()
  */
 void init_creature_parties_info()
 {
-    init_json("CreatureParty.jsonc", "parties", DefinitionHashDataType::CREATURE_PARTIES, CreaturePartyList::get_instance(), parse_creature_parties_info);
+    auto previous_id = -1;
+    auto parser = [&previous_id](nlohmann::json &element) { return parse_creature_parties_info(element, previous_id); };
+    init_json("CreatureParty.jsonc", "parties", DefinitionHashDataType::CREATURE_PARTIES, CreaturePartyList::get_instance(), parser);
 }
 
 /*!

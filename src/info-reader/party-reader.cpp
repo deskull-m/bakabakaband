@@ -92,18 +92,18 @@ static ParseErrorType set_party_members(nlohmann::json &members_data, CreaturePa
  * @param party_data パーティデータの格納されたJSON Object
  * @return エラーコード
  */
-ParseErrorType parse_creature_parties_info(nlohmann::json &party_data)
+ParseErrorType parse_creature_parties_info(nlohmann::json &party_data, int &previous_id)
 {
     if (!party_data["id"].is_number_integer()) {
         return ParseErrorType::TOO_FEW_ARGUMENTS;
     }
 
     const auto party_id = party_data["id"].get<int>();
-    if (party_id < error_idx) {
+    if (party_id < previous_id) {
         return ParseErrorType::NON_SEQUENTIAL_RECORDS;
     }
 
-    error_idx = party_id;
+    previous_id = party_id;
     auto &parties = CreaturePartyList::get_instance();
     auto &party = parties.emplace(party_id);
     party.idx = party_id;
@@ -111,7 +111,7 @@ ParseErrorType parse_creature_parties_info(nlohmann::json &party_data)
     // パーティ名の読み込み
     ParseErrorType err = set_party_name(party_data["name"], party);
     if (err != ParseErrorType::NONE) {
-        msg_print(_("パーティ名読込失敗。ID: '{}'。", "Failed to load party name. ID: '{}'."), error_idx);
+        msg_print(_("パーティ名読込失敗。ID: '{}'。", "Failed to load party name. ID: '{}'."), party_id);
         return err;
     }
 
@@ -122,18 +122,18 @@ ParseErrorType parse_creature_parties_info(nlohmann::json &party_data)
 
     // 階層レベルの読み込み
     if (const auto result = info_set_integer(party_data["min_level"], party.min_level, true, Range(0, 999)); !result) {
-        msg_print(_("パーティ最小レベル読込失敗。ID: '{}'。", "Failed to load party min level. ID: '{}'."), error_idx);
+        msg_print(_("パーティ最小レベル読込失敗。ID: '{}'。", "Failed to load party min level. ID: '{}'."), party_id);
         return result.error();
     }
 
     if (const auto result = info_set_integer(party_data["max_level"], party.max_level, true, Range(0, 999)); !result) {
-        msg_print(_("パーティ最大レベル読込失敗。ID: '{}'。", "Failed to load party max level. ID: '{}'."), error_idx);
+        msg_print(_("パーティ最大レベル読込失敗。ID: '{}'。", "Failed to load party max level. ID: '{}'."), party_id);
         return result.error();
     }
 
     // レアリティの読み込み
     if (const auto result = info_set_integer(party_data["rarity"], party.rarity, true, Range(1, 255)); !result) {
-        msg_print(_("パーティレアリティ読込失敗。ID: '{}'。", "Failed to load party rarity. ID: '{}'."), error_idx);
+        msg_print(_("パーティレアリティ読込失敗。ID: '{}'。", "Failed to load party rarity. ID: '{}'."), party_id);
         return result.error();
     }
 
@@ -144,13 +144,13 @@ ParseErrorType parse_creature_parties_info(nlohmann::json &party_data)
 
     // パーティメンバーの読み込み
     if (!party_data.contains("members")) {
-        msg_print(_("パーティメンバー情報なし。ID: '{}'。", "No party members. ID: '{}'."), error_idx);
+        msg_print(_("パーティメンバー情報なし。ID: '{}'。", "No party members. ID: '{}'."), party_id);
         return ParseErrorType::GENERIC;
     }
 
     err = set_party_members(party_data["members"], party);
     if (err != ParseErrorType::NONE) {
-        msg_print(_("パーティメンバー読込失敗。ID: '{}'。", "Failed to load party members. ID: '{}'."), error_idx);
+        msg_print(_("パーティメンバー読込失敗。ID: '{}'。", "Failed to load party members. ID: '{}'."), party_id);
         return err;
     }
 
