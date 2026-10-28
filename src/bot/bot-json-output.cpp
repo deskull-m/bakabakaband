@@ -13,6 +13,8 @@
 #include "grid/grid.h"
 #include "inventory/inventory-slot-types.h"
 #include "locale/character-encoding.h"
+#include "lore/lore-util.h"
+#include "lore/monster-lore.h"
 #include "mutation/mutation-flag-types.h"
 #include "object-enchant/item-feeling.h"
 #include "object-enchant/tr-types.h"
@@ -1991,6 +1993,160 @@ void hide_bot_drawn_screen()
     if (current_bot_drawn_screen != nullptr) {
         current_bot_drawn_screen->registered.reset();
     }
+}
+
+namespace {
+/*!
+ * @brief 描いた画面を制御サーバの state に載せるか
+ * @return 制御サーバが動いていて、登録するスコープがあれば true
+ */
+bool should_register_drawn_screen()
+{
+    return arg_control_port.has_value() && (current_bot_drawn_screen != nullptr);
+}
+
+/*!
+ * @brief 描いた画面の中身を作る必要があるか
+ * @return JSONL に書き出すか、制御サーバの state に載せるなら true
+ */
+bool should_make_drawn_screen(PlayerType *player_ptr)
+{
+    if ((player_ptr == nullptr) || (player_ptr->get_floor() == nullptr)) {
+        return false;
+    }
+
+    return arg_bot_json_output || should_register_drawn_screen();
+}
+
+/*!
+ * @brief 描いた画面を JSONL に書き出し、いちばん内側の BotDrawnScreenScope にも登録する
+ * @param type スナップショットの type と、中身を載せるキー
+ * @param content 描いたときの中身 (地図は載せない)
+ * @param build_started 中身を作り始めた時刻 (書き出しの計時に使う)
+ */
+void show_drawn_screen(PlayerType *player_ptr, std::string_view type, nlohmann::json content, BotJsonClock::time_point build_started)
+{
+    BotScreen screen{
+        [type = std::string(type), content = std::move(content)](nlohmann::json &snapshot, PlayerType *) {
+            snapshot["type"] = type;
+            // std::string のキーは値で受ける operator[] に渡り、MSVC が評価順を保証できない (C4866) ので、文字列リテラルのキーと同じく const char * で渡す
+            snapshot[type.data()] = content;
+        },
+        false
+    };
+    if (arg_bot_json_output) {
+        auto snapshot = make_snapshot(player_ptr, screen.include_map);
+        screen.add_to_snapshot(snapshot, player_ptr);
+        write_snapshot(snapshot, elapsed_microseconds(build_started));
+    }
+    if (should_register_drawn_screen()) {
+        show_bot_drawn_screen(std::move(screen));
+    }
+}
+}
+
+/*!
+ * @brief 呪文一覧 (魔法書の閲覧・詠唱メニュー) を表示したときのスナップショットを出力する
+ * @param realm_id 表示している領域
+ * @param rows print_spells() が画面に書いた各行
+ */
+void output_bot_json_spell_list_snapshot(PlayerType *player_ptr, int realm_id, const std::vector<BotSpellListRow> &rows)
+{
+    if (!should_make_drawn_screen(player_ptr)) {
+        return;
+    }
+
+    const auto build_started = BotJsonClock::now();
+    auto spells = nlohmann::json::array();
+    for (const auto &row : rows) {
+        auto spell = nlohmann::json{ { "spell_id", row.spell_id }, { "status", row.status } };
+        if (row.status != "illegible") {
+            spell["name"] = to_json_utf8(row.name);
+            spell["level"] = row.level;
+            spell["mana"] = row.mana;
+        }
+        if (row.fail) {
+            spell["fail"] = *row.fail;
+            spell["proficiency"] = to_json_utf8(row.proficiency);
+            spell["proficiency_mark"] = row.proficiency_mark;
+            spell["info"] = to_json_utf8(row.info);
+        }
+        spells.push_back(std::move(spell));
+    }
+
+    show_drawn_screen(player_ptr, "spell_list", { { "realm_id", realm_id }, { "spells", std::move(spells) } }, build_started);
+}
+
+/*!
+ * @brief 特殊能力の一覧を表示したときのスナップショットを出力する
+ * @param kind 一覧の種類 ("racial": 種族・職業・突然変異のパワー、"mind": 超能力・練気術・剣術等)
+ * @param rows 一覧の全行 (ページ送りで見られる行を含む)
+ * @param page 表示中のページ
+ * @param browse_mode 閲覧モードか
+ */
+void output_bot_json_power_list_snapshot(PlayerType *player_ptr, std::string_view kind, const std::vector<BotPowerListRow> &rows, int page, bool browse_mode)
+{
+    if (!should_make_drawn_screen(player_ptr)) {
+        return;
+    }
+
+    const auto build_started = BotJsonClock::now();
+    auto powers = nlohmann::json::array();
+    for (const auto &row : rows) {
+        powers.push_back({
+            { "letter", std::string(1, row.letter) },
+            { "page", row.page },
+            { "name", to_json_utf8(row.name) },
+            { "level", row.level },
+            { "cost", row.cost },
+            { "fail", row.fail },
+            { "info", to_json_utf8(row.info) },
+        });
+    }
+
+    show_drawn_screen(player_ptr, "power_list", { { "kind", kind }, { "page", page }, { "browse_mode", browse_mode }, { "powers", std::move(powers) } }, build_started);
+}
+
+namespace {
+std::string *lore_capture_buffer = nullptr;
+
+void capture_lore_text(TERM_COLOR, std::string_view str)
+{
+    if (lore_capture_buffer != nullptr) {
+        lore_capture_buffer->append(str);
+    }
+}
+}
+
+/*!
+ * @brief モンスターの思い出を表示したときのスナップショットを出力する
+ * @param monrace_id 表示するモンスターの種族ID
+ * @param lore_mode 表示モード (monster_lore_mode)
+ * @details 画面と同じ process_monster_lore() の出力を、描画先だけ差し替えて文字列として取り出す。
+ * 思い出の文章は乱数や状態変更を伴わないので、画面の描画の前に一度余分に組み立てても結果は変わらない。
+ */
+void output_bot_json_lore_snapshot(PlayerType *player_ptr, MonraceId monrace_id, int lore_mode)
+{
+    if (!should_make_drawn_screen(player_ptr)) {
+        return;
+    }
+
+    const auto build_started = BotJsonClock::now();
+    std::string text;
+    const auto previous_hook = hook_c_roff;
+    lore_capture_buffer = &text;
+    hook_c_roff = capture_lore_text;
+    process_monster_lore(*player_ptr, monrace_id, static_cast<monster_lore_mode>(lore_mode));
+    hook_c_roff = previous_hook;
+    lore_capture_buffer = nullptr;
+
+    const auto &monrace = MonraceList::get_instance().get_monrace(monrace_id);
+    auto lore = nlohmann::json{
+        { "race_id", enum2i(monrace_id) },
+        { "name", to_json_utf8(monrace.name.string()) },
+        { "text", to_json_utf8(text) },
+    };
+    show_drawn_screen(player_ptr, "lore", std::move(lore), build_started);
 }
 
 /*!

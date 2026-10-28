@@ -5,10 +5,40 @@
 #include <string>
 #include <string_view>
 #include <tl/optional.hpp>
+#include <vector>
 
 class CreatureEntity;
 class PlayerType;
 class StoreScreen;
+enum class MonraceId : short;
+
+/*!
+ * @brief 呪文一覧 (spell_list) の 1 行分。print_spells() が画面に書いた内容を言語非依存で持つ
+ */
+struct BotSpellListRow {
+    int spell_id = 0; //!< 呪文ID
+    std::string name; //!< 呪文名
+    std::string status; //!< available / untried / unknown / forgotten / illegible
+    int level = 0; //!< 習得レベル
+    int mana = 0; //!< 消費MP
+    tl::optional<int> fail; //!< 失敗率 (%)
+    std::string proficiency; //!< 熟練度の略記 ("[初心]" 等の画面表記)
+    bool proficiency_mark = false; //!< 熟練度の前の '!'
+    std::string info; //!< 効果欄 (未知・忘却・未経験の場合はその表記)
+};
+
+/*!
+ * @brief 特殊能力の一覧 (power_list) の 1 行分
+ */
+struct BotPowerListRow {
+    char letter; //!< 選択キー
+    int page; //!< 表示されるページ
+    std::string name; //!< 能力名
+    int level; //!< 使用可能レベル
+    int cost; //!< 消費MP
+    int fail; //!< 失敗率 (%)
+    std::string info; //!< 効果欄
+};
 
 inline constexpr auto BOT_JSON_PROTOCOL_VERSION = 2; //!< JSONスナップショットの互換性を壊す変更で更新する
 
@@ -43,6 +73,9 @@ void output_bot_json_store_snapshot(CreatureEntity &creature, const StoreScreen 
 void output_bot_json_character_snapshot(CreatureEntity &creature);
 void output_bot_json_knowledge_snapshot(CreatureEntity &creature, BotKnowledgeCategory category);
 void output_bot_json_look_snapshot(CreatureEntity &creature);
+void output_bot_json_spell_list_snapshot(PlayerType *player_ptr, int realm_id, const std::vector<BotSpellListRow> &rows);
+void output_bot_json_power_list_snapshot(PlayerType *player_ptr, std::string_view kind, const std::vector<BotPowerListRow> &rows, int page, bool browse_mode);
+void output_bot_json_lore_snapshot(PlayerType *player_ptr, MonraceId monrace_id, int lore_mode);
 
 /*!
  * @brief 開いている画面の情報を、制御サーバの state のスナップショットに足すためのもの
