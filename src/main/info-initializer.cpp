@@ -274,7 +274,9 @@ void init_terrains_info()
  */
 void init_monrace_definitions()
 {
-    init_json_reader<RaceReader>("MonraceDefinitions.jsonc", "monsters", DefinitionHashDataType::MONRACES, MonraceList::get_instance());
+    auto previous_id = -1;
+    auto parser = [&previous_id](nlohmann::json &element) { return RaceReader(element, previous_id).read(); };
+    init_json("MonraceDefinitions.jsonc", "monsters", DefinitionHashDataType::MONRACES, MonraceList::get_instance(), parser);
 }
 
 /*!

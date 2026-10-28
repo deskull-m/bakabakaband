@@ -9,8 +9,8 @@ class MonraceDefinition;
 
 class RaceReader {
 public:
-    explicit RaceReader(nlohmann::json &monrace_data);
-    RaceReader(nlohmann::json &&) = delete;
+    RaceReader(nlohmann::json &monrace_data, int &previous_id);
+    RaceReader(nlohmann::json &&, int &) = delete;
     RaceReader(const RaceReader &) = delete;
     RaceReader(RaceReader &&) = delete;
     RaceReader &operator=(const RaceReader &) = delete;
@@ -60,4 +60,5 @@ private:
     ParseErrorType set_mon_dead_spawns(const nlohmann::json &dead_spawn_data, MonraceDefinition &monrace);
 
     nlohmann::json &monrace_data;
+    int &previous_id; //!< 直前に読み込んだモンスター種族ID (昇順の検証用。読み込み全体で共有)
 };
