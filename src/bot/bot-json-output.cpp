@@ -733,6 +733,36 @@ const char *food_state(const PlayerType &player)
     return "gorged";
 }
 
+/*!
+ * @brief 品の名前から分かる種類・エゴ・固定アーティファクト・見た目を、言語に依らない ID で出力する
+ * @details 名前に出る範囲に限る。sval は aware のとき、ego_id と artifact_id は known のときだけ出す
+ * (エゴ名・固定アーティファクト名も鑑定するまで名前に出ない)。ランダムアーティファクトには固定の ID が
+ * 無いので artifact_id を出さない。flavor_id は aware でない品の名前に出る見た目で、その見た目を
+ * flavor_name に持つ BaseitemDefinitions の行の ID を表す (見た目は同じ tval の中でゲームごとに
+ * 混ぜてあるので中身は分からない)。
+ * @param item 品
+ * @param store_identified 店の商品として鑑定済みに扱うか
+ * @return {sval, ego_id, artifact_id, flavor_id} のうち出せるものだけを持つオブジェクト
+ */
+nlohmann::json make_bot_item_identity_json(const ItemEntity &item, bool store_identified)
+{
+    const auto aware = store_identified || item.is_aware();
+    const auto known = store_identified || item.is_known();
+    auto result = nlohmann::json::object();
+    if (aware) {
+        result["sval"] = item.bi_key.sval().value_or(-1);
+    } else if (const auto &record = item.get_baseitem_record(); record.is_apparent()) {
+        result["flavor_id"] = record.get_appearance_id();
+    }
+    if (known && item.is_ego()) {
+        result["ego_id"] = enum2i(item.ego_idx);
+    }
+    if (known && item.is_fixed_artifact()) {
+        result["artifact_id"] = enum2i(item.fa_id);
+    }
+    return result;
+}
+
 nlohmann::json make_item_json(PlayerType *player_ptr, const ItemEntity &item, bool store_identified = false)
 {
     // Commercial stock is fully identified by Store::carry(), independently of
@@ -758,9 +788,8 @@ nlohmann::json make_item_json(PlayerType *player_ptr, const ItemEntity &item, bo
     // Match what the normal item description reveals. An unaware flavor does
     // not reveal its base kind, and an unidentified instance does not reveal
     // charges, pval-derived values, or remaining fuel.
-    if (aware) {
-        result["sval"] = item.bi_key.sval().value_or(-1);
-    }
+    // 名前から分かる ID (sval・ego_id・artifact_id・flavor_id) は make_bot_item_identity_json() で決める。
+    result.update(make_bot_item_identity_json(item, store_identified));
     if (item.ident.has(IdentificationFlag::SENSE)) {
         result["pseudo_feeling"] = pseudo_feeling_name(static_cast<item_feel_type>(item.feeling));
     }
