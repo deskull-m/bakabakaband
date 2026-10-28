@@ -49,7 +49,6 @@ void dungeon_grid::set_trap_id(TerrainTag tag)
  */
 std::tuple<ParseErrorType, int, std::string> init_info_txt(std::ifstream &ifs, DefinitionHashDataType dhdt, Parser parse_info_txt_line)
 {
-    error_idx = -1;
     auto error_line = 0;
 
     util::SHA256 sha256;

@@ -4,9 +4,6 @@
 #include "object-enchant/activation-info-table.h"
 #include "util/string-processor.h"
 
-/* Help give useful error messages */
-int error_idx; /*!< データ読み込み/初期化時に汎用的にエラーコードを保存するグローバル変数 */
-
 /*!
  * @brief テキストトークンを走査してフラグを一つ得る(発動能力用) /
  * Grab one activation index flag

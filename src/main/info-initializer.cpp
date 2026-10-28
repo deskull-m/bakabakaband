@@ -96,7 +96,7 @@ static void init_info(std::string_view filename, DefinitionHashDataType dhdt, In
 #else
         msg_print("Error {} at line {} of '{}'.", error_code, error_line, filename);
 #endif
-        msg_print(_("レコード {} は '{}' エラーがあります。", "Record {} contains a '{}' error."), error_idx, oops);
+        msg_print(_("'{}' エラーがあります。", "Contains a '{}' error."), oops);
         msg_print(_("構文 '{}'。", "Parsing '{}'."), line);
         msg_erase();
         quit(fmt::format(_("'{}'ファイルにエラー", "Error in '{}' file."), filename));
@@ -147,8 +147,6 @@ static void init_json(std::string_view filename, std::string_view keyname, Defin
     if (!allow_empty && array_it->empty()) {
         quit(fmt::format(_("'{}'ファイルの配列 '{}' が空です。", "Array '{}' in '{}' file is empty."), keyname, filename));
     }
-
-    error_idx = -1;
 
     auto &elements = json_object[keyname];
     for (size_t index = 0; index < elements.size(); ++index) {
