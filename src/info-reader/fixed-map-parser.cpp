@@ -273,8 +273,8 @@ ParseErrorType parse_fixed_map(CreatureEntity &creature, std::string_view name, 
         if (const auto result = load_town_preferences(); !result) {
             const auto err = result.error();
             const auto oops = describe_parse_error(err);
+            // 起動時・ヘッドレスでは診断ごとに入力を待たない (msg_erase は -続く- でキー入力を待つため足さない)。
             msg_print(fmt::format("Error {} ({}) loading '{}'.", enum2i(err), oops, TOWN_PREFERENCES));
-            msg_erase();
             return err;
         }
 
@@ -283,7 +283,6 @@ ParseErrorType parse_fixed_map(CreatureEntity &creature, std::string_view name, 
             const auto err = town_file.error();
             const auto oops = describe_parse_error(err);
             msg_print(fmt::format("Error {} ({}) loading '{}'.", enum2i(err), oops, TOWN_DEFINITION_LIST));
-            msg_erase();
             return err;
         }
         const auto &map_file = *town_file;
@@ -294,7 +293,6 @@ ParseErrorType parse_fixed_map(CreatureEntity &creature, std::string_view name, 
         if (err != ParseErrorType::NONE) {
             const auto oops = describe_parse_error(err);
             msg_print(fmt::format("Error {} ({}) loading '{}'.", enum2i(err), oops, map_file));
-            msg_erase();
         }
         return err;
     }
@@ -338,7 +336,6 @@ ParseErrorType parse_fixed_map(CreatureEntity &creature, std::string_view name, 
             const auto oops = describe_parse_error(err);
             msg_print("Error {} ({}) at line {} of '{}'.", enum2i(err), oops, num, name);
             msg_print(_("'{}'を解析中。", "Parsing '{}'."), line_str->data());
-            msg_erase();
             break;
         }
     }
