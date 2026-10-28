@@ -3,12 +3,10 @@
 #include "object-enchant/object-ego.h"
 #include "room/vault-builder.h"
 #include "system/angband.h"
-#include <fstream>
 #include <functional>
 #include <nlohmann/json_fwd.hpp>
 #include <string>
 #include <string_view>
-#include <tuple>
 
 enum class ParseErrorType : int;
 enum class FixedArtifactId : short;

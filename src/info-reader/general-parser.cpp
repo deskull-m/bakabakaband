@@ -1,12 +1,9 @@
 #include "info-reader/general-parser.h"
 #include "artifact/fixed-art-types.h"
 #include "dungeon/quest.h"
-#include "info-reader/definition-hash-data.h"
-#include "info-reader/info-reader-util.h"
 #include "info-reader/parse-error-types.h"
 #include "info-reader/random-grid-effect-types.h"
 #include "io/tokenizer.h"
-#include "locale/character-encoding.h"
 #include "object-enchant/trg-types.h"
 #include "player-info/class-types.h"
 #include "player-info/race-types.h"
@@ -22,10 +19,9 @@
 #include "system/system-variables.h"
 #include "system/terrain/terrain-definition.h"
 #include "system/terrain/terrain-list.h"
-#include "util/angband-files.h"
+#include "util/enum-converter.h"
 #include "util/string-processor.h"
 #include <algorithm>
-#include <nlohmann/json.hpp>
 #include <string>
 
 dungeon_grid letter[255];

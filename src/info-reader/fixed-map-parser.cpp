@@ -37,6 +37,7 @@
 #include <algorithm>
 #include <cstdint>
 #include <fmt/format.h>
+#include <fstream>
 #include <iterator>
 #include <limits>
 #include <nlohmann/json.hpp>
