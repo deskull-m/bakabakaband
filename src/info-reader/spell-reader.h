@@ -21,6 +21,7 @@ public:
             std::set<std::string> tags;
         };
         std::map<RealmType, RealmSpells> realms;
+        int record_index = -1; //!< 呪文領域は数値IDを持たないため、エラー表示用に要素の順序を用いる (読み込み全体で共有)
     };
 
     SpellReader(const nlohmann::json &realm_data, SpellInfoList &spell_info_list, Session &session);

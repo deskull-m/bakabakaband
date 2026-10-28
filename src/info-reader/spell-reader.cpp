@@ -21,16 +21,16 @@ SpellReader::SpellReader(const nlohmann::json &realm_data, SpellInfoList &spell_
  */
 ParseErrorType SpellReader::read() const
 {
-    error_idx++; //!< @note 呪文領域は数値IDを持たないため、エラー表示用に要素の順序を用いる
+    const auto record_index = ++this->session.record_index; //!< @note 呪文領域は数値IDを持たないため、エラー表示用に要素の順序を用いる
 
     RealmType realm_id;
     if (const auto err = this->set_realm(realm_id); err != ParseErrorType::NONE) {
-        msg_print(_("領域名読込失敗。ID: '{}'。", "Failed to load realm name. ID: '{}'."), error_idx);
+        msg_print(_("領域名読込失敗。ID: '{}'。", "Failed to load realm name. ID: '{}'."), record_index);
         return err;
     }
 
     if (const auto err = this->set_book_data(realm_id); err != ParseErrorType::NONE) {
-        msg_print(_("呪文詳細読込失敗。ID: '{}'。", "Failed to load spell data. ID: '{}'."), error_idx);
+        msg_print(_("呪文詳細読込失敗。ID: '{}'。", "Failed to load spell data. ID: '{}'."), record_index);
         return err;
     }
 
@@ -75,7 +75,7 @@ ParseErrorType SpellReader::set_spell_data(const nlohmann::json &spell_data, Rea
 
     int spell_id{};
     if (const auto err = info_set_integer(get_json_value(spell_data, "spell_id"), spell_id, true, Range(0, 31)); !err) {
-        msg_print(_("呪文ID読込失敗。ID: '{}'。", "Failed to load spell ID. ID: '{}'."), error_idx);
+        msg_print(_("呪文ID読込失敗。ID: '{}'。", "Failed to load spell ID. ID: '{}'."), this->session.record_index);
         return err.error();
     }
     auto info = SpellInfo();
@@ -83,7 +83,7 @@ ParseErrorType SpellReader::set_spell_data(const nlohmann::json &spell_data, Rea
 
     const auto &tag_obj = get_json_value(spell_data, "spell_tag");
     if (!tag_obj.is_string()) {
-        msg_print(_("呪文タグ読込失敗。ID: '{}'。", "Failed to load spell tag. ID: '{}'."), error_idx);
+        msg_print(_("呪文タグ読込失敗。ID: '{}'。", "Failed to load spell tag. ID: '{}'."), this->session.record_index);
         return ParseErrorType::TOO_FEW_ARGUMENTS;
     }
     info.tag = tag_obj.get<std::string>();
@@ -100,11 +100,11 @@ ParseErrorType SpellReader::set_spell_data(const nlohmann::json &spell_data, Rea
     }
 
     if (const auto err = info_set_string(get_json_value(spell_data, "name"), info.name, true); !err) {
-        msg_print(_("呪文名読込失敗。ID: '{}'。", "Failed to load spell name. ID: '{}'."), error_idx);
+        msg_print(_("呪文名読込失敗。ID: '{}'。", "Failed to load spell name. ID: '{}'."), this->session.record_index);
         return err.error();
     }
     if (const auto err = info_set_string(get_json_value(spell_data, "description"), info.description, true); !err) {
-        msg_print(_("呪文説明読込失敗。ID: '{}'。", "Failed to load spell description. ID: '{}'."), error_idx);
+        msg_print(_("呪文説明読込失敗。ID: '{}'。", "Failed to load spell description. ID: '{}'."), this->session.record_index);
         return err.error();
     }
     this->spell_info_list.set_spell_info(realm, spell_id, std::move(info));
