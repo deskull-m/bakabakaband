@@ -2,7 +2,10 @@
  * @brief SpellHex のテスト
  */
 
+#include "player-base/player-class.h"
+#include "realm/realm-types.h"
 #include "spell-realm/spells-hex.h"
+#include "system/player-type-definition.h"
 #include "system/redrawing-flags-updater.h"
 #include "util/finalizer.h"
 #include <doctest/doctest.h>
@@ -64,4 +67,64 @@ TEST_CASE("SpellHex::request_casting_change_updates requests recalculating the p
     CHECK(rfu.has(MainWindowRedrawingFlag::EXTRA));
     CHECK(rfu.has(MainWindowRedrawingFlag::HP));
     CHECK(rfu.has(MainWindowRedrawingFlag::MP));
+}
+
+TEST_CASE("SpellHex revenge setters request redrawing the status bar only when the shown revenge changes")
+{
+    auto &rfu = RedrawingFlagsUpdater::get_instance();
+    const auto restore = util::make_finalizer([&rfu, timed_effect = rfu.has(MainWindowRedrawingFlag::TIMED_EFFECT)] {
+        restore_flag(rfu, MainWindowRedrawingFlag::TIMED_EFFECT, timed_effect);
+    });
+
+    PlayerType player;
+    player.set_pclass(PlayerClassType::HIGH_MAGE);
+    player.set_realm1(RealmType::HEX);
+    CreatureClass(player).init_specific_data();
+    SpellHex spell_hex(player);
+
+    SUBCASE("setting the type without remaining turns does not change the display")
+    {
+        rfu.reset_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
+        spell_hex.set_revenge_type(SpellHexRevengeType::PATIENCE);
+        CHECK_FALSE(rfu.has(MainWindowRedrawingFlag::TIMED_EFFECT));
+    }
+
+    SUBCASE("starting, counting down and ending the revenge")
+    {
+        spell_hex.set_revenge_type(SpellHexRevengeType::PATIENCE);
+        rfu.reset_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
+        spell_hex.set_revenge_turn(2, true);
+        CHECK(rfu.has(MainWindowRedrawingFlag::TIMED_EFFECT));
+
+        rfu.reset_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
+        spell_hex.set_revenge_turn(1, false);
+        CHECK_FALSE(rfu.has(MainWindowRedrawingFlag::TIMED_EFFECT));
+
+        spell_hex.set_revenge_turn(1, false);
+        CHECK(rfu.has(MainWindowRedrawingFlag::TIMED_EFFECT));
+    }
+
+    SUBCASE("changing the type while it is shown")
+    {
+        spell_hex.set_revenge_type(SpellHexRevengeType::PATIENCE);
+        spell_hex.set_revenge_turn(2, true);
+        rfu.reset_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
+        spell_hex.set_revenge_type(SpellHexRevengeType::REVENGE);
+        CHECK(rfu.has(MainWindowRedrawingFlag::TIMED_EFFECT));
+    }
+
+    SUBCASE("clearing the revenge")
+    {
+        rfu.reset_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
+        spell_hex.clear_revenge();
+        CHECK_FALSE(rfu.has(MainWindowRedrawingFlag::TIMED_EFFECT));
+
+        spell_hex.set_revenge_type(SpellHexRevengeType::REVENGE);
+        spell_hex.set_revenge_turn(2, true);
+        rfu.reset_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
+        spell_hex.clear_revenge();
+        CHECK(rfu.has(MainWindowRedrawingFlag::TIMED_EFFECT));
+        CHECK(spell_hex.get_revenge_turn() == 0);
+        CHECK(spell_hex.get_revenge_type() == SpellHexRevengeType::NONE);
+    }
 }
