@@ -304,6 +304,7 @@ static bool spell_okay(CreatureEntity &creature, int spell_id, bool learned, boo
  * @param sval 魔道書のsval
  * @param learned 閲覧/使用選択ならばTRUE、学習処理ならFALSE
  * @param use_realm 魔法領域ID
+ * @param browse 閲覧ならばTRUE (選ぶと説明を表示して選び直す)
  * @return
  * <pre>
  * If a valid spell is chosen, saves it in '*sn' and returns TRUE
@@ -313,7 +314,7 @@ static bool spell_okay(CreatureEntity &creature, int spell_id, bool learned, boo
  * The "known" should be TRUE for cast/pray, false for study
  * </pre>
  */
-static int get_spell(CreatureEntity &creature, SPELL_IDX *sn, std::string_view prompt_verb, int sval, bool learned, RealmType use_realm)
+static int get_spell(CreatureEntity &creature, SPELL_IDX *sn, std::string_view prompt_verb, int sval, bool learned, RealmType use_realm, bool browse = false)
 {
     int i;
     SPELL_IDX spell = -1;
@@ -383,11 +384,13 @@ static int get_spell(CreatureEntity &creature, SPELL_IDX *sn, std::string_view p
 
     const auto spell_category = spell_category_name(mp_ptr->spell_book);
     constexpr auto format_str = _("({}:{}-{}, '*'で一覧, ESCで中断) どの{}を{}ますか? ", "({}s {}-{}, *=List, ESC=exit) {} which {}? ");
+    const auto first_label = I2A(0);
+    const auto last_label = I2A(num - 1);
 #ifdef JP
     const auto verb = conjugate_jverb(prompt_verb, JVerbConjugationType::AND);
-    const auto prompt = fmt::format(format_str, str_upcase_first(spell_category), I2A(0), I2A(num - 1), spell_category, str_upcase_first(verb));
+    const auto prompt = fmt::format(format_str, str_upcase_first(spell_category), first_label, last_label, spell_category, str_upcase_first(verb));
 #else
-    const auto prompt = fmt::format(format_str, str_upcase_first(spell_category), I2A(0), I2A(num - 1), str_upcase_first(prompt_verb), spell_category);
+    const auto prompt = fmt::format(format_str, str_upcase_first(spell_category), first_label, last_label, str_upcase_first(prompt_verb), spell_category);
 #endif
 
     auto choice = (always_show_list || use_menu) ? ESCAPE : '\1';
@@ -395,7 +398,7 @@ static int get_spell(CreatureEntity &creature, SPELL_IDX *sn, std::string_view p
         if (choice == ESCAPE) {
             choice = ' ';
         } else {
-            const auto new_choice = input_command(prompt);
+            const auto new_choice = input_spell_choice(prompt, { .first_label = first_label, .last_label = last_label, .list = redraw, .browse = browse, .menu = use_menu });
             if (!new_choice) {
                 break;
             }
@@ -637,7 +640,7 @@ void do_cmd_browse(CreatureEntity &creature)
     /* Keep browsing spells.  Exit browsing on cancel. */
     while (true) {
         /* Ask for a spell, allow cancel */
-        if (!get_spell(creature, &spell, _("読む", "browse"), sval, true, use_realm)) {
+        if (!get_spell(creature, &spell, _("読む", "browse"), sval, true, use_realm, /* browse = */ true)) {
             /* If cancelled, leave immediately. */
             if (spell == -1) {
                 break;

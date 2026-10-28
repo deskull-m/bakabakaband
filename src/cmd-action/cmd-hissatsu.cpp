@@ -19,6 +19,7 @@
 #include "game-option/text-display-options.h"
 #include "inventory/inventory-slot-types.h"
 #include "io/command-repeater.h"
+#include "io/input-context.h"
 #include "io/input-key-requester.h"
 #include "main/sound-definitions-table.h"
 #include "main/sound-of-music.h"
@@ -99,7 +100,9 @@ static int get_hissatsu_power(CreatureEntity &creature, SPELL_IDX *sn)
     }
 
     constexpr auto fmt = _("({} {:c}-{:c}, '*'で一覧, ESC) どの{}を使いますか？", "({}s {:c}-{:c}, *=List, ESC=exit) Use which {}? ");
-    const auto prompt = fmt::format(fmt, str_upcase_first(p), I2A(0), "abcdefghijklmnopqrstuvwxyz012345"[num - 1], p);
+    const auto first_label = I2A(0);
+    const auto last_label = I2AD(num - 1);
+    const auto prompt = fmt::format(fmt, str_upcase_first(p), first_label, last_label, p);
 
     if (use_menu) {
         screen_save();
@@ -111,7 +114,7 @@ static int get_hissatsu_power(CreatureEntity &creature, SPELL_IDX *sn)
         if (choice == ESCAPE) {
             choice = ' ';
         } else {
-            const auto new_choice = input_command(prompt);
+            const auto new_choice = input_spell_choice(prompt, { .first_label = first_label, .last_label = last_label, .list = redraw, .menu = use_menu });
             if (!new_choice.has_value()) {
                 break;
             }
@@ -238,13 +241,7 @@ static int get_hissatsu_power(CreatureEntity &creature, SPELL_IDX *sn)
                         }
 
                     } else {
-                        char letter;
-                        if (line <= 26) {
-                            letter = I2A(line - 1);
-                        } else {
-                            letter = '0' + line - 27;
-                        }
-                        psi_desc = fmt::format("  {:c})", letter);
+                        psi_desc = fmt::format("  {:c})", I2AD(line - 1));
                     }
 
                     /* Dump the spell --(-- */

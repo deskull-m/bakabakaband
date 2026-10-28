@@ -726,9 +726,9 @@ bool get_element_power(CreatureEntity &creature, SPELL_IDX *sn, bool only_browse
     constexpr auto fmt_browse = _("({} {:c}-{:c}, '*'で一覧, ESC) どの{}について知りますか？", "({}s {:c}-{:c}, *=List, ESC=exit) Browse which {}? ");
     constexpr auto fmt_use = _("({} {:c}-{:c}, '*'で一覧, ESC) どの{}を使いますか？", "({}s {:c}-{:c}, *=List, ESC=exit) Use which {}? ");
     const auto desc_upcased = str_upcase_first(p);
-    const auto first_letter = I2A(0);
-    const auto last_letter = I2A(num - 1);
-    const auto prompt = only_browse ? fmt::format(fmt_browse, desc_upcased, first_letter, last_letter, p) : fmt::format(fmt_use, desc_upcased, first_letter, last_letter, p);
+    const auto first_label = I2A(0);
+    const auto last_label = I2A(num - 1);
+    const auto prompt = only_browse ? fmt::format(fmt_browse, desc_upcased, first_label, last_label, p) : fmt::format(fmt_use, desc_upcased, first_label, last_label, p);
     if (use_menu && !only_browse) {
         screen_save();
     }
@@ -738,7 +738,7 @@ bool get_element_power(CreatureEntity &creature, SPELL_IDX *sn, bool only_browse
         if (choice == ESCAPE) {
             choice = ' ';
         } else {
-            const auto new_choice = input_command(prompt);
+            const auto new_choice = input_spell_choice(prompt, { .first_label = first_label, .last_label = last_label, .list = redraw, .browse = only_browse, .menu = use_menu });
             if (!new_choice) {
                 break;
             }
