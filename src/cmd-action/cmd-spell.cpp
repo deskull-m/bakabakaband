@@ -9,6 +9,7 @@
 #include "action/action-limited.h"
 #include "autopick/autopick-reader-writer.h"
 #include "avatar/avatar.h"
+#include "bot/bot-json-output.h"
 #include "cmd-action/cmd-mind.h"
 #include "cmd-io/cmd-dump.h"
 #include "core/asking-player.h"
@@ -393,6 +394,7 @@ static int get_spell(CreatureEntity &creature, SPELL_IDX *sn, std::string_view p
     const auto prompt = fmt::format(format_str, str_upcase_first(spell_category), first_label, last_label, str_upcase_first(prompt_verb), spell_category);
 #endif
 
+    BotDrawnScreenScope bot_screen;
     auto choice = (always_show_list || use_menu) ? ESCAPE : '\1';
     while (!flag) {
         if (choice == ESCAPE) {
@@ -647,6 +649,7 @@ void do_cmd_browse(CreatureEntity &creature)
             }
 
             /* Display a list of spells */
+            BotDrawnScreenScope bot_screen;
             print_spells(creature, 0, spells.data(), spells.size(), 1, 15, use_realm);
 
             /* Notify that there's nothing to see, and wait. */
