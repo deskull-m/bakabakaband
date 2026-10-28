@@ -1,5 +1,6 @@
 #include "target/target-describer.h"
 #include "action/travel-execution.h"
+#include "bot/bot-json-output.h"
 #include "cmd-visual/cmd-draw.h"
 #include "core/stuff-handler.h"
 #include "core/window-redrawer.h"
@@ -195,6 +196,7 @@ static ProcessResult describe_hallucinated_target(CreatureEntity &creature, Grid
 
 static bool describe_grid_lore(CreatureEntity &creature, GridExamination *ge_ptr)
 {
+    BotDrawnScreenScope bot_screen;
     screen_save();
     screen_roff(creature, ge_ptr->m_ptr->get_ap_r_idx(), MONSTER_LORE_NORMAL);
     term_addstr(-1, TERM_WHITE, fmt::format(_("  [r思 {}{}]", "  [r,{}{}]"), ge_ptr->x_info, ge_ptr->info));
