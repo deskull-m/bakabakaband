@@ -34,9 +34,7 @@ extern dungeon_grid letter[255];
 enum class DefinitionHashDataType;
 class FloorType;
 
-using Parser = std::function<ParseErrorType(std::string_view)>;
 using JSONParser = std::function<ParseErrorType(nlohmann::json &)>;
-std::tuple<ParseErrorType, int, std::string> init_info_txt(std::ifstream &ifs, DefinitionHashDataType dhdt, Parser parse_info_txt_line);
 ParseErrorType parse_line_feature(const FloorType &floor, std::string_view buf);
 ParseErrorType parse_line_vault(FloorType *floor_ptr, std::string_view buf);
 ParseErrorType parse_line_alliance(FloorType *floor_ptr, std::string_view buf);

@@ -41,56 +41,6 @@ void dungeon_grid::set_trap_id(TerrainTag tag)
 }
 
 /*!
- * @brief パース関数に基づいてデータファイルからデータを読み取る /
- * Initialize an "*_info" array, by parsing an ascii "template" file
- * @param fp 読み取りに使うファイルポインタ
- * @param parse_info_txt_line パース関数
- * @return エラーコード, エラー行番号, エラーが起きた行の内容
- */
-std::tuple<ParseErrorType, int, std::string> init_info_txt(std::ifstream &ifs, DefinitionHashDataType dhdt, Parser parse_info_txt_line)
-{
-    auto error_line = 0;
-
-    util::SHA256 sha256;
-    std::string line;
-    while (std::getline(ifs, line)) {
-        // CRLF 改行のデータファイルにも対応する。
-        // ifstream のテキストモードが CRLF を除去するのは Windows のみで、
-        // それ以外の環境では行末に '\r' が残り解析エラーになってしまう。
-        if (line.ends_with('\r')) {
-            line.pop_back();
-        }
-
-        line = utf8_to_local(line);
-        const std::string_view sv = line;
-        error_line++;
-        if (sv.empty() || sv.starts_with('#')) {
-            continue;
-        }
-
-        if (!sv.substr(1).starts_with(':')) {
-            return { ParseErrorType::GENERIC, error_line, line };
-        }
-
-        if (sv.starts_with('V')) {
-            continue;
-        }
-
-        // N/D/J行はハッシュから除外（日本語対応）
-        if (!sv.starts_with('N') && !sv.starts_with('D') && !sv.starts_with('J')) {
-            sha256.update(sv);
-        }
-
-        if (auto err = parse_info_txt_line(sv); err != ParseErrorType::NONE) {
-            return { err, error_line, line };
-        }
-    }
-
-    DefinitionHashData::get_instance().set_digest(dhdt, sha256.digest());
-    return { ParseErrorType::NONE, error_line, "" };
-}
-
-/*!
  * @brief 地形情報の「A:」情報をパースする
  * Process "A:<ID>" -- alliance
  * @param buf 解析文字列

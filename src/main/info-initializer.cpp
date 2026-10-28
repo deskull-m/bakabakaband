@@ -70,48 +70,6 @@ concept HasShrinkToFit = requires(T t) {
 }
 
 /*!
- * @brief 各種設定データをlib/edit/のテキストから読み込み
- * Initialize the "*_info" array
- * @param filename ファイル名(拡張子txt)
- * @param dhdt 定義ファイルハッシュ種別
- * @param info データ保管先の構造体ポインタ
- * @note
- * Note that we let each entry have a unique "name" and "text" string,
- * even if the string happens to be empty (everyone has a unique '\0').
- */
-template <typename InfoType>
-static void init_info(std::string_view filename, DefinitionHashDataType dhdt, InfoType &info, Parser parser, std::function<void()> retouch = nullptr)
-{
-    const auto path = path_build(ANGBAND_DIR_EDIT, filename);
-    auto ifs = std::ifstream(path);
-    if (!ifs) {
-        quit(fmt::format(_("'{}'ファイルをオープンできません。", "Cannot open '{}' file."), filename));
-    }
-
-    const auto &[error_code, error_line, line] = init_info_txt(ifs, dhdt, parser);
-    if (error_code != ParseErrorType::NONE) {
-        const auto oops = describe_parse_error(error_code);
-#ifdef JP
-        msg_print("'{}'ファイルの {} 行目にエラー。", filename, error_line);
-#else
-        msg_print("Error {} at line {} of '{}'.", error_code, error_line, filename);
-#endif
-        msg_print(_("'{}' エラーがあります。", "Contains a '{}' error."), oops);
-        msg_print(_("構文 '{}'。", "Parsing '{}'."), line);
-        msg_erase();
-        quit(fmt::format(_("'{}'ファイルにエラー", "Error in '{}' file."), filename));
-    }
-
-    if constexpr (HasShrinkToFit<InfoType>) {
-        info.shrink_to_fit();
-    }
-
-    if (retouch) {
-        retouch();
-    }
-}
-
-/*!
  * @brief 各種設定データをlib/edit/.jsoncから読み込み
  * Load data from lib/edit/.jsonc
  * @param filename ファイル名(拡張子jsonc)
