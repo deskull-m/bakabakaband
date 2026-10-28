@@ -1,4 +1,5 @@
 #include "mind/mind-power-getter.h"
+#include "bot/bot-json-output.h"
 #include "core/asking-player.h"
 #include "core/window-redrawer.h"
 #include "game-option/text-display-options.h"
@@ -16,6 +17,7 @@
 #include "player/player-status-table.h"
 #include "system/creature-entity.h"
 #include "system/deferred-update-requests.h"
+#include "system/player-type-definition.h"
 #include "term/screen-processor.h"
 #include "util/enum-converter.h"
 #include "util/int-char-converter.h"
@@ -234,7 +236,7 @@ bool MindPowerGetter::display_minds_chance(const bool only_browse)
         put_str(_("名前", "Name"), y, x + 5);
         put_str(fmt::format(_("Lv   {}   失率 効果", "Lv   {}   Fail Info"), ((this->use_mind == MindKindType::BERSERKER) || (this->use_mind == MindKindType::NINJUTSU)) ? "HP" : "MP"),
             y, x + 35);
-        display_each_mind_chance();
+        display_each_mind_chance(only_browse);
         prt("", y + this->index + 1, x);
         return true;
     }
@@ -244,14 +246,16 @@ bool MindPowerGetter::display_minds_chance(const bool only_browse)
     }
 
     this->redraw = false;
+    hide_bot_drawn_screen();
     screen_load();
     return true;
 }
 
-void MindPowerGetter::display_each_mind_chance()
+void MindPowerGetter::display_each_mind_chance(bool only_browse)
 {
     const auto has_weapon_main = has_melee_weapon(*this->creature_ptr, INVEN_MAIN_HAND);
     const auto has_weapon_sub = has_melee_weapon(*this->creature_ptr, INVEN_SUB_HAND);
+    std::vector<BotPowerListRow> bot_rows;
     for (this->index = 0; this->index < std::ssize(mind_ptr->info); this->index++) {
         this->spell = &mind_ptr->info[this->index];
         if (this->spell->min_lev > this->creature_ptr->get_level()) {
@@ -273,7 +277,10 @@ void MindPowerGetter::display_each_mind_chance()
 
         psi_desc.append(fmt::format("{:<30}{:2} {:4}{} {:3}%{}", fmt::bytes(this->spell->name), this->spell->min_lev, mana_cost, (((this->use_mind == MindKindType::MINDCRAFTER) && (this->index == 13)) ? _("～", "~ ") : "  "), chance, comment));
         prt(psi_desc, y + this->index + 1, x);
+        bot_rows.push_back({ I2A(this->index), 0, this->spell->name, this->spell->min_lev, mana_cost, chance, comment });
     }
+
+    output_bot_json_power_list_snapshot(&static_cast<PlayerType &>(*this->creature_ptr), "mind", bot_rows, 0, only_browse);
 }
 
 void MindPowerGetter::calculate_mind_chance(bool has_weapon_main, bool has_weapon_sub)
