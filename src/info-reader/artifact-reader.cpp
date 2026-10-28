@@ -16,8 +16,9 @@
 #include <fmt/format.h>
 #include <nlohmann/json.hpp>
 
-ArtifactReader::ArtifactReader(const nlohmann::json &art_data)
+ArtifactReader::ArtifactReader(const nlohmann::json &art_data, int &previous_id)
     : art_data(art_data)
+    , previous_id(previous_id)
 {
 }
 
@@ -128,13 +129,13 @@ ParseErrorType ArtifactReader::read() const
         return err.error();
     }
     // 実行時の記録 (ArtifactRecords) は 1〜件数の ID だけを作るため、1 から欠番なく並んでいることを求める。
-    if (const auto previous_id = std::max(error_idx, 0); int_id != previous_id + 1) {
-        msg_print(_("アーティファクトIDが連番ではありません。ID: '{}'、直前ID: '{}'。", "Artifact ID is not sequential. ID: '{}', previous ID: '{}'."), int_id, previous_id);
+    if (const auto expected_previous = std::max(this->previous_id, 0); int_id != expected_previous + 1) {
+        msg_print(_("アーティファクトIDが連番ではありません。ID: '{}'、直前ID: '{}'。", "Artifact ID is not sequential. ID: '{}', previous ID: '{}'."), int_id, expected_previous);
         return ParseErrorType::NON_SEQUENTIAL_RECORDS;
     }
     const auto artifact_id = i2enum<FixedArtifactId>(int_id);
 
-    error_idx = int_id;
+    this->previous_id = int_id;
     ArtifactType artifact;
     artifact.flags.set(TR_IGNORE_ACID);
     artifact.flags.set(TR_IGNORE_ELEC);
@@ -142,63 +143,63 @@ ParseErrorType ArtifactReader::read() const
     artifact.flags.set(TR_IGNORE_COLD);
 
     if (const auto err = info_set_string(get_json_value(this->art_data, "name"), artifact.name, true); !err) {
-        msg_print(_("アーティファクトの名称読込失敗。ID: '{}'。", "Failed to load artifact name. ID: '{}'."), error_idx);
+        msg_print(_("アーティファクトの名称読込失敗。ID: '{}'。", "Failed to load artifact name. ID: '{}'."), int_id);
         return err.error();
     }
     if (const auto err = this->set_art_baseitem(artifact); err != ParseErrorType::NONE) {
-        msg_print(_("アーティファクトのベースアイテム読込失敗。ID: '{}'。", "Failed to load base item of artifact. ID: '{}'."), error_idx);
+        msg_print(_("アーティファクトのベースアイテム読込失敗。ID: '{}'。", "Failed to load base item of artifact. ID: '{}'."), int_id);
         return err;
     }
     if (const auto err = info_set_integer(get_json_value(this->art_data, "parameter_value"), artifact.pval, false, Range(-128, 128)); !err) {
-        msg_print(_("アーティファクトのパラメータ値読込失敗。ID: '{}'。", "Failed to load parameter value of artifact. ID: '{}'."), error_idx);
+        msg_print(_("アーティファクトのパラメータ値読込失敗。ID: '{}'。", "Failed to load parameter value of artifact. ID: '{}'."), int_id);
         return err.error();
     }
     if (const auto err = info_set_integer(get_json_value(this->art_data, "level"), artifact.level, true, Range(0, 128)); !err) {
-        msg_print(_("アーティファクトのレベル読込失敗。ID: '{}'。", "Failed to load level of artifact. ID: '{}'."), error_idx);
+        msg_print(_("アーティファクトのレベル読込失敗。ID: '{}'。", "Failed to load level of artifact. ID: '{}'."), int_id);
         return err.error();
     }
     if (const auto err = info_set_integer(get_json_value(this->art_data, "rarity"), artifact.rarity, true); !err) {
-        msg_print(_("アーティファクトの希少度読込失敗。ID: '{}'。", "Failed to load rarity of artifact. ID: '{}'."), error_idx);
+        msg_print(_("アーティファクトの希少度読込失敗。ID: '{}'。", "Failed to load rarity of artifact. ID: '{}'."), int_id);
         return err.error();
     }
     if (const auto err = info_set_integer(get_json_value(this->art_data, "weight"), artifact.weight, true, Range(0, 9999)); !err) {
-        msg_print(_("アーティファクトの重量読込失敗。ID: '{}'。", "Failed to load weight of artifact. ID: '{}'."), error_idx);
+        msg_print(_("アーティファクトの重量読込失敗。ID: '{}'。", "Failed to load weight of artifact. ID: '{}'."), int_id);
         return err.error();
     }
     if (const auto err = info_set_integer(get_json_value(this->art_data, "cost"), artifact.cost, true, Range(0, 99999999)); !err) {
-        msg_print(_("アーティファクトの売値読込失敗。ID: '{}'。", "Failed to load cost of artifact. ID: '{}'."), error_idx);
+        msg_print(_("アーティファクトの売値読込失敗。ID: '{}'。", "Failed to load cost of artifact. ID: '{}'."), int_id);
         return err.error();
     }
     if (const auto err = info_set_integer(get_json_value(this->art_data, "base_ac"), artifact.ac, false, Range(-99, 99)); !err) {
-        msg_print(_("アーティファクトのベースAC読込失敗。ID: '{}'。", "Failed to load base AC of artifact. ID: '{}'."), error_idx);
+        msg_print(_("アーティファクトのベースAC読込失敗。ID: '{}'。", "Failed to load base AC of artifact. ID: '{}'."), int_id);
         return err.error();
     }
     if (const auto err = info_set_dice(get_json_value(this->art_data, "base_dice"), artifact.damage_dice, false); !err) {
-        msg_print(_("アーティファクトのベースダイス読込失敗。ID: '{}'。", "Failed to load base dice of artifact. ID: '{}'."), error_idx);
+        msg_print(_("アーティファクトのベースダイス読込失敗。ID: '{}'。", "Failed to load base dice of artifact. ID: '{}'."), int_id);
         return err.error();
     }
     if (const auto err = info_set_integer(get_json_value(this->art_data, "hit_bonus"), artifact.to_h, false, Range(-99, 99)); !err) {
-        msg_print(_("アーティファクトの命中補正値読込失敗。ID: '{}'。", "Failed to load hit bonus of artifact. ID: '{}'."), error_idx);
+        msg_print(_("アーティファクトの命中補正値読込失敗。ID: '{}'。", "Failed to load hit bonus of artifact. ID: '{}'."), int_id);
         return err.error();
     }
     if (const auto err = info_set_integer(get_json_value(this->art_data, "damage_bonus"), artifact.to_d, false, Range(-99, 99)); !err) {
-        msg_print(_("アーティファクトのダメージ補正値読込失敗。ID: '{}'。", "Failed to load damage bonus of artifact. ID: '{}'."), error_idx);
+        msg_print(_("アーティファクトのダメージ補正値読込失敗。ID: '{}'。", "Failed to load damage bonus of artifact. ID: '{}'."), int_id);
         return err.error();
     }
     if (const auto err = info_set_integer(get_json_value(this->art_data, "ac_bonus"), artifact.to_a, false, Range(-999, 999)); !err) {
-        msg_print(_("アーティファクトのAC補正値読込失敗。ID: '{}'。", "Failed to load AC bonus of artifact. ID: '{}'."), error_idx);
+        msg_print(_("アーティファクトのAC補正値読込失敗。ID: '{}'。", "Failed to load AC bonus of artifact. ID: '{}'."), int_id);
         return err.error();
     }
     if (const auto err = this->set_art_activate(artifact); err != ParseErrorType::NONE) {
-        msg_print(_("アーティファクトの発動能力読込失敗。ID: '{}'。", "Failed to load activate ability of artifact. ID: '{}'."), error_idx);
+        msg_print(_("アーティファクトの発動能力読込失敗。ID: '{}'。", "Failed to load activate ability of artifact. ID: '{}'."), int_id);
         return err;
     }
     if (const auto err = this->set_art_flags(artifact); err != ParseErrorType::NONE) {
-        msg_print(_("アーティファクトの能力フラグ読込失敗。ID: '{}'。", "Failed to load ability flags of artifact. ID: '{}'."), error_idx);
+        msg_print(_("アーティファクトの能力フラグ読込失敗。ID: '{}'。", "Failed to load ability flags of artifact. ID: '{}'."), int_id);
         return err;
     }
     if (const auto err = info_set_string(get_json_value(this->art_data, "flavor"), artifact.text, false); !err) {
-        msg_print(_("アーティファクトのフレーバーテキスト読込失敗。ID: '{}'。", "Failed to load flavor text of artifact. ID: '{}'."), error_idx);
+        msg_print(_("アーティファクトのフレーバーテキスト読込失敗。ID: '{}'。", "Failed to load flavor text of artifact. ID: '{}'."), int_id);
         return err.error();
     }
 

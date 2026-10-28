@@ -193,7 +193,9 @@ static void init_json_reader(std::string_view filename, std::string_view keyname
  */
 void init_artifacts_info()
 {
-    init_json_reader<ArtifactReader>("ArtifactDefinitions.jsonc", "artifacts", DefinitionHashDataType::ARTIFACTS, ArtifactList::get_instance());
+    auto previous_id = -1;
+    auto parser = [&previous_id](nlohmann::json &element) { return ArtifactReader(element, previous_id).read(); };
+    init_json("ArtifactDefinitions.jsonc", "artifacts", DefinitionHashDataType::ARTIFACTS, ArtifactList::get_instance(), parser);
 }
 
 /*!
