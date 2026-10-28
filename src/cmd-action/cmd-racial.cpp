@@ -8,6 +8,7 @@
 #include "action/action-limited.h"
 #include "action/mutation-execution.h"
 #include "action/racial-execution.h"
+#include "bot/bot-json-output.h"
 #include "core/asking-player.h"
 #include "core/window-redrawer.h"
 #include "game-option/text-display-options.h"
@@ -30,6 +31,7 @@
 #include "status/action-setter.h"
 #include "system/creature-entity.h"
 #include "system/deferred-update-requests.h"
+#include "system/player-type-definition.h"
 #include "term/screen-processor.h"
 #include "util/bit-flags-calculator.h"
 #include "util/int-char-converter.h"
@@ -99,6 +101,14 @@ static void racial_power_display_list(CreatureEntity &creature, rc_type *rc_ptr)
     if (use_menu) {
         racial_power_display_cursor(rc_ptr);
     }
+
+    // ページ送りで見られる全行を、表示と同じ値で出力する
+    std::vector<BotPowerListRow> bot_rows;
+    for (auto ctr = 0; ctr < rc_ptr->power_count(); ctr++) {
+        const auto &rpi = rc_ptr->power_desc[ctr];
+        bot_rows.push_back({ I2AD(ctr), ctr / RC_PAGE_SIZE, rpi.racial_name, rpi.min_level, rpi.cost, 100 - racial_chance(creature, &rc_ptr->power_desc[ctr]), rpi.info });
+    }
+    output_bot_json_power_list_snapshot(&static_cast<PlayerType &>(creature), "racial", bot_rows, rc_ptr->page, rc_ptr->browse_mode);
 }
 
 /*!
@@ -378,6 +388,8 @@ static bool racial_power_select_power(CreatureEntity &creature, rc_type *rc_ptr)
         }
     }
 
+    // 一覧は選び終えるまで消さないので、この関数を抜けるまで登録する
+    BotDrawnScreenScope bot_screen;
     screen_save();
 
     if (use_menu) {
