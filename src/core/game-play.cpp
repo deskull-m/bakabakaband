@@ -40,6 +40,7 @@
 #include "info-reader/fixed-map-parser.h"
 #include "info-reader/wilderness-reader.h"
 #include "io/files-util.h"
+#include "io/input-context.h"
 #include "io/input-key-acceptor.h"
 #include "io/input-key-processor.h"
 #include "io/read-pref-file.h"
@@ -146,8 +147,9 @@ static void send_waiting_record(CreatureEntity &creature)
     apply_wilderness_definition();
     bool success = send_world_score(creature, true);
     if (!success && !input_check_strict(creature, _("スコア登録を諦めますか？", "Do you give up score registration? "), UserCheck::NO_HISTORY)) {
-        prt(_("引き続き待機します。", "standing by for future registration..."), 0, 0);
-        (void)inkey();
+        constexpr auto prompt = _("引き続き待機します。", "standing by for future registration...");
+        prt(prompt, 0, 0);
+        (void)input_key_with_context(InputKind::ANY_KEY, prompt);
     } else {
         system.set_awaiting_report_score(false);
         top_twenty(creature);
