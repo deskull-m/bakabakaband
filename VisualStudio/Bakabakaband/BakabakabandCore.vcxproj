@@ -343,6 +343,7 @@
     <ClCompile Include="..\..\src\info-reader\json-reader-util.cpp" />
     <ClCompile Include="..\..\src\info-reader\baseitem-tokens-table.cpp" />
     <ClCompile Include="..\..\src\info-reader\baseitem-reader.cpp" />
+    <ClCompile Include="..\..\src\info-reader\magic-info-tokens-table.cpp" />
     <ClCompile Include="..\..\src\info-reader\magic-reader.cpp" />
     <ClCompile Include="..\..\src\info-reader\message-reader.cpp" />
     <ClCompile Include="..\..\src\info-reader\race-info-tokens-table.cpp" />
@@ -1268,6 +1269,7 @@
     <ClInclude Include="..\..\src\info-reader\json-reader-util.h" />
     <ClInclude Include="..\..\src\info-reader\baseitem-tokens-table.h" />
     <ClInclude Include="..\..\src\info-reader\baseitem-reader.h" />
+    <ClInclude Include="..\..\src\info-reader\magic-info-tokens-table.h" />
     <ClInclude Include="..\..\src\info-reader\magic-reader.h" />
     <ClInclude Include="..\..\src\info-reader\message-reader.h" />
     <ClInclude Include="..\..\src\info-reader\parse-error-types.h" />
