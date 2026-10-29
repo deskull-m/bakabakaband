@@ -1634,16 +1634,17 @@ nlohmann::json make_knowledge_json(PlayerType *player_ptr, BotKnowledgeCategory 
     case BotKnowledgeCategory::QUESTS:
         result["quests"] = make_disclosed_quests_json();
         break;
-    case BotKnowledgeCategory::PETS:
+    case BotKnowledgeCategory::PETS: {
+        const auto is_hallucinated = player_ptr->is_hallucinated();
         for (auto i = 1; i < player_ptr->get_floor()->m_max; ++i) {
             const auto &monster = player_ptr->get_floor()->m_list[i];
             if (monster.is_valid() && monster.is_pet()) {
-                rows.push_back({ { "index", i }, { "race_id", enum2i(monster.get_r_idx()) },
-                    { "name", to_json_utf8(monster.get_monrace().name.string()) } });
+                rows.push_back(make_bot_pet_row_json(i, monster, is_hallucinated));
             }
         }
         result["pets"] = std::move(rows);
         break;
+    }
     case BotKnowledgeCategory::AUTOPICK:
         for (const auto &entry : autopick_list) {
             rows.push_back({ { "rule", to_json_utf8(autopick_line_from_entry(entry)) } });
@@ -1900,6 +1901,23 @@ nlohmann::json make_message_history_json(int count)
     }
 
     return messages;
+}
+
+/*!
+ * @brief 知識メニューのペットの一覧 (knowledge.pets) の 1 行を出力する
+ * @details 幻覚中の画面の一覧はペットの名前をでたらめな種族名にするので、ほかのモンスターの記録と同じく種族を伏せる。
+ * @param index モンスターの番号
+ * @param monster ペット
+ * @param is_hallucinated 幻覚中か
+ * @return {index, race_id, name}、幻覚中は {index, hallucinated: true}
+ */
+nlohmann::json make_bot_pet_row_json(int index, const CreatureEntity &monster, bool is_hallucinated)
+{
+    if (is_hallucinated) {
+        return { { "index", index }, { "hallucinated", true } };
+    }
+
+    return { { "index", index }, { "race_id", enum2i(monster.get_r_idx()) }, { "name", to_json_utf8(monster.get_monrace().name.string()) } };
 }
 
 namespace {

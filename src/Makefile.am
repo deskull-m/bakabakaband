@@ -1619,6 +1619,8 @@ hengband_test_SOURCES = \
 	\
 	test/autopick/test-autopick-editor-util.cpp \
 	\
+	test/bot/test-bot-json-output.cpp \
+	\
 	test/cmd-io/test-cmd-autopick.cpp \
 	\
 	test/flavor/test-flavor-util.cpp \

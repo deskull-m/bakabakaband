@@ -67,6 +67,7 @@ enum class BotKnowledgeCategory {
 
 std::string to_json_utf8(std::string_view str);
 nlohmann::json make_message_history_json(int count);
+nlohmann::json make_bot_pet_row_json(int index, const CreatureEntity &monster, bool is_hallucinated);
 nlohmann::json make_bot_json_snapshot(CreatureEntity &creature, bool include_map = true);
 void output_bot_json_snapshot(CreatureEntity &creature);
 void output_bot_json_store_snapshot(CreatureEntity &creature, const StoreScreen &screen);
