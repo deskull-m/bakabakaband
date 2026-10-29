@@ -327,10 +327,10 @@ tl::expected<void, ParseErrorType> apply_wilderness_definition()
         const auto &pos = dungeon->get_position();
         const auto is_in_bounds = (pos.y >= 0) && (pos.y < definition->height) && (pos.x >= 0) && (pos.x < definition->width);
         if (!is_in_bounds) {
-            msg_format(_("ダンジョン「%s」の座標 (%d,%d) が荒野の範囲外です。", "Dungeon '%s' has an out-of-bounds position (%d,%d)."),
-                dungeon->name.data(), pos.y, pos.x);
+            msg_print(_("ダンジョン「{}」の座標 ({},{}) が荒野の範囲外です。", "Dungeon '{}' has an out-of-bounds position ({},{})."),
+                dungeon->name, pos.y, pos.x);
             msg_erase();
-            return PARSE_ERROR_OUT_OF_BOUNDS;
+            return tl::make_unexpected(ParseErrorType::OUT_OF_BOUNDS);
         }
 
         auto &grid = wilderness.get_grid(pos);

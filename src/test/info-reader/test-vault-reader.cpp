@@ -164,7 +164,7 @@ TEST_CASE("VaultReader ignores a monster token which is not a usable monrace id"
 {
     const auto restore = preserve_vaults();
     vaults_info.clear();
-    error_idx = -1;
+    auto previous_id = -1;
     MonraceList::get_instance().emplace(i2enum<MonraceId>(5));
     // Every token below is silently ignored: the record still loads, but the symbol
     // gets no entry in place_monster_list.
@@ -173,8 +173,8 @@ TEST_CASE("VaultReader ignores a monster token which is not a usable monrace id"
         auto data = make_vault();
         data["features"] = { { { "symbol", "G" }, { "feat", 1 }, { "monster", monster } } };
         vaults_info.clear();
-        error_idx = -1;
-        REQUIRE(VaultReader(data).read() == PARSE_ERROR_NONE);
+        previous_id = -1;
+        REQUIRE(VaultReader(data, previous_id).read() == ParseErrorType::NONE);
         const auto &vault = vaults_info.at(0);
         CHECK(vault.feature_list.at('G') == 1);
         CHECK(vault.place_monster_list.count('G') == 0);

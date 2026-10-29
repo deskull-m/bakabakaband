@@ -667,7 +667,7 @@ void exe_eat_food(CreatureEntity &creature, INVENTORY_IDX i_idx)
         InventoryArrangementFlag::COMBINATION,
         InventoryArrangementFlag::REORDER,
     };
-    rfu.set_flags(flags_iaf);
+    dur.set_flags(flags_iaf);
 
     creature.plus_incident_tree("EAT", 1);
 

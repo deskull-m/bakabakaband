@@ -757,6 +757,7 @@ libhengband_a_SOURCES = \
 	io/exit-panic.cpp io/exit-panic.h \
 	io/files-util.cpp io/files-util.h \
 	io/gf-descriptions.cpp io/gf-descriptions.h \
+	io/input-context.cpp io/input-context.h \
 	io/input-key-acceptor.cpp io/input-key-acceptor.h \
 	io/input-key-processor.cpp io/input-key-processor.h \
 	io/input-key-requester.cpp io/input-key-requester.h \
@@ -1642,6 +1643,7 @@ hengband_test_SOURCES = \
 	test/info-reader/test-wilderness-reader.cpp \
 	\
 	test/io/test-condition-expression.cpp \
+	test/io/test-input-context.cpp \
 	test/io/test-interpret-pref-file.cpp \
 	test/io/test-macro-configurations-store.cpp \
 	test/io/test-pref-file-expressor.cpp \
@@ -1672,6 +1674,8 @@ hengband_test_SOURCES = \
 	test/save/test-item-writer.cpp \
 	\
 	test/spell/test-spell-info.cpp \
+	\
+	test/spell-realm/test-spells-hex.cpp \
 	\
 	test/store/test-pricing.cpp \
 	test/store/test-store-screen.cpp \

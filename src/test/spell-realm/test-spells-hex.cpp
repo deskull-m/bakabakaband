@@ -5,8 +5,8 @@
 #include "player-base/player-class.h"
 #include "realm/realm-types.h"
 #include "spell-realm/spells-hex.h"
-#include "system/player-type-definition.h"
 #include "system/deferred-update-requests.h"
+#include "system/player-type-definition.h"
 #include "util/finalizer.h"
 #include <doctest/doctest.h>
 
