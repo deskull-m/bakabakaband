@@ -27,6 +27,7 @@
 #include "view/display-player.h"
 #include "world/world.h"
 #include <fmt/format.h>
+#include <string_view>
 #include <tl/optional.hpp>
 
 /*!
@@ -87,9 +88,9 @@ void do_cmd_redraw(CreatureEntity &creature)
     }
 }
 
-static tl::optional<int> input_status_command(CreatureEntity &creature, int page)
+static tl::optional<int> input_status_command(CreatureEntity &creature, int page, std::string_view prompt)
 {
-    auto c = inkey();
+    const auto c = input_key_with_context(InputKind::COMMAND_CHAR, prompt);
     switch (c) {
     case 'c':
         // 名前変更はプレイヤー専用（モンスターにはグローバル sp_ptr 等に依存する描画処理が不可）
@@ -172,7 +173,7 @@ void do_cmd_player_status(CreatureEntity &creature)
         }
 
         term_putstr(2, 23, -1, TERM_WHITE, prompt);
-        auto next_page = input_status_command(creature, page);
+        auto next_page = input_status_command(creature, page, prompt);
         if (!next_page.has_value()) {
             break;
         }
