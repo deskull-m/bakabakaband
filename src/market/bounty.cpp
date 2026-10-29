@@ -6,7 +6,7 @@
 #include "game-option/cheat-options.h"
 #include "inventory/inventory-object.h"
 #include "inventory/inventory-slot-types.h"
-#include "io/input-key-acceptor.h"
+#include "io/input-context.h"
 #include "market/bounty-prize-table.h"
 #include "market/building-util.h"
 #include "monster-floor/place-monster-types.h"
@@ -269,8 +269,9 @@ void show_bounty(void)
         c_prt(color, format("%s %s", monrace.name.data(), done_mark), y + 7, 10);
         y = (y + 1) % 10;
         if (!y && (i < size_bounties - 1)) {
-            prt(_("何かキーを押してください", "Hit any key."), 0, 0);
-            (void)inkey();
+            constexpr auto prompt = _("何かキーを押してください", "Hit any key.");
+            prt(prompt, 0, 0);
+            (void)input_key_with_context(InputKind::ANY_KEY, prompt);
             prt("", 0, 0);
             clear_bldg(7, 18);
         }
