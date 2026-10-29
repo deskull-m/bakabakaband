@@ -95,7 +95,7 @@ static void rd_world_info(CreatureEntity &creature)
     auto &floor = *creature.get_floor();
     floor.generated_turn = rd_s32b();
     auto &df = DungeonFeeling::get_instance();
-    df.set_feeling(rd_s32b());
+    df.set_turns(rd_s32b());
 
     world.game_turn = rd_s32b();
     world.dungeon_turn = rd_s32b();
