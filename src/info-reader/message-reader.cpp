@@ -44,9 +44,9 @@ static errr set_id_list(const nlohmann::json &id_list_data, std::vector<int> &id
         if (!id_data.is_number()) {
             return PARSE_ERROR_INVALID_FLAG;
         }
-        int id;
-        if (auto err = info_set_integer(id_data, id, true, Range(1, 9999))) {
-            return err;
+        int id{};
+        if (const auto err = info_set_integer(id_data, id, true, Range(1, 9999)); !err) {
+            return err.error();
         }
         id_list.push_back(id);
     }
@@ -108,17 +108,17 @@ int MessageReader::set_mon_message() const
             return PARSE_ERROR_TOO_FEW_ARGUMENTS;
         }
         const auto &chance_data = chance_iter.value();
-        int chance;
-        if (auto err = info_set_integer(chance_data, chance, true, Range(1, 100))) {
-            return err;
+        int chance{};
+        if (const auto err = info_set_integer(chance_data, chance, true, Range(1, 100)); !err) {
+            return err.error();
         }
 
         bool use_name = true;
         const auto use_name_iter = message.find("use_name");
         if (use_name_iter != message.end()) {
             const auto &use_name_data = use_name_iter.value();
-            if (auto err = info_set_bool(use_name_data, use_name, false)) {
-                return err;
+            if (const auto err = info_set_bool(use_name_data, use_name, false); !err) {
+                return err.error();
             }
         }
 

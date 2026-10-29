@@ -193,24 +193,24 @@ parse_error_type parse_quest_legend_cell(const nlohmann::json &cell_data, QuestL
 
     const auto &monster = get_json_value(cell_data, "monster");
     if (monster.is_number_integer()) {
-        if (const auto err = info_set_integer(monster, grid.monster, true, LEGEND_MONSTER_RANGE); err != PARSE_ERROR_NONE) {
-            return i2enum<parse_error_type>(err);
+        if (const auto err = info_set_integer(monster, grid.monster, true, LEGEND_MONSTER_RANGE); !err) {
+            return err.error();
         }
     } else if (monster.is_object()) {
         if (json_is_true(get_json_value(monster, "random"))) {
             grid.random |= RANDOM_MONSTER;
             const auto &level = get_json_value(monster, "oodLevel");
             if (level.is_number_integer()) {
-                if (const auto err = info_set_integer(level, grid.monster, true, LEGEND_SHORT_RANGE); err != PARSE_ERROR_NONE) {
-                    return i2enum<parse_error_type>(err);
+                if (const auto err = info_set_integer(level, grid.monster, true, LEGEND_SHORT_RANGE); !err) {
+                    return err.error();
                 }
             }
         } else {
             const auto &clone = get_json_value(monster, "cloneOf");
             if (clone.is_number_integer()) {
                 int clone_id = 0;
-                if (const auto err = info_set_integer(clone, clone_id, true, LEGEND_MONSTER_RANGE); err != PARSE_ERROR_NONE) {
-                    return i2enum<parse_error_type>(err);
+                if (const auto err = info_set_integer(clone, clone_id, true, LEGEND_MONSTER_RANGE); !err) {
+                    return err.error();
                 }
                 grid.monster = static_cast<MONSTER_IDX>(-clone_id);
             }
@@ -219,16 +219,16 @@ parse_error_type parse_quest_legend_cell(const nlohmann::json &cell_data, QuestL
 
     const auto &object = get_json_value(cell_data, "object");
     if (object.is_number_integer()) {
-        if (const auto err = info_set_integer(object, grid.object, true, LEGEND_SHORT_RANGE); err != PARSE_ERROR_NONE) {
-            return i2enum<parse_error_type>(err);
+        if (const auto err = info_set_integer(object, grid.object, true, LEGEND_SHORT_RANGE); !err) {
+            return err.error();
         }
     } else if (object.is_object()) {
         if (json_is_true(get_json_value(object, "random"))) {
             grid.random |= RANDOM_OBJECT;
             const auto &level = get_json_value(object, "oodLevel");
             if (level.is_number_integer()) {
-                if (const auto err = info_set_integer(level, grid.object, true, LEGEND_SHORT_RANGE); err != PARSE_ERROR_NONE) {
-                    return i2enum<parse_error_type>(err);
+                if (const auto err = info_set_integer(level, grid.object, true, LEGEND_SHORT_RANGE); !err) {
+                    return err.error();
                 }
             }
         } else if (json_is_true(get_json_value(object, "questReward"))) {
@@ -238,31 +238,31 @@ parse_error_type parse_quest_legend_cell(const nlohmann::json &cell_data, QuestL
 
     const auto &ego = get_json_value(cell_data, "ego");
     if (ego.is_number_integer()) {
-        if (const auto err = info_set_integer(ego, grid.ego, true, LEGEND_EGO_RANGE); err != PARSE_ERROR_NONE) {
-            return i2enum<parse_error_type>(err);
+        if (const auto err = info_set_integer(ego, grid.ego, true, LEGEND_EGO_RANGE); !err) {
+            return err.error();
         }
     } else if (ego.is_object() && json_is_true(get_json_value(ego, "random"))) {
         grid.random |= RANDOM_EGO;
         const auto &id = get_json_value(ego, "id");
         if (id.is_number_integer()) {
-            if (const auto err = info_set_integer(id, grid.ego, true, LEGEND_EGO_RANGE); err != PARSE_ERROR_NONE) {
-                return i2enum<parse_error_type>(err);
+            if (const auto err = info_set_integer(id, grid.ego, true, LEGEND_EGO_RANGE); !err) {
+                return err.error();
             }
         }
     }
 
     const auto &artifact = get_json_value(cell_data, "artifact");
     if (artifact.is_number_integer()) {
-        if (const auto err = info_set_integer(artifact, grid.artifact, true, LEGEND_SHORT_RANGE); err != PARSE_ERROR_NONE) {
-            return i2enum<parse_error_type>(err);
+        if (const auto err = info_set_integer(artifact, grid.artifact, true, LEGEND_SHORT_RANGE); !err) {
+            return err.error();
         }
     } else if (artifact.is_object()) {
         if (json_is_true(get_json_value(artifact, "random"))) {
             grid.random |= RANDOM_ARTIFACT;
             const auto &id = get_json_value(artifact, "id");
             if (id.is_number_integer()) {
-                if (const auto err = info_set_integer(id, grid.artifact, true, LEGEND_SHORT_RANGE); err != PARSE_ERROR_NONE) {
-                    return i2enum<parse_error_type>(err);
+                if (const auto err = info_set_integer(id, grid.artifact, true, LEGEND_SHORT_RANGE); !err) {
+                    return err.error();
                 }
             }
         } else if (json_is_true(get_json_value(artifact, "questReward"))) {
@@ -281,8 +281,8 @@ parse_error_type parse_quest_legend_cell(const nlohmann::json &cell_data, QuestL
         grid.random |= RANDOM_TRAP;
     }
 
-    if (const auto err = info_set_integer(get_json_value(cell_data, "special"), grid.special, false, LEGEND_SHORT_RANGE); err != PARSE_ERROR_NONE) {
-        return i2enum<parse_error_type>(err);
+    if (const auto err = info_set_integer(get_json_value(cell_data, "special"), grid.special, false, LEGEND_SHORT_RANGE); !err) {
+        return err.error();
     }
 
     return PARSE_ERROR_NONE;
@@ -326,7 +326,8 @@ int QuestReader::read() const
 int QuestReader::set_name() const
 {
     // info_set_string は {ja, en} オブジェクトを受け取り、ビルド言語に応じた文字列を格納する
-    return info_set_string(get_json_value(this->quest_data, "name"), this->quest.name, true);
+    const auto result = info_set_string(get_json_value(this->quest_data, "name"), this->quest.name, true);
+    return result ? PARSE_ERROR_NONE : result.error();
 }
 
 int QuestReader::set_definition() const
@@ -349,20 +350,20 @@ int QuestReader::set_definition() const
     }
     meta.type = enum2i(kind_it->second);
 
-    if (const auto err = info_set_integer(get_json_value(definition, "level"), meta.level, true); err != PARSE_ERROR_NONE) {
-        return err;
+    if (const auto err = info_set_integer(get_json_value(definition, "level"), meta.level, true); !err) {
+        return err.error();
     }
-    if (const auto err = info_set_integer(get_json_value(definition, "numMon"), meta.num_mon, false); err != PARSE_ERROR_NONE) {
-        return err;
+    if (const auto err = info_set_integer(get_json_value(definition, "numMon"), meta.num_mon, false); !err) {
+        return err.error();
     }
-    if (const auto err = info_set_integer(get_json_value(definition, "maxNum"), meta.max_num, false); err != PARSE_ERROR_NONE) {
-        return err;
+    if (const auto err = info_set_integer(get_json_value(definition, "maxNum"), meta.max_num, false); !err) {
+        return err.error();
     }
-    if (const auto err = info_set_integer(get_json_value(definition, "dungeon"), meta.dungeon, false); err != PARSE_ERROR_NONE) {
-        return err;
+    if (const auto err = info_set_integer(get_json_value(definition, "dungeon"), meta.dungeon, false); !err) {
+        return err.error();
     }
-    if (const auto err = info_set_integer(get_json_value(definition, "monster"), meta.r_idx, false); err != PARSE_ERROR_NONE) {
-        return err;
+    if (const auto err = info_set_integer(get_json_value(definition, "monster"), meta.r_idx, false); !err) {
+        return err.error();
     }
 
     const auto &flags = get_json_value(definition, "flags");
@@ -521,11 +522,11 @@ int QuestReader::set_starts() const
     const auto &start = get_json_value(this->quest_data, "start");
     if (!start.is_null()) {
         QuestStartPosition position;
-        if (const auto err = info_set_integer(get_json_value(start, "y"), position.y, true); err != PARSE_ERROR_NONE) {
-            return err;
+        if (const auto err = info_set_integer(get_json_value(start, "y"), position.y, true); !err) {
+            return err.error();
         }
-        if (const auto err = info_set_integer(get_json_value(start, "x"), position.x, true); err != PARSE_ERROR_NONE) {
-            return err;
+        if (const auto err = info_set_integer(get_json_value(start, "x"), position.x, true); !err) {
+            return err.error();
         }
         if (const auto err = validate_quest_start(this->fixed_map, position); err != PARSE_ERROR_NONE) {
             return err;
@@ -545,11 +546,11 @@ int QuestReader::set_starts() const
             if (leaving_quest.is_number_integer()) {
                 position.leaving_quest = leaving_quest.get<int>();
             }
-            if (const auto err = info_set_integer(get_json_value(variant, "y"), position.y, true); err != PARSE_ERROR_NONE) {
-                return err;
+            if (const auto err = info_set_integer(get_json_value(variant, "y"), position.y, true); !err) {
+                return err.error();
             }
-            if (const auto err = info_set_integer(get_json_value(variant, "x"), position.x, true); err != PARSE_ERROR_NONE) {
-                return err;
+            if (const auto err = info_set_integer(get_json_value(variant, "x"), position.x, true); !err) {
+                return err.error();
             }
             if (const auto err = validate_quest_start(this->fixed_map, position); err != PARSE_ERROR_NONE) {
                 return err;

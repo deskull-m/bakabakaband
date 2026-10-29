@@ -14,7 +14,7 @@
 #include "floor/geometry.h"
 #include "grid/grid.h"
 #include "inventory/inventory-slot-types.h"
-#include "io/input-key-acceptor.h"
+#include "io/input-context.h"
 #include "io/input-key-requester.h"
 #include "mind/mind-ninja.h"
 #include "monster-race/monster-race-hook.h"
@@ -751,15 +751,15 @@ tl::optional<std::string> do_hissatsu_spell(CreatureEntity &creature, SPELL_IDX 
 
     case 31:
         if (cast) {
-            int i;
             if (!input_check(_("何もかも諦めますか? ", "Do you give up everything? "))) {
                 return tl::nullopt;
             }
             /* Special Verification for suicide */
-            prt(_("確認のため '@' を押して下さい。", "Please verify SUICIDE by typing the '@' sign: "), 0, 0);
+            constexpr auto prompt = _("確認のため '@' を押して下さい。", "Please verify SUICIDE by typing the '@' sign: ");
+            prt(prompt, 0, 0);
 
             flush();
-            i = inkey();
+            const auto i = input_key_with_context(InputKind::CONFIRM, prompt);
             prt("", 0, 0);
             if (i != '@') {
                 return tl::nullopt;

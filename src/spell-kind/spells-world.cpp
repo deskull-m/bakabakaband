@@ -14,7 +14,7 @@
 #include "game-option/birth-options.h"
 #include "game-option/play-record-options.h"
 #include "game-option/special-options.h"
-#include "io/input-key-acceptor.h"
+#include "io/input-context.h"
 #include "io/write-diary.h"
 #include "main/sound-definitions-table.h"
 #include "main/sound-of-music.h"
@@ -309,10 +309,11 @@ bool tele_town(CreatureEntity &creature)
         return false;
     }
 
-    prt(_("どこに行きますか:", "Where do you want to go: "), 0, 0);
+    constexpr auto prompt = _("どこに行きますか:", "Where do you want to go: ");
+    prt(prompt, 0, 0);
     char key;
     while (true) {
-        key = inkey();
+        key = input_key_with_context(InputKind::COMMAND_CHAR, prompt);
 
         if (key == ESCAPE) {
             screen_load();
@@ -405,10 +406,11 @@ static tl::optional<DungeonId> choose_dungeon(std::string_view note, int row, in
         prt(_("      選べるダンジョンがない。", "      No dungeon is available."), row, col);
     }
 
-    prt(format(_("どのダンジョン%sしますか:", "Which dungeon do you %s?: "), note.data()), 0, 0);
+    const auto prompt = format(_("どのダンジョン%sしますか:", "Which dungeon do you %s?: "), note.data());
+    prt(prompt, 0, 0);
     const auto ids = dungeon_records.collect_entered_dungeon_ids();
     while (true) {
-        const auto key = inkey();
+        const auto key = input_key_with_context(InputKind::COMMAND_CHAR, prompt);
         if ((key == ESCAPE) || ids.empty()) {
             screen_load();
             return tl::nullopt;

@@ -38,8 +38,8 @@ int VaultReader::fail(int code, std::string_view path, std::string_view reason)
 
 int VaultReader::read_integer(std::string_view key, int &value, int minimum, int maximum)
 {
-    if (const auto err = info_set_integer(this->data[key], value, true, Range(minimum, maximum))) {
-        return this->fail(err, fmt::format("$.{}", key), fmt::format(_("{}以上{}以下の整数が必要です", "expected an integer in [{}, {}]"), minimum, maximum));
+    if (const auto err = info_set_integer(this->data[key], value, true, Range(minimum, maximum)); !err) {
+        return this->fail(err.error(), fmt::format("$.{}", key), fmt::format(_("{}以上{}以下の整数が必要です", "expected an integer in [{}, {}]"), minimum, maximum));
     }
     return PARSE_ERROR_NONE;
 }
@@ -96,15 +96,14 @@ int VaultReader::read_features(vault_type &vault)
         }
         const auto symbol = symbol_it->get_ref<const std::string &>().front();
         const auto feat_it = feature.find("feat");
-        // 次の if は `||` の短絡で info_set_integer() を呼ばない経路を持ち、
-        // MSVC がその先の return を読み切れず C4701 を出すため初期値を与える
+        // 次の if は || の短絡で info_set_integer() を呼ばない経路があり MSVC が C4701 を出すため初期化する
         int feat = 0;
-        if (feat_it == feature.end() || info_set_integer(*feat_it, feat, true, Range(0, std::numeric_limits<short>::max()))) {
+        if (feat_it == feature.end() || !info_set_integer(*feat_it, feat, true, Range(0, std::numeric_limits<short>::max()))) {
             return this->fail(PARSE_ERROR_INVALID_VALUE, fmt::format("{}.feat", path), _("地形IDが必要です", "expected a terrain id"));
         }
         auto appearance = feat;
         if (const auto ap_it = feature.find("appearance"); ap_it != feature.end()) {
-            if (info_set_integer(*ap_it, appearance, true, Range(0, std::numeric_limits<short>::max()))) {
+            if (!info_set_integer(*ap_it, appearance, true, Range(0, std::numeric_limits<short>::max()))) {
                 return this->fail(PARSE_ERROR_INVALID_VALUE, fmt::format("{}.appearance", path), _("地形IDが必要です", "expected a terrain id"));
             }
         }

@@ -20,6 +20,7 @@
 #include "inventory/inventory-slot-types.h"
 #include "io/command-repeater.h"
 #include "io/cursor.h"
+#include "io/input-context.h"
 #include "io/input-key-acceptor.h"
 #include "io/input-key-requester.h"
 #include "io/write-diary.h"
@@ -105,19 +106,21 @@ void do_cmd_pet_dismiss(CreatureEntity &creature)
         if (!all_pets) {
             health_track(creature, pet_ctr);
             handle_stuff(creature);
-            constexpr auto mes = _("%sを放しますか？ [Yes/No/Unnamed (%d体)]", "Dismiss %s? [Yes/No/Unnamed (%d remain)]");
-            msg_format(mes, friend_name.data(), num_pet_index - i);
+            constexpr auto mes = _("{}を放しますか？ [Yes/No/Unnamed ({}体)]", "Dismiss {}? [Yes/No/Unnamed ({} remain)]");
+            const auto prompt = fmt::format(mes, friend_name, num_pet_index - i);
+            msg_print(prompt);
             if (monster.is_visible_on_map()) {
                 move_cursor_relative(monster.y, monster.x);
             }
 
             while (true) {
-                auto ch = inkey();
+                auto ch = input_key_with_context(InputKind::CONFIRM, prompt);
                 if (ch == 'Y' || ch == 'y') {
                     delete_this = true;
                     if (should_ask) {
-                        msg_format(_("本当によろしいですか？ (%s) ", "Are you sure? (%s) "), friend_name.data());
-                        ch = inkey();
+                        const auto confirmation = fmt::format(_("本当によろしいですか？ ({}) ", "Are you sure? ({}) "), friend_name);
+                        msg_print(confirmation);
+                        ch = input_key_with_context(InputKind::CONFIRM, confirmation);
                         if (ch != 'Y' && ch != 'y') {
                             delete_this = false;
                         }
