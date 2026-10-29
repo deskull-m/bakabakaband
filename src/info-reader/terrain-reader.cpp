@@ -125,8 +125,8 @@ static errr set_terrain_generation(const nlohmann::json &generation_obj, Terrain
             return PARSE_ERROR_TOO_FEW_ARGUMENTS;
         }
 
-        if (auto err = info_set_integer(change_obj["probability"], change.probability, true, Range(1, 100))) {
-            return err;
+        if (const auto err = info_set_integer(change_obj["probability"], change.probability, true, Range(1, 100)); !err) {
+            return err.error();
         }
 
         probability_sum += change.probability;
@@ -152,8 +152,8 @@ errr parse_terrains_json_info(nlohmann::json &element)
     }
 
     int id = 0;
-    if (auto err = info_set_integer(element["id"], id, true, Range(0, 9999))) {
-        return err;
+    if (const auto err = info_set_integer(element["id"], id, true, Range(0, 9999)); !err) {
+        return err.error();
     }
 
     const auto &key_obj = element["key"];
@@ -195,8 +195,8 @@ errr parse_terrains_json_info(nlohmann::json &element)
         terrain.state[j].result_tag.clear();
     }
 
-    if (auto err = info_set_string(element["name"], terrain.name, true)) {
-        return err;
+    if (const auto err = info_set_string(element["name"], terrain.name, true); !err) {
+        return err.error();
     }
 
     if (auto err = set_terrain_symbol(element["symbol"], terrain)) {
@@ -213,8 +213,8 @@ errr parse_terrains_json_info(nlohmann::json &element)
 
     const auto &prio_obj = element["map_priority"];
     if (!prio_obj.is_null()) {
-        if (auto err = info_set_integer(prio_obj, terrain.priority, true, Range(-9999, 9999))) {
-            return err;
+        if (const auto err = info_set_integer(prio_obj, terrain.priority, true, Range(-9999, 9999)); !err) {
+            return err.error();
         }
     }
 
@@ -284,8 +284,8 @@ errr parse_terrains_json_info(nlohmann::json &element)
         if (!random_change_obj.is_object()) {
             return PARSE_ERROR_TOO_FEW_ARGUMENTS;
         }
-        if (auto err = info_set_integer(random_change_obj["prob"], terrain.random_change_prob, true, Range(0, 99999))) {
-            return err;
+        if (const auto err = info_set_integer(random_change_obj["prob"], terrain.random_change_prob, true, Range(0, 99999)); !err) {
+            return err.error();
         }
         const auto &tag_obj = random_change_obj["tag"];
         if (!tag_obj.is_string()) {
@@ -295,8 +295,8 @@ errr parse_terrains_json_info(nlohmann::json &element)
     }
 
     // 財宝地形 (HAS_GOLD) を掘った際に生成する財宝数 (省略時は従来通り 1 個)
-    if (auto err = info_set_dice(element["DROP_GOLD"], terrain.gold_drop, false)) {
-        return err;
+    if (const auto err = info_set_dice(element["DROP_GOLD"], terrain.gold_drop, false); !err) {
+        return err.error();
     }
 
     // 生成時の確率的地形変化 (上流 #5393 相当)

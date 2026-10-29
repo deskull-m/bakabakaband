@@ -71,10 +71,10 @@ int SpellReader::set_spell_data(const nlohmann::json &spell_data, RealmType real
         return PARSE_ERROR_TOO_FEW_ARGUMENTS;
     }
 
-    int spell_id;
-    if (auto err = info_set_integer(get_json_value(spell_data, "spell_id"), spell_id, true, Range(0, 31))) {
-        msg_format(_("呪文ID読込失敗。ID: '%d'。", "Failed to load spell ID. ID: '%d'."), error_idx);
-        return err;
+    int spell_id{};
+    if (const auto err = info_set_integer(get_json_value(spell_data, "spell_id"), spell_id, true, Range(0, 31)); !err) {
+        msg_print(_("呪文ID読込失敗。ID: '{}'。", "Failed to load spell ID. ID: '{}'."), error_idx);
+        return err.error();
     }
     auto info = SpellInfo();
     info.idx = static_cast<short>(spell_id);
@@ -86,13 +86,13 @@ int SpellReader::set_spell_data(const nlohmann::json &spell_data, RealmType real
     }
     info.tag = tag_obj.get<std::string>();
 
-    if (auto err = info_set_string(get_json_value(spell_data, "name"), info.name, true)) {
-        msg_format(_("呪文名読込失敗。ID: '%d'。", "Failed to load spell name. ID: '%d'."), error_idx);
-        return err;
+    if (const auto err = info_set_string(get_json_value(spell_data, "name"), info.name, true); !err) {
+        msg_print(_("呪文名読込失敗。ID: '{}'。", "Failed to load spell name. ID: '{}'."), error_idx);
+        return err.error();
     }
-    if (auto err = info_set_string(get_json_value(spell_data, "description"), info.description, true)) {
-        msg_format(_("呪文説明読込失敗。ID: '%d'。", "Failed to load spell description. ID: '%d'."), error_idx);
-        return err;
+    if (const auto err = info_set_string(get_json_value(spell_data, "description"), info.description, true); !err) {
+        msg_print(_("呪文説明読込失敗。ID: '{}'。", "Failed to load spell description. ID: '{}'."), error_idx);
+        return err.error();
     }
     this->spell_info_list.set_spell_info(realm, spell_id, std::move(info));
 

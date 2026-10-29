@@ -65,10 +65,9 @@ static errr set_party_members(nlohmann::json &members_data, CreaturePartyDefinit
 
         // count_diceの読み込み
         Dice count_dice;
-        const auto dice_err = info_set_dice(member_data["count_dice"], count_dice, true);
-        if (dice_err) {
+        if (const auto dice_err = info_set_dice(member_data["count_dice"], count_dice, true); !dice_err) {
             msg_format(_("パーティメンバーの出現数ダイス読込失敗。", "Failed to load party member count dice."));
-            return dice_err;
+            return dice_err.error();
         }
 
         // probabilityの読み込み
@@ -122,23 +121,20 @@ errr parse_creature_parties_info(nlohmann::json &party_data)
     }
 
     // 階層レベルの読み込み
-    err = info_set_integer(party_data["min_level"], party.min_level, true, Range(0, 999));
-    if (err) {
+    if (const auto result = info_set_integer(party_data["min_level"], party.min_level, true, Range(0, 999)); !result) {
         msg_format(_("パーティ最小レベル読込失敗。ID: '%d'。", "Failed to load party min level. ID: '%d'."), error_idx);
-        return err;
+        return result.error();
     }
 
-    err = info_set_integer(party_data["max_level"], party.max_level, true, Range(0, 999));
-    if (err) {
+    if (const auto result = info_set_integer(party_data["max_level"], party.max_level, true, Range(0, 999)); !result) {
         msg_format(_("パーティ最大レベル読込失敗。ID: '%d'。", "Failed to load party max level. ID: '%d'."), error_idx);
-        return err;
+        return result.error();
     }
 
     // レアリティの読み込み
-    err = info_set_integer(party_data["rarity"], party.rarity, true, Range(1, 255));
-    if (err) {
+    if (const auto result = info_set_integer(party_data["rarity"], party.rarity, true, Range(1, 255)); !result) {
         msg_format(_("パーティレアリティ読込失敗。ID: '%d'。", "Failed to load party rarity. ID: '%d'."), error_idx);
-        return err;
+        return result.error();
     }
 
     // ユニーク許可フラグの読み込み

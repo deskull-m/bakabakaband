@@ -11,22 +11,22 @@
  * @param allow_empty 空配列を許容するか（Vaultではfalse）
  * @return エラーコード
  */
-errr info_validate_json_array(const nlohmann::json &root, std::string_view key, bool allow_empty)
+tl::expected<void, parse_error_type> info_validate_json_array(const nlohmann::json &root, std::string_view key, bool allow_empty)
 {
     if (!root.is_object()) {
-        return PARSE_ERROR_INVALID_TYPE;
+        return tl::make_unexpected(PARSE_ERROR_INVALID_TYPE);
     }
     const auto records = root.find(key);
     if (records == root.end()) {
-        return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+        return tl::make_unexpected(PARSE_ERROR_TOO_FEW_ARGUMENTS);
     }
     if (!records->is_array()) {
-        return PARSE_ERROR_INVALID_TYPE;
+        return tl::make_unexpected(PARSE_ERROR_INVALID_TYPE);
     }
     if (!allow_empty && records->empty()) {
-        return PARSE_ERROR_INVALID_VALUE;
+        return tl::make_unexpected(PARSE_ERROR_INVALID_VALUE);
     }
-    return PARSE_ERROR_NONE;
+    return {};
 }
 
 const nlohmann::json &get_json_value(const nlohmann::json &json, std::string_view key)
@@ -51,37 +51,42 @@ const nlohmann::json &get_json_value(const nlohmann::json &json, std::string_vie
  * @param is_required 必須かどうか
  * @return エラーコード
  */
-errr info_set_string(const nlohmann::json &json, std::string &data, bool is_required)
+tl::expected<void, parse_error_type> info_set_string(const nlohmann::json &json, std::string &data, bool is_required)
 {
-    const auto unexist_result = is_required ? PARSE_ERROR_TOO_FEW_ARGUMENTS : PARSE_ERROR_NONE;
+    const auto unexist_result = [is_required]() -> tl::expected<void, parse_error_type> {
+        if (is_required) {
+            return tl::make_unexpected(PARSE_ERROR_TOO_FEW_ARGUMENTS);
+        }
+        return {};
+    };
 
     if (json.is_null()) {
-        return unexist_result;
+        return unexist_result();
     }
 
     if (!json.is_object()) {
-        return PARSE_ERROR_INVALID_TYPE;
+        return tl::make_unexpected(PARSE_ERROR_INVALID_TYPE);
     }
 
     const auto str = json.find(_("ja", "en"));
     if (str == json.end()) {
-        return unexist_result;
+        return unexist_result();
     }
     if (!str->is_string()) {
-        return PARSE_ERROR_INVALID_TYPE;
+        return tl::make_unexpected(PARSE_ERROR_INVALID_TYPE);
     }
 
 #ifdef JP
     auto str_sys = utf8_to_sys(str->get<std::string>());
     if (!str_sys) {
-        return PARSE_ERROR_INVALID_FLAG;
+        return tl::make_unexpected(PARSE_ERROR_INVALID_FLAG);
     }
     data = std::move(*str_sys);
 #else
     data = str->get<std::string>();
 #endif
 
-    return PARSE_ERROR_NONE;
+    return {};
 }
 
 /*!
@@ -92,20 +97,23 @@ errr info_set_string(const nlohmann::json &json, std::string &data, bool is_requ
  * 必須でJSON Objectがnullや文字列でない場合はエラーを返す。必須でない場合は何もせずに終了する。
  * @return エラーコード
  */
-errr info_set_dice(const nlohmann::json &json, Dice &dice, bool is_required)
+tl::expected<void, parse_error_type> info_set_dice(const nlohmann::json &json, Dice &dice, bool is_required)
 {
     if (json.is_null()) {
-        return is_required ? PARSE_ERROR_TOO_FEW_ARGUMENTS : PARSE_ERROR_NONE;
+        if (is_required) {
+            return tl::make_unexpected(PARSE_ERROR_TOO_FEW_ARGUMENTS);
+        }
+        return {};
     }
     if (!json.is_string()) {
-        return PARSE_ERROR_INVALID_TYPE;
+        return tl::make_unexpected(PARSE_ERROR_INVALID_TYPE);
     }
 
     try {
         dice = Dice::parse(json.get<std::string>());
-        return PARSE_ERROR_NONE;
+        return {};
     } catch (const std::runtime_error &) {
-        return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+        return tl::make_unexpected(PARSE_ERROR_TOO_FEW_ARGUMENTS);
     }
 }
 
@@ -117,12 +125,15 @@ errr info_set_dice(const nlohmann::json &json, Dice &dice, bool is_required)
  * 必須でJSON Objectがnullやbool場合はエラーを返す。必須でない場合は何もせずに終了する。
  * @return エラーコード
  */
-errr info_set_bool(const nlohmann::json &json, bool &bool_value, bool is_required)
+tl::expected<void, parse_error_type> info_set_bool(const nlohmann::json &json, bool &bool_value, bool is_required)
 {
     if (json.is_null() || !json.is_boolean()) {
-        return is_required ? PARSE_ERROR_TOO_FEW_ARGUMENTS : PARSE_ERROR_NONE;
+        if (is_required) {
+            return tl::make_unexpected(PARSE_ERROR_TOO_FEW_ARGUMENTS);
+        }
+        return {};
     }
 
     bool_value = json.get<bool>();
-    return PARSE_ERROR_NONE;
+    return {};
 }

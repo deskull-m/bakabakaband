@@ -25,17 +25,19 @@ namespace {
 int read_localized_integer(const nlohmann::json &value, int &destination, const Range &range)
 {
     if (value.is_number_integer()) {
-        return info_set_integer(value, destination, true, range);
+        const auto result = info_set_integer(value, destination, true, range);
+        return result ? PARSE_ERROR_NONE : result.error();
     }
     if (!value.is_object()) {
         return value.is_null() ? PARSE_ERROR_TOO_FEW_ARGUMENTS : PARSE_ERROR_INVALID_TYPE;
     }
 
 #ifdef JP
-    return info_set_integer(get_json_value(value, "ja"), destination, true, range);
+    const auto result = info_set_integer(get_json_value(value, "ja"), destination, true, range);
 #else
-    return info_set_integer(get_json_value(value, "en"), destination, true, range);
+    const auto result = info_set_integer(get_json_value(value, "en"), destination, true, range);
 #endif
+    return result ? PARSE_ERROR_NONE : result.error();
 }
 
 std::optional<WildernessDefinition> load_wilderness_definition()
@@ -73,15 +75,15 @@ int WildernessReader::read(WildernessDefinition &definition) const
         return PARSE_ERROR_INVALID_TYPE;
     }
 
-    int version;
-    if (const auto err = info_set_integer(get_json_value(this->data, "version"), version, true, Range(1, 1))) {
-        return err;
+    int version{};
+    if (const auto err = info_set_integer(get_json_value(this->data, "version"), version, true, Range(1, 1)); !err) {
+        return err.error();
     }
-    if (const auto err = info_set_integer(get_json_value(this->data, "width"), definition.width, true, Range(2, 32767))) {
-        return err;
+    if (const auto err = info_set_integer(get_json_value(this->data, "width"), definition.width, true, Range(2, 32767)); !err) {
+        return err.error();
     }
-    if (const auto err = info_set_integer(get_json_value(this->data, "height"), definition.height, true, Range(2, 32767))) {
-        return err;
+    if (const auto err = info_set_integer(get_json_value(this->data, "height"), definition.height, true, Range(2, 32767)); !err) {
+        return err.error();
     }
 
     const auto &towns_data = get_json_value(this->data, "towns");
@@ -96,20 +98,20 @@ int WildernessReader::read(WildernessDefinition &definition) const
         }
 
         WildernessTownDefinition town;
-        if (const auto err = info_set_integer(get_json_value(town_data, "id"), town.id, true, Range(1, 32767))) {
-            return err;
+        if (const auto err = info_set_integer(get_json_value(town_data, "id"), town.id, true, Range(1, 32767)); !err) {
+            return err.error();
         }
         if (!town_ids.insert(town.id).second) {
             return PARSE_ERROR_NON_SEQUENTIAL_RECORDS;
         }
-        if (const auto err = info_set_string(get_json_value(town_data, "name"), town.name, true)) {
-            return err;
+        if (const auto err = info_set_string(get_json_value(town_data, "name"), town.name, true); !err) {
+            return err.error();
         }
         const auto &alias_data = get_json_value(town_data, "alias");
         if (!alias_data.is_null()) {
             std::string alias;
-            if (const auto err = info_set_string(alias_data, alias, true)) {
-                return err;
+            if (const auto err = info_set_string(alias_data, alias, true); !err) {
+                return err.error();
             }
             town.alias = std::move(alias);
         }
@@ -179,8 +181,8 @@ int WildernessReader::read_map(const nlohmann::json &map_data, int width, int he
         defined_symbols[symbol_index] = true;
 
         WildernessLetterDefinition letter{ symbol[0], WildernessTerrain::EDGE, 0, 0, 0 };
-        if (const auto err = info_set_integer(get_json_value(letter_data, "terrain"), letter.terrain, true, Range(0, enum2i(WildernessTerrain::MAX) - 1))) {
-            return err;
+        if (const auto err = info_set_integer(get_json_value(letter_data, "terrain"), letter.terrain, true, Range(0, enum2i(WildernessTerrain::MAX) - 1)); !err) {
+            return err.error();
         }
         const auto &level_data = get_json_value(letter_data, "level");
         if (!level_data.is_null()) {
@@ -190,14 +192,14 @@ int WildernessReader::read_map(const nlohmann::json &map_data, int width, int he
         }
         const auto &town_data = get_json_value(letter_data, "town");
         if (!town_data.is_null()) {
-            if (const auto err = info_set_integer(town_data, letter.town, true, Range(0, std::numeric_limits<short>::max()))) {
-                return err;
+            if (const auto err = info_set_integer(town_data, letter.town, true, Range(0, std::numeric_limits<short>::max())); !err) {
+                return err.error();
             }
         }
         const auto &road_data = get_json_value(letter_data, "road");
         if (!road_data.is_null()) {
-            if (const auto err = info_set_integer(road_data, letter.road, true, Range(0, 15))) {
-                return err;
+            if (const auto err = info_set_integer(road_data, letter.road, true, Range(0, 15)); !err) {
+                return err.error();
             }
         }
         map.letters.push_back(letter);
@@ -227,11 +229,11 @@ int WildernessReader::read_map(const nlohmann::json &map_data, int width, int he
     if (!position_data.is_object()) {
         return position_data.is_null() ? PARSE_ERROR_TOO_FEW_ARGUMENTS : PARSE_ERROR_INVALID_TYPE;
     }
-    if (auto err = info_set_integer(get_json_value(position_data, "x"), map.starting_position.x, true, Range(1, width - 1))) {
-        return err;
+    if (const auto err = info_set_integer(get_json_value(position_data, "x"), map.starting_position.x, true, Range(1, width - 1)); !err) {
+        return err.error();
     }
-    if (auto err = info_set_integer(get_json_value(position_data, "y"), map.starting_position.y, true, Range(1, height - 1))) {
-        return err;
+    if (const auto err = info_set_integer(get_json_value(position_data, "y"), map.starting_position.y, true, Range(1, height - 1)); !err) {
+        return err.error();
     }
     if (map.starting_position.y >= static_cast<int>(map.layout.size()) || map.starting_position.x >= static_cast<int>(map.layout[map.starting_position.y].size())) {
         return PARSE_ERROR_OUT_OF_BOUNDS;
