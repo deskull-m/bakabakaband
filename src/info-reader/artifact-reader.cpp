@@ -102,8 +102,9 @@ ParseErrorType ArtifactReader::set_art_flags(ArtifactType &artifact) const
     if (flag_data.is_null()) {
         return ParseErrorType::NONE;
     }
+    // フラグ配列の型の誤りは、リーダー間で揃えて INVALID_TYPE を返す
     if (!flag_data.is_array()) {
-        return ParseErrorType::TOO_FEW_ARGUMENTS;
+        return ParseErrorType::INVALID_TYPE;
     }
 
     for (auto &flag : flag_data) {

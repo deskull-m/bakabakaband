@@ -828,8 +828,9 @@ ParseErrorType RaceReader::set_mon_flags(const nlohmann::json &flag_data, Monrac
     if (flag_data.is_null()) {
         return ParseErrorType::NONE;
     }
+    // フラグ配列の型の誤りは、リーダー間で揃えて INVALID_TYPE を返す
     if (!flag_data.is_array()) {
-        return ParseErrorType::TOO_FEW_ARGUMENTS;
+        return ParseErrorType::INVALID_TYPE;
     }
 
     /*

@@ -234,15 +234,19 @@ ParseErrorType parse_terrains_json_info(nlohmann::json &element, TerrainReaderSe
     }
 
     const auto &flags_obj = element["flags"];
-    if (flags_obj.is_null() || !flags_obj.is_array()) {
+    if (flags_obj.is_null()) {
         return ParseErrorType::TOO_FEW_ARGUMENTS;
+    }
+    // フラグ配列の型の誤りは、リーダー間で揃えて INVALID_TYPE を返す
+    if (!flags_obj.is_array()) {
+        return ParseErrorType::INVALID_TYPE;
     }
 
     std::optional<uint8_t> specific_type;
     std::optional<uint8_t> terrain_power;
     for (const auto &f_obj : flags_obj) {
         if (!f_obj.is_string()) {
-            return ParseErrorType::TOO_FEW_ARGUMENTS;
+            return ParseErrorType::INVALID_TYPE;
         }
 
         const auto f = f_obj.get<std::string>();
