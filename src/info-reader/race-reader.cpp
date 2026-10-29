@@ -6,6 +6,7 @@
 #include "info-reader/json-reader-util.h"
 #include "info-reader/parse-error-types.h"
 #include "info-reader/race-info-tokens-table.h"
+#include "info-reader/symbol-reader-util.h"
 #include "locale/character-encoding.h"
 #include "object/tval-types.h"
 #include "player-ability/player-ability-types.h"
@@ -15,7 +16,6 @@
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
 #include "system/monrace/monrace-message.h"
-#include "term/gameterm.h"
 #include "util/enum-converter.h"
 #include "util/string-processor.h"
 #include "view/display-messages.h"
@@ -161,37 +161,12 @@ ParseErrorType RaceReader::set_mon_name(const nlohmann::json &name_data, Monrace
  */
 ParseErrorType RaceReader::set_mon_symbol(const nlohmann::json &symbol_data, MonraceDefinition &monrace)
 {
-    if (symbol_data.is_null()) {
-        return ParseErrorType::TOO_FEW_ARGUMENTS;
+    const auto symbol = info_read_symbol(symbol_data, SymbolReadPolicy::MONSTER_COLOR_FIRST);
+    if (!symbol) {
+        return symbol.error();
     }
 
-    const auto &character_obj = symbol_data["character"];
-    if (!character_obj.is_string()) {
-        return ParseErrorType::TOO_FEW_ARGUMENTS;
-    }
-
-    const auto &color_obj = symbol_data["color"];
-    if (!color_obj.is_string()) {
-        return ParseErrorType::TOO_FEW_ARGUMENTS;
-    }
-
-    const auto color = color_list.find(color_obj.get<std::string>());
-    if (color == color_list.end()) {
-        return ParseErrorType::INVALID_FLAG;
-    }
-    if (color->second > 127) {
-        return ParseErrorType::GENERIC;
-    }
-
-    const auto character = character_obj.get<std::string>();
-    if (character.empty()) {
-        return ParseErrorType::GENERIC;
-    }
-    if (character.size() != 1) {
-        return ParseErrorType::INVALID_VALUE;
-    }
-
-    monrace.symbol_definition = { color->second, character.front() };
+    monrace.symbol_definition = *symbol;
     return ParseErrorType::NONE;
 }
 

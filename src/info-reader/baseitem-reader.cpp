@@ -11,12 +11,12 @@
 #include "info-reader/info-reader-util.h"
 #include "info-reader/json-reader-util.h"
 #include "info-reader/parse-error-types.h"
+#include "info-reader/symbol-reader-util.h"
 #include "locale/japanese.h"
 #include "object-enchant/tr-types.h"
 #include "object/tval-types.h"
 #include "system/baseitem/baseitem-definition.h"
 #include "system/baseitem/baseitem-list.h"
-#include "term/gameterm.h"
 #include "util/bit-flags-calculator.h"
 #include "util/enum-converter.h"
 #include "view/display-messages.h"
@@ -191,37 +191,12 @@ bool BaseitemReader::grab_one_baseitem_flag(BaseitemDefinition &baseitem, std::s
  */
 ParseErrorType BaseitemReader::set_baseitem_symbol(BaseitemDefinition &baseitem) const
 {
-    const auto &symbol_data = get_json_value(this->baseitem_data, "symbol");
-    if (symbol_data.is_null()) {
-        return ParseErrorType::TOO_FEW_ARGUMENTS;
-    }
-    if (!symbol_data.is_object()) {
-        return ParseErrorType::INVALID_TYPE;
+    const auto symbol = info_read_symbol(get_json_value(this->baseitem_data, "symbol"));
+    if (!symbol) {
+        return symbol.error();
     }
 
-    const auto &character_obj = get_json_value(symbol_data, "character");
-    if (!character_obj.is_string()) {
-        return character_obj.is_null() ? ParseErrorType::TOO_FEW_ARGUMENTS : ParseErrorType::INVALID_TYPE;
-    }
-    const auto &character = character_obj.get_ref<const std::string &>();
-    if (character.size() != 1) {
-        return ParseErrorType::INVALID_VALUE;
-    }
-
-    const auto &color_obj = get_json_value(symbol_data, "color");
-    if (!color_obj.is_string()) {
-        return color_obj.is_null() ? ParseErrorType::TOO_FEW_ARGUMENTS : ParseErrorType::INVALID_TYPE;
-    }
-
-    const auto color = color_list.find(color_obj.get<std::string>());
-    if (color == color_list.end()) {
-        return ParseErrorType::INVALID_FLAG;
-    }
-    if (color->second > 127) {
-        return ParseErrorType::GENERIC;
-    }
-
-    baseitem.init_symbol(DisplaySymbol(color->second, character.front()));
+    baseitem.init_symbol(*symbol);
     return ParseErrorType::NONE;
 }
 

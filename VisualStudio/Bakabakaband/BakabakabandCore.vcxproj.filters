@@ -4023,6 +4023,9 @@
     <ClInclude Include="..\..\src\info-reader\spell-reader.h">
       <Filter>info-reader</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\info-reader\symbol-reader-util.h">
+      <Filter>info-reader</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\src\info-reader\magic-info-tokens-table.h">
       <Filter>info-reader</Filter>
     </ClInclude>
