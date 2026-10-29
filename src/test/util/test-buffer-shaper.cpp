@@ -21,9 +21,11 @@ using Lines = std::vector<std::string>;
 #if defined(JP) && defined(SJIS)
 constexpr std::string_view KUTEN = "\x81\x42"; //!< 。
 constexpr std::string_view CHOON = "\x81\x5b"; //!< ー
+constexpr std::string_view KAGI_OPEN = "\x81\x75"; //!< 「 (行末禁則文字)
 #elif defined(JP)
 constexpr std::string_view KUTEN = "\xa1\xa3"; //!< 。
 constexpr std::string_view CHOON = "\xa1\xbc"; //!< ー
+constexpr std::string_view KAGI_OPEN = "\xa1\xd6"; //!< 「 (行末禁則文字)
 #endif
 
 }
@@ -162,5 +164,18 @@ TEST_CASE("shape_buffer keeps a multibyte character together with the following 
 {
     // 全角文字の直後の半角文字で最大長に達したときは、これまでどおり全角文字の前で分ける
     CHECK(shape_buffer(cat("abcdefg", KANJI_KAN, "h"), 10) == Lines{ "abcdefg", cat(KANJI_KAN, "h") });
+}
+
+TEST_CASE("shape_buffer does not leave a line-end kinsoku character at the end of a line")
+{
+    // 行末が始め括弧になるときは、その前の語の切れ目までさかのぼって分ける (始め括弧を行末に残さない)
+    const auto str = cat(repeat(KANJI_KAN, 3), KAGI_OPEN, KANJI_KAN, KANJI_KAN);
+    CHECK(shape_buffer(str, 10) == Lines{ repeat(KANJI_KAN, 3), cat(KAGI_OPEN, KANJI_KAN, KANJI_KAN) });
+}
+
+TEST_CASE("shape_buffer does not leave a half-width opening bracket at the end of a line")
+{
+    // 半角の始め括弧も行末に残さず、括弧ごと次の行に送る
+    CHECK(shape_buffer("aaaa(bb", 6) == Lines{ "aaaa", "(bb" });
 }
 #endif

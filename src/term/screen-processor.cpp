@@ -110,6 +110,27 @@ void prt(std::string_view sv, TERM_LEN row, TERM_LEN col)
     c_prt(TERM_WHITE, sv, row, col);
 }
 
+/*!
+ * @brief 画面に表示済みの行の末尾 (x の手前) の 1 文字のマスを取り出す
+ * @return 末尾の文字のマス (全角なら 2 マス、半角なら 1 マス)。x が 0 以下なら空
+ * @details 全角文字の後半のマスには、c_roff() が属性に 0x20 の印を付けている。
+ */
+static std::vector<DisplaySymbol> last_cells_of_line(int x, int y)
+{
+    std::vector<DisplaySymbol> cells;
+    if (x <= 0) {
+        return cells;
+    }
+
+    const auto is_full_width = (term_what(x - 1, y, {}).color & 0x20) != 0;
+    const auto start = is_full_width ? (x - 2) : (x - 1);
+    for (auto col = start; col < x; col++) {
+        cells.push_back(term_what(col, y, {}));
+    }
+
+    return cells;
+}
+
 static std::vector<DisplaySymbol> c_roff_wrap(int x, int y, int w, std::string_view ch)
 {
     if (x >= w) {
@@ -119,18 +140,22 @@ static std::vector<DisplaySymbol> c_roff_wrap(int x, int y, int w, std::string_v
     std::vector<DisplaySymbol> wrap_chars;
     auto wrap_col = w;
 
-    if (ch.length() == 2) {
-        /* 現在が全角文字の場合 */
-        /* 行頭が行頭禁則文字になるときは、その１つ前の語で改行 */
-        if (is_kinsoku(ch)) {
-            DisplaySymbol ds;
-            ds = term_what(x - 2, y, ds);
-            wrap_chars.push_back(ds);
-            ds = term_what(x - 1, y, ds);
-            wrap_chars.push_back(ds);
-            wrap_col = x - 2;
-        }
-    } else {
+    // 行の末尾 (x の手前) の文字。行末禁則文字 (始め括弧) を行末に残さないための判定に使う。
+    const auto last_cells = last_cells_of_line(x, y);
+    std::string last_char;
+    for (const auto &cell : last_cells) {
+        last_char.push_back(cell.character);
+    }
+    const auto last_is_full_width = last_cells.size() == 2;
+    const auto line_ends_with_kinsoku = is_line_end_kinsoku(last_char);
+
+    // 次の行の先頭が行頭禁則文字になるとき、または行末が行末禁則文字になるときは、行末の１文字を次の行へ送る。
+    // 半角の始め括弧は下の語単位の折り返しがそのまま次の行へ送るので、全角のときだけここで送る。
+    const auto wraps_at_last_char = (((ch.length() == 2) && is_kinsoku(ch)) || line_ends_with_kinsoku) && ((ch.length() == 2) || last_is_full_width);
+    if (wraps_at_last_char) {
+        wrap_chars = last_cells;
+        wrap_col = x - static_cast<int>(last_cells.size());
+    } else if (ch.length() == 1) {
         /* 現在が半角文字の場合 */
         for (auto i = 0; i < x; i++) {
             DisplaySymbol ds;
