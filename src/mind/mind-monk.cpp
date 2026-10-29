@@ -1,6 +1,7 @@
 #include "mind/mind-monk.h"
 #include "action/action-limited.h"
-#include "io/input-key-acceptor.h"
+#include "core/asking-player.h"
+#include "io/input-context.h"
 #include "mind/stances-table.h"
 #include "player-base/player-class.h"
 #include "player-info/monk-data-type.h"
@@ -12,6 +13,7 @@
 #include "term/screen-processor.h"
 #include "term/z-form.h"
 #include "util/int-char-converter.h"
+#include "util/string-processor.h"
 #include "view/display-messages.h"
 
 static void set_stance(CreatureEntity &creature, const MonkStanceType new_stance)
@@ -50,11 +52,13 @@ bool choose_monk_stance(CreatureEntity &creature)
     }
 
     prt("", 1, 0);
-    prt(_("        どの構えをとりますか？", "        Choose Stance: "), 1, 14);
+    constexpr auto prompt = _("        どの構えをとりますか？", "        Choose Stance: ");
+    prt(prompt, 1, 14);
 
+    const auto context_prompt = str_trim(prompt);
     auto new_stance = MonkStanceType::NONE;
     while (true) {
-        char choice = inkey();
+        const auto choice = input_key_with_context(InputKind::COMMAND_CHAR, context_prompt);
         if (choice == ESCAPE) {
             screen_load();
             return false;
