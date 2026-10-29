@@ -4,7 +4,7 @@
 #include "core/window-redrawer.h"
 #include "game-option/cheat-options.h"
 #include "game-option/game-play-options.h"
-#include "io/input-key-acceptor.h"
+#include "io/input-context.h"
 #include "lore/lore-util.h"
 #include "system/creature-entity.h"
 #include "system/monrace/monrace-definition.h"
@@ -105,8 +105,9 @@ void do_cmd_query_symbol(CreatureEntity &creature)
         return;
     }
 
-    put_str(_("思い出を見ますか? (k:殺害順/y/n): ", "Recall details? (k/y/n): "), 0, _(36, 40));
-    auto query = inkey();
+    constexpr auto recall_prompt = _("思い出を見ますか? (k:殺害順/y/n): ", "Recall details? (k/y/n): ");
+    put_str(recall_prompt, 0, _(36, 40));
+    auto query = input_key_with_context(InputKind::CONFIRM, recall_prompt);
     prt(buf, 0, 0);
     auto is_detailed = false;
     if (query == 'k') {
@@ -136,8 +137,9 @@ void do_cmd_query_symbol(CreatureEntity &creature)
             }
 
             roff_top(monrace_id);
-            term_addstr(-1, TERM_WHITE, _(" ['r'思い出, ESC]", " [(r)ecall, ESC]"));
-            query = inkey();
+            constexpr auto query_prompt = _(" ['r'思い出, ESC]", " [(r)ecall, ESC]");
+            term_addstr(-1, TERM_WHITE, query_prompt);
+            query = input_key_with_context(InputKind::COMMAND_CHAR, query_prompt);
             if (recall) {
                 screen_load();
             }
