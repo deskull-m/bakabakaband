@@ -859,7 +859,11 @@ TEST_CASE("info_read_symbol preserves monster validation errors")
 TEST_CASE("info_read_symbol accepts every single byte and color token")
 {
     for (const auto policy : { SymbolReadPolicy::TYPE_AND_CHARACTER_FIRST, SymbolReadPolicy::MONSTER_COLOR_FIRST }) {
-        for (const auto &[name, color] : color_list) {
+        // clang 14/15 は構造化束縛を CAPTURE() 内のラムダに捕捉できない (P1091 は clang16 以降) ため
+        // 通常変数で受けてから渡す。
+        for (const auto &entry : color_list) {
+            const auto name = entry.first;
+            const auto color = entry.second;
             CHECK(color <= 15);
             for (int byte = 0; byte <= 255; ++byte) {
                 CAPTURE(name);

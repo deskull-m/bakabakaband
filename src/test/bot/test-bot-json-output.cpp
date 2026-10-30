@@ -51,9 +51,14 @@ TEST_CASE("make_bot_player_ability_sources_json reports each source of the chara
         { "permanent", &BotPlayerKnownFlags::permanent },
         { "temporary", &BotPlayerKnownFlags::temporary },
     };
-    for (const auto &[key, flag] : abilities) {
+    // clang 14/15 は構造化束縛を CAPTURE() 内のラムダに捕捉できない (P1091 は clang16 以降) ため通常変数で受ける
+    for (const auto &ability : abilities) {
+        const auto key = ability.first;
+        const auto flag = ability.second;
         CAPTURE(key);
-        for (const auto &[source, member] : source_members) {
+        for (const auto &source_member : source_members) {
+            const auto source = source_member.first;
+            const auto member = source_member.second;
             CAPTURE(source);
             BotPlayerKnownFlags flags;
             (flags.*member).set(flag);
@@ -75,7 +80,9 @@ TEST_CASE("make_bot_player_ability_sources_json reports the levitation from the 
     BotPlayerKnownFlags riding_only;
     riding_only.riding.set(TR_LEVITATION);
     const auto riding_only_sources = make_bot_player_ability_sources_json(riding_only);
-    for (const auto &[key, value] : riding_only_sources.items()) {
+    for (const auto &item : riding_only_sources.items()) {
+        const auto key = item.key();
+        const auto &value = item.value();
         CAPTURE(key);
         CHECK(value.at("equipment") == false);
         CHECK(value.at("permanent") == false);
