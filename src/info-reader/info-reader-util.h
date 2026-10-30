@@ -1,12 +1,15 @@
 #pragma once
 
+#include "info-reader/parse-error-types.h"
 #include "system/angband.h"
 #include "util/bit-flags-calculator.h"
 #include <concepts>
 #include <limits>
 #include <map>
+#include <nlohmann/json_fwd.hpp>
 #include <string>
 #include <string_view>
+#include <tl/expected.hpp>
 #include <tl/optional.hpp>
 #include <unordered_map>
 #include <utility>
@@ -27,6 +30,8 @@ int item_subtype_max(const BaseitemKey &key);
 
 enum class RandomArtActType : short;
 RandomArtActType grab_one_activation_flag(std::string_view what);
+//! 任意の発動指定 (省略時は null) を読み込む共通処理。省略時は NONE、指定時は発動能力 ID、失敗時は解析エラーを返す。
+tl::expected<RandomArtActType, ParseErrorType> read_activation(const nlohmann::json &activation_json);
 
 #ifndef JP
 void append_english_text(std::string &text, std::string_view add);

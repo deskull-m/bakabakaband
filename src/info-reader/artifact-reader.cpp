@@ -76,17 +76,15 @@ ParseErrorType ArtifactReader::set_art_baseitem(ArtifactType &artifact) const
  */
 ParseErrorType ArtifactReader::set_art_activate(ArtifactType &artifact) const
 {
-    const auto &act_data = get_json_value(this->art_data, "activate");
-    if (!act_data.is_string()) {
+    const auto activation = read_activation(get_json_value(this->art_data, "activate"));
+    if (!activation) {
+        return activation.error();
+    }
+    if (*activation == RandomArtActType::NONE) {
         return ParseErrorType::NONE;
     }
 
-    auto activation = grab_one_activation_flag(act_data.get<std::string>());
-    if (activation <= RandomArtActType::NONE) {
-        return ParseErrorType::INVALID_FLAG;
-    }
-
-    artifact.act_idx = activation;
+    artifact.act_idx = *activation;
     artifact.flags.set(tr_type::TR_ACTIVATE);
     return ParseErrorType::NONE;
 }

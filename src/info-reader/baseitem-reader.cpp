@@ -325,20 +325,15 @@ ParseErrorType BaseitemReader::set_baseitem_allocations(BaseitemDefinition &base
  */
 ParseErrorType BaseitemReader::set_baseitem_activate(BaseitemDefinition &baseitem) const
 {
-    const auto &act_data = get_json_value(this->baseitem_data, "activate");
-    if (act_data.is_null()) {
+    const auto activation = read_activation(get_json_value(this->baseitem_data, "activate"));
+    if (!activation) {
+        return activation.error();
+    }
+    if (*activation == RandomArtActType::NONE) {
         return ParseErrorType::NONE;
     }
-    if (!act_data.is_string()) {
-        return ParseErrorType::INVALID_TYPE;
-    }
 
-    const auto activation = grab_one_activation_flag(act_data.get<std::string>());
-    if (activation <= RandomArtActType::NONE) {
-        return ParseErrorType::INVALID_FLAG;
-    }
-
-    baseitem.act_idx = activation;
+    baseitem.act_idx = *activation;
     baseitem.flags.set(tr_type::TR_ACTIVATE);
     return ParseErrorType::NONE;
 }

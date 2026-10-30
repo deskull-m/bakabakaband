@@ -6,14 +6,20 @@
  * append_english_text を検証する。
  * JSON から値を取り出す info_set_* 群は test-json-reader-util.cpp で扱う。
  *
- * 同じヘッダで宣言されている grab_one_activation_flag は対象外とした。
+ * 同じヘッダで宣言されている grab_one_activation_flag 自体は対象外とした。
  * 未知のトークンに対する挙動が、非数値なら std::stoi が例外を送出し、"0" や負数なら
  * msg_format (ターミナルが必要) を呼ぶという状態で、現状を仕様として固定したくないため。
+ * ただし、その grab_one_activation_flag を安全に包んで値域・型を検証する read_activation は
+ * 例外もターミナル依存も持たないため、本ファイルで検証する。
  */
 
 #include "info-reader/info-reader-util.h"
 
+#include "artifact/random-art-effects.h"
+#include "info-reader/parse-error-types.h"
+#include "object-enchant/activation-info-table.h"
 #include <doctest/doctest.h>
+#include <nlohmann/json.hpp>
 
 #include <cstdint>
 #include <map>
@@ -138,6 +144,40 @@ TEST_CASE("info_set_value throws an exception for a string which is not a number
     CHECK_THROWS_AS(info_set_value(value, ""), std::invalid_argument);
     CHECK_THROWS_AS(info_set_value(value, "99999999999999999999"), std::out_of_range);
     CHECK(value == 0);
+}
+
+TEST_CASE("read_activation treats absent or null as no activation")
+{
+    // 項目が省略された場合は get_json_value が null を返すため、null は「発動なし」として NONE を返す
+    CHECK(read_activation(nlohmann::json()) == RandomArtActType::NONE);
+    CHECK(read_activation(nlohmann::json(nullptr)) == RandomArtActType::NONE);
+}
+
+TEST_CASE("read_activation rejects a non-string value with INVALID_TYPE")
+{
+    for (const auto &value : { nlohmann::json(1), nlohmann::json(true), nlohmann::json::array(), nlohmann::json::object() }) {
+        const auto result = read_activation(value);
+        REQUIRE_FALSE(result);
+        CHECK(result.error() == ParseErrorType::INVALID_TYPE);
+    }
+}
+
+TEST_CASE("read_activation rejects an unknown name with INVALID_FLAG")
+{
+    // bakaba の grab_one_activation_flag は未知名でもメッセージを出さず NONE を返すため、
+    // read_activation はターミナル非依存で INVALID_FLAG を返す
+    const auto result = read_activation(nlohmann::json("UNKNOWN_ACTIVATION"));
+    REQUIRE_FALSE(result);
+    CHECK(result.error() == ParseErrorType::INVALID_FLAG);
+}
+
+TEST_CASE("read_activation accepts every registered activation name")
+{
+    for (const auto &activation : activation_info) {
+        CAPTURE(activation.flag);
+        REQUIRE(activation.index > RandomArtActType::NONE);
+        CHECK(read_activation(nlohmann::json(activation.flag)) == activation.index);
+    }
 }
 
 #ifndef JP

@@ -184,13 +184,13 @@ ParseErrorType EgoReader::set_extra_flags(EgoItemDefinition &ego) const
 
 ParseErrorType EgoReader::set_activation(EgoItemDefinition &ego) const
 {
-    const auto &activation = get_json_value(this->ego_data, "activation");
-    if (activation.is_null()) {
+    const auto activation = read_activation(get_json_value(this->ego_data, "activation"));
+    if (!activation) {
+        return activation.error();
+    }
+    if (*activation == RandomArtActType::NONE) {
         return ParseErrorType::NONE;
     }
-    if (!activation.is_string()) {
-        return ParseErrorType::INVALID_TYPE;
-    }
-    ego.act_idx = grab_one_activation_flag(activation.get<std::string>());
-    return ego.act_idx > RandomArtActType::NONE ? ParseErrorType::NONE : ParseErrorType::INVALID_FLAG;
+    ego.act_idx = *activation;
+    return ParseErrorType::NONE;
 }
