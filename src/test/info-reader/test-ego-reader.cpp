@@ -6,6 +6,7 @@
 #include "object-enchant/object-ego.h"
 #include "object-enchant/tr-types.h"
 #include "util/enum-converter.h"
+#include "view/display-messages.h"
 #include <doctest/doctest.h>
 #include <nlohmann/json.hpp>
 
@@ -87,6 +88,8 @@ TEST_CASE("EgoReader loads bonuses, flags, activation, and probabilistic flags")
 TEST_CASE("EgoReader rejects malformed records atomically")
 {
     EgoStateGuard guard;
+    // 未知フラグ時の msg_print が端末 (game_term) 未初期化のテストで落ちないよう捕捉する。
+    const ScopedMessageCapture capture;
     const auto original = make_ego();
     auto check_invalid = [&](const nlohmann::json &data) {
         CHECK(EgoReader(data).read() != ParseErrorType::NONE);

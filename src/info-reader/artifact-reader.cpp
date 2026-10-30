@@ -56,12 +56,12 @@ ParseErrorType ArtifactReader::set_art_baseitem(ArtifactType &artifact) const
     }
 
     ItemKindType type_value{};
-    if (const auto err = info_set_integer(get_json_value(baseitem_data, "type_value"), type_value, true, Range(0, 128)); !err) {
+    if (const auto err = info_set_integer(get_json_value(baseitem_data, "type_value"), type_value, true, Range(0, ITEM_TYPE_MAX)); !err) {
         return err.error();
     }
 
     int subtype_value{};
-    if (const auto err = info_set_integer(get_json_value(baseitem_data, "subtype_value"), subtype_value, true, Range(0, 128)); !err) {
+    if (const auto err = info_set_integer(get_json_value(baseitem_data, "subtype_value"), subtype_value, true, Range(0, item_subtype_max({ type_value, 0 }))); !err) {
         return err.error();
     }
 
@@ -167,7 +167,7 @@ ParseErrorType ArtifactReader::read() const
         msg_print(_("アーティファクトの重量読込失敗。ID: '{}'。", "Failed to load weight of artifact. ID: '{}'."), int_id);
         return err.error();
     }
-    if (const auto err = info_set_integer(get_json_value(this->art_data, "cost"), artifact.cost, true, Range(0, 99999999)); !err) {
+    if (const auto err = info_set_integer(get_json_value(this->art_data, "cost"), artifact.cost, true, Range(0, ITEM_COST_MAX)); !err) {
         msg_print(_("アーティファクトの売値読込失敗。ID: '{}'。", "Failed to load cost of artifact. ID: '{}'."), int_id);
         return err.error();
     }
