@@ -1617,6 +1617,7 @@ hengband_test_SOURCES = \
 	test/scoped-rng.h \
 	test/scoped-vector-wrapper.h \
 	test/string-helpers.h \
+	test/info-reader/scoped-ego-list.h \
 	test/info-reader/scoped-reader-state.h \
 	test/save/scoped-save-io.h \
 	\

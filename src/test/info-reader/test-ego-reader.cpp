@@ -5,6 +5,7 @@
 #include "locale/character-encoding.h"
 #include "object-enchant/object-ego.h"
 #include "object-enchant/tr-types.h"
+#include "test/info-reader/scoped-ego-list.h"
 #include "util/enum-converter.h"
 #include "view/display-messages.h"
 #include <doctest/doctest.h>
@@ -12,23 +13,6 @@
 
 namespace {
 const std::string EGO_NAME_JA_UTF8 = "\xe8\xa9\xa6\xe9\xa8\x93\xe3\x81\xae";
-
-class EgoStateGuard {
-public:
-    EgoStateGuard()
-    {
-        this->saved_egos.swap(egos_info);
-    }
-
-    ~EgoStateGuard()
-    {
-        egos_info.clear();
-        egos_info.swap(this->saved_egos);
-    }
-
-private:
-    std::map<EgoType, EgoItemDefinition> saved_egos;
-};
 
 nlohmann::json make_ego()
 {
@@ -51,7 +35,7 @@ nlohmann::json make_ego()
 
 TEST_CASE("EgoReader loads bonuses, flags, activation, and probabilistic flags")
 {
-    EgoStateGuard guard;
+    test::ScopedEgoList guard;
     const auto data = make_ego();
     REQUIRE(EgoReader(data).read() == ParseErrorType::NONE);
     REQUIRE(egos_info.size() == 1);
@@ -87,7 +71,7 @@ TEST_CASE("EgoReader loads bonuses, flags, activation, and probabilistic flags")
 
 TEST_CASE("EgoReader rejects malformed records atomically")
 {
-    EgoStateGuard guard;
+    test::ScopedEgoList guard;
     // 未知フラグ時の msg_print が端末 (game_term) 未初期化のテストで落ちないよう捕捉する。
     const ScopedMessageCapture capture;
     const auto original = make_ego();
@@ -136,7 +120,7 @@ TEST_CASE("EgoReader rejects malformed records atomically")
 
 TEST_CASE("EgoReader requires unique IDs while preserving legacy ordering")
 {
-    EgoStateGuard guard;
+    test::ScopedEgoList guard;
     auto data = make_ego();
     REQUIRE(EgoReader(data).read() == ParseErrorType::NONE);
     CHECK(EgoReader(data).read() == ParseErrorType::NON_SEQUENTIAL_RECORDS);
@@ -149,7 +133,7 @@ TEST_CASE("EgoReader requires unique IDs while preserving legacy ordering")
 
 TEST_CASE("EgoReader accepts levels throughout DEPTH storage")
 {
-    EgoStateGuard guard;
+    test::ScopedEgoList guard;
     auto data = make_ego();
     data["level"] = 32768;
     REQUIRE(EgoReader(data).read() == ParseErrorType::NONE);
