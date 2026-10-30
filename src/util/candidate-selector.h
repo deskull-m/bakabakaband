@@ -40,7 +40,7 @@ class CandidateSelector {
 public:
     CandidateSelector(const std::string &prompt, int start_col = 0);
 
-    void set_max_per_page(size_t max_per_page = std::numeric_limits<size_t>::max());
+    void set_max_per_page(size_t max_per_page = (std::numeric_limits<size_t>::max)());
 
     /*!
      * @brief 引数で与えられた候補リストを画面に表示し選択する
