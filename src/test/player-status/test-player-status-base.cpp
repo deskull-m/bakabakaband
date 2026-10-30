@@ -23,6 +23,11 @@ public:
         this->max_value = 209;
     }
 
+    // 基底 PlayerStatusBase が CreatureEntity & 参照メンバを持ち代入演算子を delete して
+    // いるため、派生側でも明示的に delete する (MSVC /Wall の C4626/C5027 対策)。
+    TestPlayerStatus &operator=(const TestPlayerStatus &) = delete;
+    TestPlayerStatus &operator=(TestPlayerStatus &&) = delete;
+
     int16_t equipment = 0;
     int16_t weight = 0;
     int16_t timed = 0;
@@ -50,6 +55,9 @@ public:
         this->min_value = -128;
         this->max_value = 127;
     }
+
+    TestExceptionStatus &operator=(const TestExceptionStatus &) = delete;
+    TestExceptionStatus &operator=(TestExceptionStatus &&) = delete;
 
     int received = 0;
 
