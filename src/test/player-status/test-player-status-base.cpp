@@ -24,7 +24,12 @@ public:
     }
 
     // 基底 PlayerStatusBase が CreatureEntity & 参照メンバを持ち代入演算子を delete して
-    // いるため、派生側でも明示的に delete する (MSVC /Wall の C4626/C5027 対策)。
+    // いるため、派生側でも特殊メンバを明示する。基底と同じく コピー/ムーブコンストラクタは
+    // default、代入演算子は delete で 4 つ全て宣言する (MSVC /Wall の
+    // C4625/C4626/C5026/C5027 対策。ムーブ代入の宣言はコピーコンストラクタを暗黙 delete
+    // させるため、コピー/ムーブコンストラクタも明示が必要)。
+    TestPlayerStatus(const TestPlayerStatus &) = default;
+    TestPlayerStatus(TestPlayerStatus &&) = default;
     TestPlayerStatus &operator=(const TestPlayerStatus &) = delete;
     TestPlayerStatus &operator=(TestPlayerStatus &&) = delete;
 
@@ -56,6 +61,8 @@ public:
         this->max_value = 127;
     }
 
+    TestExceptionStatus(const TestExceptionStatus &) = default;
+    TestExceptionStatus(TestExceptionStatus &&) = default;
     TestExceptionStatus &operator=(const TestExceptionStatus &) = delete;
     TestExceptionStatus &operator=(TestExceptionStatus &&) = delete;
 
