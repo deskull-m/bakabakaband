@@ -10,11 +10,6 @@
 #include <unordered_map>
 #include <utility>
 
-/*
- * Size of memory reserved for initialization of some arrays
- */
-extern int error_idx; //!< エラーが発生したinfo ID
-
 enum class RandomArtActType : short;
 RandomArtActType grab_one_activation_flag(std::string_view what);
 

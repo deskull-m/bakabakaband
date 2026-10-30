@@ -23,6 +23,7 @@
 #include "monster/monster-util.h"
 #include "object-enchant/tr-types.h"
 #include "object/object-info.h"
+#include "pet/pet-util.h"
 #include "player-ability/player-ability-types.h"
 #include "player-base/player-race.h"
 #include "player-info/bard-data-type.h"
@@ -41,6 +42,7 @@
 #include "realm/realm-types.h"
 #include "spell-realm/spells-hex.h"
 #include "system/angband-system.h"
+#include "system/deferred-update-requests.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
@@ -51,20 +53,19 @@
 #include "system/monrace/monrace-records.h"
 #include "system/monster-profile.h"
 #include "system/player-type-definition.h"
-#include "system/redrawing-flags-updater.h"
 #include "target/projection-path-calculator.h"
 #include "term/term-color-types.h"
-#include "term/z-form.h"
 #include "term/z-rand.h"
 #include "term/z-util.h"
 #include "timed-effect/player-cut.h"
 #include "timed-effect/player-stun.h"
-#include "tracking/lore-tracker.h"
 #include "util/bit-flags-calculator.h"
 #include "util/enum-converter.h"
+#include "util/string-processor.h"
 #include "view/display-messages.h"
 #include "world/world.h"
 #include <algorithm>
+#include <fmt/format.h>
 #include <range/v3/algorithm.hpp>
 
 /*!
@@ -140,6 +141,20 @@ void CreatureEntity::ride_monster(MONSTER_IDX m_idx)
     }
 }
 
+/*!
+ * @brief モンスターから降り、乗馬中の両手持ちの設定を戻す
+ * @details 能力の再計算や乗馬中の表示の描き直しは要求しないので、必要なら呼び出し元で要求する。
+ * 騎乗・下馬の判定 (can_player_ride_pet()) は、ここで変える状態を覚えておいて一時的に降り、後で戻す。
+ * ここで変える状態を増やしたら、そちらでも戻すこと。
+ */
+void CreatureEntity::dismount()
+{
+    this->ride_monster(0);
+    this->remove_pet_extra_flag(PF_TWO_HANDS);
+    this->set_riding_ryoute(false);
+    this->set_was_riding_ryoute(false);
+}
+
 void CreatureEntity::consume_energy_by_speed(int speed_value)
 {
     this->sub_energy_need(speed_to_energy(static_cast<byte>(speed_value)));
@@ -157,7 +172,7 @@ void CreatureEntity::notify_self(std::string_view message) const
     }
 }
 
-void CreatureEntity::notify_self(std::string_view message, const char *others_format) const
+void CreatureEntity::notify_self(std::string_view message, std::string_view others_format) const
 {
     if (this->is_player()) {
         msg_print(message);
@@ -169,7 +184,7 @@ void CreatureEntity::notify_self(std::string_view message, const char *others_fo
     }
 
     const auto monster_name = monster_desc(PlayerType::get_instance(), *this, 0);
-    msg_format(others_format, monster_name.data());
+    msg_print(fmt::format(fmt::runtime(others_format), str_upcase_first(monster_name)));
 }
 
 void CreatureEntity::plus_incident(INCIDENT incidentID, int num)
@@ -927,9 +942,6 @@ void CreatureEntity::make_lore_treasure(int num_item, int num_gold) const
     }
 
     monrace.make_lore_treasure(num_item, num_gold);
-    if (LoreTracker::get_instance().is_tracking(this->r_idx)) {
-        RedrawingFlagsUpdater::get_instance().set_flag(SubWindowRedrawingFlag::MONSTER_LORE);
-    }
 }
 
 bool CreatureEntity::is_valid() const
@@ -1849,15 +1861,15 @@ std::string CreatureEntity::build_looking_description(bool needs_attitude) const
     const auto &apparent_monrace = this->get_apparent_monrace();
 
     const bool show_alliance = this->has_monster_profile() && !this->is_pet() && this->get_alliance_idx() != AllianceType::NONE;
-    const std::string alliance_part = show_alliance ? format("(%s)", alliance_list.at(this->get_alliance_idx())->name.data()) : "";
+    const std::string alliance_part = show_alliance ? fmt::format("({})", alliance_list.at(this->get_alliance_idx())->name) : "";
 
     if ((apparent_monrace.r_tkills > 0) && !this->is_kage()) {
-        constexpr auto fmt = _("レベル%d, %s%s%s%s", "Level %d, %s%s%s%s");
-        return format(fmt, apparent_monrace.level, description.data(), attitude.data(), clone.data(), alliance_part.data());
+        constexpr auto format_str = _("レベル{}, {}{}{}{}", "Level {}, {}{}{}{}");
+        return fmt::format(format_str, apparent_monrace.level, description, attitude, clone, alliance_part);
     }
 
-    constexpr auto fmt = _("レベル???, %s%s%s%s", "Level ???, %s%s%s%s");
-    return format(fmt, description.data(), attitude.data(), clone.data(), alliance_part.data());
+    constexpr auto format_str = _("レベル???, {}{}{}{}", "Level ???, {}{}{}{}");
+    return fmt::format(format_str, description, attitude, clone, alliance_part);
 }
 
 std::string CreatureEntity::build_damage_description() const
@@ -1934,8 +1946,8 @@ std::string CreatureEntity::decrease_ability_random()
         this->stat_cur[k] = 30;
     }
 
-    RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
-    return format(_("あなたは以前ほど%sなくなってしまった...。", "You're not as %s as you used to be..."), act.data());
+    DeferredUpdateRequests::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
+    return fmt::format(_("あなたは以前ほど{}なくなってしまった...。", "You're not as {} as you used to be..."), act);
 }
 
 std::string CreatureEntity::decrease_ability_all()
@@ -1947,7 +1959,7 @@ std::string CreatureEntity::decrease_ability_all()
         }
     }
 
-    RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
+    DeferredUpdateRequests::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
     return _("あなたは以前ほど力強くなくなってしまった...。", "You're not as powerful as you used to be...");
 }
 

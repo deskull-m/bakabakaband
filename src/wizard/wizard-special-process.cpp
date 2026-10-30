@@ -23,6 +23,7 @@
 #include "floor/floor-object.h"
 #include "floor/object-allocator.h"
 #include "game-option/birth-options.h"
+#include "game-option/cheat-types.h"
 #include "game-option/option-types-table.h"
 #include "game-option/play-record-options.h"
 #include "game-option/special-options.h"
@@ -47,6 +48,7 @@
 #include "player-info/race-types.h"
 #include "player-info/self-info.h"
 #include "player-status/player-energy.h"
+#include "player/attack-defense-types.h"
 #include "player/digestion-processor.h"
 #include "player/player-realm.h"
 #include "player/player-skill.h"
@@ -56,10 +58,12 @@
 #include "player/race-info-table.h"
 #include "spell-kind/spells-world.h"
 #include "spell/spells-status.h"
+#include "status/action-setter.h"
 #include "status/bad-status-setter.h"
 #include "system/artifact-type-definition.h"
 #include "system/artifact/artifact-record.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/dungeon/dungeon-list.h"
 #include "system/dungeon/quest-definition.h"
@@ -69,7 +73,6 @@
 #include "system/grid-type-definition.h"
 #include "system/inner-game-data.h"
 #include "system/item-entity.h"
-#include "system/redrawing-flags-updater.h"
 #include "system/terrain/terrain-definition.h"
 #include "system/terrain/terrain-list.h"
 #include "target/grid-selector.h"
@@ -79,12 +82,14 @@
 #include "util/candidate-selector.h"
 #include "util/dice.h"
 #include "util/int-char-converter.h"
+#include "util/string-processor.h"
 #include "view/display-messages.h"
 #include "wizard/spoiler-table.h"
 #include "wizard/tval-descriptions-table.h"
 #include "wizard/wizard-messages.h"
 #include "world/world.h"
 #include <algorithm>
+#include <fmt/format.h>
 #include <fstream>
 #include <span>
 #include <sstream>
@@ -127,7 +132,7 @@ static tl::optional<short> wiz_select_sval(const tval_desc &td)
         bi_ids.push_back(bi_id);
     }
 
-    const auto prompt = format(_("%s群の具体的なアイテムを選んで下さい", "What Kind of %s? "), td.desc);
+    const auto prompt = fmt::format(_("{}群の具体的なアイテムを選んで下さい", "What Kind of {}? "), td.desc);
 
     CandidateSelector cs(prompt, 15);
     const auto choice = cs.select(bi_ids,
@@ -426,7 +431,7 @@ void wiz_create_feature(CreatureEntity &creature)
 
     note_spot(creature, *pos);
     lite_spot(creature, *pos);
-    RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::FLOW);
+    DeferredUpdateRequests::get_instance().set_flag(StatusRecalculatingFlag::FLOW);
 }
 
 /*!
@@ -486,7 +491,7 @@ void wiz_jump_to_dungeon(CreatureEntity &creature)
         return;
     }
 
-    msg_format("You jump to dungeon level %d.", *level);
+    msg_print("You jump to dungeon level {}.", *level);
     if (autosave_l) {
         do_cmd_save_game(creature, true);
     }
@@ -512,22 +517,15 @@ void wiz_learn_items_all(CreatureEntity &creature)
 
 static void change_birth_flags()
 {
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    static constexpr auto flags_srf = {
-        StatusRecalculatingFlag::BONUS,
-        StatusRecalculatingFlag::HP,
-        StatusRecalculatingFlag::MP,
-        StatusRecalculatingFlag::SPELLS,
-    };
-    rfu.set_flag(SubWindowRedrawingFlag::PLAYER);
-    rfu.set_flags(flags_srf);
+    auto &dur = DeferredUpdateRequests::get_instance();
+    dur.set_flag(SubWindowRedrawingFlag::PLAYER);
+    dur.request_player_status_recalculation();
     static constexpr auto flags_mwrf = {
         MainWindowRedrawingFlag::BASIC,
-        MainWindowRedrawingFlag::HP,
-        MainWindowRedrawingFlag::MP,
         MainWindowRedrawingFlag::ABILITY_SCORE,
     };
-    rfu.set_flags(flags_mwrf);
+    dur.set_flags(flags_mwrf);
+    dur.request_hp_mp_redrawing();
 }
 
 static tl::optional<ElementRealmType> wiz_select_element_realm()
@@ -554,7 +552,10 @@ static tl::optional<RealmType> wiz_select_realm(const RealmChoices &choices, con
     return (choice != candidates.end()) ? tl::make_optional(*choice) : tl::nullopt;
 }
 
-static tl::optional<std::tuple<RealmType, RealmType, ElementRealmType>> wiz_select_realms(PlayerClassType pclass)
+//! デバッグコマンドで選んだ領域 (第 1 領域・第 2 領域・元素の領域)
+using WizChosenRealms = std::tuple<RealmType, RealmType, ElementRealmType>;
+
+static tl::optional<WizChosenRealms> wiz_select_realms(PlayerClassType pclass)
 {
     if (pclass == PlayerClassType::ELEMENTALIST) {
         const auto realm = wiz_select_element_realm();
@@ -608,8 +609,37 @@ void wiz_reset_race(CreatureEntity &creature)
 }
 
 /*!
+ * @brief 選んだ領域をプレイヤーに設定し、呪文の習得状況を初期化する
+ * @param creature クリーチャーへの参照
+ * @param chosen_realms 選んだ領域
+ * @param should_init_specific_data 職業固有のデータを作り直すならtrue
+ */
+static void wiz_apply_realms(CreatureEntity &creature, const WizChosenRealms &chosen_realms, bool should_init_specific_data)
+{
+    PlayerRealm pr(creature);
+    pr.reset();
+    const auto &[realm1, realm2, element_realm] = chosen_realms;
+    if (realm1 != RealmType::NONE) {
+        pr.set(realm1, realm2);
+    }
+    creature.set_element_realm(element_realm);
+
+    // 職業固有のデータは領域によって変わる (呪術のハイ=メイジ) ので、領域を決めた後に作り直す
+    if (should_init_specific_data) {
+        CreatureClass(creature).init_specific_data();
+    }
+
+    PlayerSpellStatus pss(creature);
+    pss.realm1().initialize();
+    pss.realm2().initialize();
+    creature.set_learned_spells(0);
+    change_birth_flags();
+    handle_stuff(creature);
+}
+
+/*!
  * @brief プレイヤーの職業を変更する
- * @todo 魔法領域の再選択などがまだ不完全、要実装。
+ * @todo 呪文の熟練度 (spell_exp) は前の職業・領域のものが残る
  */
 void wiz_reset_class(CreatureEntity &creature)
 {
@@ -627,24 +657,13 @@ void wiz_reset_class(CreatureEntity &creature)
         return;
     }
 
+    // 歌・呪術の詠唱・構えなどは、今の職業固有のデータで止めてから職業を変える
+    set_action(creature, ACTION_NONE);
     creature.pclass = *chosen_class;
     cp_ptr = &class_info.at(creature.pclass);
     creature.pclass_ref = &class_info.at(creature.pclass);
     mp_ptr = &class_magics_info[enum2i(creature.pclass)];
-    CreatureClass(creature).init_specific_data();
-    PlayerRealm pr(creature);
-    pr.reset();
-    const auto &[realm1, realm2, element_realm] = *chosen_realms;
-    if (realm1 != RealmType::NONE) {
-        pr.set(realm1, realm2);
-    }
-    creature.set_element_realm(element_realm);
-    PlayerSpellStatus pss(creature);
-    pss.realm1().initialize();
-    pss.realm2().initialize();
-    creature.set_learned_spells(0);
-    change_birth_flags();
-    handle_stuff(creature);
+    wiz_apply_realms(creature, *chosen_realms, true);
 }
 
 /*!
@@ -658,19 +677,15 @@ void wiz_reset_realms(CreatureEntity &creature)
         return;
     }
 
-    PlayerRealm pr(creature);
-    pr.reset();
-    const auto &[realm1, realm2, element_realm] = *chosen_realms;
-    if (realm1 != RealmType::NONE) {
-        pr.set(realm1, realm2);
+    // 呪術を使う・使っていたハイ=メイジだけ職業固有のデータを作り直すので、そのときは先に今のデータで詠唱などを止める
+    const auto &[new_realm1, new_realm2, new_element_realm] = *chosen_realms;
+    const auto is_hex_involved = PlayerRealm(creature).is_realm_hex() || (new_realm1 == RealmType::HEX);
+    const auto should_init_specific_data = CreatureClass(creature).equals(PlayerClassType::HIGH_MAGE) && is_hex_involved;
+    if (should_init_specific_data) {
+        set_action(creature, ACTION_NONE);
     }
-    creature.set_element_realm(element_realm);
-    PlayerSpellStatus pss(creature);
-    pss.realm1().initialize();
-    pss.realm2().initialize();
-    creature.set_learned_spells(0);
-    change_birth_flags();
-    handle_stuff(creature);
+
+    wiz_apply_realms(creature, *chosen_realms, should_init_specific_data);
 }
 
 /*!
@@ -682,7 +697,7 @@ void wiz_dump_options()
     const auto &filename = path.string();
     std::ofstream ofs(path);
     if (ofs.bad()) {
-        msg_format(_("ファイル %s を開けませんでした。", "Failed to open file %s."), filename.data());
+        msg_print(_("ファイル {} を開けませんでした。", "Failed to open file {}."), filename);
         msg_erase();
         return;
     }
@@ -705,16 +720,16 @@ void wiz_dump_options()
             if (exist[i][j]) {
                 const auto &option = option_info[exist[i][j] - 1];
                 const auto page = option.page ? enum2i(*option.page) : 255; //!< @details かつてnulloptではなかった頃の値.
-                ofs << format("  %d -  %02d (%4d) %s\n", i, j, page, option.text.data());
+                ofs << fmt::format("  {} -  {:02} ({:4}) {}\n", i, j, page, option.text);
             } else {
-                ofs << format("  %d -  %02d\n", i, j);
+                ofs << fmt::format("  {} -  {:02}\n", i, j);
             }
         }
 
         ofs << '\n';
     }
 
-    msg_format(_("オプションbit使用状況をファイル %s に書き出しました。", "Option bits usage dump saved to file %s."), filename.data());
+    msg_print(_("オプションbit使用状況をファイル {} に書き出しました。", "Option bits usage dump saved to file {}."), filename);
 }
 
 /*!
@@ -731,7 +746,7 @@ void wiz_dump_current_floor(CreatureEntity &creature)
     const auto &filename = path.string();
     std::ofstream ofs(path);
     if (ofs.bad()) {
-        msg_format(_("ファイル %s を開けませんでした。", "Failed to open file %s."), filename.data());
+        msg_print(_("ファイル {} を開けませんでした。", "Failed to open file {}."), filename);
         msg_erase();
         return;
     }
@@ -739,14 +754,14 @@ void wiz_dump_current_floor(CreatureEntity &creature)
     const auto height = floor.height;
     const auto width = floor.width;
     ofs << "# Current floor dump\n";
-    ofs << format("# Dungeon Level: %d\n", floor.dun_level);
-    ofs << format("# Size (rows x cols): %d x %d\n", height, width);
-    ofs << "# Player position (y, x): " << format("%d, %d\n", creature.y, creature.x);
+    ofs << fmt::format("# Dungeon Level: {}\n", floor.dun_level);
+    ofs << fmt::format("# Size (rows x cols): {} x {}\n", height, width);
+    ofs << "# Player position (y, x): " << fmt::format("{}, {}\n", creature.y, creature.x);
     ofs << "#\n";
     ofs << "# Vault 定義と同じ N:/X:/D: 形式で出力している。各文字は地形の標準表示文字。\n";
     ofs << "\n";
     ofs << "N:0:Floor Dump\n";
-    ofs << format("X:0:0:%d:%d\n", height, width);
+    ofs << fmt::format("X:0:0:{}:{}\n", height, width);
 
     for (auto y = 0; y < height; y++) {
         std::string row;
@@ -761,12 +776,12 @@ void wiz_dump_current_floor(CreatureEntity &creature)
     }
 
     if (ofs.bad()) {
-        msg_format(_("ファイル %s への書き込みに失敗しました。", "Failed to write to file %s."), filename.data());
+        msg_print(_("ファイル {} への書き込みに失敗しました。", "Failed to write to file {}."), filename);
         msg_erase();
         return;
     }
 
-    msg_format(_("現在のフロアをファイル %s に書き出しました。", "Current floor dump saved to file %s."), filename.data());
+    msg_print(_("現在のフロアをファイル {} に書き出しました。", "Current floor dump saved to file {}."), filename);
 }
 
 /*!
@@ -848,9 +863,9 @@ void wiz_level_up_target_monster(CreatureEntity &creature)
     const auto old_maxhp = monster.get_max_maxhp();
     monster.grow_hp_table_to_level(*input_level);
     update_monster(creature, grid.m_idx, false);
-    RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::HEALTH);
-    msg_format(_("%s^をレベル%dに成長させた (最大HP %d→%d)。", "%s^ grew to level %d (max HP %d -> %d)."),
-        m_name.data(), monster.get_level(), old_maxhp, monster.get_max_maxhp());
+    DeferredUpdateRequests::get_instance().set_flag(MainWindowRedrawingFlag::HEALTH);
+    msg_print(_("{}をレベル{}に成長させた (最大HP {}→{})。", "{} grew to level {} (max HP {} -> {})."),
+        str_upcase_first(m_name), monster.get_level(), old_maxhp, monster.get_max_maxhp());
 }
 
 /* @brief 死を欺く仕様(馬鹿馬鹿蛮怒独自実装) */
@@ -871,8 +886,8 @@ void cheat_death(CreatureEntity &creature, bool no_penalty)
             creature.divide_au(2);
 
             msg_print(_("『ぬわああああん、疲れたなもおおおおん！』", "\"Aaaaaah! I'm hellish tireeeed!\""));
-            msg_format(_("あなたは死んだ罰として＠人墓場でイェンダーの魔法使い共に%d年間奴隷労働を強いられた！",
-                           "As a death penalry, you were forced to work like a slave by the wizards of Yendor at the '@' Stigmatic Graveyard for %d years!"),
+            msg_print(_("あなたは死んだ罰として＠人墓場でイェンダーの魔法使い共に{}年間奴隷労働を強いられた！",
+                          "As a death penalry, you were forced to work like a slave by the wizards of Yendor at the '@' Stigmatic Graveyard for {} years!"),
                 blank_years);
             break;
         }
@@ -882,8 +897,8 @@ void cheat_death(CreatureEntity &creature, bool no_penalty)
             creature.divide_prestige(2);
             creature.add_age(static_cast<int16_t>(blank_years));
             msg_print(_("『猿先生何も考えてないと思うよ』", "\"I think that Mr.Sawatari thinks nothing.\""));
-            msg_format(_("あなたは連載%d年の間猿空間に迷い込んでいた！ついでに死んだ設定も忘れ去られていた！",
-                           "You have been lost in the *S*A*R*U* space for %d years! By the way, the dead setting was also forgotten!"),
+            msg_print(_("あなたは連載{}年の間猿空間に迷い込んでいた！ついでに死んだ設定も忘れ去られていた！",
+                          "You have been lost in the *S*A*R*U* space for {} years! By the way, the dead setting was also forgotten!"),
                 blank_years);
             break;
         }
@@ -894,7 +909,7 @@ void cheat_death(CreatureEntity &creature, bool no_penalty)
             break;
 
         case 3:
-            msg_format(_("王大人『%s 死亡確認』", "\"Lord Wang confirmed that %s is dead.\""), creature.name.data());
+            msg_print(_("王大人『{} 死亡確認』", "\"Lord Wang confirmed that {} is dead.\""), creature.name);
             break;
 
         default:

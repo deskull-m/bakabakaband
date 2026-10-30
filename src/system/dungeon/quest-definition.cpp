@@ -212,7 +212,7 @@ void QuestList::load_base_legend()
         }
 
         QuestLegendCell cell;
-        if (const auto err = parse_quest_legend_cell(cell_data, cell); err != PARSE_ERROR_NONE) {
+        if (const auto err = parse_quest_legend_cell(cell_data, cell); err != ParseErrorType::NONE) {
             constexpr auto fmt = _("ベース凡例 '{}' にエラーがあります ({}): コード {}", "Error in base legend '{}' ({}): code {}");
             THROW_EXCEPTION(std::runtime_error, fmt::format(fmt, symbol, path.string(), static_cast<int>(err)));
         }
@@ -287,7 +287,7 @@ void QuestList::load_json_quests()
 
         auto &quest = this->quests[quest_id];
         auto &fixed_map = fixed_maps.emplace(quest_id);
-        if (const auto err = QuestReader(quest_data, quest, fixed_map).read(); err != PARSE_ERROR_NONE) {
+        if (const auto err = QuestReader(quest_data, quest, fixed_map).read(); err != ParseErrorType::NONE) {
             constexpr auto fmt = _("クエストファイルにエラーがあります ({}): コード {}", "Error in quest file ({}): code {}");
             THROW_EXCEPTION(std::runtime_error, fmt::format(fmt, file.string(), static_cast<int>(err)));
         }

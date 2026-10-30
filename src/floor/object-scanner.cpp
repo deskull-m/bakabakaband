@@ -149,7 +149,7 @@ COMMAND_CODE show_floor_items(CreatureEntity &creature, int target_item, POSITIO
         c_put_str(out_color[j], descriptions[j], j + 1, col + 3);
         if (show_weights && (item.bi_key.tval() != ItemKindType::GOLD)) {
             int wgt = item.weight * item.number;
-            const auto weight = format(_("%3d.%1d kg", "%3d.%1d lb"), _(lb_to_kg_integer(wgt), wgt / 10), _(lb_to_kg_fraction(wgt), wgt % 10));
+            const auto weight = fmt::format(_("{:3}.{} kg", "{:3}.{} lb"), _(lb_to_kg_integer(wgt), wgt / 10), _(lb_to_kg_fraction(wgt), wgt % 10));
             prt(weight, j + 1, wid - 9);
         }
     }

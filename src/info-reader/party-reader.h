@@ -5,4 +5,4 @@
 #include <nlohmann/json_fwd.hpp>
 #include <string_view>
 
-errr parse_creature_parties_info(nlohmann::json &party_data);
+ParseErrorType parse_creature_parties_info(nlohmann::json &party_data, int &previous_id);

@@ -117,7 +117,7 @@ static tl::optional<std::string> exe_blue_teleport_back(CreatureEntity &creature
             monrace.r_resistance_flags.set(MonsterResistanceType::RESIST_TELEPORT);
         }
 
-        msg_format(_("%sには効果がなかった！", "%s is unaffected!"), m_name.data());
+        msg_print(_("{}には効果がなかった！", "{} is unaffected!"), m_name);
         return tl::nullopt;
     }
 
@@ -129,7 +129,7 @@ static tl::optional<std::string> exe_blue_teleport_back(CreatureEntity &creature
         monrace.r_resistance_flags.set(MonsterResistanceType::RESIST_TELEPORT);
     }
 
-    msg_format(_("%sには耐性がある！", "%s resists!"), m_name.data());
+    msg_print(_("{}には耐性がある！", "{} resists!"), m_name);
     return tl::nullopt;
 }
 
@@ -145,7 +145,7 @@ static bool cast_blue_teleport_back(CreatureEntity &creature)
         return true;
     }
 
-    msg_format(_("%sを引き戻した。", "You command %s to return."), m_name->data());
+    msg_print(_("{}を引き戻した。", "You command {} to return."), *m_name);
     teleport_monster_to(
         creature, creature.get_floor()->get_grid(*pos).m_idx, creature.y, creature.x, 100, TELEPORT_PASSIVE);
     return true;

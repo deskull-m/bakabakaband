@@ -7,9 +7,9 @@
 #include "system/inner-game-data.h"
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
-#include "term/z-form.h"
 #include "util/int-char-converter.h"
 #include "util/string-processor.h"
+#include <fmt/format.h>
 #include <sstream>
 #include <vector>
 
@@ -106,11 +106,11 @@ static std::string display_class_stat(CreatureEntity &creature, int cs, int *os,
         c_put_str(TERM_L_BLUE, class_ref.title, 3, 40);
         put_str(_("の職業修正", ": Class modification"), 3, 40 + class_ref.title->length());
         put_str(_("腕力 知能 賢さ 器用 耐久 魅力 経験 ", "Str  Int  Wis  Dex  Con  Chr   EXP "), 4, 40);
-        const auto stats = format("%+3d  %+3d  %+3d  %+3d  %+3d  %+3d %+4d%% ", class_ref.c_adj[0], class_ref.c_adj[1], class_ref.c_adj[2], class_ref.c_adj[3], class_ref.c_adj[4], class_ref.c_adj[5], class_ref.c_exp);
+        const auto stats = fmt::format("{:+3}  {:+3}  {:+3}  {:+3}  {:+3}  {:+3} {:+4}% ", class_ref.c_adj[0], class_ref.c_adj[1], class_ref.c_adj[2], class_ref.c_adj[3], class_ref.c_adj[4], class_ref.c_adj[5], class_ref.c_exp);
         c_put_str(TERM_L_BLUE, stats, 5, 40);
 
         put_str("HD", 6, 40);
-        const auto hd = format("%+3d", class_ref.c_mhp);
+        const auto hd = fmt::format("{:+3}", class_ref.c_mhp);
         c_put_str(TERM_L_BLUE, hd, 6, 42);
 
         put_str(_("隠密", "Stealth"), 6, 47);
@@ -118,7 +118,7 @@ static std::string display_class_stat(CreatureEntity &creature, int cs, int *os,
         if (i2enum<PlayerClassType>(playables[cs]) == PlayerClassType::BERSERKER) {
             stealth = " xx";
         } else {
-            stealth = format(" %+2d", class_ref.c_stl);
+            stealth = fmt::format(" {:+2}", class_ref.c_stl);
         }
         c_put_str(TERM_L_BLUE, stealth, 6, _(51, 54));
     }
@@ -173,7 +173,7 @@ static bool select_class(CreatureEntity &creature, concptr sym, int *k, const st
             break;
         }
 
-        const auto buf = format(_("職業を選んで下さい (%c-%c) ('='初期オプション設定, 灰色:勝利済): ", "Choose a class (%c-%c) ('=' for options, Gray is winner): "), sym[0], sym[count - 1]);
+        const auto buf = fmt::format(_("職業を選んで下さい ({:c}-{:c}) ('='初期オプション設定, 灰色:勝利済): ", "Choose a class ({:c}-{:c}) ('=' for options, Gray is winner): "), sym[0], sym[count - 1]);
 
         put_str(buf, 10, 6);
         char c = inkey();

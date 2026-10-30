@@ -27,6 +27,7 @@
 #include "util/enum-converter.h"
 #include <algorithm>
 #include <array>
+#include <fmt/format.h>
 #include <string>
 
 /*!
@@ -55,7 +56,7 @@ bool screen_object(CreatureEntity &creature, const ItemEntity &item, BIT_FLAGS m
     const auto &baseitem = item.get_baseitem();
     if (baseitem.alliance_idx != AllianceType::NONE) {
         const auto &alliance = alliance_list.at(baseitem.alliance_idx);
-        info[i++] = format(_("製造元: %s", "Manufactured by: %s"), alliance->name.data()).data();
+        info[i++] = fmt::format(_("製造元: {}", "Manufactured by: {}"), alliance->name).data();
     }
 
     if (item.is_equipment()) {
@@ -838,7 +839,7 @@ bool screen_object(CreatureEntity &creature, const ItemEntity &item, BIT_FLAGS m
     if (!is_fake_object && (bi_key == BaseitemKey(ItemKindType::STATUE, SV_PHOTO))) {
         const auto &monrace = item.get_monrace();
         const auto name_length = monrace.name->length();
-        prt(format("%s: '", monrace.name.data()), 1, 15);
+        prt(fmt::format("{}: '", monrace.name), 1, 15);
         term_queue_bigchar(18 + name_length, 1, { monrace.symbol_config, {} });
         prt("'", 1, (use_bigtile ? 20 : 19) + name_length);
     } else {

@@ -8,7 +8,6 @@
 #include "io/report.h"
 #include "core/asking-player.h"
 #include "core/visuals-reseter.h"
-#include "core/window-redrawer.h"
 #include "game-option/special-options.h"
 #include "io-dump/character-dump.h"
 #include "io/input-context.h"
@@ -26,7 +25,6 @@
 #include "system/enums/dungeon/dungeon-id.h"
 #include "system/floor/floor-info.h"
 #include "system/inner-game-data.h"
-#include "system/redrawing-flags-updater.h"
 #include "system/system-variables.h"
 #include "term/gameterm.h"
 #include "term/screen-processor.h"
@@ -81,9 +79,9 @@ static errr make_dump(CreatureEntity &creature, std::ostream &stream)
     fff = angband_fopen_temp(file_name, 1024);
     if (!fff) {
 #ifdef JP
-        msg_format("一時ファイル %s を作成できませんでした。", file_name);
+        msg_print("一時ファイル {} を作成できませんでした。", file_name);
 #else
-        msg_format("Failed to create temporary file %s.", file_name);
+        msg_print("Failed to create temporary file {}.", file_name);
 #endif
         msg_erase();
         return 1;
@@ -121,18 +119,12 @@ std::string make_screen_dump(CreatureEntity &creature)
     const auto &[wid, hgt] = term_get_size();
     std::stringstream screen_ss;
 
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    bool old_use_graphics = use_graphics;
-    if (old_use_graphics) {
+    if (use_graphics) {
         /* Clear -more- prompt first */
         msg_erase();
-
-        use_graphics = false;
-        reset_visuals(creature);
-
-        rfu.request_whole_main_window_redrawing();
-        redraw_stuff(creature);
     }
+
+    const GraphicsSuspender graphics_suspender(creature);
 
     screen_ss << html_head;
 
@@ -146,7 +138,7 @@ std::string make_screen_dump(CreatureEntity &creature)
         /* Dump each row */
         uint8_t old_a = 0;
         DisplaySymbol ds(0, ' ');
-        for (int x = 0; x < wid - 1; x++) {
+        for (int x = 0; x < wid; x++) {
             int rv, gv, bv;
             concptr cc = nullptr;
             ds = term_what(x, y, ds);
@@ -182,7 +174,7 @@ std::string make_screen_dump(CreatureEntity &creature)
                 rv = angband_color_table[ds.color][1];
                 gv = angband_color_table[ds.color][2];
                 bv = angband_color_table[ds.color][3];
-                screen_ss << format("%s<font color=\"#%02x%02x%02x\">", ((y == 0 && x == 0) ? "" : "</font>"), rv, gv, bv);
+                screen_ss << fmt::format("{}<font color=\"#{:02x}{:02x}{:02x}\">", ((y == 0 && x == 0) ? "" : "</font>"), rv, gv, bv);
                 old_a = ds.color;
             }
 
@@ -198,21 +190,12 @@ std::string make_screen_dump(CreatureEntity &creature)
 
     screen_ss << html_foot;
 
-    std::string ret;
     if (const auto screen_dump_size = screen_ss.tellp();
         (0 <= screen_dump_size) && (screen_dump_size < SCREEN_BUF_MAX_SIZE)) {
-        ret = screen_ss.str();
+        return screen_ss.str();
     }
 
-    if (!old_use_graphics) {
-        return ret;
-    }
-
-    use_graphics = true;
-    reset_visuals(creature);
-    rfu.request_whole_main_window_redrawing();
-    redraw_stuff(creature);
-    return ret;
+    return {};
 }
 
 /*!

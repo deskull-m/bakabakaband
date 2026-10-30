@@ -26,16 +26,17 @@
 #include "monster/monster-update.h"
 #include "player/player-status-flags.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/enums/grid-flow.h"
 #include "system/enums/terrain/terrain-tag.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
-#include "system/redrawing-flags-updater.h"
 #include "system/terrain/terrain-definition.h"
 #include "system/terrain/terrain-list.h"
 #include "term/gameterm.h"
+#include "term/z-rand.h"
 #include "util/enum-converter.h"
 #include "view/display-map.h"
 #include "view/display-messages.h"
@@ -119,7 +120,7 @@ void set_terrain_id_to_grid(CreatureEntity &creature, const Pos2D &pos, short te
             StatusRecalculatingFlag::MONSTER_LITE,
             StatusRecalculatingFlag::MONSTER_STATUSES,
         };
-        RedrawingFlagsUpdater::get_instance().set_flags(flags);
+        DeferredUpdateRequests::get_instance().set_flags(flags);
     }
 
     if (terrain.flags.has_not(TerrainCharacteristics::GLOW) || dungeon.flags.has(DungeonFeatureType::DARKNESS)) {
@@ -318,7 +319,10 @@ void print_rel(CreatureEntity &creature, const DisplaySymbol &symbol, const Pos2
 
 void print_bolt_pict(CreatureEntity &creature, const Pos2D &pos_src, const Pos2D &pos_dst, AttributeType typ)
 {
-    const auto &symbol = bolt_pict(pos_src, pos_dst, typ);
+    // 描画の回数は環境によって変わるため、ゲームのターンと座標から作った乱数生成器で色を選ぶ
+    const auto turn = AngbandWorld::get_instance().game_turn;
+    auto rng = make_keyed_rng(KeyedRngPurpose::BOLT_COLOR, { static_cast<int>(turn), pos_src.y, pos_src.x, pos_dst.y, pos_dst.x, enum2i(typ) });
+    const auto &symbol = bolt_pict(rng, pos_src, pos_dst, typ);
     print_rel(creature, symbol, pos_dst);
 }
 
@@ -396,7 +400,7 @@ void note_spot(CreatureEntity &creature, const Pos2D &pos)
         // 見つけていたアイテムでも、置かれたアイテムが重なって数が変わったときなどに描き直す。
         // 走っている間は描き直すと重いので、止まったとき (stop_running()) に要求する
         if (!creature.get_running()) {
-            RedrawingFlagsUpdater::get_instance().request_floor_item_lists_redrawing();
+            DeferredUpdateRequests::get_instance().request_floor_item_lists_redrawing();
         }
     }
 
@@ -461,7 +465,7 @@ void lite_spot(CreatureEntity &creature, const Pos2D &pos)
     if (!panel_contains(pos)) {
         // メイン画面の外のグリッドは表示が変わったか分からないので、自分の周囲を描き直す
         map_info_cache.invalidate(pos);
-        RedrawingFlagsUpdater::get_instance().set_flag(SubWindowRedrawingFlag::DUNGEON);
+        DeferredUpdateRequests::get_instance().set_flag(SubWindowRedrawingFlag::DUNGEON);
         return;
     }
 
@@ -473,7 +477,7 @@ void lite_spot(CreatureEntity &creature, const Pos2D &pos)
     // 自分の周囲は、メイン画面の表示が変わったときと、覚えていた結果 (表示しているかもしれない) と違うときに描き直す
     const auto is_main_window_changed = term_queue_bigchar(panel_col_of(pos.x), pos.y - panel_row_prt, symbol_pair);
     if (is_main_window_changed || is_cache_changed) {
-        RedrawingFlagsUpdater::get_instance().set_flag(SubWindowRedrawingFlag::DUNGEON);
+        DeferredUpdateRequests::get_instance().set_flag(SubWindowRedrawingFlag::DUNGEON);
     }
 }
 

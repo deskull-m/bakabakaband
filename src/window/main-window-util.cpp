@@ -1,7 +1,6 @@
 #include "window/main-window-util.h"
 #include "flavor/flavor-describer.h"
 #include "flavor/object-flavor-types.h"
-#include "floor/geometry.h"
 #include "game-option/special-options.h"
 #include "grid/grid.h"
 #include "player/player-status.h"
@@ -18,6 +17,7 @@
 #include "view/display-symbol.h"
 #include "view/map-info-cache.h"
 #include "window/overview-map-cache.h"
+#include "window/shrunk-overview-map.h"
 #include "world/world.h"
 #include <string>
 #include <string_view>
@@ -163,10 +163,6 @@ static void display_shortened_item_name(CreatureEntity &creature, const ItemEnti
  */
 void display_map(CreatureEntity &creature, int *cy, int *cx)
 {
-    int i, j, x, y;
-
-    byte tp;
-
     auto border_width = use_bigtile ? 2 : 1; //!< @note 枠線幅
     auto [wid, hgt] = term_get_size();
     hgt -= 2;
@@ -184,106 +180,49 @@ void display_map(CreatureEntity &creature, int *cy, int *cx)
     }
 
     const auto &floor = *creature.get_floor();
-    const auto yrat = (floor.height + hgt - 1) / hgt;
-    const auto xrat = (floor.width + wid - 1) / wid;
-
-    using std::vector;
-    vector<vector<TERM_COLOR>> ma(hgt + 2, vector<TERM_COLOR>(wid + 2, TERM_WHITE));
-    vector<vector<char>> mc(hgt + 2, vector<char>(wid + 2, ' '));
-    vector<vector<byte>> mp(hgt + 2, vector<byte>(wid + 2, 0));
-    vector<vector<int>> match_autopick_yx(hgt + 2, vector<int>(wid + 2, -1));
-    vector<vector<const ItemEntity *>> object_autopick_yx(hgt + 2, vector<const ItemEntity *>(wid + 2, nullptr));
-
-    vector<vector<TERM_COLOR>> bigma(floor.height + 2, vector<TERM_COLOR>(floor.width + 2, TERM_WHITE));
-    vector<vector<char>> bigmc(floor.height + 2, vector<char>(floor.width + 2, ' '));
-    vector<vector<byte>> bigmp(floor.height + 2, vector<byte>(floor.width + 2, 0));
-
-    for (i = 0; i < floor.width; ++i) {
-        for (j = 0; j < floor.height; ++j) {
-            x = i / xrat + 1;
-            y = j / yrat + 1;
-
-            match_autopick = -1;
-            autopick_obj = nullptr;
-            feat_priority = -1;
-            const auto symbol_pair = map_info(creature, { j, i });
-            tp = (byte)feat_priority;
-            if (match_autopick != -1 && (match_autopick_yx[y][x] == -1 || match_autopick_yx[y][x] > match_autopick)) {
-                match_autopick_yx[y][x] = match_autopick;
-                object_autopick_yx[y][x] = autopick_obj;
-                tp = 0x7f;
-            }
-
-            bigma[j + 1][i + 1] = symbol_pair.symbol_foreground.color;
-            bigmc[j + 1][i + 1] = symbol_pair.symbol_foreground.character;
-            bigmp[j + 1][i + 1] = tp;
-        }
-    }
-
-    for (j = 0; j < floor.height; ++j) {
-        for (i = 0; i < floor.width; ++i) {
-            x = i / xrat + 1;
-            y = j / yrat + 1;
-
-            DisplaySymbol symbol_foreground(bigma[j + 1][i + 1], bigmc[j + 1][i + 1]);
-            tp = bigmp[j + 1][i + 1];
-            if (mp[y][x] == tp) {
-                int cnt = 0;
-
-                for (const auto &d : Direction::directions_8()) {
-                    const auto vec = d.vec();
-                    if ((symbol_foreground.character == bigmc[j + 1 + vec.y][i + 1 + vec.x]) && (symbol_foreground.color == bigma[j + 1 + vec.y][i + 1 + vec.x])) {
-                        cnt++;
-                    }
-                }
-                if (cnt <= 4) {
-                    tp++;
-                }
-            }
-
-            if (mp[y][x] < tp) {
-                ma[y][x] = symbol_foreground.color;
-                mc[y][x] = symbol_foreground.character;
-                mp[y][x] = tp;
-            }
-        }
-    }
-
-    x = wid + 1;
-    y = hgt + 1;
-
-    mc[0][0] = mc[0][x] = mc[y][0] = mc[y][x] = '+';
-    for (x = 1; x <= wid; x++) {
-        mc[0][x] = mc[y][x] = '-';
-    }
-
-    for (y = 1; y <= hgt; y++) {
-        mc[y][0] = mc[y][x] = '|';
-    }
+    auto &overview_map_cache = OverviewMapCache::get_instance();
+    overview_map_cache.update(creature);
+    auto &shrunk_map = get_shrunk_overview_map(floor.height, floor.width, hgt, wid);
+    shrunk_map.update(overview_map_cache);
+    const auto yrat = shrunk_map.get_yrat();
+    const auto xrat = shrunk_map.get_xrat();
 
     const auto monochrome_color = get_monochrome_display_color(creature);
-    for (y = 0; y < hgt + 2; ++y) {
+    for (auto y = 0; y < hgt + 2; ++y) {
         term_gotoxy(COL_MAP, y);
-        for (x = 0; x < wid + 2; ++x) {
-            DisplaySymbol symbol_foreground(ma[y][x], mc[y][x]);
-            symbol_foreground.color = monochrome_color.value_or(symbol_foreground.color);
+        for (auto x = 0; x < wid + 2; ++x) {
+            // 縮小マップの周りに枠を描く
+            const auto is_top_or_bottom = (y == 0) || (y == hgt + 1);
+            const auto is_left_or_right = (x == 0) || (x == wid + 1);
+            DisplaySymbol symbol_foreground;
+            if (is_top_or_bottom && is_left_or_right) {
+                symbol_foreground = { TERM_WHITE, '+' };
+            } else if (is_top_or_bottom) {
+                symbol_foreground = { TERM_WHITE, '-' };
+            } else if (is_left_or_right) {
+                symbol_foreground = { TERM_WHITE, '|' };
+            } else {
+                symbol_foreground = shrunk_map.get_cell(y - 1, x - 1).symbol;
+            }
 
+            symbol_foreground.color = monochrome_color.value_or(symbol_foreground.color);
             term_add_bigch(symbol_foreground);
         }
     }
 
-    for (y = 1; y < hgt + 1; ++y) {
-        match_autopick = -1;
-        for (x = 1; x <= wid; x++) {
-            if (match_autopick_yx[y][x] != -1 && (match_autopick > match_autopick_yx[y][x] || match_autopick == -1)) {
-                match_autopick = match_autopick_yx[y][x];
-                autopick_obj = object_autopick_yx[y][x];
+    for (auto y = 0; y < hgt; ++y) {
+        tl::optional<OverviewMapAutopick> row_autopick;
+        for (auto x = 0; x < wid; x++) {
+            const auto &autopick = shrunk_map.get_autopick(y, x);
+            if (autopick && (!row_autopick || (row_autopick->rule_index > autopick->rule_index))) {
+                row_autopick = autopick;
             }
         }
 
-        term_putstr(0, y, 12, 0, "            ");
-        if (match_autopick != -1) {
-            display_shortened_item_name(creature, *autopick_obj, y);
+        // 枠の分だけ 1 行下に描く
+        term_putstr(0, y + 1, 12, 0, "            ");
+        if (row_autopick) {
+            display_shortened_item_name(creature, *row_autopick->item, y + 1);
         }
     }
 

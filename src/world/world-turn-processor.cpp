@@ -52,6 +52,7 @@
 #include "world/world-collapsion.h"
 #include "world/world-movement-processor.h"
 #include "world/world.h"
+#include <fmt/format.h>
 #include <range/v3/view.hpp>
 
 WorldTurnProcessor::WorldTurnProcessor(CreatureEntity &creature)
@@ -160,12 +161,12 @@ void WorldTurnProcessor::print_time()
     auto day = 0;
     std::tie(day, this->hour, this->min) = AngbandWorld::get_instance().extract_date_time(InnerGameData::get_instance().get_start_race());
     if (day < 1000) {
-        c_put_str(TERM_WHITE, format(_("%2d日目", "Day%3d"), day), row, COL_DAY);
+        c_put_str(TERM_WHITE, fmt::format(_("{:2}日目", "Day{:3}"), day), row, COL_DAY);
     } else {
         c_put_str(TERM_WHITE, _("***日目", "Day***"), row, COL_DAY);
     }
 
-    c_put_str(TERM_WHITE, format("%2d:%02d", this->hour, this->min), row, COL_DAY + 7);
+    c_put_str(TERM_WHITE, fmt::format("{:2}:{:02}", this->hour, this->min), row, COL_DAY + 7);
 #endif // GODOT_RICH_UI
 }
 
@@ -176,7 +177,7 @@ void WorldTurnProcessor::print_world_collapse()
 {
     c_put_str(TERM_WHITE, "             ", ROW_COLLAPSE, COL_COLLAPSE);
     c_put_str(TERM_WHITE,
-        format(_("時壊:%3d.%02d%%", "W.Col:%3d.%02d%%"), wc_ptr->collapse_degree / 1000000, (wc_ptr->collapse_degree / 10000) % 100), ROW_COLLAPSE,
+        fmt::format(_("時壊:{:3}.{:02}%", "W.Col:{:3}.{:02}%"), wc_ptr->collapse_degree / 1000000, (wc_ptr->collapse_degree / 10000) % 100), ROW_COLLAPSE,
         COL_COLLAPSE);
 }
 
@@ -189,9 +190,9 @@ void WorldTurnProcessor::print_cheat_position()
     c_put_str(TERM_WHITE, "             ", ROW_OLD_POS, COL_OLD_POS);
     if (cheat_sight) {
         c_put_str(TERM_WHITE,
-            format("nX:%03d nY:%03d", this->creature.x, this->creature.y), ROW_NOW_POS, COL_NOW_POS);
+            fmt::format("nX:{:03} nY:{:03}", this->creature.x, this->creature.y), ROW_NOW_POS, COL_NOW_POS);
         c_put_str(TERM_WHITE,
-            format("oX:%03d oY:%03d", this->creature.oldpx, this->creature.oldpy), ROW_OLD_POS, COL_OLD_POS);
+            fmt::format("oX:{:03} oY:{:03}", this->creature.oldpx, this->creature.oldpy), ROW_OLD_POS, COL_OLD_POS);
     }
 }
 
@@ -249,14 +250,14 @@ void WorldTurnProcessor::process_monster_arena_winner(int win_m_idx)
 {
     const auto &monster = this->creature.get_floor()->get_monster(static_cast<MONSTER_IDX>(win_m_idx));
     const auto m_name = monster_desc(this->creature, monster, 0);
-    msg_format(_("%sが勝利した！", "%s won!"), m_name.data());
+    msg_print(_("{}が勝利した！", "{} won!"), m_name);
     msg_erase();
 
     auto &melee_arena = MeleeArena::get_instance();
     if (melee_arena.matches_bet_number(win_m_idx - 1)) {
         msg_print(_("おめでとうございます。", "Congratulations."));
         const auto payback = melee_arena.get_payback();
-        msg_format(_("%d＄を受け取った。", "You received %d gold."), payback);
+        msg_print(_("{}＄を受け取った。", "You received {} gold."), payback);
         this->creature.add_au(payback);
     } else {
         msg_print(_("残念でした。", "You lost gold."));

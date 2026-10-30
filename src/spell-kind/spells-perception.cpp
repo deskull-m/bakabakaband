@@ -22,8 +22,8 @@
 #include "perception/identification.h"
 #include "perception/object-perception.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/item-entity.h"
-#include "system/redrawing-flags-updater.h"
 #include "util/bit-flags-calculator.h"
 #include "util/string-processor.h"
 #include "view/display-messages.h"
@@ -70,10 +70,10 @@ bool identify_item(CreatureEntity &creature, ItemEntity *o_ptr)
     o_ptr->mark_as_known();
     o_ptr->marked.set(OmType::TOUCHED);
 
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.set_flag(StatusRecalculatingFlag::BONUS);
-    rfu.request_inventory_arrangement();
-    rfu.set_item_related_sub_window_flags();
+    auto &dur = DeferredUpdateRequests::get_instance();
+    dur.set_flag(StatusRecalculatingFlag::BONUS);
+    dur.request_inventory_arrangement();
+    dur.set_item_related_sub_window_flags();
     record_item_name = known_item_name;
     record_turn = AngbandWorld::get_instance().game_turn;
 
@@ -125,11 +125,11 @@ bool ident_spell(CreatureEntity &creature, bool only_equip)
     auto old_known = identify_item(creature, item.get());
     const auto item_name = describe_flavor(creature, *item, 0);
     if (i_idx >= INVEN_MAIN_HAND) {
-        msg_format(_("%s^: %s(%c)。", "%s^: %s (%c)."), describe_use(creature, i_idx), item_name.data(), index_to_label(i_idx));
+        msg_print(_("{}: {}({:c})。", "{}: {} ({:c})."), str_upcase_first(describe_use(creature, i_idx)), item_name, index_to_label(i_idx));
     } else if (i_idx >= 0) {
-        msg_format(_("ザック中: %s(%c)。", "In your pack: %s (%c)."), item_name.data(), index_to_label(i_idx));
+        msg_print(_("ザック中: {}({:c})。", "In your pack: {} ({:c})."), item_name, index_to_label(i_idx));
     } else {
-        msg_format(_("床上: %s。", "On the ground: %s."), item_name.data());
+        msg_print(_("床上: {}。", "On the ground: {}."), item_name);
     }
 
     autopick_alter_item(creature, i_idx, (bool)(destroy_identify && !old_known));
@@ -173,11 +173,11 @@ bool identify_fully(CreatureEntity &creature, bool only_equip)
     window_stuff(creature);
     const auto item_name = describe_flavor(creature, *item, 0);
     if (i_idx >= INVEN_MAIN_HAND) {
-        msg_format(_("%s^: %s(%c)。", "%s^: %s (%c)."), describe_use(creature, i_idx), item_name.data(), index_to_label(i_idx));
+        msg_print(_("{}: {}({:c})。", "{}: {} ({:c})."), str_upcase_first(describe_use(creature, i_idx)), item_name, index_to_label(i_idx));
     } else if (i_idx >= 0) {
-        msg_format(_("ザック中: %s(%c)。", "In your pack: %s (%c)."), item_name.data(), index_to_label(i_idx));
+        msg_print(_("ザック中: {}({:c})。", "In your pack: {} ({:c})."), item_name, index_to_label(i_idx));
     } else {
-        msg_format(_("床上: %s。", "On the ground: %s."), item_name.data());
+        msg_print(_("床上: {}。", "On the ground: {}."), item_name);
     }
 
     (void)screen_object(creature, *item, 0L);

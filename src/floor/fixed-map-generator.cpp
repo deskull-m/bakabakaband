@@ -250,22 +250,22 @@ static bool parse_qtw_P(CreatureEntity &creature, qtwg_type *qtwg_ptr)
  * @return エラーコード
  * @todo クエスト情報のみを読み込む手段と実際にフロアデータまで読み込む処理は分離したい
  */
-parse_error_type generate_fixed_map_floor(CreatureEntity &creature, qtwg_type *qtwg_ptr, process_dungeon_file_pf parse_fixed_map)
+ParseErrorType generate_fixed_map_floor(CreatureEntity &creature, qtwg_type *qtwg_ptr, process_dungeon_file_pf parse_fixed_map)
 {
     if (!qtwg_ptr->buf[0]) {
-        return PARSE_ERROR_NONE;
+        return ParseErrorType::NONE;
     }
 
     if (iswspace(qtwg_ptr->buf[0])) {
-        return PARSE_ERROR_NONE;
+        return ParseErrorType::NONE;
     }
 
     if (qtwg_ptr->buf[0] == '#') {
-        return PARSE_ERROR_NONE;
+        return ParseErrorType::NONE;
     }
 
     if (qtwg_ptr->buf[1] != ':') {
-        return PARSE_ERROR_GENERIC;
+        return ParseErrorType::GENERIC;
     }
 
     if (qtwg_ptr->buf[0] == '%') {
@@ -280,16 +280,16 @@ parse_error_type generate_fixed_map_floor(CreatureEntity &creature, qtwg_type *q
     if (qtwg_ptr->buf[0] == 'D') {
         char *s = qtwg_ptr->buf + 2;
         if (init_flags & INIT_ONLY_BUILDINGS) {
-            return PARSE_ERROR_NONE;
+            return ParseErrorType::NONE;
         }
 
         parse_qtw_D(creature, qtwg_ptr, s);
         (*qtwg_ptr->y)++;
-        return PARSE_ERROR_NONE;
+        return ParseErrorType::NONE;
     }
 
     if (parse_qtw_P(creature, qtwg_ptr)) {
-        return PARSE_ERROR_NONE;
+        return ParseErrorType::NONE;
     }
 
     if (qtwg_ptr->buf[0] == 'B') {
@@ -298,7 +298,7 @@ parse_error_type generate_fixed_map_floor(CreatureEntity &creature, qtwg_type *q
 
     if (qtwg_ptr->buf[0] == 'V') {
         if (init_flags & INIT_ONLY_FEATURES) {
-            return PARSE_ERROR_NONE;
+            return ParseErrorType::NONE;
         }
         return parse_line_vault(creature.get_floor(), qtwg_ptr->buf);
     }
@@ -309,10 +309,10 @@ parse_error_type generate_fixed_map_floor(CreatureEntity &creature, qtwg_type *q
 
     if (qtwg_ptr->buf[0] == 'M') {
         // skip
-        return PARSE_ERROR_NONE;
+        return ParseErrorType::NONE;
     }
 
-    return PARSE_ERROR_GENERIC;
+    return ParseErrorType::GENERIC;
 }
 
 /*!
@@ -341,7 +341,7 @@ static const QuestStartPosition *select_quest_start(const QuestFixedMap &fixed_m
     return fallback;
 }
 
-parse_error_type generate_quest_floor_from_json(CreatureEntity &creature, QuestType &quest, const QuestFixedMap &fixed_map)
+ParseErrorType generate_quest_floor_from_json(CreatureEntity &creature, QuestType &quest, const QuestFixedMap &fixed_map)
 {
     // 1. 共通ベース凡例 (X/./%/D/< など) を letter[] へ適用 (旧 QuestPreferences.txt、起動時に読込済み)
     for (const auto &[symbol, cell] : QuestFixedMapList::get_instance().get_base_legend()) {
@@ -362,7 +362,7 @@ parse_error_type generate_quest_floor_from_json(CreatureEntity &creature, QuestT
     }
 
     if (!fixed_map.has_map()) {
-        return PARSE_ERROR_NONE;
+        return ParseErrorType::NONE;
     }
 
     // 3. マップバリアント選択: 旧 $RANDOMn は seed_town % n で決まる (乱数ではなくキャラ毎に固定)
@@ -388,7 +388,7 @@ parse_error_type generate_quest_floor_from_json(CreatureEntity &creature, QuestT
         parse_qtw_P(creature, &qg);
     }
 
-    return PARSE_ERROR_NONE;
+    return ParseErrorType::NONE;
 }
 
 /*!

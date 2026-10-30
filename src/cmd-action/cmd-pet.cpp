@@ -51,11 +51,11 @@
 #include "player/special-defense-types.h"
 #include "status/action-setter.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/redrawing-flags-updater.h"
 #include "system/terrain/terrain-definition.h"
 #include "target/target-checker.h"
 #include "target/target-getter.h"
@@ -68,6 +68,7 @@
 #include "util/string-processor.h"
 #include "view/display-messages.h"
 #include "world/world.h"
+#include <fmt/format.h>
 #include <sstream>
 
 /*!
@@ -95,7 +96,7 @@ void do_cmd_pet_dismiss(CreatureEntity &creature)
     /* Process the monsters (backwards) */
     auto all_pets = false;
     auto num_dismissed = 0;
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
+    auto &dur = DeferredUpdateRequests::get_instance();
     const int num_pet_index = std::ssize(pet_index);
     for (auto i = 0; i < num_pet_index; i++) {
         const auto pet_ctr = pet_index[i];
@@ -149,19 +150,15 @@ void do_cmd_pet_dismiss(CreatureEntity &creature)
             }
 
             if (monster.is_riding()) {
-                msg_format(_("%sから降りた。", "You dismount from %s. "), friend_name.data());
-                creature.ride_monster(0);
-                rfu.set_flag(StatusRecalculatingFlag::MONSTER_STATUSES);
-                static constexpr auto flags = {
-                    MainWindowRedrawingFlag::EXTRA,
-                    MainWindowRedrawingFlag::UHEALTH,
-                };
-                rfu.set_flags(flags);
+                msg_print(_("{}から降りた。", "You dismount from {}. "), friend_name);
+                creature.dismount();
+                dur.set_flag(StatusRecalculatingFlag::MONSTER_STATUSES);
+                dur.request_riding_status_redrawing();
             }
 
-            msg_format(_("%s を放した。", "Dismissed %s."), friend_name.data());
-            rfu.set_flag(StatusRecalculatingFlag::BONUS);
-            rfu.set_flag(SubWindowRedrawingFlag::MESSAGE);
+            msg_print(_("{} を放した。", "Dismissed {}."), friend_name);
+            dur.set_flag(StatusRecalculatingFlag::BONUS);
+            dur.set_flag(SubWindowRedrawingFlag::MESSAGE);
             delete_monster_idx(creature, pet_ctr);
             num_dismissed++;
         }
@@ -172,9 +169,9 @@ void do_cmd_pet_dismiss(CreatureEntity &creature)
     term_fresh();
 
 #ifdef JP
-    msg_format("%d 体のペットを放しました。", num_dismissed);
+    msg_print("{} 体のペットを放しました。", num_dismissed);
 #else
-    msg_format("You have dismissed %d pet%s.", num_dismissed, (num_dismissed == 1 ? "" : "s"));
+    msg_print("You have dismissed {} pet{}.", num_dismissed, (num_dismissed == 1 ? "" : "s"));
 #endif
     if ((num_dismissed == 0) && all_pets) {
         msg_print(_("'U'nnamed は、乗馬以外の名前のないペットだけを全て解放します。", "'U'nnamed means all your pets except named pets and your mount."));
@@ -224,10 +221,7 @@ bool do_cmd_riding(CreatureEntity &creature, bool force)
             return false;
         }
 
-        creature.ride_monster(0);
-        creature.remove_pet_extra_flag(PF_TWO_HANDS);
-        creature.set_was_riding_ryoute(false);
-        creature.set_riding_ryoute(false);
+        creature.dismount();
     } else {
         if (cmd_limit_confused(creature)) {
             return false;
@@ -257,11 +251,9 @@ bool do_cmd_riding(CreatureEntity &creature, bool force)
             const auto &terrain = grid.get_terrain(TerrainKind::MIMIC);
             using Tc = TerrainCharacteristics;
 #ifdef JP
-            msg_format("そのモンスターは%sの%sにいる。", terrain.name.data(),
-                (terrain.flags.has_none_of({ Tc::MOVE, Tc::CAN_FLY }) || terrain.flags.has_none_of({ Tc::LOS, Tc::TREE })) ? "中" : "上");
+            msg_print("そのモンスターは{}の{}にいる。", terrain.name, (terrain.flags.has_none_of({ Tc::MOVE, Tc::CAN_FLY }) || terrain.flags.has_none_of({ Tc::LOS, Tc::TREE })) ? "中" : "上");
 #else
-            msg_format("This monster is %s the %s.",
-                (terrain.flags.has_none_of({ Tc::MOVE, Tc::CAN_FLY }) || terrain.flags.has_none_of({ Tc::LOS, Tc::TREE })) ? "in" : "on", terrain.name.data());
+            msg_print("This monster is {} the {}.", (terrain.flags.has_none_of({ Tc::MOVE, Tc::CAN_FLY }) || terrain.flags.has_none_of({ Tc::LOS, Tc::TREE })) ? "in" : "on", terrain.name);
 #endif
 
             return false;
@@ -275,7 +267,7 @@ bool do_cmd_riding(CreatureEntity &creature, bool force)
         if (monster.is_asleep()) {
             const auto m_name = monster_desc(creature, monster, 0);
             (void)set_monster_csleep(*creature.get_floor(), grid.m_idx, 0);
-            msg_format(_("%sを起こした。", "You have woken %s up."), m_name.data());
+            msg_print(_("{}を起こした。", "You have woken {} up."), m_name);
         }
 
         if (creature.get_action() == ACTION_MONK_STANCE) {
@@ -290,19 +282,15 @@ bool do_cmd_riding(CreatureEntity &creature, bool force)
 
     PlayerEnergy(creature).set_player_turn_energy(100);
 
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
+    auto &dur = DeferredUpdateRequests::get_instance();
     static constexpr auto flags_srf = {
         StatusRecalculatingFlag::UN_VIEW,
         StatusRecalculatingFlag::UN_LITE,
         StatusRecalculatingFlag::BONUS,
     };
-    rfu.set_flags(flags_srf);
-    static constexpr auto flags_mwrf = {
-        MainWindowRedrawingFlag::MAP,
-        MainWindowRedrawingFlag::EXTRA,
-        MainWindowRedrawingFlag::UHEALTH,
-    };
-    rfu.set_flags(flags_mwrf);
+    dur.set_flags(flags_srf);
+    dur.set_flag(MainWindowRedrawingFlag::MAP);
+    dur.request_riding_status_redrawing();
     (void)move_player_effect(creature, pos.y, pos.x, MPE_HANDLE_STUFF | MPE_ENERGY_USE | MPE_DONT_PICKUP | MPE_DONT_SWAP_MON);
     return true;
 }
@@ -338,7 +326,7 @@ static void do_name_pet(CreatureEntity &creature)
         return;
     }
 
-    msg_format(_("%sに名前をつける。", "Name %s."), monster_desc(creature, monster, 0).data());
+    msg_print(_("{}に名前をつける。", "Name {}."), monster_desc(creature, monster, 0));
     msg_erase();
 
     auto old_name = false;
@@ -412,9 +400,9 @@ static MONSTER_IDX select_target_pet(CreatureEntity &creature)
         const auto name = monster_desc(creature, mon, MD_INDEF_VISIBLE);
         const char letter = static_cast<char>('a' + i);
         const char *prefix = (mon.is_riding()) ? _("(騎乗) ", "(riding) ") : "";
-        prt(format("%c) %s%s", letter, prefix, name.data()), line++, 2);
+        prt(fmt::format("{}) {}{}", letter, prefix, name), line++, 2);
     }
-    prt(format(_("a-%c を選択 (ESC でキャンセル):", "Choose a-%c (ESC to cancel):"),
+    prt(fmt::format(_("a-{} を選択 (ESC でキャンセル):", "Choose a-{} (ESC to cancel):"),
             static_cast<char>('a' + pet_indices.size() - 1)),
         line + 1, 0);
     const auto ch = inkey();
@@ -453,9 +441,9 @@ void do_cmd_pet(CreatureEntity &creature)
     const auto is_hallucinated = creature.is_hallucinated();
     const auto taget_of_pet = creature.get_floor()->get_monster(creature.get_pet_t_m_idx()).get_apparent_monrace().name.data();
     const auto target_of_pet_appearance = is_hallucinated ? _("何か奇妙な物", "something strange") : taget_of_pet;
-    const auto mes = _("ペットのターゲットを指定 (現在：%s)", "specify a target of pet (now:%s)");
+    constexpr auto fmt_target = _("ペットのターゲットを指定 (現在：{})", "specify a target of pet (now:{})");
     const auto target_name = creature.get_pet_t_m_idx() > 0 ? target_of_pet_appearance : _("指定なし", "nothing");
-    const auto target_ask = format(mes, target_name);
+    const auto target_ask = fmt::format(fmt_target, target_name);
     power_desc[num] = target_ask;
     powers[num++] = PET_TARGET;
     power_desc[num] = _("近くにいろ", "stay close");
@@ -607,14 +595,15 @@ void do_cmd_pet(CreatureEntity &creature)
         flag = false;
         redraw = false;
 
+        const auto first_label = I2A(0);
+        const auto last_label = I2A(num - 1);
         std::string prompt;
         if (use_menu) {
             screen_save();
             prompt = _("(コマンド、ESC=終了) コマンドを選んでください:", "(Command, ESC=exit) Choose command from menu.");
         } else {
-            constexpr auto fmt = _("(コマンド %c-%c、'*'=一覧、ESC=終了) コマンドを選んでください:",
-                "(Command %c-%c, *=List, ESC=exit) Select a command: ");
-            prompt = format(fmt, I2A(0), I2A(num - 1));
+            constexpr auto fmt = _("(コマンド {:c}-{:c}、'*'=一覧、ESC=終了) コマンドを選んでください:", "(Command {:c}-{:c}, *=List, ESC=exit) Select a command: ");
+            prompt = fmt::format(fmt, first_label, last_label);
         }
 
         choice = (always_show_list || use_menu) ? ESCAPE : 1;
@@ -624,7 +613,7 @@ void do_cmd_pet(CreatureEntity &creature)
             if (choice == ESCAPE) {
                 choice = ' ';
             } else {
-                const auto new_choice = input_command(prompt);
+                const auto new_choice = input_spell_choice(prompt, { .first_label = first_label, .last_label = last_label, .list = redraw, .menu = use_menu });
                 if (!new_choice) {
                     break;
                 }
@@ -694,9 +683,9 @@ void do_cmd_pet(CreatureEntity &creature)
                         /* Letter/number for power selection */
                         std::stringstream ss;
                         if (use_menu) {
-                            ss << format("%c%s ", (control == command_idx) ? '*' : ' ', (control == (menu_line - 1)) ? _("》", "> ") : "  ");
+                            ss << fmt::format("{:c}{} ", (control == command_idx) ? '*' : ' ', (control == (menu_line - 1)) ? _("》", "> ") : "  ");
                         } else {
-                            ss << format("%c%c) ", (control == command_idx) ? '*' : ' ', I2A(control));
+                            ss << fmt::format("{:c}{:c}) ", (control == command_idx) ? '*' : ' ', I2A(control));
                         }
 
                         ss << power_desc[control];
@@ -886,7 +875,7 @@ void do_cmd_pet(CreatureEntity &creature)
             creature.add_pet_extra_flag(PF_TWO_HANDS);
         }
 
-        RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
+        DeferredUpdateRequests::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
         handle_stuff(creature);
         break;
     }
@@ -912,7 +901,7 @@ void do_cmd_pet(CreatureEntity &creature)
         const auto pet_name = monster_desc(creature, pet_monster, MD_INDEF_VISIBLE);
         const auto item_name = describe_flavor(creature, given, OD_OMIT_PREFIX);
         if (pet_monster.acquire_item(given) >= 0) {
-            msg_format(_("%sに%sを渡した。", "You give %s to %s."), pet_name.data(), item_name.data());
+            msg_print(_("{}に{}を渡した。", "You give {} to {}."), pet_name, item_name);
             inven_item_increase(creature, i_idx, -1);
             inven_item_optimize(creature, i_idx);
         } else {
@@ -934,7 +923,7 @@ void do_cmd_pet(CreatureEntity &creature)
         std::vector<INVENTORY_IDX> selectable_slots;
         screen_save();
         const auto pet_name = monster_desc(creature, pet_monster, MD_INDEF_VISIBLE);
-        prt(format(_("%s から受け取るアイテム:", "Take which item from %s?"), pet_name.data()), 0, 0);
+        prt(fmt::format(_("{} から受け取るアイテム:", "Take which item from {}?"), pet_name), 0, 0);
         int line = 1;
         for (INVENTORY_IDX i = INVEN_MAIN_HAND; i < INVEN_TOTAL; i++) {
             if (!pet_monster.inventory[i]->is_valid()) {
@@ -943,7 +932,7 @@ void do_cmd_pet(CreatureEntity &creature)
             const auto name = describe_flavor(creature, *pet_monster.inventory[i], 0);
             const char letter = static_cast<char>('a' + selectable_slots.size());
             selectable_slots.push_back(i);
-            prt(format(_("%c) [装備] %s", "%c) [Equipped] %s"), letter, name.data()), line++, 2);
+            prt(fmt::format(_("{}) [装備] {}", "{}) [Equipped] {}"), letter, name), line++, 2);
         }
         for (INVENTORY_IDX i = 0; i < INVEN_PACK; i++) {
             if (!pet_monster.inventory[i]->is_valid()) {
@@ -952,7 +941,7 @@ void do_cmd_pet(CreatureEntity &creature)
             const auto name = describe_flavor(creature, *pet_monster.inventory[i], 0);
             const char letter = static_cast<char>('a' + selectable_slots.size());
             selectable_slots.push_back(i);
-            prt(format(_("%c) %s", "%c) %s"), letter, name.data()), line++, 2);
+            prt(fmt::format(_("{}) {}", "{}) {}"), letter, name), line++, 2);
         }
         if (selectable_slots.empty()) {
             prt(_("(何も持っていない)", "(nothing)"), 1, 2);
@@ -961,7 +950,7 @@ void do_cmd_pet(CreatureEntity &creature)
             screen_load();
             break;
         }
-        prt(format(_("a-%c を選択 (ESC でキャンセル):", "Choose a-%c (ESC to cancel):"),
+        prt(fmt::format(_("a-{} を選択 (ESC でキャンセル):", "Choose a-{} (ESC to cancel):"),
                 static_cast<char>('a' + selectable_slots.size() - 1)),
             line + 1, 0);
         const auto ch = inkey();
@@ -980,7 +969,7 @@ void do_cmd_pet(CreatureEntity &creature)
         received.held_m_idx = 0;
         received.iy = received.ix = 0;
         const auto item_name = describe_flavor(creature, received, OD_OMIT_PREFIX);
-        msg_format(_("%sから%sを受け取った。", "You receive %s from %s."), pet_name.data(), item_name.data());
+        msg_print(_("{}から{}を受け取った。", "You receive {} from {}."), pet_name, item_name);
         creature.store_item(received);
         item_in_slot.wipe();
         break;
@@ -996,7 +985,7 @@ void do_cmd_pet(CreatureEntity &creature)
         auto &pet_monster = floor.get_monster(target_idx);
         const auto pet_name = monster_desc(creature, pet_monster, MD_INDEF_VISIBLE);
         screen_save();
-        prt(format(_("%s の所持品:", "%s's inventory:"), pet_name.data()), 0, 0);
+        prt(fmt::format(_("{} の所持品:", "{}'s inventory:"), pet_name), 0, 0);
         int line = 1;
         // 装備スロット
         for (size_t i = INVEN_MAIN_HAND; i < INVEN_TOTAL; i++) {
@@ -1005,7 +994,7 @@ void do_cmd_pet(CreatureEntity &creature)
                 continue;
             }
             const auto name = describe_flavor(creature, item, 0);
-            prt(format(_("[装備] %s", "[Equipped] %s"), name.data()), line++, 2);
+            prt(fmt::format(_("[装備] {}", "[Equipped] {}"), name), line++, 2);
         }
         // パックスロット
         for (size_t i = 0; i < INVEN_PACK; i++) {
@@ -1014,7 +1003,7 @@ void do_cmd_pet(CreatureEntity &creature)
                 continue;
             }
             const auto name = describe_flavor(creature, item, 0);
-            prt(format(_("[%c] %s", "[%c] %s"), index_to_label(static_cast<INVENTORY_IDX>(i)), name.data()), line++, 2);
+            prt(fmt::format(_("[{}] {}", "[{}] {}"), index_to_label(static_cast<INVENTORY_IDX>(i)), name), line++, 2);
         }
         if (line == 1) {
             prt(_("(何も持っていない)", "(nothing)"), 1, 2);

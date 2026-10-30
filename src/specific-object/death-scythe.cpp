@@ -19,8 +19,8 @@
 #include "player/player-status-flags.h"
 #include "status/element-resistance.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/item-entity.h"
-#include "system/redrawing-flags-updater.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
 
@@ -112,7 +112,7 @@ static void compensate_death_scythe_reflection_magnification(CreatureEntity &cre
 
     if (!CreatureClass(creature).equals(PlayerClassType::SAMURAI) && (death_scythe_flags.has(TR_FORCE_WEAPON)) && (creature.get_current_mp() > (creature.get_max_mp() / 30))) {
         creature.sub_current_mp((1 + (creature.get_max_mp() / 30)));
-        RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::MP);
+        DeferredUpdateRequests::get_instance().set_flag(MainWindowRedrawingFlag::MP);
         *magnification = *magnification * 3 / 2 + 20;
     }
 }
@@ -128,7 +128,7 @@ static void death_scythe_reflection_critial_hit(player_attack_type *pa_ptr)
     }
 
     int more_magnification = 2;
-    msg_format(_("グッサリ切り裂かれた！", "Your weapon cuts deep into yourself!"));
+    msg_print(_("グッサリ切り裂かれた！", "Your weapon cuts deep into yourself!"));
     while (one_in_(4)) {
         more_magnification++;
     }
@@ -144,7 +144,7 @@ static void death_scythe_reflection_critial_hit(player_attack_type *pa_ptr)
 void process_death_scythe_reflection(CreatureEntity &creature, player_attack_type *pa_ptr)
 {
     sound(SoundKind::HIT);
-    msg_format(_("ミス！ %sにかわされた。", "You miss %s."), pa_ptr->m_name);
+    msg_print(_("ミス！ {}にかわされた。", "You miss {}."), pa_ptr->m_name);
     msg_print(_("振り回した大鎌が自分自身に返ってきた！", "Your scythe returns to you!"));
 
     auto *o_ptr = creature.inventory[INVEN_MAIN_HAND + pa_ptr->hand].get();

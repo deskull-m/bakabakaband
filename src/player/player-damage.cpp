@@ -59,6 +59,7 @@
 #include "system/baseitem/baseitem-list.h"
 #include "system/building-type-definition.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/dungeon/quest-definition.h"
 #include "system/enums/monrace/monrace-id.h"
@@ -67,7 +68,6 @@
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/player-type-definition.h"
-#include "system/redrawing-flags-updater.h"
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
 #include "term/z-rand.h"
@@ -113,24 +113,20 @@ static bool acid_minus_ac(CreatureEntity &creature)
     const auto item_name = describe_flavor(creature, item, OD_OMIT_PREFIX | OD_NAME_ONLY);
     const auto item_flags = item.get_flags();
     if (item.ac + item.to_a <= 0) {
-        msg_format(_("%sは既にボロボロだ！", "Your %s is already fully corroded!"), item_name.data());
+        msg_print(_("{}は既にボロボロだ！", "Your {} is already fully corroded!"), item_name);
         return false;
     }
 
     if (item_flags.has(TR_IGNORE_ACID)) {
-        msg_format(_("しかし%sには効果がなかった！", "Your %s is unaffected!"), item_name.data());
+        msg_print(_("しかし{}には効果がなかった！", "Your {} is unaffected!"), item_name);
         return true;
     }
 
-    msg_format(_("%sが酸で腐食した！", "Your %s is corroded!"), item_name.data());
+    msg_print(_("{}が酸で腐食した！", "Your {} is corroded!"), item_name);
     item.to_a--;
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.set_flag(StatusRecalculatingFlag::BONUS);
-    static constexpr auto flags_swrf = {
-        SubWindowRedrawingFlag::EQUIPMENT,
-        SubWindowRedrawingFlag::PLAYER,
-    };
-    rfu.set_flags(flags_swrf);
+    auto &dur = DeferredUpdateRequests::get_instance();
+    dur.set_flag(StatusRecalculatingFlag::BONUS);
+    dur.set_flag(SubWindowRedrawingFlag::PLAYER);
     calc_android_exp(creature);
     return true;
 }
@@ -377,9 +373,8 @@ int take_hit(CreatureEntity &creature, int damage_type, int damage, std::string_
         creature.apply_raw_damage(damage);
     }
 
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.set_flag(MainWindowRedrawingFlag::HP);
-    rfu.set_flag(SubWindowRedrawingFlag::PLAYER);
+    auto &dur = DeferredUpdateRequests::get_instance();
+    dur.set_flag(MainWindowRedrawingFlag::HP);
     if (damage_type != DAMAGE_GENO && creature.hp == 0) {
         chg_virtue(creature, Virtue::SACRIFICE, 1);
         chg_virtue(creature, Virtue::CHANCE, 2);

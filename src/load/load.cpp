@@ -51,6 +51,8 @@
 #include "view/display-messages.h"
 #include "world/world-collapsion.h"
 #include "world/world.h"
+#include <fmt/format.h>
+#include <set>
 #include <sstream>
 #include <string>
 #include <string_view>
@@ -144,7 +146,7 @@ static errr load_hp(CreatureEntity &creature)
 {
     auto tmp16u = rd_u16b();
     if (tmp16u > PY_MAX_LEVEL) {
-        load_note(format(_("ヒットポイント配列が大きすぎる(%u)！", "Too many (%u) hitpoint entries!"), tmp16u));
+        load_note(fmt::format(_("ヒットポイント配列が大きすぎる({})！", "Too many ({}) hitpoint entries!"), tmp16u));
         return 25;
     }
 
@@ -385,7 +387,7 @@ bool load_savedata(CreatureEntity &creature, bool *new_game)
     }
 
     if (err) {
-        msg_format("%s: %s", what, savefile_str.data());
+        msg_print("{}: {}", what, savefile_str);
         msg_erase();
         return false;
     }
@@ -453,7 +455,7 @@ bool load_savedata(CreatureEntity &creature, bool *new_game)
     if (err) {
         auto &system = AngbandSystem::get_instance();
         constexpr auto fmt = _("エラー(%s)がバージョン %s 用セーブファイル読み込み中に発生。", "Error (%s) reading %s savefile.");
-        msg_format(fmt, what, system.build_version_expression(VersionExpression::WITH_EXTRA).data());
+        msg_print(fmt, what, system.build_version_expression(VersionExpression::WITH_EXTRA));
         msg_erase();
         return false;
     }

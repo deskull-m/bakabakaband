@@ -13,21 +13,21 @@
 #include "io/screen-util.h"
 #include "main/sound-of-music.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
-#include "system/redrawing-flags-updater.h"
 #include "target/projection-path-calculator.h"
 #include "target/target-checker.h"
 #include "target/target-describer.h"
 #include "target/target-preparation.h"
 #include "target/target-types.h"
 #include "term/screen-processor.h"
-#include "term/z-form.h"
 #include "util/bit-flags-calculator.h"
 #include "util/int-char-converter.h"
 #include "util/string-processor.h"
 #include "window/display-sub-windows.h"
 #include "window/main-window-util.h"
+#include <fmt/format.h>
 #include <tl/optional.hpp>
 #include <tuple>
 #include <vector>
@@ -236,10 +236,7 @@ std::string TargetSetter::build_key_guide(bool can_target) const
     }
 
     const auto p_pos = this->player.get_position();
-    const auto cheatinfo = format(" X:%d Y:%d LOS:%d LOP:%d",
-        this->pos_target.x, this->pos_target.y,
-        los(*this->player.get_floor(), p_pos, this->pos_target),
-        projectable(floor, p_pos, this->pos_target));
+    const auto cheatinfo = fmt::format(" X:{} Y:{} LOS:{:d} LOP:{:d}", this->pos_target.x, this->pos_target.y, los(*this->player.get_floor(), p_pos, this->pos_target), projectable(floor, p_pos, this->pos_target));
     return info.append(cheatinfo);
 }
 
@@ -328,10 +325,10 @@ Direction TargetSetter::switch_target_input()
         return Direction::none();
     case 'p': {
         verify_panel(this->player);
-        auto &rfu = RedrawingFlagsUpdater::get_instance();
-        rfu.set_flag(StatusRecalculatingFlag::MONSTER_STATUSES);
-        rfu.set_flag(MainWindowRedrawingFlag::MAP);
-        rfu.set_flag(SubWindowRedrawingFlag::OVERHEAD);
+        auto &dur = DeferredUpdateRequests::get_instance();
+        dur.set_flag(StatusRecalculatingFlag::MONSTER_STATUSES);
+        dur.set_flag(MainWindowRedrawingFlag::MAP);
+        dur.set_flag(SubWindowRedrawingFlag::OVERHEAD);
         handle_stuff(this->player);
         this->pos_interests = target_set_prepare(this->player, this->mode);
         this->pos_target = this->player.get_position();
@@ -402,10 +399,10 @@ tl::optional<int> TargetSetter::sweep_targets(const Direction &dir, int panel_ro
     panel_col_min = panel_col_min_initial;
     panel_bounds_center();
 
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.set_flag(StatusRecalculatingFlag::MONSTER_STATUSES);
-    rfu.set_flag(MainWindowRedrawingFlag::MAP);
-    rfu.set_flag(SubWindowRedrawingFlag::OVERHEAD);
+    auto &dur = DeferredUpdateRequests::get_instance();
+    dur.set_flag(StatusRecalculatingFlag::MONSTER_STATUSES);
+    dur.set_flag(MainWindowRedrawingFlag::MAP);
+    dur.set_flag(SubWindowRedrawingFlag::OVERHEAD);
     handle_stuff(this->player);
 
     this->pos_interests = target_set_prepare(this->player, this->mode);
@@ -465,11 +462,11 @@ std::string TargetSetter::describe_grid_wizard() const
 
     const auto &floor = *this->player.get_floor();
     const auto &grid = floor.get_grid(this->pos_target);
-    constexpr auto fmt = " X:%d Y:%d LOS:%d LOP:%d SPECIAL:%d";
+    constexpr auto fmt = " X:{} Y:{} LOS:{:d} LOP:{:d} SPECIAL:{}";
     const auto p_pos = this->player.get_position();
     const auto is_los = los(floor, p_pos, this->pos_target);
     const auto is_projectable = projectable(floor, p_pos, this->pos_target);
-    const auto cheatinfo = format(fmt, this->pos_target.x, this->pos_target.y, is_los, is_projectable, grid.special);
+    const auto cheatinfo = fmt::format(fmt, this->pos_target.x, this->pos_target.y, is_los, is_projectable, grid.special);
     return cheatinfo;
 }
 
@@ -501,10 +498,10 @@ tl::optional<std::pair<Direction, bool>> TargetSetter::switch_next_grid_command(
         return tl::nullopt;
     case 'p': {
         verify_panel(this->player);
-        auto &rfu = RedrawingFlagsUpdater::get_instance();
-        rfu.set_flag(StatusRecalculatingFlag::MONSTER_STATUSES);
-        rfu.set_flag(MainWindowRedrawingFlag::MAP);
-        rfu.set_flag(SubWindowRedrawingFlag::OVERHEAD);
+        auto &dur = DeferredUpdateRequests::get_instance();
+        dur.set_flag(StatusRecalculatingFlag::MONSTER_STATUSES);
+        dur.set_flag(MainWindowRedrawingFlag::MAP);
+        dur.set_flag(SubWindowRedrawingFlag::OVERHEAD);
         handle_stuff(this->player);
         this->pos_interests = target_set_prepare(this->player, this->mode);
         this->pos_target = this->player.get_position();
@@ -606,14 +603,14 @@ Target target_set(CreatureEntity &creature, target_type mode)
     ts.sweep_target_grids();
     prt("", 0, 0);
     verify_panel(creature);
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.set_flag(StatusRecalculatingFlag::MONSTER_STATUSES);
-    rfu.set_flag(MainWindowRedrawingFlag::MAP);
+    auto &dur = DeferredUpdateRequests::get_instance();
+    dur.set_flag(StatusRecalculatingFlag::MONSTER_STATUSES);
+    dur.set_flag(MainWindowRedrawingFlag::MAP);
     static constexpr auto flags = {
         SubWindowRedrawingFlag::OVERHEAD,
         SubWindowRedrawingFlag::FLOOR_ITEMS,
     };
-    rfu.set_flags(flags);
+    dur.set_flags(flags);
     handle_stuff(creature);
     Target::set_last_target(ts.get_target());
     return ts.get_target();

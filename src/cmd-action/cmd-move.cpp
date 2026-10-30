@@ -34,6 +34,7 @@
 #include "spell-realm/spells-song.h"
 #include "status/action-setter.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/dungeon/dungeon-list.h"
 #include "system/dungeon/quest-definition.h"
@@ -41,7 +42,6 @@
 #include "system/floor/floor-info.h"
 #include "system/floor/wilderness-grid.h"
 #include "system/grid-type-definition.h"
-#include "system/redrawing-flags-updater.h"
 #include "system/services/dungeon-service.h"
 #include "system/terrain/terrain-definition.h"
 #include "target/target-getter.h"
@@ -49,6 +49,7 @@
 #include "view/display-messages.h"
 #include "world/world.h"
 #include <algorithm>
+#include <fmt/format.h>
 
 /*!
  * @brief フロア脱出時に出戻りが不可能だった場合に警告を加える処理
@@ -327,7 +328,7 @@ void do_cmd_go_down(CreatureEntity &creature)
         // ダンジョンに入った回数を記録
         creature.plus_incident_tree("ENTER_DUNGEON", 1);
         if (!dungeon.tag.empty()) {
-            const auto dungeon_key = format("ENTER_DUNGEON/%s", dungeon.tag.c_str());
+            const auto dungeon_key = fmt::format("ENTER_DUNGEON/{}", dungeon.tag);
             creature.plus_incident_tree(dungeon_key.data(), 1);
         }
     }
@@ -353,7 +354,7 @@ void do_cmd_go_down(CreatureEntity &creature)
         }
     } else {
         if (dungeon_id > DungeonId::WILDERNESS) {
-            msg_format(_("%sへ入った。", "You entered %s."), dungeon.text.data());
+            msg_print(_("{}へ入った。", "You entered {}."), dungeon.text);
         } else {
             if (creature.is_echizen()) {
                 msg_print(_("なんだこの階段は！", "What's this STAIRWAY!"));
@@ -543,9 +544,9 @@ void do_cmd_rest(CreatureEntity &creature)
     creature.plus_incident_tree("REST", 1);
     creature.set_resting(command_arg);
     creature.set_action(ACTION_REST);
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.set_flag(StatusRecalculatingFlag::BONUS);
-    rfu.set_flag(MainWindowRedrawingFlag::ACTION);
+    auto &dur = DeferredUpdateRequests::get_instance();
+    dur.set_flag(StatusRecalculatingFlag::BONUS);
+    dur.set_flag(MainWindowRedrawingFlag::ACTION);
     handle_stuff(creature);
     term_fresh();
 }
@@ -615,5 +616,5 @@ void do_cmd_go_portal(CreatureEntity &creature)
     floor.set_dungeon_index(target_dungeon);
 
     const auto &target_dungeon_info = dungeons.get_dungeon(target_dungeon);
-    msg_format(_("%sに転移した！", "You are transferred to %s!"), target_dungeon_info.name.data());
+    msg_print(_("{}に転移した！", "You are transferred to {}!"), target_dungeon_info.name);
 }

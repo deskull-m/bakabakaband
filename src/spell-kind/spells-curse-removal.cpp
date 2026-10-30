@@ -5,8 +5,8 @@
 #include "object-enchant/special-object-flags.h"
 #include "object-enchant/trc-types.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/item-entity.h"
-#include "system/redrawing-flags-updater.h"
 #include "view/display-messages.h"
 
 /*!
@@ -19,7 +19,7 @@
 static int exe_curse_removal(CreatureEntity &creature, int all)
 {
     auto count = 0;
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
+    auto &dur = DeferredUpdateRequests::get_instance();
     for (const auto i_idx : INVEN_WIELDING_SLOTS) {
         auto *o_ptr = creature.inventory[i_idx].get();
         if (!o_ptr->is_valid() || !o_ptr->is_cursed()) {
@@ -35,11 +35,8 @@ static int exe_curse_removal(CreatureEntity &creature, int all)
             continue;
         }
 
-        o_ptr->curse_flags.clear();
-        o_ptr->ident.set(IdentificationFlag::SENSE);
-        o_ptr->feeling = FEEL_NONE;
-        rfu.set_flag(StatusRecalculatingFlag::BONUS);
-        rfu.set_flag(SubWindowRedrawingFlag::EQUIPMENT);
+        o_ptr->remove_curses();
+        dur.set_flag(StatusRecalculatingFlag::BONUS);
         count++;
     }
 

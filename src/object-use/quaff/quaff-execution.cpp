@@ -24,10 +24,25 @@
 #include "spell-realm/spells-song.h"
 #include "status/experience.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/item-entity.h"
-#include "system/redrawing-flags-updater.h"
 #include "term/screen-processor.h"
 #include "view/display-messages.h"
+#include <algorithm>
+
+/*!
+ * @brief 水分を栄養にする種族が薬を飲んだ後の満腹度を計算する
+ * @param food 飲む前の満腹度
+ * @param pval 薬の滋養
+ * @return 飲んだ後の満腹度 (0以上 PY_FOOD_MAX - 1 以下)
+ * @details 滋養の10倍や和を short で計算すると回り込むので、int で計算してから抑える。
+ * 滋養が負なら10倍の項は足さない。
+ */
+short calc_moistened_food(short food, short pval)
+{
+    const auto value = food + pval + std::max(0, pval * 10) + 2000;
+    return static_cast<short>(std::clamp(value, 0, PY_FOOD_MAX - 1));
+}
 
 /*!
  * @brief コンストラクタ
@@ -65,8 +80,8 @@ void ObjectQuaffEntity::execute(INVENTORY_IDX i_idx, bool is_rectal)
         InventoryArrangementFlag::COMBINATION,
         InventoryArrangementFlag::REORDER,
     };
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.set_flags(flags_srf);
+    auto &dur = DeferredUpdateRequests::get_instance();
+    dur.set_flags(flags_srf);
     this->change_virtue_as_quaff(item);
     item.mark_as_tried();
     if (ident && !item.is_aware()) {
@@ -74,7 +89,7 @@ void ObjectQuaffEntity::execute(INVENTORY_IDX i_idx, bool is_rectal)
         gain_exp(this->creature, (item.get_baseitem_level() + (this->creature.get_level() >> 1)) / this->creature.get_level());
     }
 
-    rfu.set_item_related_sub_window_flags();
+    dur.set_item_related_sub_window_flags();
     if (CreatureRace(&this->creature).equals(PlayerRaceType::SKELETON)) {
         return;
     }
@@ -128,7 +143,7 @@ void ObjectQuaffEntity::moisten(const ItemEntity &o_ref)
     switch (CreatureRace(&this->creature).food()) {
     case PlayerRaceFoodType::WATER:
         msg_print(_("水分を取り込んだ。", "You are moistened."));
-        set_food(this->creature, std::min<short>(this->creature.get_food() + o_ref.pval + std::max<short>(0, o_ref.pval * 10) + 2000, PY_FOOD_MAX - 1));
+        set_food(this->creature, calc_moistened_food(this->creature.get_food(), o_ref.pval));
         return;
     case PlayerRaceFoodType::OIL:
         if (o_ref.bi_key.tval() != ItemKindType::FLASK) {

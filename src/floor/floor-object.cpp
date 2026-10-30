@@ -28,16 +28,17 @@
 #include "system/artifact/artifact-record.h"
 #include "system/baseitem/baseitem-allocation.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
-#include "system/redrawing-flags-updater.h"
 #include "target/projection-path-calculator.h"
 #include "util/finalizer.h"
 #include "view/display-messages.h"
 #include "window/display-sub-windows.h"
 #include "wizard/wizard-messages.h"
 #include "world/world.h"
+#include <fmt/format.h>
 #include <range/v3/algorithm.hpp>
 #include <range/v3/functional.hpp>
 #include <range/v3/range/conversion.hpp>
@@ -58,7 +59,7 @@ static void object_mention(CreatureEntity &creature, ItemEntity &item)
     item.mark_as_known();
     item.ident.set(IdentificationFlag::FULL_KNOWN);
     const auto item_name = describe_flavor(creature, item, 0);
-    msg_format_wizard(creature, CHEAT_OBJECT, _("%sを生成しました。", "%s was generated."), item_name.data());
+    msg_print_wizard(creature, CHEAT_OBJECT, _("{}を生成しました。", "{} was generated."), item_name);
 }
 
 static int get_base_floor(const FloorType &floor, BIT_FLAGS mode, tl::optional<int> rq_mon_level)
@@ -217,7 +218,7 @@ void floor_item_increase(CreatureEntity &creature, INVENTORY_IDX i_idx, ITEM_NUM
 
     num -= o_ptr->number;
     o_ptr->number += num;
-    RedrawingFlagsUpdater::get_instance().request_floor_item_lists_redrawing();
+    DeferredUpdateRequests::get_instance().request_floor_item_lists_redrawing();
 }
 
 /*!
@@ -237,7 +238,7 @@ void floor_item_optimize(CreatureEntity &creature, INVENTORY_IDX i_idx)
     }
 
     delete_object_idx(creature, i_idx);
-    RedrawingFlagsUpdater::get_instance().request_floor_item_lists_redrawing();
+    DeferredUpdateRequests::get_instance().request_floor_item_lists_redrawing();
 }
 
 /*!
@@ -266,7 +267,7 @@ void delete_object_idx(CreatureEntity &creature, OBJECT_IDX o_idx)
 
     floor.prevent_repeat_floor_item_idx = true;
 
-    RedrawingFlagsUpdater::get_instance().request_floor_item_lists_redrawing();
+    DeferredUpdateRequests::get_instance().request_floor_item_lists_redrawing();
 }
 
 /*!
@@ -462,7 +463,7 @@ short drop_near(CreatureEntity &subject, ItemEntity &drop_item, const Pos2D &pos
 
     const auto is_located = subject.is_located_at(pos_drop);
     if (is_located) {
-        RedrawingFlagsUpdater::get_instance().request_floor_item_lists_redrawing();
+        DeferredUpdateRequests::get_instance().request_floor_item_lists_redrawing();
     }
 
     if (show_drop_message && is_located) {
@@ -505,13 +506,13 @@ void floor_item_charges(const FloorType &floor, INVENTORY_IDX i_idx)
     if (item.pval <= 0) {
         msg_print("この床上のアイテムは、もう魔力が残っていない。");
     } else {
-        msg_format("この床上のアイテムは、あと %d 回分の魔力が残っている。", item.pval);
+        msg_print("この床上のアイテムは、あと {} 回分の魔力が残っている。", item.pval);
     }
 #else
     if (item.pval != 1) {
-        msg_format("There are %d charges remaining.", item.pval);
+        msg_print("There are {} charges remaining.", item.pval);
     } else {
-        msg_format("There is %d charge remaining.", item.pval);
+        msg_print("There is {} charge remaining.", item.pval);
     }
 #endif
 }
@@ -528,12 +529,12 @@ void floor_item_describe(CreatureEntity &creature, INVENTORY_IDX i_idx)
     const auto item_name = describe_flavor(creature, item, 0);
 #ifdef JP
     if (item.number <= 0) {
-        msg_format("床上には、もう%sはない。", item_name.data());
+        msg_print("床上には、もう{}はない。", item_name);
     } else {
-        msg_format("床上には、まだ %sがある。", item_name.data());
+        msg_print("床上には、まだ {}がある。", item_name);
     }
 #else
-    msg_format("You see %s.", item_name.data());
+    msg_print("You see {}.", item_name);
 #endif
 }
 

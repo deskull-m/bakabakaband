@@ -23,7 +23,7 @@
 #include "core/stuff-handler.h"
 #include "floor/floor-mode-changer.h"
 #include "floor/wild.h"
-#include "io/input-key-acceptor.h"
+#include "io/input-context.h"
 #include "io/input-key-requester.h"
 #include "main/music-definitions-table.h"
 #include "main/sound-of-music.h"
@@ -60,10 +60,10 @@
 #include "system/angband-system.h"
 #include "system/building-type-definition.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
-#include "system/redrawing-flags-updater.h"
 #include "system/terrain/terrain-definition.h"
 #include "term/gameterm.h"
 #include "term/screen-processor.h"
@@ -428,7 +428,7 @@ void do_cmd_building(CreatureEntity &creature)
         display_building_service(creature, bldg);
         prt("", 1, 0);
         building_prt_gold(creature.get_au());
-        const auto command = inkey();
+        const auto command = input_key_with_context(InputKind::BUILDING, "");
         if (command == ESCAPE) {
             floor.inside_arena = false;
             system.set_phase_out(false);
@@ -448,7 +448,7 @@ void do_cmd_building(CreatureEntity &creature)
 
         // 建物の中ではプレイヤーのターンの処理 (process_player()) が行われず、ターンごとの描き直しの要求が来ないので、
         // 支払いや報酬で変わる所持金などを反映するよう、コマンドごとにプレイヤーの情報のサブウィンドウを描き直す
-        RedrawingFlagsUpdater::get_instance().set_flag(SubWindowRedrawingFlag::PLAYER);
+        DeferredUpdateRequests::get_instance().set_flag(SubWindowRedrawingFlag::PLAYER);
         handle_stuff_with_inventory_arrangement(creature);
         if (should_leave) {
             break;
@@ -467,19 +467,19 @@ void do_cmd_building(CreatureEntity &creature)
     world.character_icky_depth--;
     term_clear();
 
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.request_monster_update_and_map_redrawing();
+    auto &dur = DeferredUpdateRequests::get_instance();
+    dur.request_monster_update_and_map_redrawing();
     static constexpr auto flags_srf = {
         StatusRecalculatingFlag::VIEW,
         StatusRecalculatingFlag::BONUS,
         StatusRecalculatingFlag::LITE,
         StatusRecalculatingFlag::MONSTER_LITE,
     };
-    rfu.set_flags(flags_srf);
+    dur.set_flags(flags_srf);
     static constexpr auto flags_mwrf = {
         MainWindowRedrawingFlag::BASIC,
         MainWindowRedrawingFlag::EXTRA,
         MainWindowRedrawingFlag::EQUIPPY,
     };
-    rfu.set_flags(flags_mwrf);
+    dur.set_flags(flags_mwrf);
 }

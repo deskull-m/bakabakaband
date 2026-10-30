@@ -8,6 +8,7 @@
 #include "action/action-limited.h"
 #include "action/mutation-execution.h"
 #include "action/racial-execution.h"
+#include "bot/bot-json-output.h"
 #include "core/asking-player.h"
 #include "core/window-redrawer.h"
 #include "game-option/text-display-options.h"
@@ -29,13 +30,16 @@
 #include "racial/racial-util.h"
 #include "status/action-setter.h"
 #include "system/creature-entity.h"
-#include "system/redrawing-flags-updater.h"
+#include "system/deferred-update-requests.h"
+#include "system/player-type-definition.h"
 #include "term/screen-processor.h"
 #include "util/bit-flags-calculator.h"
 #include "util/int-char-converter.h"
+#include "util/string-processor.h"
 #include "view/display-messages.h"
 #include "view/display-util.h"
 #include "world/world.h"
+#include <fmt/format.h>
 #include <string>
 
 #define RC_PAGE_SIZE 18
@@ -60,12 +64,16 @@ static void racial_power_erase_cursor(rc_type *rc_ptr)
  * @param creature クリーチャーへの参照
  * @param rc_ptr レイシャルパワー情報への参照ポインタ
  * @return キャンセルしたらRC_CANCEL、それ以外ならRC_CONTINUE
+ * @details 一覧を表示していない (ページが -1) ときは何も描かない。
  */
 static void racial_power_display_list(CreatureEntity &creature, rc_type *rc_ptr)
 {
+    if (rc_ptr->page < 0) {
+        return;
+    }
+
     TERM_LEN x = 11;
-    char dummy[256];
-    strcpy(dummy, "");
+    std::string dummy;
 
     prt(_("                                   Lv   MP 失率 効果", "                                   Lv   MP Fail Effect"), 1, x);
 
@@ -77,23 +85,13 @@ static void racial_power_display_list(CreatureEntity &creature, rc_type *rc_ptr)
         }
 
         if (use_menu) {
-            strcpy(dummy, "    ");
+            dummy = "    ";
         } else {
-            char letter;
-            if (ctr < 26) {
-                letter = I2A(ctr);
-            } else {
-                letter = '0' + ctr - 26;
-            }
-
-            sprintf(dummy, " %c) ", letter);
+            dummy = fmt::format(" {:c}) ", I2AD(ctr));
         }
 
         auto &rpi = rc_ptr->power_desc[ctr];
-        strcat(dummy,
-            format("%-30.30s %2d %4d %3d%% %s", rpi.racial_name.data(), rpi.min_level, rpi.cost, 100 - racial_chance(creature, &rc_ptr->power_desc[ctr]),
-                rpi.info.data())
-                .data());
+        dummy.append(fmt::format("{:<30} {:2} {:4} {:3}% {}", fmt::bytes(str_substr(rpi.racial_name, 0, 30)), rpi.min_level, rpi.cost, 100 - racial_chance(creature, &rc_ptr->power_desc[ctr]), rpi.info));
 
         prt(dummy, 2 + y, x);
     }
@@ -103,6 +101,14 @@ static void racial_power_display_list(CreatureEntity &creature, rc_type *rc_ptr)
     if (use_menu) {
         racial_power_display_cursor(rc_ptr);
     }
+
+    // ページ送りで見られる全行を、表示と同じ値で出力する
+    std::vector<BotPowerListRow> bot_rows;
+    for (auto ctr = 0; ctr < rc_ptr->power_count(); ctr++) {
+        const auto &rpi = rc_ptr->power_desc[ctr];
+        bot_rows.push_back({ I2AD(ctr), ctr / RC_PAGE_SIZE, rpi.racial_name, rpi.min_level, rpi.cost, 100 - racial_chance(creature, &rc_ptr->power_desc[ctr]), rpi.info });
+    }
+    output_bot_json_power_list_snapshot(&static_cast<PlayerType &>(creature), "racial", bot_rows, rc_ptr->page, rc_ptr->browse_mode);
 }
 
 /*!
@@ -111,16 +117,10 @@ static void racial_power_display_list(CreatureEntity &creature, rc_type *rc_ptr)
  */
 static void racial_power_make_prompt(rc_type *rc_ptr)
 {
-    concptr fmt;
-
-    if (rc_ptr->browse_mode) {
-        fmt = _(
-            "(特殊能力 %c-%c, '*':一覧, '/'で使用, ESCで中断) どの能力について知りますか？", "(Powers %c-%c, *=List. /=Use, ESC=exit) Browse which power? ");
-    } else {
-        fmt = _("(特殊能力 %c-%c, '*'で一覧, '/'で閲覧, ESCで中断) どの能力を使いますか？", "(Powers %c-%c, *=List, /=Browse, ESC=exit) Use which power? ");
-    }
-
-    rc_ptr->out_val = format(fmt, I2A(0), (rc_ptr->power_count() <= 26) ? I2A(rc_ptr->power_count() - 1) : '0' + rc_ptr->power_count() - 27);
+    constexpr auto fmt_browse = _("(特殊能力 {:c}-{:c}, '*':一覧, '/'で使用, ESCで中断) どの能力について知りますか？", "(Powers {:c}-{:c}, *=List. /=Use, ESC=exit) Browse which power? ");
+    constexpr auto fmt_use = _("(特殊能力 {:c}-{:c}, '*'で一覧, '/'で閲覧, ESCで中断) どの能力を使いますか？", "(Powers {:c}-{:c}, *=List, /=Browse, ESC=exit) Use which power? ");
+    const auto last = I2AD(rc_ptr->power_count() - 1);
+    rc_ptr->out_val = rc_ptr->browse_mode ? fmt::format(fmt_browse, I2A(0), last) : fmt::format(fmt_use, I2A(0), last);
 }
 
 /*!
@@ -272,18 +272,13 @@ static void decide_racial_command(rc_type *rc_ptr)
         rc_ptr->choice = 'a';
     }
 
-    if (!isalpha(rc_ptr->choice)) {
-        rc_ptr->ask = false;
-        rc_ptr->command_code = rc_ptr->choice - '0' + 26;
-        return;
-    }
-
-    rc_ptr->ask = (isupper(rc_ptr->choice));
+    // 大文字のラベルは、使う前に確認する
+    rc_ptr->ask = ('A' <= rc_ptr->choice) && (rc_ptr->choice <= 'Z');
     if (rc_ptr->ask) {
-        rc_ptr->choice = (char)tolower(rc_ptr->choice);
+        rc_ptr->choice = static_cast<char>(rc_ptr->choice - 'A' + 'a');
     }
 
-    rc_ptr->command_code = (islower(rc_ptr->choice) ? A2I(rc_ptr->choice) : -1);
+    rc_ptr->command_code = static_cast<COMMAND_CODE>(AD2I(rc_ptr->choice));
 }
 
 static bool ask_invoke_racial_power(rc_type *rc_ptr)
@@ -297,7 +292,7 @@ static bool ask_invoke_racial_power(rc_type *rc_ptr)
         return true;
     }
 
-    const auto prompt = format(_("%sを使いますか？ ", "Use %s? "), rc_ptr->power_desc[rc_ptr->command_code].racial_name.data());
+    const auto prompt = fmt::format(_("{}を使いますか？ ", "Use {}? "), rc_ptr->power_desc[rc_ptr->command_code].racial_name);
     return input_check(prompt);
 }
 
@@ -332,12 +327,16 @@ static void racial_power_display_explanation(CreatureEntity &creature, rc_type *
 static bool racial_power_process_input(CreatureEntity &creature, rc_type *rc_ptr)
 {
     rc_ptr->choice = (always_show_list || use_menu) ? ESCAPE : 1;
+    const auto first_label = I2A(0);
+    const auto last_label = I2AD(rc_ptr->power_count() - 1);
 
     while (true) {
         if (rc_ptr->choice == ESCAPE) {
             rc_ptr->choice = ' ';
         } else {
-            const auto choice = input_command(rc_ptr->out_val);
+            // ページが -1 なら一覧を表示していない。max_page のページは行が無く見出しだけを描く (一覧を隠した状態)
+            const auto is_list_shown = rc_ptr->page >= 0 && rc_ptr->page < rc_ptr->max_page;
+            const auto choice = input_spell_choice(rc_ptr->out_val, { .first_label = first_label, .last_label = last_label, .list = is_list_shown, .browse = rc_ptr->browse_mode, .menu = use_menu });
             if (!choice.has_value()) {
                 return true;
             }
@@ -384,6 +383,8 @@ static bool racial_power_select_power(CreatureEntity &creature, rc_type *rc_ptr)
         }
     }
 
+    // 一覧は選び終えるまで消さないので、この関数を抜けるまで登録する
+    BotDrawnScreenScope bot_screen;
     screen_save();
 
     if (use_menu) {
@@ -513,15 +514,5 @@ void do_cmd_racial_power(CreatureEntity &creature)
     }
 
     creature.plus_incident_tree("USE_RACIAL", 1);
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    const auto &flags_mwrf = {
-        MainWindowRedrawingFlag::HP,
-        MainWindowRedrawingFlag::MP,
-    };
-    rfu.set_flags(flags_mwrf);
-    static constexpr auto flags_swrf = {
-        SubWindowRedrawingFlag::PLAYER,
-        SubWindowRedrawingFlag::SPELL,
-    };
-    rfu.set_flags(flags_swrf);
+    DeferredUpdateRequests::get_instance().request_hp_mp_redrawing();
 }

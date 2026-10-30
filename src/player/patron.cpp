@@ -37,6 +37,7 @@
 #include "system/enums/monrace/monrace-id.h"
 #include "system/floor/floor-info.h"
 #include "system/item-entity.h"
+#include "util/string-processor.h"
 #include "view/display-messages.h"
 
 std::vector<Patron> patron_list = {
@@ -191,25 +192,25 @@ void Patron::gain_level_reward(CreatureEntity &creature, int chosen_reward)
     }
     type--;
 
-    const auto wrath_reason = format(_("%sの怒り", "the Wrath of %s"), this->name.data());
+    const auto wrath_reason = fmt::format(_("{}の怒り", "the Wrath of {}"), this->name);
 
     effect = this->reward_table[type];
 
     if (one_in_(6) && !chosen_reward) {
-        msg_format(_("%s^は褒美としてあなたを突然変異させた。", "%s^ rewards you with a mutation!"), this->name.data());
+        msg_print(_("{}は褒美としてあなたを突然変異させた。", "{} rewards you with a mutation!"), str_upcase_first(this->name));
         (void)gain_mutation(creature, 0);
         reward = _("変異した。", "mutation");
     } else {
         const auto &floor = *creature.get_floor();
         switch (chosen_reward ? chosen_reward : effect) {
         case REW_POLY_SLF:
-            msg_format(_("%sの声が響き渡った:", "The voice of %s booms out:"), this->name.data());
+            msg_print(_("{}の声が響き渡った:", "The voice of {} booms out:"), this->name);
             msg_print(_("「汝、新たなる姿を必要とせり！」", "'Thou needst a new form, mortal!'"));
             do_poly_self(creature);
             reward = _("変異した。", "polymorphing");
             break;
         case REW_GAIN_EXP:
-            msg_format(_("%sの声が響き渡った:", "The voice of %s booms out:"), this->name.data());
+            msg_print(_("{}の声が響き渡った:", "The voice of {} booms out:"), this->name);
             msg_print(_("「汝は良く行いたり！続けよ！」", "'Well done, mortal! Lead on!'"));
             if (CreatureRace(&creature).equals(PlayerRaceType::ANDROID)) {
                 msg_print(_("しかし何も起こらなかった。", "But, nothing happens."));
@@ -226,7 +227,7 @@ void Patron::gain_level_reward(CreatureEntity &creature, int chosen_reward)
 
             break;
         case REW_LOSE_EXP:
-            msg_format(_("%sの声が響き渡った:", "The voice of %s booms out:"), this->name.data());
+            msg_print(_("{}の声が響き渡った:", "The voice of {} booms out:"), this->name);
             msg_print(_("「下僕よ、汝それに値せず。」", "'Thou didst not deserve that, slave.'"));
             if (CreatureRace(&creature).equals(PlayerRaceType::ANDROID)) {
                 msg_print(_("しかし何も起こらなかった。", "But, nothing happens."));
@@ -237,43 +238,43 @@ void Patron::gain_level_reward(CreatureEntity &creature, int chosen_reward)
 
             break;
         case REW_GOOD_OBJ:
-            msg_format(_("%sの声がささやいた:", "The voice of %s whispers:"), this->name.data());
+            msg_print(_("{}の声がささやいた:", "The voice of {} whispers:"), this->name);
             msg_print(_("「我が与えし物を賢明に使うべし。」", "'Use my gift wisely.'"));
             acquirement(creature, creature.y, creature.x, 1, false);
             reward = _("上質なアイテムを手に入れた。", "a good item");
             break;
         case REW_GREA_OBJ:
-            msg_format(_("%sの声が響き渡った:", "The voice of %s booms out:"), this->name.data());
+            msg_print(_("{}の声が響き渡った:", "The voice of {} booms out:"), this->name);
             msg_print(_("「我が与えし物を賂明に使うべし。」", "'Use my gift wisely.'"));
             acquirement(creature, creature.y, creature.x, 1, true);
             reward = _("高級品のアイテムを手に入れた。", "an excellent item");
             break;
         case REW_CHAOS_WP:
-            msg_format(_("%sの声が響き渡った:", "The voice of %s booms out:"), this->name.data());
+            msg_print(_("{}の声が響き渡った:", "The voice of {} booms out:"), this->name);
             msg_print(_("「汝の行いは貴き剣に値せり。」", "'Thy deed hath earned thee a worthy blade.'"));
             acquire_chaos_weapon(creature);
             reward = _("(混沌)の武器を手に入れた。", "chaos weapon");
             break;
         case REW_GOOD_OBS:
-            msg_format(_("%sの声が響き渡った:", "The voice of %s booms out:"), this->name.data());
+            msg_print(_("{}の声が響き渡った:", "The voice of {} booms out:"), this->name);
             msg_print(_("「汝の行いは貴き報いに値せり。」", "'Thy deed hath earned thee a worthy reward.'"));
             acquirement(creature, creature.y, creature.x, randint1(2) + 1, false);
             reward = _("上質なアイテムを手に入れた。", "good items");
             break;
         case REW_GREA_OBS:
-            msg_format(_("%sの声が響き渡った:", "The voice of %s booms out:"), this->name.data());
+            msg_print(_("{}の声が響き渡った:", "The voice of {} booms out:"), this->name);
             msg_print(_("「下僕よ、汝の献身への我が惜しみ無き報いを見るがよい。」", "'Behold, mortal, how generously I reward thy loyalty.'"));
             acquirement(creature, creature.y, creature.x, randint1(2) + 1, true);
             reward = _("高級品のアイテムを手に入れた。", "excellent items");
             break;
         case REW_TY_CURSE:
-            msg_format(_("%sの声が轟き渡った:", "The voice of %s thunders:"), this->name.data());
+            msg_print(_("{}の声が轟き渡った:", "The voice of {} thunders:"), this->name);
             msg_print(_("「下僕よ、汝傲慢なり。」", "'Thou art growing arrogant, mortal.'"));
             (void)activate_ty_curse(creature, false, &count);
             reward = _("禍々しい呪いをかけられた。", "cursing");
             break;
         case REW_SUMMON_M:
-            msg_format(_("%sの声が響き渡った:", "The voice of %s booms out:"), this->name.data());
+            msg_print(_("{}の声が響き渡った:", "The voice of {} booms out:"), this->name);
             msg_print(_("「我が下僕たちよ、かの傲慢なる者を倒すべし！」", "'My pets, destroy the arrogant mortal!'"));
             for (int i = 0, summon_num = randint1(5) + 1; i < summon_num; i++) {
                 (void)summon_specific(creature, creature.y, creature.x, floor.dun_level, SUMMON_NONE,
@@ -283,19 +284,19 @@ void Patron::gain_level_reward(CreatureEntity &creature, int chosen_reward)
             reward = _("モンスターを召喚された。", "summoning hostile monsters");
             break;
         case REW_H_SUMMON:
-            msg_format(_("%sの声が響き渡った:", "The voice of %s booms out:"), this->name.data());
+            msg_print(_("{}の声が響き渡った:", "The voice of {} booms out:"), this->name);
             msg_print(_("「汝、より強き敵を必要とせり！」", "'Thou needst worthier opponents!'"));
             activate_hi_summon(creature, creature.y, creature.x, false);
             reward = _("モンスターを召喚された。", "summoning many hostile monsters");
             break;
         case REW_DO_HAVOC:
-            msg_format(_("%sの声が響き渡った:", "The voice of %s booms out:"), this->name.data());
+            msg_print(_("{}の声が響き渡った:", "The voice of {} booms out:"), this->name);
             msg_print(_("「死と破壊こそ我が喜びなり！」", "'Death and destruction! This pleaseth me!'"));
             call_chaos(creature);
             reward = _("カオスの力が渦巻いた。", "calling chaos");
             break;
         case REW_GAIN_ABL:
-            msg_format(_("%sの声が鳴り響いた:", "The voice of %s rings out:"), this->name.data());
+            msg_print(_("{}の声が鳴り響いた:", "The voice of {} rings out:"), this->name);
             msg_print(_("「留まるのだ、下僕よ。余が汝の肉体を鍛えん。」", "'Stay, mortal, and let me mold thee.'"));
             if ((this->boost_stat == A_RANDOM) || !one_in_(3)) {
                 do_inc_stat(creature, randint0(6));
@@ -306,7 +307,7 @@ void Patron::gain_level_reward(CreatureEntity &creature, int chosen_reward)
             reward = _("能力値が上がった。", "increasing a stat");
             break;
         case REW_LOSE_ABL:
-            msg_format(_("%sの声が響き渡った:", "The voice of %s booms out:"), this->name.data());
+            msg_print(_("{}の声が響き渡った:", "The voice of {} booms out:"), this->name);
             msg_print(_("「下僕よ、余は汝に飽みたり。」", "'I grow tired of thee, mortal.'"));
             if ((this->boost_stat == A_RANDOM) || !one_in_(3)) {
                 do_dec_stat(creature, randint0(6));
@@ -317,7 +318,7 @@ void Patron::gain_level_reward(CreatureEntity &creature, int chosen_reward)
             reward = _("能力値が下がった。", "decreasing a stat");
             break;
         case REW_RUIN_ABL:
-            msg_format(_("%sの声が轟き渡った:", "The voice of %s thunders:"), this->name.data());
+            msg_print(_("{}の声が轟き渡った:", "The voice of {} thunders:"), this->name);
             msg_print(_("「汝、謙虚たることを学ぶべし！」", "'Thou needst a lesson in humility, mortal!'"));
             msg_print(_("あなたは以前より弱くなった！", "You feel less powerful!"));
             for (int stat = 0; stat < A_MAX; stat++) {
@@ -327,12 +328,12 @@ void Patron::gain_level_reward(CreatureEntity &creature, int chosen_reward)
             reward = _("全能力値が下がった。", "decreasing all stats");
             break;
         case REW_POLY_WND:
-            msg_format(_("%sの力が触れるのを感じた。", "You feel the power of %s touch you."), this->name.data());
+            msg_print(_("{}の力が触れるのを感じた。", "You feel the power of {} touch you."), this->name);
             do_poly_wounds(creature);
             reward = _("傷が変化した。", "polymorphing wounds");
             break;
         case REW_AUGM_ABL:
-            msg_format(_("%sの声が響き渡った:", "The voice of %s booms out:"), this->name.data());
+            msg_print(_("{}の声が響き渡った:", "The voice of {} booms out:"), this->name);
             msg_print(_("「我がささやかなる賜物を受けとるがよい！」", "'Receive this modest gift from me!'"));
             for (int stat = 0; stat < A_MAX; stat++) {
                 (void)do_inc_stat(creature, stat);
@@ -341,14 +342,14 @@ void Patron::gain_level_reward(CreatureEntity &creature, int chosen_reward)
             reward = _("全能力値が上がった。", "increasing all stats");
             break;
         case REW_HURT_LOT:
-            msg_format(_("%sの声が響き渡った:", "The voice of %s booms out:"), this->name.data());
+            msg_print(_("{}の声が響き渡った:", "The voice of {} booms out:"), this->name);
             msg_print(_("「苦しむがよい、無能な愚か者よ！」", "'Suffer, pathetic fool!'"));
             fire_ball(creature, AttributeType::DISINTEGRATE, Direction::self(), creature.get_level() * 4, 4);
             take_hit(creature, DAMAGE_NOESCAPE, creature.get_level() * 4, wrath_reason);
             reward = _("分解の球が発生した。", "generating disintegration ball");
             break;
         case REW_HEAL_FUL:
-            msg_format(_("%sの声が響き渡った:", "The voice of %s booms out:"), this->name.data());
+            msg_print(_("{}の声が響き渡った:", "The voice of {} booms out:"), this->name);
             msg_print(_("「甦るがよい、我が下僕よ！」", "'Rise, my servant!'"));
             (void)restore_level(creature);
             (void)restore_all_status(creature);
@@ -361,7 +362,7 @@ void Patron::gain_level_reward(CreatureEntity &creature, int chosen_reward)
                 break;
             }
 
-            msg_format(_("%sの声が響き渡った:", "The voice of %s booms out:"), this->name.data());
+            msg_print(_("{}の声が響き渡った:", "The voice of {} booms out:"), this->name);
             msg_print(_("「汝、武器に頼ることなかれ。」", "'Thou reliest too much on thy weapon.'"));
             slot = INVEN_MAIN_HAND;
             if (has_melee_weapon(creature, INVEN_SUB_HAND)) {
@@ -373,7 +374,7 @@ void Patron::gain_level_reward(CreatureEntity &creature, int chosen_reward)
 
             const auto item_name = describe_flavor(creature, *creature.inventory[slot], OD_NAME_ONLY);
             (void)curse_weapon_object(creature, false, *creature.inventory[slot]);
-            reward = format(_("%sが破壊された。", "destroying %s"), item_name.data());
+            reward = fmt::format(_("{}が破壊された。", "destroying {}"), item_name);
             break;
         }
         case REW_CURSE_AR: {
@@ -381,15 +382,15 @@ void Patron::gain_level_reward(CreatureEntity &creature, int chosen_reward)
                 break;
             }
 
-            msg_format(_("%sの声が響き渡った:", "The voice of %s booms out:"), this->name.data());
+            msg_print(_("{}の声が響き渡った:", "The voice of {} booms out:"), this->name);
             msg_print(_("「汝、防具に頼ることなかれ。」", "'Thou reliest too much on thine equipment.'"));
             const auto item_name = describe_flavor(creature, *creature.inventory[INVEN_BODY], OD_NAME_ONLY);
             (void)curse_armor(creature);
-            reward = format(_("%sが破壊された。", "destroying %s"), item_name.data());
+            reward = fmt::format(_("{}が破壊された。", "destroying {}"), item_name);
             break;
         }
         case REW_PISS_OFF: {
-            msg_format(_("%sの声がささやいた:", "The voice of %s whispers:"), this->name.data());
+            msg_print(_("{}の声がささやいた:", "The voice of {} whispers:"), this->name);
             msg_print(_("「我を怒りしめた罪を償うべし。」", "'Now thou shalt pay for annoying me.'"));
             switch (randint1(4)) {
             case 1:
@@ -416,7 +417,7 @@ void Patron::gain_level_reward(CreatureEntity &creature, int chosen_reward)
 
                     const auto item_name = describe_flavor(creature, *creature.inventory[slot], OD_NAME_ONLY);
                     (void)curse_weapon_object(creature, false, *creature.inventory[slot]);
-                    reward = format(_("%sが破壊された。", "destroying %s"), item_name.data());
+                    reward = fmt::format(_("{}が破壊された。", "destroying {}"), item_name);
                 } else {
                     if (!creature.inventory[INVEN_BODY]->is_valid()) {
                         break;
@@ -424,7 +425,7 @@ void Patron::gain_level_reward(CreatureEntity &creature, int chosen_reward)
 
                     const auto item_name = describe_flavor(creature, *creature.inventory[INVEN_BODY], OD_NAME_ONLY);
                     (void)curse_armor(creature);
-                    reward = format(_("%sが破壊された。", "destroying %s"), item_name.data());
+                    reward = fmt::format(_("{}が破壊された。", "destroying {}"), item_name);
                 }
                 break;
             default:
@@ -438,7 +439,7 @@ void Patron::gain_level_reward(CreatureEntity &creature, int chosen_reward)
             break;
         }
         case REW_WRATH:
-            msg_format(_("%sの声が轟き渡った:", "The voice of %s thunders:"), this->name.data());
+            msg_print(_("{}の声が轟き渡った:", "The voice of {} thunders:"), this->name);
             msg_print(_("「死ぬがよい、下僕よ！」", "'Die, mortal!'"));
             take_hit(creature, DAMAGE_LOSELIFE, creature.get_level() * 4, wrath_reason);
             for (int stat = 0; stat < A_MAX; stat++) {
@@ -469,38 +470,38 @@ void Patron::gain_level_reward(CreatureEntity &creature, int chosen_reward)
 
             break;
         case REW_DESTRUCT:
-            msg_format(_("%sの声が響き渡った:", "The voice of %s booms out:"), this->name.data());
+            msg_print(_("{}の声が響き渡った:", "The voice of {} booms out:"), this->name);
             msg_print(_("「死と破壊こそ我が喜びなり！」", "'Death and destruction! This pleaseth me!'"));
             (void)destroy_area(creature, creature.y, creature.x, 25, false);
             reward = _("ダンジョンが*破壊*された。", "*destruct*ing dungeon");
             break;
         case REW_GENOCIDE:
-            msg_format(_("%sの声が響き渡った:", "The voice of %s booms out:"), this->name.data());
+            msg_print(_("{}の声が響き渡った:", "The voice of {} booms out:"), this->name);
             msg_print(_("「我、汝の敵を抹殺せん！」", "'Let me relieve thee of thine oppressors!'"));
             (void)symbol_genocide(creature, 0, false);
             reward = _("モンスターが抹殺された。", "genociding monsters");
             break;
         case REW_MASS_GEN:
-            msg_format(_("%sの声が響き渡った:", "The voice of %s booms out:"), this->name.data());
+            msg_print(_("{}の声が響き渡った:", "The voice of {} booms out:"), this->name);
             msg_print(_("「我、汝の敵を抹殺せん！」", "'Let me relieve thee of thine oppressors!'"));
             (void)mass_genocide(creature, 0, false);
             reward = _("モンスターが抹殺された。", "genociding nearby monsters");
             break;
         case REW_DISPEL_C:
-            msg_format(_("%sの力が敵を攻撃するのを感じた！", "You can feel the power of %s assault your enemies!"), this->name.data());
+            msg_print(_("{}の力が敵を攻撃するのを感じた！", "You can feel the power of {} assault your enemies!"), this->name);
             (void)dispel_monsters(creature, creature.get_level() * 4);
             break;
         case REW_GOOD_HAFTED:
-            msg_format(_("%sの声が響き渡った:", "The voice of %s booms out:"), this->name.data());
+            msg_print(_("{}の声が響き渡った:", "The voice of {} booms out:"), this->name);
             msg_print(_("「殺せ！叩き潰せ！擦り潰せ！」", "'Kill them! Crush them! Grind them into dust!'"));
             acquire_hafted_weapon(creature);
             reward = _("高級品の鈍器を手に入れた。", "a fine hafted weapon");
             break;
         case REW_IGNORE:
-            msg_format(_("%sはあなたを無視した。", "%s ignores you."), this->name.data());
+            msg_print(_("{}はあなたを無視した。", "{} ignores you."), this->name);
             break;
         case REW_SER_DEMO:
-            msg_format(_("%sは褒美として悪魔の使いをよこした！", "%s rewards you with a demonic servant!"), this->name.data());
+            msg_print(_("{}は褒美として悪魔の使いをよこした！", "{} rewards you with a demonic servant!"), this->name);
             if (!summon_specific(creature, creature.y, creature.x, floor.dun_level, SUMMON_DEMON, PM_FORCE_PET)) {
                 msg_print(_("何も現れなかった...", "Nobody ever turns up..."));
             } else {
@@ -509,7 +510,7 @@ void Patron::gain_level_reward(CreatureEntity &creature, int chosen_reward)
 
             break;
         case REW_SER_MONS:
-            msg_format(_("%sは褒美として使いをよこした！", "%s rewards you with a servant!"), this->name.data());
+            msg_print(_("{}は褒美として使いをよこした！", "{} rewards you with a servant!"), this->name);
             if (!summon_specific(creature, creature.y, creature.x, floor.dun_level, SUMMON_NONE, PM_FORCE_PET)) {
                 msg_print(_("何も現れなかった...", "Nobody ever turns up..."));
             } else {
@@ -518,7 +519,7 @@ void Patron::gain_level_reward(CreatureEntity &creature, int chosen_reward)
 
             break;
         case REW_SER_UNDE:
-            msg_format(_("%sは褒美としてアンデッドの使いをよこした。", "%s rewards you with an undead servant!"), this->name.data());
+            msg_print(_("{}は褒美としてアンデッドの使いをよこした。", "{} rewards you with an undead servant!"), this->name);
             if (!summon_specific(creature, creature.y, creature.x, floor.dun_level, SUMMON_UNDEAD, PM_FORCE_PET)) {
                 msg_print(_("何も現れなかった...", "Nobody ever turns up..."));
             } else {
@@ -527,13 +528,13 @@ void Patron::gain_level_reward(CreatureEntity &creature, int chosen_reward)
 
             break;
         default:
-            msg_format(_("%sの声がどもった:", "The voice of %s stammers:"), this->name.data());
-            msg_format(_("「あー、あー、答えは %d/%d。質問は何？」", "'Uh... uh... the answer's %d/%d, what's the question?'"), type, effect);
+            msg_print(_("{}の声がどもった:", "The voice of {} stammers:"), this->name);
+            msg_print(_("「あー、あー、答えは {}/{}。質問は何？」", "'Uh... uh... the answer's {}/{}, what's the question?'"), type, static_cast<int>(effect));
         }
     }
 
     if (!reward.empty()) {
-        const auto note = format(_("パトロンの報酬で%s", "The patron rewarded you with %s."), reward.data());
+        const auto note = fmt::format(_("パトロンの報酬で{}", "The patron rewarded you with {}."), reward);
         exe_write_diary(*creature.get_floor(), DiaryKind::DESCRIPTION, 0, note);
     }
 }
@@ -541,7 +542,7 @@ void Patron::gain_level_reward(CreatureEntity &creature, int chosen_reward)
 void Patron::admire(CreatureEntity &creature)
 {
     if (CreatureClass(creature).equals(PlayerClassType::CHAOS_WARRIOR) || creature.get_mutations().has(PlayerMutationType::CHAOS_GIFT)) {
-        msg_format(_("%sからの声が響いた。", "The voice of %s booms out:"), this->name.data());
+        msg_print(_("{}からの声が響いた。", "The voice of {} booms out:"), this->name);
         msg_print(_("『よくやった、定命の者よ！』", "'Thou art donst well, mortal!'"));
     }
 }

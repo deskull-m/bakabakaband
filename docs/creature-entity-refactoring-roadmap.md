@@ -4441,15 +4441,15 @@ virtual 化・処理の同化・機能付与** がほぼ出揃った。E トラ�
 末尾に **byte 一致**の共通後処理を重複して持っていた:
 
 ```cpp
-auto &rfu = RedrawingFlagsUpdater::get_instance();
-rfu.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
+auto &dur = DeferredUpdateRequests::get_instance();
+dur.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
 if (!notice) {
     return false;
 }
 if (disturb_state || Travel::get_instance().is_ongoing()) {
     disturb(creature, false, true);
 }
-rfu.set_flag(StatusRecalculatingFlag::BONUS);
+dur.set_flag(StatusRecalculatingFlag::BONUS);
 handle_stuff(creature);
 return true;
 ```
@@ -4465,7 +4465,7 @@ return true;
 
 **対象外（byte 不一致のため据え置き）:** `MainWindowRedrawingFlag::BASIC` を使う
 `shape-changer.cpp`、`StatusRecalculatingFlag::MONSTER_STATUSES` を `set_flags` で
-複数指定する `sight-setter.cpp`、および `rfu` を末尾以前で宣言・別フラグ設定する
+複数指定する `sight-setter.cpp`、および `dur` を末尾以前で宣言・別フラグ設定する
 一部関数（recalc フラグや再描画対象が異なるため共通化すると挙動が変わる）。
 
 Makefile.am / VisualStudio プロジェクト（`.vcxproj` / `.filters`）に新ファイルを登録。

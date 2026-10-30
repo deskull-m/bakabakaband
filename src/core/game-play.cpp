@@ -78,6 +78,7 @@
 #include "system/angband-version.h"
 #include "system/baseitem/baseitem-service.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/dungeon/quest-definition.h"
 #include "system/dungeon/quest-fixed-map.h"
 #include "system/enums/monrace/monrace-id.h"
@@ -86,12 +87,11 @@
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/redrawing-flags-updater.h"
 #include "system/system-variables.h"
 #include "target/target-checker.h"
 #include "term/gameterm.h"
 #include "term/screen-processor.h"
-#include "term/z-form.h"
+#include "term/z-rand.h"
 #include "util/angband-files.h"
 #include "view/display-messages.h"
 #include "view/display-player.h"
@@ -100,6 +100,7 @@
 #include "world/world-collapsion.h"
 #include "world/world.h"
 #include <ctime>
+#include <fmt/format.h>
 
 static void restore_windows(CreatureEntity &creature)
 {
@@ -127,13 +128,7 @@ static void send_waiting_record(CreatureEntity &creature)
         quit("");
     }
 
-    static constexpr auto flags = {
-        StatusRecalculatingFlag::BONUS,
-        StatusRecalculatingFlag::HP,
-        StatusRecalculatingFlag::MP,
-        StatusRecalculatingFlag::SPELLS,
-    };
-    RedrawingFlagsUpdater::get_instance().set_flags(flags);
+    DeferredUpdateRequests::get_instance().request_player_status_recalculation();
     update_creature(creature);
     creature.is_dead_ = true;
     auto &world = AngbandWorld::get_instance();
@@ -144,7 +139,7 @@ static void send_waiting_record(CreatureEntity &creature)
     highscore_fd = fd_open(path, O_RDWR);
 
     /* 町名消失バグ対策(#38205)のためここで世界マップ情報を読み出す */
-    apply_wilderness_definition();
+    (void)apply_wilderness_definition();
     bool success = send_world_score(creature, true);
     if (!success && !input_check_strict(creature, _("スコア登録を諦めますか？", "Do you give up score registration? "), UserCheck::NO_HISTORY)) {
         constexpr auto prompt = _("引き続き待機します。", "standing by for future registration...");
@@ -167,11 +162,11 @@ static void send_waiting_record(CreatureEntity &creature)
 static void init_random_seed(CreatureEntity &creature, bool new_game)
 {
     auto &world = AngbandWorld::get_instance();
-    auto init_random_seed = false;
+    auto init_game_rng = false;
     if (!world.character_loaded) {
         new_game = true;
         world.character_dungeon = false;
-        init_random_seed = true;
+        init_game_rng = true;
         init_saved_floors(false);
     } else if (new_game) {
         init_saved_floors(true);
@@ -183,8 +178,14 @@ static void init_random_seed(CreatureEntity &creature, bool new_game)
 
     // 既存のセーブデータから新規ゲームを始める場合、乱数生成器の状態はセーブデータのものが
     // 読み込まれている。固定シードを指定した時はこれを上書きしないと再現性が得られない
-    if (init_random_seed || (new_game && arg_fixed_seed)) {
+    if (init_game_rng || (new_game && arg_fixed_seed)) {
         Rand_state_init(arg_fixed_seed);
+    }
+
+    // ゲームの進行に影響しない乱数生成器はセーブデータに記録されないため、固定シードを指定した時は
+    // 既存のセーブデータを読み込んだ場合も初期化する。タイトル画面での乱数の消費に左右されないよう、ゲームの開始時に行う
+    if (arg_fixed_seed) {
+        Rand_external_state_init(arg_fixed_seed);
     }
 }
 
@@ -252,7 +253,7 @@ static void reset_world_info(CreatureEntity &creature)
 
 static void generate_wilderness(CreatureEntity &creature)
 {
-    apply_wilderness_definition();
+    (void)apply_wilderness_definition();
     init_flags = INIT_ONLY_BUILDINGS;
     parse_fixed_map(creature, TOWN_DEFINITION_LIST, 0, 0, MAX_HGT, MAX_WID);
     select_floor_music(creature);
@@ -301,14 +302,14 @@ static void generate_world(CreatureEntity &creature, bool new_game)
         return;
     }
 
-    const auto mes = format(_("%%sに降り立った。", "arrived in %%s."), map_name(creature).data());
+    const auto mes = fmt::format(_("{}に降り立った。", "arrived in {}."), map_name(creature));
     exe_write_diary(floor, DiaryKind::DESCRIPTION, 0, mes);
 }
 
 static void init_io(CreatureEntity &creature)
 {
     term_xtra(TERM_XTRA_REACT, 0);
-    RedrawingFlagsUpdater::get_instance().fill_up_sub_flags();
+    DeferredUpdateRequests::get_instance().fill_up_sub_flags();
     handle_stuff(creature);
     if (arg_force_original) {
         rogue_like_commands = false;

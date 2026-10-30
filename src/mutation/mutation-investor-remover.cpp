@@ -10,8 +10,8 @@
 #include "mutation/mutation-util.h"
 #include "player-base/player-race.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/item-entity.h"
-#include "system/redrawing-flags-updater.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
 
@@ -257,7 +257,7 @@ bool gain_mutation(CreatureEntity &creature, MUTATION_IDX choose_mut)
     }
 
     creature.set_mutant_regenerate_mod(calc_mutant_regenerate_mod(creature));
-    RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
+    DeferredUpdateRequests::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
     handle_stuff(creature);
     return true;
 }
@@ -302,7 +302,7 @@ bool lose_mutation(CreatureEntity &creature, MUTATION_IDX choose_mut)
         creature.remove_mutation(glm_ptr->muta_which);
     }
 
-    RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
+    DeferredUpdateRequests::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
     handle_stuff(creature);
     creature.set_mutant_regenerate_mod(calc_mutant_regenerate_mod(creature));
     return true;
@@ -314,7 +314,7 @@ void lose_all_mutations(CreatureEntity &creature)
         chg_virtue(creature, Virtue::CHANCE, -5);
         msg_print(_("全ての突然変異が治った。", "You are cured of all mutations."));
         creature.clear_mutations();
-        RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
+        DeferredUpdateRequests::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
         handle_stuff(creature);
         creature.set_mutant_regenerate_mod(calc_mutant_regenerate_mod(creature));
     }

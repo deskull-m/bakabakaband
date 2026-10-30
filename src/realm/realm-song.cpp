@@ -24,10 +24,11 @@
 #include "status/bad-status-setter.h"
 #include "status/experience.h"
 #include "system/creature-entity.h"
-#include "system/redrawing-flags-updater.h"
+#include "system/deferred-update-requests.h"
 #include "target/target-getter.h"
 #include "util/dice.h"
 #include "view/display-messages.h"
+#include <fmt/format.h>
 
 /*!
  * @brief 歌の開始を処理する / Start singing if the player is a Bard
@@ -45,9 +46,81 @@ static void start_singing(CreatureEntity &creature, SPELL_IDX spell, int32_t son
     /* Now the player is singing */
     set_action(creature, ACTION_SING);
 
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.set_flag(StatusRecalculatingFlag::BONUS);
-    rfu.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
+    auto &dur = DeferredUpdateRequests::get_instance();
+    dur.set_flag(StatusRecalculatingFlag::BONUS);
+    dur.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
+}
+
+namespace {
+// 感知の歌は、歌い続けた回数 (段階) がそれぞれの値に達すると、感知する対象が増える
+constexpr int32_t DETECTION_SONG_STAGE_TERRAIN = 0; //!< トラップ・ドア・階段
+constexpr int32_t DETECTION_SONG_STAGE_MONSTERS = 3; //!< モンスター
+constexpr int32_t DETECTION_SONG_STAGE_OBJECTS = 6; //!< 財宝・アイテム
+constexpr int32_t DETECTION_SONG_STAGE_MAP = 11; //!< 周辺の地形
+constexpr int32_t DETECTION_SONG_STAGE_WIZ_LITE = 19; //!< フロア全体
+constexpr auto DETECTION_SONG_RADIUS = DETECT_RAD_DEFAULT; //!< 感知の歌の範囲
+}
+
+/*!
+ * @brief 感知の歌で、トラップ・ドア・階段、モンスター、財宝・アイテムの感知が始まる回かを返す
+ * @param count 歌い続けた回数 (感知の歌の段階)
+ * @return 感知が始まる回ならtrue
+ */
+static bool is_detection_song_stage_start(int32_t count)
+{
+    return (count == DETECTION_SONG_STAGE_TERRAIN) || (count == DETECTION_SONG_STAGE_MONSTERS) || (count == DETECTION_SONG_STAGE_OBJECTS);
+}
+
+/*!
+ * @brief 感知の歌の段階を進められるかを返す
+ * @param count 歌い続けた回数 (感知の歌の段階)
+ * @param plev プレイヤーのレベル
+ * @return 段階を進められるならtrue
+ * @details
+ * トラップ・ドア・階段、モンスター、財宝・アイテムの感知のメッセージは、それぞれの感知が始まった回だけ出す。
+ * 次の感知へ進むにはレベルが要るが、感知が始まった回は、レベルが足りなくても段階を 1 つ進めて、
+ * 次の回からはメッセージを出さないようにする。
+ */
+static bool can_advance_detection_song(int32_t count, PLAYER_LEVEL plev)
+{
+    if (is_detection_song_stage_start(count)) {
+        return true;
+    }
+    if (count < DETECTION_SONG_STAGE_MONSTERS) {
+        return plev > 14;
+    }
+    if (count < DETECTION_SONG_STAGE_OBJECTS) {
+        return plev > 19;
+    }
+    if (count < DETECTION_SONG_STAGE_MAP) {
+        return plev > 24;
+    }
+    if (count < DETECTION_SONG_STAGE_WIZ_LITE) {
+        return plev > 39;
+    }
+
+    return false;
+}
+
+/*!
+ * @brief 感知の歌で感知したモンスターの印を、次の歌の感知まで保つ
+ * @param creature クリーチャーへの参照
+ * @details
+ * 感知したモンスターの印 (MARK) は行動ごとに外れる。歌の感知は歌の MP の消費と同じ周期で行うので、
+ * その間に印が外れないよう、行動ごとに範囲内のモンスターの印を保つ。新しくは感知しない。
+ */
+void keep_detection_song_marks(CreatureEntity &creature)
+{
+    if (!music_singing(creature, MUSIC_DETECT) || creature.has_anti_magic()) {
+        return;
+    }
+
+    // モンスターの感知が始まった回は歌の感知で行うので、その後から保つ
+    if (get_singing_count(creature) <= DETECTION_SONG_STAGE_MONSTERS) {
+        return;
+    }
+
+    keep_detected_monsters(creature, DETECTION_SONG_RADIUS);
 }
 
 /*!
@@ -244,7 +317,7 @@ tl::optional<std::string> do_music_spell(CreatureEntity &creature, SPELL_IDX spe
 
             (void)hp_player(creature, 10);
             (void)BadStatusSetter(creature).set_fear(0);
-            RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::HP);
+            DeferredUpdateRequests::get_instance().set_flag(StatusRecalculatingFlag::HP);
             start_singing(creature, spell, MUSIC_HERO);
         }
 
@@ -252,7 +325,7 @@ tl::optional<std::string> do_music_spell(CreatureEntity &creature, SPELL_IDX spe
             if (!creature.get_timed_effect(CreatureTimedEffect::HERO)) {
                 msg_print(_("ヒーローの気分が消え失せた。", "The heroism wears off."));
                 sound(SoundKind::BUFF_EXPIRE);
-                RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::HP);
+                DeferredUpdateRequests::get_instance().set_flag(StatusRecalculatingFlag::HP);
             }
         }
 
@@ -271,47 +344,39 @@ tl::optional<std::string> do_music_spell(CreatureEntity &creature, SPELL_IDX spe
         }
 
         {
-            POSITION rad = DETECT_RAD_DEFAULT;
+            constexpr auto rad = DETECTION_SONG_RADIUS;
 
             if (info) {
                 return info_radius(rad);
             }
 
             if (cont) {
-                int count = get_singing_count(creature);
+                const auto count = get_singing_count(creature);
+                const auto notice_from = [count](int32_t start) {
+                    return (count == start) ? DetectionNotice::ALWAYS : DetectionNotice::NEVER;
+                };
 
-                if (count >= 19) {
+                if (count >= DETECTION_SONG_STAGE_WIZ_LITE) {
                     wiz_lite(creature, false);
                 }
-                if (count >= 11) {
+                if (count >= DETECTION_SONG_STAGE_MAP) {
                     map_area(creature, rad);
-                    if (plev > 39 && count < 19) {
-                        set_singing_count(creature, count + 1);
-                    }
                 }
-                if (count >= 6) {
+                if (count >= DETECTION_SONG_STAGE_OBJECTS) {
                     /* There are too many hidden treasure.  So... */
                     /* detect_treasure(rad); */
-                    detect_objects_gold(creature, rad);
-                    detect_objects_normal(creature, rad);
-
-                    if (plev > 24 && count < 11) {
-                        set_singing_count(creature, count + 1);
-                    }
+                    detect_objects_gold(creature, rad, notice_from(DETECTION_SONG_STAGE_OBJECTS));
+                    detect_objects_normal(creature, rad, notice_from(DETECTION_SONG_STAGE_OBJECTS));
                 }
-                if (count >= 3) {
-                    detect_monsters_invis(creature, rad);
-                    detect_monsters_normal(creature, rad);
-
-                    if (plev > 19 && count < A_MAX) {
-                        set_singing_count(creature, count + 1);
-                    }
+                if (count >= DETECTION_SONG_STAGE_MONSTERS) {
+                    detect_monsters_invis(creature, rad, notice_from(DETECTION_SONG_STAGE_MONSTERS));
+                    detect_monsters_normal(creature, rad, notice_from(DETECTION_SONG_STAGE_MONSTERS));
                 }
-                detect_traps(creature, rad, true);
-                detect_doors(creature, rad);
-                detect_stairs(creature, rad);
+                detect_traps(creature, rad, true, notice_from(DETECTION_SONG_STAGE_TERRAIN));
+                detect_doors(creature, rad, notice_from(DETECTION_SONG_STAGE_TERRAIN));
+                detect_stairs(creature, rad, notice_from(DETECTION_SONG_STAGE_TERRAIN));
 
-                if (plev > 14 && count < 3) {
+                if (can_advance_detection_song(count, plev)) {
                     set_singing_count(creature, count + 1);
                 }
             }
@@ -610,7 +675,7 @@ tl::optional<std::string> do_music_spell(CreatureEntity &creature, SPELL_IDX spe
             const Dice e_dice(1, plev * 3);
 
             if (info) {
-                return format("%s%s+%s", KWD_DAM, m_dice.to_string().data(), e_dice.to_string().data());
+                return fmt::format("{}{}+{}", KWD_DAM, m_dice.to_string(), e_dice.to_string());
             }
 
             if (cont) {
@@ -759,7 +824,7 @@ tl::optional<std::string> do_music_spell(CreatureEntity &creature, SPELL_IDX spe
             msg_print(_("英雄の歌を口ずさんだ．．．", "You chant a powerful, heroic call to arms..."));
             (void)hp_player(creature, 10);
             (void)BadStatusSetter(creature).set_fear(0);
-            RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::HP);
+            DeferredUpdateRequests::get_instance().set_flag(StatusRecalculatingFlag::HP);
             start_singing(creature, spell, MUSIC_SHERO);
         }
 
@@ -769,7 +834,7 @@ tl::optional<std::string> do_music_spell(CreatureEntity &creature, SPELL_IDX spe
                 msg_print(_("ヒーローの気分が消え失せた。", "The heroism wears off."));
                 sound(SoundKind::BUFF_EXPIRE);
                 sound_played = true;
-                RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::HP);
+                DeferredUpdateRequests::get_instance().set_flag(StatusRecalculatingFlag::HP);
             }
 
             if (!creature.is_fast()) {
@@ -861,7 +926,7 @@ tl::optional<std::string> do_music_spell(CreatureEntity &creature, SPELL_IDX spe
 
         if (cast) {
             msg_print(_("フィンゴルフィンの冥王への挑戦を歌った．．．", "You recall the valor of Fingolfin's challenge to the Dark Lord..."));
-            RedrawingFlagsUpdater::get_instance().request_monster_update_and_map_redrawing();
+            DeferredUpdateRequests::get_instance().request_monster_update_and_map_redrawing();
             start_singing(creature, spell, MUSIC_INVULN);
         }
 
@@ -869,7 +934,7 @@ tl::optional<std::string> do_music_spell(CreatureEntity &creature, SPELL_IDX spe
             if (!creature.get_timed_effect(CreatureTimedEffect::INVULNERABILITY)) {
                 msg_print(_("無敵ではなくなった。", "The invulnerability wears off."));
                 sound(SoundKind::BUFF_EXPIRE);
-                RedrawingFlagsUpdater::get_instance().request_monster_update_and_map_redrawing();
+                DeferredUpdateRequests::get_instance().request_monster_update_and_map_redrawing();
             }
         }
 

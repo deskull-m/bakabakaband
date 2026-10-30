@@ -21,7 +21,7 @@
 #include "status/experience.h"
 #include "system/angband.h"
 #include "system/creature-entity.h"
-#include "system/redrawing-flags-updater.h"
+#include "system/deferred-update-requests.h"
 #include "view/display-messages.h"
 
 /*!
@@ -51,11 +51,11 @@ void learn_spell(CreatureEntity &creature, MonsterAbilityType monspell)
     const auto &monster_power = monster_powers.at(monspell);
     if (randint1(creature.get_level() + 70) > monster_power.level + 40) {
         bluemage_data->learnt_blue_magics.set(monspell);
-        msg_format(_("%sを学習した！", "You have learned %s!"), monster_power.name);
+        msg_print(_("{}を学習した！", "You have learned {}!"), monster_power.name);
         gain_exp(creature, monster_power.level * monster_power.smana);
         sound(SoundKind::STUDY);
         bluemage_data->new_magic_learned = true;
-        RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::ACTION);
+        DeferredUpdateRequests::get_instance().set_flag(MainWindowRedrawingFlag::ACTION);
     }
 }
 

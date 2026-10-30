@@ -13,11 +13,11 @@
 #include "room/door-definition.h"
 #include "spell-class/spells-mirror-master.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/enums/terrain/terrain-tag.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
-#include "system/redrawing-flags-updater.h"
 #include "system/terrain/terrain-definition.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
@@ -108,28 +108,8 @@ bool affect_feature(CreatureEntity &creature, MONSTER_IDX src_idx, POSITION r, P
         }
 
         if (message) {
-            msg_format(_("木は%s。", "A tree %s"), message);
+            msg_print(_("木は{}。", "A tree {}"), message);
             set_terrain_id_to_grid(creature, pos, one_in_(3) ? TerrainTag::BRAKE : TerrainTag::GRASS);
-
-            /* Observe */
-            if (grid.is_mark()) {
-                obvious = true;
-            }
-        }
-    } else if (terrain.flags.has(TerrainCharacteristics::ICE)) {
-        concptr message;
-        switch (typ) {
-        case AttributeType::FIRE:
-        case AttributeType::PLASMA:
-            message = _("溶けた", " melted.");
-            break;
-        default:
-            message = nullptr;
-            break;
-        }
-        if (message) {
-            msg_format(_("氷は%s。", "The ice %s"), message);
-            set_terrain_id_to_grid(creature, pos, TerrainTag::FLOOR);
 
             /* Observe */
             if (grid.is_mark()) {
@@ -245,7 +225,7 @@ bool affect_feature(CreatureEntity &creature, MONSTER_IDX src_idx, POSITION r, P
             break;
         }
 
-        msg_format(_("%sに何かがつっかえて開かなくなった。", "The %s seems stuck."), terrain_mimic.name.data());
+        msg_print(_("{}に何かがつっかえて開かなくなった。", "The {} seems stuck."), terrain_mimic.name);
         obvious = true;
         break;
     }
@@ -255,12 +235,12 @@ bool affect_feature(CreatureEntity &creature, MONSTER_IDX src_idx, POSITION r, P
         }
 
         if (known && grid.is_mark()) {
-            msg_format(_("%sが溶けて泥になった！", "The %s turns into mud!"), grid.get_terrain(TerrainKind::MIMIC).name.data());
+            msg_print(_("{}が溶けて泥になった！", "The {} turns into mud!"), grid.get_terrain(TerrainKind::MIMIC).name);
             obvious = true;
         }
 
         cave_alter_feat(creature, y, x, TerrainCharacteristics::STONE);
-        RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::FLOW);
+        DeferredUpdateRequests::get_instance().set_flag(StatusRecalculatingFlag::FLOW);
         break;
     }
     case AttributeType::MAKE_DOOR:
@@ -434,12 +414,12 @@ bool affect_feature(CreatureEntity &creature, MONSTER_IDX src_idx, POSITION r, P
         }
 
         if (known && (grid.is_mark())) {
-            msg_format(_("%sが割れた！", "The %s crumbled!"), grid.get_terrain(TerrainKind::MIMIC).name.data());
+            msg_print(_("{}が割れた！", "The {} crumbled!"), grid.get_terrain(TerrainKind::MIMIC).name);
             sound(SoundKind::GLASS);
         }
 
         cave_alter_feat(creature, y, x, TerrainCharacteristics::STONE);
-        RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::FLOW);
+        DeferredUpdateRequests::get_instance().set_flag(StatusRecalculatingFlag::FLOW);
         break;
     }
     case AttributeType::SOUND: {
@@ -456,12 +436,12 @@ bool affect_feature(CreatureEntity &creature, MONSTER_IDX src_idx, POSITION r, P
         }
 
         if (known && (grid.is_mark())) {
-            msg_format(_("%sが割れた！", "The %s crumbled!"), grid.get_terrain(TerrainKind::MIMIC).name.data());
+            msg_print(_("{}が割れた！", "The {} crumbled!"), grid.get_terrain(TerrainKind::MIMIC).name);
             sound(SoundKind::GLASS);
         }
 
         cave_alter_feat(creature, y, x, TerrainCharacteristics::STONE);
-        RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::FLOW);
+        DeferredUpdateRequests::get_instance().set_flag(StatusRecalculatingFlag::FLOW);
         break;
     }
     case AttributeType::DISINTEGRATE: {
@@ -474,7 +454,7 @@ bool affect_feature(CreatureEntity &creature, MONSTER_IDX src_idx, POSITION r, P
         }
 
         cave_alter_feat(creature, y, x, TerrainCharacteristics::CAN_DISINTEGRATE);
-        RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::FLOW);
+        DeferredUpdateRequests::get_instance().set_flag(StatusRecalculatingFlag::FLOW);
         break;
     }
     case AttributeType::DIRT: {

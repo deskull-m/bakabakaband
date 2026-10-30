@@ -8,7 +8,6 @@
 #include "locale/language-switcher.h"
 #include "system/angband-exceptions.h"
 #include "system/enums/dungeon/dungeon-id.h"
-#include "term/z-form.h"
 #include "term/z-rand.h"
 #include "util/enum-converter.h"
 #include "util/enum-range.h"
@@ -42,7 +41,7 @@ int DungeonRecord::get_max_max_level() const
 void DungeonRecord::set_max_level(int level)
 {
     if (level <= 0) {
-        THROW_EXCEPTION(std::logic_error, format("Invalid dungeon level: %d", level));
+        THROW_EXCEPTION(std::logic_error, fmt::format("Invalid dungeon level: {}", level));
     }
 
     this->max_level = level;

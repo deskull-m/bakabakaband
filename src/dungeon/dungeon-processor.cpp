@@ -31,25 +31,27 @@
 #include "system/angband-system.h"
 #include "system/building-type-definition.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/dungeon/dungeon-record.h"
 #include "system/dungeon/quest-definition.h"
 #include "system/enums/dungeon/dungeon-id.h"
 #include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/redrawing-flags-updater.h"
 #include "target/target-checker.h"
 #include "util/bit-flags-calculator.h"
+#include "util/string-processor.h"
 #include "view/display-messages.h"
 #include "world/world-collapsion.h"
 #include "world/world-turn-processor.h"
 #include "world/world.h"
+#include <fmt/format.h>
 
 static void redraw_character_xtra(CreatureEntity &creature)
 {
     auto &world = AngbandWorld::get_instance();
     world.character_xtra = true;
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
+    auto &dur = DeferredUpdateRequests::get_instance();
     static constexpr auto flags_swrf = {
         SubWindowRedrawingFlag::INVENTORY,
         SubWindowRedrawingFlag::EQUIPMENT,
@@ -59,13 +61,10 @@ static void redraw_character_xtra(CreatureEntity &creature)
         SubWindowRedrawingFlag::OVERHEAD,
         SubWindowRedrawingFlag::DUNGEON,
     };
-    rfu.set_flags(flags_swrf);
-    rfu.request_whole_main_window_redrawing();
-    auto flags_srf = {
-        StatusRecalculatingFlag::BONUS,
-        StatusRecalculatingFlag::HP,
-        StatusRecalculatingFlag::MP,
-        StatusRecalculatingFlag::SPELLS,
+    dur.set_flags(flags_swrf);
+    dur.request_whole_main_window_redrawing();
+    dur.request_player_status_recalculation();
+    static constexpr auto flags_srf = {
         StatusRecalculatingFlag::VIEW,
         StatusRecalculatingFlag::LITE,
         StatusRecalculatingFlag::MONSTER_LITE,
@@ -74,7 +73,7 @@ static void redraw_character_xtra(CreatureEntity &creature)
         StatusRecalculatingFlag::DISTANCE,
         StatusRecalculatingFlag::FLOW,
     };
-    rfu.set_flags(flags_srf);
+    dur.set_flags(flags_srf);
     handle_stuff(creature);
     world.character_xtra = false;
 }
@@ -140,19 +139,13 @@ void process_dungeon(CreatureEntity &creature, bool load_game)
     msg_erase();
 
     redraw_character_xtra(creature);
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    static constexpr auto flags_srf = {
-        StatusRecalculatingFlag::BONUS,
-        StatusRecalculatingFlag::HP,
-        StatusRecalculatingFlag::MP,
-        StatusRecalculatingFlag::SPELLS,
-    };
-    rfu.set_flags(flags_srf);
+    auto &dur = DeferredUpdateRequests::get_instance();
+    dur.request_player_status_recalculation();
     static constexpr auto flags_iaf = {
         InventoryArrangementFlag::COMBINATION,
         InventoryArrangementFlag::REORDER,
     };
-    rfu.set_flags(flags_iaf);
+    dur.set_flags(flags_iaf);
     handle_stuff_with_inventory_arrangement(creature);
     term_fresh();
 
@@ -193,9 +186,9 @@ void process_dungeon(CreatureEntity &creature, bool load_game)
         const auto &monrace = dungeon.get_guardian();
         if (!monrace.is_dead_unique()) {
 #ifdef JP
-            msg_format("この階には%sの主である%sが棲んでいる。", dungeon.name.data(), monrace.name.data());
+            msg_print("この階には{}の主である{}が棲んでいる。", dungeon.name, monrace.name);
 #else
-            msg_format("%s^ lives in this level as the keeper of %s.", monrace.name.data(), dungeon.name.data());
+            msg_print("{} lives in this level as the keeper of {}.", str_upcase_first(monrace.name), dungeon.name);
 #endif
         }
     }

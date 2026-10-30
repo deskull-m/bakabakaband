@@ -5,11 +5,13 @@
 #include "system/spell-info-list.h"
 #include "util/enum-converter.h"
 #include "view/display-messages.h"
+#include <fmt/format.h>
 #include <nlohmann/json.hpp>
 
-SpellReader::SpellReader(const nlohmann::json &realm_data, SpellInfoList &spell_info_list)
+SpellReader::SpellReader(const nlohmann::json &realm_data, SpellInfoList &spell_info_list, Session &session)
     : realm_data(realm_data)
     , spell_info_list(spell_info_list)
+    , session(session)
 {
 }
 
@@ -17,22 +19,22 @@ SpellReader::SpellReader(const nlohmann::json &realm_data, SpellInfoList &spell_
  * @brief 呪文情報(SpellDefinitions)のパース関数
  * @return エラーコード
  */
-int SpellReader::read() const
+ParseErrorType SpellReader::read() const
 {
-    error_idx++; //!< @note 呪文領域は数値IDを持たないため、エラー表示用に要素の順序を用いる
+    const auto record_index = ++this->session.record_index; //!< @note 呪文領域は数値IDを持たないため、エラー表示用に要素の順序を用いる
 
     RealmType realm_id;
-    if (auto err = this->set_realm(realm_id)) {
-        msg_format(_("領域名読込失敗。ID: '%d'。", "Failed to load realm name. ID: '%d'."), error_idx);
+    if (const auto err = this->set_realm(realm_id); err != ParseErrorType::NONE) {
+        msg_print(_("領域名読込失敗。ID: '{}'。", "Failed to load realm name. ID: '{}'."), record_index);
         return err;
     }
 
-    if (auto err = this->set_book_data(realm_id)) {
-        msg_format(_("呪文詳細読込失敗。ID: '%d'。", "Failed to load spell data. ID: '%d'."), error_idx);
+    if (const auto err = this->set_book_data(realm_id); err != ParseErrorType::NONE) {
+        msg_print(_("呪文詳細読込失敗。ID: '{}'。", "Failed to load spell data. ID: '{}'."), record_index);
         return err;
     }
 
-    return PARSE_ERROR_NONE;
+    return ParseErrorType::NONE;
 }
 
 /*!
@@ -40,23 +42,23 @@ int SpellReader::read() const
  * @param realm 呪文領域
  * @return エラーコード
  */
-int SpellReader::set_realm(RealmType &realm) const
+ParseErrorType SpellReader::set_realm(RealmType &realm) const
 {
     if (this->realm_data.is_null()) {
-        return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+        return ParseErrorType::TOO_FEW_ARGUMENTS;
     }
 
     const auto &realmname_obj = get_json_value(this->realm_data, "name");
     if (!realmname_obj.is_string()) {
-        return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+        return ParseErrorType::TOO_FEW_ARGUMENTS;
     }
 
     const auto it = realms_list.find(realmname_obj.get<std::string>());
     if (it == realms_list.end()) {
-        return PARSE_ERROR_OUT_OF_BOUNDS;
+        return ParseErrorType::INVALID_FLAG;
     }
     realm = it->second;
-    return PARSE_ERROR_NONE;
+    return ParseErrorType::NONE;
 }
 
 /*!
@@ -65,15 +67,15 @@ int SpellReader::set_realm(RealmType &realm) const
  * @param realm 領域ID
  * @return エラーコード
  */
-int SpellReader::set_spell_data(const nlohmann::json &spell_data, RealmType realm) const
+ParseErrorType SpellReader::set_spell_data(const nlohmann::json &spell_data, RealmType realm) const
 {
     if (spell_data.is_null()) {
-        return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+        return ParseErrorType::TOO_FEW_ARGUMENTS;
     }
 
     int spell_id{};
     if (const auto err = info_set_integer(get_json_value(spell_data, "spell_id"), spell_id, true, Range(0, 31)); !err) {
-        msg_print(_("呪文ID読込失敗。ID: '{}'。", "Failed to load spell ID. ID: '{}'."), error_idx);
+        msg_print(_("呪文ID読込失敗。ID: '{}'。", "Failed to load spell ID. ID: '{}'."), this->session.record_index);
         return err.error();
     }
     auto info = SpellInfo();
@@ -81,22 +83,33 @@ int SpellReader::set_spell_data(const nlohmann::json &spell_data, RealmType real
 
     const auto &tag_obj = get_json_value(spell_data, "spell_tag");
     if (!tag_obj.is_string()) {
-        msg_format(_("呪文タグ読込失敗。ID: '%d'。", "Failed to load spell tag. ID: '%d'."), error_idx);
-        return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+        msg_print(_("呪文タグ読込失敗。ID: '{}'。", "Failed to load spell tag. ID: '{}'."), this->session.record_index);
+        return ParseErrorType::TOO_FEW_ARGUMENTS;
     }
     info.tag = tag_obj.get<std::string>();
 
+    // 同じ領域に同じ呪文ID・タグを 2 つ書くと、エラーにならず上書きされるので弾く
+    auto &record = this->session.realms[realm];
+    if (!record.ids.insert(info.idx).second) {
+        msg_print(_("呪文ID '{}' が領域内で重複しています。", "Duplicate spell ID '{}' in a realm."), spell_id);
+        return ParseErrorType::NON_SEQUENTIAL_RECORDS;
+    }
+    if (!record.tags.insert(info.tag).second) {
+        msg_print(_("呪文タグ '{}' が領域内で重複しています。", "Duplicate spell tag '{}' in a realm."), info.tag);
+        return ParseErrorType::INVALID_VALUE;
+    }
+
     if (const auto err = info_set_string(get_json_value(spell_data, "name"), info.name, true); !err) {
-        msg_print(_("呪文名読込失敗。ID: '{}'。", "Failed to load spell name. ID: '{}'."), error_idx);
+        msg_print(_("呪文名読込失敗。ID: '{}'。", "Failed to load spell name. ID: '{}'."), this->session.record_index);
         return err.error();
     }
     if (const auto err = info_set_string(get_json_value(spell_data, "description"), info.description, true); !err) {
-        msg_print(_("呪文説明読込失敗。ID: '{}'。", "Failed to load spell description. ID: '{}'."), error_idx);
+        msg_print(_("呪文説明読込失敗。ID: '{}'。", "Failed to load spell description. ID: '{}'."), this->session.record_index);
         return err.error();
     }
     this->spell_info_list.set_spell_info(realm, spell_id, std::move(info));
 
-    return PARSE_ERROR_NONE;
+    return ParseErrorType::NONE;
 }
 
 /*!
@@ -104,24 +117,24 @@ int SpellReader::set_spell_data(const nlohmann::json &spell_data, RealmType real
  * @param realm 領域ID
  * @return エラーコード
  */
-int SpellReader::set_book_data(RealmType realm) const
+ParseErrorType SpellReader::set_book_data(RealmType realm) const
 {
     const auto &book_obj = get_json_value(this->realm_data, "books");
     if (book_obj.is_null()) {
-        return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+        return ParseErrorType::TOO_FEW_ARGUMENTS;
     }
 
     for (const auto &book : book_obj) {
         const auto &spells_obj = get_json_value(book, "spells");
         if (spells_obj.is_null()) {
-            return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+            return ParseErrorType::TOO_FEW_ARGUMENTS;
         }
 
         for (const auto &spell : spells_obj) {
-            if (auto err = this->set_spell_data(spell, realm)) {
+            if (const auto err = this->set_spell_data(spell, realm); err != ParseErrorType::NONE) {
                 return err;
             }
         }
     }
-    return PARSE_ERROR_NONE;
+    return ParseErrorType::NONE;
 }

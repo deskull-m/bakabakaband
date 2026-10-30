@@ -22,9 +22,42 @@
 #include "perception/object-perception.h"
 #include "player/player-status-flags.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/item-entity.h"
-#include "system/redrawing-flags-updater.h"
 #include "view/display-messages.h"
+
+/*!
+ * @brief 持ち物・床のアイテムに擬似鑑定の感触を付ける
+ * @param creature クリーチャーへの参照
+ * @param i_idx 持ち物の番号 (床のアイテムは負の値)
+ * @param feel 感触
+ * @details 簡易鑑定済みにし、感触による自動の銘・自動破壊 (destroy_feeling) を適用する。
+ * 呼び出し元は、感触を得られる種類 (ItemEntity::can_be_sensed()) の品だけを渡す。
+ * 感触が変わると持ち物の束をまとめられるかも変わるので、整理と一覧の描き直しを要求する。
+ */
+void apply_item_feeling(CreatureEntity &creature, INVENTORY_IDX i_idx, item_feel_type feel)
+{
+    auto item = ref_item(creature, i_idx);
+    item->sense(feel);
+    autopick_alter_item(creature, i_idx, destroy_feeling);
+    auto &dur = DeferredUpdateRequests::get_instance();
+    dur.request_inventory_arrangement();
+    dur.set_item_related_sub_window_flags();
+}
+
+/*!
+ * @brief 呪われていると分かった装備に、呪いに合わせた擬似鑑定の感触を付ける
+ * @param creature クリーチャーへの参照
+ * @param i_idx 持ち物の番号
+ * @details 装備・呪い感知・呪いが付いたときと同じ {呪われている} 系の感触で簡易鑑定済みにする。
+ * 鑑定済みの品と、呪いを表す感触で感じ済みの品は変えない (ItemEntity::find_curse_feeling())。
+ */
+void sense_curse(CreatureEntity &creature, INVENTORY_IDX i_idx)
+{
+    if (const auto feel = ref_item(creature, i_idx)->find_curse_feeling()) {
+        apply_item_feeling(creature, i_idx, *feel);
+    }
+}
 
 /*!
  * @brief 擬似鑑定を実際に行い判定を反映する
@@ -95,31 +128,24 @@ static void sense_inventory_aux(CreatureEntity &creature, INVENTORY_IDX slot, bo
     const auto item_name = describe_flavor(creature, item, (OD_OMIT_PREFIX | OD_NAME_ONLY));
     if (slot >= INVEN_MAIN_HAND) {
 #ifdef JP
-        constexpr auto mes = "%s%s(%c)は%sという感じがする...";
-        msg_format(mes, describe_use(creature, slot), item_name.data(), index_to_label(slot), game_inscriptions[feel]);
+        constexpr auto mes = "{}{}({:c})は{}という感じがする...";
+        msg_print(mes, describe_use(creature, slot), item_name, index_to_label(slot), game_inscriptions[feel]);
 #else
-        constexpr auto mes = "You feel the %s (%c) you are %s %s %s...";
-        msg_format(mes, item_name.data(), index_to_label(slot), describe_use(creature, slot),
-            ((item.number == 1) ? "is" : "are"), game_inscriptions[feel]);
+        constexpr auto mes = "You feel the {} ({:c}) you are {} {} {}...";
+        msg_print(mes, item_name, index_to_label(slot), describe_use(creature, slot), ((item.number == 1) ? "is" : "are"), game_inscriptions[feel]);
 #endif
 
     } else {
 #ifdef JP
-        constexpr auto mes = "ザックの中の%s(%c)は%sという感じがする...";
-        msg_format(mes, item_name.data(), index_to_label(slot), game_inscriptions[feel]);
+        constexpr auto mes = "ザックの中の{}({:c})は{}という感じがする...";
+        msg_print(mes, item_name, index_to_label(slot), game_inscriptions[feel]);
 #else
-        constexpr auto mes = "You feel the %s (%c) in your pack %s %s...";
-        msg_format(mes, item_name.data(), index_to_label(slot), ((item.number == 1) ? "is" : "are"), game_inscriptions[feel]);
+        constexpr auto mes = "You feel the {} ({:c}) in your pack {} {}...";
+        msg_print(mes, item_name, index_to_label(slot), ((item.number == 1) ? "is" : "are"), game_inscriptions[feel]);
 #endif
     }
 
-    item.ident.set(IdentificationFlag::SENSE);
-    item.feeling = feel;
-
-    autopick_alter_item(creature, slot, destroy_feeling);
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.request_inventory_arrangement();
-    rfu.set_flag(SubWindowRedrawingFlag::EQUIPMENT);
+    apply_item_feeling(creature, slot, feel);
 }
 
 /*!

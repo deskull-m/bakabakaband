@@ -6,9 +6,11 @@
 #include "object/object-value.h"
 #include "object/tval-types.h"
 #include "store/store-util.h"
+#include "store/store.h"
 #include "system/creature-entity.h"
 #include "system/floor/town-info.h"
 #include "system/floor/town-list.h"
+#include "system/floor/town-records.h"
 #include "system/item-entity.h"
 #include "util/object-sort.h"
 #include <algorithm>
@@ -56,19 +58,8 @@ int home_carry(CreatureEntity &creature, Store &store, ItemEntity *o_ptr)
         stack_force_costs = old_stack_force_costs;
     }
 
-    /* No space? */
-    /*
-     * 隠し機能: オプション powerup_home が設定されていると
-     *           我が家が 20 ページまで使える
-     */
-    if ((store_num != StoreSaleType::HOME) || powerup_home) {
-        if (store.stock_num >= store.stock_size) {
-            return -1;
-        }
-    } else {
-        if (store.stock_num >= ((store.stock_size) / 10)) {
-            return -1;
-        }
+    if (store.stock_num >= store_get_stock_limit(store)) {
+        return -1;
     }
 
     const auto first = store.stock.begin();
@@ -203,6 +194,6 @@ bool combine_and_reorder_home(CreatureEntity &creature, Store &store)
  */
 bool combine_and_reorder_home(CreatureEntity &creature, const StoreSaleType store_num)
 {
-    auto &store = TownList::get_instance().get_town(1).get_store(store_num);
+    auto &store = TownList::get_instance().get_town(TownId::OUTPOST).get_store(store_num);
     return combine_and_reorder_home(creature, store);
 }

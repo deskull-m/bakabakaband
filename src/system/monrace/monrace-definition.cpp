@@ -11,6 +11,7 @@
 #include "util/enum-converter.h"
 #include "world/world.h"
 #include <algorithm>
+#include <fmt/format.h>
 #ifndef JP
 #include "locale/english.h"
 #endif
@@ -116,6 +117,15 @@ bool MonraceDefinition::is_male() const
 bool MonraceDefinition::is_female() const
 {
     return this->sex == MonsterSex::FEMALE;
+}
+
+/*!
+ * @brief 性別を返す
+ * @return 性別 (性別の無い種族は MonsterSex::NONE)
+ */
+MonsterSex MonraceDefinition::get_sex() const
+{
+    return this->sex;
 }
 
 /*!
@@ -271,14 +281,15 @@ bool MonraceDefinition::is_bounty(bool unachieved_only) const
 /*!
  * @brief モンスター種族の総合的な強さを計算する。
  * @details 現在はモンスター闘技場でのモンスターの強さの総合的な評価にのみ使用されている。
+ * 全属性耐性で10万倍し、さらに闘技場の倍率を掛けるので、int ではあふれうる。int64_t で計算する。
  * @return 計算した結果のモンスター種族の総合的な強さの値を返す。
  */
-int MonraceDefinition::calc_power() const
+int64_t MonraceDefinition::calc_power() const
 {
-    auto power = 0;
-    const auto num_resistances = EnumClassFlagGroup<MonsterResistanceType>(this->resistance_flags & RFR_EFF_IMMUNE_ELEMENT_MASK).count();
+    int64_t power;
+    const auto num_resistances = static_cast<int64_t>(EnumClassFlagGroup<MonsterResistanceType>(this->resistance_flags & RFR_EFF_IMMUNE_ELEMENT_MASK).count());
     if (this->misc_flags.has(MonsterMiscType::FORCE_MAXHP)) {
-        power = this->hit_dice.maxroll() * 2;
+        power = int64_t{ this->hit_dice.maxroll() } * 2;
     } else {
         power = this->hit_dice.floored_expected_value_multiplied_by(2);
     }
@@ -361,8 +372,8 @@ int MonraceDefinition::calc_capture_value() const
 std::string MonraceDefinition::build_eldritch_horror_message(std::string_view description) const
 {
     const auto &horror_message = this->decide_horror_message();
-    constexpr auto fmt = _("%s%sの顔を見てしまった！", "You behold the %s visage of %s!");
-    return format(fmt, horror_message.data(), description.data());
+    constexpr auto fmt = _("{}{}の顔を見てしまった！", "You behold the {} visage of {}!");
+    return fmt::format(fmt, horror_message, description);
 }
 
 bool MonraceDefinition::has_reinforce() const
@@ -855,14 +866,14 @@ tl::optional<std::string> MonraceDefinition::probe_lore()
     }
 
 #ifdef JP
-    return format("%sについてさらに詳しくなった気がする。", this->name.data());
+    return fmt::format("{}についてさらに詳しくなった気がする。", this->name);
 #else
     const char *preamble = "You now know more about ";
     if (this->kind_flags.has(MonsterKindType::UNIQUE)) {
-        return format("%s%s.", preamble, this->name.data());
+        return fmt::format("{}{}.", preamble, this->name);
     }
     const auto nm = pluralize(this->name);
-    return format("%s%s.", preamble, nm.data());
+    return fmt::format("{}{}.", preamble, nm);
 #endif
 }
 

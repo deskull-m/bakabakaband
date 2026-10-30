@@ -78,7 +78,7 @@
 #include "status/buff-setter.h"
 #include "status/experience.h"
 #include "system/creature-entity.h"
-#include "system/redrawing-flags-updater.h"
+#include "system/deferred-update-requests.h"
 #include "target/target-getter.h"
 #include "util/bit-flags-calculator.h"
 #include "util/int-char-converter.h"
@@ -154,7 +154,7 @@ bool switch_class_racial_execution(CreatureEntity &creature, const int32_t comma
                 return false;
             }
 
-            RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
+            DeferredUpdateRequests::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
             return true;
         }
 
@@ -249,7 +249,7 @@ bool switch_class_racial_execution(CreatureEntity &creature, const int32_t comma
             return false;
         }
 
-        RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
+        DeferredUpdateRequests::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
         return true;
     case PlayerClassType::BLUE_MAGE:
         set_action(creature, creature.get_action() == ACTION_LEARN ? ACTION_NONE : ACTION_LEARN);

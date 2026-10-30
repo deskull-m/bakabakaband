@@ -14,7 +14,7 @@
 #include "player/process-name.h"
 #include "player/race-info-table.h"
 #include "system/creature-entity.h"
-#include "system/redrawing-flags-updater.h"
+#include "system/deferred-update-requests.h"
 #include "term/screen-processor.h"
 #include "util/enum-converter.h"
 
@@ -67,11 +67,7 @@ bool ask_quick_start(CreatureEntity &creature)
     creature.personality = &personality_info[creature.ppersonality];
 
     get_extra(creature, false);
-    static constexpr auto flags = {
-        StatusRecalculatingFlag::BONUS,
-        StatusRecalculatingFlag::HP,
-    };
-    RedrawingFlagsUpdater::get_instance().set_flags(flags);
+    DeferredUpdateRequests::get_instance().request_bonus_and_max_hp_recalculation();
     update_creature(creature);
     creature.hp = creature.maxhp;
     creature.set_current_mp(creature.get_max_mp());

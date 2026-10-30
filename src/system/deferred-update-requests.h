@@ -79,15 +79,15 @@ enum class InventoryArrangementFlag {
     MAX,
 };
 
-class RedrawingFlagsUpdater {
+class DeferredUpdateRequests {
 public:
-    RedrawingFlagsUpdater(const RedrawingFlagsUpdater &) = delete;
-    RedrawingFlagsUpdater(RedrawingFlagsUpdater &&) = delete;
-    RedrawingFlagsUpdater &operator=(const RedrawingFlagsUpdater &) = delete;
-    RedrawingFlagsUpdater &operator=(RedrawingFlagsUpdater &&) = delete;
-    ~RedrawingFlagsUpdater() = default;
+    DeferredUpdateRequests(const DeferredUpdateRequests &) = delete;
+    DeferredUpdateRequests(DeferredUpdateRequests &&) = delete;
+    DeferredUpdateRequests &operator=(const DeferredUpdateRequests &) = delete;
+    DeferredUpdateRequests &operator=(DeferredUpdateRequests &&) = delete;
+    ~DeferredUpdateRequests() = default;
 
-    static RedrawingFlagsUpdater &get_instance();
+    static DeferredUpdateRequests &get_instance();
 
     bool any_main() const;
     bool any_sub() const;
@@ -117,6 +117,7 @@ public:
     void set_item_related_sub_window_flags();
 
     //! 床のアイテムを表示するサブウィンドウ (FLOOR_ITEMS/FOUND_ITEMS) の再描画をまとめてセットする
+    void request_carried_item_lists_redrawing();
     void request_floor_item_lists_redrawing();
 
     //! 呪文情報サブウィンドウ (SPELL/ITEM_KNOWLEDGE) の再描画をまとめてセットする
@@ -125,11 +126,17 @@ public:
     //! メインウィンドウの消去と全体の描き直し (WIPE/BASIC/EXTRA/EQUIPPY/MAP) をまとめてセットする
     void request_whole_main_window_redrawing();
 
+    //! 画面全体を描き直すときの、表示の元になる値の再計算をまとめてセットする
+    void request_whole_status_recalculation();
+
     //! マップ (メインウィンドウ MAP + サブウィンドウ OVERHEAD/DUNGEON) の描き直しをまとめてセットする
     void request_map_redrawing();
 
     //! モンスターの表示状態更新 (MONSTER_STATUSES) とマップの描き直しをまとめてセットする
     void request_monster_update_and_map_redrawing();
+
+    //! 視界と明るさの消去・計算し直し (UN_VIEW/UN_LITE/VIEW/LITE/MONSTER_LITE) をまとめてセットする
+    void request_sight_recalculation();
 
     //! 所持品の結合・並べ替え (COMBINATION/REORDER) と一覧の描き直し (INVENTORY) をまとめてセットする
     void request_inventory_arrangement();
@@ -144,14 +151,22 @@ public:
     void reset_flags(const EnumClassFlagGroup<StatusRecalculatingFlag> &flags);
     void reset_flags(const EnumClassFlagGroup<InventoryArrangementFlag> &flags);
 
+    void request_inscription_change_updates();
+    void request_equipment_change_updates();
+    void request_riding_status_redrawing();
+    void request_hp_mp_redrawing();
+    void request_gold_redrawing();
+    void request_light_fuel_change_updates();
+    void request_bonus_and_max_hp_recalculation();
+    void request_max_mp_and_spells_recalculation();
+    void request_player_status_recalculation();
     void fill_up_sub_flags();
-    void request_autopick_inscription();
     EnumClassFlagGroup<SubWindowRedrawingFlag> get_sub_intersection(const EnumClassFlagGroup<SubWindowRedrawingFlag> &flags) const;
 
 private:
-    RedrawingFlagsUpdater() = default;
+    DeferredUpdateRequests() = default;
 
-    static RedrawingFlagsUpdater instance;
+    static DeferredUpdateRequests instance;
 
     EnumClassFlagGroup<MainWindowRedrawingFlag> main_window_flags{};
     EnumClassFlagGroup<SubWindowRedrawingFlag> sub_window_flags{};

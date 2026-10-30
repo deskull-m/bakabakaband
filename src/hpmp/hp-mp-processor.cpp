@@ -32,16 +32,17 @@
 #include "status/bad-status-setter.h"
 #include "status/element-resistance.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/redrawing-flags-updater.h"
 #include "system/terrain/terrain-definition.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
 #include "world/world.h"
+#include <fmt/format.h>
 #include <functional>
 #include <sstream>
 
@@ -86,8 +87,8 @@ static bool deal_damege_by_feat(CreatureEntity &creature, const Grid &grid, conc
 
     if (creature.has_levitation()) {
         msg_print(msg_levitation);
-        constexpr auto mes = _("%%s\u306e\u4e0a\u306b\u6d6e\u904a\u3057\u305f\u30c0\u30e1\u30fc\u30b8", "flying over %%s");
-        take_hit(creature, DAMAGE_NOESCAPE, damage, format(mes, grid.get_terrain(TerrainKind::MIMIC).name.data()));
+        constexpr auto mes = _("{}の上に浮遊したダメージ", "flying over {}");
+        take_hit(creature, DAMAGE_NOESCAPE, damage, fmt::format(mes, grid.get_terrain(TerrainKind::MIMIC).name));
 
         if (additional_effect != nullptr) {
             additional_effect(creature, damage);
@@ -95,7 +96,7 @@ static bool deal_damege_by_feat(CreatureEntity &creature, const Grid &grid, conc
     } else {
         const auto p_pos = creature.get_position();
         const auto &name = creature.get_floor()->get_grid(p_pos).get_terrain(TerrainKind::MIMIC).name;
-        msg_format(_("%%s%%s\uff01", "The %%s %%s!"), name.data(), msg_normal);
+        msg_print(_("{}{}！", "The {} {}!"), name, msg_normal);
         take_hit(creature, DAMAGE_NOESCAPE, damage, name);
 
         if (additional_effect != nullptr) {
@@ -149,7 +150,7 @@ void process_player_hp_mp(CreatureEntity &creature)
         const auto flags = item.get_flags();
         if ((creature.inventory[INVEN_LITE]->bi_key.tval() != ItemKindType::NONE) && flags.has_not(TR_DARK_SOURCE) && !creature.has_resist_lite()) {
             const auto item_name = describe_flavor(creature, item, (OD_OMIT_PREFIX | OD_NAME_ONLY));
-            msg_format(_("%sがあなたのアンデッドの肉体を焼き焦がした！", "The %s scorches your undead flesh!"), item_name.data());
+            msg_print(_("{}があなたのアンデッドの肉体を焼き焦がした！", "The {} scorches your undead flesh!"), item_name);
             cave_no_regen = true;
             if (!creature.is_invulnerable()) {
                 const auto wielding_item_name = describe_flavor(creature, item, OD_NAME_ONLY);
@@ -438,7 +439,7 @@ void process_player_hp_mp(CreatureEntity &creature)
 
             upkeep_factor = calculate_upkeep(creature);
 
-            msg_format(_("維持ＭＰは %d%%", "Upkeep: %d%% mana."), upkeep_factor);
+            msg_print(_("維持ＭＰは {}%", "Upkeep: {}% mana."), upkeep_factor);
             msg_erase();
         }
     }
@@ -482,19 +483,18 @@ bool hp_player(CreatureEntity &creature, int num)
             creature.hp_frac = 0;
         }
 
-        auto &rfu = RedrawingFlagsUpdater::get_instance();
-        rfu.set_flag(MainWindowRedrawingFlag::HP);
-        rfu.set_flag(SubWindowRedrawingFlag::PLAYER);
+        auto &dur = DeferredUpdateRequests::get_instance();
+        dur.set_flag(MainWindowRedrawingFlag::HP);
         // [提案D2 第3弾] 回復メッセージは notify_self seam でプレイヤーは 2 人称、
         // モンスターは視認時のみ 3 人称で表示される。
         if (num < 5) {
-            creature.notify_self(_("少し気分が良くなった。", "You feel a little better."), _("%s^は少し気分が良くなったようだ。", "%s^ looks a little better."));
+            creature.notify_self(_("少し気分が良くなった。", "You feel a little better."), _("{}は少し気分が良くなったようだ。", "{} looks a little better."));
         } else if (num < 15) {
-            creature.notify_self(_("気分が良くなった。", "You feel better."), _("%s^は気分が良くなったようだ。", "%s^ looks better."));
+            creature.notify_self(_("気分が良くなった。", "You feel better."), _("{}は気分が良くなったようだ。", "{} looks better."));
         } else if (num < 35) {
-            creature.notify_self(_("とても気分が良くなった。", "You feel much better."), _("%s^はとても気分が良くなったようだ。", "%s^ looks much better."));
+            creature.notify_self(_("とても気分が良くなった。", "You feel much better."), _("{}はとても気分が良くなったようだ。", "{} looks much better."));
         } else {
-            creature.notify_self(_("ひじょうに気分が良くなった。", "You feel very good."), _("%s^はひじょうに気分が良くなったようだ。", "%s^ looks very good."));
+            creature.notify_self(_("ひじょうに気分が良くなった。", "You feel very good."), _("{}はひじょうに気分が良くなったようだ。", "{} looks very good."));
         }
 
         return true;

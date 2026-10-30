@@ -24,7 +24,7 @@
 #include "store/store-screen.h"
 #include "store/store.h"
 #include "system/creature-entity.h"
-#include "system/redrawing-flags-updater.h"
+#include "system/deferred-update-requests.h"
 #include "system/terrain/terrain-definition.h"
 #include "system/terrain/terrain-list.h"
 #include "term/screen-processor.h"
@@ -98,7 +98,7 @@ static void take_item_from_home(CreatureEntity &creature, StoreScreen &screen, I
     const auto item_new = creature.store_item(item_inventory);
     const auto item_name = describe_flavor(creature, *creature.inventory[item_new], 0);
     handle_stuff(creature);
-    msg_format(_("%s(%c)を取った。", "You have %s (%c)."), item_name.data(), index_to_label(item_new));
+    msg_print(_("{}({:c})を取った。", "You have {} ({:c})."), item_name, index_to_label(item_new));
 
     const auto stock_num = store.stock_num;
     store.increase_item(i_idx, -amt);
@@ -189,7 +189,7 @@ void store_purchase(CreatureEntity &creature, StoreScreen &screen)
     const auto best = price_item(creature, &item, store, StoreTradeType::PLAYER_BUYS);
     if (item_store.number > 1) {
         if (store_num != StoreSaleType::HOME) {
-            msg_format(_("一つにつき $%dです。", "That costs %d gold per item."), best);
+            msg_print(_("一つにつき ${}です。", "That costs {} gold per item."), best);
         }
 
         amt = input_quantity(item_store.number);
@@ -227,7 +227,7 @@ void store_purchase(CreatureEntity &creature, StoreScreen &screen)
     const auto item_index = *item_num_opt;
     const auto item_index_char = (item_index > 25) ? toupper(I2A(item_index - 26)) : I2A(item_index);
 
-    msg_format(_("%s(%c)を購入する。", "Buying %s (%c)."), purchased_item_name.data(), item_index_char);
+    msg_print(_("{}({:c})を購入する。", "Buying {} ({:c})."), purchased_item_name, item_index_char);
     msg_erase();
 
     const auto &world = AngbandWorld::get_instance();
@@ -278,14 +278,14 @@ void store_purchase(CreatureEntity &creature, StoreScreen &screen)
 
     const auto idx = find_autopick_list(creature, &item);
     if (auto_inscribe_item(item, idx)) {
-        RedrawingFlagsUpdater::get_instance().request_autopick_inscription();
+        DeferredUpdateRequests::get_instance().request_inscription_change_updates();
     }
 
     item_new = creature.store_item(item);
     handle_stuff(creature);
 
     const auto got_item_name = describe_flavor(creature, *creature.inventory[item_new], 0);
-    msg_format(_("%s(%c)を手に入れた。", "You have %s (%c)."), got_item_name.data(), index_to_label(item_new));
+    msg_print(_("{}({:c})を手に入れた。", "You have {} ({:c})."), got_item_name, index_to_label(item_new));
 
     if (item_store.is_wand_rod()) {
         item_store.pval -= item.pval;

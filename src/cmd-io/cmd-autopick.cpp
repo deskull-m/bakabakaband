@@ -22,6 +22,7 @@
 #include "util/finalizer.h"
 #include "util/int-char-converter.h"
 #include "world/world.h"
+#include <fmt/format.h>
 #include <set>
 
 AutopickTextBody::AutopickTextBody(int cx, int cy)
@@ -143,7 +144,6 @@ void do_cmd_edit_autopick(CreatureEntity &creature)
     static int cx_save = 0;
     static int cy_save = 0;
     autopick_type an_entry, *entry = &an_entry;
-    int i;
     int key = -1;
     static int32_t old_autosave_turn = 0L;
     ape_quittance quit = APE_QUIT;
@@ -151,7 +151,7 @@ void do_cmd_edit_autopick(CreatureEntity &creature)
     AutopickTextBody text_body(cx_save, cy_save);
     AutopickTextBody *tb = &text_body;
     tb->dirty_flags = DIRTY_ALL | DIRTY_MODE | DIRTY_EXPRESSION;
-    tb->filename_mode = PT_DEFAULT;
+    tb->filename_mode = PickType::DEFAULT;
     auto &world = AngbandWorld::get_instance();
     world.play_time.pause();
     const auto unpauser = util::make_finalizer([&world]() { world.play_time.unpause(); });
@@ -172,12 +172,12 @@ void do_cmd_edit_autopick(CreatureEntity &creature)
         tb->last_destroyed = autopick_line_from_entry(*entry);
     }
 
-    tb->lines_list = read_pickpref_text_lines(creature.base_name, &tb->filename_mode);
-    for (i = 0; i < tb->cy; i++) {
-        if (!tb->lines_list[i]) {
-            tb->cy = tb->cx = 0;
-            break;
-        }
+    auto [filename_mode, lines] = read_pickpref_text_lines(creature.base_name);
+    tb->filename_mode = filename_mode;
+    tb->lines_list = std::move(lines);
+    // 前回閉じたときのカーソルの行が、読み込み直したファイルに無ければ先頭に戻す
+    if (!tb->lines_list[tb->cy]) {
+        tb->cy = tb->cx = 0;
     }
 
     TermCenteredOffsetSetter tcos(tl::nullopt, tl::nullopt);
@@ -191,9 +191,9 @@ void do_cmd_edit_autopick(CreatureEntity &creature)
                 "(^Q:Quit, ^W:Save&Quit, ESC:Menu, Other:Input text)"),
             0, 0);
         if (!tb->mark) {
-            prt(format("(%d,%d)", tb->cx, tb->cy), 0, 60);
+            prt(fmt::format("({},{})", tb->cx, tb->cy), 0, 60);
         } else {
-            prt(format("(%d,%d)-(%d,%d)", tb->mx, tb->my, tb->cx, tb->cy), 0, 60);
+            prt(fmt::format("({},{})-({},{})", tb->mx, tb->my, tb->cx, tb->cy), 0, 60);
         }
 
         term_gotoxy(tb->cx - tb->left, tb->cy - tb->upper + 1);

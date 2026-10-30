@@ -27,13 +27,14 @@
 #include "object/object-info.h"
 #include "object/object-mark-types.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
-#include "system/redrawing-flags-updater.h"
 #include "term/screen-processor.h"
 #include "view/display-messages.h"
 #include "window/display-sub-windows.h"
+#include <fmt/format.h>
 #include <range/v3/view.hpp>
 #include <sstream>
 
@@ -55,7 +56,7 @@ static void autopick_delayed_alter_aux(CreatureEntity &creature, INVENTORY_IDX i
         delete_object_idx(creature, 0 - i_idx);
     }
 
-    msg_format(_("%sを自動破壊します。", "Auto-destroying %s."), item_name.data());
+    msg_print(_("{}を自動破壊します。", "Auto-destroying {}."), item_name);
 }
 
 /*!
@@ -92,7 +93,7 @@ void autopick_alter_item(CreatureEntity &creature, INVENTORY_IDX i_idx, bool des
     auto item = ref_item(creature, i_idx);
     int idx = find_autopick_list(creature, item.get());
     if (auto_inscribe_item(*item, idx)) {
-        RedrawingFlagsUpdater::get_instance().request_autopick_inscription();
+        DeferredUpdateRequests::get_instance().request_inscription_change_updates();
     }
 
     if (destroy && i_idx <= INVEN_PACK) {
@@ -110,7 +111,7 @@ void autopick_pickup_items(CreatureEntity &creature, const Grid &grid)
         auto &item = *creature.get_floor()->o_list[this_o_idx];
         int idx = find_autopick_list(creature, &item);
         if (auto_inscribe_item(item, idx)) {
-            RedrawingFlagsUpdater::get_instance().request_autopick_inscription();
+            DeferredUpdateRequests::get_instance().request_inscription_change_updates();
         }
 
         if ((idx < 0) || (autopick_list[idx].action.has_none_of({ AutopickMethod::AUTOPICK, AutopickMethod::QUERY_AUTOPICK }))) {
@@ -122,13 +123,13 @@ void autopick_pickup_items(CreatureEntity &creature, const Grid &grid)
         const auto item_name = describe_flavor(creature, item, 0);
 
         if (!check_get_item(&item)) {
-            msg_format(_("%sを持ち運ぶことはできない。", "You can't carry %s."), item_name.data());
+            msg_print(_("{}を持ち運ぶことはできない。", "You can't carry {}."), item_name);
             item.marked.set(OmType::SUPRESS_MESSAGE);
             continue;
         }
 
         if (!creature.can_store_item(item)) {
-            msg_format(_("ザックには%sを入れる隙間がない。", "You have no room for %s."), item_name.data());
+            msg_print(_("ザックには{}を入れる隙間がない。", "You have no room for {}."), item_name);
             item.marked.set(OmType::SUPRESS_MESSAGE);
             continue;
         }

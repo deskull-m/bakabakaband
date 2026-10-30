@@ -31,10 +31,10 @@
 #include "player/special-defense-types.h"
 #include "status/action-setter.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/inner-game-data.h"
-#include "system/redrawing-flags-updater.h"
 #include "system/terrain/terrain-definition.h"
 #include "target/target-getter.h"
 #include "term/screen-processor.h"
@@ -208,7 +208,7 @@ void do_cmd_inscribe_terrain(CreatureEntity &creature)
 
     // 現在の説明を表示
     if (!grid.terrain_description.empty()) {
-        msg_format(_("現在の書き込み: %s", "Current description: %s"), grid.terrain_description.c_str());
+        msg_print(_("現在の書き込み: {}", "Current description: {}"), grid.terrain_description);
     } else {
         msg_print(_("この地形には何も書かれていない。", "This terrain has no description."));
     }
@@ -227,6 +227,6 @@ void do_cmd_inscribe_terrain(CreatureEntity &creature)
     if (desc_opt.value().empty()) {
         msg_print(_("説明を消去した。", "Description cleared."));
     } else {
-        msg_format(_("「%s」と書き込んだ。", "Inscribed '%s'."), desc_opt.value().data());
+        msg_print(_("「{}」と書き込んだ。", "Inscribed '{}'."), desc_opt.value());
     }
 }

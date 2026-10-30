@@ -27,7 +27,6 @@
 #include "player-info/race-info.h"
 #include "system/creature-entity.h"
 #include "term/term-color-types.h"
-#include "term/z-form.h"
 #include "util/string-processor.h"
 #include <fmt/format.h>
 #include <sstream>
@@ -61,7 +60,9 @@ ape_quittance do_editor_command(CreatureEntity &creature, AutopickTextBody *tb, 
             break;
         }
 
-        tb->lines_list = read_pickpref_text_lines(creature.base_name, &tb->filename_mode);
+        auto [filename_mode, lines] = read_pickpref_text_lines(creature.base_name);
+        tb->filename_mode = filename_mode;
+        tb->lines_list = std::move(lines);
         tb->dirty_flags |= DIRTY_ALL | DIRTY_MODE | DIRTY_EXPRESSION;
         tb->cx = tb->cy = 0;
         tb->mark = 0;
@@ -517,9 +518,7 @@ ape_quittance do_editor_command(CreatureEntity &creature, AutopickTextBody *tb, 
         if (!can_insert_line(tb, 2)) {
             break;
         }
-        const auto expression = format("?:[AND [EQU $RACE %s] [EQU $CLASS %s] [GEQ $LEVEL %02d]]",
-            creature.get_race_info()->title.en_string().data(), (*creature.get_class_info()).title.en_string().data(),
-            creature.get_level());
+        const auto expression = fmt::format("?:[AND [EQU $RACE {}] [EQU $CLASS {}] [GEQ $LEVEL {:02}]]", creature.get_race_info()->title.en_string(), (*creature.get_class_info()).title.en_string(), creature.get_level());
         tb->cx = 0;
         insert_return_code(tb);
         tb->lines_list[tb->cy] = std::make_unique<std::string>(expression);

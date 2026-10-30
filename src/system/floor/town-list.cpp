@@ -79,6 +79,31 @@ TownInfo &TownList::get_town(TownId town_id)
 }
 
 /*!
+ * @brief 我が家を得る
+ * @return 我が家
+ * @details 我が家は全ての町で内容を共有するため、辺境の地の店舗を返す.
+ */
+const Store &TownList::get_home() const
+{
+    return this->get_town(TownId::OUTPOST).get_store(StoreSaleType::HOME);
+}
+
+Store &TownList::get_home()
+{
+    return this->get_town(TownId::OUTPOST).get_store(StoreSaleType::HOME);
+}
+
+/*!
+ * @brief 博物館を得る
+ * @return 博物館
+ * @details 博物館は全ての町で内容を共有するため、辺境の地の店舗を返す.
+ */
+const Store &TownList::get_museum() const
+{
+    return this->get_town(TownId::OUTPOST).get_store(StoreSaleType::MUSEUM);
+}
+
+/*!
  * @brief 町情報読み込みのメインルーチン
  * @details 「我が家を拡張する」オプションのON/OFFとは無関係に、ON時の容量を確保しておく.
  */
@@ -95,7 +120,7 @@ void TownList::initialize()
                 continue;
             }
 
-            store.stock_size = store_get_stock_max(sst);
+            store.stock_size = store_get_stock_capacity(sst);
             std::vector<std::unique_ptr<ItemEntity>> stock;
             for (auto j = 0; j < store.stock_size; j++) {
                 stock.push_back(std::make_unique<ItemEntity>());

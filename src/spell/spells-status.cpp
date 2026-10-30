@@ -42,15 +42,17 @@
 #include "system/baseitem/baseitem-definition.h"
 #include "system/baseitem/baseitem-list.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/enums/terrain/terrain-characteristics.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/player-type-definition.h"
-#include "system/redrawing-flags-updater.h"
 #include "target/target-getter.h"
 #include "util/bit-flags-calculator.h"
+#include "util/string-processor.h"
 #include "view/display-messages.h"
+#include <fmt/format.h>
 
 /*!
  * @brief モンスター回復処理
@@ -213,7 +215,7 @@ bool time_walk(CreatureEntity &creature)
     msg_erase();
 
     creature.sub_energy_need(1000 + (100 + creature.get_current_mp() - 50) * TURNS_PER_TICK / 10);
-    RedrawingFlagsUpdater::get_instance().request_monster_update_and_map_redrawing();
+    DeferredUpdateRequests::get_instance().request_monster_update_and_map_redrawing();
     handle_stuff(creature);
     return true;
 }
@@ -234,10 +236,10 @@ void roll_hitdice(CreatureEntity &creature, spell_operation options)
 
     creature.remove_knowledge(KNOW_HPRATE);
 
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.set_flag(StatusRecalculatingFlag::HP);
-    rfu.set_flag(MainWindowRedrawingFlag::HP);
-    rfu.set_flag(SubWindowRedrawingFlag::PLAYER);
+    auto &dur = DeferredUpdateRequests::get_instance();
+    dur.set_flag(StatusRecalculatingFlag::HP);
+    dur.set_flag(MainWindowRedrawingFlag::HP);
+    dur.set_flag(SubWindowRedrawingFlag::PLAYER);
     if (!(options & SPOP_NO_UPDATE)) {
         handle_stuff(creature);
     }
@@ -247,7 +249,7 @@ void roll_hitdice(CreatureEntity &creature, spell_operation options)
     }
 
     if (options & SPOP_DEBUG) {
-        msg_format(_("現在の体力ランクは %d/100 です。", "Your life rate is %d/100 now."), creature.calc_life_rating());
+        msg_print(_("現在の体力ランクは {}/100 です。", "Your life rate is {}/100 now."), creature.calc_life_rating());
         creature.add_knowledge(KNOW_HPRATE);
         return;
     }
@@ -263,7 +265,7 @@ bool life_stream(CreatureEntity &creature, bool message, bool virtue_change)
     }
 
     if (message) {
-        creature.notify_self(_("体中に生命力が満ちあふれてきた！", "You feel life flow through your body!"), _("%s^の体に生命力が満ちあふれた！", "%s^ is filled with life force!"));
+        creature.notify_self(_("体中に生命力が満ちあふれてきた！", "You feel life flow through your body!"), _("{}の体に生命力が満ちあふれた！", "{} is filled with life force!"));
     }
 
     restore_level(creature);
@@ -455,7 +457,7 @@ bool restore_mana(CreatureEntity &creature, bool magic_eater)
         return false;
     }
 
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
+    auto &dur = DeferredUpdateRequests::get_instance();
     if (CreatureClass(creature).equals(PlayerClassType::MAGIC_EATER) && magic_eater) {
         // 魔力復活による、魔道具術師の取り込んだ魔法の回復量
         // 取り込み数が10回未満: 3 回分回復
@@ -478,7 +480,7 @@ bool restore_mana(CreatureEntity &creature, bool magic_eater)
         }
 
         msg_print(_("頭がハッキリとした。", "You feel your head clear."));
-        rfu.set_flag(SubWindowRedrawingFlag::PLAYER);
+        dur.set_flag(SubWindowRedrawingFlag::PLAYER);
         return true;
     }
 
@@ -489,12 +491,7 @@ bool restore_mana(CreatureEntity &creature, bool magic_eater)
     creature.set_current_mp(creature.get_max_mp());
     creature.current_mp_frac = 0;
     msg_print(_("頭がハッキリとした。", "You feel your head clear."));
-    rfu.set_flag(MainWindowRedrawingFlag::MP);
-    static constexpr auto flags_swrf = {
-        SubWindowRedrawingFlag::SPELL,
-        SubWindowRedrawingFlag::PLAYER,
-    };
-    rfu.set_flags(flags_swrf);
+    dur.set_flag(MainWindowRedrawingFlag::MP);
     return true;
 }
 
@@ -545,13 +542,13 @@ bool fishing(CreatureEntity &creature)
     const auto &grid = floor.get_grid(pos);
     if (grid.has_monster()) {
         const auto m_name = monster_desc(creature, floor.get_monster(grid.m_idx), 0);
-        msg_format(_("%sが邪魔だ！", "%s^ is standing in your way."), m_name.data());
+        msg_print(_("{}が邪魔だ！", "{} is standing in your way."), str_upcase_first(m_name));
         PlayerEnergy(creature).reset_player_turn();
         return false;
     }
 
     set_action(creature, ACTION_FISH);
-    RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::ACTION);
+    DeferredUpdateRequests::get_instance().set_flag(MainWindowRedrawingFlag::ACTION);
     return true;
 }
 
@@ -586,7 +583,7 @@ std::shared_ptr<ItemEntity> cosmic_cast_off(CreatureEntity &creature, const Item
 
     const auto old_o_idx = drop_near(creature, item, creature.get_position());
     const auto item_name = describe_flavor(creature, item, OD_NAME_ONLY);
-    msg_format(_("%sを脱ぎ捨てた。", "You cast off %s."), item_name.data());
+    msg_print(_("{}を脱ぎ捨てた。", "You cast off {}."), item_name);
     sound(SoundKind::TAKE_OFF);
 
     /* Get effects */
@@ -637,7 +634,7 @@ void apply_nexus(const CreatureEntity &attacker, CreatureEntity &creature)
 
     case 6: {
         if (evaluate_percent(creature.get_skill_save())) {
-            creature.notify_self(_("しかし効力を跳ね返した！", "You resist the effects!"), _("%s^は効力を跳ね返した！", "%s^ resists the effects!"));
+            creature.notify_self(_("しかし効力を跳ね返した！", "You resist the effects!"), _("{}は効力を跳ね返した！", "{} resists the effects!"));
             break;
         }
 
@@ -648,11 +645,11 @@ void apply_nexus(const CreatureEntity &attacker, CreatureEntity &creature)
 
     case 7: {
         if (evaluate_percent(creature.get_skill_save())) {
-            creature.notify_self(_("しかし効力を跳ね返した！", "You resist the effects!"), _("%s^は効力を跳ね返した！", "%s^ resists the effects!"));
+            creature.notify_self(_("しかし効力を跳ね返した！", "You resist the effects!"), _("{}は効力を跳ね返した！", "{} resists the effects!"));
             break;
         }
 
-        creature.notify_self(_("体がねじれ始めた...", "Your body starts to scramble..."), _("%s^の体がねじれ始めた...", "%s^'s body starts to scramble..."));
+        creature.notify_self(_("体がねじれ始めた...", "Your body starts to scramble..."), _("{}の体がねじれ始めた...", "{}'s body starts to scramble..."));
         status_shuffle(creature);
         break;
     }
@@ -694,5 +691,5 @@ void status_shuffle(CreatureEntity &creature)
         }
     }
 
-    RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
+    DeferredUpdateRequests::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
 }

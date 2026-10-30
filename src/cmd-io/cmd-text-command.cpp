@@ -24,8 +24,8 @@
 #include "sv-definition/sv-junk-types.h"
 #include "system/baseitem/baseitem-key.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/item-entity.h"
-#include "system/redrawing-flags-updater.h"
 #include "term/screen-processor.h"
 #include "timed-effect/player-cut.h"
 #include "util/int-char-converter.h"
@@ -136,8 +136,8 @@ static std::vector<TextCommand> get_text_commands()
                 // 体力を少し消費
                 if (creature.hp > 1) {
                     creature.hp--;
-                    auto &rfu = RedrawingFlagsUpdater::get_instance();
-                    rfu.set_flag(MainWindowRedrawingFlag::HP);
+                    auto &dur = DeferredUpdateRequests::get_instance();
+                    dur.set_flag(MainWindowRedrawingFlag::HP);
                 }
 
                 // 時間消費
@@ -197,8 +197,8 @@ static std::vector<TextCommand> get_text_commands()
                 // 少しの体力消費
                 if (creature.get_current_mp() > 1) {
                     creature.sub_current_mp(1);
-                    auto &rfu = RedrawingFlagsUpdater::get_instance();
-                    rfu.set_flag(MainWindowRedrawingFlag::MP);
+                    auto &dur = DeferredUpdateRequests::get_instance();
+                    dur.set_flag(MainWindowRedrawingFlag::MP);
                 }
 
                 // 時間消費
@@ -264,9 +264,9 @@ static std::vector<TextCommand> get_text_commands()
                 }
 
                 // 画面更新
-                auto &rfu = RedrawingFlagsUpdater::get_instance();
-                rfu.set_flag(MainWindowRedrawingFlag::HP);
-                rfu.set_flag(MainWindowRedrawingFlag::CUT);
+                auto &dur = DeferredUpdateRequests::get_instance();
+                dur.set_flag(MainWindowRedrawingFlag::HP);
+                dur.set_flag(MainWindowRedrawingFlag::CUT);
                 handle_stuff(creature);
 
                 // 警告メッセージ
@@ -347,7 +347,7 @@ void do_cmd_text_command(CreatureEntity &creature)
     }
 
     if (!found) {
-        msg_format(_("'%s' は認識できないコマンドです。", "'%s' is not a recognized command."), buf.value().c_str());
+        msg_print(_("'{}' は認識できないコマンドです。", "'{}' is not a recognized command."), buf.value());
         msg_print(_("'ヘルプ' と入力すると利用可能なコマンドが表示されます。", "Type 'help' to see available commands."));
     }
 }

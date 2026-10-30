@@ -8,9 +8,7 @@
 #include "locale/localized-string.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/redrawing-flags-updater.h"
 #include "term/z-rand.h"
-#include "tracking/lore-tracker.h"
 #include "util/probability-table.h"
 #include <algorithm>
 #include <range/v3/view.hpp>
@@ -513,15 +511,6 @@ void MonraceList::reset_all_visuals()
     for (auto &[_, monrace] : this->monraces) {
         monrace->symbol_config = monrace->symbol_definition;
     }
-}
-
-tl::optional<std::string> MonraceList::probe_lore(MonraceId monrace_id)
-{
-    if (LoreTracker::get_instance().is_tracking(monrace_id)) {
-        RedrawingFlagsUpdater::get_instance().set_flag(SubWindowRedrawingFlag::MONSTER_LORE);
-    }
-
-    return this->get_monrace(monrace_id).probe_lore();
 }
 
 /*

@@ -42,6 +42,7 @@
 #include "player/eldritch-horror.h"
 #include "player/player-skill.h"
 #include "player/special-defense-types.h"
+#include "realm/realm-song.h"
 #include "spell-kind/spells-random.h"
 #include "spell-realm/spells-crusade.h"
 #include "spell-realm/spells-hex.h"
@@ -50,19 +51,21 @@
 #include "system/angband-system.h"
 #include "system/creature-entity.h"
 #include "system/creature-timed-effect-types.h"
+#include "system/deferred-update-requests.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/floor/floor-info.h"
 #include "system/floor/wilderness-grid.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/redrawing-flags-updater.h"
 #include "term/screen-processor.h"
 #include "timed-effect/player-stun.h"
 #include "tracking/health-bar-tracker.h"
 #include "util/bit-flags-calculator.h"
+#include "util/string-processor.h"
 #include "view/display-messages.h"
 #include "window/display-sub-windows.h"
 #include "world/world-turn-processor.h"
+#include <fmt/format.h>
 
 bool load = true;
 bool can_save = false;
@@ -82,7 +85,7 @@ static void process_fishing(CreatureEntity &creature)
             const auto pos = creature.get_neighbor(creature.get_fishing_dir());
             if (auto m_idx = place_specific_monster(creature, pos.y, pos.x, r_idx, PM_NO_KAGE)) {
                 const auto m_name = monster_desc(creature, floor.m_list[*m_idx], 0);
-                msg_print(_(format("%sが釣れた！", m_name.data()), "You have a good catch!"));
+                msg_print(_("{}が釣れた！", "You have a good catch!"), m_name);
                 success = true;
             }
         }
@@ -188,14 +191,14 @@ void process_player(CreatureEntity &creature)
         if (monster.is_asleep()) {
             const auto m_name = monster_desc(creature, monster, 0);
             (void)set_monster_csleep(*creature.get_floor(), creature.get_riding(), 0);
-            msg_format(_("%s^を起こした。", "You have woken %s up."), m_name.data());
+            msg_print(_("{}を起こした。", "You have woken {} up."), m_name);
         }
 
         if (monster.is_stunned()) {
             if (set_monster_stunned(*creature.get_floor(), creature.get_riding(),
                     (randint0(monrace.level) < creature.get_skill_exp(PlayerSkillKindType::RIDING)) ? 0 : (monster.get_remaining_stun() - 1))) {
                 const auto m_name = monster_desc(creature, monster, 0);
-                msg_format(_("%s^を朦朧状態から立ち直らせた。", "%s^ is no longer stunned."), m_name.data());
+                msg_print(_("{}を朦朧状態から立ち直らせた。", "{} is no longer stunned."), str_upcase_first(m_name));
             }
         }
 
@@ -203,7 +206,7 @@ void process_player(CreatureEntity &creature)
             if (set_monster_confused(*creature.get_floor(), creature.get_riding(),
                     (randint0(monrace.level) < creature.get_skill_exp(PlayerSkillKindType::RIDING)) ? 0 : (monster.get_remaining_confusion() - 1))) {
                 const auto m_name = monster_desc(creature, monster, 0);
-                msg_format(_("%s^を混乱状態から立ち直らせた。", "%s^ is no longer confused."), m_name.data());
+                msg_print(_("{}を混乱状態から立ち直らせた。", "{} is no longer confused."), str_upcase_first(m_name));
             }
         }
 
@@ -211,7 +214,7 @@ void process_player(CreatureEntity &creature)
             if (set_monster_monfear(*creature.get_floor(), creature.get_riding(),
                     (randint0(monrace.level) < creature.get_skill_exp(PlayerSkillKindType::RIDING)) ? 0 : (monster.get_remaining_fear() - 1))) {
                 const auto m_name = monster_desc(creature, monster, 0);
-                msg_format(_("%s^を恐怖から立ち直らせた。", "%s^ is no longer fearful."), m_name.data());
+                msg_print(_("{}を恐怖から立ち直らせた。", "{} is no longer fearful."), str_upcase_first(m_name));
             }
         }
 
@@ -223,14 +226,14 @@ void process_player(CreatureEntity &creature)
         set_lightspeed(creature, creature.get_timed_effect(CreatureTimedEffect::LIGHTSPEED) - 1, true);
     }
 
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
+    auto &dur = DeferredUpdateRequests::get_instance();
     if (CreatureClass(creature).equals(PlayerClassType::FORCETRAINER) && get_current_ki(creature)) {
         if (get_current_ki(creature) < 40) {
             set_current_ki(creature, true, 0);
         } else {
             set_current_ki(creature, false, -40);
         }
-        rfu.set_flag(StatusRecalculatingFlag::BONUS);
+        dur.set_flag(StatusRecalculatingFlag::BONUS);
     }
 
     if (creature.get_action() == ACTION_LEARN) {
@@ -245,7 +248,7 @@ void process_player(CreatureEntity &creature)
             creature.sub_current_mp_with_frac(cost, cost_frac);
         }
 
-        rfu.set_flag(MainWindowRedrawingFlag::MP);
+        dur.set_flag(MainWindowRedrawingFlag::MP);
     }
 
     if (CreatureClass(creature).samurai_stance_is(SamuraiStanceType::MUSOU)) {
@@ -253,13 +256,13 @@ void process_player(CreatureEntity &creature)
             set_action(creature, ACTION_NONE);
         } else {
             creature.sub_current_mp(2);
-            rfu.set_flag(MainWindowRedrawingFlag::MP);
+            dur.set_flag(MainWindowRedrawingFlag::MP);
         }
     }
 
     /*** Handle actual user input ***/
     while (creature.get_energy_need() <= 0) {
-        rfu.set_flag(SubWindowRedrawingFlag::PLAYER);
+        dur.set_flag(SubWindowRedrawingFlag::PLAYER);
         creature.set_sutemi(false);
         creature.set_counter(false);
         creature.set_now_damaged(false);
@@ -293,7 +296,7 @@ void process_player(CreatureEntity &creature)
                     set_action(creature, ACTION_NONE);
                 }
 
-                rfu.set_flag(MainWindowRedrawingFlag::ACTION);
+                dur.set_flag(MainWindowRedrawingFlag::ACTION);
             }
 
             energy.set_player_turn_energy(100);
@@ -305,7 +308,7 @@ void process_player(CreatureEntity &creature)
             travel.step(creature);
         } else if (command_rep) {
             command_rep--;
-            rfu.set_flag(MainWindowRedrawingFlag::ACTION);
+            dur.set_flag(MainWindowRedrawingFlag::ACTION);
             redraw_stuff(creature);
             msg_flag = false;
             prt("", 0, 0);
@@ -318,7 +321,7 @@ void process_player(CreatureEntity &creature)
                 SubWindowRedrawingFlag::SIGHT_MONSTERS,
                 SubWindowRedrawingFlag::PETS,
             };
-            rfu.set_flags(flags);
+            dur.set_flags(flags);
             window_stuff(creature);
 
             can_save = true;
@@ -338,9 +341,12 @@ void process_player(CreatureEntity &creature)
             }
 
             if (creature.is_hallucinated()) {
-                rfu.set_flag(MainWindowRedrawingFlag::MAP);
+                dur.set_flag(MainWindowRedrawingFlag::MAP);
             }
 
+            // 感知の印は下で行動ごとに外すので、途切れないよう外す前に感知し直すか、印を保つ
+            check_emission(creature);
+            keep_detection_song_marks(creature);
             for (MONSTER_IDX m_idx = 1; m_idx < creature.get_floor()->m_max; m_idx++) {
                 auto &monster = creature.get_floor()->m_list[m_idx];
                 if (!monster.is_valid()) {
@@ -375,7 +381,7 @@ void process_player(CreatureEntity &creature)
                         update_monster(creature, m_idx, false);
                         HealthBarTracker::get_instance().set_flag_if_tracking(m_idx);
                         if (monster.is_riding()) {
-                            rfu.set_flag(MainWindowRedrawingFlag::UHEALTH);
+                            dur.set_flag(MainWindowRedrawingFlag::UHEALTH);
                         }
 
                         lite_spot(creature, monster.get_position());
@@ -391,17 +397,17 @@ void process_player(CreatureEntity &creature)
                 }
 
                 mane_data->new_mane = false;
-                rfu.set_flag(MainWindowRedrawingFlag::IMITATION);
+                dur.set_flag(MainWindowRedrawingFlag::IMITATION);
             }
 
             if (creature.get_action() == ACTION_LEARN) {
                 auto mane_data = CreatureClass(creature).get_specific_data<bluemage_data_type>();
                 mane_data->new_magic_learned = false;
-                rfu.set_flag(MainWindowRedrawingFlag::ACTION);
+                dur.set_flag(MainWindowRedrawingFlag::ACTION);
             }
 
             if (creature.is_timewalking() && (creature.get_energy_need() > -1000)) {
-                rfu.request_monster_update_and_map_redrawing();
+                dur.request_monster_update_and_map_redrawing();
                 msg_print(_("「時は動きだす…」", "You feel time flowing around you once more."));
                 msg_erase();
                 creature.set_timewalking(false);
@@ -445,10 +451,6 @@ void process_upkeep_with_speed(CreatureEntity &creature)
     while (creature.get_enchant_energy_need() <= 0) {
         if (!load) {
             check_music(creature);
-        }
-
-        if (!load) {
-            check_emission(creature);
         }
 
         if (!load) {

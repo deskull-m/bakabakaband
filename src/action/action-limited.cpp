@@ -35,7 +35,7 @@ bool cmd_limit_cast(CreatureEntity &creature)
     }
 
     if (creature.is_shero() && !CreatureClass(creature).equals(PlayerClassType::BERSERKER)) {
-        msg_format(_("狂戦士化していて頭が回らない！", "You cannot think directly!"));
+        msg_print(_("狂戦士化していて頭が回らない！", "You cannot think directly!"));
         return true;
     }
 

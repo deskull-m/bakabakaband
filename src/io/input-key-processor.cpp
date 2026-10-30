@@ -88,11 +88,11 @@
 #include "store/home.h"
 #include "store/store-util.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/floor/floor-info.h"
 #include "system/inner-game-data.h"
 #include "system/item-entity.h"
-#include "system/redrawing-flags-updater.h"
 #include "term/screen-processor.h"
 #include "util/int-char-converter.h"
 #include "view/display-messages.h"
@@ -100,6 +100,7 @@
 #include "wizard/cmd-wizard.h"
 #include "wizard/wizard-mutation.h"
 #include "world/world.h"
+#include <fmt/format.h>
 #include <string>
 #include <tl/optional.hpp>
 
@@ -198,9 +199,9 @@ void process_command(CreatureEntity &creature)
             msg_print(_("ウィザードモード突入。", "Wizard mode on."));
         }
 
-        auto &rfu = RedrawingFlagsUpdater::get_instance();
-        rfu.set_flag(StatusRecalculatingFlag::MONSTER_STATUSES);
-        rfu.set_flag(MainWindowRedrawingFlag::TITLE);
+        auto &dur = DeferredUpdateRequests::get_instance();
+        dur.set_flag(StatusRecalculatingFlag::MONSTER_STATUSES);
+        dur.set_flag(MainWindowRedrawingFlag::TITLE);
         break;
     }
     case KTRL('A'): {
@@ -468,13 +469,13 @@ void process_command(CreatureEntity &creature)
                 break;
             }
 
-            msg_format(_("反魔法バリアが%sを邪魔した！", "An anti-magic shell disrupts your %s!"), which_power);
+            msg_print(_("反魔法バリアが{}を邪魔した！", "An anti-magic shell disrupts your {}!"), which_power);
             PlayerEnergy(creature).reset_player_turn();
             break;
         }
 
         if (creature.is_shero() && !pc.equals(PlayerClassType::BERSERKER)) {
-            msg_format(_("狂戦士化していて頭が回らない！", "You cannot think directly!"));
+            msg_print(_("狂戦士化していて頭が回らない！", "You cannot think directly!"));
             PlayerEnergy(creature).reset_player_turn();
             break;
         }

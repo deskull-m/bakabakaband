@@ -34,6 +34,7 @@
 #include "target/projection-path-calculator.h"
 #include "util/string-processor.h"
 #include "view/display-messages.h"
+#include <fmt/format.h>
 
 /*!
  * @brief トランプ魔法独自の召喚処理を行う / Handle summoning and failure of trump spells
@@ -358,9 +359,7 @@ void mitokohmon(CreatureEntity &creature)
         return;
     }
 
-    msg_format(
-        _("「者ども、ひかえおろう！！！このお方をどなたとこころえる。」", "%s^ says 'WHO do you think this person is! Bow your head, down to your knees!'"),
-        sukekakusan);
+    msg_print(_("「者ども、ひかえおろう！！！このお方をどなたとこころえる。」", "{} says 'WHO do you think this person is! Bow your head, down to your knees!'"), str_upcase_first(sukekakusan));
     sukekaku = true;
     stun_monsters(creature, 120);
     confuse_monsters(creature, 120);

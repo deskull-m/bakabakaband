@@ -8,9 +8,9 @@
 #include "monster/monster-status.h"
 #include "monster/monster-util.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/redrawing-flags-updater.h"
 #include "tracking/health-bar-tracker.h"
 #include "util/bit-flags-calculator.h"
 #include "util/string-processor.h"
@@ -25,7 +25,7 @@ ProcessResult effect_monster_drain_mana(CreatureEntity &creature, EffectMonster 
     bool has_mana = ability_flags.reset(RF_ABILITY_NOMAGIC_MASK).any();
     if (!has_mana) {
         if (em_ptr->see_s_msg) {
-            msg_format(_("%sには効果がなかった。", "%s is unaffected."), em_ptr->m_name);
+            msg_print(_("{}には効果がなかった。", "{} is unaffected."), em_ptr->m_name);
         }
 
         em_ptr->dam = 0;
@@ -33,7 +33,7 @@ ProcessResult effect_monster_drain_mana(CreatureEntity &creature, EffectMonster 
     }
 
     if (!em_ptr->is_monster()) {
-        msg_format(_("%sから精神エネルギーを吸いとった。", "You draw psychic energy from %s."), em_ptr->m_name);
+        msg_print(_("{}から精神エネルギーを吸いとった。", "You draw psychic energy from {}."), em_ptr->m_name);
         (void)hp_player(creature, em_ptr->dam);
         em_ptr->dam = 0;
         return ProcessResult::PROCESS_CONTINUE;
@@ -48,12 +48,12 @@ ProcessResult effect_monster_drain_mana(CreatureEntity &creature, EffectMonster 
 
     HealthBarTracker::get_instance().set_flag_if_tracking(em_ptr->src_idx);
     if (em_ptr->m_caster_ptr && em_ptr->m_caster_ptr->is_riding()) {
-        RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::UHEALTH);
+        DeferredUpdateRequests::get_instance().set_flag(MainWindowRedrawingFlag::UHEALTH);
     }
 
     if (em_ptr->see_s_msg) {
         angband_strcpy(em_ptr->killer, monster_desc(creature, *em_ptr->m_caster_ptr, 0), sizeof(em_ptr->killer));
-        msg_format(_("%s^は気分が良さそうだ。", "%s^ appears healthier."), em_ptr->killer);
+        msg_print(_("{}は気分が良さそうだ。", "{} appears healthier."), str_upcase_first(em_ptr->killer));
     }
 
     em_ptr->dam = 0;
@@ -66,7 +66,7 @@ ProcessResult effect_monster_mind_blast(CreatureEntity &creature, EffectMonster 
         em_ptr->obvious = true;
     }
     if (em_ptr->is_player()) {
-        msg_format(_("%sをじっと睨んだ。", "You gaze intently at %s."), em_ptr->m_name);
+        msg_print(_("{}をじっと睨んだ。", "You gaze intently at {}."), em_ptr->m_name);
     }
 
     bool has_immute = em_ptr->monrace->kind_flags.has(MonsterKindType::UNIQUE);
@@ -114,7 +114,7 @@ ProcessResult effect_monster_brain_smash(CreatureEntity &creature, EffectMonster
         em_ptr->obvious = true;
     }
     if (em_ptr->is_player()) {
-        msg_format(_("%sをじっと睨んだ。", "You gaze intently at %s."), em_ptr->m_name);
+        msg_print(_("{}をじっと睨んだ。", "You gaze intently at {}."), em_ptr->m_name);
     }
 
     bool has_immute = em_ptr->monrace->kind_flags.has(MonsterKindType::UNIQUE);

@@ -5,11 +5,10 @@
 
 #include "blue-magic/learnt-info.h"
 #include "cmd-action/cmd-spell.h"
-#include "lore/lore-calculator.h" //!< @todo 少し違和感.
 #include "monster-race/race-ability-flags.h"
 #include "mspell/mspell-damage-calculator.h"
 #include "system/creature-entity.h"
-#include "term/z-form.h"
+#include <fmt/format.h>
 
 /*!
  * @brief モンスター魔法をプレイヤーが使用する場合の換算レベル
@@ -31,12 +30,7 @@ PLAYER_LEVEL get_pseudo_monstetr_level(CreatureEntity &creature)
  */
 static std::string set_bluemage_damage(CreatureEntity &creature, MonsterAbilityType ms_type, PLAYER_LEVEL plev, concptr msg)
 {
-    int base_damage = monspell_bluemage_damage(creature, ms_type, plev, BASE_DAM);
-    int dice_num = monspell_bluemage_damage(creature, ms_type, plev, DICE_NUM);
-    int dice_side = monspell_bluemage_damage(creature, ms_type, plev, DICE_SIDE);
-    int dice_mult = monspell_bluemage_damage(creature, ms_type, plev, DICE_MULT);
-    int dice_div = monspell_bluemage_damage(creature, ms_type, plev, DICE_DIV);
-    return format(" %s %s", msg, dice_to_string(base_damage, dice_num, dice_side, dice_mult, dice_div).data());
+    return fmt::format(" {} {}", msg, describe_monspell_bluemage_damage(creature, ms_type, plev));
 }
 
 /*!
@@ -120,19 +114,17 @@ std::string learnt_info(CreatureEntity &creature, MonsterAbilityType power)
     case MonsterAbilityType::MISSILE:
         return set_bluemage_damage(creature, power, plev, KWD_DAM);
     case MonsterAbilityType::HASTE:
-        return format(" %sd%d+%d", KWD_DURATION, 20 + plev, plev);
+        return fmt::format(" {}d{}+{}", KWD_DURATION, 20 + plev, plev);
     case MonsterAbilityType::HEAL:
         return set_bluemage_damage(creature, power, plev, KWD_HEAL);
     case MonsterAbilityType::INVULNER:
-        return format(" %sd7+7", KWD_DURATION);
+        return fmt::format(" {}d7+7", KWD_DURATION);
     case MonsterAbilityType::BLINK:
-        return format(" %s10", KWD_SPHERE);
+        return fmt::format(" {}10", KWD_SPHERE);
     case MonsterAbilityType::TPORT:
-        return format(" %s%d", KWD_SPHERE, plev * 5);
-    case MonsterAbilityType::PSY_SPEAR:
-        return set_bluemage_damage(creature, power, plev, KWD_DAM);
+        return fmt::format(" {}{}", KWD_SPHERE, plev * 5);
     case MonsterAbilityType::RAISE_DEAD:
-        return format(" %s5", KWD_SPHERE);
+        return fmt::format(" {}5", KWD_SPHERE);
     default:
         return std::string();
     }

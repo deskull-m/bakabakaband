@@ -5,10 +5,10 @@
 #include "player-info/class-info.h"
 #include "player/player-status.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/redrawing-flags-updater.h"
 #include "util/bit-flags-calculator.h"
 #include "world/world.h"
 
@@ -17,7 +17,8 @@ int total_friends = 0;
 /*!
  * @brief プレイヤーの騎乗/下馬処理判定
  * @param grid プレイヤーの移動先グリッドへの参照
- * @param now_riding trueなら下馬処理、falseならば騎乗処理
+ * @param creature クリーチャーへの参照
+ * @param now_riding trueなら乗った状態、falseなら降りた状態で判定する
  * @return 可能ならばtrueを返す
  */
 bool can_player_ride_pet(CreatureEntity &creature, const Grid &grid, bool now_riding)
@@ -33,15 +34,12 @@ bool can_player_ride_pet(CreatureEntity &creature, const Grid &grid, bool now_ri
     if (now_riding) {
         creature.ride_monster(grid.m_idx);
     } else {
-        creature.ride_monster(0);
-        creature.remove_pet_extra_flag(PF_TWO_HANDS);
-        creature.set_was_riding_ryoute(false);
-        creature.set_riding_ryoute(false);
+        creature.dismount();
     }
 
     // 騎乗状態を仮に変えた能力値で判定する。仮の状態を画面に描かないよう、再計算だけを行う。
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.set_flag(StatusRecalculatingFlag::BONUS);
+    auto &dur = DeferredUpdateRequests::get_instance();
+    dur.set_flag(StatusRecalculatingFlag::BONUS);
     update_creature(creature);
 
     bool p_can_enter = player_can_enter(creature, grid.feat, CEM_P_CAN_ENTER_PATTERN);
@@ -54,7 +52,7 @@ bool can_player_ride_pet(CreatureEntity &creature, const Grid &grid, bool now_ri
 
     creature.set_riding_ryoute(old_riding_two_hands);
     creature.set_was_riding_ryoute(old_old_riding_two_hands);
-    rfu.set_flag(StatusRecalculatingFlag::BONUS);
+    dur.set_flag(StatusRecalculatingFlag::BONUS);
     update_creature(creature);
 
     world.character_xtra = old_character_xtra;

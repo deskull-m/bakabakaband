@@ -5,6 +5,7 @@
 #include "core/window-redrawer.h"
 #include "io-dump/player-status-dump-json.h"
 #include "io/files-util.h"
+#include "io/input-context.h"
 #include "io/input-key-acceptor.h"
 #include "locale/japanese.h"
 #include "main/sound-of-music.h"
@@ -13,12 +14,11 @@
 #include "player/process-name.h"
 #include "racial/racial-android.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/player-type-definition.h"
-#include "system/redrawing-flags-updater.h"
 #include "term/gameterm.h"
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
-#include "term/z-form.h"
 #include "util/angband-files.h"
 #include "util/buffer-shaper.h"
 #include "util/int-char-converter.h"
@@ -26,6 +26,8 @@
 #include "view/display-messages.h"
 #include "view/display-player.h"
 #include "world/world.h"
+#include <fmt/format.h>
+#include <string_view>
 #include <tl/optional.hpp>
 
 /*!
@@ -47,27 +49,14 @@ void do_cmd_redraw(CreatureEntity &creature)
 {
     term_xtra(TERM_XTRA_REACT, 0);
 
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    static constexpr auto flags_srf = {
-        StatusRecalculatingFlag::TORCH,
-        StatusRecalculatingFlag::BONUS,
-        StatusRecalculatingFlag::HP,
-        StatusRecalculatingFlag::MP,
-        StatusRecalculatingFlag::SPELLS,
-        StatusRecalculatingFlag::UN_VIEW,
-        StatusRecalculatingFlag::UN_LITE,
-        StatusRecalculatingFlag::VIEW,
-        StatusRecalculatingFlag::LITE,
-        StatusRecalculatingFlag::MONSTER_LITE,
-        StatusRecalculatingFlag::MONSTER_STATUSES,
-    };
-    rfu.set_flags(flags_srf);
+    auto &dur = DeferredUpdateRequests::get_instance();
+    dur.request_whole_status_recalculation();
     static constexpr auto flags_iaf = {
         InventoryArrangementFlag::COMBINATION,
         InventoryArrangementFlag::REORDER,
     };
-    rfu.set_flags(flags_iaf);
-    rfu.request_whole_main_window_redrawing();
+    dur.set_flags(flags_iaf);
+    dur.request_whole_main_window_redrawing();
     static constexpr auto flags_swrf = {
         SubWindowRedrawingFlag::INVENTORY,
         SubWindowRedrawingFlag::EQUIPMENT,
@@ -79,7 +68,7 @@ void do_cmd_redraw(CreatureEntity &creature)
         SubWindowRedrawingFlag::MONSTER_LORE,
         SubWindowRedrawingFlag::ITEM_KNOWLEDGE,
     };
-    rfu.set_flags(flags_swrf);
+    dur.set_flags(flags_swrf);
     AngbandWorld::get_instance().play_time.update();
     handle_stuff(creature);
     if (CreatureRace(&creature).equals(PlayerRaceType::ANDROID)) {
@@ -99,9 +88,9 @@ void do_cmd_redraw(CreatureEntity &creature)
     }
 }
 
-static tl::optional<int> input_status_command(CreatureEntity &creature, int page)
+static tl::optional<int> input_status_command(CreatureEntity &creature, int page, std::string_view prompt)
 {
-    auto c = inkey();
+    const auto c = input_key_with_context(InputKind::COMMAND_CHAR, prompt);
     switch (c) {
     case 'c':
         // 名前変更はプレイヤー専用（モンスターにはグローバル sp_ptr 等に依存する描画処理が不可）
@@ -113,7 +102,7 @@ static tl::optional<int> input_status_command(CreatureEntity &creature, int page
         process_player_name(creature);
         return page;
     case 'f': {
-        const auto initial_filename = format("%s.txt", creature.base_name.data());
+        const auto initial_filename = fmt::format("{}.txt", creature.base_name);
         const auto input_filename = input_string(_("ファイル名: ", "File name: "), 80, initial_filename);
         if (!input_filename.has_value()) {
             return page;
@@ -128,7 +117,7 @@ static tl::optional<int> input_status_command(CreatureEntity &creature, int page
         return page;
     }
     case 'g': {
-        const auto initial_filename = format("%s.json", creature.base_name.data());
+        const auto initial_filename = fmt::format("{}.json", creature.base_name);
         const auto input_filename = input_string(_("JSON ファイル名: ", "JSON File name: "), 80, initial_filename);
         if (!input_filename.has_value()) {
             return page;
@@ -142,9 +131,9 @@ static tl::optional<int> input_status_command(CreatureEntity &creature, int page
             if (fff) {
                 dump_player_status_json_to_file(creature, fff);
                 angband_fclose(fff);
-                msg_format(_("ステータスを %s に書き出しました。", "Character status dumped to %s."), filename.data());
+                msg_print(_("ステータスを {} に書き出しました。", "Character status dumped to {}."), filename);
             } else {
-                msg_format(_("ファイル %s を開けませんでした。", "Failed to open %s."), filename.data());
+                msg_print(_("ファイル {} を開けませんでした。", "Failed to open {}."), filename);
             }
         }
 
@@ -184,7 +173,7 @@ void do_cmd_player_status(CreatureEntity &creature)
         }
 
         term_putstr(2, 23, -1, TERM_WHITE, prompt);
-        auto next_page = input_status_command(creature, page);
+        auto next_page = input_status_command(creature, page, prompt);
         if (!next_page.has_value()) {
             break;
         }
@@ -194,8 +183,8 @@ void do_cmd_player_status(CreatureEntity &creature)
     }
 
     screen_load();
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.request_whole_main_window_redrawing();
+    auto &dur = DeferredUpdateRequests::get_instance();
+    dur.request_whole_main_window_redrawing();
     // ステータス画面はモンスターの inspect にも使われる (target-describer の 'c')。
     // 終了後のメインウィンドウ (画面左のパラメータ表示等) は常にプレイヤーで復元し、
     // inspect したモンスターの値が左枠に残らないようにする。
@@ -208,7 +197,7 @@ void do_cmd_player_status(CreatureEntity &creature)
  */
 void do_cmd_message_one(void)
 {
-    prt(format("> %s", message_str(0)->data()), 0, 0);
+    prt(fmt::format("> {}", *message_str(0)), 0, 0);
 }
 
 /*!
@@ -344,11 +333,12 @@ void do_cmd_messages(int num_now)
     while (true) {
         const auto displayed_msg_count = display_message_history(base_msg_num, num_now, num_lines, wid, shower);
 
-        constexpr auto fmt = _("以前のメッセージ %d-%d 全部で(%d)", "Message Recall (%d-%d of %d)");
-        prt(format(fmt, base_msg_num, base_msg_num + displayed_msg_count - 1, message_num()), 0, 0);
-        prt(_("[ 'p' で更に古いもの, 'n' で更に新しいもの, '/' で検索, ESC で中断 ]", "[Press 'p' for older, 'n' for newer, ..., or ESCAPE]"), hgt - 1, 0);
+        constexpr auto fmt = _("以前のメッセージ {}-{} 全部で({})", "Message Recall ({}-{} of {})");
+        prt(fmt::format(fmt, base_msg_num, base_msg_num + displayed_msg_count - 1, message_num()), 0, 0);
+        constexpr auto key_guide = _("[ 'p' で更に古いもの, 'n' で更に新しいもの, '/' で検索, ESC で中断 ]", "[Press 'p' for older, 'n' for newer, ..., or ESCAPE]");
+        prt(key_guide, hgt - 1, 0);
 
-        const auto skey = inkey_special(true);
+        const auto skey = input_special_key_with_context(InputKind::FILE_VIEW, key_guide);
         if (skey == ESCAPE) {
             break;
         }
@@ -356,8 +346,7 @@ void do_cmd_messages(int num_now)
         const auto prev_base_msg_num = base_msg_num;
         switch (skey) {
         case '=': {
-            prt(_("強調: ", "Show: "), hgt - 1, 0);
-            const auto ask_result = askfor(80, shower_str);
+            const auto ask_result = input_string_on_row(_("強調: ", "Show: "), hgt - 1, 80, shower_str);
             if (ask_result) {
                 shower = *ask_result;
                 shower_str = *ask_result;
@@ -367,8 +356,7 @@ void do_cmd_messages(int num_now)
         }
         case '/':
         case KTRL('s'): {
-            prt(_("検索: ", "Find: "), hgt - 1, 0);
-            const auto ask_result = askfor(80, finder_str);
+            const auto ask_result = input_string_on_row(_("検索: ", "Find: "), hgt - 1, 80, finder_str);
             if (!ask_result) {
                 continue;
             }

@@ -4,9 +4,9 @@
  * @brief 1つの固定クエスト JSONC を QuestType(メタデータ) と QuestFixedMap(レイアウト) に読み込む
  */
 
+#include "info-reader/parse-error-types.h"
 #include <nlohmann/json_fwd.hpp>
-
-enum parse_error_type : int;
+#include <tl/expected.hpp>
 class QuestType;
 struct QuestFixedMap;
 struct QuestLegendCell;
@@ -28,15 +28,15 @@ public:
     QuestReader &operator=(const QuestReader &) = delete;
     QuestReader &operator=(QuestReader &&) = delete;
 
-    int read() const;
+    ParseErrorType read() const;
 
 private:
-    int set_name() const;
-    int set_definition() const;
-    int set_descriptions() const;
-    int set_legend() const;
-    int set_maps() const;
-    int set_starts() const;
+    tl::expected<void, ParseErrorType> set_name() const;
+    tl::expected<void, ParseErrorType> set_definition() const;
+    tl::expected<void, ParseErrorType> set_descriptions() const;
+    tl::expected<void, ParseErrorType> set_legend() const;
+    tl::expected<void, ParseErrorType> set_maps() const;
+    tl::expected<void, ParseErrorType> set_starts() const;
 
     const nlohmann::json &quest_data;
     QuestType &quest;
@@ -47,4 +47,4 @@ private:
  * @brief JSONC の gridDefinition 1件を凡例セルへ変換する (set_legend から使用)
  * @return エラーコード
  */
-parse_error_type parse_quest_legend_cell(const nlohmann::json &cell_data, QuestLegendCell &out);
+ParseErrorType parse_quest_legend_cell(const nlohmann::json &cell_data, QuestLegendCell &out);

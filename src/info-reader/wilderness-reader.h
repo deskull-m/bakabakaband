@@ -6,6 +6,7 @@
 #include <nlohmann/json_fwd.hpp>
 #include <optional>
 #include <string>
+#include <tl/expected.hpp>
 #include <vector>
 
 struct WildernessTownDefinition {
@@ -45,13 +46,13 @@ public:
     WildernessReader &operator=(const WildernessReader &) = delete;
     WildernessReader &operator=(WildernessReader &&) = delete;
 
-    int read(WildernessDefinition &definition) const;
+    ParseErrorType read(WildernessDefinition &definition) const;
 
 private:
-    int read_map(const nlohmann::json &data, int width, int height, WildernessMapDefinition &map) const;
+    ParseErrorType read_map(const nlohmann::json &data, int width, int height, WildernessMapDefinition &map) const;
 
     const nlohmann::json &data;
 };
 
-bool initialize_wilderness_definition();
-parse_error_type apply_wilderness_definition();
+tl::expected<void, std::string> initialize_wilderness_definition();
+tl::expected<void, ParseErrorType> apply_wilderness_definition();

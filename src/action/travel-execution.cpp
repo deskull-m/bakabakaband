@@ -13,6 +13,7 @@
 #include "player/player-move.h"
 #include "player/player-status-flags.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/terrain/terrain-definition.h"
@@ -239,7 +240,7 @@ void Travel::set_goal(CreatureEntity &creature, const Pos2D &pos)
 void Travel::reset_goal()
 {
     this->pos_goal.reset();
-    this->state = TravelState::STOP;
+    this->stop();
     this->forget_flow();
 }
 
@@ -248,8 +249,16 @@ bool Travel::is_ongoing() const
     return this->state == TravelState::STANDBY_TO_EXECUTE || this->state == TravelState::EXECUTING;
 }
 
+/*!
+ * @brief トラベルをやめる
+ * @details トラベル中は足元・発見済みのアイテムの一覧を描き直していないので、トラベル中だったら描き直しを要求する
+ */
 void Travel::stop()
 {
+    if (this->is_ongoing()) {
+        DeferredUpdateRequests::get_instance().request_floor_item_lists_redrawing();
+    }
+
     this->state = TravelState::STOP;
 }
 

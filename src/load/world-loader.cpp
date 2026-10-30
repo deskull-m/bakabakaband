@@ -15,6 +15,7 @@
 #include "system/floor/wilderness-grid.h"
 #include "system/inner-game-data.h"
 #include "world/world.h"
+#include <fmt/format.h>
 
 static void rd_hengband_dungeons()
 {
@@ -94,7 +95,7 @@ static void rd_world_info(CreatureEntity &creature)
     auto &floor = *creature.get_floor();
     floor.generated_turn = rd_s32b();
     auto &df = DungeonFeeling::get_instance();
-    df.set_feeling(rd_s32b());
+    df.set_turns(rd_s32b());
 
     world.game_turn = rd_s32b();
     world.dungeon_turn = rd_s32b();
@@ -138,7 +139,7 @@ errr analyze_wilderness(void)
     auto &wilderness = WildernessGrids::get_instance();
     const auto &area = wilderness.get_area();
     if ((wild_y_size > area.height()) || (wild_x_size > area.width())) {
-        load_note(format(_("荒野が大きすぎる(%d/%d)！", "Wilderness is too big (%d/%d)!"), wild_x_size, wild_y_size));
+        load_note(fmt::format(_("荒野が大きすぎる({}/{})！", "Wilderness is too big ({}/{})!"), wild_x_size, wild_y_size));
         return 23;
     }
 

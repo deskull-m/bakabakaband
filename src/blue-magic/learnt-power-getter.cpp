@@ -10,7 +10,7 @@
 #include "core/window-redrawer.h"
 #include "game-option/text-display-options.h"
 #include "io/command-repeater.h"
-#include "io/input-key-acceptor.h"
+#include "io/input-context.h"
 #include "io/input-key-requester.h"
 #include "io/screen-util.h"
 #include "main/sound-of-music.h"
@@ -23,7 +23,7 @@
 #include "realm/realm-types.h"
 #include "spell/spell-info.h"
 #include "system/creature-entity.h"
-#include "system/redrawing-flags-updater.h"
+#include "system/deferred-update-requests.h"
 #include "term/screen-processor.h"
 #include "util/enum-converter.h"
 #include "util/flag-group.h"
@@ -31,6 +31,7 @@
 #include "util/string-processor.h"
 #include "view/display-messages.h"
 #include <algorithm>
+#include <fmt/format.h>
 #include <iterator>
 #include <range/v3/range/conversion.hpp>
 #include <range/v3/view.hpp>
@@ -75,18 +76,19 @@ static tl::optional<BlueMagicType> select_blue_magic_type_by_menu()
 {
     auto menu_line = 1;
     tl::optional<BlueMagicType> type;
+    constexpr auto prompt_line = _("どの種類の魔法を使いますか？", "use which type of magic? ");
+    const auto prompt = str_trim(prompt_line);
 
     screen_save();
 
-    while (!type.has_value()) {
-        prt(format(_(" %s ボルト", " %s bolt"), (menu_line == 1) ? _("》", "> ") : "  "), 2, 14);
-        prt(format(_(" %s ボール", " %s ball"), (menu_line == 2) ? _("》", "> ") : "  "), 3, 14);
-        prt(format(_(" %s ブレス", " %s breath"), (menu_line == 3) ? _("》", "> ") : "  "), 4, 14);
-        prt(format(_(" %s 召喚", " %s sommoning"), (menu_line == 4) ? _("》", "> ") : "  "), 5, 14);
-        prt(format(_(" %s その他", " %s others"), (menu_line == 5) ? _("》", "> ") : "  "), 6, 14);
-        prt(_("どの種類の魔法を使いますか？", "use which type of magic? "), 0, 0);
-
-        auto choice = inkey();
+    while (!type) {
+        prt(fmt::format(_(" {} ボルト", " {} bolt"), (menu_line == 1) ? _("》", "> ") : "  "), 2, 14);
+        prt(fmt::format(_(" {} ボール", " {} ball"), (menu_line == 2) ? _("》", "> ") : "  "), 3, 14);
+        prt(fmt::format(_(" {} ブレス", " {} breath"), (menu_line == 3) ? _("》", "> ") : "  "), 4, 14);
+        prt(fmt::format(_(" {} 召喚", " {} sommoning"), (menu_line == 4) ? _("》", "> ") : "  "), 5, 14);
+        prt(fmt::format(_(" {} その他", " {} others"), (menu_line == 5) ? _("》", "> ") : "  "), 6, 14);
+        prt(prompt_line, 0, 0);
+        const auto choice = input_key_with_context(InputKind::COMMAND_CHAR, prompt);
         switch (choice) {
         case ESCAPE:
         case 'z':
@@ -407,23 +409,21 @@ int calculate_blue_magic_failure_probability(CreatureEntity &creature, const mon
  * 記号で選択する場合、" 記号)" が出力される
  * コマンドメニューで選択する場合、選択中の青魔法にはカーソルが、そうでない青魔法には空白が出力される
  *
- * @param buf 出力するバッファ
- * @param buf_size バッファのサイズ
  * @param index 選択する青魔法のリスト上の番号
  * @param menu_line コマンドメニューで選択する場合、選択中の行。記号で選択する場合は使用されない。
+ * @return 青魔法の先頭のヘッダ
  */
-static void close_blue_magic_name(char *buf, size_t buf_size, int index, int menu_line)
+static std::string close_blue_magic_name(int index, int menu_line)
 {
     if (!use_menu) {
-        snprintf(buf, buf_size, "  %c)", I2A(index));
-        return;
+        return fmt::format("  {})", I2A(index));
     }
 
     if (index == menu_line - 1) {
-        snprintf(buf, buf_size, _("  》", "  > "));
-    } else {
-        snprintf(buf, buf_size, "    ");
+        return _("  》", "  > ");
     }
+
+    return "    ";
 }
 
 /*!
@@ -463,10 +463,9 @@ static void describe_blue_magic_name(CreatureEntity &creature, const bluemage_da
         const auto &mp = monster_powers.at(spell);
         auto need_mana = mod_need_mana(creature, mp.smana, 0, RealmType::NONE);
         auto chance = calculate_blue_magic_failure_probability(creature, mp, need_mana);
-        char header[80];
-        close_blue_magic_name(header, sizeof(header), i, menu_line);
+        const auto header = close_blue_magic_name(i, menu_line);
         const auto info = learnt_info(creature, spell);
-        const auto psi_desc = format("%s %-26s %3d %3d%%%s", header, mp.name, need_mana, chance, info.data());
+        const auto psi_desc = fmt::format("{} {:<26} {:3} {:3}%{}", header, fmt::bytes(mp.name), need_mana, chance, info);
         prt(psi_desc, row, x_base);
     }
 }
@@ -479,7 +478,7 @@ static void describe_blue_magic_name(CreatureEntity &creature, const bluemage_da
  */
 static bool confirm_cast_blue_magic(MonsterAbilityType spell)
 {
-    const auto prompt = format(_("%sの魔法を唱えますか？", "Use %s? "), monster_powers.at(spell).name);
+    const auto prompt = fmt::format(_("{}の魔法を唱えますか？", "Use {}? "), monster_powers.at(spell).name);
     return input_check(prompt);
 }
 
@@ -493,7 +492,9 @@ static bool confirm_cast_blue_magic(MonsterAbilityType spell)
 static tl::optional<MonsterAbilityType> select_learnt_spells_by_symbol(CreatureEntity &creature, const bluemage_data_type &bluemage_data, std::span<const MonsterAbilityType> spells)
 {
     constexpr auto fmt = _("({}-{}, '*'で頁送り, ESC) どの{}を唱えますか？", "({}-{}, *=Next page, ESC=exit) Use which {}? ");
-    const auto prompt = fmt::format(fmt, I2A(0), I2A(spells.size() - 1), _("魔法", "magic"));
+    const auto first_label = I2A(0);
+    const auto last_label = I2A(spells.size() - 1);
+    const auto prompt = fmt::format(fmt, first_label, last_label, _("魔法", "magic"));
 
     bool first_show_list = always_show_list;
     auto show_list = false;
@@ -503,7 +504,7 @@ static tl::optional<MonsterAbilityType> select_learnt_spells_by_symbol(CreatureE
     while (!selected_spell.has_value()) {
         auto choice = '\0';
         if (!first_show_list) {
-            const auto choice_opt = input_command(prompt);
+            const auto choice_opt = input_spell_choice(prompt, { .first_label = first_label, .last_label = last_label, .list = show_list });
             if (!choice_opt) {
                 break;
             }
@@ -590,12 +591,14 @@ static tl::optional<MonsterAbilityType> select_learnt_spells_by_menu(CreatureEnt
     screen_save();
 
     const auto page_size = make_blue_magic_list_page_context(0, spells.size()).page_size;
+    const auto first_label = I2A(0);
+    const auto last_label = I2A(spells.size() - 1);
 
     while (!selected_spell.has_value()) {
         const auto page_context = make_blue_magic_list_page_context((menu_line - 1) / page_size, spells.size());
         describe_blue_magic_name(creature, bluemage_data, menu_line, spells, page_context);
 
-        const auto choice = input_command(prompt);
+        const auto choice = input_spell_choice(prompt, { .first_label = first_label, .last_label = last_label, .list = true, .menu = true });
         if (!choice) {
             break;
         }
@@ -668,7 +671,7 @@ tl::optional<MonsterAbilityType> get_learned_power(CreatureEntity &creature)
                               ? select_learnt_spells_by_menu(creature, *bluemage_data, spells.value())
                               : select_learnt_spells_by_symbol(creature, *bluemage_data, spells.value());
 
-    RedrawingFlagsUpdater::get_instance().set_flag(SubWindowRedrawingFlag::SPELL);
+    DeferredUpdateRequests::get_instance().set_flag(SubWindowRedrawingFlag::SPELL);
     window_stuff(creature);
 
     if (!selected_spell) {

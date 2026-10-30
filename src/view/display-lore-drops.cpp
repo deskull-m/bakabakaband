@@ -1,7 +1,9 @@
 #include "view/display-lore-drops.h"
 #include "lore/lore-util.h"
 #include "util/bit-flags-calculator.h"
+#include "util/string-processor.h"
 #include "view/display-lore.h"
+#include <fmt/format.h>
 
 void display_monster_drop_quantity(lore_type *lore_ptr)
 {
@@ -15,7 +17,7 @@ void display_monster_drop_quantity(lore_type *lore_ptr)
     } else if (lore_ptr->drop_quantity == 2) {
         hooked_roff(_("一つか二つの", " one or two"));
     } else {
-        hooked_roff(format(_(" %d 個までの", " up to %d"), lore_ptr->drop_quantity));
+        hooked_roff(fmt::format(_(" {} 個までの", " up to {}"), lore_ptr->drop_quantity));
     }
 }
 
@@ -126,7 +128,7 @@ void display_monster_drops_summary(lore_type *lore_ptr)
         drop_what = _("財宝", "treasure");
     }
 
-    hooked_roff(format(_("[ドロップ] %s(%s最大%d)\n", "[drop] %s(%smax %d)\n"), drop_what.data(), drop_quality.data(), drop_num));
+    hooked_roff(fmt::format(_("[ドロップ] {}({}最大{})\n", "[drop] {}({}max {})\n"), drop_what, drop_quality, drop_num));
 }
 
 void display_monster_drops(lore_type *lore_ptr)
@@ -134,7 +136,7 @@ void display_monster_drops(lore_type *lore_ptr)
     // 一般ドロップ (drop_flags 由来のアイテム/財宝) を持たないモンスターでも、
     // 固定ドロップ (drop_kinds) は表示する必要があるため早期 return しない。
     if ((lore_ptr->drop_gold > 0) || (lore_ptr->drop_item > 0)) {
-        hooked_roff(format(_("%s^は", "%s^ may carry"), Who::who(lore_ptr->msex).data()));
+        hooked_roff(fmt::format(_("{}は", "{} may carry"), str_upcase_first(Who::who(lore_ptr->msex))));
 #ifdef JP
 #else
         lore_ptr->sin = false;

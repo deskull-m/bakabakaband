@@ -32,6 +32,7 @@
 #include "util/string-processor.h"
 #include "view/display-messages.h"
 #include "wizard/wizard-messages.h"
+#include <fmt/format.h>
 #include <optional>
 
 #define MON_SCAT_MAXD 15 /*!< mon_scatter()関数によるモンスター配置で許される中心からの最大距離 */
@@ -249,7 +250,7 @@ tl::optional<MONSTER_IDX> place_specific_monster(CreatureEntity &creature, POSIT
                 }
             }
             if (d > scatter_max) {
-                msg_format_wizard(creature, CHEAT_MONSTER, _("護衛の指定生成に失敗しました。", "Failed fixed escorts."));
+                msg_print_wizard(creature, CHEAT_MONSTER, _("護衛の指定生成に失敗しました。", "Failed fixed escorts."));
             }
         }
     }
@@ -381,7 +382,7 @@ bool alloc_horde(CreatureEntity &creature, POSITION y, POSITION x, summon_specif
     }
 
     const auto &monrace = monentity.is_chameleon() ? monentity.get_monrace() : MonraceList::get_instance().get_monrace(*monrace_id);
-    msg_format(_("モンスターの大群(%c)", "Monster horde (%c)."), monrace.symbol_definition.character);
+    msg_print(_("モンスターの大群({:c})", "Monster horde ({:c})."), monrace.symbol_definition.character);
     return true;
 }
 

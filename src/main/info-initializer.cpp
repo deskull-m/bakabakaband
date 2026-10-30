@@ -70,48 +70,6 @@ concept HasShrinkToFit = requires(T t) {
 }
 
 /*!
- * @brief 各種設定データをlib/edit/のテキストから読み込み
- * Initialize the "*_info" array
- * @param filename ファイル名(拡張子txt)
- * @param dhdt 定義ファイルハッシュ種別
- * @param info データ保管先の構造体ポインタ
- * @note
- * Note that we let each entry have a unique "name" and "text" string,
- * even if the string happens to be empty (everyone has a unique '\0').
- */
-template <typename InfoType>
-static void init_info(std::string_view filename, DefinitionHashDataType dhdt, InfoType &info, Parser parser, std::function<void()> retouch = nullptr)
-{
-    const auto path = path_build(ANGBAND_DIR_EDIT, filename);
-    auto ifs = std::ifstream(path);
-    if (!ifs) {
-        quit(fmt::format(_("'{}'ファイルをオープンできません。", "Cannot open '{}' file."), filename));
-    }
-
-    const auto &[error_code, error_line, line] = init_info_txt(ifs, dhdt, parser);
-    if (error_code != PARSE_ERROR_NONE) {
-        const auto oops = (((error_code > 0) && (error_code < PARSE_ERROR_MAX)) ? err_str[error_code] : _("未知の", "unknown"));
-#ifdef JP
-        msg_print("'{}'ファイルの {} 行目にエラー。", filename, error_line);
-#else
-        msg_print("Error {} at line {} of '{}'.", error_code, error_line, filename);
-#endif
-        msg_print(_("レコード {} は '{}' エラーがあります。", "Record {} contains a '{}' error."), error_idx, oops);
-        msg_print(_("構文 '{}'。", "Parsing '{}'."), line);
-        msg_erase();
-        quit(fmt::format(_("'{}'ファイルにエラー", "Error in '{}' file."), filename));
-    }
-
-    if constexpr (HasShrinkToFit<InfoType>) {
-        info.shrink_to_fit();
-    }
-
-    if (retouch) {
-        retouch();
-    }
-}
-
-/*!
  * @brief 各種設定データをlib/edit/.jsoncから読み込み
  * Load data from lib/edit/.jsonc
  * @param filename ファイル名(拡張子jsonc)
@@ -133,7 +91,12 @@ static void init_json(std::string_view filename, std::string_view keyname, Defin
 
     std::istreambuf_iterator<char> ifs_iter(ifs);
     std::istreambuf_iterator<char> ifs_end;
-    auto json_object = nlohmann::json::parse(ifs_iter, ifs_end, nullptr, true, true, true);
+    nlohmann::json json_object;
+    try {
+        json_object = nlohmann::json::parse(ifs_iter, ifs_end, nullptr, true, true, true);
+    } catch (const nlohmann::json::exception &e) {
+        quit(format_json_syntax_error(filename, e.what()));
+    }
 
     const auto array_it = json_object.find(keyname);
     if ((array_it == json_object.end()) || !array_it->is_array()) {
@@ -143,13 +106,16 @@ static void init_json(std::string_view filename, std::string_view keyname, Defin
         quit(fmt::format(_("'{}'ファイルの配列 '{}' が空です。", "Array '{}' in '{}' file is empty."), keyname, filename));
     }
 
-    error_idx = -1;
-
-    for (auto &element : json_object[keyname]) {
-        const auto error_code = parser(element);
-        if (error_code != PARSE_ERROR_NONE) {
-            msg_erase();
-            quit(fmt::format(_("'{}'ファイルにエラー", "Error in '{}' file."), filename));
+    auto &elements = json_object[keyname];
+    for (size_t index = 0; index < elements.size(); ++index) {
+        // 起動中は履歴に残らず、msg_print 自体も入力を待つため、レコード単位で診断を捕捉する。
+        // 解析器が operator[] で無い項目を null として足すことがあるので、識別子の項目は解析の前に探しておく。
+        // 表記を作るのは失敗したときだけにする。
+        const auto identifier = find_record_identifier(elements[index]);
+        ScopedMessageCapture diagnostics;
+        const auto error_code = parser(elements[index]);
+        if (error_code != ParseErrorType::NONE) {
+            quit(format_definition_load_error(diagnostics.messages(), format_record_parse_error(filename, keyname, index, describe_record_identifier(identifier), error_code)));
         }
     }
 
@@ -183,7 +149,9 @@ static void init_json_reader(std::string_view filename, std::string_view keyname
  */
 void init_artifacts_info()
 {
-    init_json_reader<ArtifactReader>("ArtifactDefinitions.jsonc", "artifacts", DefinitionHashDataType::ARTIFACTS, ArtifactList::get_instance());
+    auto previous_id = -1;
+    auto parser = [&previous_id](nlohmann::json &element) { return ArtifactReader(element, previous_id).read(); };
+    init_json("ArtifactDefinitions.jsonc", "artifacts", DefinitionHashDataType::ARTIFACTS, ArtifactList::get_instance(), parser);
 }
 
 /*!
@@ -191,7 +159,9 @@ void init_artifacts_info()
  */
 void init_baseitems_info()
 {
-    init_json_reader<BaseitemReader>("BaseitemDefinitions.jsonc", "baseitems", DefinitionHashDataType::BASEITEMS, BaseitemList::get_instance());
+    auto previous_id = -1;
+    auto parser = [&previous_id](nlohmann::json &element) { return BaseitemReader(element, previous_id).read(); };
+    init_json("BaseitemDefinitions.jsonc", "baseitems", DefinitionHashDataType::BASEITEMS, BaseitemList::get_instance(), parser);
 }
 
 /*!
@@ -200,7 +170,9 @@ void init_baseitems_info()
 void init_class_magics_info()
 {
     class_magics_info.assign(PLAYER_CLASS_TYPE_MAX, {});
-    init_json_reader<MagicReader>("ClassMagicDefinitions.jsonc", "classes", DefinitionHashDataType::CLASS_MAGICS, class_magics_info);
+    auto previous_id = -1;
+    auto parser = [&previous_id](nlohmann::json &element) { return MagicReader(element, previous_id).read(); };
+    init_json("ClassMagicDefinitions.jsonc", "classes", DefinitionHashDataType::CLASS_MAGICS, class_magics_info, parser);
 }
 
 /*!
@@ -209,16 +181,19 @@ void init_class_magics_info()
 void init_class_skills_info()
 {
     class_skills_info.assign(PLAYER_CLASS_TYPE_MAX, {});
-    init_json_reader<SkillReader>("ClassSkillDefinitions.jsonc", "classes", DefinitionHashDataType::CLASS_SKILLS, class_skills_info, [] {
+    auto previous_id = -1;
+    auto parser = [&previous_id](nlohmann::json &element) { return SkillReader(element, previous_id).read(); };
+    auto retouch = [&previous_id] {
         // SkillReader が職業IDの連続性を保証するので、ここでは末尾までの網羅だけを確かめる。
         // 上流と異なり bakabakaband は ELEMENTALIST より後ろに独自の職業を持つが、
         // これらは技能定義を持たず class_skills_info の既定値 (すべて0) で動くため、
         // 全職業を要求すると起動できない。上流分を網羅しているかだけを見る。
         constexpr auto last_required_class = enum2i(PlayerClassType::ELEMENTALIST);
-        if (error_idx < last_required_class) {
+        if (previous_id < last_required_class) {
             quit("ClassSkillDefinitions.jsonc: missing class records");
         }
-    });
+    };
+    init_json("ClassSkillDefinitions.jsonc", "classes", DefinitionHashDataType::CLASS_SKILLS, class_skills_info, parser, retouch);
 }
 /*!
  * @brief ダンジョン情報読み込みのメインルーチン
@@ -226,7 +201,9 @@ void init_class_skills_info()
 void init_dungeons_info()
 {
     auto &dungeons = DungeonList::get_instance();
-    init_json_reader<DungeonReader>("DungeonDefinitions.jsonc", "dungeons", DefinitionHashDataType::DUNGEONS, dungeons, [&dungeons] { dungeons.retouch(); });
+    auto previous_id = -1;
+    auto parser = [&previous_id](nlohmann::json &element) { return DungeonReader(element, previous_id).read(); };
+    init_json("DungeonDefinitions.jsonc", "dungeons", DefinitionHashDataType::DUNGEONS, dungeons, parser, [&dungeons] { dungeons.retouch(); });
 }
 
 /*!
@@ -243,7 +220,9 @@ void init_egos_info()
 void init_terrains_info()
 {
     auto &terrains = TerrainList::get_instance();
-    init_json("TerrainDefinitions.jsonc", "terrains", DefinitionHashDataType::TERRAINS, terrains, parse_terrains_json_info, [&terrains] { terrains.retouch(); });
+    TerrainReaderSession session;
+    auto parser = [&session](nlohmann::json &element) { return parse_terrains_json_info(element, session); };
+    init_json("TerrainDefinitions.jsonc", "terrains", DefinitionHashDataType::TERRAINS, terrains, parser, [&terrains] { terrains.retouch(); });
 }
 
 /*!
@@ -251,7 +230,9 @@ void init_terrains_info()
  */
 void init_monrace_definitions()
 {
-    init_json_reader<RaceReader>("MonraceDefinitions.jsonc", "monsters", DefinitionHashDataType::MONRACES, MonraceList::get_instance());
+    auto previous_id = -1;
+    auto parser = [&previous_id](nlohmann::json &element) { return RaceReader(element, previous_id).read(); };
+    init_json("MonraceDefinitions.jsonc", "monsters", DefinitionHashDataType::MONRACES, MonraceList::get_instance(), parser);
 }
 
 /*!
@@ -267,7 +248,9 @@ void init_monster_message_definitions()
  */
 void init_creature_parties_info()
 {
-    init_json("CreatureParty.jsonc", "parties", DefinitionHashDataType::CREATURE_PARTIES, CreaturePartyList::get_instance(), parse_creature_parties_info);
+    auto previous_id = -1;
+    auto parser = [&previous_id](nlohmann::json &element) { return parse_creature_parties_info(element, previous_id); };
+    init_json("CreatureParty.jsonc", "parties", DefinitionHashDataType::CREATURE_PARTIES, CreaturePartyList::get_instance(), parser);
 }
 
 /*!
@@ -277,8 +260,9 @@ void init_spell_info()
 {
     auto &spell_info_list = SpellInfoList::get_instance();
     spell_info_list.initialize();
-    auto parser = [&spell_info_list](nlohmann::json &spell_data) {
-        return SpellReader(spell_data, spell_info_list).read();
+    SpellReader::Session session;
+    auto parser = [&spell_info_list, &session](nlohmann::json &spell_data) {
+        return SpellReader(spell_data, spell_info_list, session).read();
     };
     init_json("SpellDefinitions.jsonc", "realms", DefinitionHashDataType::SPELLS, spell_info_list, parser);
 }
@@ -291,12 +275,14 @@ void init_spell_info()
  */
 void init_vaults_info()
 {
-    auto parser = [](nlohmann::json &element) {
-        VaultReader reader(element);
+    auto previous_id = -1;
+    auto parser = [&previous_id](nlohmann::json &element) {
+        VaultReader reader(element, previous_id);
         const auto err = reader.read();
-        if (err != PARSE_ERROR_NONE) {
+        if (err != ParseErrorType::NONE) {
             const auto &diagnostic = reader.error().value();
-            quit(fmt::format(_("VaultDefinitions.jsonc: Vault{}の{}: {}", "VaultDefinitions.jsonc: vault {} at {}: {}"), diagnostic.id, diagnostic.path, diagnostic.reason));
+            // init_json 側で捕捉し終了理由にまとめるため、ここでは quit せず診断を出力する。
+            msg_print(_("VaultDefinitions.jsonc: Vault{}の{}: {}", "VaultDefinitions.jsonc: vault {} at {}: {}"), diagnostic.id, diagnostic.path, diagnostic.reason);
         }
         return err;
     };
@@ -308,8 +294,12 @@ void init_vaults_info()
  */
 void init_wilderness()
 {
-    if (!initialize_wilderness_definition()) {
-        quit(_("荒野を初期化できません", "Cannot initialize wilderness"));
+    {
+        // 起動中は履歴に残らず、msg_print 自体も入力を待つため、診断を捕捉して終了理由にまとめる。
+        ScopedMessageCapture diagnostics;
+        if (const auto result = initialize_wilderness_definition(); !result) {
+            quit(format_definition_load_error(diagnostics.messages(), result.error()));
+        }
     }
 
     init_wilderness_encounter();

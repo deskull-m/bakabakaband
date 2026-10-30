@@ -1,4 +1,5 @@
 #include "wizard/spoiler-util.h"
+#include "locale/japanese.h"
 #include "system/item-entity.h"
 #include <fstream>
 
@@ -83,6 +84,9 @@ void spoil_out(std::string_view sv, bool flush_buffer)
     static char *roff_p = roff_buf;
     static char *roff_s = nullptr;
     static bool waiting_output = false;
+#ifdef JP
+    static std::string prev_char; //!< 行に最後に足した文字 (2バイト文字はまとめて)。行末禁則の判定に使う
+#endif
     if (flush_buffer) {
         if (waiting_output) {
             fputs(roff_waiting_buf, spoiler_file);
@@ -106,6 +110,9 @@ void spoil_out(std::string_view sv, bool flush_buffer)
         roff_p = roff_buf;
         roff_s = nullptr;
         roff_buf[0] = '\0';
+#ifdef JP
+        prev_char.clear();
+#endif
         return;
     }
 
@@ -122,6 +129,7 @@ void spoil_out(std::string_view sv, bool flush_buffer)
             ch = ' ';
         }
 
+        const bool is_second_byte = iskanji_flag;
         iskanji_flag = k_flag && !iskanji_flag;
 #else
         if (!isprint(ch)) {
@@ -224,14 +232,19 @@ void spoil_out(std::string_view sv, bool flush_buffer)
         }
 
 #ifdef JP
+        // 行末禁則文字 (始め括弧) の直後では分けない (始め括弧が行末に残るのを避ける)
         if (!k_flag) {
-            if ((ch == ' ') || (ch == '(')) {
+            if ((ch == ' ') || ((ch == '(') && !is_line_end_kinsoku(prev_char))) {
                 roff_s = roff_p;
             }
         } else {
-            if (iskanji_flag && strncmp(str, "。", 2) != 0 && strncmp(str, "、", 2) != 0 && strncmp(str, "ィ", 2) != 0 && strncmp(str, "ー", 2) != 0) {
+            if (iskanji_flag && !is_kinsoku(std::string_view(str, 2)) && !is_line_end_kinsoku(prev_char)) {
                 roff_s = roff_p;
             }
+        }
+
+        if (!is_second_byte) {
+            prev_char = iskanji_flag ? std::string(str, 2) : std::string(1, ch);
         }
 #else
         if (ch == ' ') {
@@ -250,7 +263,7 @@ void ParameterValueInfo::analyze(const ItemEntity &item)
     }
 
     const auto flags = item.get_flags();
-    this->pval_desc = format("%+d", item.pval);
+    this->pval_desc = fmt::format("{:+}", item.pval);
     if (flags.has_all_of(EnumRangeInclusive(TR_STR, TR_CHR))) {
         this->pval_affects.push_back(_("全能力", "All stats"));
     } else if (flags.has_any_of(EnumRangeInclusive(TR_STR, TR_CHR))) {

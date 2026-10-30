@@ -13,6 +13,8 @@
 #include "grid/grid.h"
 #include "inventory/inventory-slot-types.h"
 #include "locale/character-encoding.h"
+#include "lore/lore-util.h"
+#include "lore/monster-lore.h"
 #include "mutation/mutation-flag-types.h"
 #include "object-enchant/item-feeling.h"
 #include "object-enchant/tr-types.h"
@@ -560,20 +562,15 @@ nlohmann::json make_player_stats_json(const PlayerType &player)
     };
 }
 
-struct PlayerKnownFlags {
-    TrFlags equipment;
-    TrFlags permanent;
-    TrFlags temporary;
-};
-
-PlayerKnownFlags collect_player_known_flags(PlayerType *player_ptr)
+BotPlayerKnownFlags collect_player_known_flags(PlayerType *player_ptr)
 {
-    PlayerKnownFlags result;
+    BotPlayerKnownFlags result;
     for (const auto slot : INVEN_WIELDING_SLOTS) {
         result.equipment.set(player_ptr->inventory[slot]->get_flags_known());
     }
     player_flags(*player_ptr, result.permanent);
     tim_player_flags(*player_ptr, result.temporary);
+    riding_flags(*player_ptr, result.riding, result.riding_negative);
     return result;
 }
 
@@ -592,7 +589,7 @@ PlayerKnownFlags collect_player_known_flags(PlayerType *player_ptr)
  * スナップショットは変身状態そのものを出していないので、消費側は permanent を
  * 「切れない」と読んではならない。
  */
-nlohmann::json make_ability_sources_json(const PlayerKnownFlags &flags, tr_type flag, tr_type greater_flag = TR_FLAG_MAX)
+nlohmann::json make_ability_sources_json(const BotPlayerKnownFlags &flags, tr_type flag, tr_type greater_flag = TR_FLAG_MAX)
 {
     const auto has = [flag, greater_flag](const TrFlags &source) {
         return source.has(flag) || ((greater_flag != TR_FLAG_MAX) && source.has(greater_flag));
@@ -604,6 +601,8 @@ nlohmann::json make_ability_sources_json(const PlayerKnownFlags &flags, tr_type 
     };
 }
 
+}
+
 /*!
  * @brief 能力の有無を供給源ごとに出力する
  * @details 出力キーは ability_sources であって abilities ではない。#5498 の abilities は
@@ -611,14 +610,27 @@ nlohmann::json make_ability_sources_json(const PlayerKnownFlags &flags, tr_type 
  * でも空でないオブジェクトは Python でも JavaScript でも真と評価され、消費側は例外も出さずに
  * 「全能力あり」と誤読する。キーを分けておけば、旧来の消費側は KeyError / undefined で
  * 即座に破綻する。
+ * 浮遊だけは乗馬の分を riding に出す (乗っていなければ null、浮遊する馬なら true、浮遊しない馬なら false)。
+ * @param flags 装備 (鑑定済み)・常時・一時・乗馬の特性
+ * @return 能力ごとの供給源の有無
  */
-nlohmann::json make_player_ability_sources_json(const PlayerKnownFlags &flags)
+nlohmann::json make_bot_player_ability_sources_json(const BotPlayerKnownFlags &flags)
 {
     // Aggregate only identified equipment flags plus intrinsic and temporary
     // flags. A known immunity upgrades its resistance on the character screen.
     const auto sources = [&flags](tr_type flag, tr_type greater_flag = TR_FLAG_MAX) {
         return make_ability_sources_json(flags, flag, greater_flag);
     };
+    // 浮遊は乗っている馬で決まる (浮遊する馬なら浮遊し、浮遊しない馬なら装備などがあっても浮遊しない)。
+    // キャラクター画面も riding_flags() で浮遊の行の色を変えて示している。
+    auto levitation = sources(TR_LEVITATION);
+    if (flags.riding.has(TR_LEVITATION)) {
+        levitation["riding"] = true;
+    } else if (flags.riding_negative.has(TR_LEVITATION)) {
+        levitation["riding"] = false;
+    } else {
+        levitation["riding"] = nullptr;
+    }
     return {
         { "resist_fire", sources(TR_RES_FIRE, TR_IM_FIRE) },
         { "resist_cold", sources(TR_RES_COLD, TR_IM_COLD) },
@@ -639,9 +651,25 @@ nlohmann::json make_player_ability_sources_json(const PlayerKnownFlags &flags)
         { "telepathy", sources(TR_TELEPATHY) },
         { "free_action", sources(TR_FREE_ACT) },
         { "see_invisible", sources(TR_SEE_INVIS) },
+        { "hold_exp", sources(TR_HOLD_EXP) },
+        // 銘 $ を刻んだ装備の警告は働かないが、キャラクター画面の装備の列と同じく装備の特性のとおりに出す。
+        { "warning", sources(TR_WARNING) },
+        { "slow_digest", sources(TR_SLOW_DIGEST) },
+        // 突然変異の肉体の腐敗は急回復をすべて打ち消すが、キャラクター画面と同じく特性のとおりに出す
+        // (種族・職業の急回復と一時の分は消え、装備と突然変異の急回復は残る)。
+        { "regenerate", sources(TR_REGEN) },
+        { "levitation", std::move(levitation) },
+        { "reflect", sources(TR_REFLECT) },
+        { "sustain_str", sources(TR_SUST_STR) },
+        { "sustain_int", sources(TR_SUST_INT) },
+        { "sustain_wis", sources(TR_SUST_WIS) },
+        { "sustain_dex", sources(TR_SUST_DEX) },
+        { "sustain_con", sources(TR_SUST_CON) },
+        { "sustain_chr", sources(TR_SUST_CHR) },
     };
 }
 
+namespace {
 /*!
  * @brief 免疫（ダメージ0）を供給源ごとに出力する
  * @details 耐性とは軽減率が別物（耐性は 1/3、免疫は 0）で、ability_sources では免疫を耐性に
@@ -649,7 +677,7 @@ nlohmann::json make_player_ability_sources_json(const PlayerKnownFlags &flags)
  * 画面の免疫欄、一時的な元素免疫はステータスバー（BAR_IMMFIRE 等）でプレイヤーも常時
  * 確認できる。
  */
-nlohmann::json make_player_immunities_json(PlayerType *player_ptr, const PlayerKnownFlags &flags)
+nlohmann::json make_player_immunities_json(PlayerType *player_ptr, const BotPlayerKnownFlags &flags)
 {
     const auto sources = [&flags](tr_type flag) {
         return nlohmann::json{
@@ -685,7 +713,7 @@ nlohmann::json make_player_immunities_json(PlayerType *player_ptr, const PlayerK
  * TR_VUL_LITE はキャラクター画面には "v" として出るのにダメージには乗らない。
  * lite.equipment はその表示に合わせてあるので、消費側は倍率と同一視してはならない。
  */
-nlohmann::json make_player_vulnerabilities_json(PlayerType *player_ptr, const PlayerKnownFlags &flags)
+nlohmann::json make_player_vulnerabilities_json(PlayerType *player_ptr, const BotPlayerKnownFlags &flags)
 {
     // 変異「元素に弱い」は player_flags() が拾わない（has_vuln_*() が FLAG_CAUSE_MUTATION
     // として別に立てている）ため、恒久側へ明示的に足す。
@@ -733,6 +761,36 @@ const char *food_state(const PlayerType &player)
     return "gorged";
 }
 
+/*!
+ * @brief 品の名前から分かる種類・エゴ・固定アーティファクト・見た目を、言語に依らない ID で出力する
+ * @details 名前に出る範囲に限る。sval は aware のとき、ego_id と artifact_id は known のときだけ出す
+ * (エゴ名・固定アーティファクト名も鑑定するまで名前に出ない)。ランダムアーティファクトには固定の ID が
+ * 無いので artifact_id を出さない。flavor_id は aware でない品の名前に出る見た目で、その見た目を
+ * flavor_name に持つ BaseitemDefinitions の行の ID を表す (見た目は同じ tval の中でゲームごとに
+ * 混ぜてあるので中身は分からない)。
+ * @param item 品
+ * @param store_identified 店の商品として鑑定済みに扱うか
+ * @return {sval, ego_id, artifact_id, flavor_id} のうち出せるものだけを持つオブジェクト
+ */
+nlohmann::json make_bot_item_identity_json(const ItemEntity &item, bool store_identified)
+{
+    const auto aware = store_identified || item.is_aware();
+    const auto known = store_identified || item.is_known();
+    auto result = nlohmann::json::object();
+    if (aware) {
+        result["sval"] = item.bi_key.sval().value_or(-1);
+    } else if (const auto &record = item.get_baseitem_record(); record.is_apparent()) {
+        result["flavor_id"] = record.get_appearance_id();
+    }
+    if (known && item.is_ego()) {
+        result["ego_id"] = enum2i(item.ego_idx);
+    }
+    if (known && item.is_fixed_artifact()) {
+        result["artifact_id"] = enum2i(item.fa_id);
+    }
+    return result;
+}
+
 nlohmann::json make_item_json(PlayerType *player_ptr, const ItemEntity &item, bool store_identified = false)
 {
     // Commercial stock is fully identified by Store::carry(), independently of
@@ -758,9 +816,8 @@ nlohmann::json make_item_json(PlayerType *player_ptr, const ItemEntity &item, bo
     // Match what the normal item description reveals. An unaware flavor does
     // not reveal its base kind, and an unidentified instance does not reveal
     // charges, pval-derived values, or remaining fuel.
-    if (aware) {
-        result["sval"] = item.bi_key.sval().value_or(-1);
-    }
+    // 名前から分かる ID (sval・ego_id・artifact_id・flavor_id) は make_bot_item_identity_json() で決める。
+    result.update(make_bot_item_identity_json(item, store_identified));
     if (item.ident.has(IdentificationFlag::SENSE)) {
         result["pseudo_feeling"] = pseudo_feeling_name(static_cast<item_feel_type>(item.feeling));
     }
@@ -817,6 +874,8 @@ nlohmann::json make_look_json(PlayerType *player_ptr)
         const auto &terrain = terrain_redacted
                                   ? TerrainList::get_instance().get_terrain(TerrainTag::NONE)
                                   : grid.get_terrain(TerrainKind::MIMIC);
+        // 幻覚中の注視コマンドはマスの中身を「何か奇妙な物」としか表示しないので、モンスターの正体と
+        // 持ち物 (carried_items)、床の品 (items) を出さない。地形は地図に描かれるので出す。
         auto monster_json = nlohmann::json(nullptr);
         auto carried_items = nlohmann::json::array();
         // This look record mirrors what the look command itself reports:
@@ -829,20 +888,24 @@ nlohmann::json make_look_json(PlayerType *player_ptr)
             const auto &monster = floor.m_list[grid.m_idx];
             if (monster.is_valid() && monster.is_visible_on_map()) {
                 monster_json = make_visible_monster_json(grid.m_idx, monster, is_hallucinated);
-                for (const auto i_idx : INVEN_PACK_SLOTS) {
-                    const auto &item = monster.inventory[i_idx];
-                    if (item && item->is_valid()) {
-                        carried_items.push_back(make_item_json(player_ptr, *item));
+                if (!is_hallucinated) {
+                    for (const auto i_idx : INVEN_PACK_SLOTS) {
+                        const auto &item = monster.inventory[i_idx];
+                        if (item && item->is_valid()) {
+                            carried_items.push_back(make_item_json(player_ptr, *item));
+                        }
                     }
                 }
             }
         }
 
         auto items = nlohmann::json::array();
-        for (const auto o_idx : grid.o_idx_list) {
-            const auto &item = *floor.o_list[o_idx];
-            if (item.is_valid() && item.marked.has(OmType::FOUND)) {
-                items.push_back(make_item_json(player_ptr, item));
+        if (!is_hallucinated) {
+            for (const auto o_idx : grid.o_idx_list) {
+                const auto &item = *floor.o_list[o_idx];
+                if (item.is_valid() && item.marked.has(OmType::FOUND)) {
+                    items.push_back(make_item_json(player_ptr, item));
+                }
             }
         }
 
@@ -1082,7 +1145,7 @@ nlohmann::json make_snapshot(PlayerType *player_ptr, bool include_map = true,
                                    } },
                         { "status", make_player_status_json(player) },
                         { "stats", make_player_stats_json(player) },
-                        { "ability_sources", make_player_ability_sources_json(known_flags) },
+                        { "ability_sources", make_bot_player_ability_sources_json(known_flags) },
                         { "immunities", make_player_immunities_json(player_ptr, known_flags) },
                         { "vulnerabilities", make_player_vulnerabilities_json(player_ptr, known_flags) },
                     } },
@@ -1507,7 +1570,7 @@ nlohmann::json make_knowledge_json(PlayerType *player_ptr, BotKnowledgeCategory 
         break;
     }
     case BotKnowledgeCategory::HOME: {
-        const auto &store = TownList::get_instance().get_town(1).get_store(StoreSaleType::HOME);
+        const auto &store = TownList::get_instance().get_town(TownId::OUTPOST).get_store(StoreSaleType::HOME);
         for (auto i = 0; i < store.stock_num; ++i) {
             auto item = make_item_json(player_ptr, *store.stock[i]);
             item["slot"] = i;
@@ -1532,7 +1595,7 @@ nlohmann::json make_knowledge_json(PlayerType *player_ptr, BotKnowledgeCategory 
         for (const auto slot : INVEN_PACK_SLOTS) {
             add_item(*player_ptr->inventory[slot], "inventory", slot);
         }
-        const auto &home = TownList::get_instance().get_town(1).get_store(StoreSaleType::HOME);
+        const auto &home = TownList::get_instance().get_town(TownId::OUTPOST).get_store(StoreSaleType::HOME);
         for (auto slot = 0; slot < home.stock_num; ++slot) {
             add_item(*home.stock[slot], "home", slot);
         }
@@ -1597,16 +1660,17 @@ nlohmann::json make_knowledge_json(PlayerType *player_ptr, BotKnowledgeCategory 
     case BotKnowledgeCategory::QUESTS:
         result["quests"] = make_disclosed_quests_json();
         break;
-    case BotKnowledgeCategory::PETS:
+    case BotKnowledgeCategory::PETS: {
+        const auto is_hallucinated = player_ptr->is_hallucinated();
         for (auto i = 1; i < player_ptr->get_floor()->m_max; ++i) {
             const auto &monster = player_ptr->get_floor()->m_list[i];
             if (monster.is_valid() && monster.is_pet()) {
-                rows.push_back({ { "index", i }, { "race_id", enum2i(monster.get_r_idx()) },
-                    { "name", to_json_utf8(monster.get_monrace().name.string()) } });
+                rows.push_back(make_bot_pet_row_json(i, monster, is_hallucinated));
             }
         }
         result["pets"] = std::move(rows);
         break;
+    }
     case BotKnowledgeCategory::AUTOPICK:
         for (const auto &entry : autopick_list) {
             rows.push_back({ { "rule", to_json_utf8(autopick_line_from_entry(entry)) } });
@@ -1865,6 +1929,23 @@ nlohmann::json make_message_history_json(int count)
     return messages;
 }
 
+/*!
+ * @brief 知識メニューのペットの一覧 (knowledge.pets) の 1 行を出力する
+ * @details 幻覚中の画面の一覧はペットの名前をでたらめな種族名にするので、ほかのモンスターの記録と同じく種族を伏せる。
+ * @param index モンスターの番号
+ * @param monster ペット
+ * @param is_hallucinated 幻覚中か
+ * @return {index, race_id, name}、幻覚中は {index, hallucinated: true}
+ */
+nlohmann::json make_bot_pet_row_json(int index, const CreatureEntity &monster, bool is_hallucinated)
+{
+    if (is_hallucinated) {
+        return { { "index", index }, { "hallucinated", true } };
+    }
+
+    return { { "index", index }, { "race_id", enum2i(monster.get_r_idx()) }, { "name", to_json_utf8(monster.get_monrace().name.string()) } };
+}
+
 namespace {
 const BotScreen *current_bot_screen = nullptr; //!< 開いている画面 (BotScreenScope が登録する)
 }
@@ -1911,6 +1992,205 @@ BotScreenScope::~BotScreenScope()
 {
     assert(current_bot_screen == &this->registered);
     current_bot_screen = this->previous;
+}
+
+namespace {
+BotDrawnScreenScope *current_bot_drawn_screen = nullptr; //!< いちばん内側の BotDrawnScreenScope
+}
+
+/*!
+ * @brief 描いた画面を登録するスコープを始める (まだ何も登録しない)
+ */
+BotDrawnScreenScope::BotDrawnScreenScope()
+    : previous(current_bot_drawn_screen)
+{
+    current_bot_drawn_screen = this;
+}
+
+/*!
+ * @brief 描いた画面の登録を外し、外側のスコープに戻す
+ * @details 始めたときとは逆の順に終えること
+ */
+BotDrawnScreenScope::~BotDrawnScreenScope()
+{
+    assert(current_bot_drawn_screen == this);
+    current_bot_drawn_screen = this->previous;
+}
+
+/*!
+ * @brief いちばん内側の BotDrawnScreenScope の登録を、描いた中身で登録し直す
+ * @param screen 描いた中身を足す処理と、地図を載せてよいか
+ * @pre BotDrawnScreenScope があること
+ */
+void show_bot_drawn_screen(BotScreen screen)
+{
+    assert(current_bot_drawn_screen != nullptr);
+    current_bot_drawn_screen->registered.emplace(std::move(screen));
+}
+
+/*!
+ * @brief 一覧を隠したときに、いちばん内側の BotDrawnScreenScope の登録を外す
+ * @details 描くときと同じく、いちばん内側のスコープに作用する。スコープが無ければ何もしない
+ */
+void hide_bot_drawn_screen()
+{
+    if (current_bot_drawn_screen != nullptr) {
+        current_bot_drawn_screen->registered.reset();
+    }
+}
+
+namespace {
+/*!
+ * @brief 描いた画面を制御サーバの state に載せるか
+ * @return 制御サーバが動いていて、登録するスコープがあれば true
+ */
+bool should_register_drawn_screen()
+{
+    return arg_control_port.has_value() && (current_bot_drawn_screen != nullptr);
+}
+
+/*!
+ * @brief 描いた画面の中身を作る必要があるか
+ * @return JSONL に書き出すか、制御サーバの state に載せるなら true
+ */
+bool should_make_drawn_screen(PlayerType *player_ptr)
+{
+    if ((player_ptr == nullptr) || (player_ptr->get_floor() == nullptr)) {
+        return false;
+    }
+
+    return arg_bot_json_output || should_register_drawn_screen();
+}
+
+/*!
+ * @brief 描いた画面を JSONL に書き出し、いちばん内側の BotDrawnScreenScope にも登録する
+ * @param type スナップショットの type と、中身を載せるキー
+ * @param content 描いたときの中身 (地図は載せない)
+ * @param build_started 中身を作り始めた時刻 (書き出しの計時に使う)
+ */
+void show_drawn_screen(PlayerType *player_ptr, std::string_view type, nlohmann::json content, BotJsonClock::time_point build_started)
+{
+    BotScreen screen{
+        [type = std::string(type), content = std::move(content)](nlohmann::json &snapshot, PlayerType *) {
+            snapshot["type"] = type;
+            // std::string のキーは値で受ける operator[] に渡り、MSVC が評価順を保証できない (C4866) ので、文字列リテラルのキーと同じく const char * で渡す
+            snapshot[type.data()] = content;
+        },
+        false
+    };
+    if (arg_bot_json_output) {
+        auto snapshot = make_snapshot(player_ptr, screen.include_map);
+        screen.add_to_snapshot(snapshot, player_ptr);
+        write_snapshot(snapshot, elapsed_microseconds(build_started));
+    }
+    if (should_register_drawn_screen()) {
+        show_bot_drawn_screen(std::move(screen));
+    }
+}
+}
+
+/*!
+ * @brief 呪文一覧 (魔法書の閲覧・詠唱メニュー) を表示したときのスナップショットを出力する
+ * @param realm_id 表示している領域
+ * @param rows print_spells() が画面に書いた各行
+ */
+void output_bot_json_spell_list_snapshot(PlayerType *player_ptr, int realm_id, const std::vector<BotSpellListRow> &rows)
+{
+    if (!should_make_drawn_screen(player_ptr)) {
+        return;
+    }
+
+    const auto build_started = BotJsonClock::now();
+    auto spells = nlohmann::json::array();
+    for (const auto &row : rows) {
+        auto spell = nlohmann::json{ { "spell_id", row.spell_id }, { "status", row.status } };
+        if (row.status != "illegible") {
+            spell["name"] = to_json_utf8(row.name);
+            spell["level"] = row.level;
+            spell["mana"] = row.mana;
+        }
+        if (row.fail) {
+            spell["fail"] = *row.fail;
+            spell["proficiency"] = to_json_utf8(row.proficiency);
+            spell["proficiency_mark"] = row.proficiency_mark;
+            spell["info"] = to_json_utf8(row.info);
+        }
+        spells.push_back(std::move(spell));
+    }
+
+    show_drawn_screen(player_ptr, "spell_list", { { "realm_id", realm_id }, { "spells", std::move(spells) } }, build_started);
+}
+
+/*!
+ * @brief 特殊能力の一覧を表示したときのスナップショットを出力する
+ * @param kind 一覧の種類 ("racial": 種族・職業・突然変異のパワー、"mind": 超能力・練気術・剣術等)
+ * @param rows 一覧の全行 (ページ送りで見られる行を含む)
+ * @param page 表示中のページ
+ * @param browse_mode 閲覧モードか
+ */
+void output_bot_json_power_list_snapshot(PlayerType *player_ptr, std::string_view kind, const std::vector<BotPowerListRow> &rows, int page, bool browse_mode)
+{
+    if (!should_make_drawn_screen(player_ptr)) {
+        return;
+    }
+
+    const auto build_started = BotJsonClock::now();
+    auto powers = nlohmann::json::array();
+    for (const auto &row : rows) {
+        powers.push_back({
+            { "letter", std::string(1, row.letter) },
+            { "page", row.page },
+            { "name", to_json_utf8(row.name) },
+            { "level", row.level },
+            { "cost", row.cost },
+            { "fail", row.fail },
+            { "info", to_json_utf8(row.info) },
+        });
+    }
+
+    show_drawn_screen(player_ptr, "power_list", { { "kind", kind }, { "page", page }, { "browse_mode", browse_mode }, { "powers", std::move(powers) } }, build_started);
+}
+
+namespace {
+std::string *lore_capture_buffer = nullptr;
+
+void capture_lore_text(TERM_COLOR, std::string_view str)
+{
+    if (lore_capture_buffer != nullptr) {
+        lore_capture_buffer->append(str);
+    }
+}
+}
+
+/*!
+ * @brief モンスターの思い出を表示したときのスナップショットを出力する
+ * @param monrace_id 表示するモンスターの種族ID
+ * @param lore_mode 表示モード (monster_lore_mode)
+ * @details 画面と同じ process_monster_lore() の出力を、描画先だけ差し替えて文字列として取り出す。
+ * 思い出の文章は乱数や状態変更を伴わないので、画面の描画の前に一度余分に組み立てても結果は変わらない。
+ */
+void output_bot_json_lore_snapshot(PlayerType *player_ptr, MonraceId monrace_id, int lore_mode)
+{
+    if (!should_make_drawn_screen(player_ptr)) {
+        return;
+    }
+
+    const auto build_started = BotJsonClock::now();
+    std::string text;
+    const auto previous_hook = hook_c_roff;
+    lore_capture_buffer = &text;
+    hook_c_roff = capture_lore_text;
+    process_monster_lore(*player_ptr, monrace_id, static_cast<monster_lore_mode>(lore_mode));
+    hook_c_roff = previous_hook;
+    lore_capture_buffer = nullptr;
+
+    const auto &monrace = MonraceList::get_instance().get_monrace(monrace_id);
+    auto lore = nlohmann::json{
+        { "race_id", enum2i(monrace_id) },
+        { "name", to_json_utf8(monrace.name.string()) },
+        { "text", to_json_utf8(text) },
+    };
+    show_drawn_screen(player_ptr, "lore", std::move(lore), build_started);
 }
 
 /*!

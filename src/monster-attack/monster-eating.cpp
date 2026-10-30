@@ -20,10 +20,11 @@
 #include "player/player-status-table.h"
 #include "status/experience.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/floor/floor-info.h"
 #include "system/item-entity.h"
-#include "system/redrawing-flags-updater.h"
 #include "tracking/health-bar-tracker.h"
+#include "util/string-processor.h"
 #include "view/display-messages.h"
 
 void process_eat_gold(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr)
@@ -64,9 +65,7 @@ void process_eat_gold(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr)
         chg_virtue(creature, Virtue::SACRIFICE, 2);
     }
 
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.set_flag(MainWindowRedrawingFlag::GOLD);
-    rfu.set_flag(SubWindowRedrawingFlag::PLAYER);
+    DeferredUpdateRequests::get_instance().request_gold_redrawing();
     monap_ptr->blinked = true;
 }
 
@@ -139,9 +138,9 @@ void process_eat_item(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr)
 
         const auto item_name = describe_flavor(creature, *monap_ptr->o_ptr, OD_OMIT_PREFIX);
 #ifdef JP
-        msg_format("%s(%c)を%s盗まれた！", item_name.data(), index_to_label(i_idx), ((monap_ptr->o_ptr->number > 1) ? "一つ" : ""));
+        msg_print("{}({:c})を{}盗まれた！", item_name, index_to_label(i_idx), ((monap_ptr->o_ptr->number > 1) ? "一つ" : ""));
 #else
-        msg_format("%sour %s (%c) was stolen!", ((monap_ptr->o_ptr->number > 1) ? "One of y" : "Y"), item_name.data(), index_to_label(i_idx));
+        msg_print("{}our {} ({:c}) was stolen!", ((monap_ptr->o_ptr->number > 1) ? "One of y" : "Y"), item_name, index_to_label(i_idx));
 #endif
         chg_virtue(creature, Virtue::SACRIFICE, 1);
         move_item_to_monster(monap_ptr);
@@ -169,9 +168,9 @@ void process_eat_food(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr)
 
         const auto item_name = describe_flavor(creature, *monap_ptr->o_ptr, (OD_OMIT_PREFIX | OD_NAME_ONLY));
 #ifdef JP
-        msg_format("%s(%c)を%s食べられてしまった！", item_name.data(), index_to_label(i_idx), ((monap_ptr->o_ptr->number > 1) ? "一つ" : ""));
+        msg_print("{}({:c})を{}食べられてしまった！", item_name, index_to_label(i_idx), ((monap_ptr->o_ptr->number > 1) ? "一つ" : ""));
 #else
-        msg_format("%sour %s (%c) was eaten!", ((monap_ptr->o_ptr->number > 1) ? "One of y" : "Y"), item_name.data(), index_to_label(i_idx));
+        msg_print("{}our {} ({:c}) was eaten!", ((monap_ptr->o_ptr->number > 1) ? "One of y" : "Y"), item_name, index_to_label(i_idx));
 #endif
         inven_item_increase(creature, i_idx, -1);
         inven_item_optimize(creature, i_idx);
@@ -196,7 +195,7 @@ void process_eat_lite(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr)
         monap_ptr->obvious = true;
     }
 
-    RedrawingFlagsUpdater::get_instance().set_flag(SubWindowRedrawingFlag::EQUIPMENT);
+    DeferredUpdateRequests::get_instance().set_flag(SubWindowRedrawingFlag::EQUIPMENT);
 }
 
 /*!
@@ -239,11 +238,11 @@ bool process_un_power(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr)
 
     HealthBarTracker::get_instance().set_flag_if_tracking(monap_ptr->m_idx);
     if (monap_ptr->m_ptr->is_riding()) {
-        RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::UHEALTH);
+        DeferredUpdateRequests::get_instance().set_flag(MainWindowRedrawingFlag::UHEALTH);
     }
 
     monap_ptr->o_ptr->pval = !is_magic_mastery || (monap_ptr->o_ptr->pval == 1) ? 0 : monap_ptr->o_ptr->pval - drain;
-    RedrawingFlagsUpdater::get_instance().request_inventory_arrangement();
+    DeferredUpdateRequests::get_instance().request_inventory_arrangement();
     return true;
 }
 
@@ -279,11 +278,11 @@ void process_drain_life(MonsterAttackPlayer *monap_ptr, const bool resist_drain)
 
     HealthBarTracker::get_instance().set_flag_if_tracking(monap_ptr->m_idx);
     if (monap_ptr->m_ptr->is_riding()) {
-        RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::UHEALTH);
+        DeferredUpdateRequests::get_instance().set_flag(MainWindowRedrawingFlag::UHEALTH);
     }
 
     if (monap_ptr->m_ptr->is_visible_on_map() && did_heal) {
-        msg_format(_("%sは体力を回復したようだ。", "%s^ appears healthier."), monap_ptr->m_name);
+        msg_print(_("{}は体力を回復したようだ。", "{} appears healthier."), str_upcase_first(monap_ptr->m_name));
     }
 }
 
@@ -301,7 +300,7 @@ void process_drain_mana(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr
         creature.current_mp_frac = 0;
     }
 
-    RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::MP);
+    DeferredUpdateRequests::get_instance().set_flag(MainWindowRedrawingFlag::MP);
 }
 
 /*!
@@ -312,7 +311,7 @@ void process_drain_mana(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr
  */
 void process_monster_attack_hungry(CreatureEntity &creature, MonsterAttackPlayer *monap_ptr)
 {
-    msg_format(_("あなたは腹が減った！", "You feel hungry!"));
+    msg_print(_("あなたは腹が減った！", "You feel hungry!"));
     auto subtracted_food = static_cast<int16_t>(creature.get_food() - monap_ptr->damage);
     if ((creature.get_food() >= PY_FOOD_ALERT) && (PY_FOOD_ALERT > subtracted_food)) {
         set_food(creature, PY_FOOD_ALERT - 1);

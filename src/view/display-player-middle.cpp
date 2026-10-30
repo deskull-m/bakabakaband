@@ -25,11 +25,11 @@
 #include "system/inner-game-data.h"
 #include "system/item-entity.h"
 #include "term/term-color-types.h"
-#include "term/z-form.h"
 #include "view/display-util.h"
 #include "view/status-first-page.h"
 #include "world/world-collapsion.h"
 #include "world/world.h"
+#include <fmt/format.h>
 
 /*!
  * @brief プレイヤーの打撃能力修正を表示する
@@ -52,7 +52,7 @@ static void display_player_melee_bonus(CreatureEntity &creature, int hand, int h
 
     show_tohit += creature.get_skill_to_hit_melee() / BTH_PLUS_ADJ;
 
-    const auto buf = format("(%+d,%+d)", (int)show_tohit, (int)show_todam);
+    const auto buf = fmt::format("({:+},{:+})", (int)show_tohit, (int)show_todam);
     if (!has_melee_weapon(creature, INVEN_MAIN_HAND) && !has_melee_weapon(creature, INVEN_SUB_HAND)) {
         display_player_one_line(ENTRY_BARE_HAND, buf, TERM_L_BLUE);
     } else if (creature.has_two_handed_weapons()) {
@@ -86,7 +86,7 @@ static void display_sub_hand(CreatureEntity &creature)
     uint stance_num = enum2i(pc.get_monk_stance()) - 1;
 
     if (stance_num < monk_stances.size()) {
-        display_player_one_line(ENTRY_POSTURE, format(_("%sの構え", "%s form"), monk_stances[stance_num].desc), TERM_YELLOW);
+        display_player_one_line(ENTRY_POSTURE, fmt::format(_("{}の構え", "{} form"), monk_stances[stance_num].desc), TERM_YELLOW);
     }
 }
 
@@ -122,7 +122,7 @@ static void display_bow_hit_damage(CreatureEntity &creature)
     }
 
     show_tohit += creature.get_skill_to_hit_bow() / BTH_PLUS_ADJ;
-    display_player_one_line(ENTRY_SHOOT_HIT_DAM, format("(%+d,%+d)", show_tohit, show_todam), TERM_L_BLUE);
+    display_player_one_line(ENTRY_SHOOT_HIT_DAM, fmt::format("({:+},{:+})", show_tohit, show_todam), TERM_L_BLUE);
 }
 
 /*!
@@ -141,7 +141,7 @@ static void display_shoot_magnification(CreatureEntity &creature)
         tmul = tmul * (100 + (int)(adj_str_td[creature.get_stat_index(A_STR)]) - 128);
     }
 
-    display_player_one_line(ENTRY_SHOOT_POWER, format("x%d.%02d", tmul / 100, tmul % 100), TERM_L_BLUE);
+    display_player_one_line(ENTRY_SHOOT_POWER, fmt::format("x{}.{:02}", tmul / 100, tmul % 100), TERM_L_BLUE);
 }
 
 /*!
@@ -221,16 +221,16 @@ static int calc_temporary_speed(CreatureEntity &creature)
  */
 static void display_player_speed(CreatureEntity &creature, TERM_COLOR attr, int base_speed, int tmp_speed)
 {
-    char buf[160];
+    std::string buf;
     if (tmp_speed) {
         if (!creature.get_riding()) {
             if (creature.get_timed_effect(CreatureTimedEffect::LIGHTSPEED)) {
-                sprintf(buf, _("光速化 (+99)", "Lightspeed (+99)"));
+                buf = _("光速化 (+99)", "Lightspeed (+99)");
             } else {
-                sprintf(buf, "(%+d%+d)", base_speed - tmp_speed, tmp_speed);
+                buf = fmt::format("({:+}{:+})", base_speed - tmp_speed, tmp_speed);
             }
         } else {
-            sprintf(buf, _("乗馬中 (%+d%+d)", "Riding (%+d%+d)"), base_speed - tmp_speed, tmp_speed);
+            buf = fmt::format(_("乗馬中 ({:+}{:+})", "Riding ({:+}{:+})"), base_speed - tmp_speed, tmp_speed);
         }
 
         if (tmp_speed > 0) {
@@ -240,14 +240,14 @@ static void display_player_speed(CreatureEntity &creature, TERM_COLOR attr, int 
         }
     } else {
         if (!creature.get_riding()) {
-            sprintf(buf, "(%+d)", base_speed);
+            buf = fmt::format("({:+})", base_speed);
         } else {
-            sprintf(buf, _("乗馬中 (%+d)", "Riding (%+d)"), base_speed);
+            buf = fmt::format(_("乗馬中 ({:+})", "Riding ({:+})"), base_speed);
         }
     }
 
     display_player_one_line(ENTRY_SPEED, buf, attr);
-    display_player_one_line(ENTRY_LEVEL, format("%d", creature.get_level()), TERM_L_GREEN);
+    display_player_one_line(ENTRY_LEVEL, fmt::format("{}", creature.get_level()), TERM_L_GREEN);
 }
 
 /*!
@@ -261,13 +261,13 @@ static void display_player_exp(CreatureEntity &creature)
     CreatureRace pr(&creature);
     int e = pr.equals(PlayerRaceType::ANDROID) ? ENTRY_EXP_ANDR : ENTRY_CUR_EXP;
     if (creature.get_exp() >= creature.get_max_exp()) {
-        display_player_one_line(e, format("%ld", creature.get_exp()), TERM_L_GREEN);
+        display_player_one_line(e, fmt::format("{}", creature.get_exp()), TERM_L_GREEN);
     } else {
-        display_player_one_line(e, format("%ld", creature.get_exp()), TERM_YELLOW);
+        display_player_one_line(e, fmt::format("{}", creature.get_exp()), TERM_YELLOW);
     }
 
     if (!pr.equals(PlayerRaceType::ANDROID)) {
-        display_player_one_line(ENTRY_MAX_EXP, format("%ld", creature.get_max_exp()), TERM_L_GREEN);
+        display_player_one_line(ENTRY_MAX_EXP, fmt::format("{}", creature.get_max_exp()), TERM_L_GREEN);
     }
 
     e = pr.equals(PlayerRaceType::ANDROID) ? ENTRY_EXP_TO_ADV_ANDR : ENTRY_EXP_TO_ADV;
@@ -281,9 +281,9 @@ static void display_player_exp(CreatureEntity &creature)
     if (creature.get_level() >= PY_MAX_LEVEL) {
         display_player_one_line(e, "*****", TERM_L_GREEN);
     } else if (pr.equals(PlayerRaceType::ANDROID)) {
-        display_player_one_line(e, format("%ld", (int32_t)(player_exp_a[creature.get_level() - 1] * creature.expfact / 100L)), TERM_L_GREEN);
+        display_player_one_line(e, fmt::format("{}", (int32_t)(player_exp_a[creature.get_level() - 1] * creature.expfact / 100L)), TERM_L_GREEN);
     } else {
-        display_player_one_line(e, format("%ld", (int32_t)(player_exp[creature.get_level() - 1] * creature.expfact / 100L)), TERM_L_GREEN);
+        display_player_one_line(e, fmt::format("{}", (int32_t)(player_exp[creature.get_level() - 1] * creature.expfact / 100L)), TERM_L_GREEN);
     }
 }
 
@@ -296,29 +296,28 @@ static void display_playtime_in_game(CreatureEntity &creature)
 {
     const auto &[day, hour, min] = AngbandWorld::get_instance().extract_date_time(InnerGameData::get_instance().get_start_race());
     const auto is_days_countable = day < MAX_DAYS;
-    const std::string fmt = is_days_countable ? _("%d日目 %2d:%02d", "Day %d %2d:%02d") : _("*****日目 %2d:%02d", "Day ***** %2d:%02d");
-    const auto mes = is_days_countable ? format(fmt.data(), day, hour, min) : format(fmt.data(), hour, min);
+    const auto mes = is_days_countable ? fmt::format(_("{}日目 {:2}:{:02}", "Day {} {:2}:{:02}"), day, hour, min) : fmt::format(_("*****日目 {:2}:{:02}", "Day ***** {:2}:{:02}"), hour, min);
     display_player_one_line(ENTRY_DAY, mes, TERM_L_GREEN);
-    display_player_one_line(ENTRY_WORLD_COLLAPSE, format("%3d.%06d%%", wc_ptr->collapse_degree / 1000000, wc_ptr->collapse_degree % 1000000), TERM_L_GREEN);
+    display_player_one_line(ENTRY_WORLD_COLLAPSE, fmt::format("{:3}.{:06}%", wc_ptr->collapse_degree / 1000000, wc_ptr->collapse_degree % 1000000), TERM_L_GREEN);
 
     if (creature.hp >= creature.maxhp) {
-        display_player_one_line(ENTRY_HP, format("%4d/%4d", creature.hp, creature.maxhp), TERM_L_GREEN);
+        display_player_one_line(ENTRY_HP, fmt::format("{:4}/{:4}", creature.hp, creature.maxhp), TERM_L_GREEN);
     } else if (creature.hp > (creature.maxhp * hitpoint_warn) / 10) {
-        display_player_one_line(ENTRY_HP, format("%4d/%4d", creature.hp, creature.maxhp), TERM_YELLOW);
+        display_player_one_line(ENTRY_HP, fmt::format("{:4}/{:4}", creature.hp, creature.maxhp), TERM_YELLOW);
     } else {
-        display_player_one_line(ENTRY_HP, format("%4d/%4d", creature.hp, creature.maxhp), TERM_RED);
+        display_player_one_line(ENTRY_HP, fmt::format("{:4}/{:4}", creature.hp, creature.maxhp), TERM_RED);
     }
 
     // SP は常に表示する。max_mp <= 0 のクリーチャー（多くのモンスター等）は
     // 生成時に max_mp/current_mp とも 0 で初期化済みのため 0/0 と表示する。
     if (creature.get_max_mp() <= 0) {
-        display_player_one_line(ENTRY_SP, format("%4d/%4d", creature.get_current_mp(), creature.get_max_mp()), TERM_SLATE);
+        display_player_one_line(ENTRY_SP, fmt::format("{:4}/{:4}", creature.get_current_mp(), creature.get_max_mp()), TERM_SLATE);
     } else if (creature.get_current_mp() >= creature.get_max_mp()) {
-        display_player_one_line(ENTRY_SP, format("%4d/%4d", creature.get_current_mp(), creature.get_max_mp()), TERM_L_GREEN);
+        display_player_one_line(ENTRY_SP, fmt::format("{:4}/{:4}", creature.get_current_mp(), creature.get_max_mp()), TERM_L_GREEN);
     } else if (creature.get_current_mp() > (creature.get_max_mp() * mana_warn) / 10) {
-        display_player_one_line(ENTRY_SP, format("%4d/%4d", creature.get_current_mp(), creature.get_max_mp()), TERM_YELLOW);
+        display_player_one_line(ENTRY_SP, fmt::format("{:4}/{:4}", creature.get_current_mp(), creature.get_max_mp()), TERM_YELLOW);
     } else {
-        display_player_one_line(ENTRY_SP, format("%4d/%4d", creature.get_current_mp(), creature.get_max_mp()), TERM_RED);
+        display_player_one_line(ENTRY_SP, fmt::format("{:4}/{:4}", creature.get_current_mp(), creature.get_max_mp()), TERM_RED);
     }
 }
 
@@ -338,7 +337,7 @@ void display_player_middle(CreatureEntity &creature)
         display_bow_hit_damage(creature);
         display_shoot_magnification(creature);
     }
-    display_player_one_line(ENTRY_BASE_AC, format("[%d,%+d]", creature.get_dis_ac(), creature.get_dis_to_a()), TERM_L_BLUE);
+    display_player_one_line(ENTRY_BASE_AC, fmt::format("[{},{:+}]", creature.get_dis_ac(), creature.get_dis_to_a()), TERM_L_BLUE);
 
     int base_speed = creature.get_speed() - 110;
     if (creature.get_action() == ACTION_SEARCH) {
@@ -349,7 +348,7 @@ void display_player_middle(CreatureEntity &creature)
     int tmp_speed = calc_temporary_speed(creature);
     display_player_speed(creature, attr, base_speed, tmp_speed);
     display_player_exp(creature);
-    display_player_one_line(ENTRY_GOLD, format("%ld", creature.get_au()), TERM_L_GREEN);
+    display_player_one_line(ENTRY_GOLD, fmt::format("{}", creature.get_au()), TERM_L_GREEN);
     display_playtime_in_game(creature);
     display_player_one_line(ENTRY_PLAY_TIME, AngbandWorld::get_instance().format_real_playtime(), TERM_L_GREEN);
 }

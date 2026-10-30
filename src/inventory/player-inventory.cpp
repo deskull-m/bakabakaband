@@ -26,12 +26,11 @@
 #include "player/player-status.h"
 #include "spell-kind/spells-perception.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
-#include "system/redrawing-flags-updater.h"
 #include "target/target-checker.h"
-#include "term/z-form.h"
 #include "util/string-processor.h"
 #include "view/display-messages.h"
 #include "world/world.h"
@@ -96,9 +95,7 @@ static void py_pickup_all_golds_on_floor(CreatureEntity &creature, const Grid &g
 
         delete_object_idx(creature, i_idx);
 
-        auto &rfu = RedrawingFlagsUpdater::get_instance();
-        rfu.set_flag(MainWindowRedrawingFlag::GOLD);
-        rfu.set_flag(SubWindowRedrawingFlag::PLAYER);
+        DeferredUpdateRequests::get_instance().request_gold_redrawing();
     }
 }
 
@@ -113,7 +110,7 @@ static void py_pickup_single_item(CreatureEntity &creature, short i_idx, bool pi
     }
 
     if (!check_get_item(&item)) {
-        msg_format(_("%sを持ち運ぶことはできない。", "You can't carry %s."), item_name.data());
+        msg_print(_("{}を持ち運ぶことはできない。", "You can't carry {}."), item_name);
         return;
     }
 
@@ -272,9 +269,9 @@ void process_player_pickup_item(CreatureEntity &creature, OBJECT_IDX o_idx)
 void carry(CreatureEntity &creature, bool pickup)
 {
     verify_panel(creature);
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.set_flag(StatusRecalculatingFlag::MONSTER_STATUSES);
-    rfu.set_flag(SubWindowRedrawingFlag::OVERHEAD);
+    auto &dur = DeferredUpdateRequests::get_instance();
+    dur.set_flag(StatusRecalculatingFlag::MONSTER_STATUSES);
+    dur.set_flag(SubWindowRedrawingFlag::OVERHEAD);
     handle_stuff(creature);
     const auto &grid = creature.get_floor()->grid_array[creature.y][creature.x];
     autopick_pickup_items(creature, grid);
@@ -305,17 +302,17 @@ void carry(CreatureEntity &creature, bool pickup)
         }
 
         if (!pickup) {
-            msg_format(_("%sがある。", "You see %s."), item_name.data());
+            msg_print(_("{}がある。", "You see {}."), item_name);
             continue;
         }
 
         if (!check_get_item(&item)) {
-            msg_format(_("%sを持ち運ぶことはできない。", "You can't carry %s."), item_name.data());
+            msg_print(_("{}を持ち運ぶことはできない。", "You can't carry {}."), item_name);
             continue;
         }
 
         if (!creature.can_store_item(item)) {
-            msg_format(_("ザックには%sを入れる隙間がない。", "You have no room for %s."), item_name.data());
+            msg_print(_("ザックには{}を入れる隙間がない。", "You have no room for {}."), item_name);
             continue;
         }
 

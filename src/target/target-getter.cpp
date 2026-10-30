@@ -16,7 +16,9 @@
 #include "target/target-setter.h"
 #include "target/target-types.h"
 #include "util/finalizer.h"
+#include "util/string-processor.h"
 #include "view/display-messages.h"
+#include <fmt/format.h>
 #include <string>
 #include <string_view>
 #include <tl/optional.hpp>
@@ -163,10 +165,12 @@ Direction get_direction(CreatureEntity &creature)
 
     const auto &monster = creature.get_floor()->get_monster(creature.get_riding());
     const auto m_name = monster_desc(creature, monster, 0);
-    const auto fmt = monster.is_confused()
-                         ? _("%sは混乱している。", "%s^ is confused.")
-                         : _("%sは思い通りに動いてくれない。", "You cannot control %s.");
-    msg_format(fmt, m_name.data());
+    if (monster.is_confused()) {
+        msg_print(_("{}は混乱している。", "{} is confused."), str_upcase_first(m_name));
+    } else {
+        msg_print(_("{}は思い通りに動いてくれない。", "You cannot control {}."), m_name);
+    }
+
     return dir;
 }
 
@@ -239,9 +243,9 @@ Direction get_rep_dir(CreatureEntity &creature, bool under)
             const auto &monster = creature.get_floor()->get_monster(creature.get_riding());
             const auto m_name = monster_desc(creature, monster, 0);
             if (monster.is_confused()) {
-                msg_format(_("%sは混乱している。", "%s^ is confused."), m_name.data());
+                msg_print(_("{}は混乱している。", "{} is confused."), str_upcase_first(m_name));
             } else {
-                msg_format(_("%sは思い通りに動いてくれない。", "You cannot control %s."), m_name.data());
+                msg_print(_("{}は思い通りに動いてくれない。", "You cannot control {}."), m_name);
             }
         }
     }

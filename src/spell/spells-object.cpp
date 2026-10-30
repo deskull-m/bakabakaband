@@ -35,14 +35,15 @@
 #include "system/artifact/artifact-record.h"
 #include "system/baseitem/baseitem-key.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/floor/floor-info.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/redrawing-flags-updater.h"
 #include "term/screen-processor.h"
 #include "util/bit-flags-calculator.h"
 #include "util/probability-table.h"
 #include "view/display-messages.h"
+#include <fmt/format.h>
 #include <variant>
 
 /*!
@@ -196,6 +197,26 @@ void acquirement(CreatureEntity &creature, POSITION y1, POSITION x1, int num, bo
 }
 
 /*!
+ * @brief 防具呪縛・武器呪縛で呪われたエゴにした品の、擬似鑑定の感触を呪いに合わせる
+ * @param item 呪縛した品
+ * @details 呪いを付けたときと同じく感触を呪いに合わせる (ItemEntity::match_feeling_to_curses())。
+ * 呪縛した品は呪われたエゴ (BLASTED・SHATTERED) になるので、次の感触は重い擬似鑑定で感じ直したときと同じ {無価値} にする。
+ * - {恐ろしい}: 固定アーティファクトはアーティファクトでなくなる (ランダムアーティファクトは名前が残り、アーティファクトのまま)
+ * - {上質}・{並} から求めた {呪われている}: 重い擬似鑑定でしか付かず、アーティファクトでもエゴでもないと分かっていた品
+ * ({呪われていない}・感触なしはランダムアーティファクトのことがあるので {呪われている} のまま)
+ */
+static void update_feeling_on_blasting(ItemEntity &item)
+{
+    const auto was_ordinary = (item.feeling == FEEL_GOOD) || (item.feeling == FEEL_AVERAGE);
+    item.match_feeling_to_curses();
+    const auto is_blasted_artifact = (item.feeling == FEEL_TERRIBLE) && !item.is_fixed_or_random_artifact();
+    const auto is_blasted_ordinary = was_ordinary && (item.feeling == FEEL_CURSED);
+    if (is_blasted_artifact || is_blasted_ordinary) {
+        item.feeling = FEEL_WORTHLESS;
+    }
+}
+
+/*!
  * @brief 防具呪縛処理 /
  * Curse the players armor
  * @param creature クリーチャーへの参照
@@ -215,14 +236,14 @@ bool curse_armor(CreatureEntity &creature)
 
     if (item.is_fixed_or_random_artifact() && one_in_(2)) {
 #ifdef JP
-        msg_format("%sが%sを包み込もうとしたが、%sはそれを跳ね返した！", "恐怖の暗黒オーラ", "防具", item_name.data());
+        msg_print("恐怖の暗黒オーラが防具を包み込もうとしたが、{}はそれを跳ね返した！", item_name);
 #else
-        msg_format("A %s tries to %s, but your %s resists the effects!", "terrible black aura", "surround your armor", item_name.data());
+        msg_print("A terrible black aura tries to surround your armor, but your {} resists the effects!", item_name);
 #endif
         return true;
     }
 
-    msg_format(_("恐怖の暗黒オーラがあなたの%sを包み込んだ！", "A terrible black aura blasts your %s!"), item_name.data());
+    msg_print(_("恐怖の暗黒オーラがあなたの{}を包み込んだ！", "A terrible black aura blasts your {}!"), item_name);
     chg_virtue(creature, Virtue::ENCHANT, -5);
     item.fa_id = FixedArtifactId::NONE;
     item.ego_idx = EgoType::BLASTED;
@@ -234,18 +255,12 @@ bool curse_armor(CreatureEntity &creature)
     item.art_flags.clear();
     item.curse_flags.set(CurseTraitType::CURSED);
     item.ident.set(IdentificationFlag::BROKEN);
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    static constexpr auto flags_srf = {
-        StatusRecalculatingFlag::BONUS,
-        StatusRecalculatingFlag::MP,
-    };
-    rfu.set_flags(flags_srf);
-    static constexpr auto flags_swrf = {
-        SubWindowRedrawingFlag::INVENTORY,
-        SubWindowRedrawingFlag::EQUIPMENT,
-        SubWindowRedrawingFlag::PLAYER,
-    };
-    rfu.set_flags(flags_swrf);
+    update_feeling_on_blasting(item);
+    auto &dur = DeferredUpdateRequests::get_instance();
+    // エゴ・アーティファクトの能力が無くなる
+    dur.request_equipment_change_updates();
+    dur.set_flag(SubWindowRedrawingFlag::PLAYER);
+    calc_android_exp(creature);
     return true;
 }
 
@@ -266,15 +281,15 @@ bool curse_weapon_object(CreatureEntity &creature, bool force, ItemEntity &item)
     const auto item_name = describe_flavor(creature, item, OD_OMIT_PREFIX);
     if (item.is_fixed_or_random_artifact() && one_in_(2) && !force) {
 #ifdef JP
-        msg_format("%sが%sを包み込もうとしたが、%sはそれを跳ね返した！", "恐怖の暗黒オーラ", "武器", item_name.data());
+        msg_print("恐怖の暗黒オーラが武器を包み込もうとしたが、{}はそれを跳ね返した！", item_name);
 #else
-        msg_format("A %s tries to %s, but your %s resists the effects!", "terrible black aura", "surround your weapon", item_name.data());
+        msg_print("A terrible black aura tries to surround your weapon, but your {} resists the effects!", item_name);
 #endif
         return true;
     }
 
     if (!force) {
-        msg_format(_("恐怖の暗黒オーラがあなたの%sを包み込んだ！", "A terrible black aura blasts your %s!"), item_name.data());
+        msg_print(_("恐怖の暗黒オーラがあなたの{}を包み込んだ！", "A terrible black aura blasts your {}!"), item_name);
     }
 
     chg_virtue(creature, Virtue::ENCHANT, -5);
@@ -288,18 +303,12 @@ bool curse_weapon_object(CreatureEntity &creature, bool force, ItemEntity &item)
     item.art_flags.clear();
     item.curse_flags.set(CurseTraitType::CURSED);
     item.ident.set(IdentificationFlag::BROKEN);
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    static constexpr auto flags_srf = {
-        StatusRecalculatingFlag::BONUS,
-        StatusRecalculatingFlag::MP,
-    };
-    rfu.set_flags(flags_srf);
-    static constexpr auto flags_swrf = {
-        SubWindowRedrawingFlag::INVENTORY,
-        SubWindowRedrawingFlag::EQUIPMENT,
-        SubWindowRedrawingFlag::PLAYER,
-    };
-    rfu.set_flags(flags_swrf);
+    update_feeling_on_blasting(item);
+    auto &dur = DeferredUpdateRequests::get_instance();
+    // エゴ・アーティファクトの能力が無くなる
+    dur.request_equipment_change_updates();
+    dur.set_flag(SubWindowRedrawingFlag::PLAYER);
+    calc_android_exp(creature);
     return true;
 }
 
@@ -333,7 +342,7 @@ void brand_bolts(CreatureEntity &creature)
         enchant_equipment(item, randint0(3) + 4, ENCH_TOHIT | ENCH_TODAM);
 
         // 修正値の強化に失敗しても、エゴは付いている
-        RedrawingFlagsUpdater::get_instance().request_inventory_arrangement();
+        DeferredUpdateRequests::get_instance().request_inventory_arrangement();
         return;
     }
 
@@ -357,9 +366,7 @@ static void break_curse(ItemEntity &item)
     }
 
     msg_print(_("かけられていた呪いが打ち破られた！", "The curse is broken!"));
-    item.curse_flags.clear();
-    item.ident.set(IdentificationFlag::SENSE);
-    item.feeling = FEEL_NONE;
+    item.remove_curses();
 }
 
 /*!
@@ -446,10 +453,10 @@ bool enchant_equipment(ItemEntity &item, int n, int eflag)
         return false;
     }
 
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.set_flag(StatusRecalculatingFlag::BONUS);
-    rfu.request_inventory_arrangement();
-    rfu.set_item_related_sub_window_flags();
+    auto &dur = DeferredUpdateRequests::get_instance();
+    dur.set_flag(StatusRecalculatingFlag::BONUS);
+    dur.request_inventory_arrangement();
+    dur.set_item_related_sub_window_flags();
     return true;
 }
 
@@ -479,9 +486,9 @@ bool enchant_spell(CreatureEntity &creature, HIT_PROB num_hit, int num_dam, ARMO
 
     const auto item_name = describe_flavor(creature, *item, (OD_OMIT_PREFIX | OD_NAME_ONLY));
 #ifdef JP
-    msg_format("%s は明るく輝いた！", item_name.data());
+    msg_print("{} は明るく輝いた！", item_name);
 #else
-    msg_format("%s %s glow%s brightly!", ((i_idx >= 0) ? "Your" : "The"), item_name.data(), ((item->number > 1) ? "" : "s"));
+    msg_print("{} {} glow{} brightly!", ((i_idx >= 0) ? "Your" : "The"), item_name, ((item->number > 1) ? "" : "s"));
 #endif
 
     auto is_enchant_successful = false;
@@ -634,17 +641,12 @@ void brand_weapon(CreatureEntity &creature, int brand_type)
         break;
     }
 
-    msg_format(_("あなたの%s%s", "Your %s %s"), item_name.data(), act);
+    msg_print(_("あなたの{}{}", "Your {} {}"), item_name, act);
     enchant_equipment(*item, randint0(3) + 4, ENCH_TOHIT | ENCH_TODAM);
     item->discount = 99;
     chg_virtue(creature, Virtue::ENCHANT, 2);
     calc_android_exp(creature);
 
-    // 修正値の強化に失敗しても、エゴの能力 (焼棄の光源の明るさなども) は付いている
-    static constexpr auto flags_srf = {
-        StatusRecalculatingFlag::BONUS,
-        StatusRecalculatingFlag::TORCH,
-        StatusRecalculatingFlag::MP,
-    };
-    RedrawingFlagsUpdater::get_instance().set_flags(flags_srf);
+    // 修正値の強化に失敗しても、エゴの能力は付いている
+    DeferredUpdateRequests::get_instance().request_equipment_change_updates();
 }

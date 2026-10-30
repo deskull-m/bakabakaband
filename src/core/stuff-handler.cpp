@@ -3,8 +3,8 @@
 #include "inventory/inventory-object.h"
 #include "player/player-status.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/floor/floor-info.h"
-#include "system/redrawing-flags-updater.h"
 #include "tracking/health-bar-tracker.h"
 #include "tracking/lore-tracker.h"
 
@@ -14,18 +14,16 @@
  */
 void handle_stuff(CreatureEntity &creature)
 {
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    if (rfu.any_stats()) {
+    auto &dur = DeferredUpdateRequests::get_instance();
+    if (dur.any_stats()) {
         update_creature(creature);
     }
 
-    if (rfu.any_main()) {
+    if (dur.any_main()) {
         redraw_stuff(creature);
     }
 
-    if (rfu.any_sub()) {
-        window_stuff(creature);
-    }
+    window_stuff_if_needed(creature);
 }
 
 /*!
@@ -45,7 +43,7 @@ void monster_race_track(CreatureEntity &creature, MonraceId r_idx)
 {
     (void)creature;
     LoreTracker::get_instance().set_trackee(r_idx);
-    RedrawingFlagsUpdater::get_instance().set_flag(SubWindowRedrawingFlag::MONSTER_LORE);
+    DeferredUpdateRequests::get_instance().set_flag(SubWindowRedrawingFlag::MONSTER_LORE);
 }
 
 /*
@@ -54,7 +52,7 @@ void monster_race_track(CreatureEntity &creature, MonraceId r_idx)
 void object_kind_track(CreatureEntity &creature, short bi_id)
 {
     creature.set_tracking_bi_id(bi_id);
-    RedrawingFlagsUpdater::get_instance().set_flag(SubWindowRedrawingFlag::ITEM_KNOWLEDGE);
+    DeferredUpdateRequests::get_instance().set_flag(SubWindowRedrawingFlag::ITEM_KNOWLEDGE);
 }
 
 /*

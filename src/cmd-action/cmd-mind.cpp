@@ -12,6 +12,7 @@
 
 #include "cmd-action/cmd-mind.h"
 #include "action/action-limited.h"
+#include "bot/bot-json-output.h"
 #include "core/asking-player.h"
 #include "core/window-redrawer.h"
 #include "effect/attribute-types.h"
@@ -45,13 +46,14 @@
 #include "status/bad-status-setter.h"
 #include "status/base-status.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
-#include "system/redrawing-flags-updater.h"
 #include "term/screen-processor.h"
 #include "util/enum-converter.h"
 #include "view/display-messages.h"
 #include "view/display-util.h"
+#include <fmt/format.h>
 
 /*!
  * @brief 職業別特殊技能の処理用構造体
@@ -236,7 +238,7 @@ static void check_mind_mindcrafter(CreatureEntity &creature, cm_type *cm_ptr)
         return;
     }
 
-    msg_format(_("%sの力が制御できない氾流となって解放された！", "Your mind unleashes its power in an uncontrollable storm!"), cm_ptr->mind_explanation);
+    msg_print(_("{}の力が制御できない氾流となって解放された！", "Your mind unleashes its power in an uncontrollable storm!"), cm_ptr->mind_explanation);
     project(creature, PROJECT_WHO_UNCTRL_POWER, 2 + cm_ptr->plev / 10, creature.y, creature.x, cm_ptr->plev * 2, AttributeType::MANA,
         PROJECT_JUMP | PROJECT_KILL | PROJECT_GRID | PROJECT_ITEM);
     creature.set_current_mp(std::max(0, creature.get_current_mp() - cm_ptr->plev * std::max(1, cm_ptr->plev / 10)));
@@ -264,7 +266,7 @@ static void check_mind_mirror_master(CreatureEntity &creature, cm_type *cm_ptr)
         return;
     }
 
-    msg_format(_("%sの力が制御できない氾流となって解放された！", "Your mind unleashes its power in an uncontrollable storm!"), cm_ptr->mind_explanation);
+    msg_print(_("{}の力が制御できない氾流となって解放された！", "Your mind unleashes its power in an uncontrollable storm!"), cm_ptr->mind_explanation);
     project(creature, PROJECT_WHO_UNCTRL_POWER, 2 + cm_ptr->plev / 10, creature.y, creature.x, cm_ptr->plev * 2, AttributeType::MANA,
         PROJECT_JUMP | PROJECT_KILL | PROJECT_GRID | PROJECT_ITEM);
     creature.set_current_mp(std::max(0, creature.get_current_mp() - cm_ptr->plev * std::max(1, cm_ptr->plev / 10)));
@@ -313,7 +315,7 @@ static bool switch_mind_class(CreatureEntity &creature, cm_type *cm_ptr)
         cm_ptr->cast = cast_ninja_spell(creature, i2enum<MindNinjaType>(cm_ptr->n));
         return true;
     default:
-        msg_format(_("謎の能力:%d, %d", "Mystery power:%d, %d"), cm_ptr->use_mind, cm_ptr->n);
+        msg_print(_("謎の能力:{}, {}", "Mystery power:{}, {}"), enum2i(cm_ptr->use_mind), cm_ptr->n);
         return false;
     }
 }
@@ -342,7 +344,7 @@ static bool judge_mind_chance(CreatureEntity &creature, cm_type *cm_ptr)
         flush();
     }
 
-    msg_format(_("%sの集中に失敗した！", "You failed to concentrate hard enough for %s!"), cm_ptr->mind_explanation);
+    msg_print(_("{}の集中に失敗した！", "You failed to concentrate hard enough for {}!"), cm_ptr->mind_explanation);
     sound(SoundKind::FAIL);
     check_mind_class(creature, cm_ptr);
     return true;
@@ -356,7 +358,7 @@ static void mind_reflection(CreatureEntity &creature, cm_type *cm_ptr)
     }
 
     creature.set_current_mp(std::max(0, creature.get_current_mp() - cm_ptr->mana_cost));
-    msg_print(_(format("%sを集中しすぎて気を失ってしまった！", cm_ptr->mind_explanation), "You faint from the effort!"));
+    msg_print(_("{}を集中しすぎて気を失ってしまった！", "You faint from the effort!"), cm_ptr->mind_explanation);
     (void)BadStatusSetter(creature).mod_paralysis(roll_spell_over_exertion_duration(oops));
     if (one_in_(2)) {
         return;
@@ -371,7 +373,7 @@ static void process_hard_concentration(CreatureEntity &creature, cm_type *cm_ptr
 {
     if ((cm_ptr->use_mind == MindKindType::BERSERKER) || (cm_ptr->use_mind == MindKindType::NINJUTSU)) {
         take_hit(creature, DAMAGE_USELIFE, cm_ptr->mana_cost, _("過度の集中", "concentrating too hard"));
-        RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::HP);
+        DeferredUpdateRequests::get_instance().set_flag(MainWindowRedrawingFlag::HP);
         return;
     }
 
@@ -398,7 +400,16 @@ void do_cmd_mind(CreatureEntity &creature)
 {
     cm_type tmp_cm;
     cm_type *cm_ptr = initialize_cm_type(creature, &tmp_cm);
-    if (cmd_limit_confused(creature) || !MindPowerGetter(creature).get_mind_power(&cm_ptr->n, false)) {
+    if (cmd_limit_confused(creature)) {
+        return;
+    }
+
+    // 技の一覧は選び終えると消えるので、選んでいる間だけ登録する
+    const auto is_selected = [&creature, cm_ptr] {
+        BotDrawnScreenScope bot_screen;
+        return MindPowerGetter(creature).get_mind_power(&cm_ptr->n, false);
+    }();
+    if (!is_selected) {
         return;
     }
 
@@ -423,13 +434,8 @@ void do_cmd_mind(CreatureEntity &creature)
     mind_turn_passing(creature, cm_ptr);
     process_hard_concentration(creature, cm_ptr);
     creature.plus_incident_tree("USE_MIND", 1);
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.set_flag(MainWindowRedrawingFlag::MP);
-    static constexpr auto flags = {
-        SubWindowRedrawingFlag::PLAYER,
-        SubWindowRedrawingFlag::SPELL,
-    };
-    rfu.set_flags(flags);
+    auto &dur = DeferredUpdateRequests::get_instance();
+    dur.set_flag(MainWindowRedrawingFlag::MP);
 }
 
 static MindKindType decide_use_mind_browse(CreatureEntity &creature)
@@ -457,6 +463,9 @@ void do_cmd_mind_browse(CreatureEntity &creature)
 {
     SPELL_IDX n = 0;
     MindKindType use_mind = decide_use_mind_browse(creature);
+
+    // 閲覧では技を選んで説明を出している間も一覧が残るので、閲覧を終えるまで登録する
+    BotDrawnScreenScope bot_screen;
     screen_save();
     while (true) {
         if (!MindPowerGetter(creature).get_mind_power(&n, true)) {

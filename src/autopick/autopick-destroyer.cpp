@@ -25,11 +25,12 @@
 #include "sv-definition/sv-other-types.h"
 #include "sv-definition/sv-wand-types.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/redrawing-flags-updater.h"
 #include "util/string-processor.h"
 #include "view/display-messages.h"
+#include <fmt/format.h>
 
 /*!
  * @brief クラス依存のアイテム破壊を調べる
@@ -139,11 +140,11 @@ void auto_destroy_item(CreatureEntity &creature, ItemEntity *o_ptr, int autopick
     disturb(creature, false, false);
     if (!can_player_destroy_object(o_ptr)) {
         const auto item_name = describe_flavor(creature, *o_ptr, 0);
-        msg_format(_("%sは破壊不能だ。", "You cannot auto-destroy %s."), item_name.data());
+        msg_print(_("{}は破壊不能だ。", "You cannot auto-destroy {}."), item_name);
         return;
     }
 
     autopick_last_destroyed_object = o_ptr->clone();
     o_ptr->marked.set(OmType::AUTODESTROY);
-    RedrawingFlagsUpdater::get_instance().set_flag(InventoryArrangementFlag::AUTO_DESTRUCTION);
+    DeferredUpdateRequests::get_instance().set_flag(InventoryArrangementFlag::AUTO_DESTRUCTION);
 }

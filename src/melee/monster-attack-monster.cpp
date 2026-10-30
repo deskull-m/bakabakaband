@@ -38,14 +38,15 @@
 #include "spell-kind/spells-teleport.h"
 #include "spell-realm/spells-hex.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/floor/floor-info.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/redrawing-flags-updater.h"
 #include "tracking/health-bar-tracker.h"
 #include "util/string-processor.h"
 #include "view/display-messages.h"
+#include <fmt/format.h>
 
 static void heal_monster_by_melee(mam_type *mam_ptr)
 {
@@ -58,11 +59,11 @@ static void heal_monster_by_melee(mam_type *mam_ptr)
 
     HealthBarTracker::get_instance().set_flag_if_tracking(mam_ptr->m_idx);
     if (mam_ptr->m_ptr->is_riding()) {
-        RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::UHEALTH);
+        DeferredUpdateRequests::get_instance().set_flag(MainWindowRedrawingFlag::UHEALTH);
     }
 
     if (mam_ptr->see_m && did_heal) {
-        msg_format(_("%sは体力を回復したようだ。", "%s^ appears healthier."), mam_ptr->m_name);
+        msg_print(_("{}は体力を回復したようだ。", "{} appears healthier."), str_upcase_first(mam_ptr->m_name));
     }
 }
 
@@ -105,7 +106,7 @@ static void aura_fire_by_melee(CreatureEntity &creature, mam_type *mam_ptr)
     }
 
     if (mam_ptr->see_either) {
-        msg_format(_("%s^は突然熱くなった！", "%s^ is suddenly very hot!"), mam_ptr->m_name);
+        msg_print(_("{}は突然熱くなった！", "{} is suddenly very hot!"), str_upcase_first(mam_ptr->m_name));
     }
 
     // 種族由来 (native) オーラのみ思い出フラグを記録する (mutation 由来は monrace 固有でないため記録しない)
@@ -136,7 +137,7 @@ static void aura_cold_by_melee(CreatureEntity &creature, mam_type *mam_ptr)
     }
 
     if (mam_ptr->see_either) {
-        msg_format(_("%s^は突然寒くなった！", "%s^ is suddenly very cold!"), mam_ptr->m_name);
+        msg_print(_("{}は突然寒くなった！", "{} is suddenly very cold!"), str_upcase_first(mam_ptr->m_name));
     }
 
     if (monster.is_visible_on_map() && is_original_ap_and_seen(creature, *mam_ptr->t_ptr)) {
@@ -168,7 +169,7 @@ static void aura_elec_by_melee(CreatureEntity &creature, mam_type *mam_ptr)
     }
 
     if (mam_ptr->see_either) {
-        msg_format(_("%s^は電撃を食らった！", "%s^ gets zapped!"), mam_ptr->m_name);
+        msg_print(_("{}は電撃を食らった！", "{} gets zapped!"), str_upcase_first(mam_ptr->m_name));
     }
 
     // 種族由来 (native) オーラのみ思い出フラグを記録する (mutation 由来は monrace 固有でないため記録しない)
@@ -190,7 +191,7 @@ static void aura_dirt_by_melee(CreatureEntity &creature, mam_type *mam_ptr)
     }
 
     if (mam_ptr->see_either) {
-        msg_format(_("%s^は汚物にまみれた！", "%s^ is covered with filth!"), mam_ptr->m_name);
+        msg_print(_("{}は汚物にまみれた！", "{} is covered with filth!"), str_upcase_first(mam_ptr->m_name));
     }
 
     if (monster.is_visible_on_map() && is_original_ap_and_seen(creature, *mam_ptr->t_ptr)) {
@@ -228,13 +229,13 @@ static void redraw_health_bar(mam_type *mam_ptr)
 
     HealthBarTracker::get_instance().set_flag_if_tracking(mam_ptr->t_idx);
     if (mam_ptr->t_ptr->is_riding()) {
-        RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::UHEALTH);
+        DeferredUpdateRequests::get_instance().set_flag(MainWindowRedrawingFlag::UHEALTH);
     }
 }
 
 static void describe_silly_melee(mam_type *mam_ptr)
 {
-    if ((mam_ptr->act == nullptr) || !mam_ptr->see_either) {
+    if (!mam_ptr->act || !mam_ptr->see_either) {
         return;
     }
 
@@ -243,18 +244,14 @@ static void describe_silly_melee(mam_type *mam_ptr)
         mam_ptr->act = rand_choice(silly_attacks2);
     }
 
-    const auto temp = format(mam_ptr->act, mam_ptr->t_name);
-    msg_format("%s^は%s", mam_ptr->m_name, temp.data());
+    msg_print("{}は{}", str_upcase_first(mam_ptr->m_name), fmt::format(*mam_ptr->act, std::string_view(mam_ptr->t_name)));
 #else
-    std::string temp;
     if (mam_ptr->do_silly_attack) {
-        mam_ptr->act = rand_choice(silly_attacks);
-        temp = format("%s %s.", mam_ptr->act, mam_ptr->t_name);
+        // 英語版の幻覚時の説明は書式でない文なので、対象の名前を後ろに付ける
+        msg_print("{} {} {}.", str_upcase_first(mam_ptr->m_name), rand_choice(silly_attacks), mam_ptr->t_name);
     } else {
-        temp = format(mam_ptr->act, mam_ptr->t_name);
+        msg_print("{} {}", str_upcase_first(mam_ptr->m_name), fmt::format(*mam_ptr->act, std::string_view(mam_ptr->t_name)));
     }
-
-    msg_format("%s^ %s", mam_ptr->m_name, temp.data());
 #endif
 }
 
@@ -274,11 +271,11 @@ static void describe_weapon_melee(mam_type *mam_ptr)
     }
 
     const auto weapon_name = describe_flavor(*mam_ptr->m_ptr, weapon, OD_NAME_ONLY | OD_OMIT_PREFIX | OD_NO_PLURAL);
-    msg_format(_("%s^は%sで%sを攻撃した。", "%s^ attacks %s with %s."),
+    msg_print(_("{}は{}で{}を攻撃した。", "{} attacks {} with {}."),
 #ifdef JP
-        mam_ptr->m_name, weapon_name.data(), mam_ptr->t_name);
+        str_upcase_first(mam_ptr->m_name), weapon_name, mam_ptr->t_name);
 #else
-        mam_ptr->m_name, mam_ptr->t_name, weapon_name.data());
+        str_upcase_first(mam_ptr->m_name), mam_ptr->t_name, weapon_name);
 #endif
 }
 
@@ -345,10 +342,10 @@ static void process_melee(CreatureEntity &creature, mam_type *mam_ptr)
         if (drained > 0) {
             HealthBarTracker::get_instance().set_flag_if_tracking(mam_ptr->m_idx);
             if (mam_ptr->m_ptr->is_riding()) {
-                RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::UHEALTH);
+                DeferredUpdateRequests::get_instance().set_flag(MainWindowRedrawingFlag::UHEALTH);
             }
             if (mam_ptr->see_m && did_heal) {
-                msg_format(_("%sは%sから生命力を吸い取った！", "%s^ drains life from %s^!"), mam_ptr->m_name, mam_ptr->t_name);
+                msg_print(_("{}は{}から生命力を吸い取った！", "{} drains life from {}!"), str_upcase_first(mam_ptr->m_name), str_upcase_first(mam_ptr->t_name));
             }
         }
 

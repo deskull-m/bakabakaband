@@ -6,6 +6,7 @@
 #include "locale/character-encoding.h"
 #include "system/monrace/monrace-message.h"
 #include "view/display-messages.h"
+#include <fmt/format.h>
 #include <nlohmann/json.hpp>
 #include <string>
 
@@ -18,14 +19,14 @@ MessageReader::MessageReader(const nlohmann::json &message_data)
  * @brief モンスターメッセージ情報(JSON Object)のパース関数
  * @return エラーコード
  */
-int MessageReader::read() const
+ParseErrorType MessageReader::read() const
 {
-    if (auto err = this->set_mon_message()) {
-        msg_format(_("モンスターメッセージ読込失敗。", "Failed to load monster message."));
+    if (const auto err = this->set_mon_message(); err != ParseErrorType::NONE) {
+        msg_print(_("モンスターメッセージ読込失敗。", "Failed to load monster message."));
         return err;
     }
 
-    return PARSE_ERROR_NONE;
+    return ParseErrorType::NONE;
 }
 
 /*!
@@ -34,15 +35,15 @@ int MessageReader::read() const
  * @param id_list id群情報を保管するvector
  * @return エラーコード
  */
-static errr set_id_list(const nlohmann::json &id_list_data, std::vector<int> &id_list)
+static ParseErrorType set_id_list(const nlohmann::json &id_list_data, std::vector<int> &id_list)
 {
     if (!id_list_data.is_array()) {
-        return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+        return ParseErrorType::TOO_FEW_ARGUMENTS;
     }
 
     for (const auto &id_data : id_list_data) {
         if (!id_data.is_number()) {
-            return PARSE_ERROR_INVALID_FLAG;
+            return ParseErrorType::INVALID_TYPE;
         }
         int id{};
         if (const auto err = info_set_integer(id_data, id, true, Range(1, 9999)); !err) {
@@ -50,20 +51,21 @@ static errr set_id_list(const nlohmann::json &id_list_data, std::vector<int> &id
         }
         id_list.push_back(id);
     }
-    return PARSE_ERROR_NONE;
+    return ParseErrorType::NONE;
 }
 
 /*!
  * @brief JSON Objectからモンスターのメッセージをセットする
  * @param message_data メッセージ情報の格納されたJSON Object
  * @return エラーコード
+ * @details 選択言語が無く他言語だけがあるメッセージは読み飛ばし、後続のメッセージの解析を続ける。
  */
-int MessageReader::set_mon_message() const
+ParseErrorType MessageReader::set_mon_message() const
 {
     const auto &group_data = this->message_data;
     const auto message_iter = group_data.find("message");
     if (message_iter == group_data.end() || !message_iter->is_array()) {
-        return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+        return ParseErrorType::TOO_FEW_ARGUMENTS;
     }
     const auto &message_array = message_iter.value();
     auto id_list = std::vector<int>();
@@ -72,40 +74,40 @@ int MessageReader::set_mon_message() const
     const auto has_id_list = (id_list_iter != group_data.end());
 
     if (has_id_list) {
-        errr id_err = set_id_list(id_list_iter.value(), id_list);
-        if (id_err != PARSE_ERROR_NONE) {
+        ParseErrorType id_err = set_id_list(id_list_iter.value(), id_list);
+        if (id_err != ParseErrorType::NONE) {
             return id_err;
         }
     } else {
         const auto &name_obj = get_json_value(group_data, "name");
         if (!name_obj.is_string()) {
-            return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+            return ParseErrorType::TOO_FEW_ARGUMENTS;
         }
 
         const auto group_name = name_obj.get<std::string>();
         if (group_name != "DEFAULT") {
-            return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+            return ParseErrorType::TOO_FEW_ARGUMENTS;
         }
     }
 
     if (!message_array.is_array()) {
-        return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+        return ParseErrorType::TOO_FEW_ARGUMENTS;
     }
 
     for (const auto &message : message_array) {
         const auto action_iter = message.find("action");
         if (action_iter == message.end() || !action_iter->is_string()) {
-            return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+            return ParseErrorType::TOO_FEW_ARGUMENTS;
         }
         const auto &action_data = action_iter.value();
         const auto action = r_info_message_flags.find(action_data.get<std::string>());
         if (action == r_info_message_flags.end()) {
-            return PARSE_ERROR_INVALID_FLAG;
+            return ParseErrorType::INVALID_FLAG;
         }
 
         const auto chance_iter = message.find("chance");
         if (chance_iter == message.end() || !chance_iter->is_number()) {
-            return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+            return ParseErrorType::TOO_FEW_ARGUMENTS;
         }
         const auto &chance_data = chance_iter.value();
         int chance{};
@@ -124,7 +126,7 @@ int MessageReader::set_mon_message() const
 
         const auto language_iter = message.find("message");
         if (language_iter == message.end() || !language_iter->is_object()) {
-            return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+            return ParseErrorType::TOO_FEW_ARGUMENTS;
         }
         const auto &language_list = language_iter.value();
 
@@ -133,32 +135,32 @@ int MessageReader::set_mon_message() const
 #ifdef JP
         if (ja_list == language_list.end()) {
             if (en_list == language_list.end()) {
-                return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+                return ParseErrorType::TOO_FEW_ARGUMENTS;
             }
-            return PARSE_ERROR_NONE;
+            continue;
         }
         const auto &message_list = ja_list.value();
 #else
         if (en_list == language_list.end()) {
             if (ja_list == language_list.end()) {
-                return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+                return ParseErrorType::TOO_FEW_ARGUMENTS;
             }
-            return PARSE_ERROR_NONE;
+            continue;
         }
         const auto &message_list = en_list.value();
 #endif
 
         for (const auto &message_str : message_list) {
             if (message_str.is_null()) {
-                return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+                return ParseErrorType::TOO_FEW_ARGUMENTS;
             }
             if (!message_str.is_string()) {
-                return PARSE_ERROR_INVALID_FLAG;
+                return ParseErrorType::INVALID_TYPE;
             }
 #ifdef JP
             auto str_test = utf8_to_sys(message_str.get<std::string>());
             if (!str_test) {
-                return PARSE_ERROR_INVALID_FLAG;
+                return ParseErrorType::INVALID_VALUE;
             }
             auto str = std::move(*str_test);
 #else
@@ -173,5 +175,5 @@ int MessageReader::set_mon_message() const
             }
         }
     }
-    return PARSE_ERROR_NONE;
+    return ParseErrorType::NONE;
 }

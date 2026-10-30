@@ -5,6 +5,7 @@
 #include "util/finalizer.h"
 #include <array>
 #include <concepts>
+#include <fmt/format.h>
 #include <limits>
 #include <sstream>
 #include <string>
@@ -39,7 +40,7 @@ class CandidateSelector {
 public:
     CandidateSelector(const std::string &prompt, int start_col = 0);
 
-    void set_max_per_page(size_t max_per_page = std::numeric_limits<size_t>::max());
+    void set_max_per_page(size_t max_per_page = (std::numeric_limits<size_t>::max)());
 
     /*!
      * @brief 引数で与えられた候補リストを画面に表示し選択する
@@ -117,7 +118,7 @@ private:
             put_str(ss.str(), i + 1, this->start_col);
         }
         if (page_max > 1) {
-            const auto page_info = format(" -- more (%lu/%lu) --", page + 1, page_max);
+            const auto page_info = fmt::format(" -- more ({}/{}) --", page + 1, page_max);
             put_str(page_info, page_item_count + 1, this->start_col);
         }
     }

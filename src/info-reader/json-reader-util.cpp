@@ -1,7 +1,9 @@
 #include "info-reader/json-reader-util.h"
 #include "info-reader/info-reader-util.h"
+#include "info-reader/symbol-reader-util.h"
 #include "locale/character-encoding.h"
 #include "locale/language-switcher.h"
+#include "term/gameterm.h"
 #include "util/dice.h"
 
 /*!
@@ -11,20 +13,20 @@
  * @param allow_empty 空配列を許容するか（Vaultではfalse）
  * @return エラーコード
  */
-tl::expected<void, parse_error_type> info_validate_json_array(const nlohmann::json &root, std::string_view key, bool allow_empty)
+tl::expected<void, ParseErrorType> info_validate_json_array(const nlohmann::json &root, std::string_view key, bool allow_empty)
 {
     if (!root.is_object()) {
-        return tl::make_unexpected(PARSE_ERROR_INVALID_TYPE);
+        return tl::make_unexpected(ParseErrorType::INVALID_TYPE);
     }
     const auto records = root.find(key);
     if (records == root.end()) {
-        return tl::make_unexpected(PARSE_ERROR_TOO_FEW_ARGUMENTS);
+        return tl::make_unexpected(ParseErrorType::TOO_FEW_ARGUMENTS);
     }
     if (!records->is_array()) {
-        return tl::make_unexpected(PARSE_ERROR_INVALID_TYPE);
+        return tl::make_unexpected(ParseErrorType::INVALID_TYPE);
     }
     if (!allow_empty && records->empty()) {
-        return tl::make_unexpected(PARSE_ERROR_INVALID_VALUE);
+        return tl::make_unexpected(ParseErrorType::INVALID_VALUE);
     }
     return {};
 }
@@ -51,11 +53,11 @@ const nlohmann::json &get_json_value(const nlohmann::json &json, std::string_vie
  * @param is_required 必須かどうか
  * @return エラーコード
  */
-tl::expected<void, parse_error_type> info_set_string(const nlohmann::json &json, std::string &data, bool is_required)
+tl::expected<void, ParseErrorType> info_set_string(const nlohmann::json &json, std::string &data, bool is_required)
 {
-    const auto unexist_result = [is_required]() -> tl::expected<void, parse_error_type> {
+    const auto unexist_result = [is_required]() -> tl::expected<void, ParseErrorType> {
         if (is_required) {
-            return tl::make_unexpected(PARSE_ERROR_TOO_FEW_ARGUMENTS);
+            return tl::make_unexpected(ParseErrorType::TOO_FEW_ARGUMENTS);
         }
         return {};
     };
@@ -65,7 +67,7 @@ tl::expected<void, parse_error_type> info_set_string(const nlohmann::json &json,
     }
 
     if (!json.is_object()) {
-        return tl::make_unexpected(PARSE_ERROR_INVALID_TYPE);
+        return tl::make_unexpected(ParseErrorType::INVALID_TYPE);
     }
 
     const auto str = json.find(_("ja", "en"));
@@ -73,13 +75,13 @@ tl::expected<void, parse_error_type> info_set_string(const nlohmann::json &json,
         return unexist_result();
     }
     if (!str->is_string()) {
-        return tl::make_unexpected(PARSE_ERROR_INVALID_TYPE);
+        return tl::make_unexpected(ParseErrorType::INVALID_TYPE);
     }
 
 #ifdef JP
     auto str_sys = utf8_to_sys(str->get<std::string>());
     if (!str_sys) {
-        return tl::make_unexpected(PARSE_ERROR_INVALID_FLAG);
+        return tl::make_unexpected(ParseErrorType::INVALID_VALUE);
     }
     data = std::move(*str_sys);
 #else
@@ -97,23 +99,23 @@ tl::expected<void, parse_error_type> info_set_string(const nlohmann::json &json,
  * 必須でJSON Objectがnullや文字列でない場合はエラーを返す。必須でない場合は何もせずに終了する。
  * @return エラーコード
  */
-tl::expected<void, parse_error_type> info_set_dice(const nlohmann::json &json, Dice &dice, bool is_required)
+tl::expected<void, ParseErrorType> info_set_dice(const nlohmann::json &json, Dice &dice, bool is_required)
 {
     if (json.is_null()) {
         if (is_required) {
-            return tl::make_unexpected(PARSE_ERROR_TOO_FEW_ARGUMENTS);
+            return tl::make_unexpected(ParseErrorType::TOO_FEW_ARGUMENTS);
         }
         return {};
     }
     if (!json.is_string()) {
-        return tl::make_unexpected(PARSE_ERROR_INVALID_TYPE);
+        return tl::make_unexpected(ParseErrorType::INVALID_TYPE);
     }
 
     try {
         dice = Dice::parse(json.get<std::string>());
         return {};
     } catch (const std::runtime_error &) {
-        return tl::make_unexpected(PARSE_ERROR_TOO_FEW_ARGUMENTS);
+        return tl::make_unexpected(ParseErrorType::INVALID_VALUE);
     }
 }
 
@@ -122,18 +124,64 @@ tl::expected<void, parse_error_type> info_set_dice(const nlohmann::json &json, D
  * @param json bool値が格納されたJSON Object
  * @param bool_value bool値を格納する変数への参照
  * @param is_required 必須かどうか
- * 必須でJSON Objectがnullやbool場合はエラーを返す。必須でない場合は何もせずに終了する。
- * @return エラーコード
+ * null は、必須なら ParseErrorType::TOO_FEW_ARGUMENTS を返し、任意なら何もせずに成功する。
+ * null 以外の非bool値は ParseErrorType::INVALID_TYPE を返す。bool値のときのみ bool_value を変更する。
+ * @return 成功時は空の値、失敗時は解析エラーコード
  */
-tl::expected<void, parse_error_type> info_set_bool(const nlohmann::json &json, bool &bool_value, bool is_required)
+tl::expected<void, ParseErrorType> info_set_bool(const nlohmann::json &json, bool &bool_value, bool is_required)
 {
-    if (json.is_null() || !json.is_boolean()) {
+    if (json.is_null()) {
         if (is_required) {
-            return tl::make_unexpected(PARSE_ERROR_TOO_FEW_ARGUMENTS);
+            return tl::make_unexpected(ParseErrorType::TOO_FEW_ARGUMENTS);
         }
         return {};
     }
 
+    if (!json.is_boolean()) {
+        return tl::make_unexpected(ParseErrorType::INVALID_TYPE);
+    }
+
     bool_value = json.get<bool>();
     return {};
+}
+
+/*!
+ * @brief 表示記号の文字と色を読み取り、既存リーダーの検証順序を保つ。
+ * @param json character と color を持つオブジェクト
+ * @param policy 通常は型・文字数・色の順。モンスターは型不一致も欠落として扱い、色を文字数より先に検証する。
+ * @return 表示記号、または欠落・型・文字数・未知の色に対応する解析エラー
+ * @details 文字は1バイトなら制御文字や非ASCIIも許容する。地形固有の lit とメッセージは呼出側で扱う。
+ */
+tl::expected<DisplaySymbol, ParseErrorType> info_read_symbol(const nlohmann::json &json, SymbolReadPolicy policy)
+{
+    const auto monster = policy == SymbolReadPolicy::MONSTER_COLOR_FIRST;
+    if (json.is_null()) {
+        return tl::unexpected(ParseErrorType::TOO_FEW_ARGUMENTS);
+    }
+    if (!json.is_object()) {
+        return tl::unexpected(monster ? ParseErrorType::TOO_FEW_ARGUMENTS : ParseErrorType::INVALID_TYPE);
+    }
+
+    const auto &character_obj = get_json_value(json, "character");
+    if (!character_obj.is_string()) {
+        return tl::unexpected(monster || character_obj.is_null() ? ParseErrorType::TOO_FEW_ARGUMENTS : ParseErrorType::INVALID_TYPE);
+    }
+    const auto &character = character_obj.get_ref<const std::string &>();
+    if (!monster && character.size() != 1) {
+        return tl::unexpected(ParseErrorType::INVALID_VALUE);
+    }
+
+    const auto &color_obj = get_json_value(json, "color");
+    if (!color_obj.is_string()) {
+        return tl::unexpected(monster || color_obj.is_null() ? ParseErrorType::TOO_FEW_ARGUMENTS : ParseErrorType::INVALID_TYPE);
+    }
+    const auto color = color_list.find(color_obj.get<std::string>());
+    if (color == color_list.end()) {
+        return tl::unexpected(ParseErrorType::INVALID_FLAG);
+    }
+    if (character.size() != 1) {
+        return tl::unexpected(ParseErrorType::INVALID_VALUE);
+    }
+
+    return DisplaySymbol(color->second, character.front());
 }

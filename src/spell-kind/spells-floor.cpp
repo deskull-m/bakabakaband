@@ -26,6 +26,7 @@
 #include "system/artifact-type-definition.h"
 #include "system/artifact/artifact-record.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/dungeon/quest-definition.h"
 #include "system/enums/terrain/terrain-tag.h"
@@ -33,7 +34,6 @@
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/redrawing-flags-updater.h"
 #include "system/terrain/terrain-definition.h"
 #include "system/terrain/terrain-list.h"
 #include "view/display-messages.h"
@@ -97,9 +97,9 @@ void wiz_lite(CreatureEntity &creature, bool ninja)
         }
     }
 
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.request_monster_update_and_map_redrawing();
-    rfu.request_floor_item_lists_redrawing();
+    auto &dur = DeferredUpdateRequests::get_instance();
+    dur.request_monster_update_and_map_redrawing();
+    dur.request_floor_item_lists_redrawing();
     if (floor.grid_array[creature.y][creature.x].info & CAVE_GLOW) {
         set_superstealth(creature, false);
     }
@@ -142,17 +142,10 @@ void wiz_dark(CreatureEntity &creature)
     /* Forget travel route when we have forgotten map */
     Travel::get_instance().reset_goal();
 
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.request_monster_update_and_map_redrawing();
-    static constexpr auto flags_srf = {
-        StatusRecalculatingFlag::UN_VIEW,
-        StatusRecalculatingFlag::UN_LITE,
-        StatusRecalculatingFlag::VIEW,
-        StatusRecalculatingFlag::LITE,
-        StatusRecalculatingFlag::MONSTER_LITE,
-    };
-    rfu.set_flags(flags_srf);
-    rfu.request_floor_item_lists_redrawing();
+    auto &dur = DeferredUpdateRequests::get_instance();
+    dur.request_monster_update_and_map_redrawing();
+    dur.request_sight_recalculation();
+    dur.request_floor_item_lists_redrawing();
 }
 
 /*
@@ -203,7 +196,7 @@ void map_area(CreatureEntity &creature, POSITION range)
         }
     }
 
-    RedrawingFlagsUpdater::get_instance().request_map_redrawing();
+    DeferredUpdateRequests::get_instance().request_map_redrawing();
 }
 
 /*!
@@ -325,7 +318,7 @@ bool destroy_area(CreatureEntity &creature, const POSITION y1, const POSITION x1
 
                         if (in_generate && cheat_peek) {
                             const auto fixed_artifact_name = item.get_fixed_artifact_name();
-                            msg_format(_("伝説のアイテム (%s) は生成中に*破壊*された。", "Artifact (%s) was *destroyed* during generation."), fixed_artifact_name.data());
+                            msg_print(_("伝説のアイテム ({}) は生成中に*破壊*された。", "Artifact ({}) was *destroyed* during generation."), fixed_artifact_name);
                         }
                     } else if (in_generate && cheat_peek && item.is_random_artifact()) {
                         msg_print(
@@ -433,17 +426,10 @@ bool destroy_area(CreatureEntity &creature, const POSITION y1, const POSITION x1
     }
 
     forget_flow(floor);
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.request_monster_update_and_map_redrawing();
-    static constexpr auto flags_srf = {
-        StatusRecalculatingFlag::UN_VIEW,
-        StatusRecalculatingFlag::UN_LITE,
-        StatusRecalculatingFlag::VIEW,
-        StatusRecalculatingFlag::LITE,
-        StatusRecalculatingFlag::FLOW,
-        StatusRecalculatingFlag::MONSTER_LITE,
-    };
-    rfu.set_flags(flags_srf);
+    auto &dur = DeferredUpdateRequests::get_instance();
+    dur.request_monster_update_and_map_redrawing();
+    dur.request_sight_recalculation();
+    dur.set_flag(StatusRecalculatingFlag::FLOW);
     if (floor.grid_array[creature.y][creature.x].info & CAVE_GLOW) {
         set_superstealth(creature, false);
     }

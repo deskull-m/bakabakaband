@@ -40,17 +40,19 @@
 #include "status/experience.h"
 #include "system/angband-system.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
 #include "system/monrace/monrace-records.h"
 #include "system/player-type-definition.h"
-#include "system/redrawing-flags-updater.h"
 #include "tracking/health-bar-tracker.h"
 #include "tracking/lore-tracker.h"
+#include "util/string-processor.h"
 #include "view/display-messages.h"
 #include "world/world.h"
+#include <fmt/format.h>
 #include <optional>
 #include <sstream>
 #include <string>
@@ -111,7 +113,7 @@ bool MonsterDamageProcessor::mon_take_hit(std::string_view note)
     monster.apply_raw_damage(this->dam);
 
     if (AngbandWorld::get_instance().wizard) {
-        msg_format(_("合計%d/%dのダメージを与えた。", "You do %d (out of %d) damage."), monster.get_dealt_damage(), monster.maxhp);
+        msg_print(_("合計{}/{}のダメージを与えた。", "You do {} (out of {}) damage."), monster.get_dealt_damage(), monster.maxhp);
     }
 
     if (this->process_dead_exp_virtue(note, exp_mon)) {
@@ -165,7 +167,7 @@ bool MonsterDamageProcessor::process_dead_exp_virtue(std::string_view note, cons
 
     sound(SoundKind::KILL);
     this->show_kill_message(note, m_name);
-    this->show_bounty_message(m_name);
+    this->show_bounty_message();
     monster_death(creature, this->m_idx, true, this->attribute_flags);
     delete_monster_idx(creature, this->m_idx);
     this->get_exp_from_mon(exp_target, exp_target.max_maxhp * 2);
@@ -263,7 +265,7 @@ void MonsterDamageProcessor::death_amberites(std::string_view m_name)
     auto curses = 1 + randint1(3);
     auto stop_ty = false;
     auto count = 0;
-    msg_format(_("％s^は恐ろしい血の呪いをあなたにかけた！", "％s^ puts a terrible blood curse on you!"), m_name.data());
+    msg_print(_("{}は恐ろしい血の呪いをあなたにかけた！", "{} puts a terrible blood curse on you!"), str_upcase_first(m_name));
     curse_equipment(this->creature, 100, 50);
     do {
         stop_ty = activate_ty_curse(this->creature, stop_ty, &count);
@@ -279,7 +281,7 @@ void MonsterDamageProcessor::death_choasians(std::string_view m_name)
     }
 
     auto chaos_effects = 2 + randint1(3);
-    msg_format(_("%s^は死の際に混沌の力を解き放った！", "%s^ unleashes chaotic forces upon death!"), m_name.data());
+    msg_print(_("{}は死の際に混沌の力を解き放った！", "{} unleashes chaotic forces upon death!"), str_upcase_first(m_name));
 
     // 混沌の効果：装備品の変化、テレポート、変身、突然変異など
     for (auto i = 0; i < chaos_effects; i++) {
@@ -336,14 +338,14 @@ void MonsterDamageProcessor::show_kill_message(std::string_view note, std::strin
     const auto &floor = *this->creature.get_floor();
     const auto &monster = floor.get_monster(this->m_idx);
     if (!note.empty()) {
-        msg_format("%s^%s", m_name.data(), note.data());
+        msg_print("{}{}", str_upcase_first(m_name), note);
         return;
     }
 
     if (!monster.is_visible_on_map()) {
-        auto mes = this->creature.is_echizen() ? _("せっかくだから%sを殺した。", "Because it's time, you have killed %s.")
-                                               : _("%sを殺した。", "You have killed %s.");
-        msg_format(mes, m_name.data());
+        auto mes = this->creature.is_echizen() ? _("せっかくだから{}を殺した。", "Because it's time, you have killed {}.")
+                                               : _("{}を殺した。", "You have killed {}.");
+        msg_print(fmt::format(fmt::runtime(mes), m_name));
         return;
     }
 
@@ -355,9 +357,9 @@ void MonsterDamageProcessor::show_kill_message(std::string_view note, std::strin
             return;
         }
 
-        auto mes = this->creature.is_echizen() ? _("せっかくだから%sを葬り去った。", "Because it's time, you have slain %s.")
-                                               : _("%sを葬り去った。", "You have slain %s.");
-        msg_format(mes, m_name.data());
+        auto mes = this->creature.is_echizen() ? _("せっかくだから{}を葬り去った。", "Because it's time, you have slain {}.")
+                                               : _("{}を葬り去った。", "You have slain {}.");
+        msg_print(fmt::format(fmt::runtime(mes), m_name));
         return;
     }
 
@@ -366,21 +368,21 @@ void MonsterDamageProcessor::show_kill_message(std::string_view note, std::strin
         return;
     }
 
-    auto mes = this->creature.is_echizen() ? _("せっかくだから%sを倒した。", "Because it's time, you have destroyed %s.")
-                                           : _("%sを倒した。", "You have destroyed %s.");
-    msg_format(mes, m_name.data());
+    auto mes = this->creature.is_echizen() ? _("せっかくだから{}を倒した。", "Because it's time, you have destroyed {}.")
+                                           : _("{}を倒した。", "You have destroyed {}.");
+    msg_print(fmt::format(fmt::runtime(mes), m_name));
 }
 
 void MonsterDamageProcessor::show_explosion_message(std::string_view died_mes, std::string_view m_name)
 {
     std::stringstream ss;
-    ss << _(m_name, format("%s^", m_name.data()));
+    ss << _(m_name, str_upcase_first(m_name));
     ss << died_mes;
     msg_print(ss.str());
     return;
 }
 
-void MonsterDamageProcessor::show_bounty_message(std::string_view m_name)
+void MonsterDamageProcessor::show_bounty_message()
 {
     auto &floor = *creature.get_floor();
     auto &monster = floor.get_monster(this->m_idx);
@@ -394,7 +396,8 @@ void MonsterDamageProcessor::show_bounty_message(std::string_view m_name)
     }
 
     if (monrace.is_bounty(true)) {
-        msg_format(_("%sの首には賞金がかかっている。", "There is a price on %s's head."), m_name.data());
+        const auto m_name = monster_desc(creature, monster, MD_TRUE_NAME | _(0, MD_POSSESSIVE));
+        msg_print(_("{}の首には賞金がかかっている。", "There is a price on {} head."), m_name);
     }
 }
 
@@ -479,7 +482,7 @@ void MonsterDamageProcessor::set_redraw()
     auto &monster = creature.get_floor()->get_monster(this->m_idx);
     HealthBarTracker::get_instance().set_flag_if_tracking(this->m_idx);
     if (monster.is_riding()) {
-        RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::UHEALTH);
+        DeferredUpdateRequests::get_instance().set_flag(MainWindowRedrawingFlag::UHEALTH);
     }
 }
 
@@ -533,7 +536,7 @@ void MonsterDamageProcessor::process_masochist_reaction()
             monster.heal_hp(heal_amount);
 
             if (monster.is_visible_on_map()) {
-                msg_format(_("%s^は苦痛に悦んでいる！", "%s^ seems to enjoy the pain!"), monster.get_monrace().name.data());
+                msg_print(_("{}は苦痛に悦んでいる！", "{} seems to enjoy the pain!"), str_upcase_first(monster.get_monrace().name));
             }
         }
     }
@@ -561,7 +564,7 @@ void MonsterDamageProcessor::process_sadist_reaction()
         (void)set_monster_fast(*creature.get_floor(), this->m_idx, monster.get_remaining_acceleration() + 100);
 
         if (monster.is_visible_on_map()) {
-            msg_format(_("%s^は他者の苦痛に興奮している！", "%s^ gets excited by others' pain!"), monster.get_monrace().name.data());
+            msg_print(_("{}は他者の苦痛に興奮している！", "{} gets excited by others' pain!"), str_upcase_first(monster.get_monrace().name));
         }
     }
 }
@@ -632,13 +635,13 @@ bool MonsterDamageProcessor::check_and_process_hp_transform()
     // メッセージ表示
     if (monster.is_visible_on_map()) {
         const auto new_name = monster_desc(creature, monster, MD_INDEF_VISIBLE);
-        msg_format(_("％sは％sに変身した！", "％s^ transforms into ％s!"),
-            old_name.data(), new_name.data());
+        msg_print(_("{}は{}に変身した！", "{} transforms into {}!"),
+            str_upcase_first(old_name), new_name);
     }
 
     // 再描画フラグを設定
     this->set_redraw();
-    RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::MAP);
+    DeferredUpdateRequests::get_instance().set_flag(MainWindowRedrawingFlag::MAP);
 
     // モンスターの情報を更新
     update_monster(creature, this->m_idx, true);

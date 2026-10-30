@@ -13,7 +13,7 @@
 #include "realm/realm-song-numbers.h"
 #include "spell-realm/spells-song.h"
 #include "system/creature-entity.h"
-#include "system/redrawing-flags-updater.h"
+#include "system/deferred-update-requests.h"
 #include "view/display-messages.h"
 
 /*!
@@ -54,7 +54,7 @@ bool set_oppose_acid(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
         return false;
     }
 
-    RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
+    DeferredUpdateRequests::get_instance().set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
     if (disturb_state || Travel::get_instance().is_ongoing()) {
         disturb(creature, false, true);
     }
@@ -102,7 +102,7 @@ bool set_oppose_elec(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
         return false;
     }
 
-    RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
+    DeferredUpdateRequests::get_instance().set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
     if (disturb_state || Travel::get_instance().is_ongoing()) {
         disturb(creature, false, true);
     }
@@ -152,7 +152,7 @@ bool set_oppose_fire(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
         return false;
     }
 
-    RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
+    DeferredUpdateRequests::get_instance().set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
     if (disturb_state || Travel::get_instance().is_ongoing()) {
         disturb(creature, false, true);
     }
@@ -199,7 +199,7 @@ bool set_oppose_cold(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
         return false;
     }
 
-    RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
+    DeferredUpdateRequests::get_instance().set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
     if (disturb_state || Travel::get_instance().is_ongoing()) {
         disturb(creature, false, true);
     }
@@ -250,7 +250,7 @@ bool set_oppose_pois(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
         return false;
     }
 
-    RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
+    DeferredUpdateRequests::get_instance().set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
     if (disturb_state || Travel::get_instance().is_ongoing()) {
         disturb(creature, false, true);
     }

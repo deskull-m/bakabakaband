@@ -16,14 +16,15 @@
 #include "perception/object-perception.h"
 #include "system/angband.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
-#include "system/redrawing-flags-updater.h"
 #include "system/terrain/terrain-definition.h"
 #include "target/target-getter.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
+#include <fmt/format.h>
 #include <string>
 
 enum ammo_creation_type {
@@ -126,15 +127,15 @@ bool create_ammo(CreatureEntity &creature)
         item.mark_as_known();
         ItemMagicApplier(creature, &item, creature.get_level(), AM_NO_FIXED_ART).execute();
         item.discount = 99;
-        int16_t slot = creature.store_item(item);
+        int16_t slot = store_item_to_inventory(creature, &item);
         const auto item_name = describe_flavor(creature, item, 0);
-        msg_print(_(format("%sを作った。", item_name.data()), "You make some ammo."));
+        msg_print(_("{}を作った。", "You make some ammo."), item_name);
         if (slot >= 0) {
             autopick_alter_item(creature, slot, false);
         }
 
         cave_alter_feat(creature, pos.y, pos.x, TerrainCharacteristics::STONE);
-        RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::FLOW);
+        DeferredUpdateRequests::get_instance().set_flag(StatusRecalculatingFlag::FLOW);
         return true;
     }
     case AMMO_ARROW: {
@@ -151,9 +152,9 @@ bool create_ammo(CreatureEntity &creature)
         ItemMagicApplier(creature, &ammo, creature.get_level(), AM_NO_FIXED_ART).execute();
         ammo.discount = 99;
         const auto item_name = describe_flavor(creature, ammo, 0);
-        msg_print(_(format("%sを作った。", item_name.data()), "You make some ammo."));
+        msg_print(_("{}を作った。", "You make some ammo."), item_name);
         vary_item(creature, i_idx, -1);
-        int16_t slot = creature.store_item(ammo);
+        int16_t slot = store_item_to_inventory(creature, &ammo);
         if (slot >= 0) {
             autopick_alter_item(creature, slot, false);
         }
@@ -175,9 +176,9 @@ bool create_ammo(CreatureEntity &creature)
         ItemMagicApplier(creature, &ammo, creature.get_level(), AM_NO_FIXED_ART).execute();
         ammo.discount = 99;
         const auto item_name = describe_flavor(creature, ammo, 0);
-        msg_print(_(format("%sを作った。", item_name.data()), "You make some ammo."));
+        msg_print(_("{}を作った。", "You make some ammo."), item_name);
         vary_item(creature, i_idx, -1);
-        int16_t slot = creature.store_item(ammo);
+        int16_t slot = store_item_to_inventory(creature, &ammo);
         if (slot >= 0) {
             autopick_alter_item(creature, slot, false);
         }

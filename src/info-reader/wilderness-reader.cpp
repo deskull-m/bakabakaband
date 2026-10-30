@@ -1,8 +1,10 @@
 #include "info-reader/wilderness-reader.h"
+#include "floor/floor-base-definitions.h"
 #include "game-option/birth-options.h"
 #include "info-reader/info-reader-util.h"
 #include "info-reader/json-reader-util.h"
 #include "io/files-util.h"
+#include "main/init-error-messages-table.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/dungeon/dungeon-list.h"
 #include "system/enums/dungeon/dungeon-id.h"
@@ -14,22 +16,24 @@
 #include "view/display-messages.h"
 #include <algorithm>
 #include <array>
+#include <fmt/format.h>
 #include <fstream>
 #include <iterator>
 #include <limits>
 #include <nlohmann/json.hpp>
 #include <set>
+#include <string>
 #include <utility>
 
 namespace {
-int read_localized_integer(const nlohmann::json &value, int &destination, const Range &range)
+ParseErrorType read_localized_integer(const nlohmann::json &value, int &destination, const Range &range)
 {
     if (value.is_number_integer()) {
         const auto result = info_set_integer(value, destination, true, range);
-        return result ? PARSE_ERROR_NONE : result.error();
+        return result ? ParseErrorType::NONE : result.error();
     }
     if (!value.is_object()) {
-        return value.is_null() ? PARSE_ERROR_TOO_FEW_ARGUMENTS : PARSE_ERROR_INVALID_TYPE;
+        return value.is_null() ? ParseErrorType::TOO_FEW_ARGUMENTS : ParseErrorType::INVALID_TYPE;
     }
 
 #ifdef JP
@@ -37,15 +41,25 @@ int read_localized_integer(const nlohmann::json &value, int &destination, const 
 #else
     const auto result = info_set_integer(get_json_value(value, "en"), destination, true, range);
 #endif
-    return result ? PARSE_ERROR_NONE : result.error();
+    return result ? ParseErrorType::NONE : result.error();
 }
 
-std::optional<WildernessDefinition> load_wilderness_definition()
+//! 荒野の定義ファイルを読み込めなかった理由
+struct WildernessLoadError {
+    std::string message; //!< 起動時に表示する診断
+    ParseErrorType code = ParseErrorType::GENERIC; //!< 定義の誤りならその種類、ファイルを開けない・構文エラーなら GENERIC
+};
+
+/*!
+ * @brief 荒野の定義ファイルを読み込む
+ * @return 読み込んだ定義、失敗時はファイルを開けない・構文エラー・定義の誤りを区別した理由
+ */
+tl::expected<WildernessDefinition, WildernessLoadError> load_wilderness_definition()
 {
     const auto path = path_build(ANGBAND_DIR_EDIT, WILDERNESS_DEFINITION);
     std::ifstream ifs(path);
     if (!ifs) {
-        return std::nullopt;
+        return tl::make_unexpected(WildernessLoadError{ fmt::format(_("{}: ファイルを開けません", "{}: cannot open the file"), WILDERNESS_DEFINITION) });
     }
 
     try {
@@ -53,13 +67,14 @@ std::optional<WildernessDefinition> load_wilderness_definition()
         std::istreambuf_iterator<char> ifs_end;
         const auto json_object = nlohmann::json::parse(ifs_iter, ifs_end, nullptr, true, true, true);
         WildernessDefinition definition;
-        if (WildernessReader(json_object).read(definition) != PARSE_ERROR_NONE) {
-            return std::nullopt;
+        if (const auto code = WildernessReader(json_object).read(definition); code != ParseErrorType::NONE) {
+            return tl::make_unexpected(WildernessLoadError{
+                fmt::format(_("{}: {} (エラー{})", "{}: {} (error {})"), WILDERNESS_DEFINITION, describe_parse_error(code), enum2i(code)), code });
         }
 
         return definition;
-    } catch (const nlohmann::json::exception &) {
-        return std::nullopt;
+    } catch (const nlohmann::json::exception &e) {
+        return tl::make_unexpected(WildernessLoadError{ format_json_syntax_error(WILDERNESS_DEFINITION, e.what()) });
     }
 }
 }
@@ -69,10 +84,10 @@ WildernessReader::WildernessReader(const nlohmann::json &data)
 {
 }
 
-int WildernessReader::read(WildernessDefinition &definition) const
+ParseErrorType WildernessReader::read(WildernessDefinition &definition) const
 {
     if (!this->data.is_object()) {
-        return PARSE_ERROR_INVALID_TYPE;
+        return ParseErrorType::INVALID_TYPE;
     }
 
     int version{};
@@ -88,13 +103,13 @@ int WildernessReader::read(WildernessDefinition &definition) const
 
     const auto &towns_data = get_json_value(this->data, "towns");
     if (!towns_data.is_array() || towns_data.empty()) {
-        return towns_data.is_null() ? PARSE_ERROR_TOO_FEW_ARGUMENTS : PARSE_ERROR_INVALID_TYPE;
+        return towns_data.is_null() ? ParseErrorType::TOO_FEW_ARGUMENTS : ParseErrorType::INVALID_TYPE;
     }
 
     std::set<int> town_ids;
     for (const auto &town_data : towns_data) {
         if (!town_data.is_object()) {
-            return PARSE_ERROR_INVALID_TYPE;
+            return ParseErrorType::INVALID_TYPE;
         }
 
         WildernessTownDefinition town;
@@ -102,7 +117,7 @@ int WildernessReader::read(WildernessDefinition &definition) const
             return err.error();
         }
         if (!town_ids.insert(town.id).second) {
-            return PARSE_ERROR_NON_SEQUENTIAL_RECORDS;
+            return ParseErrorType::NON_SEQUENTIAL_RECORDS;
         }
         if (const auto err = info_set_string(get_json_value(town_data, "name"), town.name, true); !err) {
             return err.error();
@@ -120,21 +135,21 @@ int WildernessReader::read(WildernessDefinition &definition) const
 
     const auto &maps = get_json_value(this->data, "maps");
     if (!maps.is_object()) {
-        return maps.is_null() ? PARSE_ERROR_TOO_FEW_ARGUMENTS : PARSE_ERROR_INVALID_TYPE;
+        return maps.is_null() ? ParseErrorType::TOO_FEW_ARGUMENTS : ParseErrorType::INVALID_TYPE;
     }
-    if (const auto err = this->read_map(get_json_value(maps, "normal"), definition.width, definition.height, definition.normal)) {
+    if (const auto err = this->read_map(get_json_value(maps, "normal"), definition.width, definition.height, definition.normal); err != ParseErrorType::NONE) {
         return err;
     }
     if (definition.normal.layout.size() != static_cast<size_t>(definition.height)) {
-        return PARSE_ERROR_INVALID_VALUE;
+        return ParseErrorType::INVALID_VALUE;
     }
     for (const auto &row : definition.normal.layout) {
         if (row.size() != static_cast<size_t>(definition.width)) {
-            return PARSE_ERROR_INVALID_VALUE;
+            return ParseErrorType::INVALID_VALUE;
         }
     }
 
-    if (const auto err = this->read_map(get_json_value(maps, "compact"), definition.width, definition.height, definition.compact)) {
+    if (const auto err = this->read_map(get_json_value(maps, "compact"), definition.width, definition.height, definition.compact); err != ParseErrorType::NONE) {
         return err;
     }
 
@@ -144,39 +159,39 @@ int WildernessReader::read(WildernessDefinition &definition) const
         });
     };
     if (has_undefined_town(definition.normal) || has_undefined_town(definition.compact)) {
-        return PARSE_ERROR_INVALID_VALUE;
+        return ParseErrorType::INVALID_VALUE;
     }
 
-    return PARSE_ERROR_NONE;
+    return ParseErrorType::NONE;
 }
 
-int WildernessReader::read_map(const nlohmann::json &map_data, int width, int height, WildernessMapDefinition &map) const
+ParseErrorType WildernessReader::read_map(const nlohmann::json &map_data, int width, int height, WildernessMapDefinition &map) const
 {
     if (!map_data.is_object()) {
-        return map_data.is_null() ? PARSE_ERROR_TOO_FEW_ARGUMENTS : PARSE_ERROR_INVALID_TYPE;
+        return map_data.is_null() ? ParseErrorType::TOO_FEW_ARGUMENTS : ParseErrorType::INVALID_TYPE;
     }
 
     const auto &letters_data = get_json_value(map_data, "letters");
     if (!letters_data.is_array() || letters_data.empty()) {
-        return letters_data.is_null() ? PARSE_ERROR_TOO_FEW_ARGUMENTS : PARSE_ERROR_INVALID_TYPE;
+        return letters_data.is_null() ? ParseErrorType::TOO_FEW_ARGUMENTS : ParseErrorType::INVALID_TYPE;
     }
 
     std::array<bool, 256> defined_symbols{};
     for (const auto &letter_data : letters_data) {
         if (!letter_data.is_object()) {
-            return PARSE_ERROR_INVALID_TYPE;
+            return ParseErrorType::INVALID_TYPE;
         }
         const auto &symbol_data = get_json_value(letter_data, "symbol");
         if (!symbol_data.is_string()) {
-            return PARSE_ERROR_INVALID_TYPE;
+            return ParseErrorType::INVALID_TYPE;
         }
         const auto &symbol = symbol_data.get_ref<const std::string &>();
         if (symbol.size() != 1 || symbol[0] < 0x20 || symbol[0] > 0x7e) {
-            return PARSE_ERROR_INVALID_VALUE;
+            return ParseErrorType::INVALID_VALUE;
         }
         const auto symbol_index = static_cast<unsigned char>(symbol[0]);
         if (defined_symbols[symbol_index]) {
-            return PARSE_ERROR_NON_SEQUENTIAL_RECORDS;
+            return ParseErrorType::INVALID_VALUE;
         }
         defined_symbols[symbol_index] = true;
 
@@ -186,7 +201,8 @@ int WildernessReader::read_map(const nlohmann::json &map_data, int width, int he
         }
         const auto &level_data = get_json_value(letter_data, "level");
         if (!level_data.is_null()) {
-            if (const auto err = read_localized_integer(level_data, letter.level, Range(0, std::numeric_limits<int>::max()))) {
+            // 生成は階層を MAX_DEPTH - 1 で頭打ちにし、地上の階層はセーブで16ビットになるため、それより深い値は受け付けない。
+            if (const auto err = read_localized_integer(level_data, letter.level, Range(0, MAX_DEPTH - 1)); err != ParseErrorType::NONE) {
                 return err;
             }
         }
@@ -207,19 +223,19 @@ int WildernessReader::read_map(const nlohmann::json &map_data, int width, int he
 
     const auto &layout_data = get_json_value(map_data, "layout");
     if (!layout_data.is_array() || layout_data.empty() || layout_data.size() > static_cast<size_t>(height)) {
-        return layout_data.is_null() ? PARSE_ERROR_TOO_FEW_ARGUMENTS : PARSE_ERROR_INVALID_VALUE;
+        return layout_data.is_null() ? ParseErrorType::TOO_FEW_ARGUMENTS : ParseErrorType::INVALID_VALUE;
     }
     for (const auto &row_data : layout_data) {
         if (!row_data.is_string()) {
-            return PARSE_ERROR_INVALID_TYPE;
+            return ParseErrorType::INVALID_TYPE;
         }
         const auto &row = row_data.get_ref<const std::string &>();
         if (row.empty() || row.size() > static_cast<size_t>(width)) {
-            return PARSE_ERROR_INVALID_VALUE;
+            return ParseErrorType::INVALID_VALUE;
         }
         for (const auto symbol : row) {
             if (!defined_symbols[static_cast<unsigned char>(symbol)]) {
-                return PARSE_ERROR_INVALID_VALUE;
+                return ParseErrorType::INVALID_VALUE;
             }
         }
         map.layout.push_back(row);
@@ -227,7 +243,7 @@ int WildernessReader::read_map(const nlohmann::json &map_data, int width, int he
 
     const auto &position_data = get_json_value(map_data, "starting_position");
     if (!position_data.is_object()) {
-        return position_data.is_null() ? PARSE_ERROR_TOO_FEW_ARGUMENTS : PARSE_ERROR_INVALID_TYPE;
+        return position_data.is_null() ? ParseErrorType::TOO_FEW_ARGUMENTS : ParseErrorType::INVALID_TYPE;
     }
     if (const auto err = info_set_integer(get_json_value(position_data, "x"), map.starting_position.x, true, Range(1, width - 1)); !err) {
         return err.error();
@@ -236,31 +252,31 @@ int WildernessReader::read_map(const nlohmann::json &map_data, int width, int he
         return err.error();
     }
     if (map.starting_position.y >= static_cast<int>(map.layout.size()) || map.starting_position.x >= static_cast<int>(map.layout[map.starting_position.y].size())) {
-        return PARSE_ERROR_OUT_OF_BOUNDS;
+        return ParseErrorType::OUT_OF_BOUNDS;
     }
 
-    return PARSE_ERROR_NONE;
+    return ParseErrorType::NONE;
 }
 
-bool initialize_wilderness_definition()
+tl::expected<void, std::string> initialize_wilderness_definition()
 {
     const auto definition = load_wilderness_definition();
     if (!definition) {
-        return false;
+        return tl::make_unexpected(definition.error().message);
     }
 
     auto &wilderness = WildernessGrids::get_instance();
     wilderness.initialize_width(definition->width);
     wilderness.initialize_height(definition->height);
     wilderness.initialize_grids();
-    return true;
+    return {};
 }
 
-parse_error_type apply_wilderness_definition()
+tl::expected<void, ParseErrorType> apply_wilderness_definition()
 {
     const auto definition = load_wilderness_definition();
     if (!definition) {
-        return PARSE_ERROR_GENERIC;
+        return tl::make_unexpected(definition.error().code);
     }
     const auto use_compact = vanilla_town || lite_town;
     const auto &map = use_compact ? definition->compact : definition->normal;
@@ -311,10 +327,10 @@ parse_error_type apply_wilderness_definition()
         const auto &pos = dungeon->get_position();
         const auto is_in_bounds = (pos.y >= 0) && (pos.y < definition->height) && (pos.x >= 0) && (pos.x < definition->width);
         if (!is_in_bounds) {
-            msg_format(_("ダンジョン「%s」の座標 (%d,%d) が荒野の範囲外です。", "Dungeon '%s' has an out-of-bounds position (%d,%d)."),
-                dungeon->name.data(), pos.y, pos.x);
+            msg_print(_("ダンジョン「{}」の座標 ({},{}) が荒野の範囲外です。", "Dungeon '{}' has an out-of-bounds position ({},{})."),
+                dungeon->name, pos.y, pos.x);
             msg_erase();
-            return PARSE_ERROR_OUT_OF_BOUNDS;
+            return tl::make_unexpected(ParseErrorType::OUT_OF_BOUNDS);
         }
 
         auto &grid = wilderness.get_grid(pos);
@@ -324,5 +340,5 @@ parse_error_type apply_wilderness_definition()
         }
     }
 
-    return PARSE_ERROR_NONE;
+    return {};
 }

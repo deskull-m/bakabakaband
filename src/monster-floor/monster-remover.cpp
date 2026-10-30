@@ -5,12 +5,12 @@
 #include "monster-race/race-brightness-mask.h"
 #include "monster/monster-status-setter.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/redrawing-flags-updater.h"
 #include "target/target-checker.h"
 #include "tracking/health-bar-tracker.h"
 
@@ -62,8 +62,16 @@ void delete_monster_idx(CreatureEntity &creature, short m_idx)
     }
 
     creature.clear_pet_riding_targets_pointing_to(m_idx);
+    // ふつうは落馬の処理 (process_fall_off_horse()) で先に降りているが、それを通らずに消える経路
+    // (召喚主が倒れて消える・ペット爆破で逃げ帰るなど) ではここで降ろす。
+    // 階を移るときもここを通って新しい階で乗り直すので、両手持ちの設定などは戻さない (階を移らずに消えたときも残る)
     if (monster.is_riding()) { // creature.get_riding() == m_idx のままの方がいい？
         creature.ride_monster(0);
+
+        // 乗っているモンスターの速度などで決まる能力と、乗馬中の表示・乗っているモンスターの体力の表示が変わる
+        auto &dur = DeferredUpdateRequests::get_instance();
+        dur.set_flag(StatusRecalculatingFlag::BONUS);
+        dur.request_riding_status_redrawing();
     }
 
     floor.get_grid(m_pos).m_idx = 0;
@@ -83,7 +91,7 @@ void delete_monster_idx(CreatureEntity &creature, short m_idx)
     floor.m_cnt--;
     lite_spot(creature, m_pos);
     if (monrace.brightness_flags.has_any_of(ld_mask)) {
-        RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::MONSTER_LITE);
+        DeferredUpdateRequests::get_instance().set_flag(StatusRecalculatingFlag::MONSTER_LITE);
     }
 }
 

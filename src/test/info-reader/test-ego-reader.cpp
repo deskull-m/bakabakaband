@@ -15,22 +15,18 @@ const std::string EGO_NAME_JA_UTF8 = "\xe8\xa9\xa6\xe9\xa8\x93\xe3\x81\xae";
 class EgoStateGuard {
 public:
     EgoStateGuard()
-        : saved_error_idx(error_idx)
     {
         this->saved_egos.swap(egos_info);
-        error_idx = -1;
     }
 
     ~EgoStateGuard()
     {
         egos_info.clear();
         egos_info.swap(this->saved_egos);
-        error_idx = this->saved_error_idx;
     }
 
 private:
     std::map<EgoType, EgoItemDefinition> saved_egos;
-    int saved_error_idx;
 };
 
 nlohmann::json make_ego()
@@ -56,7 +52,7 @@ TEST_CASE("EgoReader loads bonuses, flags, activation, and probabilistic flags")
 {
     EgoStateGuard guard;
     const auto data = make_ego();
-    REQUIRE(EgoReader(data).read() == PARSE_ERROR_NONE);
+    REQUIRE(EgoReader(data).read() == ParseErrorType::NONE);
     REQUIRE(egos_info.size() == 1);
     const auto &ego = egos_info.at(i2enum<EgoType>(4));
 #ifdef JP
@@ -93,9 +89,8 @@ TEST_CASE("EgoReader rejects malformed records atomically")
     EgoStateGuard guard;
     const auto original = make_ego();
     auto check_invalid = [&](const nlohmann::json &data) {
-        CHECK(EgoReader(data).read() != PARSE_ERROR_NONE);
+        CHECK(EgoReader(data).read() != ParseErrorType::NONE);
         CHECK(egos_info.empty());
-        CHECK(error_idx == -1);
     };
 
     auto data = original;
@@ -140,13 +135,12 @@ TEST_CASE("EgoReader requires unique IDs while preserving legacy ordering")
 {
     EgoStateGuard guard;
     auto data = make_ego();
-    REQUIRE(EgoReader(data).read() == PARSE_ERROR_NONE);
-    CHECK(EgoReader(data).read() == PARSE_ERROR_NON_SEQUENTIAL_RECORDS);
+    REQUIRE(EgoReader(data).read() == ParseErrorType::NONE);
+    CHECK(EgoReader(data).read() == ParseErrorType::NON_SEQUENTIAL_RECORDS);
     data["id"] = 3;
-    CHECK(EgoReader(data).read() == PARSE_ERROR_NONE);
+    CHECK(EgoReader(data).read() == ParseErrorType::NONE);
     data["id"] = 5;
-    CHECK(EgoReader(data).read() == PARSE_ERROR_NONE);
-    CHECK(error_idx == 5);
+    CHECK(EgoReader(data).read() == ParseErrorType::NONE);
     CHECK(egos_info.size() == 3);
 }
 
@@ -155,6 +149,6 @@ TEST_CASE("EgoReader accepts levels throughout DEPTH storage")
     EgoStateGuard guard;
     auto data = make_ego();
     data["level"] = 32768;
-    REQUIRE(EgoReader(data).read() == PARSE_ERROR_NONE);
+    REQUIRE(EgoReader(data).read() == ParseErrorType::NONE);
     CHECK(egos_info.at(i2enum<EgoType>(4)).level == 32768);
 }

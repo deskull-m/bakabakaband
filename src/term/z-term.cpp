@@ -18,9 +18,9 @@
 #include "util/png-displayer.h"
 #endif
 
-/* Special flags in the attr data */
-#define AF_BIGTILE2 0xf0
-#define AF_TILE1 0x80
+//! Special flags in the attr data
+constexpr auto AF_BIGTILE2 = 0xf0;
+constexpr auto AF_TILE1 = 0x80;
 
 #ifdef JP
 /*
@@ -28,9 +28,9 @@
  * 属性に全角文字の1バイト目、2バイト目も記憶。
  * By FIRST
  */
-#define AF_KANJI1 0x10
-#define AF_KANJI2 0x20
-#define AF_KANJIC 0x0f
+constexpr auto AF_KANJI1 = 0x10;
+constexpr auto AF_KANJI2 = 0x20;
+constexpr auto AF_KANJIC = 0x0f;
 #endif
 
 /* The current "term" */
@@ -458,14 +458,15 @@ static void term_queue_chars(TERM_LEN x, TERM_LEN y, int n, TERM_COLOR a, std::s
         /* check */
         if (!(a & AF_TILE1) && iskanji(*s)) {
             char nc1 = *s++;
-            char nc2 = *s;
 
-            byte na1 = (a | AF_KANJI1);
-            byte na2 = (a | AF_KANJI2);
-
-            if ((--n == 0) || !nc2) {
+            // 後半バイトを描く余地が無いか、文字列が前半バイトで終わっている (view の終端か NUL) なら、前半バイトだけでは描かずに終える
+            if ((--n == 0) || (s == sv.end()) || (*s == '\0')) {
                 break;
             }
+
+            char nc2 = *s;
+            byte na1 = (a | AF_KANJI1);
+            byte na2 = (a | AF_KANJI2);
 
             if (scr_aa[x++] == na1 && scr_aa[x] == na2 && scr_cc[x - 1] == nc1 && scr_cc[x] == nc2 && (scr_taa[x - 1] == 0) && (scr_taa[x] == 0) && (scr_tcc[x - 1] == 0) && (scr_tcc[x] == 0)) {
                 continue;
@@ -1332,7 +1333,7 @@ void term_draw(int x, int y, const DisplaySymbol &symbol)
     }
 
     /* Paranoia -- illegal char */
-    if (symbol.has_character()) {
+    if (!symbol.has_character()) {
         return;
     }
 
@@ -2152,7 +2153,7 @@ void term_putstr_v(int x, int y_initial, size_t n, uint8_t color, std::string_vi
 
             i++;
             y++;
-            if (sv[i] == '\0') {
+            if ((i >= sv.length()) || (sv[i] == '\0')) {
                 break;
             }
 

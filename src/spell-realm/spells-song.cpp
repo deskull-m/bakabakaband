@@ -18,8 +18,8 @@
 #include "status/action-setter.h"
 #include "status/status-change-notice.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/floor/floor-info.h"
-#include "system/redrawing-flags-updater.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
 
@@ -55,24 +55,20 @@ void check_music(CreatureEntity &creature)
     }
 
     creature.sub_current_mp_with_frac(need_mana, need_mana_frac);
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.set_flag(MainWindowRedrawingFlag::MP);
+    auto &dur = DeferredUpdateRequests::get_instance();
+    dur.set_flag(MainWindowRedrawingFlag::MP);
     if (interupting_song_effect != 0) {
         set_singing_song_effect(creature, interupting_song_effect);
         set_interrupting_song_effect(creature, MUSIC_NONE);
         msg_print(_("歌を再開した。", "You resume singing."));
         creature.set_action(ACTION_SING);
-        rfu.request_monster_update_and_map_redrawing();
-        static constexpr auto flags_srf = {
-            StatusRecalculatingFlag::BONUS,
-            StatusRecalculatingFlag::HP,
-        };
-        rfu.set_flags(flags_srf);
+        dur.request_monster_update_and_map_redrawing();
+        dur.request_bonus_and_max_hp_recalculation();
         static constexpr auto flags_mwrf = {
             MainWindowRedrawingFlag::TIMED_EFFECT,
             MainWindowRedrawingFlag::ACTION,
         };
-        rfu.set_flags(flags_mwrf);
+        dur.set_flags(flags_mwrf);
     }
 
     PlayerSkill(creature).gain_continuous_spell_skill_exp(RealmType::MUSIC, spell_id);
@@ -141,9 +137,9 @@ void stop_singing(CreatureEntity &creature)
     (void)exe_spell(creature, RealmType::MUSIC, get_singing_song_id(creature), SpellProcessType::STOP);
     set_singing_song_effect(creature, MUSIC_NONE);
     set_singing_song_id(creature, 0);
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.set_flag(StatusRecalculatingFlag::BONUS);
-    rfu.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
+    auto &dur = DeferredUpdateRequests::get_instance();
+    dur.set_flag(StatusRecalculatingFlag::BONUS);
+    dur.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
 }
 
 bool music_singing(CreatureEntity &creature, int music_songs)

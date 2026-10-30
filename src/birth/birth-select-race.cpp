@@ -6,9 +6,9 @@
 #include "system/creature-entity.h"
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
-#include "term/z-form.h"
 #include "util/enum-converter.h"
 #include "util/int-char-converter.h"
+#include <fmt/format.h>
 #include <sstream>
 #include <vector>
 
@@ -75,19 +75,19 @@ static std::string display_race_stat(CreatureEntity &creature, int cs, int *os, 
         put_str(_("腕力 知能 賢さ 器用 耐久 魅力 経験 ", "Str  Int  Wis  Dex  Con  Chr   EXP "), 4, 40);
         put_str(_("の種族修正", ": Race modification"), 3, 40 + creature.get_race_info()->title->length());
 
-        const auto stats = format("%+3d  %+3d  %+3d  %+3d  %+3d  %+3d %+4d%% ", creature.get_race_info()->r_adj[0], creature.get_race_info()->r_adj[1], creature.get_race_info()->r_adj[2], creature.get_race_info()->r_adj[3], creature.get_race_info()->r_adj[4], creature.get_race_info()->r_adj[5], (creature.get_race_info()->r_exp - 100));
+        const auto stats = fmt::format("{:+3}  {:+3}  {:+3}  {:+3}  {:+3}  {:+3} {:+4}% ", creature.get_race_info()->r_adj[0], creature.get_race_info()->r_adj[1], creature.get_race_info()->r_adj[2], creature.get_race_info()->r_adj[3], creature.get_race_info()->r_adj[4], creature.get_race_info()->r_adj[5], (creature.get_race_info()->r_exp - 100));
         c_put_str(TERM_L_BLUE, stats, 5, 40);
 
         put_str("HD ", 6, 40);
-        const auto hd = format("%2d", creature.get_race_info()->r_mhp);
+        const auto hd = fmt::format("{:2}", creature.get_race_info()->r_mhp);
         c_put_str(TERM_L_BLUE, hd, 6, 43);
 
         put_str(_("隠密", "Stealth"), 6, 47);
-        const auto stealth = format("%+2d", creature.get_race_info()->r_stl);
+        const auto stealth = fmt::format("{:+2}", creature.get_race_info()->r_stl);
         c_put_str(TERM_L_BLUE, stealth, 6, _(52, 55));
 
         put_str(_("赤外線視力", "Infra"), 6, _(56, 59));
-        const auto infra = format(_("%%2dft", "%%2dft"), 10 * creature.get_race_info()->infra);
+        const auto infra = fmt::format("{:2}ft", 10 * creature.get_race_info()->infra);
         c_put_str(TERM_L_BLUE, infra, 6, _(67, 65));
     }
 
@@ -146,7 +146,7 @@ static bool select_race(CreatureEntity &creature, char *sym, int *k, const std::
             break;
         }
 
-        const auto buf = format(_("種族を選んで下さい (%c-%c) ('='初期オプション設定): ", "Choose a race (%c-%c) ('=' for options): "), sym[0], sym[count - 1]);
+        const auto buf = fmt::format(_("種族を選んで下さい ({:c}-{:c}) ('='初期オプション設定): ", "Choose a race ({:c}-{:c}) ('=' for options): "), sym[0], sym[count - 1]);
         put_str(buf, 10, 10);
         char c = inkey();
         if (c == 'Q') {

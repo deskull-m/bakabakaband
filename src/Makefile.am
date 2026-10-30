@@ -722,6 +722,7 @@ libhengband_a_SOURCES = \
 	info-reader/general-parser.cpp info-reader/general-parser.h \
 	info-reader/info-reader-util.cpp info-reader/info-reader-util.h \
 	info-reader/json-reader-util.cpp info-reader/json-reader-util.h \
+	info-reader/magic-info-tokens-table.cpp info-reader/magic-info-tokens-table.h \
 	info-reader/magic-reader.cpp info-reader/magic-reader.h \
 	info-reader/message-reader.cpp info-reader/message-reader.h \
 	info-reader/parse-error-types.h \
@@ -731,6 +732,7 @@ libhengband_a_SOURCES = \
 	info-reader/race-reader.cpp info-reader/race-reader.h \
 	info-reader/random-grid-effect-types.h \
 	info-reader/skill-reader.cpp info-reader/skill-reader.h \
+	info-reader/symbol-reader-util.h \
 	info-reader/spell-reader.cpp info-reader/spell-reader.h \
 	info-reader/terrain-reader.cpp info-reader/terrain-reader.h \
 	info-reader/vault-reader.cpp info-reader/vault-reader.h \
@@ -1402,6 +1404,7 @@ libhengband_a_SOURCES = \
 	system/artifact/artifact-record.cpp system/artifact/artifact-record.h \
 	system/building-type-definition.cpp system/building-type-definition.h \
 	system/creature-entity.cpp system/creature-entity.h \
+	system/deferred-update-requests.cpp system/deferred-update-requests.h \
 	system/grid-type-definition.cpp system/grid-type-definition.h \
 	system/h-basic.h system/h-config.h \
 	system/h-system.h system/h-type.h \
@@ -1409,7 +1412,6 @@ libhengband_a_SOURCES = \
 	system/item-entity.cpp system/item-entity.h \
 	system/material-type-definition.h \
 	system/player-type-definition.cpp system/player-type-definition.h \
-	system/redrawing-flags-updater.cpp system/redrawing-flags-updater.h \
 	system/spell-info-list.cpp system/spell-info-list.h \
 	system/system-variables.cpp system/system-variables.h \
 	system/gamevalue.h \
@@ -1490,7 +1492,7 @@ libhengband_a_SOURCES = \
 	term/gameterm.cpp term/gameterm.h \
 	term/screen-processor.cpp term/screen-processor.h \
 	term/term-color-types.h \
-	term/z-form.cpp term/z-form.h term/z-rand.cpp term/z-rand.h \
+	term/z-rand.cpp term/z-rand.h \
 	term/z-term.cpp term/z-term.h term/z-util.cpp term/z-util.h \
 	\
 	timed-effect/player-cut.cpp timed-effect/player-cut.h \
@@ -1553,8 +1555,9 @@ libhengband_a_SOURCES = \
 	window/main-window-row-column.h \
 	window/main-window-stat-poster.cpp window/main-window-stat-poster.h \
 	window/main-window-util.cpp window/main-window-util.h \
-	window/overview-map-cache.cpp window/overview-map-cache.h \
 	window/main-window-equipments.cpp window/main-window-equipments.h \
+	window/overview-map-cache.cpp window/overview-map-cache.h \
+	window/shrunk-overview-map.cpp window/shrunk-overview-map.h \
 	\
 	wizard/artifact-analyzer.cpp wizard/artifact-analyzer.h \
 	wizard/artifact-bias-table.cpp wizard/artifact-bias-table.h \
@@ -1619,6 +1622,8 @@ hengband_test_SOURCES = \
 	\
 	test/autopick/test-autopick-editor-util.cpp \
 	\
+	test/bot/test-bot-json-output.cpp \
+	\
 	test/cmd-io/test-cmd-autopick.cpp \
 	\
 	test/flavor/test-flavor-util.cpp \
@@ -1644,14 +1649,25 @@ hengband_test_SOURCES = \
 	test/io/test-pref-file-expressor.cpp \
 	test/io/test-tokenizer.cpp \
 	\
+	test/knowledge/test-knowledge-features.cpp \
+	\
 	test/locale/test-character-encoding.cpp \
 	\
 	test/lore/test-monster-lore-snapshot.cpp \
 	\
+	test/market/test-building-recharger.cpp \
+	\
 	test/mspell/test-mspell-projection-table.cpp \
+	\
+	test/object-enchant/test-item-feeling.cpp \
+	\
+	test/object-use/quaff/test-quaff-execution.cpp \
 	\
 	test/object/test-object-info.cpp \
 	test/object/test-object-value.cpp \
+	\
+	test/player-status/test-player-speed.cpp \
+	test/player-status/test-player-status-base.cpp \
 	\
 	test/racial/test-racial-android.cpp \
 	\
@@ -1665,10 +1681,12 @@ hengband_test_SOURCES = \
 	test/store/test-store-screen.cpp \
 	test/store/test-store-util.cpp \
 	\
+	test/system/test-building-type-definition.cpp \
+	test/system/test-deferred-update-requests.cpp \
 	test/system/test-dungeon-record.cpp \
-	test/system/test-redrawing-flags-updater.cpp \
 	\
 	test/system/baseitem/test-baseitem-allocation.cpp \
+	test/system/baseitem/test-baseitem-definition.cpp \
 	test/system/baseitem/test-baseitem-list.cpp \
 	\
 	test/system/floor/test-floor-info.cpp \
@@ -1678,7 +1696,6 @@ hengband_test_SOURCES = \
 	test/system/monrace/test-monrace-definition.cpp \
 	test/system/monrace/test-monrace-max-level.cpp \
 	\
-	test/term/test-z-form.cpp \
 	test/term/test-z-rand.cpp \
 	\
 	test/timed-effect/test-player-cut.cpp \
@@ -1689,6 +1706,7 @@ hengband_test_SOURCES = \
 	test/util/test-dice.cpp \
 	test/util/test-finalizer.cpp \
 	test/util/test-flag-group.cpp \
+	test/util/test-int-char-converter.cpp \
 	test/util/test-probability-table.cpp \
 	test/util/test-sha256.cpp \
 	test/util/test-string-processor.cpp \
@@ -1696,7 +1714,8 @@ hengband_test_SOURCES = \
 	test/view/test-map-info-cache.cpp \
 	test/view/test-map-terrain-visibility.cpp \
 	\
-	test/window/test-overview-map-cache.cpp
+	test/window/test-overview-map-cache.cpp \
+	test/window/test-shrunk-overview-map.cpp
 
 hengband_test_LDADD = libhengband.a
 

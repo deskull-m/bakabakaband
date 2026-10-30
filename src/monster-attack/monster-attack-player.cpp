@@ -53,12 +53,12 @@
 #include "status/bad-status-setter.h"
 #include "system/angband.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/redrawing-flags-updater.h"
 #include "timed-effect/player-cut.h"
 #include "timed-effect/player-stun.h"
 #include "tracking/health-bar-tracker.h"
@@ -92,12 +92,11 @@ void MonsterAttackPlayer::make_attack_normal()
     }
 
     const auto &monrace = this->m_ptr->get_monrace();
-    // [提案C2第2弾] 戦闘習熟(レベル成長分)を近接命中へ加算 (grows_melee_proficiency・既定OFF)。
     this->rlev = ((monrace.level >= 1) ? monrace.level : 1) + this->m_ptr->get_melee_proficiency_bonus();
     angband_strcpy(this->m_name, monster_desc(creature, *this->m_ptr, 0), sizeof(this->m_name));
     angband_strcpy(this->ddesc, monster_desc(creature, *this->m_ptr, MD_WRONGDOER_NAME), sizeof(this->ddesc));
     if (CreatureClass(creature).samurai_stance_is(SamuraiStanceType::IAI)) {
-        msg_format(_("相手が襲いかかる前に素早く武器を振るった。", "You took sen, drew and cut in one motion before %s moved."), this->m_name);
+        msg_print(_("相手が襲いかかる前に素早く武器を振るった。", "You took sen, drew and cut in one motion before {} moved."), this->m_name);
         if (do_cmd_attack(creature, this->m_ptr->y, this->m_ptr->x, HISSATSU_IAI)) {
             return;
         }
@@ -324,7 +323,7 @@ bool MonsterAttackPlayer::process_monster_attack_hit()
         if (drained > 0) {
             HealthBarTracker::get_instance().set_flag_if_tracking(this->m_idx);
             if (this->m_ptr->is_visible_on_map() && did_heal) {
-                msg_format(_("%s^はあなたから生命力を吸い取った！", "%s^ drains life from you!"), this->m_name);
+                msg_print(_("{}はあなたから生命力を吸い取った！", "{} drains life from you!"), str_upcase_first(this->m_name));
             }
         }
 
@@ -381,10 +380,10 @@ bool MonsterAttackPlayer::effect_protecion_from_evil()
     }
 
 #ifdef JP
-    this->abbreviate ? msg_format("撃退した。") : msg_format("%s^は撃退された。", this->m_name);
+    this->abbreviate ? msg_print("撃退した。") : msg_print("{}は撃退された。", str_upcase_first(this->m_name));
     this->abbreviate = 1; /* 2回目以降は省略 */
 #else
-    msg_format("%s^ is repelled.", this->m_name);
+    msg_print("{} is repelled.", str_upcase_first(this->m_name));
 #endif
 
     return true;
@@ -405,17 +404,17 @@ void MonsterAttackPlayer::describe_silly_attacks()
 
 #ifdef JP
     if (this->abbreviate == 0) {
-        msg_format("%s^に%s", this->m_name, this->act);
+        msg_print("{}に{}", str_upcase_first(this->m_name), this->act);
     } else if (this->abbreviate == 1) {
-        msg_format("%s", this->act);
+        msg_print(this->act);
     } else {
         /* if (this->abbreviate == -1) */
-        msg_format("%s^%s", this->m_name, this->act);
+        msg_print("{}{}", str_upcase_first(this->m_name), this->act);
     }
 
     this->abbreviate = 1; /*2回目以降は省略 */
 #else
-    msg_format("%s^ %s%s", this->m_name, this->act, this->do_silly_attack ? " you." : "");
+    msg_print("{} {}{}", str_upcase_first(this->m_name), this->act, this->do_silly_attack ? " you." : "");
 #endif
 }
 
@@ -435,7 +434,7 @@ void MonsterAttackPlayer::describe_weapon_attack()
     }
 
     const auto weapon_name = describe_flavor(*this->creature_ptr, weapon, OD_NAME_ONLY | OD_OMIT_PREFIX | OD_NO_PLURAL);
-    msg_format(_("%s^は%sで攻撃してきた。", "%s^ attacks you with %s."), this->m_name, weapon_name.data());
+    msg_print(_("{}は{}で攻撃してきた。", "{} attacks you with {}."), str_upcase_first(this->m_name), weapon_name);
 }
 
 /*!
@@ -567,14 +566,14 @@ void MonsterAttackPlayer::describe_attack_evasion()
 #ifdef JP
     auto is_suiken = creature.has_special_attack(ATTACK_SUIKEN);
     if (this->abbreviate) {
-        msg_format("%sかわした。", is_suiken ? "奇妙な動きで" : "");
+        msg_print("{}かわした。", is_suiken ? "奇妙な動きで" : "");
     } else {
-        msg_format("%s%s^の攻撃をかわした。", is_suiken ? "奇妙な動きで" : "", this->m_name);
+        msg_print("{}{}の攻撃をかわした。", is_suiken ? "奇妙な動きで" : "", str_upcase_first(this->m_name));
     }
 
     this->abbreviate = 1; /* 2回目以降は省略 */
 #else
-    msg_format("%s^ misses you.", this->m_name);
+    msg_print("{} misses you.", str_upcase_first(this->m_name));
 #endif
 }
 
@@ -602,7 +601,7 @@ void MonsterAttackPlayer::gain_armor_exp()
     }
 
     creature.set_skill_exp(PlayerSkillKindType::SHIELD, std::min<short>(max, cur + increment));
-    RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
+    DeferredUpdateRequests::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
 }
 
 void MonsterAttackPlayer::gain_evasion_exp()
@@ -666,7 +665,7 @@ void MonsterAttackPlayer::postprocess_monster_blows()
 
     if (this->m_ptr->is_visible_on_map() && this->fear && this->alive && !creature.is_dead()) {
         sound(SoundKind::FLEE);
-        msg_format(_("%s^は恐怖で逃げ出した！", "%s^ flees in terror!"), this->m_name);
+        msg_print(_("{}は恐怖で逃げ出した！", "{} flees in terror!"), str_upcase_first(this->m_name));
     }
 
     CreatureClass(creature).break_samurai_stance({ SamuraiStanceType::IAI });
@@ -708,7 +707,7 @@ void MonsterAttackPlayer::process_sadist_reaction()
         this->m_ptr->set_constant_flag(MonsterConstantFlagType::ANGER);
 
         if (this->m_ptr->is_visible_on_map()) {
-            msg_format(_("%s^は他者の苦痛に興奮している！", "%s^ gets excited by others' pain!"), this->m_name);
+            msg_print(_("{}は他者の苦痛に興奮している！", "{} gets excited by others' pain!"), str_upcase_first(this->m_name));
         }
     }
 }

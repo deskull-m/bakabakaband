@@ -17,16 +17,18 @@
 #include "player/player-status-flags.h"
 #include "status/bad-status-setter.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/dungeon/quest-definition.h"
 #include "system/enums/terrain/terrain-tag.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/redrawing-flags-updater.h"
 #include "system/terrain/terrain-definition.h"
 #include "util/probability-table.h"
+#include "util/string-processor.h"
 #include "view/display-messages.h"
+#include <fmt/format.h>
 #include <functional>
 #include <optional>
 #include <range/v3/algorithm.hpp>
@@ -98,9 +100,9 @@ std::string build_killer_on_earthquake(CreatureEntity &creature, int m_idx)
         return _("地震", "an earthquake");
     }
 
-    const auto &monster = creature.get_floor()->get_monster(static_cast<MONSTER_IDX>(m_idx));
+    const auto &monster = creature.get_floor()->m_list[m_idx];
     const auto m_name = monster_desc(creature, monster, MD_WRONGDOER_NAME);
-    return format(_("%sの起こした地震", "an earthquake caused by %s"), m_name.data());
+    return fmt::format(_("{}の起こした地震", "an earthquake caused by {}"), m_name);
 }
 
 void process_player_damage_undodged(CreatureEntity &creature, int m_idx)
@@ -191,7 +193,7 @@ bool process_monster_damage(CreatureEntity &creature, CreatureEntity &monster, b
 
     if (!ignore_unview || is_seen(creature, monster)) {
         const auto m_name = monster_desc(creature, monster, 0);
-        msg_format(_("%s^は岩石に埋もれてしまった！", "%s^ is embedded in the rock!"), m_name.data());
+        msg_print(_("{}は岩石に埋もれてしまった！", "{} is embedded in the rock!"), str_upcase_first(m_name));
     }
 
     if (record_named_pet && monster.is_named_pet()) {
@@ -209,7 +211,7 @@ void process_hit_to_monster(CreatureEntity &creature, CreatureEntity &monster, s
     const auto pos_dodge = decide_monster_dodge_position(floor, creature.get_position(), monster, pos_collapses);
     const auto m_name = monster_desc(creature, monster, 0);
     if (!ignore_unview || is_seen(creature, monster)) {
-        msg_format(_("% s^は苦痛で泣きわめいた！", "%s^ wails out in pain!"), m_name.data());
+        msg_print(_("{}は苦痛で泣きわめいた！", "{} wails out in pain!"), str_upcase_first(m_name));
     }
 
     if (process_monster_damage(creature, monster, pos_dodge.has_value())) {
@@ -296,22 +298,15 @@ void glow_earthquake_area(auto &floor, std::span<const Pos2D> area)
 
 void set_redrawing_flags()
 {
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.request_monster_update_and_map_redrawing();
-    static constexpr auto flags_srf = {
-        StatusRecalculatingFlag::UN_VIEW,
-        StatusRecalculatingFlag::UN_LITE,
-        StatusRecalculatingFlag::VIEW,
-        StatusRecalculatingFlag::LITE,
-        StatusRecalculatingFlag::FLOW,
-        StatusRecalculatingFlag::MONSTER_LITE,
-    };
-    rfu.set_flags(flags_srf);
+    auto &dur = DeferredUpdateRequests::get_instance();
+    dur.request_monster_update_and_map_redrawing();
+    dur.request_sight_recalculation();
+    dur.set_flag(StatusRecalculatingFlag::FLOW);
     static constexpr auto flags_mwrf = {
         MainWindowRedrawingFlag::HEALTH,
         MainWindowRedrawingFlag::UHEALTH,
     };
-    rfu.set_flags(flags_mwrf);
+    dur.set_flags(flags_mwrf);
 }
 } // namespace
 

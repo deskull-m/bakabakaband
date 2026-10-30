@@ -50,10 +50,10 @@
 #include "sv-definition/sv-junk-types.h"
 #include "sv-definition/sv-other-types.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/redrawing-flags-updater.h"
 #include "util/dice.h"
 #include "util/string-processor.h"
 #include "view/display-messages.h"
@@ -490,15 +490,15 @@ static bool exe_eat_charge_of_magic_device(CreatureEntity &creature, ItemEntity 
 
     const auto staff = is_staff ? _("杖", "staff") : _("魔法棒", "wand");
 
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
+    auto &dur = DeferredUpdateRequests::get_instance();
     if (o_ptr->pval == 0) {
-        msg_format(_("この%sにはもう魔力が残っていない。", "The %s has no charges left."), staff);
+        msg_print(_("この{}にはもう魔力が残っていない。", "The {} has no charges left."), staff);
         o_ptr->ident.set(IdentificationFlag::EMPTY);
-        rfu.set_flag(SubWindowRedrawingFlag::INVENTORY);
+        dur.set_item_related_sub_window_flags();
         return true;
     }
 
-    msg_format(_("あなたは%sの魔力をエネルギー源として吸収した。", "You absorb mana of the %s as your energy."), staff);
+    msg_print(_("あなたは{}の魔力をエネルギー源として吸収した。", "You absorb mana of the {} as your energy."), staff);
 
     /* Use a single charge */
     o_ptr->pval--;
@@ -517,7 +517,7 @@ static bool exe_eat_charge_of_magic_device(CreatureEntity &creature, ItemEntity 
         /* Unstack the used item */
         o_ptr->number--;
         i_idx = creature.store_item(item);
-        msg_format(_("杖をまとめなおした。", "You unstack your staff."));
+        msg_print(_("杖をまとめなおした。", "You unstack your staff."));
     }
 
     if (i_idx >= 0) {
@@ -526,11 +526,9 @@ static bool exe_eat_charge_of_magic_device(CreatureEntity &creature, ItemEntity 
         floor_item_charges(*creature.get_floor(), 0 - i_idx);
     }
 
-    static constexpr auto flags = {
-        SubWindowRedrawingFlag::INVENTORY,
-        SubWindowRedrawingFlag::EQUIPMENT,
-    };
-    rfu.set_flags(flags);
+    // 充填が変わったので、足元の品も含めてアイテムの一覧の描き直しを予約する。
+    // 呼び出し元での予約は、充填を変える前のメッセージの表示で使われることがあるので当てにしない
+    dur.set_item_related_sub_window_flags();
     return true;
 }
 
@@ -591,9 +589,9 @@ void exe_eat_food(CreatureEntity &creature, INVENTORY_IDX i_idx)
         gain_exp(creature, (level + (creature.get_level() >> 1)) / creature.get_level());
     }
 
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.request_inventory_arrangement();
-    rfu.set_item_related_sub_window_flags();
+    auto &dur = DeferredUpdateRequests::get_instance();
+    dur.request_inventory_arrangement();
+    dur.set_item_related_sub_window_flags();
 
     /* Undeads drain recharge of magic device */
     if (exe_eat_charge_of_magic_device(creature, item.get(), i_idx)) {
@@ -606,7 +604,7 @@ void exe_eat_food(CreatureEntity &creature, INVENTORY_IDX i_idx)
     if (food_type == PlayerRaceFoodType::CORPSE) {
         if (item->is_corpse() && item->get_monrace().is_human()) {
             const auto item_name = describe_flavor(creature, *item, (OD_OMIT_PREFIX | OD_NAME_ONLY));
-            msg_format(_("%sは燃え上り灰になった。精力を吸収した気がする。", "%s^ is burnt to ashes.  You absorb its vitality!"), item_name.data());
+            msg_print(_("{}は燃え上り灰になった。精力を吸収した気がする。", "{} is burnt to ashes.  You absorb its vitality!"), str_upcase_first(item_name));
             (void)set_food(creature, PY_FOOD_MAX - 1);
             vary_item(creature, i_idx, -1);
             return;
@@ -669,13 +667,13 @@ void exe_eat_food(CreatureEntity &creature, INVENTORY_IDX i_idx)
         InventoryArrangementFlag::COMBINATION,
         InventoryArrangementFlag::REORDER,
     };
-    rfu.set_flags(flags_iaf);
+    dur.set_flags(flags_iaf);
 
     creature.plus_incident_tree("EAT", 1);
 
     // 死体を食べた場合は詳細情報を記録
     if (item->bi_key.tval() == ItemKindType::MONSTER_REMAINS && item->bi_key.sval() == SV_CORPSE) {
-        auto incident_key = format("EAT/CORPSE/%d/%d/%d",
+        auto incident_key = fmt::format("EAT/CORPSE/{}/{}/{}",
             static_cast<int>(item->bi_key.tval()),
             item->bi_key.sval().value_or(0),
             item->pval);

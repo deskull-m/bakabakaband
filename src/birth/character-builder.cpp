@@ -39,6 +39,7 @@
 #include "store/store-owners.h"
 #include "store/store.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/enums/dungeon/dungeon-id.h"
 #include "system/floor/floor-info.h"
@@ -46,13 +47,12 @@
 #include "system/floor/town-list.h"
 #include "system/floor/wilderness-grid.h"
 #include "system/gamevalue.h"
-#include "system/redrawing-flags-updater.h"
 #include "term/gameterm.h"
 #include "term/screen-processor.h"
-#include "term/z-form.h"
 #include "util/enum-converter.h"
 #include "view/display-messages.h"
 #include "world/world.h"
+#include <fmt/format.h>
 
 /*!
  * @brief プレイヤーキャラの作成結果を日記に書く
@@ -70,29 +70,29 @@ static void write_birth_diary(CreatureEntity &creature)
     const auto &floor = *creature.get_floor();
     exe_write_diary(floor, DiaryKind::GAMESTART, 1, _("-------- 新規ゲーム開始 --------", "------- Started New Game -------"));
     exe_write_diary(floor, DiaryKind::DIALY, 0);
-    const auto mes_sex = format(_("%s性別に%sを選択した。", "%schose %s gender."), indent, sex_info[creature.psex].title.data());
+    const auto mes_sex = fmt::format(_("{}性別に{}を選択した。", "{}chose {} gender."), indent, sex_info[creature.psex].title);
     exe_write_diary(floor, DiaryKind::DESCRIPTION, 1, mes_sex);
-    const auto mes_race = format(_("%s種族に%sを選択した。", "%schose %s race."), indent, race_info[enum2i(creature.prace)].title.data());
+    const auto mes_race = fmt::format(_("{}種族に{}を選択した。", "{}chose {} race."), indent, race_info[enum2i(creature.prace)].title);
     exe_write_diary(floor, DiaryKind::DESCRIPTION, 1, mes_race);
-    const auto mes_class = format(_("%s職業に%sを選択した。", "%schose %s class."), indent, class_info.at(creature.pclass).title.data());
+    const auto mes_class = fmt::format(_("{}職業に{}を選択した。", "{}chose {} class."), indent, class_info.at(creature.pclass).title);
     exe_write_diary(floor, DiaryKind::DESCRIPTION, 1, mes_class);
     PlayerRealm pr(creature);
     if (pr.realm1().is_available()) {
-        const auto mes_realm2 = pr.realm2().is_available() ? format(_("と%s", " and %s realms"), pr.realm2().get_name().data()) : _("", " realm");
-        const auto mes_realm = format(_("%s魔法の領域に%s%sを選択した。", "%schose %s%s."), indent, pr.realm1().get_name().data(), mes_realm2.data());
+        const auto mes_realm2 = pr.realm2().is_available() ? fmt::format(_("と{}", " and {} realms"), pr.realm2().get_name()) : _("", " realm");
+        const auto mes_realm = fmt::format(_("{}魔法の領域に{}{}を選択した。", "{}chose {}{}."), indent, pr.realm1().get_name(), mes_realm2);
         exe_write_diary(floor, DiaryKind::DESCRIPTION, 1, mes_realm);
     }
 
     if (creature.get_element_realm() != ElementRealmType::NONE) {
-        const auto mes_element = format(_("%s元素系統に%sを選択した。", "%schose %s system."), indent, get_element_title(creature.get_element_realm()).data());
+        const auto mes_element = fmt::format(_("{}元素系統に{}を選択した。", "{}chose {} system."), indent, get_element_title(creature.get_element_realm()));
         exe_write_diary(floor, DiaryKind::DESCRIPTION, 1, mes_element);
     }
 
-    const auto mes_personality = format(_("%s性格に%sを選択した。", "%schose %s personality."), indent, personality_info[creature.ppersonality].title.data());
+    const auto mes_personality = fmt::format(_("{}性格に{}を選択した。", "{}chose {} personality."), indent, personality_info[creature.ppersonality].title);
     exe_write_diary(floor, DiaryKind::DESCRIPTION, 1, mes_personality);
     if (CreatureClass(creature).equals(PlayerClassType::CHAOS_WARRIOR)) {
-        const auto fmt_patron = _("%s守護神%sと契約を交わした。", "%smade a contract with patron %s.");
-        const auto mes_patron = format(fmt_patron, indent, patron_list[creature.get_patron()].name.data());
+        constexpr auto fmt_patron = _("{}守護神{}と契約を交わした。", "{}made a contract with patron {}.");
+        const auto mes_patron = fmt::format(fmt_patron, indent, patron_list[creature.get_patron()].name);
         exe_write_diary(floor, DiaryKind::DESCRIPTION, 1, mes_patron);
     }
 }

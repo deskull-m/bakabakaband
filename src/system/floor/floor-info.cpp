@@ -31,6 +31,8 @@
 #include "util/point-2d.h"
 #include "world/world.h"
 #include <algorithm>
+#include <array>
+#include <fmt/format.h>
 #include <range/v3/algorithm.hpp>
 
 FloorType::FloorType()
@@ -287,7 +289,7 @@ bool FloorType::check_terrain_state(const Pos2D &pos, GridCountKind gck) const
     case GridCountKind::TRAP:
         return grid.has(TerrainCharacteristics::TRAP);
     default:
-        THROW_EXCEPTION(std::logic_error, format("Invalid GridCountKind is Specified! %d", enum2i(gck)));
+        THROW_EXCEPTION(std::logic_error, fmt::format("Invalid GridCountKind is Specified! {}", enum2i(gck)));
     }
 }
 
@@ -465,7 +467,7 @@ bool FloorType::filter_monrace_terrain(MonraceId monrace_id, MonraceHookTerrain 
     case MonraceHookTerrain::LAVA:
         return is_suitable_for_dungeon && monrace.is_suitable_for_lava();
     default:
-        THROW_EXCEPTION(std::logic_error, format("Invalid monrace hook type is specified! %d", enum2i(hook)));
+        THROW_EXCEPTION(std::logic_error, fmt::format("Invalid monrace hook type is specified! {}", enum2i(hook)));
     }
 }
 

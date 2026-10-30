@@ -24,7 +24,7 @@
 #include "monster/monster-info.h"
 #include "mutation/mutation-flag-types.h"
 #include "mutation/mutation-techniques.h"
-#include "object-enchant/item-feeling.h"
+#include "perception/simple-perception.h"
 #include "player-info/self-info.h"
 #include "player-status/player-energy.h"
 #include "player/player-damage.h"
@@ -49,7 +49,6 @@
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/redrawing-flags-updater.h"
 #include "target/target-getter.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
@@ -161,22 +160,12 @@ bool exe_mutation_power(CreatureEntity &creature, PlayerMutationType power)
     case PlayerMutationType::ILLUMINE:
         (void)lite_area(creature, Dice::roll(2, (lvl / 2)), (lvl / 10) + 1);
         return true;
-    case PlayerMutationType::DET_CURSE: {
+    case PlayerMutationType::DET_CURSE:
         for (const auto i_idx : INVEN_ALL_SLOTS) {
-            auto *o_ptr = creature.inventory[i_idx].get();
-            if (!o_ptr->is_valid() || !o_ptr->is_cursed()) {
-                continue;
-            }
-
-            o_ptr->feeling = FEEL_CURSED;
+            sense_curse(creature, i_idx);
         }
 
-        // 感触が変わると、持ち物の束をまとめられるかも変わる
-        auto &rfu = RedrawingFlagsUpdater::get_instance();
-        rfu.request_inventory_arrangement();
-        rfu.set_flag(SubWindowRedrawingFlag::EQUIPMENT);
         return true;
-    }
     case PlayerMutationType::BERSERK:
         (void)berserk(creature, randint1(25) + 25);
         return true;
@@ -316,7 +305,7 @@ bool exe_mutation_power(CreatureEntity &creature, PlayerMutationType power)
         return ThrowCommand(creature).do_cmd_throw(2 + lvl / 40, false, -1);
     default:
         PlayerEnergy(creature).reset_player_turn();
-        msg_format(_("能力 %s は実装されていません。", "Power %s not implemented. Oops."), power);
+        msg_print(_("能力 PlayerMutationType::{} は実装されていません。", "Power PlayerMutationType::{} not implemented. Oops."), enum2i(power));
         return true;
     }
 }

@@ -10,17 +10,16 @@
 #include "util/enum-converter.h"
 #include <limits>
 #include <nlohmann/json.hpp>
-#include <stdexcept>
 
 EgoReader::EgoReader(const nlohmann::json &ego_data)
     : ego_data(ego_data)
 {
 }
 
-int EgoReader::read() const
+ParseErrorType EgoReader::read() const
 {
     if (!this->ego_data.is_object()) {
-        return PARSE_ERROR_INVALID_TYPE;
+        return ParseErrorType::INVALID_TYPE;
     }
 
     int id{};
@@ -28,7 +27,7 @@ int EgoReader::read() const
         return err.error();
     }
     if (egos_info.contains(i2enum<EgoType>(id))) {
-        return PARSE_ERROR_NON_SEQUENTIAL_RECORDS;
+        return ParseErrorType::NON_SEQUENTIAL_RECORDS;
     }
 
     EgoItemDefinition ego;
@@ -55,7 +54,7 @@ int EgoReader::read() const
     const auto &base = get_json_value(this->ego_data, "base_bonuses");
     if (!base.is_null()) {
         if (!base.is_object()) {
-            return PARSE_ERROR_INVALID_TYPE;
+            return ParseErrorType::INVALID_TYPE;
         }
         if (const auto err = info_set_integer(get_json_value(base, "to_hit"), ego.base_to_h, true, Range(-32768, 32767)); !err) {
             return err.error();
@@ -71,7 +70,7 @@ int EgoReader::read() const
     const auto &maximum = get_json_value(this->ego_data, "maximum_bonuses");
     if (!maximum.is_null()) {
         if (!maximum.is_object()) {
-            return PARSE_ERROR_INVALID_TYPE;
+            return ParseErrorType::INVALID_TYPE;
         }
         if (const auto err = info_set_integer(get_json_value(maximum, "to_hit"), ego.max_to_h, true, Range(-32768, 32767)); !err) {
             return err.error();
@@ -87,19 +86,18 @@ int EgoReader::read() const
         }
     }
 
-    if (auto err = this->set_activation(ego)) {
+    if (const auto err = this->set_activation(ego); err != ParseErrorType::NONE) {
         return err;
     }
-    if (auto err = this->set_flags(ego)) {
+    if (const auto err = this->set_flags(ego); err != ParseErrorType::NONE) {
         return err;
     }
-    if (auto err = this->set_extra_flags(ego)) {
+    if (const auto err = this->set_extra_flags(ego); err != ParseErrorType::NONE) {
         return err;
     }
 
     egos_info.emplace(ego.idx, std::move(ego));
-    error_idx = id;
-    return PARSE_ERROR_NONE;
+    return ParseErrorType::NONE;
 }
 
 bool EgoReader::grab_one_flag(EgoItemDefinition &ego, const nlohmann::json &flag) const
@@ -129,29 +127,29 @@ bool EgoReader::grab_one_extra_flag(ego_generate_type &extra, const nlohmann::js
     return false;
 }
 
-int EgoReader::set_flags(EgoItemDefinition &ego) const
+ParseErrorType EgoReader::set_flags(EgoItemDefinition &ego) const
 {
     const auto &flags = get_json_value(this->ego_data, "flags");
     if (!flags.is_array()) {
-        return flags.is_null() ? PARSE_ERROR_NONE : PARSE_ERROR_INVALID_TYPE;
+        return flags.is_null() ? ParseErrorType::NONE : ParseErrorType::INVALID_TYPE;
     }
     for (const auto &flag : flags) {
         if (!this->grab_one_flag(ego, flag)) {
-            return flag.is_string() ? PARSE_ERROR_INVALID_FLAG : PARSE_ERROR_INVALID_TYPE;
+            return flag.is_string() ? ParseErrorType::INVALID_FLAG : ParseErrorType::INVALID_TYPE;
         }
     }
-    return PARSE_ERROR_NONE;
+    return ParseErrorType::NONE;
 }
 
-int EgoReader::set_extra_flags(EgoItemDefinition &ego) const
+ParseErrorType EgoReader::set_extra_flags(EgoItemDefinition &ego) const
 {
     const auto &extras = get_json_value(this->ego_data, "extra_flags");
     if (!extras.is_array()) {
-        return extras.is_null() ? PARSE_ERROR_NONE : PARSE_ERROR_INVALID_TYPE;
+        return extras.is_null() ? ParseErrorType::NONE : ParseErrorType::INVALID_TYPE;
     }
     for (const auto &extra_data : extras) {
         if (!extra_data.is_object()) {
-            return PARSE_ERROR_INVALID_TYPE;
+            return ParseErrorType::INVALID_TYPE;
         }
         ego_generate_type extra;
         if (const auto err = info_set_integer(get_json_value(extra_data, "numerator"), extra.mul, true, Range(1, 32767)); !err) {
@@ -162,36 +160,30 @@ int EgoReader::set_extra_flags(EgoItemDefinition &ego) const
         }
         const auto &flags = get_json_value(extra_data, "flags");
         if (!flags.is_array()) {
-            return flags.is_null() ? PARSE_ERROR_TOO_FEW_ARGUMENTS : PARSE_ERROR_INVALID_TYPE;
+            return flags.is_null() ? ParseErrorType::TOO_FEW_ARGUMENTS : ParseErrorType::INVALID_TYPE;
         }
         if (flags.empty()) {
-            return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+            return ParseErrorType::TOO_FEW_ARGUMENTS;
         }
         for (const auto &flag : flags) {
             if (!this->grab_one_extra_flag(extra, flag)) {
-                return flag.is_string() ? PARSE_ERROR_INVALID_FLAG : PARSE_ERROR_INVALID_TYPE;
+                return flag.is_string() ? ParseErrorType::INVALID_FLAG : ParseErrorType::INVALID_TYPE;
             }
         }
         ego.xtra_flags.push_back(std::move(extra));
     }
-    return PARSE_ERROR_NONE;
+    return ParseErrorType::NONE;
 }
 
-int EgoReader::set_activation(EgoItemDefinition &ego) const
+ParseErrorType EgoReader::set_activation(EgoItemDefinition &ego) const
 {
     const auto &activation = get_json_value(this->ego_data, "activation");
     if (activation.is_null()) {
-        return PARSE_ERROR_NONE;
+        return ParseErrorType::NONE;
     }
     if (!activation.is_string()) {
-        return PARSE_ERROR_INVALID_TYPE;
+        return ParseErrorType::INVALID_TYPE;
     }
-    try {
-        ego.act_idx = grab_one_activation_flag(activation.get<std::string>());
-    } catch (const std::invalid_argument &) {
-        return PARSE_ERROR_INVALID_FLAG;
-    } catch (const std::out_of_range &) {
-        return PARSE_ERROR_INVALID_FLAG;
-    }
-    return ego.act_idx > RandomArtActType::NONE ? PARSE_ERROR_NONE : PARSE_ERROR_INVALID_FLAG;
+    ego.act_idx = grab_one_activation_flag(activation.get<std::string>());
+    return ego.act_idx > RandomArtActType::NONE ? ParseErrorType::NONE : ParseErrorType::INVALID_FLAG;
 }

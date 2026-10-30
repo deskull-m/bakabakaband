@@ -27,12 +27,12 @@
 #include "spell-realm/spells-crusade.h"
 #include "system/angband-system.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/redrawing-flags-updater.h"
 #include "view/display-messages.h"
 #include <algorithm>
 #include <range/v3/view.hpp>
@@ -75,7 +75,7 @@ static MonsterSpellResult spell_RF6_SPECIAL_UNIFICATION(CreatureEntity &creature
         }
 
         const auto &m_name = monraces.get_monrace(it_unified->first).name;
-        msg_format(_("%sが分離した！", "%s splits!"), m_name.data());
+        msg_print(_("{}が分離した！", "{} splits!"), m_name);
         return MonsterSpellResult::make_valid();
     }
 
@@ -118,8 +118,7 @@ static MonsterSpellResult spell_RF6_SPECIAL_UNIFICATION(CreatureEntity &creature
             ranges::views::transform(monrace_id_to_name) |
             ranges::views::join(_("と"sv, " and "sv)) |
             ranges::to<std::string>;
-        const auto fmt = _("%sが合体した！", "%s combine into one!");
-        msg_format(fmt, separates_names.data());
+        msg_print(_("{}が合体した！", "{} combine into one!"), separates_names);
         return MonsterSpellResult::make_valid();
     }
 
@@ -145,8 +144,8 @@ static MonsterSpellResult spell_RF6_SPECIAL_ROLENTO(CreatureEntity &creature, PO
     bool mon_to_player = target_type == MONSTER_TO_PLAYER;
     bool known = monster_near_player(creature, m_idx, t_idx);
 
-    mspell_cast_msg_blind msg(_("%s^が何か大量に投げた。", "%s^ spreads something."),
-        _("%s^は手榴弾をばらまいた。", "%s^ throws some hand grenades."), _("%s^は手榴弾をばらまいた。", "%s^ throws some hand grenades."));
+    mspell_cast_msg_blind msg(_("{}が何か大量に投げた。", "{} spreads something."),
+        _("{}は手榴弾をばらまいた。", "{} throws some hand grenades."), _("{}は手榴弾をばらまいた。", "{} throws some hand grenades."));
 
     monspell_message(creature, m_idx, t_idx, msg, target_type);
     if (mon_to_player || (mon_to_mon && known && see_either)) {
@@ -187,25 +186,27 @@ static MonsterSpellResult spell_RF6_SPECIAL_B(CreatureEntity &creature, POSITION
     const auto m_name = monster_name(creature, m_idx);
 
     disturb(creature, true, true);
-    if (one_in_(3) || !direct) {
-        msg.to_player = _("%s^は突然視界から消えた!", "You lose sight of %s!");
-        msg.to_mons = _("%s^は突然急上昇して視界から消えた!", "You lose sight of %s!");
+    // プレイヤーを狙ったのに、プレイヤーがその地点にいなければ掴めない (モンスターを狙ったときは掴める)
+    if (one_in_(3) || (monster_to_player && !direct)) {
+        msg.to_player = _("{}は突然視界から消えた!", "You lose sight of {2}!");
+        msg.to_mons = _("{}は突然急上昇して視界から消えた!", "You lose sight of {2}!");
 
         simple_monspell_message(creature, m_idx, t_idx, msg, target_type);
 
         teleport_away(creature, m_idx, 10, TELEPORT_NONMAGICAL);
-        RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::MONSTER_STATUSES);
+        DeferredUpdateRequests::get_instance().set_flag(StatusRecalculatingFlag::MONSTER_STATUSES);
         return MonsterSpellResult::make_valid();
     }
 
-    if (direct) {
+    msg.to_player = _("{}があなたを掴んで空中から投げ落とした。", "{} snatches you, soars into the sky, and drops you.");
+    msg.to_mons = _("{}が{}を掴んで空中から投げ落とした。", "{} snatches {}, soars into the sky, and releases its grip.");
+
+    // 音は、プレイヤー (乗っている馬を含む) が掴まれたときと、モンスター同士で掴んだメッセージを出したときだけ出す。
+    // プレイヤーが狙われたときはメッセージを必ず出すが、乗っている馬が狙われたときは見えないと出さないので direct も見る
+    const auto is_noticed = simple_monspell_message(creature, m_idx, t_idx, msg, target_type);
+    if (direct || is_noticed) {
         sound(SoundKind::FALL);
     }
-
-    msg.to_player = _("%s^があなたを掴んで空中から投げ落とした。", "%s^ snatches you, soars into the sky, and drops you.");
-    msg.to_mons = _("%s^が%sを掴んで空中から投げ落とした。", "%s^ snatches %s, soars into the sky, and releases its grip.");
-
-    simple_monspell_message(creature, m_idx, t_idx, msg, target_type);
 
     bool fear, dead; /* dummy */
     int dam = Dice::roll(4, 8);
@@ -218,20 +219,20 @@ static MonsterSpellResult spell_RF6_SPECIAL_B(CreatureEntity &creature, POSITION
 
     if ((monster_to_player && creature.has_levitation()) || (monster_to_monster && monrace_target.feature_flags.has(MonsterFeatureType::CAN_FLY))) {
         msg.to_player = _("あなたは静かに着地した。", "You float gently down to the ground.");
-        msg.to_mons = _("%s^は静かに着地した。", "%s^ floats gently down to the ground.");
+        msg.to_mons = _("{4}は静かに着地した。", "{4} floats gently down to the ground.");
     } else {
         msg.to_player = _("あなたは地面に叩きつけられた。", "You crashed into the ground.");
-        msg.to_mons = _("%s^は地面に叩きつけられた。", "%s^ crashed into the ground.");
+        msg.to_mons = _("{4}は地面に叩きつけられた。", "{4} crashed into the ground.");
+        dam += Dice::roll(6, 8);
     }
 
     simple_monspell_message(creature, m_idx, t_idx, msg, target_type);
-    dam += Dice::roll(6, 8);
 
     if (monster_to_player || (monster_to_monster && monster_target.is_riding())) {
         int get_damage = take_hit(creature, DAMAGE_NOESCAPE, dam, m_name);
         if (creature.get_timed_effect(CreatureTimedEffect::TIM_EYEEYE) && get_damage > 0 && !creature.is_dead()) {
             const auto m_name_self = monster_desc(creature, monster, MD_PRON_VISIBLE | MD_POSSESSIVE | MD_OBJECTIVE);
-            msg_print(_(format("攻撃が%s自身を傷つけた！", m_name.data()), format("The attack of %s has wounded %s!", m_name.data(), m_name_self.data())));
+            msg_print(_("攻撃が{}自身を傷つけた！", "The attack of {} has wounded {}!"), m_name, m_name_self);
             project(creature, 0, 0, monster.y, monster.x, get_damage, AttributeType::MISSILE, PROJECT_KILL);
             set_tim_eyeeye(creature, creature.get_timed_effect(CreatureTimedEffect::TIM_EYEEYE) - 5, true);
         }

@@ -454,9 +454,6 @@
     <ClCompile Include="..\..\src\term\gameterm.cpp">
       <Filter>term</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\term\z-form.cpp">
-      <Filter>term</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\term\z-rand.cpp">
       <Filter>term</Filter>
     </ClCompile>
@@ -1004,6 +1001,9 @@
       <Filter>info-reader</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\info-reader\terrain-reader.cpp">
+      <Filter>info-reader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\info-reader\magic-info-tokens-table.cpp">
       <Filter>info-reader</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\info-reader\magic-reader.cpp">
@@ -1556,6 +1556,9 @@
       <Filter>window</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\window\overview-map-cache.cpp">
+      <Filter>window</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\window\shrunk-overview-map.cpp">
       <Filter>window</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\cmd-action\cmd-travel.cpp">
@@ -2445,7 +2448,7 @@
     <ClCompile Include="..\..\src\monster\monster-pain-describer.cpp">
       <Filter>monster</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\system\redrawing-flags-updater.cpp">
+    <ClCompile Include="..\..\src\system\deferred-update-requests.cpp">
       <Filter>system</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\alliance\alliance-megadeth.cpp">
@@ -3366,9 +3369,6 @@
     <ClInclude Include="..\..\src\term\gameterm.h">
       <Filter>term</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\term\z-form.h">
-      <Filter>term</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\term\z-rand.h">
       <Filter>term</Filter>
     </ClInclude>
@@ -4023,6 +4023,12 @@
     <ClInclude Include="..\..\src\info-reader\spell-reader.h">
       <Filter>info-reader</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\info-reader\symbol-reader-util.h">
+      <Filter>info-reader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\info-reader\magic-info-tokens-table.h">
+      <Filter>info-reader</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\src\info-reader\magic-reader.h">
       <Filter>info-reader</Filter>
     </ClInclude>
@@ -4669,6 +4675,9 @@
       <Filter>window</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\window\overview-map-cache.h">
+      <Filter>window</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\window\shrunk-overview-map.h">
       <Filter>window</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\cmd-action\cmd-travel.h">
@@ -5717,7 +5726,7 @@
     <ClInclude Include="..\..\src\monster\monster-pain-describer.h">
       <Filter>monster</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\system\redrawing-flags-updater.h">
+    <ClInclude Include="..\..\src\system\deferred-update-requests.h">
       <Filter>system</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\alliance\alliance-jural.h">

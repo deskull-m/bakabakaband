@@ -11,8 +11,8 @@
 #include "main/sound-of-music.h"
 #include "save/save-util.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/player-type-definition.h"
-#include "system/redrawing-flags-updater.h"
 #include "term/gameterm.h"
 #include "term/term-color-types.h"
 #include "util/finalizer.h"
@@ -20,6 +20,7 @@
 #include "world/world.h"
 #include <algorithm>
 #include <deque>
+#include <fmt/format.h>
 #include <map>
 #include <memory>
 #include <string>
@@ -30,6 +31,8 @@ bool msg_flag;
 COMMAND_CODE now_message;
 
 namespace {
+
+std::vector<std::string> *message_capture = nullptr;
 
 /*! 表示するメッセージの先頭位置 */
 static int msg_head_pos = 0;
@@ -112,6 +115,31 @@ int32_t message_num(void)
 }
 
 /*!
+ * @brief スコープ内のメッセージをシステムの文字コードのまま捕捉する
+ */
+ScopedMessageCapture::ScopedMessageCapture()
+    : previous_capture(message_capture)
+{
+    message_capture = &this->captured_messages;
+}
+
+/*!
+ * @brief 元のメッセージ出力先を復元する
+ */
+ScopedMessageCapture::~ScopedMessageCapture()
+{
+    message_capture = this->previous_capture;
+}
+
+/*!
+ * @brief 捕捉した診断を出力順に返す
+ */
+const std::vector<std::string> &ScopedMessageCapture::messages() const
+{
+    return this->captured_messages;
+}
+
+/*!
  * @brief 過去のゲームメッセージを返す。 / Recall the "text" of a saved message
  * @param age メッセージの世代
  * @return メッセージの文字列ポインタ
@@ -124,7 +152,7 @@ std::shared_ptr<const std::string> message_str(int age)
 
     const auto &[msg, repeat_count] = message_history[age];
     if (repeat_count > 1) {
-        return std::make_shared<const std::string>(*msg + format(" <x%d>", repeat_count));
+        return std::make_shared<const std::string>(fmt::format("{} <x{}>", *msg, repeat_count));
     }
 
     return msg;
@@ -328,6 +356,11 @@ static int split_length(std::string_view sv, int max)
  */
 void msg_print(std::string_view msg)
 {
+    if (message_capture != nullptr) {
+        message_capture->emplace_back(msg);
+        return;
+    }
+
     const auto &world = AngbandWorld::get_instance();
     if (world.timewalk_m_idx) {
         return;
@@ -340,7 +373,7 @@ void msg_print(std::string_view msg)
 
     std::string msg_includes_turn;
     if (cheat_turn) {
-        msg = msg_includes_turn = format("T:%d - %s", world.game_turn, msg.data());
+        msg = msg_includes_turn = fmt::format("T:{} - {}", world.game_turn, msg);
     }
 
     // -続く- の待ちの最中に端末の大きさが変わることがあるため、分割する幅は待った後に取り直す
@@ -371,7 +404,7 @@ void msg_print(std::string_view msg)
     }
 
     put_msg_line(msg_head_pos, msg);
-    RedrawingFlagsUpdater::get_instance().set_flag(SubWindowRedrawingFlag::MESSAGE);
+    DeferredUpdateRequests::get_instance().set_flag(SubWindowRedrawingFlag::MESSAGE);
     window_stuff(PlayerType::get_instance());
 
     msg_flag = true;
@@ -429,15 +462,6 @@ void redisplay_more_prompt()
     term_erase(0, 0);
     term_putstr(0, 0, -1, TERM_WHITE, msg_line);
     put_more_prompt(more_prompt_x);
-}
-
-void msg_format(const char *fmt, ...)
-{
-    va_list vp;
-    va_start(vp, fmt);
-    const auto buf = vformat(fmt, vp);
-    va_end(vp);
-    msg_print(buf);
 }
 
 /*!

@@ -19,6 +19,7 @@
 #include "game-option/text-display-options.h"
 #include "inventory/inventory-slot-types.h"
 #include "io/command-repeater.h"
+#include "io/input-context.h"
 #include "io/input-key-requester.h"
 #include "main/sound-definitions-table.h"
 #include "main/sound-of-music.h"
@@ -37,11 +38,13 @@
 #include "spell/technic-info-table.h"
 #include "status/action-setter.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/item-entity.h"
-#include "system/redrawing-flags-updater.h"
 #include "term/screen-processor.h"
 #include "util/int-char-converter.h"
+#include "util/string-processor.h"
 #include "view/display-messages.h"
+#include <fmt/format.h>
 
 /*!
  * @brief 使用可能な剣術を選択する /
@@ -96,8 +99,10 @@ static int get_hissatsu_power(CreatureEntity &creature, SPELL_IDX *sn)
         }
     }
 
-    constexpr auto fmt = _("(%s^ %c-%c, '*'で一覧, ESC) どの%sを使いますか？", "(%s^s %c-%c, *=List, ESC=exit) Use which %s? ");
-    const auto prompt = format(fmt, p, I2A(0), "abcdefghijklmnopqrstuvwxyz012345"[num - 1], p);
+    constexpr auto fmt = _("({} {:c}-{:c}, '*'で一覧, ESC) どの{}を使いますか？", "({}s {:c}-{:c}, *=List, ESC=exit) Use which {}? ");
+    const auto first_label = I2A(0);
+    const auto last_label = I2AD(num - 1);
+    const auto prompt = fmt::format(fmt, str_upcase_first(p), first_label, last_label, p);
 
     if (use_menu) {
         screen_save();
@@ -109,7 +114,7 @@ static int get_hissatsu_power(CreatureEntity &creature, SPELL_IDX *sn)
         if (choice == ESCAPE) {
             choice = ' ';
         } else {
-            const auto new_choice = input_command(prompt);
+            const auto new_choice = input_spell_choice(prompt, { .first_label = first_label, .last_label = last_label, .list = redraw, .menu = use_menu });
             if (!new_choice.has_value()) {
                 break;
             }
@@ -165,16 +170,22 @@ static int get_hissatsu_power(CreatureEntity &creature, SPELL_IDX *sn)
                 } else {
                     menu_line += 16;
                 }
+                // menu_line を常に [1, 32] に保ち、端に達したら方向を反転する。
+                // (反転を越えて menu_line-- で 0、menu_line++ で 33 となり is_learned() を範囲外で呼ぶのを防ぐ)
                 while (!realm_status.is_learned(menu_line - 1)) {
                     if (reverse) {
-                        menu_line--;
-                        if (menu_line < 2) {
+                        if (menu_line <= 1) {
                             reverse = false;
+                            menu_line++;
+                        } else {
+                            menu_line--;
                         }
                     } else {
-                        menu_line++;
-                        if (menu_line > 31) {
+                        if (menu_line >= 32) {
                             reverse = true;
+                            menu_line--;
+                        } else {
+                            menu_line++;
                         }
                     }
                 }
@@ -230,18 +241,12 @@ static int get_hissatsu_power(CreatureEntity &creature, SPELL_IDX *sn)
                         }
 
                     } else {
-                        char letter;
-                        if (line <= 26) {
-                            letter = I2A(line - 1);
-                        } else {
-                            letter = '0' + line - 27;
-                        }
-                        psi_desc += format("  %c)", letter);
+                        psi_desc = fmt::format("  {:c})", I2AD(line - 1));
                     }
 
                     /* Dump the spell --(-- */
                     const auto &spell_name = PlayerRealm::get_spell_name(RealmType::HISSATSU, i);
-                    psi_desc.append(format(" %-18s%2d %3d", spell_name.data(), spell.slevel, spell.smana));
+                    psi_desc.append(fmt::format(" {:<18}{:2} {:3}", fmt::bytes(spell_name), spell.slevel, spell.smana));
                     prt(psi_desc, y + (line % 17) + (line >= 17), x + (line / 17) * 30);
                     prt("", y + (line % 17) + (line >= 17) + 1, x + (line / 17) * 30);
                 }
@@ -259,11 +264,7 @@ static int get_hissatsu_power(CreatureEntity &creature, SPELL_IDX *sn)
         }
 
         if (!use_menu) {
-            if (isalpha(choice)) {
-                i = A2I(choice);
-            } else {
-                i = choice - '0' + 26;
-            }
+            i = AD2I(choice);
         }
 
         /* Totally Illegal */
@@ -281,7 +282,7 @@ static int get_hissatsu_power(CreatureEntity &creature, SPELL_IDX *sn)
         screen_load();
     }
 
-    RedrawingFlagsUpdater::get_instance().set_flag(SubWindowRedrawingFlag::SPELL);
+    DeferredUpdateRequests::get_instance().set_flag(SubWindowRedrawingFlag::SPELL);
     window_stuff(creature);
 
     /* Abort if needed */
@@ -352,13 +353,8 @@ void do_cmd_hissatsu(CreatureEntity &creature)
         creature.set_current_mp(0);
     }
 
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.set_flag(MainWindowRedrawingFlag::MP);
-    static constexpr auto flags = {
-        SubWindowRedrawingFlag::PLAYER,
-        SubWindowRedrawingFlag::SPELL,
-    };
-    rfu.set_flags(flags);
+    auto &dur = DeferredUpdateRequests::get_instance();
+    dur.set_flag(MainWindowRedrawingFlag::MP);
 }
 
 /*!
@@ -377,9 +373,9 @@ void do_cmd_gain_hissatsu(CreatureEntity &creature)
     }
 
 #ifdef JP
-    msg_format("あと %d 種の必殺技を学べる。", creature.new_spells);
+    msg_print("あと {} 種の必殺技を学べる。", creature.new_spells);
 #else
-    msg_format("You can learn %d new special attack%s.", creature.new_spells, (creature.new_spells == 1 ? "" : "s"));
+    msg_print("You can learn {} new special attack{}.", creature.new_spells, (creature.new_spells == 1 ? "" : "s"));
 #endif
 
     constexpr auto q = _("どの書から学びますか? ", "Study which book? ");
@@ -405,7 +401,7 @@ void do_cmd_gain_hissatsu(CreatureEntity &creature)
         realm_status.set_learned(i);
         realm_status.set_worked(i);
         const auto &spell_name = PlayerRealm::get_spell_name(RealmType::HISSATSU, i);
-        msg_format(_("%sの技を覚えた。", "You have learned the special attack of %s."), spell_name.data());
+        msg_print(_("{}の技を覚えた。", "You have learned the special attack of {}."), spell_name);
         creature.spell_order_learned.push_back(i);
         gain = true;
     }
@@ -416,5 +412,5 @@ void do_cmd_gain_hissatsu(CreatureEntity &creature)
         PlayerEnergy(creature).set_player_turn_energy(100);
     }
 
-    RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::SPELLS);
+    DeferredUpdateRequests::get_instance().set_flag(StatusRecalculatingFlag::SPELLS);
 }

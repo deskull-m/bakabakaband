@@ -12,9 +12,9 @@
 #include "player-status/player-energy.h"
 #include "player/player-move.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
-#include "system/redrawing-flags-updater.h"
 #include "system/terrain/terrain-definition.h"
 #include "view/display-messages.h"
 
@@ -79,12 +79,11 @@ bool exe_tunnel(CreatureEntity &creature, POSITION y, POSITION x)
     } else if (terrain.flags.has(TerrainCharacteristics::CAN_DIG)) {
         if (creature.get_skill_dig() > randint0(20 * power)) {
             sound(SoundKind::DIG_THROUGH);
-            msg_format(_("%sをくずした。", "You have removed the %s."), name.data());
+            msg_print(_("{}をくずした。", "You have removed the {}."), name);
             cave_alter_feat(creature, y, x, TerrainCharacteristics::TUNNEL);
-            creature.plus_incident_tree("TUNNEL", 1);
-            RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::FLOW);
+            DeferredUpdateRequests::get_instance().set_flag(StatusRecalculatingFlag::FLOW);
         } else {
-            msg_format(_("%sをくずしている。", "You dig into the %s."), name.data());
+            msg_print(_("{}をくずしている。", "You dig into the {}."), name);
             more = true;
         }
     } else {
@@ -92,10 +91,10 @@ bool exe_tunnel(CreatureEntity &creature, POSITION y, POSITION x)
         if (creature.get_skill_dig() > power + randint0(40 * power)) {
             sound(SoundKind::DIG_THROUGH);
             if (tree) {
-                msg_format(_("%sを切り払った。", "You have cleared away the %s."), name.data());
+                msg_print(_("{}を切り払った。", "You have cleared away the {}."), name);
             } else {
                 msg_print(_("穴を掘り終えた。", "You have finished the tunnel."));
-                RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::FLOW);
+                DeferredUpdateRequests::get_instance().set_flag(StatusRecalculatingFlag::FLOW);
             }
 
             if (terrain.flags.has(TerrainCharacteristics::GLASS)) {
@@ -108,12 +107,12 @@ bool exe_tunnel(CreatureEntity &creature, POSITION y, POSITION x)
             chg_virtue(creature, Virtue::NATURE, -1);
         } else {
             if (tree) {
-                msg_format(_("%sを切っている。", "You chop away at the %s."), name.data());
+                msg_print(_("{}を切っている。", "You chop away at the {}."), name);
                 if (one_in_(4)) {
                     search(creature);
                 }
             } else {
-                msg_format(_("%sに穴を掘っている。", "You tunnel into the %s."), name.data());
+                msg_print(_("{}に穴を掘っている。", "You tunnel into the {}."), name);
             }
 
             more = true;

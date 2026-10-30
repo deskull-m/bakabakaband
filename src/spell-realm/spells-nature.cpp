@@ -8,8 +8,8 @@
 #include "object/item-use-flags.h"
 #include "racial/racial-android.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/item-entity.h"
-#include "system/redrawing-flags-updater.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
 
@@ -32,19 +32,19 @@ bool rustproof(CreatureEntity &creature)
     item->art_flags.set(TR_IGNORE_ACID);
     if ((item->to_a < 0) && !item->is_cursed()) {
 #ifdef JP
-        msg_format("%sは新品同様になった！", item_name.data());
+        msg_print("{}は新品同様になった！", item_name);
 #else
-        msg_format("%s %s look%s as good as new!", ((i_idx >= 0) ? "Your" : "The"), item_name.data(), ((item->number > 1) ? "" : "s"));
+        msg_print("{} {} look{} as good as new!", ((i_idx >= 0) ? "Your" : "The"), item_name, ((item->number > 1) ? "" : "s"));
 #endif
         item->to_a = 0;
     }
 
 #ifdef JP
-    msg_format("%sは腐食しなくなった。", item_name.data());
+    msg_print("{}は腐食しなくなった。", item_name);
 #else
-    msg_format("%s %s %s now protected against corrosion.", ((i_idx >= 0) ? "Your" : "The"), item_name.data(), ((item->number > 1) ? "are" : "is"));
+    msg_print("{} {} {} now protected against corrosion.", ((i_idx >= 0) ? "Your" : "The"), item_name, ((item->number > 1) ? "are" : "is"));
 #endif
-    RedrawingFlagsUpdater::get_instance().set_item_related_sub_window_flags();
+    DeferredUpdateRequests::get_instance().set_item_related_sub_window_flags();
     calc_android_exp(creature);
     return true;
 }

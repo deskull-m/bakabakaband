@@ -18,7 +18,6 @@
 #include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"
 #include "term/screen-processor.h"
-#include "term/z-form.h"
 #include "tracking/lore-tracker.h"
 #include "util/int-char-converter.h"
 #include "view/display-messages.h"

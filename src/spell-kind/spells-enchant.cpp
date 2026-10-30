@@ -14,8 +14,8 @@
 #include "object/item-use-flags.h"
 #include "racial/racial-android.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/item-entity.h"
-#include "system/redrawing-flags-updater.h"
 #include "term/screen-processor.h"
 #include "view/display-messages.h"
 #include <memory>
@@ -36,39 +36,39 @@ bool artifact_scroll(CreatureEntity &creature)
 
     const auto item_name = describe_flavor(creature, *item, (OD_OMIT_PREFIX | OD_NAME_ONLY));
 #ifdef JP
-    msg_format("%s は眩い光を発した！", item_name.data());
+    msg_print("{} は眩い光を発した！", item_name);
 #else
-    msg_format("%s %s radiate%s a blinding light!", ((i_idx >= 0) ? "Your" : "The"), item_name.data(), ((item->number > 1) ? "" : "s"));
+    msg_print("{} {} radiate{} a blinding light!", ((i_idx >= 0) ? "Your" : "The"), item_name, ((item->number > 1) ? "" : "s"));
 #endif
 
     bool okay = false;
     if (item->is_fixed_or_random_artifact()) {
 #ifdef JP
-        msg_format("%sは既に伝説のアイテムです！", item_name.data());
+        msg_print("{}は既に伝説のアイテムです！", item_name);
 #else
-        msg_format("The %s %s already %s!", item_name.data(), ((item->number > 1) ? "are" : "is"), ((item->number > 1) ? "artifacts" : "an artifact"));
+        msg_print("The {} {} already {}!", item_name, ((item->number > 1) ? "are" : "is"), ((item->number > 1) ? "artifacts" : "an artifact"));
 #endif
         okay = false;
     } else if (item->is_ego()) {
 #ifdef JP
-        msg_format("%sは既に名のあるアイテムです！", item_name.data());
+        msg_print("{}は既に名のあるアイテムです！", item_name);
 #else
-        msg_format("The %s %s already %s!", item_name.data(), ((item->number > 1) ? "are" : "is"), ((item->number > 1) ? "ego items" : "an ego item"));
+        msg_print("The {} {} already {}!", item_name, ((item->number > 1) ? "are" : "is"), ((item->number > 1) ? "ego items" : "an ego item"));
 #endif
         okay = false;
     } else if (item->is_smith()) {
 #ifdef JP
-        msg_format("%sは既に強化されています！", item_name.data());
+        msg_print("{}は既に強化されています！", item_name);
 #else
-        msg_format("The %s %s already %s!", item_name.data(), ((item->number > 1) ? "are" : "is"), ((item->number > 1) ? "customized items" : "a customized item"));
+        msg_print("The {} {} already {}!", item_name, ((item->number > 1) ? "are" : "is"), ((item->number > 1) ? "customized items" : "a customized item"));
 #endif
     } else {
         if (item->number > 1) {
             msg_print(_("複数のアイテムに魔法をかけるだけのエネルギーはありません！", "Not enough energy to enchant more than one object!"));
 #ifdef JP
-            msg_format("%d 個の%sが壊れた！", (item->number) - 1, item_name.data());
+            msg_print("{} 個の{}が壊れた！", (item->number) - 1, item_name);
 #else
-            msg_format("%d of your %s %s destroyed!", (item->number) - 1, item_name.data(), (item->number > 2 ? "were" : "was"));
+            msg_print("{} of your {} {} destroyed!", (item->number) - 1, item_name, (item->number > 2 ? "were" : "was"));
 #endif
 
             if (i_idx >= 0) {
@@ -95,13 +95,8 @@ bool artifact_scroll(CreatureEntity &creature)
         return true;
     }
 
-    // 装備品なら、アーティファクトの能力 (光源の明るさなども) が付く
-    static constexpr auto flags_srf = {
-        StatusRecalculatingFlag::BONUS,
-        StatusRecalculatingFlag::TORCH,
-        StatusRecalculatingFlag::MP,
-    };
-    RedrawingFlagsUpdater::get_instance().set_flags(flags_srf);
+    // 装備品なら、アーティファクトの能力が付く
+    DeferredUpdateRequests::get_instance().request_equipment_change_updates();
 
     if (record_rand_art) {
         const auto diary_item_name = describe_flavor(creature, *item, OD_NAME_ONLY);
@@ -165,18 +160,13 @@ bool mundane_spell(CreatureEntity &creature, bool only_equip)
         item->timeout = timeout;
     }
 
-    // 装備品なら、修正値・エゴ・アーティファクトの能力 (光源の明るさなども) が無くなる
-    static constexpr auto flags_srf = {
-        StatusRecalculatingFlag::BONUS,
-        StatusRecalculatingFlag::TORCH,
-        StatusRecalculatingFlag::MP,
-    };
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.set_flags(flags_srf);
+    // 装備品なら、修正値・エゴ・アーティファクトの能力が無くなる
+    auto &dur = DeferredUpdateRequests::get_instance();
+    dur.request_equipment_change_updates();
 
     // 鑑定の状態・エゴ・修正値が変わるので、並び順や束をまとめられるかも変わる
-    rfu.request_inventory_arrangement();
-    rfu.set_item_related_sub_window_flags();
+    dur.request_inventory_arrangement();
+    dur.set_item_related_sub_window_flags();
     calc_android_exp(creature);
     return true;
 }

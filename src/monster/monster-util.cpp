@@ -33,6 +33,7 @@
 #include "wizard/monrace-filter-debug-info.h"
 #include "world/world-collapsion.h"
 #include <algorithm>
+#include <fmt/format.h>
 #include <iterator>
 
 /**
@@ -118,14 +119,24 @@ static bool restrict_monster_to_dungeon(const DungeonDefinition &dungeon, int fl
         return true;
     }
 
+    // 読み込み (r_info_sex) と同じ値で比べるため、種族の性別をそのまま立てる。性別の無い種族は空のまま。
+    EnumClassFlagGroup<MonsterSex> sex_flags;
+    if (const auto sex = monrace.get_sex(); sex != MonsterSex::NONE) {
+        sex_flags.set(sex);
+    }
+
     switch (dungeon.mode) {
     case DungeonMode::NONE:
         return true;
     case DungeonMode::AND:
     case DungeonMode::NAND: {
         std::vector<bool> is_possible = {
+            is_possible_monster_and(sex_flags, dungeon.mon_sex),
             is_possible_monster_and(monrace.meat_feed_flags, dungeon.mon_meat_feed_flags),
             is_possible_monster_and(monrace.ability_flags, dungeon.mon_ability_flags),
+            is_possible_monster_and(monrace.aura_flags, dungeon.mon_aura_flags),
+            is_possible_monster_and(monrace.visual_flags, dungeon.mon_visual_flags),
+            is_possible_monster_and(monrace.special_flags, dungeon.mon_special_flags),
             is_possible_monster_and(monrace.behavior_flags, dungeon.mon_behavior_flags),
             is_possible_monster_and(monrace.resistance_flags, dungeon.mon_resistance_flags),
             is_possible_monster_and(monrace.drop_flags, dungeon.mon_drop_flags),
@@ -145,8 +156,12 @@ static bool restrict_monster_to_dungeon(const DungeonDefinition &dungeon, int fl
     case DungeonMode::OR:
     case DungeonMode::NOR: {
         std::vector<bool> is_possible = {
+            is_possible_monster_or(sex_flags, dungeon.mon_sex),
             is_possible_monster_or(monrace.meat_feed_flags, dungeon.mon_meat_feed_flags),
             is_possible_monster_or(monrace.ability_flags, dungeon.mon_ability_flags),
+            is_possible_monster_or(monrace.aura_flags, dungeon.mon_aura_flags),
+            is_possible_monster_or(monrace.visual_flags, dungeon.mon_visual_flags),
+            is_possible_monster_or(monrace.special_flags, dungeon.mon_special_flags),
             is_possible_monster_or(monrace.behavior_flags, dungeon.mon_behavior_flags),
             is_possible_monster_or(monrace.resistance_flags, dungeon.mon_resistance_flags),
             is_possible_monster_or(monrace.drop_flags, dungeon.mon_drop_flags),
@@ -257,7 +272,7 @@ static bool do_hook(CreatureEntity &creature, MonraceHook hook, MonraceId monrac
     case MonraceHook::LES:
         return is_suitable_for_dungeon && monrace.is_suitable_for_les_nest();
     default:
-        THROW_EXCEPTION(std::logic_error, format("Invalid monrace hook type is specified! %d", enum2i(hook)));
+        THROW_EXCEPTION(std::logic_error, fmt::format("Invalid monrace hook type is specified! {}", enum2i(hook)));
     }
 }
 

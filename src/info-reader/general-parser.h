@@ -3,14 +3,12 @@
 #include "object-enchant/object-ego.h"
 #include "room/vault-builder.h"
 #include "system/angband.h"
-#include <fstream>
 #include <functional>
 #include <nlohmann/json_fwd.hpp>
 #include <string>
 #include <string_view>
-#include <tuple>
 
-enum parse_error_type : int;
+enum class ParseErrorType : int;
 enum class FixedArtifactId : short;
 enum class TerrainTag;
 struct dungeon_grid {
@@ -34,10 +32,8 @@ extern dungeon_grid letter[255];
 enum class DefinitionHashDataType;
 class FloorType;
 
-using Parser = std::function<errr(std::string_view)>;
-using JSONParser = std::function<errr(nlohmann::json &)>;
-std::tuple<errr, int, std::string> init_info_txt(std::ifstream &ifs, DefinitionHashDataType dhdt, Parser parse_info_txt_line);
-parse_error_type parse_line_feature(const FloorType &floor, std::string_view buf);
-parse_error_type parse_line_vault(FloorType *floor_ptr, std::string_view buf);
-parse_error_type parse_line_alliance(FloorType *floor_ptr, std::string_view buf);
-parse_error_type parse_line_building(std::string_view buf);
+using JSONParser = std::function<ParseErrorType(nlohmann::json &)>;
+ParseErrorType parse_line_feature(const FloorType &floor, std::string_view buf);
+ParseErrorType parse_line_vault(FloorType *floor_ptr, std::string_view buf);
+ParseErrorType parse_line_alliance(FloorType *floor_ptr, std::string_view buf);
+ParseErrorType parse_line_building(std::string_view buf);

@@ -85,49 +85,49 @@ void read_string_lines(const nlohmann::json &array_data, std::vector<std::string
 /*!
  * @brief JSONの文字列配列をフロアに収まるマップ行として取り込む
  * @details マップ行のようなASCIIの記号列は文字コードの変換が不要なので、そのまま取り込む
- * @return 行数または行のバイト数がフロアの上限を超える場合は PARSE_ERROR_OUT_OF_BOUNDS、
- * 行に NUL が含まれる場合は PARSE_ERROR_INVALID_VALUE
+ * @return 行数または行のバイト数がフロアの上限を超える場合は ParseErrorType::OUT_OF_BOUNDS、
+ * 行に NUL が含まれる場合は ParseErrorType::INVALID_VALUE
  */
-int read_map_rows(const nlohmann::json &array_data, std::vector<std::string> &out)
+tl::expected<void, ParseErrorType> read_map_rows(const nlohmann::json &array_data, std::vector<std::string> &out)
 {
     for (const auto &line : array_data) {
         if (!line.is_string()) {
-            continue;
+            return tl::make_unexpected(ParseErrorType::INVALID_TYPE);
         }
 
         const auto &row = line.get_ref<const std::string &>();
         // セル配置は1バイトずつ進む。幅の切り捨てと高さの配列外アクセスを読み込み時に防ぐ。
         if (out.size() >= MAX_HGT || row.size() > MAX_WID) {
-            return PARSE_ERROR_OUT_OF_BOUNDS;
+            return tl::make_unexpected(ParseErrorType::OUT_OF_BOUNDS);
         }
 
         // parse_qtw_D() は行を C 文字列として strlen で扱うため、埋め込み NUL があると
         // そこで行が黙って切り詰められ、以降のセルが欠落する。読み込み時に不正値として弾く。
         if (row.find('\0') != std::string::npos) {
-            return PARSE_ERROR_INVALID_VALUE;
+            return tl::make_unexpected(ParseErrorType::INVALID_VALUE);
         }
 
         out.push_back(row);
     }
 
-    return PARSE_ERROR_NONE;
+    return {};
 }
 
 /*!
  * @brief 条件に関係なく、開始位置がすべてのマップ候補の範囲内か確認する
- * @return マップが無い / 座標が負 / いずれかのマップ候補の範囲外なら PARSE_ERROR_OUT_OF_BOUNDS
+ * @return マップが無い / 座標が負 / いずれかのマップ候補の範囲外なら ParseErrorType::OUT_OF_BOUNDS
  */
-int validate_quest_start(const QuestFixedMap &fixed_map, const QuestStartPosition &position)
+tl::expected<void, ParseErrorType> validate_quest_start(const QuestFixedMap &fixed_map, const QuestStartPosition &position)
 {
     if (fixed_map.maps.empty() || position.y < 0 || position.x < 0) {
-        return PARSE_ERROR_OUT_OF_BOUNDS;
+        return tl::make_unexpected(ParseErrorType::OUT_OF_BOUNDS);
     }
     for (const auto &rows : fixed_map.maps) {
         if (rows.empty() || static_cast<std::size_t>(position.y) >= rows.size() || static_cast<std::size_t>(position.x) >= rows.front().size()) {
-            return PARSE_ERROR_OUT_OF_BOUNDS;
+            return tl::make_unexpected(ParseErrorType::OUT_OF_BOUNDS);
         }
     }
-    return PARSE_ERROR_NONE;
+    return {};
 }
 
 /*!
@@ -139,10 +139,10 @@ bool json_is_true(const nlohmann::json &value)
 }
 }
 
-parse_error_type parse_quest_legend_cell(const nlohmann::json &cell_data, QuestLegendCell &out)
+ParseErrorType parse_quest_legend_cell(const nlohmann::json &cell_data, QuestLegendCell &out)
 {
     if (!cell_data.is_object()) {
-        return PARSE_ERROR_INVALID_TYPE;
+        return ParseErrorType::INVALID_TYPE;
     }
 
     auto &grid = out.grid;
@@ -169,45 +169,45 @@ parse_error_type parse_quest_legend_cell(const nlohmann::json &cell_data, QuestL
             try {
                 grid.feature = terrains.get_terrain_id(tag);
             } catch (const std::exception &) {
-                return PARSE_ERROR_UNDEFINED_TERRAIN_TAG;
+                return ParseErrorType::UNDEFINED_TERRAIN_TAG;
             }
         }
+    } else if (!terrain.is_null()) {
+        return ParseErrorType::INVALID_TYPE;
     }
 
     const auto &cave_info = get_json_value(cell_data, "caveInfo");
     if (!cave_info.is_null()) {
         if (!cave_info.is_array()) {
-            return PARSE_ERROR_INVALID_TYPE;
+            return ParseErrorType::INVALID_TYPE;
         }
         for (const auto &flag : cave_info) {
             if (!flag.is_string()) {
-                return PARSE_ERROR_INVALID_TYPE;
+                return ParseErrorType::INVALID_TYPE;
             }
             const auto it = CAVE_FLAG_TOKENS.find(flag.get<std::string>());
             if (it == CAVE_FLAG_TOKENS.end()) {
-                return PARSE_ERROR_INVALID_FLAG;
+                return ParseErrorType::INVALID_FLAG;
             }
             grid.cave_info |= it->second;
         }
     }
 
+    // 整数・オブジェクト以外の値 (5.0 などの整数でない数を含む) は黙って無視せず解析エラーにする。
     const auto &monster = get_json_value(cell_data, "monster");
-    if (monster.is_number_integer()) {
+    if (monster.is_number()) {
         if (const auto err = info_set_integer(monster, grid.monster, true, LEGEND_MONSTER_RANGE); !err) {
             return err.error();
         }
     } else if (monster.is_object()) {
         if (json_is_true(get_json_value(monster, "random"))) {
             grid.random |= RANDOM_MONSTER;
-            const auto &level = get_json_value(monster, "oodLevel");
-            if (level.is_number_integer()) {
-                if (const auto err = info_set_integer(level, grid.monster, true, LEGEND_SHORT_RANGE); !err) {
-                    return err.error();
-                }
+            if (const auto err = info_set_integer(get_json_value(monster, "oodLevel"), grid.monster, false, LEGEND_SHORT_RANGE); !err) {
+                return err.error();
             }
         } else {
             const auto &clone = get_json_value(monster, "cloneOf");
-            if (clone.is_number_integer()) {
+            if (!clone.is_null()) {
                 int clone_id = 0;
                 if (const auto err = info_set_integer(clone, clone_id, true, LEGEND_MONSTER_RANGE); !err) {
                     return err.error();
@@ -215,59 +215,58 @@ parse_error_type parse_quest_legend_cell(const nlohmann::json &cell_data, QuestL
                 grid.monster = static_cast<MONSTER_IDX>(-clone_id);
             }
         }
+    } else if (!monster.is_null()) {
+        return ParseErrorType::INVALID_TYPE;
     }
 
     const auto &object = get_json_value(cell_data, "object");
-    if (object.is_number_integer()) {
+    if (object.is_number()) {
         if (const auto err = info_set_integer(object, grid.object, true, LEGEND_SHORT_RANGE); !err) {
             return err.error();
         }
     } else if (object.is_object()) {
         if (json_is_true(get_json_value(object, "random"))) {
             grid.random |= RANDOM_OBJECT;
-            const auto &level = get_json_value(object, "oodLevel");
-            if (level.is_number_integer()) {
-                if (const auto err = info_set_integer(level, grid.object, true, LEGEND_SHORT_RANGE); !err) {
-                    return err.error();
-                }
+            if (const auto err = info_set_integer(get_json_value(object, "oodLevel"), grid.object, false, LEGEND_SHORT_RANGE); !err) {
+                return err.error();
             }
         } else if (json_is_true(get_json_value(object, "questReward"))) {
             out.object_is_quest_reward = true;
         }
+    } else if (!object.is_null()) {
+        return ParseErrorType::INVALID_TYPE;
     }
 
     const auto &ego = get_json_value(cell_data, "ego");
-    if (ego.is_number_integer()) {
+    if (ego.is_number()) {
         if (const auto err = info_set_integer(ego, grid.ego, true, LEGEND_EGO_RANGE); !err) {
             return err.error();
         }
     } else if (ego.is_object() && json_is_true(get_json_value(ego, "random"))) {
         grid.random |= RANDOM_EGO;
-        const auto &id = get_json_value(ego, "id");
-        if (id.is_number_integer()) {
-            if (const auto err = info_set_integer(id, grid.ego, true, LEGEND_EGO_RANGE); !err) {
-                return err.error();
-            }
+        if (const auto err = info_set_integer(get_json_value(ego, "id"), grid.ego, false, LEGEND_EGO_RANGE); !err) {
+            return err.error();
         }
+    } else if (!ego.is_null() && !ego.is_object()) {
+        return ParseErrorType::INVALID_TYPE;
     }
 
     const auto &artifact = get_json_value(cell_data, "artifact");
-    if (artifact.is_number_integer()) {
+    if (artifact.is_number()) {
         if (const auto err = info_set_integer(artifact, grid.artifact, true, LEGEND_SHORT_RANGE); !err) {
             return err.error();
         }
     } else if (artifact.is_object()) {
         if (json_is_true(get_json_value(artifact, "random"))) {
             grid.random |= RANDOM_ARTIFACT;
-            const auto &id = get_json_value(artifact, "id");
-            if (id.is_number_integer()) {
-                if (const auto err = info_set_integer(id, grid.artifact, true, LEGEND_SHORT_RANGE); !err) {
-                    return err.error();
-                }
+            if (const auto err = info_set_integer(get_json_value(artifact, "id"), grid.artifact, false, LEGEND_SHORT_RANGE); !err) {
+                return err.error();
             }
         } else if (json_is_true(get_json_value(artifact, "questReward"))) {
             out.artifact_is_quest_reward = true;
         }
+    } else if (!artifact.is_null()) {
+        return ParseErrorType::INVALID_TYPE;
     }
 
     const auto &trap = get_json_value(cell_data, "trap");
@@ -275,7 +274,7 @@ parse_error_type parse_quest_legend_cell(const nlohmann::json &cell_data, QuestL
         try {
             grid.trap = terrains.get_terrain_id(trap.get<std::string>());
         } catch (const std::exception &) {
-            return PARSE_ERROR_UNDEFINED_TERRAIN_TAG;
+            return ParseErrorType::UNDEFINED_TERRAIN_TAG;
         }
     } else if (trap.is_object() && json_is_true(get_json_value(trap, "random"))) {
         grid.random |= RANDOM_TRAP;
@@ -285,7 +284,7 @@ parse_error_type parse_quest_legend_cell(const nlohmann::json &cell_data, QuestL
         return err.error();
     }
 
-    return PARSE_ERROR_NONE;
+    return ParseErrorType::NONE;
 }
 
 QuestReader::QuestReader(const nlohmann::json &quest_data, QuestType &quest, QuestFixedMap &fixed_map)
@@ -295,46 +294,45 @@ QuestReader::QuestReader(const nlohmann::json &quest_data, QuestType &quest, Que
 {
 }
 
-int QuestReader::read() const
+ParseErrorType QuestReader::read() const
 {
     if (!this->quest_data.is_object()) {
-        return PARSE_ERROR_INVALID_TYPE;
+        return ParseErrorType::INVALID_TYPE;
     }
 
-    if (const auto err = this->set_name(); err != PARSE_ERROR_NONE) {
-        return err;
+    if (const auto err = this->set_name(); !err) {
+        return err.error();
     }
-    if (const auto err = this->set_definition(); err != PARSE_ERROR_NONE) {
-        return err;
+    if (const auto err = this->set_definition(); !err) {
+        return err.error();
     }
-    if (const auto err = this->set_descriptions(); err != PARSE_ERROR_NONE) {
-        return err;
+    if (const auto err = this->set_descriptions(); !err) {
+        return err.error();
     }
-    if (const auto err = this->set_legend(); err != PARSE_ERROR_NONE) {
-        return err;
+    if (const auto err = this->set_legend(); !err) {
+        return err.error();
     }
-    if (const auto err = this->set_maps(); err != PARSE_ERROR_NONE) {
-        return err;
+    if (const auto err = this->set_maps(); !err) {
+        return err.error();
     }
-    if (const auto err = this->set_starts(); err != PARSE_ERROR_NONE) {
-        return err;
+    if (const auto err = this->set_starts(); !err) {
+        return err.error();
     }
 
-    return PARSE_ERROR_NONE;
+    return ParseErrorType::NONE;
 }
 
-int QuestReader::set_name() const
+tl::expected<void, ParseErrorType> QuestReader::set_name() const
 {
     // info_set_string は {ja, en} オブジェクトを受け取り、ビルド言語に応じた文字列を格納する
-    const auto result = info_set_string(get_json_value(this->quest_data, "name"), this->quest.name, true);
-    return result ? PARSE_ERROR_NONE : result.error();
+    return info_set_string(get_json_value(this->quest_data, "name"), this->quest.name, true);
 }
 
-int QuestReader::set_definition() const
+tl::expected<void, ParseErrorType> QuestReader::set_definition() const
 {
     const auto &definition = get_json_value(this->quest_data, "definition");
     if (!definition.is_object()) {
-        return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+        return tl::make_unexpected(ParseErrorType::TOO_FEW_ARGUMENTS);
     }
 
     auto &meta = this->fixed_map.metadata;
@@ -342,42 +340,42 @@ int QuestReader::set_definition() const
 
     const auto &type = get_json_value(definition, "type");
     if (!type.is_string()) {
-        return PARSE_ERROR_TOO_FEW_ARGUMENTS;
+        return tl::make_unexpected(ParseErrorType::TOO_FEW_ARGUMENTS);
     }
     const auto kind_it = QUEST_KIND_TOKENS.find(type.get<std::string>());
     if (kind_it == QUEST_KIND_TOKENS.end()) {
-        return PARSE_ERROR_INVALID_FLAG;
+        return tl::make_unexpected(ParseErrorType::INVALID_FLAG);
     }
     meta.type = enum2i(kind_it->second);
 
     if (const auto err = info_set_integer(get_json_value(definition, "level"), meta.level, true); !err) {
-        return err.error();
+        return tl::make_unexpected(err.error());
     }
     if (const auto err = info_set_integer(get_json_value(definition, "numMon"), meta.num_mon, false); !err) {
-        return err.error();
+        return tl::make_unexpected(err.error());
     }
     if (const auto err = info_set_integer(get_json_value(definition, "maxNum"), meta.max_num, false); !err) {
-        return err.error();
+        return tl::make_unexpected(err.error());
     }
     if (const auto err = info_set_integer(get_json_value(definition, "dungeon"), meta.dungeon, false); !err) {
-        return err.error();
+        return tl::make_unexpected(err.error());
     }
     if (const auto err = info_set_integer(get_json_value(definition, "monster"), meta.r_idx, false); !err) {
-        return err.error();
+        return tl::make_unexpected(err.error());
     }
 
     const auto &flags = get_json_value(definition, "flags");
     if (!flags.is_null()) {
         if (!flags.is_array()) {
-            return PARSE_ERROR_INVALID_TYPE;
+            return tl::make_unexpected(ParseErrorType::INVALID_TYPE);
         }
         for (const auto &flag : flags) {
             if (!flag.is_string()) {
-                return PARSE_ERROR_INVALID_TYPE;
+                return tl::make_unexpected(ParseErrorType::INVALID_TYPE);
             }
             const auto it = QUEST_FLAG_TOKENS.find(flag.get<std::string>());
             if (it == QUEST_FLAG_TOKENS.end()) {
-                return PARSE_ERROR_INVALID_FLAG;
+                return tl::make_unexpected(ParseErrorType::INVALID_FLAG);
             }
             meta.flags |= it->second;
         }
@@ -385,35 +383,43 @@ int QuestReader::set_definition() const
 
     const auto &reward = get_json_value(definition, "reward");
     if (!reward.is_null()) {
+        // オブジェクトでない報酬や整数以外の値は、報酬無しとして黙って無視せず解析エラーにする。
+        if (!reward.is_object()) {
+            return tl::make_unexpected(ParseErrorType::INVALID_TYPE);
+        }
         const auto &artifact = get_json_value(reward, "artifact");
-        if (artifact.is_number_integer()) {
+        if (!artifact.is_null()) {
+            if (!artifact.is_number_integer()) {
+                return tl::make_unexpected(ParseErrorType::INVALID_TYPE);
+            }
             meta.reward_artifact = artifact.get<int>();
         }
 
         const auto &artifacts = get_json_value(reward, "artifacts");
         if (!artifacts.is_null()) {
             if (!artifacts.is_array()) {
-                return PARSE_ERROR_INVALID_TYPE;
+                return tl::make_unexpected(ParseErrorType::INVALID_TYPE);
             }
             for (const auto &candidate : artifacts) {
-                if (candidate.is_number_integer()) {
-                    this->fixed_map.reward_artifact_candidates.push_back(candidate.get<int>());
+                if (!candidate.is_number_integer()) {
+                    return tl::make_unexpected(ParseErrorType::INVALID_TYPE);
                 }
+                this->fixed_map.reward_artifact_candidates.push_back(candidate.get<int>());
             }
         }
     }
 
-    return PARSE_ERROR_NONE;
+    return {};
 }
 
-int QuestReader::set_descriptions() const
+tl::expected<void, ParseErrorType> QuestReader::set_descriptions() const
 {
     const auto &descriptions = get_json_value(this->quest_data, "descriptions");
     if (descriptions.is_null()) {
-        return PARSE_ERROR_NONE;
+        return {};
     }
     if (!descriptions.is_array()) {
-        return PARSE_ERROR_INVALID_TYPE;
+        return tl::make_unexpected(ParseErrorType::INVALID_TYPE);
     }
 
     for (const auto &description : descriptions) {
@@ -424,7 +430,7 @@ int QuestReader::set_descriptions() const
         if (status_at_most.is_string()) {
             const auto it = QUEST_STATUS_TOKENS.find(status_at_most.get<std::string>());
             if (it == QUEST_STATUS_TOKENS.end()) {
-                return PARSE_ERROR_INVALID_FLAG;
+                return tl::make_unexpected(ParseErrorType::INVALID_FLAG);
             }
             block.status_at_most = it->second;
         }
@@ -433,7 +439,7 @@ int QuestReader::set_descriptions() const
         if (status.is_string()) {
             const auto it = QUEST_STATUS_TOKENS.find(status.get<std::string>());
             if (it == QUEST_STATUS_TOKENS.end()) {
-                return PARSE_ERROR_INVALID_FLAG;
+                return tl::make_unexpected(ParseErrorType::INVALID_FLAG);
             }
             block.status_equals = it->second;
         }
@@ -442,7 +448,7 @@ int QuestReader::set_descriptions() const
         if (quest_type.is_string()) {
             const auto it = QUEST_KIND_TOKENS.find(quest_type.get<std::string>());
             if (it == QUEST_KIND_TOKENS.end()) {
-                return PARSE_ERROR_INVALID_FLAG;
+                return tl::make_unexpected(ParseErrorType::INVALID_FLAG);
             }
             block.quest_type = it->second;
         }
@@ -454,110 +460,114 @@ int QuestReader::set_descriptions() const
         this->fixed_map.descriptions.push_back(std::move(block));
     }
 
-    return PARSE_ERROR_NONE;
+    return {};
 }
 
-int QuestReader::set_legend() const
+tl::expected<void, ParseErrorType> QuestReader::set_legend() const
 {
     const auto &legend = get_json_value(this->quest_data, "legend");
     if (legend.is_null()) {
-        return PARSE_ERROR_NONE;
+        return {};
     }
     if (!legend.is_object()) {
-        return PARSE_ERROR_INVALID_TYPE;
+        return tl::make_unexpected(ParseErrorType::INVALID_TYPE);
     }
 
     for (const auto &[symbol, cell_data] : legend.items()) {
         if (symbol.size() != 1) {
-            return PARSE_ERROR_GENERIC;
+            return tl::make_unexpected(ParseErrorType::GENERIC);
         }
 
         QuestLegendCell cell;
-        if (const auto err = parse_quest_legend_cell(cell_data, cell); err != PARSE_ERROR_NONE) {
-            return err;
+        if (const auto err = parse_quest_legend_cell(cell_data, cell); err != ParseErrorType::NONE) {
+            return tl::make_unexpected(err);
         }
         this->fixed_map.legend.insert_or_assign(symbol.front(), cell);
     }
 
-    return PARSE_ERROR_NONE;
+    return {};
 }
 
-int QuestReader::set_maps() const
+tl::expected<void, ParseErrorType> QuestReader::set_maps() const
 {
     const auto &map = get_json_value(this->quest_data, "map");
     if (!map.is_null()) {
         if (!map.is_array()) {
-            return PARSE_ERROR_INVALID_TYPE;
+            return tl::make_unexpected(ParseErrorType::INVALID_TYPE);
         }
         std::vector<std::string> rows;
-        if (const auto err = read_map_rows(map, rows); err != PARSE_ERROR_NONE) {
-            return err;
+        if (const auto err = read_map_rows(map, rows); !err) {
+            return tl::make_unexpected(err.error());
         }
         this->fixed_map.maps.push_back(std::move(rows));
-        return PARSE_ERROR_NONE;
+        return {};
     }
 
     const auto &variants = get_json_value(this->quest_data, "mapVariants");
     if (!variants.is_null()) {
         if (!variants.is_array()) {
-            return PARSE_ERROR_INVALID_TYPE;
+            return tl::make_unexpected(ParseErrorType::INVALID_TYPE);
         }
         for (const auto &variant : variants) {
             if (!variant.is_array()) {
-                return PARSE_ERROR_INVALID_TYPE;
+                return tl::make_unexpected(ParseErrorType::INVALID_TYPE);
             }
             std::vector<std::string> rows;
-            if (const auto err = read_map_rows(variant, rows); err != PARSE_ERROR_NONE) {
-                return err;
+            if (const auto err = read_map_rows(variant, rows); !err) {
+                return tl::make_unexpected(err.error());
             }
             this->fixed_map.maps.push_back(std::move(rows));
         }
     }
 
-    return PARSE_ERROR_NONE;
+    return {};
 }
 
-int QuestReader::set_starts() const
+tl::expected<void, ParseErrorType> QuestReader::set_starts() const
 {
     const auto &start = get_json_value(this->quest_data, "start");
     if (!start.is_null()) {
         QuestStartPosition position;
         if (const auto err = info_set_integer(get_json_value(start, "y"), position.y, true); !err) {
-            return err.error();
+            return tl::make_unexpected(err.error());
         }
         if (const auto err = info_set_integer(get_json_value(start, "x"), position.x, true); !err) {
-            return err.error();
+            return tl::make_unexpected(err.error());
         }
-        if (const auto err = validate_quest_start(this->fixed_map, position); err != PARSE_ERROR_NONE) {
-            return err;
+        if (const auto err = validate_quest_start(this->fixed_map, position); !err) {
+            return tl::make_unexpected(err.error());
         }
         this->fixed_map.starts.push_back(position);
-        return PARSE_ERROR_NONE;
+        return {};
     }
 
     const auto &variants = get_json_value(this->quest_data, "startVariants");
     if (!variants.is_null()) {
         if (!variants.is_array()) {
-            return PARSE_ERROR_INVALID_TYPE;
+            return tl::make_unexpected(ParseErrorType::INVALID_TYPE);
         }
         for (const auto &variant : variants) {
             QuestStartPosition position;
+            // 整数以外の値は黙って無視せず解析エラーにする (無視すると条件付きの開始位置が無条件になる)。
             const auto &leaving_quest = get_json_value(variant, "leavingQuest");
-            if (leaving_quest.is_number_integer()) {
+            if (!leaving_quest.is_null()) {
+                if (!leaving_quest.is_number_integer()) {
+                    return tl::make_unexpected(ParseErrorType::INVALID_TYPE);
+                }
                 position.leaving_quest = leaving_quest.get<int>();
             }
             if (const auto err = info_set_integer(get_json_value(variant, "y"), position.y, true); !err) {
-                return err.error();
+                return tl::make_unexpected(err.error());
             }
             if (const auto err = info_set_integer(get_json_value(variant, "x"), position.x, true); !err) {
-                return err.error();
+                return tl::make_unexpected(err.error());
             }
-            if (const auto err = validate_quest_start(this->fixed_map, position); err != PARSE_ERROR_NONE) {
-                return err;
+            if (const auto err = validate_quest_start(this->fixed_map, position); !err) {
+                return tl::make_unexpected(err.error());
             }
             this->fixed_map.starts.push_back(position);
         }
     }
 
-    return PARSE_ERROR_NONE;
+    return {};
 }

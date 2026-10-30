@@ -1,8 +1,9 @@
 #include "market/building-monster.h"
+#include "bot/bot-json-output.h"
 #include "core/asking-player.h"
 #include "core/window-redrawer.h"
 #include "game-option/game-play-options.h"
-#include "io/input-key-acceptor.h"
+#include "io/input-context.h"
 #include "lore/lore-util.h"
 #include "system/creature-entity.h"
 #include "system/monrace/monrace-definition.h"
@@ -10,13 +11,13 @@
 #include "term/gameterm.h"
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
-#include "term/z-form.h"
 #include "tracking/lore-tracker.h"
 #include "util/int-char-converter.h"
 #include "util/string-processor.h"
 #include "view/display-lore.h"
 #include "view/display-messages.h"
 #include <algorithm>
+#include <fmt/format.h>
 
 /*!
  * @brief 施設でモンスターの情報を知るメインルーチン / research_mon -KMW-
@@ -66,11 +67,11 @@ bool research_mon(CreatureEntity &creature)
         }
 
         monster_name = monster_name_opt.value();
-        buf = format(_("名前:%sにマッチ", "Monsters' names with \"%s\""), monster_name.data());
+        buf = fmt::format(_("名前:{}にマッチ", "Monsters' names with \"{}\""), monster_name);
     } else if (ident_info[ident_i]) {
-        buf = format("%c - %s.", sym, ident_info[ident_i] + 2);
+        buf = fmt::format("{:c} - {}.", *sym, ident_info[ident_i] + 2);
     } else {
-        buf = format("%c - %s", sym, _("無効な文字", "Unknown Symbol"));
+        buf = fmt::format("{:c} - {}", *sym, _("無効な文字", "Unknown Symbol"));
     }
 
     prt(buf, 16, 10);
@@ -142,13 +143,16 @@ bool research_mon(CreatureEntity &creature)
     auto &tracker = LoreTracker::get_instance();
     auto notpicked = true;
     auto query = 'y';
+    constexpr auto query_prompt = _(" ['r'思い出, ' 'で続行, ESC]", " [(r)ecall, ESC, space to continue]");
     while (notpicked) {
+        // 思い出は 'r' でもう一度押して止めても画面に残るので、このモンスターを表示している間は登録したままにする
+        BotDrawnScreenScope bot_screen;
         auto monrace_id = monrace_ids[i];
         roff_top(monrace_id);
-        term_addstr(-1, TERM_WHITE, _(" ['r'思い出, ' 'で続行, ESC]", " [(r)ecall, ESC, space to continue]"));
+        term_addstr(-1, TERM_WHITE, query_prompt);
         while (true) {
             if (recall) {
-                const auto mes = monraces.probe_lore(monrace_id);
+                const auto mes = monraces.get_monrace(monrace_id).probe_lore();
                 if (mes) {
                     msg_print(*mes);
                     msg_erase();
@@ -157,12 +161,14 @@ bool research_mon(CreatureEntity &creature)
                 tracker.set_trackee(monrace_id);
                 window_stuff(creature);
                 screen_roff(creature, monrace_id, MONSTER_LORE_RESEARCH);
+                // 思い出の表示は 1 行目を消してモンスターの名前だけを描き直すので、キーの案内も描き直す
+                term_addstr(-1, TERM_WHITE, query_prompt);
                 notpicked = false;
                 old_sym = *sym;
                 old_i = i;
             }
 
-            query = inkey();
+            query = input_key_with_context(InputKind::COMMAND_CHAR, query_prompt);
             if (query != 'r') {
                 break;
             }

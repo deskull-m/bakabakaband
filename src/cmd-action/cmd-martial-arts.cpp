@@ -17,6 +17,7 @@
 #include "util/int-char-converter.h"
 #include "view/display-messages.h"
 #include "view/display-player.h"
+#include <fmt/format.h>
 
 /*!
  * @brief 武術スタイル選択メニューを表示
@@ -37,7 +38,7 @@ static MartialArtsStyleType select_martial_arts_style_menu(MartialArtsStyleType 
         auto desc = get_martial_arts_style_desc(style);
         auto marker = (style == current_style) ? "*" : " ";
 
-        prt(format("%c)%s%s - %s", key, marker, name, desc), 2 + i, 5);
+        prt(fmt::format("{}){}{} - {}", key, marker, name, desc), 2 + i, 5);
     }
 
     prt("どの武術スタイルを使用しますか？", 1, 5);
@@ -90,7 +91,7 @@ void do_cmd_martial_arts_style(CreatureEntity &creature)
     creature.martial_arts_style = new_style;
 
     auto style_name = get_martial_arts_style_name(new_style);
-    msg_format("武術スタイルを%sに変更しました。", style_name);
+    msg_print("武術スタイルを{}に変更しました。", style_name);
 
     handle_stuff(creature);
 }

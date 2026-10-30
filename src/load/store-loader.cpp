@@ -39,7 +39,7 @@ static void home_carry_load(CreatureEntity &creature, Store *store_ptr, ItemEnti
         return;
     }
 
-    if (store_ptr->stock_num >= store_get_stock_max(StoreSaleType::HOME)) {
+    if (store_ptr->stock_num >= store_get_stock_capacity(StoreSaleType::HOME)) {
         return;
     }
 
@@ -86,8 +86,8 @@ static void rd_store(CreatureEntity &creature, int town_number_initial, StoreSal
     for (int j = 0; j < inven_num; j++) {
         ItemEntity item;
         item_loader->rd_item(&item);
-        auto stock_max = store_get_stock_max(store_number);
-        if (store.stock_num >= stock_max) {
+        auto stock_capacity = store_get_stock_capacity(store_number);
+        if (store.stock_num >= stock_capacity) {
             continue;
         }
 
