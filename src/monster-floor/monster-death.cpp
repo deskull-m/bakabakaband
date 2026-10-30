@@ -155,7 +155,7 @@ static void drop_corpse(CreatureEntity &creature, MonsterDeath *md_ptr)
             item.pval = enum2i(md_ptr->m_ptr->get_r_idx());
             (void)drop_near(creature, item, md_ptr->get_position());
         }
-    } catch (const std::exception &e) {
+    } catch (const std::exception &) {
         msg_print(_("エラー:ソウルドロップの処理に失敗", "Error: Failed to drop a soul."));
 #ifndef WIN_DEBUG
         throw;
