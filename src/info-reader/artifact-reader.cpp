@@ -1,8 +1,8 @@
 #include "info-reader/artifact-reader.h"
 #include "artifact/fixed-art-types.h"
 #include "artifact/random-art-effects.h"
-#include "info-reader/baseitem-tokens-table.h"
 #include "info-reader/info-reader-util.h"
+#include "info-reader/item-flag-reader.h"
 #include "info-reader/json-reader-util.h"
 #include "info-reader/parse-error-types.h"
 #include "locale/japanese.h"
@@ -31,11 +31,7 @@ ArtifactReader::ArtifactReader(const nlohmann::json &art_data, int &previous_id)
  */
 bool ArtifactReader::grab_one_artifact_flag(ArtifactType &artifact, std::string_view what) const
 {
-    if (TrFlags::grab_one_flag(artifact.flags, baseitem_flags, what)) {
-        return true;
-    }
-
-    if (EnumClassFlagGroup<ItemGenerationTraitType>::grab_one_flag(artifact.gen_flags, baseitem_geneneration_flags, what)) {
+    if (grab_one_item_flag(artifact.flags, artifact.gen_flags, what)) {
         return true;
     }
 

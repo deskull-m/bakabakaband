@@ -721,6 +721,7 @@ libhengband_a_SOURCES = \
 	info-reader/fixed-map-parser.cpp info-reader/fixed-map-parser.h \
 	info-reader/general-parser.cpp info-reader/general-parser.h \
 	info-reader/info-reader-util.cpp info-reader/info-reader-util.h \
+	info-reader/item-flag-reader.cpp info-reader/item-flag-reader.h \
 	info-reader/json-reader-util.cpp info-reader/json-reader-util.h \
 	info-reader/magic-info-tokens-table.cpp info-reader/magic-info-tokens-table.h \
 	info-reader/magic-reader.cpp info-reader/magic-reader.h \
@@ -1636,6 +1637,7 @@ hengband_test_SOURCES = \
 	test/info-reader/test-ego-reader.cpp \
 	test/info-reader/test-general-parser.cpp \
 	test/info-reader/test-info-reader-util.cpp \
+	test/info-reader/test-item-flag-reader.cpp \
 	test/info-reader/test-baseitem-reader.cpp \
 	test/info-reader/test-json-reader-util.cpp \
 	test/info-reader/test-quest-reader.cpp \

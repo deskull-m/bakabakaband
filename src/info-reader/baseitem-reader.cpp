@@ -7,8 +7,8 @@
 #include "info-reader/baseitem-reader.h"
 #include "alliance/alliance.h"
 #include "artifact/random-art-effects.h"
-#include "info-reader/baseitem-tokens-table.h"
 #include "info-reader/info-reader-util.h"
+#include "info-reader/item-flag-reader.h"
 #include "info-reader/json-reader-util.h"
 #include "info-reader/parse-error-types.h"
 #include "info-reader/symbol-reader-util.h"
@@ -203,11 +203,7 @@ ParseErrorType BaseitemReader::read() const
  */
 bool BaseitemReader::grab_one_baseitem_flag(BaseitemDefinition &baseitem, std::string_view what) const
 {
-    if (TrFlags::grab_one_flag(baseitem.flags, baseitem_flags, what)) {
-        return true;
-    }
-
-    if (EnumClassFlagGroup<ItemGenerationTraitType>::grab_one_flag(baseitem.gen_flags, baseitem_geneneration_flags, what)) {
+    if (grab_one_item_flag(baseitem.flags, baseitem.gen_flags, what)) {
         return true;
     }
 

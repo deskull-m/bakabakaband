@@ -2,6 +2,7 @@
 #include "artifact/random-art-effects.h"
 #include "info-reader/baseitem-tokens-table.h"
 #include "info-reader/info-reader-util.h"
+#include "info-reader/item-flag-reader.h"
 #include "info-reader/json-reader-util.h"
 #include "info-reader/parse-error-types.h"
 #include "locale/language-switcher.h"
@@ -108,8 +109,7 @@ bool EgoReader::grab_one_flag(EgoItemDefinition &ego, const nlohmann::json &flag
         return false;
     }
     const auto &name = flag.get_ref<const std::string &>();
-    if (TrFlags::grab_one_flag(ego.flags, baseitem_flags, name) ||
-        EnumClassFlagGroup<ItemGenerationTraitType>::grab_one_flag(ego.gen_flags, baseitem_geneneration_flags, name)) {
+    if (grab_one_item_flag(ego.flags, ego.gen_flags, name)) {
         return true;
     }
     msg_print(_("未知のエゴ・フラグ '{}'。", "Unknown ego flag '{}'."), name);
