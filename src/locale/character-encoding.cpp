@@ -447,6 +447,9 @@ static bool utf8_to_sys(std::string_view str, char *sys_str_buffer, size_t sys_s
         return false;
     }
 
+    /* CP932 は U+301C を変換できず '?' になるため、波ダッシュを 0x8160 に対応する U+FF5E へ寄せる */
+    ranges::replace(utf16buf, L'\x301C', L'\xFF5E');
+
     /* UTF-8 -> SJIS(CP932) */
     if (WideCharToMultiByte(932, 0, utf16buf.data(), -1, sys_str_buffer, sys_str_buflen, nullptr, nullptr) == 0) {
         return false;
@@ -566,6 +569,9 @@ std::string utf8_to_local(std::string_view str_utf8)
 
     std::wstring wide_str(wide_length, L'\0');
     MultiByteToWideChar(CP_UTF8, 0, str_utf8.data(), utf8_length, wide_str.data(), wide_length);
+
+    // CP932 は U+301C を変換できず '?' になるため、波ダッシュを 0x8160 に対応する U+FF5E へ寄せる
+    ranges::replace(wide_str, L'\x301C', L'\xFF5E');
 
     // UTF-16 -> Shift-JIS (CP932)
     const auto sjis_length = WideCharToMultiByte(932, 0, wide_str.data(), wide_length, NULL, 0, NULL, NULL);

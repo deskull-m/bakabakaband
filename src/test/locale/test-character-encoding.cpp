@@ -177,4 +177,20 @@ TEST_CASE("codeconv returns UNKNOWN for empty string")
     CHECK(codeconv(str.data()) == CharacterEncoding::UNKNOWN);
 }
 
+#if defined(SJIS) && defined(WINDOWS)
+TEST_CASE("utf8_to_sys converts both wave dash and fullwidth tilde to the same CP932 character")
+{
+    const auto expected = cat("8", "\x81\x60", "17");
+    CHECK(utf8_to_sys(cat("8", "\xe3\x80\x9c", "17")) == expected); // U+301C
+    CHECK(utf8_to_sys(cat("8", "\xef\xbd\x9e", "17")) == expected); // U+FF5E
+}
+
+TEST_CASE("utf8_to_local converts both wave dash and fullwidth tilde to the same CP932 character")
+{
+    const auto expected = cat("8", "\x81\x60", "17");
+    CHECK(utf8_to_local(cat("8", "\xe3\x80\x9c", "17")) == expected); // U+301C
+    CHECK(utf8_to_local(cat("8", "\xef\xbd\x9e", "17")) == expected); // U+FF5E
+}
+#endif
+
 #endif
