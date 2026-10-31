@@ -1,5 +1,6 @@
 #include "info-reader/parse-error-types.h"
 #include "info-reader/vault-reader.h"
+#include "locale/language-switcher.h"
 #include "room/rooms-vault.h"
 #include "room/vault-flag-types.h"
 #include "system/enums/monrace/monrace-id.h"
@@ -7,6 +8,7 @@
 #include "util/enum-converter.h"
 #include "util/finalizer.h"
 #include <doctest/doctest.h>
+#include <fmt/format.h>
 #include <limits>
 #include <nlohmann/json.hpp>
 #include <string>
@@ -136,6 +138,37 @@ TEST_CASE("VaultReader rejects invalid records atomically with field diagnostics
     auto data = original;
     data["typo"] = 0;
     check_invalid(data, "$.typo");
+}
+
+TEST_CASE("VaultReader distinguishes non-integer values from out-of-range integers")
+{
+    const auto restore = preserve_vaults();
+    vaults_info.clear();
+    auto previous_id = -1;
+    const auto original = make_vault();
+
+    // type の範囲は [0, 255]。整数そのものでない値と範囲外の整数で理由を変える (上流 hengband#6028 相当)。
+    const auto integer_reason = std::string(_("整数が必要です", "expected an integer"));
+    const auto range_reason = fmt::format(_("{}以上{}以下の整数が必要です", "expected an integer in [{}, {}]"), 0, 255);
+
+    const auto read_reason = [&](const nlohmann::json &value) {
+        auto data = original;
+        data["type"] = value;
+        VaultReader reader(data, previous_id);
+        CHECK(reader.read() != ParseErrorType::NONE);
+        REQUIRE(reader.error().has_value());
+        CHECK(reader.error()->path == "$.type");
+        return reader.error()->reason;
+    };
+
+    // 非整数 (null・真偽値・文字列・小数) には「整数が必要です」
+    for (const auto &value : std::vector<nlohmann::json>{ nullptr, true, "7", 7.5 }) {
+        CHECK(read_reason(value) == integer_reason);
+    }
+    // 整数だが範囲外には範囲を含む理由
+    for (const auto &value : std::vector<nlohmann::json>{ -1, 256, std::numeric_limits<uint64_t>::max() }) {
+        CHECK(read_reason(value) == range_reason);
+    }
 }
 
 TEST_CASE("VaultReader rejects duplicate and descending IDs and permits retry")

@@ -39,8 +39,14 @@ ParseErrorType VaultReader::fail(ParseErrorType code, std::string_view path, std
 
 ParseErrorType VaultReader::read_integer(std::string_view key, int &value, int minimum, int maximum)
 {
-    if (const auto err = info_set_integer(this->data[key], value, true, Range(minimum, maximum)); !err) {
-        return this->fail(err.error(), fmt::format("$.{}", key), fmt::format(_("{}以上{}以下の整数が必要です", "expected an integer in [{}, {}]"), minimum, maximum));
+    const auto &field = this->data[key];
+    if (const auto err = info_set_integer(field, value, true, Range(minimum, maximum)); !err) {
+        // 整数そのものでない (文字列・null・真偽値・小数等) 値には範囲ではなく「整数が必要」と伝える。
+        // 範囲の理由は整数かつ範囲外のときだけ使う (上流 hengband#6028 相当)。
+        const auto reason = field.is_number_integer()
+                                ? fmt::format(_("{}以上{}以下の整数が必要です", "expected an integer in [{}, {}]"), minimum, maximum)
+                                : std::string(_("整数が必要です", "expected an integer"));
+        return this->fail(err.error(), fmt::format("$.{}", key), reason);
     }
     return ParseErrorType::NONE;
 }
