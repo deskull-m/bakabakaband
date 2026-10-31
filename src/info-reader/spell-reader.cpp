@@ -3,9 +3,7 @@
 #include "info-reader/json-reader-util.h"
 #include "info-reader/parse-error-types.h"
 #include "system/spell-info-list.h"
-#include "util/enum-converter.h"
 #include "view/display-messages.h"
-#include <fmt/format.h>
 #include <nlohmann/json.hpp>
 
 SpellReader::SpellReader(const nlohmann::json &realm_data, SpellInfoList &spell_info_list, Session &session)

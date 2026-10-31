@@ -6,7 +6,6 @@
 #include "locale/character-encoding.h"
 #include "system/monrace/monrace-message.h"
 #include "view/display-messages.h"
-#include <fmt/format.h>
 #include <nlohmann/json.hpp>
 #include <string>
 

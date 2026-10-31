@@ -9,7 +9,6 @@
 #include "core/show-file.h"
 #include "flavor/flavor-describer.h"
 #include "flavor/object-flavor-types.h"
-#include "info-reader/fixed-map-parser.h"
 #include "io-dump/dump-util.h"
 #include "locale/english.h"
 #include "object-enchant/special-object-flags.h"
