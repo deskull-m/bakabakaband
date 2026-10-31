@@ -887,6 +887,7 @@
     <ClCompile Include="..\..\src\player\patron.cpp" />
     <ClCompile Include="..\..\src\player-info\class-info.cpp" />
     <ClCompile Include="..\..\src\player\player-damage.cpp" />
+    <ClCompile Include="..\..\src\player\player-known-flags.cpp" />
     <ClCompile Include="..\..\src\status\action-setter.cpp" />
     <ClCompile Include="..\..\src\inventory\player-inventory.cpp" />
     <ClCompile Include="..\..\src\player\player-personality.cpp" />
@@ -2108,6 +2109,7 @@
     <ClInclude Include="..\..\src\player\patron.h" />
     <ClInclude Include="..\..\src\player-info\class-info.h" />
     <ClInclude Include="..\..\src\player\player-damage.h" />
+    <ClInclude Include="..\..\src\player\player-known-flags.h" />
     <ClInclude Include="..\..\src\status\action-setter.h" />
     <ClInclude Include="..\..\src\player\player-move.h" />
     <ClInclude Include="..\..\src\player\player-personality.h" />
