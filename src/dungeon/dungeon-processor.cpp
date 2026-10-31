@@ -200,7 +200,7 @@ void process_dungeon(CreatureEntity &creature, bool load_game)
     floor.monster_level = floor.base_level;
     floor.object_level = floor.base_level;
     world.is_loading_now = true;
-    if (creature.get_energy_need() > 0 && !is_watching && (floor.is_underground() || floor.is_leaving_dungeon() || floor.inside_arena)) {
+    if (!load_game && creature.get_energy_need() > 0 && !is_watching && (floor.is_underground() || floor.is_leaving_dungeon() || floor.inside_arena)) {
         creature.set_energy_need(0);
     }
 
@@ -276,6 +276,8 @@ void process_dungeon(CreatureEntity &creature, bool load_game)
         if (wild_regen) {
             wild_regen--;
         }
+
+        WorldTurnProcessor(creature).decide_auto_save();
     }
 
     if ((inside_quest(quest_id)) && monrace_questor.kind_flags.has_not(MonsterKindType::UNIQUE)) {

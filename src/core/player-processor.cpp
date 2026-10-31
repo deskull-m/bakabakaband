@@ -440,7 +440,7 @@ void process_player(CreatureEntity &creature)
  */
 void process_upkeep_with_speed(CreatureEntity &creature)
 {
-    if (!load && creature.get_enchant_energy_need() > 0 && !creature.is_leaving()) {
+    if (creature.get_enchant_energy_need() > 0 && !creature.is_leaving()) {
         creature.sub_enchant_energy_need(speed_to_energy(static_cast<byte>(creature.get_speed())));
     }
 
@@ -449,23 +449,11 @@ void process_upkeep_with_speed(CreatureEntity &creature)
     }
 
     while (creature.get_enchant_energy_need() <= 0) {
-        if (!load) {
-            check_music(creature);
-        }
-
-        if (!load) {
-            check_demigod(creature);
-        }
-
+        check_music(creature);
+        check_demigod(creature);
         SpellHex spell_hex(creature);
-        if (!load) {
-            spell_hex.decrease_mana();
-        }
-
-        if (!load) {
-            spell_hex.continue_revenge();
-        }
-
+        spell_hex.decrease_mana();
+        spell_hex.continue_revenge();
         creature.add_enchant_energy_need(ENERGY_NEED());
     }
 }
