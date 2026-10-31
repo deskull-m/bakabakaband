@@ -110,7 +110,10 @@ public:
     int64_t calcCurrentPower();
     virtual bool isAnnihilated();
     virtual bool isFriendly(const CreatureEntity &creature) const;
+    //! アライアンス固有の印象値。各アライアンスが実装する
     virtual int calcImpressionPoint(const CreatureEntity &creature) const = 0;
+    //! ゲーム中で実際に用いる印象値。アライアンス固有分に全アライアンス共通の補正を足したもの
+    int calc_impression_point_total(const CreatureEntity &creature) const;
     virtual ~Alliance() = default;
     int64_t AnnihilatedPowerdownDiv = 1000; //!< 壊滅時戦力指数除算
     virtual void panishment(CreatureEntity &creature);

@@ -397,7 +397,7 @@ static void generate_wild_monsters(CreatureEntity &creature)
 
         if (alliance_it != alliance_list.end()) {
             const auto &alliance = alliance_it->second;
-            int impression = alliance->calcImpressionPoint(creature);
+            int impression = alliance->calc_impression_point_total(creature);
             auto ambush_monsters = alliance->get_ambush_monsters(creature, impression);
 
             // アライアンス固有のモンスターを配置

@@ -640,6 +640,7 @@
     <ClCompile Include="..\..\src\market\arena.cpp" />
     <ClCompile Include="..\..\src\market\bounty-prize-table.cpp" />
     <ClCompile Include="..\..\src\market\bounty.cpp" />
+    <ClCompile Include="..\..\src\market\loot-notoriety.cpp" />
     <ClCompile Include="..\..\src\market\building-craft-armor.cpp" />
     <ClCompile Include="..\..\src\market\building-craft-fix.cpp" />
     <ClCompile Include="..\..\src\market\building-craft-weapon.cpp" />
@@ -1611,6 +1612,7 @@
     <ClInclude Include="..\..\src\market\arena.h" />
     <ClInclude Include="..\..\src\market\bounty-prize-table.h" />
     <ClInclude Include="..\..\src\market\bounty.h" />
+    <ClInclude Include="..\..\src\market\loot-notoriety.h" />
     <ClInclude Include="..\..\src\market\building-actions-table.h" />
     <ClInclude Include="..\..\src\market\building-craft-armor.h" />
     <ClInclude Include="..\..\src\market\building-craft-fix.h" />
