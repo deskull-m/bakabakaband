@@ -110,7 +110,10 @@ void process_dungeon(CreatureEntity &creature, bool load_game)
     creature.set_ambush_flag(false);
     health_track(creature, 0);
 
-    disturb(creature, true, true);
+    // セーブを読み込んで再開したとき (load_game) は、セーブしている探索モードを解かず、続けた場合と同じにする
+    // (load_game は新規ゲームの最初の階でも真だが、そのときは探索モードではない)。
+    // 休憩・釣り・走り・移動は、残りの回数や向きをセーブしていないので止める
+    disturb(creature, !load_game, true);
     const auto quest_id = floor.get_quest_id();
     auto &quests = QuestList::get_instance();
     auto &monrace_questor = quests.get_quest(quest_id).get_bounty();
