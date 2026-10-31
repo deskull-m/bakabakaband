@@ -84,7 +84,7 @@
       "equip_kind": [
         {
           "id": 102,
-          "probability": "1_IN_5",
+          "probability": "1_IN_1",
           "grade": 0,
           "dice": "1d1",
         },
@@ -486,7 +486,7 @@
       "equip_kind": [
         {
           "id": 102,
-          "probability": "1_IN_5",
+          "probability": "1_IN_1",
           "grade": 0,
           "dice": "1d1",
         },
@@ -546,7 +546,7 @@
       "equip_kind": [
         {
           "id": 102,
-          "probability": "1_IN_5",
+          "probability": "1_IN_1",
           "grade": 0,
           "dice": "1d1",
         },
@@ -604,6 +604,14 @@
         "RABBLE",
         "TAKE_ITEM",
       ],
+      "equip_kind": [
+        {
+          "id": 102,
+          "probability": "1_IN_1",
+          "grade": 0,
+          "dice": "1d1",
+        },
+      ],
     },
     {
       "id": 12,
@@ -657,7 +665,7 @@
       "equip_kind": [
         {
           "id": 102,
-          "probability": "1_IN_5",
+          "probability": "1_IN_1",
           "grade": 0,
           "dice": "1d1",
         },
@@ -723,7 +731,7 @@
       "equip_kind": [
         {
           "id": 102,
-          "probability": "1_IN_5",
+          "probability": "1_IN_1",
           "grade": 0,
           "dice": "1d1",
         },
@@ -845,6 +853,14 @@
         "BASH_DOOR",
         "RABBLE",
       ],
+      "equip_kind": [
+        {
+          "id": 102,
+          "probability": "1_IN_1",
+          "grade": 0,
+          "dice": "1d1",
+        },
+      ],
     },
     {
       "id": 16,
@@ -962,6 +978,14 @@
         "BASH_DOOR",
         "WARRIOR",
         "EVIL",
+      ],
+      "equip_kind": [
+        {
+          "id": 102,
+          "probability": "1_IN_1",
+          "grade": 0,
+          "dice": "1d1",
+        },
       ],
     },
     {
@@ -82247,6 +82271,14 @@
         "DROP_SKELETON",
         "NASTY",
       ],
+      "equip_kind": [
+        {
+          "id": 102,
+          "probability": "1_IN_1",
+          "grade": 0,
+          "dice": "1d1",
+        },
+      ],
     },
     {
       "id": 1287,
@@ -88735,6 +88767,14 @@
         "HAS_LITE_1",
         "NO_CONF",
         "NO_SLEEP",
+      ],
+      "equip_kind": [
+        {
+          "id": 102,
+          "probability": "1_IN_1",
+          "grade": 0,
+          "dice": "1d1",
+        },
       ],
       "drop_kind": [
         {
@@ -110981,6 +111021,14 @@
         "EAT_LOSE_CHR",
         "HUMAN",
       ],
+      "equip_kind": [
+        {
+          "id": 102,
+          "probability": "1_IN_1",
+          "grade": 0,
+          "dice": "1d1",
+        },
+      ],
     },
     {
       "id": 1739,
@@ -115565,6 +115613,14 @@
         "OPEN_DOOR",
         "BASH_DOOR",
       ],
+      "equip_kind": [
+        {
+          "id": 102,
+          "probability": "1_IN_1",
+          "grade": 0,
+          "dice": "1d1",
+        },
+      ],
     },
     {
       "id": 1813,
@@ -116246,7 +116302,7 @@
       "equip_kind": [
         {
           "id": 102,
-          "probability": "1_IN_5",
+          "probability": "1_IN_1",
           "grade": 0,
           "dice": "1d1",
         },
@@ -119440,7 +119496,7 @@
       "equip_kind": [
         {
           "id": 102,
-          "probability": "1_IN_5",
+          "probability": "1_IN_1",
           "grade": 0,
           "dice": "1d1",
         },
@@ -120107,7 +120163,7 @@
       "equip_kind": [
         {
           "id": 102,
-          "probability": "1_IN_5",
+          "probability": "1_IN_1",
           "grade": 0,
           "dice": "1d1",
         },
@@ -128115,6 +128171,14 @@
         "HUMAN",
         "TAKE_ITEM",
       ],
+      "equip_kind": [
+        {
+          "id": 102,
+          "probability": "1_IN_1",
+          "grade": 0,
+          "dice": "1d1",
+        },
+      ],
     },
     {
       "id": 2008,
@@ -130379,6 +130443,14 @@
         "HUMAN",
         "TAKE_ITEM",
       ],
+      "equip_kind": [
+        {
+          "id": 102,
+          "probability": "1_IN_1",
+          "grade": 0,
+          "dice": "1d1",
+        },
+      ],
     },
     {
       "id": 2045,
@@ -131790,6 +131862,14 @@
         "HUMAN",
         "STUPID",
         "TAKE_ITEM",
+      ],
+      "equip_kind": [
+        {
+          "id": 102,
+          "probability": "1_IN_1",
+          "grade": 0,
+          "dice": "1d1",
+        },
       ],
     },
     {
