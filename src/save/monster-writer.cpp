@@ -62,4 +62,7 @@ void MonsterWriter::write_to_savedata() const
         wr_item(*item);
     }
     wr_u16b(0xFFFF);
+
+    // 視認されているか (visible_on_map / 旧 ml)。セーブデータバージョン 56 以降。
+    wr_byte(this->monster.is_visible_on_map() ? 1 : 0);
 }

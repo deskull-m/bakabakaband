@@ -448,6 +448,12 @@ static void exe_leave_floor(CreatureEntity &creature, saved_floor_type *sf_ptr)
     floor.forget_lite();
     floor.forget_view();
     floor.forget_mon_lite();
+
+    // 視認されているかはこの階にいる間だけのものなので、戻ったときに離れたときの状態で判定しないよう消してから保存する
+    for (short m_idx = 1; m_idx < floor.m_max; m_idx++) {
+        floor.m_list[m_idx].set_visible_on_map(false);
+    }
+
     if (save_floor(creature, sf_ptr, 0)) {
         return;
     }

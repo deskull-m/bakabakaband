@@ -31,8 +31,11 @@ constexpr std::string_view VARIANT_NAME("Bakabaka");
  *     従来プレイヤー writer (byte) / モンスター writer (s16b) で個別保存していた
  *     ものを統一 (s16b)。旧バージョンは各固有経路で読む (rd_creature_common /
  *     rd_base_info / rd_monster_v50 に older_than(54) ガード)。
+ * 56: モンスターが視認されているか (visible_on_map / 旧 ml) を保存 (hengband#6060 相当)。
+ *     旧バージョン (<56) のモンスターは視認されていない状態で読み込む
+ *     (rd_monster_v50 に older_than(56) ガード)。
  */
-constexpr uint32_t SAVEFILE_VERSION = 55;
+constexpr uint32_t SAVEFILE_VERSION = 56;
 
 /*!
  * @brief バージョンが開発版が安定版かを返す(廃止予定)
