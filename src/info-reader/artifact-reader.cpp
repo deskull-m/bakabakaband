@@ -1,8 +1,8 @@
 #include "info-reader/artifact-reader.h"
 #include "artifact/fixed-art-types.h"
 #include "artifact/random-art-effects.h"
-#include "info-reader/baseitem-tokens-table.h"
 #include "info-reader/info-reader-util.h"
+#include "info-reader/item-flag-reader.h"
 #include "info-reader/json-reader-util.h"
 #include "info-reader/parse-error-types.h"
 #include "locale/japanese.h"
@@ -31,16 +31,7 @@ ArtifactReader::ArtifactReader(const nlohmann::json &art_data, int &previous_id)
  */
 bool ArtifactReader::grab_one_artifact_flag(ArtifactType &artifact, std::string_view what) const
 {
-    if (TrFlags::grab_one_flag(artifact.flags, baseitem_flags, what)) {
-        return true;
-    }
-
-    if (EnumClassFlagGroup<ItemGenerationTraitType>::grab_one_flag(artifact.gen_flags, baseitem_geneneration_flags, what)) {
-        return true;
-    }
-
-    msg_print(_("未知の伝説のアイテム・フラグ '{}'。", "Unknown artifact flag '{}'."), what);
-    return false;
+    return grab_one_item_flag_or_report(artifact.flags, artifact.gen_flags, what, _("未知の伝説のアイテム・フラグ '{}'。", "Unknown artifact flag '{}'."));
 }
 
 /*!
@@ -56,12 +47,12 @@ ParseErrorType ArtifactReader::set_art_baseitem(ArtifactType &artifact) const
     }
 
     ItemKindType type_value{};
-    if (const auto err = info_set_integer(get_json_value(baseitem_data, "type_value"), type_value, true, Range(0, 128)); !err) {
+    if (const auto err = info_set_integer(get_json_value(baseitem_data, "type_value"), type_value, true, Range(0, ITEM_TYPE_MAX)); !err) {
         return err.error();
     }
 
     int subtype_value{};
-    if (const auto err = info_set_integer(get_json_value(baseitem_data, "subtype_value"), subtype_value, true, Range(0, 128)); !err) {
+    if (const auto err = info_set_integer(get_json_value(baseitem_data, "subtype_value"), subtype_value, true, Range(0, item_subtype_max({ type_value, 0 }))); !err) {
         return err.error();
     }
 
@@ -76,17 +67,15 @@ ParseErrorType ArtifactReader::set_art_baseitem(ArtifactType &artifact) const
  */
 ParseErrorType ArtifactReader::set_art_activate(ArtifactType &artifact) const
 {
-    const auto &act_data = get_json_value(this->art_data, "activate");
-    if (!act_data.is_string()) {
+    const auto activation = read_activation(get_json_value(this->art_data, "activate"));
+    if (!activation) {
+        return activation.error();
+    }
+    if (*activation == RandomArtActType::NONE) {
         return ParseErrorType::NONE;
     }
 
-    auto activation = grab_one_activation_flag(act_data.get<std::string>());
-    if (activation <= RandomArtActType::NONE) {
-        return ParseErrorType::INVALID_FLAG;
-    }
-
-    artifact.act_idx = activation;
+    artifact.act_idx = *activation;
     artifact.flags.set(tr_type::TR_ACTIVATE);
     return ParseErrorType::NONE;
 }
@@ -167,7 +156,7 @@ ParseErrorType ArtifactReader::read() const
         msg_print(_("アーティファクトの重量読込失敗。ID: '{}'。", "Failed to load weight of artifact. ID: '{}'."), int_id);
         return err.error();
     }
-    if (const auto err = info_set_integer(get_json_value(this->art_data, "cost"), artifact.cost, true, Range(0, 99999999)); !err) {
+    if (const auto err = info_set_integer(get_json_value(this->art_data, "cost"), artifact.cost, true, Range(0, ITEM_COST_MAX)); !err) {
         msg_print(_("アーティファクトの売値読込失敗。ID: '{}'。", "Failed to load cost of artifact. ID: '{}'."), int_id);
         return err.error();
     }

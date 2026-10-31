@@ -6,8 +6,8 @@
 #include "system/baseitem/baseitem-record.h"
 #include "system/baseitem/baseitem-records.h"
 #include "system/item-entity.h"
+#include "test/scoped-ego-list.h"
 #include "test/scoped-vector-wrapper.h"
-#include "util/finalizer.h"
 #include <doctest/doctest.h>
 #include <limits>
 #include <utility>
@@ -17,9 +17,7 @@
  */
 TEST_CASE("object_value_real composes base and ego prices before save saturation")
 {
-    auto saved_egos = std::move(egos_info);
-    const auto restore = util::make_finalizer([&saved_egos] { egos_info.swap(saved_egos); });
-    egos_info.clear();
+    const test::ScopedEgoList saved_egos;
     auto &ego = egos_info.try_emplace(EgoType::A_MORGUL).first->second;
     ego.cost = 12345;
     test::ScopedVectorWrapper<BaseitemList> saved_items{ BaseitemList::get_instance() };

@@ -1191,7 +1191,8 @@ static tl::optional<ElementRealmType> get_element_realm(CreatureEntity &creature
         put_str(buf, 10, 10);
         os = cs;
 
-        char c = inkey();
+        const InputContextScope input_context({ InputKind::BIRTH, buf, BirthInputDetails{ BirthStep::ELEMENT_REALM } });
+        const auto c = inkey();
         cs = interpret_realm_select_key(cs, n, c);
 
         if (c == 'S') {
@@ -1201,14 +1202,14 @@ static tl::optional<ElementRealmType> get_element_realm(CreatureEntity &creature
         if (c == ' ' || c == '\r' || c == '\n') {
             if (cs == n) {
                 display_realm_cursor(cs, n, TERM_WHITE);
-                cs = randint0(n - 1);
+                cs = randint0(n);
             }
             break;
         }
 
         if (c == '*') {
             display_realm_cursor(cs, n, TERM_WHITE);
-            cs = randint0(n - 1);
+            cs = randint0(n);
             break;
         }
 

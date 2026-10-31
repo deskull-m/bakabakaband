@@ -258,6 +258,10 @@ auto &system = AngbandSystem::get_instance();
 const auto restore_hoge = util::make_finalizer([&system, backup = system.get_hoge()]() { system.set_hoge(backup); });
 ```
 
+エゴの一覧（`egos_info`）はエゴの定義をコピーできないので、`util::make_finalizer()` での
+コピー退避が使えません。`test/scoped-ego-list.h` の `test::ScopedEgoList` を使ってください。
+構築時に空の一覧と入れ替え、スコープを抜けるときに元の一覧へ戻します。
+
 そのうえで、**必要な前提は各テストケースの中で自分で設定してください。**
 テストの実行順序や `--test-case=` での絞り込み実行に依存しないようにするためです。
 

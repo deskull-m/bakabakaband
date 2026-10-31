@@ -18,7 +18,6 @@
 #include "game-option/play-record-options.h"
 #include "game-option/special-options.h"
 #include "grid/grid.h"
-#include "info-reader/fixed-map-parser.h"
 #include "io/input-key-requester.h"
 #include "io/write-diary.h"
 #include "main/sound-definitions-table.h"

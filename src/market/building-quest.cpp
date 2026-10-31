@@ -2,7 +2,6 @@
 #include "core/asking-player.h"
 #include "dungeon/quest.h"
 #include "floor/wild.h"
-#include "info-reader/fixed-map-parser.h"
 #include "io/input-key-acceptor.h"
 #include "market/building-util.h"
 #include "monster/monster-list.h"

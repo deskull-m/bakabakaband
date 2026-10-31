@@ -1,17 +1,37 @@
 #pragma once
 
+#include "info-reader/parse-error-types.h"
 #include "system/angband.h"
 #include "util/bit-flags-calculator.h"
 #include <concepts>
+#include <limits>
 #include <map>
+#include <nlohmann/json_fwd.hpp>
 #include <string>
 #include <string_view>
+#include <tl/expected.hpp>
 #include <tl/optional.hpp>
 #include <unordered_map>
 #include <utility>
 
+//! ベースアイテム・アーティファクト・エゴ定義で共有する価格 (cost) の上限。
+//! 数量や割引の計算で桁あふれしないよう PRICE 上限の 1/32 に抑える。
+//! ヘッダのため windows.h の max マクロ展開を避けて括弧で囲む (MSVC C4003 対策)。
+constexpr auto ITEM_COST_MAX = (std::numeric_limits<PRICE>::max)() / 32;
+
+class BaseitemKey;
+
+//! 種別 (tval) の上限。種別を添字にする色の表が 128 要素のため 127 とする。
+constexpr int ITEM_TYPE_MAX = 127;
+//! 副種別 (sval) の既定上限。
+constexpr int ITEM_SUBTYPE_DEFAULT_MAX = 128;
+//! 種別ごとの副種別 (sval) の上限を返す (武器熟練度・呪文・魔道具の表のサイズに依存)。定義は baseitem-reader.cpp。
+int item_subtype_max(const BaseitemKey &key);
+
 enum class RandomArtActType : short;
 RandomArtActType grab_one_activation_flag(std::string_view what);
+//! 任意の発動指定 (省略時は null) を読み込む共通処理。省略時は NONE、指定時は発動能力 ID、失敗時は解析エラーを返す。
+tl::expected<RandomArtActType, ParseErrorType> read_activation(const nlohmann::json &activation_json);
 
 #ifndef JP
 void append_english_text(std::string &text, std::string_view add);

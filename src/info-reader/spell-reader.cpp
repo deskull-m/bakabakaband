@@ -3,9 +3,7 @@
 #include "info-reader/json-reader-util.h"
 #include "info-reader/parse-error-types.h"
 #include "system/spell-info-list.h"
-#include "util/enum-converter.h"
 #include "view/display-messages.h"
-#include <fmt/format.h>
 #include <nlohmann/json.hpp>
 
 SpellReader::SpellReader(const nlohmann::json &realm_data, SpellInfoList &spell_info_list, Session &session)
@@ -23,7 +21,7 @@ ParseErrorType SpellReader::read() const
 {
     const auto record_index = ++this->session.record_index; //!< @note 呪文領域は数値IDを持たないため、エラー表示用に要素の順序を用いる
 
-    RealmType realm_id;
+    RealmType realm_id = RealmType::NONE;
     if (const auto err = this->set_realm(realm_id); err != ParseErrorType::NONE) {
         msg_print(_("領域名読込失敗。ID: '{}'。", "Failed to load realm name. ID: '{}'."), record_index);
         return err;
@@ -48,16 +46,11 @@ ParseErrorType SpellReader::set_realm(RealmType &realm) const
         return ParseErrorType::TOO_FEW_ARGUMENTS;
     }
 
-    const auto &realmname_obj = get_json_value(this->realm_data, "name");
-    if (!realmname_obj.is_string()) {
-        return ParseErrorType::TOO_FEW_ARGUMENTS;
+    const auto realm_token = info_read_token(get_json_value(this->realm_data, "name"), realms_list);
+    if (!realm_token) {
+        return realm_token.error();
     }
-
-    const auto it = realms_list.find(realmname_obj.get<std::string>());
-    if (it == realms_list.end()) {
-        return ParseErrorType::INVALID_FLAG;
-    }
-    realm = it->second;
+    realm = *realm_token;
     return ParseErrorType::NONE;
 }
 
@@ -82,9 +75,13 @@ ParseErrorType SpellReader::set_spell_data(const nlohmann::json &spell_data, Rea
     info.idx = static_cast<short>(spell_id);
 
     const auto &tag_obj = get_json_value(spell_data, "spell_tag");
-    if (!tag_obj.is_string()) {
+    if (tag_obj.is_null()) {
         msg_print(_("呪文タグ読込失敗。ID: '{}'。", "Failed to load spell tag. ID: '{}'."), this->session.record_index);
         return ParseErrorType::TOO_FEW_ARGUMENTS;
+    }
+    if (!tag_obj.is_string()) {
+        msg_print(_("呪文タグ読込失敗。ID: '{}'。", "Failed to load spell tag. ID: '{}'."), this->session.record_index);
+        return ParseErrorType::INVALID_TYPE;
     }
     info.tag = tag_obj.get<std::string>();
 

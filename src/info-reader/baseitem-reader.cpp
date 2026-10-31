@@ -7,28 +7,60 @@
 #include "info-reader/baseitem-reader.h"
 #include "alliance/alliance.h"
 #include "artifact/random-art-effects.h"
-#include "info-reader/baseitem-tokens-table.h"
 #include "info-reader/info-reader-util.h"
+#include "info-reader/item-flag-reader.h"
 #include "info-reader/json-reader-util.h"
 #include "info-reader/parse-error-types.h"
 #include "info-reader/symbol-reader-util.h"
 #include "locale/japanese.h"
 #include "object-enchant/tr-types.h"
 #include "object/tval-types.h"
+#include "player/player-skill.h"
+#include "sv-definition/sv-rod-types.h"
+#include "sv-definition/sv-staff-types.h"
+#include "sv-definition/sv-wand-types.h"
 #include "system/baseitem/baseitem-definition.h"
+#include "system/baseitem/baseitem-key.h"
 #include "system/baseitem/baseitem-list.h"
 #include "util/bit-flags-calculator.h"
 #include "util/enum-converter.h"
 #include "view/display-messages.h"
+#include <array>
+#include <iterator>
 #include <limits>
 #include <nlohmann/json.hpp>
+#include <tuple>
 #include <utility>
 
+// fake_spell_flags は呪文のビット表 (cmd-spell.h) だが、ヘッダ全体を取り込むと循環依存になりうるため extern 宣言のみ参照する。
+extern const uint32_t fake_spell_flags[4];
+
 namespace {
-// エゴと同じ価格上限 (PRICE の上限の 1/32) に揃える。
-constexpr auto BASEITEM_COST_MAX = std::numeric_limits<PRICE>::max() / 32;
 // 金貨は cost が生成する額 (基本価格の 3〜9 倍) の元になるため、十分小さく保つ。
 constexpr auto GOLD_COST_MAX = 1024;
+}
+
+int item_subtype_max(const BaseitemKey &key)
+{
+    if (key.is_weapon()) {
+        // 武器熟練度の種別ごとの配列を副種別で引く。
+        return static_cast<int>(std::tuple_size_v<decltype(skill_table::w_max)::mapped_type>) - 1;
+    }
+    if (key.is_spell_book()) {
+        // 魔法書の副種別で呪文のビット表を引く。
+        return static_cast<int>(std::size(fake_spell_flags)) - 1;
+    }
+    // 魔道具術師の取り込み先の要素数に合わせる。
+    switch (key.tval()) {
+    case ItemKindType::STAFF:
+        return SV_STAFF_MAX - 1;
+    case ItemKindType::WAND:
+        return SV_WAND_MAX - 1;
+    case ItemKindType::ROD:
+        return SV_ROD_MAX - 1;
+    default:
+        return ITEM_SUBTYPE_DEFAULT_MAX;
+    }
 }
 
 BaseitemReader::BaseitemReader(const nlohmann::json &baseitem_data, int &previous_id)
@@ -114,7 +146,7 @@ ParseErrorType BaseitemReader::read() const
         msg_print(_("アイテムの重量読込失敗。ID: '{}'。", "Failed to load weight of item. ID: '{}'."), item_id);
         return err.error();
     }
-    const auto cost_max = baseitem.bi_key.tval() == ItemKindType::GOLD ? GOLD_COST_MAX : BASEITEM_COST_MAX;
+    const auto cost_max = baseitem.bi_key.tval() == ItemKindType::GOLD ? GOLD_COST_MAX : ITEM_COST_MAX;
     if (const auto err = info_set_integer(get_json_value(this->baseitem_data, "cost"), baseitem.cost, true, Range(0, cost_max)); !err) {
         msg_print(_("アイテムの売値読込失敗。ID: '{}'。", "Failed to load cost of item. ID: '{}'."), item_id);
         return err.error();
@@ -171,16 +203,7 @@ ParseErrorType BaseitemReader::read() const
  */
 bool BaseitemReader::grab_one_baseitem_flag(BaseitemDefinition &baseitem, std::string_view what) const
 {
-    if (TrFlags::grab_one_flag(baseitem.flags, baseitem_flags, what)) {
-        return true;
-    }
-
-    if (EnumClassFlagGroup<ItemGenerationTraitType>::grab_one_flag(baseitem.gen_flags, baseitem_geneneration_flags, what)) {
-        return true;
-    }
-
-    msg_print(_("未知のアイテム・フラグ '{}'。", "Unknown object flag '{}'."), what);
-    return false;
+    return grab_one_item_flag_or_report(baseitem.flags, baseitem.gen_flags, what, _("未知のアイテム・フラグ '{}'。", "Unknown object flag '{}'."));
 }
 
 /*!
@@ -293,20 +316,15 @@ ParseErrorType BaseitemReader::set_baseitem_allocations(BaseitemDefinition &base
  */
 ParseErrorType BaseitemReader::set_baseitem_activate(BaseitemDefinition &baseitem) const
 {
-    const auto &act_data = get_json_value(this->baseitem_data, "activate");
-    if (act_data.is_null()) {
+    const auto activation = read_activation(get_json_value(this->baseitem_data, "activate"));
+    if (!activation) {
+        return activation.error();
+    }
+    if (*activation == RandomArtActType::NONE) {
         return ParseErrorType::NONE;
     }
-    if (!act_data.is_string()) {
-        return ParseErrorType::INVALID_TYPE;
-    }
 
-    const auto activation = grab_one_activation_flag(act_data.get<std::string>());
-    if (activation <= RandomArtActType::NONE) {
-        return ParseErrorType::INVALID_FLAG;
-    }
-
-    baseitem.act_idx = activation;
+    baseitem.act_idx = *activation;
     baseitem.flags.set(tr_type::TR_ACTIVATE);
     return ParseErrorType::NONE;
 }

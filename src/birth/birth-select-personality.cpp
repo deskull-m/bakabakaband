@@ -1,5 +1,6 @@
 #include "birth/birth-select-personality.h"
 #include "birth/birth-util.h"
+#include "io/input-context.h"
 #include "io/input-key-acceptor.h"
 #include "player/player-personality.h"
 #include "system/creature-entity.h"
@@ -167,7 +168,8 @@ static bool select_personality(CreatureEntity &creature, int *k, concptr sym)
 
         const auto buf = fmt::format(_("性格を選んで下さい ({:c}-{:c}) ('='初期オプション設定): ", "Choose a personality ({:c}-{:c}) ('=' for options): "), sym[0], sym[MAX_SELECTABLE_PERSONALITIES - 1]);
         put_str(buf, 10, 10);
-        char c = inkey();
+        const InputContextScope input_context({ InputKind::BIRTH, buf, BirthInputDetails{ BirthStep::PERSONALITY } });
+        const auto c = inkey();
         if (c == 'Q') {
             birth_quit();
         }

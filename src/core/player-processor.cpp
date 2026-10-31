@@ -104,13 +104,30 @@ bool continuous_action_running(CreatureEntity &creature)
 }
 
 /*!
- * @brief プレイヤーの行動処理 / Process the player
- * @note
- * Notice the annoying code to handle "pack overflow", which\n
- * must come first just in case somebody manages to corrupt\n
- * the savefiles by clever use of menu commands or something.\n
+ * @brief プレイヤーの手番の始めに、時刻を表示し、画面の描き方を入力待ちに合わせる
+ * @param creature クリーチャーへの参照
  */
-void process_player(CreatureEntity &creature)
+static void prepare_turn_display(CreatureEntity &creature)
+{
+    if (!command_rep) {
+        WorldTurnProcessor(creature).print_time();
+        WorldTurnProcessor(creature).print_world_collapse();
+        WorldTurnProcessor(creature).print_cheat_position();
+    }
+
+    if (fresh_once && (continuous_action_running(creature) || !command_rep)) {
+        stop_term_fresh();
+    }
+}
+
+/*!
+ * @brief プレイヤーの手番の頭の処理 (行動力の充填と、手番ごとの効果の経過)
+ * @param creature クリーチャーへの参照
+ * @return プレイヤーの手番が来たら true
+ * @details 突然変異の獲得・太古の怨念の発動と、闘技場の観戦中のモンスターの表示は、
+ * 行動力を充填する前に呼ばれるたびに行う。手番が来なければ、その後の処理は行わずに false を返す。
+ */
+static bool start_player_turn(CreatureEntity &creature)
 {
     if (creature.is_hack_mutation()) {
         msg_print(_("何か変わった気がする！", "You feel different!"));
@@ -141,22 +158,15 @@ void process_player(CreatureEntity &creature)
         WorldTurnProcessor(creature).print_world_collapse();
         WorldTurnProcessor(creature).print_cheat_position();
 
-    } else if (!(load && creature.get_energy_need() <= 0)) {
+    } else {
         creature.consume_energy_by_speed(creature.get_speed());
     }
 
     if (creature.get_energy_need() > 0) {
-        return;
-    }
-    if (!command_rep) {
-        WorldTurnProcessor(creature).print_time();
-        WorldTurnProcessor(creature).print_world_collapse();
-        WorldTurnProcessor(creature).print_cheat_position();
+        return false;
     }
 
-    if (fresh_once && (continuous_action_running(creature) || !command_rep)) {
-        stop_term_fresh();
-    }
+    prepare_turn_display(creature);
 
     if (creature.get_resting() < 0) {
         if (creature.get_resting() == COMMAND_ARG_REST_FULL_HEALING) {
@@ -221,7 +231,6 @@ void process_player(CreatureEntity &creature)
         handle_stuff(creature);
     }
 
-    load = false;
     if (creature.get_timed_effect(CreatureTimedEffect::LIGHTSPEED)) {
         set_lightspeed(creature, creature.get_timed_effect(CreatureTimedEffect::LIGHTSPEED) - 1, true);
     }
@@ -259,6 +268,33 @@ void process_player(CreatureEntity &creature)
             dur.set_flag(MainWindowRedrawingFlag::MP);
         }
     }
+
+    return true;
+}
+
+/*!
+ * @brief プレイヤーの行動処理 / Process the player
+ * @param creature クリーチャーへの参照
+ * @details セーブを読み込んだ直後に行動力が残っていれば、^S など手番の途中でセーブしている。
+ * 手番の頭の処理はセーブの前に済んでいるので、もう一度行わずに入力待ちから再開する。
+ * @note
+ * Notice the annoying code to handle "pack overflow", which\n
+ * must come first just in case somebody manages to corrupt\n
+ * the savefiles by clever use of menu commands or something.\n
+ */
+void process_player(CreatureEntity &creature)
+{
+    // 闘技場の観戦中は、読み込むと process_dungeon() が行動力を 0 にする (手番の途中のセーブではない)
+    const auto &system = AngbandSystem::get_instance();
+    const auto resumes_turn = load && (creature.get_energy_need() <= 0) && !system.is_phase_out();
+    load = false;
+    if (resumes_turn) {
+        prepare_turn_display(creature);
+    } else if (!start_player_turn(creature)) {
+        return;
+    }
+
+    auto &dur = DeferredUpdateRequests::get_instance();
 
     /*** Handle actual user input ***/
     while (creature.get_energy_need() <= 0) {
@@ -440,7 +476,7 @@ void process_player(CreatureEntity &creature)
  */
 void process_upkeep_with_speed(CreatureEntity &creature)
 {
-    if (!load && creature.get_enchant_energy_need() > 0 && !creature.is_leaving()) {
+    if (creature.get_enchant_energy_need() > 0 && !creature.is_leaving()) {
         creature.sub_enchant_energy_need(speed_to_energy(static_cast<byte>(creature.get_speed())));
     }
 
@@ -449,23 +485,11 @@ void process_upkeep_with_speed(CreatureEntity &creature)
     }
 
     while (creature.get_enchant_energy_need() <= 0) {
-        if (!load) {
-            check_music(creature);
-        }
-
-        if (!load) {
-            check_demigod(creature);
-        }
-
+        check_music(creature);
+        check_demigod(creature);
         SpellHex spell_hex(creature);
-        if (!load) {
-            spell_hex.decrease_mana();
-        }
-
-        if (!load) {
-            spell_hex.continue_revenge();
-        }
-
+        spell_hex.decrease_mana();
+        spell_hex.continue_revenge();
         creature.add_enchant_energy_need(ENERGY_NEED());
     }
 }

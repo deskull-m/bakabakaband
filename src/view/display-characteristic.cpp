@@ -13,9 +13,7 @@
 #include "object-enchant/tr-types.h"
 #include "object-enchant/trc-types.h"
 #include "perception/object-perception.h"
-#include "player/permanent-resistances.h"
-#include "player/race-resistances.h"
-#include "player/temporary-resistances.h"
+#include "player/player-known-flags.h"
 #include "system/creature-entity.h"
 #include "system/item-entity.h"
 #include "term/screen-processor.h"
@@ -25,17 +23,6 @@
 #include <array>
 #include <string>
 #include <unordered_map>
-
-struct all_player_flags {
-    TrFlags player_flags{};
-    TrFlags tim_player_flags{};
-    TrFlags player_imm{};
-    TrFlags tim_player_imm{};
-    TrFlags player_vuln{};
-    TrFlags known_obj_imm{};
-    TrFlags riding_flags{};
-    TrFlags riding_negative_flags{};
-};
 
 /*!
  * @brief 特徴状況構造体
@@ -160,7 +147,7 @@ static void process_cursed_equipment_characteristics(CreatureEntity &creature, u
  * @details
  * その行の表示色用の判定も行う
  */
-static void process_light_equipment_characteristics(CreatureEntity &creature, all_player_flags *f, uint16_t mode, char_stat &char_stat)
+static void process_light_equipment_characteristics(CreatureEntity &creature, const PlayerKnownFlags *f, uint16_t mode, char_stat &char_stat)
 {
     const auto range = (mode & DP_WP) ? INVEN_WEAPON_SLOTS : INVEN_WIELDING_SLOTS;
     for (const auto i_idx : range) {
@@ -189,12 +176,12 @@ static void process_light_equipment_characteristics(CreatureEntity &creature, al
     }
 
     for (auto flg : lite_flags) {
-        if (f->tim_player_flags.has(flg)) {
+        if (f->temporary.has(flg)) {
             char_stat.syms.emplace_back("#");
             char_stat.has_tim = true;
             return;
         }
-        if (f->player_flags.has(flg)) {
+        if (f->permanent.has(flg)) {
             char_stat.syms.emplace_back("+");
             char_stat.has_res = true;
             return;
@@ -220,7 +207,7 @@ static void process_light_equipment_characteristics(CreatureEntity &creature, al
  * @details
  * その行の表示色用の判定も行う
  */
-static void process_inventory_characteristic(CreatureEntity &creature, tr_type flag, all_player_flags *f, uint16_t mode, char_stat &char_stat)
+static void process_inventory_characteristic(CreatureEntity &creature, tr_type flag, const PlayerKnownFlags *f, uint16_t mode, char_stat &char_stat)
 {
     const auto range = (mode & DP_WP) ? INVEN_WEAPON_SLOTS : INVEN_WIELDING_SLOTS;
     for (const auto i_idx : range) {
@@ -259,15 +246,15 @@ static void process_inventory_characteristic(CreatureEntity &creature, tr_type f
         char_stat.syms.emplace_back(b_vul ? "v" : ".");
     }
 
-    if (f->player_imm.has(flag) || f->tim_player_imm.has(flag)) {
+    if (f->immunity.has(flag) || f->temporary_immunity.has(flag)) {
         char_stat.syms.emplace_back("*");
         char_stat.has_imm = true;
-    } else if (f->tim_player_flags.has(flag)) {
+    } else if (f->temporary.has(flag)) {
         char_stat.syms.emplace_back("#");
         char_stat.has_tim = true;
     } else {
-        auto b_vul = f->player_vuln.has(flag);
-        if (f->player_flags.has(flag)) {
+        auto b_vul = f->vulnerability.has(flag);
+        if (f->permanent.has(flag)) {
             char_stat.syms.emplace_back(b_vul ? "-" : "+");
             char_stat.has_res = true;
         } else {
@@ -289,14 +276,14 @@ static void process_inventory_characteristic(CreatureEntity &creature, tr_type f
  * @param f プレイヤーの特性情報構造体
  * @param mode 表示オプション
  */
-static void process_one_characteristic(CreatureEntity &creature, TERM_LEN row, TERM_LEN col, std::string_view header, tr_type flag, all_player_flags *f, uint16_t mode)
+static void process_one_characteristic(CreatureEntity &creature, TERM_LEN row, TERM_LEN col, std::string_view header, tr_type flag, const PlayerKnownFlags *f, uint16_t mode)
 {
     char_stat char_stat;
 
-    if (f->riding_flags.has(flag)) {
+    if (f->riding.has(flag)) {
         char_stat.has_rid = true;
     }
-    if (f->riding_negative_flags.has(flag)) {
+    if (f->riding_negative.has(flag)) {
         char_stat.has_rid = true;
         char_stat.has_vul = true;
     }
@@ -351,7 +338,7 @@ static void process_one_characteristic(CreatureEntity &creature, TERM_LEN row, T
  * @param f 特性フラグへの参照ポインタ
  */
 static void display_basic_resistance_info(
-    CreatureEntity &creature, void (*display_player_equippy)(CreatureEntity &, TERM_LEN, TERM_LEN, BIT_FLAGS16), all_player_flags *f)
+    CreatureEntity &creature, void (*display_player_equippy)(CreatureEntity &, TERM_LEN, TERM_LEN, BIT_FLAGS16), const PlayerKnownFlags *f)
 {
     TERM_LEN row = 12;
     TERM_LEN col = 1;
@@ -377,7 +364,7 @@ static void display_basic_resistance_info(
  * @param f 特性フラグへの参照ポインタ
  */
 static void display_advanced_resistance_info(
-    CreatureEntity &creature, void (*display_player_equippy)(CreatureEntity &, TERM_LEN, TERM_LEN, BIT_FLAGS16), all_player_flags *f)
+    CreatureEntity &creature, void (*display_player_equippy)(CreatureEntity &, TERM_LEN, TERM_LEN, BIT_FLAGS16), const PlayerKnownFlags *f)
 {
     TERM_LEN row = 12;
     TERM_LEN col = 26;
@@ -402,7 +389,7 @@ static void display_advanced_resistance_info(
  * @param f 特性フラグへの参照ポインタ
  */
 static void display_other_resistance_info(
-    CreatureEntity &creature, void (*display_player_equippy)(CreatureEntity &, TERM_LEN, TERM_LEN, BIT_FLAGS16), all_player_flags *f)
+    CreatureEntity &creature, void (*display_player_equippy)(CreatureEntity &, TERM_LEN, TERM_LEN, BIT_FLAGS16), const PlayerKnownFlags *f)
 {
     TERM_LEN row = 12;
     TERM_LEN col = 51;
@@ -422,24 +409,6 @@ static void display_other_resistance_info(
 }
 
 /*!
- * @brief プレイヤーの特性フラグを集計する
- * @param creature クリーチャーへの参照
- * @todo 将来的には装備系とまとめたいが、乗馬による特性変化や一時能力変化等の扱いがあるので据え置き。
- */
-all_player_flags get_player_state_flags(CreatureEntity &creature)
-{
-    all_player_flags f;
-    player_flags(creature, f.player_flags);
-    tim_player_flags(creature, f.tim_player_flags);
-    player_immunity(creature, f.player_imm);
-    tim_player_immunity(creature, f.tim_player_imm);
-    known_obj_immunity(creature, f.known_obj_imm);
-    player_vulnerability_flags(creature, f.player_vuln);
-    riding_flags(creature, f.riding_flags, f.riding_negative_flags);
-    return f;
-}
-
-/*!
  * @brief プレイヤーの特性フラグ一覧表示1
  * @param creature クリーチャーへの参照
  * @param display_player_equippy 表示へのコールバック
@@ -447,7 +416,7 @@ all_player_flags get_player_state_flags(CreatureEntity &creature)
  */
 void display_player_flag_info_1(CreatureEntity &creature, void (*display_player_equippy)(CreatureEntity &, TERM_LEN, TERM_LEN, BIT_FLAGS16))
 {
-    all_player_flags f = get_player_state_flags(creature);
+    const auto f = collect_player_known_flags(creature);
 
     display_basic_resistance_info(creature, display_player_equippy, &f);
     display_advanced_resistance_info(creature, display_player_equippy, &f);
@@ -460,7 +429,7 @@ void display_player_flag_info_1(CreatureEntity &creature, void (*display_player_
  * @param display_player_equippy 表示へのコールバック
  * @param f 特性フラグへの参照ポインタ
  */
-static void display_slay_info(CreatureEntity &creature, void (*display_player_equippy)(CreatureEntity &, TERM_LEN, TERM_LEN, BIT_FLAGS16), all_player_flags *f)
+static void display_slay_info(CreatureEntity &creature, void (*display_player_equippy)(CreatureEntity &, TERM_LEN, TERM_LEN, BIT_FLAGS16), const PlayerKnownFlags *f)
 {
     TERM_LEN row = 3;
     TERM_LEN col = 1;
@@ -487,7 +456,7 @@ static void display_slay_info(CreatureEntity &creature, void (*display_player_eq
  * @param display_player_equippy 表示へのコールバック
  * @param f 特性フラグへの参照ポインタ
  */
-static void display_brand_info(CreatureEntity &creature, void (*display_player_equippy)(CreatureEntity &, TERM_LEN, TERM_LEN, BIT_FLAGS16), all_player_flags *f)
+static void display_brand_info(CreatureEntity &creature, void (*display_player_equippy)(CreatureEntity &, TERM_LEN, TERM_LEN, BIT_FLAGS16), const PlayerKnownFlags *f)
 {
     TERM_LEN row = 3;
     TERM_LEN col = 1;
@@ -516,7 +485,7 @@ static void display_brand_info(CreatureEntity &creature, void (*display_player_e
  * @param f 特性フラグへの参照ポインタ
  */
 static void display_tval_misc_info(
-    CreatureEntity &creature, void (*display_player_equippy)(CreatureEntity &, TERM_LEN, TERM_LEN, BIT_FLAGS16), all_player_flags *f)
+    CreatureEntity &creature, void (*display_player_equippy)(CreatureEntity &, TERM_LEN, TERM_LEN, BIT_FLAGS16), const PlayerKnownFlags *f)
 {
     TERM_LEN row = 3;
     TERM_LEN col = 49;
@@ -546,7 +515,7 @@ static void display_tval_misc_info(
  * @param display_player_equippy 表示へのコールバック
  * @param f 特性フラグへの参照ポインタ
  */
-static void display_esc_info(CreatureEntity &creature, void (*display_player_equippy)(CreatureEntity &, TERM_LEN, TERM_LEN, BIT_FLAGS16), all_player_flags *f)
+static void display_esc_info(CreatureEntity &creature, void (*display_player_equippy)(CreatureEntity &, TERM_LEN, TERM_LEN, BIT_FLAGS16), const PlayerKnownFlags *f)
 {
     TERM_LEN row = 3;
     TERM_LEN col = 21;
@@ -574,7 +543,7 @@ static void display_esc_info(CreatureEntity &creature, void (*display_player_equ
  * @param f 特性フラグへの参照ポインタ
  */
 static void display_stustain_aura_info(
-    CreatureEntity &creature, void (*display_player_equippy)(CreatureEntity &, TERM_LEN, TERM_LEN, BIT_FLAGS16), all_player_flags *f)
+    CreatureEntity &creature, void (*display_player_equippy)(CreatureEntity &, TERM_LEN, TERM_LEN, BIT_FLAGS16), const PlayerKnownFlags *f)
 {
     TERM_LEN row = 3;
     TERM_LEN col = 21;
@@ -605,7 +574,7 @@ static void display_stustain_aura_info(
  * @param display_player_equippy 表示へのコールバック
  * @param f 特性フラグへの参照ポインタ
  */
-static void display_curse_info(CreatureEntity &creature, void (*display_player_equippy)(CreatureEntity &, TERM_LEN, TERM_LEN, BIT_FLAGS16), all_player_flags *f)
+static void display_curse_info(CreatureEntity &creature, void (*display_player_equippy)(CreatureEntity &, TERM_LEN, TERM_LEN, BIT_FLAGS16), const PlayerKnownFlags *f)
 {
     TERM_LEN row = 3;
     TERM_LEN col = 49;
@@ -640,7 +609,7 @@ static void display_curse_info(CreatureEntity &creature, void (*display_player_e
 void display_player_flag_info_2(CreatureEntity &creature, void (*display_player_equippy)(CreatureEntity &, TERM_LEN, TERM_LEN, BIT_FLAGS16))
 {
     /* Extract flags and store */
-    all_player_flags f = get_player_state_flags(creature);
+    const auto f = collect_player_known_flags(creature);
 
     display_slay_info(creature, display_player_equippy, &f);
     display_esc_info(creature, display_player_equippy, &f);
@@ -655,7 +624,7 @@ void display_player_flag_info_2(CreatureEntity &creature, void (*display_player_
 void display_player_flag_info_3(CreatureEntity &creature, void (*display_player_equippy)(CreatureEntity &, TERM_LEN, TERM_LEN, BIT_FLAGS16))
 {
     /* Extract flags and store */
-    all_player_flags f = get_player_state_flags(creature);
+    const auto f = collect_player_known_flags(creature);
 
     display_brand_info(creature, display_player_equippy, &f);
     display_stustain_aura_info(creature, display_player_equippy, &f);

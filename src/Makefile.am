@@ -721,6 +721,7 @@ libhengband_a_SOURCES = \
 	info-reader/fixed-map-parser.cpp info-reader/fixed-map-parser.h \
 	info-reader/general-parser.cpp info-reader/general-parser.h \
 	info-reader/info-reader-util.cpp info-reader/info-reader-util.h \
+	info-reader/item-flag-reader.cpp info-reader/item-flag-reader.h \
 	info-reader/json-reader-util.cpp info-reader/json-reader-util.h \
 	info-reader/magic-info-tokens-table.cpp info-reader/magic-info-tokens-table.h \
 	info-reader/magic-reader.cpp info-reader/magic-reader.h \
@@ -1156,6 +1157,7 @@ libhengband_a_SOURCES = \
 	player/temporary-resistances.cpp player/temporary-resistances.h \
 	player/digestion-processor.cpp player/digestion-processor.h \
 	player/player-damage.cpp player/player-damage.h \
+	player/player-known-flags.cpp player/player-known-flags.h \
 	player/player-move.cpp player/player-move.h \
 	player/player-personality.cpp player/player-personality.h \
 	player/player-realm.cpp player/player-realm.h \
@@ -1613,6 +1615,7 @@ check_PROGRAMS = hengband-test
 hengband_test_SOURCES = \
 	test/test-main.cpp \
 	test/test-win-stubs.cpp \
+	test/scoped-ego-list.h \
 	test/scoped-restore.h \
 	test/scoped-rng.h \
 	test/scoped-vector-wrapper.h \
@@ -1635,6 +1638,7 @@ hengband_test_SOURCES = \
 	test/info-reader/test-ego-reader.cpp \
 	test/info-reader/test-general-parser.cpp \
 	test/info-reader/test-info-reader-util.cpp \
+	test/info-reader/test-item-flag-reader.cpp \
 	test/info-reader/test-baseitem-reader.cpp \
 	test/info-reader/test-json-reader-util.cpp \
 	test/info-reader/test-quest-reader.cpp \
@@ -1650,6 +1654,9 @@ hengband_test_SOURCES = \
 	test/io/test-tokenizer.cpp \
 	\
 	test/knowledge/test-knowledge-features.cpp \
+	\
+	test/load/test-floor-loader.cpp \
+	test/load/test-savefile-version.cpp \
 	\
 	test/locale/test-character-encoding.cpp \
 	\

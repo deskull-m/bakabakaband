@@ -10,7 +10,6 @@
 #include "floor/object-scanner.h"
 #include "game-option/input-options.h"
 #include "grid/grid.h"
-#include "info-reader/fixed-map-parser.h"
 #include "inventory/inventory-slot-types.h"
 #include "io/cursor.h"
 #include "io/input-key-acceptor.h"

@@ -72,6 +72,8 @@ Running the following as root or with the sudo command will install the game int
 make install
 ```
 
+The sound effects and the 8x8 tiles are installed automatically. Background music files are not included in the repository (`lib/xtra/music/.gitignore` excludes them), so if you want BGM when installed with `setgid`, place the music files (`.mp3` / `.ogg` / `.mid` / `.wav`) into `lib/xtra/music` before running `make install`; they are then installed together with `music.cfg`.
+
 See `./configure --help` for more information about changing the installation location and other options.
 
 ### Configuring display

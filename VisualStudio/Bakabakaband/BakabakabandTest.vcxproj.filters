@@ -31,6 +31,9 @@
     <Filter Include="knowledge">
       <UniqueIdentifier>{3f7c1a28-9d64-4a1e-b2f0-7c5e1a9b4d60}</UniqueIdentifier>
     </Filter>
+    <Filter Include="load">
+      <UniqueIdentifier>{a7d3e2b1-4c58-4f9a-b6e0-1d2c3f4a5b6c}</UniqueIdentifier>
+    </Filter>
     <Filter Include="locale">
       <UniqueIdentifier>{b12e46f4-8b51-438b-8c32-54972ab14e8f}</UniqueIdentifier>
     </Filter>
@@ -128,6 +131,9 @@
     <ClCompile Include="..\..\src\test\info-reader\test-info-reader-util.cpp">
       <Filter>info-reader</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\test\info-reader\test-item-flag-reader.cpp">
+      <Filter>info-reader</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\src\test\info-reader\test-baseitem-reader.cpp">
       <Filter>info-reader</Filter>
     </ClCompile>
@@ -166,6 +172,12 @@
     </ClCompile>
     <ClCompile Include="..\..\src\test\knowledge\test-knowledge-features.cpp">
       <Filter>knowledge</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\test\load\test-floor-loader.cpp">
+      <Filter>load</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\test\load\test-savefile-version.cpp">
+      <Filter>load</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\test\locale\test-character-encoding.cpp">
       <Filter>locale</Filter>
@@ -292,6 +304,7 @@
     <ClInclude Include="..\..\src\stdafx.h" />
     <ClInclude Include="..\..\src\test\scoped-restore.h" />
     <ClInclude Include="..\..\src\test\scoped-rng.h" />
+    <ClInclude Include="..\..\src\test\scoped-ego-list.h" />
     <ClInclude Include="..\..\src\test\scoped-vector-wrapper.h" />
     <ClInclude Include="..\..\src\test\string-helpers.h" />
   </ItemGroup>

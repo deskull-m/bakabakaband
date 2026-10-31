@@ -31,7 +31,10 @@
 
 #include <cstdint>
 #include <limits>
+#include <map>
 #include <string>
+#include <string_view>
+#include <unordered_map>
 #include <vector>
 
 namespace {
@@ -880,4 +883,25 @@ TEST_CASE("info_read_symbol accepts every single byte and color token")
             }
         }
     }
+}
+
+TEST_CASE("info_read_token distinguishes missing types unknown and known tokens")
+{
+    const std::map<std::string, int> table{ { "ZERO", 0 }, { "ONE", 1 } };
+    CHECK(info_read_token(nullptr, table).error() == ParseErrorType::TOO_FEW_ARGUMENTS);
+    CHECK(info_read_token(get_json_value(nlohmann::json::object(), "missing"), table).error() == ParseErrorType::TOO_FEW_ARGUMENTS);
+    for (const auto &value : { nlohmann::json(1), nlohmann::json(true), nlohmann::json::array(), nlohmann::json::object() }) {
+        CHECK(info_read_token(value, table).error() == ParseErrorType::INVALID_TYPE);
+    }
+    CHECK(info_read_token("unknown", table).error() == ParseErrorType::INVALID_FLAG);
+    REQUIRE(info_read_token("ZERO", table).has_value());
+    CHECK(*info_read_token("ZERO", table) == 0);
+    CHECK(*info_read_token("ONE", table) == 1);
+    const std::unordered_map<std::string_view, int> views{ { "ONE", 1 } };
+    CHECK(*info_read_token("ONE", views) == 1);
+    const auto lookup = [](const std::string &name) -> tl::optional<int> {
+        return name == "ZERO" ? tl::optional<int>(0) : tl::nullopt;
+    };
+    CHECK(*info_read_token("ZERO", lookup) == 0);
+    CHECK(info_read_token("unknown", lookup).error() == ParseErrorType::INVALID_FLAG);
 }

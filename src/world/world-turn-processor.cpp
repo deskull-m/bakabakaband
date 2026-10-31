@@ -78,7 +78,6 @@ void WorldTurnProcessor::process_world()
         return;
     }
 
-    decide_auto_save();
     const auto &floor = *this->creature.get_floor();
     if (floor.monster_noise && !ignore_unview) {
         msg_print(_("何かが聞こえた。", "You hear noise."));
@@ -283,6 +282,12 @@ void WorldTurnProcessor::process_monster_arena_draw()
     melee_arena.update_gladiators(this->creature);
 }
 
+/*!
+ * @brief 一定ターン毎の自動セーブを行う
+ * @details 読み込むとメインループの頭から再開するので、ゲームターンの処理の途中ではなく、
+ * メインループの切れ目 (ゲームターンを進めた後) で呼ぶ。途中でセーブすると、再開したときに
+ * そのゲームターンのプレイヤーとモンスターの処理がもう一度行われる。
+ */
 void WorldTurnProcessor::decide_auto_save()
 {
     if (autosave_freq == 0) {

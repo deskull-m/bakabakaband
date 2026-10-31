@@ -191,6 +191,12 @@ errr rd_saved_floor(CreatureEntity &creature, saved_floor_type *sf_ptr)
 
         auto &monster = floor.m_list[m_idx];
         monster_loader->rd_monster(monster);
+        // 倒されたモンスターの跡 (空きの番号) は、番号を保つためにそのまま書かれている。
+        // グリッドに置かず、生きているモンスターの数 (m_cnt) からも種族の数 (cur_num) からも除く。
+        if (!monster.is_valid()) {
+            floor.m_cnt--;
+            continue;
+        }
         monster.set_floor(creature.get_floor());
         auto &grid = floor.get_grid(monster.get_position());
         grid.m_idx = m_idx;

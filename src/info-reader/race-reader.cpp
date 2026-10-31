@@ -285,15 +285,11 @@ ParseErrorType RaceReader::set_mon_sex(const nlohmann::json &sex_data, MonraceDe
     if (sex_data.is_null()) {
         return ParseErrorType::NONE;
     }
-    if (!sex_data.is_string()) {
-        return ParseErrorType::TOO_FEW_ARGUMENTS;
+    const auto sex = info_read_token(sex_data, r_info_sex);
+    if (!sex) {
+        return sex.error();
     }
-
-    uint32_t sex;
-    if (!info_grab_one_const(sex, r_info_sex, sex_data.get<std::string>())) {
-        return ParseErrorType::INVALID_FLAG;
-    }
-    monrace.sex = static_cast<MonsterSex>(sex);
+    monrace.sex = static_cast<MonsterSex>(*sex);
     return ParseErrorType::NONE;
 }
 
@@ -769,19 +765,18 @@ ParseErrorType RaceReader::set_mon_blows(nlohmann::json &blow_data, MonraceDefin
             return ParseErrorType::INVALID_TYPE;
         }
 
-        const auto rbm = r_info_blow_method.find(blow_method.get<std::string>());
-        if (rbm == r_info_blow_method.end()) {
-            return ParseErrorType::INVALID_FLAG;
+        const auto rbm = info_read_token(blow_method, r_info_blow_method);
+        if (!rbm) {
+            return rbm.error();
         }
-
-        const auto rbe = r_info_blow_effect.find(blow_effect.get<std::string>());
-        if (rbe == r_info_blow_effect.end()) {
-            return ParseErrorType::INVALID_FLAG;
+        const auto rbe = info_read_token(blow_effect, r_info_blow_effect);
+        if (!rbe) {
+            return rbe.error();
         }
 
         MonsterBlow mon_blow;
-        mon_blow.method = rbm->second;
-        mon_blow.effect = rbe->second;
+        mon_blow.method = *rbm;
+        mon_blow.effect = *rbe;
 
         if (const auto err = info_set_dice(get_json_value(blow, "damage_dice"), mon_blow.damage_dice, false); !err) {
             return err.error();
@@ -1211,13 +1206,9 @@ ParseErrorType RaceReader::set_mon_message(const nlohmann::json &message_data, M
     }
 
     for (const auto &message : message_data) {
-        const auto &action_str = message["action"];
-        if (action_str.is_null()) {
-            return ParseErrorType::TOO_FEW_ARGUMENTS;
-        }
-        const auto action = r_info_message_flags.find(action_str.get<std::string>());
-        if (action == r_info_message_flags.end()) {
-            return ParseErrorType::INVALID_FLAG;
+        const auto action = info_read_token(message["action"], r_info_message_flags);
+        if (!action) {
+            return action.error();
         }
 
         int chance{};
@@ -1239,7 +1230,7 @@ ParseErrorType RaceReader::set_mon_message(const nlohmann::json &message_data, M
             return err.error();
         }
 
-        MonraceMessageList::get_instance().emplace((int)monrace.idx, action->second, chance, use_name, str);
+        MonraceMessageList::get_instance().emplace((int)monrace.idx, *action, chance, use_name, str);
     }
     return ParseErrorType::NONE;
 }

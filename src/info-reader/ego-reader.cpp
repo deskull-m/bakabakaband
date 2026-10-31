@@ -2,12 +2,15 @@
 #include "artifact/random-art-effects.h"
 #include "info-reader/baseitem-tokens-table.h"
 #include "info-reader/info-reader-util.h"
+#include "info-reader/item-flag-reader.h"
 #include "info-reader/json-reader-util.h"
 #include "info-reader/parse-error-types.h"
+#include "locale/language-switcher.h"
 #include "object-enchant/object-ego.h"
 #include "object-enchant/tr-types.h"
 #include "util/bit-flags-calculator.h"
 #include "util/enum-converter.h"
+#include "view/display-messages.h"
 #include <limits>
 #include <nlohmann/json.hpp>
 
@@ -106,8 +109,7 @@ bool EgoReader::grab_one_flag(EgoItemDefinition &ego, const nlohmann::json &flag
         return false;
     }
     const auto &name = flag.get_ref<const std::string &>();
-    return TrFlags::grab_one_flag(ego.flags, baseitem_flags, name) ||
-           EnumClassFlagGroup<ItemGenerationTraitType>::grab_one_flag(ego.gen_flags, baseitem_geneneration_flags, name);
+    return grab_one_item_flag_or_report(ego.flags, ego.gen_flags, name, _("未知のエゴ・フラグ '{}'。", "Unknown ego flag '{}'."));
 }
 
 bool EgoReader::grab_one_extra_flag(ego_generate_type &extra, const nlohmann::json &flag) const
@@ -124,6 +126,7 @@ bool EgoReader::grab_one_extra_flag(ego_generate_type &extra, const nlohmann::js
         extra.trg_flags.push_back(it->second);
         return true;
     }
+    msg_print(_("未知のエゴ・フラグ '{}'。", "Unknown ego flag '{}'."), name);
     return false;
 }
 
@@ -177,13 +180,13 @@ ParseErrorType EgoReader::set_extra_flags(EgoItemDefinition &ego) const
 
 ParseErrorType EgoReader::set_activation(EgoItemDefinition &ego) const
 {
-    const auto &activation = get_json_value(this->ego_data, "activation");
-    if (activation.is_null()) {
+    const auto activation = read_activation(get_json_value(this->ego_data, "activation"));
+    if (!activation) {
+        return activation.error();
+    }
+    if (*activation == RandomArtActType::NONE) {
         return ParseErrorType::NONE;
     }
-    if (!activation.is_string()) {
-        return ParseErrorType::INVALID_TYPE;
-    }
-    ego.act_idx = grab_one_activation_flag(activation.get<std::string>());
-    return ego.act_idx > RandomArtActType::NONE ? ParseErrorType::NONE : ParseErrorType::INVALID_FLAG;
+    ego.act_idx = *activation;
+    return ParseErrorType::NONE;
 }

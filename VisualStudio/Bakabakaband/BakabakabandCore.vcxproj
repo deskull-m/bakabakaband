@@ -340,6 +340,7 @@
     <ClCompile Include="..\..\src\info-reader\feature-reader.cpp" />
     <ClCompile Include="..\..\src\info-reader\general-parser.cpp" />
     <ClCompile Include="..\..\src\info-reader\info-reader-util.cpp" />
+    <ClCompile Include="..\..\src\info-reader\item-flag-reader.cpp" />
     <ClCompile Include="..\..\src\info-reader\json-reader-util.cpp" />
     <ClCompile Include="..\..\src\info-reader\baseitem-tokens-table.cpp" />
     <ClCompile Include="..\..\src\info-reader\baseitem-reader.cpp" />
@@ -886,6 +887,7 @@
     <ClCompile Include="..\..\src\player\patron.cpp" />
     <ClCompile Include="..\..\src\player-info\class-info.cpp" />
     <ClCompile Include="..\..\src\player\player-damage.cpp" />
+    <ClCompile Include="..\..\src\player\player-known-flags.cpp" />
     <ClCompile Include="..\..\src\status\action-setter.cpp" />
     <ClCompile Include="..\..\src\inventory\player-inventory.cpp" />
     <ClCompile Include="..\..\src\player\player-personality.cpp" />
@@ -1266,6 +1268,7 @@
     <ClInclude Include="..\..\src\info-reader\feature-reader.h" />
     <ClInclude Include="..\..\src\info-reader\general-parser.h" />
     <ClInclude Include="..\..\src\info-reader\info-reader-util.h" />
+    <ClInclude Include="..\..\src\info-reader\item-flag-reader.h" />
     <ClInclude Include="..\..\src\info-reader\json-reader-util.h" />
     <ClInclude Include="..\..\src\info-reader\baseitem-tokens-table.h" />
     <ClInclude Include="..\..\src\info-reader\baseitem-reader.h" />
@@ -1416,7 +1419,6 @@
     <ClInclude Include="..\..\src\object-hook\hook-weapon.h" />
     <ClInclude Include="..\..\src\object-use\quaff\quaff-execution.h" />
     <ClInclude Include="..\..\src\player\attack-defense-types.h" />
-    <ClInclude Include="..\..\src\load\angband-version-comparer.h" />
     <ClInclude Include="..\..\src\load\birth-loader.h" />
     <ClInclude Include="..\..\src\load\dummy-loader.h" />
     <ClInclude Include="..\..\src\load\floor-loader.h" />
@@ -2107,6 +2109,7 @@
     <ClInclude Include="..\..\src\player\patron.h" />
     <ClInclude Include="..\..\src\player-info\class-info.h" />
     <ClInclude Include="..\..\src\player\player-damage.h" />
+    <ClInclude Include="..\..\src\player\player-known-flags.h" />
     <ClInclude Include="..\..\src\status\action-setter.h" />
     <ClInclude Include="..\..\src\player\player-move.h" />
     <ClInclude Include="..\..\src\player\player-personality.h" />

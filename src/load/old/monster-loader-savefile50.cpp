@@ -356,4 +356,7 @@ void MonsterLoader50::rd_monster_v50(CreatureEntity &monster)
             item_loader->rd_item(&monster.ensure_extended_item(n));
         }
     }
+
+    // 視認されているか (visible_on_map / 旧 ml)。v56 未満のセーブには無いので視認なしで開始する。
+    monster.set_visible_on_map(!loading_savefile_version_is_older_than(56) && (rd_byte() != 0));
 }

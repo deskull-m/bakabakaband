@@ -304,8 +304,14 @@ ParseErrorType parse_terrains_json_info(nlohmann::json &element, TerrainReaderSe
     }
 
     // 財宝地形 (HAS_GOLD) を掘った際に生成する財宝数 (省略時は従来通り 1 個)
-    if (const auto err = info_set_dice(element["DROP_GOLD"], terrain.gold_drop, false); !err) {
+    const auto &drop_gold_obj = element["DROP_GOLD"];
+    if (const auto err = info_set_dice(drop_gold_obj, terrain.gold_drop, false); !err) {
         return err.error();
+    }
+    // ダイスを解析できても個数・面数が 0 以下なら黙って捨てず不正として弾く (上流 hengband#6036 相当)
+    if (!drop_gold_obj.is_null() && !terrain.gold_drop.is_valid()) {
+        msg_print(_("金貨ドロップのダイスが不正。", "Invalid gold drop dice."));
+        return ParseErrorType::INVALID_VALUE;
     }
 
     // 生成時の確率的地形変化 (上流 #5393 相当)
