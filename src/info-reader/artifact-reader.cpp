@@ -31,12 +31,7 @@ ArtifactReader::ArtifactReader(const nlohmann::json &art_data, int &previous_id)
  */
 bool ArtifactReader::grab_one_artifact_flag(ArtifactType &artifact, std::string_view what) const
 {
-    if (grab_one_item_flag(artifact.flags, artifact.gen_flags, what)) {
-        return true;
-    }
-
-    msg_print(_("未知の伝説のアイテム・フラグ '{}'。", "Unknown artifact flag '{}'."), what);
-    return false;
+    return grab_one_item_flag_or_report(artifact.flags, artifact.gen_flags, what, _("未知の伝説のアイテム・フラグ '{}'。", "Unknown artifact flag '{}'."));
 }
 
 /*!

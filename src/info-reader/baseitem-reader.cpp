@@ -203,12 +203,7 @@ ParseErrorType BaseitemReader::read() const
  */
 bool BaseitemReader::grab_one_baseitem_flag(BaseitemDefinition &baseitem, std::string_view what) const
 {
-    if (grab_one_item_flag(baseitem.flags, baseitem.gen_flags, what)) {
-        return true;
-    }
-
-    msg_print(_("未知のアイテム・フラグ '{}'。", "Unknown object flag '{}'."), what);
-    return false;
+    return grab_one_item_flag_or_report(baseitem.flags, baseitem.gen_flags, what, _("未知のアイテム・フラグ '{}'。", "Unknown object flag '{}'."));
 }
 
 /*!
