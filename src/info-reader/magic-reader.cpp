@@ -31,7 +31,7 @@ ParseErrorType MagicReader::read() const
         return ParseErrorType::INVALID_TYPE;
     }
 
-    int class_id;
+    int class_id = 0;
     if (const auto err = this->set_class_id(class_id); err != ParseErrorType::NONE) {
         msg_print(_("職業ID読込失敗。ID: '{}'。", "Failed to load class id. ID: '{}'."), this->previous_id);
         return err;

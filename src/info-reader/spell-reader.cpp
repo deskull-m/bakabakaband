@@ -21,7 +21,7 @@ ParseErrorType SpellReader::read() const
 {
     const auto record_index = ++this->session.record_index; //!< @note 呪文領域は数値IDを持たないため、エラー表示用に要素の順序を用いる
 
-    RealmType realm_id;
+    RealmType realm_id = RealmType::NONE;
     if (const auto err = this->set_realm(realm_id); err != ParseErrorType::NONE) {
         msg_print(_("領域名読込失敗。ID: '{}'。", "Failed to load realm name. ID: '{}'."), record_index);
         return err;
