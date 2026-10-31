@@ -94,6 +94,18 @@ public:
                                * の併走用一時データであり、フェーズ A-4 で hold_o_idx_list と共に削除予定。 */
     RandomArtifactBias artifact_bias{}; /*!< ランダムアーティファクト生成時のバイアスID */
 
+    /*!
+     * @brief この品の「正当な所有権」を持つモンスター種族 ID
+     * @details モンスター生成時にそのモンスターの持ち物として用意された品に、
+     *          所有者の種族 ID を刻む。プレイヤーが撃破・略奪して手に入れても
+     *          この刻印は消えないため、*鑑定* で「本来誰の物か」が判る。
+     *          `MonraceId::PLAYER` (= 0) は「所有権の記録なし」を意味する
+     *          (`MonraceList::is_valid()` と同じ規約)。
+     *          モンスターが床から拾った品・プレイヤーから盗んだ品には刻まない
+     *          (拾得・窃盗で「正当な」所有権は移らないため)。
+     */
+    MonraceId rightful_owner{};
+
     void wipe();
     ItemEntity clone() const;
     void generate(const BaseitemKey &new_bi_key);
@@ -186,6 +198,11 @@ public:
     bool is_worthless() const;
     int get_baseitem_cost() const;
     MonraceId get_monrace_id() const;
+
+    bool has_rightful_owner() const;
+    MonraceId get_rightful_owner() const;
+    void set_rightful_owner(MonraceId monrace_id);
+    std::string describe_rightful_owner() const;
     int get_lite_radius() const;
     Pos2D get_position() const;
     bool has_knowledge(ItemKindType tval) const;

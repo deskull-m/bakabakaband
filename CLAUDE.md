@@ -2602,6 +2602,92 @@ id 47 = 折れた剣 `1_IN_1`。いずれも grade 0, `1d1`, `exclusive_group: 1
   (TAKE_ITEM) を**非実体や蠕虫が「装備」して AC・打撃ダイスを得てしまっていた**。
   所持品に入った品も死亡時は `drop_all_inventory()` で床へ落ちる。
 
+### アイテムの正当な所有権 (`ItemEntity::rightful_owner`)
+
+アイテムに**本来の所有者**をモンスター種族 ID で保持し、`*鑑定*` でそれを明かす。
+プレイヤーが撃破・略奪して手に入れても刻印は消えないため、「この品は本来誰の物か」が
+常に辿れる。将来の**社会的問題** (評判・治安・賞金首・店の対応等) の土台。
+
+```cpp
+MonraceId rightful_owner{};   // MonraceId::PLAYER (= 0) は「記録なし」
+```
+
+- アクセサは `has_rightful_owner()` / `get_rightful_owner()` /
+  `set_rightful_owner(id)` / `describe_rightful_owner()` (所有者の種族名)。
+  「記録なし」の規約は `MonraceList::is_valid()` と同じ (`MonraceId::PLAYER`)。
+- **`has_rightful_owner()` は種族定義の存在も確認する** (`MonraceList::contains()`)。
+  種族は JSON 由来で増減しうるため、削除済み種族の ID が旧セーブに残っていても
+  「記録なし」に落ちて `get_monrace()` の例外を踏まない。
+
+#### 刻印する経路・しない経路
+
+**モンスター生成時にその個体の持ち物として用意された品だけ**に刻む。
+`monster-drop-generator.cpp` の匿名 namespace に置いた共通ヘルパ
+`give_item_to_monster(monster, item)` が刻印してから `acquire_item()` する。
+
+| 経路 | 刻印 |
+|---|---|
+| `equip_kind` / `equip_tval` (種族固有の持ち物) | **する** |
+| 役割装備 (SOLDIER / WARRIOR / ARCHER / RANGER / MAGE) | **する** |
+| 武装度充填 (`equip_monster_by_armament_budget`) | **する** |
+| 一般ドロップ (`generate_monster_drop_items` の `make_object`) | **する** |
+| 金銭 (`ItemKindType::GOLD`) | **しない** (通貨に所有権の記録は意味を持たない) |
+| 床の品の拾得 (`monster-object.cpp`, TAKE_ITEM) | **しない** |
+| プレイヤーからの窃盗 (`monster-eating.cpp`, EAT_ITEM) | **しない** |
+
+後ろ 2 つを除くのは意味論上重要で、**拾得・窃盗では「正当な」所有権は移らない**。
+「本来の」所有者だけを記録する、という定義を守るため生成時の経路のみに刻む。
+
+#### `*鑑定*` での表示
+
+`screen_object()` (`src/perception/identification.cpp`) が
+
+```
+この品の正統な所有権は〈種族名〉にある。
+```
+
+を出す。**`trivial_info` の確定より後に積んでいる**ため「特筆すべき情報」として
+扱われ、他に何の特性も無い平凡な品でも `*鑑定*` でこの 1 行が表示される
+(`trivial_info` より前に積むと `i <= trivial_info` で
+「特に変わったところはないようだ。」に潰される)。既存の「製造元: 〜」
+(`baseitem.alliance_idx`) と並ぶ位置づけ。
+
+#### アイテムのまとめ (stacking) への影響
+
+`is_similar_part()` に **「所有者が違う品はまとめない」** 判定を追加した。
+まとめてしまうと一方の刻印が黙って失われ、略奪品と自前の品の区別が付かなくなる。
+
+- **副作用**: 略奪した消耗品・矢弾は自前の同一品とは別スタックになる。
+  所有者ごとにも別スタックなので、複数種族から同じ矢を略奪するとスタックが分かれる。
+  意味論的には正しい (盗品は区別される) が、インベントリが太るのが煩わしければ
+  刻印対象を装備品のみ (`is_equipment()`) に絞るのが次善策。
+
+#### セーブデータ (v56)
+
+- 書込: `wr_item()` の末尾へ `wr_s16b(enum2i(get_rightful_owner()))` を**無条件**追記。
+- 読込: `ItemLoader50::rd_item()` の `ART_NAME` 読込直後で、
+  `older_than(56)` なら `MonraceId::PLAYER` を埋め、v56 以降は `rd_s16b()` で読む。
+- **`rd_item()` は以降に早期 return を複数含む**ため、読込位置を関数末尾にしてはいけない
+  (エゴ・光源の後処理で `return` される)。`ART_NAME` の直後が正しい位置。
+- **フラグビットは使わなかった**。`SaveDataItemFlagType` は `u32b` で
+  `MFLAGS2 = 0x40000000` まで埋まっており `0x80000000` の 1 ビットしか残っていない。
+  最後の 1 ビットを消費せずに済むよう末尾無条件書込 + バージョンガードの形を採った。
+  **以降のアイテムフィールド追加も同じ形にすること。**
+
+#### 社会的問題の土台 (現時点では効果なし)
+
+`process_player_pickup_item()` (`src/inventory/player-inventory.cpp`) で、
+刻印のある品を拾ったときに `plus_incident_tree("LOOT_RIGHTFUL_PROPERTY", 個数)` を
+記録する。**カウントするだけでゲーム挙動への影響は一切ない。**
+
+- 撃破して略奪した品は刻印付きのまま床へ落ちるため、**拾った時点が「略奪の成立」**になる。
+- 先に貯め始めているのは、後から集計を足しても過去の略奪が数えられないため。
+  `incident_tree` は savefile に保存される。
+- **未実装 (要設計)**: 実際の社会的問題。候補は街の評判低下・店の買取拒否や価格操作・
+  賞金首化・所有種族のアライアンスからの敵対度上昇等。所有者の種族から
+  `alliance` を引けるので、アライアンス単位の敵対度 (`IRONMAN_ALLIANCE_HOSTILITY`
+  と同じ軸) に繋げるのが素直。
+
 ### モンスターの死亡時爆発 (`death_explosion`)
 
 `MonraceDefinition` に `tl::optional<MonraceDeathExplosion> death_explosion`
