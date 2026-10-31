@@ -18,3 +18,13 @@ sound_files = \
 	sword-clash1-r.wav \
 	sword-gesture3-r.wav \
 	sword-slash3-r.wav
+
+## setgid でインストールする場合、効果音 (sound.cfg・readme.txt を含む) をインストールする。
+if SET_GID
+xtrasounddir = @DEFAULT_LIB_PATH@/xtra/sound
+
+xtrasound_DATA = \
+	readme.txt \
+	sound.cfg \
+	$(sound_files)
+endif
