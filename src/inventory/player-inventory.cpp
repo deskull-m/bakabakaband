@@ -256,6 +256,15 @@ void process_player_pickup_item(CreatureEntity &creature, OBJECT_IDX o_idx)
 
     print_pickup_message(creature, *picked_item_ptr, picked_slot_item, slot);
 
+    // 他者の正当な所有物を手に入れたことを記録する。撃破して略奪した品はこの
+    // 刻印が付いたまま床へ落ちるため、拾った時点が「略奪の成立」になる。
+    // **現時点ではカウントするだけでゲーム挙動への影響は無い**。将来の社会的
+    // 問題 (評判・治安・賞金首・店の対応等) の判定材料として先に貯め始める
+    // (後から集計を足しても過去の略奪は数えられないため)。
+    if (picked_item_ptr->has_rightful_owner()) {
+        creature.plus_incident_tree("LOOT_RIGHTFUL_PROPERTY", picked_item_ptr->number);
+    }
+
     record_item_name = describe_flavor(creature, *picked_item_ptr, OD_NAME_ONLY);
     record_turn = AngbandWorld::get_instance().game_turn;
     check_find_art_quest_completion(creature, &picked_slot_item);

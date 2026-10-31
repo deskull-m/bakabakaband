@@ -402,6 +402,28 @@ int calc_equipped_armament_cost(const CreatureEntity &monster)
 
     return total;
 }
+
+/*!
+ * @brief モンスターの持ち物として品を与える (正当な所有権を刻んでから渡す)
+ * @param monster 持たせる対象のモンスター
+ * @param item 与える品
+ * @return acquire_item() の戻り値 (格納されたスロット)
+ * @details 生成時にそのモンスターの持ち物として用意された品は、その種族が
+ *          **正当な所有者**である。プレイヤーが撃破して略奪してもこの刻印は
+ *          消えないため、*鑑定* で「本来誰の物か」が判る。
+ *          金銭には刻まない (通貨に所有権の記録は意味を持たないため)。
+ *          床から拾った品・プレイヤーから盗んだ品を渡す経路 (monster-object.cpp /
+ *          monster-eating.cpp) は本ヘルパを通さない。拾得・窃盗で「正当な」
+ *          所有権は移らないので、刻印は付けないのが正しい。
+ */
+int16_t give_item_to_monster(CreatureEntity &monster, ItemEntity &item)
+{
+    if (item.bi_key.tval() != ItemKindType::GOLD) {
+        item.set_rightful_owner(monster.get_r_idx());
+    }
+
+    return monster.acquire_item(item);
+}
 }
 
 void generate_monster_drop_items(CreatureEntity &player, CreatureEntity &monster)
@@ -445,10 +467,10 @@ void generate_monster_drop_items(CreatureEntity &player, CreatureEntity &monster
                 const auto scaled = static_cast<int>(item.pval) * gold_percent / 100;
                 item.pval = static_cast<PARAMETER_VALUE>(std::clamp(scaled, 1, static_cast<int>(std::numeric_limits<PARAMETER_VALUE>::max())));
             }
-            monster.acquire_item(item);
+            give_item_to_monster(monster, item);
         } else {
             if (auto item = make_object(player, mo_mode)) {
-                monster.acquire_item(*item);
+                give_item_to_monster(monster, *item);
             }
         }
     }
@@ -478,7 +500,7 @@ void equip_armed_monster_initial_weapon(CreatureEntity &monster)
 
     // エゴ・アーティファクト化や強化値は付けない。素の打撃ダイスのみを加える
     // ことで、強化量をレベル帯テーブルの範囲に収める。
-    (void)monster.acquire_item(weapon);
+    (void)give_item_to_monster(monster, weapon);
 }
 
 void equip_ranged_monster_initial_bow(CreatureEntity &monster)
@@ -502,7 +524,7 @@ void equip_ranged_monster_initial_bow(CreatureEntity &monster)
     bow.number = 1;
 
     // 近接武器と同様、エゴ・アーティファクト化や強化値は付けない。
-    (void)monster.acquire_item(bow);
+    (void)give_item_to_monster(monster, bow);
 }
 
 void equip_spellcaster_monster_initial_robe(CreatureEntity &monster)
@@ -526,7 +548,7 @@ void equip_spellcaster_monster_initial_robe(CreatureEntity &monster)
     robe.number = 1;
 
     // 近接武器・弓と同様、エゴ・アーティファクト化や強化値は付けない。
-    (void)monster.acquire_item(robe);
+    (void)give_item_to_monster(monster, robe);
 }
 
 void equip_monster_by_armament_budget(CreatureEntity &monster)
@@ -569,7 +591,7 @@ void equip_monster_by_armament_budget(CreatureEntity &monster)
         item.number = 1;
 
         // 役割装備と同様、エゴ・アーティファクト化や強化値は付けない。
-        (void)monster.acquire_item(item);
+        (void)give_item_to_monster(monster, item);
         budget -= candidate->cost;
     }
 }
@@ -746,7 +768,7 @@ static void equip_monster_fixed_entries(CreatureEntity &player, CreatureEntity &
 
             // 装備できるスロットが空いていれば装備し、無理なら所持品に入る。
             // いずれにせよ死亡時は drop_all_inventory() で床へ落ちる。
-            (void)monster.acquire_item(*item);
+            (void)give_item_to_monster(monster, *item);
         }
     }
 }
