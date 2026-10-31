@@ -63,6 +63,14 @@ bool screen_object(CreatureEntity &creature, const ItemEntity &item, BIT_FLAGS m
         trivial_info = i;
     }
 
+    // 正当な所有権。trivial_info より後に積むことで「特筆すべき情報」として扱わせ、
+    // 他に何の特性も無い品でも *鑑定* でこの 1 行が表示されるようにする。
+    if (item.has_rightful_owner()) {
+        info[i++] = fmt::format(
+            _("この品の正統な所有権は{}にある。", "The rightful ownership of this item belongs to {}."),
+            item.describe_rightful_owner());
+    }
+
     if (flags.has(TR_INVEN_ACTIVATE)) {
         info[i++] = _("始動したときの効果...", "It can be activated for...");
         info[i++] = activation_explanation(&item);

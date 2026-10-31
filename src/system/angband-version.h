@@ -31,8 +31,17 @@ constexpr std::string_view VARIANT_NAME("Bakabaka");
  *     従来プレイヤー writer (byte) / モンスター writer (s16b) で個別保存していた
  *     ものを統一 (s16b)。旧バージョンは各固有経路で読む (rd_creature_common /
  *     rd_base_info / rd_monster_v50 に older_than(54) ガード)。
+ * 55: 世界情報の訪問済フラグを s16b から bool へ変更 (world-loader に
+ *     older_than(55) ガード)。
+ * 56: アイテムに「正当な所有権」(ItemEntity::rightful_owner, モンスター種族 ID) を
+ *     追加。wr_item() の末尾へ s16b で無条件追記し、rd_item() は
+ *     older_than(56) なら MonraceId::PLAYER (= 記録なし) で埋める。
+ *     **注意: アイテムのビットマスク (SaveDataItemFlagType) は 0x80000000 のみ
+ *     未使用で実質満杯のため、本フィールドはフラグビットを使わず末尾無条件
+ *     書込 + バージョンガードの形を採った。以降のアイテムフィールド追加も
+ *     同じ形にすること。**
  */
-constexpr uint32_t SAVEFILE_VERSION = 55;
+constexpr uint32_t SAVEFILE_VERSION = 56;
 
 /*!
  * @brief バージョンが開発版が安定版かを返す(廃止予定)

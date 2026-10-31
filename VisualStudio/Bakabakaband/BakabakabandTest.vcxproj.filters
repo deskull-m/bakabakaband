@@ -176,6 +176,9 @@
     <ClCompile Include="..\..\src\test\market\test-building-recharger.cpp">
       <Filter>market</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\test\market\test-loot-notoriety.cpp">
+      <Filter>market</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\src\test\mspell\test-mspell-projection-table.cpp">
       <Filter>mspell</Filter>
     </ClCompile>

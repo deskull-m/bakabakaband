@@ -283,6 +283,11 @@ void wr_item(const ItemEntity &item)
     if (any_bits(flags, SaveDataItemFlagType::ART_NAME)) {
         wr_string(*item.randart_name);
     }
+
+    // 正当な所有権 (v56 以降)。SaveDataItemFlagType は 0x80000000 のみ未使用で
+    // 実質満杯なので、フラグビットを消費せず末尾へ無条件に書く。
+    // 読込側は older_than(56) で読み飛ばす。
+    wr_s16b(enum2i(item.get_rightful_owner()));
 }
 
 /*!

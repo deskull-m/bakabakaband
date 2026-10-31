@@ -11,6 +11,7 @@
 #include "sv-definition/sv-lite-types.h"
 #include "system/angband.h"
 #include "system/baseitem/baseitem-definition.h"
+#include "system/enums/monrace/monrace-id.h"
 #include "system/item-entity.h"
 #include "util/bit-flags-calculator.h"
 #include "util/enum-converter.h"
@@ -184,6 +185,15 @@ void ItemLoader50::rd_item(ItemEntity *o_ptr)
         o_ptr->randart_name = rd_string();
     } else {
         o_ptr->randart_name.reset();
+    }
+
+    // 正当な所有権 (v56 以降)。wr_item() 末尾の無条件書込と対称。
+    // 旧セーブには存在しないので「記録なし」(MonraceId::PLAYER) で埋める。
+    // 本関数は以降に早期 return を含むため、必ずここで読むこと。
+    if (loading_savefile_version_is_older_than(56)) {
+        o_ptr->set_rightful_owner(MonraceId::PLAYER);
+    } else {
+        o_ptr->set_rightful_owner(i2enum<MonraceId>(rd_s16b()));
     }
 
     if ((o_ptr->ego_idx == EgoType::DARK) || (o_ptr->ego_idx == EgoType::ANCIENT_CURSE) || (o_ptr->is_specific_artifact(FixedArtifactId::NIGHT))) {

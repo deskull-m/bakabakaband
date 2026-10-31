@@ -88,7 +88,7 @@
         "INT",
       ],
       "flavor": {
-        "ja": "金の鎖に取り付けられた、この宇宙の創世に深い関わりを持つ真紅の宝石。（R.ゼラズニイ、真世界アンバーシリーズ 3～10巻）",
+        "ja": "金の鎖に取り付けられた、この宇宙の創世に深い関わりを持つ真紅の宝石。（R.ゼラズニイ、真世界アンバーシリーズ 3〜10巻）",
         "en": "This ruby pendant in a simple setting with a heavy gold chain is deeplyrelated to the creation of this universe.(R.Zelazny, 'The Chronicles of Amber', vol.3-10)",
       },
       "activate": "JUDGE",
@@ -265,7 +265,7 @@
         "INSTA_ART",
       ],
       "flavor": {
-        "ja": "混沌の王子マーリンがログルスから生み出した意思を持った腕輪だ。普段は目に見えないが脈動して危険を知らせてくれる。装備するものが命ずると形を変えて敵の首を締めることができる。（R.ゼラズニイ、真世界アンバーシリーズ 6～10巻）",
+        "ja": "混沌の王子マーリンがログルスから生み出した意思を持った腕輪だ。普段は目に見えないが脈動して危険を知らせてくれる。装備するものが命ずると形を変えて敵の首を締めることができる。（R.ゼラズニイ、真世界アンバーシリーズ 6〜10巻）",
         "en": "This bracelet has its own will.  It was created by Merlin, a prince of Chaosand son of Corwin.  The bracelet is invisible, but it sometimes ripples orconstricts to warn its owner of danger.  When commanded by its owner, itcan morph to strangle an enemy's neck.(R.Zelazny, 'The Chronicles of Amber', vol.6-10)",
       },
       "activate": "HYPODYNAMIA_1",
@@ -9902,7 +9902,7 @@
         "WARNING",
       ],
       "flavor": {
-        "ja": "あら～あらあら。",
+        "ja": "あら〜あらあら。",
         "en": "Ala, ala, ala.",
       },
     },

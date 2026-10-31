@@ -18,6 +18,7 @@
 #include "inventory/inventory-slot-types.h"
 #include "main/sound-definitions-table.h"
 #include "main/sound-of-music.h"
+#include "market/loot-notoriety.h"
 #include "object/item-tester-hooker.h"
 #include "object/item-use-flags.h"
 #include "object/object-info.h"
@@ -255,6 +256,11 @@ void process_player_pickup_item(CreatureEntity &creature, OBJECT_IDX o_idx)
     }
 
     print_pickup_message(creature, *picked_item_ptr, picked_slot_item, slot);
+
+    // 他者の正当な所有物を手に入れたことを記録し、社会的問題を発生させる。
+    // 撃破して略奪した品はこの刻印が付いたまま床へ落ちるため、拾った時点が
+    // 「略奪の成立」になる。効果の内訳は market/loot-notoriety.h を参照。
+    record_looted_rightful_property(creature, *picked_item_ptr, picked_item_ptr->number);
 
     record_item_name = describe_flavor(creature, *picked_item_ptr, OD_NAME_ONLY);
     record_turn = AngbandWorld::get_instance().game_turn;
