@@ -1,6 +1,5 @@
 #include "load/quest-loader.h"
 #include "artifact/fixed-art-types.h"
-#include "load/angband-version-comparer.h"
 #include "load/load-util.h"
 #include "load/load-zangband.h"
 #include "load/savedata-old-flag-types.h"

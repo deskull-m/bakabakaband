@@ -11,7 +11,6 @@
 #include "game-option/birth-options.h"
 #include "grid/grid.h"
 #include "grid/trap.h"
-#include "load/angband-version-comparer.h"
 #include "load/item/item-loader-factory.h"
 #include "load/item/item-loader-version-types.h"
 #include "load/load-util.h"

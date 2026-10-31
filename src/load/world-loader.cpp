@@ -1,6 +1,5 @@
 #include "load/world-loader.h"
 #include "floor/dungeon-feeling.h"
-#include "load/angband-version-comparer.h"
 #include "load/load-util.h"
 #include "load/load-zangband.h"
 #include "market/bounty.h"

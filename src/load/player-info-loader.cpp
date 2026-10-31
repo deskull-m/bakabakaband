@@ -1,7 +1,6 @@
 #include "load/player-info-loader.h"
 #include "avatar/avatar.h"
 #include "combat/martial-arts-style.h"
-#include "load/angband-version-comparer.h"
 #include "load/birth-loader.h"
 #include "load/creature-common-loader.h"
 #include "load/dummy-loader.h"

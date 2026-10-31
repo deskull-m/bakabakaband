@@ -1653,6 +1653,7 @@ hengband_test_SOURCES = \
 	test/knowledge/test-knowledge-features.cpp \
 	\
 	test/load/test-floor-loader.cpp \
+	test/load/test-savefile-version.cpp \
 	\
 	test/locale/test-character-encoding.cpp \
 	\

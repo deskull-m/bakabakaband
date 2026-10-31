@@ -1,6 +1,5 @@
 #include "load/store-loader.h"
 #include "avatar/avatar.h"
-#include "load/angband-version-comparer.h"
 #include "load/item/item-loader-factory.h"
 #include "load/load-util.h"
 #include "load/old/item-loader-savefile50.h"
