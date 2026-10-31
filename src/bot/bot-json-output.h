@@ -53,7 +53,7 @@ struct BotPowerListRow {
     std::string info; //!< 効果欄
 };
 
-inline constexpr auto BOT_JSON_PROTOCOL_VERSION = 2; //!< JSONスナップショットの互換性を壊す変更で更新する
+inline constexpr auto BOT_JSON_PROTOCOL_VERSION = 3; //!< JSONスナップショットの互換性を壊す変更で更新する
 
 enum class BotKnowledgeCategory {
     ARTIFACTS_KNOWN,

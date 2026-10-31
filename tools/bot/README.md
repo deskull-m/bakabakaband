@@ -198,8 +198,9 @@ python3 tools/bot/hbctl.py quit            # ゲームを終了
 `keys` には `\e`（ESC）、`^X`（Ctrl+X）、`\xNN` といったマクロ表記を使えます。
 マクロトリガ表記 `\[～]` は受け付けません。
 
-プロトコル版は `2` です。版 `1` の `nearby_grids` 配列は、版 `2` では
+プロトコル版は `3` です。版 `1` の `nearby_grids` 配列は、版 `2` では
 `grid_map`（`palette` / `runs` / `cells` による圧縮地図）へ置き換わりました。
+版 `3` では `grid_map.found_item_ids`（床の品の言語非依存な ID 列）を追加しました。
 `info` と各スナップショット（JSONLを含む）の `protocol_version` は共通です。
 クライアントはこれを確認し、対応していない版は拒否してください。
 
@@ -241,6 +242,12 @@ JSONL の店のスナップショットは店のコマンドの入力待ちで�
   地形が未知でも検知済みの品は含み、金貨・未発見品・個数0の品は除外します。
   `stack_count` は品の総個数ではなくスタック数、行長は `3 + stack_count` です。
   幻覚中は数と行長を維持し、tvalを `0`（種別不明）に置き換えます。
+- `found_item_ids`（版3）: `found_items` と同じ品を同じ順で並べた `[y, x, id, ...]` の配列。
+  各 `id` は名前から分かる範囲の言語非依存な ID を持つオブジェクトで、`sval`（aware のとき）、
+  `ego_id` と `artifact_id`（known のとき。ランダムアーティファクトには `artifact_id` を出さない）、
+  `flavor_id`（aware でないときの見た目。`lib/edit` の定義行の ID）のうち出せるものだけを持ちます。
+  個数は `found_items` 側にあるのでこの行には持たず、行長は `2 + stack_count` です。
+  幻覚中は各 `id` を `null`（正体不明）にします。名前は ID から各定義を引いて得られます。
 - `unsafe_rows`: 地下かつ罠未調査表示（`view_unsafe_grids`）が有効な場合に高さと同数の16進文字列、それ以外は `null`。
   各行は `ceil(w / 4)` 桁で、x座標は `row[x / 4]` の下位から `x % 4` ビットに対応します。
   端数の上位ビットは0。これは罠そのものではなく `CAVE_UNSAFE`（罠未調査）です。

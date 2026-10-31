@@ -94,6 +94,9 @@ namespace {
 constexpr std::streamoff BOT_JSON_OUTPUT_MAX_BYTES = 256LL * 1024 * 1024;
 constexpr int BOT_JSON_MAX_MESSAGES = 32;
 
+// make_grid_map_json() が床の品 ID 列で使う。定義はこの TU の後方 (別の匿名名前空間ブロック)。
+nlohmann::json make_bot_found_item_identity_json(const ItemEntity &item, bool is_hallucinated);
+
 const char *pseudo_feeling_name(item_feel_type feeling)
 {
     switch (feeling) {
@@ -375,6 +378,7 @@ nlohmann::json make_grid_map_json(const PlayerType &player)
     auto runs = nlohmann::json::array();
     auto cells = nlohmann::json::array();
     auto found_items = nlohmann::json::array();
+    auto found_item_ids = nlohmann::json::array();
     auto unsafe_rows = make_unsafe_rows_json(floor);
     std::unordered_map<GridSignature, std::size_t, GridSignatureHash> palette_indices;
 
@@ -394,6 +398,7 @@ nlohmann::json make_grid_map_json(const PlayerType &player)
         const auto is_known = is_map_terrain_visible(player, pos);
         auto found_item_count = 0;
         auto found_item_tvals = nlohmann::json::array();
+        auto found_item_id_list = nlohmann::json::array();
         auto visible_object_count = 0;
         auto visible_object_tvals = nlohmann::json::array();
         for (const auto o_idx : source_grid.o_idx_list) {
@@ -414,6 +419,9 @@ nlohmann::json make_grid_map_json(const PlayerType &player)
                 // count/row-length contract. NONE is an unknown-class placeholder.
                 const auto tval = is_hallucinated ? ItemKindType::NONE : item.bi_key.tval();
                 found_item_tvals.push_back(enum2i(tval));
+                // tval と同順で、名前から分かる ID (sval/ego_id/artifact_id/flavor_id) を並べる。
+                // 幻覚中は品の正体が分からないので null。
+                found_item_id_list.push_back(make_bot_found_item_identity_json(item, is_hallucinated));
             }
         }
         if (found_item_count != 0) {
@@ -422,6 +430,12 @@ nlohmann::json make_grid_map_json(const PlayerType &player)
                 found_item_row.push_back(std::move(tval));
             }
             found_items.push_back(std::move(found_item_row));
+            // found_items と同じ順の ID 行。count は found_items 側にあるので持たない。
+            auto found_item_id_row = nlohmann::json::array({ pos.y, pos.x });
+            for (auto &ids : found_item_id_list) {
+                found_item_id_row.push_back(std::move(ids));
+            }
+            found_item_ids.push_back(std::move(found_item_id_row));
         }
 
         if (!is_known) {
@@ -490,6 +504,7 @@ nlohmann::json make_grid_map_json(const PlayerType &player)
         { "runs", std::move(runs) },
         { "cells", std::move(cells) },
         { "found_items", std::move(found_items) },
+        { "found_item_ids", std::move(found_item_ids) },
         { "unsafe_rows", std::move(unsafe_rows) },
     };
 }
@@ -789,6 +804,18 @@ nlohmann::json make_bot_item_identity_json(const ItemEntity &item, bool store_id
         result["artifact_id"] = enum2i(item.fa_id);
     }
     return result;
+}
+
+/*!
+ * @brief 床の品の一覧 (grid_map.found_item_ids) の 1 品分を出力する
+ * @details 幻覚中は注視コマンドでも品の名前が分からないので null にする。
+ * @param item 床の品
+ * @param is_hallucinated 幻覚中か
+ * @return make_bot_item_identity_json() の結果、幻覚中は null
+ */
+nlohmann::json make_bot_found_item_identity_json(const ItemEntity &item, bool is_hallucinated)
+{
+    return is_hallucinated ? nlohmann::json(nullptr) : make_bot_item_identity_json(item, false);
 }
 
 nlohmann::json make_item_json(PlayerType *player_ptr, const ItemEntity &item, bool store_identified = false)
