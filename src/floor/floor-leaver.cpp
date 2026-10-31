@@ -49,12 +49,16 @@ static void check_riding_preservation(CreatureEntity &creature)
         return;
     }
 
-    const auto &monster = creature.get_floor()->m_list[creature.get_riding()];
+    const auto riding_m_idx = creature.get_riding();
+    const auto &monster = creature.get_floor()->m_list[riding_m_idx];
     if (monster.has_parent()) {
         creature.dismount();
     } else {
         party_monsters[0] = monster;
-        delete_monster_idx(creature, creature.get_riding());
+        // 新しい階で乗り直すので、両手持ちの設定などは戻さずに降りてから消す。
+        // 乗ったまま消すと、delete_monster_idx() が dismount() で設定を戻してしまう
+        creature.ride_monster(0);
+        delete_monster_idx(creature, riding_m_idx);
     }
 }
 
