@@ -304,13 +304,11 @@
     <ClInclude Include="..\..\src\stdafx.h" />
     <ClInclude Include="..\..\src\test\scoped-restore.h" />
     <ClInclude Include="..\..\src\test\scoped-rng.h" />
+    <ClInclude Include="..\..\src\test\scoped-ego-list.h" />
     <ClInclude Include="..\..\src\test\scoped-vector-wrapper.h" />
     <ClInclude Include="..\..\src\test\string-helpers.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\src\test\info-reader\scoped-ego-list.h">
-      <Filter>info-reader</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\test\info-reader\scoped-reader-state.h">
       <Filter>info-reader</Filter>
     </ClInclude>

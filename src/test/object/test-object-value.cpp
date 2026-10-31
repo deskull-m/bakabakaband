@@ -6,7 +6,7 @@
 #include "system/baseitem/baseitem-record.h"
 #include "system/baseitem/baseitem-records.h"
 #include "system/item-entity.h"
-#include "test/info-reader/scoped-ego-list.h"
+#include "test/scoped-ego-list.h"
 #include "test/scoped-vector-wrapper.h"
 #include <doctest/doctest.h>
 #include <limits>
