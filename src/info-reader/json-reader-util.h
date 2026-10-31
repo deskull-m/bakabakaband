@@ -1,10 +1,12 @@
 #pragma once
 
+#include "info-reader/info-reader-util.h"
 #include "info-reader/parse-error-types.h"
 #include "system/angband.h"
 #include "util/type-concepts.h"
 #include <concepts>
 #include <nlohmann/json.hpp>
+#include <string>
 #include <string_view>
 #include <tl/expected.hpp>
 #include <tl/optional.hpp>
@@ -75,4 +77,37 @@ tl::expected<void, ParseErrorType> info_set_integer(const nlohmann::json &json, 
 
     data = static_cast<T>(value);
     return {};
+}
+
+/*!
+ * @brief JSON のトークン (文字列) を辞書または検索関数で値へ変換する
+ * @param json トークン文字列。null は必須値の欠落として扱う
+ * @param table 辞書 (info_get_const で引ける連想配列)、または文字列を受け取り tl::optional を返す検索関数
+ * @return 対応する値。欠落は TOO_FEW_ARGUMENTS、型違い (非文字列) は INVALID_TYPE、未知の名前は INVALID_FLAG
+ * @details 定義リーダーごとに重複していた「null→欠落 / 非文字列→型エラー / 辞書引き→未知名エラー」の
+ *          判定を集約する (上流 hengband#6043 相当)。
+ */
+template <typename Table>
+auto info_read_token(const nlohmann::json &json, const Table &table)
+{
+    const auto lookup = [&table](const std::string &name) {
+        if constexpr (std::is_invocable_v<const Table &, const std::string &>) {
+            return table(name);
+        } else {
+            return info_get_const(table, name);
+        }
+    };
+    using Value = typename decltype(lookup(std::declval<const std::string &>()))::value_type;
+    using Result = tl::expected<Value, ParseErrorType>;
+    if (json.is_null()) {
+        return Result(tl::make_unexpected(ParseErrorType::TOO_FEW_ARGUMENTS));
+    }
+    if (!json.is_string()) {
+        return Result(tl::make_unexpected(ParseErrorType::INVALID_TYPE));
+    }
+    const auto value = lookup(json.get_ref<const std::string &>());
+    if (!value) {
+        return Result(tl::make_unexpected(ParseErrorType::INVALID_FLAG));
+    }
+    return Result(*value);
 }

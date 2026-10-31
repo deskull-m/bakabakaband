@@ -94,14 +94,9 @@ ParseErrorType MessageReader::set_mon_message() const
     }
 
     for (const auto &message : message_array) {
-        const auto action_iter = message.find("action");
-        if (action_iter == message.end() || !action_iter->is_string()) {
-            return ParseErrorType::TOO_FEW_ARGUMENTS;
-        }
-        const auto &action_data = action_iter.value();
-        const auto action = r_info_message_flags.find(action_data.get<std::string>());
-        if (action == r_info_message_flags.end()) {
-            return ParseErrorType::INVALID_FLAG;
+        const auto action = info_read_token(get_json_value(message, "action"), r_info_message_flags);
+        if (!action) {
+            return action.error();
         }
 
         const auto chance_iter = message.find("chance");
@@ -167,10 +162,10 @@ ParseErrorType MessageReader::set_mon_message() const
 #endif
             if (has_id_list) {
                 for (auto id : id_list) {
-                    MonraceMessageList::get_instance().emplace(id, action->second, chance, use_name, str);
+                    MonraceMessageList::get_instance().emplace(id, *action, chance, use_name, str);
                 }
             } else {
-                MonraceMessageList::get_instance().emplace_default(action->second, chance, use_name, str);
+                MonraceMessageList::get_instance().emplace_default(*action, chance, use_name, str);
             }
         }
     }

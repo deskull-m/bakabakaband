@@ -339,14 +339,11 @@ tl::expected<void, ParseErrorType> QuestReader::set_definition() const
     meta.present = true;
 
     const auto &type = get_json_value(definition, "type");
-    if (!type.is_string()) {
-        return tl::make_unexpected(ParseErrorType::TOO_FEW_ARGUMENTS);
+    const auto kind = info_read_token(type, QUEST_KIND_TOKENS);
+    if (!kind) {
+        return tl::make_unexpected(kind.error());
     }
-    const auto kind_it = QUEST_KIND_TOKENS.find(type.get<std::string>());
-    if (kind_it == QUEST_KIND_TOKENS.end()) {
-        return tl::make_unexpected(ParseErrorType::INVALID_FLAG);
-    }
-    meta.type = enum2i(kind_it->second);
+    meta.type = enum2i(*kind);
 
     if (const auto err = info_set_integer(get_json_value(definition, "level"), meta.level, true); !err) {
         return tl::make_unexpected(err.error());
@@ -427,30 +424,30 @@ tl::expected<void, ParseErrorType> QuestReader::set_descriptions() const
 
         const auto &when = get_json_value(description, "when");
         const auto &status_at_most = get_json_value(when, "statusAtMost");
-        if (status_at_most.is_string()) {
-            const auto it = QUEST_STATUS_TOKENS.find(status_at_most.get<std::string>());
-            if (it == QUEST_STATUS_TOKENS.end()) {
-                return tl::make_unexpected(ParseErrorType::INVALID_FLAG);
+        if (!status_at_most.is_null()) {
+            const auto value = info_read_token(status_at_most, QUEST_STATUS_TOKENS);
+            if (!value) {
+                return tl::make_unexpected(value.error());
             }
-            block.status_at_most = it->second;
+            block.status_at_most = *value;
         }
 
         const auto &status = get_json_value(when, "status");
-        if (status.is_string()) {
-            const auto it = QUEST_STATUS_TOKENS.find(status.get<std::string>());
-            if (it == QUEST_STATUS_TOKENS.end()) {
-                return tl::make_unexpected(ParseErrorType::INVALID_FLAG);
+        if (!status.is_null()) {
+            const auto value = info_read_token(status, QUEST_STATUS_TOKENS);
+            if (!value) {
+                return tl::make_unexpected(value.error());
             }
-            block.status_equals = it->second;
+            block.status_equals = *value;
         }
 
         const auto &quest_type = get_json_value(when, "questType");
-        if (quest_type.is_string()) {
-            const auto it = QUEST_KIND_TOKENS.find(quest_type.get<std::string>());
-            if (it == QUEST_KIND_TOKENS.end()) {
-                return tl::make_unexpected(ParseErrorType::INVALID_FLAG);
+        if (!quest_type.is_null()) {
+            const auto value = info_read_token(quest_type, QUEST_KIND_TOKENS);
+            if (!value) {
+                return tl::make_unexpected(value.error());
             }
-            block.quest_type = it->second;
+            block.quest_type = *value;
         }
 
         const auto &text = get_json_value(description, "text");

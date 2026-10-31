@@ -86,16 +86,11 @@ ParseErrorType MagicReader::read() const
  */
 ParseErrorType MagicReader::set_class_id(int &class_id) const
 {
-    const auto &classname_obj = get_json_value(this->class_data, "name");
-    if (!classname_obj.is_string()) {
-        return ParseErrorType::TOO_FEW_ARGUMENTS;
+    const auto player_class = info_read_token(get_json_value(this->class_data, "name"), magic_info_class_list);
+    if (!player_class) {
+        return player_class.error();
     }
-
-    const auto player_class = magic_info_class_list.find(classname_obj.get<std::string>());
-    if (player_class == magic_info_class_list.end()) {
-        return ParseErrorType::INVALID_FLAG;
-    }
-    class_id = enum2i(player_class->second);
+    class_id = enum2i(*player_class);
     return ParseErrorType::NONE;
 }
 
@@ -106,16 +101,11 @@ ParseErrorType MagicReader::set_class_id(int &class_id) const
  */
 ParseErrorType MagicReader::set_spell_type(player_magic &magics_info) const
 {
-    const auto &spell_book = get_json_value(this->class_data, "spell_type");
-    if (!spell_book.is_string()) {
-        return ParseErrorType::TOO_FEW_ARGUMENTS;
+    const auto tval = info_read_token(get_json_value(this->class_data, "spell_type"), magic_info_spelltype_to_tval);
+    if (!tval) {
+        return tval.error();
     }
-
-    const auto tval = magic_info_spelltype_to_tval.find(spell_book.get<std::string>());
-    if (tval == magic_info_spelltype_to_tval.end()) {
-        return ParseErrorType::INVALID_FLAG;
-    }
-    magics_info.spell_book = tval->second;
+    magics_info.spell_book = *tval;
     return ParseErrorType::NONE;
 }
 
@@ -126,16 +116,11 @@ ParseErrorType MagicReader::set_spell_type(player_magic &magics_info) const
  */
 ParseErrorType MagicReader::set_magic_status(player_magic &magics_info) const
 {
-    const auto &magic_status = get_json_value(this->class_data, "magic_status");
-    if (!magic_status.is_string()) {
-        return ParseErrorType::TOO_FEW_ARGUMENTS;
+    const auto status = info_read_token(get_json_value(this->class_data, "magic_status"), magic_info_name_to_stat);
+    if (!status) {
+        return status.error();
     }
-
-    const auto status = magic_info_name_to_stat.find(magic_status.get<std::string>());
-    if (status == magic_info_name_to_stat.end()) {
-        return ParseErrorType::INVALID_FLAG;
-    }
-    magics_info.spell_stat = status->second;
+    magics_info.spell_stat = *status;
     return ParseErrorType::NONE;
 }
 
@@ -148,13 +133,9 @@ ParseErrorType MagicReader::set_magic_status(player_magic &magics_info) const
  */
 ParseErrorType MagicReader::set_spell_data(const nlohmann::json &spell_data, player_magic &magics_info, RealmType realm) const
 {
-    const auto &spell_tag_obj = get_json_value(spell_data, "spell_tag");
-    if (!spell_tag_obj.is_string()) {
-        return ParseErrorType::TOO_FEW_ARGUMENTS;
-    }
-    const auto spell_id = SpellInfoList::get_instance().get_spell_id(realm, spell_tag_obj.get<std::string>());
+    const auto spell_id = info_read_token(get_json_value(spell_data, "spell_tag"), [realm](const std::string &name) { return SpellInfoList::get_instance().get_spell_id(realm, name); });
     if (!spell_id) {
-        return ParseErrorType::INVALID_FLAG;
+        return spell_id.error();
     }
     auto &info = magics_info.info[enum2i(realm)][*spell_id];
 
@@ -194,17 +175,12 @@ ParseErrorType MagicReader::set_realm_data(player_magic &magics_info) const
     }
 
     for (const auto &realm : realms_data) {
-        const auto &realm_name_obj = get_json_value(realm, "name");
-        if (!realm_name_obj.is_string()) {
-            return ParseErrorType::TOO_FEW_ARGUMENTS;
+        const auto realm_name = info_read_token(get_json_value(realm, "name"), realms_list);
+        if (!realm_name) {
+            return realm_name.error();
         }
 
-        const auto realm_name = realms_list.find(realm_name_obj.get<std::string>());
-        if (realm_name == realms_list.end()) {
-            return ParseErrorType::INVALID_FLAG;
-        }
-
-        const auto realm_id = realm_name->second;
+        const auto realm_id = *realm_name;
         const auto &spells_info_obj = get_json_value(realm, "spells_info");
         if (spells_info_obj.is_null()) {
             return ParseErrorType::TOO_FEW_ARGUMENTS;
