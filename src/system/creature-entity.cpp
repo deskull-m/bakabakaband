@@ -730,8 +730,11 @@ bool CreatureEntity::can_store_item(const ItemEntity &item) const
 int16_t CreatureEntity::acquire_item(const ItemEntity &item)
 {
     // [フェーズ C-2] 装備可能なアイテムは空きスロットがあれば自動装備
+    // 体構造的に存在しない部位 (四足獣の利き手、非実体の胴体等) へは装備させず
+    // 所持品送りにする。ここを通さないと、蠕虫が剣を「装備」して打撃ダイスを
+    // 得るような不整合が起きる。
     const auto eq_slot = wield_slot(*this, item);
-    const bool can_auto_equip = (eq_slot >= INVEN_MAIN_HAND) && (eq_slot < INVEN_TOTAL) && !this->inventory[eq_slot]->is_valid() && (item.number == 1);
+    const bool can_auto_equip = (eq_slot >= INVEN_MAIN_HAND) && (eq_slot < INVEN_TOTAL) && this->can_equip_to(eq_slot) && !this->inventory[eq_slot]->is_valid() && (item.number == 1);
     if (can_auto_equip) {
         *this->inventory[eq_slot] = item.clone();
         return eq_slot;
@@ -848,6 +851,11 @@ bool CreatureEntity::can_equip_to(int slot) const
 
     const auto &policy = get_body_slot_policy(this->get_body_structure());
     return policy.is_allowed(slot);
+}
+
+bool CreatureEntity::is_armament_capable() const
+{
+    return get_body_slot_policy(this->get_body_structure()).is_armament_capable();
 }
 
 size_t CreatureEntity::get_extended_slot_count() const
