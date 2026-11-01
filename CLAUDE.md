@@ -2777,7 +2777,8 @@ MonraceId rightful_owner{};   // MonraceId::PLAYER (= 0) は「記録なし」
 #### 表示
 
 `知識` → `(l) これまで行った行為` に略奪の記録を出す
-(`knowledge/knowledge-incident.cpp`)。
+(`knowledge/knowledge-incident.cpp`)。**キャラクタダンプ (`C` → `f`) の
+`[これまでの出来事]` 節にも同じ内容が出る** (下記「インシデント一覧のダンプ出力」参照)。
 
 ```
 あなたはこれまで他者の持ち物を45個略奪した (総額 $65231)。
@@ -2817,6 +2818,31 @@ $65000 / ランク 3 に達する (= 正業の店が盗品を買わなくなる)
 - **A/B**: 同じ `サカバンバスピス` (FRIENDLY + WILD_TOWN + 中立) が、
   無名のキャラクターでは `friendly=true`、賞金首ランク 3 のキャラクターでは
   `friendly=false` で生成される
+
+### インシデント一覧のダンプ出力 (`[これまでの出来事]`)
+
+`CreatureEntity::incident_tree` の記録は知識画面
+(`知識` → `(l) これまで行った行為`) だけでなく、**キャラクタダンプ
+(`C` → `f`、`file_character()` → `make_character_dump()`) の
+`[これまでの出来事]` 節**にも出力される。
+
+- 整形は `write_incident_report(CreatureEntity &creature, FILE *fff)`
+  (`src/knowledge/knowledge-incident.{h,cpp}`) に集約し、知識画面
+  (`do_cmd_knowledge_incident()` = 一時ファイル + `FileDisplayer` のラッパ) と
+  ダンプ (`dump_aux_incident()` in `src/io-dump/character-dump.cpp`) の双方が
+  これを呼ぶ。**項目を追加・変更する際は `write_incident_report()` の 1 箇所を
+  直せば両方に反映される。**
+- `incident_tree` は `std::map` だが**全キーを機械的に並べるわけではない**。
+  歩数・ダンジョン入場・攻撃・撃破 (種別別/アライアンス別)・食事 (死体別)・
+  店舗入場・被打撃 (方法別/効果別)・死亡 (死因別)・略奪 (本書「略奪による
+  社会的問題」節) 等、**意味のある単位で集計した curated な一覧**である。
+  新しいインシデント ID を記録するだけでは表示されないので、表示したい場合は
+  `write_incident_report()` に項目を足すこと。
+- **記録が空のキャラクタでは節ごと省略する** (`incident_tree.empty()` ガード)。
+  見出しだけが残るのを避けるため。
+- **モンスターのダンプには出力しない**。`make_character_dump()` は
+  `!creature.is_player()` の経路でステータスと突然変異のみを出すため、
+  他の履歴系の節 (クエスト・闘技場・徳等) と同じ扱いになる。
 
 ### モンスターの死亡時爆発 (`death_explosion`)
 

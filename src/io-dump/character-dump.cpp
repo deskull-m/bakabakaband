@@ -11,6 +11,7 @@
 #include "io-dump/special-class-dump.h"
 #include "io/mutations-dump.h"
 #include "io/write-diary.h"
+#include "knowledge/knowledge-incident.h"
 #include "knowledge/knowledge-quests.h"
 #include "market/arena-entry.h"
 #include "monster/monster-describer.h"
@@ -492,6 +493,23 @@ static void dump_aux_mutations(CreatureEntity &creature, FILE *fff)
 }
 
 /*!
+ * @brief これまでの出来事 (インシデント) をファイルにダンプする
+ * @param creature クリーチャーへの参照
+ * @param fff ファイルポインタ
+ * @details 整形は知識画面 (~ → これまで行った行為) と共通の write_incident_report() に委ねる。
+ * 何も記録が無いキャラクタでは見出しだけが残らないよう節ごと省略する。
+ */
+static void dump_aux_incident(CreatureEntity &creature, FILE *fff)
+{
+    if (creature.incident_tree.empty()) {
+        return;
+    }
+
+    fmt::println(fff, _("\n\n  [これまでの出来事]\n", "\n\n  [Incidents]\n"));
+    write_incident_report(creature, fff);
+}
+
+/*!
  * @brief 所持品の情報をファイルにダンプする
  * @param creature クリーチャーへの参照
  * @param fff ファイルポインタ
@@ -611,6 +629,7 @@ void make_character_dump(CreatureEntity &creature, FILE *fff)
     dump_aux_class_special(creature, fff);
     dump_aux_mutations(creature, fff);
     dump_aux_pet(creature, fff);
+    dump_aux_incident(creature, fff);
     fputs("\n\n", fff);
     dump_aux_equipment_inventory(creature, fff);
     dump_aux_home_museum(creature, fff);
