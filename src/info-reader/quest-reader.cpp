@@ -185,11 +185,12 @@ ParseErrorType parse_quest_legend_cell(const nlohmann::json &cell_data, QuestLeg
             if (!flag.is_string()) {
                 return ParseErrorType::INVALID_TYPE;
             }
-            const auto it = CAVE_FLAG_TOKENS.find(flag.get<std::string>());
-            if (it == CAVE_FLAG_TOKENS.end()) {
-                return ParseErrorType::INVALID_FLAG;
+            // 文字列であることは確かめたので、ここで返るエラーは未知のフラグ名の INVALID_FLAG だけになる
+            const auto cave_flag = info_read_token(flag, CAVE_FLAG_TOKENS);
+            if (!cave_flag) {
+                return cave_flag.error();
             }
-            grid.cave_info |= it->second;
+            grid.cave_info |= *cave_flag;
         }
     }
 

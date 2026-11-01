@@ -16,6 +16,7 @@
 #include "info-reader/info-reader-util.h"
 
 #include "artifact/random-art-effects.h"
+#include "info-reader/activation-reader.h"
 #include "info-reader/parse-error-types.h"
 #include "object-enchant/activation-info-table.h"
 #include <doctest/doctest.h>

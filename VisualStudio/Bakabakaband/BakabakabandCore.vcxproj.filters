@@ -991,6 +991,9 @@
     <ClCompile Include="..\..\src\info-reader\baseitem-reader.cpp">
       <Filter>info-reader</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\info-reader\activation-reader.cpp">
+      <Filter>info-reader</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\src\info-reader\artifact-reader.cpp">
       <Filter>info-reader</Filter>
     </ClCompile>
@@ -4018,6 +4021,9 @@
       <Filter>info-reader</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\info-reader\baseitem-reader.h">
+      <Filter>info-reader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\info-reader\activation-reader.h">
       <Filter>info-reader</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\info-reader\artifact-reader.h">

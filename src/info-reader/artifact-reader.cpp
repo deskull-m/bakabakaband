@@ -1,6 +1,7 @@
 #include "info-reader/artifact-reader.h"
 #include "artifact/fixed-art-types.h"
 #include "artifact/random-art-effects.h"
+#include "info-reader/activation-reader.h"
 #include "info-reader/info-reader-util.h"
 #include "info-reader/item-flag-reader.h"
 #include "info-reader/json-reader-util.h"

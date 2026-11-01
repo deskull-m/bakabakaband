@@ -709,6 +709,7 @@ libhengband_a_SOURCES = \
 	hpmp/hp-mp-processor.cpp hpmp/hp-mp-processor.h \
 	hpmp/hp-mp-regenerator.cpp hpmp/hp-mp-regenerator.h \
 	\
+	info-reader/activation-reader.cpp info-reader/activation-reader.h \
 	info-reader/artifact-reader.cpp info-reader/artifact-reader.h \
 	info-reader/baseitem-reader.cpp info-reader/baseitem-reader.h \
 	info-reader/baseitem-tokens-table.cpp info-reader/baseitem-tokens-table.h \
