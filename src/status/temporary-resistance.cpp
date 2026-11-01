@@ -201,11 +201,8 @@ bool set_tim_res_fear(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
     if (!notice) {
         return false;
     }
-    if (disturb_state || Travel::get_instance().is_ongoing()) {
-        disturb(creature, false, true);
-    }
     dur.set_flag(StatusRecalculatingFlag::BONUS);
-    handle_stuff(creature);
+    finish_timed_effect_change(creature);
     return true;
 }
 
@@ -269,10 +266,7 @@ bool set_tim_imm_dark(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
     if (!notice) {
         return false;
     }
-    if (disturb_state || Travel::get_instance().is_ongoing()) {
-        disturb(creature, false, true);
-    }
     dur.set_flag(StatusRecalculatingFlag::BONUS);
-    handle_stuff(creature);
+    finish_timed_effect_change(creature);
     return true;
 }

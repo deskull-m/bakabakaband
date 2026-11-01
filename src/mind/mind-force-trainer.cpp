@@ -184,11 +184,7 @@ bool set_tim_sh_force(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
         return false;
     }
 
-    if (disturb_state || Travel::get_instance().is_ongoing()) {
-        disturb(creature, false, true);
-    }
-
-    handle_stuff(creature);
+    finish_timed_effect_change(creature);
     return true;
 }
 

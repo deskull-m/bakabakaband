@@ -181,14 +181,10 @@ bool set_ele_immune(CreatureEntity &creature, uint32_t immune_type, TIME_EFFECT 
         msg_print(_("{}の攻撃を受けつけなくなった！", "For a while, you are immune to {}"), element);
     }
 
-    if (disturb_state || Travel::get_instance().is_ongoing()) {
-        disturb(creature, false, true);
-    }
-
     auto &dur = DeferredUpdateRequests::get_instance();
     dur.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
     dur.set_flag(StatusRecalculatingFlag::BONUS);
-    handle_stuff(creature);
+    finish_timed_effect_change(creature);
 
     return true;
 }
