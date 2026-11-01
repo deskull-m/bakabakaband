@@ -27,18 +27,18 @@
 **現状分類分布**:
 - HUMANOID:    1311 (フル装備可能)
 - DRACONIC:      77 (フル装備 + TAIL_RING + WING_L + WING_R)
-- QUADRUPED:    293 (首/胴体/頭のみ)
-- INSECTOID:     67 (首/胴体/頭のみ。QUADRUPED と同一構成)
+- QUADRUPED:    293 (通常スロットなし)
+- INSECTOID:     67 (通常スロットなし。QUADRUPED と同一構成)
 - INCORPOREAL:  300 (装備不可)
-- AMORPHOUS:    109 (リング 2 個のみ)
-- WORM:          47 (首/胴体 + TAIL_RING)
+- AMORPHOUS:    109 (通常スロットなし)
+- WORM:          47 (通常スロットなし + TAIL_RING)
 - WINGED_HUMANOID: 43 (HUMANOID から体の上を除く + WING_L + WING_R)
 - WING_ARMED_HUMANOID: 3 (HUMANOID から利き手・逆手を除く + WING_L + WING_R)
-- AVIAN:         39 (首/胴体/頭/脚 + WING_L + WING_R)
-- SERPENTINE:     1 (首/胴体 + TAIL_RING。コカトリスのみ)
+- AVIAN:         39 (通常スロットなし + WING_L + WING_R)
+- SERPENTINE:     1 (通常スロットなし + TAIL_RING。コカトリスのみ)
 - VORTEX:        20 (装備不可)
 - SPHERE:        17 (装備不可)
-- BIPEDAL:       11 (首/光源/胴体/頭/脚)
+- BIPEDAL:       11 (通常スロットなし)
 - FORMLESS:      12 (装備不可)
 - GASEOUS:       10 (装備不可)
 - XAREN:          3 (装備不可)
@@ -181,19 +181,19 @@ INCORPOREAL を対象とし、後 4 種は Phase 2 (extended slots) で
 `GASEOUS` (気体) は「毒ガス・煙・蒸気」用、
 `VORTEX` (ボルテックス) は「渦・竜巻・奔流」用、
 `XAREN` (ザレン型) は「岩を泳ぐ多腕多脚の異形」用で、
-**この 4 種はいずれも装備枠が一切ない** (`AMORPHOUS` が持つ擬足の指輪すら無い)。
+**この 4 種はいずれも装備枠が一切ない**。
 `AVIAN` (鳥型) は「前肢が完全な翼になった鳥類」用で、
-**首・胴体・頭・脚 + 両翼の装飾** を持つ (`BIPEDAL` から光源を除いた形)。
+**通常スロットは持たず両翼の装飾だけ**を持つ。
 `WORM` (長胴型) は「ミミズ〜蛇〜東洋竜のような、手足を持たない長い胴が
 身体の主体である生き物」用で、スロット構成は `SERPENTINE` と同一
-(**首・胴体 + 尾の指輪**)。**`SERPENTINE` が担っていた意味論の実体は
+(**通常スロットなし + 尾の指輪**)。**`SERPENTINE` が担っていた意味論の実体は
 こちらへ移った**。
 `INSECTOID` (節足型) は「外骨格と多数の脚を持つ節足動物」用で、
-スロット構成は `QUADRUPED` と同一 (**首・胴体・頭**)。当初案の
+スロット構成は `QUADRUPED` と同一 (**通常スロットなし**)。当初案の
 「多腕」拡張スロットは `ExtendedSlotType` に該当する値が無いため未実装。
 `SERPENTINE` に残っていた多足類はここへ移り、**`SERPENTINE` には
 コカトリス 1 体だけが残っている** (鶏の体に蛇の尾という構成上、
-首・胴体 + 尾の指輪が適合するため据え置き)。
+尾の指輪が適合するため据え置き)。
 `WINGED_HUMANOID` (有翼人) は「有翼のデーモン・天使のように、人型の体に
 翼が生えた存在」用で、スロット構成は **`HUMANOID` から体の上 (クローク) だけを
 除いた全スロット** + 両翼の装飾。背の翼が邪魔でマントの類を羽織れない一方、
@@ -209,6 +209,8 @@ INCORPOREAL を対象とし、後 4 種は Phase 2 (extended slots) で
 `AMORPHOUS` の表示名は `FORMLESS` 追加にあわせて「不定形」から
 **「粘体型」** に変更した (スライム・ゼリー・モルド等 114 体が該当し、
 enum コメントの「スライム・ジェル」という実態に沿わせたもの)。
+当初案の「擬足に指輪をはめる」扱いは人型スロットの流用なので**廃止**し、
+現行では通常スロット・拡張スロットとも持たない。
 
 ### 1.2 スロット可否ポリシー
 
@@ -223,29 +225,48 @@ struct BodySlotPolicy {
 const BodySlotPolicy &get_body_slot_policy(BodyStructureType type);
 ```
 
-各タイプのデフォルト定義例:
+各タイプのデフォルト定義 (**現行実装**):
 
-| BodyStructure | MAIN_HAND | SUB_HAND | BOW | RING×2 | NECK | LITE | BODY | OUTER | HEAD | ARMS | FEET |
-|---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| HUMANOID | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
-| BIPEDAL | × | × | × | × | ○ | ○ | ○ | × | ○ | × | ○ |
-| QUADRUPED | × | × | × | × | ○ | × | ○ | × | ○ | × | × |
-| SERPENTINE | × | × | × | × | ○ | × | ○ | × | × | × | × |
-| AMORPHOUS | × | × | × | ○ | × | × | × | × | × | × | × |
-| INCORPOREAL | × | × | × | × | × | × | × | × | × | × | × |
-| FORMLESS | × | × | × | × | × | × | × | × | × | × | × |
-| GASEOUS | × | × | × | × | × | × | × | × | × | × | × |
-| VORTEX | × | × | × | × | × | × | × | × | × | × | × |
-| XAREN | × | × | × | × | × | × | × | × | × | × | × |
-| AVIAN | × | × | × | × | ○ | × | ○ | × | ○ | × | ○ |
-| WORM | × | × | × | × | ○ | × | ○ | × | × | × | × |
-| INSECTOID | × | × | × | × | ○ | × | ○ | × | ○ | × | × |
-| WINGED_HUMANOID | ○ | ○ | ○ | ○ | ○ | ○ | ○ | × | ○ | ○ | ○ |
-| WING_ARMED_HUMANOID | × | × | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
-| SPHERE | × | × | × | × | × | × | × | × | × | × | × |
+**通常装備スロットを持つのは人型系 3 種と竜体だけ**で、それ以外の体構造は
+1 つも持たない。当初案は獣に「首/胴体/頭」のような部分的な人型スロットを
+与えていたが、人間用の装具は人型の体に合わせた形をしているため不整合であり、
+**倒して身ぐるみを剥げるのは人型が主**という方針に合わせて全て閉じた。
+獣側の装飾は身体に合った**拡張スロット** (尾の指輪・両翼の装飾) で表現する。
 
-`ASSHOLE` スロット (尻穴) は HUMANOID 以外は基本的に無効
-(独自仕様だが SERPENTINE は example として有効でもよい)。
+| BodyStructure | MAIN_HAND | SUB_HAND | BOW | RING×2 | NECK | LITE | BODY | OUTER | HEAD | ARMS | FEET | ASSHOLE | 拡張 |
+|---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|---|
+| HUMANOID | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | — |
+| WINGED_HUMANOID | ○ | ○ | ○ | ○ | ○ | ○ | ○ | × | ○ | ○ | ○ | ○ | 両翼 |
+| WING_ARMED_HUMANOID | × | × | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | 両翼 |
+| DRACONIC | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | 尾の指輪 + 両翼 |
+| BIPEDAL | × | × | × | × | × | × | × | × | × | × | × | × | — |
+| QUADRUPED | × | × | × | × | × | × | × | × | × | × | × | × | — |
+| INSECTOID | × | × | × | × | × | × | × | × | × | × | × | × | — |
+| AVIAN | × | × | × | × | × | × | × | × | × | × | × | × | 両翼 |
+| WORM | × | × | × | × | × | × | × | × | × | × | × | × | 尾の指輪 |
+| SERPENTINE | × | × | × | × | × | × | × | × | × | × | × | × | 尾の指輪 |
+| AMORPHOUS | × | × | × | × | × | × | × | × | × | × | × | × | — |
+| INCORPOREAL | × | × | × | × | × | × | × | × | × | × | × | × | — |
+| FORMLESS | × | × | × | × | × | × | × | × | × | × | × | × | — |
+| GASEOUS | × | × | × | × | × | × | × | × | × | × | × | × | — |
+| VORTEX | × | × | × | × | × | × | × | × | × | × | × | × | — |
+| XAREN | × | × | × | × | × | × | × | × | × | × | × | × | — |
+| SPHERE | × | × | × | × | × | × | × | × | × | × | × | × | — |
+
+- **通常スロットの集合は「全 13」「全 13 − クローク」「全 13 − 両手」「なし」の
+  4 通りだけ**で、部分的な集合を持つ体構造は存在しない。
+- `wield_slot()` は通常スロットが体構造で不可なら `find_extended_slot()` で
+  拡張スロットを試し、それも無ければ `-1` (所持品行き) を返す。よって獣に
+  `equip_kind` を書いた場合でも、**拡張スロットに適合する単品なら装備される**
+  (尾の指輪 ← 指輪 / 両翼 ← アミュレット / 第二の首 ← アミュレット・笛 /
+  第三の頭 ← 兜・王冠)。適合しなければ所持品に入る (死亡時は所持品ごと床へ落ちる)。
+- 拡張スロットの中身は `drop_all_inventory()` の走査対象外なので、
+  **剥ぎ取れる装備としては扱われない**。獣の装飾を表すだけの枠だが、AC・耐性は
+  Phase 2.6 で集計対象に入っている。
+
+`ASSHOLE` スロット (尻穴) は**実装済みの通常スロット** (`INVEN_ASSHOLE`) で、
+`wield_slot()` が `ItemKindType::ANAL_PLUG` をここへ割り当てる。上表の「全 13」には
+このスロットを含む。
 
 ### 1.3 MonraceDefinition への追加
 
@@ -465,7 +486,7 @@ ExtendedSlot 参照は `creature.get_extended_inventory(slot_id)`
   "id": 200,
   "name": { "ja": "コブラ", "en": "Cobra" },
   "body_structure": "SERPENTINE"
-  // 自動的に MAIN_HAND/SUB_HAND/BOW/RING×2/LITE/OUTER/HEAD/ARMS/FEET/ASSHOLE が無効
+  // 自動的に通常スロット全 13 部位が無効になり、拡張スロットの尾の指輪だけが残る
 }
 ```
 
@@ -650,8 +671,8 @@ c コマンドの能力詳細ページには、**装備部位ごとに 1 列**�
 
 ## 未決事項 / 検討項目
 
-1. **AMORPHOUS のリング装備可否**: スライムは「擬足にリングをはめる」
-   と考えると面白いが、不自然との意見もあり。最終決定は実装時。
+1. **AMORPHOUS のリング装備可否**: → **決着済み (不可)**。擬足に指輪という扱いも
+   人型スロットの流用なので、通常スロットを全て閉じる方針にあわせて廃止した。
 2. **プレイヤーが装備不可能なボディタイプを持つ可能性**:
    → **一部実現済み**。`player_birth_as_monster` でモンスターを選ぶと
    `r_idx != MonraceId::PLAYER` となり、プレイヤーもその種族の
@@ -689,3 +710,4 @@ c コマンドの能力詳細ページには、**装備部位ごとに 1 列**�
 | 2026-09-01 | c ステータス 1 ページ目に体構造を表示。表示名/表示色を `body_structure_name()` / `body_structure_color()` に集約し r recall と共用。`CreatureEntity::get_body_structure()` を新設 | Claude Code (claude/creature-entity-integration-zzgibe) |
 | 2026-09-01 | 装備一覧 (e コマンド / 装備サブウィンドウ / キャラクタダンプ / c 装備ページ) から体構造的に存在しない部位を消去。判定を `CreatureEntity::should_display_equipment_slot()` に集約 | Claude Code (claude/creature-entity-integration-zzgibe) |
 | 2026-09-01 | 特性フラグ一覧・能力修正表の装備列からも非該当部位を消去。列見出しを `build_equipment_column_labels()` で動的生成し、`INVEN_ASSHOLE` 分の列ズレも解消 | Claude Code (claude/creature-entity-integration-zzgibe) |
+| 2026-11-01 | 人型系 3 種と竜体以外の通常スロットを全て閉鎖 (獣に部分的な人型スロットを与える不整合の解消)。`is_armament_capable()` 軸を追加。あわせて AC 集計・近接武器選択に `can_equip_to()` ガードを入れ、体構造変更前のセーブに残る装備が効かないようにした | Claude Code |

@@ -18,6 +18,7 @@
 #include <doctest/doctest.h>
 
 #include <algorithm>
+#include <iterator>
 #include <vector>
 
 namespace {
@@ -81,43 +82,48 @@ TEST_CASE("INCORPOREAL allows no equipment slot")
     CHECK(collect_allowed_slots(BodyStructureType::INCORPOREAL).empty());
 }
 
-TEST_CASE("restricted body structures allow only their own slots")
+TEST_CASE("only humanoid-grade and draconic bodies have normal equipment slots")
 {
-    SUBCASE("BIPEDAL cannot wield weapons but wears neck/lite/body/head/feet")
+    // 人間用の装具は人型の体に合わせた形をしているため、獣・鳥・蟲・蠕虫に
+    // 「首と胴と頭だけ」のような部分的な人型スロットは持たせない。
+    // 倒して身ぐるみを剥げるのは人型が主、という方針。
+    constexpr BodyStructureType WITH_SLOTS[] = {
+        BodyStructureType::HUMANOID,
+        BodyStructureType::WINGED_HUMANOID,
+        BodyStructureType::WING_ARMED_HUMANOID,
+        BodyStructureType::DRACONIC,
+    };
+
+    SUBCASE("every other body structure has no normal slot at all")
     {
-        const auto allowed = collect_allowed_slots(BodyStructureType::BIPEDAL);
-        CHECK(contains_slot(allowed, INVEN_NECK));
-        CHECK(contains_slot(allowed, INVEN_LITE));
-        CHECK(contains_slot(allowed, INVEN_BODY));
-        CHECK(contains_slot(allowed, INVEN_HEAD));
-        CHECK(contains_slot(allowed, INVEN_FEET));
-        CHECK_FALSE(contains_slot(allowed, INVEN_MAIN_HAND));
-        CHECK_FALSE(contains_slot(allowed, INVEN_BOW));
+        for (const auto type : ALL_BODY_STRUCTURES) {
+            const auto has_slots = std::find(std::begin(WITH_SLOTS), std::end(WITH_SLOTS), type) != std::end(WITH_SLOTS);
+            if (has_slots) {
+                continue;
+            }
+
+            CAPTURE(enum2i(type));
+            CHECK(collect_allowed_slots(type).empty());
+        }
     }
 
-    SUBCASE("QUADRUPED wears only neck/body/head")
+    SUBCASE("the four structures with slots keep a full humanoid-grade set")
     {
-        const auto allowed = collect_allowed_slots(BodyStructureType::QUADRUPED);
-        CHECK(allowed.size() == 3);
-        CHECK(contains_slot(allowed, INVEN_NECK));
-        CHECK(contains_slot(allowed, INVEN_BODY));
-        CHECK(contains_slot(allowed, INVEN_HEAD));
+        // 部分的なスロット集合を持つ体構造は存在しない。人型から除外されるのは
+        // WINGED_HUMANOID のクロークと WING_ARMED_HUMANOID の両手だけ。
+        const auto humanoid = collect_allowed_slots(BodyStructureType::HUMANOID);
+        CHECK(collect_allowed_slots(BodyStructureType::DRACONIC).size() == humanoid.size());
+        CHECK(collect_allowed_slots(BodyStructureType::WINGED_HUMANOID).size() == humanoid.size() - 1);
+        CHECK(collect_allowed_slots(BodyStructureType::WING_ARMED_HUMANOID).size() == humanoid.size() - 2);
     }
 
-    SUBCASE("SERPENTINE wears only neck/body")
+    SUBCASE("beasts keep body-appropriate extended slots instead")
     {
-        const auto allowed = collect_allowed_slots(BodyStructureType::SERPENTINE);
-        CHECK(allowed.size() == 2);
-        CHECK(contains_slot(allowed, INVEN_NECK));
-        CHECK(contains_slot(allowed, INVEN_BODY));
-    }
-
-    SUBCASE("AMORPHOUS wears only two rings")
-    {
-        const auto allowed = collect_allowed_slots(BodyStructureType::AMORPHOUS);
-        CHECK(allowed.size() == 2);
-        CHECK(contains_slot(allowed, INVEN_MAIN_RING));
-        CHECK(contains_slot(allowed, INVEN_SUB_RING));
+        // 通常スロットを失っても、身体に合った拡張スロットでの装飾は残す。
+        // 拡張スロットは drop_all_inventory() の対象外なので剥ぎ取れない。
+        CHECK_FALSE(get_body_slot_policy(BodyStructureType::SERPENTINE).get_extended_slots().empty());
+        CHECK_FALSE(get_body_slot_policy(BodyStructureType::WORM).get_extended_slots().empty());
+        CHECK_FALSE(get_body_slot_policy(BodyStructureType::AVIAN).get_extended_slots().empty());
     }
 }
 
