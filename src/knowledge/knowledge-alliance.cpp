@@ -14,6 +14,32 @@
 #include <sstream>
 #include <string>
 
+/*!
+ * @brief 各アライアンスの状態・印象値・勢力指数の簡易一覧を任意のファイルへ書き出す
+ * @param creature クリーチャーへの参照
+ * @param fff 出力先ファイルポインタ
+ * @details 知識画面の簡易表示 (do_cmd_knowledge_alliance の detail == false) と
+ * キャラクタダンプ (dump_aux_alliance_impression) の双方から呼ぶ。
+ * 印象値は必ず calc_impression_point_total() から取ること。アライアンス固有の
+ * calcImpressionPoint() を直接呼ぶと略奪ペナルティ等の全アライアンス共通の補正が
+ * 抜ける (alliance/alliance.h 参照)。
+ */
+void write_alliance_impression_summary(CreatureEntity &creature, FILE *fff)
+{
+    fprintf(fff, _("状態 アライアンス名                 印象値     勢力指数\n", "State       Alliance                       Impression        Power\n"));
+    for (const auto &[alliance_type, alliance_ptr] : alliance_list) {
+        if (alliance_type == AllianceType::NONE) {
+            continue;
+        }
+
+        // 勢力指数は int64_t なので文字列化してから桁を揃える
+        const auto power = std::to_string(alliance_ptr->calcCurrentPower());
+        fprintf(fff, _("%s %-30s %+6d %12s\n", "%-11s %-30s %+10d %12s\n"),
+            alliance_ptr->isAnnihilated() ? _("壊滅", "Annihilated") : _("健在", "Alive"),
+            alliance_ptr->name.c_str(), alliance_ptr->calc_impression_point_total(creature), power.c_str());
+    }
+}
+
 void do_cmd_knowledge_alliance(CreatureEntity &creature, bool detail)
 {
     FILE *fff = NULL;
@@ -24,7 +50,11 @@ void do_cmd_knowledge_alliance(CreatureEntity &creature, bool detail)
     }
 
     if (!detail) {
-        fprintf(fff, "状態 アライアンス名                 印象値     勢力指数\n");
+        write_alliance_impression_summary(creature, fff);
+        angband_fclose(fff);
+        FileDisplayer(creature.name).display(true, file_name, 0, 0, _("各アライアンス情報", "Information of all alliances"));
+        fd_kill(file_name);
+        return;
     }
 
     for (auto a : alliance_list) {
@@ -34,43 +64,39 @@ void do_cmd_knowledge_alliance(CreatureEntity &creature, bool detail)
         std::stringstream st;
         st << a.second->calcCurrentPower();
 
-        if (detail) {
-            fprintf(fff, _("%-30s/ あなたへの印象値: %+5d \n", "%-30s/ Impression to you: %+5d \n"), a.second->name.c_str(), a.second->calc_impression_point_total(creature));
-            fprintf(fff, _("  勢力指数: %s \n", "  Power Value: %s \n"), st.str().c_str());
-            fprintf(fff, _("  (%s) \n", "  (%s) \n"), (a.second->isAnnihilated() ? _("壊滅", "Annihilated") : _("健在", "Alive")));
+        fprintf(fff, _("%-30s/ あなたへの印象値: %+5d \n", "%-30s/ Impression to you: %+5d \n"), a.second->name.c_str(), a.second->calc_impression_point_total(creature));
+        fprintf(fff, _("  勢力指数: %s \n", "  Power Value: %s \n"), st.str().c_str());
+        fprintf(fff, _("  (%s) \n", "  (%s) \n"), (a.second->isAnnihilated() ? _("壊滅", "Annihilated") : _("健在", "Alive")));
 
-            if (!a.second->isAnnihilated()) {
-                fprintf(fff, _("所属戦力--\n", "Affiliation strength--\n"));
-            } else {
-                fprintf(fff, _("残存戦力--\n", "Remaining strength--\n"));
-            }
+        if (!a.second->isAnnihilated()) {
+            fprintf(fff, _("所属戦力--\n", "Affiliation strength--\n"));
+        } else {
+            fprintf(fff, _("残存戦力--\n", "Remaining strength--\n"));
+        }
 
-            for (auto &[r_idx, r_ref] : MonraceList::get_instance()) {
-                if (r_ref->alliance_idx == a.second->id) {
-                    fprintf(fff, _("%s  %-40s レベル %3d 評価値 %9lld", "%s  %-40s LEVEL %3d POW %9lld"), r_ref->kind_flags.has(MonsterKindType::UNIQUE) ? "[U]" : "---", r_ref->name.data(), r_ref->level, static_cast<long long>(monraces.get_monrace(r_idx).calc_power()));
-                    if (r_ref->kind_flags.has_not(MonsterKindType::UNIQUE)) {
-                        if (r_ref->mob_num > 0) {
-                            fprintf(fff, "x %d\n", r_ref->mob_num);
-                        } else {
-                            if (r_ref->max_num > 0) {
-                                fprintf(fff, _(" 全滅\n", " Wiped\n"));
-                            } else {
-                                fprintf(fff, _(" ----\n", " ----\n"));
-                            }
-                        }
+        for (auto &[r_idx, r_ref] : MonraceList::get_instance()) {
+            if (r_ref->alliance_idx == a.second->id) {
+                fprintf(fff, _("%s  %-40s レベル %3d 評価値 %9lld", "%s  %-40s LEVEL %3d POW %9lld"), r_ref->kind_flags.has(MonsterKindType::UNIQUE) ? "[U]" : "---", r_ref->name.data(), r_ref->level, static_cast<long long>(monraces.get_monrace(r_idx).calc_power()));
+                if (r_ref->kind_flags.has_not(MonsterKindType::UNIQUE)) {
+                    if (r_ref->mob_num > 0) {
+                        fprintf(fff, "x %d\n", r_ref->mob_num);
                     } else {
-                        if (r_ref->mob_num > 0) {
-                            fprintf(fff, _(" 生存\n", " Survived\n"));
+                        if (r_ref->max_num > 0) {
+                            fprintf(fff, _(" 全滅\n", " Wiped\n"));
                         } else {
-                            fprintf(fff, _(" 死亡\n", " Dead\n"));
+                            fprintf(fff, _(" ----\n", " ----\n"));
                         }
+                    }
+                } else {
+                    if (r_ref->mob_num > 0) {
+                        fprintf(fff, _(" 生存\n", " Survived\n"));
+                    } else {
+                        fprintf(fff, _(" 死亡\n", " Dead\n"));
                     }
                 }
             }
-            fprintf(fff, "\n\n");
-        } else {
-            fprintf(fff, "%s %-30s %+6d %12s\n", (a.second->isAnnihilated() ? _("壊滅", "Annihilated") : _("健在", "Alive")), a.second->name.c_str(), a.second->calc_impression_point_total(creature), st.str().c_str());
         }
+        fprintf(fff, "\n\n");
     }
 
     angband_fclose(fff);
