@@ -1033,6 +1033,12 @@ int ItemEntity::is_similar_part(const ItemEntity &other) const
         return 0;
     }
 
+    // 正当な所有権が違う品はまとめない。まとめてしまうと一方の刻印が
+    // 黙って失われ、「本来誰の物か」が辿れなくなる (略奪品と自前の品の区別が付かない)。
+    if (this->rightful_owner != other.rightful_owner) {
+        return 0;
+    }
+
     constexpr auto max_stack_size = 99;
     auto max_num = max_stack_size;
     switch (this->bi_key.tval()) {
@@ -1280,6 +1286,54 @@ MonraceId ItemEntity::get_monrace_id() const
     }
 
     return i2enum<MonraceId>(this->pval);
+}
+
+/*!
+ * @brief 正当な所有権の記録があるかを判定する
+ * @return 所有者のモンスター種族が記録されていれば true
+ * @details 種族定義が JSON 由来で増減しうるため、記録された ID が現在の定義に
+ *          存在しない場合 (旧セーブに残った削除済み種族等) も「記録なし」とする。
+ */
+bool ItemEntity::has_rightful_owner() const
+{
+    if (!MonraceList::is_valid(this->rightful_owner)) {
+        return false;
+    }
+
+    return MonraceList::get_instance().contains(this->rightful_owner);
+}
+
+/*!
+ * @brief 正当な所有権を持つモンスター種族 ID を取得する
+ * @return 所有者の種族 ID (記録が無ければ MonraceId::PLAYER)
+ */
+MonraceId ItemEntity::get_rightful_owner() const
+{
+    return this->rightful_owner;
+}
+
+/*!
+ * @brief 正当な所有権を記録する
+ * @param monrace_id 所有者のモンスター種族 ID
+ * @details モンスター生成時にその個体の持ち物として用意した品へ刻む。
+ *          `MonraceId::PLAYER` を渡すと記録を消す。
+ */
+void ItemEntity::set_rightful_owner(MonraceId monrace_id)
+{
+    this->rightful_owner = monrace_id;
+}
+
+/*!
+ * @brief 正当な所有権の所有者名を得る
+ * @return 所有者の種族名。記録が無ければ空文字列
+ */
+std::string ItemEntity::describe_rightful_owner() const
+{
+    if (!this->has_rightful_owner()) {
+        return "";
+    }
+
+    return MonraceList::get_instance().get_monrace(this->rightful_owner).name.string();
 }
 
 int ItemEntity::get_lite_radius() const
