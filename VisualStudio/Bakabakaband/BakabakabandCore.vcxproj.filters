@@ -1024,6 +1024,9 @@
     <ClCompile Include="..\..\src\info-reader\message-reader.cpp">
       <Filter>info-reader</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\info-reader\monster-flag-reader.cpp">
+      <Filter>info-reader</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\src\info-reader\race-reader.cpp">
       <Filter>info-reader</Filter>
     </ClCompile>
@@ -4057,6 +4060,9 @@
       <Filter>info-reader</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\info-reader\message-reader.h">
+      <Filter>info-reader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\info-reader\monster-flag-reader.h">
       <Filter>info-reader</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\info-reader\race-reader.h">

@@ -727,6 +727,7 @@ libhengband_a_SOURCES = \
 	info-reader/magic-info-tokens-table.cpp info-reader/magic-info-tokens-table.h \
 	info-reader/magic-reader.cpp info-reader/magic-reader.h \
 	info-reader/message-reader.cpp info-reader/message-reader.h \
+	info-reader/monster-flag-reader.cpp info-reader/monster-flag-reader.h \
 	info-reader/parse-error-types.h \
 	info-reader/party-reader.cpp info-reader/party-reader.h \
 	info-reader/quest-reader.cpp info-reader/quest-reader.h \
@@ -1643,6 +1644,7 @@ hengband_test_SOURCES = \
 	test/info-reader/test-item-flag-reader.cpp \
 	test/info-reader/test-baseitem-reader.cpp \
 	test/info-reader/test-json-reader-util.cpp \
+	test/info-reader/test-monster-flag-reader.cpp \
 	test/info-reader/test-quest-reader.cpp \
 	test/info-reader/test-skill-reader.cpp \
 	test/info-reader/test-vault-reader.cpp \

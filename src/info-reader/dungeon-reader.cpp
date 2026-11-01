@@ -2,6 +2,7 @@
 #include "artifact/fixed-art-types.h"
 #include "info-reader/dungeon-info-tokens-table.h"
 #include "info-reader/info-reader-util.h"
+#include "info-reader/monster-flag-reader.h"
 #include "info-reader/parse-error-types.h"
 #include "info-reader/race-info-tokens-table.h"
 #include "io/tokenizer.h"
@@ -54,62 +55,25 @@ bool DungeonReader::grab_one_basic_monster_flag(DungeonDefinition &dungeon, std:
         return true;
     }
 
-    if (EnumClassFlagGroup<MonsterAuraType>::grab_one_flag(dungeon.mon_aura_flags, r_info_aura_flags, what)) {
-        return true;
-    }
-
-    if (EnumClassFlagGroup<MonsterFeedType>::grab_one_flag(dungeon.mon_meat_feed_flags, r_info_meat_feed, what)) {
-        return true;
-    }
-
-    if (EnumClassFlagGroup<MonsterResistanceType>::grab_one_flag(dungeon.mon_resistance_flags, r_info_flagsr, what)) {
-        return true;
-    }
-
-    if (EnumClassFlagGroup<MonsterBehaviorType>::grab_one_flag(dungeon.mon_behavior_flags, r_info_behavior_flags, what)) {
-        return true;
-    }
-
-    if (EnumClassFlagGroup<MonsterVisualType>::grab_one_flag(dungeon.mon_visual_flags, r_info_visual_flags, what)) {
-        return true;
-    }
-
-    if (EnumClassFlagGroup<MonsterKindType>::grab_one_flag(dungeon.mon_kind_flags, r_info_kind_flags, what)) {
-        return true;
-    }
-
-    if (EnumClassFlagGroup<MonsterDropType>::grab_one_flag(dungeon.mon_drop_flags, r_info_drop_flags, what)) {
-        return true;
-    }
-
-    if (EnumClassFlagGroup<MonsterWildernessType>::grab_one_flag(dungeon.mon_wilderness_flags, r_info_wilderness_flags, what)) {
-        return true;
-    }
-
-    if (EnumClassFlagGroup<MonsterFeatureType>::grab_one_flag(dungeon.mon_feature_flags, r_info_feature_flags, what)) {
-        return true;
-    }
-
-    if (EnumClassFlagGroup<MonsterPopulationType>::grab_one_flag(dungeon.mon_population_flags, r_info_population_flags, what)) {
-        return true;
-    }
-
-    if (EnumClassFlagGroup<MonsterSpeakType>::grab_one_flag(dungeon.mon_speak_flags, r_info_speak_flags, what)) {
-        return true;
-    }
-
-    if (EnumClassFlagGroup<MonsterBrightnessType>::grab_one_flag(dungeon.mon_brightness_flags, r_info_brightness_flags, what)) {
-        return true;
-    }
-
-    if (EnumClassFlagGroup<MonsterSpecialType>::grab_one_flag(dungeon.mon_special_flags, r_info_special_flags, what)) {
-        return true;
-    }
-    if (EnumClassFlagGroup<MonsterMiscType>::grab_one_flag(dungeon.mon_misc_flags, r_info_misc_flags, what)) {
-        return true;
-    }
-
-    return false;
+    // 時代フラグ(era_flags)はモンスターの定義のみが持ちダンジョンの出現条件には無いため null を渡す。
+    const MonsterBasicFlagGroups groups{
+        .meat_feed_flags = &dungeon.mon_meat_feed_flags,
+        .resistance_flags = &dungeon.mon_resistance_flags,
+        .aura_flags = &dungeon.mon_aura_flags,
+        .behavior_flags = &dungeon.mon_behavior_flags,
+        .visual_flags = &dungeon.mon_visual_flags,
+        .kind_flags = &dungeon.mon_kind_flags,
+        .era_flags = nullptr,
+        .drop_flags = &dungeon.mon_drop_flags,
+        .wilderness_flags = &dungeon.mon_wilderness_flags,
+        .feature_flags = &dungeon.mon_feature_flags,
+        .population_flags = &dungeon.mon_population_flags,
+        .speak_flags = &dungeon.mon_speak_flags,
+        .brightness_flags = &dungeon.mon_brightness_flags,
+        .special_flags = &dungeon.mon_special_flags,
+        .misc_flags = &dungeon.mon_misc_flags,
+    };
+    return grab_one_monster_basic_flag(groups, what);
 }
 
 /*!
@@ -120,12 +84,7 @@ bool DungeonReader::grab_one_basic_monster_flag(DungeonDefinition &dungeon, std:
  */
 bool DungeonReader::grab_one_spell_monster_flag(DungeonDefinition &dungeon, std::string_view what)
 {
-    if (EnumClassFlagGroup<MonsterAbilityType>::grab_one_flag(dungeon.mon_ability_flags, r_info_ability_flags, what)) {
-        return true;
-    }
-
-    msg_print(_("未知のモンスター・フラグ '{}'。", "Unknown monster flag '{}'."), what);
-    return false;
+    return grab_one_monster_spell_flag(dungeon.mon_ability_flags, what);
 }
 
 static tl::optional<ProbabilityTable<short>> parse_terrain_probability(std::span<const std::string> tokens)
