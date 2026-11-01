@@ -1,4 +1,5 @@
 #include "store/pricing.h"
+#include "market/loot-notoriety.h"
 #include "object/object-value.h"
 #include "player/player-status-table.h"
 #include "store/gold-magnification-table.h"
@@ -118,6 +119,8 @@ int calc_store_price(int price, int markup, tl::optional<int> black_market_level
  * @return アイテムの店舗価格
  * @details 店主の強欲さ、店主とプレイヤーの種族の相性、プレイヤーの魅力・名声、闇市のレベルを
  * 集めて calc_store_price() で計算する。
+ * 他者の正当な所有権 (ItemEntity::rightful_owner) が刻まれた品は盗品として買い叩かれる
+ * (get_loot_store_sale_discount_percent())。売却時のみで、買う側の価格は変えない。
  */
 int price_item(CreatureEntity &creature, const ItemEntity *o_ptr, const Store &store, StoreTradeType trade_type)
 {
@@ -125,5 +128,13 @@ int price_item(CreatureEntity &creature, const ItemEntity *o_ptr, const Store &s
     const auto markup = owner.inflate + rgold_adj[enum2i(owner.owner_race)][enum2i(creature.prace)] - std::min(creature.get_prestige() / 10, 30) + adj_chr_gold[creature.get_stat_index(A_CHR)];
     const auto is_black_market = store.get_sale_type() == StoreSaleType::BLACK;
     const auto black_market_level = is_black_market ? tl::make_optional(store_level(StoreSaleType::BLACK)) : tl::nullopt;
-    return calc_store_price(o_ptr->calc_price(), markup, black_market_level, trade_type);
+
+    // 盗品の買い叩きは markup ではなく基本価格に掛ける (理由は
+    // get_loot_store_sale_discount_percent() のコメント参照)。売却時のみ効かせる。
+    auto price = o_ptr->calc_price();
+    if (trade_type == StoreTradeType::PLAYER_SELLS) {
+        price = static_cast<int>(static_cast<int64_t>(price) * (100 - get_loot_store_sale_discount_percent(creature, *o_ptr)) / 100);
+    }
+
+    return calc_store_price(price, markup, black_market_level, trade_type);
 }

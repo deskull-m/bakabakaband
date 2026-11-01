@@ -580,6 +580,9 @@
     <ClCompile Include="..\..\src\market\bounty.cpp">
       <Filter>market</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\market\loot-notoriety.cpp">
+      <Filter>market</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\src\market\bounty-prize-table.cpp">
       <Filter>market</Filter>
     </ClCompile>
@@ -3505,6 +3508,9 @@
       <Filter>market</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\market\bounty.h">
+      <Filter>market</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\market\loot-notoriety.h">
       <Filter>market</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\market\bounty-prize-table.h">

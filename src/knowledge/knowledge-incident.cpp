@@ -9,6 +9,7 @@
 #include "flavor/flavor-describer.h"
 #include "flavor/object-flavor-types.h"
 #include "io-dump/dump-util.h"
+#include "market/loot-notoriety.h"
 #include "monster-attack/monster-attack-table.h"
 #include "monster-race/monster-kind-type-name.h"
 #include "monster-race/race-kind-flags.h"
@@ -357,6 +358,44 @@ void do_cmd_knowledge_incident(CreatureEntity &creature)
                         monrace.name.data(), count);
                 }
             }
+        }
+    }
+
+    // 他者の正当な所有物を略奪した記録と、それによる社会的問題 (market/loot-notoriety.h)
+    if (const auto looted = get_looted_item_count(creature); looted > 0) {
+        fprintf(fff, _("\nあなたはこれまで他者の持ち物を%d個略奪した (総額 $%d)。\n", "\nYou have looted %d items belonging to others (worth $%d in total).\n"),
+            looted, get_looted_value(creature));
+
+        if (const auto lost = creature.incident_tree.count(INCIDENT_LOOT_PRESTIGE_LOST) ? creature.incident_tree[INCIDENT_LOOT_PRESTIGE_LOST] : 0; lost > 0) {
+            fprintf(fff, _("    その悪評で社会的地位を%d失った。\n", "    Your social standing has fallen by %d from the notoriety.\n"), lost);
+        }
+
+        if (const auto bounty_level = get_loot_bounty_level(creature); bounty_level > 0) {
+            fprintf(fff, _("    あなたの首には賞金が懸かっている (ランク%d/%d)。\n", "    There is a bounty on your head (rank %d/%d).\n"),
+                bounty_level, get_loot_bounty_level_max());
+        }
+
+        if (const auto refused = creature.incident_tree.count(INCIDENT_LOOT_STORE_REFUSED) ? creature.incident_tree[INCIDENT_LOOT_STORE_REFUSED] : 0; refused > 0) {
+            fprintf(fff, _("    盗品の買取を%d回断られた。\n", "    Stores have refused your stolen goods %d times.\n"), refused);
+        }
+
+        for (const auto &[alliance_type, alliance_ptr] : alliance_list) {
+            if (alliance_type == AllianceType::NONE) {
+                continue;
+            }
+
+            const auto count = get_looted_count_of_alliance(creature, alliance_type);
+            if (count <= 0) {
+                continue;
+            }
+
+            fprintf(fff, _("    %sに属する者から%d個剥いだ (印象値 %+d)\n", "    stripped %d items from members of %s (impression %+d)\n"),
+#ifdef JP
+                alliance_ptr->name.c_str(), count, -get_loot_alliance_impression_penalty(creature, alliance_type)
+#else
+                count, alliance_ptr->name.c_str(), -get_loot_alliance_impression_penalty(creature, alliance_type)
+#endif
+            );
         }
     }
 
