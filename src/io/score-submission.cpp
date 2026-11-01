@@ -111,7 +111,7 @@ nlohmann::json make_progress_section(CreatureEntity &creature)
 }
 }
 
-nlohmann::json make_score_submission(CreatureEntity &creature, const std::string &character_dump, const std::string &screen_dump)
+nlohmann::json make_score_submission(CreatureEntity &creature, const std::string &character_dump, const nlohmann::json &screen)
 {
     nlohmann::json submission;
     submission["format"] = SUBMISSION_FORMAT;
@@ -131,8 +131,8 @@ nlohmann::json make_score_submission(CreatureEntity &creature, const std::string
         attachments["character_dump"] = to_utf8_or_raw(character_dump);
     }
 
-    if (!screen_dump.empty()) {
-        attachments["screen_dump"] = to_utf8_or_raw(screen_dump);
+    if (!screen.is_null()) {
+        attachments["screen"] = screen;
     }
 
     if (!attachments.empty()) {

@@ -9,10 +9,10 @@ class CreatureEntity;
  * @brief スコアサーバへ送信する JSON (bakabakaband-score-submission 形式) を組み立てる
  * @param creature クリーチャーへの参照
  * @param character_dump キャラクターダンプ本文 (システム文字コード)。空なら添付しない
- * @param screen_dump スクリーンショット HTML (システム文字コード)。空なら添付しない
+ * @param screen 画面の JSON (make_screen_dump() の結果)。null なら添付しない
  * @return JSON オブジェクト。構造は schema/ScoreSubmission.schema.json を参照
  */
-nlohmann::json make_score_submission(CreatureEntity &creature, const std::string &character_dump, const std::string &screen_dump);
+nlohmann::json make_score_submission(CreatureEntity &creature, const std::string &character_dump, const nlohmann::json &screen);
 
 /*!
  * @brief 送信 ID (UUID v4) を生成する
