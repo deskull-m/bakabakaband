@@ -7,6 +7,7 @@
 #include "monster-race/race-ability-mask.h"
 #include "monster-race/race-brightness-mask.h"
 #include "monster/monster-status.h"
+#include "mspell/mspell-attack/mspell-ball.h"
 #include "mspell/mspell-checker.h"
 #include "mspell/mspell-judgement.h"
 #include "mspell/mspell-util.h"
@@ -22,6 +23,7 @@
 #include "system/monrace/monrace-definition.h"
 #include "target/projection-path-calculator.h"
 #include "util/bit-flags-calculator.h"
+#include "util/enum-range.h"
 #include <iterator>
 
 static void decide_melee_spell_target(CreatureEntity &creature, melee_spell_type *ms_ptr)
@@ -182,18 +184,14 @@ static void check_melee_spell_distance(CreatureEntity &creature, melee_spell_typ
         return;
     }
 
-    const auto ball_when_powerful_rad4 = {
-        MonsterAbilityType::BA_ACID,
-        MonsterAbilityType::BA_ELEC,
-        MonsterAbilityType::BA_FIRE,
-        MonsterAbilityType::BA_COLD
-    };
-    const auto &monrace = ms_ptr->m_ptr->get_monrace();
-    if (monrace.misc_flags.has(MonsterMiscType::POWERFUL)) {
-        ms_ptr->ability_flags.reset(ball_when_powerful_rad4);
+    // 半径が着弾点からプレイヤーまでの距離に届くボールは、プレイヤーを巻き込むので使わない
+    const auto is_powerful = monster_is_powerful(floor, ms_ptr->m_idx);
+    for (const auto ability : EnumRange(MonsterAbilityType::SHRIEK, MonsterAbilityType::MAX)) {
+        const auto radius = get_monster_ball_radius(ability, is_powerful);
+        if (radius && (*radius >= dist)) {
+            ms_ptr->ability_flags.reset(ability);
+        }
     }
-
-    ms_ptr->ability_flags.reset(RF_ABILITY_BIG_BALL_MASK);
 }
 
 static void check_melee_spell_rocket(CreatureEntity &creature, melee_spell_type *ms_ptr)

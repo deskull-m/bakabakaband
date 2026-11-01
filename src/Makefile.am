@@ -1666,6 +1666,7 @@ hengband_test_SOURCES = \
 	test/market/test-building-recharger.cpp \
 	test/market/test-loot-notoriety.cpp \
 	\
+	test/mspell/mspell-attack/test-mspell-ball.cpp \
 	test/mspell/test-mspell-projection-table.cpp \
 	\
 	test/object-enchant/test-item-feeling.cpp \

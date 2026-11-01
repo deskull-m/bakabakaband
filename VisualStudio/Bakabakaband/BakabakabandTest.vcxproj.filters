@@ -46,6 +46,9 @@
     <Filter Include="mspell">
       <UniqueIdentifier>{f4dbdb43-4dbe-4518-b1ac-3429da4d19b8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="mspell\mspell-attack">
+      <UniqueIdentifier>{b4dae038-9e98-5928-969f-c721bf9482a2}</UniqueIdentifier>
+    </Filter>
     <Filter Include="object">
       <UniqueIdentifier>{87da8058-8e9d-4abf-be22-43ca8b0bc0a1}</UniqueIdentifier>
     </Filter>
@@ -190,6 +193,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\test\market\test-loot-notoriety.cpp">
       <Filter>market</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\test\mspell\mspell-attack\test-mspell-ball.cpp">
+      <Filter>mspell\mspell-attack</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\test\mspell\test-mspell-projection-table.cpp">
       <Filter>mspell</Filter>

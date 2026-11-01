@@ -96,6 +96,7 @@
     <ClCompile Include="..\..\src\test\lore\test-monster-lore-snapshot.cpp" />
     <ClCompile Include="..\..\src\test\market\test-building-recharger.cpp" />
     <ClCompile Include="..\..\src\test\market\test-loot-notoriety.cpp" />
+    <ClCompile Include="..\..\src\test\mspell\mspell-attack\test-mspell-ball.cpp" />
     <ClCompile Include="..\..\src\test\mspell\test-mspell-projection-table.cpp" />
     <ClCompile Include="..\..\src\test\floor\test-floor-events.cpp" />
     <ClCompile Include="..\..\src\test\object-enchant\test-item-feeling.cpp" />
