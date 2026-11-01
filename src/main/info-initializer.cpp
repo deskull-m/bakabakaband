@@ -12,6 +12,7 @@
 #include "info-reader/ego-reader.h"
 #include "info-reader/general-parser.h"
 #include "info-reader/info-reader-util.h"
+#include "info-reader/jsonc-document-loader.h"
 #include "info-reader/magic-reader.h"
 #include "info-reader/message-reader.h"
 #include "info-reader/party-reader.h"
@@ -46,7 +47,6 @@
 #include "util/enum-converter.h"
 #include "view/display-messages.h"
 #include <fmt/format.h>
-#include <fstream>
 #include <functional>
 #include <nlohmann/json.hpp>
 #include <string>
@@ -82,20 +82,15 @@ template <typename InfoType>
 static void init_json(std::string_view filename, std::string_view keyname, DefinitionHashDataType dhdt, InfoType &info, JSONParser parser, std::function<void()> retouch = nullptr, bool allow_empty = true)
 {
     const auto path = path_build(ANGBAND_DIR_EDIT, filename);
-    std::ifstream ifs(path);
-
-    if (!ifs) {
-        quit(fmt::format(_("'{}'ファイルをオープンできません。", "Cannot open '{}' file."), filename));
+    auto loaded = JsoncDocumentLoader::load(path);
+    if (!loaded) {
+        if (loaded.error().kind == JsoncLoadErrorKind::CANNOT_OPEN) {
+            quit(fmt::format(_("'{}'ファイルをオープンできません。", "Cannot open '{}' file."), filename));
+        }
+        quit(format_json_syntax_error(filename, loaded.error().message));
     }
 
-    std::istreambuf_iterator<char> ifs_iter(ifs);
-    std::istreambuf_iterator<char> ifs_end;
-    nlohmann::json json_object;
-    try {
-        json_object = nlohmann::json::parse(ifs_iter, ifs_end, nullptr, true, true, true);
-    } catch (const nlohmann::json::exception &e) {
-        quit(format_json_syntax_error(filename, e.what()));
-    }
+    auto &json_object = *loaded;
 
     const auto array_it = json_object.find(keyname);
     if ((array_it == json_object.end()) || !array_it->is_array()) {

@@ -12,6 +12,7 @@
 #include "game-option/birth-options.h"
 #include "game-option/runtime-arguments.h"
 #include "info-reader/general-parser.h"
+#include "info-reader/jsonc-document-loader.h"
 #include "info-reader/parse-error-types.h"
 #include "info-reader/quest-reader.h"
 #include "io/condition-expression.h"
@@ -82,13 +83,17 @@ static tl::expected<void, ParseErrorType> load_town_preferences()
         return {};
     }
 
-    std::ifstream ifs(path_build(ANGBAND_DIR_EDIT, TOWN_PREFERENCES));
-    if (!ifs) {
+    auto loaded = JsoncDocumentLoader::load(path_build(ANGBAND_DIR_EDIT, TOWN_PREFERENCES));
+    if (!loaded && (loaded.error().kind == JsoncLoadErrorKind::CANNOT_OPEN)) {
         return tl::make_unexpected(ParseErrorType::GENERIC);
+    }
+    if (!loaded) {
+        // 町の設定は従来どおり解析の失敗を INVALID_VALUE にし、例外の文言は使わない。
+        return tl::make_unexpected(ParseErrorType::INVALID_VALUE);
     }
 
     try {
-        const auto data = nlohmann::json::parse(std::istreambuf_iterator<char>(ifs), std::istreambuf_iterator<char>(), nullptr, true, true, true);
+        const auto &data = *loaded;
         if (!data.is_object() || !data.contains("version") || !data["version"].is_number_integer() || data["version"] != 1 ||
             !data.contains("legend") || !data["legend"].is_object() || data["legend"].empty()) {
             return tl::make_unexpected(ParseErrorType::INVALID_TYPE);
@@ -136,13 +141,17 @@ static tl::expected<void, ParseErrorType> load_town_preferences()
  */
 static tl::expected<std::string, ParseErrorType> load_town_definition_file(CreatureEntity &creature)
 {
-    std::ifstream ifs(path_build(ANGBAND_DIR_EDIT, TOWN_DEFINITION_LIST));
-    if (!ifs) {
+    auto loaded = JsoncDocumentLoader::load(path_build(ANGBAND_DIR_EDIT, TOWN_DEFINITION_LIST));
+    if (!loaded && (loaded.error().kind == JsoncLoadErrorKind::CANNOT_OPEN)) {
         return tl::make_unexpected(ParseErrorType::GENERIC);
+    }
+    if (!loaded) {
+        // 町の定義の一覧も従来どおり解析の失敗を INVALID_VALUE にし、例外の文言は使わない。
+        return tl::make_unexpected(ParseErrorType::INVALID_VALUE);
     }
 
     try {
-        const auto data = nlohmann::json::parse(std::istreambuf_iterator<char>(ifs), std::istreambuf_iterator<char>(), nullptr, true, true, true);
+        const auto &data = *loaded;
         if (!data.is_object() || !data.contains("version") || !data["version"].is_number_integer() || data["version"] != 1 ||
             !data.contains("towns") || !data["towns"].is_object() || data["towns"].empty()) {
             return tl::make_unexpected(ParseErrorType::INVALID_TYPE);

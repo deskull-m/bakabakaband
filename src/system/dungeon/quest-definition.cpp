@@ -1,5 +1,6 @@
 #include "system/dungeon/quest-definition.h"
 #include "artifact/fixed-art-types.h"
+#include "info-reader/jsonc-document-loader.h"
 #include "info-reader/parse-error-types.h"
 #include "info-reader/quest-reader.h"
 #include "io/files-util.h"
@@ -20,7 +21,6 @@
 #include <algorithm>
 #include <filesystem>
 #include <fmt/format.h>
-#include <fstream>
 #include <iterator>
 #include <map>
 #include <nlohmann/json.hpp>
@@ -180,21 +180,17 @@ void QuestList::initialize()
 void QuestList::load_base_legend()
 {
     const auto path = path_build(ANGBAND_DIR_EDIT, "QuestPreferences.jsonc");
-    std::ifstream ifs(path);
-    if (!ifs) {
+    auto loaded = JsoncDocumentLoader::load(path);
+    if (!loaded && (loaded.error().kind == JsoncLoadErrorKind::CANNOT_OPEN)) {
         constexpr auto fmt = _("ベース凡例ファイルをオープンできません ({})", "Cannot open base legend file ({})");
         THROW_EXCEPTION(std::runtime_error, fmt::format(fmt, path.string()));
     }
-
-    nlohmann::json data;
-    try {
-        std::istreambuf_iterator<char> ifs_iter(ifs);
-        std::istreambuf_iterator<char> ifs_end;
-        data = nlohmann::json::parse(ifs_iter, ifs_end, nullptr, true, true, true);
-    } catch (const std::exception &e) {
+    if (!loaded) {
         constexpr auto fmt = _("ベース凡例ファイルの解析に失敗しました ({}): {}", "Failed to parse base legend file ({}): {}");
-        THROW_EXCEPTION(std::runtime_error, fmt::format(fmt, path.string(), e.what()));
+        THROW_EXCEPTION(std::runtime_error, fmt::format(fmt, path.string(), loaded.error().message));
     }
+
+    auto &data = *loaded;
 
     const auto legend_it = data.find("legend");
     if ((legend_it == data.end()) || !legend_it->is_object()) {
@@ -255,21 +251,17 @@ void QuestList::load_json_quests()
 
     auto &fixed_maps = QuestFixedMapList::get_instance();
     for (const auto &file : files) {
-        std::ifstream ifs(file);
-        if (!ifs) {
+        auto loaded = JsoncDocumentLoader::load(file);
+        if (!loaded && (loaded.error().kind == JsoncLoadErrorKind::CANNOT_OPEN)) {
             constexpr auto fmt = _("クエストファイルをオープンできません ({})", "Cannot open quest file ({})");
             THROW_EXCEPTION(std::runtime_error, fmt::format(fmt, file.string()));
         }
-
-        nlohmann::json quest_data;
-        try {
-            std::istreambuf_iterator<char> ifs_iter(ifs);
-            std::istreambuf_iterator<char> ifs_end;
-            quest_data = nlohmann::json::parse(ifs_iter, ifs_end, nullptr, true, true, true);
-        } catch (const std::exception &e) {
+        if (!loaded) {
             constexpr auto fmt = _("クエストファイルの解析に失敗しました ({}): {}", "Failed to parse quest file ({}): {}");
-            THROW_EXCEPTION(std::runtime_error, fmt::format(fmt, file.string(), e.what()));
+            THROW_EXCEPTION(std::runtime_error, fmt::format(fmt, file.string(), loaded.error().message));
         }
+
+        auto &quest_data = *loaded;
 
         const auto id_it = quest_data.find("id");
         if ((id_it == quest_data.end()) || !id_it->is_number_integer()) {

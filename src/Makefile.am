@@ -724,6 +724,7 @@ libhengband_a_SOURCES = \
 	info-reader/info-reader-util.cpp info-reader/info-reader-util.h \
 	info-reader/item-flag-reader.cpp info-reader/item-flag-reader.h \
 	info-reader/json-reader-util.cpp info-reader/json-reader-util.h \
+	info-reader/jsonc-document-loader.cpp info-reader/jsonc-document-loader.h \
 	info-reader/magic-info-tokens-table.cpp info-reader/magic-info-tokens-table.h \
 	info-reader/magic-reader.cpp info-reader/magic-reader.h \
 	info-reader/message-reader.cpp info-reader/message-reader.h \
@@ -1644,6 +1645,7 @@ hengband_test_SOURCES = \
 	test/info-reader/test-item-flag-reader.cpp \
 	test/info-reader/test-baseitem-reader.cpp \
 	test/info-reader/test-json-reader-util.cpp \
+	test/info-reader/test-jsonc-document-loader.cpp \
 	test/info-reader/test-monster-flag-reader.cpp \
 	test/info-reader/test-quest-reader.cpp \
 	test/info-reader/test-skill-reader.cpp \
