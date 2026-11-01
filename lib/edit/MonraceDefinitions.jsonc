@@ -37722,6 +37722,7 @@
     },
     {
       "id": 660,
+      "player_race": "AMBERITE",
       "name": {
         "ja": "ブランドの息子『リナルド』",
         "en": "Rinaldo, Son of Brand",
@@ -45444,6 +45445,7 @@
     },
     {
       "id": 763,
+      "player_race": "AMBERITE",
       "name": {
         "ja": "線の巨匠『ドワーキン』",
         "en": "Dworkin Barimen",
@@ -46380,6 +46382,7 @@
     },
     {
       "id": 773,
+      "player_race": "AMBERITE",
       "name": {
         "ja": "アンバーの狂気の夢想家『ブランド』",
         "en": "Brand, Mad Visionary of Amber",
@@ -47694,6 +47697,7 @@
     },
     {
       "id": 789,
+      "player_race": "AMBERITE",
       "name": {
         "ja": "ごまかしの名手『ブレイズ』",
         "en": "Bleys, Master of Manipulation",
@@ -47871,6 +47875,7 @@
     },
     {
       "id": 791,
+      "player_race": "AMBERITE",
       "name": {
         "ja": "女魔術師『フィオナ』",
         "en": "Fiona the Sorceress",
@@ -48136,6 +48141,7 @@
     },
     {
       "id": 794,
+      "player_race": "AMBERITE",
       "name": {
         "ja": "アーデンの森の主『ジュリアン』",
         "en": "Julian, Master of Arden Forest",
@@ -48624,6 +48630,7 @@
     },
     {
       "id": 799,
+      "player_race": "AMBERITE",
       "name": {
         "ja": "陰謀家『ケイン』",
         "en": "Caine, the Conspirator",
@@ -49224,6 +49231,7 @@
     },
     {
       "id": 807,
+      "player_race": "AMBERITE",
       "name": {
         "ja": "アンバーの強者『ジェラード』",
         "en": "Gerard, Strongman of Amber",
@@ -49727,6 +49735,7 @@
     },
     {
       "id": 813,
+      "player_race": "AMBERITE",
       "name": {
         "ja": "王位簒奪者『エリック』",
         "en": "Eric the Usurper",
@@ -50375,6 +50384,7 @@
     },
     {
       "id": 820,
+      "player_race": "AMBERITE",
       "name": {
         "ja": "アヴァロンの主『コーウィン』",
         "en": "Corwin, Lord of Avalon",
@@ -50694,6 +50704,7 @@
     },
     {
       "id": 824,
+      "player_race": "AMBERITE",
       "name": {
         "ja": "理想の戦士『ベネディクト』",
         "en": "Benedict, the Ideal Warrior",
@@ -53993,6 +54004,7 @@
     },
     {
       "id": 860,
+      "player_race": "AMBERITE",
       "name": {
         "ja": "アンバーの王『オベロン』",
         "en": "Oberon, King of Amber",
