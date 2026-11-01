@@ -13,6 +13,7 @@
 #include "io/write-diary.h"
 #include "main/sound-definitions-table.h"
 #include "main/sound-of-music.h"
+#include "market/loot-notoriety.h"
 #include "object-enchant/item-feeling.h"
 #include "object-enchant/special-object-flags.h"
 #include "object/item-tester-hooker.h"
@@ -94,6 +95,13 @@ void store_sell(CreatureEntity &creature, StoreScreen &screen)
     const auto options = USE_EQUIP | USE_INVEN | USE_FLOOR | IGNORE_BOTHHAND_SLOT;
     const auto &[item, i_idx] = choose_item(creature, q, s_none, options, FuncItemTester([](CreatureEntity *c, const ItemEntity *o, StoreSaleType st) { return store_will_buy(*c, o, st); }, creature, store_num));
     if (!item) {
+        return;
+    }
+
+    // 正業の店は、賞金首が持ち込んだ盗品 (正当な所有権が他者にある品) を扱わない。
+    // ブラック・マーケットは買うので売却経路自体は残る (market/loot-notoriety.h 参照)。
+    if (store_refuses_stolen_goods(creature, *item, store_num)) {
+        notify_store_refusal_of_stolen_goods(creature);
         return;
     }
 

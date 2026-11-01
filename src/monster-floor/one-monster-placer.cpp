@@ -16,6 +16,7 @@
 #include "game-option/birth-options.h"
 #include "game-option/cheat-types.h"
 #include "grid/grid.h"
+#include "market/loot-notoriety.h"
 #include "monster-attack/monster-attack-player.h"
 #include "monster-attack/monster-attack-table.h"
 #include "monster-floor/monster-drop-generator.h"
@@ -646,6 +647,8 @@ tl::optional<MONSTER_IDX> place_monster_one(CreatureEntity &player, POSITION y, 
         should_be_friendly |= any_bits(mode, PM_FORCE_FRIENDLY);
         auto force_hostile = monster_has_hostile_to_player(player, 0, -1, new_monrace);
         force_hostile |= floor.inside_arena;
+        // 略奪で賞金首になっていると、街の住人は友好的に生成されない (系統 3)。
+        force_hostile |= is_wanted_by_townsfolk(player, new_monrace);
         if (m_ptr->get_alliance_idx() != AllianceType::NONE) {
             should_be_friendly |= alliance_list.at(m_ptr->get_alliance_idx())->isFriendly(player);
         }

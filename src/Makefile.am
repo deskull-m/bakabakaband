@@ -884,6 +884,7 @@ libhengband_a_SOURCES = \
 	market/bounty-prize-table.cpp market/bounty-prize-table.h \
 	market/bounty-type-definition.h \
 	market/bounty.cpp market/bounty.h \
+	market/loot-notoriety.cpp market/loot-notoriety.h \
 	market/building-recharger.cpp market/building-recharger.h \
 	market/building-quest.cpp market/building-quest.h \
 	market/building-service.cpp market/building-service.h \
@@ -1663,6 +1664,7 @@ hengband_test_SOURCES = \
 	test/lore/test-monster-lore-snapshot.cpp \
 	\
 	test/market/test-building-recharger.cpp \
+	test/market/test-loot-notoriety.cpp \
 	\
 	test/mspell/test-mspell-projection-table.cpp \
 	\

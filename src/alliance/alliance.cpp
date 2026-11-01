@@ -75,6 +75,7 @@
 #include "effect/effect-characteristics.h"
 #include "floor/floor-util.h"
 #include "game-option/birth-options.h"
+#include "market/loot-notoriety.h"
 #include "monster-floor/monster-summon.h"
 #include "monster-floor/place-monster-types.h"
 #include "monster-race/race-kind-flags.h"
@@ -201,6 +202,20 @@ int Alliance::calcIronmanHostilityPenalty()
         return -10000;
     }
     return 0;
+}
+
+/*!
+ * @brief ゲーム中で実際に用いる印象値を計算する
+ * @param creature 評価対象とするクリーチャー
+ * @return アライアンス固有の印象値に全アライアンス共通の補正を加えた値
+ * @details 共通補正は現状「このアライアンスに属する者の持ち物を剥いだ分の敵対度上昇」
+ *          (market/loot-notoriety.h の系統 4) のみ。
+ *          **印象値を参照する側は必ずこちらを呼ぶこと。** calcImpressionPoint() を
+ *          直接呼ぶとアライアンス固有分しか得られず、共通補正が抜ける。
+ */
+int Alliance::calc_impression_point_total(const CreatureEntity &creature) const
+{
+    return this->calcImpressionPoint(creature) - get_loot_alliance_impression_penalty(creature, this->id);
 }
 
 void Alliance::panishment([[maybe_unused]] CreatureEntity &creature)
