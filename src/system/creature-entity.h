@@ -1534,6 +1534,20 @@ public:
     virtual bool can_equip_to(int slot) const;
 
     /*!
+     * @brief 武具を自ら調えて身に着ける体か判定する
+     * @return 自分で武具を調達・着用する体構造なら true
+     * @details `can_equip_to()` の「構造上そのスロットが在るか」とは**別軸**で、
+     *          「道具を扱える手を持ち、武具を調達して身に着ける生き物か」を表す。
+     *          獣 (四足型)・鳥型・節足型・長胴型などは首輪や装具を着けられる部位
+     *          こそあるが、自分で防具を買い揃えて着込むわけではないため false。
+     *          武装度 (`MonraceDefinition::armament_level`) による装備充填
+     *          (`equip_monster_by_armament_budget()`) の対象をこの軸で絞る。
+     *          種族定義で明示した装備 (`equip_kind` / `equip_tval`) や役割フラグ
+     *          由来の装備は製作者の明示指定なので、この判定では弾かない。
+     */
+    virtual bool is_armament_capable() const;
+
+    /*!
      * @brief クリーチャーの体構造を取得する
      * @return 体構造 (BodyStructureType)
      * @details モンスター化していない通常のプレイヤーは HUMANOID 固定。
