@@ -798,8 +798,9 @@ short CreatureEntity::select_melee_weapon_slot(int blow_index, RaceBlowMethodTyp
     case RaceBlowMethodType::PUNCH:
     case RaceBlowMethodType::SLASH:
     case RaceBlowMethodType::STING: {
-        const auto main_valid = this->inventory[INVEN_MAIN_HAND]->is_valid() && this->inventory[INVEN_MAIN_HAND]->is_melee_weapon();
-        const auto sub_valid = this->inventory[INVEN_SUB_HAND]->is_valid() && this->inventory[INVEN_SUB_HAND]->is_melee_weapon();
+        // 体構造で閉じた手の品は武器として使わない (体構造変更前のセーブに残る装備対策)
+        const auto main_valid = this->can_equip_to(INVEN_MAIN_HAND) && this->inventory[INVEN_MAIN_HAND]->is_valid() && this->inventory[INVEN_MAIN_HAND]->is_melee_weapon();
+        const auto sub_valid = this->can_equip_to(INVEN_SUB_HAND) && this->inventory[INVEN_SUB_HAND]->is_valid() && this->inventory[INVEN_SUB_HAND]->is_melee_weapon();
         if (main_valid && sub_valid) {
             return (blow_index % 2 == 0) ? INVEN_MAIN_HAND : INVEN_SUB_HAND;
         }
@@ -1821,6 +1822,10 @@ int CreatureEntity::get_ac() const
     if (this->has_monster_profile()) {
         // 通常装備
         for (size_t i = INVEN_MAIN_HAND; i < this->inventory.size(); i++) {
+            // 体構造で閉じた部位の品は数えない (体構造変更前のセーブに残る装備対策)
+            if (!this->can_equip_to(static_cast<int>(i))) {
+                continue;
+            }
             const auto &item = *this->inventory[i];
             if (!item.is_valid()) {
                 continue;

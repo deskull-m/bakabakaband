@@ -7,22 +7,6 @@
 namespace {
 
 /*!
- * @brief 指定スロット群を持つ SlotMask を生成
- * @note std::bitset::set() は C++23 まで constexpr ではないため、
- *       MSVC 互換性のため通常関数とする。
- */
-BodySlotPolicy::SlotMask make_mask(std::initializer_list<inventory_slot_type> slots)
-{
-    BodySlotPolicy::SlotMask mask;
-    for (auto slot : slots) {
-        if (slot >= INVEN_MAIN_HAND && slot < INVEN_TOTAL) {
-            mask.set(slot - INVEN_MAIN_HAND);
-        }
-    }
-    return mask;
-}
-
-/*!
  * @brief 全スロット有効な SlotMask
  */
 BodySlotPolicy::SlotMask make_all_mask()
@@ -49,27 +33,36 @@ BodySlotPolicy::SlotMask make_all_mask_except(std::initializer_list<inventory_sl
 /*!
  * @brief 体構造別ポリシー定義
  * @details docs/monster-body-structure-equipment-slots.md の表に対応。
- *          HUMANOID は全許可、その他は構造ごとに減算した個別マスクを定義。
+ *
+ *          **通常装備スロット (INVEN_MAIN_HAND..INVEN_TOTAL-1) を持つのは
+ *          人型系 3 種と竜体だけ**で、それ以外の体構造は 1 つも持たない。
+ *          人間用の装具は人型の体に合わせた形をしているので、獣・鳥・蟲・蠕虫に
+ *          「首と胴と頭だけ」のような部分的な人型スロットを与えるのは不整合
+ *          (倒して身ぐるみを剥げるのは人型が主、という方針)。獣側の装飾は
+ *          身体に合った**拡張スロット** (尾の指輪・両翼の装飾) で表現する。
+ *          拡張スロットの中身は `drop_all_inventory()` の走査対象外なので、
+ *          剥ぎ取れる装備としては扱われない。
+ *
  *          第 3 引数は「武具を自ら調えて身に着ける体か」(武装度充填の対象か)。
- *          **スロットの有無とは別軸**で、獣・鳥・蟲・蠕虫は首輪や装具を着けられる
- *          部位こそあるが、自分で防具を買い揃えて着込むわけではないため false。
- *          人型 (人型・有翼人・翼腕人) と、武具を手にする設定の竜体のみ true。
+ *          スロットの有無とは別軸の概念だが、現状の体構造では両者が一致する
+ *          (通常スロットを持つ 4 種のみ true)。将来「首輪だけ着ける獣」等を
+ *          足す場合に「スロットはあるが自分で武具は調えない」と表せる。
  */
 const std::array<BodySlotPolicy, enum2i(BodyStructureType::MAX)> body_slot_policies = {
     // HUMANOID: 全 13 スロット有効、拡張なし
     BodySlotPolicy(make_all_mask(), {}, true),
 
-    // BIPEDAL: 武器/弓/指輪/腕装備なし。首・光源・胴体・頭・脚のみ
-    BodySlotPolicy(make_mask({ INVEN_NECK, INVEN_LITE, INVEN_BODY, INVEN_HEAD, INVEN_FEET }), {}, false),
+    // BIPEDAL: 二足型 (恐竜型・翼手型)。人型用の装具が合わないため通常スロットなし
+    BodySlotPolicy(BodySlotPolicy::SlotMask{}, {}, false),
 
-    // QUADRUPED: 四足獣。首・胴体・頭のみ
-    BodySlotPolicy(make_mask({ INVEN_NECK, INVEN_BODY, INVEN_HEAD }), {}, false),
+    // QUADRUPED: 四足獣。獣に人間用の鎧・兜は合わないため通常スロットなし
+    BodySlotPolicy(BodySlotPolicy::SlotMask{}, {}, false),
 
-    // SERPENTINE: ヘビ型。首・胴体のみ + 尾の指輪
-    BodySlotPolicy(make_mask({ INVEN_NECK, INVEN_BODY }), { ExtendedSlotType::TAIL_RING }, false),
+    // SERPENTINE: ヘビ型。通常スロットなし。装飾は尾の指輪で表す
+    BodySlotPolicy(BodySlotPolicy::SlotMask{}, { ExtendedSlotType::TAIL_RING }, false),
 
-    // AMORPHOUS: スライム型。リング 2 個のみ装備可
-    BodySlotPolicy(make_mask({ INVEN_MAIN_RING, INVEN_SUB_RING }), {}, false),
+    // AMORPHOUS: 粘体型。擬足に指輪という扱いも人型スロットの流用なので持たせない
+    BodySlotPolicy(BodySlotPolicy::SlotMask{}, {}, false),
 
     // INCORPOREAL: 装備一切不可
     BodySlotPolicy(BodySlotPolicy::SlotMask{}, {}, false),
@@ -89,14 +82,14 @@ const std::array<BodySlotPolicy, enum2i(BodyStructureType::MAX)> body_slot_polic
     // XAREN: 岩を泳ぐ多腕多脚の異形。手足の形が人型と異なり装備枠一切なし
     BodySlotPolicy(BodySlotPolicy::SlotMask{}, {}, false),
 
-    // AVIAN: 鳥型。前肢が完全な翼で武器も光源も持てない。首・胴体・頭・脚 + 両翼の装飾
-    BodySlotPolicy(make_mask({ INVEN_NECK, INVEN_BODY, INVEN_HEAD, INVEN_FEET }), { ExtendedSlotType::WING_LEFT, ExtendedSlotType::WING_RIGHT }, false),
+    // AVIAN: 鳥型。全身が鳥なので通常スロットなし。装飾は両翼で表す
+    BodySlotPolicy(BodySlotPolicy::SlotMask{}, { ExtendedSlotType::WING_LEFT, ExtendedSlotType::WING_RIGHT }, false),
 
-    // WORM: 長胴型。手足を持たない長い胴が身体の主体。首・胴体 + 尾の指輪
-    BodySlotPolicy(make_mask({ INVEN_NECK, INVEN_BODY }), { ExtendedSlotType::TAIL_RING }, false),
+    // WORM: 長胴型。手足を持たないため通常スロットなし。装飾は尾の指輪で表す
+    BodySlotPolicy(BodySlotPolicy::SlotMask{}, { ExtendedSlotType::TAIL_RING }, false),
 
-    // INSECTOID: 節足型。外骨格と多数の脚で人間用の武具が合わない。首・胴体・頭のみ
-    BodySlotPolicy(make_mask({ INVEN_NECK, INVEN_BODY, INVEN_HEAD }), {}, false),
+    // INSECTOID: 節足型。外骨格と多数の脚に人間用の武具は合わないため通常スロットなし
+    BodySlotPolicy(BodySlotPolicy::SlotMask{}, {}, false),
 
     // WINGED_HUMANOID: 有翼人。背の翼が邪魔でクローク (体の上) だけ装備できない + 両翼の装飾
     BodySlotPolicy(make_all_mask_except({ INVEN_OUTER }), { ExtendedSlotType::WING_LEFT, ExtendedSlotType::WING_RIGHT }, true),
