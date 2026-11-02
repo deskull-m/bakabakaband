@@ -55,11 +55,7 @@ bool set_oppose_acid(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
     }
 
     DeferredUpdateRequests::get_instance().set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
-    if (disturb_state || Travel::get_instance().is_ongoing()) {
-        disturb(creature, false, true);
-    }
-
-    handle_stuff(creature);
+    finish_timed_effect_change(creature);
     return true;
 }
 
@@ -103,11 +99,7 @@ bool set_oppose_elec(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
     }
 
     DeferredUpdateRequests::get_instance().set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
-    if (disturb_state || Travel::get_instance().is_ongoing()) {
-        disturb(creature, false, true);
-    }
-
-    handle_stuff(creature);
+    finish_timed_effect_change(creature);
     return true;
 }
 
@@ -153,11 +145,7 @@ bool set_oppose_fire(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
     }
 
     DeferredUpdateRequests::get_instance().set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
-    if (disturb_state || Travel::get_instance().is_ongoing()) {
-        disturb(creature, false, true);
-    }
-
-    handle_stuff(creature);
+    finish_timed_effect_change(creature);
     return true;
 }
 
@@ -200,11 +188,7 @@ bool set_oppose_cold(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
     }
 
     DeferredUpdateRequests::get_instance().set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
-    if (disturb_state || Travel::get_instance().is_ongoing()) {
-        disturb(creature, false, true);
-    }
-
-    handle_stuff(creature);
+    finish_timed_effect_change(creature);
     return true;
 }
 
@@ -251,11 +235,7 @@ bool set_oppose_pois(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
     }
 
     DeferredUpdateRequests::get_instance().set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
-    if (disturb_state || Travel::get_instance().is_ongoing()) {
-        disturb(creature, false, true);
-    }
-
-    handle_stuff(creature);
+    finish_timed_effect_change(creature);
     return true;
 }
 

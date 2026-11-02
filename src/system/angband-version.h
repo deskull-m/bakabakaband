@@ -43,8 +43,11 @@ constexpr std::string_view VARIANT_NAME("Bakabaka");
  *     未使用で実質満杯のため、本フィールドはフラグビットを使わず末尾無条件
  *     書込 + バージョンガードの形を採った。以降のアイテムフィールド追加も
  *     同じ形にすること。**
+ * 58: 最後にターゲットしたもの (Target の last_target) とペット・乗馬の攻撃対象
+ *     (pet_t_m_idx / riding_t_m_idx) を保存 (hengband#6069 相当)。wr_player() 末尾へ
+ *     追記し、rd_extra() は older_than(58) なら未ターゲット状態で埋める。
  */
-constexpr uint32_t SAVEFILE_VERSION = 57;
+constexpr uint32_t SAVEFILE_VERSION = 58;
 
 /*!
  * @brief バージョンが開発版が安定版かを返す(廃止予定)

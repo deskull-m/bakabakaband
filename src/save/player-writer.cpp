@@ -21,6 +21,7 @@
 #include "system/floor/floor-info.h"
 #include "system/floor/town-records.h"
 #include "system/inner-game-data.h"
+#include "target/target.h"
 #include "util/enum-converter.h"
 #include "world/world.h"
 #include <variant>
@@ -51,6 +52,29 @@ static void wr_relams(CreatureEntity &creature)
         wr_byte((byte)pr.realm1().to_enum());
     }
     wr_byte((byte)pr.realm2().to_enum());
+}
+
+/*!
+ * @brief 最後にターゲットしたものを書き込む
+ * @details 種類 (0: なし、1: マス、2: モンスター) に続けて、マスなら座標、モンスターならフロアのモンスター番号を書く。
+ */
+static void wr_last_target()
+{
+    const auto target = Target::get_last_target();
+    if (const auto m_idx = target.get_m_idx()) {
+        wr_byte(2);
+        wr_s16b(*m_idx);
+        return;
+    }
+
+    if (const auto pos = target.get_position()) {
+        wr_byte(1);
+        wr_s16b(static_cast<int16_t>(pos->y));
+        wr_s16b(static_cast<int16_t>(pos->x));
+        return;
+    }
+
+    wr_byte(0);
 }
 
 /*!
@@ -290,4 +314,9 @@ void wr_player(CreatureEntity &creature)
     // 通常プレイヤーは PLAYER (= 0)。セーブファイルバージョン 48 以降。
     wr_s16b(enum2i(creature.get_r_idx()));
     wr_s16b(enum2i(creature.get_ap_r_idx()));
+
+    // ペット・乗馬の攻撃対象と、最後にターゲットしたもの。セーブファイルバージョン 58 以降。
+    wr_s16b(static_cast<int16_t>(creature.get_pet_t_m_idx()));
+    wr_s16b(static_cast<int16_t>(creature.get_riding_t_m_idx()));
+    wr_last_target();
 }

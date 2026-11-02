@@ -12,8 +12,32 @@
 #include "system/creature-entity.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/floor/town-records.h"
+#include "target/target.h"
 #include "util/enum-converter.h"
 #include "world/world.h"
+
+/*!
+ * @brief 最後にターゲットしたものを読み込む
+ * @param creature クリーチャーへの参照
+ * @details モンスターの番号は、この後で読み込む今の階のモンスターを指す
+ */
+static void rd_last_target(CreatureEntity &creature)
+{
+    switch (rd_byte()) {
+    case 1: {
+        const auto y = rd_s16b();
+        const auto x = rd_s16b();
+        Target::set_last_target(Target::create_grid_target(creature, { y, x }));
+        return;
+    }
+    case 2:
+        Target::set_last_target(Target::create_monster_target(creature, rd_s16b()));
+        return;
+    default:
+        Target::clear_last_target();
+        return;
+    }
+}
 
 /*!
  * @brief その他の情報を読み込む / Read the "extra" information
@@ -48,5 +72,16 @@ void rd_extra(CreatureEntity &creature)
         const auto ap_r_idx = i2enum<MonraceId>(rd_s16b());
         creature.set_r_idx(r_idx);
         creature.set_ap_r_idx(ap_r_idx);
+    }
+
+    // ペット・乗馬の攻撃対象と、最後にターゲットしたもの。セーブファイルバージョン 58 以降。
+    if (!loading_savefile_version_is_older_than(58)) {
+        creature.set_pet_t_m_idx(rd_s16b());
+        creature.set_riding_t_m_idx(rd_s16b());
+        rd_last_target(creature);
+    } else {
+        creature.set_pet_t_m_idx(0);
+        creature.set_riding_t_m_idx(0);
+        Target::clear_last_target();
     }
 }

@@ -218,11 +218,8 @@ bool set_acceleration(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
         return false;
     }
 
-    if (disturb_state || Travel::get_instance().is_ongoing()) {
-        disturb(creature, false, true);
-    }
     DeferredUpdateRequests::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
-    handle_stuff(creature);
+    finish_timed_effect_change(creature);
     return true;
 }
 
@@ -382,12 +379,8 @@ bool set_hero(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
         return false;
     }
 
-    if (disturb_state || Travel::get_instance().is_ongoing()) {
-        disturb(creature, false, true);
-    }
-
     DeferredUpdateRequests::get_instance().request_bonus_and_max_hp_recalculation();
-    handle_stuff(creature);
+    finish_timed_effect_change(creature);
     return true;
 }
 
@@ -438,10 +431,6 @@ bool set_mimic(CreatureEntity &creature, TIME_EFFECT v, MimicKindType mimic_race
         return false;
     }
 
-    if (disturb_state || Travel::get_instance().is_ongoing()) {
-        disturb(creature, false, true);
-    }
-
     auto &dur = DeferredUpdateRequests::get_instance();
     static constexpr auto flags_mwrf = {
         MainWindowRedrawingFlag::BASIC,
@@ -449,7 +438,7 @@ bool set_mimic(CreatureEntity &creature, TIME_EFFECT v, MimicKindType mimic_race
     };
     dur.set_flags(flags_mwrf);
     dur.request_bonus_and_max_hp_recalculation();
-    handle_stuff(creature);
+    finish_timed_effect_change(creature);
     return true;
 }
 
@@ -498,12 +487,8 @@ bool set_berserk(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
         return false;
     }
 
-    if (disturb_state || Travel::get_instance().is_ongoing()) {
-        disturb(creature, false, true);
-    }
-
     DeferredUpdateRequests::get_instance().request_bonus_and_max_hp_recalculation();
-    handle_stuff(creature);
+    finish_timed_effect_change(creature);
     return true;
 }
 
@@ -553,12 +538,8 @@ bool set_wraith_form(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
         return false;
     }
 
-    if (disturb_state || Travel::get_instance().is_ongoing()) {
-        disturb(creature, false, true);
-    }
-
     dur.set_flag(StatusRecalculatingFlag::BONUS);
-    handle_stuff(creature);
+    finish_timed_effect_change(creature);
     return true;
 }
 
@@ -608,11 +589,7 @@ bool set_tsuyoshi(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
         return false;
     }
 
-    if (disturb_state || Travel::get_instance().is_ongoing()) {
-        disturb(creature, false, true);
-    }
-
     dur.request_bonus_and_max_hp_recalculation();
-    handle_stuff(creature);
+    finish_timed_effect_change(creature);
     return true;
 }

@@ -72,11 +72,7 @@ void BodyImprovement::set_protection(short v, bool is_decrease)
         return;
     }
 
-    if (disturb_state || Travel::get_instance().is_ongoing()) {
-        disturb(*this->creature_ptr, false, true);
-    }
-
-    handle_stuff(*this->creature_ptr);
+    finish_timed_effect_change(*this->creature_ptr);
     this->is_affected = true;
 }
 
@@ -128,12 +124,8 @@ bool set_invuln(CreatureEntity &creature, short v, bool do_dec)
         return false;
     }
 
-    if (disturb_state || Travel::get_instance().is_ongoing()) {
-        disturb(creature, false, true);
-    }
-
     dur.set_flag(StatusRecalculatingFlag::BONUS);
-    handle_stuff(creature);
+    finish_timed_effect_change(creature);
     return true;
 }
 
@@ -288,13 +280,9 @@ bool set_tim_emission(CreatureEntity &creature, short v, bool do_dec)
         return false;
     }
 
-    if (disturb_state || Travel::get_instance().is_ongoing()) {
-        disturb(creature, false, true);
-    }
-
     dur.set_flag(StatusRecalculatingFlag::BONUS);
     dur.set_flag(StatusRecalculatingFlag::TORCH);
-    handle_stuff(creature);
+    finish_timed_effect_change(creature);
     return true;
 }
 /*!

@@ -397,7 +397,6 @@ static void process_game_turn(CreatureEntity &creature)
         world.character_xtra = true;
         handle_stuff_with_inventory_arrangement(creature);
         world.character_xtra = false;
-        Target::clear_last_target();
         health_track(creature, 0);
         floor.forget_lite();
         floor.forget_view();

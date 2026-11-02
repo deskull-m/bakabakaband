@@ -3,6 +3,7 @@
 #include "birth/birth-util.h"
 #include "cmd-io/cmd-gameoption.h"
 #include "game-option/game-option-page.h"
+#include "io/input-context.h"
 #include "io/input-key-acceptor.h"
 #include "locale/japanese.h"
 #include "main/sound-of-music.h"
@@ -209,7 +210,8 @@ bool get_stat_limits(CreatureEntity &creature)
 
     clear_from(10);
     put_str(_("能力値を抽選します。最低限得たい能力値を設定して下さい。", "Set minimum stats for picking up your charactor."), 10, 10);
-    put_str(_("２/８で項目選択、４/６で値の増減、Enterで次へ", "2/8 for Select, 4/6 for Change value, Enter for Goto next"), 11, 10);
+    constexpr auto stat_limits_prompt = _("２/８で項目選択、４/６で値の増減、Enterで次へ", "2/8 for Select, 4/6 for Change value, Enter for Goto next");
+    put_str(stat_limits_prompt, 11, 10);
     put_str(_("         基本値  種族 職業 性格     合計値  最大値", "           Base   Rac  Cla  Per      Total  Maximum"), 13, 10);
 
     int cval[A_MAX]{};
@@ -244,7 +246,12 @@ bool get_stat_limits(CreatureEntity &creature)
             os = cs;
         }
 
-        char c = inkey();
+        char c;
+        {
+            const InputContextScope input_context({ InputKind::BIRTH, stat_limits_prompt, BirthInputDetails{ BirthStep::STAT_LIMITS } });
+            c = inkey();
+        }
+
         switch (c) {
         case 'Q':
             birth_quit();
@@ -363,7 +370,8 @@ bool get_chara_limits(CreatureEntity &creature, chara_limit_type *chara_limit_pt
 
     static const std::vector<std::string> item_names = { _("年齢", "age"), _("身長(cm)", "height"), _("体重(kg)", "weight"), _("威信", "prestige") };
     clear_from(10);
-    put_str(_("2/4/6/8で項目選択、+/-で値の増減、Enterで次へ", "2/4/6/8 for Select, +/- for Change value, Enter for Goto next"), 11, 10);
+    constexpr auto chara_limits_prompt = _("2/4/6/8で項目選択、+/-で値の増減、Enterで次へ", "2/4/6/8 for Select, +/- for Change value, Enter for Goto next");
+    put_str(chara_limits_prompt, 11, 10);
     put_str(
         _("注意：身長と体重の最大値/最小値ぎりぎりの値は非常に出現確率が低くなります。", "Caution: Values near minimum or maximum are extremely rare."), 23, 2);
 
@@ -474,7 +482,12 @@ bool get_chara_limits(CreatureEntity &creature, chara_limit_type *chara_limit_pt
             os = cs;
         }
 
-        char c = inkey();
+        char c;
+        {
+            const InputContextScope input_context({ InputKind::BIRTH, chara_limits_prompt, BirthInputDetails{ BirthStep::CHARA_LIMITS } });
+            c = inkey();
+        }
+
         switch (c) {
         case 'Q':
             birth_quit();

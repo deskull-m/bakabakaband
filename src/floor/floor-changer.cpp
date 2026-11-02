@@ -45,6 +45,7 @@
 #include "system/monrace/monrace-list.h"
 #include "system/terrain/terrain-definition.h"
 #include "system/terrain/terrain-list.h"
+#include "target/target.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
 #include "window/main-window-util.h"
@@ -430,6 +431,11 @@ void change_floor(CreatureEntity &creature)
     panel_col_min = 0;
     panel_col_max = 0;
     creature.set_ambush_flag(false);
+
+    // ターゲットとペット・乗馬の攻撃対象は前の階のマスやモンスターの番号を指すので、階を替えるときに消す。
+    // 読み込んで再開したときは、階を作り直さない限りここを通らず、セーブした値を使う。
+    Target::clear_last_target();
+    creature.reset_pet_riding_targets();
     update_floor(creature);
     place_pet(creature);
     Travel::get_instance().reset_goal();
