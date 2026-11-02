@@ -141,8 +141,12 @@ static bool get_a_realm(CreatureEntity &creature, birth_realm_type *birth_realm_
         const auto buf = fmt::format(_("領域を選んで下さい({:c}-{:c}) ('='初期オプション設定): ", "Choose a realm ({:c}-{:c}) ('=' for options): "), birth_realm_ptr->sym[0], birth_realm_ptr->sym[birth_realm_ptr->n - 1]);
 
         put_str(buf, 10, 10);
-        const InputContextScope input_context({ InputKind::BIRTH, buf, BirthInputDetails{ step } });
-        const auto c = inkey();
+        char c;
+        {
+            const InputContextScope input_context({ InputKind::BIRTH, buf, BirthInputDetails{ step } });
+            c = inkey();
+        }
+
         interpret_realm_select_key(birth_realm_ptr, c);
         if (c == 'S') {
             return true;

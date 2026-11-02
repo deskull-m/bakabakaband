@@ -246,8 +246,12 @@ bool get_stat_limits(CreatureEntity &creature)
             os = cs;
         }
 
-        const InputContextScope input_context({ InputKind::BIRTH, stat_limits_prompt, BirthInputDetails{ BirthStep::STAT_LIMITS } });
-        char c = inkey();
+        char c;
+        {
+            const InputContextScope input_context({ InputKind::BIRTH, stat_limits_prompt, BirthInputDetails{ BirthStep::STAT_LIMITS } });
+            c = inkey();
+        }
+
         switch (c) {
         case 'Q':
             birth_quit();
@@ -478,8 +482,12 @@ bool get_chara_limits(CreatureEntity &creature, chara_limit_type *chara_limit_pt
             os = cs;
         }
 
-        const InputContextScope input_context({ InputKind::BIRTH, chara_limits_prompt, BirthInputDetails{ BirthStep::CHARA_LIMITS } });
-        char c = inkey();
+        char c;
+        {
+            const InputContextScope input_context({ InputKind::BIRTH, chara_limits_prompt, BirthInputDetails{ BirthStep::CHARA_LIMITS } });
+            c = inkey();
+        }
+
         switch (c) {
         case 'Q':
             birth_quit();

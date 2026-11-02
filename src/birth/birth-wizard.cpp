@@ -124,8 +124,12 @@ static bool get_player_sex(CreatureEntity &creature)
 
         const auto buf = fmt::format(_("性別を選んで下さい ({:c}-{:c}) ('='初期オプション設定): ", "Choose a sex ({:c}-{:c}) ('=' for options): "), I2A(0), I2A(1));
         put_str(buf, 10, 10);
-        const InputContextScope input_context({ InputKind::BIRTH, buf, BirthInputDetails{ BirthStep::SEX } });
-        const auto c = inkey();
+        char c;
+        {
+            const InputContextScope input_context({ InputKind::BIRTH, buf, BirthInputDetails{ BirthStep::SEX } });
+            c = inkey();
+        }
+
         if (c == 'Q') {
             birth_quit();
         }
@@ -493,8 +497,11 @@ static bool display_auto_roller_result(CreatureEntity &creature, bool prev, char
 
         prompt.append(_(", Enter この数値に決定]", ", or Enter to accept]"));
         term_putstr(2, 23, -1, TERM_WHITE, prompt);
-        const InputContextScope input_context({ InputKind::BIRTH, prompt, BirthInputDetails{ BirthStep::ROLL_RESULT } });
-        *c = inkey();
+        {
+            const InputContextScope input_context({ InputKind::BIRTH, prompt, BirthInputDetails{ BirthStep::ROLL_RESULT } });
+            *c = inkey();
+        }
+
         if (*c == 'Q') {
             birth_quit();
         }
