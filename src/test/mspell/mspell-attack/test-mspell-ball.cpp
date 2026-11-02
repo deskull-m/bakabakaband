@@ -31,7 +31,9 @@ TEST_CASE("get_monster_ball_radius returns the radius of each ball")
         { MonsterAbilityType::BA_METEOR, 4, 4 },
         { MonsterAbilityType::BA_GRAVITY, 4, 4 },
     };
-    for (const auto &[ability, radius, powerful_radius] : radii) {
+    for (const auto &[ball, radius, powerful_radius] : radii) {
+        // CAPTURE はラムダで対象を包むが、構造化束縛の変数をラムダにキャプチャできない処理系 (clang 15 以前) があるため通常の変数へ移す
+        const auto ability = ball;
         CAPTURE(ability);
         // 失敗したときに値が表示されるよう、無効値 (-1) で埋めてから比べる
         CHECK(get_monster_ball_radius(ability, false).value_or(-1) == radius);
