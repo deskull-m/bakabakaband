@@ -28,14 +28,16 @@
 #include <string>
 #include <vector>
 
-void do_cmd_knowledge_incident(CreatureEntity &creature)
+/*!
+ * @brief これまでの出来事 (インシデント) の一覧を任意のファイルへ書き出す
+ * @param creature クリーチャーへの参照
+ * @param fff 出力先ファイルポインタ
+ * @details 知識画面 (do_cmd_knowledge_incident) とキャラクタダンプ (dump_aux_incident) の
+ * 双方から呼ぶ。インシデントは CreatureEntity::incident_tree に貯まった記録を
+ * 項目ごとに整形したもので、全キーを機械的に並べるのではなく意味のある単位で集計する。
+ */
+void write_incident_report(CreatureEntity &creature, FILE *fff)
 {
-    FILE *fff = NULL;
-    GAME_TEXT file_name[FILE_NAME_SIZE];
-    if (!open_temporary_file(&fff, file_name)) {
-        return;
-    }
-
     if (creature.incident_tree.count("WALK")) {
         fprintf(fff, _("あなたはこれまで%d歩進んだ。\n", "You walked %d steps\n"), creature.incident_tree["WALK"]);
 
@@ -398,6 +400,17 @@ void do_cmd_knowledge_incident(CreatureEntity &creature)
             );
         }
     }
+}
+
+void do_cmd_knowledge_incident(CreatureEntity &creature)
+{
+    FILE *fff = NULL;
+    GAME_TEXT file_name[FILE_NAME_SIZE];
+    if (!open_temporary_file(&fff, file_name)) {
+        return;
+    }
+
+    write_incident_report(creature, fff);
 
     angband_fclose(fff);
 
