@@ -470,6 +470,82 @@ a.button-link:active {
 }
 
 /* ==========================================================
+   Subpage (更新履歴など)
+   ========================================================== */
+body.subpage {
+    padding: 0 clamp(0.5rem, 3vw, 2rem) 2rem;
+}
+
+.subpage-header {
+    width: min(100%, 52rem);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 1rem;
+}
+
+.subpage-logo img {
+    width: clamp(14rem, 40vw, 22rem);
+    /* ロゴ画像の上下の余白(グロー)を詰める */
+    margin: -2.5rem 0 -3rem;
+}
+
+.subpage-header h1.copy {
+    font-size: clamp(1.1rem, 0.9rem + 1vw, 1.5rem);
+    padding: 0.4em 2.4em;
+}
+
+#update-list {
+    width: min(100%, 52rem);
+    margin-top: 1.2rem;
+    padding: clamp(0.6rem, 2.5vw, 1.8rem);
+    background-color: rgba(0, 0, 0, 0.85);
+    border: solid 0.3rem;
+    border-radius: 1.2rem;
+}
+
+#update-list h4 {
+    margin: 1.6rem 0 0.4rem;
+    padding: 0.3rem 0.7rem;
+    font-size: clamp(0.95rem, 0.9rem + 0.3vw, 1.1rem);
+    background-color: rgba(50, 50, 50, 0.6);
+    border-left-color: #E09990;
+}
+
+#update-list h4:first-child {
+    margin-top: 0;
+}
+
+#update-list p {
+    margin: 0;
+    padding: 0.3rem 0.8rem;
+}
+
+.subpage-footer {
+    width: min(100%, 52rem);
+    display: flex;
+    justify-content: center;
+    padding: 1.5rem 0 0 1rem;
+}
+
+.popup-contents.popup-image {
+    height: auto;
+    max-height: 92vh;
+    padding: 0.8rem;
+}
+
+.popup-image img {
+    width: 100%;
+}
+
+.popup-image .popup-close {
+    position: absolute;
+    top: 0.8rem;
+    right: 0.8rem;
+    margin: 0;
+}
+
+/* ==========================================================
    Responsive
    ========================================================== */
 
