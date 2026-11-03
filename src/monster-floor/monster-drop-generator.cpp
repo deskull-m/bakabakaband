@@ -125,13 +125,51 @@ const std::vector<InitialWeaponTier> &get_initial_weapon_tiers()
 }
 
 /*!
- * @brief 種族レベルに応じた初期武器を 1 つ選ぶ
- * @param level モンスター種族のレベル
- * @return 選ばれた武器のベースアイテムキー
+ * @brief 和風武器を使うモンスター (SAMURAI) のレベル帯ごとの近接武器候補
+ * @details 刀・薙刀・鉄棒といった和風の得物だけで構成した、
+ *          `get_initial_weapon_tiers()` と対になる表。段の切れ目と各段の打撃
+ *          ダイス期待値を西洋武器の表へ揃えてあるため、**和風化による強弱の
+ *          変化はほとんど無い** (段ごとの期待値: 3.0 / 4.0 / 5.3 / 6.5 / 7.5 /
+ *          12.5 に対し、西洋側は 3.0 / 3.7 / 4.8 / 6.0 / 8.5 / 11.3)。
+ *          バランス調整はここで行うこと。
+ *
+ *          **候補は刀・薙刀・鉄棒といった侍の得物に絞り、ヌンチャク・錫杖・
+ *          三節棍のような武術家・僧の得物は和風でも含めない** (虎眼流の入門者が
+ *          ヌンチャクを振るような不整合を避ける)。
+ *
+ *          **最上段が Lv40 で止まるのは、和風武器の打撃ダイスが野太刀 (5d4) で
+ *          打ち止めになるため**。西洋側の Lv60 段 (首切りソード 4d5 /
+ *          ヘヴィ・ランス 4d8 / グレート・ハンマー 4d6、期待値 14.7) に相当する
+ *          和風武器が実データに無いので、Lv60 以上の個体も野太刀を持つ
+ *          (隼の剣 1d6 は速度特化で打撃ダイスが小さく、青龍刀 4d5 は中華風の
+ *          ため候補に含めない)。
  */
-BaseitemKey decide_initial_weapon(int level)
+const std::vector<InitialWeaponTier> &get_initial_samurai_weapon_tiers()
 {
-    for (const auto &tier : get_initial_weapon_tiers()) {
+    static const std::vector<InitialWeaponTier> tiers = {
+        { 40, { { ItemKindType::SWORD, SV_NO_DACHI } } },
+        { 30, { { ItemKindType::SWORD, SV_KATANA }, { ItemKindType::POLEARM, SV_NAGINATA }, { ItemKindType::HAFTED, SV_TETSUBO } } },
+        { 20, { { ItemKindType::SWORD, SV_KATANA }, { ItemKindType::SWORD, SV_WAKIZASHI }, { ItemKindType::POLEARM, SV_NAGINATA } } },
+        { 10, { { ItemKindType::SWORD, SV_WAKIZASHI }, { ItemKindType::SWORD, SV_NINJATO }, { ItemKindType::HAFTED, SV_BO_STAFF } } },
+        { 5, { { ItemKindType::SWORD, SV_TANTO }, { ItemKindType::SWORD, SV_WAKIZASHI } } },
+        { 0, { { ItemKindType::SWORD, SV_TANTO } } },
+    };
+
+    return tiers;
+}
+
+/*!
+ * @brief レベル帯テーブルから種族レベルに応じた 1 品を選ぶ
+ * @param tiers レベル帯テーブル (先頭から順に `level >= min_level` で判定)
+ * @param level モンスター種族のレベル
+ * @param fallback どの段にも一致しなかった場合に返すベースアイテムキー
+ * @return 選ばれたベースアイテムキー
+ * @details 近接武器・弓・軽装・和風武器の 4 テーブルで共通の走査処理。
+ *          どのテーブルも最下段の `min_level` が 0 なので通常 fallback は使わない。
+ */
+BaseitemKey decide_initial_item(const std::vector<InitialWeaponTier> &tiers, int level, const BaseitemKey &fallback)
+{
+    for (const auto &tier : tiers) {
         if (level < tier.min_level) {
             continue;
         }
@@ -139,8 +177,20 @@ BaseitemKey decide_initial_weapon(int level)
         return rand_choice(tier.candidates);
     }
 
-    // 最下段の min_level が 0 のため通常ここには来ないが、防御的に短剣を返す。
-    return { ItemKindType::SWORD, SV_DAGGER };
+    return fallback;
+}
+
+/*!
+ * @brief 種族レベルに応じた初期武器を 1 つ選ぶ
+ * @param level モンスター種族のレベル
+ * @param prefers_japanese 和風武器の表を使うか (SAMURAI 持ちなら true)
+ * @return 選ばれた武器のベースアイテムキー
+ */
+BaseitemKey decide_initial_weapon(int level, bool prefers_japanese)
+{
+    const auto &tiers = prefers_japanese ? get_initial_samurai_weapon_tiers() : get_initial_weapon_tiers();
+    const BaseitemKey fallback = prefers_japanese ? BaseitemKey{ ItemKindType::SWORD, SV_TANTO } : BaseitemKey{ ItemKindType::SWORD, SV_DAGGER };
+    return decide_initial_item(tiers, level, fallback);
 }
 
 /*!
@@ -170,16 +220,7 @@ const std::vector<InitialWeaponTier> &get_initial_bow_tiers()
  */
 BaseitemKey decide_initial_bow(int level)
 {
-    for (const auto &tier : get_initial_bow_tiers()) {
-        if (level < tier.min_level) {
-            continue;
-        }
-
-        return rand_choice(tier.candidates);
-    }
-
-    // 最下段の min_level が 0 のため通常ここには来ないが、防御的にスリングを返す。
-    return { ItemKindType::BOW, SV_SLING };
+    return decide_initial_item(get_initial_bow_tiers(), level, { ItemKindType::BOW, SV_SLING });
 }
 
 /*!
@@ -209,16 +250,7 @@ const std::vector<InitialWeaponTier> &get_initial_robe_tiers()
  */
 BaseitemKey decide_initial_robe(int level)
 {
-    for (const auto &tier : get_initial_robe_tiers()) {
-        if (level < tier.min_level) {
-            continue;
-        }
-
-        return rand_choice(tier.candidates);
-    }
-
-    // 最下段の min_level が 0 のため通常ここには来ないが、防御的にローブを返す。
-    return { ItemKindType::SOFT_ARMOR, SV_ROBE };
+    return decide_initial_item(get_initial_robe_tiers(), level, { ItemKindType::SOFT_ARMOR, SV_ROBE });
 }
 
 /*!
@@ -481,7 +513,11 @@ void generate_monster_drop_items(CreatureEntity &player, CreatureEntity &monster
 void equip_armed_monster_initial_weapon(CreatureEntity &monster)
 {
     const auto &monrace = monster.get_monrace();
-    if (monrace.kind_flags.has_none_of({ MonsterKindType::SOLDIER, MonsterKindType::WARRIOR })) {
+
+    // SAMURAI は和風の得物を持つ。SOLDIER / WARRIOR と併せ持つ個体でも
+    // 和風の表を優先する (「侍なのに西洋剣」を避ける)。
+    const auto prefers_japanese = monrace.kind_flags.has(MonsterKindType::SAMURAI);
+    if (!prefers_japanese && monrace.kind_flags.has_none_of({ MonsterKindType::SOLDIER, MonsterKindType::WARRIOR })) {
         return;
     }
 
@@ -491,11 +527,13 @@ void equip_armed_monster_initial_weapon(CreatureEntity &monster)
     }
 
     // 既に利き手が埋まっているなら何もしない (生成直後は通常空)。
+    // 種族定義の equip_kind / equip_tval は本関数より先に走るため、
+    // 製作者が名指しした得物はそのまま残る。
     if (monster.inventory[INVEN_MAIN_HAND]->is_valid()) {
         return;
     }
 
-    ItemEntity weapon(decide_initial_weapon(monrace.level));
+    ItemEntity weapon(decide_initial_weapon(monrace.level, prefers_japanese));
     weapon.number = 1;
 
     // エゴ・アーティファクト化や強化値は付けない。素の打撃ダイスのみを加える

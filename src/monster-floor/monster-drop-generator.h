@@ -26,14 +26,16 @@ class MonraceDropKind;
 void generate_monster_drop_items(CreatureEntity &player, CreatureEntity &monster);
 
 /*!
- * @brief SOLDIER / WARRIOR フラグを持つモンスターに初期装備の近接武器を持たせる。
+ * @brief SOLDIER / WARRIOR / SAMURAI フラグを持つモンスターに初期装備の近接武器を持たせる。
  * @param monster 対象モンスター
- * @details 兵士・戦士は得物を携えているのが自然なため、生成時に種族レベル相応の
+ * @details 兵士・戦士・侍は得物を携えているのが自然なため、生成時に種族レベル相応の
  *          近接武器を 1 本与えて利き手に装備させる。体構造的に武器を持てない
  *          個体 (四足・不定形・非実体等) と、既に利き手が埋まっている個体は対象外。
+ *          **SAMURAI 持ちは和風武器の表 (`get_initial_samurai_weapon_tiers()`) を
+ *          使う**。SOLDIER / WARRIOR と併せ持つ個体でも和風を優先する。
  *          **モンスターの装備武器は近接ダメージに加算される**
- *          (`calc_weapon_melee_damage`) ため、これは SOLDIER / WARRIOR 持ち
- *          モンスターへのバランス変更を伴う。武器の格は
+ *          (`calc_weapon_melee_damage`) ため、これは SOLDIER / WARRIOR / SAMURAI
+ *          持ちモンスターへのバランス変更を伴う。武器の格は
  *          `decide_initial_weapon()` のレベル帯テーブルで調整すること。
  *          一般ドロップ (`generate_monster_drop_items`) より先に呼び、
  *          利き手を初期武器が確保できるようにする。
