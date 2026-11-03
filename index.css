@@ -383,14 +383,14 @@ a.button-link:active {
 #popup-bg {
     position: fixed;
     inset: 0;
-    z-index: 20;
+    z-index: 1000; /* ポップアップは常に最前面 */
     display: none;
     background: rgba(0, 0, 0, 0.8);
 }
 
 .popup-contents {
     position: fixed;
-    z-index: 30;
+    z-index: 1001;
     top: 4vh;
     left: 50%;
     transform: translateX(-50%);
