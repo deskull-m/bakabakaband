@@ -159,6 +159,68 @@ const std::vector<InitialWeaponTier> &get_initial_samurai_weapon_tiers()
 }
 
 /*!
+ * @brief 忍者系モンスター (NINJA) のレベル帯ごとの近接武器候補
+ * @details **職業忍者が使える武器だけで構成した表**。職業忍者の武器熟練度
+ *          (`lib/edit/ClassSkillDefinitions.jsonc` の id 26) で SKILLED 以上に
+ *          なれるのは ダガー / 短刀 / 忍者刀 / 毒針 (MASTER) と マン・ゴーシュ /
+ *          レイピア / スモール・ソード / ショート・ソード / 脇差し / 隼の剣
+ *          (SKILLED) で、**いずれも刀剣 (SWORD) の軽量な短刀類**。それ以外は
+ *          `is_icky_wield()` 相当の不得手な得物になる。
+ *
+ *          **鈍器・長柄 (HAFTED / POLEARM) は入れない**。`heavy_armor()`
+ *          (`src/player-info/equipment-info.cpp`) は忍者の場合「刀剣より重い
+ *          分類の手持ち武器の重量」も防具重量に合算するため、鈍器や長柄を持つと
+ *          それだけで重装備判定に近付き、職業忍者なら加速・隠密のペナルティを
+ *          受ける組み合わせになる。
+ *
+ *          **最上段が Lv20 で止まるのは、職業忍者が扱える武器の打撃ダイスが
+ *          忍者刀 (1d9) / 脇差し (2d4) = 期待値 5.0 で打ち止めになるため**。
+ *          隼の剣 (1d6) は Lv55 の忍者の象徴的な得物だが打撃ダイスはさらに小さく、
+ *          価値 3500G が武装度予算を丸ごと食い潰すので候補に含めない。
+ *          毒針 (1d1) も打撃ダイスが無いので除く。
+ */
+const std::vector<InitialWeaponTier> &get_initial_ninja_weapon_tiers()
+{
+    static const std::vector<InitialWeaponTier> tiers = {
+        { 20, { { ItemKindType::SWORD, SV_NINJATO }, { ItemKindType::SWORD, SV_WAKIZASHI } } },
+        { 10, { { ItemKindType::SWORD, SV_TANTO }, { ItemKindType::SWORD, SV_SHORT_SWORD }, { ItemKindType::SWORD, SV_WAKIZASHI } } },
+        { 5, { { ItemKindType::SWORD, SV_TANTO }, { ItemKindType::SWORD, SV_MAIN_GAUCHE }, { ItemKindType::SWORD, SV_SHORT_SWORD } } },
+        { 0, { { ItemKindType::SWORD, SV_DAGGER }, { ItemKindType::SWORD, SV_TANTO } } },
+    };
+
+    return tiers;
+}
+
+/*!
+ * @brief 役割装備で使う近接武器の系統
+ */
+enum class InitialWeaponStyle {
+    WESTERN, //!< SOLDIER / WARRIOR の西洋武器
+    SAMURAI, //!< SAMURAI の和風武器
+    NINJA, //!< NINJA の軽量な短刀類
+};
+
+/*!
+ * @brief 種族フラグから近接武器の系統を決める
+ * @details 併せ持つ個体は **NINJA > SAMURAI > SOLDIER / WARRIOR** の順で決まる。
+ *          NINJA を最優先にするのは、忍者の得物制限が「重い武器を持つと重装備
+ *          判定に近付く」という**制約**であり、侍の和風武器が単なる**好み**で
+ *          あるのに対して破ると噛み合わなくなるため。
+ */
+InitialWeaponStyle decide_initial_weapon_style(const MonraceDefinition &monrace)
+{
+    if (monrace.kind_flags.has(MonsterKindType::NINJA)) {
+        return InitialWeaponStyle::NINJA;
+    }
+
+    if (monrace.kind_flags.has(MonsterKindType::SAMURAI)) {
+        return InitialWeaponStyle::SAMURAI;
+    }
+
+    return InitialWeaponStyle::WESTERN;
+}
+
+/*!
  * @brief レベル帯テーブルから種族レベルに応じた 1 品を選ぶ
  * @param tiers レベル帯テーブル (先頭から順に `level >= min_level` で判定)
  * @param level モンスター種族のレベル
@@ -183,14 +245,20 @@ BaseitemKey decide_initial_item(const std::vector<InitialWeaponTier> &tiers, int
 /*!
  * @brief 種族レベルに応じた初期武器を 1 つ選ぶ
  * @param level モンスター種族のレベル
- * @param prefers_japanese 和風武器の表を使うか (SAMURAI 持ちなら true)
+ * @param style 使う武器の系統 (`decide_initial_weapon_style()` が決める)
  * @return 選ばれた武器のベースアイテムキー
  */
-BaseitemKey decide_initial_weapon(int level, bool prefers_japanese)
+BaseitemKey decide_initial_weapon(int level, InitialWeaponStyle style)
 {
-    const auto &tiers = prefers_japanese ? get_initial_samurai_weapon_tiers() : get_initial_weapon_tiers();
-    const BaseitemKey fallback = prefers_japanese ? BaseitemKey{ ItemKindType::SWORD, SV_TANTO } : BaseitemKey{ ItemKindType::SWORD, SV_DAGGER };
-    return decide_initial_item(tiers, level, fallback);
+    switch (style) {
+    case InitialWeaponStyle::SAMURAI:
+        return decide_initial_item(get_initial_samurai_weapon_tiers(), level, { ItemKindType::SWORD, SV_TANTO });
+    case InitialWeaponStyle::NINJA:
+        return decide_initial_item(get_initial_ninja_weapon_tiers(), level, { ItemKindType::SWORD, SV_DAGGER });
+    case InitialWeaponStyle::WESTERN:
+    default:
+        return decide_initial_item(get_initial_weapon_tiers(), level, { ItemKindType::SWORD, SV_DAGGER });
+    }
 }
 
 /*!
@@ -273,6 +341,45 @@ const std::vector<ArmamentSlotEntry> &get_armament_slot_entries()
         { INVEN_MAIN_HAND, { ItemKindType::SWORD, ItemKindType::POLEARM, ItemKindType::HAFTED } },
         { INVEN_HEAD, { ItemKindType::HELM, ItemKindType::CROWN } },
         { INVEN_SUB_HAND, { ItemKindType::SHIELD } },
+        { INVEN_FEET, { ItemKindType::BOOTS } },
+        { INVEN_ARMS, { ItemKindType::GLOVES } },
+        { INVEN_OUTER, { ItemKindType::CLOAK } },
+    };
+
+    return entries;
+}
+
+/*!
+ * @brief 忍者系モンスター (NINJA) が武装度予算で埋める装備スロット
+ * @details 職業忍者の装備制約に合わせて既定の表から 2 点を変える。
+ *
+ *          **モンスターにペナルティが生じるわけではない**点に注意。
+ *          `CreatureClass::equals()` は非プレイヤーで常に false を返すため、
+ *          下記の `heavy_armor()` / `has_ninja_speed()` はモンスターでは発火しない。
+ *          それでも職業忍者の基準に揃えるのは、見た目の不整合 (忍者が大盾と重鎧で
+ *          固めている) を避け、C1 の `player_class` 付与や
+ *          `player_birth_as_monster` で同じ基準が効くようにしておくため。
+ *
+ *          **必ず `get_armament_slot_entries()` の部分集合であること**
+ *          (購入候補のキャッシュ `get_armament_candidates()` は既定の表から
+ *          作るため、既定に無いスロットや種別を足しても候補が引けない)。
+ *
+ *          - **逆手 (盾) を外す**: 盾を持つと `has_ninja_speed()`
+ *            (`src/player-base/player-class.cpp`) が偽になり、職業忍者なら
+ *            加速・隠密のボーナスを失う。忍者は盾を使わない。
+ *          - **胴は軽装 (SOFT_ARMOR) のみ**: `heavy_armor()` の重量判定
+ *            (防具重量 > 100 + レベル×4) に引っ掛かると、職業忍者は加速・隠密に
+ *            ペナルティを受ける。重鎧 (HARD_ARMOR) は買わせない。
+ *          - **利き手は刀剣のみ**: 役割装備で既に埋まるため通常は使われないが、
+ *            万一空いていても鈍器・長柄を買わないようにする
+ *            (理由は `get_initial_ninja_weapon_tiers()` 参照)。
+ */
+const std::vector<ArmamentSlotEntry> &get_ninja_armament_slot_entries()
+{
+    static const std::vector<ArmamentSlotEntry> entries = {
+        { INVEN_BODY, { ItemKindType::SOFT_ARMOR } },
+        { INVEN_MAIN_HAND, { ItemKindType::SWORD } },
+        { INVEN_HEAD, { ItemKindType::HELM, ItemKindType::CROWN } },
         { INVEN_FEET, { ItemKindType::BOOTS } },
         { INVEN_ARMS, { ItemKindType::GLOVES } },
         { INVEN_OUTER, { ItemKindType::CLOAK } },
@@ -371,7 +478,7 @@ const std::map<int, std::vector<ArmamentCandidate>> &get_armament_candidates()
 
 /*!
  * @brief 予算内で最も上等な装備を 1 つ選ぶ
- * @param slot 対象の装備スロット
+ * @param entry 対象の装備スロットと、そこへ装備できるアイテム種別
  * @param budget このスロットに使える上限価値
  * @return 選ばれた候補。予算内の候補が無ければ tl::nullopt
  * @details 予算内で最も高価な品の価値を基準とし、その半額以上の候補から等確率で
@@ -384,17 +491,23 @@ const std::map<int, std::vector<ArmamentCandidate>> &get_armament_candidates()
  *          達してしまう。性能値は「装備しても無意味な AC0 の品」を候補から
  *          除くためだけに使う。
  */
-tl::optional<ArmamentCandidate> pick_armament(int slot, int budget)
+tl::optional<ArmamentCandidate> pick_armament(const ArmamentSlotEntry &entry, int budget)
 {
     const auto &candidates_map = get_armament_candidates();
-    const auto it = candidates_map.find(slot);
+    const auto it = candidates_map.find(entry.slot);
     if (it == candidates_map.end()) {
         return tl::nullopt;
     }
 
+    // キャッシュは既定のスロット表から作るため、忍者用の表のように種別を狭めた
+    // 呼出では、そのスロットの候補をさらに絞り込む。
+    const auto is_allowed = [&entry](const ArmamentCandidate &candidate) {
+        return std::find(entry.tvals.begin(), entry.tvals.end(), candidate.bi_key.tval()) != entry.tvals.end();
+    };
+
     auto best_cost = 0;
     for (const auto &candidate : it->second) {
-        if ((candidate.cost <= budget) && (candidate.cost > best_cost)) {
+        if (is_allowed(candidate) && (candidate.cost <= budget) && (candidate.cost > best_cost)) {
             best_cost = candidate.cost;
         }
     }
@@ -405,7 +518,7 @@ tl::optional<ArmamentCandidate> pick_armament(int slot, int budget)
 
     std::vector<ArmamentCandidate> affordable;
     for (const auto &candidate : it->second) {
-        if ((candidate.cost <= budget) && (candidate.cost * 2 >= best_cost)) {
+        if (is_allowed(candidate) && (candidate.cost <= budget) && (candidate.cost * 2 >= best_cost)) {
             affordable.push_back(candidate);
         }
     }
@@ -514,10 +627,12 @@ void equip_armed_monster_initial_weapon(CreatureEntity &monster)
 {
     const auto &monrace = monster.get_monrace();
 
-    // SAMURAI は和風の得物を持つ。SOLDIER / WARRIOR と併せ持つ個体でも
-    // 和風の表を優先する (「侍なのに西洋剣」を避ける)。
-    const auto prefers_japanese = monrace.kind_flags.has(MonsterKindType::SAMURAI);
-    if (!prefers_japanese && monrace.kind_flags.has_none_of({ MonsterKindType::SOLDIER, MonsterKindType::WARRIOR })) {
+    // SAMURAI は和風の得物、NINJA は職業忍者と同じ軽量な短刀類を持つ。
+    // SOLDIER / WARRIOR と併せ持つ個体でもそれぞれの表を優先する
+    // (「侍なのに西洋剣」「忍者なのに大槌」を避ける)。
+    const auto style = decide_initial_weapon_style(monrace);
+    const auto has_armed_role = monrace.kind_flags.has_any_of({ MonsterKindType::SOLDIER, MonsterKindType::WARRIOR });
+    if ((style == InitialWeaponStyle::WESTERN) && !has_armed_role) {
         return;
     }
 
@@ -533,7 +648,7 @@ void equip_armed_monster_initial_weapon(CreatureEntity &monster)
         return;
     }
 
-    ItemEntity weapon(decide_initial_weapon(monrace.level, prefers_japanese));
+    ItemEntity weapon(decide_initial_weapon(monrace.level, style));
     weapon.number = 1;
 
     // エゴ・アーティファクト化や強化値は付けない。素の打撃ダイスのみを加える
@@ -606,9 +721,13 @@ void equip_monster_by_armament_budget(CreatureEntity &monster)
         return;
     }
 
+    // 忍者は盾を持たず重鎧も着ないため、専用のスロット表を使う。
+    const auto is_ninja = monster.get_monrace().kind_flags.has(MonsterKindType::NINJA);
+    const auto &slot_entries = is_ninja ? get_ninja_armament_slot_entries() : get_armament_slot_entries();
+
     // 体構造的に装備でき、かつまだ空いているスロットだけを対象にする。
     std::vector<const ArmamentSlotEntry *> targets;
-    for (const auto &entry : get_armament_slot_entries()) {
+    for (const auto &entry : slot_entries) {
         if (!monster.can_equip_to(entry.slot) || monster.inventory[entry.slot]->is_valid()) {
             continue;
         }
@@ -620,7 +739,7 @@ void equip_monster_by_armament_budget(CreatureEntity &monster)
     // これにより 1 部位に予算を使い切らず、武装度が高いほど全身が上等になる。
     for (auto i = 0U; i < targets.size(); i++) {
         const auto slot_budget = budget / static_cast<int>(targets.size() - i);
-        const auto candidate = pick_armament(targets[i]->slot, slot_budget);
+        const auto candidate = pick_armament(*targets[i], slot_budget);
         if (!candidate) {
             continue;
         }

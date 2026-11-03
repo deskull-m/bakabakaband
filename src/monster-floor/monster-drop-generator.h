@@ -26,17 +26,19 @@ class MonraceDropKind;
 void generate_monster_drop_items(CreatureEntity &player, CreatureEntity &monster);
 
 /*!
- * @brief SOLDIER / WARRIOR / SAMURAI フラグを持つモンスターに初期装備の近接武器を持たせる。
+ * @brief SOLDIER / WARRIOR / SAMURAI / NINJA フラグを持つモンスターに初期装備の近接武器を持たせる。
  * @param monster 対象モンスター
- * @details 兵士・戦士・侍は得物を携えているのが自然なため、生成時に種族レベル相応の
- *          近接武器を 1 本与えて利き手に装備させる。体構造的に武器を持てない
+ * @details 兵士・戦士・侍・忍者は得物を携えているのが自然なため、生成時に種族レベル
+ *          相応の近接武器を 1 本与えて利き手に装備させる。体構造的に武器を持てない
  *          個体 (四足・不定形・非実体等) と、既に利き手が埋まっている個体は対象外。
- *          **SAMURAI 持ちは和風武器の表 (`get_initial_samurai_weapon_tiers()`) を
- *          使う**。SOLDIER / WARRIOR と併せ持つ個体でも和風を優先する。
+ *          **武器の系統は `decide_initial_weapon_style()` が決め、優先順位は
+ *          NINJA > SAMURAI > SOLDIER / WARRIOR**。SAMURAI は和風武器
+ *          (`get_initial_samurai_weapon_tiers()`)、NINJA は職業忍者が扱える軽量な
+ *          短刀類 (`get_initial_ninja_weapon_tiers()`) を引く。
  *          **モンスターの装備武器は近接ダメージに加算される**
- *          (`calc_weapon_melee_damage`) ため、これは SOLDIER / WARRIOR / SAMURAI
- *          持ちモンスターへのバランス変更を伴う。武器の格は
- *          `decide_initial_weapon()` のレベル帯テーブルで調整すること。
+ *          (`calc_weapon_melee_damage`) ため、これは当該フラグ持ちモンスターへの
+ *          バランス変更を伴う。武器の格は `decide_initial_weapon()` のレベル帯
+ *          テーブルで調整すること。
  *          一般ドロップ (`generate_monster_drop_items`) より先に呼び、
  *          利き手を初期武器が確保できるようにする。
  */
@@ -89,6 +91,8 @@ void equip_spellcaster_monster_initial_robe(CreatureEntity &monster);
  *          持つ全モンスターへのバランス変更を伴う。調整は武装度そのもの
  *          (JSON `armament_level` / `ARMAMENT_LEVEL_PER_LEVEL`) と
  *          `get_armament_slot_entries()` の対象スロット表で行うこと。
+ *          **NINJA 持ちは専用のスロット表 (`get_ninja_armament_slot_entries()`)
+ *          を使い、盾を持たず胴は軽装のみになる** (職業忍者の装備制約に合わせる)。
  */
 void equip_monster_by_armament_budget(CreatureEntity &monster);
 
