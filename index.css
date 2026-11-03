@@ -294,6 +294,64 @@ a.button-link:active {
     min-width: min(22rem, 90%);
 }
 
+/* ダウンロードボタン（通常ボタンの約2倍） */
+#title-div .download-link {
+    width: min(100%, 40rem);
+    max-width: 100%;
+}
+
+.download-link .button {
+    min-height: 7.2rem;
+    padding: 0.8rem 1.6rem 0.8rem clamp(6rem, 4rem + 6vw, 9.6rem);
+    border-width: 0.6rem;
+    border-radius: 7.2rem;
+    line-height: 1.25;
+}
+
+.download-link .select-icon {
+    width: clamp(7rem, 5rem + 5vw, 10rem);
+    left: -1.6rem;
+}
+
+.download-title {
+    display: block;
+    font-size: clamp(1.4rem, 0.9rem + 1.7vw, 2.4rem);
+    font-weight: bold;
+    letter-spacing: 0.1em;
+}
+
+.download-meta {
+    display: block;
+    margin-top: 0.2rem;
+    font-size: clamp(0.8rem, 0.7rem + 0.5vw, 1.1rem);
+    white-space: nowrap;
+    opacity: 0.85;
+}
+
+@media screen and (max-width: 360px) {
+    .download-link .button {
+        min-height: 6rem;
+        padding-left: 5.2rem;
+        padding-right: 1rem;
+    }
+
+    .download-link .select-icon {
+        width: 6rem;
+        left: -1rem;
+    }
+}
+
+@media screen and (orientation: landscape) and (max-height: 500px) {
+    .download-link .button {
+        min-height: 5.6rem;
+        padding-left: 6.4rem;
+    }
+
+    .download-link .select-icon {
+        width: 7rem;
+    }
+}
+
 .button-small {
     margin: 1rem;
     border: solid 0.2rem white;
