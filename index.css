@@ -1,7 +1,10 @@
+/* ==========================================================
+   Reset
+   ========================================================== */
 *,
 *::before,
 *::after {
-    box-sizing: border-box
+    box-sizing: border-box;
 }
 
 body,
@@ -14,44 +17,29 @@ figure,
 blockquote,
 dl,
 dd {
-    margin: 0
-}
-
-ul[role="list"],
-ol[role="list"] {
-    list-style: none
+    margin: 0;
 }
 
 html:focus-within {
-    scroll-behavior: smooth
-}
-
-body {
-    min-height: 100vh;
-    text-rendering: optimizeSpeed;
-    line-height: 1.5
-}
-
-a:not([class]) {
-    text-decoration-skip-ink: auto
+    scroll-behavior: smooth;
 }
 
 img,
 picture {
     max-width: 100%;
-    display: block
+    display: block;
 }
 
 input,
 button,
 textarea,
 select {
-    font: inherit
+    font: inherit;
 }
 
-@media(prefers-reduced-motion:reduce) {
+@media (prefers-reduced-motion: reduce) {
     html:focus-within {
-        scroll-behavior: auto
+        scroll-behavior: auto;
     }
 
     *,
@@ -60,14 +48,40 @@ select {
         animation-duration: .01ms !important;
         animation-iteration-count: 1 !important;
         transition-duration: .01ms !important;
-        scroll-behavior: auto !important
+        scroll-behavior: auto !important;
     }
 }
 
-*,
-*:after,
-*:before {
-    box-sizing: border-box;
+/* ==========================================================
+   Base
+   ========================================================== */
+html {
+    background-color: #252b25;
+}
+
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: #ffffff;
+    font-size: 1rem;
+    font-weight: normal;
+    line-height: 1.7;
+    background-color: transparent;
+    font-family: "メイリオ", "Meiryo", "Hiragino Kaku Gothic ProN", "ヒラギノ角ゴ Pro W3", Osaka, "Noto Sans JP", Arial, Helvetica, sans-serif;
+    text-rendering: optimizeLegibility;
+    overflow-x: hidden;
+    -webkit-text-size-adjust: 100%;
+}
+
+/* 背景画像は疑似要素で固定（iOS は background-attachment: fixed が効かないため） */
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background: #252b25 url("back2.png") center top / cover no-repeat;
 }
 
 a:link {
@@ -78,576 +92,206 @@ a:visited {
     color: #C09990;
 }
 
+a:hover,
 a:active {
     color: #F0DDDD;
 }
 
-a:hover {
-    color: #F0DDDD;
+a:not([class]) {
+    text-decoration-skip-ink: auto;
 }
 
 strong {
     text-emphasis: filled circle white;
 }
 
-h1.copy {
-    padding: 1.5rem;
-    z-index: 30;
-    font-size: 1.2rem;
-    line-height: 1.8rem;
-    background-color: rgba(20, 10, 0, 0.8);
-    border-radius: 0.4rem;
-    letter-spacing: 0.05rem;
-    margin: 0.3rem;
-    text-align: center;
-    border-radius: 4rem;
-}
-
-/* レスポンシブ対応：メインタイトル */
-@media screen and (max-width: 768px) {
-    h1.copy {
-        font-size: 1rem;
-        line-height: 1.5rem;
-        padding: 1rem;
-    }
-}
-
-@media screen and (max-width: 480px) {
-    h1.copy {
-        font-size: 0.9rem;
-        line-height: 1.3rem;
-        padding: 0.8rem;
-        margin: 0.2rem;
-    }
-}
-
-#top-message h2 {
-    font-size: 1.1rem;
-    line-height: 1.2rem;
-    letter-spacing: 0.05rem;
-}
-
 p {
     padding: 0.4rem;
-    font-size: 0.9rem;
-    line-height: 1.1rem;
-    z-index: 200;
-}
-
-html,
-body {
-    height: 100%;
-    margin: 0;
-    color: #ffffff;
-    font-weight: normal;
-    line-height: 1.8rem;
-}
-
-body {
-    display: flex;
-    flex-direction: column;
-    font-size: 1.0rem;
-    height: 100%;
-    min-height: 100vh;
-    background-color: #252b25;
-    font-family: "メイリオ", "Meiryo", Osaka, "ヒラギノ角ゴ Pro W3", Arial, Helvetica, sans-serif;
-    background-image: url("back2.png");
-    background-repeat: no-repeat;
-    background-position: top;
-    background-attachment: fixed;
-    background-size: cover;
-    align-items: center;
-    overflow-x: hidden;
-    overflow-y: scroll;
-}
-
-#melko {
-    width: 80vw;
-    position: relative;
-    left: -10vw;
-    z-index: 0;
-}
-
-#melko-serif {
-    width: 60vw;
-    position: absolute;
-    top: -10vw;
-    right: -3%;
-    z-index: 2;
-    height: 50vw;
-}
-
-/* レスポンシブ対応：モバイル向け */
-@media screen and (max-width: 768px) {
-    #melko {
-        width: 100vw;
-        left: 0;
-    }
-
-    #melko-serif {
-        width: 80vw;
-        top: -5vw;
-        right: 0;
-        q height: 40vw;
-    }
+    margin-bottom: 0.6rem;
+    font-size: 0.95rem;
+    line-height: 1.8;
+    overflow-wrap: anywhere;
 }
 
 h2 {
     margin: 0.5rem;
-    padding: 0.4rem;
-    font-size: 1.3rem;
+    padding: 0.5rem 0.6rem;
+    font-size: clamp(1.05rem, 0.9rem + 0.8vw, 1.3rem);
+    font-weight: bold;
     display: block;
     text-align: center;
-    line-height: 1.4rem;
+    line-height: 1.5;
     background-color: rgba(30, 30, 30, 0.8);
-    border: solid 0.7rem rgba(50, 50, 50, 0.9);
+    border: solid 0.6rem rgba(50, 50, 50, 0.9);
     border-radius: 0.3rem;
 }
 
 h3 {
     margin: 0.5rem;
-    padding: 0.5rem;
-    font-size: 1.0rem;
+    padding: 0.4rem 0.6rem;
+    font-size: 1rem;
+    font-weight: bold;
     display: block;
     text-align: left;
-    line-height: 1.0rem;
+    line-height: 1.5;
     background-color: rgba(30, 30, 30, 0.8);
-    border: solid 0.5rem rgba(50, 50, 50, 0.9);
+    border: solid 0.4rem rgba(50, 50, 50, 0.9);
     border-radius: 0.3rem;
 }
 
 h4 {
-    margin: 0.2rem;
-    padding: 0.4rem;
-    font-size: 0.9rem;
+    margin: 0.8rem 0.2rem 0.2rem;
+    padding: 0.2rem 0.5rem;
+    font-size: 0.95rem;
+    font-weight: bold;
     display: block;
     text-align: left;
-    line-height: 1.0rem;
-    border: solid;
-    border-left-width: 0.4rem;
-    border-right-width: 0;
-    border-top-width: 0;
-    border-bottom-width: 0;
-    border-color: rgba(100, 100, 100, 0.9);
+    line-height: 1.5;
+    border: solid rgba(100, 100, 100, 0.9);
+    border-width: 0 0 0 0.4rem;
     border-radius: 0.3rem;
 }
 
 pre {
     font-size: 0.8rem;
     background-color: rgba(30, 30, 30, 0.8);
+    color: #ffffff;
     margin: 0.4rem;
     padding: 1rem;
     border: solid 0.1rem rgba(50, 50, 50, 0.9);
     border-radius: 0.3rem;
-    line-height: 1rem;
-    /* font-stretch: 150%; */
+    line-height: 1.4;
     letter-spacing: normal;
-
-}
-
-#ahona {
-    width: 100%;
-}
-
-#title-div {
-    z-index: 10;
-    position: absolute;
-    top: 0vw;
-    width: 50vw;
-    right: 5vw;
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-around;
-    align-items: center;
-}
-
-/* レスポンシブ対応：タブレット・モバイル向け */
-@media screen and (max-width: 768px) {
-    #title-div {
-        width: 90vw;
-        right: 5vw;
-        top: 10vh;
-    }
-}
-
-@media screen and (max-width: 480px) {
-    #title-div {
-        width: 95vw;
-        right: 2.5vw;
-        top: 15vh;
-    }
-}
-
-/* 追加のレスポンシブ対応 */
-
-/* タブレット横向き */
-@media screen and (max-width: 1024px) and (min-width: 769px) {
-    #title-div {
-        width: 60vw;
-        right: 5vw;
-    }
-
-    #main-area {
-        padding: 1.2rem;
-    }
-
-    .button {
-        font-size: 1.05rem;
-        padding: 0.9rem 0.9rem 0.9rem 5rem;
-    }
-}
-
-/* 大画面モバイル（iPhone Plus系） */
-@media screen and (max-width: 414px) {
-    body {
-        font-size: 0.9rem;
-    }
-
-    h1.copy {
-        font-size: 0.8rem;
-        line-height: 1.2rem;
-        padding: 0.6rem;
-    }
-
-    .button {
-        font-size: 0.85rem;
-        padding: 0.5rem 0.5rem 0.5rem 3rem;
-    }
-
-    .select-icon {
-        width: 2.5rem;
-        left: -0.3rem;
-    }
-}
-
-/* 小画面モバイル（iPhone SE系） */
-@media screen and (max-width: 375px) {
-    h1.copy {
-        font-size: 0.75rem;
-        line-height: 1.1rem;
-        padding: 0.5rem;
-    }
-
-    .button {
-        font-size: 0.8rem;
-        padding: 0.4rem 0.4rem 0.4rem 2.8rem;
-        border-radius: 2rem;
-    }
-
-    .select-icon {
-        width: 2.2rem;
-        left: -0.2rem;
-    }
-
-    #article-list {
-        font-size: 80%;
-        padding: 0.3rem;
-    }
-
-    .popup-contents {
-        padding: 0.8rem;
-        border-radius: 0.3rem;
-    }
-}
-
-/* 極小画面（古いモバイル） */
-@media screen and (max-width: 320px) {
-    h1.copy {
-        font-size: 0.7rem;
-        line-height: 1rem;
-        padding: 0.4rem;
-    }
-
-    .button {
-        font-size: 0.75rem;
-        padding: 0.3rem 0.3rem 0.3rem 2.5rem;
-    }
-
-    .select-icon {
-        width: 2rem;
-        left: -0.1rem;
-    }
-}
-
-/* 高解像度対応 */
-@media screen and (-webkit-min-device-pixel-ratio: 2),
-screen and (min-resolution: 192dpi) {
-    .select-icon {
-        image-rendering: -webkit-optimize-contrast;
-        image-rendering: crisp-edges;
-    }
-}
-
-/* ダークモード対応 */
-@media (prefers-color-scheme: dark) {
-    .modal-content {
-        background-color: #1a1a1a;
-        color: #ffffff;
-    }
-
-    .modal-header {
-        border-bottom-color: #444;
-    }
-
-    .modal-footer {
-        border-top-color: #444;
-    }
-}
-
-/* 縦画面専用の調整 */
-@media screen and (orientation: portrait) and (max-width: 768px) {
-    #visual {
-        height: 100vh;
-    }
-
-    #title-div {
-        height: 80vh;
-    }
-}
-
-/* 横画面専用の調整 */
-@media screen and (orientation: landscape) and (max-height: 500px) {
-    #visual {
-        height: 100vh;
-    }
-
-    #title-div {
-        height: 100vh;
-        top: 0;
-    }
-
-    h1.copy {
-        font-size: 0.9rem;
-        line-height: 1.2rem;
-        padding: 0.8rem;
-    }
-}
-
-#visual {
-    width: 100vw;
-    height: 100vh;
-}
-
-#main-area {
-    width: 100vw;
-    background-color: rgba(0, 0, 0, 0.40);
-    z-index: 40;
-    display: flex;
-    flex-direction: row;
-    padding: 1.5rem;
-    align-items: center;
-    justify-content: center;
-}
-
-/* レスポンシブ対応：モバイル向け */
-@media screen and (max-width: 768px) {
-    #main-area {
-        flex-direction: column;
-        padding: 1rem;
-    }
-}
-
-@media screen and (max-width: 480px) {
-    #main-area {
-        padding: 0.5rem;
-    }
-}
-
-#article-list {
-    padding: 0.8rem;
-    background-color: rgba(0, 0, 0, 0.85);
-    border: solid 0.5vw;
-    border-radius: 2vw;
-    z-index: 10;
-    max-height: 50vh;
-    overflow-y: scroll;
-    display: inline-block;
-}
-
-#article-list {
-    font-size: 100%;
-    line-height: 120%;
-    width: 60%;
-    max-width: 50rem;
-}
-
-/* レスポンシブ対応：タブレット・モバイル向け */
-@media screen and (max-width: 768px) {
-    #article-list {
-        width: 100%;
-        max-height: 40vh;
-        border-radius: 1rem;
-        border-width: 0.3rem;
-        padding: 0.5rem;
-        margin-bottom: 1rem;
-    }
-}
-
-@media screen and (max-width: 480px) {
-    #article-list {
-        font-size: 85%;
-        padding: 0.4rem;
-        max-height: 35vh;
-    }
-}
-
-#article-list ul {
-    padding-left: 1rem;
+    overflow-x: auto;
+    max-width: 100%;
 }
 
 #app {
+    width: 100%;
     display: flex;
     flex-direction: column;
-    justify-items: center;
+    align-items: center;
+}
+
+/* ==========================================================
+   Hero (メイン画像・タイトル)
+   ========================================================== */
+#visual {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    height: 100svh;
+    min-height: 34rem;
+    overflow: hidden;
+}
+
+#melko {
+    position: absolute;
+    top: 0;
+    left: -4vw;
+    width: min(62vw, 120vh);
+    max-width: none;
+    height: auto;
+    z-index: 0;
+    pointer-events: none;
+}
+
+#title-div {
+    position: absolute;
+    z-index: 10;
+    top: 0;
+    right: 3vw;
+    width: min(50vw, 44rem);
+    height: 100%;
+    padding: 4vh 0;
+    display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
-    max-width: 1400px;
+    gap: clamp(0.5rem, 3vh, 2rem);
 }
 
-#flex-box {
+h1.copy {
+    position: relative;
+    z-index: 2;
+    margin: 0;
+    padding: 0.8em 1.6em;
+    font-size: clamp(0.8rem, 0.65rem + 0.6vw, 1.2rem);
+    font-weight: bold;
+    line-height: 1.6;
+    letter-spacing: 0.05em;
+    text-align: center;
+    background-color: rgba(20, 10, 0, 0.8);
+    border-radius: 4rem;
+}
+
+.title-logo {
+    flex: 0 1 auto;
+    min-height: 0;
+    width: 100%;
     display: flex;
-    flex-direction: row;
+    justify-content: center;
+    /* ロゴ画像は上下に余白(グロー)が大きいので詰める */
+    margin: -6vh 0;
 }
 
-/* レスポンシブ対応：より詳細なメディアクエリ */
-@media screen and (max-width: 768px) {
-    #flex-box {
-        display: flex;
-        flex-direction: column-reverse;
-    }
-
-    #article-list {
-        width: 100%;
-        order: 3;
-    }
+#title {
+    width: 100%;
+    max-height: 52vh;
+    object-fit: contain;
 }
 
-@media screen and (max-width: 480px) {
-    #flex-box {
-        display: flex;
-        flex-direction: column-reverse;
-    }
-
-    #article-list {
-        width: 100%;
-        order: 3;
-    }
-}
-
-#top-message {
-    margin: 0.3vw;
-    padding: 1vw;
-    background-color: rgba(0, 0, 0, 0.85);
-    border: solid 0.5vw;
-    border-radius: 2vw;
-    z-index: 10;
-    max-height: 30rem;
-    overflow-y: scroll;
-}
-
-#menu-block {
-    flex: 1 0 50%;
-    top: 63vw;
-    right: 0vw;
-    margin: 1.5vw;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-evenly;
-    justify-items: baseline;
-    align-items: center;
-    align-content: space-between;
-}
-
-/* レスポンシブ対応：メニューブロック */
-@media screen and (max-width: 768px) {
-    #menu-block {
-        margin: 1rem;
-        flex: 1 0 auto;
-    }
-}
-
-@media screen and (max-width: 480px) {
-    #menu-block {
-        margin: 0.5rem;
-    }
-}
-
-
-a.button-link:link {
-    color: white;
-}
-
-a.button-link:visited {
-    color: white;
-}
-
+/* ==========================================================
+   Buttons
+   ========================================================== */
+.button-link,
+a.button-link:link,
+a.button-link:visited,
+a.button-link:hover,
 a.button-link:active {
-    color: white;
-}
-
-a.button-link:hover {
-    color: white;
-}
-
-.button-link {
-    display: contents;
+    display: block;
+    width: 100%;
+    max-width: 28rem;
     color: white;
     text-decoration: none;
 }
 
+.button {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 100%;
+    min-height: 3.6rem;
+    margin: 0.35rem 0;
+    padding: 0.6rem 1.2rem 0.6rem 4.8rem;
+    font-size: clamp(0.9rem, 0.8rem + 0.35vw, 1.1rem);
+    line-height: 1.35;
+    text-align: center;
+    background-color: rgba(20, 10, 0, 1.00);
+    border: solid 0.4rem;
+    border-radius: 5rem;
+    transition: background-color 0.2s, transform 0.2s;
+}
+
+.button-link:hover .button,
+.button-link:focus-visible .button {
+    background-color: rgba(70, 30, 10, 1.00);
+    transform: translateY(-1px);
+}
+
 .select-icon {
     position: absolute;
-    width: 6rem;
-    left: -2rem;
+    top: 50%;
+    left: -1rem;
+    width: 5rem;
+    transform: translateY(-50%);
 }
 
-.button {
-    width: 110%;
-    font-size: 1.1rem;
-    line-height: 1.2rem;
-    display: flex;
-    background-color: rgba(20, 10, 0, 1.00);
-    border: solid 0.5rem;
-    margin: 0.2rem 0;
-    padding: 1vw 1vw 1vw 5.5rem;
-    border-radius: 5.5rem;
-    z-index: 10;
-    justify-content: center;
-    flex-direction: column;
-    position: relative;
-    text-align: center;
-    max-width: 30rem;
-}
-
-/* レスポンシブ対応：ボタン */
-@media screen and (max-width: 768px) {
-    .button {
-        font-size: 1rem;
-        padding: 0.8rem 0.8rem 0.8rem 4rem;
-        border-radius: 3rem;
-        max-width: 100%;
-    }
-
-    .select-icon {
-        width: 4rem;
-        left: -1rem;
-    }
-}
-
-@media screen and (max-width: 480px) {
-    .button {
-        font-size: 0.9rem;
-        line-height: 1.1rem;
-        padding: 0.6rem 0.6rem 0.6rem 3.5rem;
-        border-radius: 2.5rem;
-        margin: 0.1rem 0;
-    }
-
-    .select-icon {
-        width: 3rem;
-        left: -0.5rem;
-    }
+#title-div .button-link {
+    width: auto;
+    min-width: min(22rem, 90%);
 }
 
 .button-small {
@@ -658,70 +302,145 @@ a.button-link:hover {
     display: inline-block;
 }
 
+/* ==========================================================
+   Main area (記事一覧・メニュー)
+   ========================================================== */
+#main-area {
+    position: relative;
+    z-index: 40;
+    width: 100%;
+    padding: clamp(1rem, 3vw, 2.5rem) clamp(0.75rem, 3vw, 2rem);
+    background-color: rgba(0, 0, 0, 0.45);
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(1rem, 3vw, 2.5rem);
+}
+
+#article-list {
+    flex: 1 1 32rem;
+    max-width: 50rem;
+    max-height: 60vh;
+    overflow-y: auto;
+    padding: 0.8rem;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    background-color: rgba(0, 0, 0, 0.85);
+    border: solid 0.3rem;
+    border-radius: 1.2rem;
+    z-index: 10;
+}
+
+#article-list h3 {
+    margin: 0 0 0.5rem;
+}
+
+#article-list ul {
+    list-style: none;
+    margin: 0;
+    padding: 0 0.3rem;
+}
+
+#article-list li {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+#article-list li:last-child {
+    border-bottom: none;
+}
+
+#article-list li a {
+    display: block;
+    padding: 0.45rem 0.3rem;
+    text-decoration: none;
+    overflow-wrap: anywhere;
+}
+
+#article-list li a:hover {
+    background-color: rgba(255, 255, 255, 0.06);
+    text-decoration: underline;
+}
+
+#flex-box {
+    flex: 0 1 26rem;
+    display: flex;
+    justify-content: center;
+}
+
+#menu-block {
+    width: 100%;
+    padding-left: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* ==========================================================
+   Popup
+   ========================================================== */
+#popup-bg {
+    position: fixed;
+    inset: 0;
+    z-index: 20;
+    display: none;
+    background: rgba(0, 0, 0, 0.8);
+}
 
 .popup-contents {
-    color: #ffffff;
-    background: #000000;
-    left: 5%;
-    padding: 2rem;
-    position: absolute;
-    width: 90%;
-    display: none;
-    border: solid 0.2rem black;
+    position: fixed;
     z-index: 30;
-    background-color: rgba(0, 0, 0, 0.85);
-    border: solid 0.4rem;
-    border-radius: 1.5rem;
-    margin: 1rem 0;
-    overflow-y: scroll;
-    height: 90vh;
-    top: 5vh;
+    top: 4vh;
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(92vw, 56rem);
+    height: 92vh;
+    display: none;
+    padding: 1rem clamp(1rem, 3vw, 2.5rem) 2rem;
+    color: #ffffff;
+    background-color: rgba(0, 0, 0, 0.9);
+    border: solid 0.3rem;
+    border-radius: 1.2rem;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    cursor: pointer;
 }
 
-/* レスポンシブ対応：ポップアップ */
-@media screen and (max-width: 768px) {
-    .popup-contents {
-        left: 2.5%;
-        width: 95%;
-        padding: 1.5rem;
-        top: 2.5vh;
-        height: 95vh;
-        border-radius: 1rem;
-    }
+.popup-close {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    float: right;
+    width: 2.5rem;
+    height: 2.5rem;
+    margin: 0 -0.5rem 0.5rem 0.5rem;
+    border: solid 0.15rem #fff;
+    border-radius: 50%;
+    background: rgba(20, 10, 0, 0.95);
+    color: #fff;
+    font-size: 1.5rem;
+    line-height: 2.2rem;
+    text-align: center;
+    user-select: none;
 }
 
-@media screen and (max-width: 480px) {
-    .popup-contents {
-        left: 1%;
-        width: 98%;
-        padding: 1rem;
-        top: 1vh;
-        height: 98vh;
-        border-radius: 0.5rem;
-        border-width: 0.2rem;
-    }
+.popup-contents h2 {
+    clear: none;
 }
 
 .melkor-symbol {
-    width: 10rem;
-}
-
-#popup-bg {
-    background: rgba(0, 0, 0, 0.8);
-    height: 100%;
-    position: fixed;
-    width: 100%;
-    display: none;
-    z-index: 20;
+    width: clamp(6rem, 20vw, 10rem);
 }
 
 #malkor-article {
     display: flex;
-    align-content: center;
     flex-direction: column;
-    justify-content: center;
-    justify-items: center;
     align-items: center;
+}
+
+#ahona {
+    width: 100%;
 }
 
 .popup {
@@ -732,6 +451,172 @@ a.button-link:hover {
     width: 100%;
 }
 
+/* Bootstrap modal */
+.modal-content {
+    background-color: #1a1a1a;
+    color: #ffffff;
+}
+
+.modal-header {
+    border-bottom-color: #444;
+}
+
+.modal-footer {
+    border-top-color: #444;
+}
+
 .modal-body {
     background-color: rgba(0, 0, 0, 0.8);
+}
+
+/* ==========================================================
+   Responsive
+   ========================================================== */
+
+/* タブレット */
+@media screen and (max-width: 1024px) {
+    #melko {
+        width: min(72vw, 110vh);
+        left: -8vw;
+    }
+
+    #title-div {
+        width: 58vw;
+        right: 2vw;
+    }
+}
+
+/* 縦長画面（スマホ・タブレット縦） */
+@media screen and (max-width: 768px) and (orientation: portrait),
+screen and (max-width: 600px) {
+    #melko {
+        width: 100%;
+        left: 0;
+        top: 0;
+    }
+
+    #title-div {
+        left: 0;
+        right: 0;
+        width: 100%;
+        padding: 30vh 4vw 6vh;
+        justify-content: center;
+    }
+
+    .title-logo {
+        margin: -4vh 0;
+    }
+
+    #title {
+        width: 96%;
+        max-height: 40vh;
+    }
+
+    #main-area {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    #flex-box {
+        order: -1;
+        flex: 0 0 auto;
+    }
+
+    #menu-block {
+        padding-left: 0.8rem;
+    }
+
+    #article-list {
+        flex: 0 0 auto;
+        max-width: none;
+        max-height: none;
+        overflow-y: visible;
+    }
+}
+
+/* スマホ */
+@media screen and (max-width: 480px) {
+    h1.copy {
+        padding: 0.6em 1.2em;
+    }
+
+    .button {
+        min-height: 3.2rem;
+        padding: 0.5rem 0.8rem 0.5rem 3.8rem;
+        border-width: 0.3rem;
+    }
+
+    .select-icon {
+        width: 3.8rem;
+        left: -0.6rem;
+    }
+
+    #article-list {
+        padding: 0.5rem;
+        font-size: 0.9rem;
+        border-radius: 0.8rem;
+    }
+
+    .popup-contents {
+        top: 1.5vh;
+        width: 96vw;
+        height: 97vh;
+        border-width: 0.2rem;
+        border-radius: 0.7rem;
+        padding: 0.6rem 0.8rem 1.5rem;
+    }
+
+    .popup-contents h2 {
+        margin: 0.3rem 0;
+        border-width: 0.4rem;
+    }
+
+    .popup-contents p {
+        padding: 0.2rem 0;
+    }
+}
+
+/* 横向きスマホ（高さが低い画面） */
+@media screen and (orientation: landscape) and (max-height: 500px) {
+    #visual {
+        min-height: 20rem;
+    }
+
+    #melko {
+        width: 52vw;
+        left: -4vw;
+    }
+
+    #title-div {
+        width: 56vw;
+        right: 2vw;
+        padding: 3vh 0;
+        gap: 0.4rem;
+    }
+
+    .title-logo {
+        margin: -5vh 0;
+    }
+
+    #title {
+        max-height: 55vh;
+    }
+
+    h1.copy {
+        font-size: 0.75rem;
+    }
+
+    .button {
+        min-height: 2.8rem;
+    }
+
+    #article-list {
+        max-height: none;
+        overflow-y: visible;
+    }
+
+    .popup-contents {
+        top: 2vh;
+        height: 96vh;
+    }
 }

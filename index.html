@@ -19,18 +19,22 @@
   <link rel="icon" type="image/png" href="bakabakaband256.png" />
 
   <title>馬鹿馬鹿蛮怒</title>
-</head>
 <script>
+  function clearPopupHash() {
+    if (location.hash && history.replaceState) {
+      history.replaceState(null, "", location.pathname + location.search);
+    }
+  }
   $(function () {
     $("#malkor-message-open").on("click", function () {
       $("#popup-bg").fadeIn();
       $("#malkor-message").fadeIn();
-      scrollTo(0, 0);
       return false;
     });
     $("#malkor-message").on("click", function () {
       $("#popup-bg").fadeOut();
       $("#malkor-message").fadeOut();
+      clearPopupHash();
       return true;
     });
     $("#malkor-message-close2").on("click", function () {
@@ -41,7 +45,6 @@
     $("#damnya-open").on("click", function () {
       $("#popup-bg").fadeIn();
       $("#damnya").fadeIn();
-      scrollTo(0, 0);
       return false;
     });
     $("#damnya").on("click", function () {
@@ -52,7 +55,6 @@
     $("#194powers-open").on("click", function () {
       $("#popup-bg").fadeIn();
       $("#194powers").fadeIn();
-      scrollTo(0, 0);
       return false;
     });
     $("#194powers").on("click", function () {
@@ -63,12 +65,12 @@
     $("#article-open").on("click", function () {
       $("#popup-bg").fadeIn();
       $("#article").fadeIn();
-      scrollTo(0, 0);
       return false;
     });
     $("#article").on("click", function () {
       $("#popup-bg").fadeOut();
       $("#article").fadeOut();
+      clearPopupHash();
       return true;
     });
   });
@@ -84,6 +86,7 @@
   <div id="app">
 
     <div class="popup-contents" id="malkor-message">
+      <div class="popup-close" aria-label="閉じる" title="閉じる">&times;</div>
       <article id="malkor-article">
         <img class="melkor-symbol" src="Melkor-Symbol.png" />
         <div v-html="updateMelkorLetter"></div>
@@ -91,14 +94,17 @@
     </div>
 
     <div class="popup-contents" id="damnya">
+      <div class="popup-close" aria-label="閉じる" title="閉じる">&times;</div>
       <img id="ahona" src="damnya.jpg" />
     </div>
 
     <div class="popup-contents" id="194powers">
+      <div class="popup-close" aria-label="閉じる" title="閉じる">&times;</div>
       <img id="ahona" src="194powers.jpg" />
     </div>
 
     <div class="popup-contents" id="article">
+      <div class="popup-close" aria-label="閉じる" title="閉じる">&times;</div>
       <div v-html="articleLetter"></div>
     </div>
 
@@ -109,8 +115,8 @@
           この門をくぐる者は一切の良識を捨てよ<br />
           Abandon all decency, ye who dare enter here.<br />
         </h1>
-        <div style="position: absolute;">
-          <img id="title" src="BakabakabandTitle.png" />
+        <div class="title-logo">
+          <img id="title" alt="馬鹿馬鹿蛮怒" src="BakabakabandTitle.png" />
         </div>
         <div>
           <a class="button-link"
@@ -202,15 +208,13 @@
         if (this.currentAnchor == "Melkor") {
           this.updateMelkorLetter;
           $("#popup-bg").fadeIn();
-          $("#malkor-message").fadeIn();
-          scrollTo(0, 0);
+          $("#malkor-message").scrollTop(0).fadeIn();
         }
         var code = this.currentAnchor.split('-');
         if (code[0] == "article") {
           this.updateArticle(code[1]);
           $("#popup-bg").fadeIn();
-          $("#article").fadeIn();
-          scrollTo(0, 0);
+          $("#article").scrollTop(0).fadeIn();
         }
       },
       updateArticle(article) {
