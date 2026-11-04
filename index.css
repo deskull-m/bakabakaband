@@ -69,7 +69,7 @@ body {
     font-weight: normal;
     line-height: 1.7;
     background-color: transparent;
-    font-family: "メイリオ", "Meiryo", "Hiragino Kaku Gothic ProN", "ヒラギノ角ゴ Pro W3", Osaka, "Noto Sans JP", Arial, Helvetica, sans-serif;
+    font-family: "Noto Serif JP", "Yu Mincho", "YuMincho", "游明朝", "Hiragino Mincho ProN", "ヒラギノ明朝 ProN", "HG明朝E", "MS PMincho", "ＭＳ Ｐ明朝", serif;
     text-rendering: optimizeLegibility;
     overflow-x: hidden;
     -webkit-text-size-adjust: 100%;
