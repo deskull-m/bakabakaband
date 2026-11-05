@@ -1,4 +1,5 @@
 #include "monster-floor/party-generator.h"
+#include "alliance/alliance.h"
 #include "dungeon/dungeon-flag-types.h"
 #include "game-option/cheat-types.h"
 #include "monster-floor/monster-generator.h"
@@ -14,6 +15,7 @@
 #include "view/display-messages.h"
 #include "wizard/wizard-messages.h"
 #include <algorithm>
+#include <string>
 #include <vector>
 
 namespace {
@@ -38,17 +40,46 @@ constexpr auto PARTY_NO_SELECTION_WEIGHT = 100;
 constexpr auto NO_PARTY_ID = -1;
 
 /*!
+ * @brief パーティのメンバー全員を、パーティが属するアライアンスへ同化させる
+ * @param floor フロアへの参照
+ * @param party パーティ定義
+ * @param member_m_idx_list 配置に成功したメンバーの m_idx
+ * @details パーティが無所属 (`AllianceType::NONE`) なら何もしない。所属がある場合は
+ *          **種族定義の `alliance` を上書きして**メンバー個体のアライアンスを揃える。
+ *          `CreatureEntity::is_hostile_to_melee()` は個体のアライアンスが異なるだけで
+ *          敵対と判定するため、揃えておかないと混成パーティが内輪で殺し合う。
+ *          なお生成時の友好/敵対判定 (`one_monster_placer.cpp` の `isFriendly()`) は
+ *          各メンバーの配置中、つまり**本関数より前**に種族定義のアライアンスで
+ *          行われる。そのため「種族が持たないアライアンス」をパーティへ指定すると
+ *          態度と所属が食い違いうる。実データでは**メンバー全員が既にそのアライアンスを
+ *          持つパーティにのみ指定する**方針で、この食い違いを避けている。
+ */
+void unify_party_alliance(FloorType &floor, const CreaturePartyDefinition &party, const std::vector<MONSTER_IDX> &member_m_idx_list)
+{
+    if (!party.belongs_to_alliance()) {
+        return;
+    }
+
+    for (const auto m_idx : member_m_idx_list) {
+        floor.get_monster(m_idx).set_alliance_idx(party.alliance_idx);
+    }
+}
+
+/*!
  * @brief 生成したメンバーにパーティ所属とリーダーを割り当てる
  * @param floor フロアへの参照
- * @param party_id パーティ定義ID
+ * @param party パーティ定義
  * @param member_m_idx_list 配置に成功したメンバーの m_idx
  * @return リーダーに選ばれた個体の m_idx
  * @details リーダーは**種族レベルが最も高い個体**とする (同値なら先に配置された方)。
  *          リーダー自身にも自分の m_idx を持たせることで、`party_leader_m_idx` が
  *          そのままグループ識別子になる (m_idx はフロア内で一意なので別途の
  *          インスタンス番号を持たなくても同一パーティの複数実体を区別できる)。
+ *          併せてパーティがアライアンスに属している場合は全メンバーをそれへ同化させ、
+ *          一団が 1 つの勢力として振舞うようにする (詳細は
+ *          `unify_party_alliance()` を参照)。
  */
-MONSTER_IDX assign_party_membership(FloorType &floor, int party_id, const std::vector<MONSTER_IDX> &member_m_idx_list)
+MONSTER_IDX assign_party_membership(FloorType &floor, const CreaturePartyDefinition &party, const std::vector<MONSTER_IDX> &member_m_idx_list)
 {
     const auto leader_it = std::max_element(member_m_idx_list.begin(), member_m_idx_list.end(),
         [&floor](MONSTER_IDX a, MONSTER_IDX b) {
@@ -57,8 +88,10 @@ MONSTER_IDX assign_party_membership(FloorType &floor, int party_id, const std::v
     const auto leader_m_idx = *leader_it;
 
     for (const auto m_idx : member_m_idx_list) {
-        floor.get_monster(m_idx).join_party(static_cast<short>(party_id), leader_m_idx);
+        floor.get_monster(m_idx).join_party(static_cast<short>(party.idx), leader_m_idx);
     }
+
+    unify_party_alliance(floor, party, member_m_idx_list);
 
     return leader_m_idx;
 }
@@ -156,13 +189,16 @@ bool alloc_creature_party(CreatureEntity &creature, const Pos2D &pos_center)
         return false;
     }
 
-    const auto leader_m_idx = assign_party_membership(floor, selected_party_id, member_m_idx_list);
+    const auto leader_m_idx = assign_party_membership(floor, party, member_m_idx_list);
 
+    const auto alliance_name = party.belongs_to_alliance()
+                                   ? alliance_list.at(party.alliance_idx)->name
+                                   : std::string(_("無所属", "none"));
     msg_print_wizard(creature, CHEAT_MONSTER,
-        _("パーティ「{}」を生成しました ({}体, リーダー: {} @ {},{})",
-            "Generated party \"{}\" ({} creatures, leader: {} @ {},{})"),
+        _("パーティ「{}」を生成しました ({}体, リーダー: {} @ {},{}, アライアンス: {})",
+            "Generated party \"{}\" ({} creatures, leader: {} @ {},{}, alliance: {})"),
         party.name.string(), member_m_idx_list.size(),
         floor.get_monster(leader_m_idx).get_monrace().name.string(),
-        floor.get_monster(leader_m_idx).y, floor.get_monster(leader_m_idx).x);
+        floor.get_monster(leader_m_idx).y, floor.get_monster(leader_m_idx).x, alliance_name);
     return true;
 }
