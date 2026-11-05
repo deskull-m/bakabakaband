@@ -46,8 +46,24 @@ constexpr std::string_view VARIANT_NAME("Bakabaka");
  * 58: 最後にターゲットしたもの (Target の last_target) とペット・乗馬の攻撃対象
  *     (pet_t_m_idx / riding_t_m_idx) を保存 (hengband#6069 相当)。wr_player() 末尾へ
  *     追記し、rd_extra() は older_than(58) なら未ターゲット状態で埋める。
+ * 59: モンスターのパーティ所属 (party_id / party_leader_m_idx) を保存。
+ *     旧バージョン (<59) のモンスターは非所属で読み込む
+ *     (rd_monster_v50 に older_than(59) ガード)。
+ * 60: 共通シリアライザの時限効果ダンプへ件数 (u16) を前置。
+ *     **v59 以前は件数を持たず、読込側が当時の `CreatureTimedEffect::MAX` では
+ *     なく「現在の」MAX でループしていたため、enum に値を追加すると
+ *     セーブデータバージョンを上げても旧セーブが読めなくなる構造だった。**
+ *     v53〜v59 は凍結定数 (TIMED_EFFECT_COUNT_UNTIL_V59 = 56) で読み、
+ *     v60 以降は件数を自己記述にしたので、以降 CreatureTimedEffect へ値を
+ *     追加してもバージョン更新は不要。
+ *
+ * **採番の衝突に注意**: 作業ブランチごとに独立して番号を進めると、同じ番号で
+ * 別フォーマットのセーブデータが 2 種類生まれ、どちらのビルドでも読めなくなる
+ * (実際に develop の 58 = ターゲット保存 と、パーティ所属の 58 が衝突した)。
+ * **バージョンを上げる前に必ず develop の最新を取り込み、この一覧の末尾に
+ * 追記すること。**
  */
-constexpr uint32_t SAVEFILE_VERSION = 58;
+constexpr uint32_t SAVEFILE_VERSION = 60;
 
 /*!
  * @brief バージョンが開発版が安定版かを返す(廃止予定)

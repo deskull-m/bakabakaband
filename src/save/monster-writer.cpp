@@ -35,7 +35,7 @@ void MonsterWriter::write_to_savedata() const
 
     wr_s16b(this->monster.get_parent_m_idx());
 
-    // パーティ所属 (セーブデータバージョン 58 以降)
+    // パーティ所属 (セーブデータバージョン 59 以降)
     wr_s16b(this->monster.get_party_id());
     wr_s16b(this->monster.get_party_leader_m_idx());
 
