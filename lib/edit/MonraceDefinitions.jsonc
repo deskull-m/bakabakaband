@@ -46328,6 +46328,8 @@
       "sex": "MALE",
       "alliance": "VALINOR",
       "world_collapse_plus": "-15.22",
+      "player_class": "MAGE",
+      "realm_abilities": "CRUSADE",
       "flags": [
         "UNIQUE",
         "SPEAK_ALL",
@@ -46353,6 +46355,7 @@
         "IM_POIS",
         "NO_CONF",
         "NO_SLEEP",
+        "MAGE",
       ],
       "skill": {
         "list": [
@@ -53823,6 +53826,9 @@
       },
       "sex": "MALE",
       "alliance": "MELDOR",
+      "player_class": "MAGE",
+      "realm_abilities": "SORCERY",
+      "realm_abilities2": "DEATH",
       "flags": [
         "UNIQUE",
         "SPEAK_ALL",
@@ -53851,6 +53857,7 @@
         "NO_FEAR",
         "RES_TELE",
         "POWERFUL",
+        "MAGE",
       ],
       "skill": {
         "list": [
@@ -59346,6 +59353,7 @@
       },
       "sex": "MALE",
       "alliance": "GE-ORLIC",
+      "player_class": "MINDCRAFTER",
       "flags": [
         "UNIQUE",
         "DROP_CORPSE",
@@ -59371,6 +59379,7 @@
         "RES_NEXU",
         "POWERFUL",
         "CAN_FLY",
+        "MINDCRAFTER",
       ],
       "skill": {
         "list": [
@@ -62299,6 +62308,7 @@
       },
       "sex": "MALE",
       "alliance": "NUMENOR",
+      "player_class": "WARRIOR",
       "flags": [
         "HUMAN",
         "FORCE_MAXHP",
@@ -62317,6 +62327,7 @@
         "OPEN_DOOR",
         "BASH_DOOR",
         "MOVE_BODY",
+        "WARRIOR",
       ],
     },
     {
@@ -64812,6 +64823,7 @@
       },
       "sex": "MALE",
       "alliance": "KENOHGUN",
+      "player_class": "MONK",
       "flags": [
         "UNIQUE",
         "SPEAK_ALL",
@@ -64839,6 +64851,7 @@
         "IM_ELEC",
         "IM_FIRE",
         "REGENERATE",
+        "KARATEKA",
       ],
       "skill": {
         "list": ["BR_FORC", "TELE_TO"],
@@ -77517,6 +77530,9 @@
         "en": "This man can completely absorb the soul of a dragon without giving it the chance to revive in Mordor or Oblivion.  Will there ever be a dragon who does not hang its head to him?",
       },
       "sex": "MALE",
+      "player_class": "RANGER",
+      "realm_abilities": "NATURE",
+      "realm_abilities2": "TRUMP",
       "flags": [
         "UNIQUE",
         "FORCE_MAXHP",
@@ -77538,6 +77554,7 @@
         "DROP_3D2",
         "DROP_4D2",
         "DROP_GREAT",
+        "RANGER",
       ],
       "skill": {
         "list": [
@@ -115566,6 +115583,8 @@
       },
       "sex": "MALE",
       "alliance": "FEANOR-NOLDOR",
+      "player_class": "PALADIN",
+      "realm_abilities": "CRUSADE",
       "flags": [
         "UNIQUE",
         "DROP_CORPSE",
@@ -115591,6 +115610,7 @@
         "RES_TIME",
         "POWERFUL",
         "CAN_FLY",
+        "PALADIN",
       ],
       "skill": {
         "list": [
@@ -116561,6 +116581,8 @@
       },
       "sex": "MALE",
       "alliance": "FINGOLFIN-NOLDOR",
+      "player_class": "PALADIN",
+      "realm_abilities": "CRUSADE",
       "flags": [
         "UNIQUE",
         "DROP_CORPSE",
@@ -116587,6 +116609,7 @@
         "RES_TIME",
         "POWERFUL",
         "CAN_FLY",
+        "PALADIN",
       ],
       "skill": {
         "list": [
@@ -140182,6 +140205,7 @@
       },
       "sex": "MALE",
       "alliance": "ANOR-LONDO",
+      "player_class": "WARRIOR",
       "flags": [
         "UNIQUE",
         "HAS_LITE_2",
@@ -140209,6 +140233,7 @@
         "NO_CONF",
         "NO_SLEEP",
         "NO_FEAR",
+        "WARRIOR",
       ],
       "skill": {
         "list": [

@@ -1827,6 +1827,86 @@ true は**人型系 3 種と `DRACONIC` のみ**で、武装度 (`armament_level
     **後者が本変更前の挙動**にあたり、職業を持たない Lv36 の石像が全身 7 部位を
     着込んでいたことと、`armament_level` の明示指定が逃げ道として機能することを
     同時に確認できる。
+#### 高位ユニークへの職業指定 (9 体)
+
+職業の軸を足したことで裸になった高位ユニークのうち、**メンテナが職業を名指しした
+9 体**に職業フラグ・`player_class`・`realm_abilities` を付与した。これにより武装度
+充填の対象へ戻り、同時に「どの職業の個体か」がデータとして残る。
+
+| id | 種族 | Lv | 指定 | `flags` 追加 | `player_class` | `realm_abilities` | `realm_abilities2` |
+|---|---|---|---|---|---|---|---|
+| 1811 | 憤怒の上級王『フェアノール』 | 85 | 破邪パラディン | `PALADIN` | `PALADIN` | `CRUSADE` | — |
+| 1825 | 聡明の上級王『フィンゴルフィン』 | 82 | 破邪パラディン | `PALADIN` | `PALADIN` | `CRUSADE` | — |
+| 2203 | 太陽の光の王『グウィン』 | 83 | 戦士 | `WARRIOR` | `WARRIOR` | — | — |
+| 858 | メルドールの神王『アンナタール』 | 98 | 仙術暗黒メイジ | `MAGE` | `MAGE` | `SORCERY` | `DEATH` |
+| 1018 | 世紀末覇者『ラオウ』 | 69 | 修行僧 | `KARATEKA` | `MONK` | — | — |
+| 772 | 灰色の『ガンダルフ』 | 60 | 破邪入メイジ | `MAGE` | `MAGE` | `CRUSADE` | — |
+| 934 | 『ルパート将軍』 | 71 | 超能力者 | `MINDCRAFTER` | `MINDCRAFTER` | — | — |
+| 1212 | 竜殺しの始祖『ミラーク』 | 73 | トランプレンジャー | `RANGER` | `RANGER` | `NATURE` | `TRUMP` |
+| 978 | 黄金王『アル=ファラゾン』 | 64 | 戦士 | `WARRIOR` | `WARRIOR` | — | — |
+
+**3 つのキーはそれぞれ別の軸を担う**。混同しないこと。
+
+| キー | 効果 |
+|---|---|
+| `flags` の職業フラグ | `has_armed_profession()` を真にして**武装度充填を復活**させる。加えて `WARRIOR` は役割装備の近接武器、`MAGE` は軽装 (ローブ)、`RANGER` は弓を 1 点ずつ得る |
+| `player_class` | C1 の `pclass` 付与。**現状は効果未反映**で、`player_birth_as_monster` でその種族を選んだときのプレイヤー職業にだけ効く。将来 C トラックで職業特典を反映する際の土台 |
+| `realm_abilities` / `..2` | C6 の realm→`MonsterAbilityType` 写像。**本 9 体は全員 `skill.probability` を持つ (freq_spell > 0) ので実際に詠唱能力が増える** |
+
+- **職業の割り当ては `PlayerRealm` の職業別領域テーブルに沿わせてある**
+  (`src/player/player-realm.cpp` の `realm1_choices` / `realm2_choices`)。
+  - `PALADIN` の第1領域は `{CRUSADE, DEATH}` なので**破邪パラディンは正規の構成**。
+    パラディンに第2領域は無いため `realm_abilities2` は書かない。
+  - `MAGE` は第1・第2領域とも 10 領域から自由なので `SORCERY` + `DEATH`
+    (仙術暗黒) も `CRUSADE` 単体 (破邪入り) も正規。
+  - **`RANGER` の第1領域は `NATURE` 固定**で、`TRUMP` は第2領域にしか置けない。
+    よって「トランプレンジャー」は `NATURE` + `TRUMP` と書く
+    (レンジャーは第2領域で呼び分けるのが慣例)。
+  - `WARRIOR` / `MONK` / `MINDCRAFTER` は領域テーブルに項目が無い (領域魔法を
+    使わない職業) ので `realm_abilities` を書かない。
+- **`realm_abilities` による詠唱能力の増分 (実データ)**。詠唱**頻度**
+  (`skill.probability`) は変えていないので「撃つ回数」は不変で、**撃つ中身の幅が
+  広がる**変更になる。
+
+  | 種族 | 既存能力数 | 新規 | 新規の内訳 |
+  |---|---|---|---|
+  | フェアノール | 12 | +4 | BO_LITE / SCARE / CAUSE_2 / CAUSE_4 |
+  | フィンゴルフィン | 12 | +4 | BO_LITE / SCARE / CAUSE_2 / CAUSE_4 |
+  | アンナタール | 24 | +11 | SLOW / BLINK / HOLD / TELE_TO / TELE_AWAY / CAUSE_1〜3 / BO_NETH / DRAIN_MANA / S_UNDEAD |
+  | ガンダルフ | 20 | +3 | BO_LITE / BA_LITE / CAUSE_2 |
+  | ミラーク | 9 | +9 | BO_FIRE / BO_COLD / BO_ELEC / BA_POIS / BLINK / TELE_AWAY / S_MONSTER / S_MONSTERS / S_HOUND |
+
+  - 9 体とも実効レベル (`monrace.level/2`) が 30〜49 で
+    `REALM_ADVANCED_ABILITY_MIN_LEVEL` (20) 以上なので、**基本能力と高位能力の
+    両方**が入る。
+  - **低位能力の混入で強化とは言い切れない**。アンナタール (Lv98) が `CAUSE_1` や
+    `BLINK` を覚えると、`BA_MANA` 等の主力を撃つ代わりにそれらを選ぶ手番が生じる
+    ため、実質的には**弱化しうる**。詠唱の幅を広げたくない場合は当該
+    `realm_abilities` を外せばよい (職業フラグと `player_class` だけ残せば
+    武装度充填と職業記録は保たれる)。
+- **既知のフレーバー上の粗 — 修行僧が武器を構える**。`KARATEKA` は役割装備を持た
+  ないが、武装度充填の対象 7 部位に**利き手が含まれる**ため、ラオウは価値基準で
+  選ばれた近接武器を持つ。`CreatureEntity::select_melee_weapon_slot()` は
+  `PUNCH` でも手の武器を使うので、**素手 3 連撃すべてに武器ダイスが乗る**。
+  素手で戦わせたい場合の選択肢は 2 つ:
+  1. ラオウ個体に `armament_level` を低めに明示指定して予算を絞る (他の 8 体に
+     影響しない)。
+  2. `NINJA` の `get_ninja_armament_slot_entries()` と同じ要領で**利き手・逆手を
+     除いた修行僧用スロット表**を足す (職業忍者の盾・重鎧制限と同じ論拠:
+     プレイヤーの `MONK` は武器を持つと martial-arts 打撃を失う)。ただし
+     **`KARATEKA` を持つ 26 体すべてから武器が消える**ため、独立したバランス判断が
+     必要。
+- **スキーマ変更は不要**。`player_class` / `realm_abilities` / `realm_abilities2` は
+  C1 / C6 で既に `schema/MonraceDefinitions.schema.json` に登録済で、本件が
+  **実データでの初めての使用例**になる。
+- **実測 (ヘッドレス)**: 新データでゲームが正常起動し、リーダーが新キー 3 種と
+  職業フラグを受け付けることを確認。さらにラオウ (1018、召喚能力も護衛も無いので
+  他個体の装備が混ざらない) を召喚すると
+  **「世紀末覇者『ラオウ』は三節棍で攻撃してきた。」**が出て、職業フラグによる
+  武装の復活を確認した。なお 三節棍 (3d3) は中国武術の得物なので、この回は
+  価値基準の抽選がたまたま修行僧らしい品を引いている (**毎回そうなる保証は無い**
+  のが上記の粗)。
+
 #### 役割装備の初期武器と和風武器 (SAMURAI)
 
 職業フラグ (`kind_flags`) を持つモンスターには、武装度充填より**先**に
