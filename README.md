@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="image/BakabakabandTitle.png" alt="馬鹿馬鹿蛮怒" width="480">
+</p>
+
 # 「馬鹿馬鹿蛮怒」とは
 
 [→English summary](README_en.md)
