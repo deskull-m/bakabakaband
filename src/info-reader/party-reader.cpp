@@ -2,6 +2,7 @@
 #include "info-reader/info-reader-util.h"
 #include "info-reader/json-reader-util.h"
 #include "info-reader/parse-error-types.h"
+#include "locale/character-encoding.h"
 #include "locale/localized-string.h"
 #include "system/creature-party/creature-party-definition.h"
 #include "system/creature-party/creature-party-list.h"
@@ -27,14 +28,25 @@ static ParseErrorType set_party_name(nlohmann::json &name_data, CreaturePartyDef
         return ParseErrorType::GENERIC;
     }
 
-    std::string ja_name = name_data["ja"].get<std::string>();
-    std::string en_name = ja_name; // デフォルトは日本語名と同じ
+    const auto ja_name = name_data["ja"].get<std::string>();
+    auto en_name = ja_name; // デフォルトは日本語名と同じ
 
     if (name_data.contains("en") && name_data["en"].is_string()) {
         en_name = name_data["en"].get<std::string>();
     }
 
-    party.name = LocalizedString(ja_name, en_name);
+    // JSON は UTF-8 だが日本語版は内部エンコーディング (EUC-JP) で保持する。
+    // 変換を忘れると表示時に文字化けする (RaceReader::set_mon_name() と同じ扱い)。
+#ifdef JP
+    const auto ja_name_sys = utf8_to_sys(ja_name);
+    if (!ja_name_sys) {
+        return ParseErrorType::INVALID_VALUE;
+    }
+
+    party.name = LocalizedString(*ja_name_sys, en_name);
+#else
+    party.name = LocalizedString("", en_name);
+#endif
 
     return ParseErrorType::NONE;
 }
