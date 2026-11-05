@@ -14,6 +14,7 @@
 #include "view/display-messages.h"
 #include "wizard/wizard-messages.h"
 #include <algorithm>
+#include <vector>
 
 namespace {
 /*!
@@ -35,6 +36,32 @@ constexpr auto PARTY_NO_SELECTION_WEIGHT = 100;
 
 //! 「パーティを出さない」仮想候補の ID。パーティ ID は 1 以上 (schema 準拠) なので衝突しない
 constexpr auto NO_PARTY_ID = -1;
+
+/*!
+ * @brief 生成したメンバーにパーティ所属とリーダーを割り当てる
+ * @param floor フロアへの参照
+ * @param party_id パーティ定義ID
+ * @param member_m_idx_list 配置に成功したメンバーの m_idx
+ * @return リーダーに選ばれた個体の m_idx
+ * @details リーダーは**種族レベルが最も高い個体**とする (同値なら先に配置された方)。
+ *          リーダー自身にも自分の m_idx を持たせることで、`party_leader_m_idx` が
+ *          そのままグループ識別子になる (m_idx はフロア内で一意なので別途の
+ *          インスタンス番号を持たなくても同一パーティの複数実体を区別できる)。
+ */
+MONSTER_IDX assign_party_membership(FloorType &floor, int party_id, const std::vector<MONSTER_IDX> &member_m_idx_list)
+{
+    const auto leader_it = std::max_element(member_m_idx_list.begin(), member_m_idx_list.end(),
+        [&floor](MONSTER_IDX a, MONSTER_IDX b) {
+            return floor.get_monster(a).get_monrace().level < floor.get_monster(b).get_monrace().level;
+        });
+    const auto leader_m_idx = *leader_it;
+
+    for (const auto m_idx : member_m_idx_list) {
+        floor.get_monster(m_idx).join_party(static_cast<short>(party_id), leader_m_idx);
+    }
+
+    return leader_m_idx;
+}
 }
 
 /*!
@@ -89,7 +116,7 @@ bool alloc_creature_party(CreatureEntity &creature, const Pos2D &pos_center)
     const auto &party = party_list.get_party(selected_party_id);
 
     // パーティメンバーを生成
-    int generated_count = 0;
+    std::vector<MONSTER_IDX> member_m_idx_list;
     const auto &monrace_list = MonraceList::get_instance();
 
     for (const auto &member : party.members) {
@@ -119,18 +146,23 @@ bool alloc_creature_party(CreatureEntity &creature, const Pos2D &pos_center)
             const auto m_idx = place_specific_monster(creature, pos_scatter->y, pos_scatter->x,
                 member.monrace_id, PM_ALLOW_SLEEP);
             if (m_idx) {
-                generated_count++;
+                member_m_idx_list.push_back(*m_idx);
             }
         }
     }
 
     // 1体も生成できなかった場合は失敗
-    if (generated_count == 0) {
+    if (member_m_idx_list.empty()) {
         return false;
     }
 
+    const auto leader_m_idx = assign_party_membership(floor, selected_party_id, member_m_idx_list);
+
     msg_print_wizard(creature, CHEAT_MONSTER,
-        _("パーティ「{}」を生成しました ({}体)", "Generated party \"{}\" ({} creatures)"),
-        party.name.string(), generated_count);
+        _("パーティ「{}」を生成しました ({}体, リーダー: {} @ {},{})",
+            "Generated party \"{}\" ({} creatures, leader: {} @ {},{})"),
+        party.name.string(), member_m_idx_list.size(),
+        floor.get_monster(leader_m_idx).get_monrace().name.string(),
+        floor.get_monster(leader_m_idx).y, floor.get_monster(leader_m_idx).x);
     return true;
 }

@@ -27,6 +27,7 @@
 #include "monster/monster-describer.h"
 #include "monster/monster-description-types.h"
 #include "monster/monster-info.h"
+#include "monster/monster-party.h"
 #include "monster/monster-status-setter.h"
 #include "monster/monster-status.h"
 #include "monster/monster-update.h"
@@ -137,7 +138,14 @@ bool MonsterDamageProcessor::genocide_patron()
     }
 
     this->set_redraw();
-    (void)set_monster_csleep(*creature.get_floor(), this->m_idx, 0);
+
+    // 集団AI: 被弾で目を覚ました個体は同じパーティの仲間を起こす。
+    // set_monster_csleep() が true を返すのは睡眠→覚醒の遷移時だけなので、
+    // 既に起きている個体への攻撃ではパーティ走査は走らない。
+    if (set_monster_csleep(*creature.get_floor(), this->m_idx, 0) && (this->m_idx > 0)) {
+        alert_party_members(this->creature, this->m_idx);
+    }
+
     set_superstealth(this->creature, false);
 
     return this->m_idx == 0;

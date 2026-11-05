@@ -3,6 +3,7 @@
 #include "floor/floor-object.h"
 #include "grid/grid.h"
 #include "monster-race/race-brightness-mask.h"
+#include "monster/monster-party.h"
 #include "monster/monster-status-setter.h"
 #include "system/creature-entity.h"
 #include "system/deferred-update-requests.h"
@@ -85,6 +86,13 @@ void delete_monster_idx(CreatureEntity &creature, short m_idx)
         if (child_monster.is_valid() && child_monster.get_parent_m_idx() == m_idx) {
             child_monster.set_parent_m_idx(child_m_idx);
         }
+    }
+
+    // パーティのリーダーが消滅する場合は残ったメンバーへリーダーを引き継がせる。
+    // 放置すると空いた添字を新しいモンスターが再利用した際に無関係な個体を
+    // リーダーと見なしてしまう。
+    if (monster.belongs_to_party()) {
+        succeed_party_leader(floor, m_idx);
     }
 
     monster.wipe();

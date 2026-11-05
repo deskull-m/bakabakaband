@@ -9,6 +9,7 @@
 #include "monster-race/monster-kind-mask.h"
 #include "monster-race/race-brightness-mask.h"
 #include "monster/monster-describer.h"
+#include "monster/monster-party.h"
 #include "monster/monster-processor.h"
 #include "monster/monster-util.h"
 #include "monster/smart-learn-types.h"
@@ -36,6 +37,15 @@ void set_pet(CreatureEntity &creature, CreatureEntity &target)
     QuestCompletionChecker(creature, target).complete();
     target.set_constant_flag(MonsterConstantFlagType::PET);
     target.set_alliance_idx(AllianceType::NONE);
+
+    // ペットになった個体は元のパーティから抜ける。集団AI (覚醒伝播・士気崩壊・
+    // リーダー追従) は敵対する一団としての振舞いなので、味方に付いた個体を
+    // 残すと敵の集団がプレイヤーのペットを起こしに来る等の不整合が生じる。
+    // フロア間で連れ歩ける (party_mon[]) ため、別フロアで m_idx が衝突する
+    // 懸念も併せて解消される。
+    if (target.belongs_to_party()) {
+        leave_party_and_succeed_leader(*creature.get_floor(), target);
+    }
     if (target.get_monrace().kind_flags.has_none_of(alignment_mask)) {
         target.set_sub_align(SUB_ALIGN_NEUTRAL);
     }

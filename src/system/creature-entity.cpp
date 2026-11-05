@@ -4189,6 +4189,61 @@ void CreatureEntity::set_parent_m_idx(MONSTER_IDX m_idx)
     }
 }
 
+short CreatureEntity::get_party_id() const
+{
+    return this->has_monster_profile() ? this->get_monster_profile().party_id : 0;
+}
+
+MONSTER_IDX CreatureEntity::get_party_leader_m_idx() const
+{
+    return this->has_monster_profile() ? this->get_monster_profile().party_leader_m_idx : 0;
+}
+
+void CreatureEntity::join_party(short party_id, MONSTER_IDX leader_m_idx)
+{
+    if (!this->has_monster_profile()) {
+        return;
+    }
+
+    auto &profile = this->get_monster_profile();
+    profile.party_id = party_id;
+    profile.party_leader_m_idx = leader_m_idx;
+}
+
+void CreatureEntity::set_party_leader_m_idx(MONSTER_IDX leader_m_idx)
+{
+    if (this->has_monster_profile()) {
+        this->get_monster_profile().party_leader_m_idx = leader_m_idx;
+    }
+}
+
+void CreatureEntity::leave_party()
+{
+    if (!this->has_monster_profile()) {
+        return;
+    }
+
+    auto &profile = this->get_monster_profile();
+    profile.party_id = 0;
+    profile.party_leader_m_idx = 0;
+}
+
+bool CreatureEntity::belongs_to_party() const
+{
+    return this->get_party_leader_m_idx() > 0;
+}
+
+bool CreatureEntity::is_party_leader(MONSTER_IDX self_m_idx) const
+{
+    return (self_m_idx > 0) && (this->get_party_leader_m_idx() == self_m_idx);
+}
+
+bool CreatureEntity::is_same_party(const CreatureEntity &other) const
+{
+    const auto leader_m_idx = this->get_party_leader_m_idx();
+    return (leader_m_idx > 0) && (leader_m_idx == other.get_party_leader_m_idx());
+}
+
 void CreatureEntity::add_smart_flag(MonsterSmartLearnType flag)
 {
     if (this->has_monster_profile()) {

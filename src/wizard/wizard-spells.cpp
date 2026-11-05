@@ -19,6 +19,7 @@
 #include "mind/mind-blue-mage.h"
 #include "monster-floor/monster-generator.h"
 #include "monster-floor/monster-summon.h"
+#include "monster-floor/party-generator.h"
 #include "monster-floor/place-monster-types.h"
 #include "monster-race/race-ability-flags.h"
 #include "mutation/mutation-processor.h"
@@ -229,6 +230,32 @@ void wiz_summon_horde(CreatureEntity &creature)
     }
 
     (void)alloc_horde(creature, pos.y, pos.x, summon_specific);
+}
+
+/*!
+ * @brief ウィザードモード用クリーチャーパーティ生成
+ * @param creature クリーチャーへの参照
+ * @details プレイヤーの近傍を中心にクリーチャーパーティ (集団) を生成する。
+ *          通常はフロア生成中にしか湧かないため、集団AI (覚醒伝播・士気崩壊・
+ *          リーダー追従) の確認用。現在の階層に候補が無い / レアリティ抽選で
+ *          「出さない」を引いた場合は何も起きない。
+ */
+void wiz_summon_creature_party(CreatureEntity &creature)
+{
+    const auto &floor = *creature.get_floor();
+    const auto p_pos = creature.get_position();
+    auto pos = p_pos;
+    auto attempts = 1000;
+    while (--attempts) {
+        pos = scatter(floor, p_pos, 3, PROJECT_NONE);
+        if (floor.is_empty_at(pos) && (pos != p_pos)) {
+            break;
+        }
+    }
+
+    if (!alloc_creature_party(creature, pos)) {
+        msg_print(_("パーティは生成されなかった。", "No party was generated."));
+    }
 }
 
 /*!
