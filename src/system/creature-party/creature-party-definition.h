@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 
+enum class AllianceType : int;
 enum class MonraceId : int16_t;
 
 /*!
@@ -41,9 +42,11 @@ public:
     int max_level{}; //!< 出現最大階層レベル
     int rarity{}; //!< レアリティ (値が小さいほど出現しやすい)
     bool allow_unique{}; //!< ユニークモンスターを含むか
+    AllianceType alliance_idx; //!< 所属アライアンス (NONE なら無所属)
     std::vector<CreaturePartyMember> members; //!< パーティメンバーのリスト
 
     bool is_valid() const;
+    bool belongs_to_alliance() const;
     bool can_generate(int current_level) const;
     int get_total_monster_count() const;
     void add_member(MonraceId monrace_id, const Dice &count_dice, int probability);

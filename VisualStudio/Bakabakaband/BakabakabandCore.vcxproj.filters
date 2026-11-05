@@ -1912,6 +1912,9 @@
     <ClCompile Include="..\..\src\dungeon\quest-completion-checker.cpp">
       <Filter>dungeon</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\monster\monster-party.cpp">
+      <Filter>monster</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\src\monster\monster-status-setter.cpp">
       <Filter>monster</Filter>
     </ClCompile>
@@ -5072,6 +5075,9 @@
     </ClInclude>
     <ClInclude Include="..\..\src\dungeon\quest-completion-checker.h">
       <Filter>dungeon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\monster\monster-party.h">
+      <Filter>monster</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\monster\monster-status-setter.h">
       <Filter>monster</Filter>

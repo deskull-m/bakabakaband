@@ -1,7 +1,9 @@
 #include "info-reader/party-reader.h"
+#include "alliance/alliance.h"
 #include "info-reader/info-reader-util.h"
 #include "info-reader/json-reader-util.h"
 #include "info-reader/parse-error-types.h"
+#include "locale/character-encoding.h"
 #include "locale/localized-string.h"
 #include "system/creature-party/creature-party-definition.h"
 #include "system/creature-party/creature-party-list.h"
@@ -27,16 +29,56 @@ static ParseErrorType set_party_name(nlohmann::json &name_data, CreaturePartyDef
         return ParseErrorType::GENERIC;
     }
 
-    std::string ja_name = name_data["ja"].get<std::string>();
-    std::string en_name = ja_name; // デフォルトは日本語名と同じ
+    const auto ja_name = name_data["ja"].get<std::string>();
+    auto en_name = ja_name; // デフォルトは日本語名と同じ
 
     if (name_data.contains("en") && name_data["en"].is_string()) {
         en_name = name_data["en"].get<std::string>();
     }
 
-    party.name = LocalizedString(ja_name, en_name);
+    // JSON は UTF-8 だが日本語版は内部エンコーディング (EUC-JP) で保持する。
+    // 変換を忘れると表示時に文字化けする (RaceReader::set_mon_name() と同じ扱い)。
+#ifdef JP
+    const auto ja_name_sys = utf8_to_sys(ja_name);
+    if (!ja_name_sys) {
+        return ParseErrorType::INVALID_VALUE;
+    }
+
+    party.name = LocalizedString(*ja_name_sys, en_name);
+#else
+    party.name = LocalizedString("", en_name);
+#endif
 
     return ParseErrorType::NONE;
+}
+
+/*!
+ * @brief パーティの所属アライアンスをJSONから読み込む
+ * @param alliance_data アライアンスタグのJSON (省略可)
+ * @param party パーティ定義への参照
+ * @return エラーコード
+ * @details 未指定なら無所属 (AllianceType::NONE) のまま。タグの照合は
+ *          `RaceReader::set_mon_alliance()` と同じく `alliance_list` を走査する。
+ */
+static ParseErrorType set_party_alliance(const nlohmann::json &alliance_data, CreaturePartyDefinition &party)
+{
+    if (alliance_data.is_null()) {
+        return ParseErrorType::NONE;
+    }
+
+    if (!alliance_data.is_string()) {
+        return ParseErrorType::INVALID_FLAG;
+    }
+
+    const auto alliance_tag = alliance_data.get<std::string>();
+    for (const auto &alliance : alliance_list) {
+        if (alliance.second->tag == alliance_tag) {
+            party.alliance_idx = alliance.second->id;
+            return ParseErrorType::NONE;
+        }
+    }
+
+    return ParseErrorType::INVALID_FLAG;
 }
 
 /*!
@@ -140,6 +182,13 @@ ParseErrorType parse_creature_parties_info(nlohmann::json &party_data, int &prev
     // ユニーク許可フラグの読み込み
     if (party_data.contains("allow_unique") && party_data["allow_unique"].is_boolean()) {
         party.allow_unique = party_data["allow_unique"].get<bool>();
+    }
+
+    // 所属アライアンスの読み込み (任意)
+    err = set_party_alliance(party_data["alliance"], party);
+    if (err != ParseErrorType::NONE) {
+        msg_print(_("パーティアライアンス読込失敗。ID: '{}'。", "Failed to load party alliance. ID: '{}'."), party_id);
+        return err;
     }
 
     // パーティメンバーの読み込み

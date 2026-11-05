@@ -65,6 +65,7 @@ constexpr std::array debug_menu_table = {
     std::make_tuple('G', _("ゲーム設定コマンドメニュー", "Modify game configurations")),
     std::make_tuple('H', _("モンスターの群れ生成", "Summon monsters")),
     std::make_tuple('i', _("鑑定", "Idenfity")),
+    std::make_tuple('J', _("クリーチャーパーティ生成", "Summon a creature party")),
     std::make_tuple('I', _("アイテム設定コマンドメニュー", "Modify item configurations")),
     std::make_tuple('j', _("指定ダンジョン階にワープ", "Jump to floor depth of target dungeon")),
     std::make_tuple('L', _("対象モンスターをレベルアップ(HP成長)", "Level up target monster (grow HP)")),
@@ -196,6 +197,9 @@ bool exe_cmd_debug(CreatureEntity &creature, char cmd)
         return true;
     case 'H':
         wiz_summon_horde(creature);
+        return true;
+    case 'J':
+        wiz_summon_creature_party(creature);
         return true;
     case 'i':
         (void)ident_spell(creature, false);

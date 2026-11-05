@@ -11,6 +11,7 @@
 #include "monster/monster-describer.h"
 #include "monster/monster-info.h"
 #include "monster/monster-list.h"
+#include "monster/monster-party.h"
 #include "monster/monster-status-setter.h" //!< @todo 相互依存. 後で何とかする.
 #include "monster/monster-update.h"
 #include "system/angband-system.h"
@@ -27,6 +28,7 @@
 #include "util/string-processor.h"
 #include "view/display-messages.h"
 #include <fmt/format.h>
+#include <vector>
 #if JP
 #else
 #include "monster/monster-description-types.h"
@@ -109,9 +111,13 @@ int mon_damage_mod(CreatureEntity &creature, const CreatureEntity &target, int d
  * @param floor フロアへの参照
  * @param m_idx モンスター参照ID
  * @param mte 更新するモンスターの時限ステータスID
+ * @return この呼出でモンスターが完全に目を覚ましたならtrue
+ * @details 戻り値は集団AIの覚醒伝播を**ループの外で**行うために使う
+ *          (理由は process_monsters_timed_effect() のコメント参照)。
  */
-static void process_monsters_timed_effect_aux(CreatureEntity &creature, MONSTER_IDX m_idx, CreatureTimedEffect mte)
+static bool process_monsters_timed_effect_aux(CreatureEntity &creature, MONSTER_IDX m_idx, CreatureTimedEffect mte)
 {
+    auto has_just_awakened = false;
     auto &floor = *creature.get_floor();
     const auto &monster = floor.get_monster(m_idx);
     const auto cdis = Grid::calc_distance(creature.get_position(), monster.get_position());
@@ -192,6 +198,9 @@ static void process_monsters_timed_effect_aux(CreatureEntity &creature, MONSTER_
                 monrace.r_wake++;
             }
         }
+
+        // 集団AI: 覚醒伝播の実行はループの外へ委ねる (呼出側のコメント参照)
+        has_just_awakened = true;
 
         break;
     }
@@ -282,6 +291,8 @@ static void process_monsters_timed_effect_aux(CreatureEntity &creature, MONSTER_
     default:
         THROW_EXCEPTION(std::logic_error, fmt::format("Invalid CreatureTimedEffect is specified! {}", enum2i(mte)));
     }
+
+    return has_just_awakened;
 }
 
 /*!
@@ -303,10 +314,23 @@ void process_monsters_timed_effect(CreatureEntity &creature, CreatureTimedEffect
     }
 
     /* Process the monsters (backwards) */
+    std::vector<MONSTER_IDX> awakened_m_idx_list;
     for (auto i = floor.mproc_max.at(mte) - 1; i >= 0; i--) {
         const auto m_idx = cur_mproc_list[i];
-        process_monsters_timed_effect_aux(creature, m_idx, mte);
+        if (process_monsters_timed_effect_aux(creature, m_idx, mte)) {
+            awakened_m_idx_list.push_back(m_idx);
+        }
+
         HealthBarTracker::get_instance().set_flag_if_tracking(m_idx);
+    }
+
+    // 集団AI: 覚醒伝播はループを抜けてから行う。
+    // FloorType::remove_mproc() は空いた枠へ**末尾要素を詰める**実装なので、
+    // この後退ループが安全なのは「いま処理している個体自身の除去」に限られる
+    // (その場合だけ詰め替えが自己代入になる)。ループ中に他個体を起こすと
+    // mproc_list が組み替わり、要素の取りこぼしや二重処理が起きる。
+    for (const auto m_idx : awakened_m_idx_list) {
+        alert_party_members(creature, m_idx);
     }
 }
 

@@ -1160,6 +1160,53 @@ public:
     virtual void set_parent_m_idx(MONSTER_IDX m_idx);
 
     /*!
+     * @brief 所属するクリーチャーパーティの定義IDを取得する
+     * @return パーティ定義ID。非所属なら 0
+     */
+    virtual short get_party_id() const;
+
+    /*!
+     * @brief パーティのリーダーの m_idx を取得する
+     * @return リーダーの m_idx。非所属なら 0
+     * @details 同値を持つ個体が 1 つの集団を成す。リーダー自身は自分の m_idx を持つ。
+     */
+    virtual MONSTER_IDX get_party_leader_m_idx() const;
+
+    /*!
+     * @brief パーティ所属を設定する
+     * @param party_id パーティ定義ID
+     * @param leader_m_idx リーダーの m_idx (リーダー自身には自分の m_idx を渡す)
+     */
+    virtual void join_party(short party_id, MONSTER_IDX leader_m_idx);
+
+    /*!
+     * @brief パーティのリーダーを差し替える (リーダー撃破時の継承・添字再マップ用)
+     */
+    virtual void set_party_leader_m_idx(MONSTER_IDX leader_m_idx);
+
+    /*!
+     * @brief パーティを離脱する (所属とリーダーを両方クリアする)
+     */
+    virtual void leave_party();
+
+    /*!
+     * @brief パーティに所属しているか
+     */
+    bool belongs_to_party() const;
+
+    /*!
+     * @brief 指定した m_idx の個体がこのパーティのリーダーか
+     * @details リーダー自身の判定に使う。`get_self_m_idx()` は座標が古い等の状況で 0 を
+     *          返しうるため、呼出側が m_idx を持っている場合はそれを渡すこと。
+     */
+    bool is_party_leader(MONSTER_IDX self_m_idx) const;
+
+    /*!
+     * @brief 相手が同じパーティの個体か (自分自身に対しては true)
+     */
+    bool is_same_party(const CreatureEntity &other) const;
+
+    /*!
      * @brief smart_learn フラグに 1 ビット追加する (提案 9b)
      */
     virtual void add_smart_flag(MonsterSmartLearnType flag);

@@ -24,6 +24,7 @@
 #include "monster/monster-flag-types.h"
 #include "monster/monster-info.h"
 #include "monster/monster-list.h"
+#include "monster/monster-party.h"
 #include "object-enchant/item-apply-magic.h"
 #include "object-enchant/item-magic-applier.h"
 #include "pet/pet-fall-off.h"
@@ -328,6 +329,11 @@ void monster_death(CreatureEntity &creature, MONSTER_IDX m_idx, bool drop_item, 
     }
 
     write_pet_death(creature, &md);
+
+    // 集団AI: リーダーが倒れたら生存メンバーの士気が崩壊する。
+    // md.m_ptr はこの時点でまだ有効なので、パーティ走査の除外対象に使える。
+    collapse_party_morale(creature, m_idx);
+
     on_dead_explosion(creature, &md);
     if (md.m_ptr->is_chameleon()) {
         md.m_ptr->reset_chameleon_polymorph();

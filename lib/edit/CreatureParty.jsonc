@@ -9,8 +9,8 @@
       },
       "tag": "NOVICE_PARTY",
       "min_level": 1,
-      "max_level": 127,
-      "rarity": 6,
+      "max_level": 20,
+      "rarity": 3,
       "allow_unique": false,
       "members": [
         {
@@ -31,6 +31,435 @@
         {
           "monrace_id": 46,
           "count_dice": "1d2",
+          "probability": 100,
+        },
+      ],
+    },
+    {
+      "id": 2,
+      "name": {
+        "ja": "コボルドの群れ",
+        "en": "Kobold Pack",
+      },
+      "tag": "KOBOLD_PACK",
+      "min_level": 1,
+      "max_level": 22,
+      "rarity": 2,
+      "allow_unique": false,
+      "members": [
+        {
+          "monrace_id": 29,
+          "count_dice": "1d3",
+          "probability": 100,
+        },
+        {
+          "monrace_id": 30,
+          "count_dice": "1d3",
+          "probability": 100,
+        },
+        {
+          "monrace_id": 102,
+          "count_dice": "1d2",
+          "probability": 60,
+        },
+      ],
+    },
+    {
+      "id": 3,
+      "name": {
+        "ja": "ナーガの巣",
+        "en": "Naga Nest",
+      },
+      "tag": "NAGA_NEST",
+      "min_level": 3,
+      "max_level": 26,
+      "rarity": 5,
+      "allow_unique": false,
+      "members": [
+        {
+          "monrace_id": 71,
+          "count_dice": "1d2",
+          "probability": 100,
+        },
+        {
+          "monrace_id": 94,
+          "count_dice": "1d2",
+          "probability": 100,
+        },
+        {
+          "monrace_id": 130,
+          "count_dice": "1d2",
+          "probability": 70,
+        },
+        {
+          "monrace_id": 265,
+          "count_dice": "1d1",
+          "probability": 40,
+        },
+      ],
+    },
+    {
+      "id": 4,
+      "name": {
+        "ja": "オークの斥候隊",
+        "en": "Orc Scouts",
+      },
+      "tag": "ORC_SCOUTS",
+      "min_level": 7,
+      "max_level": 30,
+      "rarity": 2,
+      "allow_unique": false,
+      "members": [
+        {
+          "monrace_id": 126,
+          "count_dice": "1d3",
+          "probability": 100,
+        },
+        {
+          "monrace_id": 149,
+          "count_dice": "1d3",
+          "probability": 100,
+        },
+        {
+          "monrace_id": 162,
+          "count_dice": "1d1",
+          "probability": 60,
+        },
+      ],
+    },
+    {
+      "id": 5,
+      "name": {
+        "ja": "葦名の足軽衆",
+        "en": "Ashina Footmen",
+      },
+      "tag": "ASHINA_FOOTMEN",
+      "alliance": "ASHINA-CLAN",
+      "min_level": 8,
+      "max_level": 32,
+      "rarity": 4,
+      "allow_unique": false,
+      "members": [
+        {
+          "monrace_id": 1479,
+          "count_dice": "1d3",
+          "probability": 100,
+        },
+        {
+          "monrace_id": 1488,
+          "count_dice": "1d2",
+          "probability": 70,
+        },
+      ],
+    },
+    {
+      "id": 6,
+      "name": {
+        "ja": "狼の群れ",
+        "en": "Wolf Pack",
+      },
+      "tag": "WOLF_PACK",
+      "min_level": 10,
+      "max_level": 32,
+      "rarity": 3,
+      "allow_unique": false,
+      "members": [
+        {
+          "monrace_id": 196,
+          "count_dice": "1d4",
+          "probability": 100,
+        },
+        {
+          "monrace_id": 211,
+          "count_dice": "1d2",
+          "probability": 70,
+        },
+      ],
+    },
+    {
+      "id": 7,
+      "name": {
+        "ja": "オーガの徒党",
+        "en": "Ogre Warband",
+      },
+      "tag": "OGRE_WARBAND",
+      "min_level": 13,
+      "max_level": 40,
+      "rarity": 4,
+      "allow_unique": false,
+      "members": [
+        {
+          "monrace_id": 238,
+          "count_dice": "1d3",
+          "probability": 100,
+        },
+        {
+          "monrace_id": 262,
+          "count_dice": "1d2",
+          "probability": 80,
+        },
+        {
+          "monrace_id": 907,
+          "count_dice": "1d2",
+          "probability": 60,
+        },
+        {
+          "monrace_id": 430,
+          "count_dice": "1d1",
+          "probability": 35,
+        },
+      ],
+    },
+    {
+      "id": 8,
+      "name": {
+        "ja": "オークの精鋭部隊",
+        "en": "Orc Elites",
+      },
+      "tag": "ORC_ELITES",
+      "min_level": 14,
+      "max_level": 42,
+      "rarity": 3,
+      "allow_unique": false,
+      "members": [
+        {
+          "monrace_id": 244,
+          "count_dice": "1d3",
+          "probability": 100,
+        },
+        {
+          "monrace_id": 954,
+          "count_dice": "1d2",
+          "probability": 80,
+        },
+        {
+          "monrace_id": 264,
+          "count_dice": "1d2",
+          "probability": 70,
+        },
+        {
+          "monrace_id": 285,
+          "count_dice": "1d1",
+          "probability": 50,
+        },
+      ],
+    },
+    {
+      "id": 9,
+      "name": {
+        "ja": "GOLAN小隊",
+        "en": "GOLAN Squad",
+      },
+      "tag": "GOLAN_SQUAD",
+      "alliance": "GOLAN",
+      "min_level": 16,
+      "max_level": 45,
+      "rarity": 6,
+      "allow_unique": false,
+      "members": [
+        {
+          "monrace_id": 1687,
+          "count_dice": "1d3",
+          "probability": 100,
+        },
+        {
+          "monrace_id": 1692,
+          "count_dice": "1d1",
+          "probability": 70,
+        },
+        {
+          "monrace_id": 1828,
+          "count_dice": "1d1",
+          "probability": 40,
+        },
+      ],
+    },
+    {
+      "id": 10,
+      "name": {
+        "ja": "トロルの群れ",
+        "en": "Troll Pack",
+      },
+      "tag": "TROLL_PACK",
+      "min_level": 17,
+      "max_level": 48,
+      "rarity": 4,
+      "allow_unique": false,
+      "members": [
+        {
+          "monrace_id": 297,
+          "count_dice": "1d3",
+          "probability": 100,
+        },
+        {
+          "monrace_id": 401,
+          "count_dice": "1d2",
+          "probability": 70,
+        },
+        {
+          "monrace_id": 403,
+          "count_dice": "1d1",
+          "probability": 50,
+        },
+        {
+          "monrace_id": 496,
+          "count_dice": "1d1",
+          "probability": 35,
+        },
+      ],
+    },
+    {
+      "id": 11,
+      "name": {
+        "ja": "忍群",
+        "en": "Ninja Cell",
+      },
+      "tag": "NINJA_CELL",
+      "min_level": 20,
+      "max_level": 55,
+      "rarity": 7,
+      "allow_unique": false,
+      "members": [
+        {
+          "monrace_id": 485,
+          "count_dice": "1d3",
+          "probability": 100,
+        },
+        {
+          "monrace_id": 1847,
+          "count_dice": "1d2",
+          "probability": 70,
+        },
+        {
+          "monrace_id": 1466,
+          "count_dice": "1d1",
+          "probability": 30,
+        },
+      ],
+    },
+    {
+      "id": 12,
+      "name": {
+        "ja": "虎眼流道場",
+        "en": "Kogan-ryu Dojo",
+      },
+      "tag": "KOGAN_DOJO",
+      "alliance": "KOGAN-RYU",
+      "min_level": 26,
+      "max_level": 60,
+      "rarity": 8,
+      "allow_unique": false,
+      "members": [
+        {
+          "monrace_id": 1456,
+          "count_dice": "1d3",
+          "probability": 100,
+        },
+        {
+          "monrace_id": 1459,
+          "count_dice": "1d2",
+          "probability": 55,
+        },
+      ],
+    },
+    {
+      "id": 13,
+      "name": {
+        "ja": "竜の一党",
+        "en": "Dragon Flight",
+      },
+      "tag": "DRAGON_FLIGHT",
+      "min_level": 33,
+      "max_level": 75,
+      "rarity": 10,
+      "allow_unique": false,
+      "members": [
+        {
+          "monrace_id": 549,
+          "count_dice": "1d1",
+          "probability": 70,
+        },
+        {
+          "monrace_id": 560,
+          "count_dice": "1d1",
+          "probability": 70,
+        },
+        {
+          "monrace_id": 561,
+          "count_dice": "1d1",
+          "probability": 70,
+        },
+        {
+          "monrace_id": 592,
+          "count_dice": "1d1",
+          "probability": 70,
+        },
+        {
+          "monrace_id": 589,
+          "count_dice": "1d1",
+          "probability": 70,
+        },
+      ],
+    },
+    {
+      "id": 14,
+      "name": {
+        "ja": "デーモン軍団",
+        "en": "Demon Legion",
+      },
+      "tag": "DEMON_LEGION",
+      "min_level": 42,
+      "max_level": 100,
+      "rarity": 9,
+      "allow_unique": false,
+      "members": [
+        {
+          "monrace_id": 665,
+          "count_dice": "1d2",
+          "probability": 100,
+        },
+        {
+          "monrace_id": 719,
+          "count_dice": "1d2",
+          "probability": 70,
+        },
+        {
+          "monrace_id": 727,
+          "count_dice": "1d1",
+          "probability": 50,
+        },
+      ],
+    },
+    {
+      "id": 15,
+      "name": {
+        "ja": "古竜の群れ",
+        "en": "Great Wyrms",
+      },
+      "tag": "GREAT_WYRMS",
+      "min_level": 64,
+      "max_level": 127,
+      "rarity": 12,
+      "allow_unique": false,
+      "members": [
+        {
+          "monrace_id": 1189,
+          "count_dice": "1d1",
+          "probability": 100,
+        },
+        {
+          "monrace_id": 1191,
+          "count_dice": "1d1",
+          "probability": 100,
+        },
+        {
+          "monrace_id": 1195,
+          "count_dice": "1d1",
+          "probability": 100,
+        },
+        {
+          "monrace_id": 1197,
+          "count_dice": "1d1",
           "probability": 100,
         },
       ],

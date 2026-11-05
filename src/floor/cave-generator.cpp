@@ -451,6 +451,30 @@ static void decide_dungeon_data_allocation(CreatureEntity &creature, DungeonData
     }
 }
 
+/*!
+ * @brief クリーチャーパーティの中心に使える座標を決める
+ * @param floor フロアへの参照
+ * @return モンスターを配置できる座標。見つからなければnullopt
+ * @details 一様乱数の座標をそのまま中心に使ってはいけない。フロアの大半は岩盤で、
+ *          `mon_scatter()` は中心からの `projectable()` を要求するため、岩盤の中を
+ *          引くと候補が全滅し 1 体も置けないまま失敗する (実測では選ばれた
+ *          パーティがほぼ毎回配置に失敗していた)。`alloc_monster()` が使う
+ *          `decide_monster_allocation_position()` と同じく、配置可能な床を
+ *          引くまで振り直す。
+ */
+static tl::optional<Pos2D> decide_creature_party_center(const FloorType &floor)
+{
+    for (auto attempts_left = 10000; attempts_left > 0; attempts_left--) {
+        const Pos2D pos(randint0(floor.height), randint0(floor.width));
+        const auto can_place = floor.is_underground() ? floor.can_generate_monster_at(pos) : floor.is_empty_at(pos);
+        if (can_place) {
+            return pos;
+        }
+    }
+
+    return tl::nullopt;
+}
+
 static bool allocate_dungeon_data(CreatureEntity &creature, DungeonData *dd_ptr, const DungeonDefinition &dungeon)
 {
     dd_ptr->alloc_monster_num += randint1(8);
@@ -458,9 +482,9 @@ static bool allocate_dungeon_data(CreatureEntity &creature, DungeonData *dd_ptr,
 
     for (dd_ptr->alloc_monster_num = dd_ptr->alloc_monster_num + dd_ptr->alloc_object_num; dd_ptr->alloc_monster_num > 0; dd_ptr->alloc_monster_num--) {
         if (one_in_(30)) {
-            // ランダムな位置を決定
-            Pos2D pos(randint0(floor.height), randint0(floor.width));
-            if (alloc_creature_party(creature, pos)) {
+            // パーティの中心は「モンスターを配置できる床」から選ぶ
+            const auto pos_center = decide_creature_party_center(floor);
+            if (pos_center && alloc_creature_party(creature, *pos_center)) {
                 // パーティ生成に成功した場合、このイテレーションをスキップ
                 continue;
             }
