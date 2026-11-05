@@ -294,9 +294,9 @@ void MonsterLoader50::rd_monster_v50(CreatureEntity &monster)
 
     monster.set_parent_m_idx(rd_s16b());
 
-    // パーティ所属。セーブデータバージョン 58 以降のみ保存されている。
+    // パーティ所属。セーブデータバージョン 59 以降のみ保存されている。
     // 旧セーブでは非所属 (0) のままとなり、既存モンスターは集団AIの対象外になる。
-    if (!loading_savefile_version_is_older_than(58)) {
+    if (!loading_savefile_version_is_older_than(59)) {
         const auto party_id = rd_s16b();
         const auto party_leader_m_idx = rd_s16b();
         monster.join_party(party_id, party_leader_m_idx);
