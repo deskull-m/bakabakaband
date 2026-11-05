@@ -1,6 +1,7 @@
 #include "system/monrace/monrace-definition.h"
 #include "monster-attack/monster-attack-table.h"
 #include "monster-race/race-ability-mask.h"
+#include "monster-race/race-kind-flags.h"
 #include "monster-race/race-resistance-mask.h"
 #include "monster/horror-descriptions.h"
 #include "system/enums/grid-flow.h"
@@ -17,6 +18,45 @@
 #endif
 
 namespace {
+
+/*!
+ * @brief 「武装する職業」とみなす種族フラグ
+ * @details `PlayerClassType` に対応する `MonsterKindType` のうち、**自ら武具を
+ *          買い揃えて身に着ける職業**を列挙する。武装度 (`armament_level`) による
+ *          装備枠の充填はこのいずれかを持つ個体にのみ行う
+ *          (`has_armed_profession()`)。
+ *
+ *          `PlayerClassType` に対応はあるが**身分・体格であって武装の職業ではない**
+ *          もの (PEASANT / RABBLE / CITIZEN / GRANDMA / SUMOU_WRESTLER / TANK) は
+ *          意図的に除いてある。農民・賤民・市民・ババアは武具を調える立場に無く、
+ *          力士は廻しを締める体格の表現、TANK の該当個体は人型の機械なので、
+ *          いずれも人間用の鎧兜を着込むのは不整合になる。
+ *
+ *          個別に武装させたい個体は JSON で `armament_level` を明示指定すること
+ *          (明示指定は「その武装度で武装する」という製作者の意思表示として
+ *          職業の有無に依らず尊重される)。
+ */
+const EnumClassFlagGroup<MonsterKindType> ARMED_PROFESSION_MASK = {
+    MonsterKindType::SOLDIER,
+    MonsterKindType::WARRIOR,
+    MonsterKindType::BERSERK,
+    MonsterKindType::PALADIN,
+    MonsterKindType::SAMURAI,
+    MonsterKindType::NINJA,
+    MonsterKindType::ROGUE,
+    MonsterKindType::RANGER,
+    MonsterKindType::ARCHER,
+    MonsterKindType::GUNNER,
+    MonsterKindType::MAGE,
+    MonsterKindType::PRIEST,
+    MonsterKindType::MINDCRAFTER,
+    MonsterKindType::BARD,
+    MonsterKindType::SMITH,
+    MonsterKindType::KARATEKA,
+    MonsterKindType::YAKUZA,
+    MonsterKindType::NOBLE,
+    MonsterKindType::MAGICAL_GIRL,
+};
 
 template <class T>
 static int count_lore_mflag_group(const EnumClassFlagGroup<T> &flags, const EnumClassFlagGroup<T> &r_flags)
@@ -95,6 +135,20 @@ MonraceDefinition::MonraceDefinition()
 int MonraceDefinition::get_armament_level() const
 {
     return this->armament_level.value_or(this->level * ARMAMENT_LEVEL_PER_LEVEL);
+}
+
+/*!
+ * @brief 自ら武具を調える職業を持つかどうかを調べる
+ * @return 「武装する職業」のフラグをいずれか持っていれば true
+ * @details 武装度による装備枠の充填 (`equip_monster_by_armament_budget()`) を
+ *          行うかどうかの判定に使う。グレムリンのような「武具を使うとは思えない
+ *          人型」が鎧兜を着込むのを防ぐため、職業を持たない個体は武装度由来の
+ *          装備を一切持たない。対象フラグの一覧と除外の理由は
+ *          `ARMED_PROFESSION_MASK` のコメントを参照。
+ */
+bool MonraceDefinition::has_armed_profession() const
+{
+    return this->kind_flags.has_any_of(ARMED_PROFESSION_MASK);
 }
 
 /*!
