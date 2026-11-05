@@ -469,10 +469,11 @@ a.button-link:active {
     position: sticky;
     top: 0;
     z-index: 5;
-    float: right;
+    display: block;
     width: 2.5rem;
     height: 2.5rem;
-    margin: 0 -0.5rem 0.5rem 0.5rem;
+    /* float だと flex の本文が横に避けて細くなるため、右寄せ+負マージンで重ねる */
+    margin: 0 -0.5rem -2.5rem auto;
     border: solid 0.15rem #fff;
     border-radius: 50%;
     background: rgba(20, 10, 0, 0.95);
@@ -483,8 +484,9 @@ a.button-link:active {
     user-select: none;
 }
 
-.popup-contents h2 {
-    clear: none;
+/* 記事先頭の見出しが閉じるボタンと重ならないように */
+.popup-contents > div > h2:first-child {
+    margin-right: 2.6rem;
 }
 
 .melkor-symbol {
