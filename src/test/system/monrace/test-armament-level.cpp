@@ -8,6 +8,7 @@
  * get_armament_level() を経由することが前提となっている。
  */
 
+#include "monster-race/race-kind-flags.h"
 #include "system/monrace/monrace-definition.h"
 
 #include <doctest/doctest.h>
@@ -52,5 +53,55 @@ TEST_CASE("MonraceDefinition::get_armament_level")
         monrace.level = 40;
         monrace.armament_level = 0;
         CHECK(monrace.get_armament_level() == 0);
+    }
+}
+
+/*!
+ * @brief 「武装する職業」判定のテスト
+ *
+ * 武装度による装備枠の充填 (equip_monster_by_armament_budget) は、
+ * 自ら武具を調える職業を持つ個体にのみ行う。グレムリンのように職業を持たない
+ * 人型が鎧兜を着込む不整合を防ぐためで、身分・体格を表すフラグ
+ * (農民・賤民・市民・ババア・力士・TANK) は職業として数えない。
+ */
+TEST_CASE("MonraceDefinition::has_armed_profession")
+{
+    SUBCASE("フラグを持たない個体は職業なし")
+    {
+        MonraceDefinition monrace;
+        CHECK_FALSE(monrace.has_armed_profession());
+    }
+
+    SUBCASE("武装する職業のフラグを持てば真")
+    {
+        for (const auto kind : { MonsterKindType::SOLDIER, MonsterKindType::WARRIOR, MonsterKindType::BERSERK,
+                 MonsterKindType::PALADIN, MonsterKindType::SAMURAI, MonsterKindType::NINJA, MonsterKindType::ROGUE,
+                 MonsterKindType::RANGER, MonsterKindType::ARCHER, MonsterKindType::GUNNER, MonsterKindType::MAGE,
+                 MonsterKindType::PRIEST, MonsterKindType::MINDCRAFTER, MonsterKindType::BARD, MonsterKindType::SMITH,
+                 MonsterKindType::KARATEKA, MonsterKindType::YAKUZA, MonsterKindType::NOBLE,
+                 MonsterKindType::MAGICAL_GIRL }) {
+            MonraceDefinition monrace;
+            monrace.kind_flags.set(kind);
+            CHECK(monrace.has_armed_profession());
+        }
+    }
+
+    SUBCASE("身分・体格を表すフラグは職業として数えない")
+    {
+        for (const auto kind : { MonsterKindType::PEASANT, MonsterKindType::RABBLE, MonsterKindType::CITIZEN,
+                 MonsterKindType::GRANDMA, MonsterKindType::SUMOU_WRESTLER, MonsterKindType::TANK }) {
+            MonraceDefinition monrace;
+            monrace.kind_flags.set(kind);
+            CHECK_FALSE(monrace.has_armed_profession());
+        }
+    }
+
+    SUBCASE("職業以外の種族フラグでは真にならない")
+    {
+        MonraceDefinition monrace;
+        monrace.kind_flags.set(MonsterKindType::ANIMAL);
+        monrace.kind_flags.set(MonsterKindType::EVIL);
+        monrace.kind_flags.set(MonsterKindType::UNIQUE);
+        CHECK_FALSE(monrace.has_armed_profession());
     }
 }

@@ -715,14 +715,25 @@ void equip_monster_by_armament_budget(CreatureEntity &monster)
         return;
     }
 
+    // 職業を持たない個体も対象外。グレムリンのように「武具を使うとは思えない
+    // 人型」が武装度だけで鎧兜を着込むのを防ぐため、武装度由来の装備は
+    // 「自ら武具を調える職業」(MonraceDefinition::has_armed_profession()) を
+    // 持つ個体に限る。JSON で armament_level を明示指定した個体は「その武装度で
+    // 武装する」という製作者の意思表示として職業の有無に依らず充填する
+    // (レベル由来の既定値しか持たない個体とはここで区別する)。
+    const auto &monrace = monster.get_monrace();
+    if (!monrace.has_armed_profession() && !monrace.armament_level) {
+        return;
+    }
+
     // 役割装備で既に使った分を差し引いた残額が、この個体の購買力になる。
-    auto budget = monster.get_monrace().get_armament_level() - calc_equipped_armament_cost(monster);
+    auto budget = monrace.get_armament_level() - calc_equipped_armament_cost(monster);
     if (budget <= 0) {
         return;
     }
 
     // 忍者は盾を持たず重鎧も着ないため、専用のスロット表を使う。
-    const auto is_ninja = monster.get_monrace().kind_flags.has(MonsterKindType::NINJA);
+    const auto is_ninja = monrace.kind_flags.has(MonsterKindType::NINJA);
     const auto &slot_entries = is_ninja ? get_ninja_armament_slot_entries() : get_armament_slot_entries();
 
     // 体構造的に装備でき、かつまだ空いているスロットだけを対象にする。
