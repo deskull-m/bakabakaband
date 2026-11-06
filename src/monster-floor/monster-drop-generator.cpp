@@ -389,6 +389,49 @@ const std::vector<ArmamentSlotEntry> &get_ninja_armament_slot_entries()
 }
 
 /*!
+ * @brief 修行僧系モンスター (KARATEKA) が武装度予算で埋める装備スロット
+ * @details 既定の表から**利き手・逆手を外した**もの。素手で戦う者に武器を
+ *          買わせないための表で、他の 5 部位 (胴・頭・脚・腕・体の上) は
+ *          既定どおり充填する。
+ *
+ *          **必ず `get_armament_slot_entries()` の部分集合であること**
+ *          (理由は `get_ninja_armament_slot_entries()` のコメント参照)。
+ *
+ *          **根拠はプレイヤーの `MONK` 側の実装にある**。
+ *          `is_martial_arts_mode()` (`src/player/player-status.cpp`) は
+ *          `empty_hands()` の `EMPTY_HAND_MAIN` を要求するため、**利き手に
+ *          何かを持つと素手打撃 (martial arts) を失う**。モンスターの近接は
+ *          `CreatureEntity::select_melee_weapon_slot()` が `PUNCH` でも手の
+ *          武器を使うので、利き手を空けておかないと素手連撃すべてに武器
+ *          ダイスが乗ってしまう。
+ *
+ *          - **利き手を外す**: 上記のとおりプレイヤー `MONK` の素手打撃条件が
+ *            「利き手が空」なので、修行僧は利き手を空けておく。
+ *          - **逆手も外す**: プレイヤー側は `can_attack_with_sub_hand()` が
+ *            近接武器のみを見るため**盾は素手打撃を壊さない**が、修行僧が盾を
+ *            構えているのは見た目の不整合なので併せて外す
+ *            (忍者が盾を外すのと同じ扱い。忍者は `has_ninja_speed()` という
+ *            機械的な理由もあるが、こちらはフレーバー上の判断)。
+ *          - **胴は既定どおり軽装・重鎧の両方**。プレイヤー `MONK` も
+ *            `heavy_armor()` で加速ボーナスを失うので忍者と同様に軽装限定に
+ *            する余地はあるが、利き手・逆手を外す本変更の範囲外として
+ *            据え置く (絞るなら `INVEN_BODY` の種別を `SOFT_ARMOR` だけに
+ *            する)。
+ */
+const std::vector<ArmamentSlotEntry> &get_monk_armament_slot_entries()
+{
+    static const std::vector<ArmamentSlotEntry> entries = {
+        { INVEN_BODY, { ItemKindType::SOFT_ARMOR, ItemKindType::HARD_ARMOR } },
+        { INVEN_HEAD, { ItemKindType::HELM, ItemKindType::CROWN } },
+        { INVEN_FEET, { ItemKindType::BOOTS } },
+        { INVEN_ARMS, { ItemKindType::GLOVES } },
+        { INVEN_OUTER, { ItemKindType::CLOAK } },
+    };
+
+    return entries;
+}
+
+/*!
  * @brief 武装度予算で購入できるベースアイテムか判定する
  * @details 通常のフロア生成に乗らない品 (生成確率が全て 0)・固定アーティファクト
  *          化する品・クエスト専用品・呪い付きの品は除外する。価値 0 の品は
@@ -732,9 +775,22 @@ void equip_monster_by_armament_budget(CreatureEntity &monster)
         return;
     }
 
-    // 忍者は盾を持たず重鎧も着ないため、専用のスロット表を使う。
-    const auto is_ninja = monrace.kind_flags.has(MonsterKindType::NINJA);
-    const auto &slot_entries = is_ninja ? get_ninja_armament_slot_entries() : get_armament_slot_entries();
+    // 忍者は盾を持たず重鎧も着ないため、修行僧は素手で戦うため、それぞれ専用の
+    // スロット表を使う。**優先順位は NINJA > KARATEKA** で、これは
+    // decide_initial_weapon_style() の得物の優先順位と揃えてある (実データで
+    // 両方を持つのは巨大サイバーワイアーム天使悪魔リッチ 929 の 1 体だけで、
+    // 忍者の役割装備が利き手を埋めるため修行僧表との差は逆手だけになる)。
+    const auto &slot_entries = [&monrace]() -> const std::vector<ArmamentSlotEntry> & {
+        if (monrace.kind_flags.has(MonsterKindType::NINJA)) {
+            return get_ninja_armament_slot_entries();
+        }
+
+        if (monrace.kind_flags.has(MonsterKindType::KARATEKA)) {
+            return get_monk_armament_slot_entries();
+        }
+
+        return get_armament_slot_entries();
+    }();
 
     // 体構造的に装備でき、かつまだ空いているスロットだけを対象にする。
     std::vector<const ArmamentSlotEntry *> targets;
