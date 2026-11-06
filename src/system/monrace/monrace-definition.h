@@ -393,6 +393,7 @@ public:
     static constexpr int ARMAMENT_LEVEL_MAX = 100000;
 
     int get_armament_level() const;
+    bool has_armed_profession() const;
 
     bool is_valid() const;
     bool is_male() const;
