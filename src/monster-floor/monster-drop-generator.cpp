@@ -412,16 +412,19 @@ const std::vector<ArmamentSlotEntry> &get_ninja_armament_slot_entries()
  *            構えているのは見た目の不整合なので併せて外す
  *            (忍者が盾を外すのと同じ扱い。忍者は `has_ninja_speed()` という
  *            機械的な理由もあるが、こちらはフレーバー上の判断)。
- *          - **胴は既定どおり軽装・重鎧の両方**。プレイヤー `MONK` も
- *            `heavy_armor()` で加速ボーナスを失うので忍者と同様に軽装限定に
- *            する余地はあるが、利き手・逆手を外す本変更の範囲外として
- *            据え置く (絞るなら `INVEN_BODY` の種別を `SOFT_ARMOR` だけに
- *            する)。
+ *          - **胴は軽装 (SOFT_ARMOR) のみ**。プレイヤー `MONK` も
+ *            `heavy_armor()` の重量判定 (5 部位の防具重量合計 >
+ *            100 + レベル×4) に掛かると加速 (Lv10 以降) と耐麻痺
+ *            (Lv25 以降) のボーナスを失い、`PlayerStealth` でも隠密に
+ *            ペナルティを受けるため、忍者と同じ扱いで重鎧を外す。
+ *            `heavy_armor()` 自体はモンスターでは発火しない
+ *            (`CreatureClass::equals()` が常に false) ので、これも忍者の
+ *            盾・重鎧制限と同様「整合性のための縛り」になる。
  */
 const std::vector<ArmamentSlotEntry> &get_monk_armament_slot_entries()
 {
     static const std::vector<ArmamentSlotEntry> entries = {
-        { INVEN_BODY, { ItemKindType::SOFT_ARMOR, ItemKindType::HARD_ARMOR } },
+        { INVEN_BODY, { ItemKindType::SOFT_ARMOR } },
         { INVEN_HEAD, { ItemKindType::HELM, ItemKindType::CROWN } },
         { INVEN_FEET, { ItemKindType::BOOTS } },
         { INVEN_ARMS, { ItemKindType::GLOVES } },
