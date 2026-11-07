@@ -39,23 +39,22 @@ struct BasicFlagStorage {
     //! @param with_era 時代フラグを扱うか (モンスターの定義なら true、ダンジョンの出現条件なら false)
     MonsterBasicFlagGroups make_groups(bool with_era)
     {
-        return MonsterBasicFlagGroups{
-            .meat_feed_flags = &this->meat_feed_flags,
-            .resistance_flags = &this->resistance_flags,
-            .aura_flags = &this->aura_flags,
-            .behavior_flags = &this->behavior_flags,
-            .visual_flags = &this->visual_flags,
-            .kind_flags = &this->kind_flags,
-            .era_flags = with_era ? &this->era_flags : nullptr,
-            .drop_flags = &this->drop_flags,
-            .wilderness_flags = &this->wilderness_flags,
-            .feature_flags = &this->feature_flags,
-            .population_flags = &this->population_flags,
-            .speak_flags = &this->speak_flags,
-            .brightness_flags = &this->brightness_flags,
-            .special_flags = &this->special_flags,
-            .misc_flags = &this->misc_flags,
-        };
+        return MonsterBasicFlagGroups(
+            this->meat_feed_flags,
+            this->resistance_flags,
+            this->aura_flags,
+            this->behavior_flags,
+            this->visual_flags,
+            this->kind_flags,
+            this->drop_flags,
+            this->wilderness_flags,
+            this->feature_flags,
+            this->population_flags,
+            this->speak_flags,
+            this->brightness_flags,
+            this->special_flags,
+            this->misc_flags,
+            with_era ? &this->era_flags : nullptr);
     }
 };
 }

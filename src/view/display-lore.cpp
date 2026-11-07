@@ -17,6 +17,7 @@
 #include "monster-attack/monster-attack-table.h"
 #include "monster-race/race-ability-flags.h"
 #include "monster-race/race-era-flags.h"
+#include "monster-race/race-sex-const.h"
 #include "object/tval-types.h"
 #include "system/baseitem/baseitem-definition.h"
 #include "system/baseitem/baseitem-key.h"
@@ -348,6 +349,18 @@ void display_monster_kind_tags(lore_type *lore_ptr)
 {
     if (lore_ptr->kind_flags.has(MonsterKindType::UNIQUE)) {
         hooked_roff(_("[ユニーク]", "[UNIQ]"));
+    }
+
+    switch (lore_ptr->msex) {
+    case MonsterSex::MALE:
+        hooked_roff(_("[男性]", "[male]"));
+        break;
+    case MonsterSex::FEMALE:
+        hooked_roff(_("[女性]", "[female]"));
+        break;
+    case MonsterSex::NONE:
+    case MonsterSex::MAX:
+        break;
     }
 
     if (lore_ptr->misc_flags.has(MonsterMiscType::ELDRITCH_HORROR)) {

@@ -28,6 +28,11 @@
 
 /*!
  * @brief 耐性倍率計算の用途に応じた分岐処理
+ * @param dice 除数のダイスの面数
+ * @param fix 除数の固定値
+ * @param mode 計算の用途
+ * @return 耐性によるダメージ倍率の除数。dice 面のダイスの目を d として (d + fix) * 100 で、CALC_AVERAGE はその平均
+ * @details 戻り値は除数なので、ダメージが最小になる CALC_MIN では最大の値を、最大になる CALC_MAX では最小の値を返す。
  */
 PERCENTAGE randrate(int dice, int fix, rate_calc_type_mode mode)
 {
@@ -39,10 +44,10 @@ PERCENTAGE randrate(int dice, int fix, rate_calc_type_mode mode)
         return (dice + 1) * 50 + fix * 100;
         break;
     case CALC_MIN:
-        return (fix + 1) * 100;
+        return (dice + fix) * 100;
         break;
     case CALC_MAX:
-        return (dice + fix) * 100;
+        return (fix + 1) * 100;
         break;
     default:
         return (fix + 1) * 100;
@@ -121,6 +126,11 @@ PERCENTAGE calc_elec_damage_rate(CreatureEntity &creature)
 PERCENTAGE calc_fire_damage_rate(CreatureEntity &creature)
 {
     PERCENTAGE per = 100;
+
+    if (creature.has_immune_fire()) {
+        return 0;
+    }
+
     BIT_FLAGS flags = creature.has_vuln_fire();
     for (BIT_FLAGS check_flag = 0x01U; check_flag < FLAG_CAUSE_MAX; check_flag <<= 1) {
         if (any_bits(flags, check_flag)) {
@@ -157,6 +167,11 @@ PERCENTAGE calc_plasma_damage_rate(CreatureEntity &creature)
 PERCENTAGE calc_cold_damage_rate(CreatureEntity &creature)
 {
     PERCENTAGE per = 100;
+
+    if (creature.has_immune_cold()) {
+        return 0;
+    }
+
     BIT_FLAGS flags = creature.has_vuln_cold();
     for (BIT_FLAGS check_flag = 0x01U; check_flag < FLAG_CAUSE_MAX; check_flag <<= 1) {
         if (any_bits(flags, check_flag)) {
@@ -384,7 +399,7 @@ PERCENTAGE calc_nexus_damage_rate(CreatureEntity &creature, rate_calc_type_mode 
 {
     PERCENTAGE per = 100;
 
-    if (creature.has_resist_disen()) {
+    if (creature.has_resist_nexus()) {
         per *= 600;
         per /= randrate(4, 7, mode);
     }
@@ -430,7 +445,6 @@ PERCENTAGE calc_nether_damage_rate(CreatureEntity &creature, rate_calc_type_mode
  */
 PERCENTAGE calc_time_damage_rate(CreatureEntity &creature, rate_calc_type_mode mode)
 {
-    (void)mode; // unused
     PERCENTAGE per = 100;
 
     if (creature.has_resist_time()) {
@@ -446,7 +460,6 @@ PERCENTAGE calc_time_damage_rate(CreatureEntity &creature, rate_calc_type_mode m
  */
 PERCENTAGE calc_water_damage_rate(CreatureEntity &creature, rate_calc_type_mode mode)
 {
-    (void)mode; // unused
     PERCENTAGE per = 100;
 
     if (creature.has_resist_water()) {
@@ -511,7 +524,6 @@ PERCENTAGE calc_void_damage_rate_rand(CreatureEntity &creature)
  */
 PERCENTAGE calc_void_damage_rate(CreatureEntity &creature, rate_calc_type_mode mode)
 {
-    (void)mode; // unused
     PERCENTAGE per = 100;
     if (creature.has_pass_wall()) {
         per = per * 3 / 2;
@@ -529,7 +541,6 @@ PERCENTAGE calc_void_damage_rate(CreatureEntity &creature, rate_calc_type_mode m
  */
 PERCENTAGE calc_abyss_damage_rate(CreatureEntity &creature, rate_calc_type_mode mode)
 {
-    (void)mode; // unused
     PERCENTAGE per = 100;
 
     if (creature.has_resist_dark() != 0) {

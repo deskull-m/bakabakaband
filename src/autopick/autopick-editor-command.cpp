@@ -21,6 +21,7 @@
 #include "core/show-file.h"
 #include "game-option/input-options.h"
 #include "game-option/keymap-directory-getter.h"
+#include "io/input-context.h"
 #include "io/macro-configurations-store.h"
 #include "locale/language-switcher.h"
 #include "player-info/class-info.h"
@@ -532,7 +533,9 @@ ape_quittance do_editor_command(CreatureEntity &creature, AutopickTextBody *tb, 
     case EC_INSERT_MACRO: {
         draw_text_editor(creature, tb);
         term_erase(0, tb->cy - tb->upper + 1, tb->wid);
-        term_putstr(0, tb->cy - tb->upper + 1, tb->wid - 1, TERM_YELLOW, _("P:<トリガーキー>: ", "P:<Trigger key>: "));
+        constexpr auto prompt = _("P:<トリガーキー>: ", "P:<Trigger key>: ");
+        term_putstr(0, tb->cy - tb->upper + 1, tb->wid - 1, TERM_YELLOW, prompt);
+        const InputContextScope context_scope(InputKind::COMMAND_CHAR, prompt);
         if (!insert_macro_line(tb)) {
             break;
         }
@@ -548,6 +551,7 @@ ape_quittance do_editor_command(CreatureEntity &creature, AutopickTextBody *tb, 
         const auto mode = rogue_like_commands ? KeymapMode::ROGUE : KeymapMode::ORIGINAL;
         const auto mes = fmt::format("C:{}:<{}>: ", enum2i(mode), _("コマンドキー", "Keypress"));
         term_putstr(0, tb->cy - tb->upper + 1, tb->wid - 1, TERM_YELLOW, mes);
+        const InputContextScope context_scope(InputKind::COMMAND_CHAR, mes);
         if (!insert_keymap_line(tb)) {
             break;
         }

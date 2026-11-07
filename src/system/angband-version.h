@@ -56,6 +56,11 @@ constexpr std::string_view VARIANT_NAME("Bakabaka");
  *     v53〜v59 は凍結定数 (TIMED_EFFECT_COUNT_UNTIL_V59 = 56) で読み、
  *     v60 以降は件数を自己記述にしたので、以降 CreatureTimedEffect へ値を
  *     追加してもバージョン更新は不要。
+ * 61: 休憩・釣り・コマンドの繰り返しの続き (resting / fishing_dir /
+ *     command_cmd / command_arg / command_rep / command_dir) と、画面に
+ *     表示している範囲 (panel_row_min / panel_col_min) を保存 (hengband#6085 相当)。
+ *     wr_player() 末尾の wr_continuous_actions() で追記し、rd_extra() は
+ *     older_than(61) なら休憩・釣りをやめ繰り返し無し・表示範囲を決め直す状態で埋める。
  *
  * **採番の衝突に注意**: 作業ブランチごとに独立して番号を進めると、同じ番号で
  * 別フォーマットのセーブデータが 2 種類生まれ、どちらのビルドでも読めなくなる
@@ -63,7 +68,7 @@ constexpr std::string_view VARIANT_NAME("Bakabaka");
  * **バージョンを上げる前に必ず develop の最新を取り込み、この一覧の末尾に
  * 追記すること。**
  */
-constexpr uint32_t SAVEFILE_VERSION = 60;
+constexpr uint32_t SAVEFILE_VERSION = 61;
 
 /*!
  * @brief バージョンが開発版が安定版かを返す(廃止予定)

@@ -13,6 +13,8 @@
 #include "autopick/autopick-reader-writer.h"
 #include "autopick/autopick-util.h"
 #include "cmd-io/cmd-save.h"
+#include "core/asking-player.h"
+#include "io/input-context.h"
 #include "io/input-key-acceptor.h"
 #include "io/read-pref-file.h"
 #include "system/creature-entity.h"
@@ -187,9 +189,8 @@ void do_cmd_edit_autopick(CreatureEntity &creature)
         int com_id = 0;
         tb->adjust_cursor_column();
         draw_text_editor(creature, tb);
-        prt(_("(^Q:終了 ^W:セーブして終了, ESC:メニュー, その他:入力)",
-                "(^Q:Quit, ^W:Save&Quit, ESC:Menu, Other:Input text)"),
-            0, 0);
+        constexpr auto key_guide = _("(^Q:終了 ^W:セーブして終了, ESC:メニュー, その他:入力)", "(^Q:Quit, ^W:Save&Quit, ESC:Menu, Other:Input text)");
+        prt(key_guide, 0, 0);
         if (!tb->mark) {
             prt(fmt::format("({},{})", tb->cx, tb->cy), 0, 60);
         } else {
@@ -205,7 +206,7 @@ void do_cmd_edit_autopick(CreatureEntity &creature)
         tb->old_wid = tb->wid;
         tb->old_hgt = tb->hgt;
 
-        key = inkey_special(true);
+        key = input_special_key_with_context(InputKind::AUTOPICK_EDITOR, key_guide);
 
         if (key & SKEY_MASK) {
             com_id = analyze_move_key(tb, static_cast<uint32_t>(key));

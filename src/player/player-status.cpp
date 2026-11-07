@@ -248,6 +248,7 @@ static void update_bonuses(CreatureEntity &creature)
 
     /* Save the old vision stuff */
     const auto old_perception = creature.capture_perception_flags();
+    BIT_FLAGS old_lite_flags = creature.get_lite_flags();
     int16_t old_speed = static_cast<int16_t>(creature.get_speed());
 
     ARMOUR_CLASS old_dis_ac = creature.get_dis_ac();
@@ -356,6 +357,11 @@ static void update_bonuses(CreatureEntity &creature)
 
     if (new_perception.monster_perception_differs_from(old_perception)) {
         dur.set_flag(StatusRecalculatingFlag::MONSTER_STATUSES);
+    }
+
+    // 光源を持たないときの明るさ (cur_lite) は発光で決まる
+    if (creature.get_lite_flags() != old_lite_flags) {
+        dur.set_flag(StatusRecalculatingFlag::TORCH);
     }
 
     if (creature.get_speed() != old_speed) {

@@ -1685,6 +1685,9 @@ hengband_test_SOURCES = \
 	test/player-status/test-player-speed.cpp \
 	test/player-status/test-player-status-base.cpp \
 	\
+	test/player/test-player-status-flags.cpp \
+	test/player/test-player-status-resist.cpp \
+	\
 	test/racial/test-racial-android.cpp \
 	\
 	test/save/test-item-writer.cpp \
@@ -1727,6 +1730,7 @@ hengband_test_SOURCES = \
 	test/util/test-sha256.cpp \
 	test/util/test-string-processor.cpp \
 	\
+	test/view/test-display-lore.cpp \
 	test/view/test-map-info-cache.cpp \
 	test/view/test-map-terrain-visibility.cpp \
 	\

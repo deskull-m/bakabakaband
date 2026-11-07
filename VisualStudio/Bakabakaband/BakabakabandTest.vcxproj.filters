@@ -101,6 +101,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\src\stdafx.cpp" />
     <ClCompile Include="..\..\src\test\test-main.cpp" />
+    <ClCompile Include="..\..\src\test\view\test-display-lore.cpp" />
     <ClCompile Include="..\..\src\test\view\test-map-info-cache.cpp" />
     <ClCompile Include="..\..\src\test\view\test-map-terrain-visibility.cpp" />
     <ClCompile Include="..\..\src\test\window\test-overview-map-cache.cpp">
@@ -221,6 +222,8 @@
     <ClCompile Include="..\..\src\test\player-status\test-player-status-base.cpp">
       <Filter>player-status</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\test\player\test-player-status-flags.cpp" />
+    <ClCompile Include="..\..\src\test\player\test-player-status-resist.cpp" />
     <ClCompile Include="..\..\src\test\floor\test-floor-events.cpp">
       <Filter>floor</Filter>
     </ClCompile>

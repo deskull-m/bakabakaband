@@ -12,6 +12,7 @@
 #include "floor/floor-save.h"
 #include "floor/wild.h"
 #include "game-option/cheat-options.h"
+#include "game-option/disturbance-options.h"
 #include "game-option/map-screen-options.h"
 #include "game-option/play-record-options.h"
 #include "hpmp/hp-mp-regenerator.h"
@@ -39,6 +40,7 @@
 #include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"
 #include "target/target-checker.h"
+#include "term/screen-processor.h"
 #include "util/bit-flags-calculator.h"
 #include "util/string-processor.h"
 #include "view/display-messages.h"
@@ -100,18 +102,23 @@ void process_dungeon(CreatureEntity &creature, bool load_game)
     world.is_loading_now = false;
     creature.set_leaving(false);
 
-    command_cmd = 0;
-    command_rep = 0;
-    command_arg = 0;
-    command_dir = Direction::none();
-
     creature.set_ambush_flag(false);
     health_track(creature, 0);
 
-    // セーブを読み込んで再開したとき (load_game) は、セーブしている探索モードを解かず、続けた場合と同じにする
-    // (load_game は新規ゲームの最初の階でも真だが、そのときは探索モードではない)。
-    // 休憩・釣り・走り・移動は、残りの回数や向きをセーブしていないので止める
-    disturb(creature, !load_game, true);
+    // セーブを読み込んで再開したとき (load_game) は、セーブしている行動 (探索モード・休憩・釣り) とコマンドの繰り返しを続け、
+    // 続けた場合と同じにする。走りと移動は続きをセーブしていないので、読み込んだ時点で止まっている
+    // (load_game は新規ゲームの最初の階でも真だが、そのときはどれも始まっていない)
+    if (load_game) {
+        if (flush_disturb) {
+            flush();
+        }
+    } else {
+        command_cmd = 0;
+        command_rep = 0;
+        command_arg = 0;
+        command_dir = Direction::none();
+        disturb(creature, true, true);
+    }
     const auto quest_id = floor.get_quest_id();
     auto &quests = QuestList::get_instance();
     auto &monrace_questor = quests.get_quest(quest_id).get_bounty();

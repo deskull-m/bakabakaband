@@ -33,6 +33,7 @@
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "target/projection-path-calculator.h"
+#include "util/bit-flags-calculator.h"
 #include "util/finalizer.h"
 #include "view/display-messages.h"
 #include "window/display-sub-windows.h"

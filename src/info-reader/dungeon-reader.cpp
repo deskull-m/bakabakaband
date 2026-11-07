@@ -34,7 +34,7 @@
  */
 bool DungeonReader::grab_one_dungeon_flag(DungeonDefinition &dungeon, std::string_view what)
 {
-    if (EnumClassFlagGroup<DungeonFeatureType>::grab_one_flag(dungeon.flags, dungeon_flags, what)) {
+    if (info_grab_one_flag(dungeon.flags, dungeon_flags, what)) {
         return true;
     }
 
@@ -51,28 +51,26 @@ bool DungeonReader::grab_one_dungeon_flag(DungeonDefinition &dungeon, std::strin
 bool DungeonReader::grab_one_basic_monster_flag(DungeonDefinition &dungeon, std::string_view what)
 {
     // NONEは種族の性別未設定を表す値であり、出現条件のフラグにはしない。
-    if (what != "NONE" && EnumClassFlagGroup<MonsterSex>::grab_one_flag(dungeon.mon_sex, r_info_sex, what)) {
+    if (what != "NONE" && info_grab_one_flag(dungeon.mon_sex, r_info_sex, what)) {
         return true;
     }
 
-    // 時代フラグ(era_flags)はモンスターの定義のみが持ちダンジョンの出現条件には無いため null を渡す。
-    const MonsterBasicFlagGroups groups{
-        .meat_feed_flags = &dungeon.mon_meat_feed_flags,
-        .resistance_flags = &dungeon.mon_resistance_flags,
-        .aura_flags = &dungeon.mon_aura_flags,
-        .behavior_flags = &dungeon.mon_behavior_flags,
-        .visual_flags = &dungeon.mon_visual_flags,
-        .kind_flags = &dungeon.mon_kind_flags,
-        .era_flags = nullptr,
-        .drop_flags = &dungeon.mon_drop_flags,
-        .wilderness_flags = &dungeon.mon_wilderness_flags,
-        .feature_flags = &dungeon.mon_feature_flags,
-        .population_flags = &dungeon.mon_population_flags,
-        .speak_flags = &dungeon.mon_speak_flags,
-        .brightness_flags = &dungeon.mon_brightness_flags,
-        .special_flags = &dungeon.mon_special_flags,
-        .misc_flags = &dungeon.mon_misc_flags,
-    };
+    // 時代フラグ(era_flags)はモンスターの定義のみが持ちダンジョンの出現条件には無いため、末尾の era_flags は既定の null を使う。
+    const MonsterBasicFlagGroups groups(
+        dungeon.mon_meat_feed_flags,
+        dungeon.mon_resistance_flags,
+        dungeon.mon_aura_flags,
+        dungeon.mon_behavior_flags,
+        dungeon.mon_visual_flags,
+        dungeon.mon_kind_flags,
+        dungeon.mon_drop_flags,
+        dungeon.mon_wilderness_flags,
+        dungeon.mon_feature_flags,
+        dungeon.mon_population_flags,
+        dungeon.mon_speak_flags,
+        dungeon.mon_brightness_flags,
+        dungeon.mon_special_flags,
+        dungeon.mon_misc_flags);
     return grab_one_monster_basic_flag(groups, what);
 }
 
@@ -603,7 +601,7 @@ ParseErrorType DungeonReader::set_dungeon_generation(DungeonDefinition &dungeon,
                     if (name.empty()) {
                         continue;
                     }
-                    if (!EnumClassFlagGroup<PitKind>::grab_one_flag(dungeon.pit, dungeon_pit_kinds, name)) {
+                    if (!info_grab_one_flag(dungeon.pit, dungeon_pit_kinds, name)) {
                         msg_print(_("未知のダンジョン pit 種別 '{}'。", "Unknown dungeon pit kind '{}'."), name);
                         return ParseErrorType::INVALID_FLAG;
                     }
@@ -627,7 +625,7 @@ ParseErrorType DungeonReader::set_dungeon_generation(DungeonDefinition &dungeon,
                     if (name.empty()) {
                         continue;
                     }
-                    if (!EnumClassFlagGroup<NestKind>::grab_one_flag(dungeon.nest, dungeon_nest_kinds, name)) {
+                    if (!info_grab_one_flag(dungeon.nest, dungeon_nest_kinds, name)) {
                         msg_print(_("未知のダンジョン nest 種別 '{}'。", "Unknown dungeon nest kind '{}'."), name);
                         return ParseErrorType::INVALID_FLAG;
                     }

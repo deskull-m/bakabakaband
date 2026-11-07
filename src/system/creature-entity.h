@@ -2530,6 +2530,7 @@ public:
     virtual void set_hold_exp(BIT_FLAGS value);
     virtual void set_slow_digest(BIT_FLAGS value);
     virtual void set_lite_flags(BIT_FLAGS value);
+    virtual BIT_FLAGS get_lite_flags() const;
     virtual void set_warning_flags(BIT_FLAGS value);
     virtual void set_impact_flags(BIT_FLAGS value);
     virtual void set_earthquake_flags(BIT_FLAGS value);

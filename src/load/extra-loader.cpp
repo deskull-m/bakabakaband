@@ -6,14 +6,18 @@
  */
 
 #include "load/extra-loader.h"
+#include "floor/geometry.h"
+#include "io/input-key-requester.h"
 #include "load/dummy-loader.h"
 #include "load/load-util.h"
 #include "load/world-loader.h"
+#include "player/attack-defense-types.h"
 #include "system/creature-entity.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/floor/town-records.h"
 #include "target/target.h"
 #include "util/enum-converter.h"
+#include "window/main-window-util.h"
 #include "world/world.h"
 
 /*!
@@ -37,6 +41,38 @@ static void rd_last_target(CreatureEntity &creature)
         Target::clear_last_target();
         return;
     }
+}
+
+/*!
+ * @brief 休憩・釣り・コマンドの繰り返しの続きと、画面に表示している範囲を読み込む
+ * @param creature クリーチャーへの参照
+ * @details 古いセーブには無いので、続きの分からない休憩と釣りはやめ、繰り返しも無い状態から始める。
+ * 表示している範囲は負にして、generate_world() で決め直させる
+ */
+static void rd_continuous_actions(CreatureEntity &creature)
+{
+    if (loading_savefile_version_is_older_than(61)) {
+        if ((creature.get_action() == ACTION_REST) || (creature.get_action() == ACTION_FISH)) {
+            creature.set_action(ACTION_NONE);
+        }
+
+        panel_row_min = -1;
+        panel_col_min = -1;
+        return;
+    }
+
+    creature.set_resting(rd_s32b());
+    // 方向は Direction に渡すと範囲外で例外を投げるので、壊れた値は方向なしにする
+    const auto fishing_dir = rd_byte();
+    creature.set_fishing_dir(Direction::is_valid_dir(fishing_dir) ? fishing_dir : 0);
+    command_cmd = rd_s16b();
+    command_arg = rd_s16b();
+    command_rep = rd_s16b();
+    const auto dir_id = rd_byte();
+    const auto dir = Direction::is_valid_dir(dir_id) ? Direction(dir_id) : Direction::none();
+    command_dir = rd_bool() ? Direction::targetting(Target::get_last_target()) : dir;
+    panel_row_min = rd_s16b();
+    panel_col_min = rd_s16b();
 }
 
 /*!
@@ -84,4 +120,6 @@ void rd_extra(CreatureEntity &creature)
         creature.set_riding_t_m_idx(0);
         Target::clear_last_target();
     }
+
+    rd_continuous_actions(creature);
 }

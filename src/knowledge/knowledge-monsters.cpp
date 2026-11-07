@@ -8,12 +8,13 @@
 
 #include "knowledge/knowledge-monsters.h"
 #include "bot/bot-json-output.h"
+#include "core/asking-player.h"
 #include "core/show-file.h"
 #include "core/window-redrawer.h"
 #include "game-option/cheat-options.h"
 #include "game-option/special-options.h"
 #include "io-dump/dump-util.h"
-#include "io/input-key-acceptor.h"
+#include "io/input-context.h"
 #include "knowledge/monster-group-table.h"
 #include "lore/lore-util.h"
 #include "monster/monster-describer.h"
@@ -425,8 +426,8 @@ void do_cmd_knowledge_monsters(CreatureEntity &creature, bool *need_redraw, bool
         }
 
         prt(fmt::format(_("{} 種", "{} Races"), monrace_ids.size()), 3, 26);
-        prt(fmt::format(_("<方向>{}{}{}, ESC", "<dir>{}{}{}, ESC"), (!visual_list && !visual_only) ? _(", 'r'で思い出を見る", ", 'r' to recall") : "", visual_list ? _(", ENTERで決定", ", ENTER to accept") : _(", 'v'でシンボル変更", ", 'v' for visuals"), (symbols_cb.symbol != DisplaySymbol()) ? _(", 'c', 'p'でペースト", ", 'c', 'p' to paste") : _(", 'c'でコピー", ", 'c' to copy")),
-            hgt - 1, 0);
+        const auto key_guide = fmt::format(_("<方向>{}{}{}, ESC", "<dir>{}{}{}, ESC"), (!visual_list && !visual_only) ? _(", 'r'で思い出を見る", ", 'r' to recall") : "", visual_list ? _(", ENTERで決定", ", ENTER to accept") : _(", 'v'でシンボル変更", ", 'v' for visuals"), (symbols_cb.symbol != DisplaySymbol()) ? _(", 'c', 'p'でペースト", ", 'c', 'p' to paste") : _(", 'c'でコピー", ", 'c' to copy"));
+        prt(key_guide, hgt - 1, 0);
 
         DisplaySymbol symbol_dummy;
         auto *symbol_ptr = &symbol_dummy;
@@ -448,7 +449,7 @@ void do_cmd_knowledge_monsters(CreatureEntity &creature, bool *need_redraw, bool
             }
         }
 
-        char ch = inkey();
+        char ch = input_key_with_context(InputKind::BROWSER, key_guide);
         if (visual_mode_command(ch, &visual_list, browser_rows - 1, wid - (max + 3), &color_top, &character_left, &symbol_ptr->color, &symbol_ptr->character, need_redraw)) {
             if (direct_r_idx) {
                 switch (ch) {
@@ -474,7 +475,7 @@ void do_cmd_knowledge_monsters(CreatureEntity &creature, bool *need_redraw, bool
             if (!visual_list && !visual_only && !monrace_ids.empty() && MonraceList::is_valid(monrace_ids[mon_cur])) {
                 BotDrawnScreenScope bot_screen;
                 screen_roff(creature, monrace_ids[mon_cur], MONSTER_LORE_NORMAL);
-                (void)inkey();
+                (void)input_key_with_context(InputKind::ANY_KEY, "");
                 redraw = true;
             }
 

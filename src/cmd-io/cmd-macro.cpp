@@ -4,6 +4,7 @@
 #include "core/asking-player.h"
 #include "game-option/input-options.h"
 #include "io/files-util.h"
+#include "io/input-context.h"
 #include "io/input-key-acceptor.h"
 #include "io/input-key-requester.h"
 #include "io/macro-configurations-store.h"
@@ -53,6 +54,9 @@ static bool macro_dump(std::string_view filename)
  */
 static std::string do_cmd_macro_aux()
 {
+    constexpr auto prompt = _("トリガーキー: ", "Trigger: ");
+    prt(prompt, 18, 0);
+    const InputContextScope context_scope(InputKind::COMMAND_CHAR, prompt);
     const auto trigger = inkey_macro_trigger();
     char tmp[1024];
     ascii_to_text(tmp, trigger, sizeof(tmp));
@@ -72,9 +76,11 @@ static std::string do_cmd_macro_aux()
  */
 static void do_cmd_macro_aux_keymap(char *buf)
 {
+    constexpr auto prompt = _("押すキー: ", "Keypress: ");
+    prt(prompt, 18, 0);
     char tmp[1024];
     flush();
-    buf[0] = inkey();
+    buf[0] = input_key_with_context(InputKind::COMMAND_CHAR, prompt);
     buf[1] = '\0';
     ascii_to_text(tmp, buf, sizeof(tmp));
     term_addstr(-1, TERM_WHITE, tmp);
@@ -150,8 +156,9 @@ void do_cmd_macros(CreatureEntity &creature)
 
     const auto initial_filename = fmt::format("{}.prf", creature.base_name);
     while (true) {
-        msg_print(_("コマンド: ", "Command: "));
-        const auto key = inkey();
+        constexpr auto prompt = _("コマンド: ", "Command: ");
+        msg_print(prompt);
+        const auto key = input_key_with_context(InputKind::COMMAND_CHAR, prompt);
         if (key == ESCAPE) {
             break;
         }
@@ -161,8 +168,7 @@ void do_cmd_macros(CreatureEntity &creature)
         switch (key) {
         case '1': {
             prt(_("コマンド: ユーザー設定ファイルのロード", "Command: Load a user pref file"), 16, 0);
-            prt(_("ファイル: ", "File: "), 18, 0);
-            const auto ask_result = askfor(70, initial_filename);
+            const auto ask_result = input_string_on_row(_("ファイル: ", "File: "), 18, 70, initial_filename);
             if (!ask_result) {
                 continue;
             }
@@ -180,8 +186,7 @@ void do_cmd_macros(CreatureEntity &creature)
         }
         case '2': {
             prt(_("コマンド: マクロをファイルに追加する", "Command: Append macros to a file"), 16, 0);
-            prt(_("ファイル: ", "File: "), 18, 0);
-            const auto ask_result = askfor(70, initial_filename);
+            const auto ask_result = input_string_on_row(_("ファイル: ", "File: "), 18, 70, initial_filename);
             if (!ask_result) {
                 continue;
             }
@@ -196,7 +201,6 @@ void do_cmd_macros(CreatureEntity &creature)
         case '3': {
             prt(_("コマンド: マクロの確認", "Command: Query a macro"), 16, 0);
             prt(_("マクロ行動が(もしあれば)下に表示されます:", "Current action (if any) shown below:"), 20, 0);
-            prt(_("トリガーキー: ", "Trigger: "), 18, 0);
             const auto trigger = do_cmd_macro_aux();
             const auto k = macro_find_exact(trigger.data());
             if (k < 0) {
@@ -215,18 +219,16 @@ void do_cmd_macros(CreatureEntity &creature)
         }
         case '4': {
             prt(_("コマンド: マクロの作成", "Command: Create a macro"), 16, 0);
-            prt(_("トリガーキー: ", "Trigger: "), 18, 0);
             const auto trigger = do_cmd_macro_aux();
             c_prt(TERM_L_RED,
                 _("カーソルキーの左右でカーソル位置を移動。BackspaceかDeleteで一文字削除。",
                     "Press Left/Right arrow keys to move cursor. Backspace/Delete to delete a char."),
                 22, 0);
-            prt(_("マクロ行動: ", "Action: "), 20, 0);
             // 最後に参照したマクロデータを元に作成する（コピーを行えるように）
             macro_buf[80] = '\0';
             char tmp[81]{};
             ascii_to_text(tmp, macro_buf, sizeof(tmp));
-            const auto ask_result = askfor(80, tmp);
+            const auto ask_result = input_string_on_row(_("マクロ行動: ", "Action: "), 20, 80, tmp);
             if (!ask_result) {
                 break;
             }
@@ -238,7 +240,6 @@ void do_cmd_macros(CreatureEntity &creature)
         }
         case '5': {
             prt(_("コマンド: マクロの削除", "Command: Remove a macro"), 16, 0);
-            prt(_("トリガーキー: ", "Trigger: "), 18, 0);
             const auto trigger = do_cmd_macro_aux();
             macro_add(trigger.data(), trigger.data());
             msg_print(_("マクロを削除しました。", "Removed a macro."));
@@ -246,8 +247,7 @@ void do_cmd_macros(CreatureEntity &creature)
         }
         case '6': {
             prt(_("コマンド: キー配置をファイルに追加する", "Command: Append keymaps to a file"), 16, 0);
-            prt(_("ファイル: ", "File: "), 18, 0);
-            const auto ask_result = askfor(80, initial_filename);
+            const auto ask_result = input_string_on_row(_("ファイル: ", "File: "), 18, 80, initial_filename);
             if (!ask_result) {
                 continue;
             }
@@ -262,7 +262,6 @@ void do_cmd_macros(CreatureEntity &creature)
         case '7': {
             prt(_("コマンド: キー配置の確認", "Command: Query a keymap"), 16, 0);
             prt(_("マクロ行動が(もしあれば)下に表示されます:", "Current action (if any) shown below:"), 20, 0);
-            prt(_("押すキー: ", "Keypress: "), 18, 0);
             do_cmd_macro_aux_keymap(buf);
             const auto &act = keymap_actions_map.at(mode).at(static_cast<uint8_t>(buf[0]));
             if (!act) {
@@ -282,18 +281,16 @@ void do_cmd_macros(CreatureEntity &creature)
         }
         case '8': {
             prt(_("コマンド: キー配置の作成", "Command: Create a keymap"), 16, 0);
-            prt(_("押すキー: ", "Keypress: "), 18, 0);
             do_cmd_macro_aux_keymap(buf);
             c_prt(TERM_L_RED,
                 _("カーソルキーの左右でカーソル位置を移動。BackspaceかDeleteで一文字削除。",
                     "Press Left/Right arrow keys to move cursor. Backspace/Delete to delete a char."),
                 22, 0);
-            prt(_("行動: ", "Action: "), 20, 0);
             // 最後に参照したマクロデータを元に作成する（コピーを行えるように）
             macro_buf[80] = '\0';
             char tmp[81]{};
             ascii_to_text(tmp, macro_buf, sizeof(tmp));
-            const auto ask_result = askfor(80, tmp);
+            const auto ask_result = input_string_on_row(_("行動: ", "Action: "), 20, 80, tmp);
             if (!ask_result) {
                 break;
             }
@@ -305,7 +302,6 @@ void do_cmd_macros(CreatureEntity &creature)
         }
         case '9':
             prt(_("コマンド: キー配置の削除", "Command: Remove a keymap"), 16, 0);
-            prt(_("押すキー: ", "Keypress: "), 18, 0);
             do_cmd_macro_aux_keymap(buf);
             keymap_actions_map.at(mode).at(static_cast<uint8_t>(buf[0])).reset();
             msg_print(_("キー配置を削除しました。", "Removed a keymap."));
@@ -316,8 +312,7 @@ void do_cmd_macros(CreatureEntity &creature)
                 _("カーソルキーの左右でカーソル位置を移動。BackspaceかDeleteで一文字削除。",
                     "Press Left/Right arrow keys to move cursor. Backspace/Delete to delete a char."),
                 22, 0);
-            prt(_("マクロ行動: ", "Action: "), 20, 0);
-            const auto ask_result = askfor(80);
+            const auto ask_result = input_string_on_row(_("マクロ行動: ", "Action: "), 20, 80);
             if (!ask_result) {
                 continue;
             }

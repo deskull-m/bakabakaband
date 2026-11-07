@@ -17,6 +17,7 @@
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/terrain/terrain-definition.h"
+#include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
 #include <queue>
 #include <vector>
