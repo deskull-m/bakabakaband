@@ -20,6 +20,11 @@ enum class MonraceId : short;
 
 class LocalizedString;
 class MonraceDefinition;
+
+namespace test {
+class MonraceListTestAccess;
+}
+
 class MonraceList : public util::AbstractMapWrapper<MonraceId, std::shared_ptr<MonraceDefinition>> {
 public:
     MonraceList(MonraceList &&) = delete;
@@ -81,6 +86,8 @@ private:
     static MonraceList instance;
     std::map<MonraceId, std::shared_ptr<MonraceDefinition>> monraces;
     mutable std::vector<MonraceDefinition *> monrace_flat_cache;
+
+    friend class test::MonraceListTestAccess;
 
     const static std::map<MonraceId, std::set<MonraceId>> unified_uniques;
 
