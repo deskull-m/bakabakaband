@@ -10,7 +10,6 @@
 class QuestType;
 struct QuestFixedMap;
 struct QuestLegendCell;
-struct QuestDescriptionBlock;
 
 /*!
  * @brief 固定クエスト JSONC 読み込みクラス
