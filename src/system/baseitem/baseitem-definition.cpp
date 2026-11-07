@@ -41,6 +41,7 @@ BaseitemDefinition BaseitemDefinition::clone_without_required_fields() const
     cloned.gen_flags = this->gen_flags;
     cloned.easy_know = this->easy_know;
     cloned.alliance_idx = this->alliance_idx;
+    cloned.civilization = this->civilization;
     return cloned;
 }
 

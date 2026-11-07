@@ -8,6 +8,7 @@
 #include "alliance/alliance.h"
 #include "artifact/random-art-effects.h"
 #include "info-reader/activation-reader.h"
+#include "info-reader/baseitem-tokens-table.h"
 #include "info-reader/info-reader-util.h"
 #include "info-reader/item-flag-reader.h"
 #include "info-reader/json-reader-util.h"
@@ -178,6 +179,10 @@ ParseErrorType BaseitemReader::read() const
     }
     if (const auto err = this->set_baseitem_alliance(baseitem); err != ParseErrorType::NONE) {
         msg_print(_("アイテムのアライアンス情報読込失敗。ID: '{}'。", "Failed to load alliance of item. ID: '{}'."), item_id);
+        return err;
+    }
+    if (const auto err = this->set_baseitem_civilization(baseitem); err != ParseErrorType::NONE) {
+        msg_print(_("アイテムの文明水準読込失敗。ID: '{}'。", "Failed to load civilization level of item. ID: '{}'."), item_id);
         return err;
     }
     if (const auto err = this->set_baseitem_activate(baseitem); err != ParseErrorType::NONE) {
@@ -362,6 +367,35 @@ ParseErrorType BaseitemReader::set_baseitem_alliance(BaseitemDefinition &baseite
         return ParseErrorType::INVALID_FLAG;
     }
 
+    return ParseErrorType::NONE;
+}
+
+/*!
+ * @brief 装備品の文明水準を設定する
+ * @param baseitem 設定対象のベースアイテム
+ * @return エラーコード
+ * @details 未指定なら CivilizationLevel::NONE (分類なし) のまま。
+ *          トークンは baseitem_civilizations (baseitem-tokens-table.cpp) を参照。
+ */
+ParseErrorType BaseitemReader::set_baseitem_civilization(BaseitemDefinition &baseitem) const
+{
+    const auto &civilization_data = get_json_value(this->baseitem_data, "civilization");
+    if (civilization_data.is_null()) {
+        baseitem.civilization = CivilizationLevel::NONE;
+        return ParseErrorType::NONE;
+    }
+    if (!civilization_data.is_string()) {
+        return ParseErrorType::INVALID_TYPE;
+    }
+
+    const auto civilization_token = civilization_data.get<std::string>();
+    const auto it = baseitem_civilizations.find(civilization_token);
+    if (it == baseitem_civilizations.end()) {
+        msg_print(_("未知の文明水準 '{}'。", "Unknown civilization level '{}'."), civilization_token);
+        return ParseErrorType::INVALID_FLAG;
+    }
+
+    baseitem.civilization = it->second;
     return ParseErrorType::NONE;
 }
 
