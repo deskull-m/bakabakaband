@@ -34,7 +34,7 @@
  */
 bool DungeonReader::grab_one_dungeon_flag(DungeonDefinition &dungeon, std::string_view what)
 {
-    if (EnumClassFlagGroup<DungeonFeatureType>::grab_one_flag(dungeon.flags, dungeon_flags, what)) {
+    if (info_grab_one_flag(dungeon.flags, dungeon_flags, what)) {
         return true;
     }
 
@@ -51,7 +51,7 @@ bool DungeonReader::grab_one_dungeon_flag(DungeonDefinition &dungeon, std::strin
 bool DungeonReader::grab_one_basic_monster_flag(DungeonDefinition &dungeon, std::string_view what)
 {
     // NONEは種族の性別未設定を表す値であり、出現条件のフラグにはしない。
-    if (what != "NONE" && EnumClassFlagGroup<MonsterSex>::grab_one_flag(dungeon.mon_sex, r_info_sex, what)) {
+    if (what != "NONE" && info_grab_one_flag(dungeon.mon_sex, r_info_sex, what)) {
         return true;
     }
 
@@ -601,7 +601,7 @@ ParseErrorType DungeonReader::set_dungeon_generation(DungeonDefinition &dungeon,
                     if (name.empty()) {
                         continue;
                     }
-                    if (!EnumClassFlagGroup<PitKind>::grab_one_flag(dungeon.pit, dungeon_pit_kinds, name)) {
+                    if (!info_grab_one_flag(dungeon.pit, dungeon_pit_kinds, name)) {
                         msg_print(_("未知のダンジョン pit 種別 '{}'。", "Unknown dungeon pit kind '{}'."), name);
                         return ParseErrorType::INVALID_FLAG;
                     }
@@ -625,7 +625,7 @@ ParseErrorType DungeonReader::set_dungeon_generation(DungeonDefinition &dungeon,
                     if (name.empty()) {
                         continue;
                     }
-                    if (!EnumClassFlagGroup<NestKind>::grab_one_flag(dungeon.nest, dungeon_nest_kinds, name)) {
+                    if (!info_grab_one_flag(dungeon.nest, dungeon_nest_kinds, name)) {
                         msg_print(_("未知のダンジョン nest 種別 '{}'。", "Unknown dungeon nest kind '{}'."), name);
                         return ParseErrorType::INVALID_FLAG;
                     }

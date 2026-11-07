@@ -26,6 +26,7 @@
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
 #include "system/system-variables.h"
+#include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
 #include "world/world-collapsion.h"
 #include "world/world.h"

@@ -13,6 +13,7 @@
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/terrain/terrain-definition.h"
+#include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
 #include <algorithm>
 #include <range/v3/algorithm.hpp>

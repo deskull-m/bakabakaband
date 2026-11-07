@@ -14,6 +14,7 @@
  */
 
 #include "info-reader/info-reader-util.h"
+#include "util/flag-group.h"
 
 #include "artifact/random-art-effects.h"
 #include "info-reader/activation-reader.h"
@@ -94,6 +95,28 @@ TEST_CASE("info_grab_one_const stores the constant only when the token is found"
         CHECK_FALSE(info_grab_one_const(buf, TEST_FLAGS, "UNKNOWN"));
         CHECK(buf == initial_value);
     }
+}
+
+TEST_CASE("info_grab_one_flag sets the flag only when the token is found")
+{
+    enum class SmallFlag {
+        ZERO,
+        THREE = 3,
+        MAX,
+    };
+    const std::map<std::string, SmallFlag> dict = {
+        { "ZERO", SmallFlag::ZERO },
+        { "THREE", SmallFlag::THREE },
+    };
+
+    EnumClassFlagGroup<SmallFlag> flags;
+
+    CHECK(info_grab_one_flag(flags, dict, "THREE"));
+    CHECK(flags.has(SmallFlag::THREE));
+
+    // 見つからなければ何も変更しない
+    CHECK_FALSE(info_grab_one_flag(flags, dict, "UNKNOWN"));
+    CHECK(flags.count() == 1);
 }
 
 TEST_CASE("info_set_value converts the string into a number")

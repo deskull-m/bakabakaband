@@ -74,7 +74,7 @@ ParseErrorType VaultReader::read_flags(vault_type &vault)
             return this->fail(ParseErrorType::INVALID_TYPE, path, _("文字列が必要です", "expected a string"));
         }
         const auto &name = flags[i].get_ref<const std::string &>();
-        if (!EnumClassFlagGroup<VaultFeatureType>::grab_one_flag(vault.flags, vault_flags, name)) {
+        if (!info_grab_one_flag(vault.flags, vault_flags, name)) {
             return this->fail(ParseErrorType::INVALID_FLAG, path, _("未知のVaultフラグです", "unknown vault flag"));
         }
     }

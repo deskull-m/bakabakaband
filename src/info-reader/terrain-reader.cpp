@@ -25,7 +25,7 @@ constexpr int MAX_TERRAIN_MAP_PRIORITY = 125;
  */
 static bool grab_one_feat_flag(TerrainType &terrain, std::string_view what)
 {
-    if (EnumClassFlagGroup<TerrainCharacteristics>::grab_one_flag(terrain.flags, f_info_flags, what)) {
+    if (info_grab_one_flag(terrain.flags, f_info_flags, what)) {
         return true;
     }
 

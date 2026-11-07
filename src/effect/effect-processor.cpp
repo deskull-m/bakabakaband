@@ -26,6 +26,7 @@
 #include "system/monrace/monrace-definition.h"
 #include "target/projection-path-calculator.h"
 #include "tracking/lore-tracker.h"
+#include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
 #include <vector>
 

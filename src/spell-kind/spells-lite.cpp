@@ -16,6 +16,7 @@
 #include "system/monrace/monrace-definition.h"
 #include "system/terrain/terrain-definition.h"
 #include "target/projection-path-calculator.h"
+#include "util/bit-flags-calculator.h"
 #include "util/string-processor.h"
 #include "view/display-messages.h"
 #include "world/world.h"

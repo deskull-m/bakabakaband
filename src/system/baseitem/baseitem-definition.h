@@ -9,6 +9,7 @@
 #include "object-enchant/tr-flags.h"
 #include "object-enchant/trg-types.h"
 #include "system/baseitem/baseitem-key.h"
+#include "system/h-type.h"
 #include "util/dice.h"
 #include "util/flag-group.h"
 #include "view/display-symbol.h"

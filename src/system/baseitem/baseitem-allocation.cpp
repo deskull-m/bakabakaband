@@ -11,6 +11,7 @@
 #include "system/baseitem/baseitem-list.h"
 #include "system/baseitem/baseitem-service.h"
 #include "system/system-variables.h"
+#include "util/bit-flags-calculator.h"
 #include <array>
 
 BaseitemAllocationEntry::BaseitemAllocationEntry(short index, int level, short prob1, short prob2)

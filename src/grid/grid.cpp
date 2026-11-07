@@ -37,6 +37,7 @@
 #include "system/terrain/terrain-list.h"
 #include "term/gameterm.h"
 #include "term/z-rand.h"
+#include "util/bit-flags-calculator.h"
 #include "util/enum-converter.h"
 #include "view/display-map.h"
 #include "view/display-messages.h"
