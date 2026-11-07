@@ -1707,6 +1707,7 @@ hengband_test_SOURCES = \
 	\
 	test/system/baseitem/test-baseitem-allocation.cpp \
 	test/system/baseitem/test-baseitem-definition.cpp \
+	test/system/baseitem/test-civilization-level.cpp \
 	test/system/baseitem/test-baseitem-list.cpp \
 	\
 	test/system/floor/test-floor-info.cpp \
