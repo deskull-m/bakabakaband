@@ -34,3 +34,21 @@ enum class CivilizationLevel : uint8_t {
  * @return 表示名。NONE / MAX では空文字列
  */
 std::string_view civilization_level_name(CivilizationLevel level);
+
+/*!
+ * @brief その文明水準の存在が、その文明水準の品を扱えるか
+ * @param item_level 品の文明水準 (BaseitemDefinition::civilization)
+ * @param user_level 扱う側の文明水準 (MonraceDefinition::civilization)
+ * @return 扱えるなら true
+ * @details **「以下なら可」判定**。本列挙は品側では「作れる最低の技術段階」を
+ *          表すので、鉄器文明の兵士は棍棒 (STONE) も鉄剣 (IRON) も扱える。
+ *          完全一致にすると鉄器水準の射手が STONE の矢を撃てない等の穴が開く。
+ *
+ *          **どちらかが NONE なら常に true**。品側の NONE は「一般的な
+ *          ファンタジーの中でもレアな品」(ミスリル・竜素材・魔法の装具等) で
+ *          どの文明の産物でもないため水準で縛らず、扱う側の NONE は
+ *          「文明に属さない存在」(獣・悪魔・竜・アンデッド等) で従来どおり
+ *          制限しない。これにより既定の挙動を変えるのは「水準を持つ存在 ×
+ *          水準を持つ品」の組み合わせだけになる。
+ */
+bool is_civilization_usable(CivilizationLevel item_level, CivilizationLevel user_level);

@@ -22,6 +22,7 @@
 #include "system/baseitem/baseitem-definition.h"
 #include "system/baseitem/baseitem-key.h"
 #include "system/baseitem/baseitem-list.h"
+#include "system/baseitem/civilization-level-types.h"
 #include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/item-entity.h"
@@ -461,11 +462,12 @@ bool is_purchasable_armament(const BaseitemDefinition &baseitem)
     });
 }
 
-//! 武装度予算で購入できるベースアイテムの候補 (価値・性能付き)
+//! 武装度予算で購入できるベースアイテムの候補 (価値・性能・文明水準付き)
 struct ArmamentCandidate {
     BaseitemKey bi_key;
     int cost; //!< 予算から差し引く価値
     int quality; //!< 選定に使う性能 (防具は基本AC、武器は打撃ダイスの最大値)
+    CivilizationLevel civilization; //!< 品の文明水準 (扱う側の水準との突き合わせに使う)
 };
 
 /*!
@@ -512,7 +514,7 @@ const std::map<int, std::vector<ArmamentCandidate>> &get_armament_candidates()
                     continue;
                 }
 
-                slot_candidates.push_back({ baseitem.bi_key, baseitem.cost, quality });
+                slot_candidates.push_back({ baseitem.bi_key, baseitem.cost, quality, baseitem.civilization });
             }
         }
 
@@ -526,6 +528,7 @@ const std::map<int, std::vector<ArmamentCandidate>> &get_armament_candidates()
  * @brief 予算内で最も上等な装備を 1 つ選ぶ
  * @param entry 対象の装備スロットと、そこへ装備できるアイテム種別
  * @param budget このスロットに使える上限価値
+ * @param civilization 装備する側の文明水準 (この水準を超える品は候補から除く)
  * @return 選ばれた候補。予算内の候補が無ければ tl::nullopt
  * @details 予算内で最も高価な品の価値を基準とし、その半額以上の候補から等確率で
  *          選ぶ。価値を選定基準にすることで「武装度が高いほど上質な装備」が
@@ -537,7 +540,7 @@ const std::map<int, std::vector<ArmamentCandidate>> &get_armament_candidates()
  *          達してしまう。性能値は「装備しても無意味な AC0 の品」を候補から
  *          除くためだけに使う。
  */
-tl::optional<ArmamentCandidate> pick_armament(const ArmamentSlotEntry &entry, int budget)
+tl::optional<ArmamentCandidate> pick_armament(const ArmamentSlotEntry &entry, int budget, CivilizationLevel civilization)
 {
     const auto &candidates_map = get_armament_candidates();
     const auto it = candidates_map.find(entry.slot);
@@ -547,8 +550,15 @@ tl::optional<ArmamentCandidate> pick_armament(const ArmamentSlotEntry &entry, in
 
     // キャッシュは既定のスロット表から作るため、忍者用の表のように種別を狭めた
     // 呼出では、そのスロットの候補をさらに絞り込む。
-    const auto is_allowed = [&entry](const ArmamentCandidate &candidate) {
-        return std::find(entry.tvals.begin(), entry.tvals.end(), candidate.bi_key.tval()) != entry.tvals.end();
+    // 文明水準の絞り込みも**ここ (best_cost の算出より前) で行う**。後段で弾くと
+    // 「予算内で最高価な品の半額以上」の帯が空になり、そのスロットが裸になってしまう。
+    // 前段で除けば帯が 1 つ下の品へ自動的に落ちる。
+    const auto is_allowed = [&entry, civilization](const ArmamentCandidate &candidate) {
+        if (std::find(entry.tvals.begin(), entry.tvals.end(), candidate.bi_key.tval()) == entry.tvals.end()) {
+            return false;
+        }
+
+        return is_civilization_usable(candidate.civilization, civilization);
     };
 
     auto best_cost = 0;
@@ -809,7 +819,7 @@ void equip_monster_by_armament_budget(CreatureEntity &monster)
     // これにより 1 部位に予算を使い切らず、武装度が高いほど全身が上等になる。
     for (auto i = 0U; i < targets.size(); i++) {
         const auto slot_budget = budget / static_cast<int>(targets.size() - i);
-        const auto candidate = pick_armament(*targets[i], slot_budget);
+        const auto candidate = pick_armament(*targets[i], slot_budget, monrace.civilization);
         if (!candidate) {
             continue;
         }
