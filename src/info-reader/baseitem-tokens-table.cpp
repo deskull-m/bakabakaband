@@ -189,6 +189,7 @@ const std::unordered_map<std::string_view, tr_type> baseitem_flags = {
     { "SUSHI", TR_SUSHI },
     { "STANDARDIZED", TR_STANDARDIZED },
     { "IM_LITE", TR_IM_LITE },
+    { "JOKE", TR_JOKE },
 };
 
 /*!

@@ -481,6 +481,7 @@ BIT_FLAGS get_player_flags(CreatureEntity &creature, tr_type tr_flag)
     case TR_IM_DARK:
         return has_immune_dark(creature);
     case TR_NASTY:
+    case TR_JOKE:
     case TR_INDESTRUCTIBLE:
     case TR_NEVER_MOVE:
     case TR_INVEN_ACTIVATE:
