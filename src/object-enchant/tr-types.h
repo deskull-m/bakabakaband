@@ -190,8 +190,9 @@ enum tr_type : int {
     TR_KILL_FEMALE = 175, //!< 女性スレイ(X女)
     TR_STANDARDIZED = 176, //!< 規格品
     TR_IM_LITE = 177, //!< 閃光免疫
+    TR_JOKE = 178, //!< ネタ装備 (下着・水着・衣装・かぶりもの等、まともな装具ではない品)
 
-    TR_FLAG_MAX = 178,
+    TR_FLAG_MAX = 179,
 };
 
 /** 能力値(STR,INT,WIS,DEX,CON,CHR)のpvalを増減させるフラグのリスト */

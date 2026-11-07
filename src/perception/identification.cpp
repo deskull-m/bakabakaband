@@ -84,6 +84,10 @@ bool screen_object(CreatureEntity &creature, const ItemEntity &item, BIT_FLAGS m
         info[i++] = _("それは例のアレだ。", "It is .. need I say anything more?");
     }
 
+    if (flags.has(TR_JOKE)) {
+        info[i++] = _("それはまともな装具ではない。", "It is not a serious piece of gear.");
+    }
+
     const auto &bi_key = item.bi_key;
     if (bi_key.tval() == ItemKindType::FIGURINE) {
         info[i++] = _("それは投げた時ペットに変化する。", "It will transform into a pet when thrown.");
