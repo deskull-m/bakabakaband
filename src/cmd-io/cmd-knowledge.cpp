@@ -1,8 +1,9 @@
 #include "cmd-io/cmd-knowledge.h"
 #include "bot/bot-json-output.h"
 #include "cmd-visual/cmd-draw.h"
+#include "core/asking-player.h"
 #include "game-option/birth-options.h"
-#include "io/input-key-acceptor.h"
+#include "io/input-context.h"
 #include "knowledge/knowledge-alliance.h"
 #include "knowledge/knowledge-autopick.h"
 #include "knowledge/knowledge-experiences.h"
@@ -71,8 +72,9 @@ void do_cmd_knowledge(CreatureEntity &creature)
         prt(_("-続く-", "-more-"), 17, 8);
         prt(_("ESC) 抜ける", "ESC) Exit menu"), 21, 1);
         prt(_("SPACE) 次ページ", "SPACE) Next page"), 21, 30);
-        prt(_("コマンド:", "Command: "), 20, 0);
-        i = inkey();
+        constexpr auto prompt = _("コマンド:", "Command: ");
+        prt(prompt, 20, 0);
+        i = input_key_with_context(InputKind::COMMAND_CHAR, prompt);
 
         if (i == ESCAPE) {
             break;
