@@ -71,7 +71,7 @@ void effect_player_nuke(CreatureEntity &creature, EffectPlayerType *ep_ptr)
         msg_print(_("放射能で攻撃された！", "You are hit by radiation!"));
     }
 
-    ep_ptr->dam = ep_ptr->dam * calc_pois_damage_rate(creature) / 100;
+    ep_ptr->dam = ep_ptr->dam * calc_nuke_damage_rate(creature) / 100;
 
     ep_ptr->get_damage = take_hit(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
     if ((double_resist || creature.has_resist_pois()) || check_multishadow(creature)) {
