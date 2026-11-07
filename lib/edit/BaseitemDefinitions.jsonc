@@ -1378,7 +1378,6 @@
           "rarity": 1,
         },
       ],
-      "civilization": "IRON",
       "flags": ["RES_CHAOS", "SHOW_MODS"],
       "flavor": {
         "ja": "千変万化の姿を持つこの武器は混沌の力によって敵を切り刻み、殺戮にふける事に残忍な喜びを感じている。",
@@ -2134,7 +2133,6 @@
           "rarity": 1,
         },
       ],
-      "civilization": "IRON",
       "flags": ["SLAY_UNDEAD", "SHOW_MODS"],
       "flavor": {
         "ja": "巨人の武器であり、相手の骨を、体を、そして精神をも粉砕する魔法が掛けられている。",
@@ -2674,7 +2672,6 @@
           "rarity": 1,
         },
       ],
-      "civilization": "IRON",
       "flags": ["SHOW_MODS", "RIDING"],
       "flavor": {
         "ja": "死神の武器である。その長い刃は流血の期待に歓喜の声を上げているかのようだ。",
@@ -3322,7 +3319,6 @@
           "rarity": 1,
         },
       ],
-      "civilization": "BRONZE",
       "flags": ["IGNORE_ACID", "IGNORE_COLD", "IGNORE_FIRE", "IGNORE_ELEC", "STEALTH", "SEARCH"],
       "flavor": {
         "ja": "不思議な絹のような素材で作られた外套だ。その素材は周りの景色の色と形を映し出し、着用者を隠す効果がある。",
@@ -4330,7 +4326,6 @@
           "rarity": 1,
         },
       ],
-      "civilization": "IRON",
       "flags": ["IGNORE_ACID"],
       "flavor": {
         "ja": "ダイアモンドのように硬いアダマンタイトでできた精巧で美しい鎧であり、これほどの防御をもたらす鎧は中つ国には他に存在しない。",
@@ -4366,7 +4361,6 @@
           "rarity": 1,
         },
       ],
-      "civilization": "IRON",
       "flags": ["IGNORE_ACID"],
       "flavor": {
         "ja": "遥かなる昔に伝説のドワーフの鍛冶師に鍛えられた、輝くまことの銀の鎧だ。凝視すると純白にきらめく。",
@@ -4402,7 +4396,6 @@
           "rarity": 1,
         },
       ],
-      "civilization": "IRON",
       "flags": ["IGNORE_ACID"],
       "flavor": {
         "ja": "本当に希少で驚くべきまことの銀製の鎖かたびらであり、他の鎧に比べてもその軽さにしてより高い防御を与える。",
@@ -4474,7 +4467,6 @@
           "rarity": 1,
         },
       ],
-      "civilization": "IRON",
       "flags": ["IGNORE_ACID", "REFLECT"],
       "flavor": {
         "ja": "",
@@ -4546,7 +4538,6 @@
           "rarity": 1,
         },
       ],
-      "civilization": "BRONZE",
       "flags": ["RES_DARK", "RES_LITE"],
       "flavor": {
         "ja": "着用者を影の層で包み込む闇夜の色のクロークだ。",
@@ -7100,7 +7091,6 @@
           "rarity": 1,
         },
       ],
-      "civilization": "IRON",
       "flags": ["SHOW_MODS", "IGNORE_ACID", "IGNORE_COLD", "IGNORE_FIRE", "IGNORE_ELEC"],
       "flavor": {
         "ja": "",
@@ -14243,7 +14233,6 @@
           "rarity": 1,
         },
       ],
-      "civilization": "IRON",
       "flags": ["RES_ACID", "ACTIVATE", "IGNORE_ACID", "IGNORE_ELEC", "IGNORE_FIRE", "IGNORE_COLD"],
       "flavor": {
         "ja": "木や金属が耐えられないかのような漆黒の鱗鎧だ。",
@@ -14279,7 +14268,6 @@
           "rarity": 1,
         },
       ],
-      "civilization": "IRON",
       "flags": ["RES_ELEC", "ACTIVATE", "IGNORE_ACID", "IGNORE_ELEC", "IGNORE_FIRE", "IGNORE_COLD"],
       "flavor": {
         "ja": "着た者が動くと不気味な稲妻と光を放つ、サファイアのように青い鱗鎧だ。",
@@ -14315,7 +14303,6 @@
           "rarity": 1,
         },
       ],
-      "civilization": "IRON",
       "flags": ["RES_COLD", "ACTIVATE", "IGNORE_ACID", "IGNORE_ELEC", "IGNORE_FIRE", "IGNORE_COLD"],
       "flavor": {
         "ja": "冷淡な白に冷たくきらめく鱗鎧だ。それを見る時、背筋が寒くなる。",
@@ -14351,7 +14338,6 @@
           "rarity": 1,
         },
       ],
-      "civilization": "IRON",
       "flags": ["RES_FIRE", "ACTIVATE", "IGNORE_ACID", "IGNORE_ELEC", "IGNORE_FIRE", "IGNORE_COLD"],
       "flavor": {
         "ja": "常に燃える炎に赤く彩られた鱗鎧だ。これを着ると古い火傷跡が痛む。",
@@ -14387,7 +14373,6 @@
           "rarity": 1,
         },
       ],
-      "civilization": "IRON",
       "flags": ["RES_POIS", "ACTIVATE", "IGNORE_ACID", "IGNORE_ELEC", "IGNORE_FIRE", "IGNORE_COLD"],
       "flavor": {
         "ja": "病的な緑に光る鱗鎧だ。",
@@ -14423,7 +14408,6 @@
           "rarity": 1,
         },
       ],
-      "civilization": "IRON",
       "flags": [
         "RES_ACID",
         "RES_ELEC",
@@ -14470,7 +14454,6 @@
           "rarity": 1,
         },
       ],
-      "civilization": "IRON",
       "flags": [
         "RES_LITE",
         "RES_DARK",
@@ -14514,7 +14497,6 @@
           "rarity": 1,
         },
       ],
-      "civilization": "IRON",
       "flags": [
         "RES_SOUND",
         "RES_SHARDS",
@@ -14558,7 +14540,6 @@
           "rarity": 1,
         },
       ],
-      "civilization": "IRON",
       "flags": ["RES_CONF", "ACTIVATE", "IGNORE_ACID", "IGNORE_ELEC", "IGNORE_FIRE", "IGNORE_COLD"],
       "flavor": {
         "ja": "贅沢に彫刻された青銅がきらめく鱗鎧だ。近づいて見ると鎧の表面に現れる渦と線の迷宮を見れば見るほど、どうやってそれらができているのかわからなくなる。",
@@ -14594,7 +14575,6 @@
           "rarity": 1,
         },
       ],
-      "civilization": "IRON",
       "flags": [
         "RES_SOUND",
         "ACTIVATE",
@@ -14637,7 +14617,6 @@
           "rarity": 1,
         },
       ],
-      "civilization": "IRON",
       "flags": [
         "RES_CHAOS",
         "RES_DISEN",
@@ -14681,7 +14660,6 @@
           "rarity": 1,
         },
       ],
-      "civilization": "IRON",
       "flags": [
         "RES_CHAOS",
         "RES_DISEN",
@@ -14727,7 +14705,6 @@
           "rarity": 1,
         },
       ],
-      "civilization": "IRON",
       "flags": [
         "RES_ACID",
         "RES_FIRE",
@@ -14784,7 +14761,6 @@
           "rarity": 1,
         },
       ],
-      "civilization": "IRON",
       "flags": ["IGNORE_ACID", "IGNORE_FIRE", "IGNORE_ELEC", "IGNORE_COLD"],
       "flavor": {
         "ja": "ドラゴンの翼飾りのある大きな兜で、虹色に輝く。元素への耐性を保証する。",
@@ -14820,7 +14796,6 @@
           "rarity": 1,
         },
       ],
-      "civilization": "IRON",
       "flags": ["IGNORE_ACID", "IGNORE_FIRE", "IGNORE_ELEC", "IGNORE_COLD"],
       "flavor": {
         "ja": "",
@@ -19193,7 +19168,6 @@
           "rarity": 1,
         },
       ],
-      "civilization": "STONE",
       "flags": ["SHOW_MODS", "DEC_MANA"],
       "flavor": {
         "ja": "",
@@ -19299,7 +19273,6 @@
           "rarity": 1,
         },
       ],
-      "civilization": "IRON",
       "flags": ["IGNORE_ACID", "IGNORE_FIRE", "IGNORE_ELEC", "IGNORE_COLD"],
       "flavor": {
         "ja": "",
@@ -19335,7 +19308,6 @@
           "rarity": 1,
         },
       ],
-      "civilization": "IRON",
       "flags": ["IGNORE_ACID", "IGNORE_FIRE", "IGNORE_ELEC", "IGNORE_COLD"],
       "flavor": {
         "ja": "",
@@ -19552,7 +19524,6 @@
           "rarity": 1,
         },
       ],
-      "civilization": "IRON",
       "flags": ["SHOW_MODS", "IGNORE_ACID", "IGNORE_ELEC", "IGNORE_FIRE", "IGNORE_COLD"],
       "flavor": {
         "ja": "",
@@ -19623,7 +19594,6 @@
           "rarity": 1,
         },
       ],
-      "civilization": "IRON",
       "flags": [
         "SHOW_MODS",
         "VORPAL",
@@ -21036,7 +21006,6 @@
           "rarity": 1,
         },
       ],
-      "civilization": "IRON",
       "flags": ["SHOW_MODS", "BLOWS"],
       "flavor": {
         "ja": "",
@@ -23001,7 +22970,6 @@
           "rarity": 1,
         },
       ],
-      "civilization": "BRONZE",
       "flags": ["RES_CURSE"],
       "flavor": {
         "ja": "魔術的なルーンの刻まれた陰気な外套だ。",
@@ -23142,7 +23110,6 @@
           "rarity": 1,
         },
       ],
-      "civilization": "IRON",
       "flags": [],
       "flavor": {
         "ja": "ヤーナムの悪夢に潜むメンシス学派の徒が頭部に被る檻だ。上位者たちの交信に用いるとも、己の獣の愚かさを克する誓いとも言われている。",
@@ -23463,7 +23430,6 @@
           "rarity": 1,
         },
       ],
-      "civilization": "IRON",
       "flags": ["DEC_MANA", "EASY_SPELL", "CURSED", "HEAVY_CURSE", "DOWN_SAVING"],
       "flavor": {
         "ja": "それはラトリアをデーモンの滅びに追い込んだ黄衣の翁の狂気の表れだ。",
@@ -25379,7 +25345,6 @@
           "rarity": 1,
         },
       ],
-      "civilization": "IRON",
       "flags": ["IGNORE_ACID", "IGNORE_FIRE", "IGNORE_ELEC", "IGNORE_COLD", "JOKE"],
       "flavor": {
         "ja": "",

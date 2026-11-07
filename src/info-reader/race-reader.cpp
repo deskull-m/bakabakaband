@@ -512,6 +512,34 @@ ParseErrorType RaceReader::set_mon_body_structure(const nlohmann::json &body_dat
 }
 
 /*!
+ * @brief JSON Object からモンスターの文明水準をセットする
+ * @param civilization_data 文明水準情報の格納された JSON Object (string)
+ * @param monrace 保管先のモンスター種族構造体
+ * @return エラーコード
+ * @details
+ * "civilization": "IRON" 等の文字列で指定する。
+ * 未指定の場合は既定の NONE (文明に属さない存在) が維持される。
+ * ベースアイテム側の "civilization" と同じ 8 段階の尺度。
+ */
+ParseErrorType RaceReader::set_mon_civilization(const nlohmann::json &civilization_data, MonraceDefinition &monrace)
+{
+    if (civilization_data.is_null()) {
+        return ParseErrorType::NONE;
+    }
+    if (!civilization_data.is_string()) {
+        return ParseErrorType::TOO_FEW_ARGUMENTS;
+    }
+
+    const auto key = civilization_data.get<std::string>();
+    const auto it = r_info_civilization.find(key);
+    if (it == r_info_civilization.end()) {
+        return ParseErrorType::INVALID_FLAG;
+    }
+    monrace.civilization = it->second;
+    return ParseErrorType::NONE;
+}
+
+/*!
  * @brief JSON Object からモンスターの拡張装備スロット個別指定を読み込む (Phase 2.7)
  * @param slots_data 拡張スロット名の配列 (例: ["TAIL_RING", "SECOND_NECK"])
  * @param monrace 保管先
@@ -2005,6 +2033,11 @@ ParseErrorType RaceReader::read()
     err = set_mon_body_structure(mon_data["body_structure"], monrace);
     if (err != ParseErrorType::NONE) {
         msg_print(_("モンスター体構造読込失敗。ID: '{}'。", "Failed to load monster body structure. ID: '{}'."), monrace_id_int);
+        return err;
+    }
+    err = set_mon_civilization(mon_data["civilization"], monrace);
+    if (err != ParseErrorType::NONE) {
+        msg_print(_("モンスター文明水準読込失敗。ID: '{}'。", "Failed to load monster civilization level. ID: '{}'."), monrace_id_int);
         return err;
     }
     err = set_mon_extended_slots(mon_data["extended_equipment_slots"], monrace);
