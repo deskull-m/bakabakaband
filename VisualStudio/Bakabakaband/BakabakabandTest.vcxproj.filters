@@ -222,6 +222,7 @@
     <ClCompile Include="..\..\src\test\player-status\test-player-status-base.cpp">
       <Filter>player-status</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\test\player\test-player-status-flags.cpp" />
     <ClCompile Include="..\..\src\test\player\test-player-status-resist.cpp" />
     <ClCompile Include="..\..\src\test\floor\test-floor-events.cpp">
       <Filter>floor</Filter>

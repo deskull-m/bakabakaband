@@ -3683,6 +3683,11 @@ void CreatureEntity::set_lite_flags(BIT_FLAGS value)
     this->lite = value;
 }
 
+BIT_FLAGS CreatureEntity::get_lite_flags() const
+{
+    return this->lite;
+}
+
 void CreatureEntity::set_warning_flags(BIT_FLAGS value)
 {
     this->warning = value;
