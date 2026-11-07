@@ -384,7 +384,7 @@ PERCENTAGE calc_nexus_damage_rate(CreatureEntity &creature, rate_calc_type_mode 
 {
     PERCENTAGE per = 100;
 
-    if (creature.has_resist_disen()) {
+    if (creature.has_resist_nexus()) {
         per *= 600;
         per /= randrate(4, 7, mode);
     }
