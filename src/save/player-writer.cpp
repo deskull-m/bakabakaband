@@ -2,7 +2,9 @@
 #include "avatar/avatar.h"
 #include "combat/martial-arts-style.h"
 #include "floor/dungeon-feeling.h"
+#include "floor/geometry.h"
 #include "game-option/birth-options.h"
+#include "io/input-key-requester.h"
 #include "market/arena-entry.h"
 #include "object/tval-types.h"
 #include "player-base/player-class.h"
@@ -23,6 +25,7 @@
 #include "system/inner-game-data.h"
 #include "target/target.h"
 #include "util/enum-converter.h"
+#include "window/main-window-util.h"
 #include "world/world.h"
 #include <variant>
 
@@ -75,6 +78,26 @@ static void wr_last_target()
     }
 
     wr_byte(0);
+}
+
+/*!
+ * @brief 休憩・釣り・コマンドの繰り返しの続きと、画面に表示している範囲を書き込む
+ * @param creature クリーチャーへの参照
+ * @details 休憩の残り、釣りの向き、繰り返し中のコマンドとその引数・残りの回数・方向を書く。
+ * 方向がターゲットを指すときは、最後のターゲット (wr_last_target()) を指すものとして印だけを書く。
+ * 表示している範囲は、再開したときに範囲が変わったとして disturb() しないよう書く
+ */
+static void wr_continuous_actions(CreatureEntity &creature)
+{
+    wr_s32b(creature.get_resting());
+    wr_byte(static_cast<uint8_t>(creature.get_fishing_dir()));
+    wr_s16b(command_cmd);
+    wr_s16b(command_arg);
+    wr_s16b(command_rep);
+    wr_byte(static_cast<uint8_t>(command_dir.dir()));
+    wr_bool(command_dir.is_targetting());
+    wr_s16b(static_cast<int16_t>(panel_row_min));
+    wr_s16b(static_cast<int16_t>(panel_col_min));
 }
 
 /*!
@@ -319,4 +342,5 @@ void wr_player(CreatureEntity &creature)
     wr_s16b(static_cast<int16_t>(creature.get_pet_t_m_idx()));
     wr_s16b(static_cast<int16_t>(creature.get_riding_t_m_idx()));
     wr_last_target();
+    wr_continuous_actions(creature);
 }

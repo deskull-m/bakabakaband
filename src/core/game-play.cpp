@@ -16,6 +16,7 @@
 #include "birth/inventory-initializer.h"
 #include "cmd-io/cmd-gameoption.h"
 #include "core/asking-player.h"
+#include "core/disturbance.h"
 #include "core/game-closer.h"
 #include "core/player-processor.h"
 #include "core/score-util.h"
@@ -33,6 +34,7 @@
 #include "floor/floor-mode-changer.h"
 #include "floor/floor-save.h"
 #include "floor/floor-util.h"
+#include "floor/geometry.h"
 #include "game-option/cheat-options.h"
 #include "game-option/input-options.h"
 #include "game-option/play-record-options.h"
@@ -43,6 +45,7 @@
 #include "io/input-context.h"
 #include "io/input-key-acceptor.h"
 #include "io/input-key-processor.h"
+#include "io/input-key-requester.h"
 #include "io/read-pref-file.h"
 #include "io/record-play-movie.h"
 #include "io/screen-util.h"
@@ -199,6 +202,13 @@ static void init_world_floor_info(CreatureEntity &creature, std::optional<QuestI
     floor.quest_number = QuestId::NONE;
     floor.inside_arena = false;
     AngbandSystem::get_instance().set_phase_out(false);
+
+    // 死んだキャラクターなどのセーブを読み込んでから新しく始めるときに、そのセーブのコマンドの繰り返しを持ち越さない
+    command_cmd = 0;
+    command_arg = 0;
+    command_rep = 0;
+    command_dir = Direction::none();
+
     write_level = true;
     auto &system = AngbandSystem::get_instance();
     system.set_seed_flavor(randint0(0x10000000));
@@ -259,42 +269,52 @@ static void generate_wilderness(CreatureEntity &creature)
     select_floor_music(creature);
 }
 
-static void change_floor_if_error(CreatureEntity &creature)
+/*!
+ * @brief 読み込んだ階が使えないときに作り直す
+ * @param creature クリーチャーへの参照
+ * @param is_panic_save パニックセーブを読み込んだか
+ */
+static void change_floor_if_error(CreatureEntity &creature, bool is_panic_save)
 {
     if (!AngbandWorld::get_instance().character_dungeon) {
         change_floor(creature);
-        return;
+    } else if (is_panic_save) {
+        if (!creature.y || !creature.x) {
+            msg_print(_("プレイヤーの位置がおかしい。フロアを再生成します。", "What a strange creature location, regenerate the dungeon floor."));
+            change_floor(creature);
+        }
+
+        if (!creature.y || !creature.x) {
+            creature.y = creature.x = 10;
+        }
     }
 
-    auto &system = AngbandSystem::get_instance();
-    if (!system.is_panic_save_executed()) {
-        return;
+    // パニックセーブは処理の途中のどこででも書かれ、セーブした休憩・釣り・コマンドの繰り返しが前の階でのものだったり、
+    // 落ちた処理につながったりするので、続けずに止める
+    if (is_panic_save) {
+        disturb(creature, false, true);
+        AngbandSystem::get_instance().set_panic_save(false);
     }
-
-    if (!creature.y || !creature.x) {
-        msg_print(_("プレイヤーの位置がおかしい。フロアを再生成します。", "What a strange creature location, regenerate the dungeon floor."));
-        change_floor(creature);
-    }
-
-    if (!creature.y || !creature.x) {
-        creature.y = creature.x = 10;
-    }
-
-    system.set_panic_save(false);
 }
 
 static void generate_world(CreatureEntity &creature, bool new_game)
 {
     reset_world_info(creature);
     const auto &floor = *creature.get_floor();
-    panel_row_min = floor.height;
-    panel_col_min = floor.width;
+
+    // 表示する範囲を決め直させる。セーブを読み込んで再開するときは、セーブした範囲を使う (古いセーブでは読み込みで負にしてある)。
+    // パニックセーブは見回しなどで範囲をずらしている途中のことがあるので決め直させる
+    const auto is_panic_save = AngbandSystem::get_instance().is_panic_save_executed();
+    if (new_game || (panel_row_min < 0) || is_panic_save) {
+        panel_row_min = floor.height;
+        panel_col_min = floor.width;
+    }
 
     BaseitemService::initialize_items_flavor();
     prt(_("お待ち下さい...", "Please wait..."), 0, 0);
     term_fresh();
     generate_wilderness(creature);
-    change_floor_if_error(creature);
+    change_floor_if_error(creature, is_panic_save);
     auto &world = AngbandWorld::get_instance();
     world.character_generated = true;
     world.character_icky_depth = 0;
