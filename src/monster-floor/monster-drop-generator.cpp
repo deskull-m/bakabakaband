@@ -389,6 +389,49 @@ const std::vector<ArmamentSlotEntry> &get_ninja_armament_slot_entries()
 }
 
 /*!
+ * @brief 修行僧系モンスター (KARATEKA) が武装度予算で埋める装備スロット
+ * @details 既定の表から**利き手・逆手を外した**もの。素手で戦う者に武器を
+ *          買わせないための表で、他の 5 部位 (胴・頭・脚・腕・体の上) は
+ *          既定どおり充填する。
+ *
+ *          **必ず `get_armament_slot_entries()` の部分集合であること**
+ *          (理由は `get_ninja_armament_slot_entries()` のコメント参照)。
+ *
+ *          **根拠はプレイヤーの `MONK` 側の実装にある**。
+ *          `is_martial_arts_mode()` (`src/player/player-status.cpp`) は
+ *          `empty_hands()` の `EMPTY_HAND_MAIN` を要求するため、**利き手に
+ *          何かを持つと素手打撃 (martial arts) を失う**。モンスターの近接は
+ *          `CreatureEntity::select_melee_weapon_slot()` が `PUNCH` でも手の
+ *          武器を使うので、利き手を空けておかないと素手連撃すべてに武器
+ *          ダイスが乗ってしまう。
+ *
+ *          - **利き手を外す**: 上記のとおりプレイヤー `MONK` の素手打撃条件が
+ *            「利き手が空」なので、修行僧は利き手を空けておく。
+ *          - **逆手も外す**: プレイヤー側は `can_attack_with_sub_hand()` が
+ *            近接武器のみを見るため**盾は素手打撃を壊さない**が、修行僧が盾を
+ *            構えているのは見た目の不整合なので併せて外す
+ *            (忍者が盾を外すのと同じ扱い。忍者は `has_ninja_speed()` という
+ *            機械的な理由もあるが、こちらはフレーバー上の判断)。
+ *          - **胴は既定どおり軽装・重鎧の両方**。プレイヤー `MONK` も
+ *            `heavy_armor()` で加速ボーナスを失うので忍者と同様に軽装限定に
+ *            する余地はあるが、利き手・逆手を外す本変更の範囲外として
+ *            据え置く (絞るなら `INVEN_BODY` の種別を `SOFT_ARMOR` だけに
+ *            する)。
+ */
+const std::vector<ArmamentSlotEntry> &get_monk_armament_slot_entries()
+{
+    static const std::vector<ArmamentSlotEntry> entries = {
+        { INVEN_BODY, { ItemKindType::SOFT_ARMOR, ItemKindType::HARD_ARMOR } },
+        { INVEN_HEAD, { ItemKindType::HELM, ItemKindType::CROWN } },
+        { INVEN_FEET, { ItemKindType::BOOTS } },
+        { INVEN_ARMS, { ItemKindType::GLOVES } },
+        { INVEN_OUTER, { ItemKindType::CLOAK } },
+    };
+
+    return entries;
+}
+
+/*!
  * @brief 武装度予算で購入できるベースアイテムか判定する
  * @details 通常のフロア生成に乗らない品 (生成確率が全て 0)・固定アーティファクト
  *          化する品・クエスト専用品・呪い付きの品は除外する。価値 0 の品は
@@ -527,6 +570,49 @@ tl::optional<ArmamentCandidate> pick_armament(const ArmamentSlotEntry &entry, in
 }
 
 /*!
+ * @brief 武装度充填で使う、その個体の役割に応じたスロット表を返す
+ * @details 忍者は盾を持たず重鎧も着ないため、修行僧は素手で戦うため、それぞれ専用の
+ *          スロット表を使う。**優先順位は NINJA > KARATEKA** で、これは
+ *          decide_initial_weapon_style() の得物の優先順位と揃えてある (実データで
+ *          両方を持つのは巨大サイバーワイアーム天使悪魔リッチ 929 の 1 体だけで、
+ *          忍者の役割装備が利き手を埋めるため修行僧表との差は逆手だけになる)。
+ */
+const std::vector<ArmamentSlotEntry> &get_role_armament_slot_entries(const MonraceDefinition &monrace)
+{
+    if (monrace.kind_flags.has(MonsterKindType::NINJA)) {
+        return get_ninja_armament_slot_entries();
+    }
+
+    if (monrace.kind_flags.has(MonsterKindType::KARATEKA)) {
+        return get_monk_armament_slot_entries();
+    }
+
+    return get_armament_slot_entries();
+}
+
+/*!
+ * @brief 役割のスロット表が既定の表から外した部位・種別か判定する
+ * @param monrace モンスター種族定義
+ * @param slot 装備しようとしている部位 (INVEN_*)
+ * @param tval 装備しようとしている品のアイテム種別
+ * @return 役割の都合で外されているなら true
+ * @details **既定の表に無い部位 (指輪・首飾り・射撃・光源) は false を返す。**
+ *          これらは「呪い付きが多い」「燃料設定が要る」といった武装度充填固有の
+ *          理由で対象外になっているだけで、装備そのものを禁じる意図は無い。
+ *          true になるのは修行僧の利き手・逆手、忍者の逆手、忍者の胴 (重鎧) ・
+ *          利き手 (鈍器・長柄) のように**既定の表から意図的に削った組合せ**だけ。
+ */
+bool is_restricted_by_role_slots(const MonraceDefinition &monrace, int slot, ItemKindType tval)
+{
+    const auto accepts = [slot, tval](const std::vector<ArmamentSlotEntry> &entries) {
+        const auto it = std::find_if(entries.begin(), entries.end(), [slot](const auto &entry) { return entry.slot == slot; });
+        return (it != entries.end()) && (std::find(it->tvals.begin(), it->tvals.end(), tval) != it->tvals.end());
+    };
+
+    return accepts(get_armament_slot_entries()) && !accepts(get_role_armament_slot_entries(monrace));
+}
+
+/*!
  * @brief 既に装備しているアイテムの価値の合計を求める
  * @details 役割装備 (SOLDIER / WARRIOR の近接武器、ARCHER / RANGER の弓、
  *          MAGE の軽装) で既に埋まっているスロットの分を武装度予算から差し引き、
@@ -565,6 +651,34 @@ int16_t give_item_to_monster(CreatureEntity &monster, ItemEntity &item)
 {
     if (item.bi_key.tval() != ItemKindType::GOLD) {
         item.set_rightful_owner(monster.get_r_idx());
+    }
+
+    return monster.acquire_item(item);
+}
+
+/*!
+ * @brief 一般ドロップの品をモンスターの持ち物として与える
+ * @param monster 持たせる対象のモンスター
+ * @param item 与える品
+ * @return 格納されたスロット
+ * @details 一般ドロップは「たまたま持っている品」なので、役割のスロット表が外した
+ *          部位へは**装備させず所持品に入れる**。`CreatureEntity::acquire_item()` の
+ *          自動装備は体構造 (`can_equip_to()`) だけを見るため、ここを通さないと
+ *          修行僧がドロップの武器を構えて素手打撃すべてに武器ダイスが乗り、忍者が
+ *          盾や重鎧を身に着けてしまう (武装度充填で手や重鎧を外した意味が消える)。
+ *          所有権の刻印・死亡時の落下 (`drop_all_inventory()`) は装備時と変わらない。
+ *          種族定義の `equip_*` と役割装備は製作者の明示指定なので本経路を通さない。
+ */
+int16_t give_drop_item_to_monster(CreatureEntity &monster, ItemEntity &item)
+{
+    if (item.bi_key.tval() != ItemKindType::GOLD) {
+        item.set_rightful_owner(monster.get_r_idx());
+    }
+
+    const auto eq_slot = wield_slot(monster, item);
+    const auto is_normal_slot = (eq_slot >= INVEN_MAIN_HAND) && (eq_slot < INVEN_TOTAL);
+    if (is_normal_slot && is_restricted_by_role_slots(monster.get_monrace(), eq_slot, item.bi_key.tval())) {
+        return monster.store_item(item);
     }
 
     return monster.acquire_item(item);
@@ -612,10 +726,10 @@ void generate_monster_drop_items(CreatureEntity &player, CreatureEntity &monster
                 const auto scaled = static_cast<int>(item.pval) * gold_percent / 100;
                 item.pval = static_cast<PARAMETER_VALUE>(std::clamp(scaled, 1, static_cast<int>(std::numeric_limits<PARAMETER_VALUE>::max())));
             }
-            give_item_to_monster(monster, item);
+            give_drop_item_to_monster(monster, item);
         } else {
             if (auto item = make_object(player, mo_mode)) {
-                give_item_to_monster(monster, *item);
+                give_drop_item_to_monster(monster, *item);
             }
         }
     }
@@ -732,9 +846,7 @@ void equip_monster_by_armament_budget(CreatureEntity &monster)
         return;
     }
 
-    // 忍者は盾を持たず重鎧も着ないため、専用のスロット表を使う。
-    const auto is_ninja = monrace.kind_flags.has(MonsterKindType::NINJA);
-    const auto &slot_entries = is_ninja ? get_ninja_armament_slot_entries() : get_armament_slot_entries();
+    const auto &slot_entries = get_role_armament_slot_entries(monrace);
 
     // 体構造的に装備でき、かつまだ空いているスロットだけを対象にする。
     std::vector<const ArmamentSlotEntry *> targets;
