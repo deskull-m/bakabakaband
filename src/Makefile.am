@@ -1432,6 +1432,7 @@ libhengband_a_SOURCES = \
 	system/baseitem/baseitem-record.cpp system/baseitem/baseitem-record.h \
 	system/baseitem/baseitem-records.cpp system/baseitem/baseitem-records.h \
 	system/baseitem/baseitem-service.cpp system/baseitem/baseitem-service.h \
+	system/baseitem/civilization-level-types.cpp system/baseitem/civilization-level-types.h \
 	\
 	system/creature-party/creature-party-definition.cpp system/creature-party/creature-party-definition.h \
 	system/creature-party/creature-party-list.cpp system/creature-party/creature-party-list.h \

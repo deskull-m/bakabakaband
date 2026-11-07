@@ -59,6 +59,14 @@ bool screen_object(CreatureEntity &creature, const ItemEntity &item, BIT_FLAGS m
         info[i++] = fmt::format(_("製造元: {}", "Manufactured by: {}"), alliance->name).data();
     }
 
+    // 文明水準。装備品ほぼ全てに付くため、製造元と同様 trivial_info の確定より前に積む
+    // (後に積むと全ての武器・防具が「特筆すべき情報あり」になってしまう)。
+    if (baseitem.civilization != CivilizationLevel::NONE) {
+        info[i++] = fmt::format(
+            _("それは{}時代の産物だ。", "It is a product of the {} Age."),
+            civilization_level_name(baseitem.civilization));
+    }
+
     if (item.is_equipment()) {
         trivial_info = i;
     }
