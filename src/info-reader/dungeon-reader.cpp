@@ -55,24 +55,22 @@ bool DungeonReader::grab_one_basic_monster_flag(DungeonDefinition &dungeon, std:
         return true;
     }
 
-    // 時代フラグ(era_flags)はモンスターの定義のみが持ちダンジョンの出現条件には無いため null を渡す。
-    const MonsterBasicFlagGroups groups{
-        .meat_feed_flags = &dungeon.mon_meat_feed_flags,
-        .resistance_flags = &dungeon.mon_resistance_flags,
-        .aura_flags = &dungeon.mon_aura_flags,
-        .behavior_flags = &dungeon.mon_behavior_flags,
-        .visual_flags = &dungeon.mon_visual_flags,
-        .kind_flags = &dungeon.mon_kind_flags,
-        .era_flags = nullptr,
-        .drop_flags = &dungeon.mon_drop_flags,
-        .wilderness_flags = &dungeon.mon_wilderness_flags,
-        .feature_flags = &dungeon.mon_feature_flags,
-        .population_flags = &dungeon.mon_population_flags,
-        .speak_flags = &dungeon.mon_speak_flags,
-        .brightness_flags = &dungeon.mon_brightness_flags,
-        .special_flags = &dungeon.mon_special_flags,
-        .misc_flags = &dungeon.mon_misc_flags,
-    };
+    // 時代フラグ(era_flags)はモンスターの定義のみが持ちダンジョンの出現条件には無いため、末尾の era_flags は既定の null を使う。
+    const MonsterBasicFlagGroups groups(
+        dungeon.mon_meat_feed_flags,
+        dungeon.mon_resistance_flags,
+        dungeon.mon_aura_flags,
+        dungeon.mon_behavior_flags,
+        dungeon.mon_visual_flags,
+        dungeon.mon_kind_flags,
+        dungeon.mon_drop_flags,
+        dungeon.mon_wilderness_flags,
+        dungeon.mon_feature_flags,
+        dungeon.mon_population_flags,
+        dungeon.mon_speak_flags,
+        dungeon.mon_brightness_flags,
+        dungeon.mon_special_flags,
+        dungeon.mon_misc_flags);
     return grab_one_monster_basic_flag(groups, what);
 }
 

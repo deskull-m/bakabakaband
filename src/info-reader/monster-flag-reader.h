@@ -26,26 +26,51 @@
 /*!
  * @brief モンスターの基本フラグ(能力フラグ・性別以外)の格納先
  * @details モンスターの定義 (MonraceDefinition) と、ダンジョンのモンスターの出現条件 (DungeonDefinition の mon_*)
- * のどちらにも向けられるよう、各フラグへのポインタを持つ。era_flags 以外はどれも null にしない。
+ * のどちらにも向けられるよう、各フラグへの参照を持つ。era_flags を除く 14 個の格納先をすべて受け取る
+ * コンストラクタでしか作れないため、書き漏らしはコンパイルエラーになり、null の格納先も作れない。
+ * 引数の型はすべて異なるので、順序の取り違えもコンパイルエラーになる。
  * era_flags (時代フラグ) はモンスターの定義のみが持ちダンジョンの出現条件には無いため、ダンジョン側は null を渡す
- * (bakaba 独自のフラグで、上流の MonsterBasicFlagGroups には無い)。
+ * (bakaba 独自のフラグで、上流の MonsterBasicFlagGroups には無く、唯一ポインタで保持する)。
+ * 参照の集成体にしないのは、MSVC の C4623 (既定のコンストラクタの暗黙の削除) を避けるため。
+ * 渡すだけの一時的な束なので、コピー・ムーブと代入は削除する。
  */
 struct MonsterBasicFlagGroups {
-    EnumClassFlagGroup<MonsterFeedType> *meat_feed_flags;
-    EnumClassFlagGroup<MonsterResistanceType> *resistance_flags;
-    EnumClassFlagGroup<MonsterAuraType> *aura_flags;
-    EnumClassFlagGroup<MonsterBehaviorType> *behavior_flags;
-    EnumClassFlagGroup<MonsterVisualType> *visual_flags;
-    EnumClassFlagGroup<MonsterKindType> *kind_flags;
+    MonsterBasicFlagGroups(
+        EnumClassFlagGroup<MonsterFeedType> &meat_feed_flags,
+        EnumClassFlagGroup<MonsterResistanceType> &resistance_flags,
+        EnumClassFlagGroup<MonsterAuraType> &aura_flags,
+        EnumClassFlagGroup<MonsterBehaviorType> &behavior_flags,
+        EnumClassFlagGroup<MonsterVisualType> &visual_flags,
+        EnumClassFlagGroup<MonsterKindType> &kind_flags,
+        EnumClassFlagGroup<MonsterDropType> &drop_flags,
+        EnumClassFlagGroup<MonsterWildernessType> &wilderness_flags,
+        EnumClassFlagGroup<MonsterFeatureType> &feature_flags,
+        EnumClassFlagGroup<MonsterPopulationType> &population_flags,
+        EnumClassFlagGroup<MonsterSpeakType> &speak_flags,
+        EnumClassFlagGroup<MonsterBrightnessType> &brightness_flags,
+        EnumClassFlagGroup<MonsterSpecialType> &special_flags,
+        EnumClassFlagGroup<MonsterMiscType> &misc_flags,
+        EnumClassFlagGroup<MonsterEraType> *era_flags = nullptr);
+    MonsterBasicFlagGroups(const MonsterBasicFlagGroups &) = delete;
+    MonsterBasicFlagGroups(MonsterBasicFlagGroups &&) = delete;
+    MonsterBasicFlagGroups &operator=(const MonsterBasicFlagGroups &) = delete;
+    MonsterBasicFlagGroups &operator=(MonsterBasicFlagGroups &&) = delete;
+
+    EnumClassFlagGroup<MonsterFeedType> &meat_feed_flags;
+    EnumClassFlagGroup<MonsterResistanceType> &resistance_flags;
+    EnumClassFlagGroup<MonsterAuraType> &aura_flags;
+    EnumClassFlagGroup<MonsterBehaviorType> &behavior_flags;
+    EnumClassFlagGroup<MonsterVisualType> &visual_flags;
+    EnumClassFlagGroup<MonsterKindType> &kind_flags;
+    EnumClassFlagGroup<MonsterDropType> &drop_flags;
+    EnumClassFlagGroup<MonsterWildernessType> &wilderness_flags;
+    EnumClassFlagGroup<MonsterFeatureType> &feature_flags;
+    EnumClassFlagGroup<MonsterPopulationType> &population_flags;
+    EnumClassFlagGroup<MonsterSpeakType> &speak_flags;
+    EnumClassFlagGroup<MonsterBrightnessType> &brightness_flags;
+    EnumClassFlagGroup<MonsterSpecialType> &special_flags;
+    EnumClassFlagGroup<MonsterMiscType> &misc_flags;
     EnumClassFlagGroup<MonsterEraType> *era_flags; //!< モンスターの定義のみ。ダンジョンの出現条件では null
-    EnumClassFlagGroup<MonsterDropType> *drop_flags;
-    EnumClassFlagGroup<MonsterWildernessType> *wilderness_flags;
-    EnumClassFlagGroup<MonsterFeatureType> *feature_flags;
-    EnumClassFlagGroup<MonsterPopulationType> *population_flags;
-    EnumClassFlagGroup<MonsterSpeakType> *speak_flags;
-    EnumClassFlagGroup<MonsterBrightnessType> *brightness_flags;
-    EnumClassFlagGroup<MonsterSpecialType> *special_flags;
-    EnumClassFlagGroup<MonsterMiscType> *misc_flags;
 };
 
 bool grab_one_monster_basic_flag(const MonsterBasicFlagGroups &groups, std::string_view what);
