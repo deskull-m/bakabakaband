@@ -184,6 +184,9 @@ SpoilerOutputResultType spoil_mon_info()
         if (monrace.max_level) {
             spoil_out(fmt::format("MaxLev:{}  ", *monrace.max_level));
         }
+        if (monrace.civilization != CivilizationLevel::NONE) {
+            spoil_out(fmt::format("Civ:{}  ", civilization_level_name(monrace.civilization)));
+        }
         spoil_out(fmt::format("Rar:{}  ", monrace.rarity));
         spoil_out(fmt::format("Spd:{:+}  ", monrace.speed - STANDARD_SPEED));
         if (monrace.misc_flags.has(MonsterMiscType::FORCE_MAXHP) || (monrace.hit_dice.sides == 1)) {

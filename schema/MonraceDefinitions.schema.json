@@ -180,6 +180,20 @@
                         "type": "string",
                         "description": "プレイヤー職業固定指定 (提案C1)。トークンは r_info_player_class を参照。効果は未反映で pclass フィールドのみ付与。"
                     },
+                    "civilization": {
+                        "type": "string",
+                        "description": "文明水準。その種族がどの文明段階に属する存在かを表す分類。ベースアイテム側の civilization と同じ尺度。既定=未指定=文明に属さない存在。",
+                        "enum": [
+                            "STONE",
+                            "BRONZE",
+                            "IRON",
+                            "INDUSTRIAL",
+                            "ATOMIC",
+                            "INFORMATION",
+                            "SOLAR",
+                            "GALACTIC"
+                        ]
+                    },
                     "armament_level": {
                         "type": "integer",
                         "minimum": 0,

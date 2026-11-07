@@ -39,6 +39,7 @@ private:
     ParseErrorType set_mon_spellbook_indices(const nlohmann::json &indices_data, MonraceDefinition &monrace);
     ParseErrorType set_mon_materials(const nlohmann::json &materials_data, MonraceDefinition &monrace);
     ParseErrorType set_mon_body_structure(const nlohmann::json &body_data, MonraceDefinition &monrace);
+    ParseErrorType set_mon_civilization(const nlohmann::json &civilization_data, MonraceDefinition &monrace);
     ParseErrorType set_mon_extended_slots(const nlohmann::json &slots_data, MonraceDefinition &monrace);
     ParseErrorType set_mon_artifacts(nlohmann::json &artifact_data, MonraceDefinition &monrace);
     ParseErrorType set_mon_death_explosion(const nlohmann::json &explosion_data, MonraceDefinition &monrace);
