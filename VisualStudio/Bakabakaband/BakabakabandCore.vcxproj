@@ -197,6 +197,7 @@
     <ClCompile Include="..\..\src\system\floor\wilderness-grid.cpp" />
     <ClCompile Include="..\..\src\system\services\dungeon-monrace-service.cpp" />
     <ClCompile Include="..\..\src\system\services\dungeon-service.cpp" />
+    <ClCompile Include="..\..\src\system\floor\monster-corpse.cpp" />
     <ClCompile Include="..\..\src\system\floor\floor-list.cpp" />
     <ClCompile Include="..\..\src\load\item\item-loader-base.cpp" />
     <ClCompile Include="..\..\src\load\item\item-loader-factory.cpp" />
@@ -604,6 +605,7 @@
     <ClCompile Include="..\..\src\main\sound-of-music.cpp" />
     <ClCompile Include="..\..\src\monster-floor\monster-summon.cpp" />
     <ClCompile Include="..\..\src\monster-floor\one-monster-placer.cpp" />
+    <ClCompile Include="..\..\src\monster-floor\monster-corpse-leaver.cpp" />
     <ClCompile Include="..\..\src\monster-floor\monster-drop-generator.cpp" />
     <ClCompile Include="..\..\src\monster\monster-compaction.cpp" />
     <ClCompile Include="..\..\src\monster-floor\monster-death.cpp" />
@@ -1053,6 +1055,7 @@
     <ClInclude Include="..\..\src\system\services\dungeon-service.h" />
     <ClInclude Include="..\..\src\system\enums\dungeon\dungeon-id.h" />
     <ClInclude Include="..\..\src\system\enums\monrace\monrace-hook-types.h" />
+    <ClInclude Include="..\..\src\system\floor\monster-corpse.h" />
     <ClInclude Include="..\..\src\system\floor\floor-list.h" />
     <ClInclude Include="..\..\src\load\item\item-loader-version-types.h" />
     <ClInclude Include="..\..\src\load\item\item-loader-base.h" />
@@ -1569,6 +1572,7 @@
     <ClInclude Include="..\..\src\mind\snipe-types.h" />
     <ClInclude Include="..\..\src\monster-floor\monster-summon.h" />
     <ClInclude Include="..\..\src\monster-floor\one-monster-placer.h" />
+    <ClInclude Include="..\..\src\monster-floor\monster-corpse-leaver.h" />
     <ClInclude Include="..\..\src\monster-floor\monster-drop-generator.h" />
     <ClInclude Include="..\..\src\monster\monster-compaction.h" />
     <ClInclude Include="..\..\src\monster-floor\monster-death.h" />

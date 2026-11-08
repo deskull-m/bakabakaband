@@ -507,6 +507,9 @@ void clear_cave(CreatureEntity &creature)
     floor.o_list.clear();
     floor.o_list.push_back(std::make_shared<ItemEntity>()); // 0番にダミーアイテムを用意
 
+    floor.corpses.clear();
+    floor.corpses.push_back(nullptr); // 0番にダミーを用意
+
     MonraceList::get_instance().reset_current_numbers();
     for (auto &monster : floor.m_list) {
         monster.wipe();
@@ -525,6 +528,7 @@ void clear_cave(CreatureEntity &creature)
             grid.feat = 0;
             grid.o_idx_list.clear();
             grid.m_idx = 0;
+            grid.corpse_idx = 0;
             grid.special = 0;
             grid.mimic = 0;
             grid.reset_costs();

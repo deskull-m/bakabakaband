@@ -13,6 +13,7 @@
 #include "util/point-2d.h"
 #include <array>
 #include <map>
+#include <memory>
 #include <tl/optional.hpp>
 #include <utility>
 #include <vector>
@@ -62,6 +63,7 @@ enum class TerrainTag;
 class DungeonDefinition;
 class Grid;
 class ItemEntity;
+class MonsterCorpse;
 class FloorType {
 public:
     FloorType();
@@ -84,6 +86,14 @@ public:
     std::vector<CreatureEntity> m_list; /*!< The array of dungeon monsters [max_m_idx] */
     MONSTER_IDX m_max = 0; /* Number of allocated monsters */
     MONSTER_IDX m_cnt = 0; /* Number of live monsters */
+
+    /*!
+     * @brief フロアに遺された死体の配列 (添字 0 はダミー)
+     * @details o_list と同じく shared_ptr の可変長配列。実体のアドレスが
+     *          push_back で無効化されないようにするため。位置からの参照は
+     *          Grid::corpse_idx を起点としたチェインで行う。
+     */
+    std::vector<std::shared_ptr<MonsterCorpse>> corpses;
 
     std::map<CreatureTimedEffect, std::vector<short>> mproc_list; /*!< The array to process dungeon monsters[max_m_idx] */
     std::map<CreatureTimedEffect, short> mproc_max; /*!< Number of monsters to be processed */
@@ -148,6 +158,9 @@ public:
     const CreatureEntity &get_monster(MONSTER_IDX m_idx) const;
     short pop_empty_index_monster();
     short pop_empty_index_item();
+    short pop_empty_index_corpse();
+    MonsterCorpse &get_corpse(short corpse_idx);
+    const MonsterCorpse &get_corpse(short corpse_idx) const;
     void forget_lite();
     void forget_view();
     void forget_mon_lite();

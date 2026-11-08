@@ -51,6 +51,15 @@ public:
     ObjectIndexList o_idx_list; /* Object list in this grid */
     MONSTER_IDX m_idx{}; /* Monster in this grid */
 
+    /*!
+     * @brief このグリッドに遺された死体チェインの先頭 (0 でなし)
+     * @details 実体は FloorType::corpses が持ち、ここは添字のみ。
+     *          同一グリッドに複数の死体が積めるよう MonsterCorpse::next_corpse_idx で
+     *          繋ぐ。セーブデータには載せず、ロード時に死体の座標から再構築する
+     *          (o_idx_list / m_idx と同じ扱い)。
+     */
+    short corpse_idx{};
+
     /*
      * 地形の特別な情報を保存する / Special grid info
      * 具体的な使用一覧はクエスト行き階段の移行先クエストID、
@@ -91,6 +100,7 @@ public:
     bool is_hidden_door() const;
     bool is_acceptable_target() const;
     bool has_monster() const;
+    bool has_corpse() const;
     uint8_t get_cost(GridFlow gf) const
     {
         return this->costs[enum2i(gf)];
