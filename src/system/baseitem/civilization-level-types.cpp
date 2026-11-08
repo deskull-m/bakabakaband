@@ -27,3 +27,12 @@ std::string_view civilization_level_name(CivilizationLevel level)
 
     return "";
 }
+
+bool is_civilization_usable(CivilizationLevel item_level, CivilizationLevel user_level)
+{
+    if ((item_level == CivilizationLevel::NONE) || (user_level == CivilizationLevel::NONE)) {
+        return true;
+    }
+
+    return item_level <= user_level;
+}
