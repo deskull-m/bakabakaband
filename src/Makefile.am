@@ -745,6 +745,7 @@ libhengband_a_SOURCES = \
 	\
 	inventory/floor-item-getter.cpp inventory/floor-item-getter.h \
 	inventory/inventory-curse.cpp inventory/inventory-curse.h \
+	inventory/corpse-rummage.cpp inventory/corpse-rummage.h \
 	inventory/inventory-damage.cpp inventory/inventory-damage.h \
 	inventory/inventory-describer.cpp inventory/inventory-describer.h \
 	inventory/inventory-object.cpp inventory/inventory-object.h \
