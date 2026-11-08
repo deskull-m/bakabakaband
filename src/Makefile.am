@@ -1643,6 +1643,7 @@ hengband_test_SOURCES = \
 	test/flavor/test-flavor-util.cpp \
 	\
 	test/floor/test-floor-events.cpp \
+	test/floor/test-object-allocator.cpp \
 	\
 	test/game-option/test-runtime-arguments.cpp \
 	\
