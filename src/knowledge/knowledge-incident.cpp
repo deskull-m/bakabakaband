@@ -400,6 +400,45 @@ void write_incident_report(CreatureEntity &creature, FILE *fff)
             );
         }
     }
+
+    // 死体を漁った記録 (market/loot-notoriety.h の系統 5)。刻印の有無に依らず
+    // 「漁った回数」を数えるため、上の略奪の記録とは別立てにする。
+    if (const auto rummaged = get_rummaged_corpse_count(creature); rummaged > 0) {
+        fprintf(fff, _("\nあなたはこれまで死体を%d体漁り、%d個の品を剥ぎ取った。\n", "\nYou have rummaged %d corpses and stripped %d items from them.\n"),
+            rummaged, get_rummaged_corpse_item_count(creature));
+
+        // 種族別の内訳は多い順に並べる (死因の一覧と同じ要領)
+        const std::string prefix = INCIDENT_RUMMAGE_CORPSE_MONRACE_PREFIX;
+        std::vector<std::pair<int, int>> rummage_list; // (MonraceId, count)
+        for (const auto &entry : creature.incident_tree) {
+            if (entry.first.compare(0, prefix.length(), prefix) != 0) {
+                continue;
+            }
+
+            try {
+                rummage_list.emplace_back(std::stoi(entry.first.substr(prefix.length())), entry.second);
+            } catch (...) {
+                // パース失敗は無視
+            }
+        }
+
+        std::sort(rummage_list.begin(), rummage_list.end(), [](const auto &a, const auto &b) { return a.second > b.second; });
+        const auto &monraces_rummaged = MonraceList::get_instance();
+        for (const auto &[monrace_id_int, count] : rummage_list) {
+            const auto monrace_id = i2enum<MonraceId>(monrace_id_int);
+            if (!MonraceList::is_valid(monrace_id) || !monraces_rummaged.contains(monrace_id)) {
+                continue;
+            }
+
+            fprintf(fff, _("    %sの死体を%d体漁った。\n", "    rummaged %d corpses of %s.\n"),
+#ifdef JP
+                monraces_rummaged.get_monrace(monrace_id).name.data(), count
+#else
+                count, monraces_rummaged.get_monrace(monrace_id).name.data()
+#endif
+            );
+        }
+    }
 }
 
 void do_cmd_knowledge_incident(CreatureEntity &creature)

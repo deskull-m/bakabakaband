@@ -53,12 +53,15 @@ bool take_item_from_corpse(CreatureEntity &creature, MonsterCorpse &corpse, int 
 
     const auto slot = creature.store_item(taken);
     held.wipe();
-    msg_print(_("{}を死体から取り出した。", "You pull {} out of the corpse."), item_name);
+    // 「死体」が二重に出るのを避けるため品名だけを述べる
+    // (品そのものが「〜の死体」になりうる)
+    msg_print(_("{}を取り出した。", "You take {}."), item_name);
 
     // 他者の正当な所有物を手に入れたことを記録し、社会的問題を発生させる。
     // 床を経由しなくなったぶん process_player_pickup_item() が通らないので、
     // ここで同じ記録を行う (market/loot-notoriety.h 参照)。
     record_looted_rightful_property(creature, taken, taken.number);
+    record_rummaged_corpse_item(creature, taken.number);
     check_find_art_quest_completion(creature, creature.inventory[slot].get());
     return true;
 }
@@ -69,6 +72,11 @@ bool take_item_from_corpse(CreatureEntity &creature, MonsterCorpse &corpse, int 
 void rummage_one_corpse(CreatureEntity &creature, short corpse_idx)
 {
     auto &floor = *creature.get_floor();
+
+    // 死者の持ち物を剥ぐ行為そのものを悪行として記録する (market/loot-notoriety.h の
+    // 系統 5)。品を取り出せたかに依らず、死体を開けた時点で 1 回だけ記録する。
+    record_rummaging_corpse(creature, floor.get_corpse(corpse_idx).body.get_r_idx());
+
     while (true) {
         auto &corpse = floor.get_corpse(corpse_idx);
         const auto slots = collect_item_slots(corpse);
