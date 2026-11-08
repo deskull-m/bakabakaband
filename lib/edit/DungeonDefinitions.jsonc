@@ -1029,7 +1029,7 @@
           { "type": "NONE", "count": 6, "chance": 30, "priority": 1 },
         ],
       },
-      "flags": ["ARENA", "NO_CAVE", "CURTAIN", "GLASS_ROOM", "ALWAY_ARENA"],
+      "flags": ["ARENA", "NO_CAVE", "CURTAIN", "GLASS_ROOM", "ALWAY_ARENA", "WATER_RIVER", "ARTIFICIAL_RIVER"],
       "monster_flags": ["DEMON"],
       "monster_symbols": ["p", "h", "H", "g"],
       "room_rates": [
@@ -1726,7 +1726,7 @@
           { "type": "NONE", "count": 6, "chance": 30, "priority": 1 },
         ],
       },
-      "flags": ["ARENA", "NO_CAVE", "CURTAIN", "GLASS_DOOR", "GLASS_ROOM"],
+      "flags": ["ARENA", "NO_CAVE", "CURTAIN", "GLASS_DOOR", "GLASS_ROOM", "WATER_RIVER", "ARTIFICIAL_RIVER"],
       "monster_flags": [
         "INVISIBLE",
         "HAS_LITE_1",
@@ -2624,7 +2624,7 @@
           { "type": "NONE", "count": 6, "chance": 30, "priority": 1 },
         ],
       },
-      "flags": ["ARENA", "NO_CAVE", "CURTAIN", "GLASS_ROOM", "ALWAYS_LIGHT"],
+      "flags": ["ARENA", "NO_CAVE", "CURTAIN", "GLASS_ROOM", "ALWAYS_LIGHT", "WATER_RIVER", "ARTIFICIAL_RIVER"],
       "monster_flags": ["HUMAN"],
       "normal_monster_rate": 25,
       "final_floor": { "guardian": 1607 },
