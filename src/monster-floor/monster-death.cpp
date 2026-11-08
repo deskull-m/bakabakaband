@@ -406,19 +406,30 @@ void monster_death(CreatureEntity &creature, MONSTER_IDX m_idx, bool drop_item, 
 
     md.leaves_corpse = decide_leaving_corpse(creature, &md);
 
+    // 死体をフロアへ遺す。死体はこの時点の所持品を**複製して**抱えるので、
+    // 床への放出より先に作る必要がある (Issue #9275 第 3 段)。
+    const auto corpse_idx = md.leaves_corpse ? leave_monster_corpse(creature, m_idx) : 0;
+    const auto keeps_inventory_in_corpse = corpse_idx > 0;
+
     // [ドロップ品移行] 一般ドロップ品はモンスター生成時に所持品として前生成済み。
-    // 死亡時は drop_all_inventory() でまとめて床へ放出する。ただし drop_item が
-    // false のケース (量子消失・モンスター同士の戦闘・一部効果死) では従来同様に
+    // **死体を遺せた個体は床へ撒かず死体の中に残す** (撃破ごとに床が散らかるのを
+    // 防ぐのが本件の主目的)。死体を作れなかった場合 (MAX_FLOOR_CORPSES 到達・
+    // 死体を遺さない種族) は従来どおり床へ放出する。ただし drop_item が false の
+    // ケース (量子消失・モンスター同士の戦闘・一部効果死) では従来同様に
     // ドロップを抑制する (モンスターピット等での床溢れ防止)。
-    if (drop_item) {
+    if (drop_item && !keeps_inventory_in_corpse) {
         md.m_ptr->drop_all_inventory(creature);
     }
 
-    // 死体の実体をフロアへ遺し、遺物 (死体/骨/ソウル/がらくた) をその中へ納める。
-    // **所持品を床へ放出した後**に呼ぶこと (死体はこの時点の所持品を複製するため、
-    // 先に呼ぶと床と死体の二重取りになる)。
+    // drop_item が false の経路では従来どおり所持品は失われる。死体へ残すと
+    // モンスター同士の戦闘やクローンで装備を無限に得られてしまうため、
+    // 死体の中身を空にする (遺物アイテムはこの後で入れる)。
+    if (keeps_inventory_in_corpse && !drop_item) {
+        floor.get_corpse(corpse_idx).body.discard_all_inventory();
+    }
+
+    // 遺物 (死体/骨/ソウル/がらくた) を死体の中へ納める
     if (md.leaves_corpse) {
-        const auto corpse_idx = leave_monster_corpse(creature, m_idx);
         store_monster_remains(creature, &md, corpse_idx);
     }
 
