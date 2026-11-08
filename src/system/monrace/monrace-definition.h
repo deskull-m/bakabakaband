@@ -27,6 +27,7 @@
 #include "player/player-personality-types.h"
 #include "realm/realm-types.h"
 #include "system/angband.h"
+#include "system/baseitem/civilization-level-types.h"
 #include "system/material-type-definition.h"
 #include "system/monrace/body-structure-types.h"
 #include "system/monrace/extended-slot.h"
@@ -372,6 +373,12 @@ public:
     //! 体構造。装備可能スロットを決定する。
     //! 詳細は docs/monster-body-structure-equipment-slots.md 参照。
     BodyStructureType body_structure{ BodyStructureType::HUMANOID };
+
+    //! 文明水準。その種族が「どの文明段階に属する存在か」を表す分類。
+    //! ベースアイテム側の `BaseitemDefinition::civilization` と同じ尺度で、
+    //! 将来「水準の一致した品のみを装備させる」判定に使う。
+    //! NONE (既定) は「文明に属さない存在」= 水準で分類しない個体。
+    CivilizationLevel civilization{ CivilizationLevel::NONE };
 
     //! 拡張装備スロットの個別上書き (Phase 2.7)。空なら body_structure の
     //! デフォルトを使う。指定があればその種別・順序の拡張スロットを持つ。
