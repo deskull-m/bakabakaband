@@ -3319,6 +3319,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "BRONZE",
       "flags": ["IGNORE_ACID", "IGNORE_COLD", "IGNORE_FIRE", "IGNORE_ELEC", "STEALTH", "SEARCH"],
       "flavor": {
         "ja": "不思議な絹のような素材で作られた外套だ。その素材は周りの景色の色と形を映し出し、着用者を隠す効果がある。",
