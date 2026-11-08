@@ -26,6 +26,7 @@ private:
     ParseErrorType set_baseitem_allocations(BaseitemDefinition &baseitem) const;
     ParseErrorType set_baseitem_activate(BaseitemDefinition &baseitem) const;
     ParseErrorType set_baseitem_alliance(BaseitemDefinition &baseitem) const;
+    ParseErrorType set_baseitem_civilization(BaseitemDefinition &baseitem) const;
     ParseErrorType set_baseitem_flags(BaseitemDefinition &baseitem) const;
 
     const nlohmann::json &baseitem_data;

@@ -885,6 +885,7 @@
     <ClCompile Include="..\..\src\system\baseitem\baseitem-records.cpp" />
     <ClCompile Include="..\..\src\system\baseitem\baseitem-definition.cpp" />
     <ClCompile Include="..\..\src\system\baseitem\baseitem-service.cpp" />
+    <ClCompile Include="..\..\src\system\baseitem\civilization-level-types.cpp" />
     <ClCompile Include="..\..\src\system\spell-info-list.cpp" />
     <ClCompile Include="..\..\src\object\object-kind-hook.cpp" />
     <ClCompile Include="..\..\src\object\object-broken.cpp" />
@@ -2115,6 +2116,7 @@
     <ClInclude Include="..\..\src\system\baseitem\baseitem-records.h" />
     <ClInclude Include="..\..\src\system\baseitem\baseitem-definition.h" />
     <ClInclude Include="..\..\src\system\baseitem\baseitem-service.h" />
+    <ClInclude Include="..\..\src\system\baseitem\civilization-level-types.h" />
     <ClInclude Include="..\..\src\system\spell-info-list.h" />
     <ClInclude Include="..\..\src\player\patron.h" />
     <ClInclude Include="..\..\src\player-info\class-info.h" />

@@ -9,6 +9,7 @@
 #include "object-enchant/tr-flags.h"
 #include "object-enchant/trg-types.h"
 #include "system/baseitem/baseitem-key.h"
+#include "system/baseitem/civilization-level-types.h"
 #include "system/h-type.h"
 #include "util/dice.h"
 #include "util/flag-group.h"
@@ -50,6 +51,7 @@ public:
 
     int level{}; /*!< ベースアイテムの基本生成階 / Level */
     AllianceType alliance_idx{}; /*!< アイテムの製造元アライアンス / Manufacturing alliance */
+    CivilizationLevel civilization{ CivilizationLevel::NONE }; /*!< その装備が属する文明水準 / Civilization level of the gear */
 
     struct alloc_table {
         int level; /*!< ベースアイテムの生成階 */

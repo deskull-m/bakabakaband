@@ -1090,6 +1090,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": ["SHOW_MODS", "TUNNEL"],
       "flavor": {
         "ja": "",
@@ -1125,6 +1126,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": ["SHOW_MODS"],
       "flavor": {
         "ja": "",
@@ -1160,6 +1162,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": ["SHOW_MODS"],
       "flavor": {
         "ja": "",
@@ -1195,6 +1198,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": ["SHOW_MODS"],
       "flavor": {
         "ja": "片手半剣とも呼ばれる。通常のロング・ソードよりも長い両刃の直刀だ。",
@@ -1230,6 +1234,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": ["SHOW_MODS"],
       "flavor": {
         "ja": "斬る用途に特化した三日月のような刀身を持つ片刃の剣だ。",
@@ -1265,6 +1270,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": ["SHOW_MODS", "RIDING"],
       "flavor": {
         "ja": "",
@@ -1300,6 +1306,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": ["SHOW_MODS", "RIDING"],
       "flavor": {
         "ja": "重く広い刀身と頑丈な柄を持った両刃の直刀だ。",
@@ -1335,6 +1342,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": ["SHOW_MODS"],
       "flavor": {
         "ja": "主に突く用途に用いる短い剣だ。",
@@ -1370,6 +1378,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": ["RES_CHAOS", "SHOW_MODS"],
       "flavor": {
         "ja": "千変万化の姿を持つこの武器は混沌の力によって敵を切り刻み、殺戮にふける事に残忍な喜びを感じている。",
@@ -1405,6 +1414,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": ["SHOW_MODS"],
       "flavor": {
         "ja": "非常に大きな両刃の直刀で、これを片手で持てる者はほとんどいない。",
@@ -1440,6 +1450,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": ["SHOW_MODS", "SUPPORTIVE"],
       "flavor": {
         "ja": "拳を防御する大きな鍔を持つ短い剣。主に決闘で防御用の短剣として用いられる。",
@@ -1475,6 +1486,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": ["SHOW_MODS"],
       "flavor": {
         "ja": "大きな曲った刀身と手をカバーする網状の柄を備えた剣だ。船員に良く用いられる。",
@@ -1510,6 +1522,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": ["SHOW_MODS"],
       "flavor": {
         "ja": "胴体から頭を綺麗に切り落とす為に作られた、巨大な曲った刃を持つ剣だ。",
@@ -1545,6 +1558,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": ["SHOW_MODS"],
       "flavor": {
         "ja": "長い柄と微妙に曲った刃を持つ切れ味に優れた片刃の剣だ。",
@@ -1580,6 +1594,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": ["SHOW_MODS", "RIDING"],
       "flavor": {
         "ja": "十字の形に2本の柄が付いた長い両刃の直刀だ。",
@@ -1615,6 +1630,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": ["SHOW_MODS"],
       "flavor": {
         "ja": "先端が鋭い両刃の短剣だ。",
@@ -1650,6 +1666,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": ["SHOW_MODS"],
       "flavor": {
         "ja": "突きに用いる長く細い刀身を持つ剣。主に決闘に用いられる。",
@@ -1685,6 +1702,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": ["SHOW_MODS", "RIDING"],
       "flavor": {
         "ja": "軽い少し曲った刃を持ち、切る事も突く事もできる。馬上及び決闘においてよく使われる。",
@@ -1720,6 +1738,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": ["SHOW_MODS"],
       "flavor": {
         "ja": "ロング・ソードを少し短くしたような剣だ。ホビットにぴったりのサイズだ。",
@@ -1755,6 +1774,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": ["SHOW_MODS"],
       "flavor": {
         "ja": "柄の上でギザギザに折れている。",
@@ -1790,6 +1810,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": ["SHOW_MODS", "RIDING"],
       "flavor": {
         "ja": "頑丈な木製のハンドルに、重い鉄のボールが鎖で繋っている。",
@@ -1825,6 +1846,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "BRONZE",
       "flags": ["SHOW_MODS"],
       "flavor": {
         "ja": "重い鞭だ。きつく巻いたこの鞭を肩の上から振り下ろすと大の男でも打ち倒す事ができる。",
@@ -1860,6 +1882,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": ["SHOW_MODS", "RIDING"],
       "flavor": {
         "ja": "2本の重い木製の棒を短い鎖で繋げた物だ。対象を叩き潰す為に用いる。",
@@ -1895,6 +1918,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": ["SHOW_MODS"],
       "flavor": {
         "ja": "2本の非常に大きな木製の棒を重い鎖で継いである。うまく用いるためには両手が必要だ。",
@@ -1930,6 +1954,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": ["SHOW_MODS"],
       "flavor": {
         "ja": "星型のトゲが突き出た鉄球が先端に付いた棍棒だ。",
@@ -1965,6 +1990,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": ["SHOW_MODS"],
       "flavor": {
         "ja": "鉄球、または鍔付きの多面体形の鉄塊が先端に付いた棍棒だ。",
@@ -2000,6 +2026,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "STONE",
       "flags": ["SHOW_MODS"],
       "flavor": {
         "ja": "2メートル程度の長さの木製の杖だ。両手で持って打ち付けたり攻撃を受け止める為に用いられる。",
@@ -2035,6 +2062,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": ["SHOW_MODS", "RIDING"],
       "flavor": {
         "ja": "長いハンドルがあり、先の尖った槌が先端から直角に付き出た形をしている。",
@@ -2070,6 +2098,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": ["SHOW_MODS"],
       "flavor": {
         "ja": "重い棍棒の先に鉛を詰めた鋼鉄の重りを繋げてある。対象を叩き潰す為に用いる。",
@@ -2105,6 +2134,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": ["SLAY_UNDEAD", "SHOW_MODS"],
       "flavor": {
         "ja": "巨人の武器であり、相手の骨を、体を、そして精神をも粉砕する魔法が掛けられている。",
@@ -2140,6 +2170,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": ["SHOW_MODS"],
       "flavor": {
         "ja": "",
@@ -2175,6 +2206,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": ["SHOW_MODS"],
       "flavor": {
         "ja": "木製の柄に、背が烏のクチバシを模した突起になった形の幅が狭い斧が付いている。",
@@ -2210,6 +2242,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": ["SHOW_MODS", "RIDING"],
       "flavor": {
         "ja": "2.5メートル程の補強された木製の棒の先端に大きなナイフの刃が真っ直に付いている。切り裂く事も付き刺す事もできる。",
@@ -2245,6 +2278,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": ["SHOW_MODS"],
       "flavor": {
         "ja": "長い竿に重い斧の刃とその反対側にスパイクが付き、さらに竿の先端に付き刺す為の穂先が付いている。最も完成されたタイプの竿状武器である。",
@@ -2280,6 +2314,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": ["SHOW_MODS"],
       "flavor": {
         "ja": "",
@@ -2315,6 +2350,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": ["SHOW_MODS"],
       "flavor": {
         "ja": "補強された柄に鉄の穂先が付いた、非常に長く重い槍だ。",
@@ -2350,6 +2386,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": ["SHOW_MODS", "RIDING"],
       "flavor": {
         "ja": "最も基本的な竿状武器だ。軽く長い竿の先に尖った両刃の穂先が付いていて、突き刺すのに適している。",
@@ -2385,6 +2422,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": ["SHOW_MODS", "RIDING"],
       "flavor": {
         "ja": "三又の槍で、元来は魚を捕るのに用いられていた。",
@@ -2420,6 +2458,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": ["SHOW_MODS", "RIDING"],
       "flavor": {
         "ja": "大きく長い円錐形の穂先を持った槍だ。馬上で構えて突撃する為に作られている。",
@@ -2455,6 +2494,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": ["SHOW_MODS"],
       "flavor": {
         "ja": "巨大な両手持ち用の戦斧だ。オークの首を落とした数を競うドワーフの戦士が愛用している。",
@@ -2490,6 +2530,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": ["SHOW_MODS"],
       "flavor": {
         "ja": "幅広の両刃の斧だ。ドワーフによく用いられる。",
@@ -2525,6 +2566,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": ["SHOW_MODS"],
       "flavor": {
         "ja": "",
@@ -2560,6 +2602,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": ["SHOW_MODS"],
       "flavor": {
         "ja": "単純な作りの片刃の戦斧で、対象の胴体や鎧を切断する威力がある。",
@@ -2595,6 +2638,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": ["SHOW_MODS"],
       "flavor": {
         "ja": "長い三日月型の刃が長い柄の先端に突けられている。両手に持って穀物、または生命を苅り取る為に用いられる…。",
@@ -2630,6 +2674,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": ["SHOW_MODS", "RIDING"],
       "flavor": {
         "ja": "死神の武器である。その長い刃は流血の期待に歓喜の声を上げているかのようだ。",
@@ -2665,6 +2710,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "STONE",
       "flags": ["SHOW_MODS"],
       "flavor": {
         "ja": "伝統的に狩人に用いられる武器だ。この軽い弓は簡単に引く事ができる。",
@@ -2700,6 +2746,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": ["SHOW_MODS"],
       "flavor": {
         "ja": "人の身長程の長さの弓だ。厚い鉄製の鎧でも貫通する程の威力を持つ。",
@@ -2735,6 +2782,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": ["SHOW_MODS"],
       "flavor": {
         "ja": "鋼鉄製の弦をあらかじめ引いておき、機械式の引き金を引くだけで矢を発射する事ができる。ショート・ボウやロング・ボウに比べて扱いが簡単な武器だ。",
@@ -2770,6 +2818,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": ["SHOW_MODS"],
       "flavor": {
         "ja": "鋼鉄製の弦をあらかじめ引いておき、機械式の引き金を引くだけで矢を発射する事ができる。ショート・ボウやロング・ボウに比べて扱いが簡単な武器だ。ヘヴィ・クロスボウはライト・クロスボウに比べて威力は強いが、弦を引くのに長い時間がかかってしまう。",
@@ -2805,6 +2854,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "STONE",
       "flags": ["SHOW_MODS"],
       "flavor": {
         "ja": "長い紐の中間にある革製の石受け部分に石を包み、これを振り回す勢いで石を飛ばす武器だ。原始的な構造だが威力はある。",
@@ -2840,6 +2890,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "STONE",
       "flags": ["SHOW_MODS"],
       "flavor": {
         "ja": "たくみに羽が付けられた真っ直な標準的な矢だ。",
@@ -2875,6 +2926,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": ["SHOW_MODS", "IGNORE_ACID", "IGNORE_COLD", "IGNORE_FIRE", "IGNORE_ELEC"],
       "flavor": {
         "ja": "希少な種類の木材から切り出され、鷲の羽を付け、威力を高めるルーンを刻まれた矢だ。",
@@ -2910,6 +2962,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": ["SHOW_MODS"],
       "flavor": {
         "ja": "発射時の強い負荷に耐えるように作られた短く重いクロスボウ用の矢だ。",
@@ -2945,6 +2998,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": ["SHOW_MODS", "IGNORE_ACID", "IGNORE_COLD", "IGNORE_FIRE", "IGNORE_ELEC"],
       "flavor": {
         "ja": "威力を高める魔法が掛けられた強力なクロスボウ用の矢だ。",
@@ -2980,6 +3034,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "STONE",
       "flags": ["SHOW_MODS"],
       "flavor": {
         "ja": "",
@@ -3015,6 +3070,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": ["SHOW_MODS"],
       "flavor": {
         "ja": "",
@@ -3050,6 +3106,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": ["SHOW_MODS", "TUNNEL"],
       "flavor": {
         "ja": "小型で頑丈なシャベルだ。",
@@ -3085,6 +3142,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": ["SHOW_MODS", "TUNNEL"],
       "flavor": {
         "ja": "ノームの職人によって作られた鋼鉄製のシャベルだ。",
@@ -3120,6 +3178,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": ["SHOW_MODS", "TUNNEL"],
       "flavor": {
         "ja": "ドワーフの強力な肩にちょうど良い幅広のシャベルだ。採掘力を高めるルーンを帯び、普通の岩ならばどんな物でも掘り進む事ができる。",
@@ -3155,6 +3214,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": ["SHOW_MODS", "TUNNEL"],
       "flavor": {
         "ja": "重い採掘用の道具で、微妙に曲った頭部の両端に切先が付いている。",
@@ -3190,6 +3250,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": ["SHOW_MODS", "TUNNEL"],
       "flavor": {
         "ja": "粗雑で醜い作りだが、実用的なつるはしだ。",
@@ -3225,6 +3286,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": ["SHOW_MODS", "TUNNEL"],
       "flavor": {
         "ja": "モリアの深部の採掘に使われていたのと同様な、短く頑丈なつるはしだ。",
@@ -3260,6 +3322,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "BRONZE",
       "flags": ["IGNORE_ACID", "IGNORE_COLD", "IGNORE_FIRE", "IGNORE_ELEC", "STEALTH", "SEARCH"],
       "flavor": {
         "ja": "不思議な絹のような素材で作られた外套だ。その素材は周りの景色の色と形を映し出し、着用者を隠す効果がある。",
@@ -3295,6 +3358,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "STONE",
       "flags": [],
       "flavor": {
         "ja": "ふくらはぎの高さまでの柔軟な革のブーツだ。踵からふくらはぎまで結び紐が付いている。",
@@ -3330,6 +3394,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "STONE",
       "flags": [],
       "flavor": {
         "ja": "長い旅路でも良く保つ丈夫な革製のブーツだ。",
@@ -3365,6 +3430,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": [],
       "flavor": {
         "ja": "二重の革製ブーツで、踵と爪先が鉄で補強されている。",
@@ -3400,6 +3466,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "STONE",
       "flags": [],
       "flavor": {
         "ja": "煮固めた革製の詰め物入りの帽子だ。",
@@ -3435,6 +3502,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "BRONZE",
       "flags": [],
       "flavor": {
         "ja": "頭部を保護する鋼鉄の帽子だ。",
@@ -3470,6 +3538,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": [],
       "flavor": {
         "ja": "頭部を完全に覆う鉄製のヘルメットだ。",
@@ -3505,6 +3574,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": [],
       "flavor": {
         "ja": "鋼鉄板と鎖かたびらを組み合わせて、頭部から肩までを完全に覆う防具だ。",
@@ -3540,6 +3610,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": [],
       "flavor": {
         "ja": "鉄の環に鉄の突起で飾りが付けられた冠だ。君主の印である。",
@@ -3575,6 +3646,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "BRONZE",
       "flags": ["IGNORE_ACID"],
       "flavor": {
         "ja": "幾つもの細い突起が上向きに付いた優雅な金の頭飾り。王の額に相応しい物に見える。",
@@ -3610,6 +3682,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "BRONZE",
       "flags": ["IGNORE_ACID"],
       "flavor": {
         "ja": "精巧に飾り付けられた重厚な金の冠に様々な宝石が虹色にちりばめられている。",
@@ -3645,6 +3718,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "BRONZE",
       "flags": [],
       "flavor": {
         "ja": "首から踵までを覆う、ビロードまたは綿製の実用的な衣服だ。",
@@ -3680,6 +3754,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "BRONZE",
       "flags": [],
       "flavor": {
         "ja": "このぼろきれは元々はローブだった物のようだが、あまりにも継ぎはぎだらけでよく判別できない。",
@@ -3715,6 +3790,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "STONE",
       "flags": [],
       "flavor": {
         "ja": "しなやかな革の胴当てに薄い革ジャケットが付いた鎧だ。",
@@ -3750,6 +3826,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "BRONZE",
       "flags": [],
       "flavor": {
         "ja": "多数の金属製の鋲で補強されたしなやかな革の胴当てだ。",
@@ -3785,6 +3862,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "STONE",
       "flags": [],
       "flavor": {
         "ja": "煮固めた革製の胴当てと肩当てが付いた鎧だ。",
@@ -3820,6 +3898,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "BRONZE",
       "flags": [],
       "flavor": {
         "ja": "多数の金属製の鋲で補強した革製のシャツに煮固めた革製の胴当てと肩当てが付いた鎧だ。",
@@ -3855,6 +3934,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "BRONZE",
       "flags": [],
       "flavor": {
         "ja": "革製のシャツに煮固めた革製の鱗のような形の部品を多数縫い付けてある鎧だ。",
@@ -3890,6 +3970,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "BRONZE",
       "flags": [],
       "flavor": {
         "ja": "革製の袖付きシャツに鋼鉄製の鱗のような形の部品を多数縫い付けてある鎧だ。",
@@ -3925,6 +4006,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": [],
       "flavor": {
         "ja": "鋼鉄の輪が噛み合った袖付きの鎖かたびらで、革が当てられている。鎖かたびらを作るには熟練を要するが、高い防御力を持ち比較的に軽量に仕上がる。",
@@ -3960,6 +4042,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": [],
       "flavor": {
         "ja": "この鎧の各部の継ぎ目は錆で脆くなっており、朽ちた鎖の輪は固まってしまい弱まっている。",
@@ -3995,6 +4078,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": [],
       "flavor": {
         "ja": "噛み合った鋼鉄の輪でできた鎖かたびらの胴鎧と脛当てと袖であり、2枚目の鎖の層で重要な部分を戦略的に補強しており、至る所に重い詰め物の層がある。",
@@ -4030,6 +4114,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": [],
       "flavor": {
         "ja": "",
@@ -4065,6 +4150,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": [],
       "flavor": {
         "ja": "",
@@ -4100,6 +4186,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": [],
       "flavor": {
         "ja": "鋼鉄製の胴鎧であり、スカートの上部には腕鎧があり、鎖の脛当てを持つ。",
@@ -4135,6 +4222,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": [],
       "flavor": {
         "ja": "",
@@ -4170,6 +4258,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": [],
       "flavor": {
         "ja": "念入りに体に合わせた鉄板製の全身鎧であり、ちょうつがいで繋がった部分の裏は鎖で守られ、鎧の裏には軽い詰め物がある。",
@@ -4205,6 +4294,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": [],
       "flavor": {
         "ja": "",
@@ -4240,6 +4330,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": ["IGNORE_ACID"],
       "flavor": {
         "ja": "ダイアモンドのように硬いアダマンタイトでできた精巧で美しい鎧であり、これほどの防御をもたらす鎧は中つ国には他に存在しない。",
@@ -4275,6 +4366,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": ["IGNORE_ACID"],
       "flavor": {
         "ja": "遥かなる昔に伝説のドワーフの鍛冶師に鍛えられた、輝くまことの銀の鎧だ。凝視すると純白にきらめく。",
@@ -4310,6 +4402,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": ["IGNORE_ACID"],
       "flavor": {
         "ja": "本当に希少で驚くべきまことの銀製の鎖かたびらであり、他の鎧に比べてもその軽さにしてより高い防御を与える。",
@@ -4345,6 +4438,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": [],
       "flavor": {
         "ja": "",
@@ -4380,6 +4474,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": ["IGNORE_ACID", "REFLECT"],
       "flavor": {
         "ja": "",
@@ -4415,6 +4510,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "BRONZE",
       "flags": [],
       "flavor": {
         "ja": "冒険者用の丈夫な外套だ。",
@@ -4450,6 +4546,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "BRONZE",
       "flags": ["RES_DARK", "RES_LITE"],
       "flavor": {
         "ja": "着用者を影の層で包み込む闇夜の色のクロークだ。",
@@ -4485,6 +4582,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "STONE",
       "flags": [],
       "flavor": {
         "ja": "革製の手甲で、手のひらは武器を握るために開いている。",
@@ -4520,6 +4618,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": [],
       "flavor": {
         "ja": "手と手首を鋼鉄板で完全に覆うグローブだ。",
@@ -4555,6 +4654,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "BRONZE",
       "flags": [],
       "flavor": {
         "ja": "重厚な手の覆いで、鋼鉄としっかり煮固めた革で縛ってある。",
@@ -4590,6 +4690,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "STONE",
       "flags": [],
       "flavor": {
         "ja": "煮固めた動物の革を重ねた小さな木の板いっぱいに伸ばして作った丸い盾だ。",
@@ -4625,6 +4726,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "STONE",
       "flags": [],
       "flavor": {
         "ja": "重ねた木の板を厚い革で覆った大きな楕円形の盾だ。",
@@ -4660,6 +4762,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "BRONZE",
       "flags": [],
       "flavor": {
         "ja": "金属の縁材と中心の円盤で強化した円形の木の盾だ。",
@@ -4695,6 +4798,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "BRONZE",
       "flags": [],
       "flavor": {
         "ja": "革で覆った木の板を金属で縁取った楕円形の盾だ。盾の大きな鉄の突起は素晴らしい腕の防御をもたらす。",
@@ -6060,6 +6164,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": [],
       "flavor": {
         "ja": "",
@@ -6959,6 +7064,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "STONE",
       "flags": ["SHOW_MODS"],
       "flavor": {
         "ja": "",
@@ -6994,6 +7100,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": ["SHOW_MODS", "IGNORE_ACID", "IGNORE_COLD", "IGNORE_FIRE", "IGNORE_ELEC"],
       "flavor": {
         "ja": "",
@@ -10389,6 +10496,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "STONE",
       "flags": ["SHOW_MODS"],
       "flavor": {
         "ja": "",
@@ -14099,6 +14207,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": ["SHOW_MODS"],
       "flavor": {
         "ja": "",
@@ -14134,6 +14243,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": ["RES_ACID", "ACTIVATE", "IGNORE_ACID", "IGNORE_ELEC", "IGNORE_FIRE", "IGNORE_COLD"],
       "flavor": {
         "ja": "木や金属が耐えられないかのような漆黒の鱗鎧だ。",
@@ -14169,6 +14279,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": ["RES_ELEC", "ACTIVATE", "IGNORE_ACID", "IGNORE_ELEC", "IGNORE_FIRE", "IGNORE_COLD"],
       "flavor": {
         "ja": "着た者が動くと不気味な稲妻と光を放つ、サファイアのように青い鱗鎧だ。",
@@ -14204,6 +14315,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": ["RES_COLD", "ACTIVATE", "IGNORE_ACID", "IGNORE_ELEC", "IGNORE_FIRE", "IGNORE_COLD"],
       "flavor": {
         "ja": "冷淡な白に冷たくきらめく鱗鎧だ。それを見る時、背筋が寒くなる。",
@@ -14239,6 +14351,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": ["RES_FIRE", "ACTIVATE", "IGNORE_ACID", "IGNORE_ELEC", "IGNORE_FIRE", "IGNORE_COLD"],
       "flavor": {
         "ja": "常に燃える炎に赤く彩られた鱗鎧だ。これを着ると古い火傷跡が痛む。",
@@ -14274,6 +14387,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": ["RES_POIS", "ACTIVATE", "IGNORE_ACID", "IGNORE_ELEC", "IGNORE_FIRE", "IGNORE_COLD"],
       "flavor": {
         "ja": "病的な緑に光る鱗鎧だ。",
@@ -14309,6 +14423,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": [
         "RES_ACID",
         "RES_ELEC",
@@ -14355,6 +14470,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": [
         "RES_LITE",
         "RES_DARK",
@@ -14398,6 +14514,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": [
         "RES_SOUND",
         "RES_SHARDS",
@@ -14441,6 +14558,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": ["RES_CONF", "ACTIVATE", "IGNORE_ACID", "IGNORE_ELEC", "IGNORE_FIRE", "IGNORE_COLD"],
       "flavor": {
         "ja": "贅沢に彫刻された青銅がきらめく鱗鎧だ。近づいて見ると鎧の表面に現れる渦と線の迷宮を見れば見るほど、どうやってそれらができているのかわからなくなる。",
@@ -14476,6 +14594,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": [
         "RES_SOUND",
         "ACTIVATE",
@@ -14518,6 +14637,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": [
         "RES_CHAOS",
         "RES_DISEN",
@@ -14561,6 +14681,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": [
         "RES_CHAOS",
         "RES_DISEN",
@@ -14606,6 +14727,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": [
         "RES_ACID",
         "RES_FIRE",
@@ -14662,6 +14784,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": ["IGNORE_ACID", "IGNORE_FIRE", "IGNORE_ELEC", "IGNORE_COLD"],
       "flavor": {
         "ja": "ドラゴンの翼飾りのある大きな兜で、虹色に輝く。元素への耐性を保証する。",
@@ -14697,6 +14820,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": ["IGNORE_ACID", "IGNORE_FIRE", "IGNORE_ELEC", "IGNORE_COLD"],
       "flavor": {
         "ja": "",
@@ -16231,6 +16355,7 @@
       "hit_bonus": 0,
       "damage_bonus": 0,
       "ac_bonus": 0,
+      "civilization": "IRON",
       "flags": ["SHOW_MODS", "INSTA_ART", "RIDING"],
       "flavor": {
         "ja": "",
@@ -16260,6 +16385,7 @@
       "hit_bonus": 0,
       "damage_bonus": 0,
       "ac_bonus": 0,
+      "civilization": "IRON",
       "flags": ["INSTA_ART"],
       "flavor": {
         "ja": "",
@@ -17072,6 +17198,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": ["SHOW_MODS"],
       "flavor": {
         "ja": "",
@@ -17107,6 +17234,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": ["SHOW_MODS"],
       "flavor": {
         "ja": "",
@@ -17142,6 +17270,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": [],
       "flavor": {
         "ja": "",
@@ -17177,6 +17306,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": [],
       "flavor": {
         "ja": "",
@@ -17212,6 +17342,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": ["SHOW_MODS", "RIDING"],
       "flavor": {
         "ja": "",
@@ -17247,6 +17378,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": ["SHOW_MODS"],
       "flavor": {
         "ja": "",
@@ -17282,6 +17414,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": [],
       "flavor": {
         "ja": "",
@@ -17317,6 +17450,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "STONE",
       "flags": [],
       "flavor": {
         "ja": "",
@@ -17352,6 +17486,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": ["SHOW_MODS"],
       "flavor": {
         "ja": "",
@@ -17387,6 +17522,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": ["SHOW_MODS"],
       "flavor": {
         "ja": "",
@@ -17422,6 +17558,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "STONE",
       "flags": [],
       "flavor": {
         "ja": "",
@@ -17457,6 +17594,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "STONE",
       "flags": [],
       "flavor": {
         "ja": "",
@@ -17492,6 +17630,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": ["SHOW_MODS"],
       "flavor": {
         "ja": "",
@@ -17527,6 +17666,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": ["SHOW_MODS"],
       "flavor": {
         "ja": "",
@@ -17562,6 +17702,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "STONE",
       "flags": ["SHOW_MODS"],
       "flavor": {
         "ja": "",
@@ -17597,6 +17738,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "STONE",
       "flags": ["SHOW_MODS"],
       "flavor": {
         "ja": "",
@@ -17632,6 +17774,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "BRONZE",
       "flags": ["SHOW_MODS"],
       "flavor": {
         "ja": "",
@@ -17667,6 +17810,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "STONE",
       "flags": ["SHOW_MODS"],
       "flavor": {
         "ja": "",
@@ -17702,6 +17846,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": ["SHOW_MODS", "RIDING"],
       "flavor": {
         "ja": "",
@@ -17737,6 +17882,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "BRONZE",
       "flags": ["SHOW_MODS"],
       "flavor": {
         "ja": "",
@@ -17772,6 +17918,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": ["SHOW_MODS"],
       "flavor": {
         "ja": "",
@@ -17807,6 +17954,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": ["SHOW_MODS"],
       "flavor": {
         "ja": "",
@@ -17842,6 +17990,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": ["SHOW_MODS"],
       "flavor": {
         "ja": "",
@@ -17877,6 +18026,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": ["SHOW_MODS", "RIDING"],
       "flavor": {
         "ja": "",
@@ -17912,6 +18062,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": ["SHOW_MODS", "SUPPORTIVE"],
       "flavor": {
         "ja": "",
@@ -17947,6 +18098,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": ["SHOW_MODS"],
       "flavor": {
         "ja": "",
@@ -17982,6 +18134,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": ["SHOW_MODS", "RIDING"],
       "flavor": {
         "ja": "",
@@ -18017,6 +18170,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": ["SHOW_MODS"],
       "flavor": {
         "ja": "",
@@ -18052,6 +18206,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": ["SHOW_MODS", "RIDING"],
       "flavor": {
         "ja": "",
@@ -18087,6 +18242,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": ["SHOW_MODS"],
       "flavor": {
         "ja": "",
@@ -18122,6 +18278,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": ["SHOW_MODS"],
       "flavor": {
         "ja": "",
@@ -18157,6 +18314,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": [],
       "flavor": {
         "ja": "",
@@ -18192,6 +18350,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "INDUSTRIAL",
       "flags": [],
       "flavor": {
         "ja": "",
@@ -18227,6 +18386,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "BRONZE",
       "flags": [],
       "flavor": {
         "ja": "",
@@ -18262,6 +18422,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "BRONZE",
       "flags": [],
       "flavor": {
         "ja": "",
@@ -18297,6 +18458,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": [],
       "flavor": {
         "ja": "",
@@ -18332,6 +18494,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "STONE",
       "flags": [],
       "flavor": {
         "ja": "",
@@ -18367,6 +18530,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": [],
       "flavor": {
         "ja": "",
@@ -18402,6 +18566,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": [],
       "flavor": {
         "ja": "",
@@ -18466,6 +18631,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "INDUSTRIAL",
       "flags": ["SHOW_MODS", "VORPAL", "TUNNEL"],
       "flavor": {
         "ja": "",
@@ -18991,6 +19157,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "INDUSTRIAL",
       "flags": [],
       "flavor": {
         "ja": "",
@@ -19026,6 +19193,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "STONE",
       "flags": ["SHOW_MODS", "DEC_MANA"],
       "flavor": {
         "ja": "",
@@ -19131,6 +19299,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": ["IGNORE_ACID", "IGNORE_FIRE", "IGNORE_ELEC", "IGNORE_COLD"],
       "flavor": {
         "ja": "",
@@ -19166,6 +19335,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": ["IGNORE_ACID", "IGNORE_FIRE", "IGNORE_ELEC", "IGNORE_COLD"],
       "flavor": {
         "ja": "",
@@ -19259,6 +19429,7 @@
       "hit_bonus": 0,
       "damage_bonus": 0,
       "ac_bonus": 0,
+      "civilization": "INFORMATION",
       "flags": ["SHOW_MODS", "INSTA_ART"],
       "flavor": {
         "ja": "",
@@ -19381,6 +19552,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": ["SHOW_MODS", "IGNORE_ACID", "IGNORE_ELEC", "IGNORE_FIRE", "IGNORE_COLD"],
       "flavor": {
         "ja": "",
@@ -19451,6 +19623,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": [
         "SHOW_MODS",
         "VORPAL",
@@ -20085,6 +20258,7 @@
       "hit_bonus": 0,
       "damage_bonus": 0,
       "ac_bonus": 10,
+      "civilization": "BRONZE",
       "flags": ["IGNORE_ACID", "REFLECT", "INSTA_ART"],
       "flavor": {
         "ja": "",
@@ -20114,6 +20288,7 @@
       "hit_bonus": 0,
       "damage_bonus": 0,
       "ac_bonus": 0,
+      "civilization": "STONE",
       "flags": ["INSTA_ART", "SHOW_MODS"],
       "flavor": {
         "ja": "",
@@ -20149,6 +20324,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "INDUSTRIAL",
       "flags": ["IGNORE_ACID", "IGNORE_ELEC", "IGNORE_FIRE", "IGNORE_COLD", "AGGRAVATE", "JOKE"],
       "flavor": {
         "ja": "",
@@ -20178,6 +20354,7 @@
       "hit_bonus": 0,
       "damage_bonus": 0,
       "ac_bonus": 0,
+      "civilization": "STONE",
       "flags": ["INSTA_ART"],
       "flavor": {
         "ja": "",
@@ -20312,6 +20489,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": ["SHOW_MODS"],
       "flavor": {
         "ja": "",
@@ -20376,6 +20554,7 @@
       "hit_bonus": 0,
       "damage_bonus": 0,
       "ac_bonus": 0,
+      "civilization": "STONE",
       "flags": ["INSTA_ART"],
       "flavor": {
         "ja": "",
@@ -20405,6 +20584,7 @@
       "hit_bonus": 0,
       "damage_bonus": 0,
       "ac_bonus": 0,
+      "civilization": "IRON",
       "flags": ["INSTA_ART"],
       "flavor": {
         "ja": "",
@@ -20434,6 +20614,7 @@
       "hit_bonus": 0,
       "damage_bonus": 0,
       "ac_bonus": 0,
+      "civilization": "BRONZE",
       "flags": ["INSTA_ART"],
       "flavor": {
         "ja": "",
@@ -20574,6 +20755,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": [],
       "flavor": {
         "ja": "",
@@ -20854,6 +21036,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": ["SHOW_MODS", "BLOWS"],
       "flavor": {
         "ja": "",
@@ -21204,6 +21387,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "BRONZE",
       "flags": [],
       "flavor": {
         "ja": "",
@@ -21478,6 +21662,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "BRONZE",
       "flags": ["STEALTH", "IGNORE_FIRE"],
       "flavor": {
         "ja": "",
@@ -22066,6 +22251,7 @@
       "hit_bonus": 0,
       "damage_bonus": 0,
       "ac_bonus": 0,
+      "civilization": "BRONZE",
       "flags": ["SHOW_MODS", "INSTA_ART"],
       "flavor": {
         "ja": "",
@@ -22416,6 +22602,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "INDUSTRIAL",
       "flags": ["NASTY", "RES_ELEC"],
       "flavor": {
         "ja": "漁師の人との幼い頃の体験というか、淡い恋心とかそういうものが籠っているようだ。",
@@ -22451,6 +22638,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "INDUSTRIAL",
       "flags": ["NASTY", "WORLD_END"],
       "flavor": {
         "ja": "ピンク色のＯバックとかどう評しろというのか。",
@@ -22486,6 +22674,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "INDUSTRIAL",
       "flags": ["NASTY"],
       "flavor": {
         "ja": "ふたいたいは（適当）",
@@ -22591,6 +22780,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "INDUSTRIAL",
       "flags": ["NASTY", "NASTY_AGGRAVATE"],
       "flavor": {
         "ja": "顔を保護はできるようだが、そこに小便されても知らんぞ。",
@@ -22668,6 +22858,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "STONE",
       "flags": ["SHOW_MODS", "JOKE"],
       "flavor": {
         "ja": "とある島の吸血鬼たちと戦うのに理想的な武器らしいが、無論無駄に重い。",
@@ -22703,6 +22894,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "INDUSTRIAL",
       "flags": ["RES_BLIND"],
       "flavor": {
         "ja": "日差しや強い照明から眼を守るために着用する保護眼鏡だ。物理的には頭部を守れない。",
@@ -22809,6 +23001,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "BRONZE",
       "flags": ["RES_CURSE"],
       "flavor": {
         "ja": "魔術的なルーンの刻まれた陰気な外套だ。",
@@ -22949,6 +23142,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": [],
       "flavor": {
         "ja": "ヤーナムの悪夢に潜むメンシス学派の徒が頭部に被る檻だ。上位者たちの交信に用いるとも、己の獣の愚かさを克する誓いとも言われている。",
@@ -23089,6 +23283,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "BRONZE",
       "flags": [],
       "flavor": {
         "ja": "",
@@ -23124,6 +23319,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "INDUSTRIAL",
       "flags": ["JOKE"],
       "flavor": {
         "ja": "",
@@ -23159,6 +23355,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "BRONZE",
       "flags": ["NASTY"],
       "flavor": {
         "ja": "六尺サポータになって、Ｈしよう！（直球）",
@@ -23194,6 +23391,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "INDUSTRIAL",
       "flags": ["SHOW_MODS", "ACTIVATE"],
       "flavor": {
         "ja": "汚物は消毒しなければいけない（戒め）",
@@ -23229,6 +23427,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "INDUSTRIAL",
       "flags": ["JOKE"],
       "flavor": {
         "ja": "物資運搬用の品だが冒険用のザックのようには扱えない。浮浪者が寒さしのぎにまとったり、寝床にもちいることもある。一部の伝説の傭兵はこれを隠密の術に用いるらしい。",
@@ -23264,6 +23463,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": ["DEC_MANA", "EASY_SPELL", "CURSED", "HEAVY_CURSE", "DOWN_SAVING"],
       "flavor": {
         "ja": "それはラトリアをデーモンの滅びに追い込んだ黄衣の翁の狂気の表れだ。",
@@ -23299,6 +23499,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "INDUSTRIAL",
       "flags": ["SHOW_MODS", "ACTIVATE"],
       "flavor": {
         "ja": "神秘の霧を放ち敵を葬るヤーナムの「聖歌隊」の武装だ。",
@@ -23334,6 +23535,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "STONE",
       "flags": [],
       "flavor": {
         "ja": "太古からのフェアリー的存在、テングの顔をかたどった面だ。",
@@ -23404,6 +23606,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "BRONZE",
       "flags": ["RES_FIRE"],
       "flavor": {
         "ja": "君もこれでオーラントの公使になれる！",
@@ -24028,6 +24231,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": ["RES_DARK"],
       "flavor": {
         "ja": "ニンジャが本能的に頭部にまとうことを好む覆いだ。",
@@ -24168,6 +24372,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "ATOMIC",
       "flags": ["SHOW_MODS", "ACTIVATE"],
       "flavor": {
         "ja": "ロマン溢れる100万発入りのドリル型だ。",
@@ -24280,6 +24485,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "BRONZE",
       "flags": [],
       "flavor": {
         "ja": "東方の国の舞踊に使われる面だ。元より防具としては適さない。",
@@ -24350,6 +24556,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "BRONZE",
       "flags": ["JOKE"],
       "flavor": {
         "ja": "それは毛根滅びた者にとって救いであり、虚無でもある。",
@@ -24672,6 +24879,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "SOLAR",
       "flags": ["IGNORE_ACID", "IGNORE_ELEC", "IGNORE_FIRE", "IGNORE_COLD"],
       "flavor": {
         "ja": "ルナ・チタニウム合金とも呼ばれる、人類が宇宙に新たな開拓を求めた時代に生み出された技術の精髄だ。本来は機械仕掛けの巨人の装甲に用いられるらしい。",
@@ -25171,6 +25379,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": ["IGNORE_ACID", "IGNORE_FIRE", "IGNORE_ELEC", "IGNORE_COLD", "JOKE"],
       "flavor": {
         "ja": "",
@@ -25451,6 +25660,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "STONE",
       "flags": ["JOKE"],
       "flavor": {
         "ja": "それにはマフティーの清廉さが感じられず、着用すると神経が苛立つ。",
@@ -25486,6 +25696,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "INDUSTRIAL",
       "flags": ["JOKE"],
       "flavor": {
         "ja": "それは明確にフェティシズムを目的としたものだ。",
@@ -25556,6 +25767,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "INDUSTRIAL",
       "flags": [],
       "flavor": {
         "ja": "鮮やかな色の意匠は見栄え良いがおよそ防具になるものではない。",
@@ -25592,6 +25804,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "GALACTIC",
       "flags": ["STANDARDIZED"],
       "flavor": {
         "ja": "フリーザ軍が制式装備している超質ラバー製の鎧だ。",
@@ -25697,6 +25910,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "BRONZE",
       "flags": ["JOKE"],
       "flavor": {
         "ja": "幼い女性向けの装飾具だ。魔法的な要素を込めない限り防御力は皆無だ。",
@@ -25732,6 +25946,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "BRONZE",
       "flags": [],
       "flavor": {
         "ja": "頭部に巻く分厚い布だ。",
@@ -25802,6 +26017,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "INDUSTRIAL",
       "flags": [],
       "flavor": {
         "ja": "現場作業者や研究職がしばしば着こなす丈夫な衣服だ。",
@@ -25837,6 +26053,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "INDUSTRIAL",
       "flags": [],
       "flavor": {
         "ja": "",
@@ -25907,6 +26124,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "INDUSTRIAL",
       "flags": [],
       "flavor": {
         "ja": "",
@@ -25942,6 +26160,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "INDUSTRIAL",
       "flags": ["JOKE"],
       "flavor": {
         "ja": "",
@@ -25977,6 +26196,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "SOLAR",
       "flags": ["TELEPATHY", "IGNORE_ACID", "IGNORE_ELEC", "IGNORE_FIRE", "IGNORE_COLD"],
       "flavor": {
         "ja": "頭部を完全に覆う精神感応素材のヘルメットだ。",
@@ -26082,6 +26302,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "GALACTIC",
       "flags": ["ACTIVATE"],
       "flavor": {
         "ja": "惑星戦士のほぼ全員に配備される、相手の戦闘力を解析する小型装置だ。",
@@ -26117,6 +26338,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "INDUSTRIAL",
       "flags": [],
       "flavor": {
         "ja": "足の保全よりも踏ん張りの聞きやすさを重視した作業用の履物だ。",
@@ -26152,6 +26374,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "BRONZE",
       "flags": [],
       "flavor": {
         "ja": "",
@@ -26187,6 +26410,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "INDUSTRIAL",
       "flags": [],
       "flavor": {
         "ja": "",
@@ -26222,6 +26446,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "INDUSTRIAL",
       "flags": [],
       "flavor": {
         "ja": "",
@@ -26257,6 +26482,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "INDUSTRIAL",
       "flags": [],
       "flavor": {
         "ja": "",
@@ -26292,6 +26518,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "INDUSTRIAL",
       "flags": ["JOKE"],
       "flavor": {
         "ja": "性的倒錯の産物だ。",
@@ -26327,6 +26554,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "INDUSTRIAL",
       "flags": ["JOKE"],
       "flavor": {
         "ja": "性的倒錯の産物だ。",
@@ -26362,6 +26590,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "BRONZE",
       "flags": [],
       "flavor": {
         "ja": "西洋で様々な用途で被られていた、ありふれた帽子だ。",
@@ -26712,6 +26941,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "INDUSTRIAL",
       "flags": ["JOKE"],
       "flavor": {
         "ja": "下着だ。通常これだけを付けて外を歩くものではない。",
@@ -26782,6 +27012,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "INDUSTRIAL",
       "flags": ["JOKE"],
       "flavor": {
         "ja": "",
@@ -26817,6 +27048,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "BRONZE",
       "flags": [],
       "flavor": {
         "ja": "頭に結ぶと気合が入る気がする。",
@@ -27097,6 +27329,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": [],
       "flavor": {
         "ja": "亀の甲羅の形をした鉄板の追加装甲だ。鎧に重ねて着ければ不意打ちも物ともしないだろうが、かなり重い。",
@@ -27132,6 +27365,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "STONE",
       "flags": ["SHOW_MODS"],
       "flavor": {
         "ja": "それに苦しめられたものの怨念が籠った石だ。",
@@ -27377,6 +27611,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "IRON",
       "flags": [],
       "flavor": {
         "ja": "構えれば全身をかばうことができるほど大型の金属盾だ。重量は重いがきわめて堅牢な保護をもたらす。",
@@ -27605,6 +27840,7 @@
           "rarity": 1,
         },
       ],
+      "civilization": "INDUSTRIAL",
       "flags": [],
       "flavor": {
         "ja": "頭にかぶるために折り畳まれたアルミホイルだ。これさえあれば「奴ら」の電波もマインドコントロールも防げると信じられているが、その効果のほどは定かではない。",
@@ -27640,6 +27876,7 @@
           "rarity": 2,
         },
       ],
+      "civilization": "INDUSTRIAL",
       "flags": [],
       "flavor": {
         "ja": "精鋭部隊の証として被られる赤いベレー帽だ。防具としては軍帽と大差ないが、これを被る者がどれほどの修羅場をくぐってきたかを物語っている。",
@@ -27669,6 +27906,7 @@
       "hit_bonus": 0,
       "damage_bonus": 0,
       "ac_bonus": 0,
+      "civilization": "BRONZE",
       "flags": ["SHOW_MODS", "INSTA_ART", "RIDING"],
       "flavor": {
         "ja": "黄金に輝く穂先を持つ長大な槍だ。金は武具の材としては柔らかすぎるはずだが、この槍はそれを感じさせない不気味な重みを備えている。",

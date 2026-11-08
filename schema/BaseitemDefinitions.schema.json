@@ -144,6 +144,20 @@
                         "type": "string",
                         "description": "アイテムの製造元アライアンスタグ (例: AMBER, VALINOR, PHYREXIA等)"
                     },
+                    "civilization": {
+                        "type": "string",
+                        "enum": [
+                            "STONE",
+                            "BRONZE",
+                            "IRON",
+                            "INDUSTRIAL",
+                            "ATOMIC",
+                            "INFORMATION",
+                            "SOLAR",
+                            "GALACTIC"
+                        ],
+                        "description": "装備品の文明水準 (石器/青銅器/鉄器/工業化/原子力/情報化/太陽系進出/銀河系進出)。未指定なら分類なし"
+                    },
                     "allocations": {
                         "type": "array",
                         "description": "アイテム出現階層と希少度の定義",
