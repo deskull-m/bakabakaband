@@ -18,6 +18,7 @@
 #include "object-hook/hook-expendable.h"
 #include "object-hook/hook-magic.h"
 #include "object/item-use-flags.h"
+#include "object/magic-device-shatter.h"
 #include "object/object-stack.h"
 #include "object/object-value.h"
 #include "player-base/player-class.h"
@@ -189,6 +190,9 @@ static void process_destroy_magic_book(CreatureEntity &creature, const ItemEntit
 
 static void exe_destroy_item(CreatureEntity &creature, ItemEntity &destroying_item, short i_idx, int amount)
 {
+    // 魔道具の魔力暴発は破壊前の充填状態 (スタック全体) で決まるので、
+    // 残り回数を減らす前の姿をここで控えておく (Issue #1770)。
+    const auto shattered_device = destroying_item.clone();
     auto destroyed_item = destroying_item.clone();
     destroyed_item.number = amount;
     const auto item_name = describe_flavor(creature, destroyed_item, 0);
@@ -204,13 +208,20 @@ static void exe_destroy_item(CreatureEntity &creature, ItemEntity &destroying_it
     if (i_idx >= INVEN_MAIN_HAND) {
         calc_android_exp(creature);
     }
+
+    // 暴発はアイテムを消した後に起こす (自傷でプレイヤーが死ぬ場合があるため最後)。
+    (void)shatter_magic_device(creature, shattered_device, amount);
 }
 
 /*!
  * @brief アイテムを破壊するコマンドのメインルーチン / Destroy an item
  * @param creature クリーチャーへの参照
+ * @param in_building 店・我が家・博物館の画面から呼ばれたならtrue
+ * @details 建物の中では魔道具を壊せない。魔力暴発 (Issue #1770) が店の画面の上に
+ *          魔力ボールを撃ち込むことになり、巻き込まれて死ぬと店の画面を抱えたまま
+ *          死亡処理へ入ってしまうため。
  */
-void do_cmd_destroy(CreatureEntity &creature)
+void do_cmd_destroy(CreatureEntity &creature, bool in_building)
 {
     CreatureClass(creature).break_samurai_stance({ SamuraiStanceType::MUSOU });
 
@@ -220,6 +231,12 @@ void do_cmd_destroy(CreatureEntity &creature)
     }
 
     const auto &[item, i_idx, amt] = *selection_result;
+    if (in_building && item->bi_key.can_recharge()) {
+        const auto item_name = describe_flavor(creature, *item, OD_OMIT_PREFIX);
+        msg_print(_("建物の中で{}を砕くわけにはいかない。", "You dare not shatter {} indoors."), item_name);
+        return;
+    }
+
     PlayerEnergy energy(creature);
     energy.set_player_turn_energy(100);
     if (!can_player_destroy_object(item.get())) {

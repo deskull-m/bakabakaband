@@ -102,6 +102,7 @@
     <ClCompile Include="..\..\src\test\mspell\mspell-attack\test-mspell-ball.cpp" />
     <ClCompile Include="..\..\src\test\mspell\test-mspell-projection-table.cpp" />
     <ClCompile Include="..\..\src\test\monster-floor\test-monster-corpse.cpp" />
+    <ClCompile Include="..\..\src\test\object\test-magic-device-shatter.cpp" />
     <ClCompile Include="..\..\src\test\floor\test-floor-events.cpp" />
     <ClCompile Include="..\..\src\test\object-enchant\test-item-feeling.cpp" />
     <ClCompile Include="..\..\src\test\object-use\quaff\test-quaff-execution.cpp" />

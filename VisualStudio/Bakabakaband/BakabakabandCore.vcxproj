@@ -894,6 +894,7 @@
     <ClCompile Include="..\..\src\object\object-kind-hook.cpp" />
     <ClCompile Include="..\..\src\object\object-broken.cpp" />
     <ClCompile Include="..\..\src\object\lite-processor.cpp" />
+    <ClCompile Include="..\..\src\object\magic-device-shatter.cpp" />
     <ClCompile Include="..\..\src\player\patron.cpp" />
     <ClCompile Include="..\..\src\player-info\class-info.cpp" />
     <ClCompile Include="..\..\src\player\player-damage.cpp" />
@@ -2043,6 +2044,7 @@
     <ClInclude Include="..\..\src\mutation\mutation-processor.h" />
     <ClInclude Include="..\..\src\flavor\object-flavor.h" />
     <ClInclude Include="..\..\src\object\lite-processor.h" />
+    <ClInclude Include="..\..\src\object\magic-device-shatter.h" />
     <ClInclude Include="..\..\src\inventory\player-inventory.h" />
     <ClInclude Include="..\..\src\player-info\mimic-info-table.h" />
     <ClInclude Include="..\..\src\player\permanent-resistances.h" />

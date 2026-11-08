@@ -1067,6 +1067,7 @@ libhengband_a_SOURCES = \
 	object/object-value.cpp object/object-value.h \
 	object/object-value-calc.cpp object/object-value-calc.h \
 	object/lite-processor.cpp object/lite-processor.h \
+	object/magic-device-shatter.cpp object/magic-device-shatter.h \
 	object/tval-types.h \
 	object/warning.cpp object/warning.h \
 	object/object-mark-types.h \
@@ -1646,6 +1647,7 @@ hengband_test_SOURCES = \
 	test/game-option/test-runtime-arguments.cpp \
 	\
 	test/monster-floor/test-monster-corpse.cpp \
+	test/object/test-magic-device-shatter.cpp \
 	\
 	test/info-reader/test-ego-reader.cpp \
 	test/info-reader/test-general-parser.cpp \
