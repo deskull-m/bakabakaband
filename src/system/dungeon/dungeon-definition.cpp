@@ -19,6 +19,31 @@ bool DungeonDefinition::has_river_flag() const
     return this->flags.has_any_of(DF_RIVER_MASK);
 }
 
+/*!
+ * @brief 人の手で造られた構造物のダンジョンか
+ * @return 人工物ならtrue
+ * @details 城・塔・施設・迷宮・市街のように**何者かが造った構造物**であることを
+ *          表す意味論的なフラグ (Issue #1960)。自然の洞窟・森・火山や、
+ *          掘られた穴にすぎない鉱山とは区別する。現状の効果は
+ *          `has_artificial_river()` 経由の水路の形のみ。
+ */
+bool DungeonDefinition::is_artificial() const
+{
+    return this->flags.has(DungeonFeatureType::ARTIFICIAL);
+}
+
+/*!
+ * @brief 川を人工の水路として掘るダンジョンか
+ * @return 整った水路を掘るならtrue
+ * @details 人工物のダンジョン (`ARTIFICIAL`) は当然その水利も人工なので真。
+ *          `ARTIFICIAL_RIVER` は「ダンジョン自体は自然物だが水利だけ人工」
+ *          (洞窟に通された水道等) を表す単独指定用。
+ */
+bool DungeonDefinition::has_artificial_river() const
+{
+    return this->is_artificial() || this->flags.has(DungeonFeatureType::ARTIFICIAL_RIVER);
+}
+
 bool DungeonDefinition::has_guardian() const
 {
     return this->final_guardian != MonraceId::PLAYER;
