@@ -14,6 +14,7 @@
 #include "core/asking-player.h"
 #include "dungeon/quest.h"
 #include "floor/dungeon-feeling.h"
+#include "floor/floor-base-definitions.h"
 #include "io-dump/dump-remover.h"
 #include "io-dump/dump-util.h"
 #include "io/files-util.h"
@@ -242,7 +243,10 @@ void do_cmd_feeling(CreatureEntity &creature)
         return;
     }
     FloorType *floor_ptr = creature.get_floor();
-    int grids_rate = floor_ptr->width * floor_ptr->height * 100 / (MAX_WID * MAX_HGT);
+    // ダンジョンフロアの広さ評価は街・荒野の上限 (MAX_*) ではなくダンジョン専用の上限
+    // (MAX_DUNGEON_*) を基準にする。MAX_* を分母にすると、ダンジョンの上限を下げた分だけ
+    // grids_rate の取り得る上限も下がり、下記 8 段階のうち上位 4 段が永久に出なくなる。
+    int grids_rate = floor_ptr->width * floor_ptr->height * 100 / (MAX_DUNGEON_WID * MAX_DUNGEON_HGT);
 
     if (floor_ptr->allianceID != AllianceType::NONE) {
         auto a_ptr = alliance_list.find(floor_ptr->allianceID)->second;

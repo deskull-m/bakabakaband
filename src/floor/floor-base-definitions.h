@@ -46,6 +46,23 @@ constexpr int MAX_HGT = 242;
  */
 constexpr int MAX_WID = 242;
 
+/*!
+ * @brief ダンジョンフロアの最大縦サイズ
+ * @details 街・荒野は MAX_HGT をそのまま使う (lib/edit/towns/ の街マップが
+ * ちょうど 242x242 で書かれており、wild.cpp が floor.height = MAX_HGT を直接
+ * 代入するため MAX_HGT 自体は下げられない)。一方ダンジョンフロアは広すぎると
+ * ランダムクエストの対象やダンジョンの主を探すのが苦痛になるので、
+ * level_gen() だけが参照する別の上限をここに持つ。
+ * SCREEN_HGT の倍数にすること。
+ */
+constexpr int MAX_DUNGEON_HGT = 132;
+
+/*!
+ * @brief ダンジョンフロアの最大横サイズ
+ * @details 意味と制約は MAX_DUNGEON_HGT と同じ。SCREEN_WID の倍数にすること。
+ */
+constexpr int MAX_DUNGEON_WID = 132;
+
 /*! @brief 汎用ダンジョン最小縦倍率 */
 constexpr int MIN_HGT_MULTIPLE = 15;
 
