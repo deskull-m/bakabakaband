@@ -24,6 +24,7 @@
 #include "player/player-personality-types.h"
 #include "realm/realm-types.h"
 #include "system/angband.h"
+#include "system/baseitem/civilization-level-types.h"
 #include "system/monrace/body-structure-types.h"
 #include "system/monrace/extended-slot.h"
 
@@ -75,6 +76,7 @@ extern const std::unordered_map<std::string_view, MonsterSex> r_info_sex;
 extern const std::unordered_map<std::string_view, player_personality_type> r_info_personality;
 extern const std::unordered_map<std::string_view, MonsterMiscType> r_info_misc_flags;
 extern const std::unordered_map<std::string_view, BodyStructureType> r_info_body_structure;
+extern const std::unordered_map<std::string_view, CivilizationLevel> r_info_civilization;
 extern const std::unordered_map<std::string_view, ExtendedSlotType> r_info_extended_slot;
 extern const std::unordered_map<std::string_view, CreatureMaterialType> r_info_materials;
 extern const std::unordered_map<std::string_view, PlayerRaceType> r_info_player_race;

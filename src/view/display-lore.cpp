@@ -426,6 +426,12 @@ void display_monster_kind_tags(lore_type *lore_ptr)
         hook_c_roff(body_structure_color(body_structure), fmt::format("[{}]", body_structure_name(body_structure)));
     }
 
+    // [文明水準] NONE (文明に属さない存在) は既定なので記載省略。
+    const auto civilization = lore_ptr->monrace->civilization;
+    if ((civilization != CivilizationLevel::NONE) && (civilization != CivilizationLevel::MAX)) {
+        hook_c_roff(TERM_L_UMBER, fmt::format(_("[{}文明]", "[{} Age]"), civilization_level_name(civilization)));
+    }
+
     hooked_roff("\n");
 }
 

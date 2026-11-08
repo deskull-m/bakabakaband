@@ -752,6 +752,17 @@ const std::unordered_map<std::string_view, BodyStructureType> r_info_body_struct
     { "SPHERE", BodyStructureType::SPHERE },
 };
 
+const std::unordered_map<std::string_view, CivilizationLevel> r_info_civilization = {
+    { "STONE", CivilizationLevel::STONE },
+    { "BRONZE", CivilizationLevel::BRONZE },
+    { "IRON", CivilizationLevel::IRON },
+    { "INDUSTRIAL", CivilizationLevel::INDUSTRIAL },
+    { "ATOMIC", CivilizationLevel::ATOMIC },
+    { "INFORMATION", CivilizationLevel::INFORMATION },
+    { "SOLAR", CivilizationLevel::SOLAR },
+    { "GALACTIC", CivilizationLevel::GALACTIC },
+};
+
 const std::unordered_map<std::string_view, ExtendedSlotType> r_info_extended_slot = {
     { "TAIL_RING", ExtendedSlotType::TAIL_RING },
     { "SECOND_NECK", ExtendedSlotType::SECOND_NECK },
