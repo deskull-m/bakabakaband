@@ -27879,5 +27879,34 @@
         "en": "A great spear with a head of shining gold.  Gold should be far too soft for a weapon, yet this one carries an uncanny weight that says otherwise.",
       },
     },
+    {
+      "id": 832,
+      "name": {
+        "ja": "の鱗",
+        "en": "Scale~",
+      },
+      "symbol": {
+        "character": "~",
+        "color": "Gray",
+      },
+      "itemkind": {
+        "type_value": 10,
+        "subtype_value": 7,
+      },
+      "parameter_value": 0,
+      "level": 1,
+      "weight": 10,
+      "cost": 0,
+      "base_ac": 0,
+      "base_dice": "1d1",
+      "hit_bonus": 0,
+      "damage_bonus": 0,
+      "ac_bonus": 0,
+      "flags": [],
+      "flavor": {
+        "ja": "モンスターの体から剥ぎ取った鱗だ。加工すれば鎧の材となるだろう。",
+        "en": "A scale stripped from a monster's body.  Worked by a craftsman it would serve as armour.",
+      },
+    },
   ],
 }
