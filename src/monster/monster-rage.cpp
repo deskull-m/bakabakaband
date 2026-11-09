@@ -1,10 +1,13 @@
 /*!
- * @brief 植木鉢くんが破壊されたときに周囲のモンスターを激怒させる処理 (Issue #180)
+ * @brief 植木鉢くんが破壊されたときの激怒と罪悪感の処理 (Issue #180)
  * @details `MonsterMiscType::UEKIBACHIKUN` を持つ種族が死亡すると、周囲の敵対
  *          モンスターへ `MonsterConstantFlagType::ENRAGED_BY_BROKEN_POT` を付け、
  *          速度・近接命中・近接ダメージ・AC・セーヴに常時ボーナスを乗せる。
  *          既存の「周囲のモンスターを怒らせる」(`aggravate_monsters()` の ANGER、
  *          一時加速のみ) とは別枠の、より大きく永続的な激怒。
+ *          壊したのがプレイヤー自身なら、併せて時限バッドステータス
+ *          `CreatureTimedEffect::BROKEN_POT_GUILT` (常時反感・AC低下・
+ *          被クリティカル率向上) を背負う。
  */
 
 #include "monster/monster-rage.h"
@@ -13,6 +16,7 @@
 #include "monster/monster-describer.h"
 #include "monster/monster-flag-types.h"
 #include "monster/monster-status-setter.h"
+#include "status/bad-status-setter.h"
 #include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
@@ -48,7 +52,7 @@ const std::array RAGE_SPEECHES = {
 };
 }
 
-void enrage_monsters_by_broken_pot(CreatureEntity &creature, MONSTER_IDX pot_m_idx)
+void enrage_monsters_by_broken_pot(CreatureEntity &creature, MONSTER_IDX pot_m_idx, bool killed_by_player)
 {
     auto &floor = *creature.get_floor();
     auto &pot = floor.get_monster(pot_m_idx);
@@ -89,21 +93,29 @@ void enrage_monsters_by_broken_pot(CreatureEntity &creature, MONSTER_IDX pot_m_i
         is_any_visible |= monster.is_visible_on_map();
     }
 
-    if (enraged_count == 0) {
-        return;
+    if (enraged_count > 0) {
+        // 目の前で起きたなら思い出に記録する (見えていなければ何が起きたか分からない)。
+        if (is_any_visible || pot.is_visible_on_map()) {
+            pot_monrace.r_misc_flags.set(MonsterMiscType::UEKIBACHIKUN);
+        }
+
+        if (is_any_visible) {
+            msg_print(_("周囲のモンスターが植木鉢くんの無残な姿に激怒した！", "The monsters nearby are enraged by the pitiful remains of the plant pot!"));
+        } else {
+            msg_print(_("どこかで何かが激怒したような気配を感じた！", "You sense something nearby seething with rage!"));
+        }
     }
 
-    // 目の前で起きたなら思い出に記録する (見えていなければ何が起きたか分からない)。
-    if (is_any_visible || pot.is_visible_on_map()) {
-        pot_monrace.r_misc_flags.set(MonsterMiscType::UEKIBACHIKUN);
+    // 壊したのがプレイヤー自身なら罪悪感 (時間経過でのみ薄れる時限バッドステータス) を背負う。
+    // 周囲に激怒する個体が居なくても壊した事実は変わらないので、`enraged_count` には依らない。
+    // 複数壊せば加算されるので、ボール系や視界内魔法を撒き散らすほど重くなる。
+    //
+    // この setter は `handle_stuff()` を呼ぶため、`pot` や `pot_monrace` の参照を
+    // 使い終えた関数末尾に置いてある (順序を入れ替えないこと)。
+    if (killed_by_player) {
+        const auto duration = BROKEN_POT_GUILT_DURATION_BASE + randint1(BROKEN_POT_GUILT_DURATION_DICE);
+        (void)BadStatusSetter(creature).mod_broken_pot_guilt(static_cast<TIME_EFFECT>(duration));
     }
-
-    if (is_any_visible) {
-        msg_print(_("周囲のモンスターが植木鉢くんの無残な姿に激怒した！", "The monsters nearby are enraged by the pitiful remains of the plant pot!"));
-        return;
-    }
-
-    msg_print(_("どこかで何かが激怒したような気配を感じた！", "You sense something nearby seething with rage!"));
 }
 
 bool speak_rage_by_broken_pot(CreatureEntity &creature, MONSTER_IDX m_idx, const Pos2D &pos, bool aware)

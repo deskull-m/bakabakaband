@@ -30,6 +30,7 @@
 #include "monster-floor/monster-lite.h"
 #include "monster-floor/monster-remover.h"
 #include "monster-race/monster-race-hook.h"
+#include "monster/monster-rage.h"
 #include "monster/monster-update.h"
 #include "monster/smart-learn-types.h"
 #include "mutation/mutation-calculator.h"
@@ -1811,6 +1812,11 @@ static ARMOUR_CLASS calc_to_ac(CreatureEntity &creature, bool is_real_value)
 
     if (creature.is_shero()) {
         ac -= 10;
+    }
+
+    // [Issue #180] 植木鉢くんを壊した罪悪感の間は身構えが緩む。
+    if (creature.get_timed_effect(CreatureTimedEffect::BROKEN_POT_GUILT)) {
+        ac -= BROKEN_POT_GUILT_AC_PENALTY;
     }
 
     if (pc.equals(PlayerClassType::NINJA)) {

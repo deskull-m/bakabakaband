@@ -14,6 +14,7 @@
 #include "monster-attack/monster-attack-status.h"
 #include "monster-attack/monster-attack-table.h"
 #include "monster-attack/monster-eating.h"
+#include "monster/monster-rage.h"
 #include "monster/monster-status.h"
 #include "monster/monster-update.h"
 #include "mutation/mutation-investor-remover.h"
@@ -31,6 +32,7 @@
 #include "status/element-resistance.h"
 #include "status/experience.h"
 #include "system/creature-entity.h"
+#include "system/creature-timed-effect-types.h"
 #include "system/dungeon/quest-definition.h"
 #include "system/floor/floor-info.h"
 #include "system/item-entity.h"
@@ -344,7 +346,9 @@ void switch_monster_blow_to_player(CreatureEntity &creature, MonsterAttackPlayer
         monap_ptr->damage = 0;
         break;
     case RaceBlowEffectType::SUPERHURT: { /* AC軽減あり / Player armor reduces total damage */
-        if (((randint1(monap_ptr->rlev * 2 + 300) > (monap_ptr->ac + 200)) || one_in_(13)) && !check_multishadow(creature)) {
+        // [Issue #180] 植木鉢くんを壊した罪悪感の間はダイス面数が増え、痛恨の一撃を貰いやすくなる。
+        const auto critical_sides = monap_ptr->rlev * 2 + 300 + (creature.get_timed_effect(CreatureTimedEffect::BROKEN_POT_GUILT) ? BROKEN_POT_GUILT_CRITICAL_SIDES : 0);
+        if (((randint1(critical_sides) > (monap_ptr->ac + 200)) || one_in_(13)) && !check_multishadow(creature)) {
             monap_ptr->damage -= (monap_ptr->damage * ((monap_ptr->ac < 150) ? monap_ptr->ac : 150) / 250);
             msg_print(_("痛恨の一撃！", "It was a critical hit!"));
             monap_ptr->damage = std::max(monap_ptr->damage, monap_ptr->damage * 2);

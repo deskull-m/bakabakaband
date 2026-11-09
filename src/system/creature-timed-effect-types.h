@@ -87,5 +87,8 @@ enum class CreatureTimedEffect {
     WORD_RECALL, /*!< 帰還のカウントダウン / Word of Recall counter */
     ALTER_REALITY, /*!< 現実改変のカウントダウン / Alter Reality counter */
 
+    // --- プレイヤー専用：バッドステータス (時間経過でのみ回復) ---
+    BROKEN_POT_GUILT, /*!< 植木鉢くんを壊した罪悪感 / Guilt of breaking the plant pot */
+
     MAX,
 };

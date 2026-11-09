@@ -84,8 +84,9 @@ enum bar_definition_type {
     BAR_EMISSION = 71, /*!< 下部ステータス表示: 発光 */
     BAR_EXORCISM = 72, /*!< 下部ステータス表示: 浄化 */
     BAR_IMMDARK = 73, /*!< 下部ステータス表示: 暗黒免疫 */
+    BAR_BROKENPOT = 74, /*!< 下部ステータス表示: 植木鉢くんを壊した罪悪感 */
 };
 
-constexpr auto MAX_STAT_BARS = 75;
+constexpr auto MAX_STAT_BARS = 76;
 
 extern stat_bar stat_bars[MAX_STAT_BARS];

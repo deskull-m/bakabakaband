@@ -232,6 +232,11 @@ void reduce_magic_effects_timeout(CreatureEntity &creature)
         (void)set_ultimate_res(creature, creature.get_timed_effect(CreatureTimedEffect::ULTIMATE_RESISTANCE) - 1, true);
     }
 
+    // [Issue #180] 植木鉢くんを壊した罪悪感は時間経過でのみ薄れる (回復手段は他に無い)。
+    if (creature.get_timed_effect(CreatureTimedEffect::BROKEN_POT_GUILT)) {
+        (void)bss.mod_broken_pot_guilt(-1);
+    }
+
     if (creature.is_poisoned()) {
         int adjust = adj_con_fix[creature.get_stat_index(A_CON)] + 1;
         (void)bss.mod_poison(-adjust);

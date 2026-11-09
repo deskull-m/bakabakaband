@@ -1882,6 +1882,13 @@ BIT_FLAGS player_aggravate_state(CreatureEntity &creature)
 
 bool has_aggravate(CreatureEntity &creature)
 {
+    // [Issue #180] 植木鉢くんを壊した罪悪感の間は種族・呪いに依らず常時反感。
+    // `player_aggravate_state()` 側へ入れると影フェアリーの特別扱い
+    // (`PlayerStealth::is_aggravated_s_fairy()` の等値判定) を崩すため、ここで足す。
+    if (creature.get_timed_effect(CreatureTimedEffect::BROKEN_POT_GUILT) > 0) {
+        return true;
+    }
+
     return player_aggravate_state(creature) & AGGRAVATE_NORMAL;
 }
 

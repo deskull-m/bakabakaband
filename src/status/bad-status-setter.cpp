@@ -657,3 +657,54 @@ void BadStatusSetter::stop_blooding(const PlayerCutRank new_rank)
         disturb(this->creature, false, false);
     }
 }
+
+/*!
+ * @brief 植木鉢くんを壊した罪悪感の継続時間をセットする
+ * @param tmp_v 継続時間
+ * @return ステータスに影響を及ぼす変化があった場合TRUEを返す。
+ * @details
+ * [Issue #180] 回復手段は時間経過のみ。どの回復アイテム・呪文からも参照しないこと。
+ * 常時反感 (has_aggravate) と AC 低下 (calc_to_ac) を伴うため、
+ * 変化時には BONUS の再計算を要求する。
+ */
+bool BadStatusSetter::set_broken_pot_guilt(const TIME_EFFECT tmp_v)
+{
+    auto notice = false;
+    const auto v = std::clamp<short>(tmp_v, 0, 10000);
+    if (this->creature.is_dead()) {
+        return false;
+    }
+
+    const auto is_guilty = this->creature.get_timed_effect(CreatureTimedEffect::BROKEN_POT_GUILT) > 0;
+    if (v > 0) {
+        if (!is_guilty) {
+            this->creature.notify_self(_("取り返しのつかないことをしてしまった…。", "You have done something irreparable..."));
+            notice = true;
+        }
+    } else {
+        if (is_guilty) {
+            this->creature.notify_self(_("ようやく後ろめたさが薄れてきた。", "You no longer feel guilty."));
+            notice = true;
+        }
+    }
+
+    this->creature.set_timed_effect(CreatureTimedEffect::BROKEN_POT_GUILT, v);
+    auto &dur = DeferredUpdateRequests::get_instance();
+    dur.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
+    if (!notice) {
+        return false;
+    }
+
+    if (disturb_state) {
+        disturb(this->creature, false, false);
+    }
+
+    dur.set_flag(StatusRecalculatingFlag::BONUS);
+    handle_stuff(this->creature);
+    return true;
+}
+
+bool BadStatusSetter::mod_broken_pot_guilt(const TIME_EFFECT tmp_v)
+{
+    return this->set_broken_pot_guilt(this->creature.get_timed_effect(CreatureTimedEffect::BROKEN_POT_GUILT) + tmp_v);
+}

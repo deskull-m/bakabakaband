@@ -702,6 +702,10 @@ void print_status(CreatureEntity &creature)
         ADD_BAR_FLAG(BAR_IMMDARK);
     }
 
+    if (creature.get_timed_effect(CreatureTimedEffect::BROKEN_POT_GUILT)) {
+        ADD_BAR_FLAG(BAR_BROKENPOT);
+    }
+
     add_hex_status_flags(creature, bar_flags);
     TERM_LEN col = 0, num = 0;
     for (int i = 0; stat_bars[i].sstr; i++) {

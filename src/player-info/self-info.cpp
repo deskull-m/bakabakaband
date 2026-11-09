@@ -62,6 +62,12 @@ static void set_bad_status_info(const CreatureEntity &subject, self_info_type *s
     if (subject.is_hallucinated()) {
         self_ptr->info_list.emplace_back(_("あなたは幻覚を見ている。", "You are hallucinating."));
     }
+
+    // [Issue #180] 植木鉢くんを壊した罪悪感。回復手段は時間経過のみ。
+    if (subject.get_timed_effect(CreatureTimedEffect::BROKEN_POT_GUILT)) {
+        self_ptr->info_list.emplace_back(
+            _("あなたは植木鉢くんを壊した後ろめたさに苛まれている。", "You are tormented by guilt over the plant pot you broke."));
+    }
 }
 
 static void set_curse_info(CreatureEntity &subject, self_info_type *self_ptr)

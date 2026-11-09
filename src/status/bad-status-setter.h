@@ -37,6 +37,8 @@ public:
     bool mod_stun(const TIME_EFFECT tmp_v);
     bool set_cut(const TIME_EFFECT tmp_v);
     bool mod_cut(const TIME_EFFECT tmp_v);
+    bool set_broken_pot_guilt(const TIME_EFFECT tmp_v);
+    bool mod_broken_pot_guilt(const TIME_EFFECT tmp_v);
 
 private:
     CreatureEntity &creature;

@@ -361,13 +361,14 @@ static void on_defeat_last_boss(CreatureEntity &creature)
  * @param m_idx 死亡したモンスターのID
  * @param drop_item TRUEならばモンスターのドロップ処理を行う
  * @param type ラストアタックの属性 (単一属性)
+ * @param killed_by_player プレイヤーが倒した (打撃・射撃・投擲・魔法・オーラ) ならTRUE
  */
-void monster_death(CreatureEntity &creature, MONSTER_IDX m_idx, bool drop_item, AttributeType type)
+void monster_death(CreatureEntity &creature, MONSTER_IDX m_idx, bool drop_item, AttributeType type, bool killed_by_player)
 {
     AttributeFlags flags;
     flags.clear();
     flags.set(type);
-    monster_death(creature, m_idx, drop_item, flags);
+    monster_death(creature, m_idx, drop_item, flags, killed_by_player);
 }
 
 /*!
@@ -376,6 +377,7 @@ void monster_death(CreatureEntity &creature, MONSTER_IDX m_idx, bool drop_item, 
  * @param m_idx 死亡したモンスターのID
  * @param drop_item TRUEならばモンスターのドロップ処理を行う
  * @param attribute_flags ラストアタックの属性 (複数属性)
+ * @param killed_by_player プレイヤーが倒した (打撃・射撃・投擲・魔法・オーラ) ならTRUE
  * @details
  * <pre>
  * Disperse treasures centered at the monster location based on the
@@ -387,7 +389,7 @@ void monster_death(CreatureEntity &creature, MONSTER_IDX m_idx, bool drop_item, 
  * it drops all of its objects, which may disappear in crowded rooms.
  * </pre>
  */
-void monster_death(CreatureEntity &creature, MONSTER_IDX m_idx, bool drop_item, AttributeFlags attribute_flags)
+void monster_death(CreatureEntity &creature, MONSTER_IDX m_idx, bool drop_item, AttributeFlags attribute_flags, bool killed_by_player)
 {
     auto &floor = *creature.get_floor();
 
@@ -416,7 +418,7 @@ void monster_death(CreatureEntity &creature, MONSTER_IDX m_idx, bool drop_item, 
 
     // [Issue #180] 植木鉢くん (UEKIBACHIKUN) が破壊されると周囲が激怒する。
     // md.m_ptr はこの時点でまだ有効なので、走査の除外対象に使える。
-    enrage_monsters_by_broken_pot(creature, m_idx);
+    enrage_monsters_by_broken_pot(creature, m_idx, killed_by_player);
 
     on_dead_explosion(creature, &md);
     if (md.m_ptr->is_chameleon()) {

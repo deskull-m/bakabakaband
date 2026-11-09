@@ -176,7 +176,10 @@ bool MonsterDamageProcessor::process_dead_exp_virtue(std::string_view note, cons
     sound(SoundKind::KILL);
     this->show_kill_message(note, m_name);
     this->show_bounty_message();
-    monster_death(creature, this->m_idx, true, this->attribute_flags);
+    // [Issue #180] 本経路はプレイヤーの打撃・射撃・投擲・オーラによる撃破経路。
+    // プレイヤー以外が呼ぶ少数の経路 (継続毒の tick / モンスターの自爆・絶頂) は
+    // いずれも `suffers_poison_dot` か `blows` を要するため、植木鉢くんには該当しない。
+    monster_death(creature, this->m_idx, true, this->attribute_flags, true);
     delete_monster_idx(creature, this->m_idx);
     this->get_exp_from_mon(exp_target, exp_target.max_maxhp * 2);
     *this->fear = false;

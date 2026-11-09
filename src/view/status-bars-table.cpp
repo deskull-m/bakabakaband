@@ -36,4 +36,4 @@ stat_bar stat_bars[MAX_STAT_BARS] = { { TERM_YELLOW, _("マ神", "MG"), _("マ�
     { TERM_WHITE, _("光", "Li"), _("耐光", "RLit") }, { TERM_L_DARK, _("暗", "Da"), _("耐暗", "RDar") },
     { TERM_L_DARK, _("怖", "Fe"), _("耐恐怖", "RFea") }, { TERM_L_WHITE, _("輝", "Em"), _("発光", "Emission") },
     { TERM_WHITE, _("浄", "Ex"), _("浄化", "Exocsm") }, { TERM_L_DARK, _("暗", "ID"), _("暗免疫", "ImmDark") },
-    { 0, nullptr, nullptr } };
+    { TERM_L_GREEN, _("鉢", "Pt"), _("植木鉢", "PotGuilt") }, { 0, nullptr, nullptr } };
