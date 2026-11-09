@@ -401,6 +401,7 @@ public:
 
     int get_armament_level() const;
     bool has_armed_profession() const;
+    bool is_humanoid_body() const;
 
     bool is_valid() const;
     bool is_male() const;

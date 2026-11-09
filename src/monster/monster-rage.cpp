@@ -10,13 +10,43 @@
 #include "monster/monster-rage.h"
 #include "grid/grid.h"
 #include "monster-race/race-misc-flags.h"
+#include "monster/monster-describer.h"
 #include "monster/monster-flag-types.h"
 #include "monster/monster-status-setter.h"
 #include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"
+#include "target/projection-path-calculator.h"
+#include "term/z-rand.h"
+#include "util/string-processor.h"
 #include "view/display-messages.h"
+#include <array>
+#include <string_view>
+
+namespace {
+/*!
+ * @brief 激怒した人型が吐く罵りのセリフ (Issue #180)
+ * @details 植木鉢くんを壊された虐待おじさんの口調。バランスではなく flavor なので
+ *          追加・差し替えはこの表だけで済む。
+ */
+const std::array RAGE_SPEECHES = {
+    _("これどうすんだよなぁ！", "What are you gonna do about this, huh!"),
+    _("お前の攻撃が飛んで来てよぉなぁ、全部メチャメチャになってんだよなぁ…", "Your attacks come flying in, see, and now everything's wrecked, see..."),
+    _("おい すいませんじゃねえよおい、なぁ、お前よぉこんな所でなぁ戦闘やってたらよぉなぁ……おい……", "Hey, 'sorry' doesn't cut it, hey, see, you, fighting in a place like this, see... hey..."),
+    _("どっかのよぉダンジョンによぉなぁ、割れるとか考えねえのかよなぁ！？", "Somebody's dungeon, see, don't you ever think stuff might break, huh!?"),
+    _("そうだろ？なぁ？ おい……戦闘やる所じゃねえだろここなぁ！どう考えたってよぉお前よぉなぁ……", "Right? See? Hey... this ain't a place to fight, see! Any way you slice it, you, see..."),
+    _("人の縄張り入るなとかって思うだろなぁ普通よぉ！なぁこれだけ狭かったらよぉなぁ……", "Normally you'd think not to walk into somebody's turf, see! See, cramped as it is here..."),
+    _("バカかおいなぁ？お前これどうすんだよそのへん！おい、お前、あれか？なぁ？", "You stupid or what, huh? What're you gonna do about all this! Hey, you, is that it? Huh?"),
+    _("自分だけ矢返してくれてこれは放っておくのか、なぁ？なぁ？", "You take your own arrows back and leave this lying here, huh? Huh?"),
+    _("おいこれどうするんだよこれ高かったんだよなぁ！植木鉢ィ！", "Hey, what're you gonna do, that was expensive, see! My plant pot!"),
+    _("なぁ？花、大事に育ててたんだよなぁ！おい……なぁ？", "See? I was raising that flower with care, see! Hey... see?"),
+    _("これぇ！これなんか見ろよこれ！……なぁこの無残な姿をよぉなぁ（半笑い）", "This! Just look at this! ...See, this pitiful state of it, see (half-laughing)"),
+    _("おい……お前……なぁ……種から育ててたんだぞここまでなぁおい", "Hey... you... see... I raised it from a seed all the way to here, see, hey"),
+    _("どう繋がっ、償うんだよなぁ！？", "How're you gonna make, make up for this, huh!?"),
+    _("お前こっち来いよ！いいから、なぁ！", "You, get over here! Just come on, see!"),
+};
+}
 
 void enrage_monsters_by_broken_pot(CreatureEntity &creature, MONSTER_IDX pot_m_idx)
 {
@@ -74,4 +104,31 @@ void enrage_monsters_by_broken_pot(CreatureEntity &creature, MONSTER_IDX pot_m_i
     }
 
     msg_print(_("どこかで何かが激怒したような気配を感じた！", "You sense something nearby seething with rage!"));
+}
+
+bool speak_rage_by_broken_pot(CreatureEntity &creature, MONSTER_IDX m_idx, const Pos2D &pos, bool aware)
+{
+    const auto &floor = *creature.get_floor();
+    const auto &monster = floor.get_monster(m_idx);
+    if (!monster.is_enraged_by_broken_pot()) {
+        return false;
+    }
+
+    // CAN_SPEAK は要求せず、人型系の体構造であることだけを条件にする (Issue #180)。
+    if (!monster.get_monrace().is_humanoid_body()) {
+        return false;
+    }
+
+    // 罵る相手はプレイヤーなので、通常の喋りと同じく気付いていて声が届く状況に限る。
+    if (!aware || !floor.has_los_at(pos) || !projectable(floor, pos, creature.get_position())) {
+        return false;
+    }
+
+    if (!one_in_(RAGE_SPEECH_CHANCE)) {
+        return false;
+    }
+
+    const auto m_name = monster.is_visible_on_map() ? monster_desc(creature, monster, 0) : std::string(_("それ", "It"));
+    msg_print(_("{}は「{}」と凄んだ。", "{} snarls, \"{}\""), str_upcase_first(m_name), rand_choice(RAGE_SPEECHES));
+    return true;
 }

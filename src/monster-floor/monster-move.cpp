@@ -22,6 +22,7 @@
 #include "monster/monster-flag-types.h"
 #include "monster/monster-info.h"
 #include "monster/monster-processor-util.h"
+#include "monster/monster-rage.h"
 #include "monster/monster-status.h"
 #include "monster/monster-update.h"
 #include "pet/pet-util.h"
@@ -615,6 +616,12 @@ void process_speak(CreatureEntity &creature, MONSTER_IDX m_idx, POSITION oy, POS
     const auto &floor = *creature.get_floor();
     const auto &monster = floor.get_monster(m_idx);
     const auto &monrace = monster.get_monrace();
+
+    // [Issue #180] 植木鉢くんの無残な姿に怒っている人型は CAN_SPEAK に依らず罵る。
+    if (speak_rage_by_broken_pot(creature, m_idx, pos, aware)) {
+        return;
+    }
+
     constexpr auto chance_speak = 8;
     auto vociferous = monrace.r_misc_flags.has(MonsterMiscType::VOCIFEROUS) && (Grid::calc_distance(creature.get_position(), monster.get_position()) <= MAX_PLAYER_SIGHT * 2) && one_in_(chance_speak / 3 + 1);
     const auto p_pos = creature.get_position();

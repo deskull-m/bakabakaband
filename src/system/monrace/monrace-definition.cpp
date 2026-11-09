@@ -152,6 +152,24 @@ bool MonraceDefinition::has_armed_profession() const
 }
 
 /*!
+ * @brief 人型系の体構造か (人語を話せる体をしているか)
+ * @details `HUMANOID` / `WINGED_HUMANOID` / `WING_ARMED_HUMANOID` の 3 種。
+ *          CLAUDE.md の「人型系 3 種」と同じ括りで、`DRACONIC` は含めない
+ *          (全 13 スロットを持つが人型ではない)。
+ */
+bool MonraceDefinition::is_humanoid_body() const
+{
+    switch (this->body_structure) {
+    case BodyStructureType::HUMANOID:
+    case BodyStructureType::WINGED_HUMANOID:
+    case BodyStructureType::WING_ARMED_HUMANOID:
+        return true;
+    default:
+        return false;
+    }
+}
+
+/*!
  * @brief 正当なモンスター (実際に存在するモンスター種族IDである)かどうかを調べる
  * @details モンスター種族IDが MonsterRaceDefinitions に実在するもの(MonraceId::PLAYERは除く)であるかどうかの用途の他、
  * m_list 上の要素などの r_idx にMonraceId::PLAYER を入れることで死亡扱いとして使われるのでその判定に使用する事もある
