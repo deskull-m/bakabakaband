@@ -52,7 +52,8 @@ static bool common_saving_throw_impl(CreatureEntity &creature, int pow, const Cr
     }
     // [提案C2第3弾・セーヴ] applies_stat_combat_bonus の対象は WIS セーヴ補正を実効レベルへ加算 (opt-in・既定OFF)
     // [提案C5・セーヴ] MAGIC_RES 突然変異のセーヴ補正も実効レベルへ加算 (opt-in・既定OFF)
-    return ((monrace.level + target.get_save_stat_bonus() + target.get_save_mutation_bonus()) > randint1((pow - 10) < 1 ? 1 : (pow - 10)) + 5);
+    const auto effective_level = monrace.level + target.get_save_stat_bonus() + target.get_save_mutation_bonus() + target.get_save_rage_bonus();
+    return (effective_level > randint1((pow - 10) < 1 ? 1 : (pow - 10)) + 5);
 }
 
 /*!

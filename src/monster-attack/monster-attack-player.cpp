@@ -203,7 +203,7 @@ bool MonsterAttackPlayer::process_monster_blows()
                 power += this->m_ptr->inventory[this->weapon_slot_for_blow]->to_h;
             }
             // [提案C2第3弾] 能力値(STR/DEX)を近接命中へ反映 (applies_stat_combat_bonus・既定OFF)。
-            power += this->m_ptr->get_melee_stat_hit_bonus();
+            power += this->m_ptr->get_melee_stat_hit_bonus() + this->m_ptr->get_rage_melee_hit_bonus();
             hit = check_hit_from_monster_to_player(creature, power, this->rlev, this->m_ptr->get_remaining_stun());
         }
 
@@ -298,7 +298,7 @@ bool MonsterAttackPlayer::process_monster_attack_hit()
 
     // [提案C2第3弾] 能力値(STR)を近接ダメージへ反映 (applies_stat_combat_bonus・既定OFF)。
     if (!this->explode) {
-        this->damage += this->m_ptr->get_melee_stat_damage_bonus();
+        this->damage += this->m_ptr->get_melee_stat_damage_bonus() + this->m_ptr->get_rage_melee_damage_bonus();
         if (this->damage < 0) {
             this->damage = 0;
         }

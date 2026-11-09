@@ -38,5 +38,6 @@ enum class MonsterConstantFlagType {
     ILLEGAL_MODIFIED = 24, /*!< 違法改造の / Illegally Modified */
     FRENZY = 25, /*!< 狂乱した / Frenzied */
     LIGHTWEIGHT = 26, /*!< 軽量化した / Lightweight */
+    ENRAGED_BY_BROKEN_POT = 27, /*!< 植木鉢くんの無残な姿に怒る / Enraged by the broken plant pot */
     MAX,
 };

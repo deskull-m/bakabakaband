@@ -953,6 +953,7 @@ libhengband_a_SOURCES = \
 	monster/monster-processor-util.cpp monster/monster-processor-util.h \
 	monster/monster-timed-effects.cpp monster/monster-timed-effects.h \
 	monster/monster-party.cpp monster/monster-party.h \
+	monster/monster-rage.cpp monster/monster-rage.h \
 	monster/monster-status.cpp monster/monster-status.h \
 	monster/monster-status-setter.cpp monster/monster-status-setter.h \
 	monster/monster-update.cpp monster/monster-update.h \
@@ -1648,6 +1649,7 @@ hengband_test_SOURCES = \
 	test/game-option/test-runtime-arguments.cpp \
 	\
 	test/monster-floor/test-monster-corpse.cpp \
+	test/monster/test-monster-rage.cpp \
 	test/object/test-magic-device-shatter.cpp \
 	\
 	test/info-reader/test-ego-reader.cpp \

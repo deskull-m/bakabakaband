@@ -26,6 +26,7 @@
 #include "monster/monster-info.h"
 #include "monster/monster-list.h"
 #include "monster/monster-party.h"
+#include "monster/monster-rage.h"
 #include "object-enchant/item-apply-magic.h"
 #include "object-enchant/item-magic-applier.h"
 #include "pet/pet-fall-off.h"
@@ -412,6 +413,10 @@ void monster_death(CreatureEntity &creature, MONSTER_IDX m_idx, bool drop_item, 
     // 集団AI: リーダーが倒れたら生存メンバーの士気が崩壊する。
     // md.m_ptr はこの時点でまだ有効なので、パーティ走査の除外対象に使える。
     collapse_party_morale(creature, m_idx);
+
+    // [Issue #180] 植木鉢くん (UEKIBACHIKUN) が破壊されると周囲が激怒する。
+    // md.m_ptr はこの時点でまだ有効なので、走査の除外対象に使える。
+    enrage_monsters_by_broken_pot(creature, m_idx);
 
     on_dead_explosion(creature, &md);
     if (md.m_ptr->is_chameleon()) {

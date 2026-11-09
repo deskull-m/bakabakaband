@@ -2029,6 +2029,27 @@ public:
     /*! @brief 怒り (ANGER) 状態 */
     virtual bool is_angered() const;
 
+    /*!
+     * @brief 植木鉢くんの無残な姿に怒っている (ENRAGED_BY_BROKEN_POT) 個体 (Issue #180)
+     * @details 既存の怒り (ANGER) とは別枠の激怒状態。`MonsterMiscType::UEKIBACHIKUN` を
+     *          持つ種族が破壊されたとき、その周囲の敵対モンスターに付く。速度・近接命中・
+     *          近接ダメージ・AC・セーヴに常時ボーナスが乗る。
+     */
+    virtual bool is_enraged_by_broken_pot() const;
+
+    /*!
+     * @brief 植木鉢くんへの激怒による近接命中・ダメージ補正を返す (Issue #180)
+     * @details 激怒していないモンスター・プレイヤーでは 0 を返す。
+     */
+    int get_rage_melee_hit_bonus() const;
+    int get_rage_melee_damage_bonus() const;
+
+    /*!
+     * @brief 植木鉢くんへの激怒によるセーヴィングスロー補正を返す (Issue #180)
+     * @details get_save_stat_bonus() 等と同じくレベル基準セーヴの実効レベルへ加算する。
+     */
+    int get_save_rage_bonus() const;
+
     /*! @brief 嫁化 (WAIFUIZED) 個体 */
     virtual bool is_waifuized() const;
 

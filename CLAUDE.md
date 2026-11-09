@@ -3683,6 +3683,95 @@ $65000 / ランク 3 に達する (= 正業の店が盗品を買わなくなる)
   旧 `on_dead_earth_destroyer()` の `is_player()` ガードは、
   `monster_death()` の全呼出元がプレイヤーを渡すため元から no-op だった。
 
+### 植木鉢くんの破壊で周囲が激怒する (`UEKIBACHIKUN`) — Issue #180
+
+`MonsterMiscType::UEKIBACHIKUN` を持つ種族が倒されると、**周囲の敵対モンスターへ
+`MonsterConstantFlagType::ENRAGED_BY_BROKEN_POT` が付き、常時の大きなバフが乗る**。
+JSON の `flags` 配列に `UEKIBACHIKUN` と書いて指定する。
+
+```jsonc
+"flags": ["EMPTY_MIND", "NEVER_MOVE", "NO_CONF", "NO_SLEEP", "NO_FEAR", "RES_TELE", "NASTY", "UEKIBACHIKUN"],
+```
+
+- **既存の「周囲のモンスターを怒らせる」(`ANGER`) とは別枠**。`aggravate_monsters()`
+  が付ける `ANGER` は一時加速 (`set_monster_fast`) のみで表示も「怒れる」だが、
+  本件は**別の mflag2 値**で、表示も 「植木鉢くんの無残な姿に怒る」、効果も下表の
+  5 種のボーナスが**フロアを離れるまで続く**。両者は独立に立つ (単体テストで検証済み)。
+- **実装**: 発火は `enrage_monsters_by_broken_pot()`
+  (`src/monster/monster-rage.{h,cpp}`)。`monster_death()` の
+  `collapse_party_morale()` の直後に呼ぶ (この時点で `md.m_ptr` はまだ有効なので
+  走査の除外対象に使える)。バランス調整は `monster-rage.h` の 6 定数で行う。
+- **振り分けはデータ、挙動は C++**。種族の名指し (`MonraceId`) はコードに持たない
+  ので、他の種族を同じ扱いにしたければ JSON に `UEKIBACHIKUN` を足すだけでよい
+  (例: 観葉植物くん 1294。本件では**メンテナの指定どおり 植木鉢くん (1976)
+  1 体にのみ付与**してある)。
+
+#### 激怒の効果
+
+| 項目 | ボーナス | 配線先 |
+|---|---|---|
+| 速度 | **+15** | `get_temporary_speed()` のモンスター分岐 (狂乱 `FRENZY` の +10 より大きい) |
+| 近接命中 | **+20** | `monster-attack-player.cpp` / `melee/monster-attack-monster.cpp` の `power` |
+| 近接ダメージ | **+10** | 同 2 経路の `damage` |
+| AC | **+30** | `get_ac()` のモンスター分岐 |
+| セーヴ | **+10** | レベル基準セーヴの実効レベル (`spells-diceroll.cpp` / `effect-monster-psi.cpp` / `effect-monster-util.cpp` の 3 サイト) |
+
+- 取得は `is_enraged_by_broken_pot()` / `get_rage_melee_hit_bonus()` /
+  `get_rage_melee_damage_bonus()` / `get_save_rage_bonus()` の virtual。
+  **プレイヤーと非激怒個体では 0 を返す**ので、フラグが立たない限り挙動は不変。
+- **一度きりの付随効果**: 眠っていれば叩き起こし、怯えていれば恐怖を解き、
+  `NOPET` を立てて**もう手懐けられなくする** (既存の `ANGER` と同じ扱い)。
+- **ペットは対象外**。既に激怒している個体は二重に数えない。
+- 届く距離は `RAGE_BROKEN_POT_RADIUS` (= 12) で、**見通しは要求しない**
+  (無残な姿が見えなくとも「やった」ことは伝わる)。
+
+#### 表示
+
+- モンスター名の接頭辞 (`monster_desc()`): 「植木鉢くんの無残な姿に怒る」/
+  `pot-avenging `。既存の「怒れる」の直後に積む。
+- 発火時のメッセージ: 視認できる個体が 1 体でもあれば
+  「周囲のモンスターが植木鉢くんの無残な姿に激怒した！」、見えなければ
+  「どこかで何かが激怒したような気配を感じた！」。
+- 思い出 (`display-lore-status.cpp`): 「それを破壊すると、周囲のモンスターが
+  その無残な姿に激怒する。」。**`lore_ptr->misc_flags` は
+  `monrace->misc_flags & monrace->r_misc_flags` なので思い出フラグを立てないと
+  出ない**。発火時に視認できていれば `r_misc_flags.set(UEKIBACHIKUN)` で記録する
+  (他の `r_misc_flags` 学習サイトと同じ形)。
+
+#### セーブデータ
+
+**セーブデータバージョンの更新は不要**。mflag2 は
+`MonsterWriter::write_to_savedata()` が `wr_FlagGroup(..., wr_byte)` で
+**バイト数前置**で書くため、`MonsterConstantFlagType` に値を足しても旧セーブが
+読める (本書「セーブ/ロードの統合」節の「件数をファイル側に持つ読込は安全」を参照)。
+**末尾 (`MAX` の直前) に追加すること**。
+
+#### 実測 (ヘッドレス)
+
+| 項目 | 結果 |
+|---|---|
+| 発火 | 植木鉢くんを突き刺して撃破 → 「周囲のモンスターが植木鉢くんの無残な姿に激怒した！」 |
+| 表示 | 「植木鉢くんの無残な姿に怒るブルー・イークに殴られた。」「…怒る洞窟オークはショート・ソードで攻撃してきた。」 |
+| ボーナス実測 | 洞窟オーク 15 体で **速度 110→125 / AC 50→80 / 命中 +20 / ダメージ +10 / セーヴ +10** (一時計測を仕込んで確認) |
+| 覚醒 | 眠っていた個体が全て `asleep=false` になり即座に襲ってくる |
+| 思い出 | 撃破後に `x` → `r` で「それを破壊すると、周囲のモンスターがその無残な姿に激怒する。」 |
+| セーブ往復 | 激怒した個体を抱えてセーブ→再起動ロード後も `x` のターゲット表示が「植木鉢くんの無残な姿に怒るブルー・イーク」 |
+
+- **検証上の注意**: 制御 API の `messages` は直近 20 件しか返さないため、激怒した
+  一団の攻撃ログで一時計測の出力が押し流される。数値を測るときは
+  `msg_print` ではなく **stderr へ出してログファイルで読む**こと。
+- **検証上の注意 2**: `state` の `visible_monsters[].name` は**種族名そのまま**で
+  接頭辞を含まない。接頭辞 (`monster_desc()` の出力) を見るには攻撃メッセージか
+  `x` のターゲット行を読む。
+
+#### Issue #180 の残り
+
+Issue 本文のコメントは、これに加えて**プレイヤー側へ時限のバッドステータス**
+(常時反感・視界内モンスターの加速・`CAN_SPEAK` 付与と虐待おじさんのセリフ・
+AC 低下・被クリティカル率向上) を付ける案も挙げている。本件はメンテナの指定
+どおり**「周囲のモンスターが mflag2 で激怒して大きくバフがつく」部分のみ**を
+実装してあり、プレイヤー側のバッドステータスは未着手。
+
 ### モンスターのレベル別HPダイス指定 (`hit_point_per_level`)
 
 `MonraceDefinition` に `Dice hit_dice_per_level`

@@ -690,6 +690,7 @@ const std::unordered_map<std::string_view, MonsterMiscType> r_info_misc_flags = 
     { "NO_WAIFUZATION", MonsterMiscType::NO_WAIFUZATION },
     { "DIURNAL", MonsterMiscType::DIURNAL },
     { "NOCTURNAL", MonsterMiscType::NOCTURNAL },
+    { "UEKIBACHIKUN", MonsterMiscType::UEKIBACHIKUN },
 };
 
 const std::unordered_map<std::string_view, MonsterSex> r_info_sex = {

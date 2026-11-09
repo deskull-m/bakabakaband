@@ -281,6 +281,10 @@ std::string monster_desc(CreatureEntity &subject, const CreatureEntity &monster,
         ss << _("怒れる", "angry ");
     }
 
+    if (monster.is_enraged_by_broken_pot()) {
+        ss << _("植木鉢くんの無残な姿に怒る", "pot-avenging ");
+    }
+
     if (monster.is_waifuized()) {
         ss << _("美少女化した", "waifuized ");
     }

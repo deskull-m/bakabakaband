@@ -33,6 +33,7 @@ enum class MonsterMiscType {
     NO_WAIFUZATION = 29,
     DIURNAL = 30,
     NOCTURNAL = 31,
+    UEKIBACHIKUN = 32, /*!< 植木鉢くん (破壊されると周囲が激怒する) / Plant pot */
     MAX
 };
 

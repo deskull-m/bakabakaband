@@ -211,6 +211,12 @@ void display_monster_constitutions(lore_type *lore_ptr)
     if (lore_ptr->misc_flags.has(MonsterMiscType::NOCTURNAL)) {
         hook_c_roff(TERM_L_DARK, fmt::format(_("{}は夜行性である。", "{} is nocturnal.  "), str_upcase_first(Who::who(lore_ptr->msex))));
     }
+
+    if (lore_ptr->misc_flags.has(MonsterMiscType::UEKIBACHIKUN)) {
+        hook_c_roff(TERM_L_GREEN,
+            fmt::format(_("{}を破壊すると、周囲のモンスターがその無残な姿に激怒する。", "Destroying {} enrages the monsters nearby at the pitiful remains.  "),
+                Who::who(lore_ptr->msex)));
+    }
 }
 
 void display_monster_concrete_weakness(lore_type *lore_ptr)

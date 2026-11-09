@@ -19,6 +19,7 @@
 #include "monster/monster-describer.h"
 #include "monster/monster-flag-types.h"
 #include "monster/monster-pain-describer.h"
+#include "monster/monster-rage.h"
 #include "monster/monster-timed-effects.h"
 #include "monster/monster-util.h"
 #include "object-enchant/tr-types.h"
@@ -1876,6 +1877,11 @@ int CreatureEntity::get_ac() const
         if (this->has_mutation(PlayerMutationType::IRON_SKIN)) {
             total_ac += 25;
         }
+
+        // [Issue #180] 植木鉢くんの無残な姿に怒っている個体は身構えが鋭くなる。
+        if (this->is_enraged_by_broken_pot()) {
+            total_ac += RAGE_AC_BONUS;
+        }
     }
 
     return total_ac;
@@ -2024,6 +2030,11 @@ byte CreatureEntity::get_temporary_speed() const
         if (this->is_frenzied()) {
             current_speed += 10;
         }
+
+        // [Issue #180] 植木鉢くんの無残な姿に怒っている個体は常時加速する。
+        if (this->is_enraged_by_broken_pot()) {
+            current_speed += RAGE_SPEED_BONUS;
+        }
     }
 
     return static_cast<byte>(current_speed);
@@ -2101,6 +2112,21 @@ int CreatureEntity::get_melee_stat_hit_bonus() const
     const auto str_index = stat_value_to_table_index(this->get_stat_use(A_STR));
     const auto dex_index = stat_value_to_table_index(this->get_stat_use(A_DEX));
     return (static_cast<int>(adj_str_th[str_index]) - 128) + (static_cast<int>(adj_dex_th[dex_index]) - 128);
+}
+
+int CreatureEntity::get_rage_melee_hit_bonus() const
+{
+    return this->is_enraged_by_broken_pot() ? RAGE_MELEE_HIT_BONUS : 0;
+}
+
+int CreatureEntity::get_rage_melee_damage_bonus() const
+{
+    return this->is_enraged_by_broken_pot() ? RAGE_MELEE_DAMAGE_BONUS : 0;
+}
+
+int CreatureEntity::get_save_rage_bonus() const
+{
+    return this->is_enraged_by_broken_pot() ? RAGE_SAVE_BONUS : 0;
 }
 
 int CreatureEntity::get_save_stat_bonus() const
@@ -3297,6 +3323,11 @@ bool CreatureEntity::is_santa() const
 bool CreatureEntity::is_angered() const
 {
     return this->has_constant_flag(MonsterConstantFlagType::ANGER);
+}
+
+bool CreatureEntity::is_enraged_by_broken_pot() const
+{
+    return this->has_constant_flag(MonsterConstantFlagType::ENRAGED_BY_BROKEN_POT);
 }
 
 bool CreatureEntity::is_waifuized() const
