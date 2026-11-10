@@ -22,6 +22,7 @@ int calc_edge_band_depth(int extent);
 bool is_within_edge_band(const Pos2D &pos, int height, int width, FloorEdge edge);
 
 enum dap_type : int;
+bool can_place_stair_at(const CreatureEntity &creature, const Pos2D &pos, int walls);
 bool alloc_stairs(CreatureEntity &creature, FEAT_IDX feat, int num, int walls, tl::optional<FloorEdge> edge = tl::nullopt);
 void alloc_object(CreatureEntity &creature, dap_type set, dungeon_allocation_type typ, int num);
 void alloc_specific_floor_items(CreatureEntity &creature);

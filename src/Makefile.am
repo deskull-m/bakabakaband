@@ -679,6 +679,7 @@ libhengband_a_SOURCES = \
 	floor/pattern-walk.cpp floor/pattern-walk.h \
 	floor/tunnel-generator.cpp floor/tunnel-generator.h \
 	floor/wild.h floor/wild.cpp \
+	floor/wormhole.cpp floor/wormhole.h \
 	\
 	game-option/auto-destruction-options.cpp game-option/auto-destruction-options.h \
 	game-option/birth-options.cpp game-option/birth-options.h \
@@ -1645,6 +1646,7 @@ hengband_test_SOURCES = \
 	\
 	test/floor/test-floor-events.cpp \
 	test/floor/test-object-allocator.cpp \
+	test/floor/test-wormhole.cpp \
 	\
 	test/game-option/test-runtime-arguments.cpp \
 	\

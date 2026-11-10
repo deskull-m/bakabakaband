@@ -1913,6 +1913,7 @@
     <ClCompile Include="..\..\src\io\screen-util.cpp" />
     <ClCompile Include="..\..\src\object\warning.cpp" />
     <ClCompile Include="..\..\src\floor\wild.cpp" />
+    <ClCompile Include="..\..\src\floor\wormhole.cpp" />
     <ClCompile Include="..\..\src\view\display-messages.cpp" />
     <ClCompile Include="..\..\src\wizard\wizard-game-modifier.cpp" />
     <ClCompile Include="..\..\src\wizard\wizard-item-modifier.cpp" />
@@ -2189,6 +2190,7 @@
     <ClInclude Include="..\..\src\io\screen-util.h" />
     <ClInclude Include="..\..\src\object\warning.h" />
     <ClInclude Include="..\..\src\floor\wild.h" />
+    <ClInclude Include="..\..\src\floor\wormhole.h" />
     <ClInclude Include="..\..\src\world\world.h" />
     <ClInclude Include="..\..\src\term\z-rand.h" />
     <ClInclude Include="..\..\src\term\z-term.h" />

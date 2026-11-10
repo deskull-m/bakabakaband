@@ -8,6 +8,7 @@
 #include "floor/geometry.h"
 #include "floor/object-allocator.h"
 #include "floor/tunnel-generator.h"
+#include "floor/wormhole.h"
 #include "game-option/birth-options.h"
 #include "game-option/cheat-types.h"
 #include "game-option/game-play-options.h"
@@ -342,6 +343,9 @@ static bool make_one_floor(CreatureEntity &creature, DungeonData *dd_ptr, const 
         }
     }
 
+    // ワームホールは同一フロア内を結ぶので辺へ寄せる意味を持たない。広いフロアほど出やすい。
+    alloc_wormholes_by_floor_area(creature);
+
     return true;
 }
 
@@ -371,6 +375,8 @@ static bool switch_making_floor(CreatureEntity &creature, DungeonData *dd_ptr, c
                 msg_print_wizard(creature, CHEAT_DUNGEON, _("迷宮ダンジョンのポータル生成に失敗", "Failed to generate portals in maze dungeon."));
             }
         }
+
+        alloc_wormholes_by_floor_area(creature);
 
         return true;
     }

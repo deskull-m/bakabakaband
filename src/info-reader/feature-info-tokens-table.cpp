@@ -144,6 +144,7 @@ const std::unordered_map<std::string_view, TerrainCharacteristics> f_info_flags 
     { "SPIDER_SILK_NET", TerrainCharacteristics::SPIDER_SILK_NET },
     { "PORTAL", TerrainCharacteristics::PORTAL },
     { "RAILWAY", TerrainCharacteristics::RAILWAY },
+    { "WORMHOLE", TerrainCharacteristics::WORMHOLE },
 };
 
 const std::unordered_map<std::string_view, TerrainTag> terrain_tags = {
@@ -287,4 +288,5 @@ const std::unordered_map<std::string_view, TerrainTag> terrain_tags = {
 
     { "SPIDER_SILK_NET", TerrainTag::SPIDER_SILK_NET },
     { "PORTAL", TerrainTag::PORTAL },
+    { "WORMHOLE", TerrainTag::WORMHOLE },
 };

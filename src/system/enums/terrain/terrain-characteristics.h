@@ -80,5 +80,6 @@ enum class TerrainCharacteristics {
     SPIDER_SILK_NET = 120, /*!< 蜘蛛糸地形である */
     PORTAL = 121, /*!< 他ダンジョンへのポータル地形である */
     RAILWAY = 122, /*!< 線路地形である */
+    WORMHOLE = 123, /*!< 同一フロアの別地点へ相互に繋がるワームホール地形である */
     MAX,
 };

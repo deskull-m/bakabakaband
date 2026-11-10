@@ -42,13 +42,14 @@ static int next_to_walls(const FloorType &floor, const Pos2D &pos)
 }
 
 /*!
- * @brief alloc_stairs()の補助として指定の位置に階段を生成できるかの判定を行う
+ * @brief 指定の位置に階段 (およびワームホール等の階段相当の地形) を生成できるかの判定を行う
  * @param creature クリーチャーへの参照
  * @param pos 基準座標
  * @param walls 最低減隣接させたい外壁の数
  * @return 階段を生成して問題がないならばTRUEを返す。
+ * @details alloc_stairs() と alloc_wormholes() (floor/wormhole.cpp) が共用する。
  */
-static bool alloc_stairs_aux(const CreatureEntity &creature, const Pos2D &pos, int walls)
+bool can_place_stair_at(const CreatureEntity &creature, const Pos2D &pos, int walls)
 {
     const auto &floor = *creature.get_floor();
     const auto &grid = floor.get_grid(pos);
@@ -179,7 +180,7 @@ bool alloc_stairs(CreatureEntity &creature, FEAT_IDX feat, int num, int walls, t
                     return false;
                 }
 
-                return alloc_stairs_aux(creature, pos, walls);
+                return can_place_stair_at(creature, pos, walls);
             };
             const auto pos_candidates =
                 floor.get_area(FloorBoundary::OUTER_WALL_INCLUSIVE) |

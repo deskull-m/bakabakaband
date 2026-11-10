@@ -12,6 +12,7 @@
 #include "floor/floor-mode-changer.h"
 #include "floor/geometry.h"
 #include "floor/wild.h"
+#include "floor/wormhole.h"
 #include "game-option/birth-options.h"
 #include "game-option/input-options.h"
 #include "game-option/map-screen-options.h"
@@ -88,6 +89,12 @@ void do_cmd_go_up(CreatureEntity &creature)
 
     if (terrain.flags.has(TerrainCharacteristics::PORTAL)) {
         do_cmd_go_portal(creature);
+        return;
+    }
+
+    // ワームホールは上下の区別を持たないので `<` でも `>` でも乗れる。
+    if (terrain.flags.has(TerrainCharacteristics::WORMHOLE)) {
+        do_cmd_enter_wormhole(creature);
         return;
     }
 
@@ -225,6 +232,11 @@ void do_cmd_go_down(CreatureEntity &creature)
 
     if (terrain.flags.has(TerrainCharacteristics::PORTAL)) {
         do_cmd_go_portal(creature);
+        return;
+    }
+
+    if (terrain.flags.has(TerrainCharacteristics::WORMHOLE)) {
+        do_cmd_enter_wormhole(creature);
         return;
     }
 
