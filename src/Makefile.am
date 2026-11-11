@@ -1516,6 +1516,7 @@ libhengband_a_SOURCES = \
 	util/buffer-shaper.cpp util/buffer-shaper.h \
 	util/bit-flags-calculator.h \
 	util/candidate-selector.cpp util/candidate-selector.h \
+	util/compass-direction.cpp util/compass-direction.h \
 	util/elapsed-time.cpp util/elapsed-time.h \
 	util/enum-converter.h \
 	util/enum-range.h \
@@ -1724,6 +1725,7 @@ hengband_test_SOURCES = \
 	\
 	test/util/test-angband-files.cpp \
 	test/util/test-buffer-shaper.cpp \
+	test/util/test-compass-direction.cpp \
 	test/util/test-dice.cpp \
 	test/util/test-finalizer.cpp \
 	test/util/test-flag-group.cpp \
