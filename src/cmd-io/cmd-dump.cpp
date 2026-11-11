@@ -29,20 +29,92 @@
 #include "system/angband-system.h"
 #include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
+#include "system/dungeon/quest-definition.h"
 #include "system/floor/floor-info.h"
 #include "system/floor/town-info.h"
 #include "system/floor/town-list.h"
 #include "system/inner-game-data.h"
+#include "system/monrace/monrace-definition.h"
+#include "system/monrace/monrace-list.h"
 #include "term/gameterm.h"
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
 #include "term/z-rand.h"
 #include "util/angband-files.h"
+#include "util/compass-direction.h"
 #include "util/int-char-converter.h"
 #include "view/display-messages.h"
 #include "view/display-player.h" // 暫定。後で消す.
 #include "world/world.h"
+#include <algorithm>
 #include <fmt/format.h>
+#include <string_view>
+#include <vector>
+
+namespace {
+/*!
+ * @brief この階の「宿敵」として扱うモンスター種族 ID を集める
+ * @param floor フロアへの参照
+ * @return 宿敵の種族 ID 一覧 (該当なしなら空)
+ * @details 対象はランダムクエストの討伐対象とダンジョンの主の 2 種。
+ *          MonsterMiscType::QUESTOR フラグでは判定しない。同フラグは
+ *          ゴルフィンブール / オベロン / 混沌のサーペント / リッキーの 4 種族が
+ *          データ側で常時持っており、クエストと無関係な文脈でも真になるため。
+ */
+std::vector<MonraceId> collect_nemesis_monrace_ids(const FloorType &floor)
+{
+    std::vector<MonraceId> nemesis_ids;
+    const auto quest_id = floor.get_random_quest_id();
+    if (inside_quest(quest_id)) {
+        const auto &quest = QuestList::get_instance().get_quest(quest_id);
+        if (MonraceList::is_valid(quest.r_idx)) {
+            nemesis_ids.push_back(quest.r_idx);
+        }
+    }
+
+    // ダンジョンの主がランダムクエストの対象と同一種族なら二重に並べない。
+    const auto &dungeon = floor.get_dungeon_definition();
+    const auto is_already_listed = std::find(nemesis_ids.begin(), nemesis_ids.end(), dungeon.final_guardian) != nemesis_ids.end();
+    if (dungeon.has_guardian() && !is_already_listed) {
+        nemesis_ids.push_back(dungeon.final_guardian);
+    }
+
+    return nemesis_ids;
+}
+
+/*!
+ * @brief 階の宿敵の気配を 16 方位で伝える
+ * @param creature クリーチャーへの参照
+ * @details 階の雰囲気が判明している (DungeonFeeling の値が 0 以外) ときだけ表示する。
+ *          **視認・感知していない個体も対象**で、広いフロアでランダムクエストの対象や
+ *          ダンジョンの主を探し回る手間を減らすのが狙い。同じ種族が複数いる場合
+ *          (討伐数が求められるランダムクエスト等) は最寄りの 1 体だけを伝える。
+ */
+void report_nemesis_direction(CreatureEntity &creature)
+{
+    if (DungeonFeeling::get_instance().get_feeling() == 0) {
+        return;
+    }
+
+    const auto &floor = *creature.get_floor();
+    const auto self_pos = creature.get_position();
+    for (const auto nemesis_id : collect_nemesis_monrace_ids(floor)) {
+        // ペットに付いた個体は宿敵ではないので除く。
+        const auto m_idx = creature.find_nearest_creature(
+            [nemesis_id](const CreatureEntity &candidate) { return (candidate.get_r_idx() == nemesis_id) && !candidate.is_pet(); });
+        if (m_idx == 0) {
+            continue;
+        }
+
+        const auto vec = floor.get_monster(m_idx).get_position() - self_pos;
+        if ((vec.y == 0) && (vec.x == 0)) {
+            continue;
+        }
+
+        msg_print(_("宿敵の気配を{}の方角に感じる！", "You sense your nemesis to the {}!"), describe_compass_direction(vec));
+    }
+}
+}
 
 /*!
  * @brief 画面を再描画するコマンドのメインルーチン
@@ -305,6 +377,7 @@ void do_cmd_feeling(CreatureEntity &creature)
     }
 
     msg_print(feeling_text);
+    report_nemesis_direction(creature);
 }
 
 /*
