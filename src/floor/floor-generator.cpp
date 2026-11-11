@@ -373,24 +373,38 @@ static tl::optional<std::string> level_gen(CreatureEntity &creature, tl::optiona
         level_height = MIN_HGT_MULTIPLE * 2;
         level_width = MIN_WID_MULTIPLE * 2;
     } else {
+        // 抽選の下限は SMALLEST 系と同じ MIN_*_MULTIPLE。これを下回るフロアは
+        // generate_rooms() が「部屋群の生成に失敗」で弾いてサイズごと振り直しになるので、
+        // 抽選の段階で作らない。
+        constexpr auto min_level_height = MIN_HGT_MULTIPLE;
+        constexpr auto min_level_width = MIN_WID_MULTIPLE;
+        constexpr auto limit_level_height = MAX_DUNGEON_HGT / SCREEN_HGT;
+        constexpr auto limit_level_width = MAX_DUNGEON_WID / SCREEN_WID;
+
+        // サイズの段階を決める。HUGE_DUNGEON_RATE / LARGE_DUNGEON_RATE の抽選で
+        // 段階ごとの上限ブロック数が変わり、クソデカフロアは稀になる。
+        // 上限そのものを 2 / 3 で割ると下限を下回りうるため、「下限からの幅」を縮める。
+        auto max_level_height = limit_level_height;
+        auto max_level_width = limit_level_width;
         if (one_in_(HUGE_DUNGEON_RATE)) {
-            level_height = randint1(MAX_DUNGEON_HGT / SCREEN_HGT);
-            level_width = randint1(MAX_DUNGEON_WID / SCREEN_WID);
+            // クソデカダンジョン。上限をそのまま使う。
         } else if (one_in_(LARGE_DUNGEON_RATE) || dungeon.flags.has(DungeonFeatureType::LARGEST)) {
-            level_height = randint1(MAX_DUNGEON_HGT / SCREEN_HGT / 2);
-            level_width = randint1(MAX_DUNGEON_WID / SCREEN_WID / 2);
+            max_level_height = min_level_height + (limit_level_height - min_level_height) / 2;
+            max_level_width = min_level_width + (limit_level_width - min_level_width) / 2;
         } else {
-            level_height = randint1(MAX_DUNGEON_HGT / SCREEN_HGT / 3);
-            level_width = randint1(MAX_DUNGEON_WID / SCREEN_WID / 3);
+            max_level_height = min_level_height + (limit_level_height - min_level_height) / 3;
+            max_level_width = min_level_width + (limit_level_width - min_level_width) / 3;
         }
-        bool is_first_level_area = true;
-        // allow_largest_floor が ON の場合は最大面積フロアを除外しない (上流 #5423 相当)。
-        bool is_max_area = !allow_largest_floor && (level_height == MAX_DUNGEON_HGT / SCREEN_HGT) && (level_width == MAX_DUNGEON_WID / SCREEN_WID);
-        while (is_first_level_area || is_max_area) {
-            level_height = randint1(MAX_DUNGEON_HGT / SCREEN_HGT);
-            level_width = randint1(MAX_DUNGEON_WID / SCREEN_WID);
-            is_first_level_area = false;
-            is_max_area = !allow_largest_floor && (level_height == MAX_DUNGEON_HGT / SCREEN_HGT) && (level_width == MAX_DUNGEON_WID / SCREEN_WID);
+
+        // 最大面積のフロアは allow_largest_floor が OFF なら除外し、同じ段階の範囲で
+        // 振り直す (上流 #5423 相当)。最大面積になり得るのはクソデカダンジョンの段階だけ。
+        while (true) {
+            level_height = rand_range(min_level_height, max_level_height);
+            level_width = rand_range(min_level_width, max_level_width);
+            const auto is_max_area = (level_height == limit_level_height) && (level_width == limit_level_width);
+            if (allow_largest_floor || !is_max_area) {
+                break;
+            }
         }
     }
     floor.height = level_height * SCREEN_HGT;
