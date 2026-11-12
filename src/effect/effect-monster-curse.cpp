@@ -62,7 +62,28 @@ ProcessResult effect_monster_curse_4(EffectMonster *em_ptr)
         em_ptr->obvious = true;
     }
     if (em_ptr->is_player()) {
-        msg_print(_("{}の秘孔を突いて、「お前は既に死んでいる」と叫んだ。", "You point at {}, screaming the word, 'DIE!'."), em_ptr->m_name);
+        msg_print(_("{}を指さして、「死ね」と叫んだ。", "You point at {}, screaming the word, 'DIE!'."), em_ptr->m_name);
+    }
+
+    if (randint0(100 + (em_ptr->caster_lev / 2)) < (em_ptr->monrace->level + 35)) {
+        em_ptr->note = _("には効果がなかった。", " is unaffected.");
+        em_ptr->dam = 0;
+    }
+
+    return ProcessResult::PROCESS_CONTINUE;
+}
+
+/*!
+ * @brief 秘孔を突く (害悪と同一仕様。ただしケンシロウが放った場合は抵抗できない)
+ * @param em_ptr 効果情報への参照ポインタ
+ */
+ProcessResult effect_monster_curse_vital_spot(EffectMonster *em_ptr)
+{
+    if (em_ptr->seen) {
+        em_ptr->obvious = true;
+    }
+    if (em_ptr->is_player()) {
+        msg_print(_("{}の秘孔を突いて、「お前は既に死んでいる」と叫んだ。", "You point at {}'s vital spot, screaming the word, 'DIE!'."), em_ptr->m_name);
     }
 
     if ((randint0(100 + (em_ptr->caster_lev / 2)) < (em_ptr->monrace->level + 35)) && (!em_ptr->is_monster() || (em_ptr->m_caster_ptr->get_r_idx() != MonraceId::KENSHIROU))) {

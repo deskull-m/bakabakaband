@@ -97,6 +97,7 @@ static bool restrict_monster_to_dungeon(const DungeonDefinition &dungeon, int fl
             MonsterAbilityType::CAUSE_2,
             MonsterAbilityType::CAUSE_3,
             MonsterAbilityType::CAUSE_4,
+            MonsterAbilityType::VITAL_SPOT,
             MonsterAbilityType::MIND_BLAST,
             MonsterAbilityType::BRAIN_SMASH,
         };

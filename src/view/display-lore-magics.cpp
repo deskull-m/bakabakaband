@@ -296,7 +296,8 @@ static const std::vector<AbilityCellDef> &attack_magic_defs()
         { MonsterAbilityType::CAUSE_1, "軽傷{}", "light wounds{}", TERM_L_WHITE },
         { MonsterAbilityType::CAUSE_2, "重傷{}", "serious wounds{}", TERM_L_WHITE },
         { MonsterAbilityType::CAUSE_3, "致命傷{}", "critical wounds{}", TERM_L_WHITE },
-        { MonsterAbilityType::CAUSE_4, "秘孔{}", "mortal wounds{}", TERM_L_WHITE },
+        { MonsterAbilityType::CAUSE_4, "害悪{}", "harm{}", TERM_L_WHITE },
+        { MonsterAbilityType::VITAL_SPOT, "秘孔{}", "vital spot{}", TERM_L_WHITE },
 
         // set_bolt_types()
         { MonsterAbilityType::BO_ACID, "酸矢{}", "acid bolt{}", TERM_GREEN },

@@ -6,3 +6,4 @@ void effect_player_curse_1(CreatureEntity &creature, EffectPlayerType *ep_ptr);
 void effect_player_curse_2(CreatureEntity &creature, EffectPlayerType *ep_ptr);
 void effect_player_curse_3(CreatureEntity &creature, EffectPlayerType *ep_ptr);
 void effect_player_curse_4(CreatureEntity &creature, EffectPlayerType *ep_ptr);
+void effect_player_curse_vital_spot(CreatureEntity &creature, EffectPlayerType *ep_ptr);

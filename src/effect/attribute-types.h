@@ -115,6 +115,7 @@ enum class AttributeType : int {
     QUANTUM_VANISH = 127, /*!< 属性取得用: 量子消滅>*/
     SPIDER_STRING = 128, /*!< 属性取得用: 蜘蛛糸>*/
     SOCIAL_GENOCIDE = 129, /*!< 魔法効果: 社会的抹殺*/
+    VITAL_SPOT = 130, /*!< 魔法効果: 秘孔を突く*/
     MAX /*!< 欠番を無視した最大サイズ (直上の値+1) */
 };
 

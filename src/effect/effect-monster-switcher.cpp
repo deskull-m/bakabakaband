@@ -517,6 +517,8 @@ ProcessResult switch_effects_monster(CreatureEntity &creature, EffectMonster *em
         return effect_monster_curse_3(em_ptr);
     case AttributeType::CAUSE_4:
         return effect_monster_curse_4(em_ptr);
+    case AttributeType::VITAL_SPOT:
+        return effect_monster_curse_vital_spot(em_ptr);
     case AttributeType::HAND_DOOM:
         return effect_monster_hand_doom(em_ptr);
     case AttributeType::CAPTURE:

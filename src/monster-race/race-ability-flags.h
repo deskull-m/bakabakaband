@@ -126,5 +126,6 @@ enum class MonsterAbilityType {
     S_BIRD = 120, /* Summon Bird */
     S_ELDRAZI = 121, /* Summon Eldrazi */
     S_ROBOT = 122, /* Summon Robot */
+    VITAL_SPOT = 123, /*!< モンスター能力: 秘孔を突く / Press Vital Spot */
     MAX,
 };

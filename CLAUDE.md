@@ -1181,6 +1181,137 @@ HISSATSU / HEX）を参照。
 - 既定なしのため実データ・既定バランスは不変。スキーマに `spellbook_realm` /
   `spellbook_indices` を登録済。実際に撃たせるには `freq_spell > 0` が必要。
 
+### 「秘孔を突く」と「害悪」の分離 (`VITAL_SPOT` / `CAUSE_4`) — Issue #781
+
+最上位のクリエイト・ウーンズ系呪文 `CAUSE_4` は長らく表示名が「秘孔を突く」で、
+メッセージも「お前は既に死んでいる」という北斗の拳の文言だった。しかし実データの
+**保有者は 104 種**でリッチ・悪魔・神格・クトゥルフ神話勢が大半を占め、北斗神拳とは
+無縁の個体が「秘孔を突く」を連発する不整合があった。そこで
+
+| 枠 | 中身 |
+|---|---|
+| `CAUSE_4` | **「害悪」/ harm** に改名。D&D の上位 cause wounds 呪文として汎用化。保有者 103 種 |
+| **`VITAL_SPOT`** (新設) | **「秘孔を突く」**。`CAUSE_4` の**完全コピー**。保有者はケンシロウ 1 種のみ |
+
+の 2 枠に分離した。**ゲーム上の仕様 (ダメージ・コスト・セーヴ式) は両者で完全に同一**で、
+違うのは表示名とメッセージ、そしてケンシロウ特例の所属先だけ。
+
+- Issue が求める「CAUSE_4 ではなくもう少し原作に忠実な近接処理にする」本体は**未着手**。
+  本変更は**その器を分けただけ**で、`VITAL_SPOT` を近接処理へ組み替えるのは後続段。
+  **ラオウ (1018) にはまだ付与していない** (彼は `CAUSE_4` も持っておらず、新規付与は
+  バランス変更になるため。近接処理化のときに併せて検討する)。
+
+#### 追加した enum とトークン
+
+| 対象 | 値 | 備考 |
+|---|---|---|
+| `MonsterAbilityType::VITAL_SPOT` | 123 | **末尾 (`MAX` の直前) に追加** |
+| `AttributeType::VITAL_SPOT` | 130 | 同上 |
+| JSON トークン | `"VITAL_SPOT"` | `r_info_ability` / `r_info_attribute` / `gf_descriptions` (`GF_VITAL_SPOT`) に登録 |
+
+- **セーブデータバージョンの更新は不要**。`r_ability_flags` / 青魔法の習得フラグは
+  `wr_FlagGroup()` のバイト数前置、ものまねの `mane_list` は値をそのまま s16b で持つので、
+  **末尾追加なら既存の値がずれない** (本書「セーブ/ロードの統合」節参照)。
+  **中間挿入は禁止**。
+- `schema/MonraceDefinitions.schema.json` の `skill.list` は enum を持たないので
+  **スキーマ変更も不要**。未知のトークンは reader が読込時エラーで弾くため、
+  **ゲームが起動すること自体がトークン登録の検証になる**。
+
+#### 配線した全サイト (CAUSE_4 と同一仕様)
+
+`CAUSE_4` を参照していた全箇所に `VITAL_SPOT` を並記した。**`CAUSE_3` を参照していて
+`CAUSE_4` を参照していない箇所は存在しない**ので、`CAUSE_3` を grep して漏れを検算できる。
+
+| 層 | ファイル | 内容 |
+|---|---|---|
+| mspell | `monster-power-table.cpp` | `monster_powers` (32/10/70/225/35/A_INT) と `monster_powers_short`。**両者で同一の数値** |
+| mspell | `mspell-damage-calculator.cpp` | `Dice(15, 15)` を共有 |
+| mspell | `mspell-attack.cpp` | 射線を要する特技の一覧 |
+| mspell | `assign-monster-spell.cpp` | 対プレイヤー / 対モンスターの両ディスパッチ |
+| mspell | `mspell-attack/mspell-curse.cpp` | `curse_list` のメッセージ 3 種 |
+| mspell | `mspell-selector.cpp` | `spell_attack()` / `spell_annoy()` |
+| monrace | `race-ability-mask.cpp` | `RF_ABILITY_ATTACK_MASK` |
+| monrace | `monster-util.cpp` | `NO_MELEE` ダンジョンでの生成許可 |
+| effect | `effect-monster-curse.{h,cpp}` | `effect_monster_curse_vital_spot()` を新設 |
+| effect | `effect-player-curse.{h,cpp}` | `effect_player_curse_vital_spot()` を新設 |
+| effect | `effect-monster-switcher.cpp` / `effect-player-switcher.cpp` / `effect-feature.cpp` | case 追加 |
+| その他 | `object/warning.cpp` / `term/gameterm.cpp` | 警告の被害予測 / 弾の表示色 (0x0E) |
+| 思い出 | `lore/magic-types-setter.cpp` / `view/display-lore-magics.cpp` | 「害悪」「秘孔を突く」の表示 |
+| 青魔法 | `blue-magic-spirit-curse.cpp` / `learnt-info.cpp` / `blue-magic-caster.cpp` | 写像・コスト・ディスパッチ |
+| ものまね | `cmd-action/cmd-mane.cpp` | `AIMING_SPELLS` とディスパッチ |
+
+- **`mspell-selector.cpp` だけは「並記」では足りない**。`spell_attack()` /
+  `spell_annoy()` は `spell_in_between(spell, CAUSE_1, MISSILE)` のような
+  **連続範囲判定**で、末尾に追加した `VITAL_SPOT` (123) は範囲外になる。
+  個別の `spell == MonsterAbilityType::VITAL_SPOT` 判定を足してある。
+  **今後 `MonsterAbilityType` に値を足すときは必ずこの 2 関数を確認すること。**
+- **`mspell-attack-util.cpp` の realm→能力写像 (C6) には足していない**。
+  秘孔は北斗神拳の特技であって魔法領域由来の呪文ではないため、`realm_abilities` で
+  配られるのは「害悪」(`CAUSE_4`) 側だけでよい。
+- 青魔法の分類は `set_rf_masks()` の `BlueMagicType::OTHER`
+  (`RF_ABILITY_ATTACK_MASK` − bolt/beam/ball/indirect) に自動的に入るので、
+  `CAUSE_1`〜`4` と同じ括りで選べる。
+
+#### ケンシロウ特例の移動 (挙動保持のため必須)
+
+`CAUSE_4` には**ケンシロウが放った場合は抵抗・セーヴできない**特例が 3 箇所に
+埋まっていた。これは秘孔固有の設定なので `VITAL_SPOT` 側へ移し、
+**あわせてケンシロウ (936) の JSON を `"CAUSE_4"` → `"VITAL_SPOT"` に変更**した。
+データを移さないと**ケンシロウが無抵抗特例を失う**ので、この 2 つは不可分。
+
+| 箇所 | 移動後 |
+|---|---|
+| `effect_monster_curse_4` | `effect_monster_curse_vital_spot` へ |
+| `effect_player_curse_4` | `effect_player_curse_vital_spot` へ |
+| `object/warning.cpp` の `AttributeType::CAUSE_4` 分岐 | `AttributeType::VITAL_SPOT` へ (`CAUSE_4` は `CAUSE_3` / `HAND_DOOM` と同じ群に合流) |
+
+- 「しかし秘孔を跳ね返した！」のセーヴ失敗メッセージも `VITAL_SPOT` 側へ移し、
+  `CAUSE_4` は `CAUSE_1`〜`3` と同じ「しかし効力を跳ね返した！」に揃えた。
+- **`effect_player_curse_vital_spot` には null ガードを足してある**。
+  `EffectPlayerType::m_ptr` は**モンスター以外が放った場合 nullptr のまま**
+  (`describe_effect_source()` が `is_monster()` のときだけ代入する) なので、
+  移植元の `ep_ptr->m_ptr->get_r_idx()` を素で書くと**ウィザードのデバッグ砲
+  (`src_idx == -1`) や溶岩で落ちる**。`ep_ptr->is_monster() &&` を前置して回避した
+  (移植元に同じ素の参照があり、これは旧 `CAUSE_4` 経路の潜在バグだった。
+  `CAUSE_4` 側は特例を外したので同時に解消している)。
+
+#### 併せて直した既存バグ: `curse_list` の書式指定子
+
+`curse_list` のメッセージは `%s^` という**printf 時代の書式のまま**残っており、
+`CurseData::Format` が `fmt::format_string` に移行した後も変換されていなかった。
+そのため **`CAUSE_1`〜`4` の詠唱メッセージは実機で `%s^` が literal 表示されていた**
+(実測: 「`%s^`が「お前は既に死んでいる」と叫んだ。」)。`{}` へ直して解消した。
+
+- `message_curse()` は `m_name` を `str_upcase_first()` 済みで渡すので、
+  **`^` (先頭大文字化) は不要**。第 1 引数が詠唱者、第 2 引数が対象。
+- **本件の範囲外の既存バグだが、新設した秘孔のメッセージも同じ表にあり
+  そのままでは壊れて見えるため同時に直した。** 同じ `%s^` 残存は
+  `src/mspell/mspell-summon.cpp` にもまだある (未着手)。
+
+#### 実測 (ヘッドレス)
+
+| 項目 | 結果 |
+|---|---|
+| トークン読込 | `"VITAL_SPOT"` を含むデータでゲームが正常起動 |
+| 思い出 (スポイラー `mon-info.txt` 全 2,362 種) | **「害悪(15d15)」が 100 行 / 「秘孔を突く(15d15)」が 1 行**。後者はケンシロウのみ。**ダイスが一致**しており完全コピーを確認 |
+| ケンシロウの思い出 | 「彼は的確に魔法を使うことができ、**秘孔を突く(15d15)**、テレポートバックの呪文を唱えることがある(確率:1/3)。」 |
+| 詠唱メッセージ (秘孔) | 検証用に `VITAL_SPOT` を仮付与した マインド・フレイヤーの祭司 が「**何かがあなたの秘孔を突いて「お前は既に死んでいる」と叫んだ。**」 |
+| セーヴ失敗 (秘孔) | 「しかし秘孔を跳ね返した！」 |
+| セーヴ失敗 (害悪) | マスターリッチ (658) の詠唱で「**しかし効力を跳ね返した！**」。秘孔の文言が出ないことを確認 |
+| null ガード | ウィザードの `k` (自分へ属性砲、`src_idx == -1`) で `EffectID 130` を撃っても落ちず、セーヴして「しかし秘孔を跳ね返した！」 |
+| `AttributeType::MAX` | ウィザードの `k` のプロンプトが `EffectID(1-130)` と出る (末尾追加の確認) |
+
+- **検証上の注意 1**: ウィザードの `n` (種族指定召喚) は**回数プレフィクスではなく
+  プロンプトで入れる**。`^A` → `n` → **`^I` (タブ)** → MonsterID。
+  ID 欄には既定値が入っているので**先に `\x7f` で消さないと数字が連結される**。
+- **検証上の注意 2**: 召喚は成功しても `PM_ALLOW_SLEEP` で眠っており暗所だと
+  `visible_monsters` に出ない。`cheat_hear` を有効にすると
+  「WIZ-MONS:…を生成しました。」が出るので**成否の切り分けはこれで行う**
+  (出ていない=失敗と誤認しやすい)。視認させるにはウィザードの `u` で全照明する。
+- **検証上の注意 3**: スポイラー `mon-info.txt` は **`$HOME/.angband/<変愚名>/`**
+  に出る (`ANGBAND_PATH` の下ではない)。中身は EUC-JP なので
+  `iconv -c -f EUC-JP -t UTF-8` で読む (`-c` 無しだと不正バイトで失敗する)。
+
 ### モンスターの継続毒 (`suffers_poison_dot`) — 提案 D7
 
 `MonraceDefinition` に `bool suffers_poison_dot`

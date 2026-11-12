@@ -49,7 +49,28 @@ void effect_player_curse_3(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 
 void effect_player_curse_4(CreatureEntity &creature, EffectPlayerType *ep_ptr)
 {
-    if ((creature.does_save_against(ep_ptr->rlev)) && (ep_ptr->m_ptr->get_r_idx() != MonraceId::KENSHIROU) && !check_multishadow(creature)) {
+    if ((creature.does_save_against(ep_ptr->rlev)) && !check_multishadow(creature)) {
+        msg_print(_("しかし効力を跳ね返した！", "You resist the effects!"));
+        return;
+    }
+
+    ep_ptr->get_damage = take_hit(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
+    if (!check_multishadow(creature)) {
+        (void)BadStatusSetter(creature).mod_cut(static_cast<TIME_EFFECT>(Dice::roll(10, 10)));
+    }
+}
+
+/*!
+ * @brief 秘孔を突く (害悪と同一仕様。ただしケンシロウが放った場合はセーヴできない)
+ * @param creature クリーチャーへの参照
+ * @param ep_ptr 効果情報への参照ポインタ
+ */
+void effect_player_curse_vital_spot(CreatureEntity &creature, EffectPlayerType *ep_ptr)
+{
+    // EffectPlayerType::m_ptr はモンスター以外が放った場合 nullptr のままなので、
+    // 先に is_monster() を確かめてから種族を見る。
+    const auto struck_by_kenshirou = ep_ptr->is_monster() && (ep_ptr->m_ptr->get_r_idx() == MonraceId::KENSHIROU);
+    if ((creature.does_save_against(ep_ptr->rlev)) && !struck_by_kenshirou && !check_multishadow(creature)) {
         msg_print(_("しかし秘孔を跳ね返した！", "You resist the effects!"));
         return;
     }

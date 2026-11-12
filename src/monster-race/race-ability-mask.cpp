@@ -89,6 +89,7 @@ const EnumClassFlagGroup<MonsterAbilityType> RF_ABILITY_ATTACK_MASK =
     MonsterAbilityType::SCARE, MonsterAbilityType::BLIND, MonsterAbilityType::CONF, MonsterAbilityType::SLOW, MonsterAbilityType::HOLD,
     MonsterAbilityType::HAND_DOOM, MonsterAbilityType::TELE_TO, MonsterAbilityType::TELE_AWAY, MonsterAbilityType::TELE_LEVEL,
     MonsterAbilityType::DARKNESS, MonsterAbilityType::TRAPS, MonsterAbilityType::FORGET,
+    MonsterAbilityType::VITAL_SPOT,
 });
 
 /* "indirect" spells Including "summon" spells */

@@ -260,6 +260,7 @@ static int monspell_damage_base(
         dice = Dice(10, 15);
         break;
     case MonsterAbilityType::CAUSE_4:
+    case MonsterAbilityType::VITAL_SPOT:
         dice = Dice(15, 15);
         break;
     case MonsterAbilityType::BO_ACID:

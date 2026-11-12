@@ -67,6 +67,11 @@ static bool spell_attack(MonsterAbilityType spell)
     if (spell_in_between(spell, MonsterAbilityType::CAUSE_1, MonsterAbilityType::MISSILE)) {
         return true;
     }
+
+    /* 秘孔を突く (enum 末尾に追加しているため上の範囲判定には入らない) */
+    if (spell == MonsterAbilityType::VITAL_SPOT) {
+        return true;
+    }
     if (spell_in_between(spell, MonsterAbilityType::BO_VOID, MonsterAbilityType::BO_METEOR)) {
         return true;
     }
@@ -122,6 +127,11 @@ static bool spell_annoy(MonsterAbilityType spell)
 
     /* Brain smash, et al (added curses) */
     if (spell_in_between(spell, MonsterAbilityType::DRAIN_MANA, MonsterAbilityType::CAUSE_4)) {
+        return true;
+    }
+
+    /* 秘孔を突く (enum 末尾に追加しているため上の範囲判定には入らない) */
+    if (spell == MonsterAbilityType::VITAL_SPOT) {
         return true;
     }
 

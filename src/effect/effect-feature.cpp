@@ -127,6 +127,7 @@ bool affect_feature(CreatureEntity &creature, MONSTER_IDX src_idx, POSITION r, P
     case AttributeType::CAUSE_2:
     case AttributeType::CAUSE_3:
     case AttributeType::CAUSE_4:
+    case AttributeType::VITAL_SPOT:
     case AttributeType::MIND_BLAST:
     case AttributeType::BRAIN_SMASH:
     case AttributeType::DRAIN_MANA:

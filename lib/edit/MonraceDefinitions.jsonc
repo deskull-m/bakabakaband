@@ -59801,7 +59801,7 @@
         "REGENERATE",
       ],
       "skill": {
-        "list": ["CAUSE_4", "TELE_TO"],
+        "list": ["VITAL_SPOT", "TELE_TO"],
         "probability": "1_IN_3",
       },
     },

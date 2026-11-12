@@ -235,6 +235,7 @@ static bool switch_cast_blue_magic(CreatureEntity &creature, bmc_type *bmc_ptr)
     case MonsterAbilityType::CAUSE_2:
     case MonsterAbilityType::CAUSE_3:
     case MonsterAbilityType::CAUSE_4:
+    case MonsterAbilityType::VITAL_SPOT:
         return cast_blue_magic_spirit_curse(creature, bmc_ptr);
     case MonsterAbilityType::SCARE:
         return cast_blue_scare(creature, bmc_ptr);

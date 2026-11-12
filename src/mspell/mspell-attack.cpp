@@ -231,6 +231,7 @@ static bool check_thrown_mspell(CreatureEntity &creature, msa_type *msa_ptr)
     case MonsterAbilityType::CAUSE_2:
     case MonsterAbilityType::CAUSE_3:
     case MonsterAbilityType::CAUSE_4:
+    case MonsterAbilityType::VITAL_SPOT:
     case MonsterAbilityType::BO_ACID:
     case MonsterAbilityType::BO_ELEC:
     case MonsterAbilityType::BO_FIRE:

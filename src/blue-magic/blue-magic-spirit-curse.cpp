@@ -25,6 +25,7 @@ const std::unordered_map<MonsterAbilityType, AttributeType> BLUE_MAGIC_SPIRIT_CU
     { MonsterAbilityType::CAUSE_2, AttributeType::CAUSE_2 },
     { MonsterAbilityType::CAUSE_3, AttributeType::CAUSE_3 },
     { MonsterAbilityType::CAUSE_4, AttributeType::CAUSE_4 },
+    { MonsterAbilityType::VITAL_SPOT, AttributeType::VITAL_SPOT },
 };
 }
 

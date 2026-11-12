@@ -532,6 +532,7 @@ static TERM_COLOR spell_color(xso::rng32 &rng, AttributeType type)
         case AttributeType::CAUSE_2:
         case AttributeType::CAUSE_3:
         case AttributeType::CAUSE_4:
+        case AttributeType::VITAL_SPOT:
             return 0x0E;
         case AttributeType::HAND_DOOM:
             return 0x07;

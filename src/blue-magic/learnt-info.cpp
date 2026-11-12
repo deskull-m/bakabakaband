@@ -98,6 +98,7 @@ std::string learnt_info(CreatureEntity &creature, MonsterAbilityType power)
     case MonsterAbilityType::CAUSE_2:
     case MonsterAbilityType::CAUSE_3:
     case MonsterAbilityType::CAUSE_4:
+    case MonsterAbilityType::VITAL_SPOT:
     case MonsterAbilityType::BO_ACID:
     case MonsterAbilityType::BO_ELEC:
     case MonsterAbilityType::BO_FIRE:

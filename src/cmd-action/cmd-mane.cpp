@@ -82,6 +82,7 @@ const std::unordered_set<MonsterAbilityType> AIMING_SPELLS = {
     MonsterAbilityType::CAUSE_2,
     MonsterAbilityType::CAUSE_3,
     MonsterAbilityType::CAUSE_4,
+    MonsterAbilityType::VITAL_SPOT,
     MonsterAbilityType::SCARE,
     MonsterAbilityType::BLIND,
     MonsterAbilityType::CONF,
@@ -405,6 +406,9 @@ static bool use_mane(CreatureEntity &creature, MonsterAbilityType spell)
         break;
     case MonsterAbilityType::CAUSE_4:
         fire_ball_hide(creature, AttributeType::CAUSE_4, dir, damage, 0);
+        break;
+    case MonsterAbilityType::VITAL_SPOT:
+        fire_ball_hide(creature, AttributeType::VITAL_SPOT, dir, damage, 0);
         break;
     case MonsterAbilityType::SCARE:
         msg_print(_("恐ろしげな幻覚を作り出した。", "You cast a fearful illusion."));

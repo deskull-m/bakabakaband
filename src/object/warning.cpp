@@ -196,6 +196,7 @@ static void spell_damcalc(CreatureEntity &creature, const CreatureEntity &monste
     case AttributeType::CAUSE_1:
     case AttributeType::CAUSE_2:
     case AttributeType::CAUSE_3:
+    case AttributeType::CAUSE_4:
     case AttributeType::HAND_DOOM:
         if (100 + rlev / 2 <= creature.get_skill_save()) {
             dam = 0;
@@ -204,7 +205,7 @@ static void spell_damcalc(CreatureEntity &creature, const CreatureEntity &monste
 
         break;
 
-    case AttributeType::CAUSE_4:
+    case AttributeType::VITAL_SPOT:
         if ((100 + rlev / 2 <= creature.get_skill_save()) && (monster.get_r_idx() != MonraceId::KENSHIROU)) {
             dam = 0;
             ignore_wraith_form = true;

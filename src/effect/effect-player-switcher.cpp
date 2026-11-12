@@ -149,6 +149,9 @@ void switch_effects_player(CreatureEntity &creature, EffectPlayerType *ep_ptr)
     case AttributeType::CAUSE_4:
         effect_player_curse_4(creature, ep_ptr);
         return;
+    case AttributeType::VITAL_SPOT:
+        effect_player_curse_vital_spot(creature, ep_ptr);
+        return;
     case AttributeType::HAND_DOOM:
         effect_player_hand_doom(creature, ep_ptr);
         return;

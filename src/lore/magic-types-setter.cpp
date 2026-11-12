@@ -218,7 +218,11 @@ void set_particular_types(CreatureEntity &creature, lore_type *lore_ptr)
     }
 
     if (lore_ptr->ability_flags.has(MonsterAbilityType::CAUSE_4)) {
-        add_lore_of_damage_skill(creature, lore_ptr, MonsterAbilityType::CAUSE_4, _("秘孔を突く{}", "cause mortal wounds{}"), TERM_L_WHITE);
+        add_lore_of_damage_skill(creature, lore_ptr, MonsterAbilityType::CAUSE_4, _("害悪{}", "harm{}"), TERM_L_WHITE);
+    }
+
+    if (lore_ptr->ability_flags.has(MonsterAbilityType::VITAL_SPOT)) {
+        add_lore_of_damage_skill(creature, lore_ptr, MonsterAbilityType::VITAL_SPOT, _("秘孔を突く{}", "press vital spot{}"), TERM_L_WHITE);
     }
 }
 

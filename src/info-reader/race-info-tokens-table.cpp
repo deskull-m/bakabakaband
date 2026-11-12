@@ -266,6 +266,7 @@ const std::unordered_map<std::string_view, MonsterAbilityType> r_info_ability_fl
 	{"S_INSECT", MonsterAbilityType::S_INSECT },
 	{"S_ELDRAZI", MonsterAbilityType::S_ELDRAZI },
 	{"S_ROBOT", MonsterAbilityType::S_ROBOT },
+	{"VITAL_SPOT", MonsterAbilityType::VITAL_SPOT },
 };
 /* clang-format on */
 
@@ -1211,6 +1212,7 @@ const std::unordered_map<std::string_view, AttributeType> r_info_attribute = {
     { "QUANTUM_VANISH", AttributeType::QUANTUM_VANISH },
     { "SPIDER_STRING", AttributeType::SPIDER_STRING },
     { "SOCIAL_GENOCIDE", AttributeType::SOCIAL_GENOCIDE },
+    { "VITAL_SPOT", AttributeType::VITAL_SPOT },
 };
 
 /*!

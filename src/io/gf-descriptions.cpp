@@ -115,6 +115,7 @@ const std::vector<named_num> gf_descriptions = {
     { "GF_MONSTER_MELEE", AttributeType::MONSTER_MELEE },
     { "GF_DIRT", AttributeType::DIRT },
     { "GF_SPIDER_STRING", AttributeType::SPIDER_STRING },
+    { "GF_VITAL_SPOT", AttributeType::VITAL_SPOT },
 };
 
 //clang-format on
