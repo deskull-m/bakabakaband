@@ -8127,8 +8127,8 @@
         "en": "wormhole",
       },
       "symbol": {
-        "character": ";",
-        "color": "Light Blue",
+        "character": "+",
+        "color": "Violet",
         "lit": true,
       },
       "mimic": null,
