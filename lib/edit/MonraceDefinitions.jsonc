@@ -65147,7 +65147,7 @@
         "KARATEKA",
       ],
       "skill": {
-        "list": ["BR_FORC", "TELE_TO"],
+        "list": ["VITAL_SPOT", "BR_FORC", "TELE_TO"],
         "probability": "1_IN_4",
       },
     },
