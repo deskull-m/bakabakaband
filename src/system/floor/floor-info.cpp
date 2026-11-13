@@ -17,6 +17,7 @@
 #include "system/enums/monrace/monrace-hook-types.h"
 #include "system/enums/terrain/terrain-characteristics.h"
 #include "system/enums/terrain/terrain-tag.h"
+#include "system/floor/monster-corpse.h"
 #include "system/floor/wilderness-grid.h"
 #include "system/gamevalue.h"
 #include "system/grid-type-definition.h"
@@ -41,6 +42,9 @@ FloorType::FloorType()
     , m_list(MAX_FLOOR_MONSTERS)
     , quest_number(QuestId::NONE)
 {
+    // 添字 0 はダミー (o_list と同じ規約)
+    this->corpses.push_back(nullptr);
+
     ranges::generate(this->o_list, [] { return std::make_shared<ItemEntity>(); });
 
     for (auto &monster : this->m_list) {
@@ -671,6 +675,33 @@ short FloorType::pop_empty_index_monster()
  * @brief アイテム配列から空きを取得する
  * @return 使われていないアイテムのフロア内インデックス
  */
+/*!
+ * @brief 死体を 1 つ格納する空き添字を確保する
+ * @return 確保した添字、満杯なら 0
+ * @details o_list と同じく push_back で伸ばすだけで添字の再利用はしない。
+ *          満杯時は例外を投げずに 0 を返し、呼出側が死体を諦める
+ *          (死体はゲーム進行に必須ではないため)。
+ */
+short FloorType::pop_empty_index_corpse()
+{
+    if (std::ssize(this->corpses) >= MAX_FLOOR_CORPSES) {
+        return 0;
+    }
+
+    this->corpses.push_back(std::make_shared<MonsterCorpse>());
+    return static_cast<short>(this->corpses.size() - 1);
+}
+
+MonsterCorpse &FloorType::get_corpse(short corpse_idx)
+{
+    return *this->corpses.at(corpse_idx);
+}
+
+const MonsterCorpse &FloorType::get_corpse(short corpse_idx) const
+{
+    return *this->corpses.at(corpse_idx);
+}
+
 short FloorType::pop_empty_index_item()
 {
     if (this->o_list.size() < MAX_FLOOR_ITEMS) {

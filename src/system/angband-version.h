@@ -61,6 +61,11 @@ constexpr std::string_view VARIANT_NAME("Bakabaka");
  *     表示している範囲 (panel_row_min / panel_col_min) を保存 (hengband#6085 相当)。
  *     wr_player() 末尾の wr_continuous_actions() で追記し、rd_extra() は
  *     older_than(61) なら休憩・釣りをやめ繰り返し無し・表示範囲を決め直す状態で埋める。
+ * 62: フロアに遺されたモンスターの死体 (FloorType::corpses) を保存。
+ *     wr_saved_floor() のモンスターの直後へ件数 (u16) + 各死体の実体
+ *     (MonsterWriter と同形式) を書き、rd_dungeon_object() は older_than(62) なら
+ *     死体なしで読み込む。グリッド側のチェイン (Grid::corpse_idx /
+ *     MonsterCorpse::next_corpse_idx) は保存せず、座標から再構築する。
  *
  * **採番の衝突に注意**: 作業ブランチごとに独立して番号を進めると、同じ番号で
  * 別フォーマットのセーブデータが 2 種類生まれ、どちらのビルドでも読めなくなる
@@ -68,7 +73,7 @@ constexpr std::string_view VARIANT_NAME("Bakabaka");
  * **バージョンを上げる前に必ず develop の最新を取り込み、この一覧の末尾に
  * 追記すること。**
  */
-constexpr uint32_t SAVEFILE_VERSION = 61;
+constexpr uint32_t SAVEFILE_VERSION = 62;
 
 /*!
  * @brief バージョンが開発版が安定版かを返す(廃止予定)

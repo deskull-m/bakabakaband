@@ -20,6 +20,13 @@ public:
     bool cloned;
     bool is_chameleon;
     bool drop_chosen_item;
+
+    /*!
+     * @brief この個体が死体を遺すか
+     * @details drop_corpse() が確率抽選を含む判定を行って立てる。乱数を 2 度
+     *          消費しないよう、死体の実体生成はこのフラグを見て後段で行う。
+     */
+    bool leaves_corpse = false;
     int md_y = 0;
     int md_x = 0;
     uint32_t mo_mode = 0;

@@ -15,6 +15,7 @@
 #include "main/music-definitions-table.h"
 #include "main/sound-of-music.h"
 #include "market/arena-entry.h"
+#include "monster-floor/monster-corpse-leaver.h"
 #include "monster-floor/monster-death-util.h"
 #include "monster-floor/special-death-switcher.h"
 #include "monster-race/monster-race-hook.h"
@@ -124,6 +125,7 @@ static void drop_corpse(CreatureEntity &creature, MonsterDeath *md_ptr)
     auto is_drop_corpse = one_in_(md_ptr->monrace->kind_flags.has(MonsterKindType::UNIQUE) ? 1 : 4);
     is_drop_corpse &= md_ptr->monrace->drop_flags.has_any_of({ MonsterDropType::DROP_CORPSE, MonsterDropType::DROP_SKELETON });
     is_drop_corpse &= !(floor.inside_arena || AngbandSystem::get_instance().is_phase_out() || md_ptr->cloned || ((md_ptr->m_ptr->get_r_idx() == AngbandWorld::get_instance().today_mon) && md_ptr->m_ptr->is_pet()));
+    md_ptr->leaves_corpse = is_drop_corpse;
     if (!is_drop_corpse) {
         return;
     }
@@ -374,6 +376,12 @@ void monster_death(CreatureEntity &creature, MONSTER_IDX m_idx, bool drop_item, 
     // ドロップを抑制する (モンスターピット等での床溢れ防止)。
     if (drop_item) {
         md.m_ptr->drop_all_inventory(creature);
+    }
+
+    // 死体の実体をフロアへ遺す。**所持品を床へ放出した後**に呼ぶこと
+    // (死体はこの時点の所持品を複製するため、先に呼ぶと二重取りになる)。
+    if (md.leaves_corpse) {
+        (void)leave_monster_corpse(creature, m_idx);
     }
 
     switch_special_death(creature, &md);

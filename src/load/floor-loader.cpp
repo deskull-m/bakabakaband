@@ -22,6 +22,7 @@
 #include "system/angband-version.h"
 #include "system/enums/terrain/terrain-tag.h"
 #include "system/floor/floor-info.h"
+#include "system/floor/monster-corpse.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
@@ -201,6 +202,41 @@ errr rd_saved_floor(CreatureEntity &creature, saved_floor_type *sf_ptr)
         auto &grid = floor.get_grid(monster.get_position());
         grid.m_idx = m_idx;
         monster.get_real_monrace().increment_current_numbers();
+    }
+
+    if (loading_savefile_version_is_older_than(62)) {
+        return 0;
+    }
+
+    // 死体はモンスターと同じ形式で並んでいる。グリッドのチェインは保存して
+    // いないので、読み込んだ座標から組み直す (cur_num は死亡時に減らしてある
+    // ので、生きたモンスターと違って increment_current_numbers() は呼ばない)。
+    limit = rd_u16b();
+    if (limit > MAX_FLOOR_CORPSES) {
+        return 163;
+    }
+
+    for (auto i = 1; i < limit; i++) {
+        const auto corpse_idx = floor.pop_empty_index_corpse();
+        if (i != corpse_idx) {
+            return 164;
+        }
+
+        auto &corpse = floor.get_corpse(corpse_idx);
+        monster_loader->rd_monster(corpse.body);
+        corpse.body.set_floor(creature.get_floor());
+        if (!corpse.is_valid()) {
+            continue;
+        }
+
+        const auto pos = corpse.get_position();
+        if (!floor.contains(pos, FloorBoundary::OUTER_WALL_INCLUSIVE)) {
+            continue;
+        }
+
+        auto &corpse_grid = floor.get_grid(pos);
+        corpse.next_corpse_idx = corpse_grid.corpse_idx;
+        corpse_grid.corpse_idx = corpse_idx;
     }
 
     return 0;

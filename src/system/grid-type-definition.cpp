@@ -180,6 +180,14 @@ bool Grid::has_monster() const
     return is_monster(this->m_idx);
 }
 
+/*!
+ * @brief このグリッドに死体が遺されているか
+ */
+bool Grid::has_corpse() const
+{
+    return this->corpse_idx > 0;
+}
+
 bool Grid::has(TerrainCharacteristics tc) const
 {
     return this->get_terrain().has(tc);
