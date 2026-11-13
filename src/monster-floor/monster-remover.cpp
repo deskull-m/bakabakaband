@@ -2,6 +2,7 @@
 #include "core/stuff-handler.h"
 #include "floor/floor-object.h"
 #include "grid/grid.h"
+#include "monster-floor/monster-corpse-leaver.h"
 #include "monster-race/race-brightness-mask.h"
 #include "monster/monster-party.h"
 #include "monster/monster-status-setter.h"
@@ -121,6 +122,8 @@ void wipe_monsters_list(CreatureEntity &creature)
         floor.get_grid(monster.get_position()).m_idx = 0;
         monster.wipe();
     }
+
+    wipe_corpses(floor);
 
     monraces.reset_current_numbers();
     floor.m_max = 1;

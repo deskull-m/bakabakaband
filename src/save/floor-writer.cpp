@@ -14,6 +14,7 @@
 #include "system/creature-entity.h"
 #include "system/deferred-update-requests.h"
 #include "system/floor/floor-info.h"
+#include "system/floor/monster-corpse.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "util/angband-files.h"
@@ -149,6 +150,14 @@ void wr_saved_floor(CreatureEntity &creature, saved_floor_type *sf_ptr)
     wr_u16b(floor.m_max);
     for (int i = 1; i < floor.m_max; i++) {
         MonsterWriter(floor.m_list[i]).write_to_savedata();
+    }
+
+    /*** Dump the corpses ***/
+    // グリッドのチェイン (Grid::corpse_idx / next_corpse_idx) は保存しない。
+    // 死体の座標から読込時に組み直すので、添字の連続性に依存しない。
+    wr_u16b(static_cast<uint16_t>(floor.corpses.size()));
+    for (auto i = 1U; i < floor.corpses.size(); i++) {
+        MonsterWriter(floor.get_corpse(static_cast<short>(i)).body).write_to_savedata();
     }
 }
 

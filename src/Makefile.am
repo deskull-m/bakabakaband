@@ -986,6 +986,7 @@ libhengband_a_SOURCES = \
 	monster-floor/monster-lite.cpp monster-floor/monster-lite.h \
 	monster-floor/monster-lite-util.cpp monster-floor/monster-lite-util.h \
 	monster-floor/one-monster-placer.cpp monster-floor/one-monster-placer.h \
+	monster-floor/monster-corpse-leaver.cpp monster-floor/monster-corpse-leaver.h \
 	monster-floor/monster-drop-generator.cpp monster-floor/monster-drop-generator.h \
 	monster-floor/place-monster-types.h \
 	monster-floor/quantum-effect.cpp monster-floor/quantum-effect.h \
@@ -1461,6 +1462,7 @@ libhengband_a_SOURCES = \
 	\
 	system/floor/floor-info.cpp system/floor/floor-info.h \
 	system/floor/floor-list.cpp system/floor/floor-list.h \
+	system/floor/monster-corpse.cpp system/floor/monster-corpse.h \
 	system/floor/town-info.cpp system/floor/town-info.h \
 	system/floor/town-list.cpp system/floor/town-list.h \
 	system/floor/town-records.cpp system/floor/town-records.h \

@@ -9,6 +9,7 @@
 #include "system/creature-entity.h"
 #include "system/enums/terrain/terrain-tag.h"
 #include "system/floor/floor-info.h"
+#include "system/floor/monster-corpse.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
@@ -264,6 +265,18 @@ DisplaySymbolPair map_info(CreatureEntity &creature, const Pos2D &pos)
         }
 
         break;
+    }
+
+    // 死体はアイテムより手前・生きているモンスターより奥に描く。
+    // 種族のシンボル文字を暗い灰色で出すことで「そこに倒れている」ことを示す。
+    if (grid.has_corpse() && display_autopick.none()) {
+        const auto &corpse = floor.get_corpse(grid.corpse_idx);
+        const auto &monrace_corpse = MonraceList::get_instance().get_monrace(corpse.body.get_r_idx());
+        symbol_pair.symbol_foreground = { TERM_L_DARK, monrace_corpse.symbol_config.character };
+        feat_priority = 25;
+        if (is_hallucinated) {
+            symbol_pair.symbol_foreground = image_monster(get_display_rng());
+        }
     }
 
     if (grid.has_monster() && display_autopick.any()) {

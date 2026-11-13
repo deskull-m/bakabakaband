@@ -35,6 +35,7 @@ constexpr auto CHANCE_STRENGTHENING = 12; /*!< ランダムアーティファク
 constexpr auto STANDARD_SPEED = 110; /* プレイヤー/モンスターの標準速度 (加速0) */
 constexpr short MAX_FLOOR_ITEMS = 4096; /*!< 1フロアに存在可能な最大アイテム数 */
 constexpr short MAX_FLOOR_MONSTERS = 1024; /*!< 1フロアに存在可能な最大モンスター数 */
+constexpr short MAX_FLOOR_CORPSES = 1024; /*!< 1フロアに遺せる最大死体数 */
 
 /*!
  * @brief 1フロアに存在可能な、増殖フラグ付きモンスター実体の最大数

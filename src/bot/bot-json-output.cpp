@@ -54,6 +54,7 @@
 #include "system/enums/terrain/terrain-kind.h"
 #include "system/enums/terrain/terrain-tag.h"
 #include "system/floor/floor-info.h"
+#include "system/floor/monster-corpse.h"
 #include "system/floor/town-list.h"
 #include "system/floor/town-records.h"
 #include "system/grid-type-definition.h"
@@ -265,6 +266,35 @@ nlohmann::json make_visible_monsters_json(const PlayerType &player)
     }
 
     return monsters;
+}
+
+/*!
+ * @brief フロアに遺された死体の一覧を返す (自動検証用)
+ * @details 視認・感知の状態に依らず全て列挙する。死体はゲームの進行に影響しない
+ *          デバッグ・自動検証向けの情報なので、モンスターの 3 つのゲートとは
+ *          別扱いにしてある。
+ */
+nlohmann::json make_corpses_json(const PlayerType &player)
+{
+    auto corpses = nlohmann::json::array();
+    const auto &floor = *player.get_floor();
+    for (auto corpse_idx = 1U; corpse_idx < floor.corpses.size(); ++corpse_idx) {
+        const auto &corpse = floor.get_corpse(static_cast<short>(corpse_idx));
+        if (!corpse.is_valid()) {
+            continue;
+        }
+
+        const auto pos = corpse.get_position();
+        nlohmann::json corpse_json;
+        corpse_json["corpse_idx"] = corpse_idx;
+        corpse_json["race_id"] = enum2i(corpse.body.get_r_idx());
+        corpse_json["y"] = pos.y;
+        corpse_json["x"] = pos.x;
+        corpse_json["items"] = corpse.body.get_inven_cnt() + corpse.body.get_equip_cnt();
+        corpses.push_back(std::move(corpse_json));
+    }
+
+    return corpses;
 }
 
 nlohmann::json make_detected_monsters_json(const PlayerType &player)
@@ -1224,6 +1254,7 @@ nlohmann::json make_snapshot(PlayerType *player_ptr, bool include_map = true,
                       } },
         { "visible_monsters", make_visible_monsters_json(player) },
         { "detected_monsters", make_detected_monsters_json(player) },
+        { "corpses", make_corpses_json(player) },
         { "messages", (messages_source == BotSnapshotMessages::HISTORY) ? make_message_history_json(BOT_JSON_MAX_MESSAGES) : make_recent_messages_json() },
         { "inventory", make_inventory_json(player_ptr) },
         { "equipment", make_equipment_json(player_ptr) },
