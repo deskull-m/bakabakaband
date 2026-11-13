@@ -44,6 +44,7 @@
 #include "system/dungeon/dungeon-definition.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/floor/floor-info.h"
+#include "system/floor/monster-corpse.h"
 #include "system/inner-game-data.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
@@ -119,16 +120,50 @@ static void on_defeat_arena_monster(CreatureEntity &creature, MonsterDeath *md_p
     exe_write_diary(floor, DiaryKind::ARENA, 0, m_name);
 }
 
-static void drop_corpse(CreatureEntity &creature, MonsterDeath *md_ptr)
+/*!
+ * @brief この個体が死体を遺すか判定する
+ * @details 死体を遺す種族 (DROP_CORPSE / DROP_SKELETON) なら**必ず**遺す。
+ *          以前は非ユニークで `one_in_(4)` の抽選だったが、死体を漁って戦利品を
+ *          得る形へ移行するにあたり撤去した (Issue #9275 第 2 段)。
+ *          闘技場・モンスター闘技場・クローン体・その日のペットは従来どおり除外する。
+ */
+static bool decide_leaving_corpse(const CreatureEntity &creature, const MonsterDeath *md_ptr)
 {
     const auto &floor = *creature.get_floor();
-    auto is_drop_corpse = one_in_(md_ptr->monrace->kind_flags.has(MonsterKindType::UNIQUE) ? 1 : 4);
-    is_drop_corpse &= md_ptr->monrace->drop_flags.has_any_of({ MonsterDropType::DROP_CORPSE, MonsterDropType::DROP_SKELETON });
-    is_drop_corpse &= !(floor.inside_arena || AngbandSystem::get_instance().is_phase_out() || md_ptr->cloned || ((md_ptr->m_ptr->get_r_idx() == AngbandWorld::get_instance().today_mon) && md_ptr->m_ptr->is_pet()));
-    md_ptr->leaves_corpse = is_drop_corpse;
-    if (!is_drop_corpse) {
-        return;
+    if (md_ptr->monrace->drop_flags.has_none_of({ MonsterDropType::DROP_CORPSE, MonsterDropType::DROP_SKELETON })) {
+        return false;
     }
+
+    const auto is_today_pet = (md_ptr->m_ptr->get_r_idx() == AngbandWorld::get_instance().today_mon) && md_ptr->m_ptr->is_pet();
+    return !(floor.inside_arena || AngbandSystem::get_instance().is_phase_out() || md_ptr->cloned || is_today_pet);
+}
+
+/*!
+ * @brief 死体/骨/ソウル/がらくたを死体の中へ納める
+ * @param corpse_idx 納める死体の添字。0 なら死体が無いので従来どおり床へ落とす
+ * @details **床へ落とさず死体の所持品にする**のが本関数の要点 (Issue #9275 第 2 段)。
+ *          死体 1 体につき遺物が床へ 1〜3 個増えるのを避けるためで、
+ *          プレイヤーは死体を漁って取り出す。死体が作れなかったとき
+ *          (`MAX_FLOOR_CORPSES` 到達等) だけは品が失われないよう床へ落とす。
+ */
+static void store_monster_remains(CreatureEntity &creature, MonsterDeath *md_ptr, short corpse_idx)
+{
+    const auto &floor = *creature.get_floor();
+    const auto monrace_id = md_ptr->m_ptr->get_r_idx();
+    const auto deliver = [&creature, md_ptr, corpse_idx](const ItemEntity &item) {
+        if (corpse_idx == 0) {
+            auto floor_item = item.clone();
+            (void)drop_near(creature, floor_item, md_ptr->get_position());
+            return;
+        }
+
+        auto &corpse = creature.get_floor()->get_corpse(corpse_idx);
+        if (corpse.body.store_item(item) < 0) {
+            // 死体の所持枠が溢れた場合も品を失わないよう床へ逃がす
+            auto floor_item = item.clone();
+            (void)drop_near(creature, floor_item, md_ptr->get_position());
+        }
+    };
 
     bool corpse = false;
     if (md_ptr->monrace->drop_flags.has_not(MonsterDropType::DROP_SKELETON)) {
@@ -149,14 +184,14 @@ static void drop_corpse(CreatureEntity &creature, MonsterDeath *md_ptr)
 
     ItemEntity item({ ItemKindType::MONSTER_REMAINS, (corpse ? SV_CORPSE : SV_SKELETON) });
     ItemMagicApplier(creature, &item, floor.object_level, AM_NO_FIXED_ART).execute();
-    item.pval = enum2i(md_ptr->m_ptr->get_r_idx());
-    (void)drop_near(creature, item, md_ptr->get_position());
+    item.pval = enum2i(monrace_id);
+    deliver(item);
 
     try {
         if (one_in_(md_ptr->monrace->kind_flags.has(MonsterKindType::UNIQUE) ? 1 : 4)) {
             item.generate(BaseitemList::get_instance().lookup_baseitem_id({ ItemKindType::MONSTER_REMAINS, SV_SOUL }));
-            item.pval = enum2i(md_ptr->m_ptr->get_r_idx());
-            (void)drop_near(creature, item, md_ptr->get_position());
+            item.pval = enum2i(monrace_id);
+            deliver(item);
         }
     } catch (const std::exception &) {
         msg_print(_("エラー:ソウルドロップの処理に失敗", "Error: Failed to drop a soul."));
@@ -167,8 +202,8 @@ static void drop_corpse(CreatureEntity &creature, MonsterDeath *md_ptr)
 
     if (md_ptr->monrace->drop_flags.has(MonsterDropType::DROP_JUNK)) {
         ItemEntity item_junk({ ItemKindType::MONSTER_REMAINS, SV_JUNK });
-        item_junk.pval = enum2i(md_ptr->m_ptr->get_r_idx());
-        (void)drop_near(creature, item_junk, md_ptr->get_position());
+        item_junk.pval = enum2i(monrace_id);
+        deliver(item_junk);
     }
 }
 
@@ -369,7 +404,8 @@ void monster_death(CreatureEntity &creature, MONSTER_IDX m_idx, bool drop_item, 
         }
     }
 
-    drop_corpse(creature, &md);
+    md.leaves_corpse = decide_leaving_corpse(creature, &md);
+
     // [ドロップ品移行] 一般ドロップ品はモンスター生成時に所持品として前生成済み。
     // 死亡時は drop_all_inventory() でまとめて床へ放出する。ただし drop_item が
     // false のケース (量子消失・モンスター同士の戦闘・一部効果死) では従来同様に
@@ -378,10 +414,12 @@ void monster_death(CreatureEntity &creature, MONSTER_IDX m_idx, bool drop_item, 
         md.m_ptr->drop_all_inventory(creature);
     }
 
-    // 死体の実体をフロアへ遺す。**所持品を床へ放出した後**に呼ぶこと
-    // (死体はこの時点の所持品を複製するため、先に呼ぶと二重取りになる)。
+    // 死体の実体をフロアへ遺し、遺物 (死体/骨/ソウル/がらくた) をその中へ納める。
+    // **所持品を床へ放出した後**に呼ぶこと (死体はこの時点の所持品を複製するため、
+    // 先に呼ぶと床と死体の二重取りになる)。
     if (md.leaves_corpse) {
-        (void)leave_monster_corpse(creature, m_idx);
+        const auto corpse_idx = leave_monster_corpse(creature, m_idx);
+        store_monster_remains(creature, &md, corpse_idx);
     }
 
     switch_special_death(creature, &md);
