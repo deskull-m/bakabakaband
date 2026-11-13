@@ -2887,7 +2887,7 @@ void check_experience(CreatureEntity &creature)
 
         if (level_mutation) {
             msg_print(_("あなたは変わった気がする...", "You feel different..."));
-            (void)gain_mutation(creature, 0);
+            (void)gain_mutation(creature);
             level_mutation = false;
         }
 

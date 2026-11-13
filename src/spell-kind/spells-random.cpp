@@ -315,7 +315,7 @@ void wild_magic(CreatureEntity &creature, int spell)
         break;
     case 27:
     case 28:
-        (void)gain_mutation(creature, 0);
+        (void)gain_mutation(creature);
         break;
     case 29:
     case 30:

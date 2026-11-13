@@ -4,6 +4,7 @@
 #include "mutation/mutation-util.h"
 #include "player-base/player-class.h"
 #include "system/creature-entity.h"
+#include "util/enum-converter.h"
 
 void switch_gain_mutation(CreatureEntity &creature, glm_type *glm_ptr)
 {
@@ -13,8 +14,8 @@ void switch_gain_mutation(CreatureEntity &creature, glm_type *glm_ptr)
     PlayerMutationType mutation_type;
 
     if (glm_ptr->choose_mut) {
-        // デバッグ等で変異が指定されている場合
-        mutation_type = static_cast<PlayerMutationType>(glm_ptr->choose_mut);
+        // 施設のサービスやデバッグ等で変異が指定されている場合
+        mutation_type = i2enum<PlayerMutationType>(*glm_ptr->choose_mut);
     } else if (pc.equals(PlayerClassType::BERSERKER)) {
         // バーサーカーは有害な変異を受けやすい
         mutation_type = MutationDataManager::get_random_mutation(2);

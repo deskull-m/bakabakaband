@@ -598,10 +598,10 @@ bool QuaffEffects::polymorph()
     auto ident = false;
     do {
         if (one_in_(2)) {
-            if (gain_mutation(this->creature, 0)) {
+            if (gain_mutation(this->creature)) {
                 ident = true;
             }
-        } else if (lose_mutation(this->creature, 0)) {
+        } else if (lose_mutation(this->creature)) {
             ident = true;
         }
     } while (!ident || one_in_(2));

@@ -13,6 +13,7 @@
 #include "system/deferred-update-requests.h"
 #include "system/item-entity.h"
 #include "util/bit-flags-calculator.h"
+#include "util/enum-converter.h"
 #include "view/display-messages.h"
 
 static void sweep_gain_mutation(CreatureEntity &creature, glm_type *gm_ptr)
@@ -36,7 +37,7 @@ static void sweep_gain_mutation(CreatureEntity &creature, glm_type *gm_ptr)
 
 static void race_dependent_mutation(CreatureEntity &creature, glm_type *gm_ptr)
 {
-    if (gm_ptr->choose_mut != 0) {
+    if (gm_ptr->choose_mut) {
         return;
     }
 
@@ -224,12 +225,17 @@ static void neutralize_other_status(CreatureEntity &creature, glm_type *gm_ptr)
 /*!
  * @brief プレイヤーに突然変異を与える
  * @param creature クリーチャーへの参照
- * @param choose_mut 与えたい突然変異のID、0ならばランダムに選択
+ * @param choose_mut 与えたい突然変異、tl::nullopt ならばランダムに選択
  */
-bool gain_mutation(CreatureEntity &creature, MUTATION_IDX choose_mut)
+bool gain_mutation(CreatureEntity &creature, tl::optional<PlayerMutationType> choose_mut)
 {
+    tl::optional<int> gain_id;
+    if (choose_mut) {
+        gain_id = enum2i(*choose_mut);
+    }
+
     glm_type tmp_gm;
-    glm_type *gm_ptr = initialize_glm_type(&tmp_gm, choose_mut);
+    glm_type *gm_ptr = initialize_glm_type(&tmp_gm, gain_id);
     sweep_gain_mutation(creature, gm_ptr);
     if (!gm_ptr->muta_chosen) {
         msg_print(_("普通になった気がする。", "You feel normal."));
@@ -286,12 +292,24 @@ static void sweep_lose_mutation(CreatureEntity &creature, glm_type *glm_ptr)
 /*!
  * @brief プレイヤーから突然変異を取り除く
  * @param creature クリーチャーへの参照
- * @param choose_mut 取り除きたい突然変異のID、0ならばランダムに消去
+ * @param choose_mut 取り除きたい突然変異、tl::nullopt ならばランダムに消去
+ * @details 喪失側の抽選表 (switch_lose_mutation) の番号体系は PlayerMutationType の
+ *          enum 値と一致しないため、指定があれば find_lose_mutation_case() で
+ *          case 番号へ変換してから渡す。当該クリーチャーでは取り除けない
+ *          突然変異 (いかさま師の白オーラ等) を指定した場合は false を返す。
  */
-bool lose_mutation(CreatureEntity &creature, MUTATION_IDX choose_mut)
+bool lose_mutation(CreatureEntity &creature, tl::optional<PlayerMutationType> choose_mut)
 {
+    tl::optional<int> lose_case;
+    if (choose_mut) {
+        lose_case = find_lose_mutation_case(creature, *choose_mut);
+        if (!lose_case) {
+            return false;
+        }
+    }
+
     glm_type tmp_glm;
-    glm_type *glm_ptr = initialize_glm_type(&tmp_glm, choose_mut);
+    glm_type *glm_ptr = initialize_glm_type(&tmp_glm, lose_case);
     sweep_lose_mutation(creature, glm_ptr);
     if (!glm_ptr->muta_chosen) {
         return false;

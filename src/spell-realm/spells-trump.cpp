@@ -2,6 +2,7 @@
 #include "avatar/avatar.h"
 #include "monster-floor/monster-summon.h"
 #include "monster-floor/place-monster-types.h"
+#include "mutation/mutation-flag-types.h"
 #include "mutation/mutation-investor-remover.h"
 #include "player-base/player-class.h"
 #include "spell-kind/earthquake.h"
@@ -234,7 +235,7 @@ void cast_shuffle(CreatureEntity &creature)
 void become_living_trump(CreatureEntity &creature)
 {
     /* 1/7 Teleport control and 6/7 Random teleportation (uncontrolled) */
-    MUTATION_IDX mutation = one_in_(7) ? 12 : 77;
+    const auto mutation = one_in_(7) ? PlayerMutationType::VTELEPORT : PlayerMutationType::RTELEPORT;
     if (gain_mutation(creature, mutation)) {
         msg_print(_("あなたは生きているカードに変わった。", "You have turned into a Living Trump."));
     }

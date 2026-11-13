@@ -131,7 +131,7 @@ static bool start_player_turn(CreatureEntity &creature)
 {
     if (creature.is_hack_mutation()) {
         msg_print(_("何か変わった気がする！", "You feel different!"));
-        (void)gain_mutation(creature, 0);
+        (void)gain_mutation(creature);
         creature.set_hack_mutation(false);
     }
 

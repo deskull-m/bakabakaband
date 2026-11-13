@@ -6,6 +6,7 @@
 #include "wizard/wizard-player-modifier.h"
 #include "core/asking-player.h"
 #include "io/input-key-requester.h"
+#include "mutation/mutation-flag-types.h"
 #include "mutation/mutation-investor-remover.h"
 #include "player-info/self-info.h"
 #include "spell/spells-status.h"
@@ -88,7 +89,8 @@ void wizard_player_modifier(CreatureEntity &creature)
         roll_hitdice(creature, i2enum<spell_operation>(SPOP_DISPLAY_MES | SPOP_DEBUG));
         break;
     case 'm':
-        (void)gain_mutation(creature, command_arg);
+        // 回数プレフィクスを突然変異IDとして使う。0 (プレフィクス無し) はランダム
+        (void)gain_mutation(creature, (command_arg > 0) && (command_arg < enum2i(PlayerMutationType::MAX)) ? tl::make_optional(i2enum<PlayerMutationType>(command_arg)) : tl::nullopt);
         break;
     case 'r':
         wiz_reset_race(creature);

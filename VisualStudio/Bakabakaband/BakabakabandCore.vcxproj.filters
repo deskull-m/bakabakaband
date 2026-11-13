@@ -607,6 +607,9 @@
     <ClCompile Include="..\..\src\market\building-monster.cpp">
       <Filter>market</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\market\building-mutation.cpp">
+      <Filter>market</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\src\market\building-enchanter.cpp">
       <Filter>market</Filter>
     </ClCompile>
@@ -3550,6 +3553,9 @@
       <Filter>market</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\market\building-monster.h">
+      <Filter>market</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\market\building-mutation.h">
       <Filter>market</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\market\building-enchanter.h">

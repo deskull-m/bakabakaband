@@ -374,7 +374,7 @@ void process_world_aux_mutation(CreatureEntity &creature)
     }
 
     if (creature.get_mutations().has(PlayerMutationType::NORMALITY) && one_in_(5000)) {
-        if (!lose_mutation(creature, 0)) {
+        if (!lose_mutation(creature)) {
             msg_print(_("奇妙なくらい普通になった気がする。", "You feel oddly normal."));
         }
     }

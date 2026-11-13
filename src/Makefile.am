@@ -897,6 +897,7 @@ libhengband_a_SOURCES = \
 	market/building-craft-armor.cpp market/building-craft-armor.h \
 	market/building-craft-fix.cpp market/building-craft-fix.h \
 	market/building-monster.cpp market/building-monster.h \
+	market/building-mutation.cpp market/building-mutation.h \
 	market/building-enchanter.cpp market/building-enchanter.h \
 	market/building-actions-table.h \
 	market/melee-arena.cpp market/melee-arena.h \

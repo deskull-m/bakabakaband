@@ -1,5 +1,7 @@
 #include "mutation/mutation-data.h"
 #include "player-base/player-class.h"
+#include "system/angband.h"
+#include <iterator>
 
 const MutationData MutationDataManager::mutation_table[] = {
     // 有益な変異 (0-31)
@@ -116,6 +118,131 @@ const MutationData MutationDataManager::mutation_table[] = {
     { PlayerMutationType::DESTROYED_ASSHOLE, "あなたの肛門は完全に破壊された！尻の穴に装備できなくなった。", "Your asshole has been completely destroyed! You can no longer equip items there.", 1 },
     { PlayerMutationType::LOST_HEAD, "あなたは頭部を失った！頭に装備できなくなった。", "You have lost your head! You can no longer equip items on your head.", 1 }
 };
+
+/*!
+ * @brief 突然変異の短い表示名の一覧 (PlayerMutationType の列挙順)
+ * @details 添字で引くので列挙順と完全に一致させること。enum に値を足したら
+ * ここにも足す (get_mutation_name() の static_assert が要素数の食い違いを検出する)。
+ */
+const MutationName MutationDataManager::mutation_name_table[] = {
+    { PlayerMutationType::SPIT_ACID, "酸の唾", "Spit Acid" },
+    { PlayerMutationType::BR_FIRE, "炎のブレス", "Breathe Fire" },
+    { PlayerMutationType::HYPN_GAZE, "催眠睨み", "Hypnotic Gaze" },
+    { PlayerMutationType::TELEKINES, "念動力", "Telekinesis" },
+    { PlayerMutationType::VTELEPORT, "テレポート", "Teleport" },
+    { PlayerMutationType::MIND_BLST, "精神攻撃", "Mind Blast" },
+    { PlayerMutationType::RADIATION, "放射能", "Emit Radiation" },
+    { PlayerMutationType::VAMPIRISM, "吸血", "Vampiric Drain" },
+    { PlayerMutationType::SMELL_MET, "金属嗅覚", "Smell Metal" },
+    { PlayerMutationType::SMELL_MON, "敵臭嗅覚", "Smell Monsters" },
+    { PlayerMutationType::BLINK, "ショート・テレポート", "Blink" },
+    { PlayerMutationType::EAT_ROCK, "岩喰い", "Eat Rock" },
+    { PlayerMutationType::SWAP_POS, "位置交換", "Swap Position" },
+    { PlayerMutationType::SHRIEK, "叫び", "Shriek" },
+    { PlayerMutationType::ILLUMINE, "照明", "Illuminate" },
+    { PlayerMutationType::DET_CURSE, "呪い感知", "Detect Curses" },
+    { PlayerMutationType::BERSERK, "狂戦士化", "Berserk" },
+    { PlayerMutationType::POLYMORPH, "変身", "Polymorph" },
+    { PlayerMutationType::MIDAS_TCH, "ミダスの手", "Midas Touch" },
+    { PlayerMutationType::GROW_MOLD, "カビ発生", "Grow Mold" },
+    { PlayerMutationType::RESIST, "エレメント耐性", "Resist Elements" },
+    { PlayerMutationType::EARTHQUAKE, "地震", "Earthquake" },
+    { PlayerMutationType::EAT_MAGIC, "魔力喰い", "Eat Magic" },
+    { PlayerMutationType::WEIGH_MAG, "魔力感知", "Weigh Magic" },
+    { PlayerMutationType::STERILITY, "増殖阻止", "Sterilize" },
+    { PlayerMutationType::HIT_AND_AWAY, "ヒットアンドアウェイ", "Panic Hit" },
+    { PlayerMutationType::DAZZLE, "眩惑", "Dazzle" },
+    { PlayerMutationType::LASER_EYE, "レーザー・アイ", "Laser Eye" },
+    { PlayerMutationType::RECALL, "帰還", "Recall" },
+    { PlayerMutationType::BANISH, "邪悪消滅", "Banish Evil" },
+    { PlayerMutationType::COLD_TOUCH, "凍結の手", "Cold Touch" },
+    { PlayerMutationType::LAUNCHER, "アイテム投げ", "Throw Object" },
+    { PlayerMutationType::BERS_RAGE, "狂戦士化の発作", "Berserk Fits" },
+    { PlayerMutationType::COWARDICE, "臆病", "Cowardice" },
+    { PlayerMutationType::RTELEPORT, "ランダムテレポート", "Random Teleport" },
+    { PlayerMutationType::ALCOHOL, "アルコール分泌", "Alcohol" },
+    { PlayerMutationType::HALLU, "幻覚", "Hallucination" },
+    { PlayerMutationType::FLATULENT, "猛烈な屁", "Flatulence" },
+    { PlayerMutationType::SCOR_TAIL, "サソリの尻尾", "Scorpion Tail" },
+    { PlayerMutationType::HORNS, "ツノ", "Horns" },
+    { PlayerMutationType::BEAK, "クチバシ", "Beak" },
+    { PlayerMutationType::ATT_DEMON, "デーモンを引き付ける", "Attract Demons" },
+    { PlayerMutationType::PROD_MANA, "制御できない魔力", "Produce Mana" },
+    { PlayerMutationType::SPEED_FLUX, "ランダムな加減速", "Speed Flux" },
+    { PlayerMutationType::BANISH_ALL, "ランダムなモンスター消滅", "Banish All" },
+    { PlayerMutationType::EAT_LIGHT, "光源喰い", "Eat Light" },
+    { PlayerMutationType::TRUNK, "象の鼻", "Trunk" },
+    { PlayerMutationType::ATT_ANIMAL, "動物を引き寄せる", "Attract Animals" },
+    { PlayerMutationType::TENTACLES, "邪悪な触手", "Evil Tentacles" },
+    { PlayerMutationType::RAW_CHAOS, "純カオス", "Raw Chaos" },
+    { PlayerMutationType::NORMALITY, "ランダムな変異の消滅", "Normality" },
+    { PlayerMutationType::WRAITH, "ランダムな幽体化", "Wraith Form" },
+    { PlayerMutationType::POLY_WOUND, "ランダムな傷の変化", "Polymorph Wounds" },
+    { PlayerMutationType::WASTING, "衰弱", "Wasting Disease" },
+    { PlayerMutationType::ATT_DRAGON, "ドラゴンを引き寄せる", "Attract Dragons" },
+    { PlayerMutationType::WEIRD_MIND, "ランダムなテレパシー", "Weird Mind" },
+    { PlayerMutationType::NAUSEA, "落ち着きの無い胃", "Nausea" },
+    { PlayerMutationType::CHAOS_GIFT, "パトロン", "Chaos Patron" },
+    { PlayerMutationType::WALK_SHAD, "ランダムな現実変容", "Walk Shadows" },
+    { PlayerMutationType::WARNING, "警告", "Warning" },
+    { PlayerMutationType::INVULN, "ランダムな無敵化", "Invulnerability Fits" },
+    { PlayerMutationType::SP_TO_HP, "ランダムなMPからHPへの変換", "Convert MP to HP" },
+    { PlayerMutationType::HP_TO_SP, "ランダムなHPからMPへの変換", "Convert HP to MP" },
+    { PlayerMutationType::DISARM, "ランダムな武器落とし", "Disarm Self" },
+    { PlayerMutationType::HYPER_STR, "超人的な力", "Hyper Strength" },
+    { PlayerMutationType::PUNY, "虚弱", "Puny" },
+    { PlayerMutationType::HYPER_INT, "生体コンピュータ", "Living Computer" },
+    { PlayerMutationType::MORONIC, "精神薄弱", "Moronic" },
+    { PlayerMutationType::RESILIENT, "弾力のある体", "Resilient Body" },
+    { PlayerMutationType::XTRA_FAT, "異常な肥満", "Extremely Fat" },
+    { PlayerMutationType::ALBINO, "アルビノ", "Albino" },
+    { PlayerMutationType::FLESH_ROT, "腐敗した肉体", "Rotting Flesh" },
+    { PlayerMutationType::SILLY_VOI, "間抜けなキーキー声", "Silly Voice" },
+    { PlayerMutationType::BLANK_FAC, "のっぺらぼう", "Blank Face" },
+    { PlayerMutationType::ILL_NORM, "幻影に覆われた体", "Illusion Normality" },
+    { PlayerMutationType::XTRA_EYES, "第三の目", "Extra Eyes" },
+    { PlayerMutationType::MAGIC_RES, "魔法防御", "Magic Resistance" },
+    { PlayerMutationType::XTRA_NOIS, "騒音", "Extra Noise" },
+    { PlayerMutationType::INFRAVIS, "赤外線視力", "Infravision" },
+    { PlayerMutationType::XTRA_LEGS, "追加の脚", "Extra Legs" },
+    { PlayerMutationType::SHORT_LEG, "短い脚", "Short Legs" },
+    { PlayerMutationType::ELEC_TOUC, "電撃オーラ", "Electric Aura" },
+    { PlayerMutationType::FIRE_BODY, "火炎オーラ", "Fiery Aura" },
+    { PlayerMutationType::WART_SKIN, "イボ肌", "Warty Skin" },
+    { PlayerMutationType::SCALES, "鱗肌", "Scaled Skin" },
+    { PlayerMutationType::IRON_SKIN, "鉄の肌", "Steel Skin" },
+    { PlayerMutationType::WINGS, "翼", "Wings" },
+    { PlayerMutationType::FEARLESS, "恐れ知らず", "Fearless" },
+    { PlayerMutationType::REGEN, "急回復", "Regeneration" },
+    { PlayerMutationType::ESP, "テレパシー", "Telepathy" },
+    { PlayerMutationType::LIMBER, "しなやかな肉体", "Limber Body" },
+    { PlayerMutationType::ARTHRITIS, "関節の痛み", "Arthritis" },
+    { PlayerMutationType::BAD_LUCK, "黒いオーラ(不運)", "Black Aura (Bad Luck)" },
+    { PlayerMutationType::VULN_ELEM, "元素攻撃弱点", "Elemental Vulnerability" },
+    { PlayerMutationType::MOTION, "正確で力強い動作", "Good Motion" },
+    { PlayerMutationType::GOOD_LUCK, "白いオーラ(幸運)", "White Aura (Good Luck)" },
+    { PlayerMutationType::DEFECATION, "脱糞癖", "Uncontrolled Defecation" },
+    { PlayerMutationType::ZEERO_VIRUS, "ゼEROウイルス感染", "ZEERO Virus" },
+    { PlayerMutationType::HOMO_SEXUAL, "同性愛", "Homosexuality" },
+    { PlayerMutationType::BI_SEXUAL, "両性愛", "Bisexuality" },
+    { PlayerMutationType::WEAK_LOWER_BODY, "貧弱な下半身", "Weak Lower Body" },
+    { PlayerMutationType::IKISUGI, "イキすぎ", "Excessive Climax" },
+    { PlayerMutationType::ATT_NASTY, "クッソ汚い輩を引きつける", "Attract Nasty Creatures" },
+    { PlayerMutationType::ATT_PERVERT, "変質者を引きつける", "Attract Perverts" },
+    { PlayerMutationType::DESTROYED_ASSHOLE, "肛門を完全破壊された", "Destroyed Asshole" },
+    { PlayerMutationType::LOST_HEAD, "頭部を失った", "Lost Head" },
+};
+
+/*!
+ * @brief 突然変異の短い表示名を返す
+ */
+const std::string &MutationDataManager::get_mutation_name(PlayerMutationType type)
+{
+    static_assert(std::size(mutation_name_table) == static_cast<size_t>(PlayerMutationType::MAX),
+        "mutation_name_table must cover every PlayerMutationType");
+    const auto &entry = mutation_name_table[static_cast<int>(type)];
+    return _(entry.name_jp, entry.name_en);
+}
 
 const MutationData &MutationDataManager::get_mutation_data(PlayerMutationType type)
 {

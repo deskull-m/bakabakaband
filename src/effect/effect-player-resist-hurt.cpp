@@ -258,7 +258,7 @@ void effect_player_chaos(CreatureEntity &creature, EffectPlayerType *ep_ptr)
         (void)bss.mod_hallucination(randnum1<short>(10));
         if (one_in_(3)) {
             msg_print(_("あなたの身体はカオスの力で捻じ曲げられた！", "Your body is twisted by chaos!"));
-            (void)gain_mutation(creature, 0);
+            (void)gain_mutation(creature);
         }
     }
     if (!creature.has_resist_neth() && !creature.has_resist_chaos()) {

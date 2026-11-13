@@ -2,10 +2,11 @@
 #include "mutation/mutation-flag-types.h"
 #include "mutation/mutation-util.h"
 #include "system/creature-entity.h"
+#include "term/z-rand.h"
 
 void switch_lose_mutation(CreatureEntity &creature, glm_type *glm_ptr)
 {
-    switch ((glm_ptr->choose_mut != 0) ? glm_ptr->choose_mut : randint1(205)) {
+    switch (glm_ptr->choose_mut.value_or(randint1(LOSE_MUTATION_RANDOM_CASE_MAX))) {
     case 1:
     case 2:
     case 3:
@@ -551,4 +552,43 @@ void switch_lose_mutation(CreatureEntity &creature, glm_type *glm_ptr)
         glm_ptr->muta_which = PlayerMutationType::MAX;
         break;
     }
+}
+
+/*!
+ * @brief 指定した突然変異を取り除く case 番号を返す
+ * @param creature クリーチャーへの参照
+ * @param type 取り除きたい突然変異
+ * @return 対応する case 番号 (最小のもの)。switch_lose_mutation() が当該
+ *         クリーチャーでは取り除けないと判断する場合は tl::nullopt
+ * @details 抽選表そのものを引き直して探すので、表と対応表が食い違う余地が無い。
+ *          choose_mut を指定した switch_lose_mutation() は乱数を一切消費しない。
+ *          サービス 1 回あたりの O(LOSE_MUTATION_CASE_MAX) 走査は無視できる。
+ */
+tl::optional<int> find_lose_mutation_case(CreatureEntity &creature, PlayerMutationType type)
+{
+    if (type == PlayerMutationType::MAX) {
+        return tl::nullopt;
+    }
+
+    for (auto i = 1; i <= LOSE_MUTATION_CASE_MAX; i++) {
+        glm_type tmp_glm;
+        auto *glm_ptr = initialize_glm_type(&tmp_glm, i);
+        switch_lose_mutation(creature, glm_ptr);
+        if (glm_ptr->muta_which == type) {
+            return i;
+        }
+    }
+
+    return tl::nullopt;
+}
+
+/*!
+ * @brief 指定した突然変異がランダムな治療で取り除けるかを返す
+ * @details ランダム治療は LOSE_MUTATION_RANDOM_CASE_MAX までしか抽選しないため、
+ *          それを超える番号の突然変異は何度振り直しても当たらない。
+ */
+bool can_lose_mutation_randomly(CreatureEntity &creature, PlayerMutationType type)
+{
+    const auto lose_case = find_lose_mutation_case(creature, type);
+    return lose_case && (*lose_case <= LOSE_MUTATION_RANDOM_CASE_MAX);
 }

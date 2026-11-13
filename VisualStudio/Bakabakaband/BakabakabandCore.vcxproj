@@ -657,6 +657,7 @@
     <ClCompile Include="..\..\src\market\building-craft-weapon.cpp" />
     <ClCompile Include="..\..\src\market\building-enchanter.cpp" />
     <ClCompile Include="..\..\src\market\building-monster.cpp" />
+    <ClCompile Include="..\..\src\market\building-mutation.cpp" />
     <ClCompile Include="..\..\src\market\building-quest.cpp" />
     <ClCompile Include="..\..\src\market\building-recharger.cpp" />
     <ClCompile Include="..\..\src\market\building-service.cpp" />
@@ -1643,6 +1644,7 @@
     <ClInclude Include="..\..\src\market\building-craft-weapon.h" />
     <ClInclude Include="..\..\src\market\building-enchanter.h" />
     <ClInclude Include="..\..\src\market\building-monster.h" />
+    <ClInclude Include="..\..\src\market\building-mutation.h" />
     <ClInclude Include="..\..\src\market\building-quest.h" />
     <ClInclude Include="..\..\src\market\building-recharger.h" />
     <ClInclude Include="..\..\src\market\building-service.h" />

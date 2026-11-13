@@ -36,6 +36,7 @@
 #include "market/building-craft-weapon.h"
 #include "market/building-enchanter.h"
 #include "market/building-monster.h"
+#include "market/building-mutation.h"
 #include "market/building-quest.h"
 #include "market/building-recharger.h"
 #include "market/building-service.h"
@@ -230,19 +231,40 @@ static bool bldg_process_command(CreatureEntity &creature, const building_type &
             muta.reset(PlayerMutationType::GOOD_LUCK);
         }
 
-        if (muta.any()) {
-            while (!lose_mutation(creature, 0)) {
-                ;
-            }
-
-            creature.sub_au(building_cost);
+        if (muta.none()) {
+            msg_print(_("治すべき突然変異が無い。", "You have no mutations."));
+            msg_erase();
             return false;
         }
 
-        msg_print(_("治すべき突然変異が無い。", "You have no mutations."));
-        msg_erase();
+        // ランダム治療は当たりが出るまで引き直すので、抽選表に載らない変異
+        // (貧弱な下半身 / 変質者を引きつける / 肛門破壊 / 頭部喪失) しか
+        // 持っていない状態で引くと無限ループになる。先に弾いておく
+        if (!has_randomly_curable_mutation(creature)) {
+            msg_print(_("ここでは治せない突然変異だけだ。", "Your mutations cannot be cured at random here."));
+            msg_erase();
+            return false;
+        }
+
+        while (!lose_mutation(creature)) {
+            ;
+        }
+
+        creature.sub_au(building_cost);
         return false;
     }
+    case BACT_GAIN_MUTATION:
+        if (gain_chosen_mutation(creature)) {
+            creature.sub_au(building_cost);
+        }
+
+        return false;
+    case BACT_LOSE_MUTATION_CHOICE:
+        if (lose_chosen_mutation(creature)) {
+            creature.sub_au(building_cost);
+        }
+
+        return false;
     case BACT_MELEE_ARENA:
         return melee_arena_comm(creature);
     case BACT_TSUCHINOKO:

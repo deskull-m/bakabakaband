@@ -1,8 +1,11 @@
 #pragma once
 
 #include "system/angband.h"
+#include <tl/optional.hpp>
 
 class CreatureEntity;
-bool gain_mutation(CreatureEntity &creature, MUTATION_IDX choose_mut);
-bool lose_mutation(CreatureEntity &creature, MUTATION_IDX choose_mut);
+enum class PlayerMutationType;
+
+bool gain_mutation(CreatureEntity &creature, tl::optional<PlayerMutationType> choose_mut = tl::nullopt);
+bool lose_mutation(CreatureEntity &creature, tl::optional<PlayerMutationType> choose_mut = tl::nullopt);
 void lose_all_mutations(CreatureEntity &creature);

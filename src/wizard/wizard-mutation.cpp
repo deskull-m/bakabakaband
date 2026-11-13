@@ -8,11 +8,13 @@
 #include "core/asking-player.h"
 #include "io/input-key-acceptor.h"
 #include "io/input-key-requester.h"
+#include "mutation/mutation-data.h"
 #include "mutation/mutation-flag-types.h"
 #include "mutation/mutation-investor-remover.h"
 #include "system/creature-entity.h"
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
+#include "util/enum-converter.h"
 #include "util/int-char-converter.h"
 #include "util/string-processor.h"
 #include "view/display-messages.h"
@@ -22,116 +24,6 @@
 #include <tuple>
 #include <utility>
 #include <vector>
-
-// Map mutation types to their Japanese names using actual enum values
-static const std::vector<std::pair<PlayerMutationType, std::string>> mutation_data = {
-    { PlayerMutationType::SPIT_ACID, "酸の唾" },
-    { PlayerMutationType::BR_FIRE, "炎のブレス" },
-    { PlayerMutationType::HYPN_GAZE, "催眠睨み" },
-    { PlayerMutationType::TELEKINES, "念動力" },
-    { PlayerMutationType::VTELEPORT, "テレポート" },
-    { PlayerMutationType::MIND_BLST, "精神攻撃" },
-    { PlayerMutationType::RADIATION, "放射能" },
-    { PlayerMutationType::VAMPIRISM, "吸血" },
-    { PlayerMutationType::SMELL_MET, "金属嗅覚" },
-    { PlayerMutationType::SMELL_MON, "敵臭嗅覚" },
-    { PlayerMutationType::BLINK, "ショート・テレポート" },
-    { PlayerMutationType::EAT_ROCK, "岩喰い" },
-    { PlayerMutationType::SWAP_POS, "位置交換" },
-    { PlayerMutationType::SHRIEK, "叫び" },
-    { PlayerMutationType::ILLUMINE, "照明" },
-    { PlayerMutationType::DET_CURSE, "呪い感知" },
-    { PlayerMutationType::BERSERK, "狂戦士化" },
-    { PlayerMutationType::POLYMORPH, "変身" },
-    { PlayerMutationType::MIDAS_TCH, "ミダスの手" },
-    { PlayerMutationType::GROW_MOLD, "カビ発生" },
-    { PlayerMutationType::RESIST, "エレメント耐性" },
-    { PlayerMutationType::EARTHQUAKE, "地震" },
-    { PlayerMutationType::EAT_MAGIC, "魔力喰い" },
-    { PlayerMutationType::WEIGH_MAG, "魔力感知" },
-    { PlayerMutationType::STERILITY, "増殖阻止" },
-    { PlayerMutationType::HIT_AND_AWAY, "ヒットアンドアウェイ" },
-    { PlayerMutationType::DAZZLE, "眩惑" },
-    { PlayerMutationType::LASER_EYE, "レーザー・アイ" },
-    { PlayerMutationType::RECALL, "帰還" },
-    { PlayerMutationType::BANISH, "邪悪消滅" },
-    { PlayerMutationType::COLD_TOUCH, "凍結の手" },
-    { PlayerMutationType::LAUNCHER, "アイテム投げ" },
-    { PlayerMutationType::BERS_RAGE, "狂戦士化の発作" },
-    { PlayerMutationType::COWARDICE, "臆病" },
-    { PlayerMutationType::RTELEPORT, "ランダムテレポート" },
-    { PlayerMutationType::ALCOHOL, "アルコール分泌" },
-    { PlayerMutationType::HALLU, "幻覚" },
-    { PlayerMutationType::FLATULENT, "猛烈な屁" },
-    { PlayerMutationType::SCOR_TAIL, "サソリの尻尾" },
-    { PlayerMutationType::HORNS, "ツノ" },
-    { PlayerMutationType::BEAK, "クチバシ" },
-    { PlayerMutationType::ATT_DEMON, "デーモンを引き付ける" },
-    { PlayerMutationType::PROD_MANA, "制御できない魔力" },
-    { PlayerMutationType::SPEED_FLUX, "ランダムな加減速" },
-    { PlayerMutationType::BANISH_ALL, "ランダムなモンスター消滅" },
-    { PlayerMutationType::EAT_LIGHT, "光源喰い" },
-    { PlayerMutationType::TRUNK, "象の鼻" },
-    { PlayerMutationType::ATT_ANIMAL, "動物を引き寄せる" },
-    { PlayerMutationType::TENTACLES, "邪悪な触手" },
-    { PlayerMutationType::RAW_CHAOS, "純カオス" },
-    { PlayerMutationType::NORMALITY, "ランダムな変異の消滅" },
-    { PlayerMutationType::WRAITH, "ランダムな幽体化" },
-    { PlayerMutationType::POLY_WOUND, "ランダムな傷の変化" },
-    { PlayerMutationType::WASTING, "衰弱" },
-    { PlayerMutationType::ATT_DRAGON, "ドラゴンを引き寄せる" },
-    { PlayerMutationType::WEIRD_MIND, "ランダムなテレパシー" },
-    { PlayerMutationType::NAUSEA, "落ち着きの無い胃" },
-    { PlayerMutationType::CHAOS_GIFT, "パトロン" },
-    { PlayerMutationType::WALK_SHAD, "ランダムな現実変容" },
-    { PlayerMutationType::WARNING, "警告" },
-    { PlayerMutationType::INVULN, "ランダムな無敵化" },
-    { PlayerMutationType::SP_TO_HP, "ランダムなMPからHPへの変換" },
-    { PlayerMutationType::HP_TO_SP, "ランダムなHPからMPへの変換" },
-    { PlayerMutationType::DISARM, "ランダムな武器落とし" },
-    { PlayerMutationType::HYPER_STR, "超人的な力" },
-    { PlayerMutationType::PUNY, "虚弱" },
-    { PlayerMutationType::HYPER_INT, "生体コンピュータ" },
-    { PlayerMutationType::MORONIC, "精神薄弱" },
-    { PlayerMutationType::RESILIENT, "弾力のある体" },
-    { PlayerMutationType::XTRA_FAT, "異常な肥満" },
-    { PlayerMutationType::ALBINO, "アルビノ" },
-    { PlayerMutationType::FLESH_ROT, "腐敗した肉体" },
-    { PlayerMutationType::SILLY_VOI, "間抜けなキーキー声" },
-    { PlayerMutationType::BLANK_FAC, "のっぺらぼう" },
-    { PlayerMutationType::ILL_NORM, "幻影に覆われた体" },
-    { PlayerMutationType::XTRA_EYES, "第三の目" },
-    { PlayerMutationType::MAGIC_RES, "魔法防御" },
-    { PlayerMutationType::XTRA_NOIS, "騒音" },
-    { PlayerMutationType::INFRAVIS, "赤外線視力" },
-    { PlayerMutationType::XTRA_LEGS, "追加の脚" },
-    { PlayerMutationType::SHORT_LEG, "短い脚" },
-    { PlayerMutationType::ELEC_TOUC, "電撃オーラ" },
-    { PlayerMutationType::FIRE_BODY, "火炎オーラ" },
-    { PlayerMutationType::WART_SKIN, "イボ肌" },
-    { PlayerMutationType::SCALES, "鱗肌" },
-    { PlayerMutationType::IRON_SKIN, "鉄の肌" },
-    { PlayerMutationType::WINGS, "翼" },
-    { PlayerMutationType::FEARLESS, "恐れ知らず" },
-    { PlayerMutationType::REGEN, "急回復" },
-    { PlayerMutationType::ESP, "テレパシー" },
-    { PlayerMutationType::LIMBER, "しなやかな肉体" },
-    { PlayerMutationType::ARTHRITIS, "関節の痛み" },
-    { PlayerMutationType::BAD_LUCK, "黒いオーラ(不運)" },
-    { PlayerMutationType::VULN_ELEM, "元素攻撃弱点" },
-    { PlayerMutationType::MOTION, "正確で力強い動作" },
-    { PlayerMutationType::GOOD_LUCK, "白いオーラ(幸運)" },
-    { PlayerMutationType::DEFECATION, "脱糞癖" },
-    { PlayerMutationType::ZEERO_VIRUS, "ゼEROウイルス感染" },
-    { PlayerMutationType::HOMO_SEXUAL, "同性愛" },
-    { PlayerMutationType::BI_SEXUAL, "両性愛" },
-    { PlayerMutationType::WEAK_LOWER_BODY, "貧弱な下半身" },
-    { PlayerMutationType::IKISUGI, "イキすぎ" },
-    { PlayerMutationType::ATT_NASTY, "クッソ汚い輩を引きつける" },
-    { PlayerMutationType::ATT_PERVERT, "変質者を引きつける" },
-    { PlayerMutationType::DESTROYED_ASSHOLE, "肛門を完全破壊された" },
-    { PlayerMutationType::LOST_HEAD, "頭部を失った" }
-};
 
 static void display_mutation_list()
 {
@@ -165,8 +57,9 @@ static void display_mutations_for_selection(CreatureEntity &creature)
     // Collect all mutations in a single list for compact display using actual enum values
     std::vector<std::tuple<int, std::string, bool>> all_mutations;
 
-    for (const auto &[muta_type, name] : mutation_data) {
-        const int id = static_cast<int>(muta_type);
+    for (auto id = 0; id < enum2i(PlayerMutationType::MAX); id++) {
+        const auto muta_type = i2enum<PlayerMutationType>(id);
+        const auto &name = MutationDataManager::get_mutation_name(muta_type);
         const bool present = creature.has_mutation(muta_type);
         all_mutations.emplace_back(id, name, present);
     }
@@ -244,10 +137,10 @@ void wiz_mutation_menu(CreatureEntity &creature)
         case 'G': {
             screen_save();
             display_mutations_for_selection(creature);
-            const auto mutation_id = input_numerics("獲得する突然変異ID", 0, static_cast<int>(PlayerMutationType::MAX) - 1, 0);
+            const auto mutation_id = input_numerics("獲得する突然変異ID", 0, enum2i(PlayerMutationType::MAX) - 1, 0);
             screen_load();
             if (mutation_id.has_value()) {
-                gain_mutation(creature, mutation_id.value());
+                gain_mutation(creature, i2enum<PlayerMutationType>(*mutation_id));
                 msg_print("突然変異を獲得しました。");
             }
             break;
@@ -257,10 +150,10 @@ void wiz_mutation_menu(CreatureEntity &creature)
         case 'L': {
             screen_save();
             display_mutations_for_selection(creature);
-            const auto mutation_id = input_numerics("喪失する突然変異ID", 0, static_cast<int>(PlayerMutationType::MAX) - 1, 0);
+            const auto mutation_id = input_numerics("喪失する突然変異ID", 0, enum2i(PlayerMutationType::MAX) - 1, 0);
             screen_load();
             if (mutation_id.has_value()) {
-                lose_mutation(creature, mutation_id.value());
+                lose_mutation(creature, i2enum<PlayerMutationType>(*mutation_id));
                 msg_print("突然変異を喪失しました。");
             }
             break;
@@ -268,8 +161,8 @@ void wiz_mutation_menu(CreatureEntity &creature)
 
         case 'a':
         case 'A': {
-            for (int i = 0; i < static_cast<int>(PlayerMutationType::MAX); i++) {
-                gain_mutation(creature, i);
+            for (auto i = 0; i < enum2i(PlayerMutationType::MAX); i++) {
+                gain_mutation(creature, i2enum<PlayerMutationType>(i));
             }
             msg_print("全ての突然変異を獲得しました。");
             break;

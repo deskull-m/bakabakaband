@@ -198,7 +198,7 @@ void Patron::gain_level_reward(CreatureEntity &creature, int chosen_reward)
 
     if (one_in_(6) && !chosen_reward) {
         msg_print(_("{}は褒美としてあなたを突然変異させた。", "{} rewards you with a mutation!"), str_upcase_first(this->name));
-        (void)gain_mutation(creature, 0);
+        (void)gain_mutation(creature);
         reward = _("変異した。", "mutation");
     } else {
         const auto &floor = *creature.get_floor();
