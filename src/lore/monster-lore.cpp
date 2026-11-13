@@ -450,6 +450,7 @@ void process_monster_lore(CreatureEntity &creature, MonraceId r_idx, monster_lor
     set_summon_types(lore_ptr);
     display_monster_magic_types(lore_ptr);
     display_mosnter_magic_possibility(lore_ptr);
+    display_monster_death_spells(lore_ptr);
     display_monster_hp_ac(lore_ptr);
 
     lore_ptr->lore_msgs.clear();

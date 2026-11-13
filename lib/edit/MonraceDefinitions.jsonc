@@ -2075,6 +2075,9 @@
         "list": ["SHRIEK"],
         "probability": "1_IN_4",
       },
+      "death_spells": [
+        { "ability": "SHRIEK", "probability": 100 },
+      ],
     },
     {
       "id": 41,

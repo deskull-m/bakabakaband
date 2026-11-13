@@ -690,6 +690,50 @@ ParseErrorType RaceReader::set_mon_death_random_artifact(const nlohmann::json &a
 }
 
 /*!
+ * @brief JSON Objectからモンスターの死亡時詠唱情報をセットする (Issue #6768)
+ * @param spells_data 死亡時詠唱情報の格納されたJSON Array
+ * @param monrace 保管先のモンスター種族構造体
+ * @return エラーコード
+ * @details 未指定・空なら死に際に何も唱えない。`ability` のトークンは通常の
+ *          `skill.list` と同じ `r_info_ability_flags` を引くので、両者で表記が
+ *          食い違うことはない。
+ */
+ParseErrorType RaceReader::set_mon_death_spells(const nlohmann::json &spells_data, MonraceDefinition &monrace)
+{
+    if (spells_data.is_null()) {
+        return ParseErrorType::NONE;
+    }
+    if (!spells_data.is_array()) {
+        return ParseErrorType::TOO_FEW_ARGUMENTS;
+    }
+
+    for (const auto &spell_data : spells_data) {
+        if (!spell_data.is_object()) {
+            return ParseErrorType::TOO_FEW_ARGUMENTS;
+        }
+
+        const auto &ability_str = spell_data["ability"];
+        if (ability_str.is_null() || !ability_str.is_string()) {
+            return ParseErrorType::TOO_FEW_ARGUMENTS;
+        }
+
+        const auto ability = r_info_ability_flags.find(ability_str.get<std::string>());
+        if (ability == r_info_ability_flags.end()) {
+            return ParseErrorType::INVALID_FLAG;
+        }
+
+        int probability{};
+        if (const auto err = info_set_integer(spell_data["probability"], probability, true, Range(1, 100)); !err) {
+            return err.error();
+        }
+
+        monrace.death_spells.push_back(MonraceDeathSpell{ ability->second, probability });
+    }
+
+    return ParseErrorType::NONE;
+}
+
+/*!
  * @brief JSON Objectからモンスターの護衛情報をセットする
  * @param escort_data 護衛情報の格納されたJSON Object
  * @param monrace 保管先のモンスター種族構造体
@@ -2098,6 +2142,12 @@ ParseErrorType RaceReader::read()
     err = set_mon_death_explosion(mon_data["death_explosion"], monrace);
     if (err != ParseErrorType::NONE) {
         msg_print(_("モンスター死亡時爆発情報読み込みに失敗しました。 : {}", "Failed to load monster death explosion info. : {}"), monrace.name);
+        return err;
+    }
+
+    err = set_mon_death_spells(mon_data["death_spells"], monrace);
+    if (err != ParseErrorType::NONE) {
+        msg_print(_("モンスター死亡時詠唱情報読み込みに失敗しました。 : {}", "Failed to load monster death spells info. : {}"), monrace.name);
         return err;
     }
 

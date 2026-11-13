@@ -468,6 +468,7 @@
     <ClCompile Include="..\..\src\racial\racial-kutar.cpp" />
     <ClCompile Include="..\..\src\mind\stances-table.cpp" />
     <ClCompile Include="..\..\src\mspell\mspell-dispel.cpp" />
+    <ClCompile Include="..\..\src\mspell\mspell-dying.cpp" />
     <ClCompile Include="..\..\src\mutation\mutation-techniques.cpp" />
     <ClCompile Include="..\..\src\artifact\random-art-pval-investor.cpp" />
     <ClCompile Include="..\..\src\object-hook\hook-expendable.cpp" />
@@ -1424,6 +1425,7 @@
     <ClInclude Include="..\..\src\mspell\monster-power-table.h" />
     <ClInclude Include="..\..\src\mspell\mspell-projection-table.h" />
     <ClInclude Include="..\..\src\mspell\mspell-dispel.h" />
+    <ClInclude Include="..\..\src\mspell\mspell-dying.h" />
     <ClInclude Include="..\..\src\mspell\mspell-checker.h" />
     <ClInclude Include="..\..\src\mspell\mspell-judgement.h" />
     <ClInclude Include="..\..\src\blue-magic\blue-magic-checker.h" />

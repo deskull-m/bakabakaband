@@ -177,6 +177,17 @@ public:
     int sval_min = 0; //!< 候補として許す最小 sval (0 で下限なし)
 };
 
+/*!
+ * @brief 死亡時詠唱の指定 (JSON キー `death_spells` の 1 エントリ) — Issue #6768
+ * @details 「死に際に最後の一手として魔法・特技を放つ」指定。各エントリは
+ * リスト順に独立して確率抽選される (artifacts と同じ扱い)。
+ */
+class MonraceDeathSpell {
+public:
+    MonsterAbilityType ability{}; //!< 放つ特技 (通常の詠唱と同じ MonsterAbilityType)
+    int probability = 0; //!< 発動確率 (%)
+};
+
 class DropArtifact {
 public:
     DropArtifact(FixedArtifactId fa_id, int chance, tl::optional<AttributeType> required_attribute = tl::nullopt);
@@ -482,6 +493,7 @@ public:
     std::vector<DropArtifact> drop_artifacts; //!< 特定アーティファクトドロップリスト
     tl::optional<MonraceDeathExplosion> death_explosion; //!< 死亡時爆発 (未指定なら爆発しない)
     tl::optional<MonraceDeathRandomArtifact> death_random_artifact; //!< 死亡時ランダムアーティファクト (未指定なら生成しない)
+    std::vector<MonraceDeathSpell> death_spells; //!< 死亡時詠唱リスト (空なら何も唱えない。Issue #6768)
 
     //!< @todo ここから先はミュータブルなフィールドなので分離すべき.
     bool has_entity() const;

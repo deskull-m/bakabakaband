@@ -2,6 +2,7 @@
 #include "lore/lore-calculator.h"
 #include "lore/lore-util.h"
 #include "monster-race/race-ability-flags.h"
+#include "mspell/monster-power-table.h"
 #include "system/monrace/monrace-definition.h"
 #include "term/term-color-types.h"
 #include "util/string-processor.h"
@@ -105,6 +106,48 @@ void display_mosnter_magic_possibility(lore_type *lore_ptr)
     }
 
     hooked_roff(_("。", ".  "));
+}
+
+/*!
+ * @brief モンスターの思い出に死亡時詠唱 (death_spells) を表示する — Issue #6768
+ * @param lore_ptr モンスターの思い出構造体への参照ポインタ
+ * @details 通常の詠唱 (`ability_flags`) とは独立のリストなので、思い出フラグでは
+ *          なく種族定義から直接出す。表示名は ものまね の `monster_powers` を
+ *          流用する (「害悪」「秘孔を突く」等、全特技に多言語の名前がある)。
+ *          一度でも倒していないと出ないのはドロップの思い出と同じ扱い。
+ */
+void display_monster_death_spells(lore_type *lore_ptr)
+{
+    const auto &death_spells = lore_ptr->monrace->death_spells;
+    if (death_spells.empty()) {
+        return;
+    }
+
+    if (!lore_ptr->know_everything && (lore_ptr->monrace->r_tkills == 0)) {
+        return;
+    }
+
+    hooked_roff(fmt::format(_("{}は倒されると、", "When defeated, {} casts "), str_upcase_first(Who::who(lore_ptr->msex))));
+
+    for (auto first = true; const auto &death_spell : death_spells) {
+        if (!first) {
+            hooked_roff(_("、", ", "));
+        }
+        first = false;
+
+        const auto power = monster_powers.find(death_spell.ability);
+        const auto *spell_name = (power != monster_powers.end()) ? power->second.name : _("何か", "something");
+        hooked_roff(spell_name);
+
+        // 確率 1/1 を「確率100%」と書くと冗長なので「必ず」にする。
+        if (death_spell.probability >= 100) {
+            hooked_roff(_("(必ず)", " (always)"));
+        } else {
+            hooked_roff(fmt::format(_("(確率{}%)", " ({}% chance)"), death_spell.probability));
+        }
+    }
+
+    hooked_roff(_("を唱える。", ".  "));
 }
 
 namespace {

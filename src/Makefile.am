@@ -1029,6 +1029,7 @@ libhengband_a_SOURCES = \
 	mspell/mspell-damage-calculator.cpp mspell/mspell-damage-calculator.h \
 	mspell/mspell-data.cpp mspell/mspell-data.h \
 	mspell/mspell-dispel.cpp mspell/mspell-dispel.h \
+	mspell/mspell-dying.cpp mspell/mspell-dying.h \
 	mspell/mspell-floor.cpp mspell/mspell-floor.h \
 	mspell/mspell-judgement.cpp mspell/mspell-judgement.h \
 	mspell/mspell-learn-checker.cpp mspell/mspell-learn-checker.h \

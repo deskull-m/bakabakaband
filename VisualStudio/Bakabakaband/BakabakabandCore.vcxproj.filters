@@ -1393,6 +1393,9 @@
     <ClCompile Include="..\..\src\mspell\mspell-dispel.cpp">
       <Filter>mspell</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\mspell\mspell-dying.cpp">
+      <Filter>mspell</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\src\status\shape-changer.cpp">
       <Filter>status</Filter>
     </ClCompile>
@@ -4513,6 +4516,9 @@
       <Filter>status</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\mspell\mspell-dispel.h">
+      <Filter>mspell</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\mspell\mspell-dying.h">
       <Filter>mspell</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\status\shape-changer.h">

@@ -27,6 +27,7 @@
 #include "monster/monster-list.h"
 #include "monster/monster-party.h"
 #include "monster/monster-rage.h"
+#include "mspell/mspell-dying.h"
 #include "object-enchant/item-apply-magic.h"
 #include "object-enchant/item-magic-applier.h"
 #include "pet/pet-fall-off.h"
@@ -419,6 +420,11 @@ void monster_death(CreatureEntity &creature, MONSTER_IDX m_idx, bool drop_item, 
     // [Issue #180] 植木鉢くん (UEKIBACHIKUN) が破壊されると周囲が激怒する。
     // md.m_ptr はこの時点でまだ有効なので、走査の除外対象に使える。
     enrage_monsters_by_broken_pot(creature, m_idx, killed_by_player);
+
+    // [Issue #6768] 死に際の詠唱。md.m_ptr はこの時点でまだ有効で自身のグリッドに
+    // 居るため、既存の mspell 経路 (ターゲットも射線判定も本人の位置基準) を
+    // そのまま使える。召喚を含むので、死体・ドロップを作る前に済ませる。
+    cast_dying_spells(creature, m_idx);
 
     on_dead_explosion(creature, &md);
     if (md.m_ptr->is_chameleon()) {

@@ -898,6 +898,30 @@
                             }
                         }
                     },
+                    "death_spells": {
+                        "type": "array",
+                        "description": "死亡時詠唱。死に際に一定確率で特技を放つ。各エントリはリスト順に独立して抽選される。未指定・空なら何も唱えない",
+                        "items": {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                                "ability",
+                                "probability"
+                            ],
+                            "properties": {
+                                "ability": {
+                                    "type": "string",
+                                    "description": "放つ特技。トークンは skill.list と同じ r_info_ability_flags (MonsterAbilityType の enum 名) を参照"
+                                },
+                                "probability": {
+                                    "type": "integer",
+                                    "description": "発動確率 (%)",
+                                    "minimum": 1,
+                                    "maximum": 100
+                                }
+                            }
+                        }
+                    },
                     "drops_sacred_treasures": {
                         "type": "boolean",
                         "description": "撃破者の性格が「なまけもの」のとき、未生成のナマケ装備 (三種の神器) を 1 つ落とすか。既定 false"
