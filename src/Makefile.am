@@ -955,6 +955,7 @@ libhengband_a_SOURCES = \
 	monster/monster-processor-util.cpp monster/monster-processor-util.h \
 	monster/monster-timed-effects.cpp monster/monster-timed-effects.h \
 	monster/monster-party.cpp monster/monster-party.h \
+	monster/monster-damage-aura.cpp monster/monster-damage-aura.h \
 	monster/monster-rage.cpp monster/monster-rage.h \
 	monster/monster-status.cpp monster/monster-status.h \
 	monster/monster-status-setter.cpp monster/monster-status-setter.h \

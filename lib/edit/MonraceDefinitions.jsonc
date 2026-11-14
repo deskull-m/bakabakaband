@@ -148605,6 +148605,11 @@
         "list": ["S_FAIRY"],
         "probability": "1_IN_6",
       },
+      "aura_damage": {
+        "attribute": "POIS",
+        "radius": 2,
+        "damage_dice": "1d4",
+      },
     },
     {
       "id": 2324,

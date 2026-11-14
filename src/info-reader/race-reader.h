@@ -45,6 +45,7 @@ private:
     ParseErrorType set_mon_death_explosion(const nlohmann::json &explosion_data, MonraceDefinition &monrace);
     ParseErrorType set_mon_death_random_artifact(const nlohmann::json &artifact_data, MonraceDefinition &monrace);
     ParseErrorType set_mon_death_spells(const nlohmann::json &spells_data, MonraceDefinition &monrace);
+    ParseErrorType set_mon_aura_damage(const nlohmann::json &aura_data, MonraceDefinition &monrace);
     ParseErrorType set_mon_escorts(nlohmann::json &escort_data, MonraceDefinition &monrace);
     ParseErrorType set_mon_blows(nlohmann::json &blow_data, MonraceDefinition &monrace);
     ParseErrorType set_mon_flags(const nlohmann::json &flag_data, MonraceDefinition &monrace);

@@ -412,6 +412,7 @@
     <ClCompile Include="..\..\src\monster-floor\special-death-switcher.cpp" />
     <ClCompile Include="..\..\src\monster-race\race-ability-mask.cpp" />
     <ClCompile Include="..\..\src\monster\monster-party.cpp" />
+    <ClCompile Include="..\..\src\monster\monster-damage-aura.cpp" />
     <ClCompile Include="..\..\src\monster\monster-rage.cpp" />
     <ClCompile Include="..\..\src\monster\monster-status-setter.cpp" />
     <ClCompile Include="..\..\src\mspell\element-resistance-checker.cpp" />
@@ -1366,6 +1367,7 @@
     <ClInclude Include="..\..\src\monster-race\race-ability-flags.h" />
     <ClInclude Include="..\..\src\monster-race\race-ability-mask.h" />
     <ClInclude Include="..\..\src\monster\monster-party.h" />
+    <ClInclude Include="..\..\src\monster\monster-damage-aura.h" />
     <ClInclude Include="..\..\src\monster\monster-rage.h" />
     <ClInclude Include="..\..\src\monster\monster-status-setter.h" />
     <ClInclude Include="..\..\src\mspell\element-resistance-checker.h" />

@@ -217,6 +217,25 @@ void display_monster_constitutions(lore_type *lore_ptr)
             fmt::format(_("{}を破壊すると、周囲のモンスターがその無残な姿に激怒する。", "Destroying {} enrages the monsters nearby at the pitiful remains.  "),
                 Who::who(lore_ptr->msex)));
     }
+
+    // [Issue #1676] 周囲継続ダメージのオーラ。属性名の多言語テーブルが無いため
+    // 属性は述べず、半径・威力・周期だけを伝える (属性は被弾時の表示で分かる)。
+    const auto &aura_damage = lore_ptr->monrace->aura_damage;
+    if (aura_damage && (lore_ptr->know_everything || (lore_ptr->monrace->r_tkills > 0))) {
+        const auto who = Who::who(lore_ptr->msex);
+        const auto dice = aura_damage->damage_dice.to_string();
+        if (aura_damage->interval <= 1) {
+            hook_c_roff(TERM_RED,
+                fmt::format(_("{0}は半径{1}マスの周囲へ絶えず{2}のダメージを放ち続ける。",
+                                "{0} constantly radiates {2} damage to everything within {1} squares.  "),
+                    who, aura_damage->radius, dice));
+        } else {
+            hook_c_roff(TERM_RED,
+                fmt::format(_("{0}は半径{1}マスの周囲へ{3}ターンごとに{2}のダメージを放つ。",
+                                "{0} radiates {2} damage to everything within {1} squares every {3} turns.  "),
+                    who, aura_damage->radius, dice, aura_damage->interval));
+        }
+    }
 }
 
 void display_monster_concrete_weakness(lore_type *lore_ptr)

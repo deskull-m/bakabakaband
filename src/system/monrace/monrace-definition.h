@@ -167,6 +167,19 @@ public:
 };
 
 /*!
+ * @brief 周囲へ継続的にダメージを与えるオーラの指定 (JSON キー `aura_damage`)
+ * @details Issue #1676 (MtG「苦花」) 由来。自身を中心とした半径内のプレイヤー・
+ * モンスターへ一定周期で属性ダメージを与え続ける。未指定なら何も起きない。
+ */
+class MonraceAuraDamage {
+public:
+    AttributeType attribute{}; //!< ダメージの属性
+    int radius = 0; //!< 効果半径
+    Dice damage_dice{}; //!< ダメージダイス
+    int interval = 1; //!< 発動周期 (TURNS_PER_TICK 単位。1 なら毎 tick)
+};
+
+/*!
  * @brief 死亡時ランダムアーティファクト生成の指定 (JSON キー `death_random_artifact`)
  * @details 旧 `on_dead_random_artifact()` を呼ぶ `case` 群をデータ化したもの。
  * 「指定種別の装備品を、まともな☆になるまで振り直して 1 個落とす」処理。
@@ -494,6 +507,7 @@ public:
     tl::optional<MonraceDeathExplosion> death_explosion; //!< 死亡時爆発 (未指定なら爆発しない)
     tl::optional<MonraceDeathRandomArtifact> death_random_artifact; //!< 死亡時ランダムアーティファクト (未指定なら生成しない)
     std::vector<MonraceDeathSpell> death_spells; //!< 死亡時詠唱リスト (空なら何も唱えない。Issue #6768)
+    tl::optional<MonraceAuraDamage> aura_damage; //!< 周囲への継続ダメージ (未指定なら何も起きない。Issue #1676)
 
     //!< @todo ここから先はミュータブルなフィールドなので分離すべき.
     bool has_entity() const;

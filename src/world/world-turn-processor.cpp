@@ -19,6 +19,7 @@
 #include "market/bounty.h"
 #include "monster-floor/monster-generator.h"
 #include "monster-floor/monster-summon.h"
+#include "monster/monster-damage-aura.h"
 #include "monster/monster-damage.h"
 #include "monster/monster-describer.h"
 #include "monster/monster-status.h"
@@ -129,6 +130,10 @@ void WorldTurnProcessor::process_world()
         const auto poison = monster.get_timed_effect(CreatureTimedEffect::POISON);
         monster.set_timed_effect(CreatureTimedEffect::POISON, static_cast<short>(poison - 1));
     }
+
+    // [Issue #1676] 周囲継続ダメージのオーラ。aura_damage 指定を持つ個体のみ
+    // 発動するため、既定では誰にも発火しない。
+    process_monster_damage_auras(this->creature);
 
     process_world_aux_sudden_attack(this->creature);
     process_alliance_recovery(this->creature);

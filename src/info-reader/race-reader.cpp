@@ -690,6 +690,54 @@ ParseErrorType RaceReader::set_mon_death_random_artifact(const nlohmann::json &a
 }
 
 /*!
+ * @brief JSON Objectからモンスターの周囲継続ダメージ情報をセットする (Issue #1676)
+ * @param aura_data 情報の格納されたJSON Object
+ * @param monrace 保管先のモンスター種族構造体
+ * @return エラーコード
+ * @details 未指定なら何も起きない。固定ダメージは `"Nd1"` と書く
+ *          (`rand_range(1, 1)` は乱数を消費しないので乱数列は変わらない)。
+ */
+ParseErrorType RaceReader::set_mon_aura_damage(const nlohmann::json &aura_data, MonraceDefinition &monrace)
+{
+    if (aura_data.is_null()) {
+        return ParseErrorType::NONE;
+    }
+    if (!aura_data.is_object()) {
+        return ParseErrorType::TOO_FEW_ARGUMENTS;
+    }
+
+    const auto &attribute_str = aura_data["attribute"];
+    if (attribute_str.is_null() || !attribute_str.is_string()) {
+        return ParseErrorType::TOO_FEW_ARGUMENTS;
+    }
+
+    const auto attribute = r_info_attribute.find(attribute_str.get<std::string>());
+    if (attribute == r_info_attribute.end()) {
+        return ParseErrorType::INVALID_FLAG;
+    }
+
+    int radius{};
+    if (const auto err = info_set_integer(aura_data["radius"], radius, true, Range(0, 20)); !err) {
+        return err.error();
+    }
+
+    Dice damage_dice;
+    if (const auto err = info_set_dice(aura_data["damage_dice"], damage_dice, true); !err) {
+        return err.error();
+    }
+
+    auto interval = 1;
+    if (aura_data.contains("interval")) {
+        if (const auto err = info_set_integer(aura_data["interval"], interval, true, Range(1, 1000)); !err) {
+            return err.error();
+        }
+    }
+
+    monrace.aura_damage = MonraceAuraDamage{ attribute->second, radius, damage_dice, interval };
+    return ParseErrorType::NONE;
+}
+
+/*!
  * @brief JSON Objectからモンスターの死亡時詠唱情報をセットする (Issue #6768)
  * @param spells_data 死亡時詠唱情報の格納されたJSON Array
  * @param monrace 保管先のモンスター種族構造体
@@ -2148,6 +2196,12 @@ ParseErrorType RaceReader::read()
     err = set_mon_death_spells(mon_data["death_spells"], monrace);
     if (err != ParseErrorType::NONE) {
         msg_print(_("モンスター死亡時詠唱情報読み込みに失敗しました。 : {}", "Failed to load monster death spells info. : {}"), monrace.name);
+        return err;
+    }
+
+    err = set_mon_aura_damage(mon_data["aura_damage"], monrace);
+    if (err != ParseErrorType::NONE) {
+        msg_print(_("モンスター周囲継続ダメージ情報読み込みに失敗しました。 : {}", "Failed to load monster aura damage info. : {}"), monrace.name);
         return err;
     }
 
