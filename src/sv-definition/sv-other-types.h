@@ -13,6 +13,7 @@ constexpr auto SV_SKELETON = 0;
 constexpr auto SV_CORPSE = 1;
 constexpr auto SV_SOUL = 2;
 constexpr auto SV_JUNK = 6;
+constexpr auto SV_SCALE = 7;
 
 /* The "sval" codes for TV_SHOT/TV_ARROW/TV_BOLT */
 constexpr auto SV_AMMO_LIGHT = 0; /* pebbles */

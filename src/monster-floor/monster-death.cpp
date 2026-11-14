@@ -139,7 +139,40 @@ static bool decide_leaving_corpse(const CreatureEntity &creature, const MonsterD
 }
 
 /*!
- * @brief 死体/骨/ソウル/がらくたを死体の中へ納める
+ * @brief 死体から剥ぎ取れる鱗の枚数を算出する
+ * @param monster 死亡したモンスターへの参照
+ * @param monrace その種族定義への参照
+ * @return 鱗の枚数 (最低 1 枚)
+ * @details 「ドラゴンの大きさに応じて」の大きさは 2 つの軸で決まる。
+ *          - **種族の大きさ**: 本データではドラゴンの体躯は種族レベルとよく相関する
+ *            (ベビー Lv9〜 / ヤング Lv25〜 / 古代 Lv38〜 / ワイアーム Lv54〜) ため、
+ *            レベルを体躯の近似として `SCALE_LEVEL_UNIT` ごとに 1 枚積む。
+ *          - **個体の体格**: 生成時に付く巨大/大型/小型フラグ
+ *            (`one_monster_placer.cpp`) で倍率を掛ける。ユニークには体格フラグが
+ *            付かないため種族レベルぶんのみとなる。
+ *          枚数の調整は本関数の 4 定数で行う。
+ */
+static int calc_scale_drop_number(const CreatureEntity &monster, const MonraceDefinition &monrace)
+{
+    constexpr auto SCALE_BASE_NUMBER = 1;
+    constexpr auto SCALE_LEVEL_UNIT = 10;
+    constexpr auto SCALE_HUGE_MULTIPLIER = 3;
+    constexpr auto SCALE_MAX_NUMBER = 99;
+
+    auto number = SCALE_BASE_NUMBER + monrace.level / SCALE_LEVEL_UNIT;
+    if (monster.is_huge()) {
+        number *= SCALE_HUGE_MULTIPLIER;
+    } else if (monster.is_large()) {
+        number = number * 3 / 2;
+    } else if (monster.is_small()) {
+        number /= 2;
+    }
+
+    return std::clamp(number, 1, SCALE_MAX_NUMBER);
+}
+
+/*!
+ * @brief 死体/骨/ソウル/がらくた/鱗を死体の中へ納める
  * @param corpse_idx 納める死体の添字。0 なら死体が無いので従来どおり床へ落とす
  * @details **床へ落とさず死体の所持品にする**のが本関数の要点 (Issue #9275 第 2 段)。
  *          死体 1 体につき遺物が床へ 1〜3 個増えるのを避けるためで、
@@ -204,6 +237,15 @@ static void store_monster_remains(CreatureEntity &creature, MonsterDeath *md_ptr
         ItemEntity item_junk({ ItemKindType::MONSTER_REMAINS, SV_JUNK });
         item_junk.pval = enum2i(monrace_id);
         deliver(item_junk);
+    }
+
+    // 鱗 (素材): ドラゴン等の鱗を持つ種族から、その大きさに応じた枚数を剥ぎ取れる。
+    // 死体を遺さない種族では本関数自体が呼ばれないため、鱗も得られない。
+    if (md_ptr->monrace->drop_flags.has(MonsterDropType::DROP_SCALE)) {
+        ItemEntity item_scale({ ItemKindType::MONSTER_REMAINS, SV_SCALE });
+        item_scale.pval = enum2i(monrace_id);
+        item_scale.number = calc_scale_drop_number(*md_ptr->m_ptr, *md_ptr->monrace);
+        deliver(item_scale);
     }
 }
 
