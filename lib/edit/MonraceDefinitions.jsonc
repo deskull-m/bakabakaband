@@ -2075,9 +2075,7 @@
         "list": ["SHRIEK"],
         "probability": "1_IN_4",
       },
-      "death_spells": [
-        { "ability": "SHRIEK", "probability": 100 },
-      ],
+      "death_spells": [{ "ability": "SHRIEK", "probability": 100 }],
     },
     {
       "id": 41,
@@ -126911,7 +126909,16 @@
       "flavor": {
         "ja": "それは種から育てた大切なものだ。あ（察し）",
       },
-      "flags": ["EMPTY_MIND", "NEVER_MOVE", "NO_CONF", "NO_SLEEP", "NO_FEAR", "RES_TELE", "NASTY", "UEKIBACHIKUN"],
+      "flags": [
+        "EMPTY_MIND",
+        "NEVER_MOVE",
+        "NO_CONF",
+        "NO_SLEEP",
+        "NO_FEAR",
+        "RES_TELE",
+        "NASTY",
+        "UEKIBACHIKUN",
+      ],
       "drop_kind": [
         {
           "id": 721,
