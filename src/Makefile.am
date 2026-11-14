@@ -1645,6 +1645,8 @@ hengband_test_SOURCES = \
 	\
 	test/game-option/test-runtime-arguments.cpp \
 	\
+	test/monster-floor/test-monster-corpse.cpp \
+	\
 	test/info-reader/test-ego-reader.cpp \
 	test/info-reader/test-general-parser.cpp \
 	test/info-reader/test-info-reader-util.cpp \
