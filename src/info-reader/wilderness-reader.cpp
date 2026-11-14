@@ -222,16 +222,24 @@ ParseErrorType WildernessReader::read_map(const nlohmann::json &map_data, int wi
     }
 
     const auto &layout_data = get_json_value(map_data, "layout");
-    if (!layout_data.is_array() || layout_data.empty() || layout_data.size() > static_cast<size_t>(height)) {
+    if (!layout_data.is_array() || layout_data.empty()) {
         return layout_data.is_null() ? ParseErrorType::TOO_FEW_ARGUMENTS : ParseErrorType::INVALID_VALUE;
+    }
+    // マップの大きさの範囲外 (荒野の高さを超える行数) は、クエスト地図と同じく範囲外エラーに統一する。
+    if (layout_data.size() > static_cast<size_t>(height)) {
+        return ParseErrorType::OUT_OF_BOUNDS;
     }
     for (const auto &row_data : layout_data) {
         if (!row_data.is_string()) {
             return ParseErrorType::INVALID_TYPE;
         }
         const auto &row = row_data.get_ref<const std::string &>();
-        if (row.empty() || row.size() > static_cast<size_t>(width)) {
+        // 空行は値エラーのまま、荒野の幅を超える行は範囲外エラーに統一する (幅の不一致は呼出側で値エラーとして扱う)。
+        if (row.empty()) {
             return ParseErrorType::INVALID_VALUE;
+        }
+        if (row.size() > static_cast<size_t>(width)) {
+            return ParseErrorType::OUT_OF_BOUNDS;
         }
         for (const auto symbol : row) {
             if (!defined_symbols[static_cast<unsigned char>(symbol)]) {
