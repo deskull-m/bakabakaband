@@ -15,11 +15,17 @@
  * | 2. 店の買い叩き・買取拒否 | 刻印付きの品は買取価格を割り引かれる。賞金首なら正業の店は買取拒否 | `price_item` / `store_sell` |
  * | 3. 賞金首化 | 略奪総額に応じた賞金首ランク。街の住人が敵対して生成される | `one_monster_placer` |
  * | 4. アライアンス敵対度上昇 | 略奪した相手のアライアンスの印象値が下がる | `Alliance::calc_impression_point_total` |
+ * | 5. 死体を漁る悪行 | 死体を漁るたびに名誉 (`Virtue::HONOUR`) が下がる | `rummage_corpses_here` |
+ *
+ * 系統 5 は「死体を漁る行為そのもの」に対する記録・処罰で、刻印の有無に依らない
+ * (無刻印の品しか持たない死体を漁っても記録される)。刻印付きの品を取り出した
+ * ぶんは系統 1〜4 が別に発火する。
  */
 
 #include <string>
 
 enum class AllianceType : int;
+enum class MonraceId : short;
 enum class StoreSaleType : int;
 class CreatureEntity;
 class ItemEntity;
@@ -37,8 +43,20 @@ constexpr auto INCIDENT_LOOT_PRESTIGE_LOST = "LOOT_NOTORIETY/PRESTIGE_LOST";
 constexpr auto INCIDENT_LOOT_STORE_REFUSED = "LOOT_NOTORIETY/STORE_REFUSED";
 //!< 到達した賞金首ランク (系統 3)
 constexpr auto INCIDENT_LOOT_BOUNTY_LEVEL = "LOOT_NOTORIETY/BOUNTY_LEVEL";
+//!< 死体を漁った累計回数 (系統 5)
+constexpr auto INCIDENT_RUMMAGE_CORPSE_COUNT = "LOOT_CORPSE";
+//!< 死体から取り出した累計個数 (系統 5)
+constexpr auto INCIDENT_RUMMAGE_CORPSE_ITEM = "LOOT_CORPSE/ITEM";
+//!< 死体を漁った累計回数 (死体の種族別、系統 5)。後続は MonraceId の数値
+constexpr auto INCIDENT_RUMMAGE_CORPSE_MONRACE_PREFIX = "LOOT_CORPSE/MONRACE/";
 
 void record_looted_rightful_property(CreatureEntity &creature, const ItemEntity &item, int number);
+void record_rummaging_corpse(CreatureEntity &creature, MonraceId monrace_id);
+void record_rummaged_corpse_item(CreatureEntity &creature, int number);
+
+int get_rummaged_corpse_count(const CreatureEntity &creature);
+int get_rummaged_corpse_item_count(const CreatureEntity &creature);
+std::string make_rummage_corpse_incident_id(MonraceId monrace_id);
 
 int get_looted_item_count(const CreatureEntity &creature);
 int get_looted_value(const CreatureEntity &creature);
