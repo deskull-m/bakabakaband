@@ -642,6 +642,7 @@
     <ClCompile Include="..\..\src\player-attack\blood-sucking-processor.cpp" />
     <ClCompile Include="..\..\src\object-enchant\vorpal-weapon.cpp" />
     <ClCompile Include="..\..\src\floor\floor-object.cpp" />
+    <ClCompile Include="..\..\src\inventory\corpse-rummage.cpp" />
     <ClCompile Include="..\..\src\inventory\inventory-damage.cpp" />
     <ClCompile Include="..\..\src\inventory\inventory-object.cpp" />
     <ClCompile Include="..\..\src\io\pref-file-expressor.cpp" />
@@ -1623,6 +1624,7 @@
     <ClInclude Include="..\..\src\combat\slaying.h" />
     <ClInclude Include="..\..\src\object-enchant\vorpal-weapon.h" />
     <ClInclude Include="..\..\src\floor\floor-object.h" />
+    <ClInclude Include="..\..\src\inventory\corpse-rummage.h" />
     <ClInclude Include="..\..\src\inventory\inventory-damage.h" />
     <ClInclude Include="..\..\src\inventory\inventory-object.h" />
     <ClInclude Include="..\..\src\io\pref-file-expressor.h" />
