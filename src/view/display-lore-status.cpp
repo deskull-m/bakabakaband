@@ -201,7 +201,7 @@ void display_monster_constitutions(lore_type *lore_ptr)
     }
 
     if (lore_ptr->behavior_flags.has(MonsterBehaviorType::TIMID)) {
-        hook_c_roff(TERM_VIOLET, _("%s^は臆病で常に逃走しようとする。", "%s^ is timid and always tries to flee.  "));
+        hook_c_roff(TERM_VIOLET, fmt::format(_("{}は臆病で常に逃走しようとする。", "{} is timid and always tries to flee.  "), str_upcase_first(Who::who(lore_ptr->msex))));
     }
 
     if (lore_ptr->misc_flags.has(MonsterMiscType::DIURNAL)) {
