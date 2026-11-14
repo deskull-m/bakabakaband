@@ -3737,12 +3737,13 @@ $65000 / ランク 3 に達する (= 正業の店が盗品を買わなくなる)
   (`level` と同じ整数、`maximum` 127)。実データはこの機能追加時点では未指定
   (バランス不変)。
 
-### モンスターの死体 (`MonsterCorpse` / `FloorType::corpses`) — Issue #9275 第 1〜2 段
+### モンスターの死体 (`MonsterCorpse` / `FloorType::corpses`) — Issue #9275 第 1〜3 段
 
 撃破のたびに所持品が床へ一斉放出され**床にアイテムが大量に散らばる**問題への対応として、
 「モンスターは死亡時に即削除せず、死んだ状態でフロアに遺し、プレイヤーは死体を
-漁って所持品を得る」形へ段階的に移行している。本節は**第 2 段 (死体を必ず遺し、
-遺物を死体の中へ納める)** までの記述。
+漁って所持品を得る」形へ段階的に移行している。本節は**第 3 段 (所持品を床へ撒かず
+死体へ封入する)** までの記述。**漁るコマンドは第 4 段で入るため、現状は死体の中の品を
+取り出す手段がまだ無い**。
 
 #### `m_list` に残さず専用コンテナへ退避する理由
 
@@ -3777,23 +3778,34 @@ $65000 / ランク 3 に達する (= 正業の店が盗品を買わなくなる)
 ```cpp
 md.leaves_corpse = decide_leaving_corpse(creature, &md);
 
-if (drop_item) {
+// 死体は「この時点の所持品」を複製して抱えるので、放出より先に作る
+const auto corpse_idx = md.leaves_corpse ? leave_monster_corpse(creature, m_idx) : 0;
+const auto keeps_inventory_in_corpse = corpse_idx > 0;
+
+// 死体を遺せた個体は床へ撒かない
+if (drop_item && !keeps_inventory_in_corpse) {
     md.m_ptr->drop_all_inventory(creature);
 }
 
-// 死体はこの時点の所持品を複製するため、放出より先に呼ぶと二重取りになる
+// drop_item が false の経路では従来どおり所持品は失われる
+if (keeps_inventory_in_corpse && !drop_item) {
+    floor.get_corpse(corpse_idx).body.discard_all_inventory();
+}
+
 if (md.leaves_corpse) {
-    const auto corpse_idx = leave_monster_corpse(creature, m_idx);
     store_monster_remains(creature, &md, corpse_idx);
 }
 ```
 
-- **`leave_monster_corpse()` は呼出時点の所持品をそのまま複製する** (`shared_ptr` ごと)。
-  第 3 段で `drop_all_inventory()` を止めて所持品を死体に残す設計なので、
-  **呼出位置を所持品放出より前へ動かしてはいけない** (動かすと床と死体の二重取りになる)。
+- **`leave_monster_corpse()` は呼出時点の所持品を複製する**。したがって
+  **死体の生成は床への放出より先**でなければならず、逆順にすると死体が空になる
+  (第 1〜2 段は逆順で、死体は空だった)。
 - 遺すかどうかは `decide_leaving_corpse()` が判定して
-  `MonsterDeath::leaves_corpse` に記録する。**判定とコンテナ生成の間に
-  所持品放出が挟まる**ため分けてある。
+  `MonsterDeath::leaves_corpse` に記録する。
+- **`MonsterCorpse` のコンストラクタは所持品を深くコピーする**。
+  `CreatureEntity` のコピーは `inventory` の `shared_ptr` を共有し、
+  `drop_all_inventory()` は `held.wipe()` で `ItemEntity` を**直接潰す**ため、
+  共有したままだとフォールバックで床へ放出した瞬間に死体の中身も消える。
 
 #### 死体を遺す条件 (第 2 段で変更)
 
@@ -3808,7 +3820,29 @@ if (md.leaves_corpse) {
 `DROP_CORPSE` 1,333 種 / `DROP_SKELETON` 739 種 (重複あり) が該当する。
 抽選へ戻したい場合は `decide_leaving_corpse()` の 1 箇所で済む。
 
-#### 遺物アイテム (死体/骨/ソウル/がらくた) は床へ落とさない
+#### 所持品は床へ撒かず死体の中に残す (第 3 段・本件の主目的)
+
+死体を遺せた個体は `drop_all_inventory()` を**呼ばない**。所持品は死体の中に残り、
+プレイヤーは死体を漁って取り出す (第 4 段)。
+
+| 条件 | 所持品の行き先 |
+|---|---|
+| 死体を遺せた (`corpse_idx > 0`) かつ `drop_item` が真 | **死体の中**。床には出ない |
+| 死体を遺さない種族 / 死体を作れなかった (`MAX_FLOOR_CORPSES` 到達) | 従来どおり**床へ放出** |
+| `drop_item` が偽 | **失われる** (死体は空のまま)。従来と同じ |
+
+- **`drop_item` が偽になるのは 3 経路**: 量子消失 (`quantum-effect.cpp`)・
+  魔法効果による死亡 (`effect-monster.cpp`)・モンスター同士の近接戦
+  (`melee-postprocess.cpp`)。ここで所持品を死体に残すと**モンスター同士の
+  同士討ちやクローンで装備を無限に収穫できてしまう**ため、
+  `discard_all_inventory()` で死体の中身を空にする
+  (遺物アイテムはその後で入れるので死体自体は残る)。
+- `drop_near()` を通らなくなるので**床の `o_list` 消費も減る**
+  (`MAX_FLOOR_ITEMS` = 4096 の圧迫が緩む)。
+- **自動拾い (autopick) は死体の中身に効かない**。床を経由しないため。
+  これは意図した結果 (散乱を減らす目的) だが、操作感が変わる点は注意。
+
+#### 遺物アイテム (死体/骨/ソウル/がらくた) も床へ落とさない
 
 `store_monster_remains()` が `MONSTER_REMAINS` の品を**死体の所持品として納める**
 (`corpse.body.store_item()`)。床へ落とすと死体 1 体につき遺物が 1〜3 個増え、
@@ -3869,6 +3903,8 @@ if (md.leaves_corpse) {
 | 死体の生成 (第 1 段) | ブルー・イーク 8 体撃破 → 死体 1 体 (当時の抽選 1/4 どおり) |
 | 死体の生成 (第 2 段) | ブルー・イーク 8 体撃破 → **死体 8 体**。各死体に遺物 1〜2 個 |
 | 遺物の届け先 | 撃破後の床の `MONSTER_REMAINS` が **0 個**、死体の中に計 10 個 |
+| 所持品の封入 (第 3 段) | 洞窟オーク 7 体撃破 → **床の装備品の増分 0 個**、死体 7 体の中に計 **63 個** (1 体あたり 8〜10 個)。従来はこの 63 個が全て床へ散らばっていた |
+| セーブ往復 (中身あり) | 死体 7 体 / 計 63 個が往復後も一致 |
 | 表示 | プレイヤーの隣のグリッドに `y` が出る (死体アイテムの `~` とは別のマス) |
 | セーブ往復 (v62) | 種族 ID・座標が保持される |
 | 後方互換 | v61 のセーブが新バイナリで読め、死体 0 件で始まる |
@@ -3876,8 +3912,11 @@ if (md.leaves_corpse) {
 
 #### 残りの段 (Issue #9275)
 
-第 3 段 = 所持品を床へ撒かず死体へ封入 / 第 4 段 = 漁るコマンドと UI /
-第 5 段 = インシデント記録と悪行化 / 第 6 段 = 腐敗・ガード確認・テスト。
+第 4 段 = 漁るコマンドと UI / 第 5 段 = インシデント記録と悪行化 /
+第 6 段 = 腐敗・ガード確認・テスト。
+
+**第 4 段が入るまでは死体の中の品を取り出せない**ので、死体を遺す種族からの
+戦利品が一時的に手に入らない状態になる点に注意 (段階的コミットの途中状態)。
 
 ### ダンジョンフロアの最大サイズ (`MAX_DUNGEON_HGT` / `MAX_DUNGEON_WID`)
 
