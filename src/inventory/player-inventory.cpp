@@ -14,6 +14,7 @@
 #include "game-option/input-options.h"
 #include "game-option/play-record-options.h"
 #include "game-option/text-display-options.h"
+#include "inventory/corpse-rummage.h"
 #include "inventory/inventory-object.h"
 #include "inventory/inventory-slot-types.h"
 #include "main/sound-definitions-table.h"
@@ -291,6 +292,10 @@ void carry(CreatureEntity &creature, bool pickup)
     }
 
     py_pickup_all_golds_on_floor(creature, grid);
+
+    // 足元に遺された死体を漁る。床のアイテムとは別経路なので easy_floor の
+    // 分岐より前に置き、どちらの設定でも同じ操作で漁れるようにする。
+    rummage_corpses_here(creature, pickup);
 
     if (easy_floor) {
         py_pickup_floor(creature, pickup);
