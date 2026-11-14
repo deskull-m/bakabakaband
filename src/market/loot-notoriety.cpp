@@ -6,6 +6,7 @@
 
 #include "market/loot-notoriety.h"
 #include "alliance/alliance.h"
+#include "avatar/avatar.h"
 #include "monster-race/race-wilderness-flags.h"
 #include "object/object-value.h"
 #include "system/creature-entity.h"
@@ -14,6 +15,7 @@
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
+#include "util/enum-converter.h"
 #include "view/display-messages.h"
 #include <algorithm>
 #include <cstdint>
@@ -60,6 +62,14 @@ constexpr auto LOOT_BOUNTY_LEVEL_MAX = 5;
  * @details ブラック・マーケットは例外で、賞金首でも盗品を買う。
  */
 constexpr auto LOOT_STORE_REFUSAL_BOUNTY_LEVEL = 1;
+
+/*!
+ * @brief 死体を 1 体漁るごとに下がる名誉の量 (系統 5)
+ * @details 死者の持ち物を剥ぐ行為に対する徳のペナルティ。1 品ごとではなく
+ *          「1 体の死体を漁り始めた時点」で 1 回だけ下げる (品数で際限なく
+ *          下がるのを避けるため)。
+ */
+constexpr auto RUMMAGE_CORPSE_HONOUR_PENALTY = 1;
 
 /*!
  * @brief 略奪 1 個あたりのアライアンス印象値ペナルティ (系統 4)
@@ -190,6 +200,52 @@ void record_looted_rightful_property(CreatureEntity &creature, const ItemEntity 
 
     apply_loot_prestige_penalty(creature, count_before, get_looted_item_count(creature));
     record_loot_bounty_level(creature, bounty_level_before);
+}
+
+/*!
+ * @brief 死体を漁ったことを記録し、悪行として名誉を下げる (系統 5)
+ * @param monrace_id 漁った死体の種族
+ * @details **刻印の有無に依らず記録する**。死者の持ち物を剥ぐ行為そのものを
+ *          悪行として扱うのが系統 5 の趣旨で、刻印付きの品を取り出したぶんは
+ *          `record_looted_rightful_property()` が別に処理する。
+ */
+void record_rummaging_corpse(CreatureEntity &creature, MonraceId monrace_id)
+{
+    add_incident_saturating(creature, INCIDENT_RUMMAGE_CORPSE_COUNT, 1);
+    add_incident_saturating(creature, make_rummage_corpse_incident_id(monrace_id), 1);
+    chg_virtue(creature, Virtue::HONOUR, -RUMMAGE_CORPSE_HONOUR_PENALTY);
+}
+
+/*!
+ * @brief 死体から品を取り出したことを記録する (系統 5)
+ */
+void record_rummaged_corpse_item(CreatureEntity &creature, int number)
+{
+    add_incident_saturating(creature, INCIDENT_RUMMAGE_CORPSE_ITEM, std::max(1, number));
+}
+
+/*!
+ * @brief 死体を漁った累計回数を返す
+ */
+int get_rummaged_corpse_count(const CreatureEntity &creature)
+{
+    return peek_incident(creature, INCIDENT_RUMMAGE_CORPSE_COUNT);
+}
+
+/*!
+ * @brief 死体から取り出した累計個数を返す
+ */
+int get_rummaged_corpse_item_count(const CreatureEntity &creature)
+{
+    return peek_incident(creature, INCIDENT_RUMMAGE_CORPSE_ITEM);
+}
+
+/*!
+ * @brief 死体の種族別インシデント ID を組む
+ */
+std::string make_rummage_corpse_incident_id(MonraceId monrace_id)
+{
+    return std::string(INCIDENT_RUMMAGE_CORPSE_MONRACE_PREFIX) + std::to_string(enum2i(monrace_id));
 }
 
 /*!
