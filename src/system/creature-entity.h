@@ -1114,6 +1114,13 @@ public:
     void drop_all_inventory(CreatureEntity &dropper);
 
     /*!
+     * @brief 所持品を床へ出さずに全て捨てる
+     * @details inventory[] の各アイテムを wipe するだけ。死体に所持品を残さない
+     *          経路 (従来から所持品が失われるケース) で使う。
+     */
+    void discard_all_inventory();
+
+    /*!
      * @brief クリーチャーのマップ上視認状態を設定する
      * @param value 視認状態
      * @details モンスターのみ意味を持つ。プレイヤーには無効。

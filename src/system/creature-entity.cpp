@@ -769,6 +769,21 @@ void CreatureEntity::drop_all_inventory(CreatureEntity &dropper)
     }
 }
 
+/*!
+ * @brief 所持品を床へ出さずに全て捨てる
+ * @details 死体に所持品を残さない経路 (モンスター同士の戦闘・量子消失・闘技場等、
+ *          従来から所持品が失われるケース) のために用意した
+ *          (`drop_all_inventory()` の床へ出さない版)。
+ */
+void CreatureEntity::discard_all_inventory()
+{
+    for (auto &item_ptr : this->inventory) {
+        if (item_ptr) {
+            item_ptr->wipe();
+        }
+    }
+}
+
 short CreatureEntity::get_inven_cnt() const
 {
     short cnt = 0;

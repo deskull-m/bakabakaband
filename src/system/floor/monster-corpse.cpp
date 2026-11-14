@@ -1,5 +1,6 @@
 #include "system/floor/monster-corpse.h"
 #include "locale/language-switcher.h"
+#include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
 #include <fmt/format.h>
@@ -26,6 +27,15 @@ MonsterCorpse::MonsterCorpse()
 MonsterCorpse::MonsterCorpse(const CreatureEntity &monster)
     : body(monster)
 {
+    // CreatureEntity のコピーは inventory の shared_ptr を共有するため、
+    // **実体を複製して共有を切る**。これを怠ると、モンスター側の
+    // drop_all_inventory() が held.wipe() で ItemEntity を直接潰すので、
+    // 死体の中身まで一緒に消える。
+    for (auto &item_ptr : this->body.inventory) {
+        if (item_ptr) {
+            item_ptr = std::make_shared<ItemEntity>(item_ptr->clone());
+        }
+    }
 }
 
 /*!
