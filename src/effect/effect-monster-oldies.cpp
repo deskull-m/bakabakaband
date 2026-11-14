@@ -2,6 +2,8 @@
 #include "avatar/avatar.h"
 #include "effect/effect-monster-util.h"
 #include "monster-floor/monster-generator.h"
+#include "monster/monster-describer.h"
+#include "monster/monster-description-types.h"
 #include "monster/monster-info.h"
 #include "monster/monster-status-setter.h"
 #include "monster/monster-status.h"
@@ -123,30 +125,44 @@ static void effect_monster_old_heal_check_player(CreatureEntity &creature, Effec
     }
 }
 
-static void effect_monster_old_heal_recovery(CreatureEntity &creature, EffectMonster *em_ptr)
+/*!
+ * @brief 回復モンスター (OLD_HEAL) による状態異常の回復をモンスター 1 体へ適用する
+ * @param creature 視点となるクリーチャーへの参照
+ * @param m_idx 回復するモンスターのID
+ * @param show_msg 回復のメッセージを表示するか (視認している場合のみ真を渡す)
+ * @details
+ * 朦朧・混乱・恐怖を解く。HPの回復は呼出側が行う。
+ * effect_monster_old_heal() と、ボール形で同じ効果を撒くモンスター魔法
+ * 「システムリカバー」(spell_RF6_SYSTEM_RECOVER) が自分自身へ適用する分で共用する。
+ */
+void recover_monster_by_heal(CreatureEntity &creature, MONSTER_IDX m_idx, bool show_msg)
 {
-    if (em_ptr->m_ptr->get_remaining_stun()) {
-        if (em_ptr->seen_msg) {
-            msg_print(_("{}は朦朧状態から立ち直った。", "{} is no longer stunned."), str_upcase_first(em_ptr->m_name));
+    auto &floor = *creature.get_floor();
+    auto &monster = floor.get_monster(m_idx);
+    const auto m_name = monster_desc(creature, monster, 0);
+    if (monster.get_remaining_stun()) {
+        if (show_msg) {
+            msg_print(_("{}は朦朧状態から立ち直った。", "{} is no longer stunned."), str_upcase_first(m_name));
         }
 
-        (void)set_monster_stunned(*creature.get_floor(), em_ptr->g_ptr->m_idx, 0);
+        (void)set_monster_stunned(floor, m_idx, 0);
     }
 
-    if (em_ptr->m_ptr->is_confused()) {
-        if (em_ptr->seen_msg) {
-            msg_print(_("{}は混乱から立ち直った。", "{} is no longer confused."), str_upcase_first(em_ptr->m_name));
+    if (monster.is_confused()) {
+        if (show_msg) {
+            msg_print(_("{}は混乱から立ち直った。", "{} is no longer confused."), str_upcase_first(m_name));
         }
 
-        (void)set_monster_confused(*creature.get_floor(), em_ptr->g_ptr->m_idx, 0);
+        (void)set_monster_confused(floor, m_idx, 0);
     }
 
-    if (em_ptr->m_ptr->is_fearful()) {
-        if (em_ptr->seen_msg) {
-            msg_print(_("{}は勇気を取り戻した。", "{} recovers {} courage."), str_upcase_first(em_ptr->m_name), em_ptr->m_poss);
+    if (monster.is_fearful()) {
+        if (show_msg) {
+            const auto m_poss = monster_desc(creature, monster, MD_PRON_VISIBLE | MD_POSSESSIVE);
+            msg_print(_("{}は勇気を取り戻した。", "{} recovers {} courage."), str_upcase_first(m_name), m_poss);
         }
 
-        (void)set_monster_monfear(*creature.get_floor(), em_ptr->g_ptr->m_idx, 0);
+        (void)set_monster_monfear(floor, m_idx, 0);
     }
 }
 
@@ -158,7 +174,7 @@ ProcessResult effect_monster_old_heal(CreatureEntity &creature, EffectMonster *e
 
     /* Wake up */
     (void)set_monster_csleep(*creature.get_floor(), em_ptr->g_ptr->m_idx, 0);
-    effect_monster_old_heal_recovery(creature, em_ptr);
+    recover_monster_by_heal(creature, em_ptr->g_ptr->m_idx, em_ptr->seen_msg);
     if (em_ptr->m_ptr->hp < MONSTER_MAXHP) {
         em_ptr->m_ptr->hp += em_ptr->dam;
     }

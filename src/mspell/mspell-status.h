@@ -50,5 +50,14 @@ MonsterSpellResult spell_RF5_HOLD(MONSTER_IDX m_idx, CreatureEntity &creature, M
 MonsterSpellResult spell_RF6_HASTE(CreatureEntity &creature, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type);
 MonsterSpellResult spell_RF5_SLOW(MONSTER_IDX m_idx, CreatureEntity &creature, MONSTER_IDX t_idx, int target_type);
 MonsterSpellResult spell_RF6_HEAL(CreatureEntity &creature, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type);
+
+/*!
+ * @brief システムリカバーのボールの半径
+ * @details 「自身と周囲 1 マス」を表す。詠唱者 (モンスター)・ものまね・青魔法の全経路で共用する。
+ */
+constexpr POSITION SYSTEM_RECOVER_RADIUS = 1;
+
+void fire_system_recover_ball(CreatureEntity &creature, MONSTER_IDX src_idx, POSITION y, POSITION x, int heal);
+MonsterSpellResult spell_RF6_SYSTEM_RECOVER(CreatureEntity &creature, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type);
 MonsterSpellResult spell_RF6_INVULNER(CreatureEntity &creature, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type);
 MonsterSpellResult spell_RF6_FORGET(CreatureEntity &creature, MONSTER_IDX m_idx);

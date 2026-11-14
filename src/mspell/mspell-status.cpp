@@ -9,6 +9,8 @@
 #include "blue-magic/blue-magic-checker.h"
 #include "core/disturbance.h"
 #include "effect/attribute-types.h"
+#include "effect/effect-characteristics.h"
+#include "effect/effect-monster-oldies.h"
 #include "effect/effect-processor.h"
 #include "mind/drs-types.h"
 #include "monster-race/race-ability-flags.h"
@@ -609,6 +611,84 @@ MonsterSpellResult spell_RF6_HEAL(CreatureEntity &creature, MONSTER_IDX m_idx, M
         msg_print(_("{}は勇気を取り戻した。", "{} recovers {} courage."), str_upcase_first(m_name), m_poss);
     }
 
+    return res;
+}
+
+namespace {
+/*!
+ * @brief システムリカバーの 1 レベルあたりの回復量
+ * @details 自己回復の基準値。体力回復 (spell_RF6_HEAL) の 6 に対し、周囲も巻き込む分
+ * 控えめにしてある。バランス調整はこの定数で行う。
+ */
+constexpr auto SYSTEM_RECOVER_HEAL_PER_LEVEL = 3;
+}
+
+void fire_system_recover_ball(CreatureEntity &creature, MONSTER_IDX src_idx, POSITION y, POSITION x, int heal)
+{
+    // PROJECT_JUMP で射線を作らず、中心 (詠唱者自身のマス) で直に炸裂させる。
+    // PROJECT_NO_PLAYER でプレイヤーを対象から外す: 敵の支援魔法がプレイヤーへの回復に
+    // なってしまうと、本魔法が意図する「支援機を先に潰す」戦術が逆転してしまう
+    // (実測で Lv42 の個体に隣接していると 1 詠唱あたり 63 も回復していた)。
+    // 詠唱者自身の回復は呼出側が直接行う (ボールは中心のマスに居る発生源を除外するため)。
+    constexpr BIT_FLAGS flags = PROJECT_KILL | PROJECT_JUMP | PROJECT_NO_PLAYER;
+    (void)project(creature, src_idx, SYSTEM_RECOVER_RADIUS, y, x, heal, AttributeType::OLD_HEAL, flags);
+}
+
+/*!
+ * @brief RF6_SYSTEM_RECOVERの処理。システムリカバー。 /
+ * @param creature クリーチャーへの参照
+ * @param m_idx 呪文を唱えるモンスターID
+ * @param t_idx 呪文を受けるモンスターID。プレイヤーの場合はdummyで0とする。
+ * @param target_type プレイヤーを対象とする場合MONSTER_TO_PLAYER、モンスターを対象とする場合MONSTER_TO_MONSTER
+ *
+ * @details
+ * 自身を回復した上で、回復モンスター (AttributeType::OLD_HEAL) の効果を自分のマスを中心とした
+ * 半径 SYSTEM_RECOVER_RADIUS のボールで撒く。ボールは詠唱者自身のマスを含むが
+ * is_affective() が「効果の発生源と同じモンスター」を除外するため、自己回復は本関数が直接行う。
+ *
+ * ラーニング不可。
+ */
+MonsterSpellResult spell_RF6_SYSTEM_RECOVER(CreatureEntity &creature, MONSTER_IDX m_idx, MONSTER_IDX t_idx, int target_type)
+{
+    const auto res = MonsterSpellResult::make_valid();
+
+    auto &floor = *creature.get_floor();
+    auto &monster = floor.get_monster(m_idx);
+    const auto rlev = monster_level_idx(floor, m_idx);
+    const auto is_blind = creature.is_blind();
+    const auto seen = (!is_blind && monster.is_visible_on_map());
+
+    mspell_cast_msg msg;
+    msg.to_player_true = _("{}が低い駆動音を響かせた。", "{} emits a low humming sound.");
+    msg.to_mons_true = _("{}が低い駆動音を響かせた。", "{} emits a low humming sound.");
+    msg.to_player_false = _("{}はシステムリカバーを実行した。", "{} executes System Recover.");
+    msg.to_mons_false = _("{}はシステムリカバーを実行した。", "{} executes System Recover.");
+    monspell_message_base(creature, m_idx, t_idx, msg, is_blind, target_type);
+
+    const auto heal = rlev * SYSTEM_RECOVER_HEAL_PER_LEVEL;
+    recover_monster_by_heal(creature, m_idx, seen);
+    monster.hp += heal;
+    if (monster.hp >= monster.maxhp) {
+        monster.hp = monster.maxhp;
+
+        msg.to_player_true = _("{}は完全に修復されたようだ！", "{} sounds completely repaired!");
+        msg.to_mons_true = _("{}は完全に修復されたようだ！", "{} sounds completely repaired!");
+        msg.to_player_false = _("{}は完全に修復された！", "{} looks completely repaired!");
+        msg.to_mons_false = _("{}は完全に修復された！", "{} looks completely repaired!");
+    } else {
+        msg.to_player_true = _("{}は自己修復したようだ。", "{} sounds repaired.");
+        msg.to_mons_true = _("{}は自己修復したようだ。", "{} sounds repaired.");
+        msg.to_player_false = _("{}は自己修復した。", "{} looks repaired.");
+        msg.to_mons_false = _("{}は自己修復した。", "{} looks repaired.");
+    }
+
+    monspell_message_base(creature, m_idx, t_idx, msg, !seen, target_type);
+    HealthBarTracker::get_instance().set_flag_if_tracking(m_idx);
+    if (monster.is_riding()) {
+        DeferredUpdateRequests::get_instance().set_flag(MainWindowRedrawingFlag::UHEALTH);
+    }
+
+    fire_system_recover_ball(creature, m_idx, monster.y, monster.x, heal);
     return res;
 }
 

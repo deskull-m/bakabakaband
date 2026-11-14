@@ -315,6 +315,10 @@ void set_status_types(lore_type *lore_ptr)
         lore_ptr->lore_msgs.emplace_back(_("治癒", "heal-self"), TERM_WHITE);
     }
 
+    if (lore_ptr->ability_flags.has(MonsterAbilityType::SYSTEM_RECOVER)) {
+        lore_ptr->lore_msgs.emplace_back(_("システムリカバー", "system recover"), TERM_WHITE);
+    }
+
     if (lore_ptr->ability_flags.has(MonsterAbilityType::INVULNER)) {
         lore_ptr->lore_msgs.emplace_back(_("無敵化", "make invulnerable"), TERM_WHITE);
     }

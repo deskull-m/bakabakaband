@@ -388,7 +388,7 @@ bool check_melee_spell_set(CreatureEntity &creature, melee_spell_type *ms_ptr)
     check_stupid(ms_ptr);
     check_arena(*creature.get_floor(), ms_ptr);
     if (AngbandSystem::get_instance().is_phase_out() && !one_in_(3)) {
-        ms_ptr->ability_flags.reset(MonsterAbilityType::HEAL);
+        ms_ptr->ability_flags.reset({ MonsterAbilityType::HEAL, MonsterAbilityType::SYSTEM_RECOVER });
     }
 
     check_riding(ms_ptr);

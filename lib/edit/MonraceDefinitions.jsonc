@@ -127302,6 +127302,10 @@
         "NONLIVING",
         "BREAK_DOWN",
       ],
+      "skill": {
+        "list": ["SYSTEM_RECOVER"],
+        "probability": "1_IN_4",
+      },
     },
     {
       "id": 1983,

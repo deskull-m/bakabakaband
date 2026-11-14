@@ -118,6 +118,8 @@ std::string learnt_info(CreatureEntity &creature, MonsterAbilityType power)
         return fmt::format(" {}d{}+{}", KWD_DURATION, 20 + plev, plev);
     case MonsterAbilityType::HEAL:
         return set_bluemage_damage(creature, power, plev, KWD_HEAL);
+    case MonsterAbilityType::SYSTEM_RECOVER:
+        return fmt::format(" {}{}", KWD_HEAL, plev * 2);
     case MonsterAbilityType::INVULNER:
         return fmt::format(" {}d7+7", KWD_DURATION);
     case MonsterAbilityType::BLINK:

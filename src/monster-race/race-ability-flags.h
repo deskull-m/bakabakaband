@@ -127,5 +127,6 @@ enum class MonsterAbilityType {
     S_ELDRAZI = 121, /* Summon Eldrazi */
     S_ROBOT = 122, /* Summon Robot */
     VITAL_SPOT = 123, /*!< モンスター能力: 秘孔を突く / Press Vital Spot */
+    SYSTEM_RECOVER = 124, /*!< モンスター能力: システムリカバー / System Recover (heal self and adjacent) */
     MAX,
 };

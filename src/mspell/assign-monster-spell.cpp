@@ -146,6 +146,7 @@ static MonsterSpellResult monspell_to_player_impl(CreatureEntity &creature, Mons
     case MonsterAbilityType::HASTE: return spell_RF6_HASTE(creature, m_idx, 0, MONSTER_TO_PLAYER); /* RF6_HASTE */
     case MonsterAbilityType::HAND_DOOM: return spell_RF6_HAND_DOOM(creature, y, x, m_idx, 0, MONSTER_TO_PLAYER); /* RF6_HAND_DOOM */
     case MonsterAbilityType::HEAL: return spell_RF6_HEAL(creature, m_idx, 0, MONSTER_TO_PLAYER); /* RF6_HEAL */
+    case MonsterAbilityType::SYSTEM_RECOVER: return spell_RF6_SYSTEM_RECOVER(creature, m_idx, 0, MONSTER_TO_PLAYER); /* RF6_SYSTEM_RECOVER */
     case MonsterAbilityType::INVULNER: return spell_RF6_INVULNER(creature, m_idx, 0, MONSTER_TO_PLAYER); /* RF6_INVULNER */
     case MonsterAbilityType::BLINK: return spell_RF6_BLINK(creature, m_idx, MONSTER_TO_PLAYER, false); /* RF6_BLINK */
     case MonsterAbilityType::TPORT: return spell_RF6_TPORT(creature, m_idx, MONSTER_TO_PLAYER); /* RF6_TPORT */
@@ -313,6 +314,7 @@ static MonsterSpellResult monspell_to_monster_impl(
     case MonsterAbilityType::HASTE: return spell_RF6_HASTE(creature, m_idx, t_idx, MONSTER_TO_MONSTER); /* RF6_HASTE */
     case MonsterAbilityType::HAND_DOOM: return spell_RF6_HAND_DOOM(creature, y, x, m_idx, t_idx, MONSTER_TO_MONSTER); /* RF6_HAND_DOOM */
     case MonsterAbilityType::HEAL: return spell_RF6_HEAL(creature, m_idx, t_idx, MONSTER_TO_MONSTER); /* RF6_HEAL */
+    case MonsterAbilityType::SYSTEM_RECOVER: return spell_RF6_SYSTEM_RECOVER(creature, m_idx, t_idx, MONSTER_TO_MONSTER); /* RF6_SYSTEM_RECOVER */
     case MonsterAbilityType::INVULNER: return spell_RF6_INVULNER(creature, m_idx, t_idx, MONSTER_TO_MONSTER); /* RF6_INVULNER */
     case MonsterAbilityType::BLINK: return spell_RF6_BLINK(creature, m_idx, MONSTER_TO_MONSTER, is_special_spell); /* RF6_BLINK */
     case MonsterAbilityType::TPORT: return spell_RF6_TPORT(creature, m_idx, MONSTER_TO_MONSTER); /* RF6_TPORT */

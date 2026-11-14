@@ -398,6 +398,7 @@ static const std::vector<AbilityCellDef> &support_magic_defs()
         { MonsterAbilityType::HOLD, "麻痺", "paralyze", TERM_RED },
         { MonsterAbilityType::HASTE, "加速", "haste-self", TERM_L_GREEN },
         { MonsterAbilityType::HEAL, "治癒", "heal-self", TERM_WHITE },
+        { MonsterAbilityType::SYSTEM_RECOVER, "システムリカバー", "system recover", TERM_WHITE },
         { MonsterAbilityType::INVULNER, "無敵化", "make invulnerable", TERM_WHITE },
         { MonsterAbilityType::DISPEL, "魔力消去", "dispel-magic", TERM_L_WHITE },
 

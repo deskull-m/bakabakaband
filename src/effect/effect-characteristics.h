@@ -22,5 +22,6 @@ enum effect_characteristics {
     PROJECT_FAST = 0x4000, /*!< 炸裂するまで画面上に表示しない / Hide "visual" of flying bolts until blast */
     PROJECT_LOS = 0x8000, /*!< 視線が通っているか(？) / Line of sight */
     PROJECT_BREATH = 0x10000, /*!< ブレスである / Breath */
-    PROJECT_MIRROR = 0x20000 /*!< 鏡で停止する */
+    PROJECT_MIRROR = 0x20000, /*!< 鏡で停止する */
+    PROJECT_NO_PLAYER = 0x40000, /*!< 射程内に居てもプレイヤーには影響を及ぼさない (モンスターだけを対象にする範囲効果) */
 };

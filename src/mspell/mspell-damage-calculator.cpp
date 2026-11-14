@@ -349,6 +349,8 @@ static int monspell_damage_base(
 
     case MonsterAbilityType::HEAL:
         return -1;
+    case MonsterAbilityType::SYSTEM_RECOVER:
+        return -1;
     case MonsterAbilityType::INVULNER:
         return -1;
     case MonsterAbilityType::BLINK:

@@ -34,6 +34,7 @@
 #include "monster/monster-status.h"
 #include "mspell/monster-power-table.h"
 #include "mspell/mspell-projection-table.h"
+#include "mspell/mspell-status.h"
 #include "player-base/player-class.h"
 #include "player-info/mane-data-type.h"
 #include "player-status/player-energy.h"
@@ -121,6 +122,8 @@ static std::string mane_info(CreatureEntity &creature, MonsterAbilityType power,
         return fmt::format(" {}d{}+{}", KWD_DURATION, 20 + plev, plev);
     case MonsterAbilityType::HEAL:
         return fmt::format(" {}{}", KWD_HEAL, plev * 6);
+    case MonsterAbilityType::SYSTEM_RECOVER:
+        return fmt::format(" {}{}", KWD_HEAL, plev * 3);
     case MonsterAbilityType::INVULNER:
         return fmt::format(" {}d7+7", KWD_DURATION);
     case MonsterAbilityType::BLINK:
@@ -441,6 +444,17 @@ static bool use_mane(CreatureEntity &creature, MonsterAbilityType spell)
         BadStatusSetter bss(creature);
         (void)bss.set_stun(0);
         (void)bss.set_cut(0);
+        break;
+    }
+    case MonsterAbilityType::SYSTEM_RECOVER: {
+        // 自身と周囲 1 マスを回復する。周囲の敵も回復してしまうのが本特技の性質。
+        msg_print(_("システムリカバーを実行した！", "You execute System Recover!"));
+        const auto heal = plev * 3;
+        (void)hp_player(creature, heal);
+        BadStatusSetter bss(creature);
+        (void)bss.set_stun(0);
+        (void)bss.set_cut(0);
+        fire_system_recover_ball(creature, 0, creature.y, creature.x, heal);
         break;
     }
     case MonsterAbilityType::INVULNER:

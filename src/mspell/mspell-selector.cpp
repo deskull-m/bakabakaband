@@ -10,6 +10,7 @@
 #include "monster/monster-status.h"
 #include "mspell/mspell-attack-util.h"
 #include "mspell/mspell-judgement.h"
+#include "mspell/mspell-status.h"
 #include "system/angband-system.h"
 #include "system/creature-entity.h"
 #include "system/enums/monrace/monrace-id.h"
@@ -260,7 +261,55 @@ static bool spell_psy_spe(MonsterAbilityType spell)
  */
 static bool spell_heal(MonsterAbilityType spell)
 {
-    return spell == MonsterAbilityType::HEAL;
+    return (spell == MonsterAbilityType::HEAL) || (spell == MonsterAbilityType::SYSTEM_RECOVER);
+}
+
+/*!
+ * @brief ID値が周囲も巻き込む範囲回復魔法かどうかを返す
+ * @param spell 判定対象のID
+ * @return 範囲回復魔法のIDならばTRUEを返す。
+ * @details
+ * 自分だけを治す魔法 (HEAL) と違い、周囲の仲間が傷ついているときにも唱える価値がある。
+ * 「自分が手負いのときだけ唱える」という spell_heal の選択条件では、支援専門の個体
+ * (スタビライザー等) が無傷のまま何もしなくなるため、別枠として扱う。
+ */
+static bool spell_area_heal(MonsterAbilityType spell)
+{
+    return spell == MonsterAbilityType::SYSTEM_RECOVER;
+}
+
+/*!
+ * @brief 範囲回復魔法を唱える価値があるか (自分か射程内のモンスターが傷ついているか) を返す
+ * @param creature クリーチャーへの参照
+ * @param m_idx 詠唱するモンスターのID
+ * @return 唱える価値があるならTRUE
+ */
+static bool should_cast_area_heal(CreatureEntity &creature, MONSTER_IDX m_idx)
+{
+    constexpr auto wounded_numerator = 3;
+    constexpr auto wounded_denominator = 4;
+    const auto &floor = *creature.get_floor();
+    const auto pos_center = floor.get_monster(m_idx).get_position();
+    for (auto dy = -SYSTEM_RECOVER_RADIUS; dy <= SYSTEM_RECOVER_RADIUS; dy++) {
+        for (auto dx = -SYSTEM_RECOVER_RADIUS; dx <= SYSTEM_RECOVER_RADIUS; dx++) {
+            const Pos2D pos(pos_center.y + dy, pos_center.x + dx);
+            if (!floor.contains(pos, FloorBoundary::OUTER_WALL_INCLUSIVE)) {
+                continue;
+            }
+
+            const auto &grid = floor.get_grid(pos);
+            if (!grid.has_monster()) {
+                continue;
+            }
+
+            const auto &monster = floor.m_list[grid.m_idx];
+            if (monster.is_valid() && (monster.hp < monster.maxhp * wounded_numerator / wounded_denominator)) {
+                return true;
+            }
+        }
+    }
+
+    return false;
 }
 
 /*!
@@ -331,6 +380,7 @@ MonsterAbilityType choose_attack_spell(CreatureEntity &creature, msa_type *msa_p
     std::vector<MonsterAbilityType> psy_spe;
     std::vector<MonsterAbilityType> raise;
     std::vector<MonsterAbilityType> heal;
+    std::vector<MonsterAbilityType> area_heal;
     std::vector<MonsterAbilityType> dispel;
 
     const auto &monster = creature.get_floor()->get_monster(msa_ptr->m_idx);
@@ -386,6 +436,10 @@ MonsterAbilityType choose_attack_spell(CreatureEntity &creature, msa_type *msa_p
 
         if (spell_heal(msa_ptr->mspells[i])) {
             heal.push_back(msa_ptr->mspells[i]);
+        }
+
+        if (spell_area_heal(msa_ptr->mspells[i])) {
+            area_heal.push_back(msa_ptr->mspells[i]);
         }
 
         if (spell_dispel(msa_ptr->mspells[i])) {
@@ -463,6 +517,12 @@ MonsterAbilityType choose_attack_spell(CreatureEntity &creature, msa_type *msa_p
 
     if (!invul.empty() && !monster.get_timed_effect(CreatureTimedEffect::INVULNERABILITY) && one_in_(2)) {
         return rand_choice(invul);
+    }
+
+    // 支援専門の個体が無傷のまま何もしなくなるのを防ぐため、仲間が傷ついていれば必ず唱える。
+    // 攻撃呪文の抽選より後に置いてあるので、攻撃呪文を併せ持つ個体では攻撃が優先される。
+    if (!area_heal.empty() && should_cast_area_heal(creature, msa_ptr->m_idx)) {
+        return rand_choice(area_heal);
     }
 
     if ((monster.hp < monster.maxhp * 3 / 4) && one_in_(4)) {

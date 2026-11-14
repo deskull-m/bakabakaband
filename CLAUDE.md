@@ -3794,6 +3794,171 @@ $65000 / ランク 3 に達する (= 正業の店が盗品を買わなくなる)
   `MonraceId` 参照が 3 つ減った (`UNICORN_ORD` / `MORGOTH` / `ONE_RING`)。
 - `NINJA` 種族フラグ由来の爆発と同じ「振り分けはデータ、挙動は C++」の形。
 
+### モンスター魔法「システムリカバー」(`SYSTEM_RECOVER`) — Issue #6720
+
+**自身と周囲 1 マスのモンスターを回復する**モンスター魔法。回復モンスターの魔法棒の効果
+(`AttributeType::OLD_HEAL`) を**半径 1 のボールとして自分のマスで炸裂させる**形で実装して
+ある。実装は `spell_RF6_SYSTEM_RECOVER()` (`src/mspell/mspell-status.cpp`)。
+
+```jsonc
+"skill": {
+  "list": ["SYSTEM_RECOVER"],
+  "probability": "1_IN_4",
+},
+```
+
+#### 効果
+
+| 対象 | 処理 |
+|---|---|
+| 詠唱者自身 | `recover_monster_by_heal()` で朦朧・混乱・恐怖を解き、HP を `rlev * SYSTEM_RECOVER_HEAL_PER_LEVEL` (既定 3) 回復 |
+| 周囲 1 マスのモンスター | 同じ回復量の `OLD_HEAL` ボールで回復。**距離 1 では `(heal + 1) / 2` に減衰する** (`make_description_of_affecred_monster()` の共通減衰) |
+| プレイヤー | **回復しない** (後述) |
+
+- **自己回復を本関数が直接行う理由**: ボールは中心のマスも含むが、`is_affective()`
+  (`effect-monster.cpp`) が「効果の発生源と同じモンスター」を除外するため、詠唱者自身には
+  ボールが当たらない。
+- **朦朧・混乱・恐怖の解除は共通プリミティブに切り出してある**。
+  `recover_monster_by_heal(creature, m_idx, show_msg)` (`effect/effect-monster-oldies.{h,cpp}`)
+  を `effect_monster_old_heal()` (魔法棒の経路) と本魔法の自己回復が共用する。
+  文言の重複を避けるための抽出で、魔法棒側の挙動は変えていない。
+- 回復量は体力回復 (`HEAL`、`rlev * 6`) の半分にしてある。周囲も巻き込むぶん控えめにした
+  もので、バランス調整は `SYSTEM_RECOVER_HEAL_PER_LEVEL` (`mspell-status.cpp` の匿名
+  namespace) と `SYSTEM_RECOVER_RADIUS` (`mspell-status.h`) で行う。
+
+#### プレイヤーを対象から外している (`PROJECT_NO_PLAYER` の新設)
+
+**`project()` のプレイヤー被弾は `PROJECT_PLAYER` ではなく `PROJECT_KILL` で決まる**
+(`effect-processor.cpp` の `if (flag & PROJECT_KILL)` ブロック)。`PROJECT_PLAYER` は
+騎乗中の分岐にしか効かないため、モンスターのボールは**プレイヤーが射程内に居れば
+必ず `affect_player()` を通る**。`AttributeType::OLD_HEAL` のプレイヤー側ハンドラ
+(`effect_player_old_heal`) は `hp_player()` を呼ぶので、素のままでは
+**敵の支援魔法がプレイヤーを回復してしまう** (実測: Lv42 の個体に隣接していると
+1 詠唱あたり 63、2 体同時なら 1 ターンで 126 回復した)。
+
+そこで**`PROJECT_NO_PLAYER` (`effect/effect-characteristics.h`、末尾に追加) を新設**し、
+`project()` のプレイヤー処理ブロック自体を飛ばせるようにした。`fire_system_recover_ball()`
+は常にこのフラグを立てる。
+
+- フラグは `project()` の引数でセーブデータに載らないため、**セーブデータバージョンの
+  更新は不要**。
+- 「支援機を先に潰す」という本魔法の戦術上の意味が、プレイヤーへの回復で逆転するのを
+  防ぐための判断。プレイヤーも回復させたい場合は
+  `fire_system_recover_ball()` から `PROJECT_NO_PLAYER` を外せばよい。
+- **プレイヤーが詠唱する経路 (ものまね・青魔法) では元から自分に当たらない**
+  (`check_continue_player_effect()` が `ep_ptr->is_player()` で弾く)。プレイヤー自身の
+  回復は `hp_player()` で直接行い、ボールは周囲のモンスターにだけ効く。
+
+#### AI の選択条件 (`spell_area_heal` / `should_cast_area_heal`)
+
+**回復魔法は「自分が手負いのときだけ」選ばれる**ので、`spell_heal` に入れただけでは
+**支援専門の個体が無傷のまま何も唱えない** (実測で確認)。そこで `mspell-selector.cpp` に
+範囲回復の枠を足した。
+
+| 述語 | 内容 |
+|---|---|
+| `spell_area_heal(spell)` | `SYSTEM_RECOVER` なら真 (`HEAL` は含めない) |
+| `should_cast_area_heal(creature, m_idx)` | 自分または半径 `SYSTEM_RECOVER_RADIUS` 内のモンスターが最大HPの 3/4 未満なら真 |
+
+- 選択は `choose_attack_spell()` の**攻撃呪文の抽選より後**、自己回復 (`hp < maxhp*3/4`) の
+  判定の直前に置いてある。攻撃呪文を併せ持つ個体では攻撃が優先され、支援専門の個体
+  (スタビライザー) では仲間が傷ついていれば必ず唱える。
+- `SYSTEM_RECOVER` は `spell_heal` にも入れてあるので、手負いのときの緊急回復としても
+  選ばれる。
+- `STUPID` 持ちは `rand_choice(mspells)` の経路なので本条件を通らない (従来どおり無条件)。
+
+#### 配線した全サイト (`HEAL` と同等)
+
+`MonsterAbilityType::HEAL` を参照していた全箇所に並記した。**`HEAL` を grep すれば
+漏れを検算できる。**
+
+| 層 | ファイル | 内容 |
+|---|---|---|
+| enum | `monster-race/race-ability-flags.h` | `SYSTEM_RECOVER = 124` (**末尾 `MAX` の直前**) |
+| トークン | `info-reader/race-info-tokens-table.cpp` | `r_info_ability_flags` に `"SYSTEM_RECOVER"` |
+| mspell | `mspell/mspell-status.{h,cpp}` | `spell_RF6_SYSTEM_RECOVER()` / `fire_system_recover_ball()` / `SYSTEM_RECOVER_RADIUS` |
+| mspell | `mspell/assign-monster-spell.cpp` | 対プレイヤー / 対モンスターの両ディスパッチ |
+| mspell | `mspell/mspell-damage-calculator.cpp` | `return -1` (威力を持たない呪文) |
+| mspell | `mspell/monster-power-table.cpp` | `monster_powers` (25/18/70/0/25/A_WIS) と `monster_powers_short` |
+| mspell | `mspell/mspell-selector.cpp` | `spell_heal` / `spell_area_heal` / `should_cast_area_heal` |
+| monrace | `monster-race/race-ability-mask.cpp` | `RF_ABILITY_INT_MASK` / `RF_ABILITY_INDIRECT_MASK` |
+| monrace | `system/monrace/monrace-definition.cpp` | 強さ評価 (`HEAL` と同じ 4/3 倍) |
+| melee | `melee/melee-spell-flags-checker.cpp` | モンスター闘技場では 2/3 で封じる |
+| effect | `effect/effect-monster-oldies.{h,cpp}` | `recover_monster_by_heal()` の抽出 |
+| effect | `effect/effect-characteristics.h` / `effect/effect-processor.cpp` | `PROJECT_NO_PLAYER` |
+| 思い出 | `lore/magic-types-setter.cpp` / `view/display-lore-magics.cpp` | 「システムリカバー」の表示 |
+| ものまね | `cmd-action/cmd-mane.cpp` | `mane_info` (`回復:plev*3`) とディスパッチ |
+| 青魔法 | `blue-magic/learnt-info.cpp` / `blue-magic/blue-magic-caster.cpp` | 情報表示 (`回復:plev*2`) とディスパッチ |
+
+- **`mspell-selector.cpp` の `spell_attack()` / `spell_annoy()` には足していない**。
+  回復魔法は攻撃でも妨害でもないため (`HEAL` も入っていない)。ただし**`MonsterAbilityType` に
+  値を足すときはこの 2 関数を必ず確認すること** (連続範囲判定なので末尾追加は範囲外になる。
+  本書「`VITAL_SPOT`」節参照)。
+- **`monster-util.cpp` の `NO_MELEE` 許可一覧にも足していない**。攻撃呪文ではないため。
+  `RF_ABILITY_NOMAGIC_MASK` にも入れていないので、**反魔法のダンジョンでは詠唱者として
+  生成されなくなる** (`HEAL` 持ちと同じ扱い)。
+- **`mspell-attack.cpp` の「直接の射線を要する特技」一覧にも足していない**。自分のマスで
+  炸裂するので射線を必要としない (`default: return true`)。
+- **`mspell-attack-util.cpp` の realm→能力写像 (提案C6) には足していない**。機械の自己修復
+  システムであって魔法領域由来の呪文ではないため。
+- **青魔法では実際には選べない**。`SYSTEM_RECOVER` は `RF_ABILITY_INDIRECT_MASK` に入り、
+  `BlueMagicType::OTHER` は `RF_ABILITY_ATTACK_MASK` から INDIRECT を除くため、どの分類にも
+  入らない。`HEAL` と全く同じ状況なので**パリティのために case を置いてある** (将来マスクが
+  変わったときに動く)。**ものまねは有効**で、実測で習得・詠唱できる。
+- **セーブデータバージョンの更新は不要**。`r_ability_flags` / 青魔法の習得フラグは
+  `wr_FlagGroup()` のバイト数前置、ものまねの `mane_list` は値をそのまま s16b で持つので、
+  **末尾追加なら既存の値がずれない**。**中間挿入は禁止**。
+- `schema/MonraceDefinitions.schema.json` の `skill.list` は enum を持たないので
+  **スキーマ変更も不要**。未知のトークンは reader が読込時エラーで弾くため、
+  **ゲームが起動すること自体がトークン登録の検証になる**。
+
+#### 保有者 (スタビライザーのみ)
+
+Issue が「ほぼLIVEALIVEのスタビライザー専用」と述べるとおり、**スタビライザー (1982)
+1 体にのみ**付与した。
+
+| id | 種族 | Lv | `skill.list` | 詠唱頻度 |
+|---|---|---|---|---|
+| 1982 | スタビライザー | 42 | `SYSTEM_RECOVER` | 1/4 |
+
+- **これは意図的なバランス変更 (OD-10 戦の強化)**。スタビライザーは
+  OD-10 マザーCOM『コギトエルゴスム』(1981) の護衛 (`escorts` 8 体) かつ
+  `spawn_creature` (3/16) で湧き続ける個体で、解説文も
+  「OD-10システム全体を維持するための補助システムだ。」と述べているのに、
+  **これまで `skill` を一切持たず何もしていなかった** (`freq_spell == 0`)。
+  本付与で OD-10 と周囲のスタビライザーを回復するようになり、原作どおり
+  「支援機を先に潰す」戦術が要る戦いになる。
+- 回復量は Lv42 なので自己 126 / 隣接 63。8 体が頻度 1/4 で唱えると OD-10 (最大HP 1320) へ
+  毎ターン 100 強が入る計算。絞りたい場合は `probability` を下げるか
+  `SYSTEM_RECOVER_HEAL_PER_LEVEL` を下げる。
+- **副作用**: `freq_spell` が 0 でなくなったため、スタビライザーは
+  **反魔法のダンジョン (`NO_MAGIC`) では生成されなくなる**
+  (`monster-util.cpp`)。OD-10 自身も元から同じ条件で生成されないので整合している。
+  `NO_MELEE` ダンジョンでの除外は `NEVER_BLOW` により元からそうだったので変化なし。
+
+#### 実測 (ヘッドレス)
+
+| 項目 | 結果 |
+|---|---|
+| トークン読込 | `"SYSTEM_RECOVER"` を含むデータでゲームが正常起動 |
+| 思い出 (スポイラー `mon-info.txt` 全 2,362 種) | 「システムリカバー」は**スタビライザーの 1 行のみ**。「それは魔法を使うことができ、システムリカバーの呪文を唱えることがある(確率:1/4)。」 |
+| **A/B (詠唱の決定的確認)** | `SYSTEM_RECOVER` を一切持たない 洞窟オーク (126) に一時付与すると、傷ついた個体が「洞窟オークはシステムリカバーを実行した。」「洞窟オークは自己修復した。」「**洞窟オークは体力を回復したようだ。**」を出す。3 行目は `effect_monster_old_heal()` の note で**ボール経由でしか出ない**ため、隣接個体が回復したことが確定する。外すと出ない |
+| 回復の実測 | 傷ついた個体の健康バンドが `wounded` → `lightly_wounded` → `unhurt` と改善 |
+| スタビライザー本体の詠唱 | 検証用に INVISIBLE / BREAK_DOWN を外した個体 (**呪文の指定は実データのまま**) を召喚して確認。「スタビライザーはシステムリカバーを実行した。」「スタビライザーは完全に修復された！」「あなたのスタビライザーは体力を回復したようだ。」 |
+| **プレイヤーが回復しないこと** | `PROJECT_NO_PLAYER` 導入前は 2 詠唱で HP 1782 → 1908 (**+126**)。導入後は 3 詠唱の間 HP が自然回復ぶん (約 16/ターン) しか増えず、「ひじょうに気分が良くなった。」も出ない。隣接モンスターの回復は引き続き発生する |
+| ものまね (`m`) | イミテーターが詠唱を目撃すると「a) システムリカバー 0% 回復:180」(= `plev * 3`) を習得。実行すると「システムリカバーを実行した！」→ 自分が +180、隣接オークが「**勇気を取り戻した。**」「**体力を回復したようだ。**」で恐怖解除と回復 |
+| 単体テスト | 533 ケース / 83,004 アサーション すべて成功 |
+
+- **検証上の注意 1**: スタビライザーは `BREAK_DOWN` (主なしでは存在を維持できない) を持つため、
+  **ウィザードの `n` (種族指定召喚) では湧かない / 湧いても自分の手番で消える**。
+  `N` (ペットとして召喚) なら残るので、挙動の確認はこちらが早い。
+- **検証上の注意 2**: 数値入力プロンプトの既定値を消すのは **`\x7f` (DEL)**。
+  **`\x08` (BS) はカーソルを左へ動かすだけ**で、既定値 `1` の前に `10` を入れると
+  `101` になる (ジャンプ先の階を誤って 101 階にしてしまった)。
+- **検証上の注意 3**: 回復魔法は「手負いの個体が近くにいる」ことが詠唱条件なので、
+  **無傷のまま待っても一度も唱えない**。ウィザードの `Y` (指定ダメージ・半径0の属性ボール) で
+  対象を傷つけてから手番を進めること。
+
 ### モンスターの死亡時詠唱 (`death_spells`) — Issue #6768
 
 `MonraceDefinition` に `std::vector<MonraceDeathSpell> death_spells`
@@ -4671,8 +4836,9 @@ case 番号で、両者の番号体系は一致しない。** 公開 API は `Pl
   999999999 になるが、**レベルが跳ね上がるので「どの能力値を上げますか？」の
   プロンプトが ESC で抜けられないループで何度も出る** (a〜f のいずれかを選ぶしかない)。
   所持金を用意するときは先にこれを消化すること。
-- **検証上の注意 4**: 数値入力プロンプトの既定値を消すのは **`\x08` (BS)**。
-  `\x7f` では消えない。
+- **検証上の注意 4**: 数値入力プロンプトの既定値は **`\x7f` (DEL)** で消える。
+  **`\x08` (BS) はプロンプトによってはカーソルを左へ動かすだけで消えない**ので、
+  既定値に数字が連結される (本書「システムリカバー」節の検証上の注意 2 参照)。
 
 ### 魔道具を砕く魔力暴発 (`shatter_magic_device`) — Issue #1770
 

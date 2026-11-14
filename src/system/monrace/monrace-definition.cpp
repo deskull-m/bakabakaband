@@ -379,7 +379,7 @@ int64_t MonraceDefinition::calc_power() const
         power = power * (num_resistances * 2 + 5) / 10;
     } else if (this->ability_flags.has(MonsterAbilityType::INVULNER)) {
         power = power * 4 / 3;
-    } else if (this->ability_flags.has(MonsterAbilityType::HEAL)) {
+    } else if (this->ability_flags.has_any_of({ MonsterAbilityType::HEAL, MonsterAbilityType::SYSTEM_RECOVER })) {
         power = power * 4 / 3;
     } else if (this->ability_flags.has(MonsterAbilityType::DRAIN_MANA)) {
         power = power * 11 / 10;

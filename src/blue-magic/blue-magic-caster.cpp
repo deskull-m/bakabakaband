@@ -17,6 +17,7 @@
 #include "monster/monster-status.h"
 #include "mspell/mspell-damage-calculator.h"
 #include "mspell/mspell-projection-table.h"
+#include "mspell/mspell-status.h"
 #include "spell-kind/spells-launcher.h"
 #include "spell-kind/spells-lite.h"
 #include "spell-kind/spells-neighbor.h"
@@ -258,6 +259,17 @@ static bool switch_cast_blue_magic(CreatureEntity &creature, bmc_type *bmc_ptr)
         BadStatusSetter bss(creature);
         (void)bss.set_stun(0);
         (void)bss.set_cut(0);
+        return true;
+    }
+    case MonsterAbilityType::SYSTEM_RECOVER: {
+        // 自身と周囲 1 マスを回復する。周囲の敵も回復してしまうのが本特技の性質。
+        msg_print(_("システムリカバーを実行した！", "You execute System Recover!"));
+        const auto heal = bmc_ptr->plev * 2;
+        (void)hp_player(creature, heal);
+        BadStatusSetter bss(creature);
+        (void)bss.set_stun(0);
+        (void)bss.set_cut(0);
+        fire_system_recover_ball(creature, 0, creature.y, creature.x, heal);
         return true;
     }
     case MonsterAbilityType::INVULNER:

@@ -17,7 +17,7 @@ const EnumClassFlagGroup<MonsterAbilityType> RF_ABILITY_INT_MASK =
     EnumClassFlagGroup<MonsterAbilityType>(RF_ABILITY_SUMMON_MASK).set({
     MonsterAbilityType::DISPEL, MonsterAbilityType::HOLD, MonsterAbilityType::SLOW, MonsterAbilityType::CONF,
     MonsterAbilityType::BLIND, MonsterAbilityType::SCARE, MonsterAbilityType::BLINK, MonsterAbilityType::TPORT,
-    MonsterAbilityType::TELE_LEVEL, MonsterAbilityType::TELE_AWAY, MonsterAbilityType::HEAL, MonsterAbilityType::INVULNER,
+    MonsterAbilityType::TELE_LEVEL, MonsterAbilityType::TELE_AWAY, MonsterAbilityType::HEAL, MonsterAbilityType::SYSTEM_RECOVER, MonsterAbilityType::INVULNER,
     MonsterAbilityType::HASTE, MonsterAbilityType::TRAPS,
 });
 
@@ -95,7 +95,7 @@ const EnumClassFlagGroup<MonsterAbilityType> RF_ABILITY_ATTACK_MASK =
 /* "indirect" spells Including "summon" spells */
 const EnumClassFlagGroup<MonsterAbilityType> RF_ABILITY_INDIRECT_MASK =
     EnumClassFlagGroup<MonsterAbilityType>(RF_ABILITY_SUMMON_MASK).set({
-    MonsterAbilityType::SHRIEK, MonsterAbilityType::HASTE, MonsterAbilityType::HEAL, MonsterAbilityType::INVULNER,
+    MonsterAbilityType::SHRIEK, MonsterAbilityType::HASTE, MonsterAbilityType::HEAL, MonsterAbilityType::SYSTEM_RECOVER, MonsterAbilityType::INVULNER,
     MonsterAbilityType::BLINK, MonsterAbilityType::WORLD, MonsterAbilityType::TPORT, MonsterAbilityType::RAISE_DEAD,
 });
 

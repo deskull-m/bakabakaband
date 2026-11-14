@@ -392,7 +392,7 @@ ProjectResult project(CreatureEntity &creature, const MONSTER_IDX src_idx, POSIT
         }
     }
 
-    if (flag & (PROJECT_KILL)) {
+    if ((flag & PROJECT_KILL) && none_bits(flag, PROJECT_NO_PLAYER)) {
         for (const auto &[dist, pos] : positions) {
             if (!creature.is_located_at(pos)) {
                 continue;
