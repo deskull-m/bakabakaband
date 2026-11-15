@@ -279,6 +279,15 @@ godot::Dictionary make_world_snapshot_dict(const GodotWorldSnapshot &snapshot, c
 }
 }
 
+godot::Dictionary HengbandGame::get_player_status()
+{
+    const auto snap = player_status_get_snapshot();
+    if (!snap.is_valid) {
+        return godot::Dictionary();
+    }
+    return snapshot_to_dict(snap);
+}
+
 godot::Dictionary HengbandGame::get_world_snapshot()
 {
     const auto snapshot = world_snapshot_get();
