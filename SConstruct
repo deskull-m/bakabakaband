@@ -57,6 +57,14 @@ def collect_hengband_sources():
 
 hengband_core_sources = collect_hengband_sources()
 
+# main-unix/ は端末版 (X11 / curses) のバックエンドなのでディレクトリごと除外しているが、
+# unix-user-ids.cpp だけはゲームコア (io/files-util.cpp, io/uid-checker.cpp) が
+# Windows 以外で参照するため、Linux 等では個別に加える。
+# 加え忘れると Godot が GDExtension を読み込む時点で
+# "undefined symbol: UnixUserIds::get_effective_user_id" で失敗する。
+if env["platform"] != "windows":
+    hengband_core_sources.append("src/main-unix/unix-user-ids.cpp")
+
 # --- ビルド設定 ---
 
 # CPPPATH と USE_GODOT は全ソースに共通 (godot-cpp との互換性に問題なし)

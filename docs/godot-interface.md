@@ -114,7 +114,8 @@ scons platform=linux target=template_debug -j$(nproc)
 `SConstruct` はゲームコアを glob で収集し、端末版バックエンド
 (`main-win` / `main-unix` / `main-x11` / `main-gcu` / `main-cap`)・`src/net/`
 (libcurl 依存)・`src/test/`・autotools の Makefile.am 未収録の孤立ソースを
-除外する。ソースを追加・除外する際は `SConstruct` の `exclude_dirs` /
+除外する (ただし `main-unix/unix-user-ids.cpp` だけはゲームコアが Windows 以外で
+参照するため Linux 等では個別に加える)。ソースを追加・除外する際は `SConstruct` の `exclude_dirs` /
 `exclude_files` / `exclude_paths` を合わせて更新すること。プラットフォーム
 別のチャーセット・例外・マクロ設定 (Windows: `/source-charset:utf-8` /
 CP932 実行文字コード / `WINDOWS`・`WIN32`・`JP`・`SJIS`、Linux: `-fexceptions`
