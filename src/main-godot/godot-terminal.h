@@ -86,6 +86,9 @@ public:
     /// ターミナル全体を消去する
     void clear_all();
 
+    /// 指定した行の文字列を返す (自動テスト・デバッグ用)。範囲外なら空文字列
+    godot::String get_row_text(int y) const;
+
     // --- GDScript 公開プロパティ ---
     int get_cols() const
     {

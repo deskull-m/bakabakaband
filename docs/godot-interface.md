@@ -227,6 +227,23 @@ StatusPanel に表示を委ねる。以下の関数に `#ifdef GODOT_RICH_UI` �
   `get_world_snapshot_verify_mismatches()` に数える。`lite_spot()` を通らない
   見え方の変化を見つけるためのもので、通常は無効にしておく (全体を作り直す分だけ重い)。
 
+### 実ゲームでの確認
+
+`tools/godot/world-snapshot-runtime-check.gd` が `main.tscn` を headless で起動して
+セーブを読み込み、移動しながら差分を手元に反映して全体と突き合わせる。
+
+```bash
+HB_SAVE=<使い捨てのセーブファイル> godot --headless --path godot_project \
+    --script tools/godot/world-snapshot-runtime-check.gd
+```
+
+セーブは端末版のヘッドレス実行 (`tools/bot/README.md`) で作れる。端末版と Godot 版の
+Linux ビルドで日本語/英語が違っても読み込める。実測 (地下 1 階、可視モンスター 19 体、
+154 版): 差分 109 グリッドを反映した手元の配列が全体と一致、検証モードの食い違い 0、
+クリーチャーの `id` は 19 体とも全期間で不変。
+
+`GodotTerminal.get_row_text(y)` で端末の行を読めるので、スクリプトから画面を確認できる。
+
 ## 既知の制限・今後の課題
 
 - **セーブファイル形式**: `save-file-scanner.cpp` はタイトル画面のセーブ一覧表示用に

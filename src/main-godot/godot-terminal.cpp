@@ -313,6 +313,24 @@ void GodotTerminal::resize_grid()
     grid_.assign(static_cast<size_t>(cols_ * rows_), CellData{});
 }
 
+godot::String GodotTerminal::get_row_text(int y) const
+{
+    std::lock_guard<std::mutex> lock(grid_mutex_);
+    if (y < 0 || y >= rows_) {
+        return godot::String();
+    }
+
+    godot::String text;
+    for (int x = 0; x < cols_; ++x) {
+        const auto ch = grid_[static_cast<size_t>(y * cols_ + x)].ch;
+        // 全角文字の右半分は 0 で埋められている
+        if (ch != 0) {
+            text += godot::String::chr(ch);
+        }
+    }
+    return text;
+}
+
 void GodotTerminal::_bind_methods()
 {
     ClassDB::bind_method(D_METHOD("set_grid_size", "cols", "rows"),
@@ -328,6 +346,7 @@ void GodotTerminal::_bind_methods()
     ClassDB::bind_method(D_METHOD("clear_all"),
         &GodotTerminal::clear_all);
     ClassDB::bind_method(D_METHOD("get_cols"), &GodotTerminal::get_cols);
+    ClassDB::bind_method(D_METHOD("get_row_text", "y"), &GodotTerminal::get_row_text);
     ClassDB::bind_method(D_METHOD("get_rows"), &GodotTerminal::get_rows);
     ClassDB::bind_method(D_METHOD("get_cell_width"), &GodotTerminal::get_cell_width);
     ClassDB::bind_method(D_METHOD("get_cell_height"), &GodotTerminal::get_cell_height);
