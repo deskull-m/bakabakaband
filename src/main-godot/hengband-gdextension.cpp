@@ -366,6 +366,7 @@ godot::Dictionary observed_creature_to_dict(const ObservedCreature &creature)
     d["flags"] = static_cast<int>(creature.flags);
     d["symbol"] = creature.symbol_char != 0 ? godot::String::chr(static_cast<char32_t>(static_cast<unsigned char>(creature.symbol_char))) : godot::String();
     d["symbol_color"] = creature.symbol_color;
+    d["light_radius"] = creature.light_radius;
     return d;
 }
 
@@ -420,6 +421,9 @@ godot::Dictionary make_world_snapshot_dict(const GodotWorldSnapshot &snapshot, c
     d["is_wild_mode"] = world.is_wild_mode;
     d["player_x"] = world.player_pos.x;
     d["player_y"] = world.player_pos.y;
+    d["player_light_radius"] = world.player_light_radius;
+    d["player_blind"] = world.player_blind;
+    d["player_hallucinated"] = world.player_hallucinated;
     if (indices) {
         godot::PackedInt32Array packed_indices;
         packed_indices.resize(static_cast<int64_t>(indices->size()));

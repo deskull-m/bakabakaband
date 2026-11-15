@@ -11,7 +11,10 @@ extends SubViewportContainer
 ## - 座標は X 軸 = 東、Z 軸 = 南、1 グリッド = 1 (input_intents.gd と同じ)
 ## - 左クリックでトラベル、右クリックでターゲット (#9296)。中ボタンのドラッグでカメラを回し、
 ##   Shift + ホイールで寄る・引く
-## - 視界・光源の表現は #9299 で行う。ここでは視界外のグリッドを暗くするだけ
+## - 視界・光源・記憶 (#9299): グリッドは「視界内で明るい」「視界内だが暗い」「記憶だけ」の 3 段階の
+##   明るさで描き、未知のグリッドは描かない。盲目なら全て記憶だけとして描く。プレイヤーの光源と
+##   光を持つモンスターには OmniLight3D を置く。見え方の判定はすべてゲーム側の値 (スナップショット)
+##   に従い、3D の光の届き方で見えるかどうかを決めることはしない
 
 const VisualCatalog = preload("res://scripts/visual_catalog.gd")
 const InputIntents = preload("res://scripts/input_intents.gd")
@@ -19,6 +22,7 @@ const InputIntents = preload("res://scripts/input_intents.gd")
 ## ObservedGridFlag / ObservedCreatureFlag
 const GRID_KNOWN := 1 << 0
 const GRID_IN_VIEW := 1 << 1
+const GRID_LIT := 1 << 2
 const GRID_OBJECT := 1 << 3
 const CREATURE_IN_VIEW := 1 << 0
 
@@ -59,6 +63,17 @@ var _camera_distance := 22.0
 
 ## 床の板は端末の色そのままだと明るすぎて上のビルボードが見づらいので落とす
 const PLANE_BRIGHTNESS := 0.35
+## 視界内だが暗いグリッドの明るさ
+const UNLIT_BRIGHTNESS := 0.55
+## 記憶だけのグリッドの明るさと彩度
+const MEMORY_BRIGHTNESS := 0.3
+const MEMORY_SATURATION := 0.25
+## 光を持つモンスターに置く光の上限 (多すぎると重い)
+const MAX_CREATURE_LIGHTS := 16
+
+var _blind := false
+var _player_light: OmniLight3D
+var _creature_lights := {} ## id → OmniLight3D
 var _dragging := false
 
 ## 計測 (ミリ秒)
@@ -83,9 +98,11 @@ func _ready() -> void:
 	env.environment.background_mode = Environment.BG_COLOR
 	env.environment.background_color = Color.BLACK
 	env.environment.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
-	env.environment.ambient_light_color = Color(0.6, 0.6, 0.6)
+	env.environment.ambient_light_color = Color(0.45, 0.45, 0.45)
 	_world.add_child(env)
+	# 箱の面を見分けるための弱い平行光。明るさの段階はグリッドの色で表し、光源は OmniLight3D で添える
 	var sun := DirectionalLight3D.new()
+	sun.light_energy = 0.35
 	sun.rotation_degrees = Vector3(-60, 30, 0)
 	_world.add_child(sun)
 
@@ -101,6 +118,8 @@ func _ready() -> void:
 	_world.add_child(_item_root)
 	_player_label = _make_glyph("@", Color.WHITE, 1.0)
 	_world.add_child(_player_label)
+	_player_light = _make_light(Color(1.0, 0.85, 0.6))
+	_world.add_child(_player_light)
 
 	_message = Label.new()
 	_message.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
@@ -139,6 +158,35 @@ func _make_multimesh(mesh: Mesh) -> MultiMesh:
 	return mm
 
 
+func _make_light(color: Color) -> OmniLight3D:
+	var light := OmniLight3D.new()
+	light.light_color = color
+	light.light_energy = 1.6
+	light.omni_attenuation = 1.2
+	light.shadow_enabled = false
+	return light
+
+
+## 光の半径 (グリッド) に合わせて光を置く。0 なら消す
+static func _place_light(light: OmniLight3D, pos: Vector2i, radius: int) -> void:
+	light.visible = radius > 0
+	light.omni_range = radius + 0.75
+	light.position = Vector3(pos.x + 0.5, 0.9, pos.y + 0.5)
+
+
+## グリッドの明るさの段階に合わせて色を変える
+static func grid_color(base: Color, flags: int, blind: bool) -> Color:
+	var in_view := (flags & GRID_IN_VIEW) != 0 and not blind
+	if in_view and (flags & GRID_LIT) != 0:
+		return base
+	if in_view:
+		var dim := base * UNLIT_BRIGHTNESS
+		dim.a = 1.0
+		return dim
+	var memory := Color.from_hsv(base.h, base.s * MEMORY_SATURATION, base.v * MEMORY_BRIGHTNESS)
+	return memory
+
+
 func _make_glyph(text: String, color: Color, scale_factor: float) -> Label3D:
 	var label := Label3D.new()
 	label.text = text
@@ -169,15 +217,23 @@ func _pull() -> void:
 	if changes.is_empty():
 		return
 	var start := Time.get_ticks_usec()
+	var blind: bool = changes.get("player_blind", false)
+	var blind_changed := blind != _blind
+	_blind = blind
 	if changes["full"]:
 		_rebuild(changes)
 		last_full_build_ms = (Time.get_ticks_usec() - start) / 1000.0
 	else:
 		_apply_changes(changes)
+		if blind_changed:
+			# 盲目になった・治ったら、全グリッドの明るさが変わる
+			for i in _width * _height:
+				_update_grid(i)
 		last_update_ms = (Time.get_ticks_usec() - start) / 1000.0
 	_sync_creatures(changes["creatures"])
 	_player = Vector2i(changes["player_x"], changes["player_y"])
 	_player_label.position = InputIntents.floor_to_world(_player, 1.0, 0.6)
+	_place_light(_player_light, _player, int(changes.get("player_light_radius", 0)) if not _blind else 0)
 	_version = changes["version"]
 	_update_camera()
 
@@ -279,7 +335,7 @@ func _terrain_visual(terrain_id: int) -> Array:
 	if placed_kind == KIND_PLANE:
 		color = color * PLANE_BRIGHTNESS
 		color.a = 1.0
-	cached = [placed_kind, Basis().scaled(Vector3(s, height, s)), height, color, color.darkened(0.55)]
+	cached = [placed_kind, Basis().scaled(Vector3(s, height, s)), height, color]
 	_terrain_visual_cache[terrain_id] = cached
 	return cached
 
@@ -290,7 +346,7 @@ func _compute_grid(i: int) -> Array:
 	var kind: int = visual[0]
 	if kind == KIND_NONE:
 		return [KIND_NONE, HIDDEN, Color.BLACK]
-	var color: Color = visual[3] if (_flags[i] & GRID_IN_VIEW) != 0 else visual[4]
+	var color := grid_color(visual[3], _flags[i], _blind)
 	var center := Vector3((i % _width) + 0.5, 0.0, (i / _width) + 0.5)
 	if kind == KIND_BOX:
 		return [KIND_BOX, Transform3D(visual[1], center + Vector3(0, float(visual[2]) / 2.0, 0)), color]
@@ -360,6 +416,28 @@ func _sync_creatures(creatures: Array) -> void:
 		if not seen.has(id):
 			_creature_labels[id].queue_free()
 			_creature_labels.erase(id)
+	_sync_creature_lights(creatures)
+
+
+## 光を持つ見えているモンスターに光を置く (上限 MAX_CREATURE_LIGHTS)
+func _sync_creature_lights(creatures: Array) -> void:
+	var lit := {}
+	for c: Dictionary in creatures:
+		var radius: int = c.get("light_radius", 0)
+		if radius <= 0 or lit.size() >= MAX_CREATURE_LIGHTS:
+			continue
+		var id: int = c["id"]
+		lit[id] = true
+		var light: OmniLight3D = _creature_lights.get(id)
+		if light == null:
+			light = _make_light(Color(1.0, 0.9, 0.7))
+			_world.add_child(light)
+			_creature_lights[id] = light
+		_place_light(light, Vector2i(c["x"], c["y"]), radius)
+	for id in _creature_lights.keys():
+		if not lit.has(id):
+			_creature_lights[id].queue_free()
+			_creature_lights.erase(id)
 
 
 func _on_game_events(_events: Array) -> void:
@@ -433,4 +511,7 @@ func count_instances() -> Dictionary:
 			boxes += 1
 		elif kind == KIND_PLANE:
 			planes += 1
-	return { "boxes": boxes, "planes": planes, "creatures": _creature_labels.size(), "items": _item_labels.size() }
+	return {
+		"boxes": boxes, "planes": planes, "creatures": _creature_labels.size(), "items": _item_labels.size(),
+		"player_light": _player_light.omni_range if _player_light.visible else 0.0, "creature_lights": _creature_lights.size(),
+	}

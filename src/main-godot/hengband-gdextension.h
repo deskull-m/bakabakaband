@@ -138,11 +138,11 @@ public:
 
     /// 最新のワールドスナップショットを Dictionary で返す (無ければ空)
     /// キー: version, floor_version, full (= true), width, height, dungeon_id, dun_level, is_wild_mode,
-    ///       player_x, player_y,
+    ///       player_x, player_y, player_light_radius, player_blind, player_hallucinated,
     ///       terrain (PackedInt32Array, 未知は -1), shapes (PackedByteArray, ObservedTerrainShape),
     ///       flags (PackedByteArray, ObservedGridFlag), symbols (PackedByteArray, 1 グリッド 4 バイト),
     ///       object_tvals (PackedByteArray, いちばん上の床アイテムの種別。無い・幻覚中は 0),
-    ///       creatures (Array[Dictionary{id, m_idx, x, y, race_id, health, flags, symbol, symbol_color}])
+    ///       creatures (Array[Dictionary{id, m_idx, x, y, race_id, health, flags, symbol, symbol_color, light_radius}])
     /// グリッドの配列は行優先 (index = y * width + x)。creatures は常に全体
     godot::Dictionary get_world_snapshot();
 

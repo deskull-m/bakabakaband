@@ -5017,6 +5017,14 @@ godot --path godot_project
   StatusPanel に委ねる分岐が入る (通常ビルドではマクロ未定義で無効)。
 - 詳細な設計・移植改変点・既知の制限は
   [`docs/godot-interface.md`](docs/godot-interface.md) を参照。
+- **3D インターフェースの基盤 (Epic #9290)**: ゲームコアには表示非依存の観測点だけを足し
+  (`src/view/observable-world` / `view-observer` / `screen-state` / `view-event`、
+  `src/io/input-intent`)、いずれも未使用時は何もせず乱数・ゲーム状態に触れない。
+  **プレイヤーが知り得る情報だけを渡す** (地形は `is_map_terrain_visible()`、クリーチャーは
+  `is_visible_on_map()`)。`lite_spot()` / `print_map()` / `apply_raw_damage()` /
+  `project()` / 近接の打撃 / `point_target()` / `target_set()` に 1 行の通知・取り出しがあるので、
+  **上流マージでこれらを触るときは残すこと**。Godot 側の 3D ビューは
+  `godot_project/scripts/dungeon_view_3d.gd` (Ctrl+Shift+D)。
 
 ---
 

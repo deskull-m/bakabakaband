@@ -1,4 +1,5 @@
 #include "view/observable-world.h"
+#include "monster-race/race-brightness-flags.h"
 #include "system/creature-entity.h"
 #include "system/enums/terrain/terrain-characteristics.h"
 #include "system/floor/floor-info.h"
@@ -190,6 +191,11 @@ ObservedCreature observe_creature(const CreatureEntity &player, short m_idx, con
     observed.race_id = static_cast<short>(enum2i(monrace.idx));
     observed.symbol_char = monrace.symbol_definition.character;
     observed.symbol_color = monrace.symbol_definition.color;
+    if (monrace.brightness_flags.has(MonsterBrightnessType::HAS_LITE_2)) {
+        observed.light_radius = 2;
+    } else if (monrace.brightness_flags.has(MonsterBrightnessType::HAS_LITE_1)) {
+        observed.light_radius = 1;
+    }
     observed.health = classify_observed_health(monster.hp, monster.maxhp);
     const std::pair<bool, ObservedCreatureFlag> states[] = {
         { monster.is_asleep(), OBSERVED_CREATURE_ASLEEP },
@@ -248,6 +254,9 @@ ObservableWorld build_observable_world_header(CreatureEntity &player)
     world.dun_level = static_cast<short>(floor.dun_level);
     world.is_wild_mode = AngbandWorld::get_instance().is_wild_mode();
     world.player_pos = player.get_position();
+    world.player_light_radius = player.get_cur_lite();
+    world.player_blind = player.is_blind();
+    world.player_hallucinated = player.is_hallucinated();
     return world;
 }
 

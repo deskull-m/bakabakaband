@@ -84,6 +84,23 @@ func _process(_delta: float) -> bool:
 				var want := expected_counts()
 				check("instances match the snapshot", got["boxes"] == want["boxes"] and got["planes"] == want["planes"] and got["creatures"] == want["creatures"] and got["items"] == want["items"], "got=%s want=%s" % [got, want])
 				print("full build %.1f ms" % view.last_full_build_ms)
+				# 光源 (#9299): プレイヤーの光の届く範囲は光源の半径に合わせる
+				var snap: Dictionary = game.get_world_snapshot()
+				var radius: int = snap["player_light_radius"]
+				check("player light follows the light radius", (radius == 0 and got["player_light"] == 0.0) or is_equal_approx(got["player_light"], radius + 0.75), "radius=%d range=%s" % [radius, got["player_light"]])
+				var lit_creatures := 0
+				for c in snap["creatures"]:
+					if c["light_radius"] > 0:
+						lit_creatures += 1
+				check("creature lights", got["creature_lights"] == mini(lit_creatures, 16), "lights=%d lit creatures=%d" % [got["creature_lights"], lit_creatures])
+				# 明るさの段階: 視界内で明るい / 暗い / 記憶だけ が色で区別されること
+				var DV = load("res://scripts/dungeon_view_3d.gd")
+				var base := Color(0.8, 0.6, 0.4)
+				var c_lit: Color = DV.grid_color(base, 1 | 2 | 4, false)
+				var c_dark: Color = DV.grid_color(base, 1 | 2, false)
+				var c_memory: Color = DV.grid_color(base, 1, false)
+				var c_blind: Color = DV.grid_color(base, 1 | 2 | 4, true)
+				check("brightness levels", c_lit.v > c_dark.v and c_dark.v > c_memory.v and c_blind == c_memory, "lit=%s dark=%s memory=%s" % [c_lit, c_dark, c_memory])
 				start_player = want["player"]
 				ih.inject_key(0x69) # i: 持ち物
 		2:

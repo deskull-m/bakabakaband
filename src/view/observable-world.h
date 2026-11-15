@@ -111,6 +111,7 @@ struct ObservedCreature {
     uint16_t flags = 0; //!< ObservedCreatureFlag の論理和
     char symbol_char = 0; //!< 見かけの種族の定義上の文字 (タイル表示の設定に依らない ASCII)。幻覚中は 0
     uint8_t symbol_color = 0; //!< 見かけの種族の定義上の色。幻覚中は 0
+    uint8_t light_radius = 0; //!< 周りを照らす光の半径 (HAS_LITE_1/2)。幻覚中・光を持たないなら 0
 };
 
 /*!
@@ -124,6 +125,9 @@ struct ObservableWorld {
     short dun_level = 0;
     bool is_wild_mode = false; //!< 広域マップ表示中
     Pos2D player_pos{ 0, 0 };
+    int player_light_radius = 0; //!< プレイヤーの光源の半径 (get_cur_lite())
+    bool player_blind = false; //!< 盲目 (視界のフラグに依らず、見えているのは記憶だけ)
+    bool player_hallucinated = false; //!< 幻覚
     std::vector<ObservedGrid> grids; //!< width × height (行優先)
     std::vector<ObservedCreature> creatures;
 

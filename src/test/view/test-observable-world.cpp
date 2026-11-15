@@ -125,6 +125,8 @@ TEST_CASE("The observable world discloses only what the player knows")
     CHECK(observed.grids.size() == 12);
     CHECK(observed.player_pos == lit_floor);
     CHECK(observed.creatures.empty());
+    CHECK_FALSE(observed.player_blind);
+    CHECK_FALSE(observed.player_hallucinated);
 
     const auto &wall = observed.get_grid(remembered_wall);
     CHECK(wall.terrain_id == ids.wall_id);
@@ -160,6 +162,7 @@ TEST_CASE("The observable world discloses only what the player knows")
     {
         player.set_timed_effect(CreatureTimedEffect::BLINDNESS, 10);
         const auto blind = build_observable_world(player, false);
+        CHECK(blind.player_blind);
         CHECK(blind.get_grid(lit_floor).terrain_id == -1);
         CHECK(blind.get_grid(remembered_wall).terrain_id == ids.wall_id);
         player.set_timed_effect(CreatureTimedEffect::BLINDNESS, 0);
