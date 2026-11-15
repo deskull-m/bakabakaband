@@ -66,6 +66,10 @@ constexpr std::string_view VARIANT_NAME("Bakabaka");
  *     (MonsterWriter と同形式) を書き、rd_dungeon_object() は older_than(62) なら
  *     死体なしで読み込む。グリッド側のチェイン (Grid::corpse_idx /
  *     MonsterCorpse::next_corpse_idx) は保存せず、座標から再構築する。
+ * 63: 死体の亡骸の形 (MonsterCorpse::remains_sval = 死体 / 骨) を各死体の実体の直後に
+ *     byte で保存。取り除かれた死体 (released) は書かない。rd_dungeon_object() は
+ *     older_than(63) なら死体の所持品に入っている同種族の死体・骨のアイテムを
+ *     取り出して亡骸の形へ移す (v62 は死体・骨をアイテムとして死体の中に入れていた)。
  *
  * **採番の衝突に注意**: 作業ブランチごとに独立して番号を進めると、同じ番号で
  * 別フォーマットのセーブデータが 2 種類生まれ、どちらのビルドでも読めなくなる
@@ -73,7 +77,7 @@ constexpr std::string_view VARIANT_NAME("Bakabaka");
  * **バージョンを上げる前に必ず develop の最新を取り込み、この一覧の末尾に
  * 追記すること。**
  */
-constexpr uint32_t SAVEFILE_VERSION = 62;
+constexpr uint32_t SAVEFILE_VERSION = 63;
 
 /*!
  * @brief バージョンが開発版が安定版かを返す(廃止予定)

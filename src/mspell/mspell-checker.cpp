@@ -13,12 +13,14 @@
 #include "effect/effect-characteristics.h"
 #include "effect/effect-processor.h"
 #include "floor/line-of-sight.h"
+#include "monster-floor/monster-corpse-leaver.h"
 #include "monster-race/race-ability-mask.h"
 #include "monster/monster-info.h"
 #include "mspell/mspell-util.h"
 #include "system/creature-entity.h"
 #include "system/enums/terrain/terrain-characteristics.h"
 #include "system/floor/floor-info.h"
+#include "system/floor/monster-corpse.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
@@ -93,6 +95,14 @@ bool raise_possible(CreatureEntity &creature, const CreatureEntity &target)
                     if (!monster_has_hostile_to_other_monster(target, monrace)) {
                         return true;
                     }
+                }
+            }
+
+            // 床に横たわる亡骸は MonsterCorpse だけが表すので、死体も見る
+            for (const auto corpse_idx : collect_corpses_at(floor, pos)) {
+                const auto &monrace = floor.get_corpse(corpse_idx).body.get_monrace();
+                if (!monster_has_hostile_to_other_monster(target, monrace)) {
+                    return true;
                 }
             }
         }

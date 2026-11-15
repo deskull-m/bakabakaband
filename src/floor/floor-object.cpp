@@ -16,6 +16,7 @@
 #include "inventory/inventory-slot-types.h"
 #include "main/sound-definitions-table.h"
 #include "main/sound-of-music.h"
+#include "monster-floor/monster-corpse-leaver.h"
 #include "object-enchant/item-apply-magic.h"
 #include "object-enchant/item-magic-applier.h"
 #include "object-enchant/special-object-flags.h"
@@ -427,6 +428,18 @@ short drop_near(CreatureEntity &subject, ItemEntity &drop_item, const Pos2D &pos
         }
 
         pos_drop = rand_choice(pos_drop_candidates);
+    }
+
+    // 死体・骨のアイテムは床のアイテムにせず死体へ戻す (床の亡骸は MonsterCorpse だけが表す)
+    if (lay_remains_as_corpses(floor, drop_item, pos_drop)) {
+        note_spot(subject, pos_drop);
+        lite_spot(subject, pos_drop);
+        sound(SoundKind::DROP);
+        if (show_drop_message && subject.is_located_at(pos_drop)) {
+            msg_print(_("何かが足下に転がってきた。", "You feel something roll beneath your feet."));
+        }
+
+        return 0;
     }
 
     auto is_absorbed = false;

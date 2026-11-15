@@ -67,7 +67,42 @@ bool take_item_from_corpse(CreatureEntity &creature, MonsterCorpse &corpse, int 
 }
 
 /*!
+ * @brief 死体そのものを持ち去る候補を表す番兵 (所持品のスロット番号と重ならない値)
+ */
+constexpr auto TAKE_WHOLE_CORPSE = -1;
+
+/*!
+ * @brief 死体そのもの (死体・骨のアイテム) を持ち去ってプレイヤーの所持品へ移す
+ * @return 持ち去ったら true (死体はフロアから無くなる)
+ * @details **持ち物が残っている死体は持ち去れない**。中身ごと持ち去れると
+ *          床の散乱を減らすために死体の中へ所持品を納めた意味が無くなり、
+ *          持ち去った死体アイテムは種族しか覚えないので中身も失われるため。
+ */
+bool take_whole_corpse(CreatureEntity &creature, short corpse_idx)
+{
+    auto &corpse = creature.get_floor()->get_corpse(corpse_idx);
+    if (corpse.has_belongings()) {
+        msg_print(_("{}にはまだ持ち物が残っている。先に取り出さないと持ち去れない。", "{} still holds belongings. Take them out first."), corpse.describe());
+        return false;
+    }
+
+    const auto remains = corpse.make_remains_item();
+    const auto item_name = describe_flavor(creature, remains, 0);
+    if (!creature.can_store_item(remains)) {
+        msg_print(_("ザックには{}を入れる隙間がない。", "You have no room for {}."), item_name);
+        return false;
+    }
+
+    (void)creature.store_item(remains);
+    remove_corpse(creature, corpse_idx, false);
+    msg_print(_("{}を持ち去った。", "You take {}."), item_name);
+    return true;
+}
+
+/*!
  * @brief 1 つの死体を漁る (中身が尽きるか ESC まで繰り返す)
+ * @details 中身の一覧の末尾に「死体そのものを持ち去る」を並べる。中身が尽きた後は
+ *          持ち去るかどうかだけを尋ねる。
  */
 void rummage_one_corpse(CreatureEntity &creature, short corpse_idx)
 {
@@ -79,19 +114,37 @@ void rummage_one_corpse(CreatureEntity &creature, short corpse_idx)
 
     while (true) {
         auto &corpse = floor.get_corpse(corpse_idx);
-        const auto slots = collect_item_slots(corpse);
+        auto slots = collect_item_slots(corpse);
         if (slots.empty()) {
-            msg_print(_("{}には何も残っていない。", "There is nothing left in {}."), corpse.describe());
+            const auto prompt = fmt::format(_("{}には何も残っていない。{}そのものを持ち去りますか？", "There is nothing left in {}. Take {} itself? "),
+                corpse.describe(), corpse.describe());
+            if (input_check(prompt)) {
+                (void)take_whole_corpse(creature, corpse_idx);
+            }
+
             return;
         }
 
+        slots.push_back(TAKE_WHOLE_CORPSE);
         const auto prompt = fmt::format(_("{}から何を取りますか？ ", "Take what from {}? "), corpse.describe());
         CandidateSelector selector(prompt);
         const auto it = selector.select(slots, [&creature, &corpse](int slot) {
+            if (slot == TAKE_WHOLE_CORPSE) {
+                return fmt::format(_("({}そのものを持ち去る)", "(take {} itself)"), corpse.describe());
+            }
+
             return describe_flavor(creature, *corpse.body.inventory[slot], 0);
         });
         if (it == slots.end()) {
             return;
+        }
+
+        if (*it == TAKE_WHOLE_CORPSE) {
+            if (take_whole_corpse(creature, corpse_idx)) {
+                return;
+            }
+
+            continue;
         }
 
         if (!take_item_from_corpse(creature, corpse, *it)) {

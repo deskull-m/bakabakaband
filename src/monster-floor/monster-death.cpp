@@ -215,10 +215,17 @@ static void store_monster_remains(CreatureEntity &creature, MonsterDeath *md_ptr
         }
     }
 
+    // 死体を遺せた場合、死体・骨はアイテムにせず死体そのものの形として持たせる
+    // (床に横たわる亡骸は MonsterCorpse だけが表す)。死体が作れなかったときだけ
+    // 従来どおりアイテムとして床へ落とす。
     ItemEntity item({ ItemKindType::MONSTER_REMAINS, (corpse ? SV_CORPSE : SV_SKELETON) });
     ItemMagicApplier(creature, &item, floor.object_level, AM_NO_FIXED_ART).execute();
     item.pval = enum2i(monrace_id);
-    deliver(item);
+    if (corpse_idx > 0) {
+        creature.get_floor()->get_corpse(corpse_idx).remains_sval = corpse ? SV_CORPSE : SV_SKELETON;
+    } else {
+        deliver(item);
+    }
 
     try {
         if (one_in_(md_ptr->monrace->kind_flags.has(MonsterKindType::UNIQUE) ? 1 : 4)) {

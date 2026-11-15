@@ -8,6 +8,7 @@
 #include "info-reader/parse-error-types.h"
 #include "info-reader/random-grid-effect-types.h"
 #include "io/tokenizer.h"
+#include "monster-floor/monster-corpse-leaver.h"
 #include "monster-floor/monster-generator.h"
 #include "monster-floor/monster-remover.h"
 #include "monster-floor/place-monster-types.h"
@@ -54,6 +55,11 @@ qtwg_type *initialize_quest_generator_type(qtwg_type *qtwg_ptr, int ymin, int xm
  */
 static void drop_here(FloorType &floor, ItemEntity &&item, POSITION y, POSITION x)
 {
+    // 死体・骨は床のアイテムにせず死体として横たえる (床の亡骸は MonsterCorpse だけが表す)
+    if (lay_remains_as_corpses(floor, item, { y, x })) {
+        return;
+    }
+
     const auto item_idx = floor.pop_empty_index_item();
     auto &dropped_item = *floor.o_list[item_idx];
     dropped_item = std::move(item);
