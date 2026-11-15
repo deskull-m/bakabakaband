@@ -287,6 +287,26 @@ StatusPanel に表示を委ねる。以下の関数に `#ifdef GODOT_RICH_UI` �
   (地下 1 階で移動 24・瞬間移動 1・近接 22・被弾 12・死亡 1 を確認。呪文を撃たせていないので `PROJECTION` は未確認)。
 - デバッグ用ミニマップ (Ctrl+Shift+M) の右側に直近のイベントを一覧する。
 
+## 座標・方向で指定する入力 (#9296)
+
+3D 表示ではクリック・タッチやカメラ相対の方向で操作したい。キーで送ると「カーソルを何マス
+動かすか」に分解しなければならない入力を、座標のまま渡す。
+
+| 層 | ファイル | 役割 |
+|---|---|---|
+| 意図 | `src/io/input-intent.{h,cpp}` | `push_point_intent(purpose, pos)` で積み、ゲームが場所を尋ねるところで用途が一致するものだけを取り出す。2 秒で失効。積まなければ何も変わらない (キー入力・ボット・リプレイに影響なし) |
+| 取り出す所 | `point_target()` (`POINT`) / `target_set()` (`TARGET`、見るコマンドは除く) | 意図があれば尋ねずにその座標を使う。ターゲットは見えていて狙えるモンスターがいればそのモンスター、いなければその場所 |
+| GDScript API | `HengbandGame.travel_to(x, y)` / `target_grid(x, y)` / `walk(dir)` | 地図を見ていてコマンドを受け付けるとき (`MAP` かつコマンド待ち) だけ、意図を積んで元祖のコマンド (`` ` `` / `*` / `;`+方向) を送る。キー配置 (keymap) を通さないよう `\` を前置する。送ったら true |
+| 補助 | `godot_project/scripts/input_intents.gd` | カメラ相対の方向 → ゲームの方向 (`rotate_direction`)、ベクトル → 8 方向、端末のセル → フロア座標 (`cell_to_floor`)、3D 座標 ↔ フロア座標 (X 軸 = 東、Z 軸 = 南、1 グリッド = 1) |
+| 2D 端末 | `terminal_pane.gd` | メイン端末の地図を左クリックでトラベル、右クリックでターゲット |
+
+- 端末のセルからフロア座標へは `get_screen_state()` の `map_col0` / `panel_col_min` /
+  `panel_row_prt` / `bigtile` で直す (`x = (列 - map_col0) / (bigtile ? 2 : 1) + panel_col_min`、`y = 行 + panel_row_prt`)。
+- 見るコマンドを座標で始める意図は未実装 (見るコマンドの対話をそのまま使う)。
+- `tools/godot/input-intents-runtime-check.gd` で実ゲームを確かめられる
+  (1 歩歩く・`@` のセルの変換・5 グリッド先へのトラベル・ターゲット後に地図へ戻る、すべて期待どおり)。
+- 補助関数の確認は `tools/godot/gdscript-unit-check.gd` (CI でも実行)。
+
 ### 実ゲームでの確認
 
 `tools/godot/world-snapshot-runtime-check.gd` が `main.tscn` を headless で起動して

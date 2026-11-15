@@ -17,6 +17,7 @@
 #include "main-godot/save-file-scanner.h"
 
 #include "game-option/special-options.h"
+#include "io/input-intent.h"
 #include "locale/character-encoding.h"
 #include "system/system-variables.h"
 
@@ -262,6 +263,56 @@ void HengbandGame::_process(double delta)
     }
 }
 
+namespace {
+/// コマンドを受け付ける画面か (地図を見ていて、プロンプトに答えている最中でない)
+bool is_accepting_command()
+{
+    const auto state = screen_state_get();
+    return (state.info.state == ScreenState::MAP) && (!state.info.input_kind || (*state.info.input_kind == InputKind::COMMAND));
+}
+
+/// キー配置 (keymap) を通さずにコマンドを送る ('\\' の後の 1 文字はキー配置で変換されない)
+void inject_raw_command(GodotInputHandler *input_handler, std::initializer_list<int> keys)
+{
+    input_handler->inject_key('\\');
+    for (const auto key : keys) {
+        input_handler->inject_key(key);
+    }
+}
+}
+
+bool HengbandGame::travel_to(int x, int y)
+{
+    if (!input_handler_ || !is_accepting_command()) {
+        return false;
+    }
+
+    push_point_intent(PointIntentPurpose::POINT, { y, x });
+    inject_raw_command(input_handler_, { '`' });
+    return true;
+}
+
+bool HengbandGame::target_grid(int x, int y)
+{
+    if (!input_handler_ || !is_accepting_command()) {
+        return false;
+    }
+
+    push_point_intent(PointIntentPurpose::TARGET, { y, x });
+    inject_raw_command(input_handler_, { '*' });
+    return true;
+}
+
+bool HengbandGame::walk(int dir)
+{
+    if (!input_handler_ || !is_accepting_command() || (dir < 1) || (dir > 9) || (dir == 5)) {
+        return false;
+    }
+
+    inject_raw_command(input_handler_, { ';', '0' + dir });
+    return true;
+}
+
 void HengbandGame::set_game_events_enabled(bool enabled)
 {
     game_events_set_enabled(enabled);
@@ -284,6 +335,10 @@ godot::Dictionary HengbandGame::get_screen_state()
     d["has_cursor"] = state.info.cursor_pos.has_value();
     d["cursor_x"] = state.info.cursor_pos ? state.info.cursor_pos->x : -1;
     d["cursor_y"] = state.info.cursor_pos ? state.info.cursor_pos->y : -1;
+    d["map_col0"] = state.map_panel.map_col0;
+    d["panel_col_min"] = state.map_panel.panel_col_min;
+    d["panel_row_prt"] = state.map_panel.panel_row_prt;
+    d["bigtile"] = state.map_panel.bigtile;
     return d;
 }
 
@@ -839,6 +894,11 @@ void HengbandGame::_bind_methods()
     // 引数: status (Dictionary) - get_player_status() と同じキー構成
     ADD_SIGNAL(MethodInfo("player_status_changed",
         PropertyInfo(Variant::DICTIONARY, "status")));
+
+    // 座標・方向で指定する入力 (#9296)
+    ClassDB::bind_method(D_METHOD("travel_to", "x", "y"), &HengbandGame::travel_to);
+    ClassDB::bind_method(D_METHOD("target_grid", "x", "y"), &HengbandGame::target_grid);
+    ClassDB::bind_method(D_METHOD("walk", "dir"), &HengbandGame::walk);
 
     // 表示用のゲームイベント (#9295)
     ClassDB::bind_method(

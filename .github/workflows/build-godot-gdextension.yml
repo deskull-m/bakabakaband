@@ -68,3 +68,7 @@ jobs:
       # --script で確認用スクリプトだけを実行して終了する (タイトル画面・ゲームスレッドは起動しない)。
       - name: Load the GDExtension with Godot headless
         run: sh ./.github/scripts/check-godot-extension-load.sh godot-bin/godot godot_project
+
+      # GDScript 側の純粋な補助関数 (方向の変換・座標の変換など) を確かめる
+      - name: Run GDScript unit checks
+        run: godot-bin/godot --headless --path godot_project --script "$PWD"/tools/godot/gdscript-unit-check.gd

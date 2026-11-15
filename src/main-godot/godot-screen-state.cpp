@@ -5,7 +5,9 @@
 
 #include "main-godot/godot-screen-state.h"
 
+#include "game-option/special-options.h"
 #include "locale/character-encoding.h"
+#include "window/main-window-util.h"
 #include "world/world.h"
 
 #include <atomic>
@@ -21,6 +23,7 @@ GodotScreenState g_state; ///< g_mutex で保護
 ScreenStateInfo g_last_info;
 int g_last_depth = -1;
 std::string g_last_prompt;
+GodotScreenState::MapPanel g_last_panel;
 
 std::string to_utf8(const std::string &text)
 {
@@ -40,19 +43,22 @@ void screen_state_update()
     const auto inputs = collect_screen_state_inputs();
     const auto info = classify_screen_state(inputs);
     const auto prompt = inputs.input_context ? inputs.input_context->prompt : std::string();
-    if ((info == g_last_info) && (depth == g_last_depth) && (prompt == g_last_prompt)) {
+    const GodotScreenState::MapPanel panel{ panel_col_of(panel_col_min), panel_col_min, panel_row_prt, use_bigtile };
+    if ((info == g_last_info) && (depth == g_last_depth) && (prompt == g_last_prompt) && (panel == g_last_panel)) {
         return;
     }
 
     g_last_info = info;
     g_last_depth = depth;
     g_last_prompt = prompt;
+    g_last_panel = panel;
 
     std::lock_guard lock(g_mutex);
     g_state.version = g_version.load() + 1;
     g_state.info = info;
     g_state.icky_depth = depth;
     g_state.prompt = to_utf8(prompt);
+    g_state.map_panel = panel;
     g_version.store(g_state.version);
 }
 

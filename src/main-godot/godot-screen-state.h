@@ -18,6 +18,17 @@ struct GodotScreenState {
     ScreenStateInfo info;
     int icky_depth{ 0 };
     std::string prompt; ///< 待っている入力のプロンプト (UTF-8)
+
+    /// メイン端末の地図の表示位置 (端末のセル → フロア座標の変換用、#9296)
+    /// フロアの x は (セルの列 - map_col0) / (bigtile ? 2 : 1) + panel_col_min、y はセルの行 + panel_row_prt
+    struct MapPanel {
+        int map_col0{ 0 }; ///< panel_col_min の x を描く端末の列
+        int panel_col_min{ 0 };
+        int panel_row_prt{ 0 };
+        bool bigtile{ false };
+
+        bool operator==(const MapPanel &) const = default;
+    } map_panel;
 };
 
 /// ゲームスレッドから呼ぶ: 画面の状態を求め直し、変わっていれば公開する

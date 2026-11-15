@@ -105,6 +105,15 @@ public:
     ///       stat_top_str/int/wis/dex/con/chr
     godot::Dictionary get_player_status();
 
+    /// 座標・方向で指定する入力 (#9296)。地図を見ていてコマンドを受け付けるときだけ送り、送ったら true
+    /// travel_to: (x, y) へトラベルする / target_grid: (x, y) をターゲットにする
+    /// (見えていて狙えるモンスターがいればそのモンスター、いなければその場所)
+    /// walk: 方向 (テンキー配置の 1-9、5 を除く) へ 1 歩歩く
+    /// いずれもキー配置 (keymap) を通さずに元祖のコマンドを送る
+    bool travel_to(int x, int y);
+    bool target_grid(int x, int y);
+    bool walk(int dir);
+
     /// 表示用のゲームイベント (#9295) の受け取りを有効/無効にする。既定は無効
     /// 有効な間、毎フレーム game_events(Array[Dictionary]) シグナルで古い順に渡す。
     /// 各 Dictionary: type (ViewEventType: 1=MELEE 2=PROJECTION 3=DAMAGE 4=DEATH

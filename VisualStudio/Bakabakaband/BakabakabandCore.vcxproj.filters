@@ -1243,6 +1243,9 @@
     <ClCompile Include="..\..\src\io\input-context.cpp">
       <Filter>io</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\io\input-intent.cpp">
+      <Filter>io</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\src\io\input-key-acceptor.cpp">
       <Filter>io</Filter>
     </ClCompile>
@@ -4330,6 +4333,9 @@
       <Filter>main</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\io\input-context.h">
+      <Filter>io</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\io\input-intent.h">
       <Filter>io</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\io\input-key-acceptor.h">

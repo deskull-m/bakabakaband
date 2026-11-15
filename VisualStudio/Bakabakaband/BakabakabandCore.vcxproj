@@ -367,6 +367,7 @@
     <ClCompile Include="..\..\src\io\condition-expression.cpp" />
     <ClCompile Include="..\..\src\io\cursor.cpp" />
     <ClCompile Include="..\..\src\io\input-context.cpp" />
+    <ClCompile Include="..\..\src\io\input-intent.cpp" />
     <ClCompile Include="..\..\src\io\input-key-acceptor.cpp" />
     <ClCompile Include="..\..\src\io\input-key-requester.cpp" />
     <ClCompile Include="..\..\src\store\store-key-processor.cpp" />
@@ -1309,6 +1310,7 @@
     <ClInclude Include="..\..\src\io\condition-expression.h" />
     <ClInclude Include="..\..\src\io\cursor.h" />
     <ClInclude Include="..\..\src\io\input-context.h" />
+    <ClInclude Include="..\..\src\io\input-intent.h" />
     <ClInclude Include="..\..\src\io\input-key-acceptor.h" />
     <ClInclude Include="..\..\src\io\input-key-requester.h" />
     <ClInclude Include="..\..\src\store\store-key-processor.h" />

@@ -763,6 +763,7 @@ libhengband_a_SOURCES = \
 	io/files-util.cpp io/files-util.h \
 	io/gf-descriptions.cpp io/gf-descriptions.h \
 	io/input-context.cpp io/input-context.h \
+	io/input-intent.cpp io/input-intent.h \
 	io/input-key-acceptor.cpp io/input-key-acceptor.h \
 	io/input-key-processor.cpp io/input-key-processor.h \
 	io/input-key-requester.cpp io/input-key-requester.h \
@@ -1666,6 +1667,7 @@ hengband_test_SOURCES = \
 	\
 	test/io/test-condition-expression.cpp \
 	test/io/test-input-context.cpp \
+	test/io/test-input-intent.cpp \
 	test/io/test-interpret-pref-file.cpp \
 	test/io/test-macro-configurations-store.cpp \
 	test/io/test-pref-file-expressor.cpp \
