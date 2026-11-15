@@ -258,6 +258,35 @@ StatusPanel に表示を委ねる。以下の関数に `#ifdef GODOT_RICH_UI` �
 
 `tools/godot/screen-state-runtime-check.gd` で実ゲームの遷移を確かめられる (地図 → 持ち物 → キャラクター情報 → 見る → 知識 → 投げる → 方向入力 → 再びキャラクター情報 → 持ち物 の 17 遷移が期待どおり)。
 
+## 表示用のゲームイベント (#9295)
+
+3D 表示のアニメーション・エフェクトのため、プレイヤーが知覚できた出来事を型付きで流す。
+
+| 層 | ファイル | 役割 |
+|---|---|---|
+| イベントと受け手 | `src/view/view-event.{h,cpp}` | `ViewEvent` / `ViewEventSink`。未登録なら呼出側は `is_view_event_sink_active()` の 1 判定で何もしない。乱数・ゲーム状態には触れない |
+| 発火点 | 下表 | 1 行の `notify_view_*()` |
+| ブリッジ | `src/main-godot/godot-game-events.{h,cpp}` | 有効な間キューに溜め (最大 1024、溢れたら古いものを捨てる)、毎フレーム `game_events(Array)` シグナルで古い順に渡す |
+| GDScript | `HengbandGame.set_game_events_enabled(bool)` / シグナル `game_events(events)` | 既定は無効 |
+
+| 種類 | 発火点 | 知らせる条件 |
+|---|---|---|
+| `MELEE` (1) | プレイヤー: `exe_player_attack_to_monster()` の各打撃 / モンスター→プレイヤー: `MonsterAttackPlayer::process_monster_blows()` / モンスター同士: `monster-attack-monster.cpp` | どちらかが見えている。見えない側は `id = 0`・座標なし |
+| `PROJECTION` (2) | `project()` (効果範囲が決まった直後) | 盲目でなく `PROJECT_HIDE` でない (端末版の描画と同じ)。軌跡・効果範囲はプレイヤーの視線が通るグリッドだけ。どちらも空なら知らせない |
+| `DAMAGE` (3) | `CreatureEntity::apply_raw_damage()` (プレイヤー・モンスター共通のプリミティブ) | プレイヤー、または見えているモンスター |
+| `DEATH` (4) | `monster_death()` の冒頭 / プレイヤーの `take_hit()` の死亡判定 | 同上 |
+| `MOVE` (5) / `TELEPORT` (6) / `APPEAR` (7) / `DISAPPEAR` (8) | ブリッジがワールドスナップショットの前回との差から作る (コアからは流さない) | スナップショットも有効なとき、同じ階の中だけ |
+
+- **移動をコアから流さない理由**: `set_position()` の呼出は 25 か所あり、生成・ロードも通るため。
+  スナップショットのクリーチャーの表示用 ID と座標を比べれば、歩行も瞬間移動も出入りも分かる。
+- **`TELEPORT` は「スナップショットの間に 2 グリッド以上動いた」の意味**。加速したモンスターが
+  1 回の画面更新の間に 2 歩進んだ場合も `TELEPORT` になる (実測で確認)。演出側は距離で補間の仕方を決めること。
+- **演出のためにゲームを待たせない** (非ブロッキング)。受け手は後追いで再生する。
+  ボルトの軌跡を見せ切ってから次へ進めたい場合の待ち合わせは将来の拡張。
+- `tools/godot/game-events-runtime-check.gd` で実ゲームのイベントを数えられる
+  (地下 1 階で移動 24・瞬間移動 1・近接 22・被弾 12・死亡 1 を確認。呪文を撃たせていないので `PROJECTION` は未確認)。
+- デバッグ用ミニマップ (Ctrl+Shift+M) の右側に直近のイベントを一覧する。
+
 ### 実ゲームでの確認
 
 `tools/godot/world-snapshot-runtime-check.gd` が `main.tscn` を headless で起動して
@@ -265,7 +294,7 @@ StatusPanel に表示を委ねる。以下の関数に `#ifdef GODOT_RICH_UI` �
 
 ```bash
 HB_SAVE=<使い捨てのセーブファイル> godot --headless --path godot_project \
-    --script tools/godot/world-snapshot-runtime-check.gd
+    --script "$PWD"/tools/godot/world-snapshot-runtime-check.gd
 ```
 
 セーブは端末版のヘッドレス実行 (`tools/bot/README.md`) で作れる。端末版と Godot 版の

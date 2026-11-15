@@ -46,6 +46,7 @@
 #include "tracking/health-bar-tracker.h"
 #include "util/string-processor.h"
 #include "view/display-messages.h"
+#include "view/view-event.h"
 #include <fmt/format.h>
 
 static void heal_monster_by_melee(mam_type *mam_ptr)
@@ -306,7 +307,9 @@ static void process_melee(CreatureEntity &creature, mam_type *mam_ptr)
     const auto remaining_stun = mam_ptr->m_ptr->get_remaining_stun();
     // [提案C2第3弾] 能力値(STR/DEX)を近接命中へ反映 (applies_stat_combat_bonus・既定OFF)。
     const auto hit_power = mam_ptr->power + mam_ptr->m_ptr->get_melee_stat_hit_bonus();
-    if (mam_ptr->effect != RaceBlowEffectType::NONE && !check_hit_from_monster_to_monster(hit_power, mam_ptr->rlev, mam_ptr->ac, remaining_stun)) {
+    const auto is_hit = (mam_ptr->effect == RaceBlowEffectType::NONE) || check_hit_from_monster_to_monster(hit_power, mam_ptr->rlev, mam_ptr->ac, remaining_stun);
+    notify_view_melee(*mam_ptr->m_ptr, *mam_ptr->t_ptr, is_hit, enum2i(mam_ptr->method));
+    if (!is_hit) {
         describe_monster_missed_monster(*creature.get_floor(), mam_ptr);
         return;
     }

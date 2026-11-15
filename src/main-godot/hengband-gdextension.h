@@ -105,6 +105,17 @@ public:
     ///       stat_top_str/int/wis/dex/con/chr
     godot::Dictionary get_player_status();
 
+    /// 表示用のゲームイベント (#9295) の受け取りを有効/無効にする。既定は無効
+    /// 有効な間、毎フレーム game_events(Array[Dictionary]) シグナルで古い順に渡す。
+    /// 各 Dictionary: type (ViewEventType: 1=MELEE 2=PROJECTION 3=DAMAGE 4=DEATH
+    ///   5=MOVE 6=TELEPORT 7=APPEAR 8=DISAPPEAR), actor / target ({id, is_player, has_pos, x, y}),
+    ///   MELEE: hit, method / DAMAGE: value /
+    ///   PROJECTION: attribute, radius, is_beam, is_breath, path (x,y,...), area (x,y,距離,...)
+    /// MOVE 系はワールドスナップショットの差から作るので、set_world_snapshot_enabled(true) も要る。
+    /// actor.pos が移動先、target.pos が移動元
+    void set_game_events_enabled(bool enabled);
+    bool is_game_events_enabled() const;
+
     /// 画面の状態を返す (#9294)
     /// キー: version, state (ScreenState: 0=NO_GAME 1=MAP 2=MAP_WITH_PROMPT 3=TARGETING
     ///       4=OVERLAY_MENU 5=FULLSCREEN_TEXT), input_kind (InputKind の値、不明なら -1),

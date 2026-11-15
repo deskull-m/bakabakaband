@@ -4,6 +4,7 @@
  */
 
 #include "main-godot/godot-world-snapshot.h"
+#include "main-godot/godot-game-events.h"
 
 #include "system/player-type-definition.h"
 #include "view/map-info-cache.h"
@@ -13,8 +14,11 @@
 
 #include <godot_cpp/variant/utility_functions.hpp>
 
+#include <algorithm>
 #include <atomic>
+#include <cstdlib>
 #include <mutex>
+#include <unordered_map>
 
 namespace {
 
@@ -103,6 +107,59 @@ void verify_against_full_build(PlayerType &player, const ObservableWorld &world)
     }
 }
 
+ViewEvent make_move_event(ViewEventType type, uint32_t id, bool is_player, const Pos2D &from, const Pos2D &to)
+{
+    ViewEvent event;
+    event.type = type;
+    event.actor.id = id;
+    event.actor.is_player = is_player;
+    event.actor.pos = to;
+    event.actor.has_pos = type != ViewEventType::DISAPPEAR;
+    event.target.pos = from;
+    event.target.has_pos = type != ViewEventType::APPEAR;
+    return event;
+}
+
+ViewEventType classify_move(const Pos2D &from, const Pos2D &to)
+{
+    const auto distance = std::max(std::abs(to.y - from.y), std::abs(to.x - from.x));
+    return distance <= 1 ? ViewEventType::MOVE : ViewEventType::TELEPORT;
+}
+
+/*!
+ * @brief 前回と今回のスナップショットの差から移動のイベントを作る
+ * @details MOVE / TELEPORT は actor.pos が移動先、target.pos が移動元。
+ * 同じ階の中だけで作る (階を移ったら Godot 側は全体を作り直すので不要)
+ */
+void push_move_events(const ObservableWorld &previous, const ObservableWorld &current, uint32_t player_id)
+{
+    if (previous.player_pos != current.player_pos) {
+        game_events_push(make_move_event(classify_move(previous.player_pos, current.player_pos), player_id, true, previous.player_pos, current.player_pos));
+    }
+
+    std::unordered_map<uint32_t, Pos2D> previous_positions;
+    for (const auto &creature : previous.creatures) {
+        previous_positions.emplace(creature.display_id, creature.pos);
+    }
+
+    for (const auto &creature : current.creatures) {
+        const auto it = previous_positions.find(creature.display_id);
+        if (it == previous_positions.end()) {
+            game_events_push(make_move_event(ViewEventType::APPEAR, creature.display_id, false, creature.pos, creature.pos));
+            continue;
+        }
+
+        if (it->second != creature.pos) {
+            game_events_push(make_move_event(classify_move(it->second, creature.pos), creature.display_id, false, it->second, creature.pos));
+        }
+        previous_positions.erase(it);
+    }
+
+    for (const auto &[id, pos] : previous_positions) {
+        game_events_push(make_move_event(ViewEventType::DISAPPEAR, id, false, pos, pos));
+    }
+}
+
 } // namespace
 
 void world_snapshot_install_observer()
@@ -176,6 +233,9 @@ void world_snapshot_push(PlayerType *player_ptr)
     }
 
     world->creatures = observe_creatures(player);
+    if (can_diff && game_events_is_enabled()) {
+        push_move_events(*g_last.world, *world, player.get_display_id());
+    }
     g_collector.all_dirty = false;
     g_collector.dirty.clear();
 

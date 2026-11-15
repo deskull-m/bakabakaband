@@ -3,7 +3,7 @@ extends SceneTree
 ## main.tscn を実際に起動してセーブデータを読み込み、ワールドスナップショットを確かめる。
 ##
 ## 使い方 (docs/godot-interface.md「実ゲームでの確認」参照):
-##   HB_SAVE=<セーブファイル> godot --headless --path godot_project --script tools/godot/world-snapshot-runtime-check.gd
+##   HB_SAVE=<セーブファイル> godot --headless --path godot_project --script "$PWD"/tools/godot/world-snapshot-runtime-check.gd
 ##
 ## 1. セーブを読み込み、ワールドスナップショットと検証モードを有効にする
 ## 2. 全体スナップショットの概要と画面を表示する

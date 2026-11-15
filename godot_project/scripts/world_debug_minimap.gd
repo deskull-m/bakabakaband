@@ -9,6 +9,7 @@ extends Control
 ## 3D 表示と同じ使い方の見本として、最初だけ全体を受け取り、以降は
 ## get_world_snapshot_changes() で変わったグリッドだけを手元の配列に反映する (#9293)。
 ## Ctrl+Shift+V で検証モード (差分と全体の突き合わせ) を切り替える。
+## 表示中は表示用のゲームイベント (#9295) も受け取り、直近のものを右側に一覧する。
 
 ## ObservedTerrainShape (src/view/observable-world.h) と同じ並び
 const SHAPE_COLORS: Array[Color] = [
@@ -51,12 +52,17 @@ var _creatures: Array = []
 var _player := Vector2i.ZERO
 var _last_changed_count: int = 0
 var _verify := false
+## 直近の表示用ゲームイベント (文字列)
+var _event_log: Array[String] = []
+const EVENT_LOG_LINES := 24
+const EVENT_NAMES := ["?", "MELEE", "PROJECTION", "DAMAGE", "DEATH", "MOVE", "TELEPORT", "APPEAR", "DISAPPEAR"]
 
 
 func setup(game: Node, view_switcher: Node = null) -> void:
 	_game = game
 	_view_switcher = view_switcher
 	_game.screen_state_changed.connect(func(_s): queue_redraw())
+	_game.game_events.connect(_on_game_events)
 	_game.world_snapshot_changed.connect(_on_world_snapshot_changed)
 	visible = false
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -70,6 +76,7 @@ func _input(event: InputEvent) -> void:
 	if event.keycode == KEY_M:
 		visible = not visible
 		_game.set_world_snapshot_enabled(visible)
+		_game.set_game_events_enabled(visible)
 		# 無効の間の変化は追えないので、次は全体から受け取り直す
 		_version = 0
 		_pull_changes()
@@ -84,6 +91,35 @@ func _input(event: InputEvent) -> void:
 func _on_world_snapshot_changed(_new_version: int) -> void:
 	if visible:
 		_pull_changes()
+
+
+func _on_game_events(events: Array) -> void:
+	for event: Dictionary in events:
+		_event_log.append(describe_event(event))
+	while _event_log.size() > EVENT_LOG_LINES:
+		_event_log.pop_front()
+	queue_redraw()
+
+
+static func describe_actor(actor: Dictionary) -> String:
+	var who := "player" if actor["is_player"] else ("#%d" % actor["id"] if actor["id"] != 0 else "?")
+	return "%s@(%d,%d)" % [who, actor["x"], actor["y"]] if actor["has_pos"] else who
+
+
+static func describe_event(event: Dictionary) -> String:
+	var type: int = event["type"]
+	var text: String = EVENT_NAMES[type] if type < EVENT_NAMES.size() else str(type)
+	text += " " + describe_actor(event["actor"])
+	match type:
+		1:
+			text += " -> %s %s" % [describe_actor(event["target"]), "hit" if event["hit"] else "miss"]
+		2:
+			text += " attr=%d r=%d path=%d area=%d" % [event["attribute"], event["radius"], event["path"].size() / 2, event["area"].size() / 3]
+		3:
+			text += " dmg=%d" % event["value"]
+		5, 6:
+			text += " from (%d,%d)" % [event["target"]["x"], event["target"]["y"]]
+	return text
 
 
 func _pull_changes() -> void:
@@ -152,3 +188,6 @@ func _draw() -> void:
 			var cursor_rect := Rect2(origin + Vector2(screen["cursor_x"] * CELL_PX, screen["cursor_y"] * CELL_PX), Vector2(CELL_PX, CELL_PX))
 			draw_rect(cursor_rect.grow(1), Color.YELLOW, false)
 	draw_string(ThemeDB.fallback_font, origin + Vector2(0, height * CELL_PX + 16), status)
+	var log_origin := origin + Vector2(width * CELL_PX + 16, 12)
+	for i in _event_log.size():
+		draw_string(ThemeDB.fallback_font, log_origin + Vector2(0, i * 14), _event_log[i], HORIZONTAL_ALIGNMENT_LEFT, -1, 12)

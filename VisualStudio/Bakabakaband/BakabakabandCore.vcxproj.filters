@@ -19,6 +19,9 @@
     <ClCompile Include="..\..\src\view\screen-state.cpp">
       <Filter>view</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\view\view-event.cpp">
+      <Filter>view</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\src\view\view-observer.cpp">
       <Filter>view</Filter>
     </ClCompile>
@@ -4414,6 +4417,9 @@
       <Filter>view</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\view\screen-state.h">
+      <Filter>view</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\view\view-event.h">
       <Filter>view</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\view\view-observer.h">

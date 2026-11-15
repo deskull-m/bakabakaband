@@ -4,6 +4,7 @@
  */
 
 #include "main-godot/godot-init.h"
+#include "main-godot/godot-game-events.h"
 #include "main-godot/godot-world-snapshot.h"
 
 #include "core/game-play.h"
@@ -79,6 +80,8 @@ void run_game_thread(const std::filesystem::path &lib_path,
 
     // 地図表示の変化をワールドスナップショットの差分更新に使う (#9293)
     world_snapshot_install_observer();
+    // 表示用のゲームイベントを Godot 側へ流す (#9295)
+    game_events_install_sink();
 
     term_activate(term_screen);
 

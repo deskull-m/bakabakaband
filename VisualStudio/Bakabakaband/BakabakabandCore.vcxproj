@@ -1898,6 +1898,7 @@
     <ClCompile Include="..\..\src\view\map-info-cache.cpp" />
     <ClCompile Include="..\..\src\view\observable-world.cpp" />
     <ClCompile Include="..\..\src\view\screen-state.cpp" />
+    <ClCompile Include="..\..\src\view\view-event.cpp" />
     <ClCompile Include="..\..\src\view\view-observer.cpp" />
     <ClCompile Include="..\..\src\player\process-death.cpp" />
     <ClCompile Include="..\..\src\view\display-player-misc-info.cpp" />
@@ -1984,6 +1985,7 @@
     <ClInclude Include="..\..\src\view\map-info-cache.h" />
     <ClInclude Include="..\..\src\view\observable-world.h" />
     <ClInclude Include="..\..\src\view\screen-state.h" />
+    <ClInclude Include="..\..\src\view\view-event.h" />
     <ClInclude Include="..\..\src\view\view-observer.h" />
     <ClInclude Include="..\..\src\view\display-self-info.h" />
     <ClInclude Include="..\..\src\view\display-scores.h" />

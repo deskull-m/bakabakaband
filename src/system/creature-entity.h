@@ -663,16 +663,7 @@ public:
      * @details hp を減算し -9999 でクランプ、on_take_hit() を呼ぶ。
      * プレイヤー・モンスター両者の基本的なダメージ算術を統一する。
      */
-    void apply_raw_damage(int damage)
-    {
-        this->hp -= damage;
-        if (this->hp < -9999) {
-            this->hp = -9999;
-        }
-        if (damage > 0) {
-            this->on_take_hit(damage);
-        }
-    }
+    void apply_raw_damage(int damage);
 
     /*!
      * @brief HP を回復する共通プリミティブ (提案 B5)

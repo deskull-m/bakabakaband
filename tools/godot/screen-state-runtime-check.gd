@@ -3,7 +3,7 @@ extends SceneTree
 ## 画面の状態 (#9294) の遷移を実ゲームで確かめる
 ##
 ## 使い方:
-##   HB_SAVE=<使い捨てのセーブファイル> godot --headless --path godot_project --script tools/godot/screen-state-runtime-check.gd
+##   HB_SAVE=<使い捨てのセーブファイル> godot --headless --path godot_project --script "$PWD"/tools/godot/screen-state-runtime-check.gd
 ##
 ## セーブを読み込み、STEPS のキーを 1 つずつ送って get_screen_state() が期待どおりかを確かめる。
 ## キーは元祖キー配置を前提にしている。地下でキャラクターが襲われると期待どおりにならないので、

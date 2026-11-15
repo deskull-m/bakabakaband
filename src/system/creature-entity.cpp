@@ -63,6 +63,7 @@
 #include "util/enum-converter.h"
 #include "util/string-processor.h"
 #include "view/display-messages.h"
+#include "view/view-event.h"
 #include "world/world.h"
 #include <algorithm>
 #include <fmt/format.h>
@@ -2200,6 +2201,18 @@ void CreatureEntity::init_monster_profile()
     this->realm1 = RealmType::NONE;
     this->realm2 = RealmType::NONE;
     this->element_realm = ElementRealmType::NONE;
+}
+
+void CreatureEntity::apply_raw_damage(int damage)
+{
+    this->hp -= damage;
+    if (this->hp < -9999) {
+        this->hp = -9999;
+    }
+    if (damage > 0) {
+        notify_view_damage(*this, damage);
+        this->on_take_hit(damage);
+    }
 }
 
 uint32_t CreatureEntity::get_display_id() const

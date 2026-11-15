@@ -5,6 +5,7 @@
 
 #include "main-godot/hengband-gdextension.h"
 #include "main-godot/godot-audio-manager.h"
+#include "main-godot/godot-game-events.h"
 #include "main-godot/godot-init.h"
 #include "main-godot/godot-input-handler.h"
 #include "main-godot/godot-player-status.h"
@@ -172,6 +173,59 @@ static godot::Dictionary snapshot_to_dict(const GodotPlayerStatusSnapshot &s)
     return d;
 }
 
+namespace {
+godot::Dictionary view_event_actor_to_dict(const ViewEventActor &actor)
+{
+    godot::Dictionary d;
+    d["id"] = static_cast<int64_t>(actor.id);
+    d["is_player"] = actor.is_player;
+    d["has_pos"] = actor.has_pos;
+    d["x"] = actor.pos.x;
+    d["y"] = actor.pos.y;
+    return d;
+}
+
+godot::Dictionary view_event_to_dict(const ViewEvent &event)
+{
+    godot::Dictionary d;
+    d["type"] = static_cast<int>(event.type);
+    d["actor"] = view_event_actor_to_dict(event.actor);
+    d["target"] = view_event_actor_to_dict(event.target);
+    switch (event.type) {
+    case ViewEventType::MELEE:
+        d["hit"] = event.hit;
+        d["method"] = event.method;
+        break;
+    case ViewEventType::DAMAGE:
+        d["value"] = event.value;
+        break;
+    case ViewEventType::PROJECTION: {
+        d["attribute"] = event.attribute;
+        d["radius"] = event.radius;
+        d["is_beam"] = event.is_beam;
+        d["is_breath"] = event.is_breath;
+        godot::PackedInt32Array path;
+        for (const auto &pos : event.path) {
+            path.push_back(pos.x);
+            path.push_back(pos.y);
+        }
+        d["path"] = path; // x, y, x, y, ...
+        godot::PackedInt32Array area;
+        for (const auto &[dist, pos] : event.area) {
+            area.push_back(pos.x);
+            area.push_back(pos.y);
+            area.push_back(dist);
+        }
+        d["area"] = area; // x, y, 中心からの距離, ...
+        break;
+    }
+    default:
+        break;
+    }
+    return d;
+}
+}
+
 void HengbandGame::_process(double delta)
 {
     (void)delta;
@@ -189,11 +243,33 @@ void HengbandGame::_process(double delta)
         emit_signal("world_snapshot_changed", static_cast<int64_t>(world_version));
     }
 
+    // 表示用のゲームイベントはフレームごとにまとめて渡す (#9295)
+    if (game_events_is_enabled()) {
+        const auto events = game_events_drain();
+        if (!events.empty()) {
+            godot::Array array;
+            for (const auto &event : events) {
+                array.push_back(view_event_to_dict(event));
+            }
+            emit_signal("game_events", array);
+        }
+    }
+
     const auto screen_version = screen_state_get_version();
     if (screen_version != last_screen_state_version_) {
         last_screen_state_version_ = screen_version;
         emit_signal("screen_state_changed", get_screen_state());
     }
+}
+
+void HengbandGame::set_game_events_enabled(bool enabled)
+{
+    game_events_set_enabled(enabled);
+}
+
+bool HengbandGame::is_game_events_enabled() const
+{
+    return game_events_is_enabled();
 }
 
 godot::Dictionary HengbandGame::get_screen_state()
@@ -763,6 +839,18 @@ void HengbandGame::_bind_methods()
     // 引数: status (Dictionary) - get_player_status() と同じキー構成
     ADD_SIGNAL(MethodInfo("player_status_changed",
         PropertyInfo(Variant::DICTIONARY, "status")));
+
+    // 表示用のゲームイベント (#9295)
+    ClassDB::bind_method(
+        D_METHOD("set_game_events_enabled", "enabled"),
+        &HengbandGame::set_game_events_enabled);
+    ClassDB::bind_method(
+        D_METHOD("is_game_events_enabled"),
+        &HengbandGame::is_game_events_enabled);
+    // シグナル: そのフレームまでに起きた表示用のゲームイベント (有効時のみ)
+    // 引数: events (Array[Dictionary]) - 古い順
+    ADD_SIGNAL(MethodInfo("game_events",
+        PropertyInfo(Variant::ARRAY, "events")));
 
     // 画面の状態 (#9294)
     ClassDB::bind_method(
