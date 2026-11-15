@@ -105,6 +105,8 @@ func _ready() -> void:
 	if status_panel and status_panel.has_method("connect_to_game"):
 		status_panel.connect_to_game(game)
 
+	_setup_item_windows(game)
+
 	# 画面の状態による地図ビューと端末の切り替え (#9294)
 	view_switcher = Node.new()
 	view_switcher.name = "ViewSwitcher"
@@ -623,3 +625,65 @@ func _on_close_requested(pane: Node) -> void:
 	else:
 		pane.queue_free()
 	_save_layout_config.call_deferred()
+
+
+# ---- メッセージ・持ち物・装備のウィンドウ ----
+
+const ItemWindow := preload("res://scripts/item_window.gd")
+## 下のバーのボタンの文字 (ItemWindow.Kind の順)
+const ITEM_WINDOW_BUTTONS := ["M", "I", "E"]
+var item_windows: Array = []
+
+func _setup_item_windows(game: Node) -> void:
+	var layer := CanvasLayer.new()
+	layer.name = "ItemWindowLayer"
+	layer.layer = 5
+	add_child(layer)
+	game.set_item_windows_enabled(true)
+
+	var bar := $ConfigLayer/BottomBar
+	var status_button: Button = $ConfigLayer/BottomBar/StatusButton
+	for kind in ITEM_WINDOW_BUTTONS.size():
+		var window := PanelContainer.new()
+		window.set_script(ItemWindow)
+		layer.add_child(window)
+		window.setup(game, kind)
+		var state: Dictionary = GameState.item_windows.get(kind, {})
+		window.visible = bool(state.get("visible", false))
+		var x := int(state.get("x", -1))
+		var y := int(state.get("y", -1))
+		window.position = Vector2(x, y) if x >= 0 and y >= 0 else Vector2(8 + kind * 40, 40 + kind * 40)
+		window.layout_changed.connect(_on_item_window_layout_changed)
+		item_windows.append(window)
+
+		# StatusButton の左へ並べる
+		var button := status_button.duplicate() as Button
+		button.name = "ItemWindowButton%d" % kind
+		button.text = ITEM_WINDOW_BUTTONS[kind]
+		button.tooltip_text = ItemWindow.TITLES[kind]
+		var shift := 50.0 * (ITEM_WINDOW_BUTTONS.size() - kind)
+		button.offset_left = status_button.offset_left - shift
+		button.offset_right = status_button.offset_right - shift
+		bar.add_child(button)
+		button.pressed.connect(_on_item_window_button_pressed.bind(kind))
+	# 画面外へ出た保存位置を戻す
+	_clamp_item_windows.call_deferred()
+
+func _clamp_item_windows() -> void:
+	var screen := get_viewport().get_visible_rect().size
+	for window in item_windows:
+		window.position = ItemWindow.clamp_position(window.position, window.size, screen)
+
+func _on_item_window_button_pressed(kind: int) -> void:
+	var window: Control = item_windows[kind]
+	window.visible = not window.visible
+	_on_item_window_layout_changed(kind)
+
+func _on_item_window_layout_changed(kind: int) -> void:
+	var window: Control = item_windows[kind]
+	GameState.item_windows[kind] = {
+		"visible": window.visible,
+		"x": int(window.position.x),
+		"y": int(window.position.y),
+	}
+	GameState.save_config()

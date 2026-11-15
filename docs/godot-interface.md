@@ -43,6 +43,7 @@ bakabakaband/
 │   ├── godot-input-handler.{cpp,h}    # キーボード・マウス入力
 │   ├── godot-audio-manager.{cpp,h}    # 効果音・BGM
 │   ├── godot-player-status.{cpp,h}    # プレイヤーステータスのブリッジ
+│   ├── godot-player-items.{cpp,h}     # 持ち物・装備・メッセージのブリッジ
 │   ├── save-file-scanner.{cpp,h}      # タイトル画面用セーブファイル一覧
 │   ├── term-color-map.{cpp,h}         # 端末カラー → Godot Color 変換
 │   ├── stack-trace-godot.cpp          # スタックトレース (Godot 版スタブ)
@@ -391,6 +392,35 @@ Linux ビルドで日本語/英語が違っても読み込める。実測 (地�
 クリーチャーの `id` は 19 体とも全期間で不変。
 
 `GodotTerminal.get_row_text(y)` で端末の行を読めるので、スクリプトから画面を確認できる。
+
+## メッセージ・持ち物・装備のウィンドウ
+
+下のバーの **M / I / E** ボタンで、メッセージ・持ち物・装備のウィンドウを開け閉めする
+(`godot_project/scripts/item_window.gd`)。題名の部分をドラッグすると動かせ、
+開いているかと位置は `GameState.item_windows` に保存される。
+
+![メッセージ・持ち物・装備のウィンドウ](images/godot-item-windows.png)
+
+- **ゲームコア側**: `src/view/observable-inventory.{h,cpp}` が持ち物・装備
+  (`observe_inventory()`) と直近のメッセージ (`observe_recent_messages()`、古い順) を
+  取り出す。品名は `describe_flavor()`、色は `tval_to_attr()` (充填中は暗い灰色)、
+  記号はベースアイテムの表示定義、装備欄は `can_equip_to()` で体構造上使えない部位を区別する。
+  プレイヤーが知り得る範囲 (端末版の `i` / `e` / `^P` と同じ) しか含まない。
+- **ブリッジ**: `src/main-godot/godot-player-items.{h,cpp}`。ゲームスレッドが
+  `TERM_XTRA_FRESH` で取り出し、前回と違うときだけ版を進めて公開する
+  (メッセージは件数と最新の 1 件で変化を判定。同じ文の繰り返しは最新の 1 件の `<xN>` に現れる)。
+  文字列は UTF-8 に直して渡す。`HengbandGame.set_item_windows_enabled(true)` の間だけ動く
+  (`main.gd` が起動時に有効にする)。
+- **API**: `get_inventory()` (`pack` / `equipment` / `total_weight` / `weight_limit`、
+  重さは 1/10 ポンド単位、色は端末の色の番号) と `get_messages()` (最大 200 件)。
+  変わったときに `inventory_changed` / `messages_changed` シグナルが出る。
+- ウィンドウは隠れている間はシグナルを受けても描き直さない。
+- 実ゲームでの確認: `tools/godot/item-windows-runtime-check.gd` (持ち物 4 品・装備 13 部位の取得、
+  ウィンドウへの描画、`,` と `d` でのメッセージ・持ち物の更新)。整形関数は
+  `gdscript-unit-check.gd` で確かめる。
+- **未実装**: ウィンドウからの操作 (クリックで使う・装備を外す等) と大きさの変更。
+  日本語版の端末で作ったセーブを英語版の Godot で読むと、セーブ内のメッセージ履歴は
+  文字コードが合わず化ける (新しく出たメッセージは正しく出る)。
 
 ## 既知の制限・今後の課題
 

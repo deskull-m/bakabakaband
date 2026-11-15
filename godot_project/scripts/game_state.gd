@@ -33,6 +33,10 @@ var status_panel_visible: bool = true
 ## 地図ビューが無い現状では効果が無い
 var use_map_view: bool = false
 
+## メッセージ・持ち物・装備のウィンドウの表示状態と位置。
+## キーはウィンドウの種類 (item_window.gd の Kind)、値は {"visible": bool, "x": int, "y": int} (x<0 は未保存)
+var item_windows: Dictionary = {}
+
 const _CONFIG_PATH := "user://hengband_config.cfg"
 
 func _ready() -> void:
@@ -60,6 +64,7 @@ func save_config() -> void:
 	cfg.set_value("status_panel", "y", status_panel_pos.y)
 	cfg.set_value("status_panel", "visible", status_panel_visible)
 	cfg.set_value("display", "use_map_view", use_map_view)
+	cfg.set_value("item_windows", "state", item_windows)
 	cfg.save(_CONFIG_PATH)
 
 func load_config() -> void:
@@ -83,3 +88,4 @@ func load_config() -> void:
 	status_panel_pos = Vector2i(spx, spy)
 	status_panel_visible = cfg.get_value("status_panel", "visible", true)
 	use_map_view = cfg.get_value("display", "use_map_view", false)
+	item_windows = cfg.get_value("item_windows", "state", {})

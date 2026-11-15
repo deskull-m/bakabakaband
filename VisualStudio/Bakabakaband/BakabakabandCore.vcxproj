@@ -1898,6 +1898,7 @@
     <ClCompile Include="..\..\src\view\display-player.cpp" />
     <ClCompile Include="..\..\src\view\display-util.cpp" />
     <ClCompile Include="..\..\src\view\map-info-cache.cpp" />
+    <ClCompile Include="..\..\src\view\observable-inventory.cpp" />
     <ClCompile Include="..\..\src\view\observable-world.cpp" />
     <ClCompile Include="..\..\src\view\screen-state.cpp" />
     <ClCompile Include="..\..\src\view\view-event.cpp" />
@@ -1985,6 +1986,7 @@
     <ClInclude Include="..\..\src\view\display-map.h" />
     <ClInclude Include="..\..\src\view\display-messages.h" />
     <ClInclude Include="..\..\src\view\map-info-cache.h" />
+    <ClInclude Include="..\..\src\view\observable-inventory.h" />
     <ClInclude Include="..\..\src\view\observable-world.h" />
     <ClInclude Include="..\..\src\view\screen-state.h" />
     <ClInclude Include="..\..\src\view\view-event.h" />

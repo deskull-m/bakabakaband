@@ -115,6 +115,19 @@ public:
     bool target_grid(int x, int y);
     bool walk(int dir);
 
+    /// 持ち物・装備・メッセージのウィンドウ用のデータを作るか (既定は無効)
+    void set_item_windows_enabled(bool enabled);
+
+    /// 持ち物と装備を返す (無ければ空)
+    /// キー: version, total_weight, weight_limit (1/10 ポンド単位),
+    ///       pack (Array[Dictionary{slot, label, name, count, weight, weight_text, color, symbol_color, symbol, tval, recharging}]),
+    ///       equipment (Array[Dictionary{slot, label, slot_name, can_equip, item (上と同じ Dictionary、空なら null)}])
+    /// color / symbol_color は端末の色 (get_term_color() で Color にする)
+    godot::Dictionary get_inventory();
+
+    /// 直近のメッセージを返す (無ければ空)。キー: version, messages (PackedStringArray、古い順、最大 200 件)
+    godot::Dictionary get_messages();
+
     /// 表示用のゲームイベント (#9295) の受け取りを有効/無効にする。既定は無効
     /// 有効な間、毎フレーム game_events(Array[Dictionary]) シグナルで古い順に渡す。
     /// 各 Dictionary: type (ViewEventType: 1=MELEE 2=PROJECTION 3=DAMAGE 4=DEATH
@@ -190,6 +203,10 @@ private:
 
     /// screen_state_changed シグナル発行用: 最後に確認した画面の状態の版
     uint64_t last_screen_state_version_{ 0 };
+
+    /// inventory_changed / messages_changed シグナル発行用
+    uint64_t last_inventory_version_{ 0 };
+    uint64_t last_message_version_{ 0 };
 
     /// タイルセットを読み込む（GDScript から呼び出す）
     /// @param graf_name  ANGBAND_GRAF に設定する値 ("old" / "new" / "ne2")

@@ -6,6 +6,7 @@
 #include "main-godot/godot-term-hooks.h"
 #include "main-godot/godot-audio-manager.h"
 #include "main-godot/godot-input-handler.h"
+#include "main-godot/godot-player-items.h"
 #include "main-godot/godot-player-status.h"
 #include "main-godot/godot-screen-state.h"
 #include "main-godot/godot-terminal.h"
@@ -159,6 +160,7 @@ errr term_xtra_godot(int n, int v)
         if (game_term == term_screen) {
             player_status_push(PlayerType::get_instance_ptr());
             world_snapshot_push(PlayerType::get_instance_ptr());
+            player_items_push(PlayerType::get_instance_ptr());
             screen_state_update();
         }
         return 0;

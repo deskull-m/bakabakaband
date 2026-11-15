@@ -8,6 +8,7 @@
 #include "main-godot/godot-game-events.h"
 #include "main-godot/godot-init.h"
 #include "main-godot/godot-input-handler.h"
+#include "main-godot/godot-player-items.h"
 #include "main-godot/godot-player-status.h"
 #include "main-godot/godot-screen-state.h"
 #include "main-godot/godot-term-hooks.h"
@@ -35,6 +36,7 @@
 #include <godot_cpp/variant/dictionary.hpp>
 #include <godot_cpp/variant/packed_byte_array.hpp>
 #include <godot_cpp/variant/packed_int32_array.hpp>
+#include <godot_cpp/variant/packed_string_array.hpp>
 #include <godot_cpp/variant/string.hpp>
 #include <godot_cpp/variant/string_name.hpp>
 
@@ -257,6 +259,18 @@ void HengbandGame::_process(double delta)
         }
     }
 
+    // 持ち物・装備・メッセージのウィンドウ用
+    const auto inventory_version = player_inventory_get_version();
+    if (inventory_version != last_inventory_version_) {
+        last_inventory_version_ = inventory_version;
+        emit_signal("inventory_changed", static_cast<int64_t>(inventory_version));
+    }
+    const auto message_version = player_messages_get_version();
+    if (message_version != last_message_version_) {
+        last_message_version_ = message_version;
+        emit_signal("messages_changed", static_cast<int64_t>(message_version));
+    }
+
     const auto screen_version = screen_state_get_version();
     if (screen_version != last_screen_state_version_) {
         last_screen_state_version_ = screen_version;
@@ -312,6 +326,79 @@ bool HengbandGame::walk(int dir)
 
     inject_raw_command(input_handler_, { ';', '0' + dir });
     return true;
+}
+
+namespace {
+godot::Dictionary observed_item_to_dict(const ObservedItem &item)
+{
+    godot::Dictionary d;
+    d["slot"] = item.slot;
+    d["label"] = godot::String::chr(static_cast<char32_t>(item.label));
+    d["name"] = godot::String::utf8(item.name.c_str());
+    d["count"] = item.count;
+    d["weight"] = item.weight;
+    d["weight_text"] = godot::String::utf8(item.weight_text.c_str());
+    d["color"] = item.color;
+    d["symbol_color"] = item.symbol_color;
+    d["symbol"] = item.symbol_char != 0 ? godot::String::chr(static_cast<char32_t>(static_cast<unsigned char>(item.symbol_char))) : godot::String();
+    d["tval"] = item.tval;
+    d["recharging"] = item.recharging;
+    return d;
+}
+}
+
+void HengbandGame::set_item_windows_enabled(bool enabled)
+{
+    player_items_set_enabled(enabled);
+}
+
+godot::Dictionary HengbandGame::get_inventory()
+{
+    const auto snapshot = player_inventory_get();
+    godot::Dictionary d;
+    if (!snapshot.inventory) {
+        return d;
+    }
+
+    const auto &inventory = *snapshot.inventory;
+    godot::Array pack;
+    for (const auto &item : inventory.pack) {
+        pack.push_back(observed_item_to_dict(item));
+    }
+    godot::Array equipment;
+    for (const auto &slot : inventory.equipment) {
+        godot::Dictionary e;
+        e["slot"] = slot.slot;
+        e["label"] = godot::String::chr(static_cast<char32_t>(slot.label));
+        e["slot_name"] = godot::String::utf8(slot.slot_name.c_str());
+        e["can_equip"] = slot.can_equip;
+        e["item"] = slot.has_item ? godot::Variant(observed_item_to_dict(slot.item)) : godot::Variant();
+        equipment.push_back(e);
+    }
+
+    d["version"] = static_cast<int64_t>(snapshot.version);
+    d["pack"] = pack;
+    d["equipment"] = equipment;
+    d["total_weight"] = inventory.total_weight;
+    d["weight_limit"] = inventory.weight_limit;
+    return d;
+}
+
+godot::Dictionary HengbandGame::get_messages()
+{
+    const auto snapshot = player_messages_get();
+    godot::Dictionary d;
+    if (!snapshot.messages) {
+        return d;
+    }
+
+    godot::PackedStringArray messages;
+    for (const auto &message : *snapshot.messages) {
+        messages.push_back(godot::String::utf8(message.c_str()));
+    }
+    d["version"] = static_cast<int64_t>(snapshot.version);
+    d["messages"] = messages;
+    return d;
 }
 
 void HengbandGame::set_game_events_enabled(bool enabled)
@@ -935,6 +1022,14 @@ void HengbandGame::_bind_methods()
     ClassDB::bind_method(D_METHOD("travel_to", "x", "y"), &HengbandGame::travel_to);
     ClassDB::bind_method(D_METHOD("target_grid", "x", "y"), &HengbandGame::target_grid);
     ClassDB::bind_method(D_METHOD("walk", "dir"), &HengbandGame::walk);
+
+    // 持ち物・装備・メッセージのウィンドウ
+    ClassDB::bind_method(D_METHOD("set_item_windows_enabled", "enabled"), &HengbandGame::set_item_windows_enabled);
+    ClassDB::bind_method(D_METHOD("get_inventory"), &HengbandGame::get_inventory);
+    ClassDB::bind_method(D_METHOD("get_messages"), &HengbandGame::get_messages);
+    // シグナル: 持ち物・装備が変わった / メッセージが増えた (有効時のみ)
+    ADD_SIGNAL(MethodInfo("inventory_changed", PropertyInfo(Variant::INT, "version")));
+    ADD_SIGNAL(MethodInfo("messages_changed", PropertyInfo(Variant::INT, "version")));
 
     // 表示用のゲームイベント (#9295)
     ClassDB::bind_method(

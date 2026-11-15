@@ -104,6 +104,7 @@
     <ClCompile Include="..\..\src\test\view\test-display-lore.cpp" />
     <ClCompile Include="..\..\src\test\view\test-map-info-cache.cpp" />
     <ClCompile Include="..\..\src\test\view\test-map-terrain-visibility.cpp" />
+    <ClCompile Include="..\..\src\test\view\test-observable-inventory.cpp" />
     <ClCompile Include="..\..\src\test\view\test-observable-world.cpp" />
     <ClCompile Include="..\..\src\test\view\test-screen-state.cpp" />
     <ClCompile Include="..\..\src\test\view\test-view-event.cpp" />
