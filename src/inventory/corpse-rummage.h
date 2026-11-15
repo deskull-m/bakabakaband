@@ -7,4 +7,4 @@
 
 class CreatureEntity;
 
-void rummage_corpses_here(CreatureEntity &creature, bool pickup);
+bool rummage_corpses_here(CreatureEntity &creature, bool pickup);

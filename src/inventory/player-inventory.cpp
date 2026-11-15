@@ -295,7 +295,11 @@ void carry(CreatureEntity &creature, bool pickup)
 
     // 足元に遺された死体を漁る。床のアイテムとは別経路なので easy_floor の
     // 分岐より前に置き、どちらの設定でも同じ操作で漁れるようにする。
-    rummage_corpses_here(creature, pickup);
+    // 漁った手番では床のアイテムを拾わない (持ち去った死体から足元へ散らばった品を
+    // そのまま拾ってしまわないため)。漁るのを断った場合は従来どおり拾う。
+    if (rummage_corpses_here(creature, pickup)) {
+        return;
+    }
 
     if (easy_floor) {
         py_pickup_floor(creature, pickup);

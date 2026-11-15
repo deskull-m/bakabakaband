@@ -62,7 +62,7 @@ bool MonsterCorpse::is_skeleton() const
 /*!
  * @brief 死体がまだ持ち物 (剥ぎ取れる品) を抱えているか
  * @details 生前の所持品・装備に加え、ソウル・鱗等の剥ぎ取れる素材も含む。
- *          持ち物が残っている死体は持ち去れない (食べる・壊すと持ち物は周りへ散らばる)。
+ *          持ち物が残ったまま持ち去る・食べる・壊すと、持ち物は周りへ散らばる。
  */
 bool MonsterCorpse::has_belongings() const
 {
