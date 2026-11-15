@@ -601,8 +601,9 @@ void exe_eat_food(CreatureEntity &creature, INVENTORY_IDX i_idx)
 
     auto food_type = CreatureRace(&creature).food();
 
-    /* Balrogs change humanoid corpses to energy */
-    if (food_type == PlayerRaceFoodType::CORPSE) {
+    // バルログ・悪魔系は人間の死体を燃やして精力に換える。上流の CORPSE (死体を捧げる) は
+    // 本作では MONSTER_REMAINS に改名しており、CORPSE は動物種族の「死体を食べる」の意味なので注意
+    if (food_type == PlayerRaceFoodType::MONSTER_REMAINS) {
         if (item->is_corpse() && item->get_monrace().is_human()) {
             const auto item_name = describe_flavor(creature, *item, (OD_OMIT_PREFIX | OD_NAME_ONLY));
             msg_print(_("{}は燃え上り灰になった。精力を吸収した気がする。", "{} is burnt to ashes.  You absorb its vitality!"), str_upcase_first(item_name));
