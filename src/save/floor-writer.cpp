@@ -155,9 +155,19 @@ void wr_saved_floor(CreatureEntity &creature, saved_floor_type *sf_ptr)
     /*** Dump the corpses ***/
     // グリッドのチェイン (Grid::corpse_idx / next_corpse_idx) は保存しない。
     // 死体の座標から読込時に組み直すので、添字の連続性に依存しない。
-    wr_u16b(static_cast<uint16_t>(floor.corpses.size()));
+    // 取り除かれた死体 (released) の空き添字は書かない。件数はダミーの添字 0 を含む。
+    std::vector<short> valid_corpses;
     for (auto i = 1U; i < floor.corpses.size(); i++) {
-        MonsterWriter(floor.get_corpse(static_cast<short>(i)).body).write_to_savedata();
+        if (floor.get_corpse(static_cast<short>(i)).is_valid()) {
+            valid_corpses.push_back(static_cast<short>(i));
+        }
+    }
+
+    wr_u16b(static_cast<uint16_t>(valid_corpses.size() + 1));
+    for (const auto corpse_idx : valid_corpses) {
+        const auto &corpse = floor.get_corpse(corpse_idx);
+        MonsterWriter(corpse.body).write_to_savedata();
+        wr_byte(static_cast<byte>(corpse.remains_sval));
     }
 }
 

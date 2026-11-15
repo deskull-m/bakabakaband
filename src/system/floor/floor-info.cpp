@@ -678,12 +678,22 @@ short FloorType::pop_empty_index_monster()
 /*!
  * @brief 死体を 1 つ格納する空き添字を確保する
  * @return 確保した添字、満杯なら 0
- * @details o_list と同じく push_back で伸ばすだけで添字の再利用はしない。
+ * @details 持ち去り・食事・破壊等で取り除かれた死体 (released) の添字を優先して
+ *          再利用し、無ければ push_back で伸ばす。死体の添字を保持するのは
+ *          グリッドのチェインだけで、取り除く際にチェインから外しているため
+ *          再利用しても古い参照は残らない。
  *          満杯時は例外を投げずに 0 を返し、呼出側が死体を諦める
  *          (死体はゲーム進行に必須ではないため)。
  */
 short FloorType::pop_empty_index_corpse()
 {
+    for (auto corpse_idx = 1U; corpse_idx < this->corpses.size(); corpse_idx++) {
+        if (this->corpses[corpse_idx]->released) {
+            this->corpses[corpse_idx] = std::make_shared<MonsterCorpse>();
+            return static_cast<short>(corpse_idx);
+        }
+    }
+
     if (std::ssize(this->corpses) >= MAX_FLOOR_CORPSES) {
         return 0;
     }

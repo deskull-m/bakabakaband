@@ -15,6 +15,7 @@
 #include "inventory/inventory-object.h"
 #include "main/sound-definitions-table.h"
 #include "main/sound-of-music.h"
+#include "monster-floor/monster-corpse-leaver.h"
 #include "object-enchant/special-object-flags.h"
 #include "object-hook/hook-expendable.h"
 #include "object/item-tester-hooker.h"
@@ -690,6 +691,9 @@ void exe_eat_food(CreatureEntity &creature, INVENTORY_IDX i_idx)
 void do_cmd_eat_food(CreatureEntity &creature)
 {
     CreatureClass(creature).break_samurai_stance({ SamuraiStanceType::MUSOU, SamuraiStanceType::KOUKIJIN });
+    // 足元の死体も床のアイテムと同じ選択肢に並べる。食べ尽くした死体は
+    // スコープを抜ける時にフロアから外れ、残っていた持ち物が周りへ散らばる
+    ScopedCorpseFloorItems corpse_floor_items(creature);
     constexpr auto q = _("どれを食べますか? ", "Eat which item? ");
     constexpr auto s = _("食べ物がない。", "You have nothing to eat.");
     const auto &[item, i_idx] = choose_item(creature, q, s, (USE_INVEN | USE_FLOOR), FuncItemTester(item_tester_hook_eatable, creature));
