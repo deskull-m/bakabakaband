@@ -66,6 +66,8 @@ struct ObservedGrid {
     uint8_t fg_char = 0; //!< map_info() の前景文字 (タイル表示時はタイルの列)
     uint8_t bg_color = 0; //!< map_info() の背景色
     uint8_t bg_char = 0; //!< map_info() の背景文字
+
+    bool operator==(const ObservedGrid &other) const = default;
 };
 
 /*!
@@ -99,6 +101,7 @@ enum ObservedCreatureFlag : uint16_t {
  * @brief 1 体のクリーチャーの観測結果
  */
 struct ObservedCreature {
+    uint32_t display_id = 0; //!< 表示用の識別番号 (CreatureEntity::get_display_id())。同じ個体の移動を追うのに使う
     short m_idx = 0; //!< フロアのモンスター配列の添字 (フロア内・圧縮までの間だけ一意)
     Pos2D pos{ 0, 0 };
     short race_id = -1; //!< 見かけの種族 ID。幻覚中は -1
@@ -125,4 +128,16 @@ struct ObservableWorld {
 
 ObservedTerrainShape classify_observed_terrain(short terrain_id);
 ObservedHealth classify_observed_health(int hp, int maxhp);
+
+/// フロア全体の観測結果を作る
 ObservableWorld build_observable_world(CreatureEntity &player, bool with_symbols = true);
+
+/// フロア全体以外 (地形・クリーチャー以外) の観測結果だけを作る。grids / creatures は空
+ObservableWorld build_observable_world_header(CreatureEntity &player);
+
+/// 1 グリッドの観測結果を作る (変わったグリッドだけを求め直すとき用)。
+/// with_symbols が真なら、事前に MapInfoCache::prepare() を呼んでおくこと
+ObservedGrid observe_grid(CreatureEntity &player, const Pos2D &pos, bool with_symbols = true);
+
+/// 見えているクリーチャーの観測結果を作る
+std::vector<ObservedCreature> observe_creatures(CreatureEntity &player);

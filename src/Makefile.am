@@ -1560,6 +1560,7 @@ libhengband_a_SOURCES = \
 	view/map-info-cache.cpp view/map-info-cache.h \
 	view/object-describer.cpp view/object-describer.h \
 	view/observable-world.cpp view/observable-world.h \
+	view/view-observer.cpp view/view-observer.h \
 	view/status-first-page.cpp view/status-first-page.h \
 	view/status-bars-table.cpp view/status-bars-table.h \
 	\

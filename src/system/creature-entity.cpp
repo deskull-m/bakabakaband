@@ -2202,6 +2202,17 @@ void CreatureEntity::init_monster_profile()
     this->element_realm = ElementRealmType::NONE;
 }
 
+uint32_t CreatureEntity::get_display_id() const
+{
+    // 払い出しはゲームスレッドの表示処理からのみ行う。一周するのは約 43 億体の後なので考慮しない
+    static uint32_t next_display_id = 0;
+    if (this->display_id == 0) {
+        this->display_id = ++next_display_id;
+    }
+
+    return this->display_id;
+}
+
 void CreatureEntity::wipe()
 {
     const bool was_monster = this->has_monster_profile();

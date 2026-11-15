@@ -16,6 +16,7 @@
 #include "view/display-map.h"
 #include "view/display-symbol.h"
 #include "view/map-info-cache.h"
+#include "view/view-observer.h"
 #include "window/overview-map-cache.h"
 #include "window/shrunk-overview-map.h"
 #include "world/world.h"
@@ -72,6 +73,7 @@ void print_map(CreatureEntity &creature)
 {
     // マップ全体を描き直すような変化は、ダンジョン全体図などでも全グリッドを求め直す
     OverviewMapCache::get_instance().mark_all_dirty();
+    notify_view_all_grids_changed();
     // 画面の保存中に残った描き直しの要求は、MapInfoCache::prepare() の側で拾う
     // 描いたグリッドの結果を覚えられるよう、覚える配列もフロアの大きさに合わせておく
     auto &map_info_cache = MapInfoCache::get_instance();

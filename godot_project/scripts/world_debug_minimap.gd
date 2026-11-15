@@ -5,6 +5,10 @@ extends Control
 ## Ctrl+Shift+M で表示/非表示を切り替える。表示中だけ HengbandGame にスナップショットを
 ## 作らせ (set_world_snapshot_enabled)、フロア全体を形状ごとの色で塗る。
 ## 端末のマップ表示と見比べて、未知のグリッドや見えないクリーチャーが漏れていないかを確認する用途。
+##
+## 3D 表示と同じ使い方の見本として、最初だけ全体を受け取り、以降は
+## get_world_snapshot_changes() で変わったグリッドだけを手元の配列に反映する (#9293)。
+## Ctrl+Shift+V で検証モード (差分と全体の突き合わせ) を切り替える。
 
 ## ObservedTerrainShape (src/view/observable-world.h) と同じ並び
 const SHAPE_COLORS: Array[Color] = [
@@ -35,7 +39,17 @@ const CELL_PX := 4
 const MARGIN := 8
 
 var _game: Node = null
-var _snapshot: Dictionary = {}
+## 手元に保持しているフロアの状態 (差分を反映していく)
+var _version: int = 0
+var _width: int = 0
+var _height: int = 0
+var _dun_level: int = 0
+var _shapes := PackedByteArray()
+var _flags := PackedByteArray()
+var _creatures: Array = []
+var _player := Vector2i.ZERO
+var _last_changed_count: int = 0
+var _verify := false
 
 
 func setup(game: Node) -> void:
@@ -48,29 +62,59 @@ func setup(game: Node) -> void:
 func _input(event: InputEvent) -> void:
 	if not (event is InputEventKey) or not event.pressed or event.echo:
 		return
-	if event.keycode == KEY_M and event.ctrl_pressed and event.shift_pressed:
+	if not (event.ctrl_pressed and event.shift_pressed):
+		return
+	if event.keycode == KEY_M:
 		visible = not visible
 		_game.set_world_snapshot_enabled(visible)
-		if visible:
-			_snapshot = _game.get_world_snapshot()
+		# 無効の間の変化は追えないので、次は全体から受け取り直す
+		_version = 0
+		_pull_changes()
+		get_viewport().set_input_as_handled()
+	elif event.keycode == KEY_V and visible:
+		_verify = not _verify
+		_game.set_world_snapshot_verify(_verify)
 		queue_redraw()
 		get_viewport().set_input_as_handled()
 
 
-func _on_world_snapshot_changed(_version: int) -> void:
-	if not visible:
+func _on_world_snapshot_changed(_new_version: int) -> void:
+	if visible:
+		_pull_changes()
+
+
+func _pull_changes() -> void:
+	var changes: Dictionary = _game.get_world_snapshot_changes(_version)
+	if changes.is_empty():
 		return
-	_snapshot = _game.get_world_snapshot()
+	_width = changes["width"]
+	_height = changes["height"]
+	_dun_level = changes["dun_level"]
+	if changes["full"]:
+		_shapes = changes["shapes"]
+		_flags = changes["flags"]
+		_last_changed_count = _shapes.size()
+	else:
+		var indices: PackedInt32Array = changes["indices"]
+		var shapes: PackedByteArray = changes["shapes"]
+		var flags: PackedByteArray = changes["flags"]
+		for i in indices.size():
+			_shapes[indices[i]] = shapes[i]
+			_flags[indices[i]] = flags[i]
+		_last_changed_count = indices.size()
+	_creatures = changes["creatures"]
+	_player = Vector2i(changes["player_x"], changes["player_y"])
+	_version = changes["version"]
 	queue_redraw()
 
 
 func _draw() -> void:
-	if _snapshot.is_empty():
+	if _version == 0 or _shapes.size() != _width * _height:
 		return
-	var width: int = _snapshot["width"]
-	var height: int = _snapshot["height"]
-	var shapes: PackedByteArray = _snapshot["shapes"]
-	var flags: PackedByteArray = _snapshot["flags"]
+	var width := _width
+	var height := _height
+	var shapes := _shapes
+	var flags := _flags
 	var origin := Vector2(MARGIN, MARGIN)
 	draw_rect(Rect2(origin - Vector2(2, 2), Vector2(width * CELL_PX + 4, height * CELL_PX + 4)), Color(0, 0, 0, 0.8))
 	for y in height:
@@ -86,13 +130,15 @@ func _draw() -> void:
 			draw_rect(rect, color)
 			if (flags[i] & (GRID_OBJECT | GRID_CORPSE)) != 0:
 				draw_rect(rect.grow(-1), Color(1, 1, 0))
-	for creature: Dictionary in _snapshot["creatures"]:
+	for creature: Dictionary in _creatures:
 		var c_flags: int = creature["flags"]
 		var color := Color(0.2, 1, 0.2) if (c_flags & CREATURE_PET) != 0 else Color(1, 0.2, 0.2)
 		if (c_flags & CREATURE_IN_VIEW) == 0:
 			color = color.darkened(0.4)
 		draw_rect(Rect2(origin + Vector2(creature["x"] * CELL_PX, creature["y"] * CELL_PX), Vector2(CELL_PX, CELL_PX)), color)
-	var player_pos := origin + Vector2(_snapshot["player_x"] * CELL_PX, _snapshot["player_y"] * CELL_PX)
+	var player_pos := origin + Vector2(_player.x * CELL_PX, _player.y * CELL_PX)
 	draw_rect(Rect2(player_pos, Vector2(CELL_PX, CELL_PX)), Color.WHITE)
-	draw_string(ThemeDB.fallback_font, origin + Vector2(0, height * CELL_PX + 16),
-		"world snapshot v%d  %dx%d  dlv %d  creatures %d" % [_snapshot["version"], width, height, _snapshot["dun_level"], _snapshot["creatures"].size()])
+	var status := "world snapshot v%d  %dx%d  dlv %d  creatures %d  changed %d" % [_version, width, height, _dun_level, _creatures.size(), _last_changed_count]
+	if _verify:
+		status += "  verify: %d stale" % _game.get_world_snapshot_verify_mismatches()
+	draw_string(ThemeDB.fallback_font, origin + Vector2(0, height * CELL_PX + 16), status)

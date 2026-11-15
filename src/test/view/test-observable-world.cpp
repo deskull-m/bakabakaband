@@ -8,9 +8,11 @@
 #include "test/scoped-restore.h"
 #include "util/finalizer.h"
 #include "view/observable-world.h"
+#include "view/view-observer.h"
 #include "world/world.h"
 #include <doctest/doctest.h>
 #include <memory>
+#include <vector>
 
 namespace {
 struct TestTerrains {
@@ -144,6 +146,16 @@ TEST_CASE("The observable world discloses only what the player knows")
     CHECK(unknown.shape == ObservedTerrainShape::UNKNOWN);
     CHECK(unknown.flags == 0);
 
+    SUBCASE("Re-observing one grid gives the same result as the full build")
+    {
+        for (const auto &pos : { remembered_wall, lit_floor, unknown_wall }) {
+            CHECK(observe_grid(player, pos, false) == observed.get_grid(pos));
+        }
+
+        // 忘れたグリッドは個別に求め直しても伏せられる
+        floor.get_grid(remembered_wall).info = 0;
+        CHECK(observe_grid(player, remembered_wall, false).terrain_id == -1);
+    }
     SUBCASE("Blindness hides terrain that is not remembered")
     {
         player.set_timed_effect(CreatureTimedEffect::BLINDNESS, 10);
@@ -152,4 +164,61 @@ TEST_CASE("The observable world discloses only what the player knows")
         CHECK(blind.get_grid(remembered_wall).terrain_id == ids.wall_id);
         player.set_timed_effect(CreatureTimedEffect::BLINDNESS, 0);
     }
+}
+
+TEST_CASE("View observer receives grid and whole-map notifications")
+{
+    struct RecordingObserver : public ViewObserver {
+        std::vector<Pos2D> grids;
+        int all_count = 0;
+        void on_grid_changed(const Pos2D &pos) override
+        {
+            this->grids.push_back(pos);
+        }
+        void on_all_grids_changed() override
+        {
+            this->all_count++;
+        }
+    };
+
+    RecordingObserver observer;
+    const auto restore = util::make_finalizer([] { set_view_observer(nullptr); });
+
+    // 未登録なら何も起きない
+    notify_view_grid_changed({ 1, 2 });
+    notify_view_all_grids_changed();
+
+    set_view_observer(&observer);
+    notify_view_grid_changed({ 3, 4 });
+    notify_view_all_grids_changed();
+    REQUIRE(observer.grids.size() == 1);
+    CHECK(observer.grids[0] == Pos2D(3, 4));
+    CHECK(observer.all_count == 1);
+
+    set_view_observer(nullptr);
+    notify_view_grid_changed({ 5, 6 });
+    CHECK(observer.grids.size() == 1);
+}
+
+TEST_CASE("Display IDs are stable across moves and reset by wipe")
+{
+    CreatureEntity first;
+    CreatureEntity second;
+    const auto first_id = first.get_display_id();
+    const auto second_id = second.get_display_id();
+    CHECK(first_id != 0);
+    CHECK(second_id != 0);
+    CHECK(first_id != second_id);
+    CHECK(first.get_display_id() == first_id);
+
+    // モンスター配列の圧縮と同じく実体ごと移すと番号も移る
+    CreatureEntity moved = std::move(first);
+    CHECK(moved.get_display_id() == first_id);
+
+    // 空いた添字を再利用するときの wipe() で番号は付け直される
+    moved.wipe();
+    const auto reused_id = moved.get_display_id();
+    CHECK(reused_id != 0);
+    CHECK(reused_id != first_id);
+    CHECK(reused_id != second_id);
 }

@@ -110,12 +110,23 @@ public:
     bool is_world_snapshot_enabled() const;
 
     /// 最新のワールドスナップショットを Dictionary で返す (無ければ空)
-    /// キー: version, width, height, dungeon_id, dun_level, is_wild_mode, player_x, player_y,
+    /// キー: version, floor_version, full (= true), width, height, dungeon_id, dun_level, is_wild_mode,
+    ///       player_x, player_y,
     ///       terrain (PackedInt32Array, 未知は -1), shapes (PackedByteArray, ObservedTerrainShape),
     ///       flags (PackedByteArray, ObservedGridFlag), symbols (PackedByteArray, 1 グリッド 4 バイト),
-    ///       creatures (Array[Dictionary{m_idx, x, y, race_id, health, flags}])
-    /// グリッドの配列は行優先 (index = y * width + x)
+    ///       creatures (Array[Dictionary{id, m_idx, x, y, race_id, health, flags}])
+    /// グリッドの配列は行優先 (index = y * width + x)。creatures は常に全体
     godot::Dictionary get_world_snapshot();
+
+    /// since_version より後に変わったグリッドだけを返す (#9293)
+    /// full = false のときは indices (PackedInt32Array, 行優先の添字) と同じ並びで terrain / shapes /
+    /// flags / symbols を持つ。since_version が floor_version より前 (階の移動など) なら
+    /// get_world_snapshot() と同じ全体 (full = true) を返す
+    godot::Dictionary get_world_snapshot_changes(int64_t since_version);
+
+    /// 検証モード: 差分で作った結果をフロア全体から作った結果と毎回突き合わせ、食い違いを printerr する
+    void set_world_snapshot_verify(bool verify);
+    int64_t get_world_snapshot_verify_mismatches() const;
 
 protected:
     static void _bind_methods();

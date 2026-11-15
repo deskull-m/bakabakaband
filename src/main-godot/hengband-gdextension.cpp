@@ -203,12 +203,78 @@ namespace {
 godot::Dictionary observed_creature_to_dict(const ObservedCreature &creature)
 {
     godot::Dictionary d;
+    d["id"] = static_cast<int64_t>(creature.display_id);
     d["m_idx"] = creature.m_idx;
     d["x"] = creature.pos.x;
     d["y"] = creature.pos.y;
     d["race_id"] = creature.race_id;
     d["health"] = static_cast<int>(creature.health);
     d["flags"] = static_cast<int>(creature.flags);
+    return d;
+}
+
+/*!
+ * @brief グリッドの観測結果を詰めた配列を作る
+ * @param indices 詰めるグリッドの添字。nullptr なら全グリッド
+ */
+void pack_observed_grids(godot::Dictionary &d, const ObservableWorld &world, const std::vector<int32_t> *indices)
+{
+    const auto count = indices ? static_cast<int64_t>(indices->size()) : static_cast<int64_t>(world.grids.size());
+    godot::PackedInt32Array terrain;
+    godot::PackedByteArray shapes;
+    godot::PackedByteArray flags;
+    godot::PackedByteArray symbols; // 1 グリッドあたり fg_color, fg_char, bg_color, bg_char の 4 バイト
+    terrain.resize(count);
+    shapes.resize(count);
+    flags.resize(count);
+    symbols.resize(count * 4);
+    for (int64_t i = 0; i < count; ++i) {
+        const auto index = indices ? static_cast<size_t>((*indices)[static_cast<size_t>(i)]) : static_cast<size_t>(i);
+        const auto &grid = world.grids[index];
+        terrain.set(i, grid.terrain_id);
+        shapes.set(i, static_cast<uint8_t>(grid.shape));
+        flags.set(i, grid.flags);
+        symbols.set(i * 4, grid.fg_color);
+        symbols.set(i * 4 + 1, grid.fg_char);
+        symbols.set(i * 4 + 2, grid.bg_color);
+        symbols.set(i * 4 + 3, grid.bg_char);
+    }
+
+    d["terrain"] = terrain;
+    d["shapes"] = shapes;
+    d["flags"] = flags;
+    d["symbols"] = symbols;
+}
+
+godot::Dictionary make_world_snapshot_dict(const GodotWorldSnapshot &snapshot, const std::vector<int32_t> *indices)
+{
+    const auto &world = *snapshot.world;
+    godot::Dictionary d;
+    d["version"] = static_cast<int64_t>(snapshot.version);
+    d["floor_version"] = static_cast<int64_t>(snapshot.floor_version);
+    d["full"] = indices == nullptr;
+    d["width"] = world.width;
+    d["height"] = world.height;
+    d["dungeon_id"] = world.dungeon_id;
+    d["dun_level"] = world.dun_level;
+    d["is_wild_mode"] = world.is_wild_mode;
+    d["player_x"] = world.player_pos.x;
+    d["player_y"] = world.player_pos.y;
+    if (indices) {
+        godot::PackedInt32Array packed_indices;
+        packed_indices.resize(static_cast<int64_t>(indices->size()));
+        for (size_t i = 0; i < indices->size(); ++i) {
+            packed_indices.set(static_cast<int64_t>(i), (*indices)[i]);
+        }
+        d["indices"] = packed_indices;
+    }
+    pack_observed_grids(d, world, indices);
+
+    godot::Array creatures;
+    for (const auto &creature : world.creatures) {
+        creatures.push_back(observed_creature_to_dict(creature));
+    }
+    d["creatures"] = creatures;
     return d;
 }
 }
@@ -220,56 +286,40 @@ godot::Dictionary HengbandGame::get_world_snapshot()
         return godot::Dictionary();
     }
 
-    const auto &world = *snapshot.world;
-    const auto grid_count = static_cast<int64_t>(world.grids.size());
-    godot::PackedInt32Array terrain;
-    godot::PackedByteArray shapes;
-    godot::PackedByteArray flags;
-    godot::PackedByteArray symbols; // 1 グリッドあたり fg_color, fg_char, bg_color, bg_char の 4 バイト
-    terrain.resize(grid_count);
-    shapes.resize(grid_count);
-    flags.resize(grid_count);
-    symbols.resize(grid_count * 4);
-    for (int64_t i = 0; i < grid_count; ++i) {
-        const auto &grid = world.grids[static_cast<size_t>(i)];
-        terrain.set(i, grid.terrain_id);
-        shapes.set(i, static_cast<uint8_t>(grid.shape));
-        flags.set(i, grid.flags);
-        symbols.set(i * 4, grid.fg_color);
-        symbols.set(i * 4 + 1, grid.fg_char);
-        symbols.set(i * 4 + 2, grid.bg_color);
-        symbols.set(i * 4 + 3, grid.bg_char);
-    }
-
-    godot::Array creatures;
-    for (const auto &creature : world.creatures) {
-        creatures.push_back(observed_creature_to_dict(creature));
-    }
-
-    godot::Dictionary d;
-    d["version"] = static_cast<int64_t>(snapshot.version);
-    d["width"] = world.width;
-    d["height"] = world.height;
-    d["dungeon_id"] = world.dungeon_id;
-    d["dun_level"] = world.dun_level;
-    d["is_wild_mode"] = world.is_wild_mode;
-    d["player_x"] = world.player_pos.x;
-    d["player_y"] = world.player_pos.y;
-    d["terrain"] = terrain;
-    d["shapes"] = shapes;
-    d["flags"] = flags;
-    d["symbols"] = symbols;
-    d["creatures"] = creatures;
-    return d;
+    return make_world_snapshot_dict(snapshot, nullptr);
 }
 
-godot::Dictionary HengbandGame::get_player_status()
+godot::Dictionary HengbandGame::get_world_snapshot_changes(int64_t since_version)
 {
-    const auto snap = player_status_get_snapshot();
-    if (!snap.is_valid) {
+    const auto snapshot = world_snapshot_get();
+    if (!snapshot.world) {
         return godot::Dictionary();
     }
-    return snapshot_to_dict(snap);
+
+    // 基準の版がフロアを作り直す前なら、差分ではなく全体を返す
+    if ((since_version <= 0) || (static_cast<uint64_t>(since_version) < snapshot.floor_version)) {
+        return make_world_snapshot_dict(snapshot, nullptr);
+    }
+
+    std::vector<int32_t> indices;
+    const auto &grid_versions = *snapshot.grid_versions;
+    for (size_t i = 0; i < grid_versions.size(); ++i) {
+        if (grid_versions[i] > static_cast<uint64_t>(since_version)) {
+            indices.push_back(static_cast<int32_t>(i));
+        }
+    }
+
+    return make_world_snapshot_dict(snapshot, &indices);
+}
+
+void HengbandGame::set_world_snapshot_verify(bool verify)
+{
+    world_snapshot_set_verify(verify);
+}
+
+int64_t HengbandGame::get_world_snapshot_verify_mismatches() const
+{
+    return static_cast<int64_t>(world_snapshot_get_verify_mismatches());
 }
 
 void HengbandGame::_notification(int p_what)
@@ -693,6 +743,15 @@ void HengbandGame::_bind_methods()
     ClassDB::bind_method(
         D_METHOD("get_world_snapshot"),
         &HengbandGame::get_world_snapshot);
+    ClassDB::bind_method(
+        D_METHOD("get_world_snapshot_changes", "since_version"),
+        &HengbandGame::get_world_snapshot_changes);
+    ClassDB::bind_method(
+        D_METHOD("set_world_snapshot_verify", "verify"),
+        &HengbandGame::set_world_snapshot_verify);
+    ClassDB::bind_method(
+        D_METHOD("get_world_snapshot_verify_mismatches"),
+        &HengbandGame::get_world_snapshot_verify_mismatches);
 
     // シグナル: ワールドスナップショットが更新された (有効時のみ)
     // 引数: version (int) - get_world_snapshot() の "version" と同じ値

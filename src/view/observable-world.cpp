@@ -99,6 +99,14 @@ bool has_found_object(const FloorType &floor, const Grid &grid)
     return false;
 }
 
+}
+
+/*!
+ * @brief 1 グリッドの観測結果を作る
+ * @param player プレイヤー (視点となるクリーチャー)
+ * @param pos 階の中の座標
+ * @param with_symbols 表示シンボル (map_info() の結果) も求めるか
+ */
 ObservedGrid observe_grid(CreatureEntity &player, const Pos2D &pos, bool with_symbols)
 {
     const auto &floor = *player.get_floor();
@@ -129,6 +137,10 @@ ObservedGrid observe_grid(CreatureEntity &player, const Pos2D &pos, bool with_sy
         observed.flags |= OBSERVED_GRID_OBJECT;
     }
 
+    if (player.get_position() == pos) {
+        observed.flags |= OBSERVED_GRID_PLAYER;
+    }
+
     if (grid.has_monster() && floor.get_monster(grid.m_idx).is_visible_on_map()) {
         observed.flags |= OBSERVED_GRID_MONSTER;
     }
@@ -145,10 +157,13 @@ ObservedGrid observe_grid(CreatureEntity &player, const Pos2D &pos, bool with_sy
     return observed;
 }
 
+namespace {
+
 ObservedCreature observe_creature(const CreatureEntity &player, short m_idx, const CreatureEntity &monster)
 {
     const auto &floor = *player.get_floor();
     ObservedCreature observed;
+    observed.display_id = monster.get_display_id();
     observed.m_idx = m_idx;
     observed.pos = monster.get_position();
     if (floor.get_grid(observed.pos).is_view()) {
@@ -188,14 +203,29 @@ ObservedCreature observe_creature(const CreatureEntity &player, short m_idx, con
 }
 
 /*!
- * @brief プレイヤーが知り得るフロアの状態を取り出す
- * @param player プレイヤー (視点となるクリーチャー)
- * @param with_symbols 各グリッドの表示シンボル (map_info() の結果) も求めるか。
- * 偽なら fg_* / bg_* は 0 のまま (地形の表示定義を持たない単体テスト等のため)
- * @details ゲームの状態は変えない (map_info() は表示用の専用乱数だけを使う)。
- * ゲームスレッドから呼ぶこと。
+ * @brief 見えているクリーチャーの観測結果を作る
  */
-ObservableWorld build_observable_world(CreatureEntity &player, bool with_symbols)
+std::vector<ObservedCreature> observe_creatures(CreatureEntity &player)
+{
+    std::vector<ObservedCreature> creatures;
+    const auto &floor = *player.get_floor();
+    for (short m_idx = 1; m_idx < floor.m_max; ++m_idx) {
+        const auto &monster = floor.m_list[m_idx];
+        if (!monster.is_valid() || !monster.is_visible_on_map()) {
+            continue;
+        }
+
+        creatures.push_back(observe_creature(player, m_idx, monster));
+    }
+
+    return creatures;
+}
+
+/*!
+ * @brief フロアの大きさ・階層・プレイヤーの位置だけを取り出す
+ * @return フロアが無ければ is_valid が偽
+ */
+ObservableWorld build_observable_world_header(CreatureEntity &player)
 {
     ObservableWorld world;
     const auto *floor_ptr = player.get_floor();
@@ -211,30 +241,35 @@ ObservableWorld build_observable_world(CreatureEntity &player, bool with_symbols
     world.dun_level = static_cast<short>(floor.dun_level);
     world.is_wild_mode = AngbandWorld::get_instance().is_wild_mode();
     world.player_pos = player.get_position();
+    return world;
+}
+
+/*!
+ * @brief プレイヤーが知り得るフロアの状態を取り出す
+ * @param player プレイヤー (視点となるクリーチャー)
+ * @param with_symbols 各グリッドの表示シンボル (map_info() の結果) も求めるか。
+ * 偽なら fg_* / bg_* は 0 のまま (地形の表示定義を持たない単体テスト等のため)
+ * @details ゲームの状態は変えない (map_info() は表示用の専用乱数だけを使う)。
+ * ゲームスレッドから呼ぶこと。
+ */
+ObservableWorld build_observable_world(CreatureEntity &player, bool with_symbols)
+{
+    auto world = build_observable_world_header(player);
+    if (!world.is_valid) {
+        return world;
+    }
 
     if (with_symbols) {
         MapInfoCache::get_instance().prepare(player);
     }
-    world.grids.reserve(static_cast<size_t>(floor.width * floor.height));
-    for (auto y = 0; y < floor.height; ++y) {
-        for (auto x = 0; x < floor.width; ++x) {
+
+    world.grids.reserve(static_cast<size_t>(world.width * world.height));
+    for (auto y = 0; y < world.height; ++y) {
+        for (auto x = 0; x < world.width; ++x) {
             world.grids.push_back(observe_grid(player, { y, x }, with_symbols));
         }
     }
 
-    const auto &player_pos = world.player_pos;
-    if ((player_pos.y >= 0) && (player_pos.y < world.height) && (player_pos.x >= 0) && (player_pos.x < world.width)) {
-        world.grids[world.player_pos.y * world.width + world.player_pos.x].flags |= OBSERVED_GRID_PLAYER;
-    }
-
-    for (short m_idx = 1; m_idx < floor.m_max; ++m_idx) {
-        const auto &monster = floor.m_list[m_idx];
-        if (!monster.is_valid() || !monster.is_visible_on_map()) {
-            continue;
-        }
-
-        world.creatures.push_back(observe_creature(player, m_idx, monster));
-    }
-
+    world.creatures = observe_creatures(player);
     return world;
 }

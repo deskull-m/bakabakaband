@@ -23,6 +23,7 @@
 #include "util/flag-group.h"
 #include "util/point-2d.h"
 #include <array>
+#include <cstdint>
 #include <functional>
 #include <initializer_list>
 #include <map>
@@ -1048,6 +1049,17 @@ public:
      *          扱わないことで既存の `is_seen()` 等の意味論を維持）
      */
     virtual bool is_visible_on_map() const;
+
+    /*!
+     * @brief 表示用の識別番号を返す (#9293)
+     * @return 1 以上の番号。初めて呼ばれたときに払い出す
+     * @details 3D 表示などで「同じ個体が動いた」ことを追うための番号。
+     * m_idx はモンスター配列の圧縮 (compact_monsters()) で変わり、空いた添字は別の個体に再利用されるため使えない。
+     * - 圧縮では実体ごと移るので番号も保たれる
+     * - wipe() で 0 に戻るので、添字を再利用した新しい個体には別の番号が付く
+     * - ゲームの進行には一切使わず、セーブもしない (ロード後は新しい番号になる)
+     */
+    uint32_t get_display_id() const;
 
     // [提案 14] AI ターゲット選定の共通化
     using CreaturePredicate = std::function<bool(const CreatureEntity &)>;
@@ -2837,6 +2849,8 @@ private:
     // 以降 shared_ptr の指す MonraceDefinition は差し替えられない (in-place 更新のみ) ため、
     // 生ポインタはセッション中安定。id が現在の r_idx / ap_r_idx と一致する限り再探索を省く
     // 自己検証型の遅延キャッシュ。r_idx 変化 (変身・カメレオン・付替え) は id 不一致で自動失効。
+    mutable uint32_t display_id{}; //!< 表示用の識別番号 (get_display_id() が遅延して払い出す。0 は未払い出し)
+
     mutable MonraceDefinition *cached_monrace{};
     mutable MonraceId cached_monrace_id{};
     mutable MonraceDefinition *cached_apparent_monrace{};

@@ -200,10 +200,32 @@ StatusPanel に表示を委ねる。以下の関数に `#ifdef GODOT_RICH_UI` �
   行・列になるので、2D タイルセットをビルボードに流用できる。
 - 形状 (`shapes`) は `ObservedTerrainShape` (床・壁・扉・階段・液体・木・入口等)。
   地形フラグから C++ 側で分類するので、GDScript は地形定義を持たなくてよい。
-- 現状は**フレッシュのたびに全量**を作る (最大 132×132)。差分化は #9293。
 - 動作確認用に **Ctrl+Shift+M** でデバッグ用ミニマップ
   (`godot_project/scripts/world_debug_minimap.gd`) を表示できる。表示中だけ
-  スナップショットが有効になる。
+  スナップショットが有効になる。**Ctrl+Shift+V** で検証モード (下記) を切り替える。
+
+### 差分更新 (#9293)
+
+| 要素 | 内容 |
+|---|---|
+| 観測点 | `src/view/view-observer.{h,cpp}` の `ViewObserver`。`lite_spot()` が `on_grid_changed(pos)`、`print_map()` が `on_all_grids_changed()` を呼ぶ (端末の地図・`OverviewMapCache` が描き直すのと同じ 2 か所)。未登録なら null 判定 1 回で終わり、乱数もゲームの状態も触らない |
+| ブリッジ | `godot-world-snapshot.cpp` の観測者が変わったかもしれないグリッドを集め、次の push でそのグリッドだけ `observe_grid()` で求め直す。中身が実際に変わったグリッドに「最後に変わった版」を記録する |
+| 全体の作り直し | 初回・`print_map()` (階の移動・画面の再描画)・フロアの大きさ/ダンジョン/階層/広域マップ表示の切替・通知の溜まりすぎ (8192 件)・スナップショットが無効だった間に変化があったとき。この版を `floor_version` とする |
+| GDScript | `get_world_snapshot_changes(since_version)` が `since_version` より後に変わったグリッドだけを `indices` (行優先の添字) と同じ並びの配列で返す。`since_version` が `floor_version` より前なら全体 (`full = true`) を返す |
+
+- **途中の版を読み飛ばしても取りこぼさない**。シグナルはフレームごとに最新の版で
+  1 回しか来ないが、グリッドごとの版で比べるので、利用者は「前回受け取った版」を
+  渡すだけでよい。
+- **クリーチャーは差分化せず毎回全体を返す** (体力・状態の変化は `lite_spot()` を
+  通らないため。走査は `m_max` までなので安い)。
+- 同じ個体を追うには `creatures[].id` (`CreatureEntity::get_display_id()`) を使う。
+  `m_idx` はモンスター配列の圧縮で変わり、空いた添字は別の個体に再利用される。
+  `id` は圧縮では実体ごと移り、`wipe()` (添字の再利用) で付け直される。
+  ゲームの進行には使わず、セーブもしない (ロード後・階の移動後は新しい番号になる)。
+- **検証モード** (`set_world_snapshot_verify(true)`) では、差分で作った結果を毎回
+  フロア全体から作り直した結果と突き合わせ、食い違ったグリッドを `printerr` し
+  `get_world_snapshot_verify_mismatches()` に数える。`lite_spot()` を通らない
+  見え方の変化を見つけるためのもので、通常は無効にしておく (全体を作り直す分だけ重い)。
 
 ## 既知の制限・今後の課題
 
