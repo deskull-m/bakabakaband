@@ -222,3 +222,23 @@ TEST_CASE("Display IDs are stable across moves and reset by wipe")
     CHECK(reused_id != first_id);
     CHECK(reused_id != second_id);
 }
+
+TEST_CASE("The terrain catalog lists tags, shapes and default symbols")
+{
+    auto &terrains = TerrainList::get_instance();
+    const auto old_size = terrains.size();
+    const auto restore = util::make_finalizer([&terrains, old_size] { terrains.resize(old_size); });
+    const auto ids = add_test_terrains(terrains, old_size);
+    auto &wall = terrains.get_terrain(ids.wall_id);
+    wall.tag = "TEST_WALL";
+    wall.symbol_definitions[F_LIT_STANDARD] = { 7, '#' };
+
+    const auto catalog = build_terrain_catalog();
+    REQUIRE(catalog.size() == terrains.size());
+    const auto &entry = catalog[static_cast<size_t>(ids.wall_id)];
+    CHECK(entry.id == ids.wall_id);
+    CHECK(entry.tag == "TEST_WALL");
+    CHECK(entry.shape == ObservedTerrainShape::WALL);
+    CHECK(entry.symbol_char == '#');
+    CHECK(entry.symbol_color == 7);
+}

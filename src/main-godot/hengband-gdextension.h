@@ -23,6 +23,7 @@
 #include <godot_cpp/classes/thread.hpp>
 #include <godot_cpp/core/class_db.hpp>
 #include <godot_cpp/variant/array.hpp>
+#include <godot_cpp/variant/color.hpp>
 
 /// ターミナル数（メイン + サブウィンドウ最大8）
 static constexpr int HENGBAND_TERM_COUNT = 8;
@@ -140,7 +141,8 @@ public:
     ///       player_x, player_y,
     ///       terrain (PackedInt32Array, 未知は -1), shapes (PackedByteArray, ObservedTerrainShape),
     ///       flags (PackedByteArray, ObservedGridFlag), symbols (PackedByteArray, 1 グリッド 4 バイト),
-    ///       creatures (Array[Dictionary{id, m_idx, x, y, race_id, health, flags}])
+    ///       object_tvals (PackedByteArray, いちばん上の床アイテムの種別。無い・幻覚中は 0),
+    ///       creatures (Array[Dictionary{id, m_idx, x, y, race_id, health, flags, symbol, symbol_color}])
     /// グリッドの配列は行優先 (index = y * width + x)。creatures は常に全体
     godot::Dictionary get_world_snapshot();
 
@@ -149,6 +151,13 @@ public:
     /// flags / symbols を持つ。since_version が floor_version より前 (階の移動など) なら
     /// get_world_snapshot() と同じ全体 (full = true) を返す
     godot::Dictionary get_world_snapshot_changes(int64_t since_version);
+
+    /// 全地形の一覧を返す (#9297、見た目の定義を地形のタグで書くため)。ゲーム開始前は空
+    /// 各要素: {id, tag, name, shape (ObservedTerrainShape), symbol (定義上の文字), symbol_color}
+    godot::Array get_terrain_catalog();
+
+    /// 端末の色 (TERM_COLOR) を Godot の Color にする (ビルボードの文字の色用)
+    godot::Color get_term_color(int color_idx) const;
 
     /// 検証モード: 差分で作った結果をフロア全体から作った結果と毎回突き合わせ、食い違いを printerr する
     void set_world_snapshot_verify(bool verify);

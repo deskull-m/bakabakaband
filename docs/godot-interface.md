@@ -307,6 +307,25 @@ StatusPanel に表示を委ねる。以下の関数に `#ifdef GODOT_RICH_UI` �
   (1 歩歩く・`@` のセルの変換・5 グリッド先へのトラベル・ターゲット後に地図へ戻る、すべて期待どおり)。
 - 補助関数の確認は `tools/godot/gdscript-unit-check.gd` (CI でも実行)。
 
+## 見た目の定義 (#9297)
+
+3D で何を描くかをコードに埋め込まず、`godot_project/data/visuals.jsonc` で決める。
+約 2,600 種のモンスター全てにモデルを用意するのは現実的でないので、**定義が無ければ
+端末と同じ文字・色のビルボードにフォールバック**する (定義が空でも全てを描ける)。
+
+| 要素 | 場所 | 内容 |
+|---|---|---|
+| 定義ファイル | `godot_project/data/visuals.jsonc` | `terrain.by_tag` (地形の `key`) / `terrain.by_shape` (形状の名前) / `monsters.by_race` (種族 ID) / `monsters.by_symbol` (文字) / `items.by_tval` (種別)。1 件は `mesh` / `sprite` / `shape` (`box`・`plane`・`none`) / `scale` / `height` / `color` |
+| 解決 | `godot_project/scripts/visual_catalog.gd` | 地形: by_tag → by_shape → 文字。クリーチャー: by_race → by_symbol → 文字。床アイテム: by_tval → 文字。幻覚中のクリーチャーは `?`。JSONC (コメント・末尾のカンマ) を読む |
+| 地形の一覧 | `HengbandGame.get_terrain_catalog()` (`build_terrain_catalog()`) | 地形 ID → タグ・名前・形状・定義上の文字と色。定義ファイルを地形のタグで書けるようにするため |
+| クリーチャー・床アイテム | スナップショットの `creatures[].symbol` / `symbol_color`、`object_tvals` | 見かけの種族の定義上の文字 (タイル表示の設定に依らない)。幻覚中は伏せる |
+| 色 | `HengbandGame.get_term_color(index)` | 端末の色の番号 → Color |
+| タイル | `VisualCatalog.tile_region(row, col, cell_size)` | タイル表示中は `symbols` の色・文字がタイルの行・列になるので、既存の 2D タイルセットをビルボードのテクスチャに流用できる |
+
+- 実測 (地下 1 階): 地形の一覧 345 件、既知のグリッド 449 件・見えているクリーチャー 19 体・
+  床アイテム 5 個の見た目がすべて決まる (`tools/godot/visual-catalog-runtime-check.gd`)。
+- 定義の解決の確認は `tools/godot/gdscript-unit-check.gd` に含む (CI でも実行)。
+
 ### 実ゲームでの確認
 
 `tools/godot/world-snapshot-runtime-check.gd` が `main.tscn` を headless で起動して

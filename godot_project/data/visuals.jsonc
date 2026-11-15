@@ -1,0 +1,51 @@
+// 3D 表示などの見た目の定義 (#9297)
+//
+// 解決の順番 (scripts/visual_catalog.gd):
+//   地形:     terrain.by_tag[地形のタグ] → terrain.by_shape[形状] → 文字のビルボード
+//   クリーチャー: monsters.by_race[種族 ID] → monsters.by_symbol[文字] → 文字のビルボード
+//   床アイテム: items.by_tval[種別の番号] → 文字のビルボード
+// どれにも当てはまらなければ、端末と同じ文字・色のビルボードになる (定義が空でも全て描ける)。
+//
+// 1 件の書式 (どれも省略可):
+//   "mesh":   メッシュのリソース (res://...)。指定があればメッシュを置く
+//   "sprite": テクスチャのリソース (res://...)。指定があればスプライトのビルボード
+//   "scale":  大きさの倍率 (既定 1.0)
+//   "height": 高さ (グリッド = 1.0。壁・扉の箱の高さなど)
+//   "color":  色 ("#rrggbb")。無ければ端末の色
+//   "shape":  "box" (箱) / "plane" (床の板) / "none" (置かない)。mesh も sprite も無いときの形
+{
+  "version": 1,
+  "terrain": {
+    // 形状 (ObservedTerrainShape の名前) ごとの既定
+    "by_shape": {
+      "FLOOR": { "shape": "plane" },
+      "WALL": { "shape": "box", "height": 1.0 },
+      "DOOR_CLOSED": { "shape": "box", "height": 0.9, "scale": 0.8 },
+      "DOOR_OPEN": { "shape": "plane" },
+      "STAIRS_UP": { "shape": "plane" },
+      "STAIRS_DOWN": { "shape": "plane" },
+      "LIQUID": { "shape": "plane" },
+      "TREE": { "shape": "box", "height": 1.2, "scale": 0.6 },
+      "ENTRANCE": { "shape": "box", "height": 1.0 },
+      "OTHER_PASSABLE": { "shape": "plane" },
+      "OTHER_OBSTACLE": { "shape": "box", "height": 0.8 }
+    },
+    // 地形のタグ (lib/edit/TerrainDefinitions.jsonc の key) ごとの上書き
+    "by_tag": {
+      "PERMANENT": { "shape": "box", "height": 1.2 },
+      "RUBBLE": { "shape": "box", "height": 0.5 }
+    }
+  },
+  "monsters": {
+    // 表示の文字ごとの既定 (例: 竜は大きく)
+    "by_symbol": {
+      "D": { "scale": 1.8 },
+      "d": { "scale": 1.2 }
+    },
+    // 種族 ID ごとの上書き
+    "by_race": {}
+  },
+  "items": {
+    "by_tval": {}
+  }
+}

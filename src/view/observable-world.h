@@ -18,6 +18,7 @@
 
 #include "util/point-2d.h"
 #include <cstdint>
+#include <string>
 #include <vector>
 
 class CreatureEntity;
@@ -66,6 +67,7 @@ struct ObservedGrid {
     uint8_t fg_char = 0; //!< map_info() の前景文字 (タイル表示時はタイルの列)
     uint8_t bg_color = 0; //!< map_info() の背景色
     uint8_t bg_char = 0; //!< map_info() の背景文字
+    uint8_t object_tval = 0; //!< いちばん上の見つけた床アイテムの種別 (ItemKindType)。無い・幻覚中は 0
 
     bool operator==(const ObservedGrid &other) const = default;
 };
@@ -107,6 +109,8 @@ struct ObservedCreature {
     short race_id = -1; //!< 見かけの種族 ID。幻覚中は -1
     ObservedHealth health = ObservedHealth::UNKNOWN;
     uint16_t flags = 0; //!< ObservedCreatureFlag の論理和
+    char symbol_char = 0; //!< 見かけの種族の定義上の文字 (タイル表示の設定に依らない ASCII)。幻覚中は 0
+    uint8_t symbol_color = 0; //!< 見かけの種族の定義上の色。幻覚中は 0
 };
 
 /*!
@@ -141,3 +145,18 @@ ObservedGrid observe_grid(CreatureEntity &player, const Pos2D &pos, bool with_sy
 
 /// 見えているクリーチャーの観測結果を作る
 std::vector<ObservedCreature> observe_creatures(CreatureEntity &player);
+
+/*!
+ * @brief 地形の一覧の 1 件 (見た目の定義を地形のタグで書けるようにするため)
+ */
+struct TerrainCatalogEntry {
+    short id = 0;
+    std::string tag; //!< 地形のタグ (TerrainDefinitions.jsonc の tag)
+    std::string name; //!< 地形の名前 (内部の文字コード)
+    ObservedTerrainShape shape = ObservedTerrainShape::UNKNOWN;
+    char symbol_char = 0; //!< 定義上の文字 (標準の明るさ)
+    uint8_t symbol_color = 0; //!< 定義上の色 (標準の明るさ)
+};
+
+/// 全地形の一覧を作る (地形の定義を読み込んだ後に呼ぶこと)
+std::vector<TerrainCatalogEntry> build_terrain_catalog();

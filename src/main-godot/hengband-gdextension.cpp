@@ -15,6 +15,7 @@
 #include "main-godot/godot-tile-layer.h"
 #include "main-godot/godot-world-snapshot.h"
 #include "main-godot/save-file-scanner.h"
+#include "main-godot/term-color-map.h"
 
 #include "game-option/special-options.h"
 #include "io/input-intent.h"
@@ -363,6 +364,8 @@ godot::Dictionary observed_creature_to_dict(const ObservedCreature &creature)
     d["race_id"] = creature.race_id;
     d["health"] = static_cast<int>(creature.health);
     d["flags"] = static_cast<int>(creature.flags);
+    d["symbol"] = creature.symbol_char != 0 ? godot::String::chr(static_cast<char32_t>(static_cast<unsigned char>(creature.symbol_char))) : godot::String();
+    d["symbol_color"] = creature.symbol_color;
     return d;
 }
 
@@ -377,7 +380,9 @@ void pack_observed_grids(godot::Dictionary &d, const ObservableWorld &world, con
     godot::PackedByteArray shapes;
     godot::PackedByteArray flags;
     godot::PackedByteArray symbols; // 1 グリッドあたり fg_color, fg_char, bg_color, bg_char の 4 バイト
+    godot::PackedByteArray object_tvals;
     terrain.resize(count);
+    object_tvals.resize(count);
     shapes.resize(count);
     flags.resize(count);
     symbols.resize(count * 4);
@@ -391,9 +396,11 @@ void pack_observed_grids(godot::Dictionary &d, const ObservableWorld &world, con
         symbols.set(i * 4 + 1, grid.fg_char);
         symbols.set(i * 4 + 2, grid.bg_color);
         symbols.set(i * 4 + 3, grid.bg_char);
+        object_tvals.set(i, grid.object_tval);
     }
 
     d["terrain"] = terrain;
+    d["object_tvals"] = object_tvals;
     d["shapes"] = shapes;
     d["flags"] = flags;
     d["symbols"] = symbols;
@@ -472,6 +479,31 @@ godot::Dictionary HengbandGame::get_world_snapshot_changes(int64_t since_version
     }
 
     return make_world_snapshot_dict(snapshot, &indices);
+}
+
+godot::Color HengbandGame::get_term_color(int color_idx) const
+{
+    return term_color_to_godot(static_cast<uint8_t>(color_idx & 0x7F));
+}
+
+godot::Array HengbandGame::get_terrain_catalog()
+{
+    godot::Array array;
+    if (!is_game_started()) {
+        return array;
+    }
+
+    for (const auto &entry : build_terrain_catalog()) {
+        godot::Dictionary d;
+        d["id"] = entry.id;
+        d["tag"] = godot::String::utf8(entry.tag.c_str());
+        d["name"] = sys_string_to_godot(entry.name);
+        d["shape"] = static_cast<int>(entry.shape);
+        d["symbol"] = entry.symbol_char != 0 ? godot::String::chr(static_cast<char32_t>(static_cast<unsigned char>(entry.symbol_char))) : godot::String();
+        d["symbol_color"] = entry.symbol_color;
+        array.push_back(d);
+    }
+    return array;
 }
 
 void HengbandGame::set_world_snapshot_verify(bool verify)
@@ -931,6 +963,12 @@ void HengbandGame::_bind_methods()
     ClassDB::bind_method(
         D_METHOD("get_world_snapshot"),
         &HengbandGame::get_world_snapshot);
+    ClassDB::bind_method(
+        D_METHOD("get_terrain_catalog"),
+        &HengbandGame::get_terrain_catalog);
+    ClassDB::bind_method(
+        D_METHOD("get_term_color", "color_idx"),
+        &HengbandGame::get_term_color);
     ClassDB::bind_method(
         D_METHOD("get_world_snapshot_changes", "since_version"),
         &HengbandGame::get_world_snapshot_changes);

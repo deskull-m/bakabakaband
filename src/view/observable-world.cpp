@@ -87,16 +87,17 @@ bool is_lit_grid(const Grid &grid)
     return any_bits(grid.info, CAVE_LITE | CAVE_MNLT) || match_bits(grid.info, CAVE_GLOW | CAVE_MNDK, CAVE_GLOW);
 }
 
-bool has_found_object(const FloorType &floor, const Grid &grid)
+/// いちばん上の見つけた床アイテム (端末の地図に描かれるもの)
+const ItemEntity *find_found_object(const FloorType &floor, const Grid &grid)
 {
     for (const auto o_idx : grid.o_idx_list) {
         const auto &item = *floor.o_list[o_idx];
         if (item.is_valid() && item.marked.has(OmType::FOUND)) {
-            return true;
+            return &item;
         }
     }
 
-    return false;
+    return nullptr;
 }
 
 }
@@ -133,8 +134,11 @@ ObservedGrid observe_grid(CreatureEntity &player, const Pos2D &pos, bool with_sy
     }
 
     // 見つけた床アイテムは地形が分からなくても端末版の地図に描かれる (感知の結果など)
-    if (has_found_object(floor, grid)) {
+    if (const auto *item = find_found_object(floor, grid); item != nullptr) {
         observed.flags |= OBSERVED_GRID_OBJECT;
+        if (!player.is_hallucinated()) {
+            observed.object_tval = static_cast<uint8_t>(enum2i(item->bi_key.tval()));
+        }
     }
 
     if (player.get_position() == pos) {
@@ -182,7 +186,10 @@ ObservedCreature observe_creature(const CreatureEntity &player, short m_idx, con
         return observed;
     }
 
-    observed.race_id = static_cast<short>(enum2i(monster.get_apparent_monrace().idx));
+    const auto &monrace = monster.get_apparent_monrace();
+    observed.race_id = static_cast<short>(enum2i(monrace.idx));
+    observed.symbol_char = monrace.symbol_definition.character;
+    observed.symbol_color = monrace.symbol_definition.color;
     observed.health = classify_observed_health(monster.hp, monster.maxhp);
     const std::pair<bool, ObservedCreatureFlag> states[] = {
         { monster.is_asleep(), OBSERVED_CREATURE_ASLEEP },
@@ -272,4 +279,28 @@ ObservableWorld build_observable_world(CreatureEntity &player, bool with_symbols
 
     world.creatures = observe_creatures(player);
     return world;
+}
+
+/*!
+ * @brief 全地形の一覧を作る
+ */
+std::vector<TerrainCatalogEntry> build_terrain_catalog()
+{
+    std::vector<TerrainCatalogEntry> catalog;
+    const auto &terrains = TerrainList::get_instance();
+    for (size_t i = 0; i < terrains.size(); ++i) {
+        const auto id = static_cast<short>(i);
+        const auto &terrain = terrains.get_terrain(id);
+        TerrainCatalogEntry entry;
+        entry.id = id;
+        entry.tag = terrain.tag;
+        entry.name = terrain.name;
+        entry.shape = classify_observed_terrain(id);
+        const auto &symbol = terrain.symbol_definitions[F_LIT_STANDARD];
+        entry.symbol_char = symbol.character;
+        entry.symbol_color = symbol.color;
+        catalog.push_back(std::move(entry));
+    }
+
+    return catalog;
 }
