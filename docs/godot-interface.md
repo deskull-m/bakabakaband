@@ -64,7 +64,7 @@ bakabakaband/
 
 | ツール | バージョン | 用途 |
 |---|---|---|
-| Godot Engine | 4.3 以上 | 実行・エディタ |
+| Godot Engine | 4.3 以上 (プロジェクト設定・CI は 4.6) | 実行・エディタ |
 | SCons | 4.x 以上 | ビルドシステム |
 | Python | 3.8 以上 | SCons 実行環境 |
 | C++ コンパイラ | C++20 対応 (MSVC v143+ / g++ / clang++) | コンパイル |
@@ -146,7 +146,7 @@ CreatureEntity 統合リファクタリングに合わせて以下を変換し�
 - プレイヤーステータス読取りを CreatureEntity の virtual アクセサ経由に変更
   (`godot-player-status.cpp`):
   - `lev` → `get_level()`、`chp`/`mhp` → `get_current_hp()`/`get_max_hp()`
-  - `csp`/`msp` → `get_csp()`/`get_msp()`、`au` → `get_au()`
+  - `csp`/`msp` → `get_current_mp()`/`get_max_mp()` (提案 6 で改名済み)、`au` → `get_au()`
   - `exp`/`max_exp` → `get_exp()`/`get_max_exp()`、`pspeed` → `get_speed()`
   - `dis_ac`/`dis_to_a` → `get_dis_ac()`/`get_dis_to_a()`
   - `stat_use[]`/`stat_top[]` → `get_stat_use(i)`/`get_stat_top(i)`
@@ -176,9 +176,34 @@ StatusPanel に表示を委ねる。以下の関数に `#ifdef GODOT_RICH_UI` �
 
 - **セーブファイル形式**: `save-file-scanner.cpp` はタイトル画面のセーブ一覧表示用に
   セーブファイルヘッダを独自に走査する。bakabakaband のセーブデータ
-  バージョン (現在 51) は上流と形式が異なるため、表示内容の検証・調整が必要。
+  バージョン (現在 63、`SAVEFILE_VERSION`) は上流と形式が異なるため、表示内容の検証・調整が必要。
 - **ネットワーク機能**: `src/net/` (libcurl 依存) は GDExtension ビルドから除外している。
 - **状態バー (`print_status`)**: 現状は端末描画を抑制するのみで、Godot StatusPanel への
   移行は未実装。
-- GDExtension ビルドは通常の autotools / MSVC ビルドとは独立しており、
-  CI には組み込んでいない。
+- **Windows (MSVC) 向けの GDExtension ビルドは CI 対象外**。CI は Linux 向けのみ
+  (下記「CI」節)。
+
+## CI
+
+`.github/workflows/build-godot-gdextension.yml` が、`src/**` / `SConstruct` /
+`godot-cpp` / `godot_project/**` を変更する PR で次を行う。
+
+1. `scons platform=linux target=template_debug` で GDExtension ライブラリをビルド
+   (`SCONS_CACHE` によるオブジェクトキャッシュ付き)
+2. Godot (`GODOT_VERSION`、`project.godot` の `config/features` に合わせて 4.6) を
+   headless で起動し、`.github/scripts/check-godot-extension-load.gd` で
+   拡張のクラス (`HengbandGame` / `GodotTerminal` / `GodotTileLayer` /
+   `GodotInputHandler` / `GodotAudioManager`) が登録されたことを確認する
+
+2 はゲームスレッドもタイトル画面も起動しないので、ゲーム内容の動作確認ではない。
+未定義シンボル・初期化時の例外などで**ライブラリが読み込めなくなる変更**を検知する。
+
+ローカルで同じ確認をする場合:
+
+```bash
+scons platform=linux target=template_debug -j$(nproc)
+sh .github/scripts/check-godot-extension-load.sh <godot 実行ファイル> godot_project
+```
+
+**Linux ビルドは英語版になる**点に注意 (`SConstruct` の Linux 分岐は `JP` を定義しない)。
+日本語版の Godot ビルドは Windows 分岐 (`JP` / `SJIS`) のみで、CI では確認していない。

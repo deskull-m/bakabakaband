@@ -4977,8 +4977,15 @@ MSBuild -warnAsError .\VisualStudio\Bakabakaband.sln /t:Rebuild /p:Configuration
 
 Godot 4.x 版 (`src/main-godot/` の GDExtension バックエンド) はゲームコア
 (`src/`) を共有 DLL/共有ライブラリとしてビルドし、`godot_project/` から
-ロードする。autotools / MSVC の端末版ビルドとは**独立**しており、CI には
-組み込んでいない。ビルドシステムはリポジトリルートの `SConstruct` (SCons)。
+ロードする。autotools / MSVC の端末版ビルドとは**独立**したビルドで、
+ビルドシステムはリポジトリルートの `SConstruct` (SCons)。
+
+**CI (`.github/workflows/build-godot-gdextension.yml`) は Linux 向けの
+GDExtension ビルドと、Godot headless での拡張の読込確認を行う** (`src/**` /
+`SConstruct` / `godot-cpp` / `godot_project/**` を変更する PR のみ)。
+SConstruct は `src/` を glob で集めるため、`src/Makefile.am` に載らない孤立
+ソースや Godot 版でだけ欠けるシンボルはここで落ちる。Linux ビルドは英語版
+(`JP` 未定義) で、Windows / 日本語版の Godot ビルドは CI 対象外。
 
 ```bash
 # 依存ツール: SCons 4.x / Python 3.8+ / C++20 対応コンパイラ

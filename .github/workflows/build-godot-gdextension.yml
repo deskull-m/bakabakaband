@@ -1,0 +1,70 @@
+name: Build Godot GDExtension
+
+# Godot 版 (src/main-godot/ + godot_project/) は SCons で別途ビルドするため、
+# autotools / MSVC のビルドジョブでは壊れても検知できない。
+# ゲームコア (src/) の変更で Godot 版だけが壊れることを防ぐため、
+# Linux 向けの GDExtension ライブラリをビルドし、Godot headless で読み込めるかを確認する。
+
+on:
+  pull_request:
+    paths:
+      - "src/**"
+      - "SConstruct"
+      - "godot-cpp"
+      - "godot_project/**"
+      - ".github/workflows/build-godot-gdextension.yml"
+
+  # 手動トリガーを許可
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  # godot-cpp の SConstruct が SCONS_CACHE を見て CacheDir() を設定する。
+  # CacheDir は同じ SCons 実行の全ターゲットに効くため、ゲームコアのオブジェクトもキャッシュされる。
+  SCONS_CACHE: ${{ github.workspace }}/.scons-cache
+  # project.godot の config/features に合わせる
+  GODOT_VERSION: "4.6-stable"
+
+jobs:
+  build:
+    name: Build GDExtension (Linux, template_debug)
+    runs-on: ubuntu-24.04
+    steps:
+      # godot-cpp サブモジュールのみ必要 (libcurl は Visual Studio 用)
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Checkout godot-cpp submodule
+        run: git submodule update --init --depth 1 godot-cpp
+
+      - name: Install SCons
+        run: python3 -m pip install --user scons
+
+      - name: Restore SCons cache
+        uses: actions/cache@v5
+        with:
+          path: ${{ env.SCONS_CACHE }}
+          key: scons-godot-linux-template_debug-${{ github.sha }}
+          restore-keys: |
+            scons-godot-linux-template_debug-
+
+      - name: Build
+        run: scons platform=linux target=template_debug -j$(nproc)
+
+      - name: Check the built library
+        run: test -f bin/bakabakaband.linux.template_debug.x86_64.so
+
+      - name: Download Godot
+        run: |
+          curl -sSfL -o godot.zip \
+            "https://github.com/godotengine/godot-builds/releases/download/${GODOT_VERSION}/Godot_v${GODOT_VERSION}_linux.x86_64.zip"
+          unzip -q godot.zip -d godot-bin
+          mv "godot-bin/Godot_v${GODOT_VERSION}_linux.x86_64" godot-bin/godot
+
+      # GDExtension を読み込めない (未定義シンボル・初期化失敗等) 場合は失敗させる。
+      # --script で確認用スクリプトだけを実行して終了する (タイトル画面・ゲームスレッドは起動しない)。
+      - name: Load the GDExtension with Godot headless
+        run: sh ./.github/scripts/check-godot-extension-load.sh godot-bin/godot godot_project
