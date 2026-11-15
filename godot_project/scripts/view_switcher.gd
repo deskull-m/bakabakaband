@@ -39,7 +39,12 @@ static func state_name(state: int) -> String:
 
 func _on_screen_state_changed(state: Dictionary) -> void:
 	current = state
-	var show := GameState.use_map_view and map_view != null and is_map_state(state["state"])
+	refresh()
+
+
+## 設定や地図ビューが変わったときにも呼ぶ
+func refresh() -> void:
+	var show := GameState.use_map_view and map_view != null and not current.is_empty() and is_map_state(current["state"])
 	if show == _showing_map:
 		return
 	_showing_map = show

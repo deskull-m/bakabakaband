@@ -326,6 +326,33 @@ StatusPanel に表示を委ねる。以下の関数に `#ifdef GODOT_RICH_UI` �
   床アイテム 5 個の見た目がすべて決まる (`tools/godot/visual-catalog-runtime-check.gd`)。
 - 定義の解決の確認は `tools/godot/gdscript-unit-check.gd` に含む (CI でも実行)。
 
+## 3D の地図ビュー (最小構成、#9298)
+
+![3D の地図ビュー (地下 1 階)](images/godot-dungeon-view-3d.png)
+
+`godot_project/scripts/dungeon_view_3d.gd` (`SubViewportContainer`) が、ワールドスナップショットを
+3D で描く。**Ctrl+Shift+D** (または `GameState.use_map_view`) で有効にすると、`view_switcher.gd` が
+地図を見ている間だけ見せ、メニュー・全画面の文章では端末に戻す。
+
+| 要素 | 実装 |
+|---|---|
+| 地形 | 箱用・板用の `MultiMesh` を 1 つずつ。**グリッドごとにインスタンスを 1 つ割り当て**、差分では変わったグリッドのインスタンスだけ書き換える。全体はバッファ (`MultiMesh.buffer`) をまとめて渡す。見た目は `visual_catalog.gd` で地形 ID ごとに 1 度だけ解決してキャッシュ |
+| クリーチャー | 表示用 ID ごとの `Label3D` (文字のビルボード、端末の色)。1 グリッド程度の移動は Tween で滑らかに動かす。感知のみのものは暗く |
+| 床アイテム・プレイヤー | `Label3D` |
+| カメラ | プレイヤーを斜め上から追う。中ボタンのドラッグで回転、Shift + ホイールで寄る・引く |
+| クリック | 床の高さの平面に投影してフロアの座標を求め、左でトラベル・右でターゲット |
+| メッセージ | 端末の 1 行目を重ねて見せる |
+| 視界 | 視界外のグリッドを暗くするだけ (光源・記憶の表現は #9299) |
+
+- **性能 (headless で計測)**: 全体の作り直しは地下 1 階 (60×60) で 9 ms、街 (242×242) で 212 ms
+  (階に入ったときだけ)。差分の反映は 0.1〜0.3 ms (22〜36 グリッド)。
+- `tools/godot/dungeon-view-runtime-check.gd`: 置いた箱・板・ビルボードの数がスナップショットと
+  一致すること、持ち物を開くと隠れて戻ると見えること、移動に追従することを確かめる
+  (headless では `MultiMesh.get_instance_transform()` が値を返さないので、ビュー自身が覚えている
+  グリッドごとの種類で数える)。
+- `tools/godot/screenshot.gd`: 仮想ディスプレイ + ソフトウェア OpenGL で実際に描いた画面を保存する。
+- 未対応: `visuals.jsonc` の `mesh` / `sprite` は現状は床の板で代用、近接攻撃・ボルトの演出 (#8805 等)。
+
 ### 実ゲームでの確認
 
 `tools/godot/world-snapshot-runtime-check.gd` が `main.tscn` を headless で起動して

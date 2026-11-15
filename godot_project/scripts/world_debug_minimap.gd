@@ -75,8 +75,10 @@ func _input(event: InputEvent) -> void:
 		return
 	if event.keycode == KEY_M:
 		visible = not visible
-		_game.set_world_snapshot_enabled(visible)
-		_game.set_game_events_enabled(visible)
+		# 3D の地図ビューを使っている間は、閉じてもスナップショットとイベントを止めない
+		var keep := visible or GameState.use_map_view
+		_game.set_world_snapshot_enabled(keep)
+		_game.set_game_events_enabled(keep)
 		# 無効の間の変化は追えないので、次は全体から受け取り直す
 		_version = 0
 		_pull_changes()

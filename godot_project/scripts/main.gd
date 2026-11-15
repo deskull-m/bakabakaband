@@ -41,6 +41,10 @@ const WorldDebugMinimap = preload("res://scripts/world_debug_minimap.gd")
 const ViewSwitcher = preload("res://scripts/view_switcher.gd")
 var view_switcher: Node = null
 
+## 3D の地図ビュー (#9298)
+const DungeonView3D = preload("res://scripts/dungeon_view_3d.gd")
+var dungeon_view: Control = null
+
 ## 解決済み lib/ パス（タイル読み込みなどで再利用する）
 var _lib_path: String = ""
 
@@ -108,6 +112,20 @@ func _ready() -> void:
 	add_child(view_switcher)
 	view_switcher.setup(game)
 
+	# 3D の地図ビュー (#9298)。Ctrl+Shift+D で切り替え、地図を見ている間だけ見せる
+	var view_layer := CanvasLayer.new()
+	view_layer.name = "MapViewLayer"
+	view_layer.layer = 1
+	add_child(view_layer)
+	dungeon_view = SubViewportContainer.new()
+	dungeon_view.name = "DungeonView3D"
+	dungeon_view.set_script(DungeonView3D)
+	dungeon_view.visible = false
+	view_layer.add_child(dungeon_view)
+	dungeon_view.setup(game)
+	view_switcher.map_view = dungeon_view
+	_apply_map_view_setting(game)
+
 	# ワールドスナップショットのデバッグ表示 (Ctrl+Shift+M、#9292)
 	var debug_layer := CanvasLayer.new()
 	debug_layer.layer = 20
@@ -145,9 +163,27 @@ func _on_viewport_size_changed() -> void:
 			_save_layout_config()
 		)
 
+## 3D の地図ビューを使う設定を反映する
+func _apply_map_view_setting(game: Node) -> void:
+	if GameState.use_map_view:
+		game.set_world_snapshot_enabled(true)
+		game.set_game_events_enabled(true)
+	view_switcher.refresh()
+
+
 ## マウスホイールでフォントサイズを拡大縮小する
+## Ctrl+Shift+D で 3D の地図ビューを切り替える (#9298)
 func _input(event: InputEvent) -> void:
+	if event is InputEventKey and event.pressed and not event.echo and event.ctrl_pressed and event.shift_pressed and event.keycode == KEY_D:
+		GameState.use_map_view = not GameState.use_map_view
+		GameState.save_config()
+		_apply_map_view_setting($HengbandGame)
+		get_viewport().set_input_as_handled()
+		return
 	if not (event is InputEventMouseButton) or not event.pressed:
+		return
+	# Shift + ホイールは 3D の地図ビューの寄り・引きに使う
+	if event.shift_pressed and dungeon_view != null and dungeon_view.visible:
 		return
 	var delta := 0
 	if event.button_index == MOUSE_BUTTON_WHEEL_UP:
