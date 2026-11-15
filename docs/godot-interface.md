@@ -227,6 +227,37 @@ StatusPanel に表示を委ねる。以下の関数に `#ifdef GODOT_RICH_UI` �
   `get_world_snapshot_verify_mismatches()` に数える。`lite_spot()` を通らない
   見え方の変化を見つけるためのもので、通常は無効にしておく (全体を作り直す分だけ重い)。
 
+## 画面の状態 (#9294)
+
+3D 表示は地図を見ている間だけ出し、メニューや全画面の文章は端末で見せるため、
+ゲームがいま何を画面に出しているかを Godot へ知らせる。
+
+| 層 | ファイル | 役割 |
+|---|---|---|
+| 判定 (表示非依存) | `src/view/screen-state.{h,cpp}` | `classify_screen_state()` が入力待ちの文脈 (`io/input-context.h`)・重ねた画面の深さ (`character_icky_depth`)・重ねてから画面全体を消したか から `ScreenState` を決める |
+| 画面全体を消した印 | `src/term/screen-processor.cpp` | `term_clear()` / `clear_from(0)` (メイン画面) で印を付け、`screen_save()` / `screen_load()` で外す。表示の判定にだけ使う |
+| ブリッジ | `src/main-godot/godot-screen-state.{h,cpp}` | 入力待ちに入る直前 (`TERM_XTRA_EVENT`) と画面の更新 (`TERM_XTRA_FRESH`) で求め、変わったときだけ公開する |
+| GDScript | `HengbandGame.get_screen_state()` / シグナル `screen_state_changed(state)` | `state` / `input_kind` / `icky_depth` / `prompt` / `has_cursor` / `cursor_x` / `cursor_y` |
+| 切り替え | `godot_project/scripts/view_switcher.gd` | 地図ビューが登録されていて `GameState.use_map_view` が真のとき、`MAP` / `MAP_WITH_PROMPT` / `TARGETING` の間だけ地図ビューを見せる (地図ビューが無い現状では何もしない) |
+
+| 状態 | 判定 |
+|---|---|
+| `NO_GAME` | フロアが無い (`character_dungeon` が偽。タイトル・キャラクター作成) |
+| `FULLSCREEN_TEXT` | ファイル表示・一覧の閲覧・オプション・自動拾いエディタ・建物・キャラクター作成・店のコマンド待ち。または重ねた画面を開いてから画面全体を消した (キャラクター情報・知識メニューなど) |
+| `TARGETING` | ターゲットの選択・見るコマンド・場所の指定。カーソルのフロア座標を `cursor_x` / `cursor_y` で渡す |
+| `MAP` | 重ねた画面が無く、コマンド待ち (または入力待ちの文脈が無い) |
+| `MAP_WITH_PROMPT` | 重ねた画面が無く、1 行で答える入力 (`-more-`・方向・y/n・数量・文字列・一覧を出していないアイテムや呪文の選択) |
+| `OVERLAY_MENU` | 重ねた画面があり、画面全体は消していない (持ち物・アイテムや呪文の一覧など) |
+
+**判定が曖昧なケース** (いずれも端末を見せる側に倒れるか、実害が小さいもの):
+
+- 持ち物の一覧 (`i`) は入力待ちの文脈を設定しないので `input_kind = -1`。重ねた画面の深さだけで `OVERLAY_MENU` になる。
+- 重ねた画面の上で `term_clear()` / `clear_from(0)` を使わずに全行を書き換える表示は `OVERLAY_MENU` になる (全画面の表示だが、地図ビューを隠す側なので安全)。
+- 見るコマンドの途中でモンスターの思い出などを重ねて表示し、その間に新しい入力待ちの文脈を設定しない場合は `TARGETING` のまま (地図ビューを見せたまま端末に説明が出る)。
+- 入力待ちの文脈は「対応した入力待ちだけ」が設定するので、文脈の無い入力待ちは重ねた画面の深さだけで決まる。
+
+`tools/godot/screen-state-runtime-check.gd` で実ゲームの遷移を確かめられる (地図 → 持ち物 → キャラクター情報 → 見る → 知識 → 投げる → 方向入力 → 再びキャラクター情報 → 持ち物 の 17 遷移が期待どおり)。
+
 ### 実ゲームでの確認
 
 `tools/godot/world-snapshot-runtime-check.gd` が `main.tscn` を headless で起動して

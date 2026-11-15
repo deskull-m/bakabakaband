@@ -29,6 +29,10 @@ var status_panel_pos: Vector2i = Vector2i(-1, -1)
 ## ステータスパネルの表示状態
 var status_panel_visible: bool = true
 
+## 地図を見ている間、端末の代わりに地図ビュー (3D 表示など) を見せるか (#9294)
+## 地図ビューが無い現状では効果が無い
+var use_map_view: bool = false
+
 const _CONFIG_PATH := "user://hengband_config.cfg"
 
 func _ready() -> void:
@@ -55,6 +59,7 @@ func save_config() -> void:
 	cfg.set_value("status_panel", "x", status_panel_pos.x)
 	cfg.set_value("status_panel", "y", status_panel_pos.y)
 	cfg.set_value("status_panel", "visible", status_panel_visible)
+	cfg.set_value("display", "use_map_view", use_map_view)
 	cfg.save(_CONFIG_PATH)
 
 func load_config() -> void:
@@ -77,3 +82,4 @@ func load_config() -> void:
 	var spy: int = cfg.get_value("status_panel", "y", -1)
 	status_panel_pos = Vector2i(spx, spy)
 	status_panel_visible = cfg.get_value("status_panel", "visible", true)
+	use_map_view = cfg.get_value("display", "use_map_view", false)

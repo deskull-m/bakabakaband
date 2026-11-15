@@ -7,6 +7,7 @@
 #include "main-godot/godot-audio-manager.h"
 #include "main-godot/godot-input-handler.h"
 #include "main-godot/godot-player-status.h"
+#include "main-godot/godot-screen-state.h"
 #include "main-godot/godot-terminal.h"
 #include "main-godot/godot-tile-layer.h"
 #include "main-godot/godot-world-snapshot.h"
@@ -158,6 +159,7 @@ errr term_xtra_godot(int n, int v)
         if (game_term == term_screen) {
             player_status_push(PlayerType::get_instance_ptr());
             world_snapshot_push(PlayerType::get_instance_ptr());
+            screen_state_update();
         }
         return 0;
     }
@@ -182,6 +184,8 @@ errr term_xtra_godot(int n, int v)
         // v=true: キーが来るまで待機、v=false: ノンブロッキング
         if (s_input_handler) {
             if (v) {
+                // 入力待ちに入る直前は、待っている入力の文脈が定まっている (#9294)
+                screen_state_update();
                 s_input_handler->wait_for_key(); // Phase 4: 即時リターン
             } else {
                 s_input_handler->poll_events();

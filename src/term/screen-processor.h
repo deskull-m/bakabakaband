@@ -20,3 +20,9 @@ void prt(std::string_view sv, TERM_LEN row, TERM_LEN col);
 void c_roff(TERM_COLOR attr, std::string_view str);
 void roff(std::string_view str);
 void clear_from(int row);
+
+/// メイン画面の全体が消された (term_clear() / clear_from(0) から呼ぶ)
+void note_main_screen_cleared();
+
+/// いちばん上に重ねた画面 (screen_save()) を開いてから、メイン画面の全体を消したか
+bool is_main_screen_cleared_since_save();

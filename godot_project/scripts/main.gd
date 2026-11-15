@@ -37,6 +37,10 @@ const TerminalPaneScene = preload("res://scenes/terminal_pane.tscn")
 ## ワールドスナップショットのデバッグ表示
 const WorldDebugMinimap = preload("res://scripts/world_debug_minimap.gd")
 
+## 画面の状態による地図ビューと端末の切り替え (#9294)
+const ViewSwitcher = preload("res://scripts/view_switcher.gd")
+var view_switcher: Node = null
+
 ## 解決済み lib/ パス（タイル読み込みなどで再利用する）
 var _lib_path: String = ""
 
@@ -97,6 +101,13 @@ func _ready() -> void:
 	if status_panel and status_panel.has_method("connect_to_game"):
 		status_panel.connect_to_game(game)
 
+	# 画面の状態による地図ビューと端末の切り替え (#9294)
+	view_switcher = Node.new()
+	view_switcher.name = "ViewSwitcher"
+	view_switcher.set_script(ViewSwitcher)
+	add_child(view_switcher)
+	view_switcher.setup(game)
+
 	# ワールドスナップショットのデバッグ表示 (Ctrl+Shift+M、#9292)
 	var debug_layer := CanvasLayer.new()
 	debug_layer.layer = 20
@@ -105,7 +116,7 @@ func _ready() -> void:
 	minimap.set_script(WorldDebugMinimap)
 	minimap.set_anchors_preset(Control.PRESET_FULL_RECT)
 	debug_layer.add_child(minimap)
-	minimap.setup(game)
+	minimap.setup(game, view_switcher)
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_WM_CLOSE_REQUEST:

@@ -8,6 +8,7 @@
 #include "main-godot/godot-init.h"
 #include "main-godot/godot-input-handler.h"
 #include "main-godot/godot-player-status.h"
+#include "main-godot/godot-screen-state.h"
 #include "main-godot/godot-term-hooks.h"
 #include "main-godot/godot-terminal.h"
 #include "main-godot/godot-tile-layer.h"
@@ -187,6 +188,27 @@ void HengbandGame::_process(double delta)
         last_world_version_ = world_version;
         emit_signal("world_snapshot_changed", static_cast<int64_t>(world_version));
     }
+
+    const auto screen_version = screen_state_get_version();
+    if (screen_version != last_screen_state_version_) {
+        last_screen_state_version_ = screen_version;
+        emit_signal("screen_state_changed", get_screen_state());
+    }
+}
+
+godot::Dictionary HengbandGame::get_screen_state()
+{
+    const auto state = screen_state_get();
+    godot::Dictionary d;
+    d["version"] = static_cast<int64_t>(state.version);
+    d["state"] = static_cast<int>(state.info.state);
+    d["input_kind"] = state.info.input_kind ? static_cast<int>(*state.info.input_kind) : -1;
+    d["icky_depth"] = state.icky_depth;
+    d["prompt"] = godot::String::utf8(state.prompt.c_str());
+    d["has_cursor"] = state.info.cursor_pos.has_value();
+    d["cursor_x"] = state.info.cursor_pos ? state.info.cursor_pos->x : -1;
+    d["cursor_y"] = state.info.cursor_pos ? state.info.cursor_pos->y : -1;
+    return d;
 }
 
 void HengbandGame::set_world_snapshot_enabled(bool enabled)
@@ -741,6 +763,15 @@ void HengbandGame::_bind_methods()
     // 引数: status (Dictionary) - get_player_status() と同じキー構成
     ADD_SIGNAL(MethodInfo("player_status_changed",
         PropertyInfo(Variant::DICTIONARY, "status")));
+
+    // 画面の状態 (#9294)
+    ClassDB::bind_method(
+        D_METHOD("get_screen_state"),
+        &HengbandGame::get_screen_state);
+    // シグナル: 画面の状態 (地図・プロンプト・ターゲット選択・メニュー・全画面) が変わった
+    // 引数: state (Dictionary) - get_screen_state() と同じキー構成
+    ADD_SIGNAL(MethodInfo("screen_state_changed",
+        PropertyInfo(Variant::DICTIONARY, "state")));
 
     // ワールドスナップショット (観測可能ワールドモデル、#9292)
     ClassDB::bind_method(

@@ -1560,6 +1560,7 @@ libhengband_a_SOURCES = \
 	view/map-info-cache.cpp view/map-info-cache.h \
 	view/object-describer.cpp view/object-describer.h \
 	view/observable-world.cpp view/observable-world.h \
+	view/screen-state.cpp view/screen-state.h \
 	view/view-observer.cpp view/view-observer.h \
 	view/status-first-page.cpp view/status-first-page.h \
 	view/status-bars-table.cpp view/status-bars-table.h \
@@ -1745,6 +1746,7 @@ hengband_test_SOURCES = \
 	test/view/test-map-info-cache.cpp \
 	test/view/test-map-terrain-visibility.cpp \
 	test/view/test-observable-world.cpp \
+	test/view/test-screen-state.cpp \
 	\
 	test/window/test-overview-map-cache.cpp \
 	test/window/test-shrunk-overview-map.cpp

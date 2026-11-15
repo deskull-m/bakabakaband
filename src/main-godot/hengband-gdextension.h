@@ -105,6 +105,12 @@ public:
     ///       stat_top_str/int/wis/dex/con/chr
     godot::Dictionary get_player_status();
 
+    /// 画面の状態を返す (#9294)
+    /// キー: version, state (ScreenState: 0=NO_GAME 1=MAP 2=MAP_WITH_PROMPT 3=TARGETING
+    ///       4=OVERLAY_MENU 5=FULLSCREEN_TEXT), input_kind (InputKind の値、不明なら -1),
+    ///       icky_depth, prompt (String), has_cursor, cursor_x, cursor_y (TARGETING のときのフロア座標)
+    godot::Dictionary get_screen_state();
+
     /// ワールドスナップショット (観測可能ワールドモデル) の作成を有効/無効にする。既定は無効
     void set_world_snapshot_enabled(bool enabled);
     bool is_world_snapshot_enabled() const;
@@ -152,6 +158,9 @@ private:
 
     /// world_snapshot_changed シグナル発行用: 最後に確認したワールドスナップショットの版
     uint64_t last_world_version_{ 0 };
+
+    /// screen_state_changed シグナル発行用: 最後に確認した画面の状態の版
+    uint64_t last_screen_state_version_{ 0 };
 
     /// タイルセットを読み込む（GDScript から呼び出す）
     /// @param graf_name  ANGBAND_GRAF に設定する値 ("old" / "new" / "ne2")

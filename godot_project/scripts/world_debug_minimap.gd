@@ -39,6 +39,7 @@ const CELL_PX := 4
 const MARGIN := 8
 
 var _game: Node = null
+var _view_switcher: Node = null
 ## 手元に保持しているフロアの状態 (差分を反映していく)
 var _version: int = 0
 var _width: int = 0
@@ -52,8 +53,10 @@ var _last_changed_count: int = 0
 var _verify := false
 
 
-func setup(game: Node) -> void:
+func setup(game: Node, view_switcher: Node = null) -> void:
 	_game = game
+	_view_switcher = view_switcher
+	_game.screen_state_changed.connect(func(_s): queue_redraw())
 	_game.world_snapshot_changed.connect(_on_world_snapshot_changed)
 	visible = false
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -141,4 +144,11 @@ func _draw() -> void:
 	var status := "world snapshot v%d  %dx%d  dlv %d  creatures %d  changed %d" % [_version, width, height, _dun_level, _creatures.size(), _last_changed_count]
 	if _verify:
 		status += "  verify: %d stale" % _game.get_world_snapshot_verify_mismatches()
+	var screen: Dictionary = _game.get_screen_state()
+	if not screen.is_empty() and _view_switcher != null:
+		status += "  screen: %s" % _view_switcher.state_name(screen["state"])
+		if screen["has_cursor"]:
+			status += " cursor=(%d,%d)" % [screen["cursor_x"], screen["cursor_y"]]
+			var cursor_rect := Rect2(origin + Vector2(screen["cursor_x"] * CELL_PX, screen["cursor_y"] * CELL_PX), Vector2(CELL_PX, CELL_PX))
+			draw_rect(cursor_rect.grow(1), Color.YELLOW, false)
 	draw_string(ThemeDB.fallback_font, origin + Vector2(0, height * CELL_PX + 16), status)
