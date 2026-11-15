@@ -291,6 +291,7 @@ nlohmann::json make_corpses_json(const PlayerType &player)
         corpse_json["y"] = pos.y;
         corpse_json["x"] = pos.x;
         corpse_json["items"] = corpse.body.get_inven_cnt() + corpse.body.get_equip_cnt();
+        corpse_json["remains"] = corpse.is_skeleton() ? "skeleton" : "corpse";
         corpses.push_back(std::move(corpse_json));
     }
 

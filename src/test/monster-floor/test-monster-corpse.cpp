@@ -4,12 +4,16 @@
  */
 
 #include "monster-floor/monster-corpse-leaver.h"
+#include "object/tval-types.h"
+#include "sv-definition/sv-other-types.h"
+#include "system/baseitem/baseitem-key.h"
 #include "system/creature-entity.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/floor/floor-info.h"
 #include "system/floor/monster-corpse.h"
 #include "system/gamevalue.h"
 #include "system/grid-type-definition.h"
+#include "system/item-entity.h"
 #include "util/enum-converter.h"
 #include <doctest/doctest.h>
 #include <memory>
@@ -117,6 +121,65 @@ TEST_CASE("Floor corpse container")
         REQUIRE(collect_corpses_at(floor, pos).empty());
         // 破棄後も添字を払い出せる
         REQUIRE(floor.pop_empty_index_corpse() == 1);
+    }
+
+    SUBCASE("A removed corpse is unlinked from its grid and its index is reused")
+    {
+        const Pos2D pos(6, 6);
+        const auto first = push_corpse_at(floor, pos, i2enum<MonraceId>(11));
+        const auto second = push_corpse_at(floor, pos, i2enum<MonraceId>(22));
+        const auto third = push_corpse_at(floor, pos, i2enum<MonraceId>(33));
+
+        // チェインの途中 (second) を外しても前後が繋がったまま残る
+        auto &middle = floor.get_corpse(second);
+        middle = MonsterCorpse();
+        middle.released = true;
+        floor.get_corpse(third).next_corpse_idx = first;
+
+        const auto collected = collect_corpses_at(floor, pos);
+        REQUIRE(collected.size() == 2);
+        REQUIRE(collected[0] == third);
+        REQUIRE(collected[1] == first);
+
+        // 取り除いた添字が次の死体に再利用され、コンテナは伸びない
+        const auto size_before = floor.corpses.size();
+        REQUIRE(floor.pop_empty_index_corpse() == second);
+        REQUIRE(floor.corpses.size() == size_before);
+        REQUIRE_FALSE(floor.get_corpse(second).released);
+    }
+
+    SUBCASE("A dropped corpse item is laid as one corpse per item")
+    {
+        const Pos2D pos(7, 7);
+        ItemEntity item;
+        item.bi_key = BaseitemKey(ItemKindType::MONSTER_REMAINS, SV_SKELETON);
+        item.pval = 11;
+        item.bi_id = 1;
+        item.number = 3;
+        REQUIRE(MonsterCorpse::is_remains_item(item));
+        REQUIRE(lay_remains_as_corpses(floor, item, pos));
+
+        const auto collected = collect_corpses_at(floor, pos);
+        REQUIRE(collected.size() == 3);
+        for (const auto corpse_idx : collected) {
+            const auto &corpse = floor.get_corpse(corpse_idx);
+            CHECK(corpse.is_skeleton());
+            CHECK(corpse.body.get_r_idx() == i2enum<MonraceId>(11));
+            CHECK(corpse.get_position() == pos);
+            CHECK_FALSE(corpse.has_belongings());
+        }
+    }
+
+    SUBCASE("Items other than corpses and skeletons are not laid as corpses")
+    {
+        ItemEntity soul;
+        soul.bi_key = BaseitemKey(ItemKindType::MONSTER_REMAINS, SV_SOUL);
+        soul.pval = 11;
+        soul.bi_id = 1;
+        soul.number = 1;
+        REQUIRE_FALSE(MonsterCorpse::is_remains_item(soul));
+        REQUIRE_FALSE(lay_remains_as_corpses(floor, soul, Pos2D(8, 8)));
+        REQUIRE_FALSE(floor.get_grid(Pos2D(8, 8)).has_corpse());
     }
 
     SUBCASE("The container stops handing out indices at the cap")

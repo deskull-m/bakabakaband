@@ -1,8 +1,10 @@
 #include "grid/object-placer.h"
 #include "floor/floor-object.h"
 #include "grid/grid.h"
+#include "monster-floor/monster-corpse-leaver.h"
 #include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
+#include "system/gamevalue.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 
@@ -75,13 +77,25 @@ void place_object(CreatureEntity &creature, const Pos2D &pos, uint32_t mode, Bas
         return;
     }
 
-    const auto item_idx = floor.pop_empty_index_item();
-    if (item_idx == 0) {
+    if (std::ssize(floor.o_list) >= MAX_FLOOR_ITEMS) {
         return;
     }
 
     auto item = make_object(creature, mode, restrict);
     if (!item) {
+        return;
+    }
+
+    // 死体・骨は床のアイテムにせず死体として横たえる (床の亡骸は MonsterCorpse だけが表す)。
+    // o_list の枠はこの判定の後で確保し、空の枠を残さない。
+    if (lay_remains_as_corpses(floor, *item, pos)) {
+        note_spot(creature, pos);
+        lite_spot(creature, pos);
+        return;
+    }
+
+    const auto item_idx = floor.pop_empty_index_item();
+    if (item_idx == 0) {
         return;
     }
 

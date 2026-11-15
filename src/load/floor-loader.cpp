@@ -27,8 +27,34 @@
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
 #include "util/angband-files.h"
+#include "util/enum-converter.h"
 #include "util/finalizer.h"
 #include <fmt/format.h>
+
+namespace {
+/*!
+ * @brief v62 の死体の所持品から亡骸の形 (死体 / 骨) を取り出す
+ * @details v62 では死体・骨のアイテムを死体の所持品へ入れていた。v63 以降は
+ *          MonsterCorpse::remains_sval で表すので、その種族の死体・骨のアイテムを
+ *          所持品から外して形だけを移す。見つからなければ既定 (死体) のまま。
+ */
+void extract_remains_from_belongings(MonsterCorpse &corpse)
+{
+    for (auto &item_ptr : corpse.body.inventory) {
+        if (!item_ptr || !MonsterCorpse::is_remains_item(*item_ptr)) {
+            continue;
+        }
+
+        if (item_ptr->pval != enum2i(corpse.body.get_r_idx())) {
+            continue;
+        }
+
+        corpse.remains_sval = *item_ptr->bi_key.sval();
+        item_ptr->wipe();
+        return;
+    }
+}
+}
 
 /*!
  * @brief 保存されたフロアを読み込む / Read the saved floor
@@ -217,23 +243,27 @@ errr rd_saved_floor(CreatureEntity &creature, saved_floor_type *sf_ptr)
     }
 
     for (auto i = 1; i < limit; i++) {
+        MonsterCorpse loaded;
+        monster_loader->rd_monster(loaded.body);
+        if (loading_savefile_version_is_older_than(63)) {
+            extract_remains_from_belongings(loaded);
+        } else {
+            loaded.remains_sval = rd_byte();
+        }
+
+        const auto pos = loaded.get_position();
+        if (!loaded.is_valid() || !floor.contains(pos, FloorBoundary::OUTER_WALL_INCLUSIVE)) {
+            continue;
+        }
+
         const auto corpse_idx = floor.pop_empty_index_corpse();
-        if (i != corpse_idx) {
+        if (corpse_idx == 0) {
             return 164;
         }
 
         auto &corpse = floor.get_corpse(corpse_idx);
-        monster_loader->rd_monster(corpse.body);
+        corpse = std::move(loaded);
         corpse.body.set_floor(creature.get_floor());
-        if (!corpse.is_valid()) {
-            continue;
-        }
-
-        const auto pos = corpse.get_position();
-        if (!floor.contains(pos, FloorBoundary::OUTER_WALL_INCLUSIVE)) {
-            continue;
-        }
-
         auto &corpse_grid = floor.get_grid(pos);
         corpse.next_corpse_idx = corpse_grid.corpse_idx;
         corpse_grid.corpse_idx = corpse_idx;

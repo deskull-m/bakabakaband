@@ -15,6 +15,7 @@
 #include "io/input-key-requester.h"
 #include "main/sound-definitions-table.h"
 #include "main/sound-of-music.h"
+#include "monster-floor/monster-corpse-leaver.h"
 #include "object-hook/hook-expendable.h"
 #include "object-hook/hook-magic.h"
 #include "object/item-use-flags.h"
@@ -33,6 +34,7 @@
 #include "system/baseitem/baseitem-key.h"
 #include "system/creature-entity.h"
 #include "system/deferred-update-requests.h"
+#include "system/floor/monster-corpse.h"
 #include "system/item-entity.h"
 #include "term/screen-processor.h"
 #include "util/int-char-converter.h"
@@ -46,6 +48,11 @@ using SelectionResult = std::tuple<std::shared_ptr<ItemEntity>, short, int>;
 static bool check_destory_item(CreatureEntity &creature, const ItemEntity &destroying_item, short i_idx)
 {
     if (!confirm_destroy && (destroying_item.calc_price() <= 0)) {
+        return true;
+    }
+
+    // 足元の死体・骨 (床のアイテムとして並べたもの) は確認せずに壊す
+    if ((i_idx < 0) && MonsterCorpse::is_remains_item(destroying_item)) {
         return true;
     }
 
@@ -214,6 +221,9 @@ void do_cmd_destroy(CreatureEntity &creature)
 {
     CreatureClass(creature).break_samurai_stance({ SamuraiStanceType::MUSOU });
 
+    // 足元の死体も床のアイテムと同じ選択肢に並べる。壊した死体は
+    // スコープを抜ける時にフロアから外れ、残っていた持ち物が周りへ散らばる
+    ScopedCorpseFloorItems corpse_floor_items(creature);
     const auto selection_result = select_destroying_item(creature, (command_arg > 0));
     if (!selection_result) {
         return;
