@@ -90,7 +90,7 @@ void run_game_thread(const std::filesystem::path &lib_path,
         const bool new_game = savefile.empty();
         play_game(player, new_game, false);
 
-        quit(nullptr);
+        quit({});
     } catch (const std::exception &e) {
         godot::UtilityFunctions::printerr(
             godot::String("Hengband game thread exception: ") + godot::String(e.what()));
