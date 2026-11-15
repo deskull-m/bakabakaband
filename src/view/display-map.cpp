@@ -268,14 +268,18 @@ DisplaySymbolPair map_info(CreatureEntity &creature, const Pos2D &pos)
     }
 
     // 死体はアイテムより手前・生きているモンスターより奥に描く。
-    // 種族のシンボル文字を暗い灰色で出すことで「そこに倒れている」ことを示す。
+    // シンボルは種族に依らず共通の '~' とし、生きているモンスターと見間違えないようにする。
+    // 色は元のモンスターの色に合わせ、何が倒れているかの手掛かりにする
+    // (タイル表示の種族は色がタイル番号を表すため暗い灰色で代用する)。
     if (grid.has_corpse() && display_autopick.none()) {
         const auto &corpse = floor.get_corpse(grid.corpse_idx);
         const auto &monrace_corpse = MonraceList::get_instance().get_monrace(corpse.body.get_r_idx());
-        symbol_pair.symbol_foreground = { TERM_L_DARK, monrace_corpse.symbol_config.character };
+        const auto &symbol_corpse = monrace_corpse.symbol_config;
+        const auto color_corpse = symbol_corpse.is_ascii_graphics() ? symbol_corpse.color : static_cast<uint8_t>(TERM_L_DARK);
+        symbol_pair.symbol_foreground = { color_corpse, '~' };
         feat_priority = 25;
         if (is_hallucinated) {
-            symbol_pair.symbol_foreground = image_monster(get_display_rng());
+            symbol_pair.symbol_foreground = image_object(get_display_rng());
         }
     }
 
