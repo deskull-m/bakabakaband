@@ -9,6 +9,7 @@
 #include "main-godot/godot-player-status.h"
 #include "main-godot/godot-terminal.h"
 #include "main-godot/godot-tile-layer.h"
+#include "main-godot/godot-world-snapshot.h"
 
 #include "core/visuals-reseter.h"
 #include "game-option/runtime-arguments.h"
@@ -156,6 +157,7 @@ errr term_xtra_godot(int n, int v)
         // メインターミナル (term 0) の更新時にプレイヤーステータスを同期する
         if (game_term == term_screen) {
             player_status_push(PlayerType::get_instance_ptr());
+            world_snapshot_push(PlayerType::get_instance_ptr());
         }
         return 0;
     }

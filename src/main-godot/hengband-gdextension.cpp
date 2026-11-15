@@ -11,6 +11,7 @@
 #include "main-godot/godot-term-hooks.h"
 #include "main-godot/godot-terminal.h"
 #include "main-godot/godot-tile-layer.h"
+#include "main-godot/godot-world-snapshot.h"
 #include "main-godot/save-file-scanner.h"
 
 #include "game-option/special-options.h"
@@ -19,6 +20,7 @@
 
 #include "term/gameterm.h"
 #include "term/z-term.h"
+#include "view/observable-world.h"
 
 #include <godot_cpp/classes/config_file.hpp>
 #include <godot_cpp/classes/os.hpp>
@@ -27,6 +29,8 @@
 #include <godot_cpp/variant/array.hpp>
 #include <godot_cpp/variant/callable.hpp>
 #include <godot_cpp/variant/dictionary.hpp>
+#include <godot_cpp/variant/packed_byte_array.hpp>
+#include <godot_cpp/variant/packed_int32_array.hpp>
 #include <godot_cpp/variant/string.hpp>
 #include <godot_cpp/variant/string_name.hpp>
 
@@ -176,6 +180,87 @@ void HengbandGame::_process(double delta)
         last_status_version_ = snap.version;
         emit_signal("player_status_changed", snapshot_to_dict(snap));
     }
+
+    // ワールドスナップショットは中身をコピーせず版だけを見る
+    const auto world_version = world_snapshot_get_version();
+    if (world_version != last_world_version_) {
+        last_world_version_ = world_version;
+        emit_signal("world_snapshot_changed", static_cast<int64_t>(world_version));
+    }
+}
+
+void HengbandGame::set_world_snapshot_enabled(bool enabled)
+{
+    world_snapshot_set_enabled(enabled);
+}
+
+bool HengbandGame::is_world_snapshot_enabled() const
+{
+    return world_snapshot_is_enabled();
+}
+
+namespace {
+godot::Dictionary observed_creature_to_dict(const ObservedCreature &creature)
+{
+    godot::Dictionary d;
+    d["m_idx"] = creature.m_idx;
+    d["x"] = creature.pos.x;
+    d["y"] = creature.pos.y;
+    d["race_id"] = creature.race_id;
+    d["health"] = static_cast<int>(creature.health);
+    d["flags"] = static_cast<int>(creature.flags);
+    return d;
+}
+}
+
+godot::Dictionary HengbandGame::get_world_snapshot()
+{
+    const auto snapshot = world_snapshot_get();
+    if (!snapshot.world) {
+        return godot::Dictionary();
+    }
+
+    const auto &world = *snapshot.world;
+    const auto grid_count = static_cast<int64_t>(world.grids.size());
+    godot::PackedInt32Array terrain;
+    godot::PackedByteArray shapes;
+    godot::PackedByteArray flags;
+    godot::PackedByteArray symbols; // 1 グリッドあたり fg_color, fg_char, bg_color, bg_char の 4 バイト
+    terrain.resize(grid_count);
+    shapes.resize(grid_count);
+    flags.resize(grid_count);
+    symbols.resize(grid_count * 4);
+    for (int64_t i = 0; i < grid_count; ++i) {
+        const auto &grid = world.grids[static_cast<size_t>(i)];
+        terrain.set(i, grid.terrain_id);
+        shapes.set(i, static_cast<uint8_t>(grid.shape));
+        flags.set(i, grid.flags);
+        symbols.set(i * 4, grid.fg_color);
+        symbols.set(i * 4 + 1, grid.fg_char);
+        symbols.set(i * 4 + 2, grid.bg_color);
+        symbols.set(i * 4 + 3, grid.bg_char);
+    }
+
+    godot::Array creatures;
+    for (const auto &creature : world.creatures) {
+        creatures.push_back(observed_creature_to_dict(creature));
+    }
+
+    godot::Dictionary d;
+    d["version"] = static_cast<int64_t>(snapshot.version);
+    d["width"] = world.width;
+    d["height"] = world.height;
+    d["dungeon_id"] = world.dungeon_id;
+    d["dun_level"] = world.dun_level;
+    d["is_wild_mode"] = world.is_wild_mode;
+    d["player_x"] = world.player_pos.x;
+    d["player_y"] = world.player_pos.y;
+    d["terrain"] = terrain;
+    d["shapes"] = shapes;
+    d["flags"] = flags;
+    d["symbols"] = symbols;
+    d["creatures"] = creatures;
+    return d;
 }
 
 godot::Dictionary HengbandGame::get_player_status()
@@ -597,6 +682,22 @@ void HengbandGame::_bind_methods()
     // 引数: status (Dictionary) - get_player_status() と同じキー構成
     ADD_SIGNAL(MethodInfo("player_status_changed",
         PropertyInfo(Variant::DICTIONARY, "status")));
+
+    // ワールドスナップショット (観測可能ワールドモデル、#9292)
+    ClassDB::bind_method(
+        D_METHOD("set_world_snapshot_enabled", "enabled"),
+        &HengbandGame::set_world_snapshot_enabled);
+    ClassDB::bind_method(
+        D_METHOD("is_world_snapshot_enabled"),
+        &HengbandGame::is_world_snapshot_enabled);
+    ClassDB::bind_method(
+        D_METHOD("get_world_snapshot"),
+        &HengbandGame::get_world_snapshot);
+
+    // シグナル: ワールドスナップショットが更新された (有効時のみ)
+    // 引数: version (int) - get_world_snapshot() の "version" と同じ値
+    ADD_SIGNAL(MethodInfo("world_snapshot_changed",
+        PropertyInfo(Variant::INT, "version")));
 }
 
 // ---------------------------------------------------------------------------

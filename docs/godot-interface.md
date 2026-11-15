@@ -172,6 +172,38 @@ StatusPanel に表示を委ねる。以下の関数に `#ifdef GODOT_RICH_UI` �
 これらのガードは通常 (autotools / MSVC) ビルドでは無効 (マクロ未定義) のため、
 端末版の挙動には影響しない。
 
+## ワールドスナップショット (観測可能ワールドモデル)
+
+3D 表示などのために、端末のセルではなく**フロアの状態**を Godot 側へ渡す仕組み
+(#9292、Epic #9290 の第 2 段)。
+
+| 層 | ファイル | 役割 |
+|---|---|---|
+| ゲームコア (表示非依存) | `src/view/observable-world.{h,cpp}` | `build_observable_world(player)` がプレイヤーの知り得るフロアの状態を `ObservableWorld` に取り出す |
+| ブリッジ | `src/main-godot/godot-world-snapshot.{h,cpp}` | ゲームスレッドが `TERM_XTRA_FRESH` (メイン端末) で作り、不変の `shared_ptr` で Godot メインスレッドへ渡す |
+| GDScript API | `HengbandGame` | `set_world_snapshot_enabled(bool)` / `get_world_snapshot()` / シグナル `world_snapshot_changed(version)` |
+
+- **既定は無効**。`set_world_snapshot_enabled(true)` の間だけフロア全体を走査する
+  (利用者がいないときにコストを掛けない)。キャラクター作成中など
+  `character_dungeon` が偽の間は作らない。
+- **端末版の画面より多くの情報は含まない**:
+  - 地形は `is_map_terrain_visible()` (端末の地図描画と同じ判定) が真のグリッドだけ。
+    未知のグリッドは `terrain = -1` / `shape = UNKNOWN`
+  - クリーチャーは `is_visible_on_map()` が真のものだけ。視界内か感知のみかは
+    `OBSERVED_CREATURE_IN_VIEW` で区別する
+  - 幻覚中はクリーチャーの種族・体力・状態を伏せる (ボット出力と同じ)
+  - 死体は地形の分かるグリッドに限る (端末の地図は地形が未知でも描くが、
+    3D では地形と切り離して置くことになるため)
+- 各グリッドの表示シンボル (`symbols`、1 グリッド 4 バイト: 前景色・前景文字・
+  背景色・背景文字) は `map_info()` の結果そのもの。タイル表示中はタイルの
+  行・列になるので、2D タイルセットをビルボードに流用できる。
+- 形状 (`shapes`) は `ObservedTerrainShape` (床・壁・扉・階段・液体・木・入口等)。
+  地形フラグから C++ 側で分類するので、GDScript は地形定義を持たなくてよい。
+- 現状は**フレッシュのたびに全量**を作る (最大 132×132)。差分化は #9293。
+- 動作確認用に **Ctrl+Shift+M** でデバッグ用ミニマップ
+  (`godot_project/scripts/world_debug_minimap.gd`) を表示できる。表示中だけ
+  スナップショットが有効になる。
+
 ## 既知の制限・今後の課題
 
 - **セーブファイル形式**: `save-file-scanner.cpp` はタイトル画面のセーブ一覧表示用に

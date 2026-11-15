@@ -34,6 +34,9 @@ const MAX_TERMINALS: int = 8
 ## TerminalPane プレハブ
 const TerminalPaneScene = preload("res://scenes/terminal_pane.tscn")
 
+## ワールドスナップショットのデバッグ表示
+const WorldDebugMinimap = preload("res://scripts/world_debug_minimap.gd")
+
 ## 解決済み lib/ パス（タイル読み込みなどで再利用する）
 var _lib_path: String = ""
 
@@ -93,6 +96,16 @@ func _ready() -> void:
 	var status_panel := $StatusLayer/StatusPanel
 	if status_panel and status_panel.has_method("connect_to_game"):
 		status_panel.connect_to_game(game)
+
+	# ワールドスナップショットのデバッグ表示 (Ctrl+Shift+M、#9292)
+	var debug_layer := CanvasLayer.new()
+	debug_layer.layer = 20
+	add_child(debug_layer)
+	var minimap := Control.new()
+	minimap.set_script(WorldDebugMinimap)
+	minimap.set_anchors_preset(Control.PRESET_FULL_RECT)
+	debug_layer.add_child(minimap)
+	minimap.setup(game)
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_WM_CLOSE_REQUEST:

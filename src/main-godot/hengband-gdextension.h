@@ -105,6 +105,18 @@ public:
     ///       stat_top_str/int/wis/dex/con/chr
     godot::Dictionary get_player_status();
 
+    /// ワールドスナップショット (観測可能ワールドモデル) の作成を有効/無効にする。既定は無効
+    void set_world_snapshot_enabled(bool enabled);
+    bool is_world_snapshot_enabled() const;
+
+    /// 最新のワールドスナップショットを Dictionary で返す (無ければ空)
+    /// キー: version, width, height, dungeon_id, dun_level, is_wild_mode, player_x, player_y,
+    ///       terrain (PackedInt32Array, 未知は -1), shapes (PackedByteArray, ObservedTerrainShape),
+    ///       flags (PackedByteArray, ObservedGridFlag), symbols (PackedByteArray, 1 グリッド 4 バイト),
+    ///       creatures (Array[Dictionary{m_idx, x, y, race_id, health, flags}])
+    /// グリッドの配列は行優先 (index = y * width + x)
+    godot::Dictionary get_world_snapshot();
+
 protected:
     static void _bind_methods();
 
@@ -126,6 +138,9 @@ private:
 
     /// player_status_changed シグナル発行用: 最後に確認したスナップショットバージョン
     uint64_t last_status_version_{ 0 };
+
+    /// world_snapshot_changed シグナル発行用: 最後に確認したワールドスナップショットの版
+    uint64_t last_world_version_{ 0 };
 
     /// タイルセットを読み込む（GDScript から呼び出す）
     /// @param graf_name  ANGBAND_GRAF に設定する値 ("old" / "new" / "ne2")
