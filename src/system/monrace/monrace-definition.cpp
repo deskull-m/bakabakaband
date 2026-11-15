@@ -856,6 +856,30 @@ void MonraceDefinition::init_sex(uint32_t value)
     this->sex = sex_tmp;
 }
 
+/*!
+ * @brief 一目見れば分かる思い出を学習する
+ * @details
+ * 見た目フラグ (visual_flags) ・時代フラグ (era_flags) と、「見れば分かる」種類の
+ * 一部の misc フラグを思い出へ記録する。発火条件 (視線・盲目・幻覚・本来の姿か) は
+ * 呼出側 (decide_sight_invisible_monster) が INVISIBLE / COLD_BLOOD の学習と
+ * 共通で課しているので、本関数は条件を見ない。
+ *
+ * ここに置くのは「姿を見るだけで判る」ものに限る。挙動で判るフラグ
+ * (REGENERATE / MASOCHIST / SADIST / BREAK_DOWN / TIMID) はそれぞれの発火点で
+ * 個別に学習する。
+ */
+void MonraceDefinition::learn_lore_by_sight()
+{
+    this->r_era_flags |= this->era_flags;
+    this->r_visual_flags |= this->visual_flags;
+
+    for (const auto flag : { MonsterMiscType::DIURNAL, MonsterMiscType::NOCTURNAL, MonsterMiscType::GUARDIAN, MonsterMiscType::RIDING }) {
+        if (this->misc_flags.has(flag)) {
+            this->r_misc_flags.set(flag);
+        }
+    }
+}
+
 tl::optional<std::string> MonraceDefinition::probe_lore()
 {
     auto n = false;
@@ -919,6 +943,8 @@ tl::optional<std::string> MonraceDefinition::probe_lore()
     n |= count_lore_mflag_group(this->feature_flags, this->r_feature_flags) > 0;
     n |= count_lore_mflag_group(this->special_flags, this->r_special_flags) > 0;
     n |= count_lore_mflag_group(this->misc_flags, this->r_misc_flags) > 0;
+    n |= count_lore_mflag_group(this->era_flags, this->r_era_flags) > 0;
+    n |= count_lore_mflag_group(this->visual_flags, this->r_visual_flags) > 0;
 
     this->r_resistance_flags = this->resistance_flags;
     this->r_ability_flags = this->ability_flags;
@@ -928,6 +954,8 @@ tl::optional<std::string> MonraceDefinition::probe_lore()
     this->r_feature_flags = this->feature_flags;
     this->r_special_flags = this->special_flags;
     this->r_misc_flags = this->misc_flags;
+    this->r_era_flags = this->era_flags;
+    this->r_visual_flags = this->visual_flags;
     if (!this->r_can_evolve) {
         n = true;
     }

@@ -53,4 +53,6 @@ void set_flags_for_full_knowledge(lore_type *lore_ptr)
     lore_ptr->drop_flags = lore_ptr->monrace->drop_flags;
     lore_ptr->special_flags = lore_ptr->monrace->special_flags;
     lore_ptr->misc_flags = lore_ptr->monrace->misc_flags;
+    lore_ptr->era_flags = lore_ptr->monrace->era_flags;
+    lore_ptr->visual_flags = lore_ptr->monrace->visual_flags;
 }

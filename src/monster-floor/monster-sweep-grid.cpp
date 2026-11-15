@@ -41,8 +41,13 @@ constexpr auto PARTY_COHESION_RADIUS = 5;
 bool mon_will_run(CreatureEntity &creature, MONSTER_IDX m_idx)
 {
     const auto &monster = creature.get_floor()->get_monster(m_idx);
-    const auto &monrace = monster.get_monrace();
+    auto &monrace = monster.get_monrace();
     if (monrace.behavior_flags.has(MonsterBehaviorType::TIMID)) {
+        // 無条件に逃げ出す姿を見れば臆病と判る
+        if (is_original_ap_and_seen(creature, monster)) {
+            monrace.r_behavior_flags.set(MonsterBehaviorType::TIMID);
+        }
+
         return true;
     }
 

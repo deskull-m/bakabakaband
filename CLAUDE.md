@@ -4217,20 +4217,22 @@ MtG の「苦花」に由来する**動かない植物系のフェアリー召�
 - **検証上の注意**: 召喚されたフェアリーは幻覚・盲目・筋力吸収・矢を撃ってくるため、
   低レベルのキャラクタでは観測前に死ぬ。実測は Lv60 / HP 2400 のキャラクタで行った。
 
-### 思い出の表示漏れの修正 (時代フラグ / 見た目フラグ / 非学習フラグ)
+### 思い出の表示漏れの修正と学習記録 (時代フラグ / 見た目フラグ / 観察で判るフラグ)
 
 思い出 (`lore_type`) の各フラグ群について「表示側が参照しているのに、`lore_ptr` へ
 値が入る経路が無い」箇所を機械的に洗い出し、**どのモードでも表示されなかった 2 群と、
 調査 (probe) か cheat でしか表示されなかった 9 フラグ**を表示されるようにした。
+さらにこれらを**観察で段階的に判明する (学習記録を持つ)** 形へ移行した
+(セーブデータ v64)。
 
 #### `lore_ptr` へ値が入る 4 つの経路
 
 | 経路 | 対象 | 条件 |
 |---|---|---|
-| `lore_type` のコンストラクタ (`lore-util.cpp`) | ability / aura / behavior / drop / resistance / feature / special / misc を `monrace->X & monrace->r_X` で写す。**brightness のみ `r_` 相当が無く無条件コピー** | 常時 |
-| `set_flags_for_full_knowledge()` (`lore-calculator.cpp`) | 上記 8 群を `monrace->X` で**丸ごと上書き** | `know_everything` (スポイラー / `cheat_know` / 研究・デバッグモード) |
+| `lore_type` のコンストラクタ (`lore-util.cpp`) | ability / aura / behavior / drop / resistance / feature / special / misc / **era / visual** を `monrace->X & monrace->r_X` で写す。**brightness のみ `r_` 相当が無く無条件コピー** | 常時 |
+| `set_flags_for_full_knowledge()` (`lore-calculator.cpp`) | 上記 10 群を `monrace->X` で**丸ごと上書き** | `know_everything` (スポイラー / `cheat_know` / 研究・デバッグモード) |
 | `set_flags1()` / `set_race_flags()` (`monster-lore.cpp`) | kind_flags と misc の一部 (QUESTOR / HAS_FRIENDS / ESCORT / MORE_ESCORT / FORCE_MAXHP / FORCE_DEPTH / STALKER) | `set_flags1` は常時、`set_race_flags` は `r_tkills \|\| know_everything` |
-| **`set_unobservable_flags()`** (本件で新設) | **era / visual の全フラグ + 非学習の misc 8 種 + behavior の TIMID** | `r_tkills \|\| know_everything` |
+| **各 gameplay 経路の学習サイト** (`monrace.r_*_flags.set(...)`) | 下表「学習サイト」の 5 種。記録すれば 1 番目の経路のマスクを通って表示される | 観察できたとき |
 
 **この 4 経路のどれにも載らないフラグは、表示コードがあっても絶対に表示されない。**
 思い出の表示を足すときは必ずどれかに載せること。
@@ -4243,13 +4245,44 @@ MtG の「苦花」に由来する**動かない植物系のフェアリー召�
 | `visual_flags` (見た目) | 書込 0・参照 0 の**完全な死にメンバ**。思い出の表示行自体が存在しなかった | 6 種で計 178 体 |
 | misc 8 種 + behavior 1 種 | `r_misc_flags` / `r_behavior_flags` への**観察由来の学習サイトが無い**ため、`probe_lore()` (調査) か `know_everything` でしか出なかった | `REGENERATE` 198 / `RIDING` 218 / `MASOCHIST` 4 / `BREAK_DOWN` 1 / `GUARDIAN` 実行時付与 15 / `DIURNAL` `NOCTURNAL` `SADIST` `TIMID` は 0 |
 
-- **開示条件は `r_tkills` (一度でも倒したか) に揃えた**。種族・徳フラグ
-  (`set_race_flags()`) と同じゲートで、未知の個体には出ない。
-- **`r_era_flags` は依然として使っていない**。セーブ/ロードはされる
-  (`lore-writer.cpp` / `lore-loader.cpp`) が学習サイトが無く、表示は
-  `monrace->era_flags` を撃破数で開く方式。これは `r_kind_flags` (スレイ武器等
-  75 箇所で学習されるのに表示に使われない。`monster-lore-snapshot.cpp:12` が
-  「表示に使わない」と明記) と同じ扱いで、**セーブデータ形式は変えていない**。
+#### 学習記録 (セーブデータ v64)
+
+**当初は「一度でも倒したか」(`r_tkills`) で一括開示する `set_unobservable_flags()`
+を置いていたが、他のフラグ群と同じ「観察して判ったものだけ記録する」形へ移行した**
+(同関数は削除済み)。記録先は他の群と同じ `monrace.r_*_flags` で、表示は
+`lore_type` ctor の `monrace->X & monrace->r_X` マスクを通る。
+
+- **`r_visual_flags` を新設**した (`MonraceDefinition`)。これがセーブデータ
+  バージョンを上げた理由で、`wr_lore()` のフラグ群の末尾へ追記し、`rd_lore()` は
+  `older_than(64)` なら未学習 (空) で読む。
+- **`r_era_flags` は v33 から保存済だったが学習サイトが無く常に空だった**。
+  本バージョンから実際に埋まるので**値の意味が変わる**が、フォーマットは
+  v33 以降と同一 (旧セーブは空から学習し直す)。
+- `probe_lore()` (調査) と `set_flags_for_full_knowledge()` (スポイラー /
+  `cheat_know`) にも era / visual を追加したので、**従来どおり一括開示もできる**。
+- `r_kind_flags` は依然として表示に使わない (`monster-lore-snapshot.cpp:12` が
+  明記)。本件の対象外。
+
+**学習サイト** (5 種):
+
+| 学習するもの | サイト | 条件 |
+|---|---|---|
+| era 全フラグ / visual 全フラグ / misc の `DIURNAL` `NOCTURNAL` `GUARDIAN` `RIDING` | `MonraceDefinition::learn_lore_by_sight()` を `decide_sight_invisible_monster()` (`monster-update.cpp`) から呼ぶ | **`INVISIBLE` / `COLD_BLOOD` の学習と同じガード**(視線あり / 非盲目 / 感知済み / 本来の姿 / 非幻覚)。姿を見るだけで判るものに限る |
+| misc の `REGENERATE` | `regenerate_monsters()` (`hp-mp-regenerator.cpp`) の `old_hp != monster.hp` 分岐 | 傷が実際に塞がり、かつ `is_original_ap_and_seen()` |
+| misc の `MASOCHIST` | `MonsterDamageProcessor::process_masochist_reaction()` | 「苦痛に悦んでいる！」が出る反応が発火し、かつ `is_original_ap_and_seen()` |
+| misc の `SADIST` | `MonsterDamageProcessor::process_sadist_reaction()` | 「他者の苦痛に興奮している！」が出る反応が発火し、かつ `is_original_ap_and_seen()` |
+| misc の `BREAK_DOWN` | `process_monsters()` の主を失って消える分岐 (`monster-processor.cpp`) | 消滅時に `is_original_ap_and_seen()` |
+| behavior の `TIMID` | `mon_will_run()` (`monster-sweep-grid.cpp`) の `TIMID` 即 return | 逃走判定で真を返すとき、かつ `is_original_ap_and_seen()` |
+
+- **`learn_lore_by_sight()` に置くのは「姿を見れば判る」ものだけ**。挙動で判るもの
+  (再生・マゾヒスト・サディスト・主を失う・臆病) はそれぞれの発火点で学習する。
+  新しいフラグを足すときもこの線引きで振り分けること。
+- **撃破は条件にしない**ので、`DIURNAL` / `RIDING` 等は従来 (撃破後) より**早く**
+  判明する。逆に `REGENERATE` / `MASOCHIST` / `SADIST` / `BREAK_DOWN` / `TIMID` は
+  **その挙動を目にするまで判らない**ので従来より遅い (これが学習記録の狙い)。
+- `DIURNAL` / `NOCTURNAL` は生成時にしか参照されない (`monster-list.cpp`) ため
+  挙動から判る機会が無く、`GUARDIAN` は実行時にダンジョン定義側が立てるフラグ
+  (`dungeon-definition.cpp`) なので、どちらも視認による学習にしてある。
 
 #### 時代フラグの表示
 

@@ -491,6 +491,8 @@ static void decide_sight_invisible_monster(CreatureEntity &creature, um_type *um
     if (do_cold_blood) {
         monrace.r_misc_flags.set(MonsterMiscType::COLD_BLOOD);
     }
+
+    monrace.learn_lore_by_sight();
 }
 
 /*!

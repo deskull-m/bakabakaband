@@ -54,6 +54,8 @@ TEST_CASE("MonsterLoreSnapshot compares the values shown in the monster recall")
             { "r_feature_flags", [](auto &r) { r.r_feature_flags.set(MonsterFeatureType::CAN_FLY); } },
             { "r_special_flags", [](auto &r) { r.r_special_flags.set(MonsterSpecialType::DIMINISH_MAX_DAMAGE); } },
             { "r_misc_flags", [](auto &r) { r.r_misc_flags.set(MonsterMiscType::HAS_FRIENDS); } },
+            { "r_era_flags", [](auto &r) { r.r_era_flags.set(MonsterEraType::MEDIEVAL); } },
+            { "r_visual_flags", [](auto &r) { r.r_visual_flags.set(MonsterVisualType::MULTI_COLOR); } },
             { "max_num", [](auto &r) { r.max_num++; } },
         };
         MonraceDefinition other_race;

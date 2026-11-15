@@ -42,5 +42,7 @@ MonsterLoreSnapshot::MonsterLoreSnapshot(const CreatureEntity &creature, const M
     , r_feature_flags(monrace.r_feature_flags)
     , r_special_flags(monrace.r_special_flags)
     , r_misc_flags(monrace.r_misc_flags)
+    , r_era_flags(monrace.r_era_flags)
+    , r_visual_flags(monrace.r_visual_flags)
 {
 }

@@ -1130,6 +1130,11 @@ bool vanish_summoned_children(CreatureEntity &creature, MONSTER_IDX m_idx, bool 
         if (see_m) {
             msg_print(_("{}は主を失い消え去った。", "{} disappears without a master."), str_upcase_first(m_name));
         }
+
+        // 主を失って消える姿を見れば、単独では存在を維持できないと判る
+        if (is_original_ap_and_seen(creature, monster)) {
+            monster.get_monrace().r_misc_flags.set(MonsterMiscType::BREAK_DOWN);
+        }
     } else if (monster.is_pet()) {
         if (see_m) {
             msg_print(_("{}は消え去った。", "{} disappears."), str_upcase_first(m_name));

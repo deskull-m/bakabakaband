@@ -66,6 +66,8 @@ lore_type::lore_type(MonraceId monrace_id, monster_lore_mode mode)
     this->brightness_flags = this->monrace->brightness_flags;
     this->special_flags = (this->monrace->special_flags & this->monrace->r_special_flags);
     this->misc_flags = (this->monrace->misc_flags & this->monrace->r_misc_flags);
+    this->era_flags = (this->monrace->era_flags & this->monrace->r_era_flags);
+    this->visual_flags = (this->monrace->visual_flags & this->monrace->r_visual_flags);
 }
 
 bool lore_type::has_reinforce() const

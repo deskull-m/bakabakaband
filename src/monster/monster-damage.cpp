@@ -531,7 +531,7 @@ void MonsterDamageProcessor::add_monster_fear()
 void MonsterDamageProcessor::process_masochist_reaction()
 {
     auto &monster = creature.get_floor()->get_monster(this->m_idx);
-    const auto &monrace = monster.get_monrace();
+    auto &monrace = monster.get_monrace();
 
     if (!monrace.misc_flags.has(MonsterMiscType::MASOCHIST)) {
         return;
@@ -549,6 +549,11 @@ void MonsterDamageProcessor::process_masochist_reaction()
             if (monster.is_visible_on_map()) {
                 msg_print(_("{}は苦痛に悦んでいる！", "{} seems to enjoy the pain!"), str_upcase_first(monster.get_monrace().name));
             }
+
+            // 苦痛に悦ぶ姿を見ればマゾヒストと判る
+            if (is_original_ap_and_seen(this->creature, monster)) {
+                monrace.r_misc_flags.set(MonsterMiscType::MASOCHIST);
+            }
         }
     }
 }
@@ -560,7 +565,7 @@ void MonsterDamageProcessor::process_masochist_reaction()
 void MonsterDamageProcessor::process_sadist_reaction()
 {
     auto &monster = creature.get_floor()->get_monster(this->m_idx);
-    const auto &monrace = monster.get_monrace();
+    auto &monrace = monster.get_monrace();
 
     if (!monrace.misc_flags.has(MonsterMiscType::SADIST)) {
         return;
@@ -576,6 +581,11 @@ void MonsterDamageProcessor::process_sadist_reaction()
 
         if (monster.is_visible_on_map()) {
             msg_print(_("{}は他者の苦痛に興奮している！", "{} gets excited by others' pain!"), str_upcase_first(monster.get_monrace().name));
+        }
+
+        // 他者の苦痛に興奮する姿を見ればサディストと判る
+        if (is_original_ap_and_seen(this->creature, monster)) {
+            monrace.r_misc_flags.set(MonsterMiscType::SADIST);
         }
     }
 }

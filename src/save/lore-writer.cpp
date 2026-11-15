@@ -53,6 +53,7 @@ void wr_lore(MonraceId monrace_id)
     wr_FlagGroup(monrace.r_feature_flags, wr_byte);
     wr_FlagGroup(monrace.r_special_flags, wr_byte);
     wr_FlagGroup(monrace.r_misc_flags, wr_byte);
+    wr_FlagGroup(monrace.r_visual_flags, wr_byte);
 
     wr_s16b(static_cast<int16_t>(monrace.mob_num));
     wr_s16b(monrace.floor_id);

@@ -66,6 +66,12 @@ constexpr std::string_view VARIANT_NAME("Bakabaka");
  *     (MonsterWriter と同形式) を書き、rd_dungeon_object() は older_than(62) なら
  *     死体なしで読み込む。グリッド側のチェイン (Grid::corpse_idx /
  *     MonsterCorpse::next_corpse_idx) は保存せず、座標から再構築する。
+ * 63: (develop 側で使用済み。本ブランチでは欠番)
+ * 64: モンスターの見た目フラグの思い出 (MonraceDefinition::r_visual_flags) を保存。
+ *     wr_lore() のフラグ群の末尾へ追記し、rd_lore() は older_than(64) なら
+ *     未学習 (空) で読み込む。**時代フラグ (r_era_flags) は v33 から保存済だが
+ *     学習サイトが無く常に空だった**ため、本バージョンから観察で学習する
+ *     (値の意味が変わるが、フォーマットは v33 以降と同一)。
  *
  * **採番の衝突に注意**: 作業ブランチごとに独立して番号を進めると、同じ番号で
  * 別フォーマットのセーブデータが 2 種類生まれ、どちらのビルドでも読めなくなる
@@ -73,7 +79,7 @@ constexpr std::string_view VARIANT_NAME("Bakabaka");
  * **バージョンを上げる前に必ず develop の最新を取り込み、この一覧の末尾に
  * 追記すること。**
  */
-constexpr uint32_t SAVEFILE_VERSION = 62;
+constexpr uint32_t SAVEFILE_VERSION = 64;
 
 /*!
  * @brief バージョンが開発版が安定版かを返す(廃止予定)

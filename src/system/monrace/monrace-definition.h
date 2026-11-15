@@ -381,6 +381,7 @@ public:
     EnumClassFlagGroup<MonsterFeatureType> r_feature_flags; //!< 見た能力フラグ(地形関連) / Observed feature flags
     EnumClassFlagGroup<MonsterSpecialType> r_special_flags; //!< 見た能力フラグ(特殊) / Observed special flags
     EnumClassFlagGroup<MonsterMiscType> r_misc_flags; //!< 見た能力フラグ(その他) / Observed feature flags
+    EnumClassFlagGroup<MonsterVisualType> r_visual_flags; //!< 見た能力フラグ(見た目) / Observed visual flags
     PLAYER_LEVEL defeat_level{}; //!< 倒したレベル(ユニーク用) / player level at which defeated this race
     REAL_TIME defeat_time{}; //!< 倒した時間(ユニーク用) / time at which defeated this race
     PERCENTAGE cur_hp_per{}; //!< 生成時現在HP率(%)
@@ -499,6 +500,7 @@ public:
     bool is_suitable_for_les_nest() const;
 
     void init_sex(uint32_t value);
+    void learn_lore_by_sight();
     tl::optional<std::string> probe_lore();
     void make_lore_treasure(int num_item, int num_drop);
     void emplace_drop_artifact(FixedArtifactId fa_id, int percentage);

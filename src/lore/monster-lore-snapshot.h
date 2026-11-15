@@ -51,4 +51,6 @@ private:
     EnumClassFlagGroup<MonsterFeatureType> r_feature_flags;
     EnumClassFlagGroup<MonsterSpecialType> r_special_flags;
     EnumClassFlagGroup<MonsterMiscType> r_misc_flags;
+    EnumClassFlagGroup<MonsterEraType> r_era_flags;
+    EnumClassFlagGroup<MonsterVisualType> r_visual_flags;
 };

@@ -2,6 +2,8 @@
 #include "cmd-item/cmd-magiceat.h"
 #include "core/window-redrawer.h"
 #include "inventory/inventory-slot-types.h"
+#include "monster-race/race-misc-flags.h"
+#include "monster/monster-info.h"
 #include "monster/monster-status.h"
 #include "object-enchant/trc-types.h"
 #include "player-base/player-class.h"
@@ -286,6 +288,12 @@ void regenerate_monsters(CreatureEntity &creature)
             tracker.set_flag_if_tracking(i);
             if (monster.is_riding()) {
                 dur.set_flag(MainWindowRedrawingFlag::UHEALTH);
+            }
+
+            // 傷が見る間に塞がれば再生能力が判る
+            auto &monrace = monster.get_monrace();
+            if (monrace.misc_flags.has(MonsterMiscType::REGENERATE) && is_original_ap_and_seen(creature, monster)) {
+                monrace.r_misc_flags.set(MonsterMiscType::REGENERATE);
             }
         }
     }

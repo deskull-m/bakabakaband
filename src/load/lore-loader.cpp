@@ -386,6 +386,9 @@ static void rd_lore(MonraceDefinition &monrace)
         rd_FlagGroup(monrace.r_feature_flags, rd_byte);
         rd_FlagGroup(monrace.r_special_flags, rd_byte);
         rd_FlagGroup(monrace.r_misc_flags, rd_byte);
+        if (!loading_savefile_version_is_older_than(64)) {
+            rd_FlagGroup(monrace.r_visual_flags, rd_byte);
+        }
     }
 
     if (loading_savefile_version_is_older_than(26)) {
@@ -417,6 +420,7 @@ static void rd_lore(MonraceDefinition &monrace)
     monrace.r_feature_flags &= monrace.feature_flags;
     monrace.r_special_flags &= monrace.special_flags;
     monrace.r_misc_flags &= monrace.misc_flags;
+    monrace.r_visual_flags &= monrace.visual_flags;
 }
 
 void load_lore()
