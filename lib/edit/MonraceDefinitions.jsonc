@@ -151213,5 +151213,57 @@
         "BASH_DOOR",
       ],
     },
+    {
+      "id": 2363,
+      "name": {
+        "ja": "フェアリーのならず者",
+        "en": "Faerie Rogue",
+      },
+      "symbol": {
+        "character": "I",
+        "color": "Dark Gray",
+      },
+      "speed": 10,
+      "hit_point": "2d8",
+      "vision": 12,
+      "armor_class": 24,
+      "alertness": 10,
+      "level": 10,
+      "rarity": 2,
+      "exp": 20,
+      "body_structure": "AMORPHOUS",
+      "next_exp": 0,
+      "next_mon": 0,
+      "escorts": [],
+      "blows": [
+        {
+          "method": "TOUCH",
+          "effect": "EAT_GOLD",
+        },
+        {
+          "method": "TOUCH",
+          "effect": "EAT_ITEM",
+        },
+        {
+          "method": "STING",
+          "effect": "HURT",
+          "damage_dice": "1d4",
+        },
+      ],
+      "flavor": {
+        "ja": "苦花が夜ごとに生み出す黒い妖精だ。ローウィンの同胞と違い女王ウーナに仕える気も無く、他人の財布と秘密を漁ることしか考えていない。羽音が聞こえたら懐を確かめた方がいい。",
+        "en": "A black faerie spawned night after night by a bitterblossom. Unlike its Lorwyn kin it has no interest in serving Queen Oona, and thinks only of rifling through other people's purses and secrets. If you hear its wings, check your pockets.",
+      },
+      "flags": [
+        "WEIRD_MIND",
+        "FRIENDS",
+        "CAN_FLY",
+        "RAND_25",
+        "TAKE_ITEM",
+        "EVIL",
+        "ROGUE",
+        "FAIRY",
+      ],
+    },
   ],
 }
