@@ -74,18 +74,12 @@ constexpr auto TAKE_WHOLE_CORPSE = -1;
 /*!
  * @brief 死体そのもの (死体・骨のアイテム) を持ち去ってプレイヤーの所持品へ移す
  * @return 持ち去ったら true (死体はフロアから無くなる)
- * @details **持ち物が残っている死体は持ち去れない**。中身ごと持ち去れると
- *          床の散乱を減らすために死体の中へ所持品を納めた意味が無くなり、
- *          持ち去った死体アイテムは種族しか覚えないので中身も失われるため。
+ * @details 持ち物が残っていれば周りへ散らばらせてから持ち去る (食べる・壊すと同じ扱い)。
+ *          持ち去った死体アイテムは種族しか覚えないので、中身は死体と一緒に運べない。
  */
 bool take_whole_corpse(CreatureEntity &creature, short corpse_idx)
 {
     auto &corpse = creature.get_floor()->get_corpse(corpse_idx);
-    if (corpse.has_belongings()) {
-        msg_print(_("{}にはまだ持ち物が残っている。先に取り出さないと持ち去れない。", "{} still holds belongings. Take them out first."), corpse.describe());
-        return false;
-    }
-
     const auto remains = corpse.make_remains_item();
     const auto item_name = describe_flavor(creature, remains, 0);
     if (!creature.can_store_item(remains)) {
@@ -93,9 +87,13 @@ bool take_whole_corpse(CreatureEntity &creature, short corpse_idx)
         return false;
     }
 
+    const auto has_belongings = corpse.has_belongings();
     (void)creature.store_item(remains);
-    remove_corpse(creature, corpse_idx, false);
+    remove_corpse(creature, corpse_idx, true);
     msg_print(_("{}を持ち去った。", "You take {}."), item_name);
+    if (has_belongings) {
+        msg_print(_("持ち物が辺りに散らばった。", "Its belongings scatter around."));
+    }
     return true;
 }
 
@@ -157,16 +155,18 @@ void rummage_one_corpse(CreatureEntity &creature, short corpse_idx)
 /*!
  * @brief 足元に遺された死体を漁る
  * @param pickup 拾う操作なら true。false のときは死体があることだけを伝える
+ * @return 死体を漁ったら true。呼出側はその手番では床のアイテムを拾わない
+ *         (持ち去った死体から散らばった品を、同じ操作のまま拾ってしまわないため)
  * @details 床のアイテムを拾う処理 (carry()) から呼ばれる。死体が複数積まれて
  *          いる場合はまずどの死体を漁るかを選ぶ。
  */
-void rummage_corpses_here(CreatureEntity &creature, bool pickup)
+bool rummage_corpses_here(CreatureEntity &creature, bool pickup)
 {
     auto &floor = *creature.get_floor();
     const auto p_pos = creature.get_position();
     const auto corpse_indices = collect_corpses_at(floor, p_pos);
     if (corpse_indices.empty()) {
-        return;
+        return false;
     }
 
     if (!pickup) {
@@ -174,7 +174,7 @@ void rummage_corpses_here(CreatureEntity &creature, bool pickup)
             msg_print(_("{}がある。", "You see {}."), floor.get_corpse(corpse_idx).describe());
         }
 
-        return;
+        return false;
     }
 
     disturb(creature, false, false);
@@ -182,11 +182,11 @@ void rummage_corpses_here(CreatureEntity &creature, bool pickup)
         const auto corpse_idx = corpse_indices.front();
         const auto prompt = fmt::format(_("{}を漁りますか？", "Search {}? "), floor.get_corpse(corpse_idx).describe());
         if (!input_check(prompt)) {
-            return;
+            return false;
         }
 
         rummage_one_corpse(creature, corpse_idx);
-        return;
+        return true;
     }
 
     CandidateSelector selector(_("どの死体を漁りますか？ ", "Search which corpse? "));
@@ -194,8 +194,9 @@ void rummage_corpses_here(CreatureEntity &creature, bool pickup)
         return floor.get_corpse(corpse_idx).describe();
     });
     if (it == corpse_indices.end()) {
-        return;
+        return false;
     }
 
     rummage_one_corpse(creature, *it);
+    return true;
 }
