@@ -4,6 +4,7 @@
 #include "lore/lore-util.h"
 #include "monster-race/race-brightness-flags.h"
 #include "monster-race/race-flags-resistance.h"
+#include "monster-race/race-visual-flags.h"
 #include "system/creature-entity.h"
 #include "system/monrace/monrace-definition.h"
 #include "term/term-color-types.h"
@@ -152,6 +153,32 @@ void display_monster_constitutions(lore_type *lore_ptr)
 
     if (lore_ptr->brightness_flags.has_any_of({ MonsterBrightnessType::SELF_DARK_1, MonsterBrightnessType::SELF_DARK_2 })) {
         hook_c_roff(TERM_L_DARK, fmt::format(_("{}は暗黒に包まれている。", "{} is surrounded by darkness.  "), str_upcase_first(Who::who(lore_ptr->msex))));
+    }
+
+    // 見た目フラグ (visual_flags)。表示シンボルの見え方そのものを述べる。
+    // 「透明で目に見えない」(INVISIBLE) とは別で、見えてはいるが姿・色が定まらない状態。
+    if (lore_ptr->visual_flags.has(MonsterVisualType::CLEAR)) {
+        hooked_roff(fmt::format(_("{}の姿は背景に溶け込んでいる。", "{} blends into its surroundings.  "), str_upcase_first(Who::who(lore_ptr->msex))));
+    }
+
+    if (lore_ptr->visual_flags.has(MonsterVisualType::CLEAR_COLOR)) {
+        hooked_roff(fmt::format(_("{}は周囲の色に紛れている。", "{} takes on the colors of its surroundings.  "), str_upcase_first(Who::who(lore_ptr->msex))));
+    }
+
+    if (lore_ptr->visual_flags.has(MonsterVisualType::MULTI_COLOR)) {
+        hook_c_roff(TERM_VIOLET, fmt::format(_("{}は万色に輝いている。", "{} shines in ever-changing colors.  "), str_upcase_first(Who::who(lore_ptr->msex))));
+    }
+
+    if (lore_ptr->visual_flags.has(MonsterVisualType::RANDOM_COLOR)) {
+        hook_c_roff(TERM_VIOLET, fmt::format(_("{}の色は個体ごとに異なる。", "{} varies in color from individual to individual.  "), str_upcase_first(Who::who(lore_ptr->msex))));
+    }
+
+    if (lore_ptr->visual_flags.has(MonsterVisualType::ANY_COLOR)) {
+        hooked_roff(fmt::format(_("{}はあらゆる色で現れる。", "{} may appear in any color.  "), str_upcase_first(Who::who(lore_ptr->msex))));
+    }
+
+    if (lore_ptr->visual_flags.has(MonsterVisualType::SHAPECHANGER)) {
+        hook_c_roff(TERM_VIOLET, fmt::format(_("{}の姿は定まらない。", "{} has an unstable appearance.  "), str_upcase_first(Who::who(lore_ptr->msex))));
     }
 
     if (lore_ptr->misc_flags.has(MonsterMiscType::INVISIBLE)) {

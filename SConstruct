@@ -42,7 +42,6 @@ def collect_hengband_sources():
     exclude_paths = {
         "src/lore/lore-store.cpp",
         "src/market/arena-info-table.cpp",
-        "src/monster-race/monster-era-type-name.cpp",
         "src/store/owner-insults.cpp",
         "src/window/display-sub-window-spells.cpp",
     }

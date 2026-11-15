@@ -4217,6 +4217,112 @@ MtG の「苦花」に由来する**動かない植物系のフェアリー召�
 - **検証上の注意**: 召喚されたフェアリーは幻覚・盲目・筋力吸収・矢を撃ってくるため、
   低レベルのキャラクタでは観測前に死ぬ。実測は Lv60 / HP 2400 のキャラクタで行った。
 
+### 思い出の表示漏れの修正 (時代フラグ / 見た目フラグ / 非学習フラグ)
+
+思い出 (`lore_type`) の各フラグ群について「表示側が参照しているのに、`lore_ptr` へ
+値が入る経路が無い」箇所を機械的に洗い出し、**どのモードでも表示されなかった 2 群と、
+調査 (probe) か cheat でしか表示されなかった 9 フラグ**を表示されるようにした。
+
+#### `lore_ptr` へ値が入る 4 つの経路
+
+| 経路 | 対象 | 条件 |
+|---|---|---|
+| `lore_type` のコンストラクタ (`lore-util.cpp`) | ability / aura / behavior / drop / resistance / feature / special / misc を `monrace->X & monrace->r_X` で写す。**brightness のみ `r_` 相当が無く無条件コピー** | 常時 |
+| `set_flags_for_full_knowledge()` (`lore-calculator.cpp`) | 上記 8 群を `monrace->X` で**丸ごと上書き** | `know_everything` (スポイラー / `cheat_know` / 研究・デバッグモード) |
+| `set_flags1()` / `set_race_flags()` (`monster-lore.cpp`) | kind_flags と misc の一部 (QUESTOR / HAS_FRIENDS / ESCORT / MORE_ESCORT / FORCE_MAXHP / FORCE_DEPTH / STALKER) | `set_flags1` は常時、`set_race_flags` は `r_tkills \|\| know_everything` |
+| **`set_unobservable_flags()`** (本件で新設) | **era / visual の全フラグ + 非学習の misc 8 種 + behavior の TIMID** | `r_tkills \|\| know_everything` |
+
+**この 4 経路のどれにも載らないフラグは、表示コードがあっても絶対に表示されない。**
+思い出の表示を足すときは必ずどれかに載せること。
+
+#### 本件で直した漏れ
+
+| 群 | 修正前の状態 | 実データ |
+|---|---|---|
+| `era_flags` (時代/文明ランク) | **`lore_ptr->era_flags` への書込が全ツリーに 0 件**。`display_monster_alignment()` の 7 行がスポイラー・cheat を含めどのモードでも表示されなかった | 1 体 (戊辰戦争兵器『サイクロップス先輩』1427, `INFORMATION_AGE`) |
+| `visual_flags` (見た目) | 書込 0・参照 0 の**完全な死にメンバ**。思い出の表示行自体が存在しなかった | 6 種で計 178 体 |
+| misc 8 種 + behavior 1 種 | `r_misc_flags` / `r_behavior_flags` への**観察由来の学習サイトが無い**ため、`probe_lore()` (調査) か `know_everything` でしか出なかった | `REGENERATE` 198 / `RIDING` 218 / `MASOCHIST` 4 / `BREAK_DOWN` 1 / `GUARDIAN` 実行時付与 15 / `DIURNAL` `NOCTURNAL` `SADIST` `TIMID` は 0 |
+
+- **開示条件は `r_tkills` (一度でも倒したか) に揃えた**。種族・徳フラグ
+  (`set_race_flags()`) と同じゲートで、未知の個体には出ない。
+- **`r_era_flags` は依然として使っていない**。セーブ/ロードはされる
+  (`lore-writer.cpp` / `lore-loader.cpp`) が学習サイトが無く、表示は
+  `monrace->era_flags` を撃破数で開く方式。これは `r_kind_flags` (スレイ武器等
+  75 箇所で学習されるのに表示に使われない。`monster-lore-snapshot.cpp:12` が
+  「表示に使わない」と明記) と同じ扱いで、**セーブデータ形式は変えていない**。
+
+#### 時代フラグの表示
+
+名称は `src/monster-race/monster-era-type-name.cpp` の
+`get_monster_era_type_name()` を**単一の表**として使う。本件まで同ファイルは
+`src/Makefile.am` に登録されておらず `SConstruct` の孤立ソース除外リストに入って
+いた (= autotools / Godot でビルドされていなかった。MSVC だけは登録済み) ため、
+**ビルド登録と `_()` による多言語化を併せて行った**。
+
+- 表示色は `display-lore.cpp` の `ERA_COLORS` (時代→色の対応表) が持ち、
+  思い出本文 (`display_monster_alignment`) と要約タグ (`display_monster_kind_tags`)
+  で共用する。名称を view 側に二重定義しないための分離。
+- 本文は「この**情報化時代級の**野獣先輩を倒すことは…」の形で種族説明へ挿入され、
+  要約タグ (`show_lore_summary` 有効時) は文明水準 `[情報化時代文明]` の直後に
+  `[情報化時代級]` として出る。
+- **`get_monster_era_type_tag()` は未使用のまま**残してある (トークン名を返す関数。
+  スポイラーへ `Era:` を足す等の用途で使える)。
+
+#### 見た目フラグの表示
+
+`display_monster_constitutions()` (`display-lore-status.cpp`) の光源・暗黒の直後に
+6 行を追加した。**「透明で目に見えない」(`INVISIBLE`) とは別概念**で、見えてはいるが
+姿・色が定まらない状態を述べる。
+
+| フラグ (トークン) | 表示 | 体数 |
+|---|---|---|
+| `CLEAR` (`CHAR_CLEAR`) | 「〜の姿は背景に溶け込んでいる。」 | 16 |
+| `CLEAR_COLOR` (`ATTR_CLEAR`) | 「〜は周囲の色に紛れている。」 | 27 |
+| `MULTI_COLOR` (`ATTR_MULTI`) | 「〜は万色に輝いている。」 | 82 |
+| `RANDOM_COLOR` (`ATTR_SEMIRAND`) | 「〜の色は個体ごとに異なる。」 | 2 |
+| `ANY_COLOR` (`ATTR_ANY`) | 「〜はあらゆる色で現れる。」 | 43 |
+| `SHAPECHANGER` | 「〜の姿は定まらない。」 | 8 |
+
+#### 検算の手順 (再発防止)
+
+表示側と投入側の差集合を取れば漏れが機械的に出る。
+
+```sh
+# 表示側が参照する kind_flags と、思い出へ写される kind_flags の差
+comm -13 \
+  <(grep -o 'MonsterKindType::[A-Z_]*' src/lore/monster-lore.cpp | sed 's/.*:://' | sort -u) \
+  <(grep -o 'kind_flags.has(MonsterKindType::[A-Z_]*' src/view/display-lore.cpp | sed 's/.*:://' | sort -u)
+```
+
+- **変数/マスク経由の学習サイトを見落とさないこと**。`ability` は
+  `r_ability_flags.set(msa_ptr->thrown_spell)`、`resistance` は
+  `apply_monster_element_resist_native()` の `r_resistance_flags.set(resist_flag)` で
+  学習するため、literal の grep では「未学習」に見える (実際は全種学習可)。
+- **`kind_flags` の表示漏れ (約 76 種) は別セッションで対応済み**。
+  `monster-lore.cpp` のフラグごとの個別コピーが約 70 種しか書かれておらず、
+  `display-lore.cpp` が参照する約 140 種との差が表示されなかったもの。
+- 併せて `src/lore/lore-store.cpp` が**ヘッダを持たず呼出元も 0 の死にファイル**
+  であることを確認した (`probe_lore()` の古い複製で、しかも aura を写さない差異を
+  抱えている)。既に `SConstruct` の除外リストに入っており未ビルドなので放置してある。
+
+#### 実測 (ヘッドレス)
+
+| 項目 | 結果 |
+|---|---|
+| スポイラー (`know_everything`) | 見た目 6 種の出現件数が**実データの保有数と完全一致** (16 / 27 / 82 / 2 / 43 / 8)。時代も 1 件 |
+| **時代 (通常プレイ・cheat なし)** | サイクロップス先輩 (1427) を撃破後、知識画面の思い出が「彼は通常地下 47 階で出現し…**この情報化時代級の**野獣先輩を倒すことは…」 |
+| 要約タグ | `show_lore_summary` を有効にすると `[ユニーク][男性]`**`[情報化時代級]`** |
+| **見た目・RIDING の A/B (決定的)** | カオス・ドレイク (501, `ATTR_MULTI` + `ATTR_ANY` + `RIDING`) を召喚 → **撃破前**は「それは空を飛ぶことができる。それの攻撃については何も知らない。」のみ。**撃破後**は「…**それは万色に輝いている。それはあらゆる色で現れる。それに乗ることができる。**…」 |
+| REGENERATE | 同じ経路でサイクロップス先輩に「**彼は素早く体力を回復する。**」 |
+| ビルド | 警告 0 (`-Werror -Wall -Wextra`)。新規に `monster-era-type-name.o` が生成される |
+| 単体テスト | 533 ケース / 83,004 アサーション すべて成功 |
+
+- **検証上の注意**: 本セーブのキャラクタは ものまね師 なので **`x` は look ではなく
+  ものまねの呪文選択**になる。look は `l`、ターゲット送りは `+`、思い出は `r`。
+- **検証上の注意 2**: ユニークは一度倒すと再召喚できないため、撃破後の思い出は
+  `~` → `5` (既知のモンスター) → `6` で右ペインへ移り `2` で送って `r`、という
+  知識画面の経路で見る。
+
 ### モンスターの死亡時詠唱 (`death_spells`) — Issue #6768
 
 `MonraceDefinition` に `std::vector<MonraceDeathSpell> death_spells`

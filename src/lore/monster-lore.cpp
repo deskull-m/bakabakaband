@@ -10,7 +10,10 @@
 #include "lore/lore-calculator.h"
 #include "lore/lore-util.h"
 #include "lore/magic-types-setter.h"
+#include "monster-race/race-behavior-flags.h"
+#include "monster-race/race-era-flags.h"
 #include "monster-race/race-misc-flags.h"
+#include "monster-race/race-visual-flags.h"
 #include "player-ability/player-ability-types.h"
 #include "system/angband.h"
 #include "system/creature-entity.h"
@@ -347,6 +350,38 @@ static void set_race_flags(lore_type *lore_ptr)
 }
 
 /*!
+ * @brief 観察では学習されないフラグ群を思い出へ反映する
+ * @param lore_ptr 知識情報
+ * @details
+ * 時代フラグ (era_flags) / 見た目フラグ (visual_flags) には思い出側の記録フィールドが
+ * そもそも無く、下記の misc / behavior フラグには `r_*_flags` へ記録する学習サイトが
+ * 存在しない。そのため本関数で写さないと、調査 (probe_lore) や cheat_know 以外では
+ * 対応する思い出が永久に表示されない (era / visual はそれらでも表示されない)。
+ * 開示条件は種族・徳フラグ (set_race_flags) と同じ「一度でも倒したか」に揃える。
+ */
+static void set_unobservable_flags(lore_type *lore_ptr)
+{
+    if (!lore_ptr->monrace->r_tkills && !lore_ptr->know_everything) {
+        return;
+    }
+
+    lore_ptr->era_flags = lore_ptr->monrace->era_flags;
+    lore_ptr->visual_flags = lore_ptr->monrace->visual_flags;
+
+    for (const auto flag : { MonsterMiscType::BREAK_DOWN, MonsterMiscType::DIURNAL, MonsterMiscType::GUARDIAN,
+             MonsterMiscType::MASOCHIST, MonsterMiscType::NOCTURNAL, MonsterMiscType::REGENERATE,
+             MonsterMiscType::RIDING, MonsterMiscType::SADIST }) {
+        if (lore_ptr->monrace->misc_flags.has(flag)) {
+            lore_ptr->misc_flags.set(flag);
+        }
+    }
+
+    if (lore_ptr->monrace->behavior_flags.has(MonsterBehaviorType::TIMID)) {
+        lore_ptr->behavior_flags.set(MonsterBehaviorType::TIMID);
+    }
+}
+
+/*!
  * @brief モンスターの思い出情報を表示するメインルーチン
  * Hack -- display monster information using "hooked_roff()"
  * @param r_idx モンスターの種族ID
@@ -366,6 +401,7 @@ void process_monster_lore(CreatureEntity &creature, MonraceId r_idx, monster_lor
     set_flags_for_full_knowledge(lore_ptr);
     set_flags1(lore_ptr);
     set_race_flags(lore_ptr);
+    set_unobservable_flags(lore_ptr);
     const auto &text = lore_ptr->monrace->text;
 
     if (show_lore_summary || lore_summary_only) {

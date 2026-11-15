@@ -15,6 +15,7 @@
 #include "lore/lore-util.h"
 #include "lore/monster-lore.h"
 #include "monster-attack/monster-attack-table.h"
+#include "monster-race/monster-era-type-name.h"
 #include "monster-race/race-ability-flags.h"
 #include "monster-race/race-era-flags.h"
 #include "monster-race/race-sex-const.h"
@@ -38,8 +39,25 @@
 #include "view/display-symbol.h"
 #include "wizard/tval-descriptions-table.h"
 #include "world/world.h"
+#include <array>
 #include <cstdint>
 #include <fmt/format.h>
+#include <utility>
+
+/*!
+ * @brief 時代フラグ (文明ランク) と表示色の対応表
+ * @details 名称は monster-era-type-name.cpp の単一の表から引くため、ここには色だけを持つ。
+ * 思い出本文 (display_monster_alignment) と要約タグ (display_monster_kind_tags) で共用する。
+ */
+static constexpr std::array<std::pair<MonsterEraType, byte>, 7> ERA_COLORS = { {
+    { MonsterEraType::PREHISTORIC, TERM_L_UMBER },
+    { MonsterEraType::ANCIENT, TERM_YELLOW },
+    { MonsterEraType::MEDIEVAL, TERM_L_BLUE },
+    { MonsterEraType::EARLY_MODERN, TERM_L_GREEN },
+    { MonsterEraType::MODERN, TERM_L_WHITE },
+    { MonsterEraType::INFORMATION_AGE, TERM_L_BLUE },
+    { MonsterEraType::NANOTECH, TERM_VIOLET },
+} };
 
 /*!
  * @brief モンスター情報のヘッダを記述する
@@ -430,6 +448,13 @@ void display_monster_kind_tags(lore_type *lore_ptr)
     const auto civilization = lore_ptr->monrace->civilization;
     if ((civilization != CivilizationLevel::NONE) && (civilization != CivilizationLevel::MAX)) {
         hook_c_roff(TERM_L_UMBER, fmt::format(_("[{}文明]", "[{} Age]"), civilization_level_name(civilization)));
+    }
+
+    // [時代] 時代フラグ (文明ランク)。指定の無い個体 (大半) は記載省略。
+    for (const auto &entry : ERA_COLORS) {
+        if (lore_ptr->era_flags.has(entry.first)) {
+            hook_c_roff(entry.second, fmt::format("[{}]", get_monster_era_type_name(entry.first)));
+        }
     }
 
     hooked_roff("\n");
@@ -1053,32 +1078,12 @@ void display_monster_kind(lore_type *lore_ptr)
 
 void display_monster_alignment(lore_type *lore_ptr)
 {
-    if (lore_ptr->era_flags.has(MonsterEraType::PREHISTORIC)) {
-        hook_c_roff(TERM_L_UMBER, _("先史時代級の", " prehistoric-era"));
-    }
+    for (const auto &entry : ERA_COLORS) {
+        if (lore_ptr->era_flags.has_not(entry.first)) {
+            continue;
+        }
 
-    if (lore_ptr->era_flags.has(MonsterEraType::ANCIENT)) {
-        hook_c_roff(TERM_YELLOW, _("古代級の", " ancient-era"));
-    }
-
-    if (lore_ptr->era_flags.has(MonsterEraType::MEDIEVAL)) {
-        hook_c_roff(TERM_L_BLUE, _("中世級の", " medieval-era"));
-    }
-
-    if (lore_ptr->era_flags.has(MonsterEraType::EARLY_MODERN)) {
-        hook_c_roff(TERM_L_GREEN, _("近代級の", " early-modern-era"));
-    }
-
-    if (lore_ptr->era_flags.has(MonsterEraType::MODERN)) {
-        hook_c_roff(TERM_L_WHITE, _("現代級の", " modern-era"));
-    }
-
-    if (lore_ptr->era_flags.has(MonsterEraType::INFORMATION_AGE)) {
-        hook_c_roff(TERM_L_BLUE, _("情報化時代級の", " information-age"));
-    }
-
-    if (lore_ptr->era_flags.has(MonsterEraType::NANOTECH)) {
-        hook_c_roff(TERM_VIOLET, _("ナノテク級の", " nanotech-era"));
+        hook_c_roff(entry.second, fmt::format(_("{}の", " {}"), get_monster_era_type_name(entry.first)));
     }
 
     /* TODO 再定義

@@ -998,6 +998,7 @@ libhengband_a_SOURCES = \
 	monster-floor/special-death-switcher.cpp monster-floor/special-death-switcher.h \
 	\
 	monster-race/monster-aura-types.h \
+	monster-race/monster-era-type-name.cpp monster-race/monster-era-type-name.h \
 	monster-race/monster-kind-mask.cpp monster-race/monster-kind-mask.h \
 	monster-race/monster-kind-type-name.cpp monster-race/monster-kind-type-name.h \
 	monster-race/monster-race-hook.cpp monster-race/monster-race-hook.h \

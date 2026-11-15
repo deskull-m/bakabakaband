@@ -5,6 +5,7 @@
  */
 
 #include "monster-race/monster-era-type-name.h"
+#include "locale/language-switcher.h"
 
 /*!
  * @brief モンスター文明ランクの名称を取得する
@@ -15,21 +16,21 @@ std::string get_monster_era_type_name(MonsterEraType era)
 {
     switch (era) {
     case MonsterEraType::PREHISTORIC:
-        return "先史時代級";
+        return _("先史時代級", "prehistoric-era");
     case MonsterEraType::ANCIENT:
-        return "古代級";
+        return _("古代級", "ancient-era");
     case MonsterEraType::MEDIEVAL:
-        return "中世級";
+        return _("中世級", "medieval-era");
     case MonsterEraType::EARLY_MODERN:
-        return "近代級";
+        return _("近代級", "early-modern-era");
     case MonsterEraType::MODERN:
-        return "現代級";
+        return _("現代級", "modern-era");
     case MonsterEraType::INFORMATION_AGE:
-        return "情報化時代級";
+        return _("情報化時代級", "information-age");
     case MonsterEraType::NANOTECH:
-        return "ナノテク級";
+        return _("ナノテク級", "nanotech-era");
     default:
-        return "不明";
+        return _("不明", "unknown-era");
     }
 }
 
