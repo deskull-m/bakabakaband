@@ -80,6 +80,11 @@ func _process(_delta: float) -> bool:
 			if phase_frame == 90:
 				check("view exists", view != null)
 				check("visible on the map", view.visible)
+				var sidebar = current_scene.status_sidebar
+				var sidebar_text := ""
+				for line in sidebar._view._lines:
+					sidebar_text += "".join(line["chars"]) + "\n"
+				check("status sidebar shown with the map", sidebar.visible and sidebar_text.contains("HP"), sidebar_text.replace("\n", " | "))
 				var got: Dictionary = view.count_instances()
 				var want := expected_counts()
 				check("instances match the snapshot", got["boxes"] == want["boxes"] and got["planes"] == want["planes"] and got["creatures"] == want["creatures"] and got["items"] == want["items"], "got=%s want=%s" % [got, want])
@@ -107,9 +112,11 @@ func _process(_delta: float) -> bool:
 			pass
 	if phase == 1 and phase_frame == 150:
 		check("hidden in the inventory", not view.visible)
+		check("status sidebar hidden in the inventory", not current_scene.status_sidebar.visible)
 		ih.inject_key(0x1B)
 	if phase == 1 and phase_frame == 210:
 		check("visible again on the map", view.visible)
+		check("status sidebar shown again", current_scene.status_sidebar.visible)
 		game.walk(6)
 	if phase == 1 and phase_frame == 300:
 		var want := expected_counts()

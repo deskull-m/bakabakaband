@@ -5013,8 +5013,9 @@ godot --path godot_project
   (libcurl 依存)・`src/test/` を除外する。GCC では godot-cpp 既定の
   `-fno-exceptions` を除去し `-fexceptions` を付与する等の差異があるため、
   ソース追加・除外時は `SConstruct` の `exclude_*` 集合を更新すること。
-- `USE_GODOT` / `GODOT_RICH_UI` マクロで端末ステータス描画を抑制し Godot 側の
-  StatusPanel に委ねる分岐が入る (通常ビルドではマクロ未定義で無効)。
+- `USE_GODOT` マクロで Godot 版を識別する (`GODOT_RICH_UI` は現在 SConstruct で定義しておらず、
+  端末の左側の欄・下段は端末版と同じに描く)。`GODOT_RICH_UI` を定義すると端末ステータス描画を抑制し
+  Godot 側の StatusPanel に委ねる分岐が有効になる (コードには残してある)。
 - 詳細な設計・移植改変点・既知の制限は
   [`docs/godot-interface.md`](docs/godot-interface.md) を参照。
 - **3D インターフェースの基盤 (Epic #9290)**: ゲームコアには表示非依存の観測点だけを足し

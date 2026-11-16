@@ -75,7 +75,10 @@ env.Append(CPPPATH=[
     "src/external-lib/include",  # fmtlib, tl::optional 等
 ])
 
-env.Append(CPPDEFINES=["USE_GODOT", "GODOT_RICH_UI"])
+# GODOT_RICH_UI (端末の下段・時刻・深さ等の描画を止めて Godot の StatusPanel に任せる) は定義しない。
+# ステータスパネルは C コマンドの画面のダンプを出すようになり、左側の欄・下段は端末と同じに描かせて
+# 3D の地図ビューでは端末の左側の欄をそのまま重ねて見せる (scripts/status_sidebar.gd)
+env.Append(CPPDEFINES=["USE_GODOT"])
 
 # --- Hengband 専用ビルド環境 ---
 # godot-cpp は CCFLAGS に /utf-8 (=/source-charset:utf-8 /execution-charset:utf-8) を追加する。

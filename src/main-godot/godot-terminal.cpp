@@ -10,6 +10,9 @@
 #include <godot_cpp/classes/image.hpp>
 #include <godot_cpp/classes/image_texture.hpp>
 #include <godot_cpp/core/class_db.hpp>
+#include <godot_cpp/variant/dictionary.hpp>
+#include <godot_cpp/variant/packed_byte_array.hpp>
+#include <godot_cpp/variant/packed_int32_array.hpp>
 #include <godot_cpp/variant/rect2.hpp>
 #include <godot_cpp/variant/vector2.hpp>
 
@@ -202,6 +205,7 @@ void GodotTerminal::set_grid_size(int cols, int rows)
     cols_ = cols;
     rows_ = rows;
     resize_grid();
+    content_version_.fetch_add(1);
     call_deferred("queue_redraw");
 }
 
@@ -209,6 +213,7 @@ void GodotTerminal::set_cell_size(int w, int h)
 {
     cell_w_ = w;
     cell_h_ = h;
+    content_version_.fetch_add(1);
     call_deferred("queue_redraw");
 }
 
@@ -227,6 +232,7 @@ void GodotTerminal::set_terminal_font(const Ref<Font> &font, int font_size)
         cell_h_ = std::max(1, static_cast<int>(std::round(ascent + descent)));
     }
 
+    content_version_.fetch_add(1);
     call_deferred("queue_redraw");
 }
 
@@ -261,6 +267,7 @@ void GodotTerminal::draw_text(int x, int y, int n, uint8_t color, const char *st
             ++col;
         }
     }
+    content_version_.fetch_add(1);
     call_deferred("queue_redraw");
 }
 
@@ -277,6 +284,7 @@ void GodotTerminal::wipe_cells(int x, int y, int n)
             cell.color = 0; // TERM_DARK
         }
     }
+    content_version_.fetch_add(1);
     call_deferred("queue_redraw");
 }
 
@@ -285,12 +293,14 @@ void GodotTerminal::set_cursor(int x, int y)
     cursor_x_ = x;
     cursor_y_ = y;
     cursor_visible_ = true;
+    content_version_.fetch_add(1);
     call_deferred("queue_redraw");
 }
 
 void GodotTerminal::hide_cursor()
 {
     cursor_visible_ = false;
+    content_version_.fetch_add(1);
     call_deferred("queue_redraw");
 }
 
@@ -304,6 +314,7 @@ void GodotTerminal::clear_all()
         }
     }
     cursor_visible_ = false;
+    content_version_.fetch_add(1);
     call_deferred("queue_redraw");
 }
 
@@ -331,6 +342,41 @@ godot::String GodotTerminal::get_row_text(int y) const
     return text;
 }
 
+godot::Dictionary GodotTerminal::get_region(int x, int y, int w, int h) const
+{
+    godot::PackedInt32Array chars;
+    godot::PackedByteArray colors;
+    w = std::max(0, w);
+    h = std::max(0, h);
+    chars.resize(w * h);
+    colors.resize(w * h);
+    {
+        std::lock_guard<std::mutex> lock(grid_mutex_);
+        for (int dy = 0; dy < h; ++dy) {
+            for (int dx = 0; dx < w; ++dx) {
+                const auto i = dy * w + dx;
+                const auto cx = x + dx;
+                const auto cy = y + dy;
+                if (cx < 0 || cx >= cols_ || cy < 0 || cy >= rows_) {
+                    chars.set(i, U' ');
+                    colors.set(i, 0);
+                    continue;
+                }
+                const auto &cell = grid_[static_cast<size_t>(cy * cols_ + cx)];
+                chars.set(i, static_cast<int32_t>(cell.ch));
+                colors.set(i, cell.color);
+            }
+        }
+    }
+
+    godot::Dictionary d;
+    d["cols"] = w;
+    d["rows"] = h;
+    d["chars"] = chars;
+    d["colors"] = colors;
+    return d;
+}
+
 void GodotTerminal::_bind_methods()
 {
     ClassDB::bind_method(D_METHOD("set_grid_size", "cols", "rows"),
@@ -347,6 +393,8 @@ void GodotTerminal::_bind_methods()
         &GodotTerminal::clear_all);
     ClassDB::bind_method(D_METHOD("get_cols"), &GodotTerminal::get_cols);
     ClassDB::bind_method(D_METHOD("get_row_text", "y"), &GodotTerminal::get_row_text);
+    ClassDB::bind_method(D_METHOD("get_region", "x", "y", "w", "h"), &GodotTerminal::get_region);
+    ClassDB::bind_method(D_METHOD("get_content_version"), &GodotTerminal::get_content_version);
     ClassDB::bind_method(D_METHOD("get_rows"), &GodotTerminal::get_rows);
     ClassDB::bind_method(D_METHOD("get_cell_width"), &GodotTerminal::get_cell_width);
     ClassDB::bind_method(D_METHOD("get_cell_height"), &GodotTerminal::get_cell_height);

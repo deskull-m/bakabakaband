@@ -6,6 +6,7 @@ const I = preload("res://scripts/input_intents.gd")
 const VisualCatalog = preload("res://scripts/visual_catalog.gd")
 const ItemWindow = preload("res://scripts/item_window.gd")
 const DungeonView = preload("res://scripts/dungeon_view_3d.gd")
+const SheetView = preload("res://scripts/character_sheet_view.gd")
 func _initialize() -> void:
 	var ok := true
 	var cases := [
@@ -45,6 +46,14 @@ func _initialize() -> void:
 		var image := DungeonView.load_texture_image(DungeonView.TERRAIN_TEXTURE_DIR + name + ".png")
 		cases.append([[name, image != null and image.get_size() == Vector2i(DungeonView.TERRAIN_TEXTURE_SIZE, DungeonView.TERRAIN_TEXTURE_SIZE)], [name, true]])
 	cases.append([texture_names.size() >= 10, true])
+	# 端末の矩形を格子の行に直す (全角の右半分 0 は前の字の幅、色は下位 4 ビット)
+	var region_lines := SheetView.region_to_lines({ "cols": 4, "rows": 2,
+		"chars": PackedInt32Array([0x8150, 0, 65, 32, 32, 32, 32, 32]), "colors": PackedByteArray([0x11, 0x21, 3, 0, 0, 0, 0, 0]) })
+	cases.append([region_lines.size(), 2])
+	cases.append([region_lines[0]["cols"], PackedInt32Array([0, 2])])
+	cases.append([region_lines[0]["widths"], PackedByteArray([2, 1])])
+	cases.append([region_lines[0]["colors"], PackedByteArray([1, 3])])
+	cases.append([region_lines[1]["chars"].size(), 0])
 	# メッセージ・持ち物・装備のウィンドウ
 	var white := func(_c: int) -> Color: return Color(1, 1, 1)
 	cases.append([ItemWindow.escape_bbcode("a[b]c"), "a[lb]b]c"])
