@@ -91,6 +91,15 @@ git submodule update --init godot-cpp
 
 ### 2. GDExtension ライブラリのビルド
 
+Linux では `japanese=yes` を付けると日本語版になる (内部の文字コードは端末版の既定と同じ EUC-JP。
+`-fexec-charset=euc-jp-ms` を使う)。オブジェクトファイルは英語版と別の拡張子 (`.jp.os`) に置くが、
+ライブラリは同じ名前に出力するので、切り替えるたびにリンクし直しになる。
+
+```bash
+scons platform=linux target=template_debug japanese=yes
+```
+
+
 `SConstruct` のオプションは godot-cpp 準拠 (`platform` / `target` /
 `arch` 等)。並列ビルドは標準の `-j` を付与する。
 
@@ -441,7 +450,13 @@ Linux ビルドで日本語/英語が違っても読み込める。実測 (地�
   作っても地図の画面のままであること、ターンが進むと作り直されること、C コマンドで端末に出した
   画面の各行とダンプの先頭の画面が一致すること)。
 - 日本語版で作ったセーブを英語版で読むと、生い立ち (Character Background) などセーブに保存された
-  文字列は文字コードが合わず化ける (端末版でも同じ)。日本語版の Godot ビルドでの見た目は未確認。
+  文字列は文字コードが合わず化ける (端末版でも同じ)。
+- **日本語版**: 全角の字も桁が揃うことを確認済み (下図、Linux の既定の等幅フォント + 日本語フォントの代替)。
+  日本語版の端末は全角の左右の桁に印 (`AF_KANJI1` = 0x10 / `AF_KANJI2` = 0x20) を色に重ねるので、
+  ブリッジで色の部分 (下位 4 ビット) だけを渡している。
+- 表示を開いたとき、ゲームが入力待ちで画面の更新が無くても、入力待ちの間 (100 ミリ秒ごとに起きる) に作る。
+
+![ステータスパネル (日本語版)](images/godot-status-panel-ja.png)
 
 ## メッセージ・持ち物・装備のウィンドウ
 
@@ -494,6 +509,8 @@ Linux ビルドで日本語/英語が違っても読み込める。実測 (地�
    headless で起動し、`.github/scripts/check-godot-extension-load.gd` で
    拡張のクラス (`HengbandGame` / `GodotTerminal` / `GodotTileLayer` /
    `GodotInputHandler` / `GodotAudioManager`) が登録されたことを確認する
+
+加えて、同じ手順を日本語版 (`japanese=yes`) でも行う (`build-japanese` ジョブ)。
 
 2 はゲームスレッドもタイトル画面も起動しないので、ゲーム内容の動作確認ではない。
 未定義シンボル・初期化時の例外などで**ライブラリが読み込めなくなる変更**を検知する。

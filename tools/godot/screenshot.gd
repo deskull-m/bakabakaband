@@ -7,6 +7,7 @@ extends SceneTree
 ##     godot --rendering-driver opengl3 --path godot_project --script "$PWD"/tools/godot/screenshot.gd
 ## HB_MAP_VIEW=0 なら 3D の地図ビューを使わず端末の表示のまま撮る
 ## HB_CAMERA_DISTANCE=<数値> なら 3D の地図ビューのカメラをその距離に寄せる (既定 22)
+## HB_FONT=<フォント名> / HB_FONT_SIZE=<大きさ> なら端末・パネルのフォントを変える (保存済みの設定より優先)
 ## HB_ITEM_WINDOWS=1 ならメッセージ・持ち物・装備のウィンドウも開く
 var save_path := OS.get_environment("HB_SAVE")
 var out := OS.get_environment("HB_SHOT")
@@ -17,6 +18,10 @@ func _initialize() -> void:
 	gs.save_path = save_path
 	gs.layout_data = {}
 	gs.use_map_view = OS.get_environment("HB_MAP_VIEW") != "0"
+	if OS.get_environment("HB_FONT") != "":
+		gs.font_name = OS.get_environment("HB_FONT")
+	if OS.get_environment("HB_FONT_SIZE") != "":
+		gs.font_size = int(OS.get_environment("HB_FONT_SIZE"))
 	if OS.get_environment("HB_ITEM_WINDOWS") == "1":
 		gs.item_windows = {
 			0: { "visible": true, "x": 440, "y": 520 },

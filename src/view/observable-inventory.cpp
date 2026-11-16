@@ -77,6 +77,8 @@ ObservedInventory observe_inventory(CreatureEntity &creature)
 
     observed.total_weight = calc_inventory_weight(creature);
     observed.weight_limit = calc_weight_limit(creature);
+    observed.total_weight_text = format_weight(observed.total_weight);
+    observed.weight_limit_text = format_weight(observed.weight_limit);
     return observed;
 }
 

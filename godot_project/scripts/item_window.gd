@@ -167,8 +167,13 @@ static func format_item_line(label: String, item: Dictionary, color_of: Callable
 static func format_weight_footer(data: Dictionary) -> String:
 	var total := int(data.get("total_weight", 0))
 	var limit := int(data.get("weight_limit", 0))
-	# 重さは 1/10 ポンド単位で持っている
-	var text := "重量 %d.%d / %d.%d lb" % [total / 10, total % 10, limit / 10, limit % 10]
+	# 表記はゲーム側で作ったもの (日本語版は kg、英語版は lb)。無ければ 1/10 ポンド単位の値から作る
+	var total_text := str(data.get("total_weight_text", "")).strip_edges()
+	var limit_text := str(data.get("weight_limit_text", "")).strip_edges()
+	if total_text == "" or limit_text == "":
+		total_text = "%d.%d lb" % [total / 10, total % 10]
+		limit_text = "%d.%d lb" % [limit / 10, limit % 10]
+	var text := "重量 %s / %s" % [total_text, limit_text]
 	var color := Color(1.0, 0.5, 0.4) if limit > 0 and total > limit else Color(0.7, 0.7, 0.7)
 	return "[color=#%s]%s[/color]" % [color.to_html(false), text]
 

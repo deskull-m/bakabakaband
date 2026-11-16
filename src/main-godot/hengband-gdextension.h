@@ -129,7 +129,7 @@ public:
     void set_item_windows_enabled(bool enabled);
 
     /// 持ち物と装備を返す (無ければ空)
-    /// キー: version, total_weight, weight_limit (1/10 ポンド単位),
+    /// キー: version, total_weight, weight_limit (1/10 ポンド単位), total_weight_text, weight_limit_text (端末版と同じ表記),
     ///       pack (Array[Dictionary{slot, label, name, count, weight, weight_text, color, symbol_color, symbol, tval, recharging}]),
     ///       equipment (Array[Dictionary{slot, label, slot_name, can_equip, item (上と同じ Dictionary、空なら null)}])
     /// color / symbol_color は端末の色 (get_term_color() で Color にする)

@@ -53,7 +53,8 @@ func _initialize() -> void:
 	cases.append([ItemWindow.clamp_position(Vector2(380, 10), Vector2(100, 50), Vector2(400, 300)), Vector2(300, 10)])
 	var item := { "label": "a", "name": "Dagger", "symbol": "|", "symbol_color": 1, "color": 1, "weight_text": "1.2 lb" }
 	cases.append([ItemWindow.format_item_line("a", item, white), "a) [color=#ffffff]|[/color] [color=#ffffff]Dagger[/color]  [color=#a0a0a0]1.2 lb[/color]"])
-	cases.append([ItemWindow.format_weight_footer({ "total_weight": 123, "weight_limit": 1500 }).contains("12.3 / 150.0"), true])
+	cases.append([ItemWindow.format_weight_footer({ "total_weight": 123, "weight_limit": 1500 }).contains("12.3 lb / 150.0 lb"), true])
+	cases.append([ItemWindow.format_weight_footer({ "total_weight": 123, "weight_limit": 1500, "total_weight_text": "  5.6 kg", "weight_limit_text": " 68.0 kg" }).contains("5.6 kg / 68.0 kg"), true])
 	cases.append([ItemWindow.format_inventory({}, white), ""])
 	cases.append([ItemWindow.format_inventory({ "pack": [item], "total_weight": 12, "weight_limit": 100 }, white).contains("Dagger"), true])
 	var equip := ItemWindow.format_equipment({ "equipment": [

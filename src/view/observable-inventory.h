@@ -58,6 +58,8 @@ struct ObservedInventory {
     std::vector<ObservedEquipmentSlot> equipment; //!< 装備の全部位 (空きも含む)
     int total_weight = 0; //!< 持ち物と装備の合計 (1/10 ポンド単位)
     int weight_limit = 0; //!< 重量の上限 (これを超えると遅くなる。1/10 ポンド単位)
+    std::string total_weight_text; //!< total_weight の表記 (日本語版は kg、英語版は lb)
+    std::string weight_limit_text; //!< weight_limit の表記
 
     bool operator==(const ObservedInventory &) const = default;
 };

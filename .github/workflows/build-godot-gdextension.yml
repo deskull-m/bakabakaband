@@ -72,3 +72,39 @@ jobs:
       # GDScript 側の純粋な補助関数 (方向の変換・座標の変換など) を確かめる
       - name: Run GDScript unit checks
         run: godot-bin/godot --headless --path godot_project --script "$PWD"/tools/godot/gdscript-unit-check.gd
+
+  # 日本語版 (内部の文字コードは EUC-JP)。文字コードに依る分岐 (#ifdef JP) を含むコードが壊れていないかを確かめる
+  build-japanese:
+    name: Build GDExtension (Linux, template_debug, Japanese)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Checkout godot-cpp submodule
+        run: git submodule update --init --depth 1 godot-cpp
+
+      - name: Install SCons
+        run: python3 -m pip install --user scons
+
+      - name: Restore SCons cache
+        uses: actions/cache@v5
+        with:
+          path: ${{ env.SCONS_CACHE }}
+          key: scons-godot-linux-template_debug-japanese-${{ github.sha }}
+          restore-keys: |
+            scons-godot-linux-template_debug-japanese-
+
+      - name: Build
+        run: scons platform=linux target=template_debug japanese=yes -j$(nproc)
+
+      - name: Download Godot
+        run: |
+          curl -sSfL -o godot.zip \
+            "https://github.com/godotengine/godot-builds/releases/download/${GODOT_VERSION}/Godot_v${GODOT_VERSION}_linux.x86_64.zip"
+          unzip -q godot.zip -d godot-bin
+          mv "godot-bin/Godot_v${GODOT_VERSION}_linux.x86_64" godot-bin/godot
+
+      - name: Load the GDExtension with Godot headless
+        run: sh ./.github/scripts/check-godot-extension-load.sh godot-bin/godot godot_project

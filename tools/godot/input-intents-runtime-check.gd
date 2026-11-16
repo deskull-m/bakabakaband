@@ -49,8 +49,17 @@ func find_player_cell() -> Vector2i:
 		var line: String = t.get_row_text(y)
 		var x := line.find("@", 12)
 		if x >= 0:
-			return Vector2i(x, y)
+			return Vector2i(column_of(line, x), y)
 	return Vector2i(-1, -1)
+
+
+## get_row_text() の文字の位置を端末の桁に直す。全角の字は 2 桁を占める (右半分は行の文字列に入らない)
+static func column_of(line: String, index: int) -> int:
+	var col := 0
+	for i in index:
+		var c := line.unicode_at(i)
+		col += 1 if c < 0x80 or (c >= 0xFF61 and c <= 0xFF9F) else 2
+	return col
 
 
 ## 東西に並んだ既知の床のうち、プレイヤーから 3〜6 グリッド先のものを探す

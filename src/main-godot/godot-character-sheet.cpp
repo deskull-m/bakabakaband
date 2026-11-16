@@ -16,6 +16,9 @@
 
 namespace {
 
+/// 端末の属性のうち色の部分 (z-term.cpp の AF_KANJIC と同じ)
+constexpr uint8_t TERM_COLOR_MASK = 0x0F;
+
 std::atomic<bool> g_enabled{ false };
 std::atomic<bool> g_refresh_requested{ true };
 std::atomic<uint64_t> g_version{ 0 };
@@ -46,7 +49,9 @@ GodotSheetLine split_line(const PlayerStatusDumpLine &line)
         }
 #endif
         if (text[i] != ' ') {
-            converted.cells.push_back({ static_cast<int>(i), length, to_utf8(text.substr(i, length)), line.colors[i] });
+            // 日本語版の端末は全角の左右の桁に印 (AF_KANJI1 = 0x10 / AF_KANJI2 = 0x20) を色に重ねるので、色の部分だけを取る
+            const auto color = static_cast<uint8_t>(line.colors[i] & TERM_COLOR_MASK);
+            converted.cells.push_back({ static_cast<int>(i), length, to_utf8(text.substr(i, length)), color });
         }
 
         i += length;
@@ -103,6 +108,11 @@ void character_sheet_push(PlayerType *player_ptr)
     g_sheet.version = g_version.load() + 1;
     g_sheet.lines = std::move(converted);
     g_version.store(g_sheet.version);
+}
+
+bool character_sheet_is_refresh_requested()
+{
+    return g_enabled.load() && g_refresh_requested.load();
 }
 
 uint64_t character_sheet_get_version()

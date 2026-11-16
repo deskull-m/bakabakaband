@@ -190,7 +190,14 @@ errr term_xtra_godot(int n, int v)
             if (v) {
                 // 入力待ちに入る直前は、待っている入力の文脈が定まっている (#9294)
                 screen_state_update();
-                s_input_handler->wait_for_key(); // Phase 4: 即時リターン
+                // ステータスパネル (C の画面のダンプ) は入力待ちの間にも作り直す。
+                // 表示を開いたときなど、画面の更新が無くても待ちの途中で作れるよう短い間隔で起きる
+                character_sheet_push(PlayerType::get_instance_ptr());
+                while (!s_input_handler->wait_for_key_for(100)) {
+                    if (character_sheet_is_refresh_requested()) {
+                        character_sheet_push(PlayerType::get_instance_ptr());
+                    }
+                }
             } else {
                 s_input_handler->poll_events();
             }

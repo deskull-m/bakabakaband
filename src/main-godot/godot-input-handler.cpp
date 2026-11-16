@@ -8,6 +8,8 @@
 #include "term/z-term.h"
 #include "util/string-processor.h"
 
+#include <chrono>
+
 #include <godot_cpp/classes/display_server.hpp>
 #include <godot_cpp/classes/input_event_key.hpp>
 #include <godot_cpp/core/class_db.hpp>
@@ -257,6 +259,16 @@ void GodotInputHandler::wait_for_key()
     std::unique_lock<std::mutex> lock(key_mutex_);
     key_cv_.wait(lock, [this] { return key_available_ || stop_requested_; });
     key_available_ = false;
+}
+
+bool GodotInputHandler::wait_for_key_for(int timeout_ms)
+{
+    std::unique_lock<std::mutex> lock(key_mutex_);
+    const auto arrived = key_cv_.wait_for(lock, std::chrono::milliseconds(timeout_ms), [this] { return key_available_ || stop_requested_; });
+    if (arrived) {
+        key_available_ = false;
+    }
+    return arrived;
 }
 
 void GodotInputHandler::poll_events()

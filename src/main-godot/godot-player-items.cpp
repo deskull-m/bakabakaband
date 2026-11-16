@@ -48,6 +48,8 @@ ObservedItem to_utf8(ObservedItem item)
 ObservedInventory to_utf8(const ObservedInventory &source)
 {
     auto converted = source;
+    converted.total_weight_text = to_utf8(converted.total_weight_text);
+    converted.weight_limit_text = to_utf8(converted.weight_limit_text);
     for (auto &item : converted.pack) {
         item = to_utf8(item);
     }

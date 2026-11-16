@@ -431,6 +431,8 @@ godot::Dictionary HengbandGame::get_inventory()
     d["equipment"] = equipment;
     d["total_weight"] = inventory.total_weight;
     d["weight_limit"] = inventory.weight_limit;
+    d["total_weight_text"] = godot::String::utf8(inventory.total_weight_text.c_str());
+    d["weight_limit_text"] = godot::String::utf8(inventory.weight_limit_text.c_str());
     return d;
 }
 

@@ -40,5 +40,8 @@ void character_sheet_push(PlayerType *player_ptr);
 /// 次の push で必ず作り直す (表示を開いたときなど)
 void character_sheet_request_refresh();
 
+/// 有効で、作り直しを求められているか (入力待ちの間に作るかの判定用)
+bool character_sheet_is_refresh_requested();
+
 uint64_t character_sheet_get_version();
 GodotCharacterSheet character_sheet_get();
