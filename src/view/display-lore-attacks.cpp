@@ -60,6 +60,20 @@ static std::string build_melee_method_abbrev(const RaceBlowMethodType method)
         return _("唸", "Moan");
     case RaceBlowMethodType::SHOW:
         return _("歌", "Show");
+    case RaceBlowMethodType::ENEMA:
+        return _("浣", "Enema");
+    case RaceBlowMethodType::BIND:
+        return _("縛", "Bind");
+    case RaceBlowMethodType::WHISPER:
+        return _("囁", "Whisper");
+    case RaceBlowMethodType::STAMP:
+        return _("踏", "Stomp");
+    case RaceBlowMethodType::FECES:
+        return _("糞", "Feces");
+    case RaceBlowMethodType::PUTAWAY:
+        return _("収", "PutAway");
+    case RaceBlowMethodType::CHOKE:
+        return _("絞", "Choke");
     case RaceBlowMethodType::NONE:
     case RaceBlowMethodType::XXX4:
     case RaceBlowMethodType::MAX:

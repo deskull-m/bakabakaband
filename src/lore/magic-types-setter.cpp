@@ -391,6 +391,10 @@ void set_summon_types(lore_type *lore_ptr)
         lore_ptr->lore_msgs.emplace_back(_("モンスター複数召喚", "summon monsters"), TERM_L_WHITE);
     }
 
+    if (lore_ptr->ability_flags.has(MonsterAbilityType::S_NASTY)) {
+        lore_ptr->lore_msgs.emplace_back(_("汚いモンスター召喚", "summon nasty monsters"), TERM_UMBER);
+    }
+
     if (lore_ptr->ability_flags.has(MonsterAbilityType::S_KIN)) {
         lore_ptr->lore_msgs.emplace_back(_("救援召喚", "summon aid"), TERM_ORANGE);
     }

@@ -1184,7 +1184,7 @@ MonsterSpellResult spell_RF6_S_NASTY(CreatureEntity &creature, POSITION y, POSIT
 
     auto rlev = monster_level_idx(floor, m_idx);
     auto count = 0;
-    for (auto k = 0; k < std::min(1, rlev / 20); k++) {
+    for (auto k = 0; k < std::max(1, rlev / 20); k++) {
         count += summon_specific(creature, y, x, rlev, SUMMON_NASTY, (PM_ALLOW_GROUP)) ? 1 : 0;
     }
 

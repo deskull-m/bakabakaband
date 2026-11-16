@@ -367,11 +367,15 @@ static const std::vector<AbilityCellDef> &summon_magic_defs()
         // set_summon_types()
         { MonsterAbilityType::S_MONSTER, "モンスター一体", "a monster", TERM_SLATE },
         { MonsterAbilityType::S_MONSTERS, "モンスター複数", "monsters", TERM_L_WHITE },
+        { MonsterAbilityType::S_NASTY, "汚い怪物", "nasty monsters", TERM_UMBER },
         { MonsterAbilityType::S_KIN, "救援", "aid", TERM_ORANGE },
         { MonsterAbilityType::S_ANT, "アリ", "ants", TERM_RED },
         { MonsterAbilityType::S_SPIDER, "クモ", "spiders", TERM_L_DARK },
         { MonsterAbilityType::S_HOUND, "ハウンド", "hounds", TERM_L_UMBER },
         { MonsterAbilityType::S_HYDRA, "ヒドラ", "hydras", TERM_L_GREEN },
+        { MonsterAbilityType::S_FAIRY, "フェアリー", "fairies", TERM_L_BLUE },
+        { MonsterAbilityType::S_APE, "類人猿", "apes", TERM_UMBER },
+        { MonsterAbilityType::S_BIRD, "鳥", "birds", TERM_L_UMBER },
         { MonsterAbilityType::S_ANGEL, "天使", "an angel", TERM_YELLOW },
         { MonsterAbilityType::S_DEMON, "デーモン", "a demon", TERM_L_RED },
         { MonsterAbilityType::S_UNDEAD, "アンデッド", "an undead", TERM_L_DARK },
@@ -382,6 +386,8 @@ static const std::vector<AbilityCellDef> &summon_magic_defs()
         { MonsterAbilityType::S_AMBERITES, "アンバーの王族", "Lords of Amber", TERM_VIOLET },
         { MonsterAbilityType::S_UNIQUE, "ユニークモンスター", "Unique Monsters", TERM_VIOLET },
         { MonsterAbilityType::S_DEAD_UNIQUE, "ユニークモンスター口寄せ", "animate Unique Monsters", TERM_VIOLET },
+        { MonsterAbilityType::S_WALL, "壁", "walls", TERM_SLATE },
+        { MonsterAbilityType::S_INSECT, "虫", "insects", TERM_GREEN },
         { MonsterAbilityType::S_ROBOT, "ロボット", "robots", TERM_SLATE },
     };
     return defs;
