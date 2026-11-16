@@ -115,6 +115,16 @@ public:
     bool target_grid(int x, int y);
     bool walk(int dir);
 
+    /// ステータス画面のダンプ (C コマンドの画面、キャラクタダンプの先頭と同じ内容) を作るか (既定は無効)。
+    /// 有効な間はゲームターンが進むたびに画面外の端末へ描いて作り直す
+    void set_character_sheet_enabled(bool enabled);
+
+    /// ステータス画面のダンプを返す (無ければ空)
+    /// キー: version, width (桁数), text (PackedStringArray、ダンプの各行), lines (Array[Dictionary{
+    ///   cols: PackedInt32Array (桁), widths: PackedByteArray (占める桁数 1/2), chars: PackedStringArray,
+    ///   colors: PackedByteArray (端末の色の番号)}])。lines は空白以外の文字だけを持つ
+    godot::Dictionary get_character_sheet();
+
     /// 持ち物・装備・メッセージのウィンドウ用のデータを作るか (既定は無効)
     void set_item_windows_enabled(bool enabled);
 
@@ -206,6 +216,7 @@ private:
 
     /// inventory_changed / messages_changed シグナル発行用
     uint64_t last_inventory_version_{ 0 };
+    uint64_t last_sheet_version_{ 0 };
     uint64_t last_message_version_{ 0 };
 
     /// タイルセットを読み込む（GDScript から呼び出す）

@@ -1,70 +1,125 @@
 extends PanelContainer
 
-## ステータスパネル (GODOT_RICH_UI)
+## ステータスパネル
 ##
-## HengbandGame の player_status_changed シグナル (Dictionary) を受信し、
-## プレイヤーの主要ステータスを画面右上に常時表示する。
+## C コマンドのステータス画面 (キャラクタダンプの先頭と同じ内容) をそのまま、端末と同じ等幅の
+## 文字の格子で描く。文字ごとに桁の位置へ置くので、フォントの字幅に依らず桁が揃う (全角は 2 桁)。
+## データは HengbandGame.get_character_sheet() から取り、character_sheet_changed で描き直す。
+## 表示している間だけゲーム側に作らせる (作るたびにステータス画面を画面外の端末へ 5 枚描くため)。
+## 題名の部分をドラッグすると動かせ、位置は GameState.status_panel_pos に保存する。
 ## main.gd の _ready() から connect_to_game(game) で接続される。
 
-## 能力値の内部キー (snapshot_to_dict の stat_<key>) と短縮表示名
-const STAT_KEYS := ["str", "int", "wis", "dex", "con", "chr"]
-const STAT_NAMES := ["筋", "知", "賢", "器", "耐", "魅"]
+## 一度に見せる行数 (それより長い分はスクロール)
+const VISIBLE_ROWS := 26
+const SheetView := preload("res://scripts/character_sheet_view.gd")
 
-@onready var _name_label: Label = $VBox/NameLabel
-@onready var _race_class_label: Label = $VBox/RaceClassLabel
-@onready var _level_label: Label = $VBox/LevelLabel
-@onready var _hp_label: Label = $VBox/HpLabel
-@onready var _sp_label: Label = $VBox/SpLabel
-@onready var _ac_label: Label = $VBox/AcLabel
-@onready var _speed_label: Label = $VBox/SpeedLabel
-@onready var _gold_label: Label = $VBox/GoldLabel
-@onready var _depth_label: Label = $VBox/DepthLabel
-@onready var _stats_label: Label = $VBox/StatsLabel
+var _game: Node = null
+var _view: Control
+var _scroll: ScrollContainer
+var _title: Label
+var _dragging := false
+var _drag_offset := Vector2.ZERO
+
 
 func _ready() -> void:
-	visible = GameState.status_panel_visible
+	mouse_filter = Control.MOUSE_FILTER_STOP
+	var vbox := VBoxContainer.new()
+	add_child(vbox)
+	var header := HBoxContainer.new()
+	vbox.add_child(header)
+	_title = Label.new()
+	_title.text = "ステータス"
+	_title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_title.mouse_filter = Control.MOUSE_FILTER_PASS
+	_title.add_theme_color_override("font_color", Color(1.0, 0.85, 0.5))
+	header.add_child(_title)
+	var close := Button.new()
+	close.text = "×"
+	close.flat = true
+	close.focus_mode = Control.FOCUS_NONE
+	close.pressed.connect(func() -> void:
+		visible = false
+		GameState.status_panel_visible = false
+		GameState.save_config())
+	header.add_child(close)
 
-## HengbandGame ノードのステータス更新シグナルに接続する。
-## 既に接続済みの場合は二重接続しない。
+	_scroll = ScrollContainer.new()
+	_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	vbox.add_child(_scroll)
+	_view = SheetView.new()
+	_scroll.add_child(_view)
+	set_sheet_font(_make_font(), GameState.font_size)
+
+	visible = GameState.status_panel_visible
+	visibility_changed.connect(_on_visibility_changed)
+	# main.tscn は右上に寄せる配置で置いているので、位置は自分で決める
+	set_anchors_preset(Control.PRESET_TOP_LEFT)
+	_place.call_deferred()
+
+
+func _make_font() -> Font:
+	var font := SystemFont.new()
+	font.font_names = [GameState.font_name, "Courier New", "Monospace"]
+	return font
+
+
+## 文字の大きさが変わったら格子と窓の大きさを合わせる
+func set_sheet_font(font: Font, font_size: int) -> void:
+	_view.set_font(font, font_size)
+	_scroll.custom_minimum_size = Vector2(_view.custom_minimum_size.x, _view.cell_size.y * VISIBLE_ROWS)
+	reset_size()
+
+
+func _place() -> void:
+	var screen := get_viewport_rect().size
+	var pos := Vector2(GameState.status_panel_pos)
+	if GameState.status_panel_pos.x < 0:
+		pos = Vector2(screen.x - size.x - 4, 4)
+	position = clamp_position(pos, size, screen)
+
+
+## HengbandGame ノードに接続する。既に接続済みの場合は二重接続しない。
 func connect_to_game(game: Node) -> void:
 	if game == null:
 		return
-	if not game.is_connected("player_status_changed", Callable(self, "_on_status_changed")):
-		game.connect("player_status_changed", Callable(self, "_on_status_changed"))
-	# 初期表示を即時反映する (シグナルは変化時のみ発火するため)
-	if game.has_method("get_player_status"):
-		var snapshot: Dictionary = game.get_player_status()
-		if not snapshot.is_empty():
-			_on_status_changed(snapshot)
+	_game = game
+	if not game.is_connected("character_sheet_changed", Callable(self, "_on_sheet_changed")):
+		game.connect("character_sheet_changed", Callable(self, "_on_sheet_changed"))
+	game.set_character_sheet_enabled(visible)
+	_on_sheet_changed(0)
 
-func _on_status_changed(status: Dictionary) -> void:
-	_name_label.text = str(status.get("name", ""))
-	_race_class_label.text = "%s %s" % [status.get("race", ""), status.get("class", "")]
-	_level_label.text = "Lv %d" % int(status.get("level", 0))
-	_hp_label.text = "HP %d / %d" % [int(status.get("hp", 0)), int(status.get("max_hp", 0))]
-	_sp_label.text = "SP %d / %d" % [int(status.get("sp", 0)), int(status.get("max_sp", 0))]
-	_ac_label.text = "AC %d" % int(status.get("ac", 0))
-	_speed_label.text = "速度 %+d" % int(status.get("speed", 0))
-	_gold_label.text = "$ %d" % int(status.get("gold", 0))
-	_depth_label.text = _format_depth(int(status.get("dun_level", 0)))
 
-	var parts: Array[String] = []
-	for i in STAT_KEYS.size():
-		var raw := int(status.get("stat_" + STAT_KEYS[i], 0))
-		parts.append("%s%s" % [STAT_NAMES[i], _format_stat(raw)])
-	_stats_label.text = "  ".join(parts)
+func _on_visibility_changed() -> void:
+	if _game:
+		_game.set_character_sheet_enabled(visible)
 
-## 内部能力値 (18 超は 18 + xx で格納) を "18/xxx" 形式に整形する
-func _format_stat(value: int) -> String:
-	if value <= 18:
-		return str(value)
-	var bonus := value - 18
-	if bonus >= 220:
-		return "18/***"
-	return "18/%d" % bonus
 
-## ダンジョン深度を表示用文字列に整形する
-func _format_depth(dun_level: int) -> String:
-	if dun_level <= 0:
-		return "地上"
-	return "%d F (%d')" % [dun_level, dun_level * 50]
+func _on_sheet_changed(_version: int) -> void:
+	if _game == null or not visible:
+		return
+	var sheet: Dictionary = _game.get_character_sheet()
+	if not sheet.is_empty():
+		_view.set_sheet(sheet)
+
+
+func _gui_input(event: InputEvent) -> void:
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
+		if event.pressed and event.position.y <= _title.size.y + 6:
+			_dragging = true
+			_drag_offset = event.position
+			accept_event()
+		elif not event.pressed and _dragging:
+			_dragging = false
+			GameState.status_panel_pos = Vector2i(position)
+			GameState.save_config()
+			accept_event()
+	elif event is InputEventMouseMotion and _dragging:
+		position = clamp_position(position + event.position - _drag_offset, size, get_viewport_rect().size)
+		accept_event()
+
+
+## 窓を画面の中に収める (題名の部分が必ず見えるように)
+static func clamp_position(pos: Vector2, window_size: Vector2, screen: Vector2) -> Vector2:
+	var max_x := maxf(0.0, screen.x - minf(window_size.x, screen.x))
+	var max_y := maxf(0.0, screen.y - 24.0)
+	return Vector2(clampf(pos.x, 0.0, max_x), clampf(pos.y, 0.0, max_y))

@@ -216,6 +216,10 @@ func _apply_font(game: Node) -> void:
 	var font := SystemFont.new()
 	font.font_names = [GameState.font_name, "Courier New", "Monospace"]
 	game.set_game_font(font, GameState.font_size)
+	# ステータスパネルも端末と同じ等幅のフォントで描く
+	var status_panel := get_node_or_null("StatusLayer/StatusPanel")
+	if status_panel and status_panel.has_method("set_sheet_font"):
+		status_panel.set_sheet_font(font, GameState.font_size)
 	_fit_main_term()
 	# ペイン固有フォントを再適用（set_game_font でリセットされるため）
 	for pane in get_tree().get_nodes_in_group("terminal_panes"):

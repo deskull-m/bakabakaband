@@ -44,6 +44,7 @@ bakabakaband/
 │   ├── godot-audio-manager.{cpp,h}    # 効果音・BGM
 │   ├── godot-player-status.{cpp,h}    # プレイヤーステータスのブリッジ
 │   ├── godot-player-items.{cpp,h}     # 持ち物・装備・メッセージのブリッジ
+│   ├── godot-character-sheet.{cpp,h}  # ステータス画面のダンプのブリッジ
 │   ├── save-file-scanner.{cpp,h}      # タイトル画面用セーブファイル一覧
 │   ├── term-color-map.{cpp,h}         # 端末カラー → Godot Color 変換
 │   ├── stack-trace-godot.cpp          # スタックトレース (Godot 版スタブ)
@@ -413,6 +414,34 @@ Linux ビルドで日本語/英語が違っても読み込める。実測 (地�
 クリーチャーの `id` は 19 体とも全期間で不変。
 
 `GodotTerminal.get_row_text(y)` で端末の行を読めるので、スクリプトから画面を確認できる。
+
+## ステータスパネル (C コマンドの画面のダンプ)
+
+下のバーの **S** ボタンで開くステータスパネルは、C コマンドのステータス画面を
+**キャラクタダンプの先頭 (`[キャラクタ情報]` の直後) と同じ内容そのまま** 表示する
+(5 画面ぶん、約 90 行。スクロールで見る)。題名の部分をドラッグすると動かせ、位置は保存される。
+
+![ステータスパネル](images/godot-status-panel.png)
+
+- **ゲームコア側**: `io-dump/player-status-dump` の `collect_player_status_dump()` が
+  ダンプの各行を「文字列 + 各バイトの端末の色」で作る。ファイルへのダンプ (`dump_aux_player_status()`) も
+  これを書き出すだけにしたので、パネルとダンプのファイルは同じ処理から出る
+  (変更前後でダンプのファイルが同一であることを端末版で確認済み。違ったのはプレイ時間の秒だけ)。
+- `collect_player_status_dump_offscreen()` は、画面に出していない 80x48 の端末 (`term_init()` の
+  既定のフックだけを持つ) に切り替えて描き、元の端末に戻す。いまの画面 (地図) には触れない。
+- **ブリッジ**: `src/main-godot/godot-character-sheet.{h,cpp}`。1 回作るのにステータス画面を 5 枚描くので、
+  `TERM_XTRA_FRESH` のうちゲームターンが進んだときだけ作り直し、中身が変わったときだけ公開する。
+  パネルを表示している間だけ有効 (`set_character_sheet_enabled()`)。
+- **API**: `get_character_sheet()` (`text` = ダンプの各行、`lines` = 空白以外の文字ごとの
+  桁・占める桁数・文字・色) と `character_sheet_changed` シグナル。
+- **等幅の描画**: `scripts/character_sheet_view.gd` が文字ごとに「桁 × 半角の字幅」の位置へ描く。
+  フォントの字幅が端末と違っても桁が揃う。全角 (2 バイト文字) は 2 桁を占め、2 桁より広い字は横に縮める。
+  フォントは端末と同じ (`GameState.font_name` / `font_size`、設定の変更にも追従)。
+- 実ゲームでの確認: `tools/godot/character-sheet-runtime-check.gd` (ダンプの取得、パネルへの描画、
+  作っても地図の画面のままであること、ターンが進むと作り直されること、C コマンドで端末に出した
+  画面の各行とダンプの先頭の画面が一致すること)。
+- 日本語版で作ったセーブを英語版で読むと、生い立ち (Character Background) などセーブに保存された
+  文字列は文字コードが合わず化ける (端末版でも同じ)。日本語版の Godot ビルドでの見た目は未確認。
 
 ## メッセージ・持ち物・装備のウィンドウ
 

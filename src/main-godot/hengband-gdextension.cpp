@@ -5,6 +5,7 @@
 
 #include "main-godot/hengband-gdextension.h"
 #include "main-godot/godot-audio-manager.h"
+#include "main-godot/godot-character-sheet.h"
 #include "main-godot/godot-game-events.h"
 #include "main-godot/godot-init.h"
 #include "main-godot/godot-input-handler.h"
@@ -259,6 +260,13 @@ void HengbandGame::_process(double delta)
         }
     }
 
+    // ステータス画面のダンプ
+    const auto sheet_version = character_sheet_get_version();
+    if (sheet_version != last_sheet_version_) {
+        last_sheet_version_ = sheet_version;
+        emit_signal("character_sheet_changed", static_cast<int64_t>(sheet_version));
+    }
+
     // 持ち物・装備・メッセージのウィンドウ用
     const auto inventory_version = player_inventory_get_version();
     if (inventory_version != last_inventory_version_) {
@@ -345,6 +353,48 @@ godot::Dictionary observed_item_to_dict(const ObservedItem &item)
     d["recharging"] = item.recharging;
     return d;
 }
+}
+
+void HengbandGame::set_character_sheet_enabled(bool enabled)
+{
+    character_sheet_set_enabled(enabled);
+}
+
+godot::Dictionary HengbandGame::get_character_sheet()
+{
+    const auto sheet = character_sheet_get();
+    godot::Dictionary d;
+    if (!sheet.lines) {
+        return d;
+    }
+
+    godot::Array lines;
+    godot::PackedStringArray texts;
+    for (const auto &line : *sheet.lines) {
+        godot::PackedInt32Array cols;
+        godot::PackedByteArray widths;
+        godot::PackedStringArray chars;
+        godot::PackedByteArray colors;
+        for (const auto &cell : line.cells) {
+            cols.push_back(cell.col);
+            widths.push_back(static_cast<uint8_t>(cell.width));
+            chars.push_back(godot::String::utf8(cell.text.c_str()));
+            colors.push_back(cell.color);
+        }
+        godot::Dictionary l;
+        l["cols"] = cols;
+        l["widths"] = widths;
+        l["chars"] = chars;
+        l["colors"] = colors;
+        lines.push_back(l);
+        texts.push_back(godot::String::utf8(line.text.c_str()));
+    }
+
+    d["version"] = static_cast<int64_t>(sheet.version);
+    d["width"] = 80;
+    d["lines"] = lines;
+    d["text"] = texts;
+    return d;
 }
 
 void HengbandGame::set_item_windows_enabled(bool enabled)
@@ -1022,6 +1072,11 @@ void HengbandGame::_bind_methods()
     ClassDB::bind_method(D_METHOD("travel_to", "x", "y"), &HengbandGame::travel_to);
     ClassDB::bind_method(D_METHOD("target_grid", "x", "y"), &HengbandGame::target_grid);
     ClassDB::bind_method(D_METHOD("walk", "dir"), &HengbandGame::walk);
+
+    // ステータス画面のダンプ (C コマンドの画面)
+    ClassDB::bind_method(D_METHOD("set_character_sheet_enabled", "enabled"), &HengbandGame::set_character_sheet_enabled);
+    ClassDB::bind_method(D_METHOD("get_character_sheet"), &HengbandGame::get_character_sheet);
+    ADD_SIGNAL(MethodInfo("character_sheet_changed", PropertyInfo(Variant::INT, "version")));
 
     // 持ち物・装備・メッセージのウィンドウ
     ClassDB::bind_method(D_METHOD("set_item_windows_enabled", "enabled"), &HengbandGame::set_item_windows_enabled);
