@@ -14,6 +14,7 @@ extends RefCounted
 ##   mesh / sprite: リソースのパス (kind が mesh / sprite のとき)
 ##   glyph:  文字 (String)。glyph_color: 端末の色の番号
 ##   scale / height: 数値。color: Color (定義に無ければ端末の色から)
+##   texture: 箱・板に貼るテクスチャの名前 (assets/textures/terrain/<名前>.png)。無ければ ""
 ##   source: どの定義から決まったか ("by_tag" / "by_shape" / "by_race" / "by_symbol" / "by_tval" / "fallback")
 
 const DEFAULT_PATH := "res://data/visuals.jsonc"
@@ -115,6 +116,7 @@ func _build(entry: Dictionary, source: String, glyph: String, glyph_color: int) 
 		"height": float(entry.get("height", 1.0)),
 		"color": Color.html(entry["color"]) if entry.has("color") else _term_color(glyph_color),
 		"source": source,
+		"texture": str(entry.get("texture", "")),
 	}
 	if entry.has("mesh"):
 		result["kind"] = "mesh"

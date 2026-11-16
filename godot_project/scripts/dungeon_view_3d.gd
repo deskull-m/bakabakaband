@@ -17,6 +17,10 @@ extends SubViewportContainer
 ##   に従い、3D の光の届き方で見えるかどうかを決めることはしない
 
 const VisualCatalog = preload("res://scripts/visual_catalog.gd")
+const TerrainShader = preload("res://shaders/terrain.gdshader")
+## 地形のテクスチャの置き場所 (<名前>.png、tools/godot/gen-terrain-textures.py で生成)
+const TERRAIN_TEXTURE_DIR := "res://assets/textures/terrain/"
+const TERRAIN_TEXTURE_SIZE := 128
 const InputIntents = preload("res://scripts/input_intents.gd")
 
 ## ObservedGridFlag / ObservedCreatureFlag
@@ -63,6 +67,8 @@ var _camera_distance := 22.0
 
 ## 床の板は端末の色そのままだと明るすぎて上のビルボードが見づらいので落とす
 const PLANE_BRIGHTNESS := 0.35
+## テクスチャを貼った板の明るさ (テクスチャ自体が暗い分を戻す)
+const TEXTURED_PLANE_BRIGHTNESS := 0.6
 ## 視界内だが暗いグリッドの明るさ
 const UNLIT_BRIGHTNESS := 0.55
 ## 記憶だけのグリッドの明るさと彩度
@@ -75,6 +81,10 @@ var _blind := false
 var _player_light: OmniLight3D
 var _creature_lights := {} ## id → OmniLight3D
 var _dragging := false
+
+## テクスチャの名前 → Texture2DArray の層 (0 は無地)
+var _texture_layers := {}
+var _terrain_material: ShaderMaterial
 
 ## 計測 (ミリ秒)
 var last_full_build_ms := 0.0
@@ -110,6 +120,8 @@ func _ready() -> void:
 	_camera.fov = 50.0
 	_world.add_child(_camera)
 
+	_terrain_material = ShaderMaterial.new()
+	_terrain_material.shader = TerrainShader
 	_box_mm = _make_multimesh(BoxMesh.new())
 	_plane_mm = _make_multimesh(_make_plane_mesh())
 	_creature_root = Node3D.new()
@@ -133,6 +145,7 @@ func setup(game_node: Node) -> void:
 	game = game_node
 	catalog.load_definitions()
 	catalog.set_color_provider(game.get_term_color)
+	_load_terrain_textures()
 	game.world_snapshot_changed.connect(_on_world_snapshot_changed)
 	game.game_events.connect(_on_game_events)
 	visibility_changed.connect(_on_visibility_changed)
@@ -148,14 +161,63 @@ func _make_multimesh(mesh: Mesh) -> MultiMesh:
 	var mm := MultiMesh.new()
 	mm.transform_format = MultiMesh.TRANSFORM_3D
 	mm.use_colors = true
+	mm.use_custom_data = true
 	mm.mesh = mesh
-	var material := StandardMaterial3D.new()
-	material.vertex_color_use_as_albedo = true
-	mesh.surface_set_material(0, material)
+	mesh.surface_set_material(0, _terrain_material)
 	var instance := MultiMeshInstance3D.new()
 	instance.multimesh = mm
 	_world.add_child(instance)
 	return mm
+
+
+## 見た目の定義で使われているテクスチャを読み、Texture2DArray にまとめてシェーダに渡す
+## 層 0 は無地 (白)。読めない・大きさの違うテクスチャは無地で描く
+func _load_terrain_textures() -> void:
+	_texture_layers = {}
+	var white := Image.create(TERRAIN_TEXTURE_SIZE, TERRAIN_TEXTURE_SIZE, false, Image.FORMAT_RGB8)
+	white.fill(Color.WHITE)
+	white.generate_mipmaps()
+	var images: Array[Image] = [white]
+	for name in collect_texture_names(catalog.definitions):
+		var image := load_texture_image(TERRAIN_TEXTURE_DIR + name + ".png")
+		if image == null or image.get_size() != Vector2i(TERRAIN_TEXTURE_SIZE, TERRAIN_TEXTURE_SIZE):
+			push_warning("terrain texture not usable: " + name)
+			continue
+		_texture_layers[name] = images.size()
+		images.append(image)
+	var array := Texture2DArray.new()
+	array.create_from_images(images)
+	_terrain_material.set_shader_parameter("terrain_textures", array)
+
+
+## 見た目の定義 (terrain.by_shape / by_tag) で使われているテクスチャの名前 (重複なし、出てきた順)
+static func collect_texture_names(definitions: Dictionary) -> Array[String]:
+	var names: Array[String] = []
+	var terrain: Variant = definitions.get("terrain", {})
+	if not (terrain is Dictionary):
+		return names
+	for section in ["by_shape", "by_tag"]:
+		var table: Variant = terrain.get(section, {})
+		if not (table is Dictionary):
+			continue
+		for entry in table.values():
+			if entry is Dictionary and entry.has("texture"):
+				var name := str(entry["texture"])
+				if name != "" and not names.has(name):
+					names.append(name)
+	return names
+
+
+## PNG を読む (インポートを通さないので、書き出し時は assets/textures を含めること)
+static func load_texture_image(path: String) -> Image:
+	if not FileAccess.file_exists(path):
+		return null
+	var image := Image.new()
+	if image.load_png_from_buffer(FileAccess.get_file_as_bytes(path)) != OK:
+		return null
+	image.convert(Image.FORMAT_RGB8)
+	image.generate_mipmaps()
+	return image
 
 
 func _make_light(color: Color) -> OmniLight3D:
@@ -257,14 +319,14 @@ func _rebuild(full: Dictionary) -> void:
 	# 全体はインスタンスを 1 つずつ設定せず、バッファ (変換 12 + 色 4 の float) をまとめて渡す
 	var box_buffer := PackedFloat32Array()
 	var plane_buffer := PackedFloat32Array()
-	box_buffer.resize(count * 16)
-	plane_buffer.resize(count * 16)
+	box_buffer.resize(count * INSTANCE_STRIDE)
+	plane_buffer.resize(count * INSTANCE_STRIDE)
 	for i in count:
 		var placed := _compute_grid(i)
 		_grid_kind[i] = placed[0]
 		var target := box_buffer if placed[0] == KIND_BOX else plane_buffer
 		if placed[0] != KIND_NONE:
-			_write_instance(target, i, placed[1], placed[2])
+			_write_instance(target, i, placed[1], placed[2], placed[3])
 		_update_item(i)
 	_box_mm.instance_count = count
 	_plane_mm.instance_count = count
@@ -273,9 +335,13 @@ func _rebuild(full: Dictionary) -> void:
 	last_changed_grids = count
 
 
-## バッファの i 番目に変換と色を書く (MultiMesh の TRANSFORM_3D + 色の並び: 3x4 の行優先 + RGBA)
-static func _write_instance(buffer: PackedFloat32Array, i: int, xform: Transform3D, color: Color) -> void:
-	var o := i * 16
+## MultiMesh の 1 インスタンスの float の数 (変換 12 + 色 4 + カスタムデータ 4)
+const INSTANCE_STRIDE := 20
+
+## バッファの i 番目に変換・色・テクスチャの層を書く
+## (MultiMesh の TRANSFORM_3D + 色 + カスタムデータの並び: 3x4 の行優先 + RGBA + RGBA)
+static func _write_instance(buffer: PackedFloat32Array, i: int, xform: Transform3D, color: Color, layer: int) -> void:
+	var o := i * INSTANCE_STRIDE
 	var b := xform.basis
 	buffer[o + 0] = b.x.x
 	buffer[o + 1] = b.y.x
@@ -293,6 +359,10 @@ static func _write_instance(buffer: PackedFloat32Array, i: int, xform: Transform
 	buffer[o + 13] = color.g
 	buffer[o + 14] = color.b
 	buffer[o + 15] = color.a
+	buffer[o + 16] = float(layer)
+	buffer[o + 17] = 0.0
+	buffer[o + 18] = 0.0
+	buffer[o + 19] = 0.0
 
 
 func _apply_changes(changes: Dictionary) -> void:
@@ -312,7 +382,7 @@ func _apply_changes(changes: Dictionary) -> void:
 	last_changed_grids = indices.size()
 
 
-## 地形 ID ごとに解決した見た目 [KIND_*, 大きさの Basis, 高さ, 色, 視界外の色]
+## 地形 ID ごとに解決した見た目 [KIND_*, 大きさの Basis, 高さ, 色, テクスチャの層]
 ## 地形の種類は数百しかないので、グリッドごとに解決し直さない
 var _terrain_visual_cache := {}
 
@@ -331,26 +401,27 @@ func _terrain_visual(terrain_id: int) -> Array:
 		placed_kind = KIND_BOX
 	elif kind == "none":
 		placed_kind = KIND_NONE
+	var layer: int = _texture_layers.get(visual.get("texture", ""), 0)
 	# 板・文字のビルボード・未対応のメッシュは、いまは床の板で代用する
 	if placed_kind == KIND_PLANE:
-		color = color * PLANE_BRIGHTNESS
+		color = color * (TEXTURED_PLANE_BRIGHTNESS if layer > 0 else PLANE_BRIGHTNESS)
 		color.a = 1.0
-	cached = [placed_kind, Basis().scaled(Vector3(s, height, s)), height, color]
+	cached = [placed_kind, Basis().scaled(Vector3(s, height, s)), height, color, layer]
 	_terrain_visual_cache[terrain_id] = cached
 	return cached
 
 
-## 1 グリッドに何を置くか: [KIND_*, 変換, 色]
+## 1 グリッドに何を置くか: [KIND_*, 変換, 色, テクスチャの層]
 func _compute_grid(i: int) -> Array:
 	var visual := _terrain_visual(_terrain[i])
 	var kind: int = visual[0]
 	if kind == KIND_NONE:
-		return [KIND_NONE, HIDDEN, Color.BLACK]
+		return [KIND_NONE, HIDDEN, Color.BLACK, 0]
 	var color := grid_color(visual[3], _flags[i], _blind)
 	var center := Vector3((i % _width) + 0.5, 0.0, (i / _width) + 0.5)
 	if kind == KIND_BOX:
-		return [KIND_BOX, Transform3D(visual[1], center + Vector3(0, float(visual[2]) / 2.0, 0)), color]
-	return [KIND_PLANE, Transform3D(Basis(), center), color]
+		return [KIND_BOX, Transform3D(visual[1], center + Vector3(0, float(visual[2]) / 2.0, 0)), color, visual[4]]
+	return [KIND_PLANE, Transform3D(Basis(), center), color, visual[4]]
 
 
 ## 1 グリッドの地形と床アイテムを描き直す (差分用)
@@ -360,10 +431,12 @@ func _update_grid(i: int) -> void:
 	if placed[0] == KIND_BOX:
 		_box_mm.set_instance_transform(i, placed[1])
 		_box_mm.set_instance_color(i, placed[2])
+		_box_mm.set_instance_custom_data(i, Color(float(placed[3]), 0, 0, 0))
 		_plane_mm.set_instance_transform(i, HIDDEN)
 	elif placed[0] == KIND_PLANE:
 		_plane_mm.set_instance_transform(i, placed[1])
 		_plane_mm.set_instance_color(i, placed[2])
+		_plane_mm.set_instance_custom_data(i, Color(float(placed[3]), 0, 0, 0))
 		_box_mm.set_instance_transform(i, HIDDEN)
 	else:
 		_box_mm.set_instance_transform(i, HIDDEN)

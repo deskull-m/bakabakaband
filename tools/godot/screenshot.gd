@@ -6,6 +6,7 @@ extends SceneTree
 ##   HB_SAVE=<セーブ> HB_SHOT=<出力 PNG> LIBGL_ALWAYS_SOFTWARE=1 xvfb-run -s "-screen 0 1280x800x24" \
 ##     godot --rendering-driver opengl3 --path godot_project --script "$PWD"/tools/godot/screenshot.gd
 ## HB_MAP_VIEW=0 なら 3D の地図ビューを使わず端末の表示のまま撮る
+## HB_CAMERA_DISTANCE=<数値> なら 3D の地図ビューのカメラをその距離に寄せる (既定 22)
 ## HB_ITEM_WINDOWS=1 ならメッセージ・持ち物・装備のウィンドウも開く
 var save_path := OS.get_environment("HB_SAVE")
 var out := OS.get_environment("HB_SHOT")
@@ -32,6 +33,10 @@ func _process(_d: float) -> bool:
 		return false
 	if Time.get_ticks_msec() > 150000:
 		OS.kill(OS.get_process_id())
+	if frame == 390 and OS.get_environment("HB_CAMERA_DISTANCE") != "":
+		var view = current_scene.find_child("DungeonView3D", true, false)
+		if view:
+			view._camera_distance = float(OS.get_environment("HB_CAMERA_DISTANCE"))
 	if frame == 400:
 		game.get_node("InputHandler").inject_key(0x1B)
 		game.get_node("InputHandler").inject_key(0x12)

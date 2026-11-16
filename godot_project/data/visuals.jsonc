@@ -13,27 +13,43 @@
 //   "height": 高さ (グリッド = 1.0。壁・扉の箱の高さなど)
 //   "color":  色 ("#rrggbb")。無ければ端末の色
 //   "shape":  "box" (箱) / "plane" (床の板) / "none" (置かない)。mesh も sprite も無いときの形
+//   "texture": 箱・板に貼るテクスチャの名前 (assets/textures/terrain/<名前>.png、128x128)。
+//             色はテクスチャに端末の地形の色を掛けて付くので、テクスチャは明暗の模様だけでよい。
+//             tools/godot/gen-terrain-textures.py が生成する
 {
   "version": 1,
   "terrain": {
     // 形状 (ObservedTerrainShape の名前) ごとの既定
     "by_shape": {
-      "FLOOR": { "shape": "plane" },
-      "WALL": { "shape": "box", "height": 1.0 },
-      "DOOR_CLOSED": { "shape": "box", "height": 0.9, "scale": 0.8 },
-      "DOOR_OPEN": { "shape": "plane" },
-      "STAIRS_UP": { "shape": "plane" },
-      "STAIRS_DOWN": { "shape": "plane" },
-      "LIQUID": { "shape": "plane" },
-      "TREE": { "shape": "box", "height": 1.2, "scale": 0.6 },
-      "ENTRANCE": { "shape": "box", "height": 1.0 },
-      "OTHER_PASSABLE": { "shape": "plane" },
-      "OTHER_OBSTACLE": { "shape": "box", "height": 0.8 }
+      "FLOOR": { "shape": "plane", "texture": "floor" },
+      "WALL": { "shape": "box", "height": 1.0, "texture": "wall" },
+      "DOOR_CLOSED": { "shape": "box", "height": 0.9, "scale": 0.8, "texture": "door" },
+      "DOOR_OPEN": { "shape": "plane", "texture": "floor" },
+      "STAIRS_UP": { "shape": "plane", "texture": "stairs_up" },
+      "STAIRS_DOWN": { "shape": "plane", "texture": "stairs_down" },
+      "LIQUID": { "shape": "plane", "texture": "liquid" },
+      "TREE": { "shape": "box", "height": 1.2, "scale": 0.6, "texture": "tree" },
+      "ENTRANCE": { "shape": "box", "height": 1.0, "texture": "door" },
+      "OTHER_PASSABLE": { "shape": "plane", "texture": "dirt" },
+      "OTHER_OBSTACLE": { "shape": "box", "height": 0.8, "texture": "rubble" }
     },
     // 地形のタグ (lib/edit/TerrainDefinitions.jsonc の key) ごとの上書き
     "by_tag": {
-      "PERMANENT": { "shape": "box", "height": 1.2 },
-      "RUBBLE": { "shape": "box", "height": 0.5 }
+      "PERMANENT": { "shape": "box", "height": 1.2, "texture": "permanent" },
+      "PERMANENT_INNER": { "shape": "box", "height": 1.2, "texture": "permanent" },
+      "PERMANENT_OUTER": { "shape": "box", "height": 1.2, "texture": "permanent" },
+      "PERMANENT_SOLID": { "shape": "box", "height": 1.2, "texture": "permanent" },
+      "MAGMA_VEIN": { "shape": "box", "height": 1.0, "texture": "vein" },
+      "QUARTZ_VEIN": { "shape": "box", "height": 1.0, "texture": "vein" },
+      "MAGMA_TREASURE": { "shape": "box", "height": 1.0, "texture": "vein" },
+      "QUARTZ_TREASURE": { "shape": "box", "height": 1.0, "texture": "vein" },
+      "BLICK_MANSONRY_WALL": { "shape": "box", "height": 1.0, "texture": "brick" },
+      "WOOD_WALL": { "shape": "box", "height": 1.0, "texture": "wood_wall" },
+      "RUBBLE": { "shape": "box", "height": 0.5, "texture": "rubble" },
+      "GRASS": { "shape": "plane", "texture": "grass" },
+      "FLOWER": { "shape": "plane", "texture": "grass" },
+      "DIRT": { "shape": "plane", "texture": "dirt" },
+      "FLAGSTONE": { "shape": "plane", "texture": "permanent" }
     }
   },
   "monsters": {

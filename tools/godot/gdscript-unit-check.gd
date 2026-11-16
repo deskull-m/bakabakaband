@@ -5,6 +5,7 @@ extends SceneTree
 const I = preload("res://scripts/input_intents.gd")
 const VisualCatalog = preload("res://scripts/visual_catalog.gd")
 const ItemWindow = preload("res://scripts/item_window.gd")
+const DungeonView = preload("res://scripts/dungeon_view_3d.gd")
 func _initialize() -> void:
 	var ok := true
 	var cases := [
@@ -36,6 +37,14 @@ func _initialize() -> void:
 	cases.append([vc.resolve_creature({ "race_id": 5, "symbol": "k", "symbol_color": 4 })["kind"], "glyph"])
 	cases.append([vc.resolve_creature({ "race_id": -1 })["glyph"], "?"])
 	cases.append([VisualCatalog.tile_region(0x83, 0x82, Vector2i(16, 16)), Rect2i(32, 48, 16, 16)])
+	# 地形のテクスチャ
+	cases.append([vc.resolve_terrain(1)["texture"], "floor"])
+	cases.append([DungeonView.collect_texture_names({ "terrain": { "by_shape": { "A": { "texture": "x" }, "B": {} }, "by_tag": { "C": { "texture": "y" }, "D": { "texture": "x" } } } }), ["x", "y"]])
+	var texture_names := DungeonView.collect_texture_names(vc.definitions)
+	for name in texture_names:
+		var image := DungeonView.load_texture_image(DungeonView.TERRAIN_TEXTURE_DIR + name + ".png")
+		cases.append([[name, image != null and image.get_size() == Vector2i(DungeonView.TERRAIN_TEXTURE_SIZE, DungeonView.TERRAIN_TEXTURE_SIZE)], [name, true]])
+	cases.append([texture_names.size() >= 10, true])
 	# メッセージ・持ち物・装備のウィンドウ
 	var white := func(_c: int) -> Color: return Color(1, 1, 1)
 	cases.append([ItemWindow.escape_bbcode("a[b]c"), "a[lb]b]c"])
