@@ -54,3 +54,18 @@ void set_flags_for_full_knowledge(lore_type *lore_ptr)
     lore_ptr->special_flags = lore_ptr->monrace->special_flags;
     lore_ptr->misc_flags = lore_ptr->monrace->misc_flags;
 }
+
+/*!
+ * @brief 種族定義の種族分類 (MonsterKindType) を思い出へ写す
+ * @param lore_ptr 知識情報
+ * @details
+ * フラグを 1 つずつ列挙して写すと MonsterKindType を追加したときに配線漏れが起き、
+ * 表示側 (display_monster_kind() 等) がデッドコードになる。
+ * 実際に 76 種が写されないまま表示側だけ存在していたため、一括で写す形にしてある。
+ * ここは種族定義 (MonraceDefinition::kind_flags) をそのまま写すので「覚えた分」の
+ * 選別は行わない。撃破数による開示判定は呼出側 (set_race_flags()) が担う。
+ */
+void set_known_kind_flags(lore_type *lore_ptr)
+{
+    lore_ptr->kind_flags.set(lore_ptr->monrace->kind_flags);
+}

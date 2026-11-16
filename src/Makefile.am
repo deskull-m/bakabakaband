@@ -1674,6 +1674,7 @@ hengband_test_SOURCES = \
 	\
 	test/locale/test-character-encoding.cpp \
 	\
+	test/lore/test-lore-calculator.cpp \
 	test/lore/test-monster-lore-snapshot.cpp \
 	\
 	test/market/test-building-recharger.cpp \

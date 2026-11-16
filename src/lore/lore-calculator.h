@@ -12,3 +12,4 @@ class CreatureEntity;
 std::string get_skill_damage(CreatureEntity &creature, lore_type *lore_ptr, MonsterAbilityType ms_type);
 void add_lore_of_damage_skill(CreatureEntity &creature, lore_type *lore_ptr, MonsterAbilityType ms_type, fmt::format_string<std::string_view> msg, byte color);
 void set_flags_for_full_knowledge(lore_type *lore_ptr);
+void set_known_kind_flags(lore_type *lore_ptr);
