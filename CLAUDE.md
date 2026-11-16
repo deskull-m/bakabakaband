@@ -4782,6 +4782,78 @@ JSON キー `alliance`)。宣言があるパーティは、生成したメンバ
 - パーティのアライアンス宣言は実装済みだが、**無所属パーティへの勢力付与
   (バランス変更を伴う) は未着手**。
 
+### 思い出の種族分類の写し (`set_known_kind_flags`)
+
+モンスターの思い出 (lore) は**種族定義のフラグを直接読まず、`lore_type` 側の写しを
+読む**。種族分類 `MonsterKindType` の写しは `set_known_kind_flags()`
+(`src/lore/lore-calculator.cpp`) が
+`lore_ptr->kind_flags.set(lore_ptr->monrace->kind_flags)` の**一括コピー 1 行**で行い、
+表示側 (`display_monster_kind()` / `display_monster_kind_tags()`、
+`src/view/display-lore.cpp`) はこの写しを `lore_ptr->kind_flags.has(...)` で参照する。
+
+**フラグを 1 つずつ列挙して写してはいけない。** 以前は
+
+```cpp
+if (lore_ptr->monrace->kind_flags.has(MonsterKindType::ORC)) {
+    lore_ptr->kind_flags.set(MonsterKindType::ORC);
+}
+```
+
+を `set_race_flags()` (`src/lore/monster-lore.cpp`) 内に約 70 個並べる形だったため、
+**表示側が参照する 147 種のうち 71 種しか写されず、差分の 76 種は
+`lore_ptr->kind_flags` に立つ経路が存在せず表示コードがデッドコードになっていた**
+(`盗賊の` / `戦士の` / `兵士の` / `プリーストの` / `メイジの` / `ニンジャの` 等)。
+`ROGUE` を持つ `盗賊の頭領` の思い出に「盗賊の」が出ず、スポイラー `mon-info.txt`
+全種を検索しても種族名としての 1 件しか現れない状態だった。`MonsterKindType` を
+追加するたびに写しの追記を忘れると同じ穴が開くため、**一括コピーにして構造的に
+配線漏れが起きないようにしてある**。
+
+- **開示判定 (撃破数ゲート) は呼出側が持つ。** `set_race_flags()` 冒頭の
+  `if (!monrace->r_tkills && !know_everything) return;` がそれで、**その種族を
+  1 体も倒していなければ種族分類は一切表示されない**。写し自体は種族定義を
+  そのまま複製するので、フラグ単位の「覚えた分」の選別は行わない
+  (一括化の前後で変わらない従来どおりの仕様)。
+- **`r_kind_flags` (思い出フラグ) は思い出表示には使われない。** スレイや射撃
+  (`src/combat/slaying.cpp` / `shoot.cpp`) が記録する側のフィールドで、思い出が
+  見るのは種族定義 `kind_flags` の方。`MonsterLoreSnapshot` も `r_kind_flags` を
+  比較対象に含めない (`src/test/lore/test-monster-lore-snapshot.cpp` の該当
+  サブケース参照)。
+- **`UNIQUE` は別経路でも写される。** `set_flags1()` が撃破数ゲートの**外**で
+  `UNIQUE` を写すため、未撃破でも `[ユニーク]` タグは出る。ゲート通過時は
+  一括コピーでも重複して立つが同値なので挙動は変わらない。
+- 全 157 種の内訳は「元から写され表示されていた 71 + 本修正で表示されるように
+  なった 76 + 表示処理を持たない 10」。後者 (`MALE` / `FEMALE` / `NONLIVING` /
+  `SKELETON` / `ZOMBIE` / `CANCER` / `HOMO_SEXUAL` / `SQUIRREL` / `BARD` /
+  `MAGICAL_GIRL`) は `display-lore.cpp` に参照が無いため一括コピーしても
+  **何も表示されない** (性別は `lore_type::msex` 経由で別に表示される)。
+- **これは意図的な表示の変更**で、`ROGUE` / `WARRIOR` 等を持つ既存モンスターの
+  思い出に分類の語が増える。ゲームバランスへの影響は無い (表示のみ)。
+
+**配線漏れの検知は `src/test/lore/test-lore-calculator.cpp`** が
+`EnumRange<MonsterKindType>` の全 157 種について「種族がそのフラグを持てば思い出へ
+写る」ことを確かめる。**一括コピーになった後はソースを grep して差集合を取る方法では
+検証できない** (写しの記述がフラグ名を持たないため) ので、網羅性はこのテストで
+担保する。旧実装を再現すると 159 アサーションのうち 157 が落ちることを確認済み。
+
+**実測 (ヘッドレス)**:
+
+| 確認項目 | 結果 |
+|---|---|
+| スポイラー `mon-info.txt` の `盗賊の` | 65 件。`ROGUE` を持つ monrace 65 種と**一致** |
+| 同 `戦士の` | 110 件。`WARRIOR` を持つ 110 種と**一致** |
+| `盗賊の頭領` (1024) の思い出 | 「この**邪悪なる盗賊の**人間を倒すことは…」が出る |
+| 撃破ゲート (未撃破) | `盗賊の頭領` を召喚して `l` → `r` で思い出を見ると「このモンスターを倒したことはない。」で**分類の語は一切出ない** |
+| 撃破ゲート (1 体撃破後) | `汚いイタズラ小僧` (1) を 1 体倒すと「この**邪悪なる盗賊の人間賤民**を倒すことは…」に変わる (`ROGUE` = 本修正分、`RABBLE` = 元から出ていた分の両方) |
+
+- **検証上の注意**: `--output-spoilers` は `spoil_categorized_mon_desc()` で
+  **segfault する** (`mon-info.txt` に到達しない)。本件とは無関係の既存の不具合で、
+  修正前のコードでも同様に落ちる。スポイラーの検証はヘッドレス起動 +
+  ウィザードコマンド `^A` → `"` → `5` (`spoil_mon_info()` を直接呼ぶ) で行うこと。
+  ウィザードコマンドの利用には先に `=` → `(4)` で `allow_debug_opts` を
+  「はい」にする必要がある。
+- **検証上の注意 2**: デバッグコマンドへ番号を渡す書式は `0N^aX`
+  (例: `01024^An` で monrace 1024 を召喚)。`^A` の後に番号を打っても効かない。
+
 ### セーブ/ロードの統合 (CreatureEntity 共通シリアライズ) — フェーズ 1〜4
 
 旧 PlayerType / 旧 MonsterEntity に分かれていたセーブ/ロード処理を、
