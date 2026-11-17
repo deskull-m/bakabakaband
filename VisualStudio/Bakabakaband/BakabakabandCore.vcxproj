@@ -1850,6 +1850,10 @@
     <ClCompile Include="..\..\src\realm\realm-life.cpp" />
     <ClCompile Include="..\..\src\realm\realm-trump.cpp" />
     <ClCompile Include="..\..\src\io\report.cpp" />
+    <ClCompile Include="..\..\src\net\curl-easy-session.cpp" />
+    <ClCompile Include="..\..\src\net\curl-slist.cpp" />
+    <ClCompile Include="..\..\src\net\http-client.cpp" />
+    <ClCompile Include="..\..\src\net\report-error.cpp" />
     <ClCompile Include="..\..\src\io\score-submission.cpp" />
     <ClCompile Include="..\..\src\room\rooms-city.cpp" />
     <ClCompile Include="..\..\src\room\rooms-fractal.cpp" />
@@ -2152,6 +2156,10 @@
     <ClInclude Include="..\..\src\realm\realm-sorcery.h" />
     <ClInclude Include="..\..\src\realm\realm-trump.h" />
     <ClInclude Include="..\..\src\io\report.h" />
+    <ClInclude Include="..\..\src\net\curl-easy-session.h" />
+    <ClInclude Include="..\..\src\net\curl-slist.h" />
+    <ClInclude Include="..\..\src\net\http-client.h" />
+    <ClInclude Include="..\..\src\net\report-error.h" />
     <ClInclude Include="..\..\src\io\score-submission.h" />
     <ClInclude Include="..\..\src\room\rooms-city.h" />
     <ClInclude Include="..\..\src\room\rooms-fractal.h" />

@@ -472,6 +472,18 @@
     <ClCompile Include="..\..\src\io\report.cpp">
       <Filter>io</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\net\curl-easy-session.cpp">
+      <Filter>net</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\net\curl-slist.cpp">
+      <Filter>net</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\net\http-client.cpp">
+      <Filter>net</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\net\report-error.cpp">
+      <Filter>net</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\src\io\score-submission.cpp">
       <Filter>io</Filter>
     </ClCompile>
@@ -3407,6 +3419,18 @@
     </ClInclude>
     <ClInclude Include="..\..\src\io\report.h">
       <Filter>io</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\net\curl-easy-session.h">
+      <Filter>net</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\net\curl-slist.h">
+      <Filter>net</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\net\http-client.h">
+      <Filter>net</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\net\report-error.h">
+      <Filter>net</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\io\score-submission.h">
       <Filter>io</Filter>
