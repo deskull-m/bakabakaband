@@ -11,57 +11,45 @@
 #include "game-option/special-options.h"
 #include "io-dump/character-dump.h"
 #include "io/input-context.h"
-#include "mind/mind-elementalist.h"
-#include "player-base/player-class.h"
-#include "player-info/class-info.h"
-#include "player-info/race-info.h"
-#include "player/player-personality.h"
-#include "player/player-realm.h"
-#include "player/player-status.h"
+#include "io/score-submission.h"
+#include "net/http-client.h"
 #include "system/angband-system.h"
 #include "system/creature-entity.h"
-#include "system/dungeon/dungeon-definition.h"
-#include "system/dungeon/dungeon-record.h"
-#include "system/enums/dungeon/dungeon-id.h"
-#include "system/floor/floor-info.h"
-#include "system/inner-game-data.h"
 #include "system/system-variables.h"
 #include "term/gameterm.h"
 #include "term/screen-processor.h"
 #include "util/angband-files.h"
 #include "view/display-messages.h"
-#include "world/world.h"
-#include <algorithm>
+#include "view/display-symbol.h"
+#include <cstdlib>
 #include <fmt/format.h>
 #include <fstream>
-#include <span>
+#include <nlohmann/json.hpp>
+#include <sstream>
 #include <string>
-#include <string_view>
-#include <vector>
 
 std::string screen_dump;
 
 #ifdef WORLD_SCORE
 
-/*
- * internet resource value
+/*!
+ * @brief スコアサーバの送信先 URL (既定値)
+ * @details 環境変数 BAKABAKABAND_SCORE_URL で上書きできる。
+ * サーバ側の実装は https://github.com/deskull-m/bakabakaband-score を参照。
  */
-#define HTTP_TIMEOUT 30 /*!< デフォルトのタイムアウト時間(秒) / Timeout length (second) */
+constexpr auto DEFAULT_SCORE_SERVER_URL = "http://localhost:3000/submit";
 
-#ifdef JP
-// constexpr auto SCORE_SERVER_SCHEME_HOST = ""; /*!< スコアサーバホスト */
-// constexpr auto SCORE_SERVER_PATH = ""; /*< スコアサーバパス */
-#endif
-
-size_t read_callback(char *buffer, size_t size, size_t nitems, void *userdata)
+/*!
+ * @brief スコアサーバの送信先 URL を返す
+ */
+static std::string get_score_server_url()
 {
-    auto &data = *static_cast<std::span<const char> *>(userdata);
-    const auto copy_size = std::min<size_t>(size * nitems, data.size());
+    const auto *env = std::getenv("BAKABAKABAND_SCORE_URL");
+    if (env != nullptr && env[0] != '\0') {
+        return env;
+    }
 
-    std::copy_n(data.begin(), copy_size, buffer);
-    data = data.subspan(copy_size);
-
-    return copy_size;
+    return DEFAULT_SCORE_SERVER_URL;
 }
 
 /*!
@@ -199,42 +187,45 @@ std::string make_screen_dump(CreatureEntity &creature)
 }
 
 /*!
+ * @brief サーバの応答から表示用のメッセージを取り出す
+ * @param body 応答本文 (JSON を期待するが、そうでなくてもよい)
+ * @return 応答に含まれる error または message。無ければ空文字列
+ */
+static std::string extract_response_message(const std::string &body)
+{
+    const auto json = nlohmann::json::parse(body, nullptr, false);
+    if (json.is_discarded() || !json.is_object()) {
+        return "";
+    }
+
+    for (const auto *key : { "error", "message" }) {
+        if (json.contains(key) && json[key].is_string()) {
+            return json[key].get<std::string>();
+        }
+    }
+
+    return "";
+}
+
+/*!
  * @brief スコア転送処理のメインルーチン
  * @param creature クリーチャーへの参照
  * @return 正常にスコアを送信できたらtrue、失敗時に送信を中止したらfalse
+ * @details
+ * bakabakaband-score-submission 形式の JSON を組み立てて HTTP POST する。
+ * 送信内容 (submission_id を含む) は最初に一度だけ組み立て、再試行でも同じものを送る。
+ * サーバは submission_id と内容で重複登録を抑止するので、何度送っても 1 件にしかならない。
  */
 bool report_score(CreatureEntity &creature)
 {
-    std::stringstream score_ss;
-    std::string personality_desc = (*creature.get_personality_info()).title.string();
-    personality_desc.append(_((*creature.get_personality_info()).no ? "の" : "", " "));
+    std::stringstream dump_ss;
+    make_dump(creature, dump_ss);
+    const auto submission = make_score_submission(creature, dump_ss.str(), screen_dump);
+    const auto body = submission.dump(-1, ' ', false, nlohmann::json::error_handler_t::replace);
+    const auto url = get_score_server_url();
 
-    PlayerRealm pr(creature);
-    const auto &realm1_name = CreatureClass(creature).equals(PlayerClassType::ELEMENTALIST) ? get_element_title(creature.get_element_realm()) : pr.realm1().get_name().string();
-    score_ss << fmt::format("name: {}\n", creature.name)
-             << fmt::format("version: {}\n", AngbandSystem::get_instance().build_version_expression(VersionExpression::FULL))
-             << fmt::format("score: {}\n", calc_score(creature))
-             << fmt::format("level: {}\n", creature.get_level())
-             << fmt::format("depth: {}\n", creature.get_floor()->dun_level)
-             << fmt::format("maxlv: {}\n", creature.get_max_plv())
-             << fmt::format("maxdp: {}\n", DungeonRecords::get_instance().get_record(DungeonId::ANGBAND).get_max_level())
-             << fmt::format("au: {}\n", creature.get_au());
-    const auto &igd = InnerGameData::get_instance();
-    score_ss << fmt::format("turns: {}\n", igd.get_real_turns(AngbandWorld::get_instance().game_turn))
-             << fmt::format("sex: {}\n", enum2i(creature.psex))
-             << fmt::format("race: {}\n", creature.get_race_info()->title)
-             << fmt::format("class: {}\n", (*creature.get_class_info()).title)
-             << fmt::format("seikaku: {}\n", personality_desc)
-             << fmt::format("realm1: {}\n", realm1_name)
-             << fmt::format("realm2: {}\n", pr.realm2().get_name())
-             << fmt::format("killer: {}\n", creature.died_from)
-             << "-----charcter dump-----\n";
-
-    make_dump(creature, score_ss);
-    if (!screen_dump.empty()) {
-        score_ss << "-----screen shot-----\n"
-                 << screen_dump;
-    }
+    http::Client client;
+    client.user_agent = "Bakabakaband/" + AngbandSystem::get_instance().build_version_expression(VersionExpression::WITH_EXTRA);
 
     term_clear();
     while (true) {
@@ -242,7 +233,20 @@ bool report_score(CreatureEntity &creature)
         prt(_("スコア送信中...", "Sending the score..."), 0, 0);
         term_fresh();
 
-        constexpr auto prompt = _("スコア・サーバへの送信に失敗しました。", "Failed to send to the score server.");
+        const auto response = client.post(url, body, "application/json");
+        if (response && response->status == 200) {
+            return true;
+        }
+
+        std::string reason;
+        if (!response) {
+            reason = _("接続できませんでした", "could not connect");
+        } else {
+            const auto message = extract_response_message(response->body);
+            reason = fmt::format("HTTP {}{}{}", response->status, message.empty() ? "" : ": ", message);
+        }
+
+        const auto prompt = fmt::format(_("スコア・サーバへの送信に失敗しました。({})", "Failed to send to the score server. ({})"), reason);
         prt(prompt, 0, 0);
         (void)input_key_with_context(InputKind::ANY_KEY, prompt);
         if (input_check_strict(creature, _("もう一度接続を試みますか? ", "Try again? "), UserCheck::NO_HISTORY)) {
@@ -252,5 +256,4 @@ bool report_score(CreatureEntity &creature)
         return false;
     }
 }
-#else
 #endif /* WORLD_SCORE */
