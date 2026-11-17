@@ -33,10 +33,11 @@
 
 /*!
  * @brief スコアサーバの送信先 URL (既定値)
- * @details 環境変数 BAKABAKABAND_SCORE_URL で上書きできる。
- * サーバ側の実装は https://github.com/deskull-m/bakabakaband-score を参照。
+ * @details 公開サーバ https://sikabane-works.net/bakabakaband/score/ の受付エンドポイント。
+ * 開発中のローカルサーバなどに向けるときは環境変数 BAKABAKABAND_SCORE_URL で上書きする
+ * (例: http://localhost:3000/submit)。サーバ側の実装は https://github.com/deskull-m/bakabakaband-score を参照。
  */
-constexpr auto DEFAULT_SCORE_SERVER_URL = "http://localhost:3000/submit";
+constexpr auto DEFAULT_SCORE_SERVER_URL = "https://sikabane-works.net/bakabakaband/score/submit";
 
 /*!
  * @brief スコアサーバの送信先 URL を返す
