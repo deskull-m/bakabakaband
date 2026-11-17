@@ -29,6 +29,37 @@
 #include <sstream>
 #include <string>
 
+namespace {
+
+/*! 死亡時などに capture_screen_dump() で保存した画面。未保存なら null */
+nlohmann::json screen_dump;
+
+}
+
+std::string serialize_screen_dump()
+{
+    if (screen_dump.is_null()) {
+        return "";
+    }
+
+    return screen_dump.dump(-1, ' ', false, nlohmann::json::error_handler_t::replace);
+}
+
+void restore_screen_dump(std::string_view text)
+{
+    screen_dump = nullptr;
+    if (text.empty()) {
+        return;
+    }
+
+    auto parsed = nlohmann::json::parse(text, nullptr, false);
+    if (parsed.is_discarded() || !parsed.is_object()) {
+        return;
+    }
+
+    screen_dump = std::move(parsed);
+}
+
 #ifdef WORLD_SCORE
 
 /*!
@@ -97,8 +128,6 @@ constexpr auto SCREEN_FORMAT = "bakabakaband-screen";
 constexpr auto SCREEN_FORMAT_VERSION = 1;
 constexpr auto SCREEN_PALETTE_SIZE = 16;
 
-nlohmann::json screen_dump;
-
 /*!
  * @brief システム文字コードの文字列を UTF-8 にして返す。変換できなければそのまま返す
  */
@@ -124,7 +153,11 @@ nlohmann::json make_screen_row(int y, int width)
         }
 
         if (!text.empty()) {
-            runs.push_back({ run_color, screen_text_to_utf8(text) });
+            auto utf8 = screen_text_to_utf8(text);
+            nlohmann::json run = nlohmann::json::array();
+            run.push_back(run_color);
+            run.push_back(std::move(utf8));
+            runs.push_back(std::move(run));
         }
 
         text.clear();
@@ -192,14 +225,13 @@ nlohmann::json make_screen_dump(CreatureEntity &creature)
         rows.push_back(make_screen_row(y, wid));
     }
 
-    nlohmann::json screen = {
-        { "format", SCREEN_FORMAT },
-        { "version", SCREEN_FORMAT_VERSION },
-        { "width", wid },
-        { "height", hgt },
-        { "palette", palette },
-        { "rows", rows },
-    };
+    nlohmann::json screen = nlohmann::json::object();
+    screen["format"] = SCREEN_FORMAT;
+    screen["version"] = SCREEN_FORMAT_VERSION;
+    screen["width"] = wid;
+    screen["height"] = hgt;
+    screen["palette"] = std::move(palette);
+    screen["rows"] = std::move(rows);
     if (screen.dump(-1, ' ', false, nlohmann::json::error_handler_t::replace).size() >= SCREEN_BUF_MAX_SIZE) {
         return nullptr;
     }

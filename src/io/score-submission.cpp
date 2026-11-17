@@ -29,6 +29,7 @@
 #include <cstdint>
 #include <nlohmann/json.hpp>
 #include <random>
+#include <utility>
 
 namespace {
 
@@ -58,25 +59,32 @@ const char *platform_name()
 nlohmann::json make_score_section(CreatureEntity &creature)
 {
     const auto &entries = ArenaEntryList::get_instance();
-    nlohmann::json score;
-    score["points"] = calc_score(creature);
-    score["multiplier"] = calc_score_multiplier();
-    score["options"] = {
-        { "preserve_mode", preserve_mode },
-        { "autoroller", autoroller },
-        { "smart_learn", smart_learn },
-        { "smart_cheat", smart_cheat },
-        { "ironman_shops", ironman_shops },
-        { "ironman_smallest_floor", ironman_smallest_floor },
-        { "ironman_force_arena_floor", ironman_force_arena_floor },
-        { "powerup_home", powerup_home },
-        { "ironman_rooms", ironman_rooms },
-        { "ironman_nightmare", ironman_nightmare },
-        { "ironman_downward", ironman_downward },
-    };
-    score["arena_wins"] = std::min(entries.get_current_entry(), entries.get_max_entries());
-    score["spectre_berserker"] = CreatureClass(creature).equals(PlayerClassType::BERSERKER) && CreatureRace(&creature).equals(PlayerRaceType::SPECTRE);
-    score["munchkin"] = creature.get_ppersonality() == PERSONALITY_MUNCHKIN;
+    const auto points = calc_score(creature);
+    const auto multiplier = calc_score_multiplier();
+    const auto arena_wins = std::min(entries.get_current_entry(), entries.get_max_entries());
+    const auto spectre_berserker = CreatureClass(creature).equals(PlayerClassType::BERSERKER) && CreatureRace(&creature).equals(PlayerRaceType::SPECTRE);
+    const auto munchkin = creature.get_ppersonality() == PERSONALITY_MUNCHKIN;
+
+    nlohmann::json options = nlohmann::json::object();
+    options["preserve_mode"] = preserve_mode;
+    options["autoroller"] = autoroller;
+    options["smart_learn"] = smart_learn;
+    options["smart_cheat"] = smart_cheat;
+    options["ironman_shops"] = ironman_shops;
+    options["ironman_smallest_floor"] = ironman_smallest_floor;
+    options["ironman_force_arena_floor"] = ironman_force_arena_floor;
+    options["powerup_home"] = powerup_home;
+    options["ironman_rooms"] = ironman_rooms;
+    options["ironman_nightmare"] = ironman_nightmare;
+    options["ironman_downward"] = ironman_downward;
+
+    nlohmann::json score = nlohmann::json::object();
+    score["points"] = points;
+    score["multiplier"] = multiplier;
+    score["options"] = std::move(options);
+    score["arena_wins"] = arena_wins;
+    score["spectre_berserker"] = spectre_berserker;
+    score["munchkin"] = munchkin;
     return score;
 }
 
@@ -84,12 +92,14 @@ nlohmann::json make_progress_section(CreatureEntity &creature)
 {
     const auto &world = AngbandWorld::get_instance();
     const auto &igd = InnerGameData::get_instance();
-    nlohmann::json progress;
-    progress["max_level"] = creature.get_max_plv();
-    progress["max_max_experience"] = creature.get_max_max_exp();
-    progress["real_turns"] = igd.get_real_turns(world.game_turn);
-    progress["play_time_sec"] = world.play_time.elapsed_sec();
-    progress["max_depth_overall"] = DungeonService::find_max_level();
+    const auto max_level = creature.get_max_plv();
+    const auto max_max_experience = creature.get_max_max_exp();
+    const auto real_turns = igd.get_real_turns(world.game_turn);
+    const auto play_time_sec = world.play_time.elapsed_sec();
+    const auto max_depth_overall = DungeonService::find_max_level();
+    const auto death_count = creature.get_death_count();
+    const auto total_winner = world.total_winner > 0;
+    const auto true_winner = creature.is_true_winner();
 
     nlohmann::json max_depth = nlohmann::json::object();
     const auto &records = DungeonRecords::get_instance();
@@ -100,35 +110,51 @@ nlohmann::json make_progress_section(CreatureEntity &creature)
             continue;
         }
 
-        max_depth[dungeons.get_dungeon(dungeon_id).tag] = record.get_max_level();
+        const auto &tag = dungeons.get_dungeon(dungeon_id).tag;
+        const auto level = record.get_max_level();
+        max_depth.emplace(tag, level);
     }
 
-    progress["max_depth"] = max_depth;
-    progress["death_count"] = creature.get_death_count();
-    progress["total_winner"] = world.total_winner > 0;
-    progress["true_winner"] = creature.is_true_winner();
+    nlohmann::json progress = nlohmann::json::object();
+    progress["max_level"] = max_level;
+    progress["max_max_experience"] = max_max_experience;
+    progress["real_turns"] = real_turns;
+    progress["play_time_sec"] = play_time_sec;
+    progress["max_depth_overall"] = max_depth_overall;
+    progress["max_depth"] = std::move(max_depth);
+    progress["death_count"] = death_count;
+    progress["total_winner"] = total_winner;
+    progress["true_winner"] = true_winner;
     return progress;
 }
 }
 
 nlohmann::json make_score_submission(CreatureEntity &creature, const std::string &character_dump, const nlohmann::json &screen)
 {
-    nlohmann::json submission;
+    auto version = to_utf8_or_raw(AngbandSystem::get_instance().build_version_expression(VersionExpression::FULL));
+    auto submission_id = generate_submission_id();
+    auto score = make_score_section(creature);
+    auto progress = make_progress_section(creature);
+    auto character = make_creature_status_json(creature);
+
+    nlohmann::json game = nlohmann::json::object();
+    game["version"] = std::move(version);
+    game["platform"] = platform_name();
+    game["locale"] = _("ja", "en");
+
+    nlohmann::json submission = nlohmann::json::object();
     submission["format"] = SUBMISSION_FORMAT;
     submission["format_version"] = SUBMISSION_FORMAT_VERSION;
-    submission["submission_id"] = generate_submission_id();
-    submission["game"] = {
-        { "version", to_utf8_or_raw(AngbandSystem::get_instance().build_version_expression(VersionExpression::FULL)) },
-        { "platform", platform_name() },
-        { "locale", _("ja", "en") },
-    };
-    submission["score"] = make_score_section(creature);
-    submission["progress"] = make_progress_section(creature);
-    submission["character"] = make_creature_status_json(creature);
+    submission["submission_id"] = std::move(submission_id);
+    submission["game"] = std::move(game);
+    submission["score"] = std::move(score);
+    submission["progress"] = std::move(progress);
+    submission["character"] = std::move(character);
 
     nlohmann::json attachments = nlohmann::json::object();
     if (!character_dump.empty()) {
-        attachments["character_dump"] = to_utf8_or_raw(character_dump);
+        auto dump = to_utf8_or_raw(character_dump);
+        attachments["character_dump"] = std::move(dump);
     }
 
     if (!screen.is_null()) {
@@ -136,7 +162,7 @@ nlohmann::json make_score_submission(CreatureEntity &creature, const std::string
     }
 
     if (!attachments.empty()) {
-        submission["attachments"] = attachments;
+        submission["attachments"] = std::move(attachments);
     }
 
     return submission;
