@@ -868,10 +868,22 @@ void wiz_level_up_target_monster(CreatureEntity &creature)
         str_upcase_first(m_name), monster.get_level(), old_maxhp, monster.get_max_maxhp());
 }
 
-/* @brief 死を欺く仕様(馬鹿馬鹿蛮怒独自実装) */
+/*!
+ * @brief 死を欺く仕様(馬鹿馬鹿蛮怒独自実装)
+ * @param creature クリーチャーへの参照
+ * @param no_penalty 真ならペナルティ無しで復活する (詐欺オプション cheat_live 由来)。
+ * 偽なら通常の死亡からの復活で、ランダムなペナルティを受ける
+ * @details
+ * 通常の復活はこのゲームの正規の仕様であり、死亡回数は calc_score() で既にスコアの除数になっている。
+ * そのため no_score (デバッグ/詐欺使用) の印は、ペナルティ無しの復活 (cheat_live) のときだけ付ける。
+ * 以前は無条件に付けていたため、普通に死んで復活しただけでウィザードモードやデバッグコマンドが
+ * 確認なしで入れる状態になり、スコアも記録されなくなっていた。
+ */
 void cheat_death(CreatureEntity &creature, bool no_penalty)
 {
-    if (!no_penalty) {
+    if (no_penalty) {
+        InnerGameData::get_instance().add_no_score(0x0001);
+    } else {
 
         switch (randint0(4)) {
 
@@ -917,7 +929,6 @@ void cheat_death(CreatureEntity &creature, bool no_penalty)
         }
     }
 
-    InnerGameData::get_instance().add_no_score(0x0001);
     msg_erase();
 
     creature.is_dead_ = false;
