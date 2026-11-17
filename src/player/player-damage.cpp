@@ -527,7 +527,7 @@ void PlayerType::on_death(std::string_view cause)
     play_music(TERM_XTRA_MUSIC_BASIC, MUSIC_BASIC_GAMEOVER);
 
 #ifdef WORLD_SCORE
-    screen_dump = make_screen_dump(*this);
+    capture_screen_dump(*this);
 #endif
     auto hit_from = cause;
     if (is_seppuku) {
@@ -723,7 +723,7 @@ void PlayerType::on_death(std::string_view cause)
     term_putstr(w - 1, h - 1, 1, TERM_WHITE, " ");
     flush();
 #ifdef WORLD_SCORE
-    screen_dump = make_screen_dump(*this);
+    capture_screen_dump(*this);
 #endif
     // 辞世の句などを画面に表示しただけで、プロンプトは表示していない
     (void)input_key_with_context(InputKind::ANY_KEY, "");

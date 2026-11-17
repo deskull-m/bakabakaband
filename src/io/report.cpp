@@ -12,6 +12,7 @@
 #include "io-dump/character-dump.h"
 #include "io/input-context.h"
 #include "io/score-submission.h"
+#include "locale/character-encoding.h"
 #include "net/http-client.h"
 #include "system/angband-system.h"
 #include "system/creature-entity.h"
@@ -27,8 +28,6 @@
 #include <nlohmann/json.hpp>
 #include <sstream>
 #include <string>
-
-std::string screen_dump;
 
 #ifdef WORLD_SCORE
 
@@ -91,22 +90,90 @@ static errr make_dump(CreatureEntity &creature, std::ostream &stream)
     return 0;
 }
 
+namespace {
+
+constexpr auto SCREEN_FORMAT = "bakabakaband-screen";
+constexpr auto SCREEN_FORMAT_VERSION = 1;
+constexpr auto SCREEN_PALETTE_SIZE = 16;
+
+nlohmann::json screen_dump;
+
 /*!
- * @brief スクリーンダンプを作成する/ Make screen dump to buffer
- * @return 作成したスクリーンダンプの参照ポインタ
+ * @brief システム文字コードの文字列を UTF-8 にして返す。変換できなければそのまま返す
  */
-std::string make_screen_dump(CreatureEntity &creature)
+std::string screen_text_to_utf8(std::string_view text)
 {
-    constexpr auto html_head =
-        "<html>\n<body text=\"#ffffff\" bgcolor=\"#000000\">\n"
-        "<pre>\n";
-    constexpr auto html_foot =
-        "</pre>\n"
-        "</body>\n</html>\n";
+    const auto converted = sys_to_utf8(text);
+    return converted ? *converted : std::string(text);
+}
 
+/*!
+ * @brief 1 行分のセル列を「色番号と文字列」の連続区間 (run) の配列にする
+ * @details 行末の空白だけの区間は落とす。表示側は width まで空白で埋めて描画する。
+ */
+nlohmann::json make_screen_row(int y, int width)
+{
+    nlohmann::json runs = nlohmann::json::array();
+    std::string text;
+    uint8_t run_color = 0;
+    auto push_run = [&](bool is_last) {
+        if (is_last) {
+            const auto end = text.find_last_not_of(' ');
+            text.erase(end == std::string::npos ? 0 : end + 1);
+        }
+
+        if (!text.empty()) {
+            runs.push_back({ run_color, screen_text_to_utf8(text) });
+        }
+
+        text.clear();
+    };
+
+    DisplaySymbol ds(0, ' ');
+    for (auto x = 0; x < width; x++) {
+        ds = term_what(x, y, ds);
+#ifdef WINDOWS
+        switch (ds.character) {
+        case 0x1f:
+            ds.character = '.';
+            break;
+        case 0x7f:
+            ds.character = (ds.color == 0x09) ? '%' : '#';
+            break;
+        default:
+            break;
+        }
+#endif
+        const auto color = static_cast<uint8_t>(ds.color & 0x0F);
+        if (x > 0 && color != run_color) {
+            push_run(false);
+        }
+
+        run_color = color;
+        text.push_back(ds.character);
+    }
+
+    push_run(true);
+    return runs;
+}
+}
+
+/*!
+ * @brief 画面の内容を色付きテキストの JSON として取得する
+ * @param creature クリーチャーへの参照
+ * @return bakabakaband-screen 形式の JSON オブジェクト。大きすぎる場合は null
+ * @details
+ * {
+ *   "format": "bakabakaband-screen", "version": 1,
+ *   "width": 80, "height": 24,
+ *   "palette": ["#000000", "#ffffff", ...],      // 色番号 0-15 の RGB
+ *   "rows": [ [[1, "@..#"], [7, "..."]], ... ]   // 行ごとに [色番号, 文字列] の連続区間
+ * }
+ * 描画は閲覧側 (スコアサーバ) が行うので、ここでは HTML を組み立てない。
+ */
+nlohmann::json make_screen_dump(CreatureEntity &creature)
+{
     const auto &[wid, hgt] = term_get_size();
-    std::stringstream screen_ss;
-
     if (use_graphics) {
         /* Clear -more- prompt first */
         msg_erase();
@@ -114,76 +181,39 @@ std::string make_screen_dump(CreatureEntity &creature)
 
     const GraphicsSuspender graphics_suspender(creature);
 
-    screen_ss << html_head;
-
-    /* Dump the screen */
-    for (int y = 0; y < hgt; y++) {
-        /* Start the row */
-        if (y != 0) {
-            screen_ss << '\n';
-        }
-
-        /* Dump each row */
-        uint8_t old_a = 0;
-        DisplaySymbol ds(0, ' ');
-        for (int x = 0; x < wid; x++) {
-            int rv, gv, bv;
-            concptr cc = nullptr;
-            ds = term_what(x, y, ds);
-
-            switch (ds.character) {
-            case '&':
-                cc = "&amp;";
-                break;
-            case '<':
-                cc = "&lt;";
-                break;
-            case '>':
-                cc = "&gt;";
-                break;
-            case '"':
-                cc = "&quot;";
-                break;
-            case '\'':
-                cc = "&#39;";
-                break;
-#ifdef WINDOWS
-            case 0x1f:
-                ds.character = '.';
-                break;
-            case 0x7f:
-                ds.character = (ds.color == 0x09) ? '%' : '#';
-                break;
-#endif
-            }
-
-            ds.color = ds.color & 0x0F;
-            if (((y == 0) && (x == 0)) || (ds.color != old_a)) {
-                rv = angband_color_table[ds.color][1];
-                gv = angband_color_table[ds.color][2];
-                bv = angband_color_table[ds.color][3];
-                screen_ss << fmt::format("{}<font color=\"#{:02x}{:02x}{:02x}\">", ((y == 0 && x == 0) ? "" : "</font>"), rv, gv, bv);
-                old_a = ds.color;
-            }
-
-            if (cc) {
-                screen_ss << cc;
-            } else {
-                screen_ss << ds.character;
-            }
-        }
+    nlohmann::json palette = nlohmann::json::array();
+    for (auto i = 0; i < SCREEN_PALETTE_SIZE; i++) {
+        palette.push_back(fmt::format("#{:02x}{:02x}{:02x}", angband_color_table[i][1], angband_color_table[i][2], angband_color_table[i][3]));
     }
 
-    screen_ss << "</font>\n";
-
-    screen_ss << html_foot;
-
-    if (const auto screen_dump_size = screen_ss.tellp();
-        (0 <= screen_dump_size) && (screen_dump_size < SCREEN_BUF_MAX_SIZE)) {
-        return screen_ss.str();
+    nlohmann::json rows = nlohmann::json::array();
+    for (auto y = 0; y < hgt; y++) {
+        rows.push_back(make_screen_row(y, wid));
     }
 
-    return {};
+    nlohmann::json screen = {
+        { "format", SCREEN_FORMAT },
+        { "version", SCREEN_FORMAT_VERSION },
+        { "width", wid },
+        { "height", hgt },
+        { "palette", palette },
+        { "rows", rows },
+    };
+    if (screen.dump(-1, ' ', false, nlohmann::json::error_handler_t::replace).size() >= SCREEN_BUF_MAX_SIZE) {
+        return nullptr;
+    }
+
+    return screen;
+}
+
+void capture_screen_dump(CreatureEntity &creature)
+{
+    screen_dump = make_screen_dump(creature);
+}
+
+const nlohmann::json &get_screen_dump()
+{
+    return screen_dump;
 }
 
 /*!
