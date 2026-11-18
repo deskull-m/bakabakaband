@@ -249,6 +249,7 @@ const std::map<MonsterAbilityType, concptr> monster_powers_short = {
     { MonsterAbilityType::S_HYDRA, _("ヒドラ", "Hydras") },
     { MonsterAbilityType::S_INSECT, _("虫", "Insects") },
     { MonsterAbilityType::S_FAIRY, _("フェアリー", "Fairies") },
+    { MonsterAbilityType::S_APE, _("類人猿", "Apes") },
     { MonsterAbilityType::S_BIRD, _("鳥", "Birds") },
     { MonsterAbilityType::S_ANGEL, _("天使", "Angel") },
     { MonsterAbilityType::S_DEMON, _("悪魔", "Daemon") },

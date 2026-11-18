@@ -4275,8 +4275,9 @@ MtG の「苦花」に由来する**動かない植物系のフェアリー召�
   (下記「`S_GOLEM` の反復回数 typo」)。当初この文書は「S_GOLEM には既存の保有者が
   いるためバランス変更になる」と書いていたが、**これは誤り**で S_GOLEM も
   JSON トークン未登録・保有者 0 の死にコードだった。
-- トークン未登録の召喚は他に **4 つ残っている** (`S_APE` / `S_HOMO` /
-  `S_PERVERT` / `S_PUYO`)。いずれも実装はあるがデータから指定できない。
+- **トークン未登録だった残り 4 つ (`S_APE` / `S_HOMO` / `S_PERVERT` / `S_PUYO`) も
+  本件に続く別コミットで登録済み。** `S_GOLEM` を含む 5 つのトークンと、併せて
+  見つかったディスパッチ・思い出の穴は次節「召喚特技 31 種の配線完成」を参照。
 
 #### `S_GOLEM` の反復回数 typo (別コミットで修正)
 
@@ -4392,6 +4393,156 @@ flavor 文を書いたら `python3 -c "...".encode('euc_jp')` で全文を通し
   直接メッセージを狙うのは効率が悪い。
 - **検証上の注意 4**: プレイヤーが死ぬと**セーブファイルが壊れて次回起動で
   「セーブファイルが壊れています」になる**。検証用セーブは必ず別名で退避しておくこと。
+
+### 召喚特技 31 種の配線完成 (トークン 5 件 / ディスパッチ 3 件 / 思い出 7 件)
+
+`MonsterAbilityType` の召喚特技は全 31 種あるが、**実装はあるのに配線が欠けていて
+データから使えない・思い出に出ない**ものが多数残っていた。`S_NASTY` (前節) と
+`S_GOLEM` に続き残り全てを埋め、**31 種すべてが「JSON に書ける / 両方の
+ディスパッチに乗る / ものまねの表に載る / 思い出の本文と要約の双方に出る」**状態に
+した。
+
+#### 配線すべき 7 箇所 (`MonsterAbilityType` に値を足すときの検算表)
+
+| # | 箇所 | 足し忘れると |
+|---|---|---|
+| 1 | `r_info_ability_flags` (`info-reader/race-info-tokens-table.cpp`) | **`skill.list` に書けない** (書くと読込時エラーで起動しない) |
+| 2 | 対プレイヤーのディスパッチ (`mspell/assign-monster-spell.cpp` の `monspell_to_player_impl`) | **プレイヤーを狙っても何も起きない** (`default: break` → `make_invalid()`) |
+| 3 | 対モンスターのディスパッチ (同 `monspell_to_monster_impl`) | モンスター同士で何も起きない |
+| 4 | `monster_powers` (`mspell/monster-power-table.cpp`) | ものまね / 青魔法の一覧に名前が出ない |
+| 5 | `monster_powers_short` (同) | 同・短縮名が出ない |
+| 6 | `set_summon_types()` (`lore/magic-types-setter.cpp`) | **思い出の本文に出ない** |
+| 7 | `summon_magic_defs()` (`view/display-lore-magics.cpp`) | **思い出の `[召喚魔法]` 要約行に出ない** |
+
+- 6 と 7 はコメントが `// set_summon_types()` と明記しているとおり**同順・同数**に
+  保つこと (現在とも 31 件)。
+- `RF_ABILITY_SUMMON_MASK` / `mane_info` (`cmd-mane.cpp`) /
+  `blue-magic-caster.cpp` は**元から 31 件揃っていた**ので対象外。
+  `learnt-info.cpp` は召喚系を 1 件も持たない (威力を持たない呪文群なので正常)。
+- **どれも switch ではなく表か case の列挙なので、足し忘れてもコンパイルは通る。**
+  下記の検算スクリプトを使うこと。
+
+#### 本件で埋めた穴 (8 能力)
+
+| ability | 欠けていたもの | 実データの保有者 |
+|---|---|---|
+| `S_APE` (119) | **トークン / 対プレイヤー・対モンスターの両ディスパッチ / `monster_powers_short`** の 4 箇所 | 0 |
+| `S_HOMO` (114) | トークン / **対プレイヤーのディスパッチ** / 思い出 2 箇所 | 0 |
+| `S_PERVERT` (115) | トークン / 思い出 2 箇所 | 0 |
+| `S_PUYO` (113) | トークン / 思い出 2 箇所 | 0 |
+| `S_GOLEM` (99) | トークン / 思い出 2 箇所 (反復回数 typo は前コミットで修正済) | 0 |
+| **`S_CAT` (112)** | **思い出 2 箇所** (トークンは元からあった) | **1 (王妃『べルシエル』2288)** |
+| `S_CHOASIANS` (95) | 思い出 2 箇所 | 0 |
+| `S_ELDRAZI` (121) | 思い出 2 箇所 | 0 |
+
+- **`S_CAT` だけは実データに保有者がいる実害**だった。王妃『べルシエル』
+  (2288, Lv39, 詠唱率 **1/1**) は解説文が「猫を下僕にして様々な悪しき事を企んで
+  いた」と述べ実際に `S_CAT` を毎ターン唱えるのに、**思い出は本文も
+  `[召喚魔法]` 行もネコに一言も触れていなかった**。
+- **`S_APE` はディスパッチが両経路とも無かった**ため、トークンだけ登録しても
+  `make_invalid()` に落ちて一切発動しない。トークンと同時に埋める必要があった。
+- `S_CAT` 以外の 7 種は保有者 0 なので**実データのバランスは不変**。思い出の
+  表示が増えるのも `S_CAT` の 1 行だけ。
+- **反復回数の `std::min`/`std::max` typo は残っていない**。`rlev` 比例の 7 関数は
+  全て `std::max`、`S_APE` / `S_HOMO` / `S_CHOASIANS` は `S_NUM_4` 固定。
+  `grep -n "std::min(1, rlev" src/mspell/mspell-summon.cpp` が 0 件であることが
+  退行検知になる (前節参照)。
+
+#### 召喚プールの規模 (実データ)
+
+トークンを登録しても**プールが空なら 1 体も湧かない**ので、使う前に確認すること。
+`summon-checker.cpp` の述語は `S_GOLEM` だけ**シンボル `g`** で、残りは
+`MonsterKindType` のフラグで選ぶ。
+
+| ability | プールの述語 | 非ユニーク | レベル帯 |
+|---|---|---|---|
+| `S_APE` | `MonsterKindType::APE` | 3 | Lv8〜20 |
+| `S_HOMO` | `HOMO_SEXUAL` | 35 | Lv0〜99 |
+| `S_PERVERT` | `PERVERT` | 9 | Lv0〜70 |
+| `S_PUYO` | `PUYO` | 12 | **Lv25〜55** |
+| `S_GOLEM` | シンボル `g` | 67 | Lv4〜127 |
+| `S_CAT` | `CAT` | 19 | Lv0〜49 |
+| `S_ELDRAZI` | `ELDRAZI` | 13 | Lv10〜99 |
+| **`S_CHOASIANS`** | `CHOASIAN` | **0** | — |
+
+- **`S_CHOASIANS` はプールが空**なので、付与してもメッセージだけ出て 1 体も
+  湧かない。使うには `CHOASIAN` フラグを持つ種族をデータに追加する必要がある。
+- `S_PUYO` は**プール最低が Lv25** なので、低レベルの詠唱者では空振りする
+  (`summon_specific` は詠唱者のレベルでプールを絞る)。
+
+#### 既知の残課題: クイルスルグの「自分中心に召喚する」一覧が不完全
+
+`assign-monster-spell.cpp` は `MonsterKindType::QUYLTHLUG` 持ちの召喚を
+**自分のマスを中心に湧かせる**ための switch を 2 つ (対プレイヤー / 対モンスター)
+持つが、**どちらも召喚特技 31 種を網羅しておらず、しかも互いに非対称**。
+
+| switch | 載っている | 載っていない |
+|---|---|---|
+| 対プレイヤー (`monspell_to_player_impl` 冒頭) | 22 種 | `S_BIRD` / `S_DEAD_UNIQUE` / `S_NASTY` / `S_GOLEM` / `S_CAT` / `S_PUYO` / `S_HOMO` / `S_PERVERT` / `S_APE` |
+| 対モンスター (`monspell_to_monster_impl` 冒頭) | 23 種 | 上記から `S_BIRD` を除いた 8 種 |
+
+- **実データで効いているのは 巨大サイバーワイアーム天使悪魔リッチ
+  (929, Lv99, QUYLTHLUG) の `S_DEAD_UNIQUE` 1 件だけ**で、同個体のユニーク口寄せは
+  自分中心ではなくプレイヤーの位置に湧く。他の QUYLTHLUG 16 種は未登録の特技を
+  1 つも持たない。
+- **本件では直していない。** 直すと 929 の召喚位置が変わる = 頼まれていない
+  バランス変更になるため。埋めるなら両一覧を 31 種に揃えること (対称性の回復と
+  929 の挙動変更を同時に受け入れる判断が要る)。
+
+#### 検算スクリプト
+
+7 箇所すべてを機械的に突き合わせる。**穴があれば `-` が出る。**
+
+```sh
+python3 - <<'PY'
+import re, pathlib
+r = pathlib.Path('.')
+enum = [n for n, _ in re.findall(r'(S_[A-Z_0-9]+) = (\d+)', (r/'src/monster-race/race-ability-flags.h').read_text())]
+tok  = set(re.findall(r'\{"(S_[A-Z_0-9]+)", MonsterAbilityType::', (r/'src/info-reader/race-info-tokens-table.cpp').read_text()))
+lore = set(re.findall(r'MonsterAbilityType::(S_[A-Z_0-9]+)', (r/'src/lore/magic-types-setter.cpp').read_text()))
+summ = set(re.findall(r'MonsterAbilityType::(S_[A-Z_0-9]+)', (r/'src/view/display-lore-magics.cpp').read_text()))
+asg  = (r/'src/mspell/assign-monster-spell.cpp').read_text()
+pl   = set(re.findall(r'MonsterAbilityType::(S_[A-Z_0-9]+): return.*MONSTER_TO_PLAYER', asg))
+mo   = set(re.findall(r'MonsterAbilityType::(S_[A-Z_0-9]+): return.*MONSTER_TO_MONSTER', asg))
+pw   = (r/'src/mspell/monster-power-table.cpp').read_text().splitlines()
+full = set(re.findall(r'MonsterAbilityType::(S_\w+)', '\n'.join(pw[9:140])))
+shrt = set(re.findall(r'MonsterAbilityType::(S_\w+)', '\n'.join(pw[144:272])))
+bad = 0
+for n in enum:
+    cells = [n in tok, n in lore, n in summ, n in pl, n in mo, n in full, n in shrt]
+    if not all(cells):
+        bad += 1
+        print(n, ''.join('o' if c else '-' for c in cells))
+print('穴のある能力:', bad, '/', len(enum))
+PY
+```
+
+- `monster-power-table.cpp` の行範囲 (`pw[9:140]` / `pw[144:272]`) は 2 つの表の
+  境界なので、表が伸びたら更新すること。
+
+#### 実測 (ヘッドレス)
+
+| 項目 | 結果 |
+|---|---|
+| トークン読込 | 5 トークンを含むデータでゲームが正常起動 (未知トークンは読込時エラーなので、起動自体が登録の検証) |
+| 検算スクリプト | **穴のある能力 0 / 31**。本文 (`set_summon_types`) と要約 (`summon_magic_defs`) がとも 31 件・同順 |
+| **A/B (4 能力の同時確認)** | 洞窟オーク (126) に 5 能力 / `1_IN_1` を一時付与し Lv40 化 (scratchpad のみ) → 掃討済みの鉄獄 40 階で「**魔法でゴーレムを召喚した！**」「**魔法で変質者を召喚した！**」「**魔法で類人猿を召喚した。**」「**魔法でホモを召喚した！**」が出て、エオグ・ゴーレム / 雲ゴーレム (`g`) / ちんちん亭催眠おじさん / 種付けおじさん / 迫真相撲部員 (`PERVERT`) / サスカッチ / イエティ / シコザル (`APE`) / 『NKTIDKSG』 / デビルひで / チンポバトル兄貴 (`HOMO_SEXUAL`) が湧く |
+| **A/B (`S_PUYO` 単独)** | 同じ個体を `S_PUYO` のみに差し替え → 「**魔法でぷよを召喚した！**」が繰り返し出て、全感知で **おじゃまぷよ 14 / 岩ぷよ 3 / 青ぷよ 2 / 月ぷよ 2 / 黄ぷよ 1 / 星ぷよ 1 / 固ぷよ 1 = 7 種 24 体**。5 能力すべてが末端まで到達することを確認 |
+| **`S_CAT` の思い出 (実害修正)** | 実データのスポイラーで 王妃『べルシエル』(2288) が `[召喚魔法] モンスター複数 **ネコ** デーモン` / 本文「モンスター複数召喚、**ネコ召喚**、デーモン一体召喚の呪文を唱えることがある(確率:1/1)。」 |
+| 退行検知 | 全 2,364 種の `[召喚魔法]` 行 397 件に**空行が 1 つも無い**。本文に「召喚」があって要約行が無い 3 種 (815 / 842 / 1004) はいずれも flavor 文での誤検出で、召喚特技を持たない |
+| ビルド | 警告 0 (`-Werror -Wall -Wextra`) |
+| 単体テスト | 533 ケース / 83,006 アサーション すべて成功 |
+
+- **検証上の注意 1**: スポイラー出力は**ウィザードコマンド**の `^A` → `"` → `5`。
+  `"` を素で押すと**設定変更コマンド**が開くだけ (本書の旧記述は `^A` が抜けていた)。
+  出力先は `$HOME/.angband/<変愚名>/mon-info.txt` (EUC-JP)。
+- **検証上の注意 2**: `^A` → `"` の実行後は**制御ポートの接続が切れる**ので、
+  同じボットセッションで続けて操作できない。スポイラーは最後に撃つこと。
+- **検証上の注意 3**: 保有者 0 の能力は、A/B で一時付与した個体の**プールの
+  レベル帯に届く詠唱者レベル**が必要。`S_PUYO` (プール最低 Lv25) は Lv7 の
+  洞窟オークでは空振りするので、一時的に `level` を 40 へ上げて測った。
+
+---
 
 ### 思い出の表示漏れの修正と学習記録 (時代フラグ / 見た目フラグ / 観察で判るフラグ)
 

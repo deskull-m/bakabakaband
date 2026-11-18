@@ -395,6 +395,14 @@ void set_summon_types(lore_type *lore_ptr)
         lore_ptr->lore_msgs.emplace_back(_("汚いモンスター召喚", "summon nasty monsters"), TERM_UMBER);
     }
 
+    if (lore_ptr->ability_flags.has(MonsterAbilityType::S_HOMO)) {
+        lore_ptr->lore_msgs.emplace_back(_("ホモ召喚", "summon homos"), TERM_UMBER);
+    }
+
+    if (lore_ptr->ability_flags.has(MonsterAbilityType::S_PERVERT)) {
+        lore_ptr->lore_msgs.emplace_back(_("変質者召喚", "summon perverts"), TERM_UMBER);
+    }
+
     if (lore_ptr->ability_flags.has(MonsterAbilityType::S_KIN)) {
         lore_ptr->lore_msgs.emplace_back(_("救援召喚", "summon aid"), TERM_ORANGE);
     }
@@ -425,6 +433,14 @@ void set_summon_types(lore_type *lore_ptr)
 
     if (lore_ptr->ability_flags.has(MonsterAbilityType::S_BIRD)) {
         lore_ptr->lore_msgs.emplace_back(_("鳥召喚", "summon birds"), TERM_L_UMBER);
+    }
+
+    if (lore_ptr->ability_flags.has(MonsterAbilityType::S_CAT)) {
+        lore_ptr->lore_msgs.emplace_back(_("ネコ召喚", "summon cats"), TERM_L_UMBER);
+    }
+
+    if (lore_ptr->ability_flags.has(MonsterAbilityType::S_PUYO)) {
+        lore_ptr->lore_msgs.emplace_back(_("ぷよ召喚", "summon puyo"), TERM_L_GREEN);
     }
 
     if (lore_ptr->ability_flags.has(MonsterAbilityType::S_ANGEL)) {
@@ -459,6 +475,10 @@ void set_summon_types(lore_type *lore_ptr)
         lore_ptr->lore_msgs.emplace_back(_("アンバーの王族召喚", "summon Lords of Amber"), TERM_VIOLET);
     }
 
+    if (lore_ptr->ability_flags.has(MonsterAbilityType::S_CHOASIANS)) {
+        lore_ptr->lore_msgs.emplace_back(_("混沌の王族召喚", "summon Lords of Chaos"), TERM_VIOLET);
+    }
+
     if (lore_ptr->ability_flags.has(MonsterAbilityType::S_UNIQUE)) {
         lore_ptr->lore_msgs.emplace_back(_("ユニーク・モンスター召喚", "summon Unique Monsters"), TERM_VIOLET);
     }
@@ -467,12 +487,20 @@ void set_summon_types(lore_type *lore_ptr)
         lore_ptr->lore_msgs.emplace_back(_("ユニーク・モンスター口寄せ", "animate Unique Monsters"), TERM_VIOLET);
     }
 
+    if (lore_ptr->ability_flags.has(MonsterAbilityType::S_ELDRAZI)) {
+        lore_ptr->lore_msgs.emplace_back(_("エルドラージ召喚", "summon Eldrazi"), TERM_VIOLET);
+    }
+
     if (lore_ptr->ability_flags.has(MonsterAbilityType::S_WALL)) {
         lore_ptr->lore_msgs.emplace_back(_("壁召喚", "summon walls"), TERM_L_WHITE);
     }
 
     if (lore_ptr->ability_flags.has(MonsterAbilityType::S_INSECT)) {
         lore_ptr->lore_msgs.emplace_back(_("虫召喚", "summon insects"), TERM_UMBER);
+    }
+
+    if (lore_ptr->ability_flags.has(MonsterAbilityType::S_GOLEM)) {
+        lore_ptr->lore_msgs.emplace_back(_("ゴーレム召喚", "summon golems"), TERM_SLATE);
     }
 
     if (lore_ptr->ability_flags.has(MonsterAbilityType::S_ROBOT)) {

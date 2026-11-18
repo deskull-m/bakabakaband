@@ -109,7 +109,7 @@ void display_mosnter_magic_possibility(lore_type *lore_ptr)
 }
 
 /*!
- * @brief モンスターの思い出に死亡時詠唱 (death_spells) を表示する — Issue #6768
+ * @brief モンスターの思い出に死亡時詠唱 (death_spells) を表示する ― Issue #6768
  * @param lore_ptr モンスターの思い出構造体への参照ポインタ
  * @details 通常の詠唱 (`ability_flags`) とは独立のリストなので、思い出フラグでは
  *          なく種族定義から直接出す。表示名は ものまね の `monster_powers` を
@@ -368,6 +368,8 @@ static const std::vector<AbilityCellDef> &summon_magic_defs()
         { MonsterAbilityType::S_MONSTER, "モンスター一体", "a monster", TERM_SLATE },
         { MonsterAbilityType::S_MONSTERS, "モンスター複数", "monsters", TERM_L_WHITE },
         { MonsterAbilityType::S_NASTY, "汚い怪物", "nasty monsters", TERM_UMBER },
+        { MonsterAbilityType::S_HOMO, "ホモ", "homos", TERM_UMBER },
+        { MonsterAbilityType::S_PERVERT, "変質者", "perverts", TERM_UMBER },
         { MonsterAbilityType::S_KIN, "救援", "aid", TERM_ORANGE },
         { MonsterAbilityType::S_ANT, "アリ", "ants", TERM_RED },
         { MonsterAbilityType::S_SPIDER, "クモ", "spiders", TERM_L_DARK },
@@ -376,6 +378,8 @@ static const std::vector<AbilityCellDef> &summon_magic_defs()
         { MonsterAbilityType::S_FAIRY, "フェアリー", "fairies", TERM_L_BLUE },
         { MonsterAbilityType::S_APE, "類人猿", "apes", TERM_UMBER },
         { MonsterAbilityType::S_BIRD, "鳥", "birds", TERM_L_UMBER },
+        { MonsterAbilityType::S_CAT, "ネコ", "cats", TERM_L_UMBER },
+        { MonsterAbilityType::S_PUYO, "ぷよ", "puyo", TERM_L_GREEN },
         { MonsterAbilityType::S_ANGEL, "天使", "an angel", TERM_YELLOW },
         { MonsterAbilityType::S_DEMON, "デーモン", "a demon", TERM_L_RED },
         { MonsterAbilityType::S_UNDEAD, "アンデッド", "an undead", TERM_L_DARK },
@@ -384,10 +388,13 @@ static const std::vector<AbilityCellDef> &summon_magic_defs()
         { MonsterAbilityType::S_HI_DRAGON, "古代ドラゴン", "Ancient Dragons", TERM_ORANGE },
         { MonsterAbilityType::S_CYBER, "サイバーデーモン", "Cyberdemons", TERM_UMBER },
         { MonsterAbilityType::S_AMBERITES, "アンバーの王族", "Lords of Amber", TERM_VIOLET },
+        { MonsterAbilityType::S_CHOASIANS, "混沌の王族", "Lords of Chaos", TERM_VIOLET },
         { MonsterAbilityType::S_UNIQUE, "ユニークモンスター", "Unique Monsters", TERM_VIOLET },
         { MonsterAbilityType::S_DEAD_UNIQUE, "ユニークモンスター口寄せ", "animate Unique Monsters", TERM_VIOLET },
+        { MonsterAbilityType::S_ELDRAZI, "エルドラージ", "Eldrazi", TERM_VIOLET },
         { MonsterAbilityType::S_WALL, "壁", "walls", TERM_SLATE },
         { MonsterAbilityType::S_INSECT, "虫", "insects", TERM_GREEN },
+        { MonsterAbilityType::S_GOLEM, "ゴーレム", "golems", TERM_SLATE },
         { MonsterAbilityType::S_ROBOT, "ロボット", "robots", TERM_SLATE },
     };
     return defs;

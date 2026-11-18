@@ -169,6 +169,7 @@ static MonsterSpellResult monspell_to_player_impl(CreatureEntity &creature, Mons
     case MonsterAbilityType::S_HOUND: return spell_RF6_S_HOUND(creature, y, x, m_idx, 0, MONSTER_TO_PLAYER); /* RF6_S_HOUND */
     case MonsterAbilityType::S_HYDRA: return spell_RF6_S_HYDRA(creature, y, x, m_idx, 0, MONSTER_TO_PLAYER); /* RF6_S_HYDRA */
     case MonsterAbilityType::S_FAIRY: return spell_RF6_S_FAIRY(creature, y, x, m_idx, 0, MONSTER_TO_PLAYER); /* RF6_S_FAIRY */
+    case MonsterAbilityType::S_APE: return spell_RF6_S_APE(creature, y, x, m_idx, 0, MONSTER_TO_PLAYER); /* RF6_S_APE */
     case MonsterAbilityType::S_BIRD: return spell_RF6_S_BIRD(creature, y, x, m_idx, 0, MONSTER_TO_PLAYER); /* RF6_S_BIRD */
     case MonsterAbilityType::S_ANGEL: return spell_RF6_S_ANGEL(creature, y, x, m_idx, 0, MONSTER_TO_PLAYER); /* RF6_S_ANGEL */
     case MonsterAbilityType::S_DEMON: return spell_RF6_S_DEMON(creature, y, x, m_idx, 0, MONSTER_TO_PLAYER); /* RF6_S_DEMON */
@@ -184,6 +185,7 @@ static MonsterSpellResult monspell_to_player_impl(CreatureEntity &creature, Mons
     case MonsterAbilityType::S_GOLEM: return spell_RF6_S_GOLEM(creature, y, x, m_idx, 0, MONSTER_TO_PLAYER); /* RF6_S_GOLEM */
     case MonsterAbilityType::S_CAT: return spell_RF6_S_CATS(creature, y, x, m_idx, 0, MONSTER_TO_PLAYER); /* RF6_S_CATS */
     case MonsterAbilityType::S_PUYO: return spell_RF6_S_PUYO(creature, y, x, m_idx, 0, MONSTER_TO_PLAYER); /* RF6_S_PUYO */
+    case MonsterAbilityType::S_HOMO: return spell_RF6_S_HOMO(creature, y, x, m_idx, 0, MONSTER_TO_PLAYER); /* RF6_S_HOMO */
     case MonsterAbilityType::S_PERVERT: return spell_RF6_S_PERVERTS(creature, y, x, m_idx, 0, MONSTER_TO_PLAYER); /* RF6_S_PERVERT */
     case MonsterAbilityType::S_WALL: return spell_RF6_S_WALL(creature, y, x, m_idx, 0, MONSTER_TO_PLAYER); /* RF6_S_WALL */
     case MonsterAbilityType::S_INSECT: return spell_RF6_S_INSECT(creature, y, x, m_idx, 0, MONSTER_TO_PLAYER); /* RF6_S_INSECT */
@@ -337,6 +339,7 @@ static MonsterSpellResult monspell_to_monster_impl(
     case MonsterAbilityType::S_HOUND: return spell_RF6_S_HOUND(creature, y, x, m_idx, t_idx, MONSTER_TO_MONSTER); /* RF6_S_HOUND */
     case MonsterAbilityType::S_HYDRA: return spell_RF6_S_HYDRA(creature, y, x, m_idx, t_idx, MONSTER_TO_MONSTER); /* RF6_S_HYDRA */
     case MonsterAbilityType::S_FAIRY: return spell_RF6_S_FAIRY(creature, y, x, m_idx, t_idx, MONSTER_TO_MONSTER); /* RF6_S_FAIRY */
+    case MonsterAbilityType::S_APE: return spell_RF6_S_APE(creature, y, x, m_idx, t_idx, MONSTER_TO_MONSTER); /* RF6_S_APE */
     case MonsterAbilityType::S_BIRD: return spell_RF6_S_BIRD(creature, y, x, m_idx, t_idx, MONSTER_TO_MONSTER); /* RF6_S_BIRD */
     case MonsterAbilityType::S_ANGEL: return spell_RF6_S_ANGEL(creature, y, x, m_idx, t_idx, MONSTER_TO_MONSTER); /* RF6_S_ANGEL */
     case MonsterAbilityType::S_DEMON: return spell_RF6_S_DEMON(creature, y, x, m_idx, t_idx, MONSTER_TO_MONSTER); /* RF6_S_DEMON */
