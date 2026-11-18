@@ -349,21 +349,21 @@ void do_cmd_feeling(CreatureEntity &creature)
     }
 
     if (grids_rate > 80) {
-        msg_print("途方に暮れる程に広そうなフロアだ。");
+        msg_print(_("途方に暮れる程に広そうなフロアだ。", "This level looks bewilderingly vast."));
     } else if (grids_rate > 60) {
-        msg_print("極めて広そうなフロアだ。");
+        msg_print(_("極めて広そうなフロアだ。", "This level looks extremely large."));
     } else if (grids_rate > 50) {
-        msg_print("非常にに広そうなフロアだ。");
+        msg_print(_("非常に広そうなフロアだ。", "This level looks very large."));
     } else if (grids_rate > 30) {
-        msg_print("そこそこに広そうなフロアだ。");
+        msg_print(_("そこそこに広そうなフロアだ。", "This level looks fairly large."));
     } else if (grids_rate > 20) {
-        msg_print("少し広そうなフロアだ。");
+        msg_print(_("少し広そうなフロアだ。", "This level looks a little large."));
     } else if (grids_rate > 10) {
-        msg_print("普通の大きさのフロアのようだ。");
+        msg_print(_("普通の大きさのフロアのようだ。", "This level looks to be of ordinary size."));
     } else if (grids_rate > 5) {
-        msg_print("少し狭そうなフロアだ。");
+        msg_print(_("少し狭そうなフロアだ。", "This level looks a little small."));
     } else {
-        msg_print("狭そうなフロアだ。");
+        msg_print(_("狭そうなフロアだ。", "This level looks small."));
     }
 
     const auto &df = DungeonFeeling::get_instance();
