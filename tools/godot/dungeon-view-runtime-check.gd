@@ -117,6 +117,14 @@ func _process(_delta: float) -> bool:
 	if phase == 1 and phase_frame == 210:
 		check("visible again on the map", view.visible)
 		check("status sidebar shown again", current_scene.status_sidebar.visible)
+		# 下端の状態バーは端末の最下行と同じ中身 (空なら隠す)
+		var bar = current_scene.status_bottom_bar
+		var term = current_scene.status_sidebar._terminal
+		var last_row: String = term.get_row_text(term.get_rows() - 1).strip_edges()
+		var bar_text := ""
+		for line in bar._view._lines:
+			bar_text += " ".join(line["chars"])
+		check("status bottom bar mirrors the last row", bar.visible == (last_row != "") and bar_text.replace(" ", "") == last_row.replace(" ", ""), "row=\"%s\" visible=%s" % [last_row, bar.visible])
 		game.walk(6)
 	if phase == 1 and phase_frame == 300:
 		var want := expected_counts()

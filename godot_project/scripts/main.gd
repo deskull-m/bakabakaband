@@ -221,8 +221,9 @@ func _apply_font(game: Node) -> void:
 	var status_panel := get_node_or_null("StatusLayer/StatusPanel")
 	if status_panel and status_panel.has_method("set_sheet_font"):
 		status_panel.set_sheet_font(font, GameState.font_size)
-	if status_sidebar:
-		status_sidebar.set_sheet_font.call_deferred(font, GameState.font_size)
+	for mirror in [status_sidebar, status_bottom_bar]:
+		if mirror:
+			mirror.set_sheet_font.call_deferred(font, GameState.font_size)
 	_fit_main_term()
 	# ペイン固有フォントを再適用（set_game_font でリセットされるため）
 	for pane in get_tree().get_nodes_in_group("terminal_panes"):
@@ -696,12 +697,14 @@ func _on_item_window_layout_changed(kind: int) -> void:
 	GameState.save_config()
 
 
-# ---- 3D の地図ビューに重ねる左側の欄 ----
+# ---- 3D の地図ビューに重ねる左側の欄と下端の状態バー ----
 
 const StatusSidebar := preload("res://scripts/status_sidebar.gd")
 var status_sidebar: Control = null
+var status_bottom_bar: Control = null
 
-## 3D の地図ビューを見ている間、端末の左側の欄 (能力値・HP 等) を半透明の窓で重ねて見せる
+## 3D の地図ビューを見ている間、端末の左側の欄 (能力値・HP 等) と最下行の状態バーを
+## 半透明の窓で重ねて見せる
 func _setup_status_sidebar() -> void:
 	var terminal: Node = null
 	for pane in get_tree().get_nodes_in_group("terminal_panes"):
@@ -713,14 +716,23 @@ func _setup_status_sidebar() -> void:
 	layer.name = "StatusSidebarLayer"
 	layer.layer = 2
 	add_child(layer)
-	status_sidebar = PanelContainer.new()
-	status_sidebar.name = "StatusSidebar"
-	status_sidebar.set_script(StatusSidebar)
-	layer.add_child(status_sidebar)
 	var font := SystemFont.new()
 	font.font_names = [GameState.font_name, "Courier New", "Monospace"]
-	status_sidebar.setup(terminal, font, GameState.font_size)
+	status_sidebar = _make_terminal_mirror(layer, "StatusSidebar", terminal, font, StatusSidebar.Region.LEFT_PANEL)
 	# 地図ビューのメッセージの行の下に置く
 	status_sidebar.position = Vector2(4, terminal.get_cell_height() + 8)
-	status_sidebar.visible = dungeon_view.visible
-	dungeon_view.visibility_changed.connect(func() -> void: status_sidebar.visible = dungeon_view.visible)
+	# 下端の帯は位置を自分で決める (画面の下、下のバーの上)
+	status_bottom_bar = _make_terminal_mirror(layer, "StatusBottomBar", terminal, font, StatusSidebar.Region.BOTTOM_BAR)
+	var sync := func() -> void:
+		status_sidebar.set_shown(dungeon_view.visible)
+		status_bottom_bar.set_shown(dungeon_view.visible)
+	sync.call()
+	dungeon_view.visibility_changed.connect(sync)
+
+func _make_terminal_mirror(layer: CanvasLayer, node_name: String, terminal: Node, font: Font, region: int) -> Control:
+	var mirror := PanelContainer.new()
+	mirror.name = node_name
+	mirror.set_script(StatusSidebar)
+	layer.add_child(mirror)
+	mirror.setup(terminal, font, GameState.font_size, region)
+	return mirror
