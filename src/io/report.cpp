@@ -11,57 +11,76 @@
 #include "game-option/special-options.h"
 #include "io-dump/character-dump.h"
 #include "io/input-context.h"
-#include "mind/mind-elementalist.h"
-#include "player-base/player-class.h"
-#include "player-info/class-info.h"
-#include "player-info/race-info.h"
-#include "player/player-personality.h"
-#include "player/player-realm.h"
-#include "player/player-status.h"
+#include "io/score-submission.h"
+#include "locale/character-encoding.h"
+#include "net/http-client.h"
 #include "system/angband-system.h"
 #include "system/creature-entity.h"
-#include "system/dungeon/dungeon-definition.h"
-#include "system/dungeon/dungeon-record.h"
-#include "system/enums/dungeon/dungeon-id.h"
-#include "system/floor/floor-info.h"
-#include "system/inner-game-data.h"
 #include "system/system-variables.h"
 #include "term/gameterm.h"
 #include "term/screen-processor.h"
 #include "util/angband-files.h"
 #include "view/display-messages.h"
-#include "world/world.h"
-#include <algorithm>
+#include "view/display-symbol.h"
+#include <cstdlib>
 #include <fmt/format.h>
 #include <fstream>
-#include <span>
+#include <nlohmann/json.hpp>
+#include <sstream>
 #include <string>
-#include <string_view>
-#include <vector>
 
-std::string screen_dump;
+namespace {
+
+/*! 死亡時などに capture_screen_dump() で保存した画面。未保存なら null */
+nlohmann::json screen_dump;
+
+}
+
+std::string serialize_screen_dump()
+{
+    if (screen_dump.is_null()) {
+        return "";
+    }
+
+    return screen_dump.dump(-1, ' ', false, nlohmann::json::error_handler_t::replace);
+}
+
+void restore_screen_dump(std::string_view text)
+{
+    screen_dump = nullptr;
+    if (text.empty()) {
+        return;
+    }
+
+    auto parsed = nlohmann::json::parse(text, nullptr, false);
+    if (parsed.is_discarded() || !parsed.is_object()) {
+        return;
+    }
+
+    screen_dump = std::move(parsed);
+}
 
 #ifdef WORLD_SCORE
 
-/*
- * internet resource value
+/*!
+ * @brief スコアサーバの送信先 URL (既定値)
+ * @details 公開サーバ https://sikabane-works.net/bakabakaband/score/ の受付エンドポイント。
+ * 開発中のローカルサーバなどに向けるときは環境変数 BAKABAKABAND_SCORE_URL で上書きする
+ * (例: http://localhost:3000/submit)。サーバ側の実装は https://github.com/deskull-m/bakabakaband-score を参照。
  */
-#define HTTP_TIMEOUT 30 /*!< デフォルトのタイムアウト時間(秒) / Timeout length (second) */
+constexpr auto DEFAULT_SCORE_SERVER_URL = "https://sikabane-works.net/bakabakaband/score/submit";
 
-#ifdef JP
-// constexpr auto SCORE_SERVER_SCHEME_HOST = ""; /*!< スコアサーバホスト */
-// constexpr auto SCORE_SERVER_PATH = ""; /*< スコアサーバパス */
-#endif
-
-size_t read_callback(char *buffer, size_t size, size_t nitems, void *userdata)
+/*!
+ * @brief スコアサーバの送信先 URL を返す
+ */
+static std::string get_score_server_url()
 {
-    auto &data = *static_cast<std::span<const char> *>(userdata);
-    const auto copy_size = std::min<size_t>(size * nitems, data.size());
+    const auto *env = std::getenv("BAKABAKABAND_SCORE_URL");
+    if (env != nullptr && env[0] != '\0') {
+        return env;
+    }
 
-    std::copy_n(data.begin(), copy_size, buffer);
-    data = data.subspan(copy_size);
-
-    return copy_size;
+    return DEFAULT_SCORE_SERVER_URL;
 }
 
 /*!
@@ -103,22 +122,92 @@ static errr make_dump(CreatureEntity &creature, std::ostream &stream)
     return 0;
 }
 
+namespace {
+
+constexpr auto SCREEN_FORMAT = "bakabakaband-screen";
+constexpr auto SCREEN_FORMAT_VERSION = 1;
+constexpr auto SCREEN_PALETTE_SIZE = 16;
+
 /*!
- * @brief スクリーンダンプを作成する/ Make screen dump to buffer
- * @return 作成したスクリーンダンプの参照ポインタ
+ * @brief システム文字コードの文字列を UTF-8 にして返す。変換できなければそのまま返す
  */
-std::string make_screen_dump(CreatureEntity &creature)
+std::string screen_text_to_utf8(std::string_view text)
 {
-    constexpr auto html_head =
-        "<html>\n<body text=\"#ffffff\" bgcolor=\"#000000\">\n"
-        "<pre>\n";
-    constexpr auto html_foot =
-        "</pre>\n"
-        "</body>\n</html>\n";
+    const auto converted = sys_to_utf8(text);
+    return converted ? *converted : std::string(text);
+}
 
+/*!
+ * @brief 1 行分のセル列を「色番号と文字列」の連続区間 (run) の配列にする
+ * @details 行末の空白だけの区間は落とす。表示側は width まで空白で埋めて描画する。
+ */
+nlohmann::json make_screen_row(int y, int width)
+{
+    nlohmann::json runs = nlohmann::json::array();
+    std::string text;
+    uint8_t run_color = 0;
+    auto push_run = [&](bool is_last) {
+        if (is_last) {
+            const auto end = text.find_last_not_of(' ');
+            text.erase(end == std::string::npos ? 0 : end + 1);
+        }
+
+        if (!text.empty()) {
+            auto utf8 = screen_text_to_utf8(text);
+            nlohmann::json run = nlohmann::json::array();
+            run.push_back(run_color);
+            run.push_back(std::move(utf8));
+            runs.push_back(std::move(run));
+        }
+
+        text.clear();
+    };
+
+    DisplaySymbol ds(0, ' ');
+    for (auto x = 0; x < width; x++) {
+        ds = term_what(x, y, ds);
+#ifdef WINDOWS
+        switch (ds.character) {
+        case 0x1f:
+            ds.character = '.';
+            break;
+        case 0x7f:
+            ds.character = (ds.color == 0x09) ? '%' : '#';
+            break;
+        default:
+            break;
+        }
+#endif
+        const auto color = static_cast<uint8_t>(ds.color & 0x0F);
+        if (x > 0 && color != run_color) {
+            push_run(false);
+        }
+
+        run_color = color;
+        text.push_back(ds.character);
+    }
+
+    push_run(true);
+    return runs;
+}
+}
+
+/*!
+ * @brief 画面の内容を色付きテキストの JSON として取得する
+ * @param creature クリーチャーへの参照
+ * @return bakabakaband-screen 形式の JSON オブジェクト。大きすぎる場合は null
+ * @details
+ * {
+ *   "format": "bakabakaband-screen", "version": 1,
+ *   "width": 80, "height": 24,
+ *   "palette": ["#000000", "#ffffff", ...],      // 色番号 0-15 の RGB
+ *   "rows": [ [[1, "@..#"], [7, "..."]], ... ]   // 行ごとに [色番号, 文字列] の連続区間
+ * }
+ * 描画は閲覧側 (スコアサーバ) が行うので、ここでは HTML を組み立てない。
+ */
+nlohmann::json make_screen_dump(CreatureEntity &creature)
+{
     const auto &[wid, hgt] = term_get_size();
-    std::stringstream screen_ss;
-
     if (use_graphics) {
         /* Clear -more- prompt first */
         msg_erase();
@@ -126,115 +215,80 @@ std::string make_screen_dump(CreatureEntity &creature)
 
     const GraphicsSuspender graphics_suspender(creature);
 
-    screen_ss << html_head;
+    nlohmann::json palette = nlohmann::json::array();
+    for (auto i = 0; i < SCREEN_PALETTE_SIZE; i++) {
+        palette.push_back(fmt::format("#{:02x}{:02x}{:02x}", angband_color_table[i][1], angband_color_table[i][2], angband_color_table[i][3]));
+    }
 
-    /* Dump the screen */
-    for (int y = 0; y < hgt; y++) {
-        /* Start the row */
-        if (y != 0) {
-            screen_ss << '\n';
-        }
+    nlohmann::json rows = nlohmann::json::array();
+    for (auto y = 0; y < hgt; y++) {
+        rows.push_back(make_screen_row(y, wid));
+    }
 
-        /* Dump each row */
-        uint8_t old_a = 0;
-        DisplaySymbol ds(0, ' ');
-        for (int x = 0; x < wid; x++) {
-            int rv, gv, bv;
-            concptr cc = nullptr;
-            ds = term_what(x, y, ds);
+    nlohmann::json screen = nlohmann::json::object();
+    screen["format"] = SCREEN_FORMAT;
+    screen["version"] = SCREEN_FORMAT_VERSION;
+    screen["width"] = wid;
+    screen["height"] = hgt;
+    screen["palette"] = std::move(palette);
+    screen["rows"] = std::move(rows);
+    if (screen.dump(-1, ' ', false, nlohmann::json::error_handler_t::replace).size() >= SCREEN_BUF_MAX_SIZE) {
+        return nullptr;
+    }
 
-            switch (ds.character) {
-            case '&':
-                cc = "&amp;";
-                break;
-            case '<':
-                cc = "&lt;";
-                break;
-            case '>':
-                cc = "&gt;";
-                break;
-            case '"':
-                cc = "&quot;";
-                break;
-            case '\'':
-                cc = "&#39;";
-                break;
-#ifdef WINDOWS
-            case 0x1f:
-                ds.character = '.';
-                break;
-            case 0x7f:
-                ds.character = (ds.color == 0x09) ? '%' : '#';
-                break;
-#endif
-            }
+    return screen;
+}
 
-            ds.color = ds.color & 0x0F;
-            if (((y == 0) && (x == 0)) || (ds.color != old_a)) {
-                rv = angband_color_table[ds.color][1];
-                gv = angband_color_table[ds.color][2];
-                bv = angband_color_table[ds.color][3];
-                screen_ss << fmt::format("{}<font color=\"#{:02x}{:02x}{:02x}\">", ((y == 0 && x == 0) ? "" : "</font>"), rv, gv, bv);
-                old_a = ds.color;
-            }
+void capture_screen_dump(CreatureEntity &creature)
+{
+    screen_dump = make_screen_dump(creature);
+}
 
-            if (cc) {
-                screen_ss << cc;
-            } else {
-                screen_ss << ds.character;
-            }
+const nlohmann::json &get_screen_dump()
+{
+    return screen_dump;
+}
+
+/*!
+ * @brief サーバの応答から表示用のメッセージを取り出す
+ * @param body 応答本文 (JSON を期待するが、そうでなくてもよい)
+ * @return 応答に含まれる error または message。無ければ空文字列
+ */
+static std::string extract_response_message(const std::string &body)
+{
+    const auto json = nlohmann::json::parse(body, nullptr, false);
+    if (json.is_discarded() || !json.is_object()) {
+        return "";
+    }
+
+    for (const auto *key : { "error", "message" }) {
+        if (json.contains(key) && json[key].is_string()) {
+            return json[key].get<std::string>();
         }
     }
 
-    screen_ss << "</font>\n";
-
-    screen_ss << html_foot;
-
-    if (const auto screen_dump_size = screen_ss.tellp();
-        (0 <= screen_dump_size) && (screen_dump_size < SCREEN_BUF_MAX_SIZE)) {
-        return screen_ss.str();
-    }
-
-    return {};
+    return "";
 }
 
 /*!
  * @brief スコア転送処理のメインルーチン
  * @param creature クリーチャーへの参照
  * @return 正常にスコアを送信できたらtrue、失敗時に送信を中止したらfalse
+ * @details
+ * bakabakaband-score-submission 形式の JSON を組み立てて HTTP POST する。
+ * 送信内容 (submission_id を含む) は最初に一度だけ組み立て、再試行でも同じものを送る。
+ * サーバは submission_id と内容で重複登録を抑止するので、何度送っても 1 件にしかならない。
  */
 bool report_score(CreatureEntity &creature)
 {
-    std::stringstream score_ss;
-    std::string personality_desc = (*creature.get_personality_info()).title.string();
-    personality_desc.append(_((*creature.get_personality_info()).no ? "の" : "", " "));
+    std::stringstream dump_ss;
+    make_dump(creature, dump_ss);
+    const auto submission = make_score_submission(creature, dump_ss.str(), screen_dump);
+    const auto body = submission.dump(-1, ' ', false, nlohmann::json::error_handler_t::replace);
+    const auto url = get_score_server_url();
 
-    PlayerRealm pr(creature);
-    const auto &realm1_name = CreatureClass(creature).equals(PlayerClassType::ELEMENTALIST) ? get_element_title(creature.get_element_realm()) : pr.realm1().get_name().string();
-    score_ss << fmt::format("name: {}\n", creature.name)
-             << fmt::format("version: {}\n", AngbandSystem::get_instance().build_version_expression(VersionExpression::FULL))
-             << fmt::format("score: {}\n", calc_score(creature))
-             << fmt::format("level: {}\n", creature.get_level())
-             << fmt::format("depth: {}\n", creature.get_floor()->dun_level)
-             << fmt::format("maxlv: {}\n", creature.get_max_plv())
-             << fmt::format("maxdp: {}\n", DungeonRecords::get_instance().get_record(DungeonId::ANGBAND).get_max_level())
-             << fmt::format("au: {}\n", creature.get_au());
-    const auto &igd = InnerGameData::get_instance();
-    score_ss << fmt::format("turns: {}\n", igd.get_real_turns(AngbandWorld::get_instance().game_turn))
-             << fmt::format("sex: {}\n", enum2i(creature.psex))
-             << fmt::format("race: {}\n", creature.get_race_info()->title)
-             << fmt::format("class: {}\n", (*creature.get_class_info()).title)
-             << fmt::format("seikaku: {}\n", personality_desc)
-             << fmt::format("realm1: {}\n", realm1_name)
-             << fmt::format("realm2: {}\n", pr.realm2().get_name())
-             << fmt::format("killer: {}\n", creature.died_from)
-             << "-----charcter dump-----\n";
-
-    make_dump(creature, score_ss);
-    if (!screen_dump.empty()) {
-        score_ss << "-----screen shot-----\n"
-                 << screen_dump;
-    }
+    http::Client client;
+    client.user_agent = "Bakabakaband/" + AngbandSystem::get_instance().build_version_expression(VersionExpression::WITH_EXTRA);
 
     term_clear();
     while (true) {
@@ -242,7 +296,20 @@ bool report_score(CreatureEntity &creature)
         prt(_("スコア送信中...", "Sending the score..."), 0, 0);
         term_fresh();
 
-        constexpr auto prompt = _("スコア・サーバへの送信に失敗しました。", "Failed to send to the score server.");
+        const auto response = client.post(url, body, "application/json");
+        if (response && response->status == 200) {
+            return true;
+        }
+
+        std::string reason;
+        if (!response) {
+            reason = _("接続できませんでした", "could not connect");
+        } else {
+            const auto message = extract_response_message(response->body);
+            reason = fmt::format("HTTP {}{}{}", response->status, message.empty() ? "" : ": ", message);
+        }
+
+        const auto prompt = fmt::format(_("スコア・サーバへの送信に失敗しました。({})", "Failed to send to the score server. ({})"), reason);
         prt(prompt, 0, 0);
         (void)input_key_with_context(InputKind::ANY_KEY, prompt);
         if (input_check_strict(creature, _("もう一度接続を試みますか? ", "Try again? "), UserCheck::NO_HISTORY)) {
@@ -252,5 +319,4 @@ bool report_score(CreatureEntity &creature)
         return false;
     }
 }
-#else
 #endif /* WORLD_SCORE */

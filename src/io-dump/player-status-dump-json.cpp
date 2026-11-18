@@ -215,13 +215,13 @@ static void add_history_to_json(nlohmann::json &j, CreatureEntity &creature)
 }
 
 /*!
- * @brief クリーチャー（プレイヤー・モンスター）のステータス情報を JSON 形式で出力する
+ * @brief クリーチャー（プレイヤー・モンスター）のステータス情報を JSON オブジェクトとして構築する
  * @param creature クリーチャーへの参照
- * @return JSON 文字列
+ * @return JSON オブジェクト
  * @details モンスターは性別・種族等一部のフィールドのみ出力し、プレイヤー専用のセクション
  * (sex/personality/realm/mimic_form) はスキップする。
  */
-std::string dump_player_status_json(CreatureEntity &creature)
+nlohmann::json make_creature_status_json(CreatureEntity &creature)
 {
     nlohmann::json j;
 
@@ -252,8 +252,17 @@ std::string dump_player_status_json(CreatureEntity &creature)
     // 履歴
     add_history_to_json(j, creature);
 
-    // 整形して返す
-    return j.dump(2);
+    return j;
+}
+
+/*!
+ * @brief クリーチャー（プレイヤー・モンスター）のステータス情報を JSON 形式で出力する
+ * @param creature クリーチャーへの参照
+ * @return JSON 文字列
+ */
+std::string dump_player_status_json(CreatureEntity &creature)
+{
+    return make_creature_status_json(creature).dump(2);
 }
 
 /*!

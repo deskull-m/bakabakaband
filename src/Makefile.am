@@ -773,6 +773,7 @@ libhengband_a_SOURCES = \
 	io/read-pref-file.cpp io/read-pref-file.h \
 	io/record-play-movie.cpp io/record-play-movie.h \
 	io/report.cpp io/report.h \
+	io/score-submission.cpp io/score-submission.h \
 	io/screen-util.cpp io/screen-util.h \
 	io/signal-handlers.cpp io/signal-handlers.h \
 	io/temp-file.cpp io/temp-file.h \
@@ -786,7 +787,6 @@ libhengband_a_SOURCES = \
 	io-dump/player-status-dump.cpp io-dump/player-status-dump.h \
 	io-dump/player-status-dump-json.cpp io-dump/player-status-dump-json.h \
 	io-dump/random-art-info-dumper.cpp io-dump/random-art-info-dumper.h \
-	io-dump/score-sender.cpp io-dump/score-sender.h \
 	io-dump/special-class-dump.cpp io-dump/special-class-dump.h \
 	\
 	knowledge/knowledge-alliance.cpp knowledge/knowledge-alliance.h \
@@ -1057,6 +1057,11 @@ libhengband_a_SOURCES = \
 	mutation/mutation-flag-types.h \
 	mutation/mutation-processor.cpp mutation/mutation-processor.h \
 	mutation/mutation-techniques.cpp mutation/mutation-techniques.h \
+	\
+	net/curl-easy-session.cpp net/curl-easy-session.h \
+	net/curl-slist.cpp net/curl-slist.h \
+	net/http-client.cpp net/http-client.h \
+	net/report-error.cpp net/report-error.h \
 	\
 	object/item-tester-hooker.cpp object/item-tester-hooker.h \
 	object/object-broken.cpp object/object-broken.h \
