@@ -4271,11 +4271,52 @@ MtG の「苦花」に由来する**動かない植物系のフェアリー召�
 | 2 | **思い出に出なかった** (`set_summon_types()`, `magic-types-setter.cpp`) | 「汚いモンスター召喚」を追加 |
 | 3 | **召喚の反復回数が `std::min(1, rlev / 20)`** (`mspell-summon.cpp`) | 兄弟の召喚呪文は全て `std::max`。`min` では **rlev 20 未満で 0 回**になり、メッセージだけ出て 1 体も召喚しない。`std::max` に修正 |
 
-- **`spell_RF6_S_GOLEM` の同じ `std::min(1, rlev / 25)` は意図的に直していない。**
-  S_GOLEM には既存の保有者がいるため、直すと頼まれていないバランス変更になる。
-  直す場合は別件として扱うこと。
-- トークン未登録の召喚は他に **5 つ残っている** (`S_APE` / `S_GOLEM` / `S_HOMO` /
+- **`spell_RF6_S_GOLEM` の同じ `std::min(1, rlev / 25)` は別コミットで修正した**
+  (下記「`S_GOLEM` の反復回数 typo」)。当初この文書は「S_GOLEM には既存の保有者が
+  いるためバランス変更になる」と書いていたが、**これは誤り**で S_GOLEM も
+  JSON トークン未登録・保有者 0 の死にコードだった。
+- トークン未登録の召喚は他に **4 つ残っている** (`S_APE` / `S_HOMO` /
   `S_PERVERT` / `S_PUYO`)。いずれも実装はあるがデータから指定できない。
+
+#### `S_GOLEM` の反復回数 typo (別コミットで修正)
+
+`spell_RF6_S_GOLEM()` の召喚反復回数も `std::min(1, rlev / 25)` だった。
+**`mspell-summon.cpp` で `rlev` に比例させる召喚呪文は 7 つあり、`min` は
+S_GOLEM だけ**で残り 6 つはすべて `max` (うち 3 つは**除数まで同じ `rlev / 25`**)。
+
+| 関数 | 反復回数 |
+|---|---|
+| `spell_RF6_S_NASTY` | `std::max(1, rlev / 20)` |
+| **`spell_RF6_S_GOLEM`** | **`std::min(1, rlev / 25)` → `std::max(...)` に修正** |
+| `spell_RF6_S_CATS` / `S_PERVERTS` / `S_PUYO` | `std::max(1, rlev / 25)` |
+| `spell_RF6_S_ROBOT` | `std::max(1, rlev / 25)` |
+| `spell_RF6_S_ELDRAZI` | `std::max(1, rlev / 30)` |
+
+- **`min` だと `rlev < 25` で 0 回**になり、メッセージだけ出て 1 体も召喚しない。
+  `rlev >= 25` でも常に 1 回で、レベル比例の意図が死んでいた。
+- **保有者 0 なので実データのバランスは不変**。`S_GOLEM` は
+  `r_info_ability_flags` に未登録 (= `skill.list` に書けない)・realm 写像 (C6) にも
+  `set_summon_types()` にも無く、ものまね / 青魔法も「モンスターの詠唱を目撃する」
+  ことが習得条件なので、**どの経路からも発動し得ない**。
+- `SUMMON_GOLEM` のプールは**シンボル `g` で選ぶ** (`summon-checker.cpp`。
+  `MonsterKindType::GOLEM` フラグではない)。実データは非ユニーク 67 種
+  (Lv 最小 4 / 中央 30 / 最大 127、Lv40 以上が 27 種) で、将来 `S_GOLEM` を
+  データから使えるようにした際に困らない規模がある。
+- **`grep -n "std::min(1, rlev" src/mspell/mspell-summon.cpp` が 0 件であることが
+  退行検知になる。**
+
+**実測 (A/B、決定的)**: データから到達できない呪文なので、検証には
+`race-info-tokens-table.cpp` へ **`S_GOLEM` トークンを一時登録**してビルドし直し
+(検証後に revert)、洞窟オーク (126, **Lv7 = rlev 7**) に `S_GOLEM` / `1_IN_1` を
+一時付与した。掃討済みの鉄獄 5 階で
+
+- 「**洞窟オークが魔法でゴーレムを召喚した！**」が出る
+- **マイア (Lv10) / 羽ばたき飛行機械 (Lv4) / メムナイト (Lv6) が湧き、3 種とも
+  シンボル `g`** (= `SUMMON_GOLEM` のプール)
+
+**rlev 7 では旧 `std::min(1, 7/25)` = 0 回なので 1 体も湧かない**から、これが
+修正の効果の証明になる (S_NASTY の A/B と同じ形)。ビルド警告 0 /
+単体テスト 533 ケース・83,006 アサーション成功。
 
 #### 併せて埋めた思い出の表示漏れ
 
