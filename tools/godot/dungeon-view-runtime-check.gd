@@ -133,6 +133,16 @@ func _process(_delta: float) -> bool:
 		var label_pos: Vector3 = view._player_label.position
 		check("player billboard follows", Vector2i(int(floor(label_pos.x)), int(floor(label_pos.z))) == want["player"], "label=%s player=%s start=%s" % [label_pos, want["player"], start_player])
 		print("last diff update %.2f ms for %d grids" % [view.last_update_ms, view.last_changed_grids])
+		# 1 行目のメッセージ: 階の雰囲気 (^F) を出して、写しが端末の 1 行目と一致するか
+		ih.inject_key(0x06)
+	if phase == 1 and phase_frame == 360:
+		var term = current_scene.status_sidebar._terminal
+		var msg = current_scene.status_message_line
+		var row0: String = term.get_row_text(0).strip_edges()
+		var msg_text := ""
+		for line in msg._view._lines:
+			msg_text += "".join(line["chars"])
+		check("message line mirrors the first row", row0 != "" and msg.visible and msg_text == row0.replace(" ", ""), "row0=\"%s\" mirror=\"%s\"" % [row0, msg_text])
 		print("RESULT: ", "OK" if ok else "NG")
 		OS.kill(OS.get_process_id())
 	return false

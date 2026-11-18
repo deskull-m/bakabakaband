@@ -10,8 +10,9 @@ extends PanelContainer
 ## - LEFT_PANEL: 左側の欄 (種族・職業・レベル・経験・所持金・能力値・AC・HP・MP・時空崩壊度・
 ##   日付・ダンジョン名など)。地図の左の COL_MAP 桁 × メッセージの行の下から最下行の上まで
 ## - BOTTOM_BAR: 最下行 (状態バー・速度・学習など。ROW_STATBAR / ROW_SPEED = -1)。全幅
+## - MESSAGE_LINE: 1 行目 (メッセージ・-more-・プロンプト)。全幅
 
-enum Region { LEFT_PANEL, BOTTOM_BAR }
+enum Region { LEFT_PANEL, BOTTOM_BAR, MESSAGE_LINE }
 
 const SheetView := preload("res://scripts/character_sheet_view.gd")
 ## 地図の左にある欄の幅 (src/window/main-window-util.h の COL_MAP)
@@ -63,6 +64,8 @@ func set_sheet_font(font: Font, font_size: int) -> void:
 static func region_rect(region_kind: int, cols: int, rows: int) -> Rect2i:
 	if region_kind == Region.BOTTOM_BAR:
 		return Rect2i(0, rows - 1, cols, 1)
+	if region_kind == Region.MESSAGE_LINE:
+		return Rect2i(0, 0, cols, 1)
 	# 最下行は状態バーなので左側の欄には含めない (BOTTOM_BAR で写す)
 	return Rect2i(0, FIRST_ROW, SIDEBAR_COLUMNS, maxi(0, rows - FIRST_ROW - 1))
 
@@ -122,7 +125,9 @@ func _content_width(lines: Array, full_width: int) -> int:
 
 
 func _place() -> void:
-	if region != Region.BOTTOM_BAR or _terminal == null:
+	if _terminal == null:
 		return
-	var screen := get_viewport_rect().size
-	position = Vector2(4, screen.y - BOTTOM_MARGIN - size.y)
+	if region == Region.BOTTOM_BAR:
+		position = Vector2(4, get_viewport_rect().size.y - BOTTOM_MARGIN - size.y)
+	elif region == Region.MESSAGE_LINE:
+		position = Vector2(4, 2)

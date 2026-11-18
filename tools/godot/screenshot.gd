@@ -9,6 +9,7 @@ extends SceneTree
 ## HB_CAMERA_DISTANCE=<数値> なら 3D の地図ビューのカメラをその距離に寄せる (既定 22)
 ## HB_FONT=<フォント名> / HB_FONT_SIZE=<大きさ> なら端末・パネルのフォントを変える (保存済みの設定より優先)
 ## HB_STATUS_PANEL=0 ならステータスパネル (C の画面のダンプ) を閉じて撮る
+## HB_KEYS=<キーコード,...> (10 進) なら撮る前にそのキーを送る (メッセージを出すとき等。例: 6 = ^F)
 ## HB_ITEM_WINDOWS=1 ならメッセージ・持ち物・装備のウィンドウも開く
 var save_path := OS.get_environment("HB_SAVE")
 var out := OS.get_environment("HB_SHOT")
@@ -56,6 +57,9 @@ func _process(_d: float) -> bool:
 				ih.inject_key(k)
 		else:
 			ih.inject_key(0x67)
+	if frame == 480 and OS.get_environment("HB_KEYS") != "":
+		for k in OS.get_environment("HB_KEYS").split(","):
+			game.get_node("InputHandler").inject_key(int(k))
 	if frame == 600:
 		var v = current_scene.find_child("DungeonView3D", true, false)
 		if v and v.visible:

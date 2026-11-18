@@ -45,7 +45,6 @@ var _plane_mm: MultiMesh
 var _creature_root: Node3D
 var _item_root: Node3D
 var _player_label: Label3D
-var _message: Label
 
 var _version := 0
 var _width := 0
@@ -133,12 +132,6 @@ func _ready() -> void:
 	_player_light = _make_light(Color(1.0, 0.85, 0.6))
 	_world.add_child(_player_light)
 
-	_message = Label.new()
-	_message.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
-	_message.add_theme_color_override("font_color", Color.WHITE)
-	_message.add_theme_color_override("font_outline_color", Color.BLACK)
-	_message.add_theme_constant_override("outline_size", 4)
-	add_child(_message)
 
 
 func setup(game_node: Node) -> void:
@@ -524,14 +517,6 @@ func _update_camera() -> void:
 	_camera.position = focus + offset
 	_camera.look_at(focus, Vector3.UP)
 
-
-func _process(_delta: float) -> void:
-	if not visible or game == null:
-		return
-	# 1 行目 (メッセージ・プロンプト) を重ねて見せる
-	var terms := get_tree().root.find_children("*", "GodotTerminal", true, false)
-	if not terms.is_empty():
-		_message.text = terms[0].get_row_text(0).strip_edges()
 
 
 func _gui_input(event: InputEvent) -> void:

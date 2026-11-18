@@ -221,7 +221,7 @@ func _apply_font(game: Node) -> void:
 	var status_panel := get_node_or_null("StatusLayer/StatusPanel")
 	if status_panel and status_panel.has_method("set_sheet_font"):
 		status_panel.set_sheet_font(font, GameState.font_size)
-	for mirror in [status_sidebar, status_bottom_bar]:
+	for mirror in [status_sidebar, status_bottom_bar, status_message_line]:
 		if mirror:
 			mirror.set_sheet_font.call_deferred(font, GameState.font_size)
 	_fit_main_term()
@@ -702,9 +702,10 @@ func _on_item_window_layout_changed(kind: int) -> void:
 const StatusSidebar := preload("res://scripts/status_sidebar.gd")
 var status_sidebar: Control = null
 var status_bottom_bar: Control = null
+var status_message_line: Control = null
 
-## 3D の地図ビューを見ている間、端末の左側の欄 (能力値・HP 等) と最下行の状態バーを
-## 半透明の窓で重ねて見せる
+## 3D の地図ビューを見ている間、端末の 1 行目 (メッセージ)・左側の欄 (能力値・HP 等)・
+## 最下行の状態バーを半透明の窓で重ねて見せる
 func _setup_status_sidebar() -> void:
 	var terminal: Node = null
 	for pane in get_tree().get_nodes_in_group("terminal_panes"):
@@ -723,9 +724,12 @@ func _setup_status_sidebar() -> void:
 	status_sidebar.position = Vector2(4, terminal.get_cell_height() + 8)
 	# 下端の帯は位置を自分で決める (画面の下、下のバーの上)
 	status_bottom_bar = _make_terminal_mirror(layer, "StatusBottomBar", terminal, font, StatusSidebar.Region.BOTTOM_BAR)
+	# 1 行目 (メッセージ・-more-・プロンプト) も写す
+	status_message_line = _make_terminal_mirror(layer, "StatusMessageLine", terminal, font, StatusSidebar.Region.MESSAGE_LINE)
 	var sync := func() -> void:
 		status_sidebar.set_shown(dungeon_view.visible)
 		status_bottom_bar.set_shown(dungeon_view.visible)
+		status_message_line.set_shown(dungeon_view.visible)
 	sync.call()
 	dungeon_view.visibility_changed.connect(sync)
 
