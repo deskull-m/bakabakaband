@@ -19,6 +19,7 @@
 #include "core/asking-player.h"
 #include "game-option/birth-options.h"
 #include "game-option/game-option-page.h"
+#include "io/input-context.h"
 #include "io/input-key-acceptor.h"
 #include "locale/japanese.h"
 #include "main/sound-definitions-table.h"
@@ -34,10 +35,9 @@
 #include "player/player-status.h"
 #include "player/process-name.h"
 #include "system/creature-entity.h"
-#include "system/redrawing-flags-updater.h"
+#include "system/deferred-update-requests.h"
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
-#include "term/z-form.h"
 #include "util/enum-converter.h"
 #include "util/int-char-converter.h"
 #include "util/string-processor.h"
@@ -47,7 +47,9 @@
 #include "view/display-symbol.h"
 #include "view/display-util.h"
 #include "world/world.h"
+#include <fmt/format.h>
 #include <sstream>
+#include <string>
 
 static void display_initial_birth_message(CreatureEntity &creature)
 {
@@ -120,9 +122,14 @@ static bool get_player_sex(CreatureEntity &creature)
             break;
         }
 
-        const auto buf = format(_("性別を選んで下さい (%c-%c) ('='初期オプション設定): ", "Choose a sex (%c-%c) ('=' for options): "), I2A(0), I2A(1));
+        const auto buf = fmt::format(_("性別を選んで下さい ({:c}-{:c}) ('='初期オプション設定): ", "Choose a sex ({:c}-{:c}) ('=' for options): "), I2A(0), I2A(1));
         put_str(buf, 10, 10);
-        char c = inkey();
+        char c;
+        {
+            const InputContextScope input_context({ InputKind::BIRTH, buf, BirthInputDetails{ BirthStep::SEX } });
+            c = inkey();
+        }
+
         if (c == 'Q') {
             birth_quit();
         }
@@ -304,11 +311,11 @@ static void display_initial_options(CreatureEntity &creature)
     put_str("                                   ", 3, 40);
     put_str(_("修正の合計値", "Your total modification"), 3, 40);
     put_str(_("腕力 知能 賢さ 器用 耐久 魅力 経験 ", "Str  Int  Wis  Dex  Con  Chr   EXP "), 4, 40);
-    const auto stats = format("%+3d  %+3d  %+3d  %+3d  %+3d  %+3d %+4d%% ", adj[0], adj[1], adj[2], adj[3], adj[4], adj[5], expfact_mod);
+    const auto stats = fmt::format("{:+3}  {:+3}  {:+3}  {:+3}  {:+3}  {:+3} {:+4}% ", adj[0], adj[1], adj[2], adj[3], adj[4], adj[5], expfact_mod);
     c_put_str(TERM_L_BLUE, stats, 5, 40);
 
     put_str("HD ", 6, 40);
-    const auto hd = format("%2d", creature.get_race_info()->r_mhp + (*creature.get_class_info()).c_mhp + (*creature.get_personality_info()).a_mhp);
+    const auto hd = fmt::format("{:2}", creature.get_race_info()->r_mhp + (*creature.get_class_info()).c_mhp + (*creature.get_personality_info()).a_mhp);
     c_put_str(TERM_L_BLUE, hd, 6, 43);
 
     put_str(_("隠密", "Stealth"), 6, 47);
@@ -316,12 +323,12 @@ static void display_initial_options(CreatureEntity &creature)
     if (CreatureClass(creature).equals(PlayerClassType::BERSERKER)) {
         stealth = "xx";
     } else {
-        stealth = format("%+2d", creature.get_race_info()->r_stl + (*creature.get_class_info()).c_stl + (*creature.get_personality_info()).a_stl);
+        stealth = fmt::format("{:+2}", creature.get_race_info()->r_stl + (*creature.get_class_info()).c_stl + (*creature.get_personality_info()).a_stl);
     }
     c_put_str(TERM_L_BLUE, stealth, 6, _(52, 55));
 
     put_str(_("赤外線視力", "Infra"), 6, _(56, 59));
-    const auto infra = format(_("%%2dft", "%%2dft"), 10 * creature.get_race_info()->infra);
+    const auto infra = fmt::format("{:2}ft", 10 * creature.get_race_info()->infra);
     c_put_str(TERM_L_BLUE, infra, 6, _(67, 65));
 
     clear_from(10);
@@ -342,7 +349,7 @@ static void display_auto_roller_success_rate(CreatureEntity &creature, const int
     std::string prob;
 
     if (autoroll_chance >= 1) {
-        prob = format(_("確率 :  1/%8d00", "Prob :  1/%8d00"), autoroll_chance);
+        prob = fmt::format(_("確率 :  1/{:8}00", "Prob :  1/{:8}00"), autoroll_chance);
     } else if (autoroll_chance == -999) {
         prob = _("確率 :     不可能", "Prob :     Impossible");
     } else {
@@ -355,7 +362,8 @@ static void display_auto_roller_success_rate(CreatureEntity &creature, const int
     for (int i = 0; i < A_MAX; i++) {
         put_str(stat_names[i], 3 + i, col + 8);
         int j = creature.get_race_info()->r_adj[i] + (*creature.get_class_info()).c_adj[i] + (*creature.get_personality_info()).a_adj[i];
-        int m = adjust_stat(stat_limit[i], j);
+        // stat_limit は整数 3〜17 の基本能力値。内部表現 (10 倍) へ変換して補正後の値を表示する
+        int m = adjust_stat(stat_limit[i] * 10, j);
         c_put_str(TERM_L_BLUE, cnv_stat(m), 3 + i, col + 13);
     }
 }
@@ -382,7 +390,8 @@ static bool decide_initial_stat(CreatureEntity &creature)
 
     bool accept = true;
     for (int i = 0; i < A_MAX; i++) {
-        if (creature.get_stat_max(i) < stat_limit[i]) {
+        // stat_limit は整数 3〜17 の基本能力値。能力値の内部表現は 10 倍 (17.0 = 170) なので揃えて比較する
+        if (creature.get_stat_max(i) < stat_limit[i] * 10) {
             accept = false;
             break;
         }
@@ -433,9 +442,9 @@ static bool display_auto_roller_count(CreatureEntity &creature, const int col)
 
     birth_put_stats(creature);
     if (auto_upper_round) {
-        put_str(format("%ld%09ld", auto_upper_round, auto_round), 10, col + 20);
+        put_str(fmt::format("{}{:09}", auto_upper_round, auto_round), 10, col + 20);
     } else {
-        put_str(format("%10ld", auto_round), 10, col + 20);
+        put_str(fmt::format("{:10}", auto_round), 10, col + 20);
     }
     term_fresh();
     inkey_scan = true;
@@ -468,35 +477,31 @@ static void exe_auto_roller(CreatureEntity &creature, chara_limit_type chara_lim
 static bool display_auto_roller_result(CreatureEntity &creature, bool prev, char *c)
 {
     BIT_FLAGS mode = 0;
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    static constexpr auto flags = {
-        StatusRecalculatingFlag::BONUS,
-        StatusRecalculatingFlag::HP,
-    };
+    auto &dur = DeferredUpdateRequests::get_instance();
     while (true) {
-        rfu.set_flags(flags);
+        dur.request_bonus_and_max_hp_recalculation();
         update_creature(creature);
         creature.hp = creature.maxhp;
         creature.set_current_mp(creature.get_max_mp());
         (void)display_player(creature, mode);
-        term_gotoxy(2, 23);
-        const char b1 = '[';
-        term_addch({ TERM_WHITE, b1 });
-        term_addstr(-1, TERM_WHITE, _("'r' 次の数値", "'r'eroll"));
+        std::string prompt = _("['r' 次の数値", "['r'eroll");
         if (prev) {
-            term_addstr(-1, TERM_WHITE, _(", 'p' 前の数値", ", 'p'revious"));
+            prompt.append(_(", 'p' 前の数値", ", 'p'revious"));
         }
 
         if (mode) {
-            term_addstr(-1, TERM_WHITE, _(", 'h' その他の情報", ", 'h' Misc."));
+            prompt.append(_(", 'h' その他の情報", ", 'h' Misc."));
         } else {
-            term_addstr(-1, TERM_WHITE, _(", 'h' 生い立ちを表示", ", 'h'istory"));
+            prompt.append(_(", 'h' 生い立ちを表示", ", 'h'istory"));
         }
 
-        term_addstr(-1, TERM_WHITE, _(", Enter この数値に決定", ", or Enter to accept"));
-        const char b2 = ']';
-        term_addch({ TERM_WHITE, b2 });
-        *c = inkey();
+        prompt.append(_(", Enter この数値に決定]", ", or Enter to accept]"));
+        term_putstr(2, 23, -1, TERM_WHITE, prompt);
+        {
+            const InputContextScope input_context({ InputKind::BIRTH, prompt, BirthInputDetails{ BirthStep::ROLL_RESULT } });
+            *c = inkey();
+        }
+
         if (*c == 'Q') {
             birth_quit();
         }
@@ -593,7 +598,6 @@ static void set_name_history(CreatureEntity &creature)
     edit_history(creature);
     get_max_stats(creature);
     initialize_virtues(creature);
-    prt(_("[ 'Q' 中断, 'S' 初めから, Enter ゲーム開始 ]", "['Q'uit, 'S'tart over, or Enter to continue]"), 23, _(14, 10));
 }
 
 /*!
@@ -642,6 +646,9 @@ bool player_birth_wizard(CreatureEntity &creature)
     }
 
     set_name_history(creature);
+    constexpr auto prompt = _("[ 'Q' 中断, 'S' 初めから, Enter ゲーム開始 ]", "['Q'uit, 'S'tart over, or Enter to continue]");
+    prt(prompt, 23, _(14, 10));
+    const InputContextScope input_context({ InputKind::BIRTH, prompt, BirthInputDetails{ BirthStep::START } });
     char c = inkey();
     if (c == 'Q') {
         birth_quit();

@@ -24,10 +24,11 @@
 #include "status/base-status.h"
 #include "system/angband-system.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/redrawing-flags-updater.h"
+#include "util/string-processor.h"
 #include "view/display-messages.h"
 #include "world/world.h"
 #include <string>
@@ -39,7 +40,7 @@ static bool process_mod_hallucination(CreatureEntity &creature, std::string_view
         return false;
     }
 
-    msg_format(_("%s%sの顔を見てしまった！", "You behold the %s visage of %s!"), rand_choice(funny_desc).data(), m_name.data());
+    msg_print(_("{}{}の顔を見てしまった！", "You behold the {} visage of {}!"), rand_choice(funny_desc), m_name);
     if (one_in_(3)) {
         msg_print(rand_choice(funny_comments));
         BadStatusSetter(creature).mod_hallucination(randnum1<short>(monrace.level));
@@ -142,7 +143,7 @@ void sanity_blast(CreatureEntity &creature, tl::optional<short> m_idx, bool necr
         }
 
         if (evaluate_percent(creature.get_skill_save() * 100 / power)) {
-            msg_format(_("夢の中で%sに追いかけられた。", "%s^ chases you through your dreams."), m_name.data());
+            msg_print(_("夢の中で{}に追いかけられた。", "{} chases you through your dreams."), str_upcase_first(m_name));
             return;
         }
 
@@ -293,6 +294,6 @@ void sanity_blast(CreatureEntity &creature, tl::optional<short> m_idx, bool necr
         break;
     }
 
-    RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
+    DeferredUpdateRequests::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
     handle_stuff(creature);
 }

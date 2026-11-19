@@ -200,7 +200,7 @@ static int calc_arm_avgdamage(CreatureEntity &creature, ItemEntity *o_ptr)
 
     dam += o_ptr->to_d;
     constexpr auto fmt = _("\u7d20:%d> \u5bfe\u90aa:%d> \u7406\u529b:%d> \u5207:%d> \u6700\u7d42:%d", "Normal:%d> Evil:%d> Force:%d> Vorpal:%d> Total:%d");
-    msg_format_wizard(creature, CHEAT_OBJECT, fmt, base, s_evil, forced, vorpal, dam);
+    msg_print_wizard(creature, CHEAT_OBJECT, fmt, base, s_evil, forced, vorpal, dam);
     return dam;
 }
 

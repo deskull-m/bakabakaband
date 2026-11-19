@@ -1,8 +1,8 @@
 #pragma once
 
-enum class StoreSaleType;
 class CreatureEntity;
-void store_prt_gold(int num_golds);
-void display_entry(CreatureEntity &creature, int pos, StoreSaleType store_num);
-void display_store_inventory(CreatureEntity &creature, StoreSaleType store_num);
-void display_store(CreatureEntity &creature, StoreSaleType store_num);
+class StoreScreen;
+void store_prt_gold(const StoreScreen &screen, int num_golds);
+void display_entry(CreatureEntity &creature, const StoreScreen &screen, int pos);
+void display_store_inventory(CreatureEntity &creature, const StoreScreen &screen);
+void display_store(CreatureEntity &creature, const StoreScreen &screen);

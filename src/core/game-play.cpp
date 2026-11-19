@@ -16,6 +16,7 @@
 #include "birth/inventory-initializer.h"
 #include "cmd-io/cmd-gameoption.h"
 #include "core/asking-player.h"
+#include "core/disturbance.h"
 #include "core/game-closer.h"
 #include "core/player-processor.h"
 #include "core/score-util.h"
@@ -27,19 +28,24 @@
 #include "dungeon/dungeon-processor.h"
 #include "dungeon/quest.h"
 #include "flavor/object-flavor.h"
+#include "floor/fixed-map-generator.h"
 #include "floor/floor-changer.h"
 #include "floor/floor-leaver.h"
 #include "floor/floor-mode-changer.h"
 #include "floor/floor-save.h"
 #include "floor/floor-util.h"
+#include "floor/geometry.h"
 #include "game-option/cheat-options.h"
 #include "game-option/input-options.h"
 #include "game-option/play-record-options.h"
 #include "game-option/runtime-arguments.h"
 #include "info-reader/fixed-map-parser.h"
+#include "info-reader/wilderness-reader.h"
 #include "io/files-util.h"
+#include "io/input-context.h"
 #include "io/input-key-acceptor.h"
 #include "io/input-key-processor.h"
+#include "io/input-key-requester.h"
 #include "io/read-pref-file.h"
 #include "io/record-play-movie.h"
 #include "io/screen-util.h"
@@ -75,20 +81,20 @@
 #include "system/angband-version.h"
 #include "system/baseitem/baseitem-service.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/dungeon/quest-definition.h"
+#include "system/dungeon/quest-fixed-map.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/floor/floor-info.h"
-#include "system/floor/wilderness-grid.h"
 #include "system/gamevalue.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/redrawing-flags-updater.h"
 #include "system/system-variables.h"
 #include "target/target-checker.h"
 #include "term/gameterm.h"
 #include "term/screen-processor.h"
-#include "term/z-form.h"
+#include "term/z-rand.h"
 #include "util/angband-files.h"
 #include "view/display-messages.h"
 #include "view/display-player.h"
@@ -97,6 +103,7 @@
 #include "world/world-collapsion.h"
 #include "world/world.h"
 #include <ctime>
+#include <fmt/format.h>
 
 static void restore_windows(CreatureEntity &creature)
 {
@@ -124,13 +131,7 @@ static void send_waiting_record(CreatureEntity &creature)
         quit("");
     }
 
-    static constexpr auto flags = {
-        StatusRecalculatingFlag::BONUS,
-        StatusRecalculatingFlag::HP,
-        StatusRecalculatingFlag::MP,
-        StatusRecalculatingFlag::SPELLS,
-    };
-    RedrawingFlagsUpdater::get_instance().set_flags(flags);
+    DeferredUpdateRequests::get_instance().request_player_status_recalculation();
     update_creature(creature);
     creature.is_dead_ = true;
     auto &world = AngbandWorld::get_instance();
@@ -141,12 +142,12 @@ static void send_waiting_record(CreatureEntity &creature)
     highscore_fd = fd_open(path, O_RDWR);
 
     /* 町名消失バグ対策(#38205)のためここで世界マップ情報を読み出す */
-    const auto &area = WildernessGrids::get_instance().get_area();
-    parse_fixed_map(creature, WILDERNESS_DEFINITION, 0, 0, area.height(), area.width());
+    (void)apply_wilderness_definition();
     bool success = send_world_score(creature, true);
     if (!success && !input_check_strict(creature, _("スコア登録を諦めますか？", "Do you give up score registration? "), UserCheck::NO_HISTORY)) {
-        prt(_("引き続き待機します。", "standing by for future registration..."), 0, 0);
-        (void)inkey();
+        constexpr auto prompt = _("引き続き待機します。", "standing by for future registration...");
+        prt(prompt, 0, 0);
+        (void)input_key_with_context(InputKind::ANY_KEY, prompt);
     } else {
         system.set_awaiting_report_score(false);
         top_twenty(creature);
@@ -164,11 +165,11 @@ static void send_waiting_record(CreatureEntity &creature)
 static void init_random_seed(CreatureEntity &creature, bool new_game)
 {
     auto &world = AngbandWorld::get_instance();
-    auto init_random_seed = false;
+    auto init_game_rng = false;
     if (!world.character_loaded) {
         new_game = true;
         world.character_dungeon = false;
-        init_random_seed = true;
+        init_game_rng = true;
         init_saved_floors(false);
     } else if (new_game) {
         init_saved_floors(true);
@@ -178,8 +179,16 @@ static void init_random_seed(CreatureEntity &creature, bool new_game)
         process_player_name(creature);
     }
 
-    if (init_random_seed) {
-        Rand_state_init();
+    // 既存のセーブデータから新規ゲームを始める場合、乱数生成器の状態はセーブデータのものが
+    // 読み込まれている。固定シードを指定した時はこれを上書きしないと再現性が得られない
+    if (init_game_rng || (new_game && arg_fixed_seed)) {
+        Rand_state_init(arg_fixed_seed);
+    }
+
+    // ゲームの進行に影響しない乱数生成器はセーブデータに記録されないため、固定シードを指定した時は
+    // 既存のセーブデータを読み込んだ場合も初期化する。タイトル画面での乱数の消費に左右されないよう、ゲームの開始時に行う
+    if (arg_fixed_seed) {
+        Rand_external_state_init(arg_fixed_seed);
     }
 }
 
@@ -193,6 +202,13 @@ static void init_world_floor_info(CreatureEntity &creature, std::optional<QuestI
     floor.quest_number = QuestId::NONE;
     floor.inside_arena = false;
     AngbandSystem::get_instance().set_phase_out(false);
+
+    // 死んだキャラクターなどのセーブを読み込んでから新しく始めるときに、そのセーブのコマンドの繰り返しを持ち越さない
+    command_cmd = 0;
+    command_arg = 0;
+    command_rep = 0;
+    command_dir = Direction::none();
+
     write_level = true;
     auto &system = AngbandSystem::get_instance();
     system.set_seed_flavor(randint0(0x10000000));
@@ -247,49 +263,58 @@ static void reset_world_info(CreatureEntity &creature)
 
 static void generate_wilderness(CreatureEntity &creature)
 {
-    const auto &area = WildernessGrids::get_instance().get_area();
-    parse_fixed_map(creature, WILDERNESS_DEFINITION, 0, 0, area.height(), area.width());
+    (void)apply_wilderness_definition();
     init_flags = INIT_ONLY_BUILDINGS;
     parse_fixed_map(creature, TOWN_DEFINITION_LIST, 0, 0, MAX_HGT, MAX_WID);
     select_floor_music(creature);
 }
 
-static void change_floor_if_error(CreatureEntity &creature)
+/*!
+ * @brief 読み込んだ階が使えないときに作り直す
+ * @param creature クリーチャーへの参照
+ * @param is_panic_save パニックセーブを読み込んだか
+ */
+static void change_floor_if_error(CreatureEntity &creature, bool is_panic_save)
 {
     if (!AngbandWorld::get_instance().character_dungeon) {
         change_floor(creature);
-        return;
+    } else if (is_panic_save) {
+        if (!creature.y || !creature.x) {
+            msg_print(_("プレイヤーの位置がおかしい。フロアを再生成します。", "What a strange creature location, regenerate the dungeon floor."));
+            change_floor(creature);
+        }
+
+        if (!creature.y || !creature.x) {
+            creature.y = creature.x = 10;
+        }
     }
 
-    auto &system = AngbandSystem::get_instance();
-    if (!system.is_panic_save_executed()) {
-        return;
+    // パニックセーブは処理の途中のどこででも書かれ、セーブした休憩・釣り・コマンドの繰り返しが前の階でのものだったり、
+    // 落ちた処理につながったりするので、続けずに止める
+    if (is_panic_save) {
+        disturb(creature, false, true);
+        AngbandSystem::get_instance().set_panic_save(false);
     }
-
-    if (!creature.y || !creature.x) {
-        msg_print(_("プレイヤーの位置がおかしい。フロアを再生成します。", "What a strange creature location, regenerate the dungeon floor."));
-        change_floor(creature);
-    }
-
-    if (!creature.y || !creature.x) {
-        creature.y = creature.x = 10;
-    }
-
-    system.set_panic_save(false);
 }
 
 static void generate_world(CreatureEntity &creature, bool new_game)
 {
     reset_world_info(creature);
     const auto &floor = *creature.get_floor();
-    panel_row_min = floor.height;
-    panel_col_min = floor.width;
+
+    // 表示する範囲を決め直させる。セーブを読み込んで再開するときは、セーブした範囲を使う (古いセーブでは読み込みで負にしてある)。
+    // パニックセーブは見回しなどで範囲をずらしている途中のことがあるので決め直させる
+    const auto is_panic_save = AngbandSystem::get_instance().is_panic_save_executed();
+    if (new_game || (panel_row_min < 0) || is_panic_save) {
+        panel_row_min = floor.height;
+        panel_col_min = floor.width;
+    }
 
     BaseitemService::initialize_items_flavor();
     prt(_("お待ち下さい...", "Please wait..."), 0, 0);
     term_fresh();
     generate_wilderness(creature);
-    change_floor_if_error(creature);
+    change_floor_if_error(creature, is_panic_save);
     auto &world = AngbandWorld::get_instance();
     world.character_generated = true;
     world.character_icky_depth = 0;
@@ -297,14 +322,14 @@ static void generate_world(CreatureEntity &creature, bool new_game)
         return;
     }
 
-    const auto mes = format(_("%%sに降り立った。", "arrived in %%s."), map_name(creature).data());
+    const auto mes = fmt::format(_("{}に降り立った。", "arrived in {}."), map_name(creature));
     exe_write_diary(floor, DiaryKind::DESCRIPTION, 0, mes);
 }
 
 static void init_io(CreatureEntity &creature)
 {
     term_xtra(TERM_XTRA_REACT, 0);
-    RedrawingFlagsUpdater::get_instance().fill_up_sub_flags();
+    DeferredUpdateRequests::get_instance().fill_up_sub_flags();
     handle_stuff(creature);
     if (arg_force_original) {
         rogue_like_commands = false;
@@ -376,7 +401,7 @@ static void decide_arena_death(CreatureEntity &creature)
     creature.set_leaving(true);
 
     world.set_arena(true);
-    reset_tim_flags(creature);
+    reset_arena_buffs(creature);
     FloorChangeModesStore::get_instace()->set({ FloorChangeMode::SAVE_FLOORS, FloorChangeMode::RANDOM_CONNECT });
     leave_floor(creature);
 }
@@ -390,9 +415,8 @@ static void process_game_turn(CreatureEntity &creature)
     while (true) {
         process_dungeon(creature, load_game);
         world.character_xtra = true;
-        handle_stuff(creature);
+        handle_stuff_with_inventory_arrangement(creature);
         world.character_xtra = false;
-        Target::clear_last_target();
         health_track(creature, 0);
         floor.forget_lite();
         floor.forget_view();
@@ -452,8 +476,11 @@ void play_game(CreatureEntity &creature, bool new_game, bool browsing_movie, std
     // クエスト開始時は、マップサイズを事前に取得する
     auto &floor = *creature.get_floor();
     if (new_game && floor.is_in_quest()) {
-        init_flags = INIT_GET_SIZE;
-        parse_fixed_map(creature, QUEST_DEFINITION_LIST, 0, 0, 0, 0);
+        const auto fixed_map = QuestFixedMapList::get_instance().find(floor.quest_number);
+        if (fixed_map) {
+            get_quest_floor_size_from_json(creature, *fixed_map);
+        }
+
         // サイズが取得できなかった場合はデフォルト値を設定
         if (floor.height == 0 || floor.width == 0) {
             floor.height = MAX_HGT;

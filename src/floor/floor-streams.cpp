@@ -36,6 +36,7 @@
 #include "system/item-entity.h"
 #include "system/terrain/terrain-definition.h"
 #include "system/terrain/terrain-list.h"
+#include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
 #include "wizard/wizard-messages.h"
 #include <cmath>
@@ -309,7 +310,7 @@ void build_streamer(CreatureEntity &creature, FEAT_IDX feat, int chance)
                         ArtifactRecords::get_instance().set_generated(item.fa_id, false);
                         if (cheat_peek) {
                             const auto fixed_artifact_name = item.get_fixed_artifact_name();
-                            msg_format(_("伝説のアイテム (%s) はストリーマーにより削除された。", "Artifact (%s) was deleted by streamer."), fixed_artifact_name.data());
+                            msg_print(_("伝説のアイテム ({}) はストリーマーにより削除された。", "Artifact ({}) was deleted by streamer."), fixed_artifact_name);
                         }
                     } else if (cheat_peek && item.is_random_artifact()) {
                         msg_print(_("ランダム・アーティファクトの1つはストリーマーにより削除された。", "One of the random artifacts was deleted by streamer."));

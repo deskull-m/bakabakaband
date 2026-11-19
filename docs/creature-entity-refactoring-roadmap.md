@@ -711,6 +711,152 @@ bakabakaband ではプレイヤーとモンスター双方が `CreatureEntity` �
     装備品 + ULTIMATE_RESISTANCE 等を反映
 - **B-2b**: 近接攻撃のダメージボーナス (7a9cda1ec)
   - HIT/PUNCH/SLASH/STING 打撃で `weapon.damage_dice.roll() + weapon.to_d` 加算
+  - 後に共通の `calc_attack_damage_with_slay()` でスレイ/ブランドも反映
+- **B-2b2**: 武器ダメージ計算のプレイヤー完全同化 (会心の追加)
+  - B-2b の「ダイス→スレイ/ブランド→ to_d」に**会心 (`critical_norm`)** を追加し、
+    プレイヤーの `process_weapon_attack()` と同一パイプラインに揃えた
+  - 共通ヘルパ `calc_weapon_melee_damage(attacker, weapon, target, hand)`
+    (`src/combat/slaying.cpp`) に集約。対プレイヤー
+    (`monster-attack-player.cpp`) / 対モンスター (`monster-attack-monster.cpp`)
+    の両経路が同一関数を呼ぶ
+  - `critical_norm()` の会心メッセージ・効果音は攻撃者視点の文言のため
+    `creature.is_player()` でガードし、モンスター会心時はダメージのみ反映して
+    表示を抑止 (ダメージ値はプレイヤーと完全同一)
+  - **武器を装備したモンスターは、対プレイヤー・対モンスターのいずれでも
+    プレイヤーと同じ武器打撃ダメージ (会心込み) を与える**。武器ダメージは
+    従来同様、種族固有の innate blow ダメージに**加算**される (B-2b の加算モデルを継承)
+- **B-2b3**: ヴォーパル (メッタ斬り) の同化
+  - `calc_weapon_melee_damage()` に**ヴォーパル倍率** (`process_vorpal_attack()`
+    と同一算出: `TR_VORPAL` 保有時 `randint1(vorpal_chance*3/2)==1` で発火、
+    基準倍率 2 から `one_in_(vorpal_chance)` で加倍。VORPAL_BLADE / CHAINSWORD は
+    `vorpal_chance=2`、他は 4) を追加。会心とダメージ加算 (to_d) の間に適用し、
+    プレイヤーの武器ダメージパイプライン (ダイス→スレイ/ブランド→会心→ヴォーパル→ to_d)
+    に完全一致
+  - メッセージは攻撃者・対象双方の文脈が必要なため共通計算では省略
+    (ダメージのみ反映)。ルーンソード呪唱 (術者状態) ・斬鉄剣無効化 (対象非切断) 等の
+    文脈依存分岐は武器固有プロパティのみに限定 (`TR_VORPAL` フラグ判定のみ)
+  - **ヴォーパル武器を装備したモンスターもプレイヤーと同じメッタ斬りダメージを与える**
+- **B-2b4**: 吸血 (ヴァンパイア武器) の同化
+  - 共通関数 `apply_weapon_vampiric_drain(attacker, weapon, target, weapon_damage)`
+    (`src/combat/slaying.cpp`) を追加。`TR_VAMPIRIC` 武器で生命のある対象
+    (`has_living_flag`) を攻撃した場合、与えた武器ダメージ (対象残 HP が上限) を元に
+    `2d(drain/6)` の HP を攻撃側へ回復 (プレイヤー `blood-sucking-processor.cpp` と同式)
+  - 吸血はダメージ倍率を持たず回復のみ (プレイヤー版と同様に `mult_brand` 非関与)
+  - 対プレイヤー (`monster-attack-player.cpp`) / 対モンスター
+    (`monster-attack-monster.cpp`) の両経路で発火。体力バー再描画・視認時メッセージを付随
+  - **意図的な簡略化**: プレイヤー版の対象最大 HP 減少 (weaken) と攻撃全体の回復上限
+    (`MAX_VAMPIRIC_DRAIN`=50) は、既存モンスター吸血 (`heal_monster_by_melee`、innate
+    DRAIN 打撃) が「回復のみ・上限なし」である慣習に合わせて省略。恒久的な最大 HP 減少を
+    プレイヤーへ課す挙動は保守的に見送り (将来のバランス判断で追加余地)
+  - **吸血武器を装備したモンスターは対プレイヤー・対モンスターとも生命力を吸収して回復する**
+- **B-2b5**: 地震 (アースクエイク武器) の同化
+  - 共通判定 `does_weapon_cause_earthquake(weapon, weapon_damage)` (`src/combat/slaying.cpp`)
+    を追加。`TR_EARTHQUAKE` 武器で武器ダメージ > 50 または 1/7 で地震予約
+    (プレイヤー `does_equip_cause_earthquake()` と同条件)
+  - **発生タイミング**: プレイヤーの `cause_earthquake` 同様、全打撃終了後にまとめて
+    `earthquake(player, 攻撃モンスターの位置, 10, 攻撃モンスターの m_idx)` を発火。
+    打撃ループ中は floor / monster 参照が無効化されうるため、`do_quake` フラグを
+    `MonsterAttackPlayer` / `mam_type` に持たせ、ループ後 (`make_attack_normal` /
+    `monst_attack_monst`) に 1 度だけ起こす
+  - 地震の破壊/巻き込みはプレイヤー版と同一 (`earthquake()` を共用)。震源は攻撃側
+    モンスター、原因 (`m_idx`) も攻撃側モンスターとして正しく帰属
+  - **地震武器を装備したモンスターは対プレイヤー・対モンスターとも地震を起こす**
+- **B-2b6**: 属性ブランドのプレイヤー標的への適用 (属性適用)
+  - **背景**: モンスターの武器攻撃で標的がプレイヤーの場合、`mult_brand()` は
+    `target.get_monrace()` (プレイヤーは id 0 の空 monrace) を参照するため、火/冷等の
+    属性ブランド倍率が**プレイヤーの実際の免疫/弱点を無視**して常に全開 (2.5 倍) だった
+  - **修正**: `mult_brand()` にプレイヤー標的分岐を追加。プレイヤーの
+    `has_immune_fire()` / `has_vuln_fire()` 等を参照し、**免疫でブランド無効・弱点で 5 倍・
+    それ以外は 2.5 倍**とする。この属性ブランド倍率モデルは monster 標的でも
+    「免疫 (または RESIST_ALL) のみ無効・部分耐性は素通し」であり、プレイヤー標的も
+    **完全対称** (= PC の打撃処理と同じ倍率算出)
+  - 実害があるのは属性免疫/弱点を持つプレイヤーのみ (部分耐性・通常は従来通り 2.5 倍)。
+    毒ブランドはプレイヤー用の免疫/弱点クエリが無いため通常扱い
+  - `calc_attack_damage_with_slay()` / `mult_brand()` / `calc_weapon_melee_damage()` の
+    `target` を `const CreatureEntity &` → `CreatureEntity &` に変更 (プレイヤーの
+    免疫/弱点仮想メソッドが非 const のため)。全既存呼出は非 const 実体を渡すため影響なし
+  - **未対応 (別トラック候補)**: `mult_slaying()` のプレイヤー種族対応 (スレイ・アンデッド武器を
+    アンデッド種族プレイヤーへ等) は「属性」ではなく「スレイ」であり本弾の対象外。
+    属性ダメージを物理ではなく属性型として被ダメージ経路へ適用する方式 (部分耐性も反映) は、
+    そもそも PC のブランドが倍率モデル (部分耐性は素通し) のため PC 挙動と乖離する。よって不採用
+- **B-2b7**: スレイのプレイヤー種族対応 (B-2b6 の対称仕上げ)
+  - **背景**: B-2b6 の属性ブランドと同様、`mult_slaying()` もプレイヤー標的では空 monrace の
+    kind_flags を見るため、スレイ武器 (スレイ・アンデッド等) がプレイヤーの種族性質を無視していた
+  - **修正**: `mult_slaying()` にプレイヤー標的分岐を追加。ヘルパ
+    `player_counts_as_kind(player, MonsterKindType)` で、モンスターの kind_flags 相当を
+    プレイヤーの種族/生死種別/性別/アライメントから判定:
+    - UNDEAD/DEMON: `CreatureRace::life()` (`PlayerRaceLifeType`、ミミック変身を反映)
+    - ORC/TROLL/GIANT/HUMAN: `CreatureRace::equals(PlayerRaceType::…)`、DRAGON: `DRACONIAN`
+    - MALE/FEMALE: `get_psex()`、EVIL/GOOD: `alignment` の善悪境界 (>10 / <-10、表記ラベルと一致)
+    - ANIMAL: 対応するプレイヤー種族が無いため常に非該当
+  - プレイヤーには思い出フラグ (`r_kind_flags`) が無いため記録はしない
+  - `mult_slaying()` の `target` も `CreatureEntity &` に変更 (`CreatureRace` 構築が非 const 参照要求)
+  - **スレイ武器を装備したモンスターは、対応する種族/性別/アライメントのプレイヤーへ
+    スレイ倍率を乗せる** (例: スレイ・ヒューマン武器 → 人間プレイヤー、スレイ・アンデッド → 屍鬼系種族)
+- **B-2b8**: カオス武器 (TR_CHAOTIC) の追加効果の同化
+  - 新規 TU `src/combat/monster-chaos-weapon.{h,cpp}` に
+    `apply_monster_weapon_chaos_effect()` を追加。プレイヤーの `select_chaotic_effect()` と
+    **同一確率**でカオス効果を抽選し (TR_CHAOTIC 保有かつ 1/2 で発動、以降 吸血 3/5 →
+    地震 1/250 → 混乱 9/10 → テレポート/変身)、対プレイヤー・対モンスターそれぞれに適した
+    既存プリミティブへ振り分ける:
+    - **吸血 (CE_VAMPIRIC)**: `drain_life_to_attacker()` (slaying から抽出。TR_VAMPIRIC の
+      有無に依らず発火)。攻撃側 HP バー再描画
+    - **地震 (CE_QUAKE)**: 戻り値 true で B-2b5 の `do_quake` 予約に集約 (全打撃終了後に発火)
+    - **混乱 (CE_CONFUSION)**: プレイヤーは `BadStatusSetter::mod_confusion()`、モンスターは
+      `set_monster_confused()`
+    - **テレポート (CE_TELE_AWAY)**: プレイヤーは `teleport_player_away()`、モンスターは
+      `teleport_away()`
+  - **意図的な保留 (変身 CE_POLYMORPH)**: `polymorph_monster()` は打撃ループ途中で対象を
+    delete/再生成し得て被害者ポインタ (`t_ptr`) を無効化する危険があるため本段では非適用
+    (何も起こさない)。プレイヤーへの変身プリミティブも存在しない。安全な発火点の整備を要する後続段とする
+  - 吸血処理の共通コアを `apply_weapon_vampiric_drain()` から `drain_life_to_attacker()` に
+    切り出し、TR_VAMPIRIC ゲート版とカオス版で共用
+  - **カオス武器を装備したモンスターは対プレイヤー・対モンスターとも吸血/地震/混乱/テレポートを
+    引き起こす** (変身は保留)
+- **B-2b9**: プレイヤーの UNIQUE 扱い + 毒針 (SV_POISON_NEEDLE) の即死同化
+  - **`CreatureEntity::is_unique()`** virtual を追加。モンスターは種族 UNIQUE フラグ、
+    **プレイヤーは常に true**。プレイヤーを唯一無二の固有存在として UNIQUE モンスターと同格に扱い、
+    即死・変身等の「UNIQUE には効かない」危険効果からプレイヤーを保護する。これにより
+    モンスターの武器由来の危険効果を導入してもプレイヤー側のバランスが崩れにくい
+  - **毒針の即死**: `poison_needle_blow_damage(weapon, target)` (`slaying.cpp`) を追加。
+    プレイヤーの `critical_attack()` の毒針処理と同じく `randint1(randint1(level/7)+5)==1` で
+    即死 (対象現在 HP+1)、失敗で 1 ダメージ。即死は **`target.is_unique()` (プレイヤー・UNIQUE
+    モンスター) と NO_INSTANTLY_DEATH 耐性を除外**。両経路 (monster-attack-player /
+    monster-attack-monster) の武器ブロック末尾で通常ダメージを上書き
+  - **毒針を装備したモンスターは非 UNIQUE モンスターを確率で即死させるが、プレイヤーには
+    即死せず 1 ダメージに留まる** (is_unique 保護)
+- **B-2b10**: カオス武器の変身 (CE_POLYMORPH) の有効化 (B-2b8 の保留解除)
+  - `apply_monster_weapon_chaos_effect()` の戻り値を `bool`→`enum ChaosWeaponDeferred`
+    (NONE / EARTHQUAKE / POLYMORPH_TARGET) に変更。混乱・テレポート・吸血は即時、地震・変身は
+    遅延実行に分類
+  - **変身の安全化**: `polymorph_monster()` は対象を delete/再生成し `t_ptr` を無効化するため、
+    `mam_type::do_polymorph` に予約し、`monst_attack_monst()` の**全打撃終了後**に一度だけ
+    (対象が生存していれば) 実行。除外条件はプレイヤーの `attack_polymorph()` と同一
+    (`is_unique()` = プレイヤー・UNIQUE モンスター / QUESTOR / カオス耐性、加えて
+    `randint1(90) > level` 抽選)
+  - **プレイヤーは is_unique により変身対象外**。対プレイヤー経路 (monster-attack-player) は
+    POLYMORPH_TARGET を返さないため do_polymorph を持たない (EARTHQUAKE のみ処理)
+  - **カオス武器を装備したモンスターは非 UNIQUE モンスターを変身させ得るが、プレイヤーは
+    変身しない** (is_unique 保護)
+- **B-2b11**: 魔術ブランド (TR_BRAND_MAGIC) の追加効果の同化
+  - 新規 TU `src/combat/monster-magical-brand.{h,cpp}` に
+    `roll_monster_magical_brand_effect()` / `monster_magical_brand_extra_dice()` /
+    `apply_monster_magical_brand_status()` を追加。プレイヤーの `select_magical_brand_effect()` と
+    **同一確率**で効果を抽選 (1/5 STUN → 1/5 SCARE → 1/10 DISPELL → 1/16 PROBE → EXTRA):
+    - **EXTRA (追加ダイス)**: `calc_weapon_melee_damage()` に `extra_damage_dice` 引数を追加し、
+      EXTRA=+1 / STUN・SCARE・DISPELL・PROBE=+2 ダイスを**基本ロールに含めて**スレイ/会心倍率を通す
+      (プレイヤーの `magical_brand_extra_dice` と同じく全効果で追加ダイスが乗る)
+    - **STUN (朦朧)**: プレイヤーは `BadStatusSetter::mod_stun()`、モンスターは NO_STUN・レベル抵抗を
+      経て `set_monster_stunned()`
+    - **SCARE (恐怖)**: プレイヤーは `BadStatusSetter::mod_fear()`、モンスターは NO_FEAR・レベル抵抗を
+      経て `set_monster_monfear()`
+    - **DISPELL (魔力吸収)**: 攻撃能力を持つモンスター標的のみ、`dispel_monster_status()` で強化解除し
+      攻撃側モンスターが `Dice::roll(dd,8)` の MP を回復 (プレイヤーの `attack_dispel` と同式)
+  - **意図的な非適用**: **PROBE** はプレイヤーへの情報提示効果でモンスター攻撃者には無意味なため非適用。
+    **プレイヤー標的への DISPELL** はプレイヤーバフ解呪の単純プリミティブが無いため非適用 (追加ダイス・
+    朦朧・恐怖はプレイヤーにも適用)
+  - **魔術ブランド武器を装備したモンスターは対プレイヤー・対モンスターとも追加ダメージ + 朦朧/恐怖を
+    与え、対モンスターでは魔力吸収も行う**
 - **B-2c**: 近接攻撃の命中ボーナス (11058a278)
   - `to_h` を `check_hit_from_monster_to_player` の power に加算
 - **B-4**: look 表示で装備品/パック品を区別 (145f1fb56)
@@ -3032,7 +3178,7 @@ JSON で明示付与**する形で導入する。これにより:
 | C0 | 成長状態の savefile 完全永続化 (`hp_table`) | ほぼ完了 | 小 | 小 | バージョン bump 要否 |
 | C1 | 種族・職業の顕在化（`prace`/`pclass` 付与） | ✅ cache 有 | 中 | 高 | ✅ 1(付与)/2(基本5)/3(二次7)/4(恐怖)/5(自由行動)/6(光闇)/7(複合攻撃) 完了 |
 | C2 | 能力成長の拡張（stat / 熟練度） | ✅ 成長機構 | 中 | 中 | ✅ stat成長/熟練度=近接命中/STR→近接ダメージ/STR・DEX→命中/DEX→AC/WIS→セーヴ(全opt-in `applies_stat_combat_bonus`) 完了 |
-| C3 | ESP のモンスター付与 | 🔴 新規 AI 要 | 中〜大 | 中 | ESP をモンスター AI にどう効かせるか（新規設計） |
+| C3 | ESP のモンスター付与 | 🔴 新規 AI 要 | 中〜大 | 中 | ✅ 1(超隠密無視)/2(睡眠時の壁越し・長距離覚醒) 完了。種族別 ESP は要設計判断 |
 | C4 | MP 消費詠唱 | 🟡 pool 有 | 中 | 中 | ✅ 完了（opt-in・レベル比例コスト） |
 | C5 | 突然変異のモンスター運用 | 🟡 処理汎用 | 中 | 中 | ✅ 完了（3段: 付与→専用処理→発火） |
 | C6 | 魔法領域詠唱のモンスター運用 | 🔴 別系統 | 大 | 中〜高 | ✅ 完了（案A: realm→ability・opt-in） |
@@ -3393,8 +3539,48 @@ one-monster-placer 等）がプレイヤーを渡すことを確認済。**モ�
 共通ヘルパ `race_grants_tr_flag(TR_TELEPATHY)`。**C トラックで初めて AI 挙動に触れた反映**
 （効果は超隠密無視に限定＝低リスク）。フルビルド (BUILD_EXIT=0) / validate_json 8/8 で検証済。
 
-**残（第2弾以降・大）:** 睡眠中モンスターの ESP による覚醒、種族別 ESP（esp_evil 等）で
-プレイヤー種別を感知、壁越し索敵距離等。いずれも新規 AI ＋バランス判断を要する大物。
+### ✅ 第2弾 完了（睡眠中モンスターの ESP 覚醒＝壁越し・長距離感知）
+
+**対象:** `process_monsters_timed_effect_aux()`（`monster/monster-status.cpp`）の
+`SLEEP_OR_PARALYSIS` 分岐にある「覚醒判定に入るか」のゲート。着手前は 2 条件のみ:
+
+```cpp
+if (cdis < MAX_MONSTER_SENSING) {          // 100
+    if (cdis <= aaf) { ... }                // 種族の索敵半径 (視線不要)
+    else if ((cdis <= MAX_PLAYER_SIGHT) && has_los_at(...)) { ... }  // 20 かつ視線あり
+}
+```
+
+**実装:** テレパシー持ちは相手の「心」を直接感知するため、**種族の索敵半径 (`aaf`) や
+視線の有無によらず `MAX_MONSTER_SENSING`(=100) 内なら覚醒判定に入る**ようにした
+（先頭に条件を 1 つ足す純増分。既存 2 条件は順序・内容とも不変）。
+
+- 実データの `aaf` は中央値 20（最頻値 20 が 811 体）なので、**中央的なモンスターで
+  索敵半径が 5 倍**に広がり、かつ視線条件（20 グリッド）を超えて壁越しに効く。
+- ゲート通過後の「気付き」判定 `(notice^3) > csleep_noise` と覚醒量 `d` の計算は
+  **一切変更していない**。テレパシーは「感知範囲」だけを広げ、隠密（`csleep_noise`）の
+  効果は従来どおり残る（覚醒が即時にならない保守的スコープ）。
+
+**述語の集約:** `CreatureEntity::has_telepathic_awareness()` を新設し、
+付与種族由来 (`has_race_granted_telepathy()`、C3 第1弾) と ESP 突然変異 (C5) の
+論理和を 1 箇所に集約。第1弾で実装した `process_stealth()` の同一の二項判定も
+この述語に置換（DRY 化）。monrace ネイティブの ESP 相当フラグは**含めない**
+（含めると既存モンスターの AI 挙動が変わるため）。装備由来のプレイヤーテレパシー
+(`has_telepathy()`) とも別物。
+
+**既定バランス不変の根拠（データ実測）:** `applies_player_race_telepathy` の既定は
+`false` で、**実データ `MonraceDefinitions.jsonc` で指定している monrace は 0 件**。
+`"mutations"` キーを持つ monrace も**0 件**。よって全既存モンスターで
+`has_telepathic_awareness()` は常に `false` となり、覚醒挙動は完全に不変。
+
+**検証:** フルビルド（g++ -O3 -Werror -Wall -Wextra）/ clang-format-18 済。
+あわせて第1弾の置換で不要になった `mutation/mutation-flag-types.h` の include を
+`monster-processor.cpp` から削除。
+
+**残（第3弾以降・大・要メンテナ判断）:** 種族別 ESP（`esp_evil` / `esp_undead` 等）で
+プレイヤーの種別を選択的に感知する仕組み。プレイヤー側の「種別」をどう定義して
+モンスターの ESP 種別と突き合わせるかという**新規のゲーム設計判断**を要するため、
+本ロードマップの範囲では扱わない。
 
 ---
 
@@ -3457,7 +3643,67 @@ per-turn 変異処理ループの新設（性能・正当性）、(b) 副作用�
   ・`teleport_away` 等**モンスター安全なプリミティブ**で適用。`BadStatusSetter`・
   UI プロンプト・脱糞等プレイヤー専用副作用や、モンスターに無意味な変異は扱わない。
   メッセージはモンスター視認時のみ。
-- **C5-3（発火）**: `process_world()` のプレイヤー変異処理直後に、変異持ちモンスターを
+  - **C5-2b（curated セット拡充）**: 純粋にモンスター安全なプリミティブで完結する
+    能動変異 2 種を追加。**INVULN**（`!has_anti_magic()` かつ `one_in_(5000)` で
+    `set_monster_invulner()` により一時無敵化。視認時メッセージ）/ **SP_TO_HP**
+    （`one_in_(2000)` で傷がある場合、`get_current_mp()` を上限に `heal_hp()` で
+    HP を回復し `sub_current_mp()` で MP を消費。HP 変化は `HealthBarTracker` で
+    追跡対象時のみ再描画。プレイヤー版同様メッセージ無し）。いずれも死亡経路や
+    プレイヤー専用副作用を伴わない純粋自己効果のため安全。プレイヤー版
+    (`take_hit` を用いる `HP_TO_SP` 等) はモンスター死亡経路を要するため据え置き。
+  - **C5-3（発火）**: `process_world()` のプレイヤー変異処理直後に、変異持ちモンスターを
+    走査して `process_monster_mutation()` を呼ぶ。`process_world` 全体が
+    `TURNS_PER_TICK`(10 ゲームターン)でゲートされるため**プレイヤーと同一周期**で、
+    発動確率(`one_in_(3000)` 等)がそのまま整合。大多数のモンスターは `none()` 即スキップ。
+    HP 変化を伴う能動変異（SP_TO_HP 等）は追跡対象時のみ `HealthBarTracker` で再描画し、
+    メッセージはモンスター視認時のみ。**プレイヤー版 `HP_TO_SP`（`take_hit` で死亡し得る）は
+    モンスターの死亡経路（ドロップ・撃破クレジット等）を避ける必要があるため引き続き据え置きで、
+    モンスターには発火しない**（C5-2b と同方針。将来モンスターに導入する際は現在 HP を 1 残す
+    等の非致死変換ルールが前提となる）。
+  - **C5-2c（受動変異の反映）**: 常時効果の受動変異を、per-turn 処理ではなく
+    既存のクエリ仮想へ OR-in する形で反映（C1 の種族由来フラグ反映と同じ手法）。
+    **REGEN**（`has_regen_flag()` のモンスター分岐へ `has_mutation(REGEN)` を OR-in →
+    自然回復 2 倍化。C1第10弾の `has_race_granted_regeneration()` と同経路）/ **ESP**
+    （`process_stealth()` の `has_race_granted_telepathy()` 判定へ `has_mutation(ESP)` を
+    OR-in → 忍者の超隠密を無視。C3第1弾と同経路）を追加。**FEARLESS** は
+    `has_resist_fear()` 仮想が呼ぶ自由関数 `::has_resist_fear()` がクリーチャー共通で
+    `FEARLESS` 変異を参照するため**追加配線なしで既に反映済み**と確認（同様に **VULN_ELEM**
+    元素弱点も `has_vuln_*()` が自由関数経由で参照するため反映済み）。**MOTION**（正確で
+    力強い動作＝`TR_FREE_ACT`）は C1第5弾で `TR_FREE_ACT` を配線済みの
+    `effect_monster_old_sleep` / `effect_monster_stasis` の `has_resistance` 集約へ
+    `has_mutation(MOTION)` を OR-in し、魔法睡眠・拘束を無効化するよう追加。さらに
+    **AC 修正の皮膚系変異**（**WART_SKIN** +5 / **SCALES** +10 / **IRON_SKIN** +25）を
+    `get_ac()` のモンスター分岐へ、プレイヤー版 `calc_to_ac()` と同じ加算値で反映
+    （C2第3弾の DEX→AC と同じ get_ac() 分岐）。さらに **加速系変異**（**XTRA_LEGS** +3 /
+    **SHORT_LEG** -3 / **XTRA_FAT** -2 / **WEAK_LOWER_BODY** -2）を `place_monster_one()` の
+    生成時速度設定（C1第11弾の種族加速の直後、`assign_fixed_mutations()` 後）へ
+    プレイヤー版と同じ加減速値で反映。さらに **魔法防御 MAGIC_RES** を
+    `get_save_mutation_bonus()`（プレイヤー版 skill_sav 加算 `15 + level/5` と同値）で
+    レベル基準セーヴの実効レベルへ加算。C2第3弾の `get_save_stat_bonus()`（WIS）と同じ
+    3 サイト（`spells-diceroll` の魅了/服従・状態異常、`effect-monster-psi`、
+    `effect-monster-util::monster_saves_status_by_level`）へ配線し、C2 の
+    `applies_stat_combat_bonus` ゲートとは独立に MAGIC_RES 保有のみで発火する。
+    いずれも JSON `"mutations"` opt-in（既定は付与個体ゼロ）でバランス不変。
+  - **C5-2d（能力値修正変異）**: `place_monster_one()` の `assign_fixed_mutations()` 直後で、
+    プレイヤー版の表示値を内部 ×10 単位（reader が `modifier * 10` で格納する C1
+    `stat_modifiers` と同一スケール）に換算し、同じ機構で `stat_max/cur/max_max/use` へ加算。
+    16 エントリの表駆動（**HYPER_STR** STR+4 / **PUNY** STR-4 / **WEAK_LOWER_BODY** STR+2 /
+    **HYPER_INT** INT+4・WIS+4 / **MORONIC** INT-4・WIS-4 / **RESILIENT** CON+4 /
+    **XTRA_FAT** CON+2 / **ALBINO** CON-4 / **FLESH_ROT** CON-2・CHR-1 / **SILLY_VOI** CHR-4 /
+    **BLANK_FAC** CHR-1 / **LIMBER** DEX+3 / **ARTHRITIS** DEX-3）。適用位置が所持金
+    (`get_money_for_creature`)・最大MP (`calc_creature_mana`)・最大HP (`calc_max_hp_con_bonus`)
+    算出の前段のため、CHR→所持金・INT→最大MP・CON→最大HP に一貫して流れ、STR/DEX/WIS は
+    C2 opt-in (`applies_stat_combat_bonus`) の戦闘反映で用いられる。スケール対応・順序依存の
+    設計課題を解決して反映。いずれも JSON `"mutations"` opt-in（既定は付与個体ゼロ）で
+    バランス不変。
+  - **C5-2e（元素オーラ変異）**: **FIRE_BODY**（火オーラ）/ **ELEC_TOUC**（電オーラ）を、
+    native `aura_flags` を読む 3 経路すべてへ「native オーラ ∨ 対応変異」で OR-in:
+    プレイヤー被弾（`player-damage.cpp::process_aura_damage`）・モンスター対モンスター
+    （`monster-attack-monster.cpp` の `aura_fire/elec_by_melee`）・騎乗中の騎手被弾
+    （`hp-mp-processor.cpp`）。思い出フラグ (`r_aura_flags`) は **native オーラ時のみ記録**
+    （変異由来は monrace 固有でないため非記録、C1 の native ガードと同方針）。COLD オーラに
+    対応する突然変異は無いため対象外。ロードマップが最後に残していた「別系統
+    `MonsterAuraType`・逆方向・多攻撃サイト」の課題を、各サイトへ最小 OR-in する形で解決。
   走査して `process_monster_mutation()` を呼ぶ。`process_world` 全体が
   `TURNS_PER_TICK`(10 ゲームターン)でゲートされるため**プレイヤーと同一周期**で、
   発動確率(`one_in_(3000)` 等)がそのまま整合。大多数のモンスターは `none()` 即スキップ。
@@ -3466,8 +3712,17 @@ per-turn 変異処理ループの新設（性能・正当性）、(b) 副作用�
 **工数:** 中（3 コミット）。**価値:** 中（opt-in 個体に確率的な自己効果を付与）。
 フルビルド (g++ -O3 -Werror) / clang-format-18 / validate_json.py で検証済。
 
-**将来拡張余地:** 対応変異の追加（受動変異の stat/耐性反映等）、モンスター視点での
-より豊かなメッセージ。現状は能動 4 種の最小 curated セット。
+**将来拡張余地:** 受動変異の元素オーラ反映（monster 側は別系統 `MonsterAuraType` かつ
+被攻撃反撃サブシステムが player と逆方向）・能力値修正、モンスター視点でのより豊かな
+メッセージ、`MonsterDamageProcessor` 経由で死亡し得る自己ダメージ変異の導入
+（現状の `HP_TO_SP` は非致死ガード付き）。現状は **能動 7 種**（BERS_RAGE / COWARDICE /
+RTELEPORT / SPEED_FLUX / INVULN / SP_TO_HP / HP_TO_SP）の curated セット＋
+**受動 26 種**（REGEN / ESP / FEARLESS / VULN_ELEM / MOTION / FIRE_BODY / ELEC_TOUC /
+WART_SKIN / SCALES / IRON_SKIN / XTRA_LEGS / SHORT_LEG / XTRA_FAT / WEAK_LOWER_BODY /
+MAGIC_RES ＋ 能力値修正 13 種 HYPER_STR / PUNY / HYPER_INT / MORONIC / RESILIENT /
+ALBINO / FLESH_ROT / SILLY_VOI / BLANK_FAC / LIMBER / ARTHRITIS 他）を反映済み
+（FEARLESS / VULN_ELEM は自由関数経由で追加配線なし）。**C5 の主要な変異反映は概ね完了。**
+残るのは効果がモンスターに意味を持ちにくい細かな変異（XTRA_EYES 探索・INFRAVIS 等）のみ。
 
 ---
 
@@ -3525,7 +3780,105 @@ JSON `"realm_abilities": "CHAOS"` を指定した個体は、詠唱時（`msa_ty
   monrace に `freq_spell > 0` が要る（メンテナのデータ設定）。
 - フルビルド (g++ -O3 -Werror) / clang-format-18 / validate_json.py で検証済。
 
-**将来拡張余地:** 写像表の精緻化、realm2 の併用、realm レベル依存の能力段階化。
+### ✅ 第2弾 完了（realm2 併用）
+
+**完了内容:** `MonraceDefinition::realm_abilities2`（`RealmType`、既定 `NONE`）を追加。
+`realm_abilities` と併用でき、`msa_type` 構築時に両 realm 由来の `MonsterAbilityType` を
+順に OR-in する（**二重詠唱者**＝プレイヤーの realm1/realm2 に相当）。
+
+- reader は共通ヘルパ `parse_realm_ability_token(json, RealmType&)` を新設し、
+  `set_mon_realm_abilities` / `set_mon_realm_abilities2` の両者が共用（重複排除）。
+  schema に `realm_abilities2` を登録。
+- 写像は既存の `add_realm_granted_abilities()` を第2 realm にもそのまま適用するため、
+  10 realm 表をそのまま二領域で再利用（新規写像コードなし）。
+- **既定 `NONE` のため実データ・既定バランス不変。** フルビルド (g++ -O3 -Werror) /
+  clang-format-18 / validate_json.py で検証済。
+
+### ✅ 第3弾 完了（realm レベル依存の能力段階化）
+
+**完了内容:** `add_realm_granted_abilities()` を各 realm「基本能力 (常時)」＋「高位能力
+(モンスター実効レベル >= `REALM_ADVANCED_ABILITY_MIN_LEVEL`=20)」の 2 段階に再構成。
+低レベルの realm-caster 個体には過剰な高位能力 (ボール/ブレス/召喚/高位 cause 等) を
+与えないようにした。
+
+- **両段の和集合は従来の全集合と一致**するため、閾値以上の個体は従来と完全同一
+  （strict な安全リファイン: 高位能力が低レベル個体から外れるのみ）。
+- 関数に `level` 引数を追加し、`msa_type` 構築時の `m_ptr->get_level()` を渡す
+  （realm_abilities / realm_abilities2 の両者に適用）。閾値は調整用 constexpr。
+- **realm 由来能力は opt-in 個体のみに付くため既定バランス不変。** フルビルド
+  (g++ -O3 -Werror) / clang-format-18 で検証済。
+
+### ✅ 第4弾 完了（写像表の精緻化）
+
+**完了内容:** `add_realm_granted_abilities()` の realm→ability 写像を、各 realm の実際の
+呪文性格に沿って拡充・thematic 化した。豊富な `MonsterAbilityType` 語彙を活用しつつ、
+基本/高位のティア規律（ボルト・操作・自己強化＝基本、ボール・ブレス・召喚・高位 cause・
+無敵＝高位）を維持。
+
+- 主な精緻化: NATURE=元素ボルト三種→上位で元素・毒ボール / CHAOS=マジックミサイル起点 /
+  DEATH=cause 階梯＋地獄＋魔力吸収→上位で死者復活 (S_UNDEAD) / TRUMP=転移＋多様な召喚
+  (S_MONSTERS/S_HOUND) / SORCERY=減速/混乱/盲目/恐慌＋上位で麻痺・両転移 /
+  CRAFT=加速/回復→上位で無敵 (INVULNER) / CRUSADE=光のボルト・恐慌→上位でスターバースト /
+  ARCANE=汎用弱め (ミサイル＋転移→上位で魔力の矢/嵐) / LIFE=回復＋cause 階梯 /
+  DAEMON=火炎ボルト→上位で火炎球・ブレス・地獄球・悪魔召喚。
+- **realm 由来能力は opt-in 個体のみに付くため既定バランス不変。** バランス調整は
+  引き続きこの表で行う。フルビルド (g++ -O3 -Werror) / clang-format-18 で検証済。
+
+**将来拡張余地:** MUSIC/HISSATSU/HEX の技術領域マッピング（サステイン/技系のため
+要設計・現状は意図的に未マッピング）、詠唱頻度/コストの realm 別調整。
+
+---
+
+## 提案 C6-R: 魔導書学習ベースへの組み直し（NPC が PC 同様に魔導書から学習して使う）
+
+### 方針転換の背景
+
+C6（realm まるごと付与）は「realm を指定すると its ability セットが付く」レンズ方式
+だった。メンテナ要望により、**「NPC がプレイヤーと同様、所定の魔導書から呪文を学習し、
+学んだ呪文を使う」** 方針へ組み直す。学習はプレイヤーと同じ `spell_learned` データ構造を
+用い、将来のプレイヤー経路詠唱（案B）でもそのまま流用できる基盤とする。
+
+### 実コード検証（案B の障壁の再確認）
+
+- `exe_spell(creature, realm, spell, CAST)` → `do_*_spell()` の CAST 経路は
+  `get_aim_dir` / `get_direction` / `get_item` / メニュー等 **UI プロンプトを直呼び**
+  する（realm ファイル全体で約 **115 箇所**）。→ 完全な PC 経路詠唱をモンスターに
+  行わせるには「ヘッドレス seam（対象を事前注入して UI プロンプトを回避）」の整備が要る。
+- ただし `get_aim_dir` は `command_dir` / `use_old_target` + 最終ターゲットが設定済みなら
+  プロンプトを出さずに方向を返す repeat/auto-target 機構を持つ → 将来のヘッドレス化の
+  seam として利用可能（後続段）。
+
+### ✅ 第1段 完了（学習データ基盤 ＋ 学習駆動の詠唱）
+
+- **データモデル:** `MonraceDefinition::spellbook_realm`（`RealmType`）＋
+  `spellbook_mask`（`uint8_t` ビットマスク、bit b=第b書 0..3）。JSON は
+  `"spellbook_realm": "CHAOS", "spellbook_indices": [0,1]`。reader は
+  `parse_realm_ability_token`（realm）＋新設 `set_mon_spellbook_indices`（配列→mask）。
+  schema 登録済。
+- **学習（生成時）:** `place_monster_one()` が `CreatureEntity::learn_realm_spellbooks(realm, mask)`
+  を呼び、`realm1` 設定＋指定書（各8呪文 `[b*8, b*8+8)`）を `spell_learned` /
+  `spell_worked` に登録し `spell_exp` を `SPELL_EXP_SKILLED`(1200) 相当にする。
+  **プレイヤーの学習と同一フィールドを埋める。**
+- **詠唱（学習駆動）:** `add_realm_granted_abilities()` を `add_realm_base_abilities()` /
+  `add_realm_advanced_abilities()` に分解し、新設 `add_learned_spellbook_abilities()` が
+  学習済み呪文のティア（第1〜2書=spell_id 0..15→基本 / 第3〜4書=16..31→高位）に応じて
+  `MonsterAbilityType` を OR-in。詠唱自体は既存 mspell 経路をそのまま利用。C6 の
+  realm_abilities（まるごと）とは独立経路で併用可能。
+- **既定なしのため実データ・既定バランス不変。** フルビルド (g++ -O3 -Werror) /
+  clang-format-18 / validate_json.py(9/9) で検証済。
+
+### 第2段以降（残・案B へ向けて）
+
+- **ヘッドレス詠唱 seam:** `exe_spell` の CAST を、対象を事前注入して UI プロンプトを
+  回避する形でモンスターから呼べるようにする（`get_aim_dir` の auto-target 機構を
+  スコープ付きで利用する RAII ガード等）。まず「方向系のみを使う攻撃/操作呪文」の
+  ホワイトリストから。
+- **castable 判定:** realm 呪文ごとに「モンスターがヘッドレスで安全に撃てるか」
+  （player-only 効果＝探知/地図/帰還等を除外）を表で管理し、学習済みかつ castable な
+  呪文を実際に `exe_spell` 経由で撃たせる。第1段の `spell_learned` をそのまま消費する。
+- **spell_exp の成長・詠唱失敗率:** 学習済み呪文の実運用（熟練度上昇・失敗率）を
+  プレイヤー式に寄せる。
+- **realm2 の学習:** 現状 `learn_realm_spellbooks` は realm1 のみ。二領域学習へ拡張。
 
 ---
 
@@ -3617,11 +3970,11 @@ A/B と違い挙動が変わるため、対象範囲と数値はメンテナ判�
 | 番号 | 提案 | 種別 | 工数 | 価値 | 状態 |
 |---|---|---|---|---|---|
 | D1 | セービングスロー述語 `does_save_against()` 統一 | 純粋refactor | 小 | 中 | ✅ 完了 |
-| D2 | 回復・状態治療関数の is_player ガード除去 + メッセージ seam | 同化中核 | 中〜大 | 高 | ✅ 完了（回復・治療9関数＋能力値回復） |
-| D3 | 統一クリーチャーテレポートプリミティブ | primitive | 中 | 中 | 計画 |
+| D2 | 回復・状態治療関数の is_player ガード除去 + メッセージ seam | 同化中核 | 中〜大 | 高 | ✅ 完了（回復・治療9関数＋能力値回復＋3人称 seam） |
+| D3 | 統一クリーチャーテレポートプリミティブ | primitive | 中 | 中 | ✅ 完了（薄いディスパッチャ＋apply_nexus 開放） |
 | D4 | 属性ダメージ分類器（immune/resist/vuln）の共通化 | primitive | 中 | 中 | ✅ 第1弾完了（monster側 immune/hurt 共通化） |
 | D5 | 小規模統合（charm/control セーヴ統合ほか） | 純粋refactor | 小 | 低〜中 | ✅ 完了（charm/control。他2件は精査の上見送り） |
-| D6 | spoiler/lore の PlayerType dummy 軽量化（※前提訂正） | 構造 | 小 | 低 | 計画（低優先・前提誤り訂正済） |
+| D6 | spoiler/lore の PlayerType dummy 軽量化 | 構造 | 小 | 低 | ⏭️ 見送り（前提が完全に消滅・付随する無駄のみ修正） |
 | D7 | モンスターの poison DoT（opt-in 機能） | 機能(C隣接) | 中 | 中 | ✅ 完了（poison、opt-in・既定OFF） |
 
 ---
@@ -3644,7 +3997,7 @@ effect-monster-charm / mspell-status / mspell-floor / effect-player-resist-hurt�
 
 ---
 
-## 提案 D2: 回復・状態治療関数の is_player ガード除去 + メッセージ seam（同化の中核） ✅ 第1弾完了
+## 提案 D2: 回復・状態治療関数の is_player ガード除去 + メッセージ seam（同化の中核） ✅ 第1〜3弾完了
 
 ### ✅ 第1弾 完了内容（メッセージ seam + 回復6関数）
 
@@ -3674,13 +4027,46 @@ effect-monster-charm / mspell-status / mspell-floor / effect-player-resist-hurt�
 - フルビルド (g++ -O3 -Werror) / clang-format-18 で検証済。**回復・状態治療系 9 関数
   ＋能力値回復がモンスターに安全に適用可能**になった（現状 monster 呼出は無く挙動不変）。
 
-### 第3弾以降（残）
+### ✅ 第3弾 完了内容（3 人称メッセージ seam）
 
-- `notify_self` を**モンスター視認時の 3 人称文**へ拡張（現状はモンスター無表示）。
+**2 引数オーバーロードの新設:** `CreatureEntity::notify_self(std::string_view message,
+const char *others_format)` を追加（`creature-entity.{h,cpp}`）。
+
+- **プレイヤー**: `msg_print(message)`（1 引数版と完全に同一 ＝ **挙動完全不変**）。
+- **モンスター**: `is_visible_on_map()` が真のときに限り、`monster_desc()` で得た名前を
+  `others_format`（`"%s^"` 書式）に埋めて `msg_format()` で表示。非視認・
+  `monster_profile` 無しでは無表示（`is_visible_on_map()` が profile 有無を先に見るため
+  安全）。
+
+**移行サイト（計 42）:** `bad-status-setter.cpp` 20 / `buff-setter.cpp` 17 /
+`spells-status.cpp`(`life_stream`) 1 / `hp-mp-processor.cpp`(`hp_player` の 4 段階回復文)
+4 ＝ 実質 42 サイト（通知呼出し単位）。3 人称文は既存のモンスター向け文言（`effect-monster-oldies.cpp` /
+`mspell-status.cpp` の `"%s^は混乱から立ち直った。"` / `"%s^は麻痺した！"` /
+`"%s^の動きが遅くなった。"` 等）に語調を合わせた。
+
+**ランク別メッセージの対応表を新設:** 朦朧・切り傷は文言がランク依存のため、
+`PlayerStun::get_stun_mes_others(PlayerStunRank)` /
+`PlayerCut::get_cut_mes_others(PlayerCutRank)`（既存の `get_stun_mes` /
+`get_cut_mes` と対になる static）を追加し、`process_stun_status` /
+`decrease_charisma` から渡す。
+
+**1 引数版のまま残置したサイト（3 人称が意味を持たないプレイヤー固有処理）:**
+青魔法の学習中断（`"学習が続けられない！"`）・構えの崩れ（`"構えがとけた。"` /
+`"型が崩れた。"` 計 4 箇所）・朦朧時の頭痛（`"割れるような頭痛がする。"`、能力値低下の
+内部処理）・オクレ兄さん化の掛け声（`"「オクレ兄さん！」"`）。これらは今後モンスターに
+対応概念が生まれた時点で個別に 3 人称化する。
+
+**検証:** フルビルド（g++ -O3 -Werror -Wall -Wextra）/ clang-format-18 済。
+プレイヤー経路のメッセージ・乱数消費は不変。
+
+### 第4弾以降（残）
+
 - setter 群の残るプレイヤー専用テール（stance / spell 停止 / redraw）は no-op で
   モンスター無害だが、必要なら virtual 化で整理。
-- これにより「モンスターの回復・状態治療」を実際に使う機能（C トラックの回復
-  モンスター等）への足場が完成する。
+- 上記の「1 引数版のまま残置したサイト」の 3 人称化（対応概念の実装後）。
+- これで「モンスターの回復・状態治療」を実際に使う機能（C トラックの回復
+  モンスター等）への足場は完成した。当該機能側は C トラック方針（JSON オプトイン）で
+  段階導入すること。
 
 ### 参考: 当初の設計メモ
 
@@ -3710,16 +4096,83 @@ seam を setter 群へ横展開、と段階化する。
 
 ---
 
-## 提案 D3: 統一クリーチャーテレポートプリミティブ
+## 提案 D3: 統一クリーチャーテレポートプリミティブ ✅ 完了
 
-**現状:** テレポート系は `teleport_player` / `teleport_player_to` / `teleport_player_aux`
-（プレイヤー）と `teleport_away`（モンスター、`CreatureEntity &, m_idx`）に分かれる。
-`apply_nexus`(:644) / `teleport_level`(spells-world.cpp:60) / 突然変異の RTELEPORT 等が
-プレイヤー版に依存し、モンスター運用時に別プリミティブへ切替が要る。
+**着手前の現状:** テレポート系は `teleport_player` / `teleport_player_to` /
+`teleport_player_aux`（プレイヤー）と `teleport_away` / `teleport_monster_to`
+（モンスター、`CreatureEntity &subject, m_idx`）に分かれる。`apply_nexus` /
+突然変異の RTELEPORT 等がプレイヤー版に依存し、モンスター運用時に別プリミティブへ
+切替が要る（実際 C5 のモンスター変異処理は同一分岐を `teleport_away` で二重に
+書いていた）。
 
-**提案:** 対象クリーチャーを受けて適切に移動する統一プリミティブ（内部で
-is_player 分岐または位置操作の共通化）。これにより apply_nexus / teleport_level の
-ガードを外せる。**工数:** 中。**価値:** 中。**リスク:** 中（移動は副作用が広い）。
+### 設計判断: アルゴリズム統合は行わず「薄いディスパッチャ」に留める
+
+実コード検証の結果、移動先選定アルゴリズムは**両者で本質的に異なる**:
+
+| | プレイヤー (`teleport_player_aux`) | モンスター (`teleport_away`) |
+|---|---|---|
+| 選定方式 | 距離内の候補を**全列挙**し、上位 50% 圏から**一様抽選** | `rand_spread` の**乱数散布**を成功まで最大 100 回リトライ |
+| 距離の扱い | 固定 `dis` 内 | 失敗のたび `dis` 倍増・`min` 半減 |
+| 移動処理 | `move_player_effect()`（罠・拾得・視界等の副作用込み） | グリッド付替え ＋ `update_monster` / `lite_spot` |
+
+これらを 1 本化すると**乱数消費列と移動先分布が変わる**ため、挙動保存を原則とする
+本ロードマップでは統合しない。よって**型で既存実装へ振り分ける薄いディスパッチャ**を
+新設する方針を採った。
+
+### ✅ 完了内容
+
+**新プリミティブ 2 種**（`spell-kind/spells-teleport.{h,cpp}`）:
+
+```cpp
+bool teleport_creature(CreatureEntity &target, POSITION dis, teleport_flags mode);
+void teleport_creature_to(CreatureEntity &target, const Pos2D &pos, teleport_flags mode);
+```
+
+- プレイヤーなら `teleport_player()` / `teleport_player_to()`、モンスターなら
+  `get_self_m_idx()` を引いて `teleport_away()` / `teleport_monster_to()` に委譲。
+  モンスター側の subject（視界更新・徳変動の基準）は常に
+  `PlayerType::get_instance()`（既存の全 call site と同じ規約）。
+- `teleport_monster_to()` の成功率 `power` は、常に成功するプレイヤー版と揃えるため
+  `100` 固定。
+- `m_idx` が引けない（座標が古い等）モンスターは `false` / no-op を返す。
+
+**`teleport_player()` の戻り値化:** `void` → `bool`（`teleport_player_aux()` の結果を
+そのまま伝播）。既存 62 call site は**いずれも戻り値を使っていない**ため無影響。
+
+**Phase 4 のダメージディスパッチャとの違い（削除された `apply_damage_to_creature()`
+の轍を踏まないこと）:** あちらは全 call site が被害者型を既に把握していたため未使用に
+なった。本提案は**実際に型が不定な call site が 2 つ存在する**ことを確認済みで、
+両方を移行している（下記）。
+
+**移行サイト:**
+
+1. `mutation/mutation-processor.cpp` の **RTELEPORT**: プレイヤー版
+   (`process_world_aux_mutation`) とモンスター版 (`process_monster_mutation`) が
+   同一条件・別プリミティブで二重に書かれていたものを、両方 `teleport_creature()`
+   に統一。モンスター版の `m_idx` は元々関数冒頭で `monster.get_self_m_idx()` から
+   得て `<= 0` なら早期 return しているため、ディスパッチャ内の再取得と**同値**（挙動不変）。
+2. `spell/spells-status.cpp` の **`apply_nexus()`**: 冒頭の
+   `if (!creature.is_player()) return;` を撤去。7 分岐のうち
+   - 1〜3（ランダムテレポート）→ `teleport_creature()`
+   - 4〜5（術者への引き寄せ）→ `teleport_creature_to(attacker.get_position())`
+   - 6（階層テレポート）→ `teleport_level()` の第 1 引数は**視点となるプレイヤー**、
+     第 2 引数が対象 m_idx（0 でプレイヤー自身）という契約なので、
+     `teleport_level(PlayerType::get_instance(), creature.is_player() ? 0 : creature.get_self_m_idx())`
+     とした。`teleport_level` は元々モンスター対象を扱える。
+   - 7（能力値シャッフル）→ `status_shuffle()` は D2 第2弾で開放済み
+   - 2 人称メッセージ 3 箇所は D2 第3弾の `notify_self` 3 人称 seam に載せ替え
+
+  呼出元は `effect-player-resist-hurt.cpp` の 1 箇所のみで常にプレイヤーを渡すため、
+  **既定挙動は完全不変**（enabling 変更）。
+
+**検証:** フルビルド（g++ -O3 -Werror -Wall -Wextra）/ clang-format-18 済。
+
+### 残（後続）
+
+- 因果混乱をモンスターに実際に浴びせる経路（`effect_monster_nexus` 相当）の追加は
+  バランス変更のため C トラック方針（JSON オプトイン）で別途扱う。
+- `teleport_player_away` / `dimension_door` 等の残プリミティブは対象が
+  プレイヤー固定の文脈でしか使われないため据え置き。
 
 ---
 
@@ -3809,17 +4262,54 @@ dark の 2 サイトを集約（native_resist 条件も維持、挙動不変）�
 
 ---
 
-## 提案 D6: spoiler/lore の PlayerType dummy 軽量化（前提訂正済・低優先）
+## 提案 D6: spoiler/lore の PlayerType dummy 軽量化 ⏭️ 見送り（前提が完全に消滅）
 
-**⚠️ 当初前提の訂正（実コード検証）:** 調査時「`CreatureEntity` はインスタンス化
-不可」としたが**誤り**。`CreatureEntity` に純粋仮想は無く（`= 0` は全てメンバ既定値）、
-モンスターは `std::vector<CreatureEntity> m_list` として**直接インスタンス化されている**
+**⚠️ 第1次訂正（既出）:** 調査時「`CreatureEntity` はインスタンス化不可」としたが
+**誤り**。`CreatureEntity` に純粋仮想は無く（`= 0` は全てメンバ既定値）、モンスターは
+`std::vector<CreatureEntity> m_list` として**直接インスタンス化されている**
 （＝ concrete class）。よって「インスタンス化可能化」という課題自体が存在しない。
 
-**残る小課題:** spoiler/lore が便宜上 `PlayerType dummy;`（重量オブジェクト）を作る
-2 箇所 (`display-lore.cpp:122` / `items-spoiler.cpp:167`)。原理的には軽量な
-`CreatureEntity` で置換可能だが、callee がアクセスするフィールドを満たす必要があり、
-価値は低い（wizard/spoiler の非ゲーム経路）。**低優先。**
+### ⚠️ 第2次訂正: 「軽量化」の前提も成立しない（本提案の結論）
+
+残る小課題は「spoiler/lore が便宜上 `PlayerType dummy;`（**重量オブジェクト**）を作る
+2 箇所を軽量な `CreatureEntity` に置換する」であった。実測により**この前提自体が
+誤りであることが判明**した。
+
+```text
+sizeof(PlayerType)     == 2224
+sizeof(CreatureEntity) == 2224   // 完全一致
+```
+
+`PlayerType` は `CreatureEntity` に対し**データメンバを 1 つも追加していない**
+（`player-type-definition.h`: 11 個の virtual override ＋ 2 個の static アクセサ
+のみの薄い殻）。コンストラクタも `PlayerType::PlayerType() = default;` で、
+構築コストの実体は基底 `CreatureEntity` の `std::map` / `std::vector` /
+`std::string` メンバであり**両者で同一**。
+
+したがって `PlayerType dummy;` → `CreatureEntity dummy;` の置換は:
+
+- **メモリ削減 0 バイト**・**構築コスト削減 0**
+- 一方で `is_player()` が `true` → `false` に**反転**し、callee の分岐挙動が変わる
+
+**＝ 得るものが無く、リスクだけがある。よって本提案は見送りとする。**
+E トラックの調査所見「`PlayerType` は既に薄い殻で大規模 hoist は残っていない」と
+同じ結論に、別経路から到達したことになる。
+
+### ✅ 付随して発見・修正した実際の無駄（loop-invariant な dummy 構築）
+
+型の話とは独立に、`wizard/items-spoiler.cpp` の `spoil_obj_desc()` が
+`PlayerType dummy;` を**内側ループの中**で構築していた（アイテム 1 個ごとに
+2224 バイト・`std::map`/`std::vector`/`std::string` メンバ込みで構築・破棄）。
+
+`describe_flavor(dummy, item, OD_NAME_ONLY | OD_STORE, ...)` は creature を
+**読み取るのみ**（`OD_NAME_ONLY` 指定時は `describe_named_item()` の直後に早期
+return し、そこで参照されるのは `creature.name` だけ）で一切変更しないため、
+**ループ外へ巻き上げても挙動は完全に不変**。1 箇所修正済み。
+
+`view/display-lore.cpp` の `output_monster_spoiler()` 側も同型
+（monrace ごとに約 2,300 回構築）だが、こちらは dummy が関数ローカルのため
+巻き上げには公開関数のシグネチャ変更が必要で、debug 専用スポイラー出力
+（既に行単位のファイル I/O を伴う経路）に対して churn が見合わない。**据え置き。**
 
 **別途の小改善（→ 提案 E2 で完了）:** `PlayerType::should_skip_natural_regen` /
 `apply_state_regen_modifier`（Samurai/Monk 構えの再生補正）の `const_cast<PlayerType&>`
@@ -3855,7 +4345,7 @@ BadStatusSetter は実質プレイヤー専用）。よって tick だけ足し�
 ## D トラック着手順の推奨
 
 **D1（完了）→ D5（小整理）→ D4（分類器）→ D2（同化中核）→ D3（テレポート）→
-D6（構造）→ D7（機能）**。純粋 refactor で安全な D1/D5 を先に、"同化"の本丸で
+D6（構造・見送り）→ D7（機能）**。純粋 refactor で安全な D1/D5 を先に、"同化"の本丸で
 価値の高い D2 は seam 設計後に段階着手、機能寄りの D7 は C トラック方針
 （opt-in・バランス確認）で扱う。
 
@@ -3951,15 +4441,15 @@ virtual 化・処理の同化・機能付与** がほぼ出揃った。E トラ�
 末尾に **byte 一致**の共通後処理を重複して持っていた:
 
 ```cpp
-auto &rfu = RedrawingFlagsUpdater::get_instance();
-rfu.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
+auto &dur = DeferredUpdateRequests::get_instance();
+dur.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
 if (!notice) {
     return false;
 }
 if (disturb_state || Travel::get_instance().is_ongoing()) {
     disturb(creature, false, true);
 }
-rfu.set_flag(StatusRecalculatingFlag::BONUS);
+dur.set_flag(StatusRecalculatingFlag::BONUS);
 handle_stuff(creature);
 return true;
 ```
@@ -3975,7 +4465,7 @@ return true;
 
 **対象外（byte 不一致のため据え置き）:** `MainWindowRedrawingFlag::BASIC` を使う
 `shape-changer.cpp`、`StatusRecalculatingFlag::MONSTER_STATUSES` を `set_flags` で
-複数指定する `sight-setter.cpp`、および `rfu` を末尾以前で宣言・別フラグ設定する
+複数指定する `sight-setter.cpp`、および `dur` を末尾以前で宣言・別フラグ設定する
 一部関数（recalc フラグや再描画対象が異なるため共通化すると挙動が変わる）。
 
 Makefile.am / VisualStudio プロジェクト（`.vcxproj` / `.filters`）に新ファイルを登録。

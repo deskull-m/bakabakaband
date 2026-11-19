@@ -1,29 +1,39 @@
 #include "core/stuff-handler.h"
 #include "core/window-redrawer.h"
+#include "inventory/inventory-object.h"
 #include "player/player-status.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/floor/floor-info.h"
-#include "system/redrawing-flags-updater.h"
 #include "tracking/health-bar-tracker.h"
 #include "tracking/lore-tracker.h"
 
 /*!
  * @brief 全更新処理をチェックして処理していく
+ * @details 所持品の自動破壊・結合・並べ替えは行わない (handle_stuff_with_inventory_arrangement() で行う)。
  */
 void handle_stuff(CreatureEntity &creature)
 {
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    if (rfu.any_stats()) {
+    auto &dur = DeferredUpdateRequests::get_instance();
+    if (dur.any_stats()) {
         update_creature(creature);
     }
 
-    if (rfu.any_main()) {
+    if (dur.any_main()) {
         redraw_stuff(creature);
     }
 
-    if (rfu.any_sub()) {
-        window_stuff(creature);
-    }
+    window_stuff_if_needed(creature);
+}
+
+/*!
+ * @brief 所持品の自動破壊・結合・並べ替えを行ってから、全更新処理を行う
+ * @details メインループや店のループなど、コマンドの区切りにあたる位置で呼ぶ (update_inventory_arrangement() を参照)。
+ */
+void handle_stuff_with_inventory_arrangement(CreatureEntity &creature)
+{
+    update_inventory_arrangement(creature);
+    handle_stuff(creature);
 }
 
 /*
@@ -33,7 +43,7 @@ void monster_race_track(CreatureEntity &creature, MonraceId r_idx)
 {
     (void)creature;
     LoreTracker::get_instance().set_trackee(r_idx);
-    RedrawingFlagsUpdater::get_instance().set_flag(SubWindowRedrawingFlag::MONSTER_LORE);
+    DeferredUpdateRequests::get_instance().set_flag(SubWindowRedrawingFlag::MONSTER_LORE);
 }
 
 /*
@@ -42,7 +52,7 @@ void monster_race_track(CreatureEntity &creature, MonraceId r_idx)
 void object_kind_track(CreatureEntity &creature, short bi_id)
 {
     creature.set_tracking_bi_id(bi_id);
-    RedrawingFlagsUpdater::get_instance().set_flag(SubWindowRedrawingFlag::ITEM_KNOWLEDGE);
+    DeferredUpdateRequests::get_instance().set_flag(SubWindowRedrawingFlag::ITEM_KNOWLEDGE);
 }
 
 /*
@@ -60,33 +70,4 @@ void health_track(CreatureEntity &creature, short m_idx)
     }
 
     HealthBarTracker::get_instance().set_trackee(m_idx);
-}
-
-bool update_player()
-{
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    static constexpr auto flags_srf = {
-        StatusRecalculatingFlag::COMBINATION,
-        StatusRecalculatingFlag::REORDER,
-    };
-    rfu.set_flags(flags_srf);
-    rfu.set_flag(SubWindowRedrawingFlag::INVENTORY);
-    return true;
-}
-
-bool redraw_player(CreatureEntity &creature)
-{
-    if (creature.get_current_mp() > creature.get_max_mp()) {
-        creature.set_current_mp(creature.get_max_mp());
-    }
-
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.set_flag(MainWindowRedrawingFlag::MP);
-    static constexpr auto flags_srf = {
-        StatusRecalculatingFlag::COMBINATION,
-        StatusRecalculatingFlag::REORDER,
-    };
-    rfu.set_flags(flags_srf);
-    rfu.set_flag(SubWindowRedrawingFlag::INVENTORY);
-    return true;
 }

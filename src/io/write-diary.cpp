@@ -6,7 +6,6 @@
 
 #include "io/write-diary.h"
 #include "dungeon/quest.h"
-#include "info-reader/fixed-map-parser.h"
 #include "io/files-util.h"
 #include "market/arena-entry.h"
 #include "player/player-status.h"
@@ -17,12 +16,12 @@
 #include "system/floor/floor-info.h"
 #include "system/inner-game-data.h"
 #include "system/monrace/monrace-definition.h"
-#include "term/z-form.h"
 #include "util/angband-files.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
 #include "world/world.h"
 #include <ctime>
+#include <fmt/format.h>
 #include <sstream>
 
 bool write_level; //!< @todo *抹殺* したい…
@@ -46,7 +45,7 @@ static bool open_diary_file(FILE **fff, bool *disable_diary)
 
     constexpr auto fmt = _("%s を開くことができませんでした。プレイ記録を一時停止します。", "Failed to open %s. Play-Record is disabled temporarily.");
     const auto &filename = path.string();
-    msg_format(fmt, filename.data());
+    msg_print(fmt, filename);
     msg_erase();
     *disable_diary = true;
     return false;
@@ -78,9 +77,9 @@ static std::pair<QuestId, std::string> write_floor(const FloorType &floor)
 
     const auto &dungeon = floor.get_dungeon_definition();
 #ifdef JP
-    const auto desc = format("%d階(%s):", floor.dun_level, dungeon.name.data());
+    const auto desc = fmt::format("{}階({}):", floor.dun_level, dungeon.name);
 #else
-    const auto desc = format("%s L%d:", dungeon.name.data(), floor.dun_level);
+    const auto desc = fmt::format("{} L{}:", dungeon.name, floor.dun_level);
 #endif
     return std::make_pair(q_idx, desc);
 }
@@ -163,9 +162,6 @@ int exe_write_diary_quest(CreatureEntity &creature, DiaryKind dk, QuestId quest_
     const auto old_quest = floor.quest_number;
     const auto &quests = QuestList::get_instance();
     const auto &quest = quests.get_quest(quest_id);
-    floor.quest_number = (quest.type == QuestKindType::RANDOM) ? QuestId::NONE : quest_id;
-    init_flags = INIT_NAME_ONLY;
-    parse_fixed_map(creature, QUEST_DEFINITION_LIST, 0, 0, 0, 0);
     floor.quest_number = old_quest;
 
     const auto &[q_idx, note_level] = write_floor(floor);
@@ -301,7 +297,7 @@ void exe_write_diary(const FloorType &floor, DiaryKind dk, int num, std::string_
                       ? _("地上", "the surface")
                   : !(floor.dun_level + num)
                       ? _("地上", "the surface")
-                      : format(_("%d階", "level %d"), floor.dun_level + num);
+                      : fmt::format(_("{}階", "level {}"), floor.dun_level + num);
         constexpr auto fmt = _(" %2d:%02d %20s %sへ%s。\n", " %2d:%02d %20s %s %s.\n");
         fprintf(fff, fmt, hour, min, note_level.data(), _(to.data(), note.data()), _(note.data(), to.data()));
         break;
@@ -372,7 +368,7 @@ void exe_write_diary(const FloorType &floor, DiaryKind dk, int num, std::string_
     case DiaryKind::PAT_TELE: {
         const auto to = !floor.is_underground()
                             ? _("地上", "the surface")
-                            : format(_("%d階(%s)", "level %d of %s"), floor.dun_level, floor.get_dungeon_definition().name.data());
+                            : fmt::format(_("{}階({})", "level {} of {}"), floor.dun_level, floor.get_dungeon_definition().name);
         constexpr auto fmt = _(" %2d:%02d %20s %sへとパターンの力で移動した。\n", " %2d:%02d %20s used Pattern to teleport to %s.\n");
         fprintf(fff, fmt, hour, min, note_level.data(), to.data());
         break;

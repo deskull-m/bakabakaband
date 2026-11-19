@@ -1,6 +1,7 @@
 #include "core/asking-player.h"
 #include "game-option/birth-options.h"
 #include "store/say-comments.h"
+#include "store/store-owners.h"
 #include "store/store-util.h"
 #include "store/store.h"
 #include "term/screen-processor.h"
@@ -19,7 +20,7 @@ static s32b last_inc = 0L;
 int increase_insults(void)
 {
     st_ptr->insult_cur++;
-    if (st_ptr->insult_cur <= ot_ptr->insult_max) {
+    if (st_ptr->insult_cur <= st_ptr->get_owner().insult_max) {
         return FALSE;
     }
 

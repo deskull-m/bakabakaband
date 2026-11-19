@@ -12,12 +12,13 @@
 #include "save/monster-writer.h"
 #include "save/save-util.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/floor/floor-info.h"
+#include "system/floor/monster-corpse.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
-#include "system/redrawing-flags-updater.h"
-#include "term/z-form.h"
 #include "util/angband-files.h"
+#include <fmt/format.h>
 #include <range/v3/view.hpp>
 
 namespace {
@@ -150,6 +151,24 @@ void wr_saved_floor(CreatureEntity &creature, saved_floor_type *sf_ptr)
     for (int i = 1; i < floor.m_max; i++) {
         MonsterWriter(floor.m_list[i]).write_to_savedata();
     }
+
+    /*** Dump the corpses ***/
+    // グリッドのチェイン (Grid::corpse_idx / next_corpse_idx) は保存しない。
+    // 死体の座標から読込時に組み直すので、添字の連続性に依存しない。
+    // 取り除かれた死体 (released) の空き添字は書かない。件数はダミーの添字 0 を含む。
+    std::vector<short> valid_corpses;
+    for (auto i = 1U; i < floor.corpses.size(); i++) {
+        if (floor.get_corpse(static_cast<short>(i)).is_valid()) {
+            valid_corpses.push_back(static_cast<short>(i));
+        }
+    }
+
+    wr_u16b(static_cast<uint16_t>(valid_corpses.size() + 1));
+    for (const auto corpse_idx : valid_corpses) {
+        const auto &corpse = floor.get_corpse(corpse_idx);
+        MonsterWriter(corpse.body).write_to_savedata();
+        wr_byte(static_cast<byte>(corpse.remains_sval));
+    }
 }
 
 /*!
@@ -172,7 +191,7 @@ bool wr_dungeon(CreatureEntity &creature)
         StatusRecalculatingFlag::DISTANCE,
         StatusRecalculatingFlag::FLOW,
     };
-    RedrawingFlagsUpdater::get_instance().set_flags(flags);
+    DeferredUpdateRequests::get_instance().set_flags(flags);
     wr_s16b(max_floor_id);
     wr_byte(static_cast<uint8_t>(floor.dungeon_id));
     if (creature.floor_id == 0) {
@@ -262,7 +281,7 @@ bool save_floor(CreatureEntity &creature, saved_floor_type *sf_ptr, BIT_FLAGS mo
     }
 
     auto floor_savefile = savefile.string();
-    const auto ext = format(".F%02d", (int)sf_ptr->savefile_id);
+    const auto ext = fmt::format(".F{:02}", sf_ptr->savefile_id);
     floor_savefile.append(ext);
     safe_setuid_grab();
     fd_kill(floor_savefile);

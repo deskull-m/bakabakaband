@@ -2,15 +2,6 @@
 #include "system/angband-exceptions.h"
 #include "system/angband.h"
 
-enum class PlayerStunRank {
-    NONE = 0,
-    SLIGHT = 1,
-    NORMAL = 2,
-    HARD = 3,
-    UNCONSCIOUS = 4,
-    KNOCKED = 5,
-};
-
 PlayerStunRank PlayerStun::get_rank(short value)
 {
     if (value > 200) {
@@ -51,6 +42,31 @@ std::string_view PlayerStun::get_stun_mes(PlayerStunRank stun_rank)
         return _("頭がクラクラして意識が遠のいてきた。", "You have been unconcious.");
     case PlayerStunRank::KNOCKED:
         return _("あなたはぶっ倒れた！", "You are knocked out!!");
+    default:
+        THROW_EXCEPTION(std::logic_error, "Invalid StunRank is specified!");
+    }
+}
+
+/*!
+ * @brief 朦朧ランクに対応する 3 人称メッセージ書式を返す (提案D2 第3弾).
+ * @param stun_rank 朦朧ランク
+ * @return "{}" にクリーチャー名が入る書式文字列
+ */
+const char *PlayerStun::get_stun_mes_others(PlayerStunRank stun_rank)
+{
+    switch (stun_rank) {
+    case PlayerStunRank::NONE:
+        return "";
+    case PlayerStunRank::SLIGHT:
+        return _("{}は少し朦朧としたようだ。", "{} has been slightly stunned.");
+    case PlayerStunRank::NORMAL:
+        return _("{}は朦朧としたようだ。", "{} has been stunned.");
+    case PlayerStunRank::HARD:
+        return _("{}はひどく朦朧としたようだ。", "{} has been heavily stunned.");
+    case PlayerStunRank::UNCONSCIOUS:
+        return _("{}は意識が遠のいたようだ。", "{} has been knocked senseless.");
+    case PlayerStunRank::KNOCKED:
+        return _("{}はぶっ倒れた！", "{} is knocked out!!");
     default:
         THROW_EXCEPTION(std::logic_error, "Invalid StunRank is specified!");
     }

@@ -231,12 +231,10 @@ std::string get_inscription(const ItemEntity &item)
             if (ss.tellp() > MAX_INSCRIPTION - 1) {
                 break;
             }
-#ifdef JP
-            if (iskanji(sv.front())) {
+            if (is_multibyte_char_at(sv)) {
                 ss << sv.front();
                 sv.remove_prefix(1);
             }
-#endif
             ss << sv.front();
         }
 

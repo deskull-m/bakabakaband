@@ -11,6 +11,11 @@
 #include <vector>
 
 class MonraceRecord;
+
+namespace test {
+class MonraceRecordsTestAccess;
+}
+
 class MonraceRecords {
 public:
     MonraceRecords(MonraceRecords &&) = delete;
@@ -34,6 +39,8 @@ private:
     static MonraceRecords instance;
 
     std::vector<std::shared_ptr<MonraceRecord>> records;
+
+    friend class test::MonraceRecordsTestAccess;
 
     std::shared_ptr<MonraceRecord> &get_record_ref(MonraceId monrace_id);
     const std::shared_ptr<MonraceRecord> &get_record_ref(MonraceId monrace_id) const;

@@ -82,6 +82,7 @@ protected:
 };
 
 bool is_already_running(void);
+void attach_console();
 void save_screen_as_html(HWND hWnd);
 HWND get_main_window_hwnd(void);
 void open_dir_in_explorer(const std::filesystem::path &path);

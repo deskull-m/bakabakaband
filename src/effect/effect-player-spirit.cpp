@@ -9,8 +9,9 @@
 #include "status/bad-status-setter.h"
 #include "status/base-status.h"
 #include "system/creature-entity.h"
-#include "system/redrawing-flags-updater.h"
+#include "system/deferred-update-requests.h"
 #include "tracking/health-bar-tracker.h"
+#include "util/string-processor.h"
 #include "view/display-messages.h"
 #include "world/world.h"
 
@@ -28,7 +29,7 @@ void effect_player_drain_mana(CreatureEntity &creature, EffectPlayerType *ep_ptr
     }
 
     if (ep_ptr->is_monster()) {
-        msg_format(_("%s^に精神エネルギーを吸い取られてしまった！", "%s^ draws psychic energy from you!"), ep_ptr->m_name.data());
+        msg_print(_("{}に精神エネルギーを吸い取られてしまった！", "{} draws psychic energy from you!"), str_upcase_first(ep_ptr->m_name));
     } else {
         msg_print(_("精神エネルギーを吸い取られてしまった！", "Your psychic energy is drained!"));
     }
@@ -41,13 +42,8 @@ void effect_player_drain_mana(CreatureEntity &creature, EffectPlayerType *ep_ptr
         creature.sub_current_mp(ep_ptr->dam);
     }
 
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.set_flag(MainWindowRedrawingFlag::MP);
-    static constexpr auto flags = {
-        SubWindowRedrawingFlag::PLAYER,
-        SubWindowRedrawingFlag::SPELL,
-    };
-    rfu.set_flags(flags);
+    auto &dur = DeferredUpdateRequests::get_instance();
+    dur.set_flag(MainWindowRedrawingFlag::MP);
 
     if (!ep_ptr->is_monster() || (ep_ptr->m_ptr->hp >= ep_ptr->m_ptr->maxhp)) {
         ep_ptr->dam = 0;
@@ -61,11 +57,11 @@ void effect_player_drain_mana(CreatureEntity &creature, EffectPlayerType *ep_ptr
 
     HealthBarTracker::get_instance().set_flag_if_tracking(ep_ptr->src_idx);
     if (ep_ptr->src_ptr && ep_ptr->src_ptr->is_riding()) {
-        rfu.set_flag(MainWindowRedrawingFlag::UHEALTH);
+        dur.set_flag(MainWindowRedrawingFlag::UHEALTH);
     }
 
     if (ep_ptr->m_ptr->is_visible_on_map()) {
-        msg_format(_("%s^は気分が良さそうだ。", "%s^ appears healthier."), ep_ptr->m_name.data());
+        msg_print(_("{}は気分が良さそうだ。", "{} appears healthier."), str_upcase_first(ep_ptr->m_name));
     }
 
     ep_ptr->dam = 0;
@@ -99,7 +95,7 @@ void effect_player_mind_blast(CreatureEntity &creature, EffectPlayerType *ep_ptr
         creature.current_mp_frac = 0;
     }
 
-    RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::MP);
+    DeferredUpdateRequests::get_instance().set_flag(MainWindowRedrawingFlag::MP);
     ep_ptr->get_damage = take_hit(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
 }
 
@@ -118,7 +114,7 @@ void effect_player_brain_smash(CreatureEntity &creature, EffectPlayerType *ep_pt
             creature.current_mp_frac = 0;
         }
 
-        RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::MP);
+        DeferredUpdateRequests::get_instance().set_flag(MainWindowRedrawingFlag::MP);
     }
 
     ep_ptr->get_damage = take_hit(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);

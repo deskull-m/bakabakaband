@@ -11,9 +11,11 @@
 #include "system/monrace/monrace-list.h"
 #include "system/monrace/monrace-service.h"
 #include "system/player-type-definition.h"
+#include "term/z-rand.h"
 #include "util/bit-flags-calculator.h"
 #include "util/string-processor.h"
 #include "view/display-messages.h"
+#include "world/world.h"
 #include <fmt/format.h>
 #include <sstream>
 #include <string>
@@ -127,16 +129,20 @@ static std::string get_describing_monster_name(const CreatureEntity &monster, co
         return any_bits(mode, MD_TRUE_NAME) ? monster.get_real_monrace().name.string() : monrace.name.string();
     }
 
-    if (one_in_(2)) {
+    // 幻覚中の名前は表示専用で、ペット一覧のサブウィンドウなど呼び出される回数が環境によって変わる
+    // 場面でも使われるため、ゲームのターンとモンスターの位置・種族から作った乱数生成器を使い、名前をゲームの状態だけで決める
+    const auto m_pos = monster.get_position();
+    auto rng = make_keyed_rng(KeyedRngPurpose::MONSTER_NAME, { static_cast<int>(AngbandWorld::get_instance().game_turn), m_pos.y, m_pos.x, enum2i(monster.get_r_idx()) });
+    if (one_in_(rng, 2)) {
         constexpr auto filename = _("silly_j.txt", "silly.txt");
-        const auto silly_name = get_random_line(filename, enum2i(monster.get_r_idx()));
+        const auto silly_name = get_random_line(rng, filename, enum2i(monster.get_r_idx()));
         if (silly_name) {
             return *silly_name;
         }
     }
 
     const auto ids = MonraceService::search([](const auto &monrace) { return monrace.kind_flags.has_not(MonsterKindType::UNIQUE); });
-    return MonraceList::get_instance().get_monrace(rand_choice(ids)).name.string();
+    return MonraceList::get_instance().get_monrace(rand_choice(rng, ids)).name.string();
 }
 
 #ifdef JP
@@ -167,11 +173,11 @@ static tl::optional<std::string> get_fake_monster_name(const CreatureEntity &cre
     }
 
     if (monster.is_chameleon() && none_bits(mode, MD_TRUE_NAME)) {
-        return _(replace_monster_name_undefined(name), format("%s?", name.data()));
+        return _(replace_monster_name_undefined(name), fmt::format("{}?", name));
     }
 
     if (AngbandSystem::get_instance().is_phase_out() && !monster.is_riding()) {
-        return format(_("%sもどき", "fake %s"), name.data());
+        return fmt::format(_("{}もどき", "fake {}"), name);
     }
 
     return name;
@@ -322,7 +328,7 @@ std::string monster_desc(CreatureEntity &subject, const CreatureEntity &monster,
     }
 
     if (monster.is_pet() && !monster.is_original_ap()) {
-        ss << _(replace_monster_name_undefined(name), format("%s?", name.data()));
+        ss << _(replace_monster_name_undefined(name), fmt::format("{}?", name));
     } else {
         ss << describe_non_pet(subject, monster, name, mode);
     }

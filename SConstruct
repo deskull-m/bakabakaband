@@ -40,7 +40,6 @@ def collect_hengband_sources():
     # glob ビルドから path 指定で除外し、autotools の扱いと揃える。
     # ※ 同名の生存ファイルを巻き込まないよう basename ではなく相対 path で判定する。
     exclude_paths = {
-        "src/load/angband-version-comparer.cpp",
         "src/lore/lore-store.cpp",
         "src/market/arena-info-table.cpp",
         "src/monster-race/monster-era-type-name.cpp",

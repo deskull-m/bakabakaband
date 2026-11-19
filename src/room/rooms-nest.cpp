@@ -155,7 +155,7 @@ void output_debug_nest(CreatureEntity &creature, std::array<NestMonsterInfo, NUM
         }
 
         constexpr auto fmt_nest_num = _("Nest構成モンスターNo.%d: %s", "Nest monster No.%d: %s");
-        msg_format_wizard(creature, CHEAT_DUNGEON, fmt_nest_num, i, nest_mon_info.get_monrace().name.data());
+        msg_print_wizard(creature, CHEAT_DUNGEON, fmt_nest_num, i, nest_mon_info.get_monrace().name);
     }
 }
 }
@@ -222,9 +222,9 @@ bool build_type5(CreatureEntity &creature, DungeonData *dd_ptr)
     auto rectangle = generate_large_room(creature, *center);
     generate_inner_room(creature, *center, rectangle);
 
-    constexpr auto fmt_nest = _("モンスター部屋(nest)(%s%s)を生成します。", "Monster nest (%s%s)");
+    constexpr auto fmt_nest = _("モンスター部屋(nest)({}{})を生成します。", "Monster nest ({}{})");
     const auto &nest_filter = PitNestFilter::get_instance();
-    msg_format_wizard(creature, CHEAT_DUNGEON, fmt_nest, nest.name.data(), nest_filter.nest_subtype(*nest_type).data());
+    msg_print_wizard(creature, CHEAT_DUNGEON, fmt_nest, nest.name, nest_filter.nest_subtype(*nest_type));
     place_monsters_in_nest(creature, *center, *nest_mon_info_list);
     output_debug_nest(creature, *nest_mon_info_list);
     return true;

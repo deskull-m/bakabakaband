@@ -36,3 +36,4 @@ bool cast_blue_summon_homo(CreatureEntity &creature, bmc_type *bmc_ptr);
 bool cast_blue_summon_wall(CreatureEntity &creature, bmc_type *bmc_ptr);
 bool cast_blue_summon_insect(CreatureEntity &creature, bmc_type *bmc_ptr);
 bool cast_blue_summon_eldrazi(CreatureEntity &creature, bmc_type *bmc_ptr);
+bool cast_blue_summon_robot(CreatureEntity &creature, bmc_type *bmc_ptr);

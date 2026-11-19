@@ -29,9 +29,10 @@ jobs:
   build:
     runs-on: ${{ inputs.runner }}
     steps:
+      # サブモジュール (lib/xtra と Visual Studio 用の libcurl) はビルドに不要で、make dist のときだけ必要になる
       - uses: actions/checkout@v7
         with:
-          submodules: true
+          submodules: ${{ inputs.distcheck }}
           persist-credentials: false
 
       - id: calculate-cache-key
@@ -60,6 +61,8 @@ jobs:
           sudo apt-get install \
             libncursesw5-dev \
             libcurl4-openssl-dev \
+            libx11-dev \
+            libxext-dev \
             nkf \
             libc++-15-dev \
             libc++abi-15-dev \
@@ -80,3 +83,14 @@ jobs:
       - name: Build
         if: ${{ !inputs.distcheck }}
         run: make -j$(nproc) >/dev/null
+
+      # distcheck は make check を内部で実行するため、ここでは実行しない
+      - name: Run unit tests
+        if: ${{ !inputs.distcheck }}
+        run: make -j$(nproc) check VERBOSE=1
+
+      # distcheck は出力を捨てているため、失敗したテストの内容はログに残らない。
+      # 失敗時にテストの出力を残す
+      - name: Show the test log on failure
+        if: ${{ failure() }}
+        run: find . -name test-suite.log -exec sh -c 'echo "==== {} ===="; cat {}' \;

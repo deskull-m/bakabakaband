@@ -21,8 +21,9 @@
 #include "spell-realm/spells-song.h"
 #include "status/experience.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
+#include "system/floor/floor-info.h"
 #include "system/item-entity.h"
-#include "system/redrawing-flags-updater.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
 
@@ -60,31 +61,26 @@ void ObjectReadEntity::execute(bool known)
 
     auto executor = ReadExecutorFactory::create(this->creature, item.get(), known);
     auto used_up = executor->read();
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    using Srf = StatusRecalculatingFlag;
-    EnumClassFlagGroup<Srf> flags_srf = { Srf::COMBINATION, Srf::REORDER };
-    if (rfu.has(Srf::AUTO_DESTRUCTION)) {
-        flags_srf.set(Srf::AUTO_DESTRUCTION);
-    }
-
-    rfu.reset_flags(flags_srf);
+    auto &dur = DeferredUpdateRequests::get_instance();
     this->change_virtue_as_read(*item);
     item->mark_as_tried();
     this->gain_exp_from_item_use(item.get(), executor->is_identified());
-    static constexpr auto flags_swrf = {
-        SubWindowRedrawingFlag::INVENTORY,
-        SubWindowRedrawingFlag::EQUIPMENT,
-        SubWindowRedrawingFlag::PLAYER,
-    };
-    rfu.set_flags(flags_swrf);
-    rfu.set_flags(flags_srf);
+    dur.request_inventory_arrangement();
+    dur.set_item_related_sub_window_flags();
     if (!used_up) {
         return;
     }
 
     sound(SoundKind::SCROLL);
     this->creature.plus_incident_tree("READ_SCROLL", 1);
-    vary_item(this->creature, this->i_idx, -1);
+
+    // 効果中のアイテム削除や並べ替えでインデックスが変わるため、同じ実体を探し直す。
+    const auto is_inventory = this->i_idx >= 0;
+    const auto &items = is_inventory ? this->creature.inventory : this->creature.get_floor()->o_list;
+    const auto current_idx = find_item_index(items, item);
+    if (current_idx) {
+        vary_item(this->creature, is_inventory ? *current_idx : -*current_idx, -1);
+    }
 }
 
 bool ObjectReadEntity::can_read() const

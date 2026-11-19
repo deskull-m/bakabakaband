@@ -16,6 +16,7 @@
 #include "game-option/birth-options.h"
 #include "game-option/cheat-types.h"
 #include "grid/grid.h"
+#include "market/loot-notoriety.h"
 #include "monster-attack/monster-attack-player.h"
 #include "monster-attack/monster-attack-table.h"
 #include "monster-floor/monster-drop-generator.h"
@@ -32,6 +33,7 @@
 #include "monster/monster-timed-effects.h"
 #include "monster/monster-update.h"
 #include "monster/monster-util.h"
+#include "mutation/mutation-flag-types.h"
 #include "object/warning.h"
 #include "player-ability/player-ability-types.h"
 #include "player-base/player-class.h"
@@ -39,6 +41,7 @@
 #include "player/player-sex.h"
 #include "player/player-status.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/dungeon/quest-definition.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/enums/terrain/terrain-characteristics.h"
@@ -46,11 +49,12 @@
 #include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/redrawing-flags-updater.h"
+#include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
 #include "wizard/wizard-messages.h"
 #include "world/world.h"
 #include <algorithm>
+#include <fmt/format.h>
 #include <range/v3/algorithm.hpp>
 #include <time.h>
 
@@ -309,9 +313,9 @@ static void warn_unique_generation(CreatureEntity &creature, MonraceId r_idx)
     const auto &item = choose_warning_item(creature);
     if (item) {
         const auto item_name = describe_flavor(creature, *item, (OD_OMIT_PREFIX | OD_NAME_ONLY));
-        msg_format(_("%sは%s光った。", "%s glows %s."), item_name.data(), color.data());
+        msg_print(_("{}は{}光った。", "{} glows {}."), item_name, color);
     } else {
-        msg_format(_("%s光る物が頭に浮かんだ。", "A %s image forms in your mind."), color.data());
+        msg_print(_("{}光る物が頭に浮かんだ。", "A {} image forms in your mind."), color);
     }
 }
 
@@ -344,7 +348,7 @@ tl::optional<MONSTER_IDX> place_monster_one(CreatureEntity &player, POSITION y, 
         return tl::nullopt;
     }
 
-    msg_format_wizard(player, CHEAT_MONSTER, _("%s(Lv%d)を生成しました。", "%s(Lv%d) was generated."), monrace.name.data(), monrace.level);
+    msg_print_wizard(player, CHEAT_MONSTER, _("{}(Lv{})を生成しました。", "{}(Lv{}) was generated."), monrace.name, monrace.level);
     if (monrace.kind_flags.has(MonsterKindType::UNIQUE) || monrace.population_flags.has(MonsterPopulationType::NAZGUL) || (monrace.level < 10)) {
         reset_bits(mode, PM_KAGE);
     }
@@ -386,24 +390,9 @@ tl::optional<MONSTER_IDX> place_monster_one(CreatureEntity &player, POSITION y, 
     }
 
     const auto &new_monrace = m_ptr->get_monrace();
-    // 種族側で能力値補正が指定されていれば、ロール結果に加算する。
-    // 補正値は内部 10 単位 (表示 1.0 = 10) で格納されており、tl::nullopt の能力値は補正しない。
-    constexpr short stat_min = STAT_MIN_VALUE;
-    constexpr short stat_max = STAT_MAX_VALUE;
-    for (auto stat = 0; stat < A_MAX; ++stat) {
-        const auto &mod = new_monrace.stat_modifiers[stat];
-        if (!mod.has_value()) {
-            continue;
-        }
-        auto adjusted = static_cast<int>(m_ptr->get_stat_max(stat)) + *mod;
-        adjusted = std::clamp(adjusted, static_cast<int>(stat_min), static_cast<int>(stat_max));
-        m_ptr->set_stat_max(stat, static_cast<short>(adjusted));
-        m_ptr->set_stat_cur(stat, static_cast<short>(adjusted));
-        if (m_ptr->get_stat_max_max(stat) < m_ptr->get_stat_max(stat)) {
-            m_ptr->set_stat_max_max(stat, m_ptr->get_stat_max(stat));
-        }
-        m_ptr->set_stat_use(stat, m_ptr->get_stat_max(stat));
-    }
+    // 種族側の能力値補正をロール結果に加算する。JSON で個別指定の無い能力値には
+    // 種族レベル比例の既定補正が入る (プレイヤーのモンスター開始経路と共通)。
+    m_ptr->apply_monrace_stat_modifiers(new_monrace);
     const auto is_summoned = summoner_m_idx.has_value();
     const CreatureEntity &summoner = floor.m_list[summoner_m_idx.value_or(0)];
 
@@ -580,6 +569,61 @@ tl::optional<MONSTER_IDX> place_monster_one(CreatureEntity &player, POSITION y, 
     // [提案 C5-1] JSON で突然変異が固定指定されたモンスターに付与 (付与のみ、per-turn 処理は別段)
     m_ptr->assign_fixed_mutations();
 
+    // [提案C5] 能力値修正の突然変異を生成時能力値へ反映 (opt-in・既定OFF)。プレイヤー版と同じ
+    // 表示値を内部 ×10 単位に換算し、C1 stat_modifiers と同じ機構で stat_max/cur/max_max/use へ
+    // 加算する。assign_fixed_mutations() 直後で適用するため、CON 変化は後段の最大HP
+    // (calc_max_hp_con_bonus)、INT 変化は最大MP (calc_creature_mana)、CHR 変化は所持金
+    // (get_money_for_creature) にそれぞれ流れる。STR/DEX/WIS 変化は C2 opt-in
+    // (applies_stat_combat_bonus) の戦闘反映で用いられる。
+    {
+        struct StatMutationMod {
+            PlayerMutationType mutation;
+            int stat;
+            int display_delta; // 表示単位 (内部は ×10)
+        };
+        static constexpr StatMutationMod stat_mutation_table[] = {
+            { PlayerMutationType::HYPER_STR, A_STR, 4 },
+            { PlayerMutationType::PUNY, A_STR, -4 },
+            { PlayerMutationType::WEAK_LOWER_BODY, A_STR, 2 },
+            { PlayerMutationType::HYPER_INT, A_INT, 4 },
+            { PlayerMutationType::HYPER_INT, A_WIS, 4 },
+            { PlayerMutationType::MORONIC, A_INT, -4 },
+            { PlayerMutationType::MORONIC, A_WIS, -4 },
+            { PlayerMutationType::RESILIENT, A_CON, 4 },
+            { PlayerMutationType::XTRA_FAT, A_CON, 2 },
+            { PlayerMutationType::ALBINO, A_CON, -4 },
+            { PlayerMutationType::FLESH_ROT, A_CON, -2 },
+            { PlayerMutationType::FLESH_ROT, A_CHR, -1 },
+            { PlayerMutationType::SILLY_VOI, A_CHR, -4 },
+            { PlayerMutationType::BLANK_FAC, A_CHR, -1 },
+            { PlayerMutationType::LIMBER, A_DEX, 3 },
+            { PlayerMutationType::ARTHRITIS, A_DEX, -3 },
+        };
+        int stat_muta_mod[A_MAX] = {};
+        for (const auto &entry : stat_mutation_table) {
+            if (m_ptr->has_mutation(entry.mutation)) {
+                stat_muta_mod[entry.stat] += entry.display_delta * 10;
+            }
+        }
+        for (auto stat = 0; stat < A_MAX; ++stat) {
+            if (stat_muta_mod[stat] == 0) {
+                continue;
+            }
+            auto adjusted = static_cast<int>(m_ptr->get_stat_max(stat)) + stat_muta_mod[stat];
+            adjusted = std::clamp(adjusted, static_cast<int>(STAT_MIN_VALUE), static_cast<int>(STAT_MAX_VALUE));
+            m_ptr->set_stat_max(stat, static_cast<short>(adjusted));
+            m_ptr->set_stat_cur(stat, static_cast<short>(adjusted));
+            // 突然変異は生得の恒久補正のため、負の変異でも本来の最大値 (stat_max_max) を
+            // 補正後の値へ同期する (「大きい時のみ更新」だと負の変異で ceiling が下がらない)。
+            m_ptr->set_stat_max_max(stat, m_ptr->get_stat_max(stat));
+            m_ptr->set_stat_use(stat, m_ptr->get_stat_max(stat));
+        }
+    }
+
+    // [提案C6-R] 指定された魔導書からモンスターが realm 呪文を学習する (opt-in・既定OFF)。
+    // プレイヤーと同じ spell_learned データ構造へ登録し、詠唱は学習済みの書に応じて発火する。
+    m_ptr->learn_realm_spellbooks(new_monrace.spellbook_realm, new_monrace.spellbook_mask);
+
     // 種族が指定されている場合、身長・体重を設定
     get_height_weight(*m_ptr);
 
@@ -604,6 +648,8 @@ tl::optional<MONSTER_IDX> place_monster_one(CreatureEntity &player, POSITION y, 
         should_be_friendly |= any_bits(mode, PM_FORCE_FRIENDLY);
         auto force_hostile = monster_has_hostile_to_player(player, 0, -1, new_monrace);
         force_hostile |= floor.inside_arena;
+        // 略奪で賞金首になっていると、街の住人は友好的に生成されない (系統 3)。
+        force_hostile |= is_wanted_by_townsfolk(player, new_monrace);
         if (m_ptr->get_alliance_idx() != AllianceType::NONE) {
             should_be_friendly |= alliance_list.at(m_ptr->get_alliance_idx())->isFriendly(player);
         }
@@ -739,15 +785,29 @@ tl::optional<MONSTER_IDX> place_monster_one(CreatureEntity &player, POSITION y, 
         m_ptr->speed += race_granted_speed_bonus;
     }
 
+    // [提案C5] 加速系の突然変異を生成時速度へ反映 (opt-in・既定OFF)。
+    // プレイヤー版と同じ加減速値 (XTRA_LEGS +3 / SHORT_LEG -3 / XTRA_FAT -2 / WEAK_LOWER_BODY -2)。
+    // 変異は assign_fixed_mutations() (上記) で付与済みのためここで参照できる。
+    if (m_ptr->has_mutation(PlayerMutationType::XTRA_LEGS)) {
+        m_ptr->speed += 3;
+    }
+    if (m_ptr->has_mutation(PlayerMutationType::SHORT_LEG)) {
+        m_ptr->speed -= 3;
+    }
+    if (m_ptr->has_mutation(PlayerMutationType::XTRA_FAT)) {
+        m_ptr->speed -= 2;
+    }
+    if (m_ptr->has_mutation(PlayerMutationType::WEAK_LOWER_BODY)) {
+        m_ptr->speed -= 2;
+    }
+
     if (any_bits(mode, PM_HASTE)) {
         (void)set_monster_fast(floor, g_ptr->m_idx, 100);
     }
 
-    if (!ironman_nightmare) {
-        m_ptr->set_energy_need(ENERGY_NEED() - randnum0<short>(100));
-    } else {
-        m_ptr->set_energy_need(ENERGY_NEED() - randnum0<short>(100) * 2);
-    }
+    auto energy_need = ENERGY_NEED();
+    energy_need -= randnum0<short>(100) * (ironman_nightmare ? 2 : 1);
+    m_ptr->set_energy_need(energy_need);
 
     if (!ironman_nightmare) {
         m_ptr->set_temporary_flag(MonsterTemporaryFlagType::PREVENT_MAGIC);
@@ -756,11 +816,29 @@ tl::optional<MONSTER_IDX> place_monster_one(CreatureEntity &player, POSITION y, 
     auto is_awake_lightning_monster = new_monrace.brightness_flags.has_any_of(self_ld_mask);
     is_awake_lightning_monster |= new_monrace.brightness_flags.has_any_of(has_ld_mask) && !m_ptr->is_asleep();
     if (is_awake_lightning_monster) {
-        RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::MONSTER_LITE);
+        DeferredUpdateRequests::get_instance().set_flag(StatusRecalculatingFlag::MONSTER_LITE);
     }
 
     update_monster(const_cast<CreatureEntity &>(player), g_ptr->m_idx, true);
     m_ptr->get_real_monrace().increment_current_numbers();
+
+    // 生成時装備指定 (equip_kinds / equip_tvals) のアイテムを持たせる。種族固有の
+    // 「らしさ」を最優先するため、役割装備・武装度充填より先にスロットを確保させる。
+    equip_monster_fixed_items(player, *m_ptr);
+
+    // SOLDIER / WARRIOR 持ちのモンスターに初期装備の近接武器を持たせる。
+    // 一般ドロップより先に呼び、利き手を初期武器が確保できるようにする。
+    equip_armed_monster_initial_weapon(*m_ptr);
+
+    // ARCHER / RANGER 持ちのモンスターに初期装備の弓を持たせる。
+    equip_ranged_monster_initial_bow(*m_ptr);
+
+    // MAGE 持ちのモンスターに初期装備の軽装を着せる。
+    equip_spellcaster_monster_initial_robe(*m_ptr);
+
+    // 種族の武装度を予算として、残る装備スロットを埋める。
+    // 役割装備の価値は予算から差し引かれるため、必ず上記 3 関数の後に呼ぶ。
+    equip_monster_by_armament_budget(*m_ptr);
 
     // [ドロップ品移行] 一般ドロップ品を生成時に所持品として前生成する。
     // 死亡時は drop_all_inventory() でまとめて床へ放出される。
@@ -768,7 +846,7 @@ tl::optional<MONSTER_IDX> place_monster_one(CreatureEntity &player, POSITION y, 
 
     if (any_bits(mode, PM_AMBUSH)) {
         auto m_name = monster_desc(player, *m_ptr, 0);
-        msg_format(_("突如%sがあなたに襲い掛かってきた！", "Suddenly %s has ambushed you!"), m_name.data());
+        msg_print(_("突如{}があなたに襲い掛かってきた！", "Suddenly {} has ambushed you!"), m_name);
         disturb(player, false, true);
         MonsterAttackPlayer(player, g_ptr->m_idx).make_attack_normal();
     }

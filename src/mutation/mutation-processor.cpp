@@ -45,20 +45,23 @@
 #include "system/angband-system.h"
 #include "system/creature-entity.h"
 #include "system/creature-timed-effect-types.h"
+#include "system/deferred-update-requests.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/redrawing-flags-updater.h"
 #include "target/target-checker.h"
 #include "target/target-getter.h"
 #include "target/target-setter.h"
 #include "target/target-types.h"
 #include "term/screen-processor.h"
+#include "tracking/health-bar-tracker.h"
+#include "util/string-processor.h"
 #include "view/display-messages.h"
 #include "world/world-collapsion.h"
 #include "world/world.h"
+#include <fmt/format.h>
 
 /*!
  * @brief 10ゲームターンが進行するごとに敵対的存在の襲撃を判定する処置
@@ -150,14 +153,15 @@ void process_world_aux_mutation(CreatureEntity &creature)
             disturb(creature, false, true);
             msg_print(_("あなたの位置は突然ひじょうに不確定になった...", "Your position suddenly seems very uncertain..."));
             msg_erase();
-            teleport_player(creature, 40, TELEPORT_PASSIVE);
+            // [提案D3] 統一プリミティブ経由。プレイヤーでは teleport_player() と等価。
+            teleport_creature(creature, 40, TELEPORT_PASSIVE);
         }
     }
 
     if (creature.get_mutations().has(PlayerMutationType::ALCOHOL) && (randint1(6400) == 321)) {
         if (!creature.has_resist_conf() && !creature.has_resist_chaos()) {
             disturb(creature, false, true);
-            RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::EXTRA);
+            DeferredUpdateRequests::get_instance().set_flag(MainWindowRedrawingFlag::EXTRA);
             msg_print(_("いひきがもーろーとひてきたきがふる...ヒック！", "You feel a SSSCHtupor cOmINg over yOu... *HIC*!"));
         }
 
@@ -189,7 +193,7 @@ void process_world_aux_mutation(CreatureEntity &creature)
     if (creature.get_mutations().has(PlayerMutationType::HALLU) && (randint1(6400) == 42)) {
         if (!creature.has_resist_chaos()) {
             disturb(creature, false, true);
-            RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::EXTRA);
+            DeferredUpdateRequests::get_instance().set_flag(MainWindowRedrawingFlag::EXTRA);
             (void)bss.mod_hallucination(randint0(50) + 20);
         }
     }
@@ -220,7 +224,7 @@ void process_world_aux_mutation(CreatureEntity &creature)
         const auto flags = {
             MainWindowRedrawingFlag::EXTRA,
         };
-        RedrawingFlagsUpdater::get_instance().set_flags(flags);
+        DeferredUpdateRequests::get_instance().set_flags(flags);
 
         (void)bss.mod_hallucination(randint0(10) + 20);
         (void)set_berserk(creature, 10 + randint1(creature.get_level()), false);
@@ -430,7 +434,9 @@ void process_world_aux_mutation(CreatureEntity &creature)
             disturb(creature, false, true);
             msg_print(_("自分が衰弱していくのが分かる！", "You can feel yourself wasting away!"));
             msg_erase();
-            (void)dec_stat(creature, which_stat, randint1(6) + 6, one_in_(3));
+            const auto amount = randint1(6) + 6;
+            const auto is_permanent = one_in_(3);
+            (void)dec_stat(creature, which_stat, amount, is_permanent);
         }
     }
 
@@ -514,10 +520,6 @@ void process_world_aux_mutation(CreatureEntity &creature)
         (void)set_invuln(creature, randint1(8) + 8, false);
     }
 
-    static constexpr auto flags = {
-        MainWindowRedrawingFlag::HP,
-        MainWindowRedrawingFlag::MP,
-    };
     if (creature.get_mutations().has(PlayerMutationType::SP_TO_HP) && one_in_(2000)) {
         MANA_POINT wounds = (MANA_POINT)(creature.maxhp - creature.hp);
         if (wounds > 0) {
@@ -528,7 +530,7 @@ void process_world_aux_mutation(CreatureEntity &creature)
 
             hp_player(creature, healing);
             creature.sub_current_mp(healing);
-            RedrawingFlagsUpdater::get_instance().set_flags(flags);
+            DeferredUpdateRequests::get_instance().request_hp_mp_redrawing();
         }
     }
 
@@ -541,7 +543,7 @@ void process_world_aux_mutation(CreatureEntity &creature)
             }
 
             creature.add_current_mp(healing);
-            RedrawingFlagsUpdater::get_instance().set_flags(flags);
+            DeferredUpdateRequests::get_instance().request_hp_mp_redrawing();
             take_hit(creature, DAMAGE_LOSELIFE, healing, _("頭に昇った血", "blood rushing to the head"));
         }
     }
@@ -556,11 +558,11 @@ void process_world_aux_mutation(CreatureEntity &creature)
 
 /*!
  * @brief モンスターの突然変異を 10 ゲームターン毎に処理する (提案C5)
- * @param player プレイヤー (メッセージ表示・テレポート処理の視点)
+ * @param player プレイヤー (メッセージ表示の視点)
  * @param monster 対象モンスター
  * @details プレイヤー用 process_world_aux_mutation() とは分離した、モンスターに
  *          意味のある能動突然変異のみを扱う専用処理。効果はモンスター安全な
- *          プリミティブ (set_monster_* / teleport_away) で適用し、プレイヤー専用の
+ *          プリミティブ (set_monster_* / teleport_creature / heal_hp 等) で適用し、プレイヤー専用の
  *          副作用 (BadStatusSetter の徳変化・UI プロンプト・脱糞等) は用いない。
  *          メッセージはモンスターが視認可能な時のみ表示する。
  */
@@ -579,10 +581,10 @@ void process_monster_mutation(CreatureEntity &player, CreatureEntity &monster)
     const auto &muta = monster.get_mutations();
     const auto visible = monster.is_visible_on_map();
     const auto level = monster.get_level();
-    const auto notify = [&](concptr msg) {
+    const auto notify = [&](std::string_view msg) {
         if (visible) {
             const auto m_name = monster_desc(player, monster, 0);
-            msg_format(msg, m_name.data());
+            msg_print(fmt::format(fmt::runtime(msg), str_upcase_first(m_name)));
         }
     };
 
@@ -590,22 +592,23 @@ void process_monster_mutation(CreatureEntity &player, CreatureEntity &monster)
     if (muta.has(PlayerMutationType::BERS_RAGE) && one_in_(3000)) {
         set_monster_monfear(floor, m_idx, 0);
         set_monster_fast(floor, m_idx, monster.get_timed_effect(CreatureTimedEffect::ACCELERATION) + 10 + randint1(level));
-        notify(_("%sは激怒の発作に襲われた！", "%s^ is seized by a fit of rage!"));
+        notify(_("{}は激怒の発作に襲われた！", "{} is seized by a fit of rage!"));
     }
 
     // 臆病 (COWARDICE): 恐怖状態になる
     if (muta.has(PlayerMutationType::COWARDICE) && (randint1(3000) == 13)) {
         if (!monster.has_resist_fear()) {
             set_monster_monfear(floor, m_idx, monster.get_timed_effect(CreatureTimedEffect::FEAR) + 13 + randint1(26));
-            notify(_("%sは急に何かに怯えだした！", "%s^ is suddenly afraid!"));
+            notify(_("{}は急に何かに怯えだした！", "{} is suddenly afraid!"));
         }
     }
 
     // ランダムテレポート (RTELEPORT)
     if (muta.has(PlayerMutationType::RTELEPORT) && (randint1(5000) == 88)) {
         if (!monster.has_resist_shard() && muta.has_not(PlayerMutationType::VTELEPORT) && !monster.has_anti_tele()) {
-            notify(_("%sの位置は突然ひじょうに不確定になった...", "%s^'s position suddenly seems very uncertain..."));
-            teleport_away(player, m_idx, 40, TELEPORT_PASSIVE);
+            notify(_("{}の位置は突然ひじょうに不確定になった...", "{}'s position suddenly seems very uncertain..."));
+            // [提案D3] 統一プリミティブ経由。モンスターでは teleport_away() と等価。
+            teleport_creature(monster, 40, TELEPORT_PASSIVE);
         }
     }
 
@@ -616,7 +619,28 @@ void process_monster_mutation(CreatureEntity &player, CreatureEntity &monster)
         } else {
             set_monster_fast(floor, m_idx, monster.get_timed_effect(CreatureTimedEffect::ACCELERATION) + randint1(30) + 10);
         }
-        notify(_("%sの速度が急に変化した。", "%s^'s speed suddenly changes."));
+        notify(_("{}の速度が急に変化した。", "{}'s speed suddenly changes."));
+    }
+
+    // 一時的無敵 (INVULN)
+    if (muta.has(PlayerMutationType::INVULN) && !monster.has_anti_magic() && one_in_(5000)) {
+        set_monster_invulner(floor, m_idx, randint1(8) + 8, false);
+        notify(_("{}は無敵になった気がしているようだ！", "{} seems to feel invincible!"));
+    }
+
+    // MP を HP へ変換して傷を癒す (SP_TO_HP)
+    if (muta.has(PlayerMutationType::SP_TO_HP) && one_in_(2000)) {
+        const auto wounds = monster.get_max_hp() - monster.get_current_hp();
+        if (wounds > 0) {
+            auto healing = monster.get_current_mp();
+            if (healing > wounds) {
+                healing = wounds;
+            }
+
+            monster.heal_hp(healing);
+            monster.sub_current_mp(healing);
+            HealthBarTracker::get_instance().set_flag_if_tracking(m_idx);
+        }
     }
 }
 

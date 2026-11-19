@@ -62,8 +62,10 @@
             "minLength": 1
           },
           "map_priority": {
-            "description": "マップ表示優先度",
-            "type": ["integer", "null"]
+            "description": "縮小マップの表示優先度 (0..125)。null・省略は新しい地形では 0。同順位で +1 されても自動拾い印の 127 未満に収める。",
+            "type": ["integer", "null"],
+            "minimum": 0,
+            "maximum": 125
           },
           "flags": {
             "description": "地形フラグ (bakabakaband独自拡張の POWER_* / SUBTYPE_* / C-PRIORITY_* / HYGIENE_* 等のパラメトリックフラグを含むため enum では制約しない)",

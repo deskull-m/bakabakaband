@@ -21,7 +21,7 @@
 #include "inventory/inventory-damage.h"
 #include "inventory/inventory-slot-types.h"
 #include "io/files-util.h"
-#include "io/input-key-acceptor.h"
+#include "io/input-context.h"
 #include "io/report.h"
 #include "io/write-diary.h"
 #include "main/music-definitions-table.h"
@@ -51,6 +51,7 @@
 #include "player/special-defense-types.h"
 #include "racial/racial-android.h"
 #include "save/save.h"
+#include "status/bad-status-setter.h"
 #include "status/base-status.h"
 #include "status/element-resistance.h"
 #include "sv-definition/sv-junk-types.h"
@@ -58,6 +59,7 @@
 #include "system/baseitem/baseitem-list.h"
 #include "system/building-type-definition.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/dungeon/quest-definition.h"
 #include "system/enums/monrace/monrace-id.h"
@@ -66,9 +68,9 @@
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/player-type-definition.h"
-#include "system/redrawing-flags-updater.h"
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
+#include "term/z-rand.h"
 #include "util/bit-flags-calculator.h"
 #include "util/enum-converter.h"
 #include "util/string-processor.h"
@@ -111,24 +113,20 @@ static bool acid_minus_ac(CreatureEntity &creature)
     const auto item_name = describe_flavor(creature, item, OD_OMIT_PREFIX | OD_NAME_ONLY);
     const auto item_flags = item.get_flags();
     if (item.ac + item.to_a <= 0) {
-        msg_format(_("%sは既にボロボロだ！", "Your %s is already fully corroded!"), item_name.data());
+        msg_print(_("{}は既にボロボロだ！", "Your {} is already fully corroded!"), item_name);
         return false;
     }
 
     if (item_flags.has(TR_IGNORE_ACID)) {
-        msg_format(_("しかし%sには効果がなかった！", "Your %s is unaffected!"), item_name.data());
+        msg_print(_("しかし{}には効果がなかった！", "Your {} is unaffected!"), item_name);
         return true;
     }
 
-    msg_format(_("%sが酸で腐食した！", "Your %s is corroded!"), item_name.data());
+    msg_print(_("{}が酸で腐食した！", "Your {} is corroded!"), item_name);
     item.to_a--;
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.set_flag(StatusRecalculatingFlag::BONUS);
-    static constexpr auto flags_swrf = {
-        SubWindowRedrawingFlag::EQUIPMENT,
-        SubWindowRedrawingFlag::PLAYER,
-    };
-    rfu.set_flags(flags_swrf);
+    auto &dur = DeferredUpdateRequests::get_instance();
+    dur.set_flag(StatusRecalculatingFlag::BONUS);
+    dur.set_flag(SubWindowRedrawingFlag::PLAYER);
     calc_android_exp(creature);
     return true;
 }
@@ -279,6 +277,32 @@ int cold_dam(CreatureEntity &creature, int dam, std::string_view kb_str, bool au
 }
 
 /*!
+ * @brief 汚物(糞)属性によるプレイヤー損害処理
+ * Hurt the creature with filth (feces)
+ * @param creature 汚物を浴びたクリーチャーへの参照
+ * @param dam 基本ダメージ量
+ * @param kb_str ダメージ原因記述
+ * @param aura オーラよるダメージが原因ならばTRUE
+ * @return 修正HPダメージ量
+ * @details 毒耐性でダメージを軽減し、耐性が無ければ一定確率で毒状態を付与する。
+ */
+int dirt_dam(CreatureEntity &creature, int dam, std::string_view kb_str, bool aura)
+{
+    bool double_resist = is_oppose_pois(creature);
+    dam = dam * calc_pois_damage_rate(creature) / 100;
+    if (dam <= 0) {
+        return 0;
+    }
+
+    int get_damage = take_hit(creature, aura ? DAMAGE_NOESCAPE : DAMAGE_ATTACK, dam, kb_str);
+    if ((aura || !check_multishadow(creature)) && !(double_resist || creature.has_resist_pois())) {
+        (void)BadStatusSetter(creature).mod_poison(randint1(dam) + 1);
+    }
+
+    return get_damage;
+}
+
+/*!
  * @brief プレイヤーの死亡時強制セーブ処理
  * @param creature クリーチャーへの参照
  */
@@ -349,9 +373,8 @@ int take_hit(CreatureEntity &creature, int damage_type, int damage, std::string_
         creature.apply_raw_damage(damage);
     }
 
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.set_flag(MainWindowRedrawingFlag::HP);
-    rfu.set_flag(SubWindowRedrawingFlag::PLAYER);
+    auto &dur = DeferredUpdateRequests::get_instance();
+    dur.set_flag(MainWindowRedrawingFlag::HP);
     if (damage_type != DAMAGE_GENO && creature.hp == 0) {
         chg_virtue(creature, Virtue::SACRIFICE, 1);
         chg_virtue(creature, Virtue::CHANCE, 2);
@@ -504,7 +527,7 @@ void PlayerType::on_death(std::string_view cause)
     play_music(TERM_XTRA_MUSIC_BASIC, MUSIC_BASIC_GAMEOVER);
 
 #ifdef WORLD_SCORE
-    screen_dump = make_screen_dump(*this);
+    capture_screen_dump(*this);
 #endif
     auto hit_from = cause;
     if (is_seppuku) {
@@ -659,8 +682,13 @@ void PlayerType::on_death(std::string_view cause)
     term_clear();
 
     /* 桜散る */
+    auto &rng = get_external_rng();
     for (auto i = 0; i < 40; i++) {
-        term_putstr(randint0(w / 2) * 2, randint0(h), 2, TERM_VIOLET, "υ");
+        // 変数名に x / y を使うと CreatureEntity の同名メンバを隠し MSVC が C4458 を出す。
+        // また Pos2D にまとめると引数の評価順が未規定に戻るため、2 文のまま扱う。
+        const auto petal_x = randint0(rng, w / 2) * 2;
+        const auto petal_y = randint0(rng, h);
+        term_putstr(petal_x, petal_y, 2, TERM_VIOLET, "υ");
     }
 
     auto str = death_message.data();
@@ -695,9 +723,10 @@ void PlayerType::on_death(std::string_view cause)
     term_putstr(w - 1, h - 1, 1, TERM_WHITE, " ");
     flush();
 #ifdef WORLD_SCORE
-    screen_dump = make_screen_dump(*this);
+    capture_screen_dump(*this);
 #endif
-    (void)inkey();
+    // 辞世の句などを画面に表示しただけで、プロンプトは表示していない
+    (void)input_key_with_context(InputKind::ANY_KEY, "");
     return;
 #else
     msg_print(death_message);
@@ -715,17 +744,37 @@ void PlayerType::on_death(std::string_view cause)
  * @param dam_func ダメージ処理を行う関数の参照ポインタ
  * @param message オーラダメージを受けた際のメッセージ
  */
+/*!
+ * @brief オーラ属性に対応する突然変異をソースが持つか [提案C5]
+ * @details FIRE_BODY→火オーラ / ELEC_TOUC→電オーラ。COLD オーラに対応する突然変異は無い。
+ * opt-in (JSON "mutations") 個体のみ true。プレイヤー・非対応では false。
+ */
+static bool source_has_aura_by_mutation(const CreatureEntity &source, MonsterAuraType aura_flag)
+{
+    switch (aura_flag) {
+    case MonsterAuraType::FIRE:
+        return source.has_mutation(PlayerMutationType::FIRE_BODY);
+    case MonsterAuraType::ELEC:
+        return source.has_mutation(PlayerMutationType::ELEC_TOUC);
+    default:
+        return false;
+    }
+}
+
 static void process_aura_damage(const CreatureEntity &source, CreatureEntity &creature, bool immune, MonsterAuraType aura_flag, dam_func dam_func, concptr message)
 {
     auto &monrace = source.get_monrace();
-    if (monrace.aura_flags.has_not(aura_flag) || immune) {
+    const auto has_native_aura = monrace.aura_flags.has(aura_flag);
+    // [提案C5] FIRE_BODY→火オーラ / ELEC_TOUC→電オーラ 突然変異も native オーラと同様に反撃 (opt-in・既定OFF)
+    if ((!has_native_aura && !source_has_aura_by_mutation(source, aura_flag)) || immune) {
         return;
     }
 
     int aura_damage = Dice::roll(1 + (monrace.level / 26), 1 + (monrace.level / 17));
     msg_print(message);
     (*dam_func)(creature, aura_damage, monster_desc(creature, source, MD_WRONGDOER_NAME).data(), true);
-    if (is_original_ap_and_seen(creature, source)) {
+    // 種族由来 (native) オーラのみ思い出フラグを記録する (mutation 由来は monrace 固有でないため記録しない)
+    if (has_native_aura && is_original_ap_and_seen(creature, source)) {
         monrace.r_aura_flags.set(aura_flag);
     }
 
@@ -742,9 +791,11 @@ void touch_zap_player(const CreatureEntity &source, CreatureEntity &creature)
     constexpr auto fire_mes = _("突然とても熱くなった！", "You are suddenly very hot!");
     constexpr auto cold_mes = _("突然とても寒くなった！", "You are suddenly very cold!");
     constexpr auto elec_mes = _("電撃をくらった！", "You get zapped!");
+    constexpr auto dirt_mes = _("汚物にまみれた！", "You are covered with filth!");
     process_aura_damage(source, creature, creature.has_immune_fire() != 0, MonsterAuraType::FIRE, fire_dam, fire_mes);
     process_aura_damage(source, creature, creature.has_immune_cold() != 0, MonsterAuraType::COLD, cold_dam, cold_mes);
     process_aura_damage(source, creature, creature.has_immune_elec() != 0, MonsterAuraType::ELEC, elec_dam, elec_mes);
+    process_aura_damage(source, creature, false, MonsterAuraType::DIRT, dirt_dam, dirt_mes);
 }
 
 /*!

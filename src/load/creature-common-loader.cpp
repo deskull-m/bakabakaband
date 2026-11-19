@@ -7,6 +7,17 @@
 #include "util/enum-converter.h"
 #include <vector>
 
+namespace {
+/*!
+ * @brief セーブデータバージョン 53〜59 の時限効果ダンプ件数
+ * @details 当時は件数を保存せず `CreatureTimedEffect::MAX` を読込側でも使っていた
+ *          ため、enum へ値を追加すると旧セーブが読めなくなる構造だった。
+ *          当時の値をここに凍結し、v60 以降は件数を自己記述にしてある。
+ *          **この値は歴史的定数なので変更してはいけない。**
+ */
+constexpr auto TIMED_EFFECT_COUNT_UNTIL_V59 = 56;
+}
+
 /*!
  * @brief CreatureEntity の共通基底フィールドをセーブデータから読み込む
  * @param creature 復元対象クリーチャー
@@ -47,8 +58,23 @@ void rd_creature_common(CreatureEntity &creature)
         creature.set_timed_effect(CreatureTimedEffect::INVULNERABILITY, rd_s16b());
     } else {
         // v53 以降: 全時限効果を列挙順にダンプ (wr_creature_common と対称)。
-        for (auto i = 0; i < enum2i(CreatureTimedEffect::MAX); i++) {
-            creature.set_timed_effect(i2enum<CreatureTimedEffect>(i), rd_s16b());
+        //
+        // 件数の決め方がバージョンで違う点に注意:
+        //   v53〜v59 … 件数を保存していないため、**当時の `CreatureTimedEffect::MAX`
+        //               (= 56) で固定**して読む。現在の MAX を使うと enum に値を
+        //               追加した瞬間に旧セーブのストリームがずれる。
+        //   v60 以降 … 先頭の u16 件数をそのまま使う (自己記述)。以降 enum へ
+        //               値を追加してもセーブデータバージョンの更新は不要。
+        const auto count = loading_savefile_version_is_older_than(60)
+                               ? TIMED_EFFECT_COUNT_UNTIL_V59
+                               : rd_u16b();
+        constexpr auto current_count = enum2i(CreatureTimedEffect::MAX);
+        for (auto i = 0; i < count; i++) {
+            const auto value = rd_s16b();
+            // 現在の enum に無い (将来削除された / 未知の) 分は読み捨てる
+            if (i < current_count) {
+                creature.set_timed_effect(i2enum<CreatureTimedEffect>(i), value);
+            }
         }
     }
 

@@ -25,6 +25,7 @@
 #include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/dungeon/quest-definition.h"
+#include "system/dungeon/quest-fixed-map.h"
 #include "system/floor/floor-info.h" // @todo 相互参照、将来的に削除する.
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
@@ -34,8 +35,12 @@
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
 #include "world/world.h"
+#include <fmt/format.h>
 #include <sstream>
 #include <stdexcept>
+#ifndef JP
+#include "locale/english.h"
+#endif
 
 /*!
  * @brief クエスト突入時のメッセージテーブル
@@ -48,6 +53,64 @@ const std::vector<std::string> quest_entered_messages = {
     _("何かが階段の上に書いてある:", "Something is written on the staircase"),
     _("巻物を見つけた。メッセージが書いてある:", "You find a scroll with the following message"),
 };
+}
+
+/*!
+ * @brief JSONC 化済み固定クエストの説明文を quest_text_lines へ収集する
+ * @param quest_id 対象クエストID
+ * @return JSONC のレイアウトから説明文を設定した場合 true、未変換で従来経路に委ねる場合 false
+ * @details 旧 ?:[LEQ/EQU $QUESTnn ...] / [EQU $QUEST_TYPEnn ...] をクエストの現在状態で再現する。
+ * 条件を満たすブロックの行を上限まで追加する (通常はステータスで排他となり1ブロックのみ該当)。
+ */
+bool populate_quest_text_lines(QuestId quest_id)
+{
+    // 旧経路と同じく、対象クエストにレイアウトが無い場合でも表示バッファは必ず空にする
+    // (残すと直前に表示したクエストの説明文が別クエストに紛れて表示され得る)。
+    quest_text_lines.clear();
+    const auto fixed_map = QuestFixedMapList::get_instance().find(quest_id);
+    if (!fixed_map) {
+        return false;
+    }
+
+    // テキスト表示のみ: 静的メタデータは再適用しない (実行時に変化した type 等を壊さないため。
+    // メタデータの確立は受託時(get_questinfo do_init)・フロア生成・reset_all・ロードで行う)
+    const auto &quest = QuestList::get_instance().get_quest(quest_id);
+    for (const auto &block : fixed_map->descriptions) {
+        if (block.status_at_most && (enum2i(quest.status) > enum2i(*block.status_at_most))) {
+            continue;
+        }
+        if (block.status_equals && (quest.status != *block.status_equals)) {
+            continue;
+        }
+        if (block.quest_type && (quest.type != *block.quest_type)) {
+            continue;
+        }
+
+        const auto &lines = _(block.lines_ja, block.lines_en);
+        for (const auto &line : lines) {
+            if (std::ssize(quest_text_lines) >= QUEST_TEST_LINES_MAX) {
+                return true;
+            }
+            quest_text_lines.push_back(line);
+        }
+    }
+
+    return true;
+}
+
+/*!
+ * @brief JSONC 化済みクエストの静的メタデータを QuestType へ適用する (旧 INIT_ASSIGN 相当)
+ * @param quest_id 対象クエストID
+ */
+void assign_json_quest_metadata(QuestId quest_id)
+{
+    const auto fixed_map = QuestFixedMapList::get_instance().find(quest_id);
+    if (fixed_map) {
+        auto &quest = QuestList::get_instance().get_quest(quest_id);
+        // QUESTOR 付与を含む静的メタデータを確立し、報酬の確定・アーティファクト予約は受託時のみ行う。
+        apply_quest_metadata(*fixed_map, quest);
+        resolve_quest_reward(*fixed_map, quest);
+    }
 }
 
 /*!
@@ -167,12 +230,12 @@ void quest_discovery(QuestId quest_id)
     msg_print(rand_choice(quest_entered_messages));
     msg_erase();
     if (num_subjugation != 1) {
-        msg_format(_("注意しろ！この階は%d体の%sによって守られている！", "Be warned, this level is guarded by %d %s!"), num_subjugation, name.data());
+        msg_print(_("注意しろ！この階は{}体の{}によって守られている！", "Be warned, this level is guarded by {} {}!"), num_subjugation, name);
         return;
     }
 
     if (!monrace.is_dead_unique()) {
-        msg_format(_("注意せよ！この階は%sによって守られている！", "Beware, this level is protected by %s!"), name.data());
+        msg_print(_("注意せよ！この階は{}によって守られている！", "Beware, this level is protected by {}!"), name);
         return;
     }
 

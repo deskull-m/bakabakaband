@@ -11,23 +11,24 @@
 #include "mspell/mspell-util.h"
 #include "system/creature-entity.h"
 #include "system/floor/floor-info.h"
+#include "util/string-processor.h"
 #include "view/display-messages.h"
 
-static bool message_curse(CreatureEntity &creature, MONSTER_IDX m_idx, MONSTER_IDX t_idx, std::string_view msg1, std::string_view msg2, std::string_view msg3, int target_type)
+static bool message_curse(CreatureEntity &creature, MONSTER_IDX m_idx, MONSTER_IDX t_idx, CurseData::Format msg1, CurseData::Format msg2, CurseData::Format msg3, int target_type)
 {
-    const auto m_name = monster_name(creature, m_idx);
+    const auto m_name = str_upcase_first(monster_name(creature, m_idx));
     const auto t_name = monster_name(creature, t_idx);
 
     if (target_type == MONSTER_TO_PLAYER) {
         disturb(creature, true, true);
         if (creature.is_blind()) {
-            msg_format(msg1.data(), m_name.data());
+            msg_print(msg1, std::string_view(m_name), std::string_view(t_name));
         } else {
-            msg_format(msg2.data(), m_name.data());
+            msg_print(msg2, std::string_view(m_name), std::string_view(t_name));
         }
     } else if (target_type == MONSTER_TO_MONSTER) {
         if (see_monster(creature, m_idx)) {
-            msg_format(msg3.data(), m_name.data(), t_name.data());
+            msg_print(msg3, std::string_view(m_name), std::string_view(t_name));
         } else {
             creature.get_floor()->monster_noise = true;
         }
@@ -35,7 +36,7 @@ static bool message_curse(CreatureEntity &creature, MONSTER_IDX m_idx, MONSTER_I
     return false;
 }
 
-CurseData::CurseData(const std::string_view &msg1, const std::string_view &msg2, const std::string_view &msg3, const AttributeType &typ)
+CurseData::CurseData(Format msg1, Format msg2, Format msg3, const AttributeType &typ)
     : MSpellData([=](CreatureEntity &creature, auto m_idx, auto t_idx, int target_type) {
         return message_curse(creature, m_idx, t_idx, msg1, msg2, msg3, target_type);
     },

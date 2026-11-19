@@ -60,6 +60,35 @@ std::string PlayerCut::get_cut_mes(PlayerCutRank stun_rank)
 }
 
 /*!
+ * @brief 切り傷ランクに対応する 3 人称メッセージ書式を返す (提案D2 第3弾).
+ * @param cut_rank 切り傷ランク
+ * @return "{}" にクリーチャー名が入る書式文字列
+ */
+const char *PlayerCut::get_cut_mes_others(PlayerCutRank cut_rank)
+{
+    switch (cut_rank) {
+    case PlayerCutRank::NONE:
+        return "";
+    case PlayerCutRank::GRAZING:
+        return _("{}はかすり傷を負った。", "{} has been given a graze.");
+    case PlayerCutRank::LIGHT:
+        return _("{}は軽い傷を負った。", "{} has been given a light cut.");
+    case PlayerCutRank::BAD:
+        return _("{}はひどい傷を負った。", "{} has been given a bad cut.");
+    case PlayerCutRank::NASTY:
+        return _("{}は大変な傷を負った。", "{} has been given a nasty cut.");
+    case PlayerCutRank::SEVERE:
+        return _("{}は重大な傷を負った。", "{} has been given a severe cut.");
+    case PlayerCutRank::DEEP:
+        return _("{}はひどい深手を負った。", "{} has been given a deep gash.");
+    case PlayerCutRank::MORTAL:
+        return _("{}は致命的な傷を負った。", "{} has been given a mortal wound.");
+    default:
+        THROW_EXCEPTION(std::logic_error, "Invalid CutRank is specified!");
+    }
+}
+
+/*!
  * @brief モンスター打撃による切り傷値を返す.
  * @param total 痛恨の一撃でない場合の最大ダメージ (ダイスXdY に対し、X*Y)
  * @param dam プレイヤーに与えた実際のダメージ

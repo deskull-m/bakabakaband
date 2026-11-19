@@ -6,7 +6,7 @@
 #include "main/sound-definitions-table.h"
 #include "main/sound-of-music.h"
 #include "system/creature-entity.h"
-#include "system/redrawing-flags-updater.h"
+#include "system/deferred-update-requests.h"
 #include "view/display-messages.h"
 
 /*!
@@ -43,18 +43,14 @@ bool set_tim_sh_fire(CreatureEntity &creature, TIME_EFFECT v, bool do_dec)
     }
 
     creature.set_timed_effect(CreatureTimedEffect::TIM_SH_FIRE, v);
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
+    auto &dur = DeferredUpdateRequests::get_instance();
+    dur.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
 
     if (!notice) {
         return false;
     }
 
-    if (disturb_state || Travel::get_instance().is_ongoing()) {
-        disturb(creature, false, true);
-    }
-
-    rfu.set_flag(StatusRecalculatingFlag::BONUS);
-    handle_stuff(creature);
+    dur.set_flag(StatusRecalculatingFlag::BONUS);
+    finish_timed_effect_change(creature);
     return true;
 }

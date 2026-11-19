@@ -7,20 +7,22 @@
 #include <string>
 #include <vector>
 
-#define MAX_LINELEN 1024
-#define MAX_AUTOPICK_DEFAULT 200
-#define MAX_YANK MAX_LINELEN
-#define MAX_LINES 6000
+constexpr auto MAX_LINELEN = 1024;
+constexpr auto MAX_LINES = 6000;
 
-#define PT_DEFAULT 0
-#define PT_WITH_PNAME 1
+enum class PickType {
+    DEFAULT = 0, //!< picktype.prf
+    WITH_PNAME = 1, //!< picktype-<playername>.prf
+};
 
-#define MARK_MARK 0x01
-#define MARK_BY_SHIFT 0x02
+constexpr auto MARK_MARK = 0x01;
+constexpr auto MARK_BY_SHIFT = 0x02;
 
-#define LSTAT_BYPASS 0x01
-#define LSTAT_EXPRESSION 0x02
-#define LSTAT_AUTOREGISTER 0x04
+constexpr auto LSTAT_BYPASS = 0x01;
+constexpr auto LSTAT_EXPRESSION = 0x02;
+constexpr auto LSTAT_AUTOREGISTER = 0x04;
+constexpr auto LSTAT_EXPRESSION_ERROR = 0x08;
+constexpr auto LSTAT_INCLUDE = 0x10;
 
 /*!
  * @struct autopick_type
@@ -38,15 +40,21 @@ struct autopick_type {
     void remove(int flag);
 };
 
-/*
- * Data struct for text editor
- */
 class ItemEntity;
-struct text_body_type {
-    text_body_type(int cx, int cy); //!< @details 画面表示はX→Yの順番であることが多いので一応揃える.
+
+/*!
+ * @brief 自動拾い設定ファイル用テキストエディタの状態を保持するクラス
+ *
+ * 編集中の行データ・各行の状態・カーソル位置・画面スクロール位置・選択範囲・検索条件・ヤンクバッファ・再描画用ダーティ情報・変更フラグなどをまとめて管理する。
+ * ユーザがエディタを操作する度に、このクラスのインスタンスを通じて状態が更新される。
+ */
+class AutopickTextBody {
+public:
+    AutopickTextBody(int cx, int cy); // 画面表示はX→Yの順番であることが多いので一応揃える.
 
     void adjust_cursor_column();
     void update_cursor_column_record(int com_id);
+    bool is_cursor_on_second_byte_of_kanji() const;
 
     int cx;
     int cy;
@@ -76,10 +84,12 @@ struct text_body_type {
 
     uint16_t dirty_flags = 0;
     int dirty_line = -1;
-    int filename_mode = 0;
+    PickType filename_mode{};
     int old_com_id = 0;
 
     bool changed = false;
+
+    int count_line() const;
 };
 
 /*
@@ -88,8 +98,7 @@ struct text_body_type {
 extern std::vector<autopick_type> autopick_list;
 extern ItemEntity autopick_last_destroyed_object;
 
-void auto_inscribe_item(ItemEntity *o_ptr, int idx);
-int count_line(text_body_type *tb);
+bool auto_inscribe_item(ItemEntity &item, int idx);
 
 /*!
  * @brief 最大行数を超えるかチェックする

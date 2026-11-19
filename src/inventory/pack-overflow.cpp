@@ -20,7 +20,7 @@ void pack_overflow(CreatureEntity &creature)
         return;
     }
 
-    update_creature(creature);
+    update_inventory_arrangement(creature);
     if (!creature.inventory[INVEN_PACK]->is_valid()) {
         return;
     }
@@ -30,9 +30,9 @@ void pack_overflow(CreatureEntity &creature)
     msg_print(_("ザックからアイテムがあふれた！", "Your pack overflows!"));
 
     const auto item_name = describe_flavor(creature, item, 0);
-    msg_format(_("%s(%c)を落とした。", "You drop %s (%c)."), item_name.data(), index_to_label(INVEN_PACK));
+    msg_print(_("{}({:c})を落とした。", "You drop {} ({:c})."), item_name, index_to_label(INVEN_PACK));
     (void)drop_near(creature, item, creature.get_position(), false);
 
     vary_item(creature, INVEN_PACK, -255);
-    handle_stuff(creature);
+    handle_stuff_with_inventory_arrangement(creature);
 }

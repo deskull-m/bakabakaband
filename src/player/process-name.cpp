@@ -5,6 +5,7 @@
 #include "io/files-util.h"
 #include "player/player-personality.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
 #include "util/angband-files.h"
@@ -12,6 +13,7 @@
 #include "util/string-processor.h"
 #include "view/display-player-misc-info.h"
 #include "world/world.h"
+#include <fmt/format.h>
 #include <sstream>
 #ifdef SAVEFILE_USE_UID
 #include "main-unix/unix-user-ids.h"
@@ -43,7 +45,7 @@ void process_player_name(CreatureEntity &creature, bool is_new_savefile)
 #else
         if (iscntrl(name_c_str[i])) {
 #endif
-            quit_fmt(_("'%s' という名前は不正なコントロールコードを含んでいます。", "The name '%s' contains control chars!"), name_c_str);
+            quit(fmt::format(_("'{}' という名前は不正なコントロールコードを含んでいます。", "The name '{}' contains control chars!"), creature.name));
         }
     }
 
@@ -128,6 +130,8 @@ void get_name(CreatureEntity &creature)
 {
     const auto finalizer = util::make_finalizer([&creature]() {
         display_player_misc_info(creature);
+        // 名前を表示するプレイヤーの情報のサブウィンドウも描き直す (店の中ではプレイヤーのターンごとの要求が来ない)
+        DeferredUpdateRequests::get_instance().set_flag(SubWindowRedrawingFlag::PLAYER);
     });
 
     std::string initial_name = creature.name;
@@ -142,4 +146,29 @@ void get_name(CreatureEntity &creature)
     if (initial_name.empty()) {
         creature.name = "PLAYER";
     }
+}
+
+/*!
+ * @brief 条件式の $PLAYER で使うプレイヤー名を作る
+ * @param name プレイヤー名
+ * @return 空白と括弧を「_」に置き換えた名前
+ * @details 2バイト文字は、後半バイトが空白や括弧と同じ値でもそのまま残す。
+ */
+std::string make_player_name_for_expression(std::string_view name)
+{
+    std::string result;
+    for (size_t i = 0; i < name.length();) {
+#ifdef JP
+        if (is_multibyte_char_at(name, i)) {
+            result += name.substr(i, 2);
+            i += 2;
+            continue;
+        }
+#endif
+        const auto c = name[i];
+        result += (std::string_view(" []").find(c) != std::string_view::npos) ? '_' : c;
+        ++i;
+    }
+
+    return result;
 }

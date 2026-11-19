@@ -16,7 +16,7 @@
 #include "status/bad-status-setter.h"
 #include "system/angband-system.h"
 #include "system/creature-entity.h"
-#include "system/redrawing-flags-updater.h"
+#include "system/deferred-update-requests.h"
 #include "view/display-messages.h"
 #include "world/world.h"
 
@@ -224,9 +224,9 @@ bool set_food(CreatureEntity &creature, TIME_EFFECT v)
         disturb(creature, false, false);
     }
 
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.set_flag(StatusRecalculatingFlag::BONUS);
-    rfu.set_flag(MainWindowRedrawingFlag::HUNGER);
+    auto &dur = DeferredUpdateRequests::get_instance();
+    dur.set_flag(StatusRecalculatingFlag::BONUS);
+    dur.set_flag(MainWindowRedrawingFlag::HUNGER);
     handle_stuff(creature);
 
     return true;

@@ -3,12 +3,12 @@
 #include "artifact/fixed-art-types.h"
 #include "dungeon/quest.h"
 #include "floor/floor-object.h"
-#include "floor/wild.h"
 #include "grid/object-placer.h"
 #include "info-reader/general-parser.h"
 #include "info-reader/parse-error-types.h"
 #include "info-reader/random-grid-effect-types.h"
 #include "io/tokenizer.h"
+#include "monster-floor/monster-corpse-leaver.h"
 #include "monster-floor/monster-generator.h"
 #include "monster-floor/monster-remover.h"
 #include "monster-floor/place-monster-types.h"
@@ -16,6 +16,7 @@
 #include "object-enchant/item-apply-magic.h"
 #include "object-enchant/item-magic-applier.h"
 #include "sv-definition/sv-scroll-types.h"
+#include "system/angband-system.h"
 #include "system/artifact-type-definition.h"
 #include "system/artifact/artifact-record.h"
 #include "system/baseitem/baseitem-definition.h"
@@ -23,15 +24,14 @@
 #include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/dungeon/quest-definition.h"
+#include "system/dungeon/quest-fixed-map.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
 #include "window/main-window-util.h"
-
-// PARSE_ERROR_MAXが既にあり扱い辛いのでここでconst宣言.
-static const int PARSE_CONTINUE = 255;
+#include <algorithm>
 
 qtwg_type *initialize_quest_generator_type(qtwg_type *qtwg_ptr, int ymin, int xmin, int ymax, int xmax, int *y, int *x)
 {
@@ -55,6 +55,11 @@ qtwg_type *initialize_quest_generator_type(qtwg_type *qtwg_ptr, int ymin, int xm
  */
 static void drop_here(FloorType &floor, ItemEntity &&item, POSITION y, POSITION x)
 {
+    // 死体・骨は床のアイテムにせず死体として横たえる (床の亡骸は MonsterCorpse だけが表す)
+    if (lay_remains_as_corpses(floor, item, { y, x })) {
+        return;
+    }
+
     const auto item_idx = floor.pop_empty_index_item();
     auto &dropped_item = *floor.o_list[item_idx];
     dropped_item = std::move(item);
@@ -185,143 +190,6 @@ static void parse_qtw_D(CreatureEntity &creature, qtwg_type *qtwg_ptr, char *s)
     }
 }
 
-static bool parse_qtw_QQ(QuestType *q_ptr, const std::vector<std::string> &tokens, int num)
-{
-    if (tokens[1][0] != 'Q') {
-        return false;
-    }
-
-    if ((init_flags & INIT_ASSIGN) == 0) {
-        return true;
-    }
-
-    if (num < 9) {
-        return true;
-    }
-
-    q_ptr->type = i2enum<QuestKindType>(std::stoi(tokens[2]));
-    q_ptr->num_mon = std::stoi(tokens[3]);
-    q_ptr->cur_num = std::stoi(tokens[4]);
-    q_ptr->max_num = std::stoi(tokens[5]);
-    q_ptr->level = std::stoi(tokens[6]);
-    q_ptr->r_idx = i2enum<MonraceId>(std::stoi(tokens[7]));
-    const auto fa_id = i2enum<FixedArtifactId>(std::stoi(tokens[8]));
-    q_ptr->dungeon = i2enum<DungeonId>(std::stoi(tokens[9]));
-
-    if (num > 10) {
-        q_ptr->flags = std::stoi(tokens[10]);
-    }
-
-    auto &monrace = q_ptr->get_bounty();
-    if (monrace.kind_flags.has(MonsterKindType::UNIQUE)) {
-        monrace.misc_flags.set(MonsterMiscType::QUESTOR);
-    }
-
-    if (fa_id == FixedArtifactId::NONE) {
-        return true;
-    }
-
-    q_ptr->set_reward(fa_id);
-    return true;
-}
-
-/*!
- * @todo 処理がどうなっているのかいずれチェックする
- */
-static bool parse_qtw_QR(QuestType *q_ptr, const std::vector<std::string> &tokens, int num)
-{
-    if (tokens[1][0] != 'R') {
-        return false;
-    }
-
-    if ((init_flags & INIT_ASSIGN) == 0) {
-        return true;
-    }
-
-    int count = 0;
-    auto reward_idx = FixedArtifactId::NONE;
-    for (auto idx = 2; idx < num; idx++) {
-        const auto fa_id = i2enum<FixedArtifactId>(std::stoi(tokens[idx]));
-        if (fa_id == FixedArtifactId::NONE) {
-            continue;
-        }
-
-        if (ArtifactRecords::get_instance().get_generated(fa_id)) {
-            continue;
-        }
-
-        count++;
-        if (one_in_(count)) {
-            reward_idx = fa_id;
-        }
-    }
-
-    if (reward_idx != FixedArtifactId::NONE) {
-        q_ptr->set_reward(reward_idx);
-    } else {
-        q_ptr->type = QuestKindType::KILL_ALL;
-    }
-
-    return true;
-}
-
-/*!
- * @brief t_info、q_info、w_infoにおけるQトークンをパースする
- * @param qtwg_ptr トークンパース構造体への参照ポインタ
- * @param tokens トークン保管文字列
- * @return エラーコード、但しPARSE_CONTINUEの時は処理続行
- */
-static int parse_qtw_Q(qtwg_type *qtwg_ptr)
-{
-    if (qtwg_ptr->buf[0] != 'Q') {
-        return PARSE_CONTINUE;
-    }
-
-#ifdef JP
-    if (qtwg_ptr->buf[2] == '$') {
-        return PARSE_ERROR_NONE;
-    }
-#else
-    if (qtwg_ptr->buf[2] != '$') {
-        return PARSE_ERROR_NONE;
-    }
-#endif
-
-    const auto tokens = tokenize(qtwg_ptr->buf + _(2, 3), 33);
-    const auto size = tokens.size();
-    if (size < 3) {
-        return PARSE_ERROR_TOO_FEW_ARGUMENTS;
-    }
-
-    auto &quests = QuestList::get_instance();
-    auto &quest = quests.get_quest(i2enum<QuestId>(std::stoi(tokens[0])));
-    if (parse_qtw_QQ(&quest, tokens, size)) {
-        return PARSE_ERROR_NONE;
-    }
-
-    if (parse_qtw_QR(&quest, tokens, size)) {
-        return PARSE_ERROR_NONE;
-    }
-
-    if (tokens[1][0] == 'N') {
-        if (init_flags & (INIT_ASSIGN | INIT_SHOW_TEXT | INIT_NAME_ONLY)) {
-            quest.name = tokens[2];
-        }
-
-        return PARSE_ERROR_NONE;
-    }
-
-    if (tokens[1][0] == 'T') {
-        if ((init_flags & INIT_SHOW_TEXT) && (std::ssize(quest_text_lines) < QUEST_TEST_LINES_MAX)) {
-            quest_text_lines.emplace_back(tokens[2]);
-        }
-
-        return PARSE_ERROR_NONE;
-    }
-
-    return PARSE_ERROR_GENERIC;
-}
-
 static bool parse_qtw_P(CreatureEntity &creature, qtwg_type *qtwg_ptr)
 {
     if (qtwg_ptr->buf[0] != 'P') {
@@ -388,22 +256,22 @@ static bool parse_qtw_P(CreatureEntity &creature, qtwg_type *qtwg_ptr)
  * @return エラーコード
  * @todo クエスト情報のみを読み込む手段と実際にフロアデータまで読み込む処理は分離したい
  */
-parse_error_type generate_fixed_map_floor(CreatureEntity &creature, qtwg_type *qtwg_ptr, process_dungeon_file_pf parse_fixed_map)
+ParseErrorType generate_fixed_map_floor(CreatureEntity &creature, qtwg_type *qtwg_ptr, process_dungeon_file_pf parse_fixed_map)
 {
     if (!qtwg_ptr->buf[0]) {
-        return PARSE_ERROR_NONE;
+        return ParseErrorType::NONE;
     }
 
     if (iswspace(qtwg_ptr->buf[0])) {
-        return PARSE_ERROR_NONE;
+        return ParseErrorType::NONE;
     }
 
     if (qtwg_ptr->buf[0] == '#') {
-        return PARSE_ERROR_NONE;
+        return ParseErrorType::NONE;
     }
 
     if (qtwg_ptr->buf[1] != ':') {
-        return PARSE_ERROR_GENERIC;
+        return ParseErrorType::GENERIC;
     }
 
     if (qtwg_ptr->buf[0] == '%') {
@@ -418,32 +286,16 @@ parse_error_type generate_fixed_map_floor(CreatureEntity &creature, qtwg_type *q
     if (qtwg_ptr->buf[0] == 'D') {
         char *s = qtwg_ptr->buf + 2;
         if (init_flags & INIT_ONLY_BUILDINGS) {
-            return PARSE_ERROR_NONE;
+            return ParseErrorType::NONE;
         }
 
         parse_qtw_D(creature, qtwg_ptr, s);
         (*qtwg_ptr->y)++;
-        return PARSE_ERROR_NONE;
-    }
-
-    parse_error_type parse_result_Q = i2enum<parse_error_type>(parse_qtw_Q(qtwg_ptr));
-    if (parse_result_Q != PARSE_CONTINUE) {
-        return parse_result_Q;
-    }
-
-    if (qtwg_ptr->buf[0] == 'W') {
-        const Pos2D pos_initial(*qtwg_ptr->y, *qtwg_ptr->x);
-        const auto pos = parse_line_wilderness(qtwg_ptr->buf, qtwg_ptr->xmin, qtwg_ptr->xmax, pos_initial);
-        if (pos) {
-            *qtwg_ptr->y = pos->y;
-            *qtwg_ptr->x = pos->x;
-        }
-
-        return pos.error_or(PARSE_ERROR_NONE);
+        return ParseErrorType::NONE;
     }
 
     if (parse_qtw_P(creature, qtwg_ptr)) {
-        return PARSE_ERROR_NONE;
+        return ParseErrorType::NONE;
     }
 
     if (qtwg_ptr->buf[0] == 'B') {
@@ -452,7 +304,7 @@ parse_error_type generate_fixed_map_floor(CreatureEntity &creature, qtwg_type *q
 
     if (qtwg_ptr->buf[0] == 'V') {
         if (init_flags & INIT_ONLY_FEATURES) {
-            return PARSE_ERROR_NONE;
+            return ParseErrorType::NONE;
         }
         return parse_line_vault(creature.get_floor(), qtwg_ptr->buf);
     }
@@ -463,8 +315,134 @@ parse_error_type generate_fixed_map_floor(CreatureEntity &creature, qtwg_type *q
 
     if (qtwg_ptr->buf[0] == 'M') {
         // skip
-        return PARSE_ERROR_NONE;
+        return ParseErrorType::NONE;
     }
 
-    return PARSE_ERROR_GENERIC;
+    return ParseErrorType::GENERIC;
+}
+
+/*!
+ * @brief startVariants から現在の退出クエストに合う開始位置を選ぶ
+ */
+static const QuestStartPosition *select_quest_start(const QuestFixedMap &fixed_map)
+{
+    if (fixed_map.starts.empty()) {
+        return nullptr;
+    }
+
+    const auto current_leaving = enum2i(leaving_quest);
+    const QuestStartPosition *fallback = nullptr;
+    for (const auto &start : fixed_map.starts) {
+        if (!start.leaving_quest) {
+            fallback = &start;
+            continue;
+        }
+
+        if (*start.leaving_quest == current_leaving) {
+            return &start;
+        }
+    }
+
+    // 条件付きのみで一致が無い場合は配置しない (旧挙動: 該当 ?: が無ければ P: を実行しない)
+    return fallback;
+}
+
+ParseErrorType generate_quest_floor_from_json(CreatureEntity &creature, QuestType &quest, const QuestFixedMap &fixed_map)
+{
+    // 1. 共通ベース凡例 (X/./%/D/< など) を letter[] へ適用 (旧 QuestPreferences.txt、起動時に読込済み)
+    for (const auto &[symbol, cell] : QuestFixedMapList::get_instance().get_base_legend()) {
+        letter[static_cast<uint8_t>(symbol)] = cell.grid;
+    }
+
+    // 2. このクエスト固有の凡例を letter[] に上書き (報酬は受託時 resolve_quest_reward で解決済み)
+    for (const auto &[symbol, cell] : fixed_map.legend) {
+        auto grid = cell.grid;
+        if (cell.object_is_quest_reward && quest.has_reward() && !quest.is_reward_instant_artifact()) {
+            grid.object = quest.get_reward_bi_id();
+        }
+        if (cell.artifact_is_quest_reward) {
+            grid.artifact = quest.get_reward().value_or(FixedArtifactId::NONE);
+        }
+
+        letter[static_cast<uint8_t>(symbol)] = grid;
+    }
+
+    if (!fixed_map.has_map()) {
+        return ParseErrorType::NONE;
+    }
+
+    // 3. マップバリアント選択: 旧 $RANDOMn は seed_town % n で決まる (乱数ではなくキャラ毎に固定)
+    const auto variant_count = fixed_map.maps.size();
+    const auto variant_index = (variant_count <= 1) ? 0 : (AngbandSystem::get_instance().get_seed_town() % variant_count);
+    const auto &rows = fixed_map.maps[variant_index];
+
+    // 4. 既存のセル配置ロジックでグリッドを敷く
+    auto y = 0;
+    auto x = 0;
+    qtwg_type qg;
+    initialize_quest_generator_type(&qg, 0, 0, MAX_HGT, MAX_WID, &y, &x);
+    for (const auto &row : rows) {
+        std::string buffer(row);
+        parse_qtw_D(creature, &qg, buffer.data());
+        (*qg.y)++;
+    }
+
+    // 5. 開始位置とフロアサイズ (parse_qtw_P を "P:y:x" で再利用)
+    if (const auto *start = select_quest_start(fixed_map); start != nullptr) {
+        std::string p_line = "P:" + std::to_string(start->y) + ":" + std::to_string(start->x);
+        qg.buf = p_line.data();
+        parse_qtw_P(creature, &qg);
+    }
+
+    return ParseErrorType::NONE;
+}
+
+/*!
+ * @brief JSONCから読み込んだ固定クエストのレイアウトからフロアサイズだけを求める
+ * @param creature クリーチャーへの参照
+ * @param fixed_map 対象クエストのレイアウト情報
+ * @return レイアウトからサイズを決定できた場合 true
+ * @details
+ * 旧 INIT_GET_SIZE 相当 (bakabakaband 独自。クエスト突入前にマップサイズを先に確定させる)。
+ * 旧経路は D: 行を実際に敷きながら y/x を数えて P: で確定させていたが、サイズを知るだけなら
+ * 行数と桁数から求まるため、グリッドを書き換えずに済ませる。
+ */
+bool get_quest_floor_size_from_json(CreatureEntity &creature, const QuestFixedMap &fixed_map)
+{
+    if (!fixed_map.has_map()) {
+        return false;
+    }
+
+    // バリアントによって大きさが変わることは無いが、生成時と同じ選び方をしておく
+    const auto variant_count = fixed_map.maps.size();
+    const auto variant_index = (variant_count <= 1) ? 0 : (AngbandSystem::get_instance().get_seed_town() % variant_count);
+    const auto &rows = fixed_map.maps[variant_index];
+    if (rows.empty()) {
+        return false;
+    }
+
+    auto width = 0;
+    for (const auto &row : rows) {
+        width = std::max<int>(width, static_cast<int>(row.length()));
+    }
+
+    width = std::min(width, MAX_WID);
+    const auto height = std::min<int>(static_cast<int>(rows.size()), MAX_HGT);
+
+    auto panels_y = height / SCREEN_HGT;
+    if (height % SCREEN_HGT) {
+        panels_y++;
+    }
+
+    auto panels_x = width / SCREEN_WID;
+    if (width % SCREEN_WID) {
+        panels_x++;
+    }
+
+    auto &floor = *creature.get_floor();
+    floor.height = panels_y * SCREEN_HGT;
+    floor.width = panels_x * SCREEN_WID;
+    panel_row_min = floor.height;
+    panel_col_min = floor.width;
+    return true;
 }

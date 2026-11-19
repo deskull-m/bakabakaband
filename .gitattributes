@@ -1,0 +1,41 @@
+# リポジトリ全体の改行コード方針
+#
+# ゲームデータが CRLF で混入すると、C++ 側のパーサが行末に残る '\r' を
+# 処理できず不具合になる。実例:
+#   - init_info_txt() は '\r' だけの行を不正な行として扱い解析エラーにする
+#     (VaultDefinitions.txt が CRLF で commit されており Linux 版の起動が
+#      「'VaultDefinitions.txt'ファイルの 2 行目にエラー。」で止まっていた)
+#   - angband_fgets() は非印字文字を '?' に置換するため、固定マップの各行末に
+#     余計な '?' が 1 文字混入する
+# いずれも ifstream / fgets のテキストモードが CRLF を畳む Windows では
+# 顕在化せず、Linux でのみ壊れる。そこで既定でテキストを LF に正規化し、
+# Windows 専用ファイルだけを従来どおり CRLF のまま扱う。
+
+# 既定: Git がテキストと判定したファイルはリポジトリ内で LF に正規化する
+* text=auto
+
+# ゲームデータ (C++ のパーサが直接読む) は作業ツリーでも LF に固定する
+lib/**/*.txt text eol=lf
+lib/**/*.jsonc text eol=lf
+lib/**/*.prf text eol=lf
+lib/**/*.cfg text eol=lf
+lib/**/*.hlp text eol=lf
+
+# シェルスクリプトは LF でないと実行できない
+*.sh text eol=lf
+
+# Windows 専用ファイルは CRLF のまま (Visual Studio が扱うので変換しない)
+*.sln -text
+*.vcxproj -text
+*.filters -text
+*.props -text
+*.config -text
+*.bat -text
+
+# バイナリ (自動判定に任せず明示する)
+*.png binary
+*.bmp binary
+*.ico binary
+*.wav binary
+*.ogg binary
+*.raw binary

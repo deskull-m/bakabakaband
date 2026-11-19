@@ -2,6 +2,9 @@
 
 #include "system/angband.h"
 #include "util/dice.h"
+#include <fmt/base.h>
+#include <string_view>
+#include <tl/optional.hpp>
 
 enum class AttributeType;
 enum class BlowEffectType;
@@ -10,6 +13,9 @@ enum class RaceBlowMethodType;
 
 /* monster-attack-monster type*/
 class CreatureEntity;
+
+//! 打撃の説明の書式。{} で対象の名前を受ける
+using MonsterBlowFormat = fmt::format_string<std::string_view>;
 struct mam_type {
     BlowEffectType attribute{};
     MONSTER_IDX m_idx = 0;
@@ -27,7 +33,7 @@ struct mam_type {
     RaceBlowMethodType method{};
     bool explode = false;
     bool touched = false;
-    concptr act = "";
+    tl::optional<MonsterBlowFormat> act; //!< 打撃の説明
     AttributeType pt{};
     RaceBlowEffectType effect{};
     ARMOUR_CLASS ac = 0;
@@ -41,6 +47,8 @@ struct mam_type {
     bool fear = false;
     bool dead = false;
     short weapon_slot_for_blow = -1; //!< 当該打撃で使用する武器スロット (-1 = 武器なし)
+    bool do_quake = false; //!< [B-2b5] 地震武器による地震を全打撃終了後に起こすか
+    bool do_polymorph = false; //!< [B-2b10] カオス武器による対象変身を全打撃終了後に行うか
 };
 
 mam_type *initialize_mam_type(CreatureEntity &creature, mam_type *mam_ptr, MONSTER_IDX m_idx, MONSTER_IDX t_idx);

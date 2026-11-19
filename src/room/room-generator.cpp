@@ -270,10 +270,10 @@ bool generate_rooms(CreatureEntity &creature, DungeonData *dd_ptr)
     }
 
     if (rooms_built < 2) {
-        msg_format_wizard(creature, CHEAT_DUNGEON, _("部屋数が2未満でした。生成を再試行します。", "Number of rooms was under 2. Retry."), rooms_built);
+        msg_print_wizard(creature, CHEAT_DUNGEON, _("部屋数が2未満でした。生成を再試行します。", "Number of rooms was under 2. Retry."), rooms_built);
         return false;
     }
 
-    msg_format_wizard(creature, CHEAT_DUNGEON, _("このダンジョンの部屋数は %d です。", "Number of Rooms: %d"), rooms_built);
+    msg_print_wizard(creature, CHEAT_DUNGEON, _("このダンジョンの部屋数は {} です。", "Number of Rooms: {}"), rooms_built);
     return true;
 }

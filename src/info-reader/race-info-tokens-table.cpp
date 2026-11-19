@@ -1,4 +1,5 @@
 #include "info-reader/race-info-tokens-table.h"
+#include "effect/attribute-types.h"
 #include "monster-attack/monster-attack-effect.h"
 #include "monster-attack/monster-attack-table.h"
 #include "monster-race/race-ability-flags.h"
@@ -14,6 +15,7 @@
 #include "monster-race/race-visual-flags.h"
 #include "monster-race/race-wilderness-flags.h"
 #include "system/material-type-definition.h"
+#include "system/monrace/monrace-definition.h"
 
 /*!
  * モンスター特性トークンの定義9 /
@@ -263,6 +265,7 @@ const std::unordered_map<std::string_view, MonsterAbilityType> r_info_ability_fl
 	{"S_WALL", MonsterAbilityType::S_WALL },
 	{"S_INSECT", MonsterAbilityType::S_INSECT },
 	{"S_ELDRAZI", MonsterAbilityType::S_ELDRAZI },
+	{"S_ROBOT", MonsterAbilityType::S_ROBOT },
 };
 /* clang-format on */
 
@@ -358,6 +361,7 @@ const std::unordered_map<std::string_view, MonsterAuraType> r_info_aura_flags = 
     { "AURA_GRAVITY", MonsterAuraType::GRAVITY },
     { "AURA_VOIDS", MonsterAuraType::VOIDS },
     { "AURA_ABYSS", MonsterAuraType::ABYSS },
+    { "AURA_DIRT", MonsterAuraType::DIRT },
 };
 
 const std::unordered_map<std::string_view, MonsterBehaviorType> r_info_behavior_flags = {
@@ -564,6 +568,7 @@ const std::unordered_map<std::string_view, MonsterDropType> r_info_drop_flags = 
     { "DROP_CORPSE", MonsterDropType::DROP_CORPSE },
     { "DROP_SKELETON", MonsterDropType::DROP_SKELETON },
     { "DROP_JUNK", MonsterDropType::DROP_JUNK },
+    { "DROP_SCALE", MonsterDropType::DROP_SCALE },
     { "DROP_60", MonsterDropType::DROP_60 },
     { "DROP_90", MonsterDropType::DROP_90 },
     { "DROP_1D2", MonsterDropType::DROP_1D2 },
@@ -736,6 +741,27 @@ const std::unordered_map<std::string_view, BodyStructureType> r_info_body_struct
     { "AMORPHOUS", BodyStructureType::AMORPHOUS },
     { "INCORPOREAL", BodyStructureType::INCORPOREAL },
     { "DRACONIC", BodyStructureType::DRACONIC },
+    { "FORMLESS", BodyStructureType::FORMLESS },
+    { "GASEOUS", BodyStructureType::GASEOUS },
+    { "VORTEX", BodyStructureType::VORTEX },
+    { "XAREN", BodyStructureType::XAREN },
+    { "AVIAN", BodyStructureType::AVIAN },
+    { "WORM", BodyStructureType::WORM },
+    { "INSECTOID", BodyStructureType::INSECTOID },
+    { "WINGED_HUMANOID", BodyStructureType::WINGED_HUMANOID },
+    { "WING_ARMED_HUMANOID", BodyStructureType::WING_ARMED_HUMANOID },
+    { "SPHERE", BodyStructureType::SPHERE },
+};
+
+const std::unordered_map<std::string_view, CivilizationLevel> r_info_civilization = {
+    { "STONE", CivilizationLevel::STONE },
+    { "BRONZE", CivilizationLevel::BRONZE },
+    { "IRON", CivilizationLevel::IRON },
+    { "INDUSTRIAL", CivilizationLevel::INDUSTRIAL },
+    { "ATOMIC", CivilizationLevel::ATOMIC },
+    { "INFORMATION", CivilizationLevel::INFORMATION },
+    { "SOLAR", CivilizationLevel::SOLAR },
+    { "GALACTIC", CivilizationLevel::GALACTIC },
 };
 
 const std::unordered_map<std::string_view, ExtendedSlotType> r_info_extended_slot = {
@@ -1064,4 +1090,132 @@ const std::unordered_map<std::string_view, RealmType> r_info_realm = {
     { "MUSIC", RealmType::MUSIC },
     { "HISSATSU", RealmType::HISSATSU },
     { "HEX", RealmType::HEX },
+};
+
+/*!
+ * @brief 属性トークン (死亡時爆発 death_explosion 用)
+ * @details AttributeType の enum 名をそのままトークンにする。NONE は
+ * 「属性なし」で爆発の指定として無意味なため除外する。
+ */
+const std::unordered_map<std::string_view, AttributeType> r_info_attribute = {
+    { "ELEC", AttributeType::ELEC },
+    { "POIS", AttributeType::POIS },
+    { "ACID", AttributeType::ACID },
+    { "COLD", AttributeType::COLD },
+    { "FIRE", AttributeType::FIRE },
+    { "PSY_SPEAR", AttributeType::PSY_SPEAR },
+    { "MISSILE", AttributeType::MISSILE },
+    { "DEBUG", AttributeType::DEBUG },
+    { "PLASMA", AttributeType::PLASMA },
+    { "WATER", AttributeType::WATER },
+    { "LITE", AttributeType::LITE },
+    { "DARK", AttributeType::DARK },
+    { "LITE_WEAK", AttributeType::LITE_WEAK },
+    { "DARK_WEAK", AttributeType::DARK_WEAK },
+    { "SHARDS", AttributeType::SHARDS },
+    { "SOUND", AttributeType::SOUND },
+    { "CONFUSION", AttributeType::CONFUSION },
+    { "FORCE", AttributeType::FORCE },
+    { "INERTIAL", AttributeType::INERTIAL },
+    { "MANA", AttributeType::MANA },
+    { "METEOR", AttributeType::METEOR },
+    { "ICE", AttributeType::ICE },
+    { "CHAOS", AttributeType::CHAOS },
+    { "NETHER", AttributeType::NETHER },
+    { "DISENCHANT", AttributeType::DISENCHANT },
+    { "NEXUS", AttributeType::NEXUS },
+    { "TIME", AttributeType::TIME },
+    { "GRAVITY", AttributeType::GRAVITY },
+    { "KILL_WALL", AttributeType::KILL_WALL },
+    { "KILL_DOOR", AttributeType::KILL_DOOR },
+    { "KILL_TRAP", AttributeType::KILL_TRAP },
+    { "MAKE_WALL", AttributeType::MAKE_WALL },
+    { "MAKE_DOOR", AttributeType::MAKE_DOOR },
+    { "MAKE_TRAP", AttributeType::MAKE_TRAP },
+    { "MAKE_TREE", AttributeType::MAKE_TREE },
+    { "OLD_CLONE", AttributeType::OLD_CLONE },
+    { "OLD_POLY", AttributeType::OLD_POLY },
+    { "OLD_HEAL", AttributeType::OLD_HEAL },
+    { "OLD_SPEED", AttributeType::OLD_SPEED },
+    { "OLD_SLOW", AttributeType::OLD_SLOW },
+    { "OLD_CONF", AttributeType::OLD_CONF },
+    { "OLD_SLEEP", AttributeType::OLD_SLEEP },
+    { "HYPODYNAMIA", AttributeType::HYPODYNAMIA },
+    { "AWAY_UNDEAD", AttributeType::AWAY_UNDEAD },
+    { "AWAY_EVIL", AttributeType::AWAY_EVIL },
+    { "AWAY_ALL", AttributeType::AWAY_ALL },
+    { "TURN_UNDEAD", AttributeType::TURN_UNDEAD },
+    { "TURN_EVIL", AttributeType::TURN_EVIL },
+    { "TURN_ALL", AttributeType::TURN_ALL },
+    { "DISP_UNDEAD", AttributeType::DISP_UNDEAD },
+    { "DISP_EVIL", AttributeType::DISP_EVIL },
+    { "DISP_ALL", AttributeType::DISP_ALL },
+    { "DISP_DEMON", AttributeType::DISP_DEMON },
+    { "DISP_LIVING", AttributeType::DISP_LIVING },
+    { "ROCKET", AttributeType::ROCKET },
+    { "NUKE", AttributeType::NUKE },
+    { "MAKE_RUNE_PROTECTION", AttributeType::MAKE_RUNE_PROTECTION },
+    { "STASIS", AttributeType::STASIS },
+    { "STONE_WALL", AttributeType::STONE_WALL },
+    { "DEATH_RAY", AttributeType::DEATH_RAY },
+    { "STUN", AttributeType::STUN },
+    { "HOLY_FIRE", AttributeType::HOLY_FIRE },
+    { "HELL_FIRE", AttributeType::HELL_FIRE },
+    { "DISINTEGRATE", AttributeType::DISINTEGRATE },
+    { "CHARM", AttributeType::CHARM },
+    { "CONTROL_UNDEAD", AttributeType::CONTROL_UNDEAD },
+    { "CONTROL_ANIMAL", AttributeType::CONTROL_ANIMAL },
+    { "PSI", AttributeType::PSI },
+    { "PSI_DRAIN", AttributeType::PSI_DRAIN },
+    { "TELEKINESIS", AttributeType::TELEKINESIS },
+    { "JAM_DOOR", AttributeType::JAM_DOOR },
+    { "DOMINATION", AttributeType::DOMINATION },
+    { "DISP_GOOD", AttributeType::DISP_GOOD },
+    { "DRAIN_MANA", AttributeType::DRAIN_MANA },
+    { "MIND_BLAST", AttributeType::MIND_BLAST },
+    { "BRAIN_SMASH", AttributeType::BRAIN_SMASH },
+    { "CAUSE_1", AttributeType::CAUSE_1 },
+    { "CAUSE_2", AttributeType::CAUSE_2 },
+    { "CAUSE_3", AttributeType::CAUSE_3 },
+    { "CAUSE_4", AttributeType::CAUSE_4 },
+    { "HAND_DOOM", AttributeType::HAND_DOOM },
+    { "CAPTURE", AttributeType::CAPTURE },
+    { "ANIM_DEAD", AttributeType::ANIM_DEAD },
+    { "CHARM_LIVING", AttributeType::CHARM_LIVING },
+    { "IDENTIFY", AttributeType::IDENTIFY },
+    { "ATTACK", AttributeType::ATTACK },
+    { "ENGETSU", AttributeType::ENGETSU },
+    { "GENOCIDE", AttributeType::GENOCIDE },
+    { "PHOTO", AttributeType::PHOTO },
+    { "CONTROL_DEMON", AttributeType::CONTROL_DEMON },
+    { "LAVA_FLOW", AttributeType::LAVA_FLOW },
+    { "BLOOD_CURSE", AttributeType::BLOOD_CURSE },
+    { "SEEKER", AttributeType::SEEKER },
+    { "SUPER_RAY", AttributeType::SUPER_RAY },
+    { "STAR_HEAL", AttributeType::STAR_HEAL },
+    { "WATER_FLOW", AttributeType::WATER_FLOW },
+    { "CRUSADE", AttributeType::CRUSADE },
+    { "STASIS_EVIL", AttributeType::STASIS_EVIL },
+    { "WOUNDS", AttributeType::WOUNDS },
+    { "E_GENOCIDE", AttributeType::E_GENOCIDE },
+    { "VOID_MAGIC", AttributeType::VOID_MAGIC },
+    { "ABYSS", AttributeType::ABYSS },
+    { "HUNGRY", AttributeType::HUNGRY },
+    { "PLAYER_SHOOT", AttributeType::PLAYER_SHOOT },
+    { "PLAYER_MELEE", AttributeType::PLAYER_MELEE },
+    { "DIRT", AttributeType::DIRT },
+    { "STUNGUN", AttributeType::STUNGUN },
+    { "MONSTER_SHOOT", AttributeType::MONSTER_SHOOT },
+    { "MONSTER_MELEE", AttributeType::MONSTER_MELEE },
+    { "QUANTUM_VANISH", AttributeType::QUANTUM_VANISH },
+    { "SPIDER_STRING", AttributeType::SPIDER_STRING },
+    { "SOCIAL_GENOCIDE", AttributeType::SOCIAL_GENOCIDE },
+};
+
+/*!
+ * @brief `*_tval` の分類指定トークン
+ */
+const std::unordered_map<std::string_view, MonraceDropCategory> r_info_drop_category = {
+    { "SPELL_BOOK", MonraceDropCategory::SPELL_BOOK },
+    { "HIGH_LEVEL_BOOK", MonraceDropCategory::HIGH_LEVEL_BOOK },
 };

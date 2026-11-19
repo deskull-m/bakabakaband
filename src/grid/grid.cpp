@@ -26,20 +26,26 @@
 #include "monster/monster-update.h"
 #include "player/player-status-flags.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/enums/grid-flow.h"
 #include "system/enums/terrain/terrain-tag.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
-#include "system/redrawing-flags-updater.h"
 #include "system/terrain/terrain-definition.h"
 #include "system/terrain/terrain-list.h"
 #include "term/gameterm.h"
+#include "term/z-rand.h"
+#include "util/bit-flags-calculator.h"
+#include "util/enum-converter.h"
 #include "view/display-map.h"
 #include "view/display-messages.h"
+#include "view/map-info-cache.h"
 #include "window/main-window-util.h"
+#include "window/overview-map-cache.h"
 #include "world/world.h"
+#include <algorithm>
 #include <queue>
 
 bool GridTemplate::matches(const Grid &grid) const
@@ -115,7 +121,7 @@ void set_terrain_id_to_grid(CreatureEntity &creature, const Pos2D &pos, short te
             StatusRecalculatingFlag::MONSTER_LITE,
             StatusRecalculatingFlag::MONSTER_STATUSES,
         };
-        RedrawingFlagsUpdater::get_instance().set_flags(flags);
+        DeferredUpdateRequests::get_instance().set_flags(flags);
     }
 
     if (terrain.flags.has_not(TerrainCharacteristics::GLOW) || dungeon.flags.has(DungeonFeatureType::DARKNESS)) {
@@ -314,7 +320,10 @@ void print_rel(CreatureEntity &creature, const DisplaySymbol &symbol, const Pos2
 
 void print_bolt_pict(CreatureEntity &creature, const Pos2D &pos_src, const Pos2D &pos_dst, AttributeType typ)
 {
-    const auto &symbol = bolt_pict(pos_src, pos_dst, typ);
+    // 描画の回数は環境によって変わるため、ゲームのターンと座標から作った乱数生成器で色を選ぶ
+    const auto turn = AngbandWorld::get_instance().game_turn;
+    auto rng = make_keyed_rng(KeyedRngPurpose::BOLT_COLOR, { static_cast<int>(turn), pos_src.y, pos_src.x, pos_dst.y, pos_dst.x, enum2i(typ) });
+    const auto &symbol = bolt_pict(rng, pos_src, pos_dst, typ);
     print_rel(creature, symbol, pos_dst);
 }
 
@@ -387,7 +396,13 @@ void note_spot(CreatureEntity &creature, const Pos2D &pos)
     for (const auto this_o_idx : grid.o_idx_list) {
         auto &item = *floor.o_list[this_o_idx];
         item.marked.set(OmType::FOUND);
-        RedrawingFlagsUpdater::get_instance().set_flag(SubWindowRedrawingFlag::FOUND_ITEMS);
+
+        // 足元のアイテムの一覧も、見つけたアイテムだけを出す。
+        // 見つけていたアイテムでも、置かれたアイテムが重なって数が変わったときなどに描き直す。
+        // 走っている間は描き直すと重いので、止まったとき (stop_running()) に要求する
+        if (!creature.get_running()) {
+            DeferredUpdateRequests::get_instance().request_floor_item_lists_redrawing();
+        }
     }
 
     /* Hack -- memorize grids */
@@ -440,16 +455,30 @@ void note_spot(CreatureEntity &creature, const Pos2D &pos)
  */
 void lite_spot(CreatureEntity &creature, const Pos2D &pos)
 {
-    if (panel_contains(pos) && creature.get_floor()->contains(pos, FloorBoundary::OUTER_WALL_INCLUSIVE)) {
-        auto symbol_pair = map_info(creature, pos);
-        symbol_pair.symbol_foreground.color = get_monochrome_display_color(creature).value_or(symbol_pair.symbol_foreground.color);
+    if (!creature.get_floor()->contains(pos, FloorBoundary::OUTER_WALL_INCLUSIVE)) {
+        return;
+    }
 
-        term_queue_bigchar(panel_col_of(pos.x), pos.y - panel_row_prt, symbol_pair);
-        static constexpr auto flags = {
-            SubWindowRedrawingFlag::OVERHEAD,
-            SubWindowRedrawingFlag::DUNGEON,
-        };
-        RedrawingFlagsUpdater::get_instance().set_flags(flags);
+    // 全体図は表示のオプションが違うので、ここでは印を付けるだけにする。
+    // 描き直すかは、サブウィンドウを描くときに印を付けたグリッドを求め直して決める
+    OverviewMapCache::get_instance().mark_dirty(pos);
+    auto &map_info_cache = MapInfoCache::get_instance();
+    if (!panel_contains(pos)) {
+        // メイン画面の外のグリッドは表示が変わったか分からないので、自分の周囲を描き直す
+        map_info_cache.invalidate(pos);
+        DeferredUpdateRequests::get_instance().set_flag(SubWindowRedrawingFlag::DUNGEON);
+        return;
+    }
+
+    // メイン画面の表示が変わらなくても、覚える結果は変わることがある (単色表示で色だけ変わったときなど) ので、必ず覚える
+    auto symbol_pair = map_info(creature, pos);
+    const auto is_cache_changed = map_info_cache.store(pos, symbol_pair);
+    symbol_pair.symbol_foreground.color = get_monochrome_display_color(creature).value_or(symbol_pair.symbol_foreground.color);
+
+    // 自分の周囲は、メイン画面の表示が変わったときと、覚えていた結果 (表示しているかもしれない) と違うときに描き直す
+    const auto is_main_window_changed = term_queue_bigchar(panel_col_of(pos.x), pos.y - panel_row_prt, symbol_pair);
+    if (is_main_window_changed || is_cache_changed) {
+        DeferredUpdateRequests::get_instance().set_flag(SubWindowRedrawingFlag::DUNGEON);
     }
 }
 
@@ -659,55 +688,54 @@ void lite_spot(CreatureEntity &creature, const Pos2D &pos)
  * Oh, and outside of the "torch radius", only "lite" grids need to be scanned.
  */
 
-/*
- * Hack - speed up the update_flow algorithm by only doing
- * it everytime the player moves out of LOS of the last
- * "way-point".
+/*!
+ * @brief 前回 update_flow() で探索したときのプレイヤーの位置
+ * @details 走行中にこの位置が見えている間は探索を省く。また、前回の探索で値を書いた範囲を消すのにも使う。
  */
-static POSITION flow_x = 0;
-static POSITION flow_y = 0;
+static Pos2D flow_center(0, 0);
 
-/*
- * Hack -- fill in the "cost" field of every grid that the player
- * can "reach" with the number of steps needed to reach that grid.
- * This also yields the "distance" of the player from every grid.
- *
- * In addition, mark the "when" of the grids that can reach
- * the player with the incremented value of "flow_n".
- *
- * Hack -- use the "seen" array as a "circular queue".
- *
- * We do not need a priority queue because the cost from grid
- * to grid is always "one" and we process them in order.
+/*!
+ * @brief モンスターがプレイヤーを追跡するための経路情報を更新する
+ * @param creature クリーチャーへの参照
+ * @details プレイヤーの位置から幅優先探索を行い、到達できるグリッドに、移動の種類 (GridFlow) ごとの
+ * コスト (閉じた扉は余分にかかる) と距離を記録する。探索は monster_flow_depth マスで打ち切る。
  */
 void update_flow(CreatureEntity &creature)
 {
     auto &floor = *creature.get_floor();
 
     /* The last way-point is on the map */
-    const Pos2D flow(flow_y, flow_x);
-    if (creature.get_running() && floor.contains(flow, FloorBoundary::OUTER_WALL_EXCLUSIVE)) {
+    if (creature.get_running() && floor.contains(flow_center, FloorBoundary::OUTER_WALL_EXCLUSIVE)) {
         /* The way point is in sight - do not update.  (Speedup) */
-        if (floor.get_grid(flow).info & CAVE_VIEW) {
+        if (floor.get_grid(flow_center).info & CAVE_VIEW) {
             return;
         }
     }
 
-    /* Erase all of the current flow information */
-    for (const auto &pos : floor.get_area()) {
-        auto &grid = floor.get_grid(pos);
-        grid.reset_costs();
-        grid.reset_dists();
+    // 敵のプレイヤーに対する移動道のりの最大値(この値以上は処理を打ち切る).
+    constexpr auto monster_flow_depth = 32;
+
+    // 前回の探索で値を書いたのは、前回の中心から monster_flow_depth マス以内のグリッドだけなので、そこだけを消す。
+    // フロアの生成・読み込み時と forget_flow() では、フロア全体を消している。
+    const auto y_min = std::max(flow_center.y - monster_flow_depth, 0);
+    const auto y_max = std::min(flow_center.y + monster_flow_depth, floor.height - 1);
+    const auto x_min = std::max(flow_center.x - monster_flow_depth, 0);
+    const auto x_max = std::min(flow_center.x + monster_flow_depth, floor.width - 1);
+    for (auto y = y_min; y <= y_max; y++) {
+        for (auto x = x_min; x <= x_max; x++) {
+            auto &grid = floor.get_grid({ y, x });
+            grid.reset_costs();
+            grid.reset_dists();
+        }
     }
 
-    /* Save player position */
-    flow_y = creature.y;
-    flow_x = creature.x;
+    const auto p_pos = creature.get_position();
+    flow_center = p_pos;
 
     for (const auto gf : GRID_FLOW_RANGE) {
         // 幅優先探索用のキュー。
         std::queue<Pos2D> que;
-        que.emplace(creature.y, creature.x);
+        que.push(p_pos);
 
         /* Now process the queue */
         while (!que.empty()) {
@@ -716,40 +744,50 @@ void update_flow(CreatureEntity &creature)
             const auto &grid = floor.get_grid(pos);
 
             /* Add the "children" */
+            const uint8_t base_cost = grid.get_cost(gf) + 1;
+            const uint8_t n = grid.get_distance(gf) + 1;
             for (const auto &d : Direction::directions_8()) {
-                uint8_t m = grid.costs.at(gf) + 1;
-                const uint8_t n = grid.dists.at(gf) + 1;
                 const auto pos_neighbor = pos + d.vec();
 
                 /* Ignore player's grid */
-                if (creature.is_located_at(pos_neighbor)) {
+                if (pos_neighbor == p_pos) {
                     continue;
-                }
-
-                if (floor.has_closed_door_at(pos_neighbor)) {
-                    m += 3;
                 }
 
                 /* Ignore "pre-stamped" entries */
                 auto &grid_neighbor = floor.get_grid(pos_neighbor);
-                auto &cost_neighbor = grid_neighbor.costs.at(gf);
-                auto &dist_neighbor = grid_neighbor.dists.at(gf);
-                if ((dist_neighbor != 0) && (dist_neighbor <= n) && (cost_neighbor <= m)) {
+                auto &cost_neighbor = grid_neighbor.costs[enum2i(gf)];
+                auto &dist_neighbor = grid_neighbor.dists[enum2i(gf)];
+                const auto is_pre_stamped = [&](uint8_t cost) { return (dist_neighbor != 0) && (dist_neighbor <= n) && (cost_neighbor <= cost); };
+
+                // 閉じた扉はコストを増やすだけなので、扉を考慮する前に記録済みなら考慮した後も記録済みである。
+                // 地形を引く前に除外しておく。
+                if (is_pre_stamped(base_cost)) {
                     continue;
+                }
+
+                const auto &terrain_neighbor = grid_neighbor.get_terrain();
+                const auto is_closed_door = terrain_neighbor.is_closed_door();
+                auto m = base_cost;
+                if (is_closed_door) {
+                    m += 3;
+                    if (is_pre_stamped(m)) {
+                        continue;
+                    }
                 }
 
                 /* Ignore "walls", "holes" and "rubble" */
                 auto can_move = false;
                 switch (gf) {
                 case GridFlow::CAN_FLY:
-                    can_move = grid_neighbor.has(TerrainCharacteristics::MOVE) || grid_neighbor.has(TerrainCharacteristics::CAN_FLY);
+                    can_move = terrain_neighbor.has(TerrainCharacteristics::MOVE) || terrain_neighbor.has(TerrainCharacteristics::CAN_FLY);
                     break;
                 default:
-                    can_move = grid_neighbor.has(TerrainCharacteristics::MOVE);
+                    can_move = terrain_neighbor.has(TerrainCharacteristics::MOVE);
                     break;
                 }
 
-                if (!can_move && !floor.has_closed_door_at(pos_neighbor)) {
+                if (!can_move && !is_closed_door) {
                     continue;
                 }
 
@@ -761,8 +799,6 @@ void update_flow(CreatureEntity &creature)
                     dist_neighbor = n;
                 }
 
-                // 敵のプレイヤーに対する移動道のりの最大値(この値以上は処理を打ち切る).
-                constexpr auto monster_flow_depth = 32;
                 if (n == monster_flow_depth) {
                     continue;
                 }

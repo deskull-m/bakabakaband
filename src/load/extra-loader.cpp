@@ -6,14 +6,74 @@
  */
 
 #include "load/extra-loader.h"
+#include "floor/geometry.h"
+#include "io/input-key-requester.h"
 #include "load/dummy-loader.h"
 #include "load/load-util.h"
 #include "load/world-loader.h"
+#include "player/attack-defense-types.h"
 #include "system/creature-entity.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/floor/town-records.h"
+#include "target/target.h"
 #include "util/enum-converter.h"
+#include "window/main-window-util.h"
 #include "world/world.h"
+
+/*!
+ * @brief 最後にターゲットしたものを読み込む
+ * @param creature クリーチャーへの参照
+ * @details モンスターの番号は、この後で読み込む今の階のモンスターを指す
+ */
+static void rd_last_target(CreatureEntity &creature)
+{
+    switch (rd_byte()) {
+    case 1: {
+        const auto y = rd_s16b();
+        const auto x = rd_s16b();
+        Target::set_last_target(Target::create_grid_target(creature, { y, x }));
+        return;
+    }
+    case 2:
+        Target::set_last_target(Target::create_monster_target(creature, rd_s16b()));
+        return;
+    default:
+        Target::clear_last_target();
+        return;
+    }
+}
+
+/*!
+ * @brief 休憩・釣り・コマンドの繰り返しの続きと、画面に表示している範囲を読み込む
+ * @param creature クリーチャーへの参照
+ * @details 古いセーブには無いので、続きの分からない休憩と釣りはやめ、繰り返しも無い状態から始める。
+ * 表示している範囲は負にして、generate_world() で決め直させる
+ */
+static void rd_continuous_actions(CreatureEntity &creature)
+{
+    if (loading_savefile_version_is_older_than(61)) {
+        if ((creature.get_action() == ACTION_REST) || (creature.get_action() == ACTION_FISH)) {
+            creature.set_action(ACTION_NONE);
+        }
+
+        panel_row_min = -1;
+        panel_col_min = -1;
+        return;
+    }
+
+    creature.set_resting(rd_s32b());
+    // 方向は Direction に渡すと範囲外で例外を投げるので、壊れた値は方向なしにする
+    const auto fishing_dir = rd_byte();
+    creature.set_fishing_dir(Direction::is_valid_dir(fishing_dir) ? fishing_dir : 0);
+    command_cmd = rd_s16b();
+    command_arg = rd_s16b();
+    command_rep = rd_s16b();
+    const auto dir_id = rd_byte();
+    const auto dir = Direction::is_valid_dir(dir_id) ? Direction(dir_id) : Direction::none();
+    command_dir = rd_bool() ? Direction::targetting(Target::get_last_target()) : dir;
+    panel_row_min = rd_s16b();
+    panel_col_min = rd_s16b();
+}
 
 /*!
  * @brief その他の情報を読み込む / Read the "extra" information
@@ -49,4 +109,17 @@ void rd_extra(CreatureEntity &creature)
         creature.set_r_idx(r_idx);
         creature.set_ap_r_idx(ap_r_idx);
     }
+
+    // ペット・乗馬の攻撃対象と、最後にターゲットしたもの。セーブファイルバージョン 58 以降。
+    if (!loading_savefile_version_is_older_than(58)) {
+        creature.set_pet_t_m_idx(rd_s16b());
+        creature.set_riding_t_m_idx(rd_s16b());
+        rd_last_target(creature);
+    } else {
+        creature.set_pet_t_m_idx(0);
+        creature.set_riding_t_m_idx(0);
+        Target::clear_last_target();
+    }
+
+    rd_continuous_actions(creature);
 }

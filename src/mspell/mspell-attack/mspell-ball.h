@@ -3,7 +3,9 @@
 #include "system/angband.h"
 
 #include "mspell/mspell-attack/abstract-mspell.h"
+#include <tl/optional.hpp>
 
+enum class MonsterAbilityType;
 struct MonsterSpellResult;
 
 class PlayerType;
@@ -20,3 +22,5 @@ public:
 };
 
 class CreatureEntity;
+
+tl::optional<POSITION> get_monster_ball_radius(MonsterAbilityType ability, bool is_powerful);

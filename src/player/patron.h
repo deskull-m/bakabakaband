@@ -7,7 +7,7 @@
 #include <tl/optional.hpp>
 #include <vector>
 
-#define MAX_PATRON 19 /*!< パトロンの最大定義数 / The number of "patrons" available (for Chaos Warriors) */
+constexpr auto MAX_PATRON = 19; /*!< パトロンの最大定義数 / The number of "patrons" available (for Chaos Warriors) */
 
 enum class PatronType : int16_t {
     NONE = -1, //!< なし

@@ -11,11 +11,11 @@
 #include "system/baseitem/baseitem-service.h"
 #include "system/item-entity.h"
 #include "system/player-type-definition.h"
-#include "term/z-form.h"
 #include "util/angband-files.h"
 #include "view/display-messages.h"
 #include "wizard/spoiler-util.h"
 #include <algorithm>
+#include <fmt/format.h>
 #include <sstream>
 
 /*!
@@ -57,7 +57,7 @@ static std::string describe_dam_or_ac(const ItemEntity &item)
     case ItemKindType::SOFT_ARMOR:
     case ItemKindType::HARD_ARMOR:
     case ItemKindType::DRAG_ARMOR:
-        return format("%d", item.ac);
+        return fmt::format("{}", item.ac);
     default:
         return {};
     }
@@ -77,7 +77,7 @@ static std::string describe_chance(const ItemEntity &item)
     for (auto i = 0U; i < baseitem.alloc_tables.size(); i++) {
         const auto &[level, chance] = baseitem.alloc_tables[i];
         if (chance > 0) {
-            ss << format("%s%3dF:%+4d", (i != 0 ? "/" : ""), level, 100 / chance);
+            ss << fmt::format("{}{:3}F:{:+4}", (i != 0 ? "/" : ""), level, 100 / chance);
         }
     }
 
@@ -92,14 +92,16 @@ static std::string describe_chance(const ItemEntity &item)
  */
 static std::string describe_weight(const ItemEntity &item)
 {
-    return format("%3d.%d", (int)(item.weight / 10), (int)(item.weight % 10));
+    return fmt::format("{:3}.{}", item.weight / 10, item.weight % 10);
 }
 
 /*!
  * @brief obj-desc.txt出力用にベースアイテムIDからItemEntityオブジェクトを生成する
  * @param bi_id ベースアイテムID
  * @return obj-desc.txt出力用に使用するItemEntityオブジェクト
- * @details 人形・像・死体類はpvalが0だと異常アイテム扱いで例外が飛ぶためダミー値を入れておく.
+ * @details 人形・像・死体類はpvalにモンスター種族IDが入る。スポイラーには種族名込みの名前と
+ * 価格の双方を出力するため、pvalが0のままだと名前の記述と価格計算
+ * (ItemEntity::calc_figurine_value()) の両方で例外が飛ぶ。ダミー値を入れておく.
  */
 static ItemEntity prepare_item_for_obj_desc(short bi_id)
 {
@@ -134,10 +136,10 @@ SpoilerOutputResultType spoil_obj_desc()
         return SpoilerOutputResultType::FILE_OPEN_FAILED;
     }
 
-    constexpr auto fmt_version = "Spoiler File -- Basic Items (%s)\n\n\n";
-    ofs << format(fmt_version, AngbandSystem::get_instance().build_version_expression(VersionExpression::FULL).data());
-    ofs << format("%-37s%8s%7s%5s %40s%9s\n", "Description", "Dam/AC", "Wgt", "Lev", "Chance", "Cost");
-    ofs << format("%-37s%8s%7s%5s %40s%9s\n", "-------------------------------------", "------", "---", "---", "----------------", "----");
+    constexpr auto fmt_version = "Spoiler File -- Basic Items ({})\n\n\n";
+    ofs << fmt::format(fmt_version, AngbandSystem::get_instance().build_version_expression(VersionExpression::FULL));
+    ofs << fmt::format("{:<37}{:>8}{:>7}{:>5} {:>40}{:>9}\n", "Description", "Dam/AC", "Wgt", "Lev", "Chance", "Cost");
+    ofs << fmt::format("{:<37}{:>8}{:>7}{:>5} {:>40}{:>9}\n", "-------------------------------------", "------", "---", "---", "----------------", "----");
 
     const auto &baseitems = BaseitemList::get_instance();
     for (const auto &[tval_list, name] : group_item_list) {
@@ -165,15 +167,19 @@ SpoilerOutputResultType spoil_obj_desc()
 
         ofs << "\n\n"
             << name << "\n\n";
+
+        // describe_flavor() は creature を読み取るのみ (OD_NAME_ONLY 経路では name の参照だけ) で
+        // 変更しないため、ループ不変な dummy はループ外で 1 度だけ構築すれば足りる。
+        PlayerType dummy;
         for (const auto &bi_id : whats) {
-            PlayerType dummy;
             const auto item = prepare_item_for_obj_desc(bi_id);
             const auto item_name = describe_flavor(dummy, item, OD_NAME_ONLY | OD_STORE);
             const auto &[depth, price] = get_info(item);
             const auto dam_or_ac = describe_dam_or_ac(item);
             const auto weight = describe_weight(item);
             const auto chance = describe_chance(item);
-            ofs << format("  %-35s%8s%7s%5d %-40s%9d\n", item_name.data(), dam_or_ac.data(), weight.data(), depth, chance.data(), price);
+            const auto line = fmt::format("  {:<35}{:>8}{:>7}{:5} {:<40}{:9}\n", fmt::bytes(item_name), fmt::bytes(dam_or_ac), fmt::bytes(weight), depth, fmt::bytes(chance), price);
+            ofs << line;
         }
     }
 

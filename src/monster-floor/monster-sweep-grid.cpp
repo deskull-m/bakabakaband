@@ -26,6 +26,13 @@
 
 namespace {
 /*!
+ * @brief パーティのリーダーへ合流を試みる距離の閾値 (グリッド)
+ * @details 生成時の散開半径 (`alloc_creature_party()` の `mon_scatter(..., 5)`) と
+ *          揃えてある。これ以内なら隊列を保っているものとして合流しない。
+ */
+constexpr auto PARTY_COHESION_RADIUS = 5;
+
+/*!
  * @brief モンスターが逃走しようとするかを判定する
  *
  * @param m_idx モンスターの参照ID
@@ -181,6 +188,52 @@ public:
         }
 
         return tl::nullopt;
+    }
+
+private:
+    CreatureEntity *creature_ptr;
+    MONSTER_IDX m_idx;
+};
+
+/*!
+ * @brief 同じパーティのリーダーへ合流するように移動先を決定するクラス (集団AI)
+ * @details プレイヤーが差し迫った脅威でない状況で、リーダーから離れてしまった
+ *          メンバーを隊列へ戻す。生成時は中心から半径 5 に散開するので、
+ *          それを超えて離れたら合流を試みる。リーダー自身・ペット・逃走中の個体は
+ *          対象外。パーティ所属は敵対モンスターの機構なので、プレイヤーを
+ *          視認できる間や近距離では従来どおりプレイヤーへ向かう。
+ */
+class PartyCohesionMoveGridDecider : public MonsterMoveGridDecider {
+public:
+    PartyCohesionMoveGridDecider(CreatureEntity *creature_ptr, MONSTER_IDX m_idx)
+        : creature_ptr(creature_ptr)
+        , m_idx(m_idx)
+    {
+    }
+
+    tl::optional<Pos2D> decide_move_grid() const override
+    {
+        const auto &floor = *this->creature_ptr->get_floor();
+        const auto &monster = floor.get_monster(this->m_idx);
+        const auto leader_m_idx = monster.get_party_leader_m_idx();
+        const auto &leader = floor.get_monster(leader_m_idx);
+        if (!leader.is_valid()) {
+            return tl::nullopt;
+        }
+
+        // 眠っているリーダーの所へは集まらない。集まってしまうと、目を覚ました
+        // メンバーが寝ているリーダーの周りに留まりプレイヤーを追わなくなる。
+        if (leader.is_asleep()) {
+            return tl::nullopt;
+        }
+
+        // 散開半径を超えて離れている場合のみ合流する
+        const auto leader_pos = leader.get_position();
+        if (Grid::calc_distance(monster.get_position(), leader_pos) <= PARTY_COHESION_RADIUS) {
+            return tl::nullopt;
+        }
+
+        return leader_pos;
     }
 
 private:
@@ -492,6 +545,14 @@ public:
 
         if (!will_run && distance_to_player <= AngbandSystem::get_instance().get_max_range() + 1 && monrace.ability_flags.has_any_of(RF_ABILITY_ATTACK_MASK)) {
             deciders.push_back(std::make_unique<RangedAttackMoveGridDecider>(creature_ptr, m_idx));
+        }
+
+        // 集団AI: プレイヤーが差し迫った脅威でないときに限りリーダーへ合流する。
+        // 視認できる / 近いうちは従来どおりプレイヤーへ向かうため戦闘には干渉しない。
+        const auto is_player_pressing = can_see_player || (distance_to_player <= MAX_PLAYER_SIGHT / 2);
+        if (!will_run && monster.is_hostile() && !is_player_pressing &&
+            monster.belongs_to_party() && !monster.is_party_leader(m_idx)) {
+            deciders.push_back(std::make_unique<PartyCohesionMoveGridDecider>(creature_ptr, m_idx));
         }
 
         const auto should_go_straight = no_flow || can_pass_wall || can_kill_wall;

@@ -17,7 +17,5 @@ struct monster_power {
     concptr name;
 };
 
-#define MAX_MONSPELLS 96
-
 extern const std::map<MonsterAbilityType, const monster_power> monster_powers;
 extern const std::map<MonsterAbilityType, concptr> monster_powers_short;

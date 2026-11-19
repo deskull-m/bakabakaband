@@ -4,26 +4,38 @@
 #include "core/window-redrawer.h"
 #include "game-option/input-options.h"
 #include "io/command-repeater.h"
+#include "io/input-context.h"
 #include "io/input-key-acceptor.h"
 #include "io/input-key-requester.h" //!< @todo 相互依存している、後で何とかする.
 #include "main/sound-of-music.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/player-type-definition.h"
-#include "system/redrawing-flags-updater.h"
 #include "term/gameterm.h"
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
-#include "term/z-form.h"
 #include "util/int-char-converter.h"
 #include "util/string-processor.h"
 #include "view/display-messages.h"
 #include <algorithm>
 #include <charconv>
 #include <climits>
+#include <fmt/format.h>
 #include <iostream>
 #include <sstream>
 #include <stdexcept>
 #include <string>
+#include <utility>
+#include <variant>
+
+/*!
+ * @brief 入力欄の開始位置と画面幅に合わせて文字列のバイト上限を求める
+ */
+static int get_input_length(int len, int x)
+{
+    const auto start = ((x < 0) || (x >= MAIN_TERM_MIN_COLS)) ? 0 : x;
+    return std::clamp(len, 1, MAIN_TERM_MIN_COLS - start);
+}
 
 /*
  * Get some string input at the cursor location.
@@ -52,17 +64,11 @@ tl::optional<std::string> askfor(int len, std::string_view initial_value, bool n
     auto color = TERM_YELLOW;
 
     auto [x, y] = term_locate();
-    if (len < 1) {
-        len = 1;
-    }
-
     if ((x < 0) || (x >= MAIN_TERM_MIN_COLS)) {
         x = 0;
     }
 
-    if (x + len > MAIN_TERM_MIN_COLS) {
-        len = MAIN_TERM_MIN_COLS - x;
-    }
+    len = get_input_length(len, x);
 
     std::string buf(initial_value);
     auto pos = 0;
@@ -180,13 +186,62 @@ tl::optional<std::string> askfor(int len, std::string_view initial_value, bool n
  *
  * We clear the input, and return false, on "ESCAPE".
  */
-tl::optional<std::string> input_string(std::string_view prompt, int len, std::string_view initial_value, bool numpad_cursor)
+/*!
+ * @brief 文字列の入力の文脈を作る
+ * @details バイト上限は入力欄の位置に合わせて askfor_with_context() で求め直す。
+ */
+static InputContext make_string_input_context(std::string_view prompt, int len, std::string_view initial_value)
+{
+    return { InputKind::STRING, std::string(prompt), StringInputDetails{ len, std::string(initial_value) } };
+}
+
+/*!
+ * @brief 指定した文脈を公開して、カーソルの位置から文字列の入力を待つ
+ * @details 文字列の入力では、文脈のバイト上限を入力欄の位置に合わせる。
+ * 数量入力も同じ編集処理を利用するが、公開する文脈は数量のまま保つ。
+ */
+static tl::optional<std::string> askfor_with_context(InputContext input_context, int len, std::string_view initial_value, bool numpad_cursor)
+{
+    if (auto *details = std::get_if<StringInputDetails>(&input_context.details)) {
+        details->max_length = get_input_length(len, term_locate().first);
+    }
+
+    const InputContextScope context_scope(std::move(input_context));
+    return askfor(len, initial_value, numpad_cursor);
+}
+
+/*!
+ * @brief 指定した文脈で文字列の入力を待つ
+ * @details 数量入力も同じ編集処理を利用するが、公開する文脈は数量のまま保つ。
+ */
+static tl::optional<std::string> input_string_with_context(InputContext input_context, int len, std::string_view initial_value, bool numpad_cursor)
 {
     msg_erase();
-    prt(prompt, 0, 0);
-    const auto ask_result = askfor(len, initial_value, numpad_cursor);
+    prt(input_context.prompt, 0, 0);
+    const auto ask_result = askfor_with_context(std::move(input_context), len, initial_value, numpad_cursor);
     prt("", 0, 0);
     return ask_result;
+}
+
+tl::optional<std::string> input_string(std::string_view prompt, int len, std::string_view initial_value, bool numpad_cursor)
+{
+    return input_string_with_context(make_string_input_context(prompt, len, initial_value), len, initial_value, numpad_cursor);
+}
+
+/*!
+ * @brief 指定した行にプロンプトを表示して、続けて文字列の入力を待つ
+ * @param prompt プロンプト
+ * @param row プロンプトを表示する行
+ * @param len 入力できる文字列のバイト数の上限
+ * @param initial_value 初期文字列
+ * @param numpad_cursor テンキーでカーソルを動かすか
+ * @return 入力した文字列。ESCで中断したらnullopt
+ * @details 画面の下の行など、1行目以外で入力させる処理に使う。input_string() と違い、メッセージ行の消去や入力後の行の消去はしない。
+ */
+tl::optional<std::string> input_string_on_row(std::string_view prompt, int row, int len, std::string_view initial_value, bool numpad_cursor)
+{
+    prt(prompt, row, 0);
+    return askfor_with_context(make_string_input_context(prompt, len, initial_value), len, initial_value, numpad_cursor);
 }
 
 /*
@@ -235,9 +290,9 @@ bool input_check_strict(CreatureEntity &creature, std::string_view prompt, EnumC
     }
 
     const auto buf = ss.str();
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
+    auto &dur = DeferredUpdateRequests::get_instance();
     if (auto_more) {
-        rfu.set_flag(SubWindowRedrawingFlag::MESSAGE);
+        dur.set_flag(SubWindowRedrawingFlag::MESSAGE);
         window_stuff(creature);
         num_more = 0;
     }
@@ -247,10 +302,11 @@ bool input_check_strict(CreatureEntity &creature, std::string_view prompt, EnumC
     prt(buf, 0, 0);
     if (mode.has_not(UserCheck::NO_HISTORY) && creature.is_playing()) {
         message_add(buf);
-        rfu.set_flag(SubWindowRedrawingFlag::MESSAGE);
+        dur.set_flag(SubWindowRedrawingFlag::MESSAGE);
         window_stuff(creature);
     }
 
+    const InputContextScope input_context(InputKind::CONFIRM, buf);
     bool flag = false;
     while (true) {
         int i = inkey();
@@ -301,13 +357,27 @@ bool input_check_strict(CreatureEntity &creature, std::string_view prompt, EnumC
  */
 tl::optional<char> input_command(std::string_view prompt)
 {
+    return input_command_with_context({ InputKind::COMMAND_CHAR, std::string(prompt), {} });
+}
+
+/*!
+ * @brief 入力待ちの文脈を指定して、1文字の入力を受け付ける
+ * @param input_context 入力待ちの間に公開する文脈。プロンプトは文脈のものを表示する
+ * @return 入力した文字。ESCで中断したらnullopt
+ * @details 1文字の入力のうち、方向の入力のように種類と詳細を公開したいものに使う。
+ */
+tl::optional<char> input_command_with_context(InputContext input_context)
+{
     msg_erase();
-    prt(prompt, 0, 0);
+    prt(input_context.prompt, 0, 0);
     char command;
-    if (get_com_no_macros) {
-        command = static_cast<char>(inkey_special(false));
-    } else {
-        command = inkey();
+    {
+        const InputContextScope context_scope(std::move(input_context));
+        if (get_com_no_macros) {
+            command = static_cast<char>(inkey_special(false));
+        } else {
+            command = inkey();
+        }
     }
 
     prt("", 0, 0);
@@ -316,6 +386,57 @@ tl::optional<char> input_command(std::string_view prompt)
     }
 
     return command;
+}
+
+/*!
+ * @brief 呪文・技・特殊能力などを一覧から選ぶ待ちで、1文字の入力を受け付ける
+ * @param prompt プロンプト
+ * @param details ラベルの範囲や一覧を表示しているかなどの詳細
+ * @return 入力した文字。ESCで中断したらnullopt
+ */
+tl::optional<char> input_spell_choice(std::string_view prompt, const SpellInputDetails &details)
+{
+    return input_command_with_context({ InputKind::SPELL, std::string(prompt), details });
+}
+
+/*!
+ * @brief 入力待ちの文脈を公開して、キーを1つ待つ
+ * @param kind 入力の種類
+ * @param prompt 公開するプロンプト (表示は呼び出し元が行う)
+ * @param do_all_term_refresh true なら inkey() と同じく、待つ前に全ての端末を描き直す
+ * @return 入力したキー
+ * @details 独自に表示した選択肢や確認に答えるキーや、何かキーを押す待ちのキーを読む処理に使う。
+ */
+char input_key_with_context(InputKind kind, std::string_view prompt, bool do_all_term_refresh)
+{
+    const InputContextScope input_context(kind, prompt);
+    return inkey(do_all_term_refresh);
+}
+
+/*!
+ * @brief 入力待ちの文脈を公開して、特殊キーも区別してキーを1つ待つ
+ * @param kind 入力の種類
+ * @param prompt 公開するプロンプト (表示は呼び出し元が行う)
+ * @param numpad_cursor テンキーをカーソルキーとして扱うか
+ * @return 入力したキー (カーソルキーなどの特殊キーは SKEY_* の値)
+ * @details ファイルの表示のページ送りのように、inkey_special() でキーを読む処理に使う。
+ */
+int input_special_key_with_context(InputKind kind, std::string_view prompt, bool numpad_cursor)
+{
+    return input_special_key_with_context({ kind, std::string(prompt), {} }, numpad_cursor);
+}
+
+/*!
+ * @brief 入力待ちの文脈を指定して公開し、特殊キーも区別してキーを1つ待つ
+ * @param input_context 入力待ちの間に公開する文脈 (表示は呼び出し元が行う)
+ * @param numpad_cursor テンキーをカーソルキーとして扱うか
+ * @return 入力したキー (カーソルキーなどの特殊キーは SKEY_* の値)
+ * @details input_special_key_with_context(InputKind, std::string_view, bool) のうち、種類ごとの詳細も公開したいものに使う。
+ */
+int input_special_key_with_context(InputContext input_context, bool numpad_cursor)
+{
+    const InputContextScope context_scope(std::move(input_context));
+    return inkey_special(numpad_cursor);
 }
 
 /*
@@ -345,11 +466,12 @@ int input_quantity(int max, std::string_view initial_prompt)
     if (!initial_prompt.empty()) {
         prompt = initial_prompt;
     } else {
-        prompt = format(_("いくつですか (1-%d): ", "Quantity (1-%d): "), max);
+        prompt = fmt::format(_("いくつですか (1-{}): ", "Quantity (1-{}): "), max);
     }
 
     msg_erase();
-    const auto input_amount = input_string(prompt, 6, "1", false);
+    InputContext input_context{ InputKind::QUANTITY, prompt, QuantityInputDetails{ max, 1 } };
+    const auto input_amount = input_string_with_context(std::move(input_context), 6, "1", false);
     if (!input_amount) {
         return 0;
     }
@@ -378,9 +500,10 @@ int input_quantity(int max, std::string_view initial_prompt)
 void pause_line(int row)
 {
     prt("", row, 0);
-    put_str(_("[ 何かキーを押して下さい ]", "[Press any key to continue]"), row, _(26, 23));
+    constexpr auto prompt = _("[ 何かキーを押して下さい ]", "[Press any key to continue]");
+    put_str(prompt, row, _(26, 23));
 
-    (void)inkey();
+    (void)input_key_with_context(InputKind::ANY_KEY, prompt);
     prt("", row, 0);
 }
 
@@ -398,7 +521,7 @@ tl::optional<int> input_integer(std::string_view prompt, int min, int max, int i
         try {
             auto val = std::stoi(input_str.value());
             if ((val < min) || (val > max)) {
-                msg_format(_("%dから%dの間で指定して下さい。", "It must be between %d to %d."), min, max);
+                msg_print(_("{}から{}の間で指定して下さい。", "It must be between {} to {}."), min, max);
                 continue;
             }
 

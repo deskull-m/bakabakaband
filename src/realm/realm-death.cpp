@@ -28,6 +28,7 @@
 #include "system/creature-entity.h"
 #include "target/target-getter.h"
 #include "util/dice.h"
+#include <fmt/format.h>
 
 /*!
  * @brief 暗黒領域魔法の各処理を行う
@@ -402,7 +403,7 @@ tl::optional<std::string> do_death_spell(CreatureEntity &creature, SPELL_IDX spe
         int dam = 100;
 
         if (info) {
-            return format("%s3*%d", KWD_DAM, dam);
+            return fmt::format("{}3*{}", KWD_DAM, dam);
         }
 
         if (cast) {

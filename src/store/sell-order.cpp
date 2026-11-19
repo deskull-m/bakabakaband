@@ -13,12 +13,15 @@
 #include "io/write-diary.h"
 #include "main/sound-definitions-table.h"
 #include "main/sound-of-music.h"
+#include "market/loot-notoriety.h"
 #include "object-enchant/item-feeling.h"
 #include "object-enchant/special-object-flags.h"
 #include "object/item-tester-hooker.h"
 #include "object/item-use-flags.h"
 #include "object/object-info.h"
 #include "object/object-stack.h"
+#include "object/object-value.h"
+#include "perception/simple-perception.h"
 #include "racial/racial-android.h"
 #include "spell-kind/spells-perception.h"
 #include "store/home.h"
@@ -26,11 +29,11 @@
 #include "store/say-comments.h"
 #include "store/service-checker.h"
 #include "store/store-owners.h"
+#include "store/store-screen.h"
 #include "store/store.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/floor/town-info.h"
-#include "system/floor/town-list.h"
-#include "system/redrawing-flags-updater.h"
 #include "view/display-messages.h"
 #include "view/display-store.h"
 #include "view/object-describer.h"
@@ -40,15 +43,16 @@
 /*!
  * @brief プレイヤーが売却する時の確認プロンプト / Prompt to sell for the price
  * @param creature クリーチャーへの参照
+ * @param store 売却先の店舗
  * @param o_ptr オブジェクトの構造体参照ポインタ
  * @return 売るなら(true,売値)、売らないなら(false,0)のタプル
  */
-static tl::optional<int> prompt_to_sell(CreatureEntity &creature, ItemEntity *o_ptr, StoreSaleType store_num)
+static tl::optional<int> prompt_to_sell(CreatureEntity &creature, const Store &store, ItemEntity *o_ptr)
 {
-    auto price_ask = price_item(creature, o_ptr, ot_ptr->inflate, true, store_num);
+    auto price_ask = price_item(creature, o_ptr, store, StoreTradeType::PLAYER_SELLS);
 
-    price_ask = std::min(price_ask, ot_ptr->max_cost);
-    price_ask *= o_ptr->number;
+    price_ask = std::min(price_ask, store.get_owner().max_cost);
+    price_ask = clamp_price(int64_t{ price_ask } * o_ptr->number);
     const auto s = fmt::format(_("売値 ${} で売りますか？", "Do you sell for ${}? "), price_ask);
     if (input_check_strict(creature, s, UserCheck::DEFAULT_Y)) {
         return price_ask;
@@ -61,9 +65,12 @@ static tl::optional<int> prompt_to_sell(CreatureEntity &creature, ItemEntity *o_
  * @brief 店からの売却処理のメインルーチン /
  * Sell an item to the store (or home)
  * @param creature クリーチャーへの参照
+ * @param screen 売却先の店舗の画面
  */
-void store_sell(CreatureEntity &creature, StoreSaleType store_num)
+void store_sell(CreatureEntity &creature, StoreScreen &screen)
 {
+    auto &store = screen.get_store();
+    const auto store_num = store.get_sale_type();
     concptr q; //!< @note プロンプトメッセージ
     concptr s_none; //!< @note 売る/置くものがない場合のメッセージ
     concptr s_full; //!< @note もう置けない場合のメッセージ
@@ -91,8 +98,16 @@ void store_sell(CreatureEntity &creature, StoreSaleType store_num)
         return;
     }
 
+    // 正業の店は、賞金首が持ち込んだ盗品 (正当な所有権が他者にある品) を扱わない。
+    // ブラック・マーケットは買うので売却経路自体は残る (market/loot-notoriety.h 参照)。
+    if (store_refuses_stolen_goods(creature, *item, store_num)) {
+        notify_store_refusal_of_stolen_goods(creature);
+        return;
+    }
+
     if ((i_idx >= INVEN_MAIN_HAND) && item->is_cursed()) {
         msg_print(_("ふーむ、どうやらそれは呪われているようだね。", "Hmmm, it seems to be cursed."));
+        sense_curse(creature, i_idx);
         return;
     }
 
@@ -116,7 +131,7 @@ void store_sell(CreatureEntity &creature, StoreSaleType store_num)
         selling_item.feeling = FEEL_NONE;
     }
 
-    if (!store_check_num(&selling_item, store_num)) {
+    if (!store_check_num(&selling_item, store)) {
         msg_print(s_full);
         return;
     }
@@ -124,10 +139,10 @@ void store_sell(CreatureEntity &creature, StoreSaleType store_num)
     bool placed = false;
     if ((store_num != StoreSaleType::HOME) && (store_num != StoreSaleType::MUSEUM)) {
         const auto item_name = describe_flavor(creature, selling_item, 0);
-        msg_format(_("%s(%c)を売却する。", "Selling %s (%c)."), item_name.data(), index_to_label(i_idx));
+        msg_print(_("{}({:c})を売却する。", "Selling {} ({:c})."), item_name, index_to_label(i_idx));
         msg_erase();
 
-        auto res = prompt_to_sell(creature, &selling_item, store_num);
+        auto res = prompt_to_sell(creature, store, &selling_item);
         placed = res.has_value();
         if (placed) {
             const auto price = res.value();
@@ -143,9 +158,9 @@ void store_sell(CreatureEntity &creature, StoreSaleType store_num)
                 chg_virtue(creature, Virtue::NATURE, 1);
             }
 
-            creature.add_au(price);
-            store_prt_gold(creature.get_au());
-            const auto dummy = selling_item.calc_price() * selling_item.number;
+            creature.set_au(clamp_price(int64_t{ creature.get_au() } + price));
+            store_prt_gold(screen, creature.get_au());
+            const auto dummy = int64_t{ selling_item.calc_price() } * selling_item.number;
 
             identify_item(creature, item.get());
             auto sold_item = item->clone();
@@ -156,9 +171,9 @@ void store_sell(CreatureEntity &creature, StoreSaleType store_num)
                 sold_item.pval = item->pval * amt / item->number;
             }
 
-            const auto value = sold_item.calc_price() * sold_item.number;
+            const auto value = int64_t{ sold_item.calc_price() } * sold_item.number;
             const auto sold_item_name = describe_flavor(creature, sold_item, 0);
-            msg_format(_("%sを $%dで売却しました。", "You sold %s for %d gold."), sold_item_name.data(), price);
+            msg_print(_("{}を ${}で売却しました。", "You sold {} for {} gold."), sold_item_name, price);
 
             if (record_sell) {
                 exe_write_diary(*creature.get_floor(), DiaryKind::SELL, 0, sold_item_name);
@@ -179,22 +194,21 @@ void store_sell(CreatureEntity &creature, StoreSaleType store_num)
             }
 
             inven_item_optimize(creature, i_idx);
-            auto &store = TownList::get_instance().get_town(creature.get_town_num()).get_store(store_num);
             const auto item_pos = store.carry(sold_item);
             if (item_pos) {
-                store_top = (*item_pos / store_bottom) * store_bottom;
-                display_store_inventory(creature, store_num);
+                screen.show_page_containing(*item_pos);
+                display_store_inventory(creature, screen);
             }
         }
     } else if (store_num == StoreSaleType::MUSEUM) {
         const auto museum_item_name = describe_flavor(creature, selling_item, OD_NAME_ONLY);
-        if (-1 == store_check_num(&selling_item, store_num)) {
+        if (-1 == store_check_num(&selling_item, store)) {
             msg_print(_("それと同じ品物は既に博物館にあるようです。", "The Museum already has one of those items."));
         } else {
             msg_print(_("博物館に寄贈したものは取り出すことができません！！", "You cannot take back items which have been donated to the Museum!!"));
         }
 
-        if (!input_check(format(_("本当に%sを寄贈しますか？", "Really give %s to the Museum? "), museum_item_name.data()))) {
+        if (!input_check(fmt::format(_("本当に{}を寄贈しますか？", "Really give {} to the Museum? "), museum_item_name))) {
             return;
         }
 
@@ -202,32 +216,32 @@ void store_sell(CreatureEntity &creature, StoreSaleType store_num)
         selling_item.ident.set(IdentificationFlag::FULL_KNOWN);
 
         distribute_charges(item.get(), &selling_item, amt);
-        msg_format(_("%sを置いた。(%c)", "You drop %s (%c)."), museum_item_name.data(), index_to_label(i_idx));
+        msg_print(_("{}を置いた。({:c})", "You drop {} ({:c})."), museum_item_name, index_to_label(i_idx));
         placed = true;
 
         vary_item(creature, i_idx, -amt);
 
-        int item_pos = home_carry(creature, &selling_item, store_num);
+        int item_pos = home_carry(creature, store, &selling_item);
         if (item_pos >= 0) {
-            store_top = (item_pos / store_bottom) * store_bottom;
-            display_store_inventory(creature, store_num);
+            screen.show_page_containing(item_pos);
+            display_store_inventory(creature, screen);
         }
     } else {
         distribute_charges(item.get(), &selling_item, amt);
         const auto item_name = describe_flavor(creature, selling_item, 0);
-        msg_format(_("%sを置いた。(%c)", "You drop %s (%c)."), item_name.data(), index_to_label(i_idx));
+        msg_print(_("{}を置いた。({:c})", "You drop {} ({:c})."), item_name, index_to_label(i_idx));
         placed = true;
         vary_item(creature, i_idx, -amt);
-        int item_pos = home_carry(creature, &selling_item, store_num);
+        int item_pos = home_carry(creature, store, &selling_item);
         if (item_pos >= 0) {
-            store_top = (item_pos / store_bottom) * store_bottom;
-            display_store_inventory(creature, store_num);
+            screen.show_page_containing(item_pos);
+            display_store_inventory(creature, screen);
         }
     }
 
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.set_flag(StatusRecalculatingFlag::BONUS);
-    rfu.set_flag(SubWindowRedrawingFlag::PLAYER);
+    auto &dur = DeferredUpdateRequests::get_instance();
+    dur.set_flag(StatusRecalculatingFlag::BONUS);
+    dur.set_flag(SubWindowRedrawingFlag::PLAYER);
     handle_stuff(creature);
 
     if (placed && (i_idx >= INVEN_MAIN_HAND)) {

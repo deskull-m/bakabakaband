@@ -454,7 +454,7 @@ ProcessResult effect_monster_confusion(CreatureEntity &creature, EffectMonster *
     em_ptr->dam *= 3;
     em_ptr->dam /= randint1(6) + 6;
     if (native_resist && is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
-        em_ptr->monrace->resistance_flags.set(MonsterResistanceType::NO_CONF);
+        em_ptr->monrace->r_resistance_flags.set(MonsterResistanceType::NO_CONF);
     }
 
     return ProcessResult::PROCESS_CONTINUE;

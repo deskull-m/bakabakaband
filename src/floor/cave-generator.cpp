@@ -189,7 +189,7 @@ static bool decide_tunnel_planned_site(CreatureEntity &creature, DungeonData *dd
         dd_ptr->why = _("トンネル接続に失敗", "Failed to generate tunnels");
         return false;
     } else {
-        msg_format_wizard(creature, CHEAT_DUNGEON, _("トンネル失敗回数:%d ", "Failure Tunnels:%d "), dd_ptr->tunnel_fail_count);
+        msg_print_wizard(creature, CHEAT_DUNGEON, _("トンネル失敗回数:{} ", "Failure Tunnels:{} "), dd_ptr->tunnel_fail_count);
     }
 
     return true;
@@ -446,9 +446,33 @@ static void decide_dungeon_data_allocation(CreatureEntity &creature, DungeonData
     if (dd_ptr->alloc_monster_num > small_tester) {
         dd_ptr->alloc_monster_num = small_tester;
     } else {
-        msg_format_wizard(creature, CHEAT_DUNGEON, _("モンスター数基本値を %d から %d に減らします", "Reduced monsters base from %d to %d"), small_tester,
+        msg_print_wizard(creature, CHEAT_DUNGEON, _("モンスター数基本値を {} から {} に減らします", "Reduced monsters base from {} to {}"), small_tester,
             dd_ptr->alloc_monster_num);
     }
+}
+
+/*!
+ * @brief クリーチャーパーティの中心に使える座標を決める
+ * @param floor フロアへの参照
+ * @return モンスターを配置できる座標。見つからなければnullopt
+ * @details 一様乱数の座標をそのまま中心に使ってはいけない。フロアの大半は岩盤で、
+ *          `mon_scatter()` は中心からの `projectable()` を要求するため、岩盤の中を
+ *          引くと候補が全滅し 1 体も置けないまま失敗する (実測では選ばれた
+ *          パーティがほぼ毎回配置に失敗していた)。`alloc_monster()` が使う
+ *          `decide_monster_allocation_position()` と同じく、配置可能な床を
+ *          引くまで振り直す。
+ */
+static tl::optional<Pos2D> decide_creature_party_center(const FloorType &floor)
+{
+    for (auto attempts_left = 10000; attempts_left > 0; attempts_left--) {
+        const Pos2D pos(randint0(floor.height), randint0(floor.width));
+        const auto can_place = floor.is_underground() ? floor.can_generate_monster_at(pos) : floor.is_empty_at(pos);
+        if (can_place) {
+            return pos;
+        }
+    }
+
+    return tl::nullopt;
 }
 
 static bool allocate_dungeon_data(CreatureEntity &creature, DungeonData *dd_ptr, const DungeonDefinition &dungeon)
@@ -458,9 +482,9 @@ static bool allocate_dungeon_data(CreatureEntity &creature, DungeonData *dd_ptr,
 
     for (dd_ptr->alloc_monster_num = dd_ptr->alloc_monster_num + dd_ptr->alloc_object_num; dd_ptr->alloc_monster_num > 0; dd_ptr->alloc_monster_num--) {
         if (one_in_(30)) {
-            // ランダムな位置を決定
-            Pos2D pos(randint0(floor.height), randint0(floor.width));
-            if (alloc_creature_party(creature, pos)) {
+            // パーティの中心は「モンスターを配置できる床」から選ぶ
+            const auto pos_center = decide_creature_party_center(floor);
+            if (pos_center && alloc_creature_party(creature, *pos_center)) {
                 // パーティ生成に成功した場合、このイテレーションをスキップ
                 continue;
             }
@@ -553,7 +577,7 @@ tl::optional<std::string> cave_gen(CreatureEntity &creature, tl::optional<uint32
         rng.get_state(original_state.begin()); // 現在の乱数状態を保存
         rng = xso::rng32(*seed); // 指定された種で乱数を初期化
         seed_was_fixed = true;
-        msg_format_wizard(creature, CHEAT_DUNGEON,
+        msg_print_wizard(creature, CHEAT_DUNGEON,
             _("乱数種を固定してダンジョンを生成: 0x%08X", "Generating dungeon with fixed seed: 0x%08X"),
             *seed);
     }
@@ -568,8 +592,8 @@ tl::optional<std::string> cave_gen(CreatureEntity &creature, tl::optional<uint32
         if (auto random_dungeon_id = select_random_non_beginner_dungeon()) {
             floor.dungeon_generated_id = *random_dungeon_id;
             msg_print_wizard(creature, CHEAT_DUNGEON,
-                format(_("鉄獄で他ダンジョンの生成処理を使用: %s", "Using random dungeon generation in Angband: %s"),
-                    floor.get_generated_dungeon_definition().name.data()));
+                fmt::format(_("鉄獄で他ダンジョンの生成処理を使用: {}", "Using random dungeon generation in Angband: {}"),
+                    floor.get_generated_dungeon_definition().name));
         } else {
             floor.dungeon_generated_id = floor.dungeon_id;
         }
@@ -699,7 +723,7 @@ void apply_vestige_terrain_replacement(CreatureEntity &creature)
     }
 
     msg_print_wizard(creature, CHEAT_DUNGEON,
-        format(_("VESTIGE効果: %d箇所の地形を差し替えました", "VESTIGE effect: Replaced %d terrain features"),
+        fmt::format(_("VESTIGE効果: {}箇所の地形を差し替えました", "VESTIGE effect: Replaced {} terrain features"),
             replacement_count));
 }
 
@@ -762,8 +786,8 @@ void apply_void_terrain_placement(CreatureEntity &creature)
     }
 
     msg_print_wizard(creature, CHEAT_DUNGEON,
-        format(_("時空崩壊効果: %d箇所を虚空地形に置き換えました（崩壊度: %d.%06d%%、配置率: %d%%）",
-                   "World collapse effect: Replaced %d terrain features with void (collapse: %d.%06d%%, rate: %d%%)"),
+        fmt::format(_("時空崩壊効果: {}箇所を虚空地形に置き換えました（崩壊度: {}.{:06}%、配置率: {}%）",
+                        "World collapse effect: Replaced {} terrain features with void (collapse: {}.{:06}%, rate: {}%)"),
             placement_count,
             wc_ptr->collapse_degree / 1000000, wc_ptr->collapse_degree % 1000000,
             placement_rate_percent));

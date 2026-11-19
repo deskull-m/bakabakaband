@@ -1,0 +1,317 @@
+/*!
+ * @brief 体構造ごとの装備スロットポリシーと表示名のテスト
+ *
+ * 体構造 (BodyStructureType) ごとに、どの装備スロットが許可されるか、
+ * どの拡張スロットを持つか、および表示名・表示色が定義されているかを検証する。
+ * c コマンドのステータス表示と r コマンドの思い出表示は同じ表示名を共用するため、
+ * 全ての体構造について名前が空でないことを保証する。
+ */
+
+#include "system/monrace/body-structure-policy.h"
+
+#include "inventory/inventory-slot-types.h"
+#include "system/monrace/body-structure-types.h"
+#include "system/monrace/extended-slot.h"
+#include "term/term-color-types.h"
+#include "util/enum-converter.h"
+
+#include <doctest/doctest.h>
+
+#include <algorithm>
+#include <iterator>
+#include <vector>
+
+namespace {
+
+//! 全ての体構造 (MAX を除く)
+constexpr BodyStructureType ALL_BODY_STRUCTURES[] = {
+    BodyStructureType::HUMANOID,
+    BodyStructureType::BIPEDAL,
+    BodyStructureType::QUADRUPED,
+    BodyStructureType::SERPENTINE,
+    BodyStructureType::AMORPHOUS,
+    BodyStructureType::INCORPOREAL,
+    BodyStructureType::DRACONIC,
+    BodyStructureType::FORMLESS,
+    BodyStructureType::GASEOUS,
+    BodyStructureType::VORTEX,
+    BodyStructureType::XAREN,
+    BodyStructureType::AVIAN,
+    BodyStructureType::WORM,
+    BodyStructureType::INSECTOID,
+    BodyStructureType::WINGED_HUMANOID,
+    BodyStructureType::WING_ARMED_HUMANOID,
+    BodyStructureType::SPHERE,
+};
+
+//! 装備スロットのうち許可されているものを列挙する
+std::vector<int> collect_allowed_slots(BodyStructureType type)
+{
+    const auto &policy = get_body_slot_policy(type);
+    std::vector<int> allowed;
+    for (int slot = INVEN_MAIN_HAND; slot < INVEN_TOTAL; slot++) {
+        if (policy.is_allowed(slot)) {
+            allowed.push_back(slot);
+        }
+    }
+
+    return allowed;
+}
+
+bool contains_slot(const std::vector<int> &slots, int slot)
+{
+    return std::find(slots.begin(), slots.end(), slot) != slots.end();
+}
+
+}
+
+TEST_CASE("HUMANOID allows every equipment slot")
+{
+    // HUMANOID は既定の体構造であり、通常のプレイヤーもこれとして扱われる。
+    // 全 13 スロットが許可されていないと、プレイヤーの装備が壊れる。
+    const auto allowed = collect_allowed_slots(BodyStructureType::HUMANOID);
+    CHECK(allowed.size() == static_cast<size_t>(INVEN_TOTAL - INVEN_MAIN_HAND));
+    for (int slot = INVEN_MAIN_HAND; slot < INVEN_TOTAL; slot++) {
+        CAPTURE(slot);
+        CHECK(get_body_slot_policy(BodyStructureType::HUMANOID).is_allowed(slot));
+    }
+}
+
+TEST_CASE("INCORPOREAL allows no equipment slot")
+{
+    CHECK(collect_allowed_slots(BodyStructureType::INCORPOREAL).empty());
+}
+
+TEST_CASE("only humanoid-grade and draconic bodies have normal equipment slots")
+{
+    // 人間用の装具は人型の体に合わせた形をしているため、獣・鳥・蟲・蠕虫に
+    // 「首と胴と頭だけ」のような部分的な人型スロットは持たせない。
+    // 倒して身ぐるみを剥げるのは人型が主、という方針。
+    constexpr BodyStructureType WITH_SLOTS[] = {
+        BodyStructureType::HUMANOID,
+        BodyStructureType::WINGED_HUMANOID,
+        BodyStructureType::WING_ARMED_HUMANOID,
+        BodyStructureType::DRACONIC,
+    };
+
+    SUBCASE("every other body structure has no normal slot at all")
+    {
+        for (const auto type : ALL_BODY_STRUCTURES) {
+            const auto has_slots = std::find(std::begin(WITH_SLOTS), std::end(WITH_SLOTS), type) != std::end(WITH_SLOTS);
+            if (has_slots) {
+                continue;
+            }
+
+            CAPTURE(enum2i(type));
+            CHECK(collect_allowed_slots(type).empty());
+        }
+    }
+
+    SUBCASE("the four structures with slots keep a full humanoid-grade set")
+    {
+        // 部分的なスロット集合を持つ体構造は存在しない。人型から除外されるのは
+        // WINGED_HUMANOID のクロークと WING_ARMED_HUMANOID の両手だけ。
+        const auto humanoid = collect_allowed_slots(BodyStructureType::HUMANOID);
+        CHECK(collect_allowed_slots(BodyStructureType::DRACONIC).size() == humanoid.size());
+        CHECK(collect_allowed_slots(BodyStructureType::WINGED_HUMANOID).size() == humanoid.size() - 1);
+        CHECK(collect_allowed_slots(BodyStructureType::WING_ARMED_HUMANOID).size() == humanoid.size() - 2);
+    }
+
+    SUBCASE("beasts keep body-appropriate extended slots instead")
+    {
+        // 通常スロットを失っても、身体に合った拡張スロットでの装飾は残す。
+        // 拡張スロットは drop_all_inventory() の対象外なので剥ぎ取れない。
+        CHECK_FALSE(get_body_slot_policy(BodyStructureType::SERPENTINE).get_extended_slots().empty());
+        CHECK_FALSE(get_body_slot_policy(BodyStructureType::WORM).get_extended_slots().empty());
+        CHECK_FALSE(get_body_slot_policy(BodyStructureType::AVIAN).get_extended_slots().empty());
+    }
+}
+
+TEST_CASE("extended slots are defined per body structure")
+{
+    SUBCASE("HUMANOID has no extended slot")
+    {
+        CHECK(get_body_slot_policy(BodyStructureType::HUMANOID).get_extended_slots().empty());
+    }
+
+    SUBCASE("SERPENTINE has a tail ring")
+    {
+        const auto &slots = get_body_slot_policy(BodyStructureType::SERPENTINE).get_extended_slots();
+        REQUIRE(slots.size() == 1);
+        CHECK(slots[0] == ExtendedSlotType::TAIL_RING);
+    }
+
+    SUBCASE("DRACONIC keeps humanoid slots and adds tail and wings")
+    {
+        // DRACONIC は HUMANOID と同じ全スロットに加えて拡張スロットを持つ
+        CHECK(collect_allowed_slots(BodyStructureType::DRACONIC) == collect_allowed_slots(BodyStructureType::HUMANOID));
+
+        const auto &slots = get_body_slot_policy(BodyStructureType::DRACONIC).get_extended_slots();
+        REQUIRE(slots.size() == 3);
+        CHECK(slots[0] == ExtendedSlotType::TAIL_RING);
+        CHECK(slots[1] == ExtendedSlotType::WING_LEFT);
+        CHECK(slots[2] == ExtendedSlotType::WING_RIGHT);
+    }
+}
+
+TEST_CASE("WINGED_HUMANOID is HUMANOID minus the cloak slot")
+{
+    // 有翼人は背の翼が邪魔でクローク (体の上) だけ羽織れない。
+    // それ以外は人型と同じなので、武器・盾・鎧・兜・篭手・靴は通常どおり扱える。
+    const auto allowed = collect_allowed_slots(BodyStructureType::WINGED_HUMANOID);
+    const auto humanoid = collect_allowed_slots(BodyStructureType::HUMANOID);
+    CHECK(allowed.size() == humanoid.size() - 1);
+    CHECK_FALSE(contains_slot(allowed, INVEN_OUTER));
+    for (const auto slot : humanoid) {
+        if (slot == INVEN_OUTER) {
+            continue;
+        }
+
+        CAPTURE(slot);
+        CHECK(contains_slot(allowed, slot));
+    }
+
+    SUBCASE("winged humanoid has both wings as extended slots")
+    {
+        const auto &slots = get_body_slot_policy(BodyStructureType::WINGED_HUMANOID).get_extended_slots();
+        REQUIRE(slots.size() == 2);
+        CHECK(slots[0] == ExtendedSlotType::WING_LEFT);
+        CHECK(slots[1] == ExtendedSlotType::WING_RIGHT);
+    }
+}
+
+TEST_CASE("WING_ARMED_HUMANOID is HUMANOID minus both hands")
+{
+    // 翼腕人は両腕が翼なので利き手・逆手が無い。背に翼を負うわけではないので
+    // 体の上 (クローク) は有翼人と違って羽織れる。
+    const auto allowed = collect_allowed_slots(BodyStructureType::WING_ARMED_HUMANOID);
+    const auto humanoid = collect_allowed_slots(BodyStructureType::HUMANOID);
+    CHECK(allowed.size() == humanoid.size() - 2);
+    CHECK_FALSE(contains_slot(allowed, INVEN_MAIN_HAND));
+    CHECK_FALSE(contains_slot(allowed, INVEN_SUB_HAND));
+    CHECK(contains_slot(allowed, INVEN_OUTER));
+    for (const auto slot : humanoid) {
+        if ((slot == INVEN_MAIN_HAND) || (slot == INVEN_SUB_HAND)) {
+            continue;
+        }
+
+        CAPTURE(slot);
+        CHECK(contains_slot(allowed, slot));
+    }
+
+    SUBCASE("wing-armed humanoid has both wings as extended slots")
+    {
+        const auto &slots = get_body_slot_policy(BodyStructureType::WING_ARMED_HUMANOID).get_extended_slots();
+        REQUIRE(slots.size() == 2);
+        CHECK(slots[0] == ExtendedSlotType::WING_LEFT);
+        CHECK(slots[1] == ExtendedSlotType::WING_RIGHT);
+    }
+}
+
+TEST_CASE("SPHERE allows no equipment slot at all")
+{
+    // 球体は手足も頭も首も無いため、装備できる部位が 1 つも存在しない。
+    // INCORPOREAL / FORMLESS / GASEOUS / VORTEX / XAREN と同じ構成 (意味論のみ異なる)。
+    CHECK(collect_allowed_slots(BodyStructureType::SPHERE).empty());
+    CHECK(get_body_slot_policy(BodyStructureType::SPHERE).get_extended_slots().empty());
+}
+
+TEST_CASE("only humanoid-grade bodies outfit themselves with armament")
+{
+    // 武装度 (armament_level) による装備充填の対象は「武具を自ら調える体」だけ。
+    // 獣・鳥・蟲・蠕虫は首・胴・頭のスロットが構造上あっても、自分で防具を
+    // 買い揃えて着込む生き物ではないため対象外 (安物の鎧や兜を着た獣が
+    // 大量に出ないようにするための軸)。
+    SUBCASE("humanoid-grade and draconic bodies are armament capable")
+    {
+        CHECK(get_body_slot_policy(BodyStructureType::HUMANOID).is_armament_capable());
+        CHECK(get_body_slot_policy(BodyStructureType::WINGED_HUMANOID).is_armament_capable());
+        CHECK(get_body_slot_policy(BodyStructureType::WING_ARMED_HUMANOID).is_armament_capable());
+        CHECK(get_body_slot_policy(BodyStructureType::DRACONIC).is_armament_capable());
+    }
+
+    SUBCASE("beasts and bodiless structures are not armament capable")
+    {
+        constexpr BodyStructureType INCAPABLE[] = {
+            BodyStructureType::BIPEDAL,
+            BodyStructureType::QUADRUPED,
+            BodyStructureType::SERPENTINE,
+            BodyStructureType::AMORPHOUS,
+            BodyStructureType::INCORPOREAL,
+            BodyStructureType::FORMLESS,
+            BodyStructureType::GASEOUS,
+            BodyStructureType::VORTEX,
+            BodyStructureType::XAREN,
+            BodyStructureType::AVIAN,
+            BodyStructureType::WORM,
+            BodyStructureType::INSECTOID,
+            BodyStructureType::SPHERE,
+        };
+        for (const auto type : INCAPABLE) {
+            CAPTURE(enum2i(type));
+            CHECK_FALSE(get_body_slot_policy(type).is_armament_capable());
+        }
+    }
+
+    SUBCASE("a body with no slot at all is never armament capable")
+    {
+        // スロットが 1 つも無い体構造が充填対象になっていると、
+        // 予算を消費するだけで何も装備できない無駄な走査になる。
+        for (const auto type : ALL_BODY_STRUCTURES) {
+            CAPTURE(enum2i(type));
+            if (collect_allowed_slots(type).empty()) {
+                CHECK_FALSE(get_body_slot_policy(type).is_armament_capable());
+            }
+        }
+    }
+}
+
+TEST_CASE("out of range body structure falls back to HUMANOID policy")
+{
+    const auto &fallback = get_body_slot_policy(BodyStructureType::MAX);
+    for (int slot = INVEN_MAIN_HAND; slot < INVEN_TOTAL; slot++) {
+        CAPTURE(slot);
+        CHECK(fallback.is_allowed(slot));
+    }
+}
+
+TEST_CASE("slots outside the equipment range are never allowed")
+{
+    for (const auto type : ALL_BODY_STRUCTURES) {
+        CAPTURE(enum2i(type));
+        const auto &policy = get_body_slot_policy(type);
+        CHECK_FALSE(policy.is_allowed(INVEN_MAIN_HAND - 1));
+        CHECK_FALSE(policy.is_allowed(INVEN_TOTAL));
+        CHECK_FALSE(policy.is_allowed(-1));
+    }
+}
+
+TEST_CASE("every body structure has a display name and color")
+{
+    // c コマンドのステータス表示と r コマンドの思い出表示が共用するため、
+    // 体構造を追加したときに名前の定義漏れがあると空欄が表示されてしまう。
+    for (const auto type : ALL_BODY_STRUCTURES) {
+        CAPTURE(enum2i(type));
+        CHECK_FALSE(body_structure_name(type).empty());
+        CHECK(body_structure_color(type) != TERM_DARK);
+    }
+
+    SUBCASE("distinct body structures have distinct names")
+    {
+        std::vector<std::string_view> names;
+        for (const auto type : ALL_BODY_STRUCTURES) {
+            names.push_back(body_structure_name(type));
+        }
+
+        std::sort(names.begin(), names.end());
+        const bool all_names_unique = std::adjacent_find(names.begin(), names.end()) == names.end();
+        CHECK(all_names_unique);
+    }
+
+    SUBCASE("incorporeal and draconic are colored differently from the default")
+    {
+        CHECK(body_structure_color(BodyStructureType::INCORPOREAL) == TERM_L_DARK);
+        CHECK(body_structure_color(BodyStructureType::DRACONIC) == TERM_ORANGE);
+        CHECK(body_structure_color(BodyStructureType::HUMANOID) == TERM_L_BLUE);
+    }
+}

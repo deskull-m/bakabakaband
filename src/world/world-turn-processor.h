@@ -13,6 +13,7 @@ public:
     void print_time();
     void print_world_collapse();
     void print_cheat_position();
+    void decide_auto_save();
 
 private:
     CreatureEntity &creature;
@@ -23,7 +24,6 @@ private:
     void process_monster_arena();
     void process_monster_arena_winner(int win_m_idx);
     void process_monster_arena_draw();
-    void decide_auto_save();
     void process_change_daytime_night();
     void process_world_monsters();
     void decide_alloc_monster();

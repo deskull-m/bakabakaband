@@ -9,18 +9,20 @@
 #include "monster-race/monster-kind-mask.h"
 #include "monster-race/race-brightness-mask.h"
 #include "monster/monster-describer.h"
+#include "monster/monster-party.h"
 #include "monster/monster-processor.h"
 #include "monster/monster-util.h"
 #include "monster/smart-learn-types.h"
 #include "player/player-status-flags.h"
 #include "system/angband-system.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/redrawing-flags-updater.h"
 #include "target/projection-path-calculator.h"
 #include "tracking/health-bar-tracker.h"
+#include "util/string-processor.h"
 #include "view/display-messages.h"
 #include "world/world.h"
 #include <string>
@@ -35,6 +37,15 @@ void set_pet(CreatureEntity &creature, CreatureEntity &target)
     QuestCompletionChecker(creature, target).complete();
     target.set_constant_flag(MonsterConstantFlagType::PET);
     target.set_alliance_idx(AllianceType::NONE);
+
+    // ペットになった個体は元のパーティから抜ける。集団AI (覚醒伝播・士気崩壊・
+    // リーダー追従) は敵対する一団としての振舞いなので、味方に付いた個体を
+    // 残すと敵の集団がプレイヤーのペットを起こしに来る等の不整合が生じる。
+    // フロア間で連れ歩ける (party_mon[]) ため、別フロアで m_idx が衝突する
+    // 懸念も併せて解消される。
+    if (target.belongs_to_party()) {
+        leave_party_and_succeed_leader(*creature.get_floor(), target);
+    }
     if (target.get_monrace().kind_flags.has_none_of(alignment_mask)) {
         target.set_sub_align(SUB_ALIGN_NEUTRAL);
     }
@@ -52,7 +63,7 @@ void anger_monster(CreatureEntity &creature, CreatureEntity &target)
     }
 
     const auto m_name = monster_desc(creature, target, 0);
-    msg_format(_("%s^\u306f\u6012\u3063\u305f\uff01", "%s^ gets angry!"), m_name.data());
+    msg_print(_("{}は怒った！", "{} gets angry!"), str_upcase_first(m_name));
     target.set_hostile();
     chg_virtue(creature, Virtue::INDIVIDUALISM, 1);
     chg_virtue(creature, Virtue::HONOUR, -1);
@@ -74,16 +85,16 @@ bool set_monster_csleep(FloorType &floor, MONSTER_IDX m_idx, int v)
     }
 
     auto &monster = floor.get_monster(m_idx);
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
+    auto &dur = DeferredUpdateRequests::get_instance();
     if (monster.is_visible_on_map()) {
         HealthBarTracker::get_instance().set_flag_if_tracking(m_idx);
         if (monster.is_riding()) {
-            rfu.set_flag(MainWindowRedrawingFlag::UHEALTH);
+            dur.set_flag(MainWindowRedrawingFlag::UHEALTH);
         }
     }
 
     if (monster.get_monrace().brightness_flags.has_any_of(has_ld_mask)) {
-        rfu.set_flag(StatusRecalculatingFlag::MONSTER_LITE);
+        dur.set_flag(StatusRecalculatingFlag::MONSTER_LITE);
     }
 
     return true;
@@ -103,7 +114,7 @@ bool set_monster_fast(FloorType &floor, MONSTER_IDX m_idx, int v)
     }
 
     if (floor.get_monster(m_idx).is_riding()) {
-        RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
+        DeferredUpdateRequests::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
     }
 
     return true;
@@ -123,7 +134,7 @@ bool set_monster_slow(FloorType &floor, MONSTER_IDX m_idx, int v)
     }
 
     if (floor.get_monster(m_idx).is_riding()) {
-        RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
+        DeferredUpdateRequests::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
     }
 
     return true;
@@ -176,7 +187,7 @@ bool set_monster_monfear(FloorType &floor, MONSTER_IDX m_idx, int v)
     if (monster.is_visible_on_map()) {
         HealthBarTracker::get_instance().set_flag_if_tracking(m_idx);
         if (monster.is_riding()) {
-            RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::UHEALTH);
+            DeferredUpdateRequests::get_instance().set_flag(MainWindowRedrawingFlag::UHEALTH);
         }
     }
 
@@ -208,7 +219,7 @@ bool set_monster_invulner(FloorType &floor, MONSTER_IDX m_idx, int v, bool energ
     if (monster.is_visible_on_map()) {
         HealthBarTracker::get_instance().set_flag_if_tracking(m_idx);
         if (monster.is_riding()) {
-            RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::UHEALTH);
+            DeferredUpdateRequests::get_instance().set_flag(MainWindowRedrawingFlag::UHEALTH);
         }
     }
 
@@ -260,20 +271,13 @@ bool set_monster_timewalk(CreatureEntity &creature, MONSTER_IDX m_idx, int num, 
 
         process_monster(creature, world.timewalk_m_idx);
         monster.reset_target();
-        handle_stuff(creature);
+        handle_stuff_with_inventory_arrangement(creature);
         if (vs_player) {
             term_xtra(TERM_XTRA_DELAY, 500);
         }
     }
 
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.set_flag(MainWindowRedrawingFlag::MAP);
-    rfu.set_flag(StatusRecalculatingFlag::MONSTER_STATUSES);
-    static constexpr auto flags = {
-        SubWindowRedrawingFlag::OVERHEAD,
-        SubWindowRedrawingFlag::DUNGEON,
-    };
-    rfu.set_flags(flags);
+    DeferredUpdateRequests::get_instance().request_monster_update_and_map_redrawing();
     world.timewalk_m_idx = 0;
     const auto p_pos = creature.get_position();
     const auto m_pos = monster.get_position();

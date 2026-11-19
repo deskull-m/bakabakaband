@@ -35,6 +35,10 @@ void MonsterWriter::write_to_savedata() const
 
     wr_s16b(this->monster.get_parent_m_idx());
 
+    // パーティ所属 (セーブデータバージョン 59 以降)
+    wr_s16b(this->monster.get_party_id());
+    wr_s16b(this->monster.get_party_leader_m_idx());
+
     wr_s16b(static_cast<int16_t>(enum2i(this->monster.get_transform_r_idx())));
     wr_byte(static_cast<byte>(this->monster.get_transform_hp_threshold()));
     wr_byte(this->monster.has_transformed() ? 1 : 0);
@@ -62,4 +66,7 @@ void MonsterWriter::write_to_savedata() const
         wr_item(*item);
     }
     wr_u16b(0xFFFF);
+
+    // 視認されているか (visible_on_map / 旧 ml)。セーブデータバージョン 56 以降。
+    wr_byte(this->monster.is_visible_on_map() ? 1 : 0);
 }

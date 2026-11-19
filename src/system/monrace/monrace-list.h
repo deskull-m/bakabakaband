@@ -14,11 +14,17 @@
 #include <tl/optional.hpp>
 #include <utility>
 #include <vector>
+#include <xoshiro.h>
 
 enum class MonraceId : short;
 
 class LocalizedString;
 class MonraceDefinition;
+
+namespace test {
+class MonraceListTestAccess;
+}
+
 class MonraceList : public util::AbstractMapWrapper<MonraceId, std::shared_ptr<MonraceDefinition>> {
 public:
     MonraceList(MonraceList &&) = delete;
@@ -52,7 +58,9 @@ public:
     bool order_level(MonraceId id1, MonraceId id2) const;
     bool order_level_unique(MonraceId id1, MonraceId id2) const;
     MonraceId pick_id_at_random() const;
+    MonraceId pick_id_at_random(xso::rng32 &rng) const;
     const MonraceDefinition &pick_monrace_at_random() const;
+    const MonraceDefinition &pick_monrace_at_random(xso::rng32 &rng) const;
     int calc_defeat_count() const;
     MonraceId select_figurine(int max_level) const;
     const LocalizedString &get_name(MonraceId monrace_id) const;
@@ -61,7 +69,6 @@ public:
 
     void reset_current_numbers();
     void reset_all_visuals();
-    tl::optional<std::string> probe_lore(MonraceId monrace_id);
     void kill_unique_monster(MonraceId monrace_id);
 
 private:
@@ -79,6 +86,8 @@ private:
     static MonraceList instance;
     std::map<MonraceId, std::shared_ptr<MonraceDefinition>> monraces;
     mutable std::vector<MonraceDefinition *> monrace_flat_cache;
+
+    friend class test::MonraceListTestAccess;
 
     const static std::map<MonraceId, std::set<MonraceId>> unified_uniques;
 

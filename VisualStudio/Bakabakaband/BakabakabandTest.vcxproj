@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="English-Debug|Win32">
+      <Configuration>English-Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="English-Release|Win32">
+      <Configuration>English-Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{49D5706B-A153-4EC1-AE3F-65508BF4C93B}</ProjectGuid>
+    <RootNamespace>BakabakabandTest</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <Import Project="Bakabakaband.Configuration.props" />
+  <PropertyGroup Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="Bakabakaband.Common.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <OutDir>$(Configuration)\</OutDir>
+    <TargetName>bakabakaband-test</TargetName>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <!-- doctest の CHECK 等は ExpressionDecomposer << 式 に展開されるため、式に暗黙の型変換を伴う
+           引数があると MSVC が評価順序の警告 (C4866) を出す。左辺の構築には副作用がなく
+           評価順序が結果に影響しないため、テストプロジェクトに限って無効化する -->
+      <DisableSpecificWarnings>4866;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
+    <Link>
+      <!-- doctest が生成する main() を持つコンソールアプリのため、
+           Bakabakaband.Common.props の SubSystem=Windows を上書きする -->
+      <SubSystem>Console</SubSystem>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <!--
+      プリコンパイルヘッダ。BakabakabandCore とは IntDir が異なり pch を共有できないため、
+      テストプロジェクト側でも stdafx.cpp から生成する。
+      stdafx.cpp はシンボルを定義しないので BakabakabandCore.lib 内の同名オブジェクトとは衝突しない。
+    -->
+    <ClCompile Include="..\..\src\stdafx.cpp">
+      <PrecompiledHeader>Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\..\src\test\test-main.cpp" />
+    <ClCompile Include="..\..\src\test\util\test-angband-files.cpp" />
+    <ClCompile Include="..\..\src\test\view\test-display-lore.cpp" />
+    <ClCompile Include="..\..\src\test\view\test-map-info-cache.cpp" />
+    <ClCompile Include="..\..\src\test\view\test-map-terrain-visibility.cpp" />
+    <ClCompile Include="..\..\src\test\window\test-overview-map-cache.cpp" />
+    <ClCompile Include="..\..\src\test\window\test-shrunk-overview-map.cpp" />
+    <ClCompile Include="..\..\src\test\autopick\test-autopick-editor-util.cpp" />
+    <ClCompile Include="..\..\src\test\bot\test-bot-json-output.cpp" />
+    <ClCompile Include="..\..\src\test\game-option\test-runtime-arguments.cpp" />
+    <ClCompile Include="..\..\src\test\cmd-io\test-cmd-autopick.cpp" />
+    <ClCompile Include="..\..\src\test\flavor\test-flavor-util.cpp" />
+    <ClCompile Include="..\..\src\test\info-reader\test-ego-reader.cpp" />
+    <ClCompile Include="..\..\src\test\info-reader\test-general-parser.cpp" />
+    <ClCompile Include="..\..\src\test\info-reader\test-info-reader-util.cpp" />
+    <ClCompile Include="..\..\src\test\info-reader\test-item-flag-reader.cpp" />
+    <ClCompile Include="..\..\src\test\info-reader\test-baseitem-reader.cpp" />
+    <ClCompile Include="..\..\src\test\info-reader\test-json-reader-util.cpp" />
+    <ClCompile Include="..\..\src\test\info-reader\test-jsonc-document-loader.cpp" />
+    <ClCompile Include="..\..\src\test\info-reader\test-monster-flag-reader.cpp" />
+    <ClCompile Include="..\..\src\test\info-reader\test-quest-reader.cpp" />
+    <ClCompile Include="..\..\src\test\info-reader\test-skill-reader.cpp" />
+    <ClCompile Include="..\..\src\test\info-reader\test-vault-reader.cpp" />
+    <ClCompile Include="..\..\src\test\info-reader\test-wilderness-reader.cpp" />
+    <ClCompile Include="..\..\src\test\io\test-condition-expression.cpp" />
+    <ClCompile Include="..\..\src\test\io\test-input-context.cpp" />
+    <ClCompile Include="..\..\src\test\io\test-interpret-pref-file.cpp" />
+    <ClCompile Include="..\..\src\test\io\test-macro-configurations-store.cpp" />
+    <ClCompile Include="..\..\src\test\io\test-pref-file-expressor.cpp" />
+    <ClCompile Include="..\..\src\test\io\test-tokenizer.cpp" />
+    <ClCompile Include="..\..\src\test\knowledge\test-knowledge-features.cpp" />
+    <ClCompile Include="..\..\src\test\load\test-floor-loader.cpp" />
+    <ClCompile Include="..\..\src\test\load\test-savefile-version.cpp" />
+    <ClCompile Include="..\..\src\test\locale\test-character-encoding.cpp" />
+    <ClCompile Include="..\..\src\test\lore\test-lore-calculator.cpp" />
+    <ClCompile Include="..\..\src\test\lore\test-monster-lore-snapshot.cpp" />
+    <ClCompile Include="..\..\src\test\market\test-building-recharger.cpp" />
+    <ClCompile Include="..\..\src\test\market\test-loot-notoriety.cpp" />
+    <ClCompile Include="..\..\src\test\mspell\mspell-attack\test-mspell-ball.cpp" />
+    <ClCompile Include="..\..\src\test\mspell\test-mspell-projection-table.cpp" />
+    <ClCompile Include="..\..\src\test\monster-floor\test-monster-corpse.cpp" />
+    <ClCompile Include="..\..\src\test\floor\test-floor-events.cpp" />
+    <ClCompile Include="..\..\src\test\object-enchant\test-item-feeling.cpp" />
+    <ClCompile Include="..\..\src\test\object-use\quaff\test-quaff-execution.cpp" />
+    <ClCompile Include="..\..\src\test\object\test-object-info.cpp" />
+    <ClCompile Include="..\..\src\test\object\test-object-value.cpp" />
+    <ClCompile Include="..\..\src\test\player-status\test-player-speed.cpp" />
+    <ClCompile Include="..\..\src\test\player-status\test-player-status-base.cpp" />
+    <ClCompile Include="..\..\src\test\player\test-player-status-flags.cpp" />
+    <ClCompile Include="..\..\src\test\player\test-player-status-resist.cpp" />
+    <ClCompile Include="..\..\src\test\racial\test-racial-android.cpp" />
+    <ClCompile Include="..\..\src\test\store\test-pricing.cpp" />
+    <ClCompile Include="..\..\src\test\store\test-store-screen.cpp" />
+    <ClCompile Include="..\..\src\test\store\test-store-util.cpp" />
+    <ClCompile Include="..\..\src\test\save\test-item-writer.cpp" />
+    <ClCompile Include="..\..\src\test\spell\test-spell-info.cpp" />
+    <ClCompile Include="..\..\src\test\spell-realm\test-spells-hex.cpp" />
+    <ClCompile Include="..\..\src\test\system\test-building-type-definition.cpp" />
+    <ClCompile Include="..\..\src\test\system\test-dungeon-record.cpp" />
+    <ClCompile Include="..\..\src\test\system\test-deferred-update-requests.cpp" />
+    <ClCompile Include="..\..\src\test\system\baseitem\test-baseitem-allocation.cpp" />
+    <ClCompile Include="..\..\src\test\system\baseitem\test-baseitem-definition.cpp" />
+    <ClCompile Include="..\..\src\test\system\baseitem\test-civilization-level.cpp" />
+    <ClCompile Include="..\..\src\test\system\baseitem\test-baseitem-list.cpp" />
+    <ClCompile Include="..\..\src\test\system\floor\test-floor-info.cpp" />
+    <ClCompile Include="..\..\src\test\system\monrace\test-armament-level.cpp" />
+    <ClCompile Include="..\..\src\test\system\monrace\test-body-structure-policy.cpp" />
+    <ClCompile Include="..\..\src\test\system\monrace\test-monrace-definition.cpp" />
+    <ClCompile Include="..\..\src\test\system\monrace\test-monrace-max-level.cpp" />
+    <ClCompile Include="..\..\src\test\term\test-z-rand.cpp" />
+    <ClCompile Include="..\..\src\test\timed-effect\test-player-cut.cpp" />
+    <ClCompile Include="..\..\src\test\timed-effect\test-player-stun.cpp" />
+    <ClCompile Include="..\..\src\test\util\test-buffer-shaper.cpp" />
+    <ClCompile Include="..\..\src\test\util\test-compass-direction.cpp" />
+    <ClCompile Include="..\..\src\test\util\test-dice.cpp" />
+    <ClCompile Include="..\..\src\test\util\test-finalizer.cpp" />
+    <ClCompile Include="..\..\src\test\util\test-flag-group.cpp" />
+    <ClCompile Include="..\..\src\test\util\test-int-char-converter.cpp" />
+    <ClCompile Include="..\..\src\test\util\test-probability-table.cpp" />
+    <ClCompile Include="..\..\src\test\util\test-sha256.cpp" />
+    <ClCompile Include="..\..\src\test\util\test-string-processor.cpp" />
+    <ClCompile Include="..\..\src\test\test-win-stubs.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\src\stdafx.h" />
+    <ClInclude Include="..\..\src\test\scoped-restore.h" />
+    <ClInclude Include="..\..\src\test\scoped-rng.h" />
+    <ClInclude Include="..\..\src\test\scoped-ego-list.h" />
+    <ClInclude Include="..\..\src\test\scoped-vector-wrapper.h" />
+    <ClInclude Include="..\..\src\test\info-reader\scoped-reader-state.h" />
+    <ClInclude Include="..\..\src\test\save\scoped-save-io.h" />
+    <ClInclude Include="..\..\src\test\string-helpers.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="BakabakabandCore.vcxproj">
+      <Project>{91B5F434-C680-49FE-9532-8586F6F6E2E4}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets" />
+</Project>

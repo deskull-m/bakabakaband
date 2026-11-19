@@ -15,6 +15,7 @@
 #include "term/term-color-types.h"
 #include "util/int-char-converter.h"
 #include "view/display-messages.h"
+#include <fmt/format.h>
 #include <realm/realm-names-table.h>
 #include <window/display-sub-window-spells.h>
 
@@ -121,7 +122,7 @@ static void display_spell_list(CreatureEntity &creature)
 
             const auto comment = mindcraft_info(creature, use_mind, i);
 
-            term_putstr(x, y + i + 1, -1, a, format("  %c) %-30s%2d %4d %3d%%%s", I2A(i), spell.name, spell.min_lev, spell.mana_cost, chance, comment.data()));
+            term_putstr(x, y + i + 1, -1, a, fmt::format("  {}) {:<30}{:2} {:4} {:3}%{}", I2A(i), fmt::bytes(spell.name), spell.min_lev, spell.mana_cost, chance, comment));
         }
 
         return;

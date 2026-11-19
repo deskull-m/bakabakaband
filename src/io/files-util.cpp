@@ -21,10 +21,12 @@
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
 #include "term/screen-processor.h"
+#include "term/z-rand.h"
 #include "util/angband-files.h"
 #include "util/string-processor.h"
 #include "view/display-messages.h"
 #include <algorithm>
+#include <fmt/format.h>
 #ifdef SAVEFILE_USE_UID
 #include "main-unix/unix-user-ids.h"
 #endif
@@ -107,13 +109,25 @@ void file_character(CreatureEntity &creature, std::string_view filename)
  */
 tl::optional<std::string> get_random_line(concptr file_name, int entry)
 {
+    return get_random_line(get_game_rng(), file_name, entry);
+}
+
+/*!
+ * @brief 指定した乱数生成器で、ファイルからランダムに行を一つ取得する
+ * @param rng 乱数生成器
+ * @param file_name ファイル名
+ * @param entry 特定条件時のN:タグヘッダID
+ * @return ファイルから取得した行 (但しファイルがなかったり異常値ならばnullopt)
+ */
+tl::optional<std::string> get_random_line(xso::rng32 &rng, concptr file_name, int entry)
+{
     const auto path = path_build(ANGBAND_DIR_FILE, file_name);
     auto *fp = angband_fopen(path, FileOpenMode::READ);
     if (!fp) {
         return tl::nullopt;
     }
 
-    int test;
+    auto test = 0;
     auto line_num = 0;
     const auto monrace_id = i2enum<MonraceId>(entry);
     const auto &monrace = MonraceList::get_instance().get_monrace(monrace_id);
@@ -142,12 +156,12 @@ tl::optional<std::string> get_random_line(concptr file_name, int entry)
             if (monrace.is_female()) {
                 break;
             }
-        } else if (sscanf(&(buf[2]), "%d", &test) != EOF) {
+        } else if (sscanf(&(buf[2]), "%d", &test) == 1) {
             if (test == entry) {
                 break;
             }
         } else {
-            msg_format("Error in line %d of %s!", line_num, file_name);
+            msg_print("Error in line {} of {}!", line_num, file_name);
             angband_fclose(fp);
             return tl::nullopt;
         }
@@ -176,7 +190,7 @@ tl::optional<std::string> get_random_line(concptr file_name, int entry)
             break;
         }
 
-        if (one_in_(counter + 1)) {
+        if (one_in_(rng, counter + 1)) {
             line = std::move(buf);
         }
 
@@ -233,9 +247,9 @@ static errr counts_seek(CreatureEntity &creature, int fd, uint32_t where, bool f
     auto short_pclass = enum2i(creature.pclass);
 #ifdef SAVEFILE_USE_UID
     const auto user_id = UnixUserIds::get_instance().get_user_id();
-    const auto header = format("%d.%s.%d%d%d", user_id, savefile_base.string().data(), short_pclass, creature.ppersonality, creature.get_age());
+    const auto header = fmt::format("{}.{}.{}{}{}", user_id, savefile_base.string(), short_pclass, static_cast<int>(creature.ppersonality), creature.get_age());
 #else
-    const auto header = format("%s.%d%d%d", savefile_base.string().data(), short_pclass, creature.ppersonality, creature.get_age());
+    const auto header = fmt::format("{}.{}{}{}", savefile_base.string(), short_pclass, static_cast<int>(creature.ppersonality), creature.get_age());
 #endif
     angband_strcpy(temp1, header, sizeof(temp1));
     for (int i = 0; temp1[i]; i++) {

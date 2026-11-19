@@ -69,4 +69,5 @@ enum summon_type : int {
     SUMMON_INSECT = 83, /*!< 召喚タイプ: 昆虫 */
     SUMMON_ELDRAZI = 84, /*!< 召喚タイプ: エルドラージ */
     SUMMON_TOKUSAN = 85, /*!< 召喚タイプ: とくさん (HOMO_SEXUAL かつ MALE) */
+    SUMMON_ROBOT = 86, /*!< 召喚タイプ: ロボット */
 };

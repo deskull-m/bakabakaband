@@ -112,11 +112,7 @@ static bool wr_savefile_new(CreatureEntity &creature)
         wr_lore(i2enum<MonraceId>(r_idx));
     }
 
-    tmp16u = static_cast<uint16_t>(BaseitemList::get_instance().size());
-    wr_u16b(tmp16u);
-    for (short bi_id = 0; bi_id < tmp16u; bi_id++) {
-        wr_perception(bi_id);
-    }
+    wr_baseitem_records();
 
     const auto &towns = TownList::get_instance();
     const auto towns_size = static_cast<uint16_t>(towns.size());
@@ -231,7 +227,7 @@ static bool wr_savefile_new(CreatureEntity &creature)
     wr_s16b(creature.get_pet_follow_distance());
     wr_s16b(creature.get_pet_extra_flags());
     if (AngbandSystem::get_instance().is_awaiting_report_status() || !creature.is_dead()) {
-        wr_string(screen_dump);
+        wr_string(serialize_screen_dump());
     } else {
         wr_string("");
     }

@@ -23,6 +23,8 @@
 #include "term/term-color-types.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-symbol.h"
+#include "view/display-util.h"
+#include <fmt/format.h>
 
 /*!
  * @brief プレイヤーのパラメータ基礎値 (腕力等)を18以下になるようにして返す
@@ -107,15 +109,13 @@ static void display_basic_stat_name(CreatureEntity &creature, int stat_num, int 
  */
 static void display_basic_stat_value(CreatureEntity &creature, int stat_num, int r_adj, int e_adj, int row, int stat_col)
 {
-    c_put_str(TERM_L_BLUE, format("%3d", r_adj), row + stat_num + 1, stat_col + 13);
+    c_put_str(TERM_L_BLUE, fmt::format("{:3}", r_adj), row + stat_num + 1, stat_col + 13);
 
-    const auto class_adj = (creature.pclass_ref != nullptr) ? (int)(*creature.get_class_info()).c_adj[stat_num] : 0;
-    c_put_str(TERM_L_BLUE, format("%3d", class_adj), row + stat_num + 1, stat_col + 16);
+    c_put_str(TERM_L_BLUE, fmt::format("{:3}", cp_ptr->c_adj[stat_num]), row + stat_num + 1, stat_col + 16);
 
-    const auto personality_adj = (creature.personality != nullptr) ? (int)(*creature.get_personality_info()).a_adj[stat_num] : 0;
-    c_put_str(TERM_L_BLUE, format("%3d", personality_adj), row + stat_num + 1, stat_col + 19);
+    c_put_str(TERM_L_BLUE, fmt::format("{:3}", (*creature.get_personality_info()).a_adj[stat_num]), row + stat_num + 1, stat_col + 19);
 
-    c_put_str(TERM_L_BLUE, format("%3d", (int)e_adj), row + stat_num + 1, stat_col + 22);
+    c_put_str(TERM_L_BLUE, fmt::format("{:3}", e_adj), row + stat_num + 1, stat_col + 22);
 
     c_put_str(TERM_L_GREEN, cnv_stat(creature.get_stat_top(stat_num)), row + stat_num + 1, stat_col + 26);
 
@@ -203,6 +203,11 @@ static DisplaySymbol compensate_stat_by_weapon(uint8_t color, ItemEntity *o_ptr,
 static void display_equipments_compensation(CreatureEntity &creature, int row, int *col)
 {
     for (const auto i_idx : INVEN_WIELDING_SLOTS) {
+        // 体構造的に存在しない部位は列ごと消す (列見出しと同条件)
+        if (!creature.should_display_equipment_slot(i_idx)) {
+            continue;
+        }
+
         ItemEntity *o_ptr;
         o_ptr = creature.inventory[i_idx].get();
         auto flags = o_ptr->get_flags_known();
@@ -389,7 +394,7 @@ void display_player_stat_info(CreatureEntity &creature)
     process_stats(creature, row, stat_col);
 
     int col = stat_col + 41;
-    c_put_str(TERM_WHITE, "abcdefghijkl@", row, col);
+    c_put_str(TERM_WHITE, build_equipment_column_labels(creature), row, col);
     c_put_str(TERM_L_GREEN, _("能力修正", "Modification"), row - 1, col);
 
     display_equipments_compensation(creature, row, &col);

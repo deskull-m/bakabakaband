@@ -6,15 +6,17 @@
 #include "monster/monster-status-setter.h"
 #include "monster/monster-status.h"
 #include "monster/monster-util.h"
+#include "mutation/mutation-flag-types.h"
 #include "object-enchant/tr-types.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/redrawing-flags-updater.h"
 #include "tracking/health-bar-tracker.h"
 #include "util/bit-flags-calculator.h"
+#include "util/string-processor.h"
 #include "view/display-messages.h"
 
 // Powerful monsters can resist.
@@ -76,7 +78,7 @@ ProcessResult effect_monster_star_heal(CreatureEntity &creature, EffectMonster *
 
     if (em_ptr->m_ptr->maxhp < em_ptr->m_ptr->max_maxhp) {
         if (em_ptr->seen_msg) {
-            msg_format(_("%s^の強さが戻った。", "%s^ recovers %s vitality."), em_ptr->m_name, em_ptr->m_poss);
+            msg_print(_("{}の強さが戻った。", "{} recovers {} vitality."), str_upcase_first(em_ptr->m_name), em_ptr->m_poss);
         }
         em_ptr->m_ptr->maxhp = em_ptr->m_ptr->max_maxhp;
     }
@@ -84,7 +86,7 @@ ProcessResult effect_monster_star_heal(CreatureEntity &creature, EffectMonster *
     if (!em_ptr->dam) {
         HealthBarTracker::get_instance().set_flag_if_tracking(em_ptr->g_ptr->m_idx);
         if (em_ptr->m_ptr->is_riding()) {
-            RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::UHEALTH);
+            DeferredUpdateRequests::get_instance().set_flag(MainWindowRedrawingFlag::UHEALTH);
         }
 
         return ProcessResult::PROCESS_FALSE;
@@ -125,7 +127,7 @@ static void effect_monster_old_heal_recovery(CreatureEntity &creature, EffectMon
 {
     if (em_ptr->m_ptr->get_remaining_stun()) {
         if (em_ptr->seen_msg) {
-            msg_format(_("%s^は朦朧状態から立ち直った。", "%s^ is no longer stunned."), em_ptr->m_name);
+            msg_print(_("{}は朦朧状態から立ち直った。", "{} is no longer stunned."), str_upcase_first(em_ptr->m_name));
         }
 
         (void)set_monster_stunned(*creature.get_floor(), em_ptr->g_ptr->m_idx, 0);
@@ -133,7 +135,7 @@ static void effect_monster_old_heal_recovery(CreatureEntity &creature, EffectMon
 
     if (em_ptr->m_ptr->is_confused()) {
         if (em_ptr->seen_msg) {
-            msg_format(_("%s^は混乱から立ち直った。", "%s^ is no longer confused."), em_ptr->m_name);
+            msg_print(_("{}は混乱から立ち直った。", "{} is no longer confused."), str_upcase_first(em_ptr->m_name));
         }
 
         (void)set_monster_confused(*creature.get_floor(), em_ptr->g_ptr->m_idx, 0);
@@ -141,7 +143,7 @@ static void effect_monster_old_heal_recovery(CreatureEntity &creature, EffectMon
 
     if (em_ptr->m_ptr->is_fearful()) {
         if (em_ptr->seen_msg) {
-            msg_format(_("%s^は勇気を取り戻した。", "%s^ recovers %s courage."), em_ptr->m_name, em_ptr->m_poss);
+            msg_print(_("{}は勇気を取り戻した。", "{} recovers {} courage."), str_upcase_first(em_ptr->m_name), em_ptr->m_poss);
         }
 
         (void)set_monster_monfear(*creature.get_floor(), em_ptr->g_ptr->m_idx, 0);
@@ -174,7 +176,7 @@ ProcessResult effect_monster_old_heal(CreatureEntity &creature, EffectMonster *e
 
     HealthBarTracker::get_instance().set_flag_if_tracking(em_ptr->g_ptr->m_idx);
     if (em_ptr->m_ptr->is_riding()) {
-        RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::UHEALTH);
+        DeferredUpdateRequests::get_instance().set_flag(MainWindowRedrawingFlag::UHEALTH);
     }
 
     em_ptr->note = _("は体力を回復したようだ。", " looks healthier.");
@@ -244,12 +246,14 @@ ProcessResult effect_monster_old_sleep(CreatureEntity &creature, EffectMonster *
     has_resistance |= em_ptr->monrace->resistance_flags.has(MonsterResistanceType::NO_SLEEP);
     // [提案C1第5弾] 付与種族が自由行動 (TR_FREE_ACT) を持てば魔法睡眠を無効化 (opt-in・既定OFF)
     has_resistance |= target_race_resists_element(em_ptr, TR_FREE_ACT);
+    // [提案C5] 正確で力強い動作 (MOTION) 突然変異も自由行動として魔法睡眠を無効化 (opt-in・既定OFF)
+    has_resistance |= em_ptr->m_ptr->has_mutation(PlayerMutationType::MOTION);
     has_resistance |= monster_saves_status_by_level(em_ptr, em_ptr->dam);
 
     if (has_resistance) {
         if (em_ptr->monrace->resistance_flags.has(MonsterResistanceType::NO_SLEEP)) {
             if (is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
-                em_ptr->monrace->resistance_flags.set(MonsterResistanceType::NO_SLEEP);
+                em_ptr->monrace->r_resistance_flags.set(MonsterResistanceType::NO_SLEEP);
             }
         }
 
@@ -282,7 +286,7 @@ ProcessResult effect_monster_old_conf(CreatureEntity &creature, EffectMonster *e
     if (has_resistance) {
         if (em_ptr->monrace->resistance_flags.has(MonsterResistanceType::NO_CONF)) {
             if (is_original_ap_and_seen(creature, *em_ptr->m_ptr)) {
-                em_ptr->monrace->resistance_flags.set(MonsterResistanceType::NO_CONF);
+                em_ptr->monrace->r_resistance_flags.set(MonsterResistanceType::NO_CONF);
             }
         }
 
@@ -305,6 +309,8 @@ ProcessResult effect_monster_stasis(EffectMonster *em_ptr, bool to_evil)
     has_resistance |= monster_saves_status_by_level(em_ptr, em_ptr->dam);
     // [提案C1第5弾] 付与種族が自由行動 (TR_FREE_ACT) を持てば拘束(stasis)を無効化 (opt-in・既定OFF)
     has_resistance |= target_race_resists_element(em_ptr, TR_FREE_ACT);
+    // [提案C5] 正確で力強い動作 (MOTION) 突然変異も自由行動として拘束(stasis)を無効化 (opt-in・既定OFF)
+    has_resistance |= em_ptr->m_ptr->has_mutation(PlayerMutationType::MOTION);
     if (to_evil) {
         has_resistance |= em_ptr->monrace->kind_flags.has_not(MonsterKindType::EVIL);
     }

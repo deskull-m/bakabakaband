@@ -218,6 +218,8 @@ void describe_monster_attack_method(MonsterAttackPlayer *monap_ptr)
             monap_ptr->act = rand_choice(desc_moan);
         } else if (monap_ptr->m_ptr->get_ap_r_idx() == MonraceId::MISUMI) {
             monap_ptr->act = rand_choice(desc_moan3);
+        } else if (monap_ptr->m_ptr->get_ap_r_idx() == MonraceId::TORITETSU) {
+            monap_ptr->act = rand_choice(desc_moan_toritetsu);
         } else {
             monap_ptr->act = rand_choice(desc_moan2);
         }

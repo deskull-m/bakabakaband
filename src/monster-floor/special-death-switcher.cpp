@@ -16,6 +16,7 @@
 #include "main/sound-of-music.h"
 #include "monster-floor/monster-death-util.h"
 #include "monster-floor/monster-death.h"
+#include "monster-floor/monster-drop-generator.h"
 #include "monster-floor/monster-summon.h"
 #include "monster-floor/place-monster-types.h"
 #include "monster-race/race-kind-flags.h"
@@ -25,8 +26,6 @@
 #include "object-enchant/item-magic-applier.h"
 #include "object/object-kind-hook.h"
 #include "spell/summon-types.h"
-#include "sv-definition/sv-food-types.h"
-#include "sv-definition/sv-other-types.h"
 #include "sv-definition/sv-potion-types.h"
 #include "sv-definition/sv-protector-types.h"
 #include "sv-definition/sv-weapon-types.h"
@@ -42,6 +41,7 @@
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
 #include "view/display-messages.h"
+#include <set>
 
 /*!
  * @brief 死亡召喚に使用するモード選択
@@ -60,6 +60,55 @@ static BIT_FLAGS dead_mode(MonsterDeath *md_ptr)
     }
 
     return mode;
+}
+
+/*!
+ * @brief 死亡時ドロップ指定のアイテムを床へ落とす
+ * @param killer 撃破したクリーチャーへの参照
+ * @param md_ptr モンスター撃破構造体への参照ポインタ
+ * @param entries ドロップ指定のリスト (drop_kinds / drop_tvals)
+ * @param is_itemkind entries がアイテム種別指定 (drop_tvals) なら true
+ * @details 生成時装備 (equip_kinds / equip_tvals) は既に所持品として存在し
+ *          drop_all_inventory() で落ちるため、ここでは扱わない。
+ *          本経路は「死んで初めて生成される物」(死体から剥ぐ素材等) 専用。
+ *          kill_interval が指定されていれば種族の累計撃破数がその倍数のときだけ
+ *          発火する (確率抽選とは AND)。r_akills は本関数より前の
+ *          MonsterDamageProcessor::increase_kill_numbers() で加算済みなので、
+ *          N 体目の撃破時に r_akills == N となり「確実に N 体に 1 体」になる。
+ */
+static void drop_fixed_items_on_death(CreatureEntity &killer, MonsterDeath *md_ptr, const std::vector<MonraceDropKind> &entries, bool is_itemkind)
+{
+    // クローン体・カメレオン・闘技場・モンスター闘技場・ペット討伐、および
+    // drop_item が false の死 (量子消失・モンスター同士の戦闘・ペットの効果死) では
+    // 落とさない。固定アーティファクト (drop_artifacts) や、4 キーへ移行する前の
+    // 個別ハードコーディング (on_dead_can_angel 等) と同じ判定で、高額品の
+    // クローン量産・闘技場量産を防ぐ。
+    if (!md_ptr->drop_chosen_item) {
+        return;
+    }
+
+    // 排他グループ (exclusive_group) は 1 リストの中で閉じる。
+    std::set<int> fired_groups;
+    const auto dun_level = killer.get_floor()->dun_level;
+    for (const auto &entry : entries) {
+        if ((entry.kill_interval > 1) && ((md_ptr->monrace->r_akills % entry.kill_interval) != 0)) {
+            continue;
+        }
+
+        if (!roll_fixed_item_entry(entry, fired_groups, dun_level)) {
+            continue;
+        }
+
+        const auto drop_nums = entry.dice.roll();
+        for (auto i = 0; i < drop_nums; i++) {
+            auto item = generate_fixed_item(killer, entry, is_itemkind);
+            if (!item) {
+                continue;
+            }
+
+            (void)drop_near(killer, *item, md_ptr->get_position());
+        }
+    }
 }
 
 /*!
@@ -151,55 +200,7 @@ static void on_dead_spawn_monsters(CreatureEntity &killer, MonsterDeath *md_ptr)
  */
 static void on_dead_drop_kind_item(CreatureEntity &killer, MonsterDeath *md_ptr)
 {
-    for (auto kind : md_ptr->monrace->drop_kinds) {
-        ItemEntity item;
-        int num = std::get<0>(kind);
-        int deno = std::get<1>(kind);
-        if (randint1(deno) > num) {
-            continue;
-        }
-        short kind_idx = std::get<2>(kind);
-        int grade = std::get<3>(kind);
-        int dn = std::get<4>(kind);
-        int ds = std::get<5>(kind);
-        int drop_nums = Dice::roll(dn, ds);
-
-        for (int i = 0; i < drop_nums; i++) {
-            item.generate(kind_idx);
-            switch (grade) {
-            /* Apply bad magic, but first clear object */
-            case -2:
-                ItemMagicApplier(killer, &item, killer.get_floor()->dun_level, AM_NO_FIXED_ART | AM_GOOD | AM_GREAT | AM_CURSED).execute();
-                break;
-            /* Apply bad magic, but first clear object */
-            case -1:
-                ItemMagicApplier(killer, &item, killer.get_floor()->dun_level, AM_NO_FIXED_ART | AM_GOOD | AM_CURSED).execute();
-                break;
-            /* Apply normal magic, but first clear object */
-            case 0:
-                ItemMagicApplier(killer, &item, killer.get_floor()->dun_level, AM_NO_FIXED_ART).execute();
-                break;
-            /* Apply good magic, but first clear object */
-            case 1:
-                ItemMagicApplier(killer, &item, killer.get_floor()->dun_level, AM_NO_FIXED_ART | AM_GOOD).execute();
-                break;
-            /* Apply great magic, but first clear object */
-            case 2:
-                ItemMagicApplier(killer, &item, killer.get_floor()->dun_level, AM_NO_FIXED_ART | AM_GOOD | AM_GREAT).execute();
-                break;
-            /* Apply special magic, but first clear object */
-            case 3:
-                ItemMagicApplier(killer, &item, killer.get_floor()->dun_level, AM_GOOD | AM_GREAT | AM_SPECIAL).execute();
-                if (!item.is_fixed_artifact()) {
-                    become_random_artifact(killer, &item, false);
-                }
-                break;
-            default:
-                break;
-            }
-            (void)drop_near(killer, item, md_ptr->get_position());
-        }
-    }
+    drop_fixed_items_on_death(killer, md_ptr, md_ptr->monrace->drop_kinds, false);
 }
 
 /*
@@ -210,109 +211,7 @@ static void on_dead_drop_kind_item(CreatureEntity &killer, MonsterDeath *md_ptr)
  */
 static void on_dead_drop_tval_item(CreatureEntity &killer, MonsterDeath *md_ptr)
 {
-    for (auto kind : md_ptr->monrace->drop_tvals) {
-        ItemEntity item;
-        int num = std::get<0>(kind);
-        int deno = std::get<1>(kind);
-        if (randint1(deno) > num) {
-            continue;
-        }
-        int tval = std::get<2>(kind);
-        int grade = std::get<3>(kind);
-        int dn = std::get<4>(kind);
-        int ds = std::get<5>(kind);
-        int drop_nums = Dice::roll(dn, ds);
-
-        for (int i = 0; i < drop_nums; i++) {
-            item.generate(BaseitemList::get_instance().lookup_baseitem_id({ i2enum<ItemKindType>(tval), 0 }));
-            switch (grade) {
-            /* Apply bad magic, but first clear object */
-            case -2:
-                ItemMagicApplier(killer, &item, killer.get_floor()->dun_level, AM_NO_FIXED_ART | AM_GOOD | AM_GREAT | AM_CURSED).execute();
-                break;
-            /* Apply bad magic, but first clear object */
-            case -1:
-                ItemMagicApplier(killer, &item, killer.get_floor()->dun_level, AM_NO_FIXED_ART | AM_GOOD | AM_CURSED).execute();
-                break;
-            /* Apply normal magic, but first clear object */
-            case 0:
-                ItemMagicApplier(killer, &item, killer.get_floor()->dun_level, AM_NO_FIXED_ART).execute();
-                break;
-            /* Apply good magic, but first clear object */
-            case 1:
-                ItemMagicApplier(killer, &item, killer.get_floor()->dun_level, AM_NO_FIXED_ART | AM_GOOD).execute();
-                break;
-            /* Apply great magic, but first clear object */
-            case 2:
-                ItemMagicApplier(killer, &item, killer.get_floor()->dun_level, AM_NO_FIXED_ART | AM_GOOD | AM_GREAT).execute();
-                break;
-            /* Apply special magic, but first clear object */
-            case 3:
-                ItemMagicApplier(killer, &item, killer.get_floor()->dun_level, AM_GOOD | AM_GREAT | AM_SPECIAL).execute();
-                if (!item.is_fixed_artifact()) {
-                    if (killer.is_player()) {
-                        become_random_artifact(killer, &item, false);
-                    }
-                }
-                break;
-            default:
-                break;
-            }
-            (void)drop_near(killer, item, md_ptr->get_position());
-        }
-    }
-}
-
-static void on_dead_bottle_gnome(CreatureEntity &killer, MonsterDeath *md_ptr)
-{
-    ItemEntity forge;
-    ItemEntity *q_ptr = &forge;
-    q_ptr->generate(BaseitemList::get_instance().lookup_baseitem_id({ ItemKindType::POTION, SV_POTION_CURE_CRITICAL }));
-    (void)drop_near(killer, *q_ptr, md_ptr->get_position());
-}
-
-static void on_dead_bloodletter(CreatureEntity &killer, MonsterDeath *md_ptr)
-{
-    if (!md_ptr->drop_chosen_item || (randint1(100) >= 15)) {
-        return;
-    }
-
-    ItemEntity item;
-    item.generate(BaseitemList::get_instance().lookup_baseitem_id({ ItemKindType::SWORD, SV_BLADE_OF_CHAOS }));
-    ItemMagicApplier(killer, &item, killer.get_floor()->object_level, AM_NO_FIXED_ART | md_ptr->mo_mode).execute();
-    (void)drop_near(killer, item, md_ptr->get_position());
-}
-
-static void on_dead_inariman1_2(CreatureEntity &killer, MonsterDeath *md_ptr)
-{
-    ItemEntity forge;
-    ItemEntity *q_ptr = &forge;
-    q_ptr->generate(BaseitemList::get_instance().lookup_baseitem_id({ ItemKindType::FOOD, SV_FOOD_SUSHI2 }));
-    ItemMagicApplier(killer, q_ptr, killer.get_floor()->dun_level, AM_NO_FIXED_ART | md_ptr->mo_mode).execute();
-    (void)drop_near(killer, *q_ptr, md_ptr->get_position());
-}
-
-static void on_dead_inariman3(CreatureEntity &killer, MonsterDeath *md_ptr)
-{
-    ItemEntity forge;
-    ItemEntity *q_ptr = &forge;
-    q_ptr->generate(BaseitemList::get_instance().lookup_baseitem_id({ ItemKindType::FOOD, SV_FOOD_SUSHI3 }));
-    ItemMagicApplier(killer, q_ptr, killer.get_floor()->dun_level, AM_NO_FIXED_ART | md_ptr->mo_mode).execute();
-    (void)drop_near(killer, *q_ptr, md_ptr->get_position());
-}
-
-static void on_dead_raal(CreatureEntity &killer, MonsterDeath *md_ptr)
-{
-    const auto &floor = *killer.get_floor();
-    if (!md_ptr->drop_chosen_item || (floor.dun_level <= 9)) {
-        return;
-    }
-
-    const auto restrict = ((floor.dun_level > 49) && one_in_(5)) ? kind_is_good_book : kind_is_book;
-
-    if (auto item = make_object(killer, md_ptr->mo_mode, restrict)) {
-        (void)drop_near(killer, *item, md_ptr->get_position());
-    }
+    drop_fixed_items_on_death(killer, md_ptr, md_ptr->monrace->drop_tvals, true);
 }
 
 static void drop_sushi(CreatureEntity &killer, MonsterDeath *md_ptr)
@@ -322,24 +221,46 @@ static void drop_sushi(CreatureEntity &killer, MonsterDeath *md_ptr)
     }
 }
 
+/*!
+ * @brief 死亡時に指定属性の爆発を起こす
+ * @param killer 撃破したクリーチャーへの参照
+ * @param md_ptr モンスター撃破構造体への参照ポインタ
+ * @param attribute 爆発の属性
+ * @param radius 効果半径
+ * @param damage ダメージ
+ * @details PROJECT_ITEM を含むため、既に床へ出ているドロップ品を巻き込んで破壊しうる。
+ *          死亡時ドロップより後に呼ぶこと。
+ */
+static void explode_on_death(CreatureEntity &killer, MonsterDeath *md_ptr, AttributeType attribute, int radius, int damage)
+{
+    (void)project(killer, md_ptr->m_idx, radius, md_ptr->md_y, md_ptr->md_x, damage, attribute, PROJECT_GRID | PROJECT_ITEM | PROJECT_KILL);
+}
+
+/*!
+ * @brief JSON の `death_explosion` 指定に従って死亡時爆発を起こす
+ * @details 未指定の種族では何もしない。
+ */
+static void on_dead_explosion_by_data(CreatureEntity &killer, MonsterDeath *md_ptr)
+{
+    const auto &explosion = md_ptr->monrace->death_explosion;
+    if (!explosion) {
+        return;
+    }
+
+    explode_on_death(killer, md_ptr, explosion->attribute, explosion->radius, explosion->damage_dice.roll());
+}
+
 static void on_dead_ninja(CreatureEntity &killer, MonsterDeath *md_ptr)
 {
     if (is_seen(killer, *md_ptr->m_ptr)) {
         msg_print(_("「サヨナラ！」", "Sayonara!"));
         auto m_name = monster_desc(killer, *md_ptr->m_ptr, MD_NONE);
-        msg_format(_("%sは哀れ爆発四散した！ショッギョ・ムッジョ！", "%s explodes pitifully! Shogyomujo!"), m_name.data());
+        msg_print(_("{}は哀れ爆発四散した！ショッギョ・ムッジョ！", "{} explodes pitifully! Shogyomujo!"), m_name);
     }
 
-    (void)project(killer, md_ptr->m_idx, 6, md_ptr->md_y, md_ptr->md_x, 20, AttributeType::MISSILE, PROJECT_GRID | PROJECT_ITEM | PROJECT_KILL);
-}
-
-static void on_dead_earth_destroyer(CreatureEntity &killer, MonsterDeath *md_ptr)
-{
-    if (!killer.is_player()) {
-        return;
-    }
-    msg_print(_("ワーオ！22世紀の文明の叡知が今炸裂した！", "Wow! The wisdom of 22nd century civilization has now exploded!"));
-    (void)project(killer, md_ptr->m_idx, 10, md_ptr->md_y, md_ptr->md_x, 10000, AttributeType::DISINTEGRATE, PROJECT_GRID | PROJECT_ITEM | PROJECT_KILL);
+    // NINJA は種族フラグ由来の一括挙動なので、メッセージと爆発諸元は 12 種族へ
+    // データ複製せず C++ 側に残す。爆発そのものは death_explosion と共通化する。
+    explode_on_death(killer, md_ptr, AttributeType::MISSILE, 6, 20);
 }
 
 static void on_dead_sacred_treasures(CreatureEntity &killer, MonsterDeath *md_ptr)
@@ -369,49 +290,6 @@ static void on_dead_sacred_treasures(CreatureEntity &killer, MonsterDeath *md_pt
 
     const auto a_idx = rand_choice(candidates);
     create_named_art(killer, a_idx, md_ptr->md_y, md_ptr->md_x);
-}
-
-static void on_dead_serpent(CreatureEntity &killer, MonsterDeath *md_ptr)
-{
-    if (!md_ptr->drop_chosen_item) {
-        return;
-    }
-
-    ItemEntity item_grond({ ItemKindType::HAFTED, SV_GROND });
-    item_grond.fa_id = FixedArtifactId::GROND;
-    ItemMagicApplier(killer, &item_grond, -1, AM_GOOD | AM_GREAT).execute();
-    (void)drop_near(killer, item_grond, md_ptr->get_position());
-
-    ItemEntity item_chaos({ ItemKindType::CROWN, SV_CHAOS });
-    item_chaos.fa_id = FixedArtifactId::CHAOS;
-    ItemMagicApplier(killer, &item_chaos, -1, AM_GOOD | AM_GREAT).execute();
-    (void)drop_near(killer, item_chaos, md_ptr->get_position());
-}
-
-static void on_dead_death_sword(CreatureEntity &killer, MonsterDeath *md_ptr)
-{
-    if (!md_ptr->drop_chosen_item) {
-        return;
-    }
-
-    ItemEntity item({ ItemKindType::SWORD, randint1(2) });
-    (void)drop_near(killer, item, md_ptr->get_position());
-}
-
-static void on_dead_can_angel(CreatureEntity &killer, MonsterDeath *md_ptr)
-{
-    auto is_drop_can = md_ptr->drop_chosen_item;
-    auto is_silver = md_ptr->m_ptr->get_r_idx() == MonraceId::A_SILVER;
-    is_silver &= md_ptr->monrace->r_akills % 5 == 0;
-    is_drop_can &= (md_ptr->m_ptr->get_r_idx() == MonraceId::A_GOLD) || is_silver;
-    if (!is_drop_can) {
-        return;
-    }
-
-    ItemEntity item;
-    item.generate(BaseitemList::get_instance().lookup_baseitem_id({ ItemKindType::CHEST, SV_CHEST_KANDUME }));
-    ItemMagicApplier(killer, &item, killer.get_floor()->object_level, AM_NO_FIXED_ART).execute();
-    (void)drop_near(killer, item, md_ptr->get_position());
 }
 
 /*!
@@ -479,89 +357,25 @@ static void on_dead_random_artifact(CreatureEntity &killer, MonsterDeath *md_ptr
 }
 
 /*!
- * @brief マニマニのあくま撃破時メッセージ
- * @todo 死亡時の特殊メッセージを表示するだけの処理を複数作るなら、switch/case文に分けられるように汎用化すること
+ * @brief JSON の `death_random_artifact` 指定に従ってランダムアーティファクトを落とす
+ * @details 未指定の種族では何もしない。カメレオンは旧 `case` と同じく除外する。
  */
-static void on_dead_manimani(CreatureEntity &killer, MonsterDeath *md_ptr)
+static void on_dead_random_artifact_by_data(CreatureEntity &killer, MonsterDeath *md_ptr)
 {
-    if (!is_seen(killer, *md_ptr->m_ptr)) {
+    const auto &spec = md_ptr->monrace->death_random_artifact;
+    if (!spec || md_ptr->is_chameleon) {
         return;
     }
 
-    msg_print(_("どこからか声が聞こえる…「ハロー！　そして…グッドバイ！」", "Heard a voice from somewhere... 'Hello! And... good bye!'"));
+    const auto tval = i2enum<ItemKindType>(spec->tval);
+    const auto sval_min = spec->sval_min;
+    on_dead_random_artifact(killer, md_ptr, [tval, sval_min](short bi_id) {
+        const auto &bi_key = BaseitemList::get_instance().get_baseitem(bi_id).bi_key;
+        return (bi_key.tval() == tval) && (bi_key.sval() >= sval_min);
+    });
 }
 
-static void drop_specific_item_on_dead(CreatureEntity &killer, MonsterDeath *md_ptr, BaseitemRestrict restrict)
-{
-    if (auto item = make_object(killer, md_ptr->mo_mode, restrict)) {
-        (void)drop_near(killer, *item, md_ptr->get_position());
-    }
-}
-
-static void on_dead_mimics(CreatureEntity &killer, MonsterDeath *md_ptr)
-{
-    if (!md_ptr->drop_chosen_item) {
-        return;
-    }
-
-    switch (md_ptr->monrace->symbol_definition.character) {
-    case '(':
-        if (killer.get_floor()->dun_level <= 0) {
-            return;
-        }
-
-        drop_specific_item_on_dead(killer, md_ptr, kind_is_cloak);
-        return;
-    case '/':
-        if (killer.get_floor()->dun_level <= 4) {
-            return;
-        }
-
-        drop_specific_item_on_dead(killer, md_ptr, kind_is_polearm);
-        return;
-    case '[':
-        if (killer.get_floor()->dun_level <= 19) {
-            return;
-        }
-
-        drop_specific_item_on_dead(killer, md_ptr, kind_is_armor);
-        return;
-    case '\\':
-        if (killer.get_floor()->dun_level <= 4) {
-            return;
-        }
-
-        drop_specific_item_on_dead(killer, md_ptr, kind_is_hafted);
-        return;
-    case '|':
-        if (md_ptr->m_ptr->get_r_idx() == MonraceId::STORMBRINGER) {
-            return;
-        }
-
-        drop_specific_item_on_dead(killer, md_ptr, kind_is_sword);
-        return;
-    case ']':
-        if (killer.get_floor()->dun_level <= 19) {
-            return;
-        }
-
-        drop_specific_item_on_dead(killer, md_ptr, kind_is_boots);
-        return;
-    default:
-        return;
-    }
-}
-
-static void on_dead_swordfish(CreatureEntity &killer, MonsterDeath *md_ptr, AttributeFlags attribute_flags)
-{
-    if (attribute_flags.has_not(AttributeType::COLD) || !md_ptr->drop_chosen_item || (randint1(100) >= 10)) {
-        return;
-    }
-
-    drop_single_artifact(killer, md_ptr, FixedArtifactId::FROZEN_SWORDFISH);
-}
-
-void switch_special_death(CreatureEntity &creature, MonsterDeath *md_ptr, AttributeFlags attribute_flags)
+void switch_special_death(CreatureEntity &creature, MonsterDeath *md_ptr)
 {
     auto &monrace = MonraceList::get_instance().get_monrace(md_ptr->apparent_monrace->idx);
     const auto &summon_list = monrace.get_final_summons();
@@ -595,78 +409,16 @@ void switch_special_death(CreatureEntity &creature, MonsterDeath *md_ptr, Attrib
         drop_sushi(creature, md_ptr);
     }
 
-    switch (md_ptr->apparent_monrace->idx) {
-    case MonraceId::EARTH_DESTROYER:
-        on_dead_earth_destroyer(creature, md_ptr);
-        return;
-    case MonraceId::BOTTLE_GNOME:
-        on_dead_bottle_gnome(creature, md_ptr);
-        return;
-    case MonraceId::BLOODLETTER:
-        on_dead_bloodletter(creature, md_ptr);
-        return;
-    case MonraceId::RAAL:
-        on_dead_raal(creature, md_ptr);
-        return;
-    case MonraceId::UNMAKER:
-        (void)project(creature, md_ptr->m_idx, 6, md_ptr->md_y, md_ptr->md_x, 100, AttributeType::CHAOS, PROJECT_GRID | PROJECT_ITEM | PROJECT_KILL);
-        break;
-    case MonraceId::UNICORN_ORD:
-    case MonraceId::MORGOTH:
-    case MonraceId::ONE_RING:
+    // 旧 EARTH_DESTROYER / UNMAKER / ROLENTO の case が個別に書いていた死亡時爆発。
+    // PROJECT_ITEM でドロップ品を巻き込むため、旧実装と同じくドロップ処理の後に置く。
+    on_dead_explosion_by_data(creature, md_ptr);
+
+    // 爆発の PROJECT_ITEM に巻き込まれないよう、☆生成は爆発より後に置く。
+    on_dead_random_artifact_by_data(creature, md_ptr);
+
+    // 撃破者の性格に依存する処理なので monrace データには置けない。対象種族の指定
+    // だけを JSON フラグへ出し、ハードコードされた MonraceId 参照を無くしてある。
+    if (md_ptr->monrace->drops_sacred_treasures) {
         on_dead_sacred_treasures(creature, md_ptr);
-        return;
-    case MonraceId::SERPENT:
-        on_dead_serpent(creature, md_ptr);
-        return;
-    case MonraceId::B_DEATH_SWORD:
-        on_dead_death_sword(creature, md_ptr);
-        return;
-    case MonraceId::A_GOLD:
-    case MonraceId::A_SILVER:
-        on_dead_can_angel(creature, md_ptr);
-        return;
-    case MonraceId::ROLENTO:
-        (void)project(creature, md_ptr->m_idx, 3, md_ptr->md_y, md_ptr->md_x, Dice::roll(20, 10), AttributeType::FIRE, PROJECT_GRID | PROJECT_ITEM | PROJECT_KILL);
-        return;
-    case MonraceId::CAIT_SITH:
-        if (creature.get_floor()->dun_level <= 0 || md_ptr->is_chameleon) {
-            return;
-        }
-        drop_specific_item_on_dead(creature, md_ptr, kind_is_boots);
-        return;
-    case MonraceId::YENDOR_WIZARD_1:
-        if (md_ptr->is_chameleon) {
-            return;
-        }
-        on_dead_random_artifact(creature, md_ptr, kind_is_amulet);
-        return;
-    case MonraceId::YENDOR_WIZARD_2:
-        if (creature.get_floor()->dun_level <= 0 || md_ptr->is_chameleon) {
-            return;
-        }
-        drop_specific_item_on_dead(creature, md_ptr, kind_is_amulet);
-        return;
-    case MonraceId::MANIMANI:
-        on_dead_manimani(creature, md_ptr);
-        return;
-    case MonraceId::LOSTRINGIL:
-        if (md_ptr->is_chameleon) {
-            return;
-        }
-        on_dead_random_artifact(creature, md_ptr, kind_is_sword);
-        return;
-    case MonraceId::INARIMAN_2:
-        on_dead_inariman1_2(creature, md_ptr);
-        return;
-    case MonraceId::INARIMAN_3:
-        on_dead_inariman3(creature, md_ptr);
-        return;
-    case MonraceId::SWORDFISH:
-        on_dead_swordfish(creature, md_ptr, attribute_flags);
-        break;
-    default:
-        on_dead_mimics(creature, md_ptr);
-        return;
     }
 }

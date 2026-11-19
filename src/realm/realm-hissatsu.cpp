@@ -14,7 +14,7 @@
 #include "floor/geometry.h"
 #include "grid/grid.h"
 #include "inventory/inventory-slot-types.h"
-#include "io/input-key-acceptor.h"
+#include "io/input-context.h"
 #include "io/input-key-requester.h"
 #include "mind/mind-ninja.h"
 #include "monster-race/monster-race-hook.h"
@@ -37,13 +37,13 @@
 #include "spell/technic-info-table.h"
 #include "status/bad-status-setter.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/enums/terrain/terrain-characteristics.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/redrawing-flags-updater.h"
 #include "target/grid-selector.h"
 #include "target/projection-path-calculator.h"
 #include "target/target-getter.h"
@@ -267,11 +267,11 @@ tl::optional<std::string> do_hissatsu_spell(CreatureEntity &creature, SPELL_IDX 
                     }
                 }
                 if (pos_target != pos_origin) {
-                    msg_format(_("%sを吹き飛ばした！", "You blow %s away!"), m_name.data());
+                    msg_print(_("{}を吹き飛ばした！", "You blow {} away!"), m_name);
                     monster.set_target(creature.get_position());
                     move_monster_to(creature, monster, pos_target);
                     if (monster.get_monrace().brightness_flags.has_any_of(ld_mask)) {
-                        RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::MONSTER_LITE);
+                        DeferredUpdateRequests::get_instance().set_flag(StatusRecalculatingFlag::MONSTER_LITE);
                     }
                 }
             }
@@ -311,7 +311,7 @@ tl::optional<std::string> do_hissatsu_spell(CreatureEntity &creature, SPELL_IDX 
 
             /* Destroy the feature */
             cave_alter_feat(creature, pos.y, pos.x, TerrainCharacteristics::STONE);
-            RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::FLOW);
+            DeferredUpdateRequests::get_instance().set_flag(StatusRecalculatingFlag::FLOW);
         }
         break;
 
@@ -435,7 +435,7 @@ tl::optional<std::string> do_hissatsu_spell(CreatureEntity &creature, SPELL_IDX 
                 }
 
                 const auto m_name = monster_desc(creature, monster, 0);
-                msg_format(_("%sには効果がない！", "%s is unharmed!"), m_name.data());
+                msg_print(_("{}には効果がない！", "{} is unharmed!"), m_name);
             }
         }
 
@@ -625,7 +625,7 @@ tl::optional<std::string> do_hissatsu_spell(CreatureEntity &creature, SPELL_IDX 
                 }
                 command_dir = Direction::none();
 
-                RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::MP);
+                DeferredUpdateRequests::get_instance().set_flag(MainWindowRedrawingFlag::MP);
                 handle_stuff(creature);
             } while (creature.get_current_mp() > mana_cost_per_monster);
 
@@ -751,15 +751,15 @@ tl::optional<std::string> do_hissatsu_spell(CreatureEntity &creature, SPELL_IDX 
 
     case 31:
         if (cast) {
-            int i;
             if (!input_check(_("何もかも諦めますか? ", "Do you give up everything? "))) {
                 return tl::nullopt;
             }
             /* Special Verification for suicide */
-            prt(_("確認のため '@' を押して下さい。", "Please verify SUICIDE by typing the '@' sign: "), 0, 0);
+            constexpr auto prompt = _("確認のため '@' を押して下さい。", "Please verify SUICIDE by typing the '@' sign: ");
+            prt(prompt, 0, 0);
 
             flush();
-            i = inkey();
+            const auto i = input_key_with_context(InputKind::CONFIRM, prompt);
             prt("", 0, 0);
             if (i != '@') {
                 return tl::nullopt;

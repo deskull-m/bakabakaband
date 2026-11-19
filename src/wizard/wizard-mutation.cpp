@@ -17,6 +17,7 @@
 #include "util/string-processor.h"
 #include "view/display-messages.h"
 #include <algorithm>
+#include <fmt/format.h>
 #include <string>
 #include <tuple>
 #include <utility>
@@ -180,7 +181,7 @@ static void display_mutations_for_selection(CreatureEntity &creature)
             for (auto i = 1; i <= 23; i++) {
                 term_erase(0, i, 80);
             }
-            prt(format("突然変異一覧 (白:所持 灰:未所持) - ページ %d", page + 1), 0, 0);
+            prt(fmt::format("突然変異一覧 (白:所持 灰:未所持) - ページ {}", page + 1), 0, 0);
         }
 
         display_row = 1;
@@ -192,7 +193,7 @@ static void display_mutations_for_selection(CreatureEntity &creature)
 
             // Very compact truncation - 15 chars max
             auto truncated_name = name.length() > 15 ? name.substr(0, 15) : name;
-            const auto display_text = format("%02d:%-15.15s", id, truncated_name.c_str());
+            const auto display_text = fmt::format("{:02}:{:<15}", id, fmt::bytes(truncated_name));
 
             // Use color: white for owned, dark gray for unowned
             const auto color = has_mutation ? TERM_WHITE : TERM_SLATE;
@@ -219,7 +220,7 @@ static void display_mutations_for_selection(CreatureEntity &creature)
     }
 
     // Show final count
-    prt(format("全表示: %d/%d 個の突然変異", mutations_displayed, total_mutations), 23, 0);
+    prt(fmt::format("全表示: {}/{} 個の突然変異", mutations_displayed, total_mutations), 23, 0);
 }
 
 void wiz_mutation_menu(CreatureEntity &creature)

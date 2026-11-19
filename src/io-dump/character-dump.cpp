@@ -11,6 +11,8 @@
 #include "io-dump/special-class-dump.h"
 #include "io/mutations-dump.h"
 #include "io/write-diary.h"
+#include "knowledge/knowledge-alliance.h"
+#include "knowledge/knowledge-incident.h"
 #include "knowledge/knowledge-quests.h"
 #include "market/arena-entry.h"
 #include "monster/monster-describer.h"
@@ -39,7 +41,6 @@
 #include "system/monrace/monrace-list.h"
 #include "system/services/dungeon-service.h"
 #include "term/gameterm.h"
-#include "term/z-form.h"
 #include "util/buffer-shaper.h"
 #include "util/enum-converter.h"
 #include "util/int-char-converter.h"
@@ -177,8 +178,12 @@ static void dump_aux_last_message(CreatureEntity &creature, FILE *fff)
  */
 static void dump_aux_recall(FILE *fff)
 {
-    fmt::println(fff, _("\n  [帰還場所]\n", "\n  [Recall Depth]\n"));
-    for (const auto &known_dungeon : DungeonService::build_known_dungeons(DungeonMessageFormat::DUMP)) {
+    fmt::println(fff, _("\n  [帰還場所 (訪問済み)]\n", "\n  [Recall Depth (Visited)]\n"));
+    for (const auto &known_dungeon : DungeonService::build_known_dungeons(DungeonMessageFormat::DUMP, true)) {
+        fmt::print(fff, "{}", known_dungeon);
+    }
+    fmt::println(fff, _("\n  [帰還場所 (解放済み・未訪問)]\n", "\n  [Recall Depth (Unlocked Only)]\n"));
+    for (const auto &known_dungeon : DungeonService::build_known_dungeons(DungeonMessageFormat::DUMP, false)) {
         fmt::print(fff, "{}", known_dungeon);
     }
 }
@@ -189,7 +194,7 @@ static void dump_aux_recall(FILE *fff)
  */
 static void dump_aux_options(FILE *fff)
 {
-    fprintf(fff, _("\n  [オプション設定]\n", "\n  [Option Settings]\n"));
+    fmt::println(fff, _("\n  [オプション設定]", "\n  [Option Settings]"));
     if (preserve_mode) {
         fmt::print(fff, _("\n 保存モード:         ON", "\n Preserve Mode:      ON"));
     } else {
@@ -287,11 +292,10 @@ static void dump_aux_arena(FILE *fff)
         return;
     }
 
-    const auto victory_count = current_entry > max_entries ? max_entries : current_entry;
 #ifdef JP
-    fprintf(fff, "\n 闘技場: %2d勝\n", victory_count);
+    fmt::println(fff, "\n 闘技場: {:2}勝", current_entry);
 #else
-    fprintf(fff, "\n Arena: %2d %s\n", victory_count, (current_entry > 1) ? "Victories" : "Victory");
+    fmt::println(fff, "\n Arena: {:2} {}", current_entry, (current_entry == 1) ? "Victory" : "Victories");
 #endif
     fmt::print(fff, "\n");
 }
@@ -374,8 +378,9 @@ static void dump_aux_monsters(FILE *fff)
             defeat_info = fmt::format(fmt, defeat_level, defeat_hour, max_hour_digits, defeat_minute, defeat_second);
         }
 
-        const auto names = str_separate(monrace.name, 40);
-        fprintf(fff, _("  %-40s (レベル%3d)%s\n", "  %-40s (level %3d)%s\n"), names.front().data(), monrace.level, defeat_info.data());
+        // shape_buffer() は終端文字の分を除いた maxlen - 1 バイトごとに区切るので、名前の欄の幅 + 1 を渡す
+        const auto names = shape_buffer(monrace.name, 40 + 1);
+        fmt::println(fff, _("  {:<40} (レベル{:3}){}", "  {:<40} (level {:3}){}"), fmt::bytes(names.front()), monrace.level, defeat_info);
         for (const auto &name : names | ranges::views::drop(1)) {
             fmt::println(fff, "  {}", name);
         }
@@ -489,6 +494,36 @@ static void dump_aux_mutations(CreatureEntity &creature, FILE *fff)
 }
 
 /*!
+ * @brief 各アライアンスに対する印象値の簡易一覧をファイルにダンプする
+ * @param creature クリーチャーへの参照
+ * @param fff ファイルポインタ
+ * @details 整形は知識画面の簡易表示 (~ → 各アライアンスの簡易情報) と共通の
+ * write_alliance_impression_summary() に委ねる。
+ */
+static void dump_aux_alliance_impression(CreatureEntity &creature, FILE *fff)
+{
+    fmt::println(fff, _("\n\n  [各アライアンスへの印象値]\n", "\n\n  [Alliance Impressions]\n"));
+    write_alliance_impression_summary(creature, fff);
+}
+
+/*!
+ * @brief これまでの出来事 (インシデント) をファイルにダンプする
+ * @param creature クリーチャーへの参照
+ * @param fff ファイルポインタ
+ * @details 整形は知識画面 (~ → これまで行った行為) と共通の write_incident_report() に委ねる。
+ * 何も記録が無いキャラクタでは見出しだけが残らないよう節ごと省略する。
+ */
+static void dump_aux_incident(CreatureEntity &creature, FILE *fff)
+{
+    if (creature.incident_tree.empty()) {
+        return;
+    }
+
+    fmt::println(fff, _("\n\n  [これまでの出来事]\n", "\n\n  [Incidents]\n"));
+    write_incident_report(creature, fff);
+}
+
+/*!
  * @brief 所持品の情報をファイルにダンプする
  * @param creature クリーチャーへの参照
  * @param fff ファイルポインタ
@@ -498,6 +533,11 @@ static void dump_aux_equipment_inventory(CreatureEntity &creature, FILE *fff)
     if (creature.get_equip_cnt()) {
         fmt::println(fff, _("  [キャラクタの装備]\n", "  [Character Equipment]\n"));
         for (const auto i_idx : INVEN_WIELDING_SLOTS) {
+            // 体構造的に存在しない部位は出力しない (アイテムが入っている場合は残す)
+            if (!creature.should_display_equipment_slot(i_idx)) {
+                continue;
+            }
+
             auto item_name = describe_flavor(creature, *creature.inventory[i_idx], 0);
             auto is_two_handed = ((i_idx == INVEN_MAIN_HAND) && can_attack_with_sub_hand(creature));
             is_two_handed |= ((i_idx == INVEN_SUB_HAND) && can_attack_with_main_hand(creature));
@@ -531,8 +571,8 @@ static void dump_aux_equipment_inventory(CreatureEntity &creature, FILE *fff)
  */
 static void dump_aux_home_museum(CreatureEntity &creature, FILE *fff)
 {
-    const auto &outpost = TownList::get_instance().get_town(1);
-    const auto &home = outpost.get_store(StoreSaleType::HOME);
+    const auto &towns = TownList::get_instance();
+    const auto &home = towns.get_home();
     if (home.stock_num) {
         fmt::println(fff, _("  [我が家のアイテム]", "  [Home Inventory]"));
         auto page = 1;
@@ -548,7 +588,7 @@ static void dump_aux_home_museum(CreatureEntity &creature, FILE *fff)
         fmt::println(fff, "\n");
     }
 
-    const auto &museum = outpost.get_store(StoreSaleType::MUSEUM);
+    const auto &museum = towns.get_museum();
     if (museum.stock_num == 0) {
         return;
     }
@@ -603,6 +643,8 @@ void make_character_dump(CreatureEntity &creature, FILE *fff)
     dump_aux_class_special(creature, fff);
     dump_aux_mutations(creature, fff);
     dump_aux_pet(creature, fff);
+    dump_aux_incident(creature, fff);
+    dump_aux_alliance_impression(creature, fff);
     fputs("\n\n", fff);
     dump_aux_equipment_inventory(creature, fff);
     dump_aux_home_museum(creature, fff);

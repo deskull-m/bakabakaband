@@ -34,10 +34,10 @@
 #include "player/player-personality-types.h"
 #include "system/angband-system.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/redrawing-flags-updater.h"
 #include "tracking/health-bar-tracker.h"
 #include "util/bit-flags-calculator.h"
 #include "util/string-processor.h"
@@ -81,7 +81,7 @@ static void prepare_redraw(mam_pp_type *mam_pp_ptr)
 
     HealthBarTracker::get_instance().set_flag_if_tracking(mam_pp_ptr->m_idx);
     if (mam_pp_ptr->m_ptr->is_riding()) {
-        RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::UHEALTH);
+        DeferredUpdateRequests::get_instance().set_flag(MainWindowRedrawingFlag::UHEALTH);
     }
 }
 
@@ -92,12 +92,12 @@ static void prepare_redraw(mam_pp_type *mam_pp_ptr)
  */
 static bool process_invulnerability(mam_pp_type *mam_pp_ptr)
 {
-    if (mam_pp_ptr->m_ptr->is_invulnerable() && randint0(PENETRATE_INVULNERABILITY)) {
+    if (!mam_pp_ptr->m_ptr->is_invulnerable() || one_in_(PENETRATE_INVULNERABILITY)) {
         return false;
     }
 
     if (mam_pp_ptr->seen) {
-        msg_format(_("%s^はダメージを受けない。", "%s^ is unharmed."), mam_pp_ptr->m_name.data());
+        msg_print(_("{}はダメージを受けない。", "{} is unharmed."), str_upcase_first(mam_pp_ptr->m_name));
     }
 
     return true;
@@ -127,7 +127,7 @@ static bool process_all_resistances(mam_pp_type *mam_pp_ptr)
     }
 
     if (mam_pp_ptr->seen) {
-        msg_format(_("%s^はダメージを受けない。", "%s^ is unharmed."), mam_pp_ptr->m_name.data());
+        msg_print(_("{}はダメージを受けない。", "{} is unharmed."), str_upcase_first(mam_pp_ptr->m_name));
     }
 
     return true;
@@ -156,30 +156,30 @@ static void print_monster_dead_by_monster(CreatureEntity &creature, mam_pp_type 
     if (!mam_pp_ptr->note.empty()) {
         const auto kill_sound = mam_pp_ptr->m_ptr->has_living_flag() ? SoundKind::KILL : SoundKind::N_KILL;
         sound(kill_sound);
-        msg_format(_("%s^%s", "%s^%s"), mam_pp_ptr->m_name.data(), mam_pp_ptr->note.data());
+        msg_print("{}{}", str_upcase_first(mam_pp_ptr->m_name), mam_pp_ptr->note);
         return;
     }
 
     if (!mam_pp_ptr->m_ptr->has_living_flag()) {
         sound(SoundKind::N_KILL);
-        msg_format(_("%s^は破壊された。", "%s^ is destroyed."), mam_pp_ptr->m_name.data());
+        msg_print(_("{}は破壊された。", "{} is destroyed."), str_upcase_first(mam_pp_ptr->m_name));
         return;
     }
 
     sound(SoundKind::KILL);
-    msg_format(_("%s^は殺された。", "%s^ is killed."), mam_pp_ptr->m_name.data());
+    msg_print(_("{}は殺された。", "{} is killed."), str_upcase_first(mam_pp_ptr->m_name));
 }
 
 /*!
  * @brief ダメージを受けたモンスターのHPが0未満になった際の処理
  * @param creature クリーチャーへの参照
  * @param mam_pp_ptr 標的モンスター構造体への参照ポインタ
- * @return 生きていたらTRUE、それ以外 (ユニークは＠以外の攻撃では死なない)はFALSE
+ * @return 死んだらTRUE、生きていたら (ユニークは＠以外の攻撃では死なない) FALSE
  */
 static bool check_monster_hp(CreatureEntity &creature, mam_pp_type *mam_pp_ptr)
 {
     const auto &monrace = mam_pp_ptr->m_ptr->get_monrace();
-    if (mam_pp_ptr->m_ptr->hp < 0) {
+    if (mam_pp_ptr->m_ptr->hp >= 0) {
         return false;
     }
 
@@ -224,7 +224,7 @@ static void cancel_fear_by_pain(CreatureEntity &creature, mam_pp_type *mam_pp_pt
 static void make_monster_fear(CreatureEntity &creature, mam_pp_type *mam_pp_ptr)
 {
     const auto &monrace = mam_pp_ptr->m_ptr->get_monrace();
-    if (mam_pp_ptr->m_ptr->is_fearful() || (monrace.resistance_flags.has_not(MonsterResistanceType::NO_FEAR))) {
+    if (mam_pp_ptr->m_ptr->is_fearful() || monrace.resistance_flags.has(MonsterResistanceType::NO_FEAR)) {
         return;
     }
 
@@ -256,7 +256,7 @@ static void fall_off_horse_by_melee(CreatureEntity &creature, mam_pp_type *mam_p
     }
 
     if (process_fall_off_horse(creature, (mam_pp_ptr->dam > 200) ? 200 : mam_pp_ptr->dam, false)) {
-        msg_format(_("%s^に振り落とされた！", "You have been thrown off from %s!"), mam_pp_ptr->m_name.data());
+        msg_print(_("{}に振り落とされた！", "You have been thrown off from {}!"), mam_pp_ptr->m_name);
     }
 }
 
@@ -277,6 +277,7 @@ void mon_take_hit_mon(CreatureEntity &creature, MONSTER_IDX m_idx, int dam, bool
     auto &monster = floor.get_monster(m_idx);
     mam_pp_type tmp_mam_pp(creature, m_idx, dam, dead, fear, note, src_idx);
     mam_pp_type *mam_pp_ptr = &tmp_mam_pp;
+    *dead = false;
     prepare_redraw(mam_pp_ptr);
     (void)set_monster_csleep(*creature.get_floor(), m_idx, 0);
 
@@ -288,15 +289,14 @@ void mon_take_hit_mon(CreatureEntity &creature, MONSTER_IDX m_idx, int dam, bool
         return;
     }
 
-    monster.hp -= dam;
+    monster.hp -= mam_pp_ptr->dam;
     if (check_monster_hp(creature, mam_pp_ptr)) {
         return;
     }
 
-    *dead = false;
     cancel_fear_by_pain(creature, mam_pp_ptr);
     make_monster_fear(creature, mam_pp_ptr);
-    if ((dam > 0) && !monster.is_pet() && !monster.is_friendly() && (mam_pp_ptr->src_idx != m_idx)) {
+    if ((mam_pp_ptr->dam > 0) && !monster.is_pet() && !monster.is_friendly() && (mam_pp_ptr->src_idx != m_idx)) {
         const auto &monster_src = floor.get_monster(src_idx);
         if (monster_src.is_pet() && !creature.is_located_at(monster.get_target_position())) {
             monster.set_target(monster_src.get_position());

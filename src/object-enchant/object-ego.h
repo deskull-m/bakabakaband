@@ -275,7 +275,7 @@ public:
     std::vector<ego_generate_type> xtra_flags{}; //!< 追加能力/耐性フラグ
 
     RandomArtActType act_idx{}; //!< 発動番号 / Activative ability index
-    PERCENTAGE broken_rate; /*!< 発動破損率 */
+    PERCENTAGE broken_rate{}; /*!< 発動破損率 */
 };
 
 extern std::map<EgoType, EgoItemDefinition> egos_info;

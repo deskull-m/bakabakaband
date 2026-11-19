@@ -5,6 +5,7 @@
 class CreatureEntity;
 enum class RealmType;
 MANA_POINT mod_need_mana(CreatureEntity &creature, MANA_POINT need_mana, SPELL_IDX spell_id, RealmType realm);
+TIME_EFFECT roll_spell_over_exertion_duration(MANA_POINT need_mana);
 PERCENTAGE mod_spell_chance_1(CreatureEntity &creature, PERCENTAGE chance);
 PERCENTAGE mod_spell_chance_2(CreatureEntity &creature, PERCENTAGE chance);
 PERCENTAGE spell_chance(CreatureEntity &creature, SPELL_IDX spell_id, RealmType realm);

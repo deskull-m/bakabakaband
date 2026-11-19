@@ -73,7 +73,7 @@ bool import_magic_device(CreatureEntity &creature)
     }
 
     const auto item_name = describe_flavor(creature, *item, 0);
-    msg_format(_("%sの魔力を取り込んだ。", "You absorb magic of %s."), item_name.data());
+    msg_print(_("{}の魔力を取り込んだ。", "You absorb magic of {}."), item_name);
 
     vary_item(creature, i_idx, -999);
     PlayerEnergy(creature).set_player_turn_energy(100);

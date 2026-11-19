@@ -11,7 +11,6 @@
  */
 
 #include "spell-kind/magic-item-recharger.h"
-#include "core/stuff-handler.h"
 #include "flavor/flavor-describer.h"
 #include "flavor/object-flavor-types.h"
 #include "floor/floor-object.h"
@@ -23,6 +22,7 @@
 #include "player-base/player-class.h"
 #include "system/angband-exceptions.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/item-entity.h"
 #include "view/display-messages.h"
 
@@ -56,6 +56,7 @@ bool recharge(CreatureEntity &creature, int power)
         return false;
     }
 
+    auto &dur = DeferredUpdateRequests::get_instance();
     const auto item_level = item->get_baseitem_level();
 
     TIME_EFFECT recharge_amount;
@@ -113,18 +114,22 @@ bool recharge(CreatureEntity &creature, int power)
     }
 
     if (is_recharge_successful) {
-        return update_player();
+        dur.request_inventory_arrangement();
+        dur.set_item_related_sub_window_flags();
+        return true;
     }
 
     if (item->is_fixed_artifact()) {
         const auto item_name = describe_flavor(creature, *item, OD_NAME_ONLY);
-        msg_format(_("魔力が逆流した！%sは完全に魔力を失った。", "The recharging backfires - %s is completely drained!"), item_name.data());
+        msg_print(_("魔力が逆流した！{}は完全に魔力を失った。", "The recharging backfires - {} is completely drained!"), item_name);
         if ((tval == ItemKindType::ROD) && (item->timeout < 10000)) {
             item->timeout = (item->timeout + 100) * 2;
         } else if (item->is_wand_staff()) {
             item->pval = 0;
         }
-        return update_player();
+        dur.request_inventory_arrangement();
+        dur.set_item_related_sub_window_flags();
+        return true;
     }
 
     const auto item_name = describe_flavor(creature, *item, (OD_OMIT_PREFIX | OD_NAME_ONLY));
@@ -188,16 +193,16 @@ bool recharge(CreatureEntity &creature, int power)
                 item->timeout = (item->timeout + 100) * 2;
             }
         } else if (tval == ItemKindType::WAND) {
-            msg_format(_("%sは破損を免れたが、魔力が全て失われた。", "You save your %s from destruction, but all charges are lost."), item_name.data());
+            msg_print(_("{}は破損を免れたが、魔力が全て失われた。", "You save your {} from destruction, but all charges are lost."), item_name);
             item->pval = 0;
         }
 
         break;
     case 2:
         if (item->number > 1) {
-            msg_format(_("乱暴な魔法のために%sが一本壊れた！", "Wild magic consumes one of your %s!"), item_name.data());
+            msg_print(_("乱暴な魔法のために{}が一本壊れた！", "Wild magic consumes one of your {}!"), item_name);
         } else {
-            msg_format(_("乱暴な魔法のために%sが壊れた！", "Wild magic consumes your %s!"), item_name.data());
+            msg_print(_("乱暴な魔法のために{}が壊れた！", "Wild magic consumes your {}!"), item_name);
         }
 
         if (tval == ItemKindType::ROD) {
@@ -212,9 +217,9 @@ bool recharge(CreatureEntity &creature, int power)
         break;
     case 3:
         if (item->number > 1) {
-            msg_format(_("乱暴な魔法のために%sが全て壊れた！", "Wild magic consumes all your %s!"), item_name.data());
+            msg_print(_("乱暴な魔法のために{}が全て壊れた！", "Wild magic consumes all your {}!"), item_name);
         } else {
-            msg_format(_("乱暴な魔法のために%sが壊れた！", "Wild magic consumes your %s!"), item_name.data());
+            msg_print(_("乱暴な魔法のために{}が壊れた！", "Wild magic consumes your {}!"), item_name);
         }
 
         vary_item(creature, i_idx, -999);
@@ -223,5 +228,7 @@ bool recharge(CreatureEntity &creature, int power)
         THROW_EXCEPTION(std::logic_error, "Invalid fail type!");
     }
 
-    return update_player();
+    dur.request_inventory_arrangement();
+    dur.set_item_related_sub_window_flags();
+    return true;
 }

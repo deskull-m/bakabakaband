@@ -109,7 +109,7 @@ bool draconian_breath(CreatureEntity &creature)
     }
 
     stop_mouth(creature);
-    msg_format(_("あなたは%sのブレスを吶いた。", "You breathe %s."), breath_type_description.data());
+    msg_print(_("あなたは{}のブレスを吐いた。", "You breathe {}."), breath_type_description);
     fire_breath(creature, breath_type, dir, creature.get_level() * 2, (creature.get_level() / 15) + 1);
     return true;
 }

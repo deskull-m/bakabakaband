@@ -12,12 +12,14 @@
 #include "effect/effect-processor.h"
 #include "floor/floor-util.h"
 #include "floor/pattern-walk.h"
+#include "game-option/cheat-types.h"
 #include "grid/grid.h"
 #include "io/gf-descriptions.h"
 #include "io/input-key-acceptor.h"
 #include "mind/mind-blue-mage.h"
 #include "monster-floor/monster-generator.h"
 #include "monster-floor/monster-summon.h"
+#include "monster-floor/party-generator.h"
 #include "monster-floor/place-monster-types.h"
 #include "monster-race/race-ability-flags.h"
 #include "mutation/mutation-processor.h"
@@ -35,13 +37,13 @@
 #include "spell/spells-status.h"
 #include "spell/summon-types.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
 #include "system/monrace/monrace-service.h"
 #include "system/player-type-definition.h"
-#include "system/redrawing-flags-updater.h"
 #include "target/grid-selector.h"
 #include "target/target-checker.h"
 #include "target/target-getter.h"
@@ -50,8 +52,10 @@
 #include "util/enum-converter.h"
 #include "util/flag-group.h"
 #include "util/int-char-converter.h"
+#include "util/string-processor.h"
 #include "view/display-messages.h"
 #include "wizard/wizard-messages.h"
+#include <fmt/format.h>
 #include <string_view>
 #include <vector>
 
@@ -135,7 +139,7 @@ void wiz_summon_specific_monster_common(CreatureEntity &creature, MonraceId monr
         summon_named_creature(creature, 0, p_pos.y, p_pos.x, *summon_monrace_id, mode)
             .transform(index_to_monster);
     if (!monster) {
-        msg_print_wizard(creature, 1, "Monster isn't summoned correctly...");
+        msg_print_wizard(creature, CHEAT_MONSTER, "Monster isn't summoned correctly...");
         return;
     }
 
@@ -188,7 +192,7 @@ void wiz_debug_spell(CreatureEntity &creature)
             (d.command_function.spell6.spell_function)(creature);
             return;
         default:
-            msg_format("Command not found.");
+            msg_print("Command not found.");
             return;
         }
     }
@@ -226,6 +230,32 @@ void wiz_summon_horde(CreatureEntity &creature)
     }
 
     (void)alloc_horde(creature, pos.y, pos.x, summon_specific);
+}
+
+/*!
+ * @brief ウィザードモード用クリーチャーパーティ生成
+ * @param creature クリーチャーへの参照
+ * @details プレイヤーの近傍を中心にクリーチャーパーティ (集団) を生成する。
+ *          通常はフロア生成中にしか湧かないため、集団AI (覚醒伝播・士気崩壊・
+ *          リーダー追従) の確認用。現在の階層に候補が無い / レアリティ抽選で
+ *          「出さない」を引いた場合は何も起きない。
+ */
+void wiz_summon_creature_party(CreatureEntity &creature)
+{
+    const auto &floor = *creature.get_floor();
+    const auto p_pos = creature.get_position();
+    auto pos = p_pos;
+    auto attempts = 1000;
+    while (--attempts) {
+        pos = scatter(floor, p_pos, 3, PROJECT_NONE);
+        if (floor.is_empty_at(pos) && (pos != p_pos)) {
+            break;
+        }
+    }
+
+    if (!alloc_creature_party(creature, pos)) {
+        msg_print(_("パーティは生成されなかった。", "No party was generated."));
+    }
 }
 
 /*!
@@ -286,7 +316,7 @@ void wiz_generate_random_monster(CreatureEntity &creature, int num)
     constexpr auto flags = PM_ALLOW_SLEEP | PM_ALLOW_GROUP | PM_ALLOW_UNIQUE | PM_NO_QUEST;
     for (auto i = 0; i < num; i++) {
         if (!alloc_monster(creature, 0, flags, summon_specific, 5)) {
-            msg_print_wizard(creature, 1, "Monster isn't generated correctly...");
+            msg_print_wizard(creature, CHEAT_MONSTER, "Monster isn't generated correctly...");
             return;
         }
     }
@@ -305,7 +335,7 @@ void wiz_summon_random_monster(CreatureEntity &creature, int num)
     const auto p_pos = creature.get_position();
     for (auto i = 0; i < num; i++) {
         if (!summon_specific(creature, p_pos.y, p_pos.x, level, SUMMON_NONE, flags)) {
-            msg_print_wizard(creature, 1, "Monster isn't summoned correctly...");
+            msg_print_wizard(creature, CHEAT_MONSTER, "Monster isn't summoned correctly...");
             return;
         }
     }
@@ -339,15 +369,15 @@ void wiz_generate_room(CreatureEntity &creature, int v_idx)
 
         const auto flags = { StatusRecalculatingFlag::MONSTER_LITE, StatusRecalculatingFlag::UN_VIEW, StatusRecalculatingFlag::UN_LITE, StatusRecalculatingFlag::VIEW, StatusRecalculatingFlag::LITE,
             StatusRecalculatingFlag::FLOW, StatusRecalculatingFlag::MONSTER_LITE, StatusRecalculatingFlag::MONSTER_STATUSES };
-        RedrawingFlagsUpdater::get_instance().set_flags(flags);
+        DeferredUpdateRequests::get_instance().set_flags(flags);
 
         const auto flags2 = {
             MainWindowRedrawingFlag::MAP,
         };
-        RedrawingFlagsUpdater::get_instance().set_flags(flags2);
-        auto &rfu = RedrawingFlagsUpdater::get_instance();
+        DeferredUpdateRequests::get_instance().set_flags(flags2);
+        auto &dur = DeferredUpdateRequests::get_instance();
         const auto flags3 = { SubWindowRedrawingFlag::OVERHEAD, SubWindowRedrawingFlag::DUNGEON };
-        rfu.set_flags(flags3);
+        dur.set_flags(flags3);
     }
 }
 
@@ -407,7 +437,7 @@ void wiz_kill_target(CreatureEntity &creature, int initial_dam, AttributeType ef
             const auto &gf_description = gf_descriptions[i];
             auto name = std::string_view(gf_description.name).substr(3); // 先頭の"GF_"を取り除く
             auto num = enum2i(gf_description.num);
-            put_str(format("%03d:%-.10s^", num, name.data()), 1 + i / 5, 1 + (i % 5) * 16);
+            put_str(fmt::format("{:03}:{}", num, str_upcase_first(name.substr(0, 10))), 1 + i / 5, 1 + (i % 5) * 16);
         }
 
         const auto input_effect_id = input_numerics("EffectID", 1, max - 1, idx);

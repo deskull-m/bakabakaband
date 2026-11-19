@@ -1,6 +1,7 @@
 #include "system/monrace/monrace-definition.h"
 #include "monster-attack/monster-attack-table.h"
 #include "monster-race/race-ability-mask.h"
+#include "monster-race/race-kind-flags.h"
 #include "monster-race/race-resistance-mask.h"
 #include "monster/horror-descriptions.h"
 #include "system/enums/grid-flow.h"
@@ -9,14 +10,53 @@
 #include "system/monrace/monrace-message.h"
 #include "system/system-variables.h"
 #include "util/enum-converter.h"
-#include "util/string-processor.h"
 #include "world/world.h"
 #include <algorithm>
+#include <fmt/format.h>
 #ifndef JP
 #include "locale/english.h"
 #endif
 
 namespace {
+
+/*!
+ * @brief 「武装する職業」とみなす種族フラグ
+ * @details `PlayerClassType` に対応する `MonsterKindType` のうち、**自ら武具を
+ *          買い揃えて身に着ける職業**を列挙する。武装度 (`armament_level`) による
+ *          装備枠の充填はこのいずれかを持つ個体にのみ行う
+ *          (`has_armed_profession()`)。
+ *
+ *          `PlayerClassType` に対応はあるが**身分・体格であって武装の職業ではない**
+ *          もの (PEASANT / RABBLE / CITIZEN / GRANDMA / SUMOU_WRESTLER / TANK) は
+ *          意図的に除いてある。農民・賤民・市民・ババアは武具を調える立場に無く、
+ *          力士は廻しを締める体格の表現、TANK の該当個体は人型の機械なので、
+ *          いずれも人間用の鎧兜を着込むのは不整合になる。
+ *
+ *          個別に武装させたい個体は JSON で `armament_level` を明示指定すること
+ *          (明示指定は「その武装度で武装する」という製作者の意思表示として
+ *          職業の有無に依らず尊重される)。
+ */
+const EnumClassFlagGroup<MonsterKindType> ARMED_PROFESSION_MASK = {
+    MonsterKindType::SOLDIER,
+    MonsterKindType::WARRIOR,
+    MonsterKindType::BERSERK,
+    MonsterKindType::PALADIN,
+    MonsterKindType::SAMURAI,
+    MonsterKindType::NINJA,
+    MonsterKindType::ROGUE,
+    MonsterKindType::RANGER,
+    MonsterKindType::ARCHER,
+    MonsterKindType::GUNNER,
+    MonsterKindType::MAGE,
+    MonsterKindType::PRIEST,
+    MonsterKindType::MINDCRAFTER,
+    MonsterKindType::BARD,
+    MonsterKindType::SMITH,
+    MonsterKindType::KARATEKA,
+    MonsterKindType::YAKUZA,
+    MonsterKindType::NOBLE,
+    MonsterKindType::MAGICAL_GIRL,
+};
 
 template <class T>
 static int count_lore_mflag_group(const EnumClassFlagGroup<T> &flags, const EnumClassFlagGroup<T> &r_flags)
@@ -27,9 +67,10 @@ static int count_lore_mflag_group(const EnumClassFlagGroup<T> &flags, const Enum
 }
 }
 
-DropArtifact::DropArtifact(FixedArtifactId fa_id, int chance)
+DropArtifact::DropArtifact(FixedArtifactId fa_id, int chance, tl::optional<AttributeType> required_attribute)
     : fa_id(fa_id)
     , chance(chance)
+    , required_attribute(required_attribute)
 {
 }
 
@@ -84,6 +125,33 @@ MonraceDefinition::MonraceDefinition()
 }
 
 /*!
+ * @brief 武装度を取得する
+ * @return JSON で明示指定があればその値、無ければ種族レベルから算出した既定値
+ * @details 武装度は「生成時にどれだけ上質な装備を与えるか」を表す種族固有の値。
+ *          未指定のモンスターには `level * ARMAMENT_LEVEL_PER_LEVEL` を既定値として
+ *          与えるため、格が上がるほど自動的に良い装備を持つ。既定値をレベルから
+ *          算出する都合上、`armament_level` を直接読まずに必ず本メソッドを使うこと。
+ */
+int MonraceDefinition::get_armament_level() const
+{
+    return this->armament_level.value_or(this->level * ARMAMENT_LEVEL_PER_LEVEL);
+}
+
+/*!
+ * @brief 自ら武具を調える職業を持つかどうかを調べる
+ * @return 「武装する職業」のフラグをいずれか持っていれば true
+ * @details 武装度による装備枠の充填 (`equip_monster_by_armament_budget()`) を
+ *          行うかどうかの判定に使う。グレムリンのような「武具を使うとは思えない
+ *          人型」が鎧兜を着込むのを防ぐため、職業を持たない個体は武装度由来の
+ *          装備を一切持たない。対象フラグの一覧と除外の理由は
+ *          `ARMED_PROFESSION_MASK` のコメントを参照。
+ */
+bool MonraceDefinition::has_armed_profession() const
+{
+    return this->kind_flags.has_any_of(ARMED_PROFESSION_MASK);
+}
+
+/*!
  * @brief 正当なモンスター (実際に存在するモンスター種族IDである)かどうかを調べる
  * @details モンスター種族IDが MonsterRaceDefinitions に実在するもの(MonraceId::PLAYERは除く)であるかどうかの用途の他、
  * m_list 上の要素などの r_idx にMonraceId::PLAYER を入れることで死亡扱いとして使われるのでその判定に使用する事もある
@@ -103,6 +171,15 @@ bool MonraceDefinition::is_male() const
 bool MonraceDefinition::is_female() const
 {
     return this->sex == MonsterSex::FEMALE;
+}
+
+/*!
+ * @brief 性別を返す
+ * @return 性別 (性別の無い種族は MonsterSex::NONE)
+ */
+MonsterSex MonraceDefinition::get_sex() const
+{
+    return this->sex;
 }
 
 /*!
@@ -258,14 +335,15 @@ bool MonraceDefinition::is_bounty(bool unachieved_only) const
 /*!
  * @brief モンスター種族の総合的な強さを計算する。
  * @details 現在はモンスター闘技場でのモンスターの強さの総合的な評価にのみ使用されている。
+ * 全属性耐性で10万倍し、さらに闘技場の倍率を掛けるので、int ではあふれうる。int64_t で計算する。
  * @return 計算した結果のモンスター種族の総合的な強さの値を返す。
  */
-int MonraceDefinition::calc_power() const
+int64_t MonraceDefinition::calc_power() const
 {
-    auto power = 0;
-    const auto num_resistances = EnumClassFlagGroup<MonsterResistanceType>(this->resistance_flags & RFR_EFF_IMMUNE_ELEMENT_MASK).count();
+    int64_t power;
+    const auto num_resistances = static_cast<int64_t>(EnumClassFlagGroup<MonsterResistanceType>(this->resistance_flags & RFR_EFF_IMMUNE_ELEMENT_MASK).count());
     if (this->misc_flags.has(MonsterMiscType::FORCE_MAXHP)) {
-        power = this->hit_dice.maxroll() * 2;
+        power = int64_t{ this->hit_dice.maxroll() } * 2;
     } else {
         power = this->hit_dice.floored_expected_value_multiplied_by(2);
     }
@@ -348,8 +426,8 @@ int MonraceDefinition::calc_capture_value() const
 std::string MonraceDefinition::build_eldritch_horror_message(std::string_view description) const
 {
     const auto &horror_message = this->decide_horror_message();
-    constexpr auto fmt = _("%s%sの顔を見てしまった！", "You behold the %s visage of %s!");
-    return format(fmt, horror_message.data(), description.data());
+    constexpr auto fmt = _("{}{}の顔を見てしまった！", "You behold the {} visage of {}!");
+    return fmt::format(fmt, horror_message, description);
 }
 
 bool MonraceDefinition::has_reinforce() const
@@ -565,6 +643,17 @@ bool MonraceDefinition::is_suitable_for_nightmare(int min_level) const
     return this->misc_flags.has(MonsterMiscType::ELDRITCH_HORROR) && (this->level > min_level);
 }
 
+/*!
+ * @brief 生成上限階層を超えた階か否かを判定する
+ * @param floor_level 生成階層
+ * @return 上限階層 (max_level) が指定されており、かつ floor_level がそれより深ければ true
+ * @details 未指定 (tl::nullopt) の場合は常に false (上限なし)
+ */
+bool MonraceDefinition::is_too_deep_to_generate(int floor_level) const
+{
+    return this->max_level.has_value() && (floor_level > *this->max_level);
+}
+
 bool MonraceDefinition::is_human() const
 {
     return this->symbol_char_is_any_of("pht");
@@ -579,7 +668,7 @@ bool MonraceDefinition::is_catchable_for_fishing() const
 {
     auto is_catchable = this->feature_flags.has(MonsterFeatureType::AQUATIC);
     is_catchable &= this->kind_flags.has_not(MonsterKindType::UNIQUE);
-    is_catchable &= str_find("Jjlw", &this->symbol_definition.character);
+    is_catchable &= this->symbol_char_is_any_of("Jjlw");
     return is_catchable;
 }
 
@@ -806,6 +895,7 @@ tl::optional<std::string> MonraceDefinition::probe_lore()
     this->r_cast_spell = MAX_UCHAR;
     n |= count_lore_mflag_group(this->resistance_flags, this->r_resistance_flags) > 0;
     n |= count_lore_mflag_group(this->ability_flags, this->r_ability_flags) > 0;
+    n |= count_lore_mflag_group(this->aura_flags, this->r_aura_flags) > 0;
     n |= count_lore_mflag_group(this->behavior_flags, this->r_behavior_flags) > 0;
     n |= count_lore_mflag_group(this->drop_flags, this->r_drop_flags) > 0;
     n |= count_lore_mflag_group(this->feature_flags, this->r_feature_flags) > 0;
@@ -814,6 +904,7 @@ tl::optional<std::string> MonraceDefinition::probe_lore()
 
     this->r_resistance_flags = this->resistance_flags;
     this->r_ability_flags = this->ability_flags;
+    this->r_aura_flags = this->aura_flags;
     this->r_behavior_flags = this->behavior_flags;
     this->r_drop_flags = this->drop_flags;
     this->r_feature_flags = this->feature_flags;
@@ -829,14 +920,14 @@ tl::optional<std::string> MonraceDefinition::probe_lore()
     }
 
 #ifdef JP
-    return format("%sについてさらに詳しくなった気がする。", this->name.data());
+    return fmt::format("{}についてさらに詳しくなった気がする。", this->name);
 #else
     const char *preamble = "You now know more about ";
     if (this->kind_flags.has(MonsterKindType::UNIQUE)) {
-        return format("%s%s.", preamble, this->name.data());
+        return fmt::format("{}{}.", preamble, this->name);
     }
     const auto nm = pluralize(this->name);
-    return format("%s%s.", preamble, nm.data());
+    return fmt::format("{}{}.", preamble, nm);
 #endif
 }
 

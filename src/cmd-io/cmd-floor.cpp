@@ -9,7 +9,7 @@
 #include "io/screen-util.h"
 #include "main/sound-of-music.h"
 #include "system/creature-entity.h"
-#include "system/redrawing-flags-updater.h"
+#include "system/deferred-update-requests.h"
 #include "target/target-checker.h"
 #include "target/target-setter.h"
 #include "target/target-types.h"
@@ -17,6 +17,7 @@
 #include "view/display-messages.h"
 #include "window/main-window-util.h"
 #include "world/world.h"
+#include <fmt/format.h>
 
 /*!
  * @brief ターゲットを設定するコマンドのメインルーチン
@@ -45,8 +46,8 @@ void do_cmd_look(CreatureEntity &creature)
         SubWindowRedrawingFlag::SIGHT_MONSTERS,
         SubWindowRedrawingFlag::FLOOR_ITEMS,
     };
-    RedrawingFlagsUpdater::get_instance().set_flags(flags);
-    handle_stuff(creature);
+    DeferredUpdateRequests::get_instance().set_flags(flags);
+    window_stuff(creature);
     output_bot_json_look_snapshot(creature);
     if (target_set(creature, TARGET_LOOK).is_okay()) {
         msg_print(_("ターゲット決定。", "Target Selected."));
@@ -68,10 +69,10 @@ void do_cmd_locate(CreatureEntity &creature)
     const auto &[wid, hgt] = get_screen_size();
     POSITION y2 = y1 = panel_row_min;
     POSITION x2 = x1 = panel_col_min;
-    constexpr auto fmt = _("マップ位置 [%d(%02d),%d(%02d)] (プレイヤーの%s)  方向?", "Map sector [%d(%02d),%d(%02d)], which is%s your sector.  Direction?");
+    constexpr auto format_str = _("マップ位置 [{}({:02}),{}({:02})] (プレイヤーの{})  方向?", "Map sector [{}({:02}),{}({:02})], which is{} your sector.  Direction?");
     while (true) {
         const auto &dirstring = dirstrings[(y2 < y1) ? 0 : ((y2 > y1) ? 2 : 1)][(x2 < x1) ? 0 : ((x2 > x1) ? 2 : 1)];
-        const auto prompt = format(fmt, y2 / (hgt / 2), y2 % (hgt / 2), x2 / (wid / 2), x2 % (wid / 2), dirstring.data());
+        const auto prompt = fmt::format(format_str, y2 / (hgt / 2), y2 % (hgt / 2), x2 / (wid / 2), x2 % (wid / 2), dirstring);
         auto dir = Direction::none();
         while (!dir) {
             const auto command = input_command(prompt);
@@ -97,13 +98,6 @@ void do_cmd_locate(CreatureEntity &creature)
     }
 
     verify_panel(creature);
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.set_flag(StatusRecalculatingFlag::MONSTER_STATUSES);
-    rfu.set_flag(MainWindowRedrawingFlag::MAP);
-    static constexpr auto flags = {
-        SubWindowRedrawingFlag::OVERHEAD,
-        SubWindowRedrawingFlag::DUNGEON,
-    };
-    rfu.set_flags(flags);
+    DeferredUpdateRequests::get_instance().request_monster_update_and_map_redrawing();
     handle_stuff(creature);
 }

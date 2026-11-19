@@ -2,7 +2,6 @@
 #include "core/asking-player.h"
 #include "dungeon/quest.h"
 #include "floor/wild.h"
-#include "info-reader/fixed-map-parser.h"
 #include "io/input-key-acceptor.h"
 #include "market/building-util.h"
 #include "monster/monster-list.h"
@@ -16,6 +15,7 @@
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
 #include "view/display-messages.h"
+#include <fmt/format.h>
 
 /*!
  * @brief クエスト情報を処理しつつ取得する。/ Process and get quest information
@@ -31,12 +31,12 @@ static void get_questinfo(CreatureEntity &creature, QuestId quest_id, bool do_in
     const auto old_quest = floor.quest_number;
     floor.quest_number = quest_id;
 
-    init_flags = INIT_SHOW_TEXT;
+    // 受託時のみ静的メタデータを確立する (旧 INIT_ASSIGN 相当)。表示のみのときは行わない。
     if (do_init) {
-        init_flags = i2enum<init_flags_type>(init_flags | INIT_ASSIGN);
+        assign_json_quest_metadata(quest_id);
     }
 
-    parse_fixed_map(creature, QUEST_DEFINITION_LIST, 0, 0, 0, 0);
+    populate_quest_text_lines(quest_id);
     floor.quest_number = old_quest;
 }
 
@@ -52,7 +52,7 @@ static void print_questinfo(CreatureEntity &creature, QuestId quest_id, bool do_
 
     const auto &quests = QuestList::get_instance();
     const auto &quest = quests.get_quest(quest_id);
-    prt(format(_("クエスト情報 (危険度: %d 階相当)", "Quest Information (Danger level: %d)"), quest.level), 5, 0);
+    prt(fmt::format(_("クエスト情報 (危険度: {} 階相当)", "Quest Information (Danger level: {})"), quest.level), 5, 0);
     prt(quest.name, 7, 0);
 
     for (auto i = 0; i < std::ssize(quest_text_lines); i++) {
@@ -91,7 +91,7 @@ void castle_quest(CreatureEntity &creature)
         put_str(_("CTRL-Qを使えばクエストの状態がチェックできます。", "Use CTRL-Q to check the status of your quest."), 9, 0);
 
         get_questinfo(creature, quest_id, false);
-        put_str(format(_("現在のクエスト「%s」", "Current quest is '%s'."), quest.name.data()), 11, 0);
+        put_str(fmt::format(_("現在のクエスト「{}」", "Current quest is '{}'."), quest.name), 11, 0);
 
         if (quest.type != QuestKindType::KILL_LEVEL || quest.dungeon == DungeonId::WILDERNESS) {
             put_str(_("クエストを終わらせたら戻って来て下さい。", "Return when you have completed your quest."), 12, 0);
@@ -161,9 +161,9 @@ void castle_quest(CreatureEntity &creature)
     quest.cur_num = 0;
     concptr name = r_ptr->name.data();
 #ifdef JP
-    msg_format("クエスト: %sを %d体倒す", name, quest.max_num);
+    msg_print("クエスト: {}を {}体倒す", name, quest.max_num);
 #else
-    msg_format("Your quest: kill %d %s", quest.max_num, name);
+    msg_print("Your quest: kill {} {}", quest.max_num, name);
 #endif
     print_questinfo(creature, quest_id, true);
     if (!input_check(_("このクエストを受けますか？", "Are you sure to take this quest? "))) {

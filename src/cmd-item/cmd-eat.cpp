@@ -15,6 +15,7 @@
 #include "inventory/inventory-object.h"
 #include "main/sound-definitions-table.h"
 #include "main/sound-of-music.h"
+#include "monster-floor/monster-corpse-leaver.h"
 #include "object-enchant/special-object-flags.h"
 #include "object-hook/hook-expendable.h"
 #include "object/item-tester-hooker.h"
@@ -50,10 +51,10 @@
 #include "sv-definition/sv-junk-types.h"
 #include "sv-definition/sv-other-types.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/redrawing-flags-updater.h"
 #include "util/dice.h"
 #include "util/string-processor.h"
 #include "view/display-messages.h"
@@ -490,15 +491,15 @@ static bool exe_eat_charge_of_magic_device(CreatureEntity &creature, ItemEntity 
 
     const auto staff = is_staff ? _("杖", "staff") : _("魔法棒", "wand");
 
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
+    auto &dur = DeferredUpdateRequests::get_instance();
     if (o_ptr->pval == 0) {
-        msg_format(_("この%sにはもう魔力が残っていない。", "The %s has no charges left."), staff);
+        msg_print(_("この{}にはもう魔力が残っていない。", "The {} has no charges left."), staff);
         o_ptr->ident.set(IdentificationFlag::EMPTY);
-        rfu.set_flag(SubWindowRedrawingFlag::INVENTORY);
+        dur.set_item_related_sub_window_flags();
         return true;
     }
 
-    msg_format(_("あなたは%sの魔力をエネルギー源として吸収した。", "You absorb mana of the %s as your energy."), staff);
+    msg_print(_("あなたは{}の魔力をエネルギー源として吸収した。", "You absorb mana of the {} as your energy."), staff);
 
     /* Use a single charge */
     o_ptr->pval--;
@@ -517,7 +518,7 @@ static bool exe_eat_charge_of_magic_device(CreatureEntity &creature, ItemEntity 
         /* Unstack the used item */
         o_ptr->number--;
         i_idx = creature.store_item(item);
-        msg_format(_("杖をまとめなおした。", "You unstack your staff."));
+        msg_print(_("杖をまとめなおした。", "You unstack your staff."));
     }
 
     if (i_idx >= 0) {
@@ -526,11 +527,9 @@ static bool exe_eat_charge_of_magic_device(CreatureEntity &creature, ItemEntity 
         floor_item_charges(*creature.get_floor(), 0 - i_idx);
     }
 
-    static constexpr auto flags = {
-        SubWindowRedrawingFlag::INVENTORY,
-        SubWindowRedrawingFlag::EQUIPMENT,
-    };
-    rfu.set_flags(flags);
+    // 充填が変わったので、足元の品も含めてアイテムの一覧の描き直しを予約する。
+    // 呼び出し元での予約は、充填を変える前のメッセージの表示で使われることがあるので当てにしない
+    dur.set_item_related_sub_window_flags();
     return true;
 }
 
@@ -573,21 +572,6 @@ void exe_eat_food(CreatureEntity &creature, INVENTORY_IDX i_idx)
     const auto &bi_key = item->bi_key;
     const auto ident = exe_eat_food_type_object(creature, bi_key);
 
-    /*
-     * Store what may have to be updated for the inventory (including
-     * autodestroy if set by something else).  Then turn off those flags
-     * so that updates triggered by calling gain_exp() or set_food() below
-     * do not rearrange the inventory before the food item is destroyed in
-     * the pack.
-     */
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    using Srf = StatusRecalculatingFlag;
-    EnumClassFlagGroup<Srf> flags_srf = { Srf::COMBINATION, Srf::REORDER };
-    if (rfu.has(Srf::AUTO_DESTRUCTION)) {
-        flags_srf.set(Srf::AUTO_DESTRUCTION);
-    }
-
-    rfu.reset_flags(flags_srf);
     if (!(item->is_aware())) {
         chg_virtue(creature, Virtue::KNOWLEDGE, -1);
         chg_virtue(creature, Virtue::PATIENCE, -1);
@@ -606,16 +590,12 @@ void exe_eat_food(CreatureEntity &creature, INVENTORY_IDX i_idx)
         gain_exp(creature, (level + (creature.get_level() >> 1)) / creature.get_level());
     }
 
-    static constexpr auto flags_swrf = {
-        SubWindowRedrawingFlag::INVENTORY,
-        SubWindowRedrawingFlag::EQUIPMENT,
-        SubWindowRedrawingFlag::PLAYER,
-    };
-    rfu.set_flags(flags_swrf);
+    auto &dur = DeferredUpdateRequests::get_instance();
+    dur.request_inventory_arrangement();
+    dur.set_item_related_sub_window_flags();
 
     /* Undeads drain recharge of magic device */
     if (exe_eat_charge_of_magic_device(creature, item.get(), i_idx)) {
-        rfu.set_flags(flags_srf);
         return;
     }
 
@@ -625,10 +605,8 @@ void exe_eat_food(CreatureEntity &creature, INVENTORY_IDX i_idx)
     if (food_type == PlayerRaceFoodType::CORPSE) {
         if (item->is_corpse() && item->get_monrace().is_human()) {
             const auto item_name = describe_flavor(creature, *item, (OD_OMIT_PREFIX | OD_NAME_ONLY));
-            msg_format(_("%sは燃え上り灰になった。精力を吸収した気がする。", "%s^ is burnt to ashes.  You absorb its vitality!"), item_name.data());
+            msg_print(_("{}は燃え上り灰になった。精力を吸収した気がする。", "{} is burnt to ashes.  You absorb its vitality!"), str_upcase_first(item_name));
             (void)set_food(creature, PY_FOOD_MAX - 1);
-
-            rfu.set_flags(flags_srf);
             vary_item(creature, i_idx, -1);
             return;
         }
@@ -683,18 +661,26 @@ void exe_eat_food(CreatureEntity &creature, INVENTORY_IDX i_idx)
         return;
     }
 
+    // 所持品の整理は実際に食べた場合だけ予約する。これより前に抜ける 2 経路
+    // (魔法道具の充填吸収・バルログの死体焼却) では、所持数を変える
+    // store_item() / inven_item_increase() が必要なフラグを自分で立てる。
+    static constexpr auto flags_iaf = {
+        InventoryArrangementFlag::COMBINATION,
+        InventoryArrangementFlag::REORDER,
+    };
+    dur.set_flags(flags_iaf);
+
     creature.plus_incident_tree("EAT", 1);
 
     // 死体を食べた場合は詳細情報を記録
     if (item->bi_key.tval() == ItemKindType::MONSTER_REMAINS && item->bi_key.sval() == SV_CORPSE) {
-        auto incident_key = format("EAT/CORPSE/%d/%d/%d",
+        auto incident_key = fmt::format("EAT/CORPSE/{}/{}/{}",
             static_cast<int>(item->bi_key.tval()),
             item->bi_key.sval().value_or(0),
             item->pval);
         creature.plus_incident_tree(incident_key, 1);
     }
 
-    rfu.set_flags(flags_srf);
     vary_item(creature, i_idx, -1);
 }
 
@@ -705,6 +691,9 @@ void exe_eat_food(CreatureEntity &creature, INVENTORY_IDX i_idx)
 void do_cmd_eat_food(CreatureEntity &creature)
 {
     CreatureClass(creature).break_samurai_stance({ SamuraiStanceType::MUSOU, SamuraiStanceType::KOUKIJIN });
+    // 足元の死体も床のアイテムと同じ選択肢に並べる。食べ尽くした死体は
+    // スコープを抜ける時にフロアから外れ、残っていた持ち物が周りへ散らばる
+    ScopedCorpseFloorItems corpse_floor_items(creature);
     constexpr auto q = _("どれを食べますか? ", "Eat which item? ");
     constexpr auto s = _("食べ物がない。", "You have nothing to eat.");
     const auto &[item, i_idx] = choose_item(creature, q, s, (USE_INVEN | USE_FLOOR), FuncItemTester(item_tester_hook_eatable, creature));

@@ -1,46 +1,49 @@
 #include "view/display-store.h"
 #include "flavor/flavor-describer.h"
-#include "game-option/birth-options.h"
 #include "game-option/special-options.h"
 #include "game-option/text-display-options.h"
 #include "locale/japanese.h"
 #include "player/race-info-table.h"
 #include "store/pricing.h"
 #include "store/store-owners.h"
-#include "store/store.h" //!< @todo 相互依存している、こっちは残す？.
+#include "store/store-screen.h"
+#include "store/store-util.h"
+#include "store/store.h"
 #include "system/creature-entity.h"
-#include "system/terrain/terrain-definition.h"
-#include "system/terrain/terrain-list.h"
 #include "term/gameterm.h"
 #include "term/screen-processor.h"
-#include "term/z-form.h"
 #include "util/int-char-converter.h"
+#include "view/display-symbol.h"
+#include <algorithm>
+#include <fmt/format.h>
 
 /*!
  * @brief プレイヤーの所持金を表示する
+ * @param screen 表示する店舗の画面
  * @param num_golds 所持金
  */
-void store_prt_gold(int num_golds)
+void store_prt_gold(const StoreScreen &screen, int num_golds)
 {
-    prt(_("手持ちのお金: ", "Gold Remaining: "), 19 + xtra_stock, 53);
-    prt(format("%9d", num_golds), 19 + xtra_stock, 68);
+    const auto row = screen.get_status_row();
+    prt(_("手持ちのお金: ", "Gold Remaining: "), row, 53);
+    prt(fmt::format("{:9}", num_golds), row, 68);
 }
 
 /*!
  * @brief 店の商品リストを再表示する /
  * Re-displays a single store entry
  * @param creature クリーチャーへの参照
- * @param pos 表示行
+ * @param screen 表示する店舗の画面
+ * @param pos 表示する在庫の番号
  */
-void display_entry(CreatureEntity &creature, int pos, StoreSaleType store_num)
+void display_entry(CreatureEntity &creature, const StoreScreen &screen, int pos)
 {
-    const auto &item = *st_ptr->stock[pos];
-    int i = (pos % store_bottom);
+    const auto &store = screen.get_store();
+    const auto &item = *store.stock[pos];
+    const auto i = screen.get_page_position(pos);
 
     /* Label it, clear the line --(-- */
-    char out_val[160];
-    (void)sprintf(out_val, "%c) ", ((i > 25) ? toupper(I2A(i - 26)) : I2A(i)));
-    prt(out_val, i + 6, 0);
+    prt(fmt::format("{:c}) ", ((i > 25) ? toupper(I2A(i - 26)) : I2A(i))), i + 6, 0);
 
     int cur_col = 3;
     if (show_item_graph) {
@@ -54,6 +57,7 @@ void display_entry(CreatureEntity &creature, int pos, StoreSaleType store_num)
 
     /* Describe an item in the home */
     int maxwid = 75;
+    const auto store_num = store.get_sale_type();
     if ((store_num == StoreSaleType::HOME) || (store_num == StoreSaleType::MUSEUM)) {
         if (show_weights) {
             maxwid -= 10;
@@ -64,7 +68,7 @@ void display_entry(CreatureEntity &creature, int pos, StoreSaleType store_num)
 
         if (show_weights) {
             const auto wgt = item.weight;
-            put_str(format(_("%3d.%1d kg", "%3d.%d lb"), _(lb_to_kg_integer(wgt), wgt / 10), _(lb_to_kg_fraction(wgt), wgt % 10)), i + 6, _(67, 68));
+            put_str(fmt::format(_("{:3}.{:1} kg", "{:3}.{} lb"), _(lb_to_kg_integer(wgt), wgt / 10), _(lb_to_kg_fraction(wgt), wgt % 10)), i + 6, _(67, 68));
         }
 
         return;
@@ -80,48 +84,44 @@ void display_entry(CreatureEntity &creature, int pos, StoreSaleType store_num)
 
     if (show_weights) {
         const auto wgt = item.weight;
-        put_str(format("%3d.%1d", _(lb_to_kg_integer(wgt), wgt / 10), _(lb_to_kg_fraction(wgt), wgt % 10)), i + 6, _(60, 61));
+        put_str(fmt::format("{:3}.{:1}", _(lb_to_kg_integer(wgt), wgt / 10), _(lb_to_kg_fraction(wgt), wgt % 10)), i + 6, _(60, 61));
     }
 
-    const auto price = price_item(creature, &item, ot_ptr->inflate, false, store_num);
-    put_str(format("%9d  ", price), i + 6, 68);
+    const auto price = price_item(creature, &item, store, StoreTradeType::PLAYER_BUYS);
+    put_str(fmt::format("{:9}  ", price), i + 6, 68);
 }
 
 /*!
  * @brief 店の商品リストを表示する /
  * Displays a store's inventory -RAK-
  * @param creature クリーチャーへの参照
+ * @param screen 表示する店舗の画面
  * @details
  * All prices are listed as "per individual object".  -BEN-
  */
-void display_store_inventory(CreatureEntity &creature, StoreSaleType store_num)
+void display_store_inventory(CreatureEntity &creature, const StoreScreen &screen)
 {
-    int k;
-    for (k = 0; k < store_bottom; k++) {
-        if (store_top + k >= st_ptr->stock_num) {
-            break;
-        }
-
-        display_entry(creature, store_top + k, store_num);
+    const auto &store = screen.get_store();
+    const auto store_num = store.get_sale_type();
+    const auto page_top = screen.get_page_top();
+    const auto page_size = screen.get_page_size();
+    const auto page_item_count = std::max(screen.get_page_item_count(), 0);
+    for (auto k = 0; k < page_item_count; k++) {
+        display_entry(creature, screen, page_top + k);
     }
 
-    for (int i = k; i < store_bottom + 1; i++) {
+    for (auto i = page_item_count; i <= page_size; i++) {
         prt("", i + 6, 0);
     }
 
     put_str(_("          ", "        "), 5, _(20, 22));
-    if (st_ptr->stock_num > store_bottom) {
-        prt(_("-続く-", "-more-"), k + 6, 3);
-        put_str(format(_("(%dページ)  ", "(Page %d)  "), store_top / store_bottom + 1), 5, _(20, 22));
+    if (screen.has_multiple_pages()) {
+        prt(_("-続く-", "-more-"), page_item_count + 6, 3);
+        put_str(fmt::format(_("({}ページ)  ", "(Page {})  "), page_top / page_size + 1), 5, _(20, 22));
     }
 
     if (store_num == StoreSaleType::HOME || store_num == StoreSaleType::MUSEUM) {
-        k = st_ptr->stock_size;
-        if (store_num == StoreSaleType::HOME && !powerup_home) {
-            k /= 10;
-        }
-
-        put_str(format(_("アイテム数:  %4d/%4d", "Objects:  %4d/%4d"), st_ptr->stock_num, k), 19 + xtra_stock, _(27, 30));
+        put_str(fmt::format(_("アイテム数:  {:4}/{:4}", "Objects:  {:4}/{:4}"), store.stock_num, store_get_stock_limit(store)), screen.get_status_row(), _(27, 30));
     }
 }
 
@@ -129,10 +129,13 @@ void display_store_inventory(CreatureEntity &creature, StoreSaleType store_num)
  * @brief 店舗情報全体を表示するメインルーチン /
  * Displays store (after clearing screen)		-RAK-
  * @param creature クリーチャーへの参照
+ * @param screen 表示する店舗の画面
  * @details
  */
-void display_store(CreatureEntity &creature, StoreSaleType store_num)
+void display_store(CreatureEntity &creature, const StoreScreen &screen)
 {
+    const auto &store = screen.get_store();
+    const auto store_num = store.get_sale_type();
     term_clear();
     if (store_num == StoreSaleType::HOME) {
         put_str(_("我が家", "Your Home"), 3, 31);
@@ -141,8 +144,8 @@ void display_store(CreatureEntity &creature, StoreSaleType store_num)
             put_str(_("  重さ", "Weight"), 5, 70);
         }
 
-        store_prt_gold(creature.get_au());
-        display_store_inventory(creature, store_num);
+        store_prt_gold(screen, creature.get_au());
+        display_store_inventory(creature, screen);
         return;
     }
 
@@ -153,17 +156,16 @@ void display_store(CreatureEntity &creature, StoreSaleType store_num)
             put_str(_("  重さ", "Weight"), 5, 70);
         }
 
-        store_prt_gold(creature.get_au());
-        display_store_inventory(creature, store_num);
+        store_prt_gold(screen, creature.get_au());
+        display_store_inventory(creature, screen);
         return;
     }
 
-    const auto &store_name = TerrainList::get_instance().get_terrain(cur_store_feat).name;
-    const auto owner_name = ot_ptr->owner_name;
-    const auto race_name = race_info[enum2i(ot_ptr->owner_race)].title.data();
-    put_str(format("%s (%s)", owner_name, race_name), 3, 10);
+    const auto &owner = store.get_owner();
+    const auto race_name = race_info[enum2i(owner.owner_race)].title.data();
+    put_str(fmt::format("{} ({})", owner.owner_name, race_name), 3, 10);
 
-    prt(format("%s (%d)", store_name.data(), ot_ptr->max_cost), 3, 50);
+    prt(fmt::format("{} ({})", screen.get_name(), owner.max_cost), 3, 50);
 
     put_str(_("商品の一覧", "Item Description"), 5, 5);
     if (show_weights) {
@@ -171,6 +173,6 @@ void display_store(CreatureEntity &creature, StoreSaleType store_num)
     }
 
     put_str(_(" 価格", "Price"), 5, 72);
-    store_prt_gold(creature.get_au());
-    display_store_inventory(creature, store_num);
+    store_prt_gold(screen, creature.get_au());
+    display_store_inventory(creature, screen);
 }

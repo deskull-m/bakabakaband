@@ -23,6 +23,7 @@
 #include "system/dungeon/quest-definition.h"
 #include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"
+#include "util/string-processor.h"
 #include "view/display-messages.h"
 
 /*!
@@ -53,157 +54,157 @@ void describe_melee_method(mam_type *mam_ptr)
 {
     switch (mam_ptr->method) {
     case RaceBlowMethodType::HIT: {
-        mam_ptr->act = _("%sを殴った。", "hits %s.");
+        mam_ptr->act = MonsterBlowFormat(_("{}を殴った。", "hits {}."));
         mam_ptr->touched = true;
         break;
     }
     case RaceBlowMethodType::TOUCH: {
-        mam_ptr->act = _("%sを触った。", "touches %s.");
+        mam_ptr->act = MonsterBlowFormat(_("{}を触った。", "touches {}."));
         mam_ptr->touched = true;
         break;
     }
     case RaceBlowMethodType::PUNCH: {
-        mam_ptr->act = _("%sをパンチした。", "punches %s.");
+        mam_ptr->act = MonsterBlowFormat(_("{}をパンチした。", "punches {}."));
         mam_ptr->touched = true;
         break;
     }
     case RaceBlowMethodType::KICK: {
-        mam_ptr->act = _("%sを蹴った。", "kicks %s.");
+        mam_ptr->act = MonsterBlowFormat(_("{}を蹴った。", "kicks {}."));
         mam_ptr->touched = true;
         break;
     }
     case RaceBlowMethodType::CLAW: {
-        mam_ptr->act = _("%sをひっかいた。", "claws %s.");
+        mam_ptr->act = MonsterBlowFormat(_("{}をひっかいた。", "claws {}."));
         mam_ptr->touched = true;
         break;
     }
     case RaceBlowMethodType::BITE: {
-        mam_ptr->act = _("%sを噛んだ。", "bites %s.");
+        mam_ptr->act = MonsterBlowFormat(_("{}を噛んだ。", "bites {}."));
         mam_ptr->touched = true;
         break;
     }
     case RaceBlowMethodType::STING: {
-        mam_ptr->act = _("%sを刺した。", "stings %s.");
+        mam_ptr->act = MonsterBlowFormat(_("{}を刺した。", "stings {}."));
         mam_ptr->touched = true;
         break;
     }
     case RaceBlowMethodType::SLASH: {
-        mam_ptr->act = _("%sを斬った。", "slashes %s.");
+        mam_ptr->act = MonsterBlowFormat(_("{}を斬った。", "slashes {}."));
         break;
     }
     case RaceBlowMethodType::BUTT: {
-        mam_ptr->act = _("%sを角で突いた。", "butts %s.");
+        mam_ptr->act = MonsterBlowFormat(_("{}を角で突いた。", "butts {}."));
         mam_ptr->touched = true;
         break;
     }
     case RaceBlowMethodType::CRUSH: {
-        mam_ptr->act = _("%sを押し潰した", "crushes %s.");
+        mam_ptr->act = MonsterBlowFormat(_("{}を押し潰した", "crushes {}."));
         mam_ptr->touched = true;
         break;
     }
     case RaceBlowMethodType::ENGULF: {
-        mam_ptr->act = _("%sを飲み込んだ。", "engulfs %s.");
+        mam_ptr->act = MonsterBlowFormat(_("{}を飲み込んだ。", "engulfs {}."));
         mam_ptr->touched = true;
         break;
     }
     case RaceBlowMethodType::CHARGE: {
-        mam_ptr->act = _("%sに請求書をよこした。", "charges %s.");
+        mam_ptr->act = MonsterBlowFormat(_("{}に請求書をよこした。", "charges {}."));
         mam_ptr->touched = true;
         break;
     }
     case RaceBlowMethodType::CRAWL: {
-        mam_ptr->act = _("%sの体の上を這い回った。", "crawls on %s.");
+        mam_ptr->act = MonsterBlowFormat(_("{}の体の上を這い回った。", "crawls on {}."));
         mam_ptr->touched = true;
         break;
     }
     case RaceBlowMethodType::DROOL: {
-        mam_ptr->act = _("%sによだれをたらした。", "drools on %s.");
+        mam_ptr->act = MonsterBlowFormat(_("{}によだれをたらした。", "drools on {}."));
         mam_ptr->touched = false;
         break;
     }
     case RaceBlowMethodType::SPIT: {
-        mam_ptr->act = _("%sに唾を吐いた。", "spits on %s.");
+        mam_ptr->act = MonsterBlowFormat(_("{}に唾を吐いた。", "spits on {}."));
         mam_ptr->touched = false;
         break;
     }
     case RaceBlowMethodType::EXPLODE: {
-        mam_ptr->act = _("爆発した。", "explodes.");
+        mam_ptr->act = MonsterBlowFormat(_("爆発した。", "explodes."));
         mam_ptr->explode = true;
         mam_ptr->touched = false;
         break;
     }
     case RaceBlowMethodType::GAZE: {
-        mam_ptr->act = _("%sをにらんだ。", "gazes at %s.");
+        mam_ptr->act = MonsterBlowFormat(_("{}をにらんだ。", "gazes at {}."));
         mam_ptr->touched = false;
         break;
     }
     case RaceBlowMethodType::WAIL: {
-        mam_ptr->act = _("%sに泣きついた。", "wails at %s.");
+        mam_ptr->act = MonsterBlowFormat(_("{}に泣きついた。", "wails at {}."));
         mam_ptr->touched = false;
         break;
     }
     case RaceBlowMethodType::SPORE: {
-        mam_ptr->act = _("%sに胞子を飛ばした。", "releases spores at %s.");
+        mam_ptr->act = MonsterBlowFormat(_("{}に胞子を飛ばした。", "releases spores at {}."));
         mam_ptr->touched = false;
         break;
     }
     case RaceBlowMethodType::XXX4: {
-        mam_ptr->act = _("%sにXXX4を飛ばした。", "projects XXX4's at %s.");
+        mam_ptr->act = MonsterBlowFormat(_("{}にXXX4を飛ばした。", "projects XXX4's at {}."));
         mam_ptr->touched = false;
         break;
     }
     case RaceBlowMethodType::BEG: {
-        mam_ptr->act = _("%sに金をせがんだ。", "begs %s for money.");
+        mam_ptr->act = MonsterBlowFormat(_("{}に金をせがんだ。", "begs {} for money."));
         mam_ptr->touched = false;
         break;
     }
     case RaceBlowMethodType::INSULT: {
-        mam_ptr->act = _("%sを侮辱した。", "insults %s.");
+        mam_ptr->act = MonsterBlowFormat(_("{}を侮辱した。", "insults {}."));
         mam_ptr->touched = false;
         break;
     }
     case RaceBlowMethodType::MOAN: {
-        mam_ptr->act = _("%sにむかってうめいた。", "moans at %s.");
+        mam_ptr->act = MonsterBlowFormat(_("{}にむかってうめいた。", "moans at {}."));
         mam_ptr->touched = false;
         break;
     }
     case RaceBlowMethodType::SHOW: {
-        mam_ptr->act = _("%sにむかって歌った。", "sings to %s.");
+        mam_ptr->act = MonsterBlowFormat(_("{}にむかって歌った。", "sings to {}."));
         mam_ptr->touched = false;
         break;
     }
     case RaceBlowMethodType::ENEMA: {
-        mam_ptr->act = _("%sに浣腸した。", "gives %s an enema.");
+        mam_ptr->act = MonsterBlowFormat(_("{}に浣腸した。", "gives {} an enema."));
         mam_ptr->touched = true;
         break;
     }
     case RaceBlowMethodType::BIND: {
-        mam_ptr->act = _("%sを縛り上げた。", "binds %s.");
+        mam_ptr->act = MonsterBlowFormat(_("{}を縛り上げた。", "binds {}."));
         mam_ptr->touched = true;
         break;
     }
     case RaceBlowMethodType::WHISPER: {
-        mam_ptr->act = _("%sに囁いた。", "whispers %s.");
+        mam_ptr->act = MonsterBlowFormat(_("{}に囁いた。", "whispers {}."));
         mam_ptr->touched = false;
         break;
     }
     case RaceBlowMethodType::STAMP: {
-        mam_ptr->act = _("%sを踏みつけた。", "stomps on %s.");
+        mam_ptr->act = MonsterBlowFormat(_("{}を踏みつけた。", "stomps on {}."));
         mam_ptr->touched = true;
         break;
     }
     case RaceBlowMethodType::FECES: {
-        mam_ptr->act = _("%sに糞を塗った。", "paint shit on %s.");
+        mam_ptr->act = MonsterBlowFormat(_("{}に糞を塗った。", "paint shit on {}."));
         mam_ptr->touched = true;
         break;
     }
     case RaceBlowMethodType::PUTAWAY: {
-        mam_ptr->act = _("%sをしまっちゃった。", "puts %s away.");
+        mam_ptr->act = MonsterBlowFormat(_("{}をしまっちゃった。", "puts {} away."));
         mam_ptr->touched = true;
         break;
     }
     case RaceBlowMethodType::CHOKE: {
-        mam_ptr->act = _("%sの絞めた。", "chokes %s.");
+        mam_ptr->act = MonsterBlowFormat(_("{}の絞めた。", "chokes {}."));
         mam_ptr->touched = true;
         break;
     }
@@ -324,7 +325,7 @@ void decide_monster_attack_effect(CreatureEntity &creature, mam_type *mam_ptr)
         }
 
         if (!has_resist && one_in_(2)) {
-            msg_format(_("%s^は変化した！", "%s^ changes!"), mam_ptr->t_name);
+            msg_print(_("{}は変化した！", "{} changes!"), str_upcase_first(mam_ptr->t_name));
         }
     } break;
     case RaceBlowEffectType::FLAVOR:
@@ -360,9 +361,9 @@ void describe_monster_missed_monster(FloorType &floor, mam_type *mam_ptr)
         (void)set_monster_csleep(floor, mam_ptr->t_idx, 0);
         if (mam_ptr->see_m) {
 #ifdef JP
-            msg_format("%sは%s^の攻撃をかわした。", mam_ptr->t_name, mam_ptr->m_name);
+            msg_print("{}は{}の攻撃をかわした。", mam_ptr->t_name, str_upcase_first(mam_ptr->m_name));
 #else
-            msg_format("%s^ misses %s.", mam_ptr->m_name, mam_ptr->t_name);
+            msg_print("{} misses {}.", str_upcase_first(mam_ptr->m_name), mam_ptr->t_name);
 #endif
         }
 

@@ -1,6 +1,7 @@
 #include "core/show-file.h"
 #include "core/asking-player.h"
 #include "io/files-util.h"
+#include "io/input-context.h"
 #include "io/input-key-acceptor.h"
 #include "main/sound-of-music.h"
 #include "system/angband-exceptions.h"
@@ -12,6 +13,8 @@
 #include "util/int-char-converter.h"
 #include "util/string-processor.h"
 #include "view/display-messages.h"
+#include <algorithm>
+#include <fmt/format.h>
 #include <sstream>
 #include <string>
 #include <string_view>
@@ -35,51 +38,30 @@
 static void show_file_aux_line(std::string_view str, int cy, std::string_view shower)
 {
     const auto lcstr = str_tolower(str);
-    concptr ptr;
-    byte textcolor = TERM_WHITE;
-    byte focuscolor = TERM_YELLOW;
-
-    if (!shower.empty()) {
-        ptr = angband_strstr(lcstr.data(), shower);
-        textcolor = (ptr == nullptr) ? TERM_L_DARK : TERM_WHITE;
-    }
+    const std::string_view lcstr_view = lcstr;
+    const byte textcolor = (!shower.empty() && !str_find(lcstr, shower)) ? TERM_L_DARK : TERM_WHITE;
+    const byte focuscolor = TERM_YELLOW;
 
     int cx = 0;
     term_gotoxy(cx, cy);
 
-    static const char tag_str[] = "[[[[";
+    constexpr std::string_view tag_str = "[[[[";
     byte color = textcolor;
     char in_tag = '\0';
     for (size_t i = 0; i < str.length();) {
-        int len = strlen(&str[i]);
-        int showercol = len + 1;
-        int bracketcol = len + 1;
-        int endcol = len;
-        if (!shower.empty()) {
-            ptr = angband_strstr(&lcstr[i], shower);
-            if (ptr) {
-                showercol = ptr - &lcstr[i];
-            }
-        }
+        // 強調する文字列とタグのうち、先に現れる方の手前までを書き出す (見つからなければ npos)
+        const auto rest = str.substr(i);
+        const auto showercol = shower.empty() ? std::string_view::npos : str_find_position(lcstr_view.substr(i), shower);
+        const auto bracketcol = in_tag ? str_find_position(rest, in_tag) : str_find_position(rest, tag_str);
+        const auto endcol = std::min({ rest.length(), showercol, bracketcol });
 
-        ptr = in_tag ? angband_strchr(&str[i], in_tag) : angband_strstr(&str[i], tag_str);
-        if (ptr) {
-            bracketcol = ptr - &str[i];
-        }
-        if (bracketcol < endcol) {
-            endcol = bracketcol;
-        }
-        if (showercol < endcol) {
-            endcol = showercol;
-        }
-
-        term_addstr(endcol, color, &str[i]);
+        term_addstr(static_cast<int>(endcol), color, rest);
         cx += endcol;
         i += endcol;
 
-        if (!shower.empty() && (endcol == showercol)) {
+        if (endcol == showercol) {
             const auto showerlen = shower.length();
-            term_addstr(showerlen, focuscolor, &str[i]);
+            term_addstr(showerlen, focuscolor, str.substr(i));
             cx += showerlen;
             i += showerlen;
             continue;
@@ -96,15 +78,17 @@ static void show_file_aux_line(std::string_view str, int cy, std::string_view sh
             continue;
         }
 
-        i += sizeof(tag_str) - 1;
-        color = color_char_to_attr(str[i]);
-        if (color == 255 || str[i + 1] == '\0') {
+        // 「[[[[」の後には色を表す文字と、区切りの文字が続く。どちらかが無ければタグとして扱わない
+        i += tag_str.length();
+        const auto tag_color = (i + 1 < str.length()) ? color_char_to_attr(str[i]) : TERM_COLOR{ 255 };
+        if (tag_color == 255) {
             color = textcolor;
             term_addstr(-1, color, tag_str);
-            cx += sizeof(tag_str) - 1;
+            cx += tag_str.length();
             continue;
         }
 
+        color = tag_color;
         i++;
         in_tag = str[i];
         i++;
@@ -114,23 +98,47 @@ static void show_file_aux_line(std::string_view str, int cy, std::string_view sh
 }
 
 /*!
- * @brief ファイル内容をコンソールに出力する
+ * @brief ファイルを開けなかった旨のメッセージを作る
+ * @param name_with_tag ファイル名の文字列 (「#タグ」が付いていれば取り除いて表示する)
+ * @return メッセージ
+ */
+static std::string make_open_error_message(std::string_view name_with_tag)
+{
+    const auto name = str_split(name_with_tag, '#')[0];
+    return fmt::format(_("'{}'をオープンできません。", "Cannot open '{}'."), name);
+}
+
+/*!
+ * @brief ファイル内容をコンソールに出力する (ファイルが見つからない場合は例外を送出する)
+ * @details 引数の意味は try_display() と同じ。
+ * ユーザーが入力した名前のように見つからないことがあり得る場合は try_display() を使う。
+ */
+void FileDisplayer::display(bool show_version, std::string_view name_with_tag, int initial_line, uint32_t mode, std::string_view what)
+{
+    if (this->try_display(show_version, name_with_tag, initial_line, mode, what)) {
+        return;
+    }
+
+    THROW_EXCEPTION(std::runtime_error, make_open_error_message(name_with_tag));
+}
+
+/*!
+ * @brief ファイル内容をコンソールに出力する (ファイルが見つからない場合は何もしない)
  * Recursive file perusal.
- * @param creature クリーチャーへの参照
  * @param show_version TRUEならばコンソール上にゲームのバージョンを表示する
- * @param name ファイル名の文字列
- * @param what 内容キャプションの文字列
- * @param line 表示の現在行
+ * @param name_with_tag ファイル名の文字列 (「#タグ」を付けるとその位置から表示する)
+ * @param initial_line 表示の開始行
  * @param mode オプション
+ * @param what 内容キャプションの文字列
+ * @return ファイルを表示した場合はtrue、ファイルが見つからなかった場合はfalse
  * @details
  * <pre>
  * Process various special text in the input file, including
  * the "menu" structures used by the "help file" system.
- * Return FALSE on 'q' to exit from a deep, otherwise TRUE.
  * </pre>
  * @todo 表示とそれ以外を分割する
  */
-void FileDisplayer::display(bool show_version, std::string_view name_with_tag, int initial_line, uint32_t mode, std::string_view what)
+bool FileDisplayer::try_display(bool show_version, std::string_view name_with_tag, int initial_line, uint32_t mode, std::string_view what)
 {
     TermCenteredOffsetSetter tcos(MAIN_TERM_MIN_COLS, tl::nullopt);
 
@@ -173,9 +181,8 @@ void FileDisplayer::display(bool show_version, std::string_view name_with_tag, i
         fff = angband_fopen(path_reopen, FileOpenMode::READ);
     }
 
-    const auto open_error_mes = format(_("'%s'をオープンできません。", "Cannot open '%s'."), name.data());
     if (!fff) {
-        THROW_EXCEPTION(std::runtime_error, open_error_mes);
+        return false;
     }
 
     const auto caption_str = caption.str();
@@ -245,7 +252,7 @@ void FileDisplayer::display(bool show_version, std::string_view name_with_tag, i
             angband_fclose(fff);
             fff = angband_fopen(path_reopen, FileOpenMode::READ);
             if (!fff) {
-                THROW_EXCEPTION(std::runtime_error, open_error_mes);
+                THROW_EXCEPTION(std::runtime_error, make_open_error_message(name));
             }
 
             next = 0;
@@ -300,29 +307,32 @@ void FileDisplayer::display(bool show_version, std::string_view name_with_tag, i
         }
 
         if (show_version) {
-            constexpr auto title = _("[%s, %s, %d/%d]", "[%s, %s, Line %d/%d]");
+            constexpr auto title = _("[{}, {}, {}/{}]", "[{}, {}, Line {}/{}]");
             const auto version = AngbandSystem::get_instance().build_version_expression(VersionExpression::FULL);
-            prt(format(title, version.data(), caption_str.data(), line, size), 0, 0);
+            prt(fmt::format(title, version, caption_str, line, size), 0, 0);
         } else {
-            constexpr auto title = _("[%s, %d/%d]", "[%s, Line %d/%d]");
-            prt(format(title, caption_str.data(), line, size), 0, 0);
+            constexpr auto title = _("[{}, {}/{}]", "[{}, Line {}/{}]");
+            prt(fmt::format(title, caption_str, line, size), 0, 0);
         }
 
+        std::string_view key_guide;
         if (size <= rows) {
-            prt(_("[キー:(?)ヘルプ (ESC)終了]", "[Press ESC to exit.]"), hgt - 1, 0);
+            key_guide = _("[キー:(?)ヘルプ (ESC)終了]", "[Press ESC to exit.]");
         } else {
 #ifdef JP
             if (reverse) {
-                prt("[キー:(RET/スペース)↑ (-)↓ (?)ヘルプ (ESC)終了]", hgt - 1, 0);
+                key_guide = "[キー:(RET/スペース)↑ (-)↓ (?)ヘルプ (ESC)終了]";
             } else {
-                prt("[キー:(RET/スペース)↓ (-)↑ (?)ヘルプ (ESC)終了]", hgt - 1, 0);
+                key_guide = "[キー:(RET/スペース)↓ (-)↑ (?)ヘルプ (ESC)終了]";
             }
 #else
-            prt("[Press Return, Space, -, =, /, |, or ESC to exit.]", hgt - 1, 0);
+            key_guide = "[Press Return, Space, -, =, /, |, or ESC to exit.]";
 #endif
         }
 
-        skey = inkey_special(true);
+        prt(key_guide, hgt - 1, 0);
+        skey = input_special_key_with_context(InputKind::FILE_VIEW, key_guide);
+
         switch (skey) {
         case '?':
             if (name != _("jhelpinfo.txt", "helpinfo.txt")) {
@@ -331,8 +341,7 @@ void FileDisplayer::display(bool show_version, std::string_view name_with_tag, i
 
             break;
         case '=': {
-            prt(_("強調: ", "Show: "), hgt - 1, 0);
-            auto ask_result = askfor(80, shower_str);
+            auto ask_result = input_string_on_row(_("強調: ", "Show: "), hgt - 1, 80, shower_str);
             if (!ask_result) {
                 break;
             }
@@ -348,8 +357,7 @@ void FileDisplayer::display(bool show_version, std::string_view name_with_tag, i
         }
         case '/':
         case KTRL('s'): {
-            prt(_("検索: ", "Find: "), hgt - 1, 0);
-            auto ask_result = askfor(80, finder_str);
+            auto ask_result = input_string_on_row(_("検索: ", "Find: "), hgt - 1, 80, finder_str);
             if (!ask_result) {
                 break;
             }
@@ -368,10 +376,10 @@ void FileDisplayer::display(bool show_version, std::string_view name_with_tag, i
             break;
         }
         case '#': {
-            prt(_("行: ", "Goto Line: "), hgt - 1, 0);
+            std::string_view prompt = _("行: ", "Goto Line: ");
             constexpr auto initial_goto = "0";
             while (true) {
-                const auto ask_result = askfor(10, initial_goto);
+                const auto ask_result = input_string_on_row(prompt, hgt - 1, 10, initial_goto);
                 if (!ask_result) {
                     break;
                 }
@@ -380,9 +388,9 @@ void FileDisplayer::display(bool show_version, std::string_view name_with_tag, i
                     line = std::stoi(*ask_result);
                     break;
                 } catch (std::invalid_argument const &) {
-                    prt(_("数値を入力して下さい。", "Please input numeric value."), hgt - 1, 0);
+                    prompt = _("数値を入力して下さい。", "Please input numeric value.");
                 } catch (std::out_of_range const &) {
-                    prt(_("入力可能な数値の範囲を超えています。", "Input value overflows the maximum number."), hgt - 1, 0);
+                    prompt = _("入力可能な数値の範囲を超えています。", "Input value overflows the maximum number.");
                 }
             }
 
@@ -395,15 +403,27 @@ void FileDisplayer::display(bool show_version, std::string_view name_with_tag, i
             line = ((size - 1) / rows) * rows;
             break;
         case '%': {
-            prt(_("ファイル・ネーム: ", "Goto File: "), hgt - 1, 0);
-            const auto ask_result = askfor(80, _("jhelp.hlp", "help.hlp"));
-            if (!ask_result) {
-                break;
-            }
+            std::string_view prompt = _("ファイル・ネーム: ", "Goto File: ");
+            std::string initial_file(_("jhelp.hlp", "help.hlp"));
+            while (true) {
+                const auto ask_result = input_string_on_row(prompt, hgt - 1, 80, initial_file);
+                if (!ask_result) {
+                    break;
+                }
 
-            this->display(true, *ask_result, 0, mode);
-            if (this->is_terminated) {
-                skey = 'q';
+                // 入力された名前のファイルが無いのは誤りではないので、例外にせず知らせて入力し直させる
+                if (this->try_display(true, *ask_result, 0, mode)) {
+                    if (this->is_terminated) {
+                        skey = 'q';
+                    }
+
+                    break;
+                }
+
+                // 入力欄は見出しの直後から始まるため、見出しにファイル名を含めると名前が長いほど入力欄が狭くなる。
+                // 名前は入力欄の初期値として残るので、見出しは最初の入力の見出し以下の長さの決まった文言にする
+                prompt = _("見つかりません: ", "Not found: ");
+                initial_file = *ask_result;
             }
 
             break;
@@ -463,9 +483,12 @@ void FileDisplayer::display(bool show_version, std::string_view name_with_tag, i
             }
 
             if ((key > -1) && hook[key][0]) {
-                /* Recurse on that file */
-                this->display(true, hook[key], 0, mode);
-                if (this->is_terminated) {
+                // リンク先が無いのはヘルプの誤りだが、異常終了はさせずに知らせて元のファイルの表示を続ける
+                if (!this->try_display(true, hook[key], 0, mode)) {
+                    const auto error_message = make_open_error_message(hook[key]);
+                    prt(error_message, hgt - 1, 0);
+                    (void)input_key_with_context(InputKind::ANY_KEY, error_message);
+                } else if (this->is_terminated) {
                     skey = 'q';
                 }
             }
@@ -495,7 +518,7 @@ void FileDisplayer::display(bool show_version, std::string_view name_with_tag, i
                     break;
                 }
 
-                fprintf(ffp, "%s\n", line_str->data());
+                fmt::println(ffp, "{}", *line_str);
             }
             angband_fclose(fff);
             angband_fclose(ffp);
@@ -517,4 +540,5 @@ void FileDisplayer::display(bool show_version, std::string_view name_with_tag, i
 
     angband_fclose(fff);
     this->is_terminated = skey == 'q';
+    return true;
 }

@@ -2,9 +2,24 @@
 
 AUTOMAKE_OPTIONS = foreign subdir-objects nostdinc
 
+## ゲーム本体のソースは main.cpp を除いて全て libhengband.a にまとめる。
+## こうすることで、ユニットテスト (check_PROGRAMS) からもゲーム本体のコードを
+## 再コンパイルすることなくリンクして利用できる。
+##
+## 注意: 静的ライブラリからは、未定義シンボルの解決に必要なオブジェクトのみが
+## 取り込まれる。静的初期化子による自己登録だけを目的とする翻訳単位を追加しても
+## リンクされず、警告も出ないまま無視される (その場合は --whole-archive を検討する)。
+noinst_LIBRARIES = libhengband.a
+
+## thin archive が使える環境では crT になる (configure で判定)
+ARFLAGS = @ARFLAGS@
+
 bin_PROGRAMS = hengband
 
-hengband_SOURCES = \
+hengband_SOURCES = main.cpp
+hengband_LDADD = libhengband.a
+
+libhengband_a_SOURCES = \
 	achievement/achievement-checker.cpp achievement/achievement-checker.h \
 	achievement/achievement-definition.h \
 	achievement/achievement-definitions.cpp achievement/achievement-definitions.h \
@@ -85,6 +100,7 @@ hengband_SOURCES = \
 	alliance/alliance-utumno.cpp alliance/alliance-utumno.h \
 	alliance/alliance-valverde.cpp alliance/alliance-valverde.h \
 	alliance/alliance-eagle-clan.cpp alliance/alliance-eagle-clan.h \
+	alliance/alliance-bolas.cpp alliance/alliance-bolas.h \
 	alliance/alliance-silvan-elf.cpp alliance/alliance-silvan-elf.h \
 	alliance/alliance-soukaiya.cpp alliance/alliance-soukaiya.h \
 	alliance/alliance-arioch.cpp alliance/alliance-arioch.h \
@@ -136,7 +152,11 @@ hengband_SOURCES = \
 	avatar/avatar.h avatar/avatar.cpp \
 	avatar/avatar-changer.cpp avatar/avatar-changer.h \
 	\
+	bot/bot-control-server.cpp bot/bot-control-server.h \
 	bot/bot-json-output.cpp bot/bot-json-output.h \
+	bot/bot-report.cpp bot/bot-report.h \
+	bot/bot-screen.cpp bot/bot-screen.h \
+	bot/bot-socket-server.cpp bot/bot-socket-server.h \
 	\
 	birth/birth-explanations-table.cpp birth/birth-explanations-table.h \
 	birth/character-builder.cpp birth/character-builder.h \
@@ -151,7 +171,11 @@ hengband_SOURCES = \
 	birth/initial-equipments-table.cpp birth/initial-equipments-table.h \
 	birth/inventory-initializer.cpp birth/inventory-initializer.h \
 	birth/game-play-initializer.cpp birth/game-play-initializer.h \
+	bot/bot-control-server.cpp bot/bot-control-server.h \
 	birth/history-editor.cpp birth/history-editor.h \
+	bot/bot-report.cpp bot/bot-report.h \
+	bot/bot-screen.cpp bot/bot-screen.h \
+	bot/bot-socket-server.cpp bot/bot-socket-server.h \
 	birth/birth-select-race.cpp birth/birth-select-race.h \
 	birth/birth-select-class.cpp birth/birth-select-class.h \
 	birth/birth-select-personality.cpp birth/birth-select-personality.h \
@@ -159,8 +183,6 @@ hengband_SOURCES = \
 	birth/auto-roller.cpp birth/auto-roller.h \
 	birth/birth-wizard.cpp birth/birth-wizard.h \
 	\
-	blue-magic/blue-magic-ball-bolt.cpp blue-magic/blue-magic-ball-bolt.h \
-	blue-magic/blue-magic-breath.cpp blue-magic/blue-magic-breath.h \
 	blue-magic/blue-magic-caster.cpp blue-magic/blue-magic-caster.h \
 	blue-magic/blue-magic-checker.cpp blue-magic/blue-magic-checker.h \
 	blue-magic/blue-magic-spirit-curse.cpp blue-magic/blue-magic-spirit-curse.h \
@@ -228,6 +250,8 @@ hengband_SOURCES = \
 	combat/martial-arts-style.cpp combat/martial-arts-style.h \
 	combat/attack-accuracy.cpp combat/attack-accuracy.h \
 	combat/slaying.cpp combat/slaying.h \
+	combat/monster-chaos-weapon.cpp combat/monster-chaos-weapon.h \
+	combat/monster-magical-brand.cpp combat/monster-magical-brand.h \
 	combat/combat-options-type.h \
 	combat/attack-criticality.cpp combat/attack-criticality.h \
 	combat/shoot.cpp combat/shoot.h \
@@ -280,7 +304,9 @@ hengband_SOURCES = \
 	effect/effect-processor.cpp effect/effect-processor.h \
 	effect/effect-characteristics.h \
 	\
+	external-lib/include/doctest/doctest.h \
 	external-lib/include/nlohmann/json.hpp \
+	external-lib/include/nlohmann/json_fwd.hpp \
 	external-lib/include/simpleini/SimpleIni.h \
 	external-lib/include/std/detail/associated_types.hpp \
 	external-lib/include/std/iterator \
@@ -678,9 +704,12 @@ hengband_SOURCES = \
 	grid/object-placer.cpp grid/object-placer.h \
 	grid/trap.cpp grid/trap.h \
 	\
+	headless-term/headless-term.cpp headless-term/headless-term.h \
+	\
 	hpmp/hp-mp-processor.cpp hpmp/hp-mp-processor.h \
 	hpmp/hp-mp-regenerator.cpp hpmp/hp-mp-regenerator.h \
 	\
+	info-reader/activation-reader.cpp info-reader/activation-reader.h \
 	info-reader/artifact-reader.cpp info-reader/artifact-reader.h \
 	info-reader/baseitem-reader.cpp info-reader/baseitem-reader.h \
 	info-reader/baseitem-tokens-table.cpp info-reader/baseitem-tokens-table.h \
@@ -693,22 +722,30 @@ hengband_SOURCES = \
 	info-reader/fixed-map-parser.cpp info-reader/fixed-map-parser.h \
 	info-reader/general-parser.cpp info-reader/general-parser.h \
 	info-reader/info-reader-util.cpp info-reader/info-reader-util.h \
+	info-reader/item-flag-reader.cpp info-reader/item-flag-reader.h \
 	info-reader/json-reader-util.cpp info-reader/json-reader-util.h \
+	info-reader/jsonc-document-loader.cpp info-reader/jsonc-document-loader.h \
+	info-reader/magic-info-tokens-table.cpp info-reader/magic-info-tokens-table.h \
 	info-reader/magic-reader.cpp info-reader/magic-reader.h \
 	info-reader/message-reader.cpp info-reader/message-reader.h \
+	info-reader/monster-flag-reader.cpp info-reader/monster-flag-reader.h \
 	info-reader/parse-error-types.h \
 	info-reader/party-reader.cpp info-reader/party-reader.h \
+	info-reader/quest-reader.cpp info-reader/quest-reader.h \
 	info-reader/race-info-tokens-table.cpp info-reader/race-info-tokens-table.h \
 	info-reader/race-reader.cpp info-reader/race-reader.h \
 	info-reader/random-grid-effect-types.h \
 	info-reader/skill-reader.cpp info-reader/skill-reader.h \
+	info-reader/symbol-reader-util.h \
 	info-reader/spell-reader.cpp info-reader/spell-reader.h \
 	info-reader/terrain-reader.cpp info-reader/terrain-reader.h \
 	info-reader/vault-reader.cpp info-reader/vault-reader.h \
 	info-reader/vault-info-tokens-table.h \
+	info-reader/wilderness-reader.cpp info-reader/wilderness-reader.h \
 	\
 	inventory/floor-item-getter.cpp inventory/floor-item-getter.h \
 	inventory/inventory-curse.cpp inventory/inventory-curse.h \
+	inventory/corpse-rummage.cpp inventory/corpse-rummage.h \
 	inventory/inventory-damage.cpp inventory/inventory-damage.h \
 	inventory/inventory-describer.cpp inventory/inventory-describer.h \
 	inventory/inventory-object.cpp inventory/inventory-object.h \
@@ -720,10 +757,12 @@ hengband_SOURCES = \
 	inventory/recharge-processor.cpp inventory/recharge-processor.h \
 	\
 	io/command-repeater.cpp io/command-repeater.h \
+	io/condition-expression.cpp io/condition-expression.h \
 	io/cursor.cpp io/cursor.h \
 	io/exit-panic.cpp io/exit-panic.h \
 	io/files-util.cpp io/files-util.h \
 	io/gf-descriptions.cpp io/gf-descriptions.h \
+	io/input-context.cpp io/input-context.h \
 	io/input-key-acceptor.cpp io/input-key-acceptor.h \
 	io/input-key-processor.cpp io/input-key-processor.h \
 	io/input-key-requester.cpp io/input-key-requester.h \
@@ -734,6 +773,7 @@ hengband_SOURCES = \
 	io/read-pref-file.cpp io/read-pref-file.h \
 	io/record-play-movie.cpp io/record-play-movie.h \
 	io/report.cpp io/report.h \
+	io/score-submission.cpp io/score-submission.h \
 	io/screen-util.cpp io/screen-util.h \
 	io/signal-handlers.cpp io/signal-handlers.h \
 	io/temp-file.cpp io/temp-file.h \
@@ -747,7 +787,6 @@ hengband_SOURCES = \
 	io-dump/player-status-dump.cpp io-dump/player-status-dump.h \
 	io-dump/player-status-dump-json.cpp io-dump/player-status-dump-json.h \
 	io-dump/random-art-info-dumper.cpp io-dump/random-art-info-dumper.h \
-	io-dump/score-sender.cpp io-dump/score-sender.h \
 	io-dump/special-class-dump.cpp io-dump/special-class-dump.h \
 	\
 	knowledge/knowledge-alliance.cpp knowledge/knowledge-alliance.h \
@@ -815,9 +854,10 @@ hengband_SOURCES = \
 	lore/lore-calculator.cpp lore/lore-calculator.h \
 	lore/lore-util.cpp lore/lore-util.h \
 	lore/magic-types-setter.cpp lore/magic-types-setter.h \
+	lore/monster-lore-snapshot.cpp lore/monster-lore-snapshot.h \
 	lore/monster-lore.cpp lore/monster-lore.h \
 	\
-	main.cpp main-x11.cpp main-gcu.cpp \
+	main-x11.cpp main-gcu.cpp \
 	\
 	main/angband-initializer.cpp main/angband-initializer.h \
 	main/game-data-initializer.cpp main/game-data-initializer.h \
@@ -833,6 +873,7 @@ hengband_SOURCES = \
 	main-unix/stack-trace-unix.cpp \
 	main-unix/unix-user-ids.cpp main-unix/unix-user-ids.h \
 	main-unix/x11-gamma-builder.cpp main-unix/x11-gamma-builder.h \
+	main-unix/x11-helper.cpp main-unix/x11-helper.h \
 	main-unix/x11-type-string.cpp main-unix/x11-type-string.h \
 	main-unix/unix-music.cpp main-unix/unix-music.h \
 	main-unix/unix-cfg-reader.cpp main-unix/unix-cfg-reader.h \
@@ -847,6 +888,7 @@ hengband_SOURCES = \
 	market/bounty-prize-table.cpp market/bounty-prize-table.h \
 	market/bounty-type-definition.h \
 	market/bounty.cpp market/bounty.h \
+	market/loot-notoriety.cpp market/loot-notoriety.h \
 	market/building-recharger.cpp market/building-recharger.h \
 	market/building-quest.cpp market/building-quest.h \
 	market/building-service.cpp market/building-service.h \
@@ -910,6 +952,7 @@ hengband_SOURCES = \
 	monster/monster-processor.cpp monster/monster-processor.h \
 	monster/monster-processor-util.cpp monster/monster-processor-util.h \
 	monster/monster-timed-effects.cpp monster/monster-timed-effects.h \
+	monster/monster-party.cpp monster/monster-party.h \
 	monster/monster-status.cpp monster/monster-status.h \
 	monster/monster-status-setter.cpp monster/monster-status-setter.h \
 	monster/monster-update.cpp monster/monster-update.h \
@@ -944,6 +987,7 @@ hengband_SOURCES = \
 	monster-floor/monster-lite.cpp monster-floor/monster-lite.h \
 	monster-floor/monster-lite-util.cpp monster-floor/monster-lite-util.h \
 	monster-floor/one-monster-placer.cpp monster-floor/one-monster-placer.h \
+	monster-floor/monster-corpse-leaver.cpp monster-floor/monster-corpse-leaver.h \
 	monster-floor/monster-drop-generator.cpp monster-floor/monster-drop-generator.h \
 	monster-floor/place-monster-types.h \
 	monster-floor/quantum-effect.cpp monster-floor/quantum-effect.h \
@@ -976,6 +1020,7 @@ hengband_SOURCES = \
 	mspell/high-resistance-checker.cpp mspell/high-resistance-checker.h \
 	mspell/improper-mspell-remover.cpp mspell/improper-mspell-remover.h \
 	mspell/monster-power-table.cpp mspell/monster-power-table.h \
+	mspell/mspell-projection-table.cpp mspell/mspell-projection-table.h \
 	mspell/mspell-attack.cpp mspell/mspell-attack.h \
 	mspell/mspell-attack-util.cpp mspell/mspell-attack-util.h \
 	mspell/mspell-checker.cpp mspell/mspell-checker.h \
@@ -1012,6 +1057,11 @@ hengband_SOURCES = \
 	mutation/mutation-flag-types.h \
 	mutation/mutation-processor.cpp mutation/mutation-processor.h \
 	mutation/mutation-techniques.cpp mutation/mutation-techniques.h \
+	\
+	net/curl-easy-session.cpp net/curl-easy-session.h \
+	net/curl-slist.cpp net/curl-slist.h \
+	net/http-client.cpp net/http-client.h \
+	net/report-error.cpp net/report-error.h \
 	\
 	object/item-tester-hooker.cpp object/item-tester-hooker.h \
 	object/object-broken.cpp object/object-broken.h \
@@ -1119,6 +1169,7 @@ hengband_SOURCES = \
 	player/temporary-resistances.cpp player/temporary-resistances.h \
 	player/digestion-processor.cpp player/digestion-processor.h \
 	player/player-damage.cpp player/player-damage.h \
+	player/player-known-flags.cpp player/player-known-flags.h \
 	player/player-move.cpp player/player-move.h \
 	player/player-personality.cpp player/player-personality.h \
 	player/player-realm.cpp player/player-realm.h \
@@ -1345,6 +1396,7 @@ hengband_SOURCES = \
 	store/sell-order.cpp store/sell-order.h \
 	store/service-checker.cpp store/service-checker.h \
 	store/store-key-processor.cpp store/store-key-processor.h \
+	store/store-screen.cpp store/store-screen.h \
 	store/store-util.cpp store/store-util.h \
 	store/store-owners.cpp store/store-owners.h \
 	store/store-owner-comments.cpp store/store-owner-comments.h \
@@ -1366,6 +1418,7 @@ hengband_SOURCES = \
 	system/artifact/artifact-record.cpp system/artifact/artifact-record.h \
 	system/building-type-definition.cpp system/building-type-definition.h \
 	system/creature-entity.cpp system/creature-entity.h \
+	system/deferred-update-requests.cpp system/deferred-update-requests.h \
 	system/grid-type-definition.cpp system/grid-type-definition.h \
 	system/h-basic.h system/h-config.h \
 	system/h-system.h system/h-type.h \
@@ -1373,7 +1426,6 @@ hengband_SOURCES = \
 	system/item-entity.cpp system/item-entity.h \
 	system/material-type-definition.h \
 	system/player-type-definition.cpp system/player-type-definition.h \
-	system/redrawing-flags-updater.cpp system/redrawing-flags-updater.h \
 	system/spell-info-list.cpp system/spell-info-list.h \
 	system/system-variables.cpp system/system-variables.h \
 	system/gamevalue.h \
@@ -1387,6 +1439,7 @@ hengband_SOURCES = \
 	system/baseitem/baseitem-record.cpp system/baseitem/baseitem-record.h \
 	system/baseitem/baseitem-records.cpp system/baseitem/baseitem-records.h \
 	system/baseitem/baseitem-service.cpp system/baseitem/baseitem-service.h \
+	system/baseitem/civilization-level-types.cpp system/baseitem/civilization-level-types.h \
 	\
 	system/creature-party/creature-party-definition.cpp system/creature-party/creature-party-definition.h \
 	system/creature-party/creature-party-list.cpp system/creature-party/creature-party-list.h \
@@ -1396,6 +1449,7 @@ hengband_SOURCES = \
 	system/dungeon/dungeon-list.cpp system/dungeon/dungeon-list.h \
 	system/dungeon/dungeon-record.cpp system/dungeon/dungeon-record.h \
 	system/dungeon/quest-definition.cpp system/dungeon/quest-definition.h \
+	system/dungeon/quest-fixed-map.cpp system/dungeon/quest-fixed-map.h \
 	\
 	system/enums/grid-flow.h \
 	system/enums/grid-count-kind.h \
@@ -1414,6 +1468,7 @@ hengband_SOURCES = \
 	\
 	system/floor/floor-info.cpp system/floor/floor-info.h \
 	system/floor/floor-list.cpp system/floor/floor-list.h \
+	system/floor/monster-corpse.cpp system/floor/monster-corpse.h \
 	system/floor/town-info.cpp system/floor/town-info.h \
 	system/floor/town-list.cpp system/floor/town-list.h \
 	system/floor/town-records.cpp system/floor/town-records.h \
@@ -1453,7 +1508,7 @@ hengband_SOURCES = \
 	term/gameterm.cpp term/gameterm.h \
 	term/screen-processor.cpp term/screen-processor.h \
 	term/term-color-types.h \
-	term/z-form.cpp term/z-form.h term/z-rand.cpp term/z-rand.h \
+	term/z-rand.cpp term/z-rand.h \
 	term/z-term.cpp term/z-term.h term/z-util.cpp term/z-util.h \
 	\
 	timed-effect/player-cut.cpp timed-effect/player-cut.h \
@@ -1469,6 +1524,7 @@ hengband_SOURCES = \
 	util/buffer-shaper.cpp util/buffer-shaper.h \
 	util/bit-flags-calculator.h \
 	util/candidate-selector.cpp util/candidate-selector.h \
+	util/compass-direction.cpp util/compass-direction.h \
 	util/elapsed-time.cpp util/elapsed-time.h \
 	util/enum-converter.h \
 	util/enum-range.h \
@@ -1483,6 +1539,7 @@ hengband_SOURCES = \
 	util/sha256.cpp util/sha256.h \
 	util/stack-trace.h \
 	util/string-processor.cpp util/string-processor.h \
+	util/type-concepts.h \
 	\
 	view/display-birth.cpp view/display-birth.h \
 	view/display-characteristic.cpp view/display-characteristic.h \
@@ -1505,6 +1562,7 @@ hengband_SOURCES = \
 	view/display-store.cpp view/display-store.h \
 	view/display-symbol.h \
 	view/display-util.cpp view/display-util.h \
+	view/map-info-cache.cpp view/map-info-cache.h \
 	view/object-describer.cpp view/object-describer.h \
 	view/status-first-page.cpp view/status-first-page.h \
 	view/status-bars-table.cpp view/status-bars-table.h \
@@ -1515,6 +1573,8 @@ hengband_SOURCES = \
 	window/main-window-stat-poster.cpp window/main-window-stat-poster.h \
 	window/main-window-util.cpp window/main-window-util.h \
 	window/main-window-equipments.cpp window/main-window-equipments.h \
+	window/overview-map-cache.cpp window/overview-map-cache.h \
+	window/shrunk-overview-map.cpp window/shrunk-overview-map.h \
 	\
 	wizard/artifact-analyzer.cpp wizard/artifact-analyzer.h \
 	wizard/artifact-bias-table.cpp wizard/artifact-bias-table.h \
@@ -1542,8 +1602,8 @@ hengband_SOURCES = \
 	world/world-movement-processor.cpp world/world-movement-processor.h \
 	world/world-turn-processor.cpp world/world-turn-processor.h
 
-EXTRA_hengband_SOURCES = \
-	bakabakaband.ico angband.rc ang_eng.rc ang_jp.rc maid-x11.cpp main-win.cpp \
+EXTRA_libhengband_a_SOURCES = \
+	bakabakaband.ico angband.rc ang_eng.rc ang_jp.rc main-win.cpp \
 	main-win/commandline-win.cpp main-win/commandline-win.h \
 	main-win/graphics-win.cpp main-win/graphics-win.h \
 	main-win/main-win-bg.cpp main-win/main-win-bg.h \
@@ -1560,13 +1620,157 @@ EXTRA_hengband_SOURCES = \
 	main-win/main-win-utils.cpp main-win/main-win-utils.h \
 	main-win/stack-trace-win.cpp \
 	main-win/wav-reader.cpp main-win/wav-reader.h \
-	test/test-sha256.cpp \
-	test/test-probability-table.cpp \
 	wall.bmp \
 	stdafx.cpp stdafx.h
 
+## ユニットテスト
+## make check でビルドと実行が行われる。テストの追加方法は test/README.md を参照。
+check_PROGRAMS = hengband-test
+
+hengband_test_SOURCES = \
+	test/test-main.cpp \
+	test/test-win-stubs.cpp \
+	test/scoped-ego-list.h \
+	test/scoped-restore.h \
+	test/scoped-rng.h \
+	test/scoped-vector-wrapper.h \
+	test/string-helpers.h \
+	test/info-reader/scoped-reader-state.h \
+	test/save/scoped-save-io.h \
+	\
+	test/autopick/test-autopick-editor-util.cpp \
+	\
+	test/bot/test-bot-json-output.cpp \
+	\
+	test/cmd-io/test-cmd-autopick.cpp \
+	\
+	test/flavor/test-flavor-util.cpp \
+	\
+	test/floor/test-floor-events.cpp \
+	\
+	test/game-option/test-runtime-arguments.cpp \
+	\
+	test/monster-floor/test-monster-corpse.cpp \
+	\
+	test/info-reader/test-ego-reader.cpp \
+	test/info-reader/test-general-parser.cpp \
+	test/info-reader/test-info-reader-util.cpp \
+	test/info-reader/test-item-flag-reader.cpp \
+	test/info-reader/test-baseitem-reader.cpp \
+	test/info-reader/test-json-reader-util.cpp \
+	test/info-reader/test-jsonc-document-loader.cpp \
+	test/info-reader/test-monster-flag-reader.cpp \
+	test/info-reader/test-quest-reader.cpp \
+	test/info-reader/test-skill-reader.cpp \
+	test/info-reader/test-vault-reader.cpp \
+	test/info-reader/test-wilderness-reader.cpp \
+	\
+	test/io/test-condition-expression.cpp \
+	test/io/test-input-context.cpp \
+	test/io/test-interpret-pref-file.cpp \
+	test/io/test-macro-configurations-store.cpp \
+	test/io/test-pref-file-expressor.cpp \
+	test/io/test-tokenizer.cpp \
+	\
+	test/knowledge/test-knowledge-features.cpp \
+	\
+	test/load/test-floor-loader.cpp \
+	test/load/test-savefile-version.cpp \
+	\
+	test/locale/test-character-encoding.cpp \
+	\
+	test/lore/test-lore-calculator.cpp \
+	test/lore/test-monster-lore-snapshot.cpp \
+	\
+	test/market/test-building-recharger.cpp \
+	test/market/test-loot-notoriety.cpp \
+	\
+	test/mspell/mspell-attack/test-mspell-ball.cpp \
+	test/mspell/test-mspell-projection-table.cpp \
+	\
+	test/object-enchant/test-item-feeling.cpp \
+	\
+	test/object-use/quaff/test-quaff-execution.cpp \
+	\
+	test/object/test-object-info.cpp \
+	test/object/test-object-value.cpp \
+	\
+	test/player-status/test-player-speed.cpp \
+	test/player-status/test-player-status-base.cpp \
+	\
+	test/player/test-player-status-flags.cpp \
+	test/player/test-player-status-resist.cpp \
+	\
+	test/racial/test-racial-android.cpp \
+	\
+	test/save/test-item-writer.cpp \
+	\
+	test/spell/test-spell-info.cpp \
+	\
+	test/spell-realm/test-spells-hex.cpp \
+	\
+	test/store/test-pricing.cpp \
+	test/store/test-store-screen.cpp \
+	test/store/test-store-util.cpp \
+	\
+	test/system/test-building-type-definition.cpp \
+	test/system/test-deferred-update-requests.cpp \
+	test/system/test-dungeon-record.cpp \
+	\
+	test/system/baseitem/test-baseitem-allocation.cpp \
+	test/system/baseitem/test-baseitem-definition.cpp \
+	test/system/baseitem/test-civilization-level.cpp \
+	test/system/baseitem/test-baseitem-list.cpp \
+	\
+	test/system/floor/test-floor-info.cpp \
+	\
+	test/system/monrace/test-armament-level.cpp \
+	test/system/monrace/test-body-structure-policy.cpp \
+	test/system/monrace/test-monrace-definition.cpp \
+	test/system/monrace/test-monrace-max-level.cpp \
+	\
+	test/term/test-z-rand.cpp \
+	\
+	test/timed-effect/test-player-cut.cpp \
+	test/timed-effect/test-player-stun.cpp \
+	\
+	test/util/test-angband-files.cpp \
+	test/util/test-buffer-shaper.cpp \
+	test/util/test-compass-direction.cpp \
+	test/util/test-dice.cpp \
+	test/util/test-finalizer.cpp \
+	test/util/test-flag-group.cpp \
+	test/util/test-int-char-converter.cpp \
+	test/util/test-probability-table.cpp \
+	test/util/test-sha256.cpp \
+	test/util/test-string-processor.cpp \
+	\
+	test/view/test-display-lore.cpp \
+	test/view/test-map-info-cache.cpp \
+	test/view/test-map-terrain-visibility.cpp \
+	\
+	test/window/test-overview-map-cache.cpp \
+	test/window/test-shrunk-overview-map.cpp
+
+hengband_test_LDADD = libhengband.a
+
+## 端末と入力待ちを使う共通描画の回帰プローブ。通常のユニットテストとは別に明示実行する。
+main-window-wipe-probe$(EXEEXT): $(top_srcdir)/tools/tests/main-window-wipe-probe.cpp libhengband.a
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) $(LDFLAGS) -o $@ $(top_srcdir)/tools/tests/main-window-wipe-probe.cpp libhengband.a $(LIBS)
+
+.PHONY: check-main-window-wipe
+check-main-window-wipe: main-window-wipe-probe$(EXEEXT)
+	./main-window-wipe-probe$(EXEEXT) plain
+	./main-window-wipe-probe$(EXEEXT) deferred
+	./main-window-wipe-probe$(EXEEXT) reenter
+
+CLEANFILES = main-window-wipe-probe$(EXEEXT)
+
+TESTS = $(check_PROGRAMS)
+
 EXTRA_DIST = \
-	gcc-wrap
+	gcc-wrap \
+	test/README.md
 
 DEFAULT_INCLUDES = \
 	-I. -I$(srcdir) -isystem $(srcdir)/external-lib/include
@@ -1605,8 +1809,12 @@ stdafx.h.gch: stdafx.h stdafx.cpp Makefile
 		$(PCH_CHECKSUMMER) $@ > "$@".sum ; \
 	fi
 
-$(hengband_SOURCES:.cpp=.$(OBJEXT)): stdafx.h.gch
-$(hengband_SOURCES:.cc=.$(OBJEXT)): stdafx.h.gch
+## $(SOURCES) は automake が全ターゲットの _SOURCES を合成して定義する変数。
+## これを使うことで、ターゲットが増えても PCH の依存関係が自動的に追従する。
+## ヘッダやリソースファイルも含まれているため、filter でソースのみに絞る
+## (絞らないと stdafx.h: stdafx.h.gch のような循環依存が生成される)。
+$(patsubst %.cpp,%.$(OBJEXT),$(filter %.cpp,$(SOURCES))): stdafx.h.gch
+$(patsubst %.cc,%.$(OBJEXT),$(filter %.cc,$(SOURCES))): stdafx.h.gch
 endif
 
 install-exec-hook:

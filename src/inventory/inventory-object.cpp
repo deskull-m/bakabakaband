@@ -1,4 +1,5 @@
 #include "inventory/inventory-object.h"
+#include "autopick/autopick.h"
 #include "core/window-redrawer.h"
 #include "flavor/flavor-describer.h"
 #include "floor/floor-object.h"
@@ -12,8 +13,8 @@
 #include "player-info/equipment-info.h"
 #include "spell-realm/spells-craft.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/item-entity.h"
-#include "system/redrawing-flags-updater.h"
 #include "util/enum-converter.h"
 #include "util/object-sort.h"
 #include "view/display-messages.h"
@@ -57,18 +58,13 @@ void inven_item_increase(CreatureEntity &creature, INVENTORY_IDX i_idx, ITEM_NUM
     }
 
     o_ptr->number += num;
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
+    auto &dur = DeferredUpdateRequests::get_instance();
     static constexpr auto flags_srf = {
         StatusRecalculatingFlag::BONUS,
         StatusRecalculatingFlag::MP,
-        StatusRecalculatingFlag::COMBINATION,
     };
-    rfu.set_flags(flags_srf);
-    static constexpr auto flags_swrf = {
-        SubWindowRedrawingFlag::INVENTORY,
-        SubWindowRedrawingFlag::EQUIPMENT,
-    };
-    rfu.set_flags(flags_swrf);
+    dur.set_flags(flags_srf);
+    dur.set_flag(InventoryArrangementFlag::COMBINATION);
     if (o_ptr->number || !creature.get_timed_effect(CreatureTimedEffect::ELE_ATTACK)) {
         return;
     }
@@ -100,20 +96,10 @@ void inven_item_optimize(CreatureEntity &creature, INVENTORY_IDX i_idx)
         return;
     }
 
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
+    auto &dur = DeferredUpdateRequests::get_instance();
     if (i_idx >= INVEN_MAIN_HAND) {
         creature.inventory[i_idx]->wipe();
-        static constexpr auto flags_srf = {
-            StatusRecalculatingFlag::BONUS,
-            StatusRecalculatingFlag::TORCH,
-            StatusRecalculatingFlag::MP,
-        };
-        rfu.set_flags(flags_srf);
-        static constexpr auto flags_swrf = {
-            SubWindowRedrawingFlag::EQUIPMENT,
-            SubWindowRedrawingFlag::SPELL,
-        };
-        rfu.set_flags(flags_swrf);
+        dur.request_equipment_change_updates();
         return;
     }
 
@@ -126,7 +112,7 @@ void inven_item_optimize(CreatureEntity &creature, INVENTORY_IDX i_idx)
         SubWindowRedrawingFlag::INVENTORY,
         SubWindowRedrawingFlag::SPELL,
     };
-    rfu.set_flags(flags);
+    dur.set_flags(flags);
 }
 
 /*!
@@ -156,7 +142,7 @@ void drop_from_inventory(CreatureEntity &creature, INVENTORY_IDX i_idx, ITEM_NUM
 
     item.number = amt;
     const auto item_name = describe_flavor(creature, item, 0);
-    msg_format(_("%s(%c)を落とした。", "You drop %s (%c)."), item_name.data(), index_to_label(i_idx));
+    msg_print(_("{}({:c})を落とした。", "You drop {} ({:c})."), item_name, index_to_label(i_idx));
     (void)drop_near(creature, item, creature.get_position(), false);
     vary_item(creature, i_idx, -amt);
 }
@@ -217,7 +203,7 @@ void combine_pack(CreatureEntity &creature)
                     }
                 }
 
-                RedrawingFlagsUpdater::get_instance().set_flag(SubWindowRedrawingFlag::INVENTORY);
+                DeferredUpdateRequests::get_instance().set_flag(SubWindowRedrawingFlag::INVENTORY);
                 combined = true;
                 break;
             }
@@ -252,9 +238,33 @@ void reorder_pack(CreatureEntity &creature)
     }
 
     std::stable_sort(first, last, comp);
-    RedrawingFlagsUpdater::get_instance().set_flag(SubWindowRedrawingFlag::INVENTORY);
+    DeferredUpdateRequests::get_instance().set_flag(SubWindowRedrawingFlag::INVENTORY);
 
     msg_print(_("ザックの中のアイテムを並べ直した。", "You reorder some items in your pack."));
+}
+
+/*!
+ * @brief フラグに応じて所持品の自動破壊・結合・並べ替えを行う
+ * @details 所持品のスロット番号が変わるため、アイテムの番号を保持している処理の途中では呼ばない。
+ * 通常は handle_stuff_with_inventory_arrangement() を通じて呼ぶ。
+ */
+void update_inventory_arrangement(CreatureEntity &creature)
+{
+    auto &dur = DeferredUpdateRequests::get_instance();
+    if (dur.has(InventoryArrangementFlag::AUTO_DESTRUCTION)) {
+        dur.reset_flag(InventoryArrangementFlag::AUTO_DESTRUCTION);
+        autopick_delayed_alter(creature);
+    }
+
+    if (dur.has(InventoryArrangementFlag::COMBINATION)) {
+        dur.reset_flag(InventoryArrangementFlag::COMBINATION);
+        combine_pack(creature);
+    }
+
+    if (dur.has(InventoryArrangementFlag::REORDER)) {
+        dur.reset_flag(InventoryArrangementFlag::REORDER);
+        reorder_pack(creature);
+    }
 }
 
 /*!
@@ -269,11 +279,7 @@ int16_t store_item_to_inventory(CreatureEntity &creature, ItemEntity *o_ptr)
     INVENTORY_IDX n = -1;
 
     ItemEntity *j_ptr;
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    static constexpr auto flags_swrf = {
-        SubWindowRedrawingFlag::INVENTORY,
-        SubWindowRedrawingFlag::PLAYER,
-    };
+    auto &dur = DeferredUpdateRequests::get_instance();
     for (const auto i_idx : INVEN_PACK_SLOTS) {
         j_ptr = creature.inventory[i_idx].get();
         if (!j_ptr->is_valid()) {
@@ -283,8 +289,8 @@ int16_t store_item_to_inventory(CreatureEntity &creature, ItemEntity *o_ptr)
         n = enum2i(i_idx);
         if (j_ptr->is_similar(*o_ptr)) {
             j_ptr->absorb(*o_ptr);
-            rfu.set_flag(StatusRecalculatingFlag::BONUS);
-            rfu.set_flags(flags_swrf);
+            dur.set_flag(StatusRecalculatingFlag::BONUS);
+            dur.set_flag(SubWindowRedrawingFlag::PLAYER);
             return enum2i(i_idx);
         }
     }
@@ -317,13 +323,9 @@ int16_t store_item_to_inventory(CreatureEntity &creature, ItemEntity *o_ptr)
     j_ptr->iy = j_ptr->ix = 0;
     j_ptr->marked.clear().set(OmType::TOUCHED);
 
-    static constexpr auto flags_srf = {
-        StatusRecalculatingFlag::BONUS,
-        StatusRecalculatingFlag::COMBINATION,
-        StatusRecalculatingFlag::REORDER,
-    };
-    rfu.set_flags(flags_srf);
-    rfu.set_flags(flags_swrf);
+    dur.set_flag(StatusRecalculatingFlag::BONUS);
+    dur.request_inventory_arrangement();
+    dur.set_flag(SubWindowRedrawingFlag::PLAYER);
     return i;
 }
 
@@ -400,9 +402,9 @@ INVENTORY_IDX inven_takeoff(CreatureEntity &creature, INVENTORY_IDX i_idx, ITEM_
 
     const auto slot = store_item_to_inventory(creature, &item);
 #ifdef JP
-    msg_format("%s(%c)%s。", item_name.data(), index_to_label(slot), act.data());
+    msg_print("{}({:c}){}。", item_name, index_to_label(slot), act);
 #else
-    msg_format("%s %s (%c).", act.data(), item_name.data(), index_to_label(slot));
+    msg_print("{} {} ({:c}).", act, item_name, index_to_label(slot));
 #endif
 
     return slot;

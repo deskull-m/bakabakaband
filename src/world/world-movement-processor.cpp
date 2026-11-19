@@ -11,6 +11,7 @@
 #include "main/sound-of-music.h"
 #include "system/angband-system.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/dungeon/dungeon-record.h"
 #include "system/dungeon/quest-definition.h"
@@ -18,7 +19,6 @@
 #include "system/floor/floor-info.h"
 #include "system/floor/wilderness-grid.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/redrawing-flags-updater.h"
 #include "util/enum-range.h"
 #include "view/display-messages.h"
 #include "world/world-collapsion.h"
@@ -74,7 +74,7 @@ void execute_recall(CreatureEntity &creature)
     }
 
     creature.set_timed_effect(CreatureTimedEffect::WORD_RECALL, recall - 1);
-    RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
+    DeferredUpdateRequests::get_instance().set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
     if (creature.get_timed_effect(CreatureTimedEffect::WORD_RECALL) != 0) {
         return;
     }
@@ -159,7 +159,7 @@ void execute_floor_reset(CreatureEntity &creature)
     }
 
     creature.set_timed_effect(CreatureTimedEffect::ALTER_REALITY, alter - 1);
-    RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
+    DeferredUpdateRequests::get_instance().set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
     if (creature.get_timed_effect(CreatureTimedEffect::ALTER_REALITY) != 0) {
         return;
     }

@@ -11,8 +11,13 @@
 #include "floor/fixed-map-generator.h"
 #include "game-option/birth-options.h"
 #include "game-option/runtime-arguments.h"
+#include "info-reader/general-parser.h"
+#include "info-reader/jsonc-document-loader.h"
 #include "info-reader/parse-error-types.h"
+#include "info-reader/quest-reader.h"
+#include "io/condition-expression.h"
 #include "io/files-util.h"
+#include "io/pref-file-expressor.h"
 #include "locale/character-encoding.h"
 #include "main/init-error-messages-table.h"
 #include "player-info/class-info.h"
@@ -22,220 +27,243 @@
 #include "system/angband-system.h"
 #include "system/creature-entity.h"
 #include "system/dungeon/quest-definition.h"
+#include "system/dungeon/quest-fixed-map.h"
 #include "system/floor/floor-info.h"
+#include "system/gamevalue.h"
 #include "util/angband-files.h"
+#include "util/enum-converter.h"
 #include "util/string-processor.h"
 #include "view/display-messages.h"
 #include "world/world-collapsion.h"
 #include <algorithm>
+#include <cstdint>
+#include <fmt/format.h>
+#include <fstream>
+#include <iterator>
+#include <limits>
+#include <nlohmann/json.hpp>
 #include <sstream>
 #include <string>
+#include <tl/expected.hpp>
+#include <type_traits>
+#include <utility>
+#include <vector>
 
-static char tmp[8];
 static concptr variant = "ZANGBAND";
 
 /*!
- * @brief 固定マップ (クエスト＆街＆広域マップ)生成時の分岐処理
- * Helper function for "parse_fixed_map()"
- * @param creature クリーチャーへの参照
- * @param sp
- * @param fp
- * @return エラーコード
+ * @brief 街の凡例セルの special 値が int16_t の範囲に収まる整数かを判定する
+ * @param value JSON 値
+ * @return 範囲内の整数なら true
  */
-static std::string parse_fixed_map_expression(CreatureEntity &creature, char **sp, char *fp)
+static bool is_valid_town_special(const nlohmann::json &value)
 {
-    constexpr char b1 = '[';
-    constexpr char b2 = ']';
-
-    char f = ' ';
-
-    char *s = (*sp);
-
-    while (iswspace(*s)) {
-        s++;
+    if (!value.is_number_integer()) {
+        return false;
     }
 
-    char *b = s;
-    std::string v = "?o?o?";
-    if (*s == b1) {
-        std::string t;
-        s++;
-        t = parse_fixed_map_expression(creature, &s, &f);
-        if (t.empty()) {
-            /* Nothing */
-        } else if (t == "IOR") {
-            v = "0";
-            while (*s && (f != b2)) {
-                t = parse_fixed_map_expression(creature, &s, &f);
-                if (!t.empty() && t != "0") {
-                    v = "1";
-                }
-            }
-        } else if (t == "AND") {
-            v = "1";
-            while (*s && (f != b2)) {
-                t = parse_fixed_map_expression(creature, &s, &f);
-                if (!t.empty() && t == "0") {
-                    v = "0";
-                }
-            }
-        } else if (t == "NOT") {
-            v = "1";
-            while (*s && (f != b2)) {
-                t = parse_fixed_map_expression(creature, &s, &f);
-                if (!t.empty() && t == "1") {
-                    v = "0";
-                }
-            }
-        } else if (t == "EQU") {
-            v = "0";
-            if (*s && (f != b2)) {
-                t = parse_fixed_map_expression(creature, &s, &f);
-            }
-
-            while (*s && (f != b2)) {
-                auto p = parse_fixed_map_expression(creature, &s, &f);
-                if (t == p) {
-                    v = "1";
-                }
-            }
-        } else if (t == "LEQ") {
-            v = "1";
-            if (*s && (f != b2)) {
-                t = parse_fixed_map_expression(creature, &s, &f);
-            }
-
-            while (*s && (f != b2)) {
-                auto p = parse_fixed_map_expression(creature, &s, &f);
-                if (!p.empty() && atoi(t.data()) > atoi(p.data())) {
-                    v = "0";
-                }
-            }
-        } else if (t == "GEQ") {
-            v = "1";
-            if (*s && (f != b2)) {
-                t = parse_fixed_map_expression(creature, &s, &f);
-            }
-
-            while (*s && (f != b2)) {
-                auto p = parse_fixed_map_expression(creature, &s, &f);
-                if (!p.empty() && atoi(t.data()) < atoi(p.data())) {
-                    v = "0";
-                }
-            }
-        } else {
-            while (*s && (f != b2)) {
-                t = parse_fixed_map_expression(creature, &s, &f);
-            }
-        }
-
-        if (f != b2) {
-            v = "?x?x?";
-        }
-        if ((f = *s) != '\0') {
-            *s++ = '\0';
-        }
-
-        (*fp) = f;
-        (*sp) = s;
-        return v;
+    constexpr auto minimum = std::numeric_limits<int16_t>::min();
+    constexpr auto maximum = std::numeric_limits<int16_t>::max();
+    if (value.is_number_unsigned()) {
+        return value.get<uint64_t>() <= static_cast<uint64_t>(maximum);
     }
 
-#ifdef JP
-    while (iskanji(*s) || (isprint(*s) && !angband_strchr(" []", *s))) {
-        if (iskanji(*s)) {
-            s++;
-        }
-        s++;
-    }
-#else
-    while (isprint(*s) && !angband_strchr(" []", *s)) {
-        ++s;
-    }
-#endif
-    if ((f = *s) != '\0') {
-        *s++ = '\0';
+    const auto special = value.get<int64_t>();
+    return special >= minimum && special <= maximum;
+}
+
+/*!
+ * @brief 街の地形凡例 (TownPreferences.jsonc) を読み込み、共通の凡例テーブルに反映する
+ * @return エラーコード
+ * @details 個別の街定義はこの凡例を上書きできる。INIT_ONLY_BUILDINGS 時は読み込まない。
+ */
+static tl::expected<void, ParseErrorType> load_town_preferences()
+{
+    if (init_flags & INIT_ONLY_BUILDINGS) {
+        return {};
     }
 
-    if (*b != '$') {
-        v = b;
-        (*fp) = f;
-        (*sp) = s;
-        return v;
+    auto loaded = JsoncDocumentLoader::load(path_build(ANGBAND_DIR_EDIT, TOWN_PREFERENCES));
+    if (!loaded && (loaded.error().kind == JsoncLoadErrorKind::CANNOT_OPEN)) {
+        return tl::make_unexpected(ParseErrorType::GENERIC);
+    }
+    if (!loaded) {
+        // 町の設定は従来どおり解析の失敗を INVALID_VALUE にし、例外の文言は使わない。
+        return tl::make_unexpected(ParseErrorType::INVALID_VALUE);
     }
 
-    if (streq(b + 1, "SYS")) {
-        v = ANGBAND_SYS;
-    } else if (streq(b + 1, "GRAF")) {
-        v = ANGBAND_GRAF;
-    } else if (streq(b + 1, "MONOCHROME")) {
-        if (arg_monochrome) {
-            v = "ON";
-        } else {
-            v = "OFF";
+    try {
+        const auto &data = *loaded;
+        if (!data.is_object() || !data.contains("version") || !data["version"].is_number_integer() || data["version"] != 1 ||
+            !data.contains("legend") || !data["legend"].is_object() || data["legend"].empty()) {
+            return tl::make_unexpected(ParseErrorType::INVALID_TYPE);
         }
-    } else if (streq(b + 1, "RACE")) {
-        v = creature.get_race_info()->title.en_string();
-    } else if (streq(b + 1, "CLASS")) {
-        v = (*creature.get_class_info()).title.en_string();
-    } else if (streq(b + 1, "REALM1")) {
-        v = PlayerRealm(creature).realm1().get_name().en_string();
-    } else if (streq(b + 1, "REALM2")) {
-        v = PlayerRealm(creature).realm2().get_name().en_string();
-    } else if (streq(b + 1, "PLAYER")) {
-        char tmp_player_name[64]{};
-        const char *pn = creature.name.c_str();
-        char *tpn = tmp_player_name;
-        for (; *pn; pn++, tpn++) {
-#ifdef JP
-            if (iskanji(*pn)) {
-                *(tpn++) = *(pn++);
-                *tpn = *pn;
-                continue;
+
+        std::vector<std::pair<unsigned char, dungeon_grid>> legend;
+        for (const auto &[symbol, cell_data] : data["legend"].items()) {
+            if (symbol.size() != 1 || symbol.front() < '!' || symbol.front() > '~' || !cell_data.is_object() ||
+                !cell_data.contains("terrain") || !cell_data["terrain"].is_string() || !cell_data.contains("caveInfo") || !cell_data["caveInfo"].is_array()) {
+                return tl::make_unexpected(ParseErrorType::INVALID_TYPE);
             }
-#endif
-            *tpn = angband_strchr(" []", *pn) ? '_' : *pn;
+            for (const auto &flag : cell_data["caveInfo"]) {
+                if (!flag.is_string()) {
+                    return tl::make_unexpected(ParseErrorType::INVALID_TYPE);
+                }
+            }
+            if (cell_data.contains("special") && !is_valid_town_special(cell_data["special"])) {
+                return tl::make_unexpected(ParseErrorType::INVALID_VALUE);
+            }
+
+            QuestLegendCell cell;
+            if (const auto err = parse_quest_legend_cell(cell_data, cell); err != ParseErrorType::NONE) {
+                return tl::make_unexpected(err);
+            }
+            legend.emplace_back(static_cast<unsigned char>(symbol.front()), cell.grid);
         }
 
-        *tpn = '\0';
-        v = tmp_player_name;
-    } else if (streq(b + 1, "TOWN")) {
-        v = std::to_string(creature.get_town_num());
-    } else if (streq(b + 1, "LEVEL")) {
-        v = std::to_string(creature.get_level());
-    } else if (streq(b + 1, "QUEST_NUMBER")) {
-        v = std::to_string(enum2i(creature.get_floor()->quest_number));
-    } else if (streq(b + 1, "LEAVING_QUEST")) {
-        v = std::to_string(enum2i(leaving_quest));
-    } else if (prefix(b + 1, "QUEST_TYPE")) {
+        for (const auto &[symbol, grid] : legend) {
+            letter[symbol] = grid;
+        }
+        return {};
+    } catch (const nlohmann::json::exception &) {
+        return tl::make_unexpected(ParseErrorType::INVALID_VALUE);
+    }
+}
+
+/*!
+ * @brief 街定義リスト (TownDefinitionList.jsonc) から現在の街・荒野モードに対応する街マップファイル名を得る
+ * @param creature クリーチャーへの参照 (現在の街番号を得るために使用)
+ * @param map_file 選択された街マップファイル名の格納先 (該当街が無い場合は空のまま)
+ * @return エラーコード
+ * @details towns キーの各街は単一のマップファイル名、または荒野モード別
+ * ({ lite / normal / none }) のオブジェクトで指定する。vanilla_town なら none、
+ * lite_town なら lite、それ以外は normal を選ぶ。
+ */
+static tl::expected<std::string, ParseErrorType> load_town_definition_file(CreatureEntity &creature)
+{
+    auto loaded = JsoncDocumentLoader::load(path_build(ANGBAND_DIR_EDIT, TOWN_DEFINITION_LIST));
+    if (!loaded && (loaded.error().kind == JsoncLoadErrorKind::CANNOT_OPEN)) {
+        return tl::make_unexpected(ParseErrorType::GENERIC);
+    }
+    if (!loaded) {
+        // 町の定義の一覧も従来どおり解析の失敗を INVALID_VALUE にし、例外の文言は使わない。
+        return tl::make_unexpected(ParseErrorType::INVALID_VALUE);
+    }
+
+    try {
+        const auto &data = *loaded;
+        if (!data.is_object() || !data.contains("version") || !data["version"].is_number_integer() || data["version"] != 1 ||
+            !data.contains("towns") || !data["towns"].is_object() || data["towns"].empty()) {
+            return tl::make_unexpected(ParseErrorType::INVALID_TYPE);
+        }
+
+        const auto &towns = data["towns"];
+        const auto town = towns.find(std::to_string(creature.get_town_num()));
+        if (town == towns.end()) {
+            // 現在の街に対応するマップ定義が無いときは空文字列を返す (エラーではない)
+            return std::string{};
+        }
+
+        const nlohmann::json *selected = &*town;
+        if (selected->is_object()) {
+            const auto *mode = vanilla_town ? "none" : (lite_town ? "lite" : "normal");
+            const auto file = selected->find(mode);
+            if (file == selected->end()) {
+                return tl::make_unexpected(ParseErrorType::INVALID_TYPE);
+            }
+            selected = &*file;
+        }
+
+        if (!selected->is_string()) {
+            return tl::make_unexpected(ParseErrorType::INVALID_TYPE);
+        }
+        auto map_file = selected->get<std::string>();
+        if (!map_file.starts_with("towns/") || !map_file.ends_with(".txt") || map_file.find("..") != std::string::npos ||
+            map_file.find('\\') != std::string::npos) {
+            return tl::make_unexpected(ParseErrorType::INVALID_VALUE);
+        }
+        return map_file;
+    } catch (const nlohmann::json::exception &) {
+        return tl::make_unexpected(ParseErrorType::INVALID_VALUE);
+    }
+}
+
+/*!
+ * @brief 町のマップの条件式の変数の値を返す
+ * @param creature クリーチャーへの参照
+ * @param name 先頭の「$」を除いた変数名
+ * @return 変数の値。知らない変数なら tl::nullopt
+ */
+static tl::optional<std::string> resolve_town_map_variable(CreatureEntity &creature, std::string_view name)
+{
+    if (name == "TOWN") {
+        return std::to_string(creature.get_town_num());
+    }
+    if (name == "LEVEL") {
+        return std::to_string(creature.get_level());
+    }
+    if (name == "QUEST_NUMBER") {
+        return std::to_string(enum2i(creature.get_floor()->quest_number));
+    }
+    if (name == "LEAVING_QUEST") {
+        return std::to_string(enum2i(leaving_quest));
+    }
+    // 接頭辞の後ろの番号のクエストを返す。不正な番号・未定義のクエストは nullptr
+    const auto get_quest_after = [name](std::string_view prefix) -> const QuestType * {
+        const auto number = parse_condition_expression_integer(name.substr(prefix.length()));
+        if (!number || !std::in_range<std::underlying_type_t<QuestId>>(*number)) {
+            return nullptr;
+        }
+        const auto id = i2enum<QuestId>(*number);
         const auto &quests = QuestList::get_instance();
-        v = std::to_string(enum2i(quests.get_quest(i2enum<QuestId>(atoi(b + 11))).type));
-    } else if (prefix(b + 1, "QUEST")) {
-        const auto &quests = QuestList::get_instance();
-        v = std::to_string(enum2i(quests.get_quest(i2enum<QuestId>(atoi(b + 6))).status));
-    } else if (prefix(b + 1, "RANDOM")) {
+        return quests.contains(id) ? &quests.get_quest(id) : nullptr;
+    };
+    constexpr std::string_view quest_type_prefix = "QUEST_TYPE";
+    if (name.starts_with(quest_type_prefix)) {
+        const auto *quest = get_quest_after(quest_type_prefix);
+        if (quest == nullptr) {
+            return tl::nullopt;
+        }
+        return std::to_string(enum2i(quest->type));
+    }
+    constexpr std::string_view quest_prefix = "QUEST";
+    if (name.starts_with(quest_prefix)) {
+        const auto *quest = get_quest_after(quest_prefix);
+        if (quest == nullptr) {
+            return tl::nullopt;
+        }
+        return std::to_string(enum2i(quest->status));
+    }
+    constexpr std::string_view random_prefix = "RANDOM";
+    if (name.starts_with(random_prefix)) {
+        const auto divisor = parse_condition_expression_integer(name.substr(random_prefix.length()));
+        if (!divisor || (*divisor <= 0)) {
+            return tl::nullopt;
+        }
         const auto &system = AngbandSystem::get_instance();
-        v = std::to_string((static_cast<int>(system.get_seed_town()) % std::stoi(b + 7)));
-    } else if (streq(b + 1, "VARIANT")) {
-        v = variant;
-    } else if (streq(b + 1, "WILDERNESS")) {
+        // 符号付きへ変換すると seed の最上位ビットが立つ場合に剰余が負になるため、符号なしのまま剰余を取る
+        return std::to_string(system.get_seed_town() % static_cast<uint32_t>(*divisor));
+    }
+    if (name == "VARIANT") {
+        return variant;
+    }
+    if (name == "WILDERNESS") {
         if (vanilla_town) {
-            sprintf(tmp, "NONE");
-        } else if (lite_town) {
-            sprintf(tmp, "LITE");
-        } else {
-            sprintf(tmp, "NORMAL");
+            return "NONE";
         }
-        v = tmp;
-    } else if (streq(b + 1, "WORLD_COLLAPSE")) {
-        v = std::to_string(wc_ptr->collapse_degree);
-    } else if (streq(b + 1, "IRONMAN_DOWNWARD")) {
-        v = (ironman_downward ? "1" : "0");
+        if (lite_town) {
+            return "LITE";
+        }
+        return "NORMAL";
+    }
+    if (name == "WORLD_COLLAPSE") {
+        return std::to_string(wc_ptr->collapse_degree);
+    }
+    if (name == "IRONMAN_DOWNWARD") {
+        return ironman_downward ? "1" : "0";
     }
 
-    (*fp) = f;
-    (*sp) = s;
-    return v;
+    return resolve_common_expression_variable(creature, name);
 }
 
 /*!
@@ -248,16 +276,44 @@ static std::string parse_fixed_map_expression(CreatureEntity &creature, char **s
  * @param xmax 詳細不明
  * @return エラーコード
  */
-parse_error_type parse_fixed_map(CreatureEntity &creature, std::string_view name, int ymin, int xmin, int ymax, int xmax)
+ParseErrorType parse_fixed_map(CreatureEntity &creature, std::string_view name, int ymin, int xmin, int ymax, int xmax)
 {
+    if (name == TOWN_DEFINITION_LIST) {
+        if (const auto result = load_town_preferences(); !result) {
+            const auto err = result.error();
+            const auto oops = describe_parse_error(err);
+            // 起動時・ヘッドレスでは診断ごとに入力を待たない (msg_erase は -続く- でキー入力を待つため足さない)。
+            msg_print(fmt::format("Error {} ({}) loading '{}'.", enum2i(err), oops, TOWN_PREFERENCES));
+            return err;
+        }
+
+        const auto town_file = load_town_definition_file(creature);
+        if (!town_file) {
+            const auto err = town_file.error();
+            const auto oops = describe_parse_error(err);
+            msg_print(fmt::format("Error {} ({}) loading '{}'.", enum2i(err), oops, TOWN_DEFINITION_LIST));
+            return err;
+        }
+        const auto &map_file = *town_file;
+        if (map_file.empty()) {
+            return ParseErrorType::NONE;
+        }
+        const auto err = parse_fixed_map(creature, map_file, ymin, xmin, ymax, xmax);
+        if (err != ParseErrorType::NONE) {
+            const auto oops = describe_parse_error(err);
+            msg_print(fmt::format("Error {} ({}) loading '{}'.", enum2i(err), oops, map_file));
+        }
+        return err;
+    }
+
     const auto path = path_build(ANGBAND_DIR_EDIT, name);
     auto *fp = angband_fopen(path, FileOpenMode::READ);
     if (fp == nullptr) {
-        return PARSE_ERROR_GENERIC;
+        return ParseErrorType::GENERIC;
     }
 
     int num = -1;
-    parse_error_type err = PARSE_ERROR_NONE;
+    ParseErrorType err = ParseErrorType::NONE;
     bool bypass = false;
     int x = xmin;
     int y = ymin;
@@ -274,10 +330,8 @@ parse_error_type parse_fixed_map(CreatureEntity &creature, std::string_view name
         }
 
         if (line_str->starts_with("?:")) {
-            char f;
-            auto *s = line_str->data() + 2;
-            auto v = parse_fixed_map_expression(creature, &s, &f);
-            bypass = v == "0";
+            const auto resolve = [&creature](std::string_view name) { return resolve_town_map_variable(creature, name); };
+            bypass = evaluate_condition_expression(std::string_view(*line_str).substr(2), resolve) == "0";
             continue;
         }
 
@@ -287,105 +341,14 @@ parse_error_type parse_fixed_map(CreatureEntity &creature, std::string_view name
 
         qg_ptr->buf = line_str->data();
         err = generate_fixed_map_floor(creature, qg_ptr, parse_fixed_map);
-        if (err != PARSE_ERROR_NONE) {
-            concptr oops = (((err > 0) && (err < PARSE_ERROR_MAX)) ? err_str[err] : "unknown");
-            msg_format("Error %d (%s) at line %d of '%s'.", err, oops, num, name.data());
-            msg_format(_("'%s'を解析中。", "Parsing '%s'."), line_str->data());
-            msg_erase();
+        if (err != ParseErrorType::NONE) {
+            const auto oops = describe_parse_error(err);
+            msg_print("Error {} ({}) at line {} of '{}'.", enum2i(err), oops, num, name);
+            msg_print(_("'{}'を解析中。", "Parsing '{}'."), line_str->data());
             break;
         }
     }
 
     angband_fclose(fp);
     return err;
-}
-
-static QuestId parse_quest_number_n(const std::vector<std::string> &token)
-{
-    auto number = i2enum<QuestId>(atoi(token[1].substr(_(0, 1)).data()));
-    return number;
-}
-
-static QuestId parse_quest_number(const std::vector<std::string> &token)
-{
-    auto is_quest_none = _(token[1][0] == '$', token[1][0] != '$');
-    if (is_quest_none) {
-        return QuestId::NONE;
-    }
-
-    if (token[2] == "N") {
-        return parse_quest_number_n(token);
-    }
-    return QuestId::NONE;
-}
-
-/*!
- * @brief クエスト番号をファイルから読み込んでパースする
- * @param creature クリーチャーへの参照
- * @param file_name ファイル名
- * @param key_list キーになるQuestIdの配列
- */
-static void parse_quest_info_aux(std::string_view file_name, std::set<QuestId> &key_list_ref)
-{
-    auto push_set = [&key_list_ref, &file_name](auto q, auto line) {
-        if (q == QuestId::NONE) {
-            return;
-        }
-
-        if (key_list_ref.find(q) != key_list_ref.end()) {
-            std::stringstream ss;
-            ss << _("重複したQuestID ", "Duplicated Quest Id ") << enum2i(q) << '(' << file_name << ", L" << line << ')';
-            THROW_EXCEPTION(std::runtime_error, ss.str());
-        }
-
-        key_list_ref.insert(q);
-    };
-
-    const auto path = path_build(ANGBAND_DIR_EDIT, file_name);
-    auto *fp = angband_fopen(path, FileOpenMode::READ);
-    if (fp == nullptr) {
-        std::stringstream ss;
-        ss << _("ファイルが見つかりません (", "File is not found (") << file_name << ')';
-        THROW_EXCEPTION(std::runtime_error, ss.str());
-    }
-
-    auto line_num = 0;
-    while (true) {
-        const auto line_str = angband_fgets(fp);
-        if (!line_str) {
-            break;
-        }
-        line_num++;
-
-        const auto token = str_split(*line_str, ':', true);
-
-        switch (token[0][0]) {
-        case 'Q': {
-            auto quest_number = parse_quest_number(token);
-            push_set(quest_number, line_num);
-            break;
-        }
-        case '%': {
-            parse_quest_info_aux(token[1].data(), key_list_ref);
-            break;
-        }
-        default:
-            break;
-        }
-    }
-
-    angband_fclose(fp);
-}
-
-/*!
- * @brief ファイルからパースして作成したクエスト番号配列を返す
- * @param creature クリーチャーへの参照
- * @param file_name ファイル名
- * @return クエスト番号の配列
- */
-std::set<QuestId> parse_quest_info(std::string_view file_name)
-{
-    std::set<QuestId> key_list;
-    parse_quest_info_aux(file_name, key_list);
-    return key_list;
 }

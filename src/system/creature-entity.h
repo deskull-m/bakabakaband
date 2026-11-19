@@ -49,6 +49,7 @@ enum class MimicKindType;
 enum class CurseTraitType;
 enum class CurseSpecialTraitType;
 enum class ExtendedSlotType : uint8_t;
+enum class BodyStructureType : uint8_t;
 enum class MonraceId : int16_t;
 enum class MonsterAbilityType;
 enum class PlayerSkillKindType;
@@ -397,6 +398,7 @@ public:
     bool is_true_winner() const;
     bool try_resist_eldritch_horror() const;
     void ride_monster(MONSTER_IDX m_idx);
+    void dismount();
     void plus_incident(INCIDENT incidentID, int num);
 
     /*!
@@ -536,6 +538,7 @@ public:
     bool has_living_flag(bool is_appearance = false) const;
     bool has_demon_flag(bool is_appearance = false) const;
     bool has_undead_flag(bool is_appearance = false) const;
+    virtual bool is_unique() const;
     bool is_explodable() const;
     std::string get_died_message() const;
     bool can_ring_boss_call_nazgul() const;
@@ -610,6 +613,16 @@ public:
      * 既定 false / プレイヤーでは 0 を返すため既定バランス不変。
      */
     int get_save_stat_bonus() const;
+
+    /*!
+     * @brief 魔法防御 (MAGIC_RES) 突然変異によるレベル基準セーヴ補正を返す [提案C5]
+     * @return 実効レベルへの加算値 (モンスター・MAGIC_RES 保有時のみ非 0)
+     * @details MAGIC_RES 突然変異を持つモンスターに、プレイヤー版 skill_sav の加算
+     * (15 + level/5) と同じ補正を返す。get_save_stat_bonus() と同じレベル基準セーヴ
+     * 判定 (monrace.level > randint1(...)) の実効レベルへ加算する。JSON "mutations"
+     * opt-in / プレイヤーでは 0 を返すため既定バランス不変。
+     */
+    int get_save_mutation_bonus() const;
 
     /*!
      * @brief クリーチャーがプレイヤーかどうかを判定
@@ -887,6 +900,18 @@ public:
     void notify_self(std::string_view message) const;
 
     /*!
+     * @brief クリーチャー自身に関する状態メッセージを表示する (提案D2 第3弾: 3 人称対応版)
+     * @param message 2 人称の状態メッセージ (プレイヤー視点文)
+     * @param others_format 3 人称の状態メッセージ書式 ("{}" にクリーチャー名 (先頭大文字化) が入る fmt 書式)
+     * @details プレイヤーなら `message` を `msg_print()` で表示、モンスターなら
+     *          **視認できている場合に限り** `others_format` にモンスター名を埋めて表示する。
+     *          プレイヤー経路の挙動は 1 引数版と完全に同一。3 人称文が意味を持たない
+     *          プレイヤー固有の状態 (構えの崩れ・職業固有処理等) は 1 引数版を使うこと。
+     *          定義は creature-entity.cpp。
+     */
+    void notify_self(std::string_view message, std::string_view others_format) const;
+
+    /*!
      * @brief カメレオンの変身を元に戻す。
      * @details r_idx と ap_r_idx を実種族IDにリセットする。
      */
@@ -1089,6 +1114,13 @@ public:
     void drop_all_inventory(CreatureEntity &dropper);
 
     /*!
+     * @brief 所持品を床へ出さずに全て捨てる
+     * @details inventory[] の各アイテムを wipe するだけ。死体に所持品を残さない
+     *          経路 (従来から所持品が失われるケース) で使う。
+     */
+    void discard_all_inventory();
+
+    /*!
      * @brief クリーチャーのマップ上視認状態を設定する
      * @param value 視認状態
      * @details モンスターのみ意味を持つ。プレイヤーには無効。
@@ -1133,6 +1165,53 @@ public:
      * @brief 親モンスター m_idx を設定する (提案 9b)
      */
     virtual void set_parent_m_idx(MONSTER_IDX m_idx);
+
+    /*!
+     * @brief 所属するクリーチャーパーティの定義IDを取得する
+     * @return パーティ定義ID。非所属なら 0
+     */
+    virtual short get_party_id() const;
+
+    /*!
+     * @brief パーティのリーダーの m_idx を取得する
+     * @return リーダーの m_idx。非所属なら 0
+     * @details 同値を持つ個体が 1 つの集団を成す。リーダー自身は自分の m_idx を持つ。
+     */
+    virtual MONSTER_IDX get_party_leader_m_idx() const;
+
+    /*!
+     * @brief パーティ所属を設定する
+     * @param party_id パーティ定義ID
+     * @param leader_m_idx リーダーの m_idx (リーダー自身には自分の m_idx を渡す)
+     */
+    virtual void join_party(short party_id, MONSTER_IDX leader_m_idx);
+
+    /*!
+     * @brief パーティのリーダーを差し替える (リーダー撃破時の継承・添字再マップ用)
+     */
+    virtual void set_party_leader_m_idx(MONSTER_IDX leader_m_idx);
+
+    /*!
+     * @brief パーティを離脱する (所属とリーダーを両方クリアする)
+     */
+    virtual void leave_party();
+
+    /*!
+     * @brief パーティに所属しているか
+     */
+    bool belongs_to_party() const;
+
+    /*!
+     * @brief 指定した m_idx の個体がこのパーティのリーダーか
+     * @details リーダー自身の判定に使う。`get_self_m_idx()` は座標が古い等の状況で 0 を
+     *          返しうるため、呼出側が m_idx を持っている場合はそれを渡すこと。
+     */
+    bool is_party_leader(MONSTER_IDX self_m_idx) const;
+
+    /*!
+     * @brief 相手が同じパーティの個体か (自分自身に対しては true)
+     */
+    bool is_same_party(const CreatureEntity &other) const;
 
     /*!
      * @brief smart_learn フラグに 1 ビット追加する (提案 9b)
@@ -1507,6 +1586,45 @@ public:
      *          docs/monster-body-structure-equipment-slots.md 参照。
      */
     virtual bool can_equip_to(int slot) const;
+
+    /*!
+     * @brief 武具を自ら調えて身に着ける体か判定する
+     * @return 自分で武具を調達・着用する体構造なら true
+     * @details `can_equip_to()` の「構造上そのスロットが在るか」とは**別軸**で、
+     *          「道具を扱える手を持ち、武具を調達して身に着ける生き物か」を表す。
+     *          獣 (四足型)・鳥型・節足型・長胴型などは首輪や装具を着けられる部位
+     *          こそあるが、自分で防具を買い揃えて着込むわけではないため false。
+     *          武装度 (`MonraceDefinition::armament_level`) による装備充填
+     *          (`equip_monster_by_armament_budget()`) の対象をこの軸で絞る。
+     *          種族定義で明示した装備 (`equip_kind` / `equip_tval`) や役割フラグ
+     *          由来の装備は製作者の明示指定なので、この判定では弾かない。
+     */
+    virtual bool is_armament_capable() const;
+
+    /*!
+     * @brief クリーチャーの体構造を取得する
+     * @return 体構造 (BodyStructureType)
+     * @details モンスター化していない通常のプレイヤーは HUMANOID 固定。
+     *          モンスター、および monster 化したプレイヤー (player_birth_as_monster)
+     *          は種族定義の MonraceDefinition::body_structure を返す。
+     *          装備スロット可否 (can_equip_to) / 拡張スロット (get_extended_slot_*) と
+     *          c コマンドの体構造表示が同じ判定を共有するための窓口。
+     *          docs/monster-body-structure-equipment-slots.md 参照。
+     */
+    virtual BodyStructureType get_body_structure() const;
+
+    /*!
+     * @brief 装備一覧の表示にこの部位を出すべきか判定する
+     * @param slot inventory_slot_type (INVEN_MAIN_HAND..INVEN_TOTAL-1)
+     * @return 表示すべきなら true
+     * @details 体構造的に装備できない部位は一覧から消す (四足獣に「利き腕」、
+     *          不定形に「頭」などの存在しない部位が並ぶのを防ぐ)。
+     *          ただし装備できない部位に何らかの理由で実際にアイテムが入っている
+     *          場合は、一覧から消すと外せなくなるため表示する。
+     *          装備一覧を描画する全ての箇所 (e コマンド / 装備サブウィンドウ /
+     *          c コマンドの装備ページ / キャラクタダンプ) で共用すること。
+     */
+    bool should_display_equipment_slot(int slot) const;
 
     /*!
      * @brief 拡張装備スロット数を取得する (Phase 2)
@@ -2079,6 +2197,24 @@ public:
     virtual void apply_material_stat_modifiers();
 
     /*!
+     * @brief モンスター種族の能力値修正を能力値に適用する
+     * @param monrace 適用元の種族定義 (モンスターでは chameleon 判定後の実効種族)
+     * @details JSON `stat_modifiers` で個別指定された能力値はその値を、指定の無い
+     *          能力値は種族レベル比例の既定補正 (`DEFAULT_STAT_MODIFIER_PER_LEVEL`) を
+     *          `stat_max` / `stat_cur` / `stat_use` へ加算し `[30, 2000]` にクランプする
+     *          (`stat_max_max` は必要に応じて引き上げる)。
+     *          モンスター生成 (`place_monster_one`) とモンスターとしてのゲーム開始
+     *          (`player_birth_as_monster`) の双方から呼び、両者の能力値を揃える。
+     */
+    void apply_monrace_stat_modifiers(const MonraceDefinition &monrace);
+
+    //! JSON で個別指定の無い能力値へ与える、種族レベル比例の既定補正の係数
+    //! (表示単位 / 種族レベル)。1 なら「種族レベル 40 の個体は全能力値 +40.0」。
+    //! 能力値は CON → 最大HP・INT → 最大MP・CHR → 所持金へ波及するため、
+    //! この定数はゲームバランスの調整点となる。
+    static constexpr int DEFAULT_STAT_MODIFIER_PER_LEVEL = 1;
+
+    /*!
      * @brief 性格を指定値に設定する
      * @details ppersonality と personality ポインタの双方を更新する。
      * @param value 設定する性格
@@ -2226,6 +2362,18 @@ public:
     bool has_race_granted_speed() const;
     //! 付与された player_race 由来のテレパシー (TR_TELEPATHY) を AI 索敵で使えるか (提案C3第1弾。opt-in・既定OFF・モンスター専用)
     bool has_race_granted_telepathy() const;
+
+    /*!
+     * @brief クリーチャー自身のテレパシーで相手の存在を感知できるか (提案C3)
+     * @return 感知できるならtrue
+     * @details 付与種族由来のテレパシー (C1/C3 第1弾、`applies_player_race_telepathy` で
+     *          opt-in) と ESP 突然変異 (C5) のいずれかを持つかを返す。**どちらも既定 OFF**
+     *          なので、既存モンスターでは常に false ＝ 既定バランス不変。
+     *          monrace ネイティブの ESP 相当フラグは含めない (含めると既存モンスターの
+     *          AI 挙動が変わってしまうため)。装備由来のプレイヤーテレパシー
+     *          (`has_telepathy()`) とも別物。
+     */
+    bool has_telepathic_awareness() const;
     virtual bool has_two_handed_weapons();
     virtual BIT_FLAGS has_sh_fire();
     virtual BIT_FLAGS has_sh_elec();
@@ -2389,6 +2537,7 @@ public:
     virtual void set_hold_exp(BIT_FLAGS value);
     virtual void set_slow_digest(BIT_FLAGS value);
     virtual void set_lite_flags(BIT_FLAGS value);
+    virtual BIT_FLAGS get_lite_flags() const;
     virtual void set_warning_flags(BIT_FLAGS value);
     virtual void set_impact_flags(BIT_FLAGS value);
     virtual void set_earthquake_flags(BIT_FLAGS value);
@@ -3150,6 +3299,17 @@ public:
     virtual void set_worked_spell(int realm_idx, int spell_id, bool value);
     virtual void set_forgotten_spell(int realm_idx, int spell_id, bool value);
     std::vector<int> spell_order_learned{}; /* order spells learned */
+
+    /*!
+     * @brief 指定魔法領域の魔導書 (ビットマスク) からモンスターが呪文を学習する [提案C6-R]
+     * @param realm 学習する魔法領域 (NONE なら何もしない)
+     * @param book_mask 学習済み魔導書のビットマスク (bit b = 第b書。各書8呪文 [b*8, b*8+8))
+     * @details realm1 を設定し、指定書の呪文を spell_learned / spell_worked に登録して
+     *          spell_exp を習得済み相当にする。プレイヤーと同じ学習データ構造を用いるため、
+     *          将来のプレイヤー経路詠唱 (案B) でもそのまま利用できる。opt-in・既定なしで
+     *          呼ばれない (spellbook_realm=NONE) ため既定バランス不変。
+     */
+    void learn_realm_spellbooks(RealmType realm, uint32_t book_mask);
 
     // [A-3] private 化済。get_hp_table(level_index) / set_hp_table(level_index, value) 経由。
     // CreatureEntity 内部の roll_hp_table() 等は this->hp_table を直接操作。

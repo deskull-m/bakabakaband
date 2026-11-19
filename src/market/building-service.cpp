@@ -6,6 +6,7 @@
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
 #include "util/enum-converter.h"
+#include <fmt/format.h>
 
 /*!
  * @brief 施設毎に設定された種族、職業、魔法領域フラグがプレイヤーと一致するかを判定する。
@@ -86,7 +87,7 @@ void display_building_service(CreatureEntity &creature, const building_type &bld
     byte action_color;
 
     term_clear();
-    prt(format("%s (%s) %35s", bldg.owner_name, bldg.owner_race, bldg.name), 2, 1);
+    prt(fmt::format("{} ({}) {:>35}", bldg.owner_name, bldg.owner_race, fmt::bytes(bldg.name)), 2, 1);
 
     for (int i = 0; i < 8; i++) {
         if (!bldg.letters[i]) {
@@ -100,13 +101,13 @@ void display_building_service(CreatureEntity &creature, const building_type &bld
                 buff[0] = '\0';
             } else if (is_owner(creature, bldg)) {
                 action_color = TERM_YELLOW;
-                buff = format(_("($%d)", "(%dgp)"), bldg.member_costs[i]);
+                buff = fmt::format(_("(${})", "({}gp)"), bldg.member_costs[i]);
             } else {
                 action_color = TERM_YELLOW;
-                buff = format(_("($%d)", "(%dgp)"), bldg.other_costs[i]);
+                buff = fmt::format(_("(${})", "({}gp)"), bldg.other_costs[i]);
             }
 
-            c_put_str(action_color, format(" %c) %s %s", bldg.letters[i], bldg.act_names[i], buff.data()), 19 + (i / 2), 35 * (i % 2));
+            c_put_str(action_color, fmt::format(" {:c}) {} {}", bldg.letters[i], bldg.act_names[i], buff), 19 + (i / 2), 35 * (i % 2));
             continue;
         }
 
@@ -119,13 +120,13 @@ void display_building_service(CreatureEntity &creature, const building_type &bld
                 buff[0] = '\0';
             } else if (is_owner(creature, bldg)) {
                 action_color = TERM_YELLOW;
-                buff = format(_("($%d)", "(%dgp)"), bldg.member_costs[i]);
+                buff = fmt::format(_("(${})", "({}gp)"), bldg.member_costs[i]);
             } else {
                 action_color = TERM_YELLOW;
-                buff = format(_("($%d)", "(%dgp)"), bldg.other_costs[i]);
+                buff = fmt::format(_("(${})", "({}gp)"), bldg.other_costs[i]);
             }
 
-            c_put_str(action_color, format(" %c) %s %s", bldg.letters[i], bldg.act_names[i], buff.data()), 19 + (i / 2), 35 * (i % 2));
+            c_put_str(action_color, fmt::format(" {:c}) {} {}", bldg.letters[i], bldg.act_names[i], buff), 19 + (i / 2), 35 * (i % 2));
             continue;
         }
 
@@ -134,13 +135,13 @@ void display_building_service(CreatureEntity &creature, const building_type &bld
             buff = _("(閉店)", "(closed)");
         } else if (bldg.member_costs[i] != 0) {
             action_color = TERM_YELLOW;
-            buff = format(_("($%d)", "(%dgp)"), bldg.member_costs[i]);
+            buff = fmt::format(_("(${})", "({}gp)"), bldg.member_costs[i]);
         } else {
             action_color = TERM_WHITE;
             buff[0] = '\0';
         }
 
-        c_put_str(action_color, format(" %c) %s %s", bldg.letters[i], bldg.act_names[i], buff.data()), 19 + (i / 2), 35 * (i % 2));
+        c_put_str(action_color, fmt::format(" {:c}) {} {}", bldg.letters[i], bldg.act_names[i], buff), 19 + (i / 2), 35 * (i % 2));
     }
 
     prt(_(" ESC) 建物を出る", " ESC) Exit building"), 23, 0);

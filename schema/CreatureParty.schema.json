@@ -67,6 +67,10 @@
                         "description": "ユニークモンスターを含むかどうか",
                         "default": false
                     },
+                    "alliance": {
+                        "type": "string",
+                        "description": "所属アライアンスのタグ（省略時は無所属。メンバー全員がこのアライアンスへ同化する）"
+                    },
                     "members": {
                         "type": "array",
                         "description": "パーティメンバーのリスト",

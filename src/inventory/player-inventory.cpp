@@ -14,23 +14,25 @@
 #include "game-option/input-options.h"
 #include "game-option/play-record-options.h"
 #include "game-option/text-display-options.h"
+#include "inventory/corpse-rummage.h"
 #include "inventory/inventory-object.h"
 #include "inventory/inventory-slot-types.h"
 #include "main/sound-definitions-table.h"
 #include "main/sound-of-music.h"
+#include "market/loot-notoriety.h"
 #include "object/item-tester-hooker.h"
 #include "object/item-use-flags.h"
 #include "object/object-info.h"
 #include "object/object-mark-types.h"
 #include "player/player-move.h"
+#include "player/player-status.h"
 #include "spell-kind/spells-perception.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
-#include "system/redrawing-flags-updater.h"
 #include "target/target-checker.h"
-#include "term/z-form.h"
 #include "util/string-processor.h"
 #include "view/display-messages.h"
 #include "world/world.h"
@@ -95,9 +97,7 @@ static void py_pickup_all_golds_on_floor(CreatureEntity &creature, const Grid &g
 
         delete_object_idx(creature, i_idx);
 
-        auto &rfu = RedrawingFlagsUpdater::get_instance();
-        rfu.set_flag(MainWindowRedrawingFlag::GOLD);
-        rfu.set_flag(SubWindowRedrawingFlag::PLAYER);
+        DeferredUpdateRequests::get_instance().request_gold_redrawing();
     }
 }
 
@@ -112,7 +112,7 @@ static void py_pickup_single_item(CreatureEntity &creature, short i_idx, bool pi
     }
 
     if (!check_get_item(&item)) {
-        msg_format(_("%sを持ち運ぶことはできない。", "You can't carry %s."), item_name.data());
+        msg_print(_("{}を持ち運ぶことはできない。", "You can't carry {}."), item_name);
         return;
     }
 
@@ -153,6 +153,9 @@ static void py_pickup_multiple_items(CreatureEntity &creature, bool pickup)
             break;
         }
         process_player_pickup_item(creature, -i_idx);
+
+        // 拾ったときの鑑定で自動破壊の印が付いたアイテムを、次を選ぶ前に壊してザックの空きを作る。
+        update_inventory_arrangement(creature);
     }
 }
 
@@ -255,6 +258,11 @@ void process_player_pickup_item(CreatureEntity &creature, OBJECT_IDX o_idx)
 
     print_pickup_message(creature, *picked_item_ptr, picked_slot_item, slot);
 
+    // 他者の正当な所有物を手に入れたことを記録し、社会的問題を発生させる。
+    // 撃破して略奪した品はこの刻印が付いたまま床へ落ちるため、拾った時点が
+    // 「略奪の成立」になる。効果の内訳は market/loot-notoriety.h を参照。
+    record_looted_rightful_property(creature, *picked_item_ptr, picked_item_ptr->number);
+
     record_item_name = describe_flavor(creature, *picked_item_ptr, OD_NAME_ONLY);
     record_turn = AngbandWorld::get_instance().game_turn;
     check_find_art_quest_completion(creature, &picked_slot_item);
@@ -268,19 +276,30 @@ void process_player_pickup_item(CreatureEntity &creature, OBJECT_IDX o_idx)
 void carry(CreatureEntity &creature, bool pickup)
 {
     verify_panel(creature);
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.set_flag(StatusRecalculatingFlag::MONSTER_STATUSES);
-    rfu.set_flag(MainWindowRedrawingFlag::MAP);
-    rfu.set_flag(SubWindowRedrawingFlag::OVERHEAD);
+    auto &dur = DeferredUpdateRequests::get_instance();
+    dur.set_flag(StatusRecalculatingFlag::MONSTER_STATUSES);
+    dur.set_flag(SubWindowRedrawingFlag::OVERHEAD);
     handle_stuff(creature);
     const auto &grid = creature.get_floor()->grid_array[creature.y][creature.x];
     autopick_pickup_items(creature, grid);
+
+    // 自動拾いや拾ったときの鑑定で自動破壊の印が付いたアイテムを、拾う候補を数える前に壊す。
+    // carry() は移動のコマンドからだけ呼ばれ、所持品の番号を持たない。
+    update_inventory_arrangement(creature);
 
     if (!grid.o_idx_list.empty()) {
         disturb(creature, false, false);
     }
 
     py_pickup_all_golds_on_floor(creature, grid);
+
+    // 足元に遺された死体を漁る。床のアイテムとは別経路なので easy_floor の
+    // 分岐より前に置き、どちらの設定でも同じ操作で漁れるようにする。
+    // 漁った手番では床のアイテムを拾わない (持ち去った死体から足元へ散らばった品を
+    // そのまま拾ってしまわないため)。漁るのを断った場合は従来どおり拾う。
+    if (rummage_corpses_here(creature, pickup)) {
+        return;
+    }
 
     if (easy_floor) {
         py_pickup_floor(creature, pickup);
@@ -298,20 +317,24 @@ void carry(CreatureEntity &creature, bool pickup)
         }
 
         if (!pickup) {
-            msg_format(_("%sがある。", "You see %s."), item_name.data());
+            msg_print(_("{}がある。", "You see {}."), item_name);
             continue;
         }
 
         if (!check_get_item(&item)) {
-            msg_format(_("%sを持ち運ぶことはできない。", "You can't carry %s."), item_name.data());
+            msg_print(_("{}を持ち運ぶことはできない。", "You can't carry {}."), item_name);
             continue;
         }
 
         if (!creature.can_store_item(item)) {
-            msg_format(_("ザックには%sを入れる隙間がない。", "You have no room for %s."), item_name.data());
+            msg_print(_("ザックには{}を入れる隙間がない。", "You have no room for {}."), item_name);
             continue;
         }
 
         py_pickup_single_item(creature, this_o_idx, pickup);
+
+        // 拾ったときの鑑定で自動破壊の印が付いたアイテムを、次を調べる前に壊してザックの空きを作る。
+        // 床のアイテムの印はループの前に処理済みなので、ここで床の一覧の要素が消えることはない。
+        update_inventory_arrangement(creature);
     }
 }

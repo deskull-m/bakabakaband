@@ -81,6 +81,7 @@
 
 #ifdef WINDOWS
 
+#include "bot/bot-control-server.h"
 #include "cmd-io/cmd-save.h"
 #include "cmd-visual/cmd-draw.h"
 #include "core/game-play.h"
@@ -92,6 +93,7 @@
 #include "core/visuals-reseter.h"
 #include "game-option/runtime-arguments.h"
 #include "game-option/special-options.h"
+#include "headless-term/headless-term.h"
 #include "io/files-util.h"
 #include "io/input-key-acceptor.h"
 #include "io/record-play-movie.h"
@@ -110,15 +112,17 @@
 #include "main/angband-initializer.h"
 #include "main/sound-of-music.h"
 #include "save/save.h"
+#include "system/angband-version.h"
 #include "system/angband.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/floor/floor-info.h"
 #include "system/player-type-definition.h"
-#include "system/redrawing-flags-updater.h"
 #include "system/system-variables.h"
 #include "term/gameterm.h"
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
+#include "term/z-util.h"
 #include "util/angband-files.h"
 #include "util/bit-flags-calculator.h"
 #include "util/enum-converter.h"
@@ -131,8 +135,10 @@
 #include "world/world.h"
 #include <algorithm>
 #include <commdlg.h>
+#include <cstdio>
 #include <cstdlib>
 #include <direct.h>
+#include <fmt/format.h>
 #include <locale>
 #include <string>
 #include <string_view>
@@ -272,7 +278,7 @@ static void validate_file(const std::filesystem::path &s)
     }
 
     const auto &file = s.string();
-    quit_fmt(_("必要なファイル[%s]が見あたりません。", "Cannot find required file:\n%s"), file.data());
+    quit(fmt::format(_("必要なファイル[{}]が見あたりません。", "Cannot find required file:\n{}"), file));
 }
 
 /*!
@@ -286,9 +292,9 @@ static void validate_dir(const std::filesystem::path &s, bool vital)
 
     const auto &dir = s.string();
     if (vital) {
-        quit_fmt(_("必要なディレクトリ[%s]が見あたりません。", "Cannot find required directory:\n%s"), dir.data());
+        quit(fmt::format(_("必要なディレクトリ[{}]が見あたりません。", "Cannot find required directory:\n{}"), dir));
     } else if (mkdir(dir.data())) {
-        quit_fmt("Unable to create directory:\n%s", dir.data());
+        quit(fmt::format("Unable to create directory:\n{}", dir));
     }
 }
 
@@ -439,7 +445,7 @@ static void save_prefs()
     const auto savefile_str = savefile.string();
     const auto savefile_dir_str = savefile_str.substr(0, path_length);
     if (angband_dir_str == savefile_dir_str) {
-        const auto relative_path = format(".\\%s", (savefile_str.data() + path_length));
+        const auto relative_path = fmt::format(".\\{}", std::string_view(savefile_str).substr(path_length));
         WritePrivateProfileStringA("Angband", "SaveFile", relative_path.data(), ini_file);
     } else {
         WritePrivateProfileStringA("Angband", "SaveFile", savefile_str.data(), ini_file);
@@ -623,7 +629,7 @@ static bool change_bg_mode(bg_mode new_mode, bool show_error = false, bool force
             current_bg_mode = bg_mode::BG_NONE;
             if (show_error) {
                 const auto &wallaper_filename = wallpaper_path.string();
-                plog_fmt(_("壁紙用ファイル '%s' を読み込めません。", "Can't load the image file '%s'."), wallaper_filename.data());
+                plog(fmt::format(_("壁紙用ファイル '{}' を読み込めません。", "Can't load the image file '{}'."), wallaper_filename));
             }
         }
     } else {
@@ -849,6 +855,10 @@ static errr term_xtra_win_react(CreatureEntity &creature)
 
 /*!
  * @brief Process at least one event
+ * @details
+ * 待たない場合、保留中のメッセージが無ければ非0を返す。
+ * 呼び出し側がメッセージを取り切ったことを判定できるようにするためのもので、
+ * main-gcu.cpp・main-x11.cpp・main-cap.cppのTERM_XTRA_EVENTと同じ約束である。
  */
 static errr term_xtra_win_event(int v)
 {
@@ -858,13 +868,16 @@ static errr term_xtra_win_event(int v)
             TranslateMessage(&msg);
             DispatchMessage(&msg);
         }
-    } else {
-        if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) {
-            TranslateMessage(&msg);
-            DispatchMessage(&msg);
-        }
+
+        return 0;
     }
 
+    if (!PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) {
+        return 1;
+    }
+
+    TranslateMessage(&msg);
+    DispatchMessage(&msg);
     return 0;
 }
 
@@ -2158,8 +2171,8 @@ static void fit_term_size_to_window(term_data *td, bool recalc_window_size = fal
 
         rebuild_term(td, recalc_window_size);
 
-        if (!is_main_term(td)) {
-            RedrawingFlagsUpdater::get_instance().fill_up_sub_flags();
+        if (!is_main_term(td) && AngbandWorld::get_instance().character_dungeon) {
+            DeferredUpdateRequests::get_instance().fill_up_sub_flags();
             handle_stuff(PlayerType::get_instance());
         }
     }
@@ -2610,6 +2623,7 @@ static void hook_quit(std::string_view str)
         MessageBoxW(data[0].w, to_wchar(str).wc_str(), _(L"エラー！", L"Error"), MB_ICONEXCLAMATION | MB_OK | MB_ICONSTOP);
     }
 
+    shutdown_bot_control_server();
     save_prefs();
     for (int i = MAX_TERM_DATA - 1; i >= 0; --i) {
         term_force_font(&data[i]);
@@ -2720,15 +2734,16 @@ void create_debug_spoiler()
     init_stuff();
     init_angband(PlayerType::get_instance(), true);
 
+    // GUI アプリはコンソールを持たないことがあり、fmt::print() は書き込みに失敗すると例外を投げるので、std::fputs() で出力する
     switch (output_all_spoilers()) {
     case SpoilerOutputResultType::SUCCESSFUL:
-        fprintf(stdout, "Successfully created a spoiler file.");
+        std::fputs("Successfully created a spoiler file.", stdout);
         break;
     case SpoilerOutputResultType::FILE_OPEN_FAILED:
-        fprintf(stderr, "Cannot create spoiler file.");
+        std::fputs("Cannot create spoiler file.", stderr);
         break;
     case SpoilerOutputResultType::FILE_CLOSE_FAILED:
-        fprintf(stderr, "Cannot close spoiler file.");
+        std::fputs("Cannot close spoiler file.", stderr);
         break;
     default:
         break;
@@ -2769,6 +2784,81 @@ static void register_wndclass()
 }
 
 /*!
+ * @brief 端末の準備が済んだ後に共通して行うゲームの初期化
+ * @param shows_file_menu_prompt [ファイル]メニューの操作を促すメッセージを表示するか否か
+ * @details
+ * ウィンドウ版とヘッドレス版で共通の手順。TermCenteredOffsetSetterの寿命に
+ * 依存するため、メッセージ表示までを1つの関数にまとめている。
+ */
+static void prepare_game_start(bool shows_file_menu_prompt)
+{
+    signals_init();
+    term_activate(term_screen);
+    TermCenteredOffsetSetter tcos(MAIN_TERM_MIN_COLS, MAIN_TERM_MIN_ROWS);
+
+    init_angband(PlayerType::get_instance(), false);
+    initialized = true;
+
+    check_for_save_file(command_line.get_savefile_option());
+    if (shows_file_menu_prompt) {
+        prt(_("[ファイル] メニューの [新規] または [開く] を選択してください。", "[Choose 'New' or 'Open' from the 'File' menu]"), 23, _(8, 17));
+        term_fresh();
+    }
+}
+
+/*!
+ * @brief コマンドライン全体を軽く走査し、--headless の指定があるかどうかだけを調べる
+ * @details
+ * is_already_running()のチェックはcommand_line.handle()（ひいてはarg_headlessの確定）より
+ * 前にあるため、多重起動時の応答（ダイアログを出すかどうか）を分岐するには、フルの
+ * オプション解釈を待たずに--headlessの有無だけを知る必要がある。値の妥当性検証は行わず、
+ * 通常どおりcommand_line.handle()内のparse_runtime_option()に委ねる。
+ */
+static bool is_headless_launch_requested()
+{
+    int argc = 0;
+    LPWSTR *argv = ::CommandLineToArgvW(::GetCommandLineW(), &argc);
+    if (argv == nullptr) {
+        return false;
+    }
+
+    const auto found = std::any_of(argv + 1, argv + argc, [](LPWSTR arg) {
+        return std::wstring_view(arg) == L"--headless";
+    });
+    ::LocalFree(argv);
+    return found;
+}
+
+/*!
+ * @brief ヘッドレス端末でゲームを実行する
+ * @return 正常に開始した場合0、端末の初期化に失敗した場合1
+ * @details
+ * ウィンドウもメッセージループも作らず、直ちにゲームを開始する。
+ * plog/quit/coreの出力先はinit_headless_term()が標準エラー出力へ差し替えるため、
+ * ここでは設定しない。
+ *
+ * ウィンドウ版と異なり[ファイル]メニューを経由しないため、開始するゲームは
+ * コマンドラインで渡されたセーブファイルの有無で決まる。
+ */
+static int run_headless_game()
+{
+    // init_headless_term()が差し替えるplog()の出力先を確保する
+    attach_console();
+    init_stuff();
+
+    // init_stuff()が設定したANGBAND_SYSはinit_headless_term()が上書きする
+    if (init_headless_term() != 0) {
+        return 1;
+    }
+
+    init_bot_control_server();
+    prepare_game_start(false);
+    play_game(PlayerType::get_instance(), savefile.empty(), false);
+    quit("");
+    return 0;
+}
+
+/*!
  * @brief (Windows固有)Windowsアプリケーションとしてのエントリポイント
  */
 int WINAPI WinMain(
@@ -2776,14 +2866,29 @@ int WINAPI WinMain(
 {
     setlocale(LC_ALL, "ja_JP");
     hInstance = hInst;
+    // コマンドライン引数の解釈中に出力し得る診断メッセージに名前を付けるため、
+    // plog()/quit()を呼び得る処理より先に設定する
+    program_name = VARIANT_NAME;
     if (is_already_running()) {
+        if (is_headless_launch_requested()) {
+            // モーダルダイアログは非対話環境で応答不能のままハングするため、
+            // ヘッドレス起動時は標準エラー出力への通知と非ゼロ終了で応答する
+            attach_console();
+            quit("Bakabakaband is already running.");
+        }
+
         constexpr auto mes = _(L"馬鹿馬鹿蛮怒はすでに起動しています。", L"Bakabakaband is already running.");
         constexpr auto caption = _(L"エラー！", L"Error");
         MessageBoxW(NULL, mes, caption, MB_ICONEXCLAMATION | MB_OK | MB_ICONSTOP);
         return 0;
     }
 
+    // handle()は--output-spoilersの処理でinit_angband()まで走らせ得るため、多重起動チェックの後に呼ぶ
     command_line.handle();
+    if (arg_headless) {
+        return run_headless_game();
+    }
+
     register_wndclass();
 
     // before term_data initialize
@@ -2817,24 +2922,18 @@ int WINAPI WinMain(
     quit_aux = hook_quit;
     core_aux = hook_quit;
 
-    signals_init();
-    term_activate(term_screen);
-    {
-        TermCenteredOffsetSetter tcos(MAIN_TERM_MIN_COLS, MAIN_TERM_MIN_ROWS);
-
-        init_angband(PlayerType::get_instance(), false);
-        initialized = true;
-
-        check_for_save_file(command_line.get_savefile_option());
-        prt(_("[ファイル] メニューの [新規] または [開く] を選択してください。", "[Choose 'New' or 'Open' from the 'File' menu]"), 23, _(8, 17));
-        term_fresh();
-    }
+    prepare_game_start(true);
 
     change_sound_mode(arg_sound);
     use_music = arg_music;
     if (use_music) {
         init_music();
     }
+
+    // 端末が揃った後、最初のキー入力待ちより前に待ち受けを始める。
+    // 次のループは自前のメッセージループでキー入力待ちではないため、
+    // クライアントへの応答が始まるのはゲームが開始した後になる
+    init_bot_control_server();
 
     // ユーザーがゲーム開始を選択するまで待つループ
     MSG msg;

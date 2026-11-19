@@ -12,12 +12,13 @@
 #include "game-option/option-flags.h"
 #include "game-option/option-types-table.h"
 #include "game-option/special-options.h"
+#include "io/input-context.h"
 #include "io/input-key-acceptor.h"
 #include "io/write-diary.h"
 #include "main/sound-of-music.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/inner-game-data.h"
-#include "system/redrawing-flags-updater.h"
 #include "term/gameterm.h"
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
@@ -27,6 +28,7 @@
 #include "view/display-messages.h"
 #include "view/display-symbol.h"
 #include "world/world.h"
+#include <fmt/format.h>
 #include <string>
 
 namespace {
@@ -96,9 +98,10 @@ static void do_cmd_options_autosave(CreatureEntity &creature, std::string_view i
 {
     auto k = 0;
     constexpr auto n = 2;
+    const auto header = fmt::format(_("{} ( リターンで次へ, y/n でセット, F で頻度を入力, ESC で決定 ) ", "{} (RET to advance, y/n to set, 'F' for frequency, ESC to accept) "), info);
     term_clear();
     while (true) {
-        prt(format(_("%s ( リターンで次へ, y/n でセット, F で頻度を入力, ESC で決定 ) ", "%s (RET to advance, y/n to set, 'F' for frequency, ESC to accept) "), info.data()), 0, 0);
+        prt(header, 0, 0);
         for (auto i = 0; i < n; i++) {
             byte a = TERM_WHITE;
             if (i == k) {
@@ -106,12 +109,12 @@ static void do_cmd_options_autosave(CreatureEntity &creature, std::string_view i
             }
 
             const auto &autosave = autosave_info[i];
-            c_prt(a, format("%-48s: %s (%s)", autosave.description.data(), (*autosave.value ? _("はい  ", "yes") : _("いいえ", "no ")), autosave.text.data()), i + 2, 0);
+            c_prt(a, fmt::format("{:<48}: {} ({})", fmt::bytes(autosave.description), (*autosave.value ? _("はい  ", "yes") : _("いいえ", "no ")), autosave.text), i + 2, 0);
         }
 
-        prt(format(_("自動セーブの頻度： %d ターン毎", "Timed autosave frequency: every %d turns"), autosave_freq), 5, 0);
+        prt(fmt::format(_("自動セーブの頻度： {} ターン毎", "Timed autosave frequency: every {} turns"), autosave_freq), 5, 0);
         move_cursor(k + 2, 50);
-        auto ch = inkey();
+        auto ch = input_key_with_context(InputKind::OPTION, header);
         auto &autosave = autosave_info[k];
         switch (ch) {
         case ESCAPE:
@@ -141,7 +144,7 @@ static void do_cmd_options_autosave(CreatureEntity &creature, std::string_view i
         case 'f':
         case 'F':
             autosave_freq = toggle_frequency(autosave_freq);
-            prt(format(_("自動セーブの頻度： %d ターン毎", "Timed autosave frequency: every %d turns"), autosave_freq), 5, 0);
+            prt(fmt::format(_("自動セーブの頻度： {} ターン毎", "Timed autosave frequency: every {} turns"), autosave_freq), 5, 0);
             break;
         case '?':
             FileDisplayer(creature.name).display(true, _("joption.txt#Autosave", "option.txt#Autosave"), 0, 0);
@@ -216,9 +219,10 @@ static void do_cmd_options_win(CreatureEntity &creature)
     char ch;
     bool go = true;
     const auto old_flags = g_window_flags;
+    constexpr auto header = _("ウィンドウ・フラグ (<方向>で移動, 't'でON/OFF,'s'でON(他窓OFF), ESC)", "Window Flags (<dir>, <t>oggle, <s>et, ESC) ");
     term_clear();
     while (go) {
-        prt(_("ウィンドウ・フラグ (<方向>で移動, 't'でON/OFF,'s'でON(他窓OFF), ESC)", "Window Flags (<dir>, <t>oggle, <s>et, ESC) "), 0, 0);
+        prt(header, 0, 0);
         for (j = 0; j < 8; j++) {
             byte a = TERM_WHITE;
             auto s = angband_term_name[j];
@@ -258,7 +262,7 @@ static void do_cmd_options_win(CreatureEntity &creature)
 
         bool has_flag = false;
         term_gotoxy(35 + x * 5, y + 5);
-        ch = inkey();
+        ch = input_key_with_context(InputKind::OPTION, header);
         switch (ch) {
         case ESCAPE:
             go = false;
@@ -326,8 +330,9 @@ static void do_cmd_options_cheat(const FloorType &floor, std::string_view player
     term_clear();
     auto k = 0U;
     const auto n = cheat_info.size();
+    const auto header = fmt::format(_("{} ( リターンで次へ, y/n でセット, ESC で決定 )", "{} (RET to advance, y/n to set, ESC to accept) "), info);
     while (true) {
-        prt(format(_("%s ( リターンで次へ, y/n でセット, ESC で決定 )", "%s (RET to advance, y/n to set, ESC to accept) "), info.data()), 0, 0);
+        prt(header, 0, 0);
 
 #ifdef JP
         /* 詐欺オプションをうっかりいじってしまう人がいるようなので注意 */
@@ -344,11 +349,11 @@ static void do_cmd_options_cheat(const FloorType &floor, std::string_view player
 
             const auto &cheat = cheat_info[i];
             const auto yesno = *cheat.value ? _("はい  ", "yes") : _("いいえ", "no ");
-            c_prt(enum2i(a), format("%-48s: %s (%s)", cheat.description.data(), yesno, cheat.text.data()), i + 2, 0);
+            c_prt(enum2i(a), fmt::format("{:<48}: {} ({})", fmt::bytes(cheat.description), yesno, cheat.text), i + 2, 0);
         }
 
         move_cursor(k + 2, 50);
-        auto ch = inkey();
+        auto ch = input_key_with_context(InputKind::OPTION, header);
         if (const auto dir = get_keymap_dir(ch); dir.is_axial()) {
             ch = I2D(dir.dir());
         }
@@ -446,11 +451,12 @@ void do_cmd_options(CreatureEntity &creature)
                 if (i == y) {
                     a = TERM_L_BLUE;
                 }
-                term_putstr(5, option_fields[i].row, -1, a, format("(%c) %s", toupper(option_fields[i].key), option_fields[i].name.data()));
+                term_putstr(5, option_fields[i].row, -1, a, fmt::format("({:c}) {}", toupper(option_fields[i].key), option_fields[i].name));
             }
 
-            prt(_("<方向>で移動, Enterで決定, ESCでキャンセル, ?でヘルプ: ", "Move to <dir>, Select to Enter, Cancel to ESC, ? to help: "), 21, 0);
-            skey = inkey_special(true);
+            constexpr auto prompt = _("<方向>で移動, Enterで決定, ESCでキャンセル, ?でヘルプ: ", "Move to <dir>, Select to Enter, Cancel to ESC, ? to help: ");
+            prt(prompt, 21, 0);
+            skey = input_special_key_with_context(InputKind::COMMAND_CHAR, prompt);
             if (!(skey & SKEY_MASK)) {
                 k = (char)skey;
             } else {
@@ -552,7 +558,7 @@ void do_cmd_options(CreatureEntity &creature)
         case 'W':
         case 'w': {
             do_cmd_options_win(creature);
-            RedrawingFlagsUpdater::get_instance().fill_up_sub_flags();
+            DeferredUpdateRequests::get_instance().fill_up_sub_flags();
             break;
         }
         case 'P':
@@ -563,7 +569,7 @@ void do_cmd_options(CreatureEntity &creature)
         case 'D':
         case 'd': {
             clear_from(18);
-            prt(format(_("現在ウェイト量(msec): %d", "Current Delay Factor(msec): %d"), delay_factor), 19, 0);
+            prt(fmt::format(_("現在ウェイト量(msec): {}", "Current Delay Factor(msec): {}"), delay_factor), 19, 0);
             constexpr auto prompt = _("コマンド: ウェイト量(msec)", "Command: Delay Factor(msec)");
             const auto new_delay_factor = input_integer(prompt, 0, 1000, delay_factor);
             if (new_delay_factor.has_value()) {
@@ -578,9 +584,10 @@ void do_cmd_options(CreatureEntity &creature)
             clear_from(18);
             prt(_("コマンド: 低ヒットポイント警告", "Command: Hitpoint Warning"), 19, 0);
             while (true) {
-                prt(format(_("現在の低ヒットポイント警告: %d0%%", "Current hitpoint warning: %d0%%"), hitpoint_warn), 22, 0);
-                prt(_("低ヒットポイント警告 (0-9) ESCで決定: ", "Hitpoint Warning (0-9 or ESC to accept): "), 20, 0);
-                k = inkey();
+                prt(fmt::format(_("現在の低ヒットポイント警告: {}0%", "Current hitpoint warning: {}0%"), hitpoint_warn), 22, 0);
+                constexpr auto prompt = _("低ヒットポイント警告 (0-9) ESCで決定: ", "Hitpoint Warning (0-9 or ESC to accept): ");
+                prt(prompt, 20, 0);
+                k = input_key_with_context(InputKind::COMMAND_CHAR, prompt);
                 if (k == ESCAPE) {
                     break;
                 } else if (k == '?') {
@@ -600,9 +607,10 @@ void do_cmd_options(CreatureEntity &creature)
             clear_from(18);
             prt(_("コマンド: 低魔力色閾値", "Command: Mana Color Threshold"), 19, 0);
             while (true) {
-                prt(format(_("現在の低魔力色閾値: %d0%%", "Current mana color threshold: %d0%%"), mana_warn), 22, 0);
-                prt(_("低魔力閾値 (0-9) ESCで決定: ", "Mana color Threshold (0-9 or ESC to accept): "), 20, 0);
-                k = inkey();
+                prt(fmt::format(_("現在の低魔力色閾値: {}0%", "Current mana color threshold: {}0%"), mana_warn), 22, 0);
+                constexpr auto prompt = _("低魔力閾値 (0-9) ESCで決定: ", "Mana color Threshold (0-9 or ESC to accept): ");
+                prt(prompt, 20, 0);
+                k = input_key_with_context(InputKind::COMMAND_CHAR, prompt);
                 if (k == ESCAPE) {
                     break;
                 } else if (k == '?') {
@@ -631,7 +639,7 @@ void do_cmd_options(CreatureEntity &creature)
     }
 
     screen_load();
-    RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::EQUIPPY);
+    DeferredUpdateRequests::get_instance().set_flag(MainWindowRedrawingFlag::EQUIPPY);
 }
 
 /*!
@@ -659,10 +667,11 @@ void do_cmd_options_aux(CreatureEntity &creature, GameOptionPage page, std::stri
         option_num++;
     }
 
+    constexpr auto command = _("{} (リターン:次, {}ESC:終了, ?:ヘルプ) ", "{} (RET:next, {}, ?:help) ");
+    const auto header = fmt::format(command, info, browse_only ? _("", "ESC:exit") : _("y/n:変更, ", "y/n:change, ESC:accept"));
     term_clear();
     while (true) {
-        constexpr auto command = _("%s (リターン:次, %sESC:終了, ?:ヘルプ) ", "%s (RET:next, %s, ?:help) ");
-        prt(format(command, info.data(), browse_only ? _("", "ESC:exit") : _("y/n:変更, ", "y/n:change, ESC:accept")), 0, 0);
+        prt(header, 0, 0);
         if (page == GameOptionPage::AUTODESTROY) {
             constexpr auto mes = _("以下のオプションは、簡易自動破壊を使用するときのみ有効", "Following options will protect items from easy auto-destroyer.");
             c_prt(TERM_YELLOW, mes, 6, _(6, 3));
@@ -676,7 +685,7 @@ void do_cmd_options_aux(CreatureEntity &creature, GameOptionPage page, std::stri
 
             const auto &option = option_info[opt[i]];
             const auto reply = *option.value ? _("はい  ", "yes") : _("いいえ", "no ");
-            const auto label = format("%-48s: %s (%.19s)", option.description.data(), reply, option.text.data());
+            const auto label = fmt::format("{:<48}: {} ({})", fmt::bytes(option.description), reply, str_substr(option.text, 0, 19));
             if ((page == GameOptionPage::AUTODESTROY) && i > 2) {
                 c_prt(a, label, i + 5, 0);
             } else {
@@ -691,7 +700,7 @@ void do_cmd_options_aux(CreatureEntity &creature, GameOptionPage page, std::stri
         }
 
         move_cursor(k + 2 + l, 50);
-        ch = inkey();
+        ch = input_key_with_context(InputKind::OPTION, header);
         if (const auto dir = get_keymap_dir(ch); dir.is_axial()) {
             ch = I2D(dir.dir());
         }

@@ -44,7 +44,7 @@ bool activate_dragon_breath(CreatureEntity &creature, const ItemEntity &item)
     }
 
     const auto &breath = rand_choice(breaths);
-    msg_format(_("あなたは%sのブレスを吐いた。", "You breathe %s."), breath.second.data());
+    msg_print(_("あなたは{}のブレスを吐いた。", "You breathe {}."), breath.second);
     fire_breath(creature, breath.first, dir, 250, 4);
     return true;
 }

@@ -22,6 +22,7 @@ enum sv_helm_type {
     SV_DRAGON_HELM = 7,
     SV_KABUTO = 8, /* 7 */
     SV_SCOUTER = 22,
+    SV_ALUMINUM_FOIL_HAT = 27,
 };
 
 /* The "sval" codes for TV_CROWN */

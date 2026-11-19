@@ -123,6 +123,12 @@
                         "minimum": 0,
                         "maximum": 128
                     },
+                    "max_level": {
+                        "type": "integer",
+                        "description": "生成上限階層。この階層より深い階では通常生成されない (召喚・変身等の一般生成ルーチンも含む)。level 以上を指定すること。省略時は無制限",
+                        "minimum": 0,
+                        "maximum": 127
+                    },
                     "rarity": {
                         "type": "integer",
                         "description": "出現頻度。高いほど出にくい",
@@ -174,6 +180,26 @@
                         "type": "string",
                         "description": "プレイヤー職業固定指定 (提案C1)。トークンは r_info_player_class を参照。効果は未反映で pclass フィールドのみ付与。"
                     },
+                    "civilization": {
+                        "type": "string",
+                        "description": "文明水準。その種族がどの文明段階に属する存在かを表す分類。ベースアイテム側の civilization と同じ尺度。既定=未指定=文明に属さない存在。",
+                        "enum": [
+                            "STONE",
+                            "BRONZE",
+                            "IRON",
+                            "INDUSTRIAL",
+                            "ATOMIC",
+                            "INFORMATION",
+                            "SOLAR",
+                            "GALACTIC"
+                        ]
+                    },
+                    "armament_level": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100000,
+                        "description": "武装度。生成時にどれだけ上質な装備を与えるかを表す種族固有の値。未指定の場合は level * 50 が既定値となる。"
+                    },
                     "grows_stats": {
                         "type": "boolean",
                         "description": "レベルアップ時に能力値も成長させるか (提案C2)。既定false=オプトイン。trueの個体のみ成長。"
@@ -192,6 +218,23 @@
                     "realm_abilities": {
                         "type": "string",
                         "description": "詠唱能力を付与する魔法領域 (提案C6)。トークンは r_info_realm を参照。指定するとその realm 由来の MonsterAbilityType が詠唱時に追加される。既定=なし=オプトイン。"
+                    },
+                    "realm_abilities2": {
+                        "type": "string",
+                        "description": "詠唱能力を付与する第2魔法領域 (提案C6第2弾)。realm_abilities と併用でき、二重詠唱者となる。トークンは r_info_realm を参照。既定=なし=オプトイン。"
+                    },
+                    "spellbook_realm": {
+                        "type": "string",
+                        "description": "魔導書学習の魔法領域 (提案C6-R)。spellbook_indices の書からこの realm の呪文を生成時に学習し、学習した書のティアに応じて詠唱する。トークンは r_info_realm を参照。既定=なし=オプトイン。"
+                    },
+                    "spellbook_indices": {
+                        "type": "array",
+                        "items": {
+                            "type": "integer",
+                            "minimum": 0,
+                            "maximum": 3
+                        },
+                        "description": "学習する魔導書の番号 (0..3) の配列 (提案C6-R)。第1〜2書(0,1)で基本呪文、第3〜4書(2,3)で高位呪文を学ぶ。spellbook_realm と併用。既定=なし=オプトイン。"
                     },
                     "suffers_poison_dot": {
                         "type": "boolean",
@@ -259,6 +302,10 @@
                                     "description": "ドロップ率 1-100%",
                                     "minimum": 1,
                                     "maximum": 100
+                                },
+                                "required_attribute": {
+                                    "type": "string",
+                                    "description": "この属性で止めを刺したときだけ落とす。トークンは r_info_attribute (AttributeType の enum 名) を参照。省略時は属性を問わない"
                                 }
                             }
                         }
@@ -523,6 +570,337 @@
                                 }
                             }
                         }
+                    },
+                    "equip_kind": {
+                        "type": "array",
+                        "description": "生成時装備指定。生成時に持たせて装備させる (撃破すれば所持品ごと床へ落ちる)",
+                        "items": {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                                "id",
+                                "probability",
+                                "grade",
+                                "dice"
+                            ],
+                            "properties": {
+                                "id": {
+                                    "type": "integer",
+                                    "description": "装備するベースアイテムID",
+                                    "minimum": 0,
+                                    "maximum": 9999
+                                },
+                                "probability": {
+                                    "type": "string",
+                                    "description": "確率。X_IN_Y形式",
+                                    "pattern": "[1-9][0-9]*_IN_[1-9][0-9]*"
+                                },
+                                "grade": {
+                                    "type": "integer",
+                                    "description": "品質等級。-2:呪い 〜 2:優良",
+                                    "minimum": -2,
+                                    "maximum": 2
+                                },
+                                "dice": {
+                                    "type": "string",
+                                    "description": "個数のダイス。XdY形式",
+                                    "pattern": "[1-9][0-9]*d[1-9][0-9]*"
+                                },
+                                "exclusive_group": {
+                                    "type": "integer",
+                                    "description": "排他グループ番号。同じ番号のエントリはリスト順に抽選し、最初に当たった 1 つだけを採用する (先勝ちカスケード)。省略時は 0 = グループ無しでエントリごとに独立抽選",
+                                    "minimum": 1,
+                                    "maximum": 100
+                                },
+                                "apply_magic": {
+                                    "type": "boolean",
+                                    "description": "ItemMagicApplier による魔法的強化を与えるか。省略時は true = grade に応じた強化を適用。false にすると grade を無視してベースアイテムのまま生成する"
+                                },
+                                "allows_fixed_artifact": {
+                                    "type": "boolean",
+                                    "description": "魔法的強化で固定アーティファクト化を許すか。省略時は false = AM_NO_FIXED_ART 付きで強化するため固定アーティファクトにはならない。true にすると通常のアイテム生成と同じく固定アーティファクト化を試みる"
+                                },
+                                "min_dun_level": {
+                                    "type": "integer",
+                                    "description": "発火に必要な最小の階層。生成階 (dun_level) がこの値未満なら発火しない。省略時は 0 = 制限なし",
+                                    "minimum": 0,
+                                    "maximum": 128
+                                }
+                            }
+                        }
+                    },
+                    "equip_tval": {
+                        "type": "array",
+                        "description": "生成時装備指定 (アイテム種別)。指定種別の中から無作為に選ばれた品を生成時に装備させる",
+                        "items": {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                                "probability",
+                                "grade",
+                                "dice"
+                            ],
+                            "properties": {
+                                "tval": {
+                                    "type": "integer",
+                                    "description": "アイテム種別 (ItemKindType の値)。候補となるベースアイテムが 1 つも無い種別は読込エラーになる",
+                                    "minimum": 0,
+                                    "maximum": 128
+                                },
+                                "probability": {
+                                    "type": "string",
+                                    "description": "確率。X_IN_Y形式",
+                                    "pattern": "[1-9][0-9]*_IN_[1-9][0-9]*"
+                                },
+                                "grade": {
+                                    "type": "integer",
+                                    "description": "品質等級。-2:呪い 〜 2:優良",
+                                    "minimum": -2,
+                                    "maximum": 2
+                                },
+                                "dice": {
+                                    "type": "string",
+                                    "description": "個数のダイス。XdY形式",
+                                    "pattern": "[1-9][0-9]*d[1-9][0-9]*"
+                                },
+                                "use_allocation_table": {
+                                    "type": "boolean",
+                                    "description": "品目を通常のアイテム生成と同じ深度加重アロケーションテーブルで選ぶか。省略時は false = 当該種別の全 sval から一様抽選。*_tval 専用"
+                                },
+                                "exclusive_group": {
+                                    "type": "integer",
+                                    "description": "排他グループ番号。同じ番号のエントリはリスト順に抽選し、最初に当たった 1 つだけを採用する (先勝ちカスケード)。省略時は 0 = グループ無しでエントリごとに独立抽選",
+                                    "minimum": 1,
+                                    "maximum": 100
+                                },
+                                "apply_magic": {
+                                    "type": "boolean",
+                                    "description": "ItemMagicApplier による魔法的強化を与えるか。省略時は true = grade に応じた強化を適用。false にすると grade を無視してベースアイテムのまま生成する"
+                                },
+                                "allows_fixed_artifact": {
+                                    "type": "boolean",
+                                    "description": "魔法的強化で固定アーティファクト化を許すか。省略時は false = AM_NO_FIXED_ART 付きで強化するため固定アーティファクトにはならない。true にすると通常のアイテム生成と同じく固定アーティファクト化を試みる"
+                                },
+                                "sval_min": {
+                                    "type": "integer",
+                                    "description": "品目選定で候補として許す最小 sval。当該種別のうち sval >= この値の品だけを候補にする。省略時は 0 = 下限なし。*_tval 専用",
+                                    "minimum": 0,
+                                    "maximum": 255
+                                },
+                                "min_dun_level": {
+                                    "type": "integer",
+                                    "description": "発火に必要な最小の階層。生成階 (dun_level) がこの値未満なら発火しない。省略時は 0 = 制限なし",
+                                    "minimum": 0,
+                                    "maximum": 128
+                                },
+                                "category": {
+                                    "type": "string",
+                                    "description": "tval を跨ぐベースアイテム分類で候補を絞る。SPELL_BOOK / HIGH_LEVEL_BOOK。指定時は tval を省略できる。*_tval 専用",
+                                    "enum": [
+                                        "SPELL_BOOK",
+                                        "HIGH_LEVEL_BOOK"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "drop_kind": {
+                        "type": "array",
+                        "description": "死亡時ドロップ指定。生成時には存在せず、死亡時に初めて指定のベースアイテムが生成される",
+                        "items": {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                                "id",
+                                "probability",
+                                "grade",
+                                "dice"
+                            ],
+                            "properties": {
+                                "id": {
+                                    "type": "integer",
+                                    "description": "生成するベースアイテムID",
+                                    "minimum": 0,
+                                    "maximum": 9999
+                                },
+                                "probability": {
+                                    "type": "string",
+                                    "description": "確率。X_IN_Y形式",
+                                    "pattern": "[1-9][0-9]*_IN_[1-9][0-9]*"
+                                },
+                                "grade": {
+                                    "type": "integer",
+                                    "description": "品質等級。-2:呪い 〜 2:優良",
+                                    "minimum": -2,
+                                    "maximum": 2
+                                },
+                                "dice": {
+                                    "type": "string",
+                                    "description": "個数のダイス。XdY形式",
+                                    "pattern": "[1-9][0-9]*d[1-9][0-9]*"
+                                },
+                                "kill_interval": {
+                                    "type": "integer",
+                                    "description": "確実に N 体に 1 体だけ落とす場合の N。種族の累計撃破数がこの倍数のときのみ発火する (probability とは AND)。省略時は 1 = 毎回判定。drop_* 専用",
+                                    "minimum": 1,
+                                    "maximum": 1000
+                                },
+                                "exclusive_group": {
+                                    "type": "integer",
+                                    "description": "排他グループ番号。同じ番号のエントリはリスト順に抽選し、最初に当たった 1 つだけを採用する (先勝ちカスケード)。省略時は 0 = グループ無しでエントリごとに独立抽選",
+                                    "minimum": 1,
+                                    "maximum": 100
+                                },
+                                "apply_magic": {
+                                    "type": "boolean",
+                                    "description": "ItemMagicApplier による魔法的強化を与えるか。省略時は true = grade に応じた強化を適用。false にすると grade を無視してベースアイテムのまま生成する"
+                                },
+                                "allows_fixed_artifact": {
+                                    "type": "boolean",
+                                    "description": "魔法的強化で固定アーティファクト化を許すか。省略時は false = AM_NO_FIXED_ART 付きで強化するため固定アーティファクトにはならない。true にすると通常のアイテム生成と同じく固定アーティファクト化を試みる"
+                                },
+                                "min_dun_level": {
+                                    "type": "integer",
+                                    "description": "発火に必要な最小の階層。生成階 (dun_level) がこの値未満なら発火しない。省略時は 0 = 制限なし",
+                                    "minimum": 0,
+                                    "maximum": 128
+                                }
+                            }
+                        }
+                    },
+                    "drop_tval": {
+                        "type": "array",
+                        "description": "死亡時ドロップ指定 (アイテム種別)。生成時には存在せず、死亡時に指定種別の中から無作為にベースアイテムが選ばれる",
+                        "items": {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                                "probability",
+                                "grade",
+                                "dice"
+                            ],
+                            "properties": {
+                                "tval": {
+                                    "type": "integer",
+                                    "description": "アイテム種別 (ItemKindType の値)。候補となるベースアイテムが 1 つも無い種別は読込エラーになる",
+                                    "minimum": 0,
+                                    "maximum": 128
+                                },
+                                "probability": {
+                                    "type": "string",
+                                    "description": "確率。X_IN_Y形式",
+                                    "pattern": "[1-9][0-9]*_IN_[1-9][0-9]*"
+                                },
+                                "grade": {
+                                    "type": "integer",
+                                    "description": "品質等級。-2:呪い 〜 2:優良",
+                                    "minimum": -2,
+                                    "maximum": 2
+                                },
+                                "dice": {
+                                    "type": "string",
+                                    "description": "個数のダイス。XdY形式",
+                                    "pattern": "[1-9][0-9]*d[1-9][0-9]*"
+                                },
+                                "kill_interval": {
+                                    "type": "integer",
+                                    "description": "確実に N 体に 1 体だけ落とす場合の N。種族の累計撃破数がこの倍数のときのみ発火する (probability とは AND)。省略時は 1 = 毎回判定。drop_* 専用",
+                                    "minimum": 1,
+                                    "maximum": 1000
+                                },
+                                "use_allocation_table": {
+                                    "type": "boolean",
+                                    "description": "品目を通常のアイテム生成と同じ深度加重アロケーションテーブルで選ぶか。省略時は false = 当該種別の全 sval から一様抽選。*_tval 専用"
+                                },
+                                "exclusive_group": {
+                                    "type": "integer",
+                                    "description": "排他グループ番号。同じ番号のエントリはリスト順に抽選し、最初に当たった 1 つだけを採用する (先勝ちカスケード)。省略時は 0 = グループ無しでエントリごとに独立抽選",
+                                    "minimum": 1,
+                                    "maximum": 100
+                                },
+                                "apply_magic": {
+                                    "type": "boolean",
+                                    "description": "ItemMagicApplier による魔法的強化を与えるか。省略時は true = grade に応じた強化を適用。false にすると grade を無視してベースアイテムのまま生成する"
+                                },
+                                "allows_fixed_artifact": {
+                                    "type": "boolean",
+                                    "description": "魔法的強化で固定アーティファクト化を許すか。省略時は false = AM_NO_FIXED_ART 付きで強化するため固定アーティファクトにはならない。true にすると通常のアイテム生成と同じく固定アーティファクト化を試みる"
+                                },
+                                "sval_min": {
+                                    "type": "integer",
+                                    "description": "品目選定で候補として許す最小 sval。当該種別のうち sval >= この値の品だけを候補にする。省略時は 0 = 下限なし。*_tval 専用",
+                                    "minimum": 0,
+                                    "maximum": 255
+                                },
+                                "min_dun_level": {
+                                    "type": "integer",
+                                    "description": "発火に必要な最小の階層。生成階 (dun_level) がこの値未満なら発火しない。省略時は 0 = 制限なし",
+                                    "minimum": 0,
+                                    "maximum": 128
+                                },
+                                "category": {
+                                    "type": "string",
+                                    "description": "tval を跨ぐベースアイテム分類で候補を絞る。SPELL_BOOK / HIGH_LEVEL_BOOK。指定時は tval を省略できる。*_tval 専用",
+                                    "enum": [
+                                        "SPELL_BOOK",
+                                        "HIGH_LEVEL_BOOK"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "death_explosion": {
+                        "type": "object",
+                        "description": "死亡時爆発。未指定なら爆発しない",
+                        "additionalProperties": false,
+                        "required": [
+                            "attribute",
+                            "radius",
+                            "damage_dice"
+                        ],
+                        "properties": {
+                            "attribute": {
+                                "type": "string",
+                                "description": "爆発の属性。トークンは r_info_attribute (AttributeType の enum 名) を参照"
+                            },
+                            "radius": {
+                                "type": "integer",
+                                "description": "効果半径",
+                                "minimum": 0,
+                                "maximum": 20
+                            },
+                            "damage_dice": {
+                                "type": "string",
+                                "description": "ダメージダイス。XdY形式。固定値は \"Nd1\" と書く",
+                                "pattern": "[1-9][0-9]*d[1-9][0-9]*"
+                            }
+                        }
+                    },
+                    "death_random_artifact": {
+                        "type": "object",
+                        "description": "死亡時ランダムアーティファクト生成。指定種別の装備品をまともな☆になるまで振り直して1個落とす。未指定なら生成しない",
+                        "additionalProperties": false,
+                        "required": [
+                            "tval"
+                        ],
+                        "properties": {
+                            "tval": {
+                                "type": "integer",
+                                "description": "候補とするアイテム種別 (ItemKindType の値)",
+                                "minimum": 0,
+                                "maximum": 128
+                            },
+                            "sval_min": {
+                                "type": "integer",
+                                "description": "候補として許す最小 sval。省略時は 0 = 下限なし",
+                                "minimum": 0,
+                                "maximum": 255
+                            }
+                        }
+                    },
+                    "drops_sacred_treasures": {
+                        "type": "boolean",
+                        "description": "撃破者の性格が「なまけもの」のとき、未生成のナマケ装備 (三種の神器) を 1 つ落とすか。既定 false"
                     }
                 }
             }

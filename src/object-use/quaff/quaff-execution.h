@@ -4,6 +4,9 @@
 
 class CreatureEntity;
 class ItemEntity;
+
+short calc_moistened_food(short food, short pval);
+
 class ObjectQuaffEntity {
 public:
     ObjectQuaffEntity(CreatureEntity &creature);

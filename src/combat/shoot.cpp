@@ -11,7 +11,6 @@
 #include "flavor/object-flavor-types.h"
 #include "floor/floor-object.h"
 #include "floor/geometry.h"
-#include "game-option/cheat-types.h"
 #include "game-option/special-options.h"
 #include "grid/grid.h"
 #include "inventory/inventory-object.h"
@@ -48,18 +47,19 @@
 #include "system/artifact-type-definition.h"
 #include "system/baseitem/baseitem-key.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/enums/terrain/terrain-characteristics.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/redrawing-flags-updater.h"
 #include "target/projection-path-calculator.h"
 #include "target/target-checker.h"
 #include "target/target-getter.h"
 #include "tracking/lore-tracker.h"
 #include "util/bit-flags-calculator.h"
+#include "util/string-processor.h"
 #include "view/display-messages.h"
 #include "wizard/wizard-messages.h"
 #include <cstdint>
@@ -466,7 +466,7 @@ static MULTIPLY calc_shot_damage_with_slay(
 
         if ((flags.has(TR_FORCE_WEAPON)) && (creature.get_current_mp() > (creature.get_max_mp() / 30))) {
             creature.sub_current_mp((1 + (creature.get_max_mp() / 30)));
-            RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::MP);
+            DeferredUpdateRequests::get_instance().set_flag(MainWindowRedrawingFlag::MP);
             mult = mult * 5 / 2;
         }
         break;
@@ -665,7 +665,7 @@ void exe_fire(CreatureEntity &creature, INVENTORY_IDX i_idx, ItemEntity *j_ptr, 
                         StatusRecalculatingFlag::FLOW,
                         StatusRecalculatingFlag::MONSTER_LITE,
                     };
-                    RedrawingFlagsUpdater::get_instance().set_flags(flags);
+                    DeferredUpdateRequests::get_instance().set_flags(flags);
 
                     /* Destroy the wall */
                     cave_alter_feat(creature, pos_impact.y, pos_impact.x, TerrainCharacteristics::STONE);
@@ -776,7 +776,7 @@ void exe_fire(CreatureEntity &creature, INVENTORY_IDX i_idx, ItemEntity *j_ptr, 
                     /* Handle unseen monster */
                     if (!visible) {
                         /* Invisible monster */
-                        msg_format(_("%sが敵を捕捉した。", "The %s finds a mark."), item_name.data());
+                        msg_print(_("{}が敵を捕捉した。", "The {} finds a mark."), item_name);
                     }
 
                     /* Handle visible monster */
@@ -784,7 +784,7 @@ void exe_fire(CreatureEntity &creature, INVENTORY_IDX i_idx, ItemEntity *j_ptr, 
                         /* Get "the monster" or "it" */
                         const auto m_name = monster_desc(creature, monster, 0);
 
-                        msg_format(_("%sが%sに命中した。", "The %s hits %s."), item_name.data(), m_name.data());
+                        msg_print(_("{}が{}に命中した。", "The {} hits {}."), item_name, m_name);
 
                         if (monster.is_visible_on_map()) {
                             if (!creature.is_hallucinated()) {
@@ -805,7 +805,7 @@ void exe_fire(CreatureEntity &creature, INVENTORY_IDX i_idx, ItemEntity *j_ptr, 
 
                             tdam = monster.hp + 1;
                             base_dam = tdam;
-                            msg_format(_("%sの急所に突き刺さった！", "Your shot hit a fatal spot of %s!"), m_name.data());
+                            msg_print(_("{}の急所に突き刺さった！", "Your shot hit a fatal spot of {}!"), m_name);
                         } else {
                             if (no_instantly_death) {
                                 monrace.r_resistance_flags.set(MonsterResistanceType::NO_INSTANTLY_DEATH);
@@ -830,8 +830,7 @@ void exe_fire(CreatureEntity &creature, INVENTORY_IDX i_idx, ItemEntity *j_ptr, 
                         tdam = mon_damage_mod(creature, monster, tdam, false);
                     }
 
-                    msg_format_wizard(creature, CHEAT_MONSTER, _("%dのダメージを与えた。(残りHP %d/%d(%d))", "You do %d damage. (left HP %d/%d(%d))"), tdam,
-                        monster.hp - tdam, monster.maxhp, monster.max_maxhp);
+                    msg_print_wizard_damage(creature, monster, tdam);
 
                     /* Sniper */
                     if (snipe_type == SP_EXPLODE) {
@@ -861,7 +860,7 @@ void exe_fire(CreatureEntity &creature, INVENTORY_IDX i_idx, ItemEntity *j_ptr, 
                         /* STICK TO */
                         if (fire_item.is_fixed_artifact() && (sniper_concent == 0)) {
                             stick_to = true;
-                            msg_format(_("%sは%sに突き刺さった！", "%s^ is stuck in %s!"), item_name.data(), m_name.data());
+                            msg_print(_("{}は{}に突き刺さった！", "{} is stuck in {}!"), str_upcase_first(item_name), m_name);
                         }
 
                         const auto pain_message = monster.get_pain_message(m_name, tdam);
@@ -876,7 +875,7 @@ void exe_fire(CreatureEntity &creature, INVENTORY_IDX i_idx, ItemEntity *j_ptr, 
 
                         if (fear && monster.is_visible_on_map()) {
                             sound(SoundKind::FLEE);
-                            msg_format(_("%s^は恐怖して逃げ出した！", "%s^ flees in terror!"), m_name.data());
+                            msg_print(_("{}は恐怖して逃げ出した！", "{} flees in terror!"), str_upcase_first(m_name));
                         }
 
                         monster.set_target(creature.get_position());
@@ -1026,7 +1025,7 @@ bool test_hit_fire(CreatureEntity &creature, int chance, CreatureEntity &target,
     if (randint0(chance) < (ac * 3 / 4)) {
         if (target.get_r_idx() == MonraceId::GOEMON && !target.is_asleep()) {
             const auto m_name = monster_desc(creature, target, MD_IGNORE_HALLU | MD_INDEF_HIDDEN);
-            msg_format(_("%sは%sを斬り捨てた！", "%s cuts down %s!"), m_name.data(), item_name.data());
+            msg_print(_("{}は{}を斬り捨てた！", "{} cuts down {}!"), m_name, item_name);
         }
         return false;
     }

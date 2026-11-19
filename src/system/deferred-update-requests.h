@@ -1,0 +1,175 @@
+#pragma once
+
+#include "util/flag-group.h"
+
+enum class MainWindowRedrawingFlag {
+    TITLE, /*!< 称号 */
+    LEVEL,
+    EXP, /*!< 経験値 */
+    ABILITY_SCORE,
+    AC,
+    HP,
+    MP,
+    GOLD,
+    DEPTH,
+    EQUIPPY, /*!< 装備シンボル */
+    HEALTH, /*!< モンスターのステータス */
+    CUT, /*!< 負傷度 */
+    STUN, /*!< 朦朧度 */
+    HUNGER, /*!< 空腹度 */
+    TIMED_EFFECT,
+    UHEALTH, /*!< ペットのステータス */
+    ACTION, /*!< プレイヤーの行動状態 */
+    SPEED, /*!< 加速 */
+    STUDY, /*!< 学習 */
+    IMITATION, /*!< ものまね */
+    EXTRA, /*!< 拡張ステータス全体 */
+    BASIC, /*!< 基本ステータス全体 */
+    MAP, /*!< ゲームマップ */
+    WIPE, /*!< 画面消去 */
+    MAX,
+};
+
+enum class SubWindowRedrawingFlag {
+    INVENTORY = 0, /*!< 所持品-装備品 */
+    EQUIPMENT = 1, /*!< 装備品-所持品 */
+    SPELL = 2, /*!< 魔法一覧 */
+    PLAYER = 3, /*!< プレイヤーのステータス */
+    SIGHT_MONSTERS = 4, /*!< 視界内モンスターの一覧 */
+    PETS = 5, /*!< ペットの一覧 */
+    MESSAGE = 6, /*!< メッセージログ */
+    OVERHEAD = 7, /*!< 周辺の光景 */
+    MONSTER_LORE = 8, /*!< モンスターの思い出 */
+    ITEM_KNOWLEDGE = 9, /*!< アイテムの知識 */
+    DUNGEON = 10, /*!< ダンジョンの地形 */
+    SNAPSHOT = 11, /*!< 記念写真 */
+    FLOOR_ITEMS = 12, /*!< 床上のアイテム一覧 */
+    FOUND_ITEMS = 13, /*!< 発見済みのアイテム一覧 */
+    /*!< 14は予約領域 */
+    /*!< 15は予約領域 */
+    MAX = 16,
+};
+
+enum class StatusRecalculatingFlag {
+    BONUS, /*!< 能力値修正 */
+    TORCH, /*!< 光源半径 */
+    HP,
+    MP,
+    SPELLS, /*!< 魔法学習数 */
+    UN_VIEW, /*!< 地形の視界外化 */
+    UN_LITE, /*!< 明暗範囲の視界外化 */
+    VIEW, /*!< 視界 */
+    LITE, /*!< 明暗範囲 */
+    MONSTER_LITE, /*!< モンスターの光源範囲 */
+    DELAY_VISIBILITY, /*!< 視界の追加更新 */
+    MONSTER_STATUSES, /*!< モンスターのステータス */
+    DISTANCE, /*!< プレイヤーとモンスターの距離 */
+    FLOW, /*!< プレイヤーから各マスへの到達距離 */
+    MAX,
+};
+
+/*!
+ * @brief 所持品の整理を要することを示すフラグ
+ * @details 所持品のスロット番号が変わるため、コマンドの区切りでだけ処理する (update_inventory_arrangement() を参照)。
+ */
+enum class InventoryArrangementFlag {
+    AUTO_DESTRUCTION, /*!< アイテムの自動破壊を要する */
+    COMBINATION, /*!< アイテムの結合を要する */
+    REORDER, /*!< アイテムの並べ替えを要する */
+    MAX,
+};
+
+class DeferredUpdateRequests {
+public:
+    DeferredUpdateRequests(const DeferredUpdateRequests &) = delete;
+    DeferredUpdateRequests(DeferredUpdateRequests &&) = delete;
+    DeferredUpdateRequests &operator=(const DeferredUpdateRequests &) = delete;
+    DeferredUpdateRequests &operator=(DeferredUpdateRequests &&) = delete;
+    ~DeferredUpdateRequests() = default;
+
+    static DeferredUpdateRequests &get_instance();
+
+    bool any_main() const;
+    bool any_sub() const;
+    bool any_stats() const;
+
+    bool has(MainWindowRedrawingFlag flag) const;
+    bool has(SubWindowRedrawingFlag flag) const;
+    bool has(StatusRecalculatingFlag flag) const;
+    bool has(InventoryArrangementFlag flag) const;
+
+    bool has_any_of(const EnumClassFlagGroup<MainWindowRedrawingFlag> &flags) const;
+    bool has_any_of(const EnumClassFlagGroup<SubWindowRedrawingFlag> &flags) const;
+    bool has_any_of(const EnumClassFlagGroup<StatusRecalculatingFlag> &flags) const;
+    bool has_any_of(const EnumClassFlagGroup<InventoryArrangementFlag> &flags) const;
+
+    void set_flag(MainWindowRedrawingFlag flag);
+    void set_flag(SubWindowRedrawingFlag flag);
+    void set_flag(StatusRecalculatingFlag flag);
+    void set_flag(InventoryArrangementFlag flag);
+
+    void set_flags(const EnumClassFlagGroup<MainWindowRedrawingFlag> &flags);
+    void set_flags(const EnumClassFlagGroup<SubWindowRedrawingFlag> &flags);
+    void set_flags(const EnumClassFlagGroup<StatusRecalculatingFlag> &flags);
+    void set_flags(const EnumClassFlagGroup<InventoryArrangementFlag> &flags);
+
+    //! アイテム関連サブウィンドウ (INVENTORY/EQUIPMENT/PLAYER/FLOOR_ITEMS/FOUND_ITEMS) の再描画をまとめてセットする
+    void set_item_related_sub_window_flags();
+
+    //! 床のアイテムを表示するサブウィンドウ (FLOOR_ITEMS/FOUND_ITEMS) の再描画をまとめてセットする
+    void request_carried_item_lists_redrawing();
+    void request_floor_item_lists_redrawing();
+
+    //! 呪文情報サブウィンドウ (SPELL/ITEM_KNOWLEDGE) の再描画をまとめてセットする
+    void request_spell_info_redrawing();
+
+    //! メインウィンドウの消去と全体の描き直し (WIPE/BASIC/EXTRA/EQUIPPY/MAP) をまとめてセットする
+    void request_whole_main_window_redrawing();
+
+    //! 画面全体を描き直すときの、表示の元になる値の再計算をまとめてセットする
+    void request_whole_status_recalculation();
+
+    //! マップ (メインウィンドウ MAP + サブウィンドウ OVERHEAD/DUNGEON) の描き直しをまとめてセットする
+    void request_map_redrawing();
+
+    //! モンスターの表示状態更新 (MONSTER_STATUSES) とマップの描き直しをまとめてセットする
+    void request_monster_update_and_map_redrawing();
+
+    //! 視界と明るさの消去・計算し直し (UN_VIEW/UN_LITE/VIEW/LITE/MONSTER_LITE) をまとめてセットする
+    void request_sight_recalculation();
+
+    //! 所持品の結合・並べ替え (COMBINATION/REORDER) と一覧の描き直し (INVENTORY) をまとめてセットする
+    void request_inventory_arrangement();
+
+    void reset_flag(MainWindowRedrawingFlag flag);
+    void reset_flag(SubWindowRedrawingFlag flag);
+    void reset_flag(StatusRecalculatingFlag flag);
+    void reset_flag(InventoryArrangementFlag flag);
+
+    void reset_flags(const EnumClassFlagGroup<MainWindowRedrawingFlag> &flags);
+    void reset_flags(const EnumClassFlagGroup<SubWindowRedrawingFlag> &flags);
+    void reset_flags(const EnumClassFlagGroup<StatusRecalculatingFlag> &flags);
+    void reset_flags(const EnumClassFlagGroup<InventoryArrangementFlag> &flags);
+
+    void request_inscription_change_updates();
+    void request_equipment_change_updates();
+    void request_riding_status_redrawing();
+    void request_hp_mp_redrawing();
+    void request_gold_redrawing();
+    void request_light_fuel_change_updates();
+    void request_bonus_and_max_hp_recalculation();
+    void request_max_mp_and_spells_recalculation();
+    void request_player_status_recalculation();
+    void fill_up_sub_flags();
+    EnumClassFlagGroup<SubWindowRedrawingFlag> get_sub_intersection(const EnumClassFlagGroup<SubWindowRedrawingFlag> &flags) const;
+
+private:
+    DeferredUpdateRequests() = default;
+
+    static DeferredUpdateRequests instance;
+
+    EnumClassFlagGroup<MainWindowRedrawingFlag> main_window_flags{};
+    EnumClassFlagGroup<SubWindowRedrawingFlag> sub_window_flags{};
+    EnumClassFlagGroup<StatusRecalculatingFlag> status_flags{};
+    EnumClassFlagGroup<InventoryArrangementFlag> inventory_arrangement_flags{};
+};

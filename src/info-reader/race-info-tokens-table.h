@@ -24,6 +24,7 @@
 #include "player/player-personality-types.h"
 #include "realm/realm-types.h"
 #include "system/angband.h"
+#include "system/baseitem/civilization-level-types.h"
 #include "system/monrace/body-structure-types.h"
 #include "system/monrace/extended-slot.h"
 
@@ -43,6 +44,8 @@ enum class MonsterPopulationType;
 enum class MonsterResistanceType;
 enum class MonsterSex;
 enum class MonsterSpeakType;
+enum class AttributeType : int;
+enum class MonraceDropCategory;
 enum class MonsterMessageType;
 enum class MonsterSpecialType;
 enum class MonsterVisualType;
@@ -73,9 +76,12 @@ extern const std::unordered_map<std::string_view, MonsterSex> r_info_sex;
 extern const std::unordered_map<std::string_view, player_personality_type> r_info_personality;
 extern const std::unordered_map<std::string_view, MonsterMiscType> r_info_misc_flags;
 extern const std::unordered_map<std::string_view, BodyStructureType> r_info_body_structure;
+extern const std::unordered_map<std::string_view, CivilizationLevel> r_info_civilization;
 extern const std::unordered_map<std::string_view, ExtendedSlotType> r_info_extended_slot;
 extern const std::unordered_map<std::string_view, CreatureMaterialType> r_info_materials;
 extern const std::unordered_map<std::string_view, PlayerRaceType> r_info_player_race;
 extern const std::unordered_map<std::string_view, PlayerClassType> r_info_player_class;
 extern const std::unordered_map<std::string_view, PlayerMutationType> r_info_mutation;
 extern const std::unordered_map<std::string_view, RealmType> r_info_realm;
+extern const std::unordered_map<std::string_view, AttributeType> r_info_attribute;
+extern const std::unordered_map<std::string_view, MonraceDropCategory> r_info_drop_category;

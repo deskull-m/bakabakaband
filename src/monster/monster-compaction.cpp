@@ -66,6 +66,17 @@ static void compact_monsters_aux(CreatureEntity &creature, MONSTER_IDX i1, MONST
         }
     }
 
+    // パーティのリーダー参照を新しい添字へ張り替える。リーダー自身も自分の m_idx を
+    // 持っているため、この 1 ループでリーダー・メンバー双方が追従する。
+    if (monster.belongs_to_party()) {
+        for (auto i = 1; i < floor.m_max; i++) {
+            auto &party_monster = floor.get_monster(static_cast<MONSTER_IDX>(i));
+            if (party_monster.get_party_leader_m_idx() == i1) {
+                party_monster.set_party_leader_m_idx(i2);
+            }
+        }
+    }
+
     floor.m_list[i2] = std::move(floor.m_list[i1]);
     floor.m_list[i1].wipe();
 

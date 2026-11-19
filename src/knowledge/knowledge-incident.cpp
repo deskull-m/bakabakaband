@@ -9,6 +9,7 @@
 #include "flavor/flavor-describer.h"
 #include "flavor/object-flavor-types.h"
 #include "io-dump/dump-util.h"
+#include "market/loot-notoriety.h"
 #include "monster-attack/monster-attack-table.h"
 #include "monster-race/monster-kind-type-name.h"
 #include "monster-race/race-kind-flags.h"
@@ -27,14 +28,16 @@
 #include <string>
 #include <vector>
 
-void do_cmd_knowledge_incident(CreatureEntity &creature)
+/*!
+ * @brief これまでの出来事 (インシデント) の一覧を任意のファイルへ書き出す
+ * @param creature クリーチャーへの参照
+ * @param fff 出力先ファイルポインタ
+ * @details 知識画面 (do_cmd_knowledge_incident) とキャラクタダンプ (dump_aux_incident) の
+ * 双方から呼ぶ。インシデントは CreatureEntity::incident_tree に貯まった記録を
+ * 項目ごとに整形したもので、全キーを機械的に並べるのではなく意味のある単位で集計する。
+ */
+void write_incident_report(CreatureEntity &creature, FILE *fff)
 {
-    FILE *fff = NULL;
-    GAME_TEXT file_name[FILE_NAME_SIZE];
-    if (!open_temporary_file(&fff, file_name)) {
-        return;
-    }
-
     if (creature.incident_tree.count("WALK")) {
         fprintf(fff, _("あなたはこれまで%d歩進んだ。\n", "You walked %d steps\n"), creature.incident_tree["WALK"]);
 
@@ -359,6 +362,94 @@ void do_cmd_knowledge_incident(CreatureEntity &creature)
             }
         }
     }
+
+    // 他者の正当な所有物を略奪した記録と、それによる社会的問題 (market/loot-notoriety.h)
+    if (const auto looted = get_looted_item_count(creature); looted > 0) {
+        fprintf(fff, _("\nあなたはこれまで他者の持ち物を%d個略奪した (総額 $%d)。\n", "\nYou have looted %d items belonging to others (worth $%d in total).\n"),
+            looted, get_looted_value(creature));
+
+        if (const auto lost = creature.incident_tree.count(INCIDENT_LOOT_PRESTIGE_LOST) ? creature.incident_tree[INCIDENT_LOOT_PRESTIGE_LOST] : 0; lost > 0) {
+            fprintf(fff, _("    その悪評で社会的地位を%d失った。\n", "    Your social standing has fallen by %d from the notoriety.\n"), lost);
+        }
+
+        if (const auto bounty_level = get_loot_bounty_level(creature); bounty_level > 0) {
+            fprintf(fff, _("    あなたの首には賞金が懸かっている (ランク%d/%d)。\n", "    There is a bounty on your head (rank %d/%d).\n"),
+                bounty_level, get_loot_bounty_level_max());
+        }
+
+        if (const auto refused = creature.incident_tree.count(INCIDENT_LOOT_STORE_REFUSED) ? creature.incident_tree[INCIDENT_LOOT_STORE_REFUSED] : 0; refused > 0) {
+            fprintf(fff, _("    盗品の買取を%d回断られた。\n", "    Stores have refused your stolen goods %d times.\n"), refused);
+        }
+
+        for (const auto &[alliance_type, alliance_ptr] : alliance_list) {
+            if (alliance_type == AllianceType::NONE) {
+                continue;
+            }
+
+            const auto count = get_looted_count_of_alliance(creature, alliance_type);
+            if (count <= 0) {
+                continue;
+            }
+
+            fprintf(fff, _("    %sに属する者から%d個剥いだ (印象値 %+d)\n", "    stripped %d items from members of %s (impression %+d)\n"),
+#ifdef JP
+                alliance_ptr->name.c_str(), count, -get_loot_alliance_impression_penalty(creature, alliance_type)
+#else
+                count, alliance_ptr->name.c_str(), -get_loot_alliance_impression_penalty(creature, alliance_type)
+#endif
+            );
+        }
+    }
+
+    // 死体を漁った記録 (market/loot-notoriety.h の系統 5)。刻印の有無に依らず
+    // 「漁った回数」を数えるため、上の略奪の記録とは別立てにする。
+    if (const auto rummaged = get_rummaged_corpse_count(creature); rummaged > 0) {
+        fprintf(fff, _("\nあなたはこれまで死体を%d体漁り、%d個の品を剥ぎ取った。\n", "\nYou have rummaged %d corpses and stripped %d items from them.\n"),
+            rummaged, get_rummaged_corpse_item_count(creature));
+
+        // 種族別の内訳は多い順に並べる (死因の一覧と同じ要領)
+        const std::string prefix = INCIDENT_RUMMAGE_CORPSE_MONRACE_PREFIX;
+        std::vector<std::pair<int, int>> rummage_list; // (MonraceId, count)
+        for (const auto &entry : creature.incident_tree) {
+            if (entry.first.compare(0, prefix.length(), prefix) != 0) {
+                continue;
+            }
+
+            try {
+                rummage_list.emplace_back(std::stoi(entry.first.substr(prefix.length())), entry.second);
+            } catch (...) {
+                // パース失敗は無視
+            }
+        }
+
+        std::sort(rummage_list.begin(), rummage_list.end(), [](const auto &a, const auto &b) { return a.second > b.second; });
+        const auto &monraces_rummaged = MonraceList::get_instance();
+        for (const auto &[monrace_id_int, count] : rummage_list) {
+            const auto monrace_id = i2enum<MonraceId>(monrace_id_int);
+            if (!MonraceList::is_valid(monrace_id) || !monraces_rummaged.contains(monrace_id)) {
+                continue;
+            }
+
+            fprintf(fff, _("    %sの死体を%d体漁った。\n", "    rummaged %d corpses of %s.\n"),
+#ifdef JP
+                monraces_rummaged.get_monrace(monrace_id).name.data(), count
+#else
+                count, monraces_rummaged.get_monrace(monrace_id).name.data()
+#endif
+            );
+        }
+    }
+}
+
+void do_cmd_knowledge_incident(CreatureEntity &creature)
+{
+    FILE *fff = NULL;
+    GAME_TEXT file_name[FILE_NAME_SIZE];
+    if (!open_temporary_file(&fff, file_name)) {
+        return;
+    }
+
+    write_incident_report(creature, fff);
 
     angband_fclose(fff);
 

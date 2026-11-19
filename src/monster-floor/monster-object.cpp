@@ -22,13 +22,14 @@
 #include "object/object-info.h"
 #include "object/object-mark-types.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monrace/extended-slot.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/redrawing-flags-updater.h"
 #include "util/bit-flags-calculator.h"
+#include "util/string-processor.h"
 #include "view/display-messages.h"
 #include <string_view>
 
@@ -139,7 +140,7 @@ static void monster_pickup_object(CreatureEntity &creature, turn_flags *turn_fla
         if (turn_flags_ptr->do_take && monrace.behavior_flags.has(MonsterBehaviorType::STUPID)) {
             turn_flags_ptr->did_take_item = true;
             if (monster.is_visible_on_map() && player_can_see_bold(creature, ny, nx)) {
-                msg_format(_("%s^は%sを拾おうとしたが、だめだった。", "%s^ tries to pick up %s, but fails."), m_name.data(), o_name.data());
+                msg_print(_("{}は{}を拾おうとしたが、だめだった。", "{} tries to pick up {}, but fails."), str_upcase_first(m_name), o_name);
             }
         }
 
@@ -149,7 +150,7 @@ static void monster_pickup_object(CreatureEntity &creature, turn_flags *turn_fla
     if (turn_flags_ptr->do_take) {
         turn_flags_ptr->did_take_item = true;
         if (player_can_see_bold(creature, ny, nx)) {
-            msg_format(_("%s^が%sを拾った。", "%s^ picks up %s."), m_name.data(), o_name.data());
+            msg_print(_("{}が{}を拾った。", "{} picks up {}."), str_upcase_first(m_name), o_name);
         }
 
         // [フェーズ A-5] inventory[] に格納し、floor.o_list 側のエントリは
@@ -164,7 +165,7 @@ static void monster_pickup_object(CreatureEntity &creature, turn_flags *turn_fla
         const auto acquired_slot = monster.acquire_item(picked);
         if ((acquired_slot >= INVEN_MAIN_HAND) && (acquired_slot < INVEN_TOTAL) && player_can_see_bold(creature, ny, nx)) {
             const auto eq_name = describe_flavor(creature, *monster.inventory[acquired_slot], 0);
-            msg_format(_("%s^は%sを装備した。", "%s^ wields %s."), m_name.data(), eq_name.data());
+            msg_print(_("{}は{}を装備した。", "{} wields {}."), str_upcase_first(m_name), eq_name);
         }
         // [Phase 2.5] 拡張装備スロットへの装備メッセージ
         if (acquired_slot >= INVEN_EXTENDED_BASE && player_can_see_bold(creature, ny, nx)) {
@@ -172,8 +173,8 @@ static void monster_pickup_object(CreatureEntity &creature, turn_flags *turn_fla
             if (ext_idx < monster.get_extended_inventory_size() && monster.get_extended_item(ext_idx)) {
                 const auto eq_name = describe_flavor(creature, *monster.get_extended_item(ext_idx), 0);
                 const auto slot_name = get_extended_slot_name(monster.get_extended_slot_type(ext_idx));
-                msg_format(_("%s^は%sに%sを装着した。", "%s^ attaches %s to its %s."),
-                    m_name.data(),
+                msg_print(_("{}は{}に{}を装着した。", "{} attaches {} to its {}."),
+                    str_upcase_first(m_name),
 #ifdef JP
                     slot_name.empty() ? "拡張部位" : std::string(slot_name).c_str(),
                     eq_name.data()
@@ -185,7 +186,7 @@ static void monster_pickup_object(CreatureEntity &creature, turn_flags *turn_fla
             }
         }
 
-        RedrawingFlagsUpdater::get_instance().set_flag(SubWindowRedrawingFlag::FOUND_ITEMS);
+        DeferredUpdateRequests::get_instance().set_flag(SubWindowRedrawingFlag::FOUND_ITEMS);
         return;
     }
 
@@ -195,7 +196,7 @@ static void monster_pickup_object(CreatureEntity &creature, turn_flags *turn_fla
 
     turn_flags_ptr->did_kill_item = true;
     if (floor.has_los_at({ ny, nx })) {
-        msg_format(_("%s^が%sを破壊した。", "%s^ destroys %s."), m_name.data(), o_name.data());
+        msg_print(_("{}が{}を破壊した。", "{} destroys {}."), str_upcase_first(m_name), o_name);
     }
 
     delete_object_idx(creature, this_o_idx);

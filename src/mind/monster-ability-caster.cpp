@@ -21,11 +21,12 @@
 #include "status/bad-status-setter.h"
 #include "status/base-status.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/redrawing-flags-updater.h"
 #include "util/candidate-selector.h"
 #include "view/display-messages.h"
+#include <fmt/format.h>
 #include <vector>
 
 namespace {
@@ -70,7 +71,7 @@ bool do_cmd_use_monster_ability(CreatureEntity &creature)
     auto describer = [&creature](MonsterAbilityType ability) {
         const auto &power = monster_powers.at(ability);
         const auto need_mana = mod_need_mana(creature, power.smana, 0, RealmType::NONE);
-        return format("%-30s MP:%2d", power.name, need_mana);
+        return fmt::format("{:<30} MP:{:2}", fmt::bytes(power.name), need_mana);
     };
     CandidateSelector cs(_("どの能力を行使しますか？", "Use which ability? "), 15);
     const auto choice = cs.select(abilities, describer);
@@ -117,7 +118,7 @@ bool do_cmd_use_monster_ability(CreatureEntity &creature)
         creature.set_current_mp(0);
         creature.current_mp_frac = 0;
         msg_print(_("精神を集中しすぎて気を失ってしまった！", "You faint from the effort!"));
-        (void)BadStatusSetter(creature).mod_paralysis(randnum1<short>(5 * oops + 1));
+        (void)BadStatusSetter(creature).mod_paralysis(roll_spell_over_exertion_duration(oops));
         chg_virtue(creature, Virtue::KNOWLEDGE, -10);
         if (one_in_(2)) {
             const auto perm = one_in_(4);
@@ -127,12 +128,12 @@ bool do_cmd_use_monster_ability(CreatureEntity &creature)
     }
 
     PlayerEnergy(creature).set_player_turn_energy(100);
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.set_flag(MainWindowRedrawingFlag::MP);
+    auto &dur = DeferredUpdateRequests::get_instance();
+    dur.set_flag(MainWindowRedrawingFlag::MP);
     static constexpr auto flags = {
         SubWindowRedrawingFlag::PLAYER,
         SubWindowRedrawingFlag::SPELL,
     };
-    rfu.set_flags(flags);
+    dur.set_flags(flags);
     return true;
 }

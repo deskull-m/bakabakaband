@@ -8,7 +8,10 @@ angband_files = \
 	03_Morivant.txt \
 	04_Angwil.txt \
 	05_Zul.txt \
-	06_Rlyeh_Obsoleted.txt
+	06_Rlyeh_Obsoleted.txt \
+	07_NorthOkayama.txt \
+	08_GOLAN.txt \
+	09_ShittoAzito.txt
 
 EXTRA_DIST = \
 	$(angband_files)

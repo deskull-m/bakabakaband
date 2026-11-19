@@ -126,7 +126,7 @@ racial_level_check_result check_racial_level(CreatureEntity &creature, rpi_type 
 
     PlayerEnergy energy(creature);
     if (creature.get_level() < min_level) {
-        msg_format(_("この能力を使用するにはレベル %d に達していなければなりません。", "You need to attain level %d to use this power."), min_level);
+        msg_print(_("この能力を使用するにはレベル {} に達していなければなりません。", "You need to attain level {} to use this power."), min_level);
         energy.reset_player_turn();
         return RACIAL_CANCEL;
     }
@@ -145,7 +145,9 @@ racial_level_check_result check_racial_level(CreatureEntity &creature, rpi_type 
 
     adjust_racial_power_difficulty(creature, rpi_ptr, &difficulty);
     energy.set_player_turn_energy(100);
-    if (randint1(creature.get_stat_cur(rpi_ptr->stat)) >= ((difficulty / 2) + randint1(difficulty / 2))) {
+    const auto stat_roll = randint1(creature.get_stat_cur(rpi_ptr->stat));
+    const auto difficulty_roll = (difficulty / 2) + randint1(difficulty / 2);
+    if (stat_roll >= difficulty_roll) {
         return RACIAL_SUCCESS;
     }
 

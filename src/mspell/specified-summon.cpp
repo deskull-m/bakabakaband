@@ -18,6 +18,8 @@
 #include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
+#include "system/player-type-definition.h"
+#include "util/string-processor.h"
 #include "view/display-messages.h"
 
 /*!
@@ -54,7 +56,9 @@ MONSTER_NUMBER summon_EDGE(CreatureEntity &creature, POSITION y, POSITION x, int
     int count = 0;
     int num = 2 + randint1(1 + rlev / 20);
     for (int k = 0; k < num; k++) {
-        count += summon_named_creature(creature, m_idx, y, x, MonraceId::EDGE, PM_NONE) ? 1 : 0;
+        if (summon_named_creature(creature, m_idx, y, x, MonraceId::EDGE, PM_NONE)) {
+            count++;
+        }
     }
 
     return count;
@@ -111,7 +115,9 @@ MONSTER_NUMBER summon_LOCKE_CLONE(CreatureEntity &creature, POSITION y, POSITION
     int count = 0;
     int num = randint1(3);
     for (int k = 0; k < num; k++) {
-        count += summon_named_creature(creature, m_idx, y, x, MonraceId::LOCKE_CLONE, PM_NONE) ? 1 : 0;
+        if (summon_named_creature(creature, m_idx, y, x, MonraceId::LOCKE_CLONE, PM_NONE)) {
+            count++;
+        }
     }
 
     return count;
@@ -158,7 +164,9 @@ MONSTER_NUMBER summon_DEMON_SLAYER(CreatureEntity &creature, POSITION y, POSITIO
 
     auto count = 0;
     for (auto k = 0; k < MAX_NAZGUL_NUM; k++) {
-        count += summon_named_creature(creature, m_idx, y, x, MonraceId::DESLAYER_MEMBER, PM_NONE) ? 1 : 0;
+        if (summon_named_creature(creature, m_idx, y, x, MonraceId::DESLAYER_MEMBER, PM_NONE)) {
+            count++;
+        }
     }
 
     if (count == 0) {
@@ -185,9 +193,9 @@ MONSTER_NUMBER summon_NAZGUL(CreatureEntity &creature, POSITION y, POSITION x, M
     const auto m_name = monster_name(creature, m_idx);
 
     if (creature.is_blind()) {
-        msg_format(_("%s^が何かをつぶやいた。", "%s^ mumbles."), m_name.data());
+        msg_print(_("{}が何かをつぶやいた。", "{} mumbles."), str_upcase_first(m_name));
     } else {
-        msg_format(_("%s^が魔法で幽鬼戦隊を召喚した！", "%s^ magically summons rangers of Nazgul!"), m_name.data());
+        msg_print(_("{}が魔法で幽鬼戦隊を召喚した！", "{} magically summons rangers of Nazgul!"), str_upcase_first(m_name));
     }
 
     msg_erase();
@@ -220,15 +228,15 @@ MONSTER_NUMBER summon_NAZGUL(CreatureEntity &creature, POSITION y, POSITION x, M
         pos = pos_scat;
         count++;
         if (count == 1) {
-            msg_format(_("「幽鬼戦隊%d号、ナズグル・ブラック！」", "A Nazgul says 'Nazgul-Rangers Number %d, Nazgul-Black!'"), count);
+            msg_print(_("「幽鬼戦隊{}号、ナズグル・ブラック！」", "A Nazgul says 'Nazgul-Rangers Number {}, Nazgul-Black!'"), count);
         } else {
-            msg_format(_("「同じく%d号、ナズグル・ブラック！」", "Another one says 'Number %d, Nazgul-Black!'"), count);
+            msg_print(_("「同じく{}号、ナズグル・ブラック！」", "Another one says 'Number {}, Nazgul-Black!'"), count);
         }
 
         msg_erase();
     }
 
-    msg_format(_("「%d人そろって、リングレンジャー！」", "They say 'The %d meets! We are the Ring-Ranger!'."), count);
+    msg_print(_("「{}人そろって、リングレンジャー！」", "They say 'The {} meets! We are the Ring-Ranger!'."), count);
     msg_erase();
     return count;
 }
@@ -272,7 +280,9 @@ MONSTER_NUMBER summon_EYE_PHORN(CreatureEntity &creature, POSITION y, POSITION x
     int count = 0;
     int num = 2 + randint1(1 + rlev / 20);
     for (int k = 0; k < num; k++) {
-        count += summon_named_creature(creature, m_idx, y, x, MonraceId::EYE_PHORN, PM_NONE) ? 1 : 0;
+        if (summon_named_creature(creature, m_idx, y, x, MonraceId::EYE_PHORN, PM_NONE)) {
+            count++;
+        }
     }
 
     return count;
@@ -316,14 +326,13 @@ MONSTER_NUMBER summon_YENDER_WIZARD(CreatureEntity &creature, POSITION y, POSITI
         return 0;
     }
 
-    auto count = summon_named_creature(creature, m_idx, y, x, MonraceId::YENDOR_WIZARD_2, PM_NONE) ? 1 : 0;
-    if (count == 0) {
+    if (!summon_named_creature(creature, m_idx, y, x, MonraceId::YENDOR_WIZARD_2, PM_NONE)) {
         msg_print(_("どこからか声が聞こえる…「三重苦は負わぬ。。。」", "Heard a voice from somewhere... 'I will deny the triple suffering...'"));
         return 0;
     }
 
     msg_print(_("二重苦だ。。。", "THIS is double suffering..."));
-    return count;
+    return 1;
 }
 
 MONSTER_NUMBER summon_PLASMA(CreatureEntity &creature, POSITION y, POSITION x, int rlev, MONSTER_IDX m_idx)
@@ -331,7 +340,9 @@ MONSTER_NUMBER summon_PLASMA(CreatureEntity &creature, POSITION y, POSITION x, i
     auto count = 0;
     auto num = 2 + randint1(1 + rlev / 20);
     for (auto k = 0; k < num; k++) {
-        count += summon_named_creature(creature, m_idx, y, x, MonraceId::PLASMA_VORTEX, PM_NONE) ? 1 : 0;
+        if (summon_named_creature(creature, m_idx, y, x, MonraceId::PLASMA_VORTEX, PM_NONE)) {
+            count++;
+        }
     }
 
     msg_print(_("プーラーズーマーッ！！", "P--la--s--ma--!!"));
@@ -376,7 +387,9 @@ MONSTER_NUMBER summon_LAFFEY_II(CreatureEntity &creature, const Pos2D &position,
         }
     }
     for (auto k = 0; k < real_num; k++) {
-        count += summon_named_creature(creature, m_idx, position.y, position.x, MonraceId::BUNBUN_STRIKERS, PM_NONE) ? 1 : 0;
+        if (summon_named_creature(creature, m_idx, position.y, position.x, MonraceId::BUNBUN_STRIKERS, PM_NONE)) {
+            count++;
+        }
     }
     return count;
 }
@@ -386,7 +399,9 @@ MONSTER_NUMBER summon_POLYGON(CreatureEntity &creature, POSITION y, POSITION x, 
     auto count = 0;
     auto num = 2 + randint1(3);
     for (auto k = 0; k < num; k++) {
-        count += summon_named_creature(creature, m_idx, y, x, MonraceId::POLYGON_SPIN, PM_NONE) ? 1 : 0;
+        if (summon_named_creature(creature, m_idx, y, x, MonraceId::POLYGON_SPIN, PM_NONE)) {
+            count++;
+        }
     }
 
     return count;

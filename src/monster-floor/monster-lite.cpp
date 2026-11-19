@@ -8,12 +8,12 @@
 #include "player/special-defense-types.h"
 #include "system/angband-system.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/enums/terrain/terrain-characteristics.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/redrawing-flags-updater.h"
 #include "util/point-2d.h"
 #include "view/display-messages.h"
 #include "world/world.h"
@@ -296,7 +296,7 @@ void update_mon_lite(CreatureEntity &creature)
     const auto points_mon_lite = floor.collect_temp_mon_lite();
     points.insert(points.end(), points_mon_lite.begin(), points_mon_lite.end());
     floor.set_mon_lite(points, end_temp);
-    RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::DELAY_VISIBILITY);
+    DeferredUpdateRequests::get_instance().set_flag(StatusRecalculatingFlag::DELAY_VISIBILITY);
     creature.set_monlite((floor.get_grid(p_pos).info & CAVE_MNLT) != 0);
     const auto ninja_data = CreatureClass(creature).get_specific_data<ninja_data_type>();
     if (!ninja_data || !ninja_data->s_stealth) {

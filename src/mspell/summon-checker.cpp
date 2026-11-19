@@ -82,6 +82,8 @@ bool check_summon_specific(CreatureEntity &creature, MonraceId summoner_idx, Mon
         return monrace.kind_flags.has(MonsterKindType::INSECT);
     case SUMMON_ELDRAZI:
         return monrace.kind_flags.has(MonsterKindType::ELDRAZI);
+    case SUMMON_ROBOT:
+        return monrace.kind_flags.has(MonsterKindType::ROBOT);
     case SUMMON_CYBER:
         return monrace.symbol_char_is_any_of("U") && monrace.ability_flags.has(MonsterAbilityType::ROCKET);
     case SUMMON_KIN: {

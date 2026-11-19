@@ -26,10 +26,10 @@
 #include "status/experience.h"
 #include "status/shape-changer.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/item-entity.h"
 #include "system/player-type-definition.h"
-#include "system/redrawing-flags-updater.h"
 #include "view/display-messages.h"
 #include "world/world.h"
 
@@ -71,7 +71,7 @@ void effect_player_nuke(CreatureEntity &creature, EffectPlayerType *ep_ptr)
         msg_print(_("放射能で攻撃された！", "You are hit by radiation!"));
     }
 
-    ep_ptr->dam = ep_ptr->dam * calc_pois_damage_rate(creature) / 100;
+    ep_ptr->dam = ep_ptr->dam * calc_nuke_damage_rate(creature) / 100;
 
     ep_ptr->get_damage = take_hit(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
     if ((double_resist || creature.has_resist_pois()) || check_multishadow(creature)) {
@@ -434,18 +434,9 @@ void effect_player_lite(CreatureEntity &creature, EffectPlayerType *ep_ptr)
     creature.set_timed_effect(CreatureTimedEffect::WRAITH_FORM, 0);
     msg_print(_("閃光のため非物質的な影の存在でいられなくなった。", "The light forces you out of your incorporeal shadow form."));
 
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    static constexpr auto flags_mwrf = {
-        MainWindowRedrawingFlag::MAP,
-        MainWindowRedrawingFlag::TIMED_EFFECT,
-    };
-    rfu.set_flags(flags_mwrf);
-    rfu.set_flag(StatusRecalculatingFlag::MONSTER_STATUSES);
-    static constexpr auto flags_swrf = {
-        SubWindowRedrawingFlag::OVERHEAD,
-        SubWindowRedrawingFlag::DUNGEON,
-    };
-    rfu.set_flags(flags_swrf);
+    auto &dur = DeferredUpdateRequests::get_instance();
+    dur.request_monster_update_and_map_redrawing();
+    dur.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
 }
 
 void effect_player_dark(CreatureEntity &creature, EffectPlayerType *ep_ptr)
@@ -672,6 +663,7 @@ void effect_player_abyss(CreatureEntity &creature, EffectPlayerType *ep_ptr)
                                      : _("深淵があなたを誘い込んでいる！", "You are falling into the abyss!");
     msg_print(effect_mes);
     ep_ptr->dam = ep_ptr->dam * calc_abyss_damage_rate(creature, CALC_RAND) / 100;
+    ep_ptr->get_damage = take_hit(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
     BadStatusSetter bss(creature);
     if (check_multishadow(creature)) {
         return;
@@ -697,7 +689,6 @@ void effect_player_abyss(CreatureEntity &creature, EffectPlayerType *ep_ptr)
     if (!creature.has_resist_fear()) {
         (void)bss.mod_fear(randnum1<short>(10));
     }
-    ep_ptr->get_damage = take_hit(creature, DAMAGE_ATTACK, ep_ptr->dam, ep_ptr->killer);
 }
 
 void effect_player_spider_string(CreatureEntity &creature, EffectPlayerType *ep_ptr)

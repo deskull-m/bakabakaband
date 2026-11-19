@@ -13,8 +13,8 @@
 #include "spell/spells-status.h"
 #include "sv-definition/sv-weapon-types.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/inner-game-data.h"
-#include "system/redrawing-flags-updater.h"
 #include <array>
 
 namespace {
@@ -227,5 +227,5 @@ void get_max_stats(CreatureEntity &creature)
     }
 
     creature.remove_knowledge(KNOW_STAT);
-    RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::ABILITY_SCORE);
+    DeferredUpdateRequests::get_instance().set_flag(MainWindowRedrawingFlag::ABILITY_SCORE);
 }

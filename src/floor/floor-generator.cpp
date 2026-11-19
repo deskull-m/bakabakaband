@@ -13,6 +13,7 @@
 #include "dungeon/dungeon-flag-types.h"
 #include "dungeon/quest.h"
 #include "floor/cave-generator.h"
+#include "floor/fixed-map-generator.h"
 #include "floor/floor-base-definitions.h"
 #include "floor/floor-events.h"
 #include "floor/floor-save.h" //!< @todo precalc_cur_num_of_pet() が依存している、違和感.
@@ -24,7 +25,6 @@
 #include "game-option/game-play-options.h"
 #include "game-option/play-record-options.h"
 #include "grid/grid.h"
-#include "info-reader/fixed-map-parser.h"
 #include "io/files-util.h"
 #include "io/write-diary.h"
 #include "market/arena-entry.h"
@@ -43,6 +43,7 @@
 #include "system/dungeon/dungeon-definition.h"
 #include "system/dungeon/dungeon-list.h"
 #include "system/dungeon/quest-definition.h"
+#include "system/dungeon/quest-fixed-map.h"
 #include "system/enums/terrain/terrain-tag.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
@@ -301,8 +302,13 @@ static void generate_fixed_floor(CreatureEntity &creature)
         place_bold(creature, pos.y, pos.x, GB_SOLID_PERM);
     }
 
-    const auto &quests = QuestList::get_instance();
-    floor.base_level = quests.get_quest(floor.quest_number).level;
+    auto &quest = QuestList::get_instance().get_quest(floor.quest_number);
+    const auto fixed_map = QuestFixedMapList::get_instance().find(floor.quest_number);
+    if (fixed_map) {
+        apply_quest_metadata(*fixed_map, quest);
+    }
+
+    floor.base_level = quest.level;
     floor.dun_level = floor.base_level;
     floor.object_level = floor.base_level;
     floor.monster_level = floor.base_level;
@@ -312,7 +318,9 @@ static void generate_fixed_floor(CreatureEntity &creature)
 
     get_mon_num_prep_enum(creature, floor.get_monrace_hook());
     init_flags = INIT_CREATE_DUNGEON;
-    parse_fixed_map(creature, QUEST_DEFINITION_LIST, 0, 0, MAX_HGT, MAX_WID);
+    if (fixed_map && fixed_map->has_map()) {
+        generate_quest_floor_from_json(creature, quest, *fixed_map);
+    }
 }
 
 /*!
@@ -334,8 +342,8 @@ static tl::optional<std::string> level_gen(CreatureEntity &creature, tl::optiona
         rng.get_state(original_state.begin()); // 現在の乱数状態を保存
         rng = xso::rng32(*seed); // 指定された種で乱数を初期化
         seed_was_fixed = true;
-        msg_format_wizard(creature, CHEAT_DUNGEON,
-            _("乱数種を固定してフロア生成: 0x%08X", "Generating floor with fixed seed: 0x%08X"),
+        msg_print_wizard(creature, CHEAT_DUNGEON,
+            _("乱数種を固定してフロア生成: 0x{:08X}", "Generating floor with fixed seed: 0x{:08X}"),
             *seed);
     }
 
@@ -344,8 +352,8 @@ static tl::optional<std::string> level_gen(CreatureEntity &creature, tl::optiona
     const auto &dungeon = floor.get_generated_dungeon_definition();
     int level_height, level_width;
     if (dungeon.flags.has(DungeonFeatureType::ALWAY_MAX_SIZE)) {
-        level_height = MAX_HGT / SCREEN_HGT;
-        level_width = MAX_WID / SCREEN_WID;
+        level_height = MAX_DUNGEON_HGT / SCREEN_HGT;
+        level_width = MAX_DUNGEON_WID / SCREEN_WID;
     } else if (always_small_floor || ironman_smallest_floor || (allow_smallest_floor && !always_large_floor && one_in_(chance_small_floor)) || dungeon.flags.has(DungeonFeatureType::SMALLEST)) {
         level_height = MIN_HGT_MULTIPLE;
         level_width = MIN_WID_MULTIPLE;
@@ -359,30 +367,44 @@ static tl::optional<std::string> level_gen(CreatureEntity &creature, tl::optiona
     } else if (always_large_floor) {
         // 常に大きめのフロアを生成する (上流 #5423 相当)。
         // always_small_floor 等の「小さめ」系が優先されるよう、それらより後に判定する。
-        level_height = MAX_HGT / SCREEN_HGT;
-        level_width = MAX_WID / SCREEN_WID;
+        level_height = MAX_DUNGEON_HGT / SCREEN_HGT;
+        level_width = MAX_DUNGEON_WID / SCREEN_WID;
     } else if (dungeon.flags.has(DungeonFeatureType::BEGINNER)) {
         level_height = MIN_HGT_MULTIPLE * 2;
         level_width = MIN_WID_MULTIPLE * 2;
     } else {
+        // 抽選の下限は SMALLEST 系と同じ MIN_*_MULTIPLE。これを下回るフロアは
+        // generate_rooms() が「部屋群の生成に失敗」で弾いてサイズごと振り直しになるので、
+        // 抽選の段階で作らない。
+        constexpr auto min_level_height = MIN_HGT_MULTIPLE;
+        constexpr auto min_level_width = MIN_WID_MULTIPLE;
+        constexpr auto limit_level_height = MAX_DUNGEON_HGT / SCREEN_HGT;
+        constexpr auto limit_level_width = MAX_DUNGEON_WID / SCREEN_WID;
+
+        // サイズの段階を決める。HUGE_DUNGEON_RATE / LARGE_DUNGEON_RATE の抽選で
+        // 段階ごとの上限ブロック数が変わり、クソデカフロアは稀になる。
+        // 上限そのものを 2 / 3 で割ると下限を下回りうるため、「下限からの幅」を縮める。
+        auto max_level_height = limit_level_height;
+        auto max_level_width = limit_level_width;
         if (one_in_(HUGE_DUNGEON_RATE)) {
-            level_height = randint1(MAX_HGT / SCREEN_HGT);
-            level_width = randint1(MAX_WID / SCREEN_WID);
+            // クソデカダンジョン。上限をそのまま使う。
         } else if (one_in_(LARGE_DUNGEON_RATE) || dungeon.flags.has(DungeonFeatureType::LARGEST)) {
-            level_height = randint1(MAX_HGT / SCREEN_HGT / 2);
-            level_width = randint1(MAX_WID / SCREEN_WID / 2);
+            max_level_height = min_level_height + (limit_level_height - min_level_height) / 2;
+            max_level_width = min_level_width + (limit_level_width - min_level_width) / 2;
         } else {
-            level_height = randint1(MAX_HGT / SCREEN_HGT / 3);
-            level_width = randint1(MAX_WID / SCREEN_WID / 3);
+            max_level_height = min_level_height + (limit_level_height - min_level_height) / 3;
+            max_level_width = min_level_width + (limit_level_width - min_level_width) / 3;
         }
-        bool is_first_level_area = true;
-        // allow_largest_floor が ON の場合は最大面積フロアを除外しない (上流 #5423 相当)。
-        bool is_max_area = !allow_largest_floor && (level_height == MAX_HGT / SCREEN_HGT) && (level_width == MAX_WID / SCREEN_WID);
-        while (is_first_level_area || is_max_area) {
-            level_height = randint1(MAX_HGT / SCREEN_HGT);
-            level_width = randint1(MAX_WID / SCREEN_WID);
-            is_first_level_area = false;
-            is_max_area = !allow_largest_floor && (level_height == MAX_HGT / SCREEN_HGT) && (level_width == MAX_WID / SCREEN_WID);
+
+        // 最大面積のフロアは allow_largest_floor が OFF なら除外し、同じ段階の範囲で
+        // 振り直す (上流 #5423 相当)。最大面積になり得るのはクソデカダンジョンの段階だけ。
+        while (true) {
+            level_height = rand_range(min_level_height, max_level_height);
+            level_width = rand_range(min_level_width, max_level_width);
+            const auto is_max_area = (level_height == limit_level_height) && (level_width == limit_level_width);
+            if (allow_largest_floor || !is_max_area) {
+                break;
+            }
         }
     }
     floor.height = level_height * SCREEN_HGT;
@@ -485,6 +507,9 @@ void clear_cave(CreatureEntity &creature)
     floor.o_list.clear();
     floor.o_list.push_back(std::make_shared<ItemEntity>()); // 0番にダミーアイテムを用意
 
+    floor.corpses.clear();
+    floor.corpses.push_back(nullptr); // 0番にダミーを用意
+
     MonraceList::get_instance().reset_current_numbers();
     for (auto &monster : floor.m_list) {
         monster.wipe();
@@ -503,6 +528,7 @@ void clear_cave(CreatureEntity &creature)
             grid.feat = 0;
             grid.o_idx_list.clear();
             grid.m_idx = 0;
+            grid.corpse_idx = 0;
             grid.special = 0;
             grid.mimic = 0;
             grid.reset_costs();
@@ -668,7 +694,7 @@ void generate_floor(CreatureEntity &creature)
             break;
         }
 
-        msg_format(_("生成やり直し(%s)", "Generation restarted (%s)"), why->data());
+        msg_print(_("生成やり直し({})", "Generation restarted ({})"), *why);
         wipe_o_list(floor);
         wipe_monsters_list(creature);
     }

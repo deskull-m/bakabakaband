@@ -1,4 +1,6 @@
 #include "view/display-util.h"
+#include "inventory/inventory-slot-types.h"
+#include "system/creature-entity.h"
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
 #include "util/buffer-shaper.h"
@@ -67,7 +69,24 @@ const std::vector<disp_player_line> disp_player_lines = {
     { 29, 11, 21, _("HP回復/100T", "HP Regen/100T") },
     { 29, 12, 21, _("MP回復/100T", "MP Regen/100T") },
     { 1, 8, -1, _("所属     : ", "Alliance : ") },
+    { 1, 9, -1, _("体構造   : ", "Body     : ") },
 };
+}
+
+std::string build_equipment_column_labels(CreatureEntity &creature, bool weapon_slots_only)
+{
+    const auto range = weapon_slots_only ? INVEN_WEAPON_SLOTS : INVEN_WIELDING_SLOTS;
+    std::string labels;
+    for (const auto i_idx : range) {
+        if (!creature.should_display_equipment_slot(i_idx)) {
+            continue;
+        }
+
+        labels.push_back(static_cast<char>('a' + (i_idx - INVEN_MAIN_HAND)));
+    }
+
+    labels.push_back('@');
+    return labels;
 }
 
 /*!

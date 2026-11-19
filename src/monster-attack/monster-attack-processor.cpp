@@ -80,7 +80,7 @@ static bool exe_monster_attack_to_monster(CreatureEntity &creature, MONSTER_IDX 
         return false;
     }
 
-    if ((monrace.behavior_flags.has_not(MonsterBehaviorType::KILL_BODY)) && is_original_ap_and_seen(creature, monster)) {
+    if (monrace.behavior_flags.has(MonsterBehaviorType::KILL_BODY) && is_original_ap_and_seen(creature, monster)) {
         monrace.r_behavior_flags.set(MonsterBehaviorType::KILL_BODY);
     }
 

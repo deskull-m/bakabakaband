@@ -5,6 +5,8 @@
 enum class MimicKindType;
 class CreatureEntity;
 void reset_tim_flags(CreatureEntity &creature);
+void reset_ki_and_kawarimi(CreatureEntity &creature, bool notify);
+void reset_arena_buffs(CreatureEntity &creature);
 bool set_acceleration(CreatureEntity &creature, TIME_EFFECT v, bool do_dec);
 bool mod_acceleration(CreatureEntity &creature, const TIME_EFFECT v, const bool do_dec);
 bool set_shield(CreatureEntity &creature, TIME_EFFECT v, bool do_dec);

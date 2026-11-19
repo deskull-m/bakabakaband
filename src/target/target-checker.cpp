@@ -17,8 +17,8 @@
 #include "io/cursor.h"
 #include "io/screen-util.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/floor/floor-info.h"
-#include "system/redrawing-flags-updater.h"
 #include "target/target-preparation.h"
 #include "target/target-types.h"
 #include "window/main-window-util.h"
@@ -123,12 +123,5 @@ void verify_panel(CreatureEntity &creature)
     }
 
     panel_bounds_center();
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.set_flag(StatusRecalculatingFlag::MONSTER_STATUSES);
-    rfu.set_flag(MainWindowRedrawingFlag::MAP);
-    static constexpr auto flags = {
-        SubWindowRedrawingFlag::OVERHEAD,
-        SubWindowRedrawingFlag::DUNGEON,
-    };
-    rfu.set_flags(flags);
+    DeferredUpdateRequests::get_instance().request_monster_update_and_map_redrawing();
 }

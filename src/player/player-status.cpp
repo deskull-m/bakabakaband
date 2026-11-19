@@ -20,7 +20,7 @@
 #include "grid/grid.h"
 #include "inventory/inventory-object.h"
 #include "inventory/inventory-slot-types.h"
-#include "io/input-key-acceptor.h"
+#include "io/input-context.h"
 #include "io/write-diary.h"
 #include "main/sound-definitions-table.h"
 #include "main/sound-of-music.h"
@@ -96,13 +96,13 @@
 #include "sv-definition/sv-weapon-types.h"
 #include "system/creature-entity.h"
 #include "system/creature-timed-effect-types.h"
+#include "system/deferred-update-requests.h"
 #include "system/enums/terrain/pattern-tile-type.h"
 #include "system/enums/terrain/terrain-tag.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/redrawing-flags-updater.h"
 #include "system/services/dungeon-service.h"
 #include "system/terrain/terrain-definition.h"
 #include "term/screen-processor.h"
@@ -111,6 +111,7 @@
 #include "util/string-processor.h"
 #include "view/display-messages.h"
 #include "world/world.h"
+#include <fmt/format.h>
 
 static bool is_martial_arts_mode(CreatureEntity &creature);
 
@@ -247,6 +248,7 @@ static void update_bonuses(CreatureEntity &creature)
 
     /* Save the old vision stuff */
     const auto old_perception = creature.capture_perception_flags();
+    BIT_FLAGS old_lite_flags = creature.get_lite_flags();
     int16_t old_speed = static_cast<int16_t>(creature.get_speed());
 
     ARMOUR_CLASS old_dis_ac = creature.get_dis_ac();
@@ -347,23 +349,28 @@ static void update_bonuses(CreatureEntity &creature)
     creature.set_dis_ac(calc_base_ac(creature));
     creature.set_dis_to_a(calc_to_ac(creature, false));
 
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
+    auto &dur = DeferredUpdateRequests::get_instance();
     const auto new_perception = creature.capture_perception_flags();
     if (new_perception.mighty_throw_differs_from(old_perception)) {
-        rfu.set_flag(SubWindowRedrawingFlag::INVENTORY);
+        dur.set_flag(SubWindowRedrawingFlag::INVENTORY);
     }
 
     if (new_perception.monster_perception_differs_from(old_perception)) {
-        rfu.set_flag(StatusRecalculatingFlag::MONSTER_STATUSES);
+        dur.set_flag(StatusRecalculatingFlag::MONSTER_STATUSES);
+    }
+
+    // 光源を持たないときの明るさ (cur_lite) は発光で決まる
+    if (creature.get_lite_flags() != old_lite_flags) {
+        dur.set_flag(StatusRecalculatingFlag::TORCH);
     }
 
     if (creature.get_speed() != old_speed) {
-        rfu.set_flag(MainWindowRedrawingFlag::SPEED);
+        dur.set_flag(MainWindowRedrawingFlag::SPEED);
     }
 
     if ((creature.get_dis_ac() != old_dis_ac) || (creature.get_dis_to_a() != old_dis_to_a)) {
-        rfu.set_flag(MainWindowRedrawingFlag::AC);
-        rfu.set_flag(SubWindowRedrawingFlag::PLAYER);
+        dur.set_flag(MainWindowRedrawingFlag::AC);
+        dur.set_flag(SubWindowRedrawingFlag::PLAYER);
     }
 
     if (AngbandWorld::get_instance().character_xtra) {
@@ -422,16 +429,15 @@ static void update_max_hitpoints(CreatureEntity &creature)
 
 #ifdef JP
     if (creature.has_level_up_message() && (mhp > old_maxhp)) {
-        msg_format("最大ヒット・ポイントが %d 増加した！", (mhp - old_maxhp));
+        msg_print("最大ヒット・ポイントが {} 増加した！", (mhp - old_maxhp));
     }
 #endif
 
     // 本来の最大HP (max_maxhp) を確定し、現在の最大HP (maxhp) と現在HPを再計算する。
     creature.set_max_hp(mhp);
 
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.set_flag(MainWindowRedrawingFlag::HP);
-    rfu.set_flag(SubWindowRedrawingFlag::PLAYER);
+    auto &dur = DeferredUpdateRequests::get_instance();
+    dur.set_flag(MainWindowRedrawingFlag::HP);
 }
 
 /*!
@@ -517,11 +523,7 @@ static void update_num_of_spells(CreatureEntity &creature)
         realm_status.set_learned(spell_id, false);
 
         const auto &spell_name = realm.get_spell_name(spell_id);
-#ifdef JP
-        msg_format("%sの%sを忘れてしまった。", spell_name.data(), spell_category.data());
-#else
-        msg_format("You have forgotten the %s of %s.", spell_category.data(), spell_name.data());
-#endif
+        msg_print(_("{0}の{1}を忘れてしまった。", "You have forgotten the {1} of {0}."), spell_name, spell_category);
         creature.new_spells++;
     }
 
@@ -544,11 +546,7 @@ static void update_num_of_spells(CreatureEntity &creature)
 
         const auto &realm = is_realm1 ? pr.realm1() : pr.realm2();
         const auto &spell_name = realm.get_spell_name(spell_id);
-#ifdef JP
-        msg_format("%sの%sを忘れてしまった。", spell_name.data(), spell_category.data());
-#else
-        msg_format("You have forgotten the %s of %s.", spell_category.data(), spell_name.data());
-#endif
+        msg_print(_("{0}の{1}を忘れてしまった。", "You have forgotten the {1} of {0}."), spell_name, spell_category);
         creature.new_spells++;
     }
 
@@ -577,11 +575,7 @@ static void update_num_of_spells(CreatureEntity &creature)
         realm_status.set_learned(spell_id);
 
         const auto &spell_name = realm.get_spell_name(spell_id);
-#ifdef JP
-        msg_format("%sの%sを思い出した。", spell_name.data(), spell_category.data());
-#else
-        msg_format("You have remembered the %s of %s.", spell_category.data(), spell_name.data());
-#endif
+        msg_print(_("{0}の{1}を思い出した。", "You have remembered the {1} of {0}."), spell_name, spell_category);
         creature.new_spells--;
     }
 
@@ -620,19 +614,18 @@ static void update_num_of_spells(CreatureEntity &creature)
     if (creature.new_spells) {
 #ifdef JP
         if (creature.new_spells < 10) {
-            msg_format("あと %d つの%sを学べる。", creature.new_spells, spell_category.data());
+            msg_print("あと {} つの{}を学べる。", creature.new_spells, spell_category);
         } else {
-            msg_format("あと %d 個の%sを学べる。", creature.new_spells, spell_category.data());
+            msg_print("あと {} 個の{}を学べる。", creature.new_spells, spell_category);
         }
 #else
-        msg_format("You can learn %d more %s%s.", creature.new_spells, spell_category.data(), (creature.new_spells != 1) ? "s" : "");
+        msg_print("You can learn {} more {}{}.", creature.new_spells, spell_category, (creature.new_spells != 1) ? "s" : "");
 #endif
     }
 
     creature.set_old_spells(creature.new_spells);
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.set_flag(MainWindowRedrawingFlag::STUDY);
-    rfu.set_flag(SubWindowRedrawingFlag::ITEM_KNOWLEDGE);
+    auto &dur = DeferredUpdateRequests::get_instance();
+    dur.set_flag(MainWindowRedrawingFlag::STUDY);
 }
 
 /*!
@@ -673,7 +666,7 @@ static void update_max_mana(CreatureEntity &creature)
                 creature.current_mp_frac = 0;
             }
             creature.set_max_mp(baseline_max_mp);
-            RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::MP);
+            DeferredUpdateRequests::get_instance().set_flag(MainWindowRedrawingFlag::MP);
         }
         return;
     }
@@ -689,7 +682,7 @@ static void update_max_mana(CreatureEntity &creature)
     } else {
         if (mp_ptr->spell_first > creature.get_level()) {
             creature.set_max_mp(baseline_max_mp);
-            RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::MP);
+            DeferredUpdateRequests::get_instance().set_flag(MainWindowRedrawingFlag::MP);
             return;
         }
 
@@ -888,17 +881,13 @@ static void update_max_mana(CreatureEntity &creature)
 
 #ifdef JP
         if (creature.has_level_up_message() && (max_mp > creature.get_max_mp())) {
-            msg_format("最大マジック・ポイントが %d 増加した！", (max_mp - creature.get_max_mp()));
+            msg_print("最大マジック・ポイントが {} 増加した！", (max_mp - creature.get_max_mp()));
         }
 #endif
         creature.set_max_mp(max_mp);
-        auto &rfu = RedrawingFlagsUpdater::get_instance();
-        rfu.set_flag(MainWindowRedrawingFlag::MP);
-        static constexpr auto flags = {
-            SubWindowRedrawingFlag::PLAYER,
-            SubWindowRedrawingFlag::SPELL,
-        };
-        rfu.set_flags(flags);
+        auto &dur = DeferredUpdateRequests::get_instance();
+        dur.set_flag(MainWindowRedrawingFlag::MP);
+        dur.set_flag(SubWindowRedrawingFlag::SPELL);
     }
 
     if (AngbandWorld::get_instance().character_xtra) {
@@ -1995,13 +1984,13 @@ void put_equipment_warning(CreatureEntity &creature)
     if (creature.get_riding() && (creature.was_riding_ryoute() != creature.is_riding_ryoute())) {
         if (creature.is_riding_ryoute()) {
 #ifdef JP
-            msg_format("%s馬を操れない。", (empty_hands(creature, false) == EMPTY_HAND_NONE) ? "両手がふさがっていて" : "");
+            msg_print("{}馬を操れない。", (empty_hands(creature, false) == EMPTY_HAND_NONE) ? "両手がふさがっていて" : "");
 #else
             msg_print("You are using both hand for fighting, and you can't control the pet you're riding.");
 #endif
         } else {
 #ifdef JP
-            msg_format("%s馬を操れるようになった。", (empty_hands(creature, false) == EMPTY_HAND_NONE) ? "手が空いて" : "");
+            msg_print("{}馬を操れるようになった。", (empty_hands(creature, false) == EMPTY_HAND_NONE) ? "手が空いて" : "");
 #else
             msg_print("You began to control the pet you're riding with one hand.");
 #endif
@@ -2030,6 +2019,25 @@ static bool is_bare_knuckle(CreatureEntity &creature)
     auto bare_knuckle = is_martial_arts_mode(creature);
     bare_knuckle &= empty_hands(creature, false) == (EMPTY_HAND_MAIN | EMPTY_HAND_SUB);
     return bare_knuckle;
+}
+
+/*!
+ * @brief 武器以外の装備による命中・ダメージ修正を加算する対象のスロットかを判定する
+ * @param creature クリーチャーへの参照
+ * @param slot 判定する装備スロット
+ * @return 加算対象ならtrue
+ * @details
+ * 空きスロットとモンスター・ボールは対象外。打撃武器と遠隔武器自身の修正は武器の分として別に計算するため、
+ * 打撃武器を装備している手と遠隔武器のスロットも対象外とする。
+ */
+static bool is_non_weapon_bonus_slot(CreatureEntity &creature, inventory_slot_type slot)
+{
+    const auto &item = *creature.inventory[slot];
+    if (!item.is_valid() || (item.bi_key.tval() == ItemKindType::CAPTURE)) {
+        return false;
+    }
+
+    return (slot != INVEN_BOW) && !has_melee_weapon(creature, slot);
 }
 
 static short calc_to_damage(CreatureEntity &creature, INVENTORY_IDX slot, bool is_real_value)
@@ -2092,12 +2100,7 @@ static short calc_to_damage(CreatureEntity &creature, INVENTORY_IDX slot, bool i
     for (const auto i_idx : INVEN_WIELDING_SLOTS) {
         int bonus_to_d = 0;
         o_ptr = creature.inventory[i_idx].get();
-        const auto has_melee = has_melee_weapon(creature, i_idx);
-        if (!o_ptr->is_valid() || (o_ptr->bi_key.tval() == ItemKindType::CAPTURE)) {
-            continue;
-        }
-
-        if (((i_idx == INVEN_MAIN_HAND) && has_melee) || ((i_idx == INVEN_SUB_HAND) && has_melee) || (i_idx == INVEN_BOW)) {
+        if (!is_non_weapon_bonus_slot(creature, i_idx)) {
             continue;
         }
 
@@ -2332,13 +2335,7 @@ static short calc_to_hit(CreatureEntity &creature, INVENTORY_IDX slot, bool is_r
     for (const auto i_idx : INVEN_WIELDING_SLOTS) {
         auto *o_ptr = creature.inventory[i_idx].get();
 
-        /* Ignore empty hands, handed weapons, bows and capture balls */
-        const auto has_melee = has_melee_weapon(creature, i_idx);
-        if (!o_ptr->is_valid() || o_ptr->bi_key.tval() == ItemKindType::CAPTURE) {
-            continue;
-        }
-
-        if (((i_idx == INVEN_MAIN_HAND) && has_melee) || ((i_idx == INVEN_SUB_HAND) && has_melee) || (i_idx == INVEN_BOW)) {
+        if (!is_non_weapon_bonus_slot(creature, i_idx)) {
             continue;
         }
 
@@ -2473,12 +2470,7 @@ static int16_t calc_to_hit_bow(CreatureEntity &creature, bool is_real_value)
     for (const auto i_idx : INVEN_WIELDING_SLOTS) {
         int bonus_to_h;
         o_ptr = creature.inventory[i_idx].get();
-        const auto has_melee = has_melee_weapon(creature, i_idx);
-        if (!o_ptr->is_valid() || (o_ptr->bi_key.tval() == ItemKindType::CAPTURE)) {
-            continue;
-        }
-
-        if (((i_idx == INVEN_MAIN_HAND) && has_melee) || ((i_idx == INVEN_SUB_HAND) && has_melee) || (i_idx == INVEN_BOW)) {
+        if (!is_non_weapon_bonus_slot(creature, i_idx)) {
             continue;
         }
 
@@ -2508,7 +2500,7 @@ static int16_t calc_to_damage_misc(CreatureEntity &creature)
 
     for (const auto i_idx : INVEN_WIELDING_SLOTS) {
         o_ptr = creature.inventory[i_idx].get();
-        if (!o_ptr->is_valid()) {
+        if (!is_non_weapon_bonus_slot(creature, i_idx)) {
             continue;
         }
 
@@ -2538,7 +2530,7 @@ static int16_t calc_to_hit_misc(CreatureEntity &creature)
 
     for (const auto i_idx : INVEN_WIELDING_SLOTS) {
         o_ptr = creature.inventory[i_idx].get();
-        if (!o_ptr->is_valid()) {
+        if (!is_non_weapon_bonus_slot(creature, i_idx)) {
             continue;
         }
 
@@ -2594,32 +2586,33 @@ int calc_weight_limit(CreatureEntity &creature)
 /*!
  * @brief update のフラグに応じた更新をまとめて行う / Handle "update"
  * @details 更新処理の対象はプレイヤーの能力修正/光源寿命/HP/MP/魔法の学習状態、他多数の外界の状態判定。
+ * 所持品の自動破壊・結合・並べ替えは行わない (update_inventory_arrangement() で行う)。
  */
 void update_creature(CreatureEntity &creature)
 {
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    if (!rfu.any_stats()) {
+    auto &dur = DeferredUpdateRequests::get_instance();
+    if (!dur.any_stats()) {
         return;
     }
 
+    // 呪文の失敗率・消費 MP・覚えている呪文は、能力の修正 (朦朧・能力値・装備・熟練度・レベルなど)、
+    // 最大 MP、覚えられる呪文の数を計算し直すと変わりうる
+    static constexpr auto flags_srf = {
+        StatusRecalculatingFlag::BONUS,
+        StatusRecalculatingFlag::MP,
+        StatusRecalculatingFlag::SPELLS,
+    };
+    if (dur.has_any_of(flags_srf)) {
+        dur.request_spell_info_redrawing();
+    }
+
     auto &floor = *creature.get_floor();
-    if (rfu.has(StatusRecalculatingFlag::AUTO_DESTRUCTION)) {
-        rfu.reset_flag(StatusRecalculatingFlag::AUTO_DESTRUCTION);
-        autopick_delayed_alter(creature);
-    }
+    if (dur.has(StatusRecalculatingFlag::BONUS)) {
+        dur.reset_flag(StatusRecalculatingFlag::BONUS);
 
-    if (rfu.has(StatusRecalculatingFlag::COMBINATION)) {
-        rfu.reset_flag(StatusRecalculatingFlag::COMBINATION);
-        combine_pack(creature);
-    }
+        // 矢弾・投擲の威力、運搬中・両手持ちの表示、騎乗中のランスのダイスは、能力の修正 (能力値・射撃・騎乗・集中度など) で変わる
+        dur.request_carried_item_lists_redrawing();
 
-    if (rfu.has(StatusRecalculatingFlag::REORDER)) {
-        rfu.reset_flag(StatusRecalculatingFlag::REORDER);
-        reorder_pack(creature);
-    }
-
-    if (rfu.has(StatusRecalculatingFlag::BONUS)) {
-        rfu.reset_flag(StatusRecalculatingFlag::BONUS);
         PlayerAlignment(creature).update_alignment();
         PlayerSkill ps(creature);
         ps.apply_special_weapon_skill_max_values();
@@ -2627,23 +2620,23 @@ void update_creature(CreatureEntity &creature)
         update_bonuses(creature);
     }
 
-    if (rfu.has(StatusRecalculatingFlag::TORCH)) {
-        rfu.reset_flag(StatusRecalculatingFlag::TORCH);
+    if (dur.has(StatusRecalculatingFlag::TORCH)) {
+        dur.reset_flag(StatusRecalculatingFlag::TORCH);
         update_lite_radius(creature);
     }
 
-    if (rfu.has(StatusRecalculatingFlag::HP)) {
-        rfu.reset_flag(StatusRecalculatingFlag::HP);
+    if (dur.has(StatusRecalculatingFlag::HP)) {
+        dur.reset_flag(StatusRecalculatingFlag::HP);
         update_max_hitpoints(creature);
     }
 
-    if (rfu.has(StatusRecalculatingFlag::MP)) {
-        rfu.reset_flag(StatusRecalculatingFlag::MP);
+    if (dur.has(StatusRecalculatingFlag::MP)) {
+        dur.reset_flag(StatusRecalculatingFlag::MP);
         update_max_mana(creature);
     }
 
-    if (rfu.has(StatusRecalculatingFlag::SPELLS)) {
-        rfu.reset_flag(StatusRecalculatingFlag::SPELLS);
+    if (dur.has(StatusRecalculatingFlag::SPELLS)) {
+        dur.reset_flag(StatusRecalculatingFlag::SPELLS);
         update_num_of_spells(creature);
     }
 
@@ -2652,48 +2645,48 @@ void update_creature(CreatureEntity &creature)
         return;
     }
 
-    if (rfu.has(StatusRecalculatingFlag::UN_LITE)) {
-        rfu.reset_flag(StatusRecalculatingFlag::UN_LITE);
+    if (dur.has(StatusRecalculatingFlag::UN_LITE)) {
+        dur.reset_flag(StatusRecalculatingFlag::UN_LITE);
         floor.forget_lite();
     }
 
-    if (rfu.has(StatusRecalculatingFlag::UN_VIEW)) {
-        rfu.reset_flag(StatusRecalculatingFlag::UN_VIEW);
+    if (dur.has(StatusRecalculatingFlag::UN_VIEW)) {
+        dur.reset_flag(StatusRecalculatingFlag::UN_VIEW);
         floor.forget_view();
     }
 
-    if (rfu.has(StatusRecalculatingFlag::VIEW)) {
-        rfu.reset_flag(StatusRecalculatingFlag::VIEW);
+    if (dur.has(StatusRecalculatingFlag::VIEW)) {
+        dur.reset_flag(StatusRecalculatingFlag::VIEW);
         update_view(creature);
     }
 
-    if (rfu.has(StatusRecalculatingFlag::LITE)) {
-        rfu.reset_flag(StatusRecalculatingFlag::LITE);
+    if (dur.has(StatusRecalculatingFlag::LITE)) {
+        dur.reset_flag(StatusRecalculatingFlag::LITE);
         update_lite(creature);
     }
 
-    if (rfu.has(StatusRecalculatingFlag::FLOW)) {
-        rfu.reset_flag(StatusRecalculatingFlag::FLOW);
+    if (dur.has(StatusRecalculatingFlag::FLOW)) {
+        dur.reset_flag(StatusRecalculatingFlag::FLOW);
         update_flow(creature);
     }
 
-    if (rfu.has(StatusRecalculatingFlag::DISTANCE)) {
-        rfu.reset_flag(StatusRecalculatingFlag::DISTANCE);
+    if (dur.has(StatusRecalculatingFlag::DISTANCE)) {
+        dur.reset_flag(StatusRecalculatingFlag::DISTANCE);
         update_monsters(creature, true);
     }
 
-    if (rfu.has(StatusRecalculatingFlag::MONSTER_LITE)) {
-        rfu.reset_flag(StatusRecalculatingFlag::MONSTER_LITE);
+    if (dur.has(StatusRecalculatingFlag::MONSTER_LITE)) {
+        dur.reset_flag(StatusRecalculatingFlag::MONSTER_LITE);
         update_mon_lite(creature);
     }
 
-    if (rfu.has(StatusRecalculatingFlag::DELAY_VISIBILITY)) {
-        rfu.reset_flag(StatusRecalculatingFlag::DELAY_VISIBILITY);
+    if (dur.has(StatusRecalculatingFlag::DELAY_VISIBILITY)) {
+        dur.reset_flag(StatusRecalculatingFlag::DELAY_VISIBILITY);
         delayed_visual_update(creature);
     }
 
-    if (rfu.has(StatusRecalculatingFlag::MONSTER_STATUSES)) {
-        rfu.reset_flag(StatusRecalculatingFlag::MONSTER_STATUSES);
+    if (dur.has(StatusRecalculatingFlag::MONSTER_STATUSES)) {
+        dur.reset_flag(StatusRecalculatingFlag::MONSTER_STATUSES);
         update_monsters(creature, false);
     }
 }
@@ -2787,28 +2780,26 @@ void check_experience(CreatureEntity &creature)
         creature.set_max_max_exp(creature.get_max_exp());
     }
 
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.set_flag(MainWindowRedrawingFlag::EXP);
+    auto &dur = DeferredUpdateRequests::get_instance();
+    dur.set_flag(MainWindowRedrawingFlag::EXP);
     handle_stuff(creature);
 
     CreatureRace pr(&creature);
     bool android = pr.equals(PlayerRaceType::ANDROID);
     PLAYER_LEVEL old_lev = creature.get_level();
-    static constexpr auto flags_srf = {
-        StatusRecalculatingFlag::BONUS,
-        StatusRecalculatingFlag::HP,
-        StatusRecalculatingFlag::MP,
-        StatusRecalculatingFlag::SPELLS,
+    const auto request_level_change_recalculation = [&dur] {
+        dur.request_player_status_recalculation();
+        dur.set_flag(StatusRecalculatingFlag::TORCH); // 一時的な発光の明るさもレベルで決まる
     };
     while ((creature.get_level() > 1) && (creature.get_exp() < ((android ? player_exp_a : player_exp)[creature.get_level() - 2] * creature.expfact / 100L))) {
         creature.set_level(creature.get_level() - 1);
-        rfu.set_flags(flags_srf);
+        request_level_change_recalculation();
         static constexpr auto flags_mwrf = {
             MainWindowRedrawingFlag::LEVEL,
             MainWindowRedrawingFlag::TITLE,
         };
-        rfu.set_flags(flags_mwrf);
-        rfu.set_flag(SubWindowRedrawingFlag::PLAYER);
+        dur.set_flags(flags_mwrf);
+        dur.set_flag(SubWindowRedrawingFlag::PLAYER);
         handle_stuff(creature);
     }
 
@@ -2834,20 +2825,15 @@ void check_experience(CreatureEntity &creature)
         }
 
         sound(SoundKind::LEVEL);
-        msg_format(_("レベル %d にようこそ。", "Welcome to level %d."), creature.get_level());
-        rfu.set_flags(flags_srf);
+        msg_print(_("レベル {} にようこそ。", "Welcome to level {}."), creature.get_level());
+        request_level_change_recalculation();
         const auto flags_mwrf_levelup = {
             MainWindowRedrawingFlag::LEVEL,
             MainWindowRedrawingFlag::TITLE,
             MainWindowRedrawingFlag::EXP,
         };
-        rfu.set_flags(flags_mwrf_levelup);
-        const auto &flags_swrf_levelup = {
-            SubWindowRedrawingFlag::PLAYER,
-            SubWindowRedrawingFlag::SPELL,
-            SubWindowRedrawingFlag::INVENTORY,
-        };
-        rfu.set_flags(flags_swrf_levelup);
+        dur.set_flags(flags_mwrf_levelup);
+        dur.set_flag(SubWindowRedrawingFlag::PLAYER);
         creature.set_level_up_message(true);
         handle_stuff(creature);
 
@@ -2859,18 +2845,20 @@ void check_experience(CreatureEntity &creature)
                 while (true) {
                     int n;
 
-                    prt(format(_("        a) 腕力 (現在値 %s)", "        a) Str (cur %s)"), cnv_stat(creature.get_stat_max(0)).data()), 2, 14);
-                    prt(format(_("        b) 知能 (現在値 %s)", "        b) Int (cur %s)"), cnv_stat(creature.get_stat_max(1)).data()), 3, 14);
-                    prt(format(_("        c) 賢さ (現在値 %s)", "        c) Wis (cur %s)"), cnv_stat(creature.get_stat_max(2)).data()), 4, 14);
-                    prt(format(_("        d) 器用 (現在値 %s)", "        d) Dex (cur %s)"), cnv_stat(creature.get_stat_max(3)).data()), 5, 14);
-                    prt(format(_("        e) 耐久 (現在値 %s)", "        e) Con (cur %s)"), cnv_stat(creature.get_stat_max(4)).data()), 6, 14);
-                    prt(format(_("        f) 魅力 (現在値 %s)", "        f) Chr (cur %s)"), cnv_stat(creature.get_stat_max(5)).data()), 7, 14);
+                    prt(fmt::format(_("        a) 腕力 (現在値 {})", "        a) Str (cur {})"), cnv_stat(creature.get_stat_max(0))), 2, 14);
+                    prt(fmt::format(_("        b) 知能 (現在値 {})", "        b) Int (cur {})"), cnv_stat(creature.get_stat_max(1))), 3, 14);
+                    prt(fmt::format(_("        c) 賢さ (現在値 {})", "        c) Wis (cur {})"), cnv_stat(creature.get_stat_max(2))), 4, 14);
+                    prt(fmt::format(_("        d) 器用 (現在値 {})", "        d) Dex (cur {})"), cnv_stat(creature.get_stat_max(3))), 5, 14);
+                    prt(fmt::format(_("        e) 耐久 (現在値 {})", "        e) Con (cur {})"), cnv_stat(creature.get_stat_max(4))), 6, 14);
+                    prt(fmt::format(_("        f) 魅力 (現在値 {})", "        f) Chr (cur {})"), cnv_stat(creature.get_stat_max(5))), 7, 14);
 
                     prt("", 8, 14);
-                    prt(_("        どの能力値を上げますか？", "        Which stat do you want to raise?"), 1, 14);
+                    constexpr auto prompt = _("        どの能力値を上げますか？", "        Which stat do you want to raise?");
+                    prt(prompt, 1, 14);
 
+                    const auto context_prompt = str_trim(prompt);
                     while (true) {
-                        choice = inkey();
+                        choice = input_key_with_context(InputKind::COMMAND_CHAR, context_prompt);
                         if ((choice >= 'a') && (choice <= 'f')) {
                             break;
                         }
@@ -2906,17 +2894,13 @@ void check_experience(CreatureEntity &creature)
             level_reward = false;
         }
 
-        rfu.set_flags(flags_srf);
+        request_level_change_recalculation();
         static constexpr auto flags_mwrf = {
             MainWindowRedrawingFlag::LEVEL,
             MainWindowRedrawingFlag::TITLE,
         };
-        rfu.set_flags(flags_mwrf);
-        static constexpr auto flags_swrf = {
-            SubWindowRedrawingFlag::PLAYER,
-            SubWindowRedrawingFlag::SPELL,
-        };
-        rfu.set_flags(flags_swrf);
+        dur.set_flags(flags_mwrf);
+        dur.set_flag(SubWindowRedrawingFlag::PLAYER);
         handle_stuff(creature);
     }
 
@@ -2939,7 +2923,7 @@ std::string cnv_stat(int val)
 
     const int integer_part = val / 10;
     const int decimal_part = val % 10;
-    return format("%3d.%d", integer_part, decimal_part);
+    return fmt::format("{:3}.{}", integer_part, decimal_part);
 }
 
 /*!
@@ -2968,15 +2952,13 @@ int16_t modify_stat_value(int value, int amount)
 }
 
 /*!
- * @brief スコアを計算する /
- * Hack -- Calculates the total number of points earned		-JWT-
- * @details
+ * @brief 出生オプションによるスコア乗数を計算する
+ * @return 乗数 (100 が基準、下限 5)
+ * @details スコアサーバ側でも同じ式で再計算するので、変更時は
+ * bakabakaband-score の src/score.js と合わせること。
  */
-uint32_t calc_score(CreatureEntity &creature)
+int calc_score_multiplier()
 {
-    const auto &entries = ArenaEntryList::get_instance();
-    const auto current_entry = entries.get_current_entry();
-    const auto arena_win = std::min(current_entry, entries.get_max_entries());
     auto mult = 100;
     if (!preserve_mode) {
         mult += 10;
@@ -3013,6 +2995,20 @@ uint32_t calc_score(CreatureEntity &creature)
         mult = 5;
     }
 
+    return mult;
+}
+
+/*!
+ * @brief スコアを計算する /
+ * Hack -- Calculates the total number of points earned		-JWT-
+ * @details
+ */
+uint32_t calc_score(CreatureEntity &creature)
+{
+    const auto &entries = ArenaEntryList::get_instance();
+    const auto current_entry = entries.get_current_entry();
+    const auto arena_win = std::min(current_entry, entries.get_max_entries());
+    const auto mult = calc_score_multiplier();
     const auto max_dungeon_level = DungeonService::find_max_level();
     uint32_t point_l = (creature.get_max_max_exp() + (100 * max_dungeon_level));
     uint32_t point_h = point_l / 0x10000L;

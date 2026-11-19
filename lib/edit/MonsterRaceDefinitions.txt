@@ -795,7 +795,7 @@ D:それはドロドロしてベトベトして貪欲な小さいモンスター
 #J0#
 #J0#
 #J0#(コメント)
-#J0# 銀～という色のあらわし方はあまり気に入っていない。
+#J0# 銀〜という色のあらわし方はあまり気に入っていない。
 #J0#
 N:42:銀緑ムカデ
 E:Metallic green centipede
@@ -5754,7 +5754,7 @@ D:触らないほうがいいぞ！
 #J0#(コメント)
 #J0# ワーウルフについては p.263 で「人狼」という訳語が用いられている。
 #J0# しかし、そうするとワーラットがなんとも訳し難くなるので、ここでは
-#J0# 「ワーウルフ」と「ワー～」で統一してある。
+#J0# 「ワーウルフ」と「ワー〜」で統一してある。
 #J0#
 N:347:ワーウルフ
 E:Werewolf
@@ -12353,7 +12353,7 @@ D:$with ropy arms squirming and reaching... It came crawling up the
 D:$hillside... and it was the black thing of my dreams... that black, 
 D:$ropy, slimy jelly tree-thing out of the woods. It crawled up and it 
 D:$flowed up on its hoofs and mouths and snaky arms."
-D:３～６メートルの、のたうつ巨大な塊であり、
+D:３〜６メートルの、のたうつ巨大な塊であり、
 D:ロープのような黒い触肢で形作られている。
 D:塊の表面にはシワの寄ったいくつもの大きな口がついており、
 D:緑色の涎を垂らしている。
@@ -16214,7 +16214,7 @@ D:に没頭し恐ろしい死霊術師となった。（ワーグナー「パル
 #JZ#マントを留める金具がトレードマーク。
 #JZ#(この描写はトランプの絵柄) by 藤岡さん
 #JZ#(コメント)訳は 久留さん
-#JZ#アンバーの王子の一人で、「アンバーの九王子」～「混沌の宮廷」の主人公。
+#JZ#アンバーの王子の一人で、「アンバーの九王子」〜「混沌の宮廷」の主人公。
 N:820:アヴァロンの主『コーウィン』
 E:Corwin, Lord of Avalon
 G:p:r
@@ -16724,7 +16724,7 @@ D:数千万年前に飛来した大いなる「クトゥルフ」の眷族と考
 D:ゼラチンめいた緑色をしており、大きな蛸に似た怪物と、
 D:ドラゴンのような翼と鉤爪を持った、顔が髭で覆われている太った怪物の２種類
 D:がいると言われている。
-D:平均身長は１５～２０メートルだが、
+D:平均身長は１５〜２０メートルだが、
 D:体の各部位の大きさを自由に変える事が出来る。
 D:元々はルルイエに生息していたが、その沈没と共に大部分は封印されている。
 D:しかし、一部のクトゥルフの落とし子は、ディープワンによって、
@@ -22162,7 +22162,7 @@ F:NO_SLEEP | SELF_LITE_1 | ANGEL
 D:$Born with wings of light and a sword of faith,
 D:$ this heavenly incarnation embodies both fury and purity.
 D:光の翼と信仰の剣と共に生まれたこの天使は、怒りと純粋さを体現する。
-D:（Magic: the Gathering リミテッド～第４版）
+D:（Magic: the Gathering リミテッド〜第４版）
 
 N:1109:センギアの吸血鬼
 E:Sengir vampire
@@ -30040,7 +30040,7 @@ F:RES_INER | RES_GRAV | KILL_BODY | NASTY
 D:$Fellatiosaurus (scientific name: Fellatiosaurus) is a carnivorous lecherous dragon that has been sexually active all over the Earth from the 1st century B.C. to the present (the end of the Mesozoic Era).
 D:$It is a very famous lecherous dragon, and has been depicted as a symbol of foreplay in various pornographic films with a penis theme, such as Deep Throat.
 D:フェラチオザウルス(学名:Fellatiosaurus)は、
-D:紀元前1世紀(諸説あり)～現在(中生代白濁紀末期マスカカズシテモラウ)の地球全土に性交渉している肉食淫竜。
+D:紀元前1世紀(諸説あり)〜現在(中生代白濁紀末期マスカカズシテモラウ)の地球全土に性交渉している肉食淫竜。
 D:非常に有名な淫竜で、『ディープ・スロート』等の陰茎をテーマにした各種のポルノ作品においては、前戯の象徴として描（後略）
 
 N:1576:オレンジ色の水晶像
@@ -34191,7 +34191,7 @@ D:さらにはウトゥムノの長、父への叛逆者となった魂の兄、
 D:壊れかけたアルダを維持するための労苦にあっては同志でもあり、
 D:何としても父と長兄の和解を成そうと尽力したが、遂に果たせなかったことを嘆いたという。
 
-#アレ、「俺」じゃくてどじょうと"おめ"(お前)のさ～
+#アレ、「俺」じゃくてどじょうと"おめ"(お前)のさ〜
 #って言っていたと思うんすけど（普推理）─DSKL
 N:1830:妄言の忌み子『総理大臣』
 E:The Prime Minister, by Absurd Omen

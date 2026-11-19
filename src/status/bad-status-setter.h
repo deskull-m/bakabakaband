@@ -43,7 +43,7 @@ private:
 
     bool process_stun_effect(const short v);
     void process_stun_status(const PlayerStunRank new_rank, const short v);
-    void clear_head();
+    void clear_head(short v);
     void decrease_int_wis(const short v);
     bool process_cut_effect(const short v);
     void decrease_charisma(const PlayerCutRank new_rank, const short v);

@@ -11,7 +11,6 @@
 #include "game-option/birth-options.h"
 #include "grid/grid.h"
 #include "grid/trap.h"
-#include "load/angband-version-comparer.h"
 #include "load/item/item-loader-factory.h"
 #include "load/item/item-loader-version-types.h"
 #include "load/load-util.h"
@@ -48,6 +47,7 @@
 #include "util/bit-flags-calculator.h"
 #include "util/enum-converter.h"
 #include "world/world.h"
+#include <fmt/format.h>
 
 /* Old hidden trap flag */
 // static const BIT_FLAGS CAVE_TRAP = 0x8000;

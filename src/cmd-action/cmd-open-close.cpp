@@ -20,11 +20,11 @@
 #include "status/action-setter.h"
 #include "status/experience.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/enums/grid-count-kind.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
-#include "system/redrawing-flags-updater.h"
 #include "system/terrain/terrain-definition.h"
 #include "target/target-getter.h"
 #include "term/screen-processor.h"
@@ -327,7 +327,7 @@ void do_cmd_spike(CreatureEntity &creature)
         attack_monster_in_the_way(creature, pos);
     } else {
         PlayerEnergy(creature).set_player_turn_energy(100);
-        msg_format(_("%sにくさびを打ち込んだ。", "You jam the %s with a spike."), terrain_mimic.name.data());
+        msg_print(_("{}にくさびを打ち込んだ。", "You jam the {} with a spike."), terrain_mimic.name);
         cave_alter_feat(creature, pos.y, pos.x, TerrainCharacteristics::SPIKE);
         vary_item(creature, i_idx, -1);
     }

@@ -13,6 +13,9 @@ int AllianceTheShire::calcImpressionPoint([[maybe_unused]] const CreatureEntity 
 
     impression += Alliance::calcPlayerPower(creature, -10, 1);
 
+    // トールキンの善玉陣営: 善のアライメントほどそこそこプラス、悪の場合は大きめにマイナス
+    impression += (creature.alignment > 0) ? creature.alignment : creature.alignment * 3;
+
     // THE-SHIRE所属モンスターの殺害による印象値減少
     const std::string shire_tag = get_alliance_type_tag(AllianceType::THE_SHIRE);
     const std::string kill_key = "KILL/ALLIANCE/" + shire_tag;

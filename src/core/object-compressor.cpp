@@ -3,10 +3,10 @@
 #include "floor/floor-object.h"
 #include "grid/grid.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
-#include "system/redrawing-flags-updater.h"
 #include "term/z-rand.h"
 #include "view/display-messages.h"
 #include <range/v3/view.hpp>
@@ -78,13 +78,7 @@ void compact_objects(CreatureEntity &creature, int size)
 {
     if (size) {
         msg_print(_("アイテム情報を圧縮しています...", "Compacting objects..."));
-        auto &rfu = RedrawingFlagsUpdater::get_instance();
-        rfu.set_flag(MainWindowRedrawingFlag::MAP);
-        static constexpr auto flags_swrf = {
-            SubWindowRedrawingFlag::OVERHEAD,
-            SubWindowRedrawingFlag::DUNGEON,
-        };
-        rfu.set_flags(flags_swrf);
+        DeferredUpdateRequests::get_instance().request_map_redrawing();
     }
 
     auto &floor = *creature.get_floor();

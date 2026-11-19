@@ -16,12 +16,14 @@
 #include "monster-race/race-kind-flags.h"
 #include "monster-race/race-misc-flags.h"
 #include "monster-race/race-sex-const.h"
+#include "monster/monster-describer.h"
 #include "monster/monster-flag-types.h"
 #include "monster/monster-pain-describer.h"
 #include "monster/monster-timed-effects.h"
 #include "monster/monster-util.h"
 #include "object-enchant/tr-types.h"
 #include "object/object-info.h"
+#include "pet/pet-util.h"
 #include "player-ability/player-ability-types.h"
 #include "player-base/player-race.h"
 #include "player-info/bard-data-type.h"
@@ -40,6 +42,7 @@
 #include "realm/realm-types.h"
 #include "spell-realm/spells-hex.h"
 #include "system/angband-system.h"
+#include "system/deferred-update-requests.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
@@ -49,20 +52,20 @@
 #include "system/monrace/monrace-list.h"
 #include "system/monrace/monrace-records.h"
 #include "system/monster-profile.h"
-#include "system/redrawing-flags-updater.h"
+#include "system/player-type-definition.h"
 #include "target/projection-path-calculator.h"
 #include "term/term-color-types.h"
-#include "term/z-form.h"
 #include "term/z-rand.h"
 #include "term/z-util.h"
 #include "timed-effect/player-cut.h"
 #include "timed-effect/player-stun.h"
-#include "tracking/lore-tracker.h"
 #include "util/bit-flags-calculator.h"
 #include "util/enum-converter.h"
+#include "util/string-processor.h"
 #include "view/display-messages.h"
 #include "world/world.h"
 #include <algorithm>
+#include <fmt/format.h>
 #include <range/v3/algorithm.hpp>
 
 /*!
@@ -138,6 +141,20 @@ void CreatureEntity::ride_monster(MONSTER_IDX m_idx)
     }
 }
 
+/*!
+ * @brief モンスターから降り、乗馬中の両手持ちの設定を戻す
+ * @details 能力の再計算や乗馬中の表示の描き直しは要求しないので、必要なら呼び出し元で要求する。
+ * 騎乗・下馬の判定 (can_player_ride_pet()) は、ここで変える状態を覚えておいて一時的に降り、後で戻す。
+ * ここで変える状態を増やしたら、そちらでも戻すこと。
+ */
+void CreatureEntity::dismount()
+{
+    this->ride_monster(0);
+    this->remove_pet_extra_flag(PF_TWO_HANDS);
+    this->set_riding_ryoute(false);
+    this->set_was_riding_ryoute(false);
+}
+
 void CreatureEntity::consume_energy_by_speed(int speed_value)
 {
     this->sub_energy_need(speed_to_energy(static_cast<byte>(speed_value)));
@@ -153,6 +170,21 @@ void CreatureEntity::notify_self(std::string_view message) const
     if (this->is_player()) {
         msg_print(message);
     }
+}
+
+void CreatureEntity::notify_self(std::string_view message, std::string_view others_format) const
+{
+    if (this->is_player()) {
+        msg_print(message);
+        return;
+    }
+
+    if (!this->is_visible_on_map()) {
+        return;
+    }
+
+    const auto monster_name = monster_desc(PlayerType::get_instance(), *this, 0);
+    msg_print(fmt::format(fmt::runtime(others_format), str_upcase_first(monster_name)));
 }
 
 void CreatureEntity::plus_incident(INCIDENT incidentID, int num)
@@ -294,6 +326,22 @@ bool CreatureEntity::has_undead_flag(bool is_appearance) const
 {
     const auto &monrace = is_appearance ? this->get_apparent_monrace() : this->get_monrace();
     return monrace.has_undead_flag();
+}
+
+/*!
+ * @brief 唯一無二の存在 (UNIQUE) として扱うか
+ * @return モンスターは種族の UNIQUE フラグ、プレイヤーは常に true
+ * @details プレイヤーは世界に一人の固有存在であり UNIQUE モンスターと同格に扱う。
+ * これにより即死・変身などの「UNIQUE には効かない」危険効果からプレイヤーが保護され、
+ * モンスターの武器由来の危険効果を導入してもプレイヤー側のゲームバランスが崩れにくくなる。
+ */
+bool CreatureEntity::is_unique() const
+{
+    if (this->is_player()) {
+        return true;
+    }
+
+    return this->get_monrace().kind_flags.has(MonsterKindType::UNIQUE);
 }
 
 bool CreatureEntity::is_explodable() const
@@ -682,8 +730,11 @@ bool CreatureEntity::can_store_item(const ItemEntity &item) const
 int16_t CreatureEntity::acquire_item(const ItemEntity &item)
 {
     // [フェーズ C-2] 装備可能なアイテムは空きスロットがあれば自動装備
+    // 体構造的に存在しない部位 (四足獣の利き手、非実体の胴体等) へは装備させず
+    // 所持品送りにする。ここを通さないと、蠕虫が剣を「装備」して打撃ダイスを
+    // 得るような不整合が起きる。
     const auto eq_slot = wield_slot(*this, item);
-    const bool can_auto_equip = (eq_slot >= INVEN_MAIN_HAND) && (eq_slot < INVEN_TOTAL) && !this->inventory[eq_slot]->is_valid() && (item.number == 1);
+    const bool can_auto_equip = (eq_slot >= INVEN_MAIN_HAND) && (eq_slot < INVEN_TOTAL) && this->can_equip_to(eq_slot) && !this->inventory[eq_slot]->is_valid() && (item.number == 1);
     if (can_auto_equip) {
         *this->inventory[eq_slot] = item.clone();
         return eq_slot;
@@ -718,6 +769,21 @@ void CreatureEntity::drop_all_inventory(CreatureEntity &dropper)
     }
 }
 
+/*!
+ * @brief 所持品を床へ出さずに全て捨てる
+ * @details 死体に所持品を残さない経路 (モンスター同士の戦闘・量子消失・闘技場等、
+ *          従来から所持品が失われるケース) のために用意した
+ *          (`drop_all_inventory()` の床へ出さない版)。
+ */
+void CreatureEntity::discard_all_inventory()
+{
+    for (auto &item_ptr : this->inventory) {
+        if (item_ptr) {
+            item_ptr->wipe();
+        }
+    }
+}
+
 short CreatureEntity::get_inven_cnt() const
 {
     short cnt = 0;
@@ -747,8 +813,9 @@ short CreatureEntity::select_melee_weapon_slot(int blow_index, RaceBlowMethodTyp
     case RaceBlowMethodType::PUNCH:
     case RaceBlowMethodType::SLASH:
     case RaceBlowMethodType::STING: {
-        const auto main_valid = this->inventory[INVEN_MAIN_HAND]->is_valid() && this->inventory[INVEN_MAIN_HAND]->is_melee_weapon();
-        const auto sub_valid = this->inventory[INVEN_SUB_HAND]->is_valid() && this->inventory[INVEN_SUB_HAND]->is_melee_weapon();
+        // 体構造で閉じた手の品は武器として使わない (体構造変更前のセーブに残る装備対策)
+        const auto main_valid = this->can_equip_to(INVEN_MAIN_HAND) && this->inventory[INVEN_MAIN_HAND]->is_valid() && this->inventory[INVEN_MAIN_HAND]->is_melee_weapon();
+        const auto sub_valid = this->can_equip_to(INVEN_SUB_HAND) && this->inventory[INVEN_SUB_HAND]->is_valid() && this->inventory[INVEN_SUB_HAND]->is_melee_weapon();
         if (main_valid && sub_valid) {
             return (blow_index % 2 == 0) ? INVEN_MAIN_HAND : INVEN_SUB_HAND;
         }
@@ -765,21 +832,46 @@ short CreatureEntity::select_melee_weapon_slot(int blow_index, RaceBlowMethodTyp
     }
 }
 
+BodyStructureType CreatureEntity::get_body_structure() const
+{
+    // プレイヤーで monster へ polymorph していない通常状態は HUMANOID 固定。
+    if (this->is_player() && this->get_r_idx() == MonraceId::PLAYER) {
+        return BodyStructureType::HUMANOID;
+    }
+
+    // モンスター、または monster 化したプレイヤーは種族定義の体構造に従う。
+    return this->get_monrace().body_structure;
+}
+
+bool CreatureEntity::should_display_equipment_slot(int slot) const
+{
+    if (this->can_equip_to(slot)) {
+        return true;
+    }
+
+    // 体構造的に装備できない部位でも、実際にアイテムが入っているなら表示する
+    // (一覧から消すと外す手段が無くなるため)。
+    if ((slot < 0) || (static_cast<size_t>(slot) >= this->inventory.size())) {
+        return false;
+    }
+
+    const auto &item = this->inventory[slot];
+    return item && item->is_valid();
+}
+
 bool CreatureEntity::can_equip_to(int slot) const
 {
     if (slot < INVEN_MAIN_HAND || slot >= INVEN_TOTAL) {
         return false;
     }
 
-    // プレイヤーで monster へ polymorph していない通常状態: HUMANOID 想定で全スロット許可
-    if (this->is_player() && this->get_r_idx() == MonraceId::PLAYER) {
-        return true;
-    }
-
-    // モンスター、または monster 化したプレイヤー: 種族の body_structure に対応するポリシーを参照
-    const auto &monrace = this->get_monrace();
-    const auto &policy = get_body_slot_policy(monrace.body_structure);
+    const auto &policy = get_body_slot_policy(this->get_body_structure());
     return policy.is_allowed(slot);
+}
+
+bool CreatureEntity::is_armament_capable() const
+{
+    return get_body_slot_policy(this->get_body_structure()).is_armament_capable();
 }
 
 size_t CreatureEntity::get_extended_slot_count() const
@@ -874,9 +966,6 @@ void CreatureEntity::make_lore_treasure(int num_item, int num_gold) const
     }
 
     monrace.make_lore_treasure(num_item, num_gold);
-    if (LoreTracker::get_instance().is_tracking(this->r_idx)) {
-        RedrawingFlagsUpdater::get_instance().set_flag(SubWindowRedrawingFlag::MONSTER_LORE);
-    }
 }
 
 bool CreatureEntity::is_valid() const
@@ -1102,6 +1191,25 @@ void CreatureEntity::apply_material_stat_modifiers()
         }
         auto adjusted = static_cast<int>(this->get_stat_max(stat)) + mod;
         adjusted = std::clamp(adjusted, STAT_MIN_VALUE, STAT_MAX_VALUE);
+        this->set_stat_max(stat, static_cast<short>(adjusted));
+        this->set_stat_cur(stat, static_cast<short>(adjusted));
+        if (this->get_stat_max_max(stat) < this->get_stat_max(stat)) {
+            this->set_stat_max_max(stat, this->get_stat_max(stat));
+        }
+        this->set_stat_use(stat, this->get_stat_max(stat));
+    }
+}
+
+void CreatureEntity::apply_monrace_stat_modifiers(const MonraceDefinition &monrace)
+{
+    const auto default_modifier = monrace.level * DEFAULT_STAT_MODIFIER_PER_LEVEL * 10;
+    for (auto stat = 0; stat < A_MAX; ++stat) {
+        const auto modifier = monrace.stat_modifiers[stat].value_or(default_modifier);
+        if (modifier == 0) {
+            continue;
+        }
+
+        const auto adjusted = std::clamp(static_cast<int>(this->get_stat_max(stat)) + modifier, STAT_MIN_VALUE, STAT_MAX_VALUE);
         this->set_stat_max(stat, static_cast<short>(adjusted));
         this->set_stat_cur(stat, static_cast<short>(adjusted));
         if (this->get_stat_max_max(stat) < this->get_stat_max(stat)) {
@@ -1729,6 +1837,10 @@ int CreatureEntity::get_ac() const
     if (this->has_monster_profile()) {
         // 通常装備
         for (size_t i = INVEN_MAIN_HAND; i < this->inventory.size(); i++) {
+            // 体構造で閉じた部位の品は数えない (体構造変更前のセーブに残る装備対策)
+            if (!this->can_equip_to(static_cast<int>(i))) {
+                continue;
+            }
             const auto &item = *this->inventory[i];
             if (!item.is_valid()) {
                 continue;
@@ -1752,6 +1864,18 @@ int CreatureEntity::get_ac() const
                 total_ac = 0;
             }
         }
+
+        // [提案C5] AC 修正の突然変異を反映 (opt-in・既定OFF)。プレイヤー版 calc_to_ac()
+        // と同じ加算値 (WART_SKIN +5 / SCALES +10 / IRON_SKIN +25)。皮膚系の常時効果。
+        if (this->has_mutation(PlayerMutationType::WART_SKIN)) {
+            total_ac += 5;
+        }
+        if (this->has_mutation(PlayerMutationType::SCALES)) {
+            total_ac += 10;
+        }
+        if (this->has_mutation(PlayerMutationType::IRON_SKIN)) {
+            total_ac += 25;
+        }
     }
 
     return total_ac;
@@ -1765,15 +1889,15 @@ std::string CreatureEntity::build_looking_description(bool needs_attitude) const
     const auto &apparent_monrace = this->get_apparent_monrace();
 
     const bool show_alliance = this->has_monster_profile() && !this->is_pet() && this->get_alliance_idx() != AllianceType::NONE;
-    const std::string alliance_part = show_alliance ? format("(%s)", alliance_list.at(this->get_alliance_idx())->name.data()) : "";
+    const std::string alliance_part = show_alliance ? fmt::format("({})", alliance_list.at(this->get_alliance_idx())->name) : "";
 
     if ((apparent_monrace.r_tkills > 0) && !this->is_kage()) {
-        constexpr auto fmt = _("レベル%d, %s%s%s%s", "Level %d, %s%s%s%s");
-        return format(fmt, apparent_monrace.level, description.data(), attitude.data(), clone.data(), alliance_part.data());
+        constexpr auto format_str = _("レベル{}, {}{}{}{}", "Level {}, {}{}{}{}");
+        return fmt::format(format_str, apparent_monrace.level, description, attitude, clone, alliance_part);
     }
 
-    constexpr auto fmt = _("レベル???, %s%s%s%s", "Level ???, %s%s%s%s");
-    return format(fmt, description.data(), attitude.data(), clone.data(), alliance_part.data());
+    constexpr auto format_str = _("レベル???, {}{}{}{}", "Level ???, {}{}{}{}");
+    return fmt::format(format_str, description, attitude, clone, alliance_part);
 }
 
 std::string CreatureEntity::build_damage_description() const
@@ -1850,8 +1974,8 @@ std::string CreatureEntity::decrease_ability_random()
         this->stat_cur[k] = 30;
     }
 
-    RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
-    return format(_("あなたは以前ほど%sなくなってしまった...。", "You're not as %s as you used to be..."), act.data());
+    DeferredUpdateRequests::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
+    return fmt::format(_("あなたは以前ほど{}なくなってしまった...。", "You're not as {} as you used to be..."), act);
 }
 
 std::string CreatureEntity::decrease_ability_all()
@@ -1863,7 +1987,7 @@ std::string CreatureEntity::decrease_ability_all()
         }
     }
 
-    RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
+    DeferredUpdateRequests::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
     return _("あなたは以前ほど力強くなくなってしまった...。", "You're not as powerful as you used to be...");
 }
 
@@ -1992,6 +2116,21 @@ int CreatureEntity::get_save_stat_bonus() const
     // adj_wis_sav は直接加算テーブル (0-19, -128 オフセット無し)。
     const auto index = stat_value_to_table_index(this->get_stat_use(A_WIS));
     return static_cast<int>(adj_wis_sav[index]);
+}
+
+int CreatureEntity::get_save_mutation_bonus() const
+{
+    if (!this->has_monster_profile()) {
+        return 0;
+    }
+
+    // [提案C5] 魔法防御 (MAGIC_RES) 突然変異をレベル基準セーヴへ反映 (opt-in・既定OFF)。
+    // プレイヤー版 skill_sav の加算 (15 + level/5) に合わせる。
+    if (this->has_mutation(PlayerMutationType::MAGIC_RES)) {
+        return 15 + this->get_level() / 5;
+    }
+
+    return 0;
 }
 
 /*!
@@ -2398,6 +2537,14 @@ bool CreatureEntity::has_race_granted_telepathy() const
     // [提案C3第1弾] 付与種族のテレパシーを AI 索敵へ反映 (opt-in・既定OFF・モンスター専用)
     return this->race_grants_tr_flag(TR_TELEPATHY) && this->get_monrace().applies_player_race_telepathy;
 }
+
+bool CreatureEntity::has_telepathic_awareness() const
+{
+    // [提案C3] 付与種族由来 (C3 第1弾) と ESP 突然変異 (C5) のテレパシーを集約した述語。
+    // 索敵 (超隠密無視) と睡眠時の覚醒判定で共用する。いずれも opt-in・既定 OFF。
+    return this->has_race_granted_telepathy() || this->has_mutation(PlayerMutationType::ESP);
+}
+
 bool CreatureEntity::has_two_handed_weapons()
 {
     if (this->has_monster_profile()) {
@@ -2468,7 +2615,8 @@ bool CreatureEntity::has_regen_flag() const
 {
     if (this->has_monster_profile()) {
         // [提案C1第10弾] 付与種族の再生 (TR_REGEN) も native REGENERATE と同様に自然回復を倍化 (opt-in・既定OFF)。
-        return this->get_monrace().misc_flags.has(MonsterMiscType::REGENERATE) || this->has_race_granted_regeneration();
+        // [提案C5] 再生 (REGEN) 突然変異を持つモンスターも同様に自然回復を倍化 (opt-in・既定OFF)。
+        return this->get_monrace().misc_flags.has(MonsterMiscType::REGENERATE) || this->has_race_granted_regeneration() || this->has_mutation(PlayerMutationType::REGEN);
     }
     return this->regenerate != 0;
 }
@@ -3550,6 +3698,11 @@ void CreatureEntity::set_lite_flags(BIT_FLAGS value)
     this->lite = value;
 }
 
+BIT_FLAGS CreatureEntity::get_lite_flags() const
+{
+    return this->lite;
+}
+
 void CreatureEntity::set_warning_flags(BIT_FLAGS value)
 {
     this->warning = value;
@@ -3984,6 +4137,33 @@ void CreatureEntity::set_forgotten_spell(int realm_idx, int spell_id, bool value
     this->set_spell_forgotten_flags(realm_idx, flags);
 }
 
+void CreatureEntity::learn_realm_spellbooks(RealmType realm, uint32_t book_mask)
+{
+    if ((realm == RealmType::NONE) || (book_mask == 0)) {
+        return;
+    }
+
+    // 学習領域を realm1 に設定する。slot 0 (spell_learned1) は realm1 に対応するため、
+    // slot 0 へ書き込む前に realm1 を realm へ揃える (add_learned_spellbook_abilities は
+    // realm1 と slot 0 を対で参照するので、両者の realm が食い違うと別領域の能力を付与してしまう)。
+    this->set_realm1(realm);
+
+    constexpr int spells_per_book = 8; // 各魔導書は 8 呪文 (4 書 × 8 = 32 = SPELLS_IN_REALM)
+    constexpr int books_per_realm = 4;
+    constexpr SUB_EXP learned_spell_exp = 1200; // SPELL_EXP_SKILLED 相当 (熟練度は将来の案B詠唱で使用)
+    for (int book = 0; book < books_per_realm; ++book) {
+        if ((book_mask & (1U << book)) == 0) {
+            continue;
+        }
+        for (int offset = 0; offset < spells_per_book; ++offset) {
+            const int spell_id = (book * spells_per_book) + offset;
+            this->set_learned_spell(0, spell_id, true);
+            this->set_worked_spell(0, spell_id, true);
+            this->set_spell_exp(spell_id, learned_spell_exp);
+        }
+    }
+}
+
 // ==== 提案 E4: creature-entity.h からの inline virtual accessor 本体移設 ====
 
 AllianceType CreatureEntity::get_alliance_idx() const
@@ -4027,6 +4207,61 @@ void CreatureEntity::set_parent_m_idx(MONSTER_IDX m_idx)
     if (this->has_monster_profile()) {
         this->get_monster_profile().parent_m_idx = m_idx;
     }
+}
+
+short CreatureEntity::get_party_id() const
+{
+    return this->has_monster_profile() ? this->get_monster_profile().party_id : 0;
+}
+
+MONSTER_IDX CreatureEntity::get_party_leader_m_idx() const
+{
+    return this->has_monster_profile() ? this->get_monster_profile().party_leader_m_idx : 0;
+}
+
+void CreatureEntity::join_party(short party_id, MONSTER_IDX leader_m_idx)
+{
+    if (!this->has_monster_profile()) {
+        return;
+    }
+
+    auto &profile = this->get_monster_profile();
+    profile.party_id = party_id;
+    profile.party_leader_m_idx = leader_m_idx;
+}
+
+void CreatureEntity::set_party_leader_m_idx(MONSTER_IDX leader_m_idx)
+{
+    if (this->has_monster_profile()) {
+        this->get_monster_profile().party_leader_m_idx = leader_m_idx;
+    }
+}
+
+void CreatureEntity::leave_party()
+{
+    if (!this->has_monster_profile()) {
+        return;
+    }
+
+    auto &profile = this->get_monster_profile();
+    profile.party_id = 0;
+    profile.party_leader_m_idx = 0;
+}
+
+bool CreatureEntity::belongs_to_party() const
+{
+    return this->get_party_leader_m_idx() > 0;
+}
+
+bool CreatureEntity::is_party_leader(MONSTER_IDX self_m_idx) const
+{
+    return (self_m_idx > 0) && (this->get_party_leader_m_idx() == self_m_idx);
+}
+
+bool CreatureEntity::is_same_party(const CreatureEntity &other) const
+{
+    const auto leader_m_idx = this->get_party_leader_m_idx();
+    return (leader_m_idx > 0) && (leader_m_idx == other.get_party_leader_m_idx());
 }
 
 void CreatureEntity::add_smart_flag(MonsterSmartLearnType flag)

@@ -2,7 +2,9 @@
 #include "avatar/avatar.h"
 #include "combat/martial-arts-style.h"
 #include "floor/dungeon-feeling.h"
+#include "floor/geometry.h"
 #include "game-option/birth-options.h"
+#include "io/input-key-requester.h"
 #include "market/arena-entry.h"
 #include "object/tval-types.h"
 #include "player-base/player-class.h"
@@ -21,9 +23,24 @@
 #include "system/floor/floor-info.h"
 #include "system/floor/town-records.h"
 #include "system/inner-game-data.h"
+#include "target/target.h"
 #include "util/enum-converter.h"
+#include "window/main-window-util.h"
 #include "world/world.h"
 #include <variant>
+
+/*!
+ * @brief 各ダンジョンの帰還深度と訪問履歴をセーブデータに書き込む
+ */
+void wr_dungeons()
+{
+    const auto &records = DungeonRecords::get_instance();
+    wr_byte(static_cast<uint8_t>(records.size()));
+    for (const auto &[_, record] : records) {
+        wr_s16b(static_cast<int16_t>(record->get_max_level()));
+        wr_bool(record->has_visited());
+    }
+}
 
 /*!
  * @brief セーブデータに領域情報を書き込む / Write player realms
@@ -38,6 +55,49 @@ static void wr_relams(CreatureEntity &creature)
         wr_byte((byte)pr.realm1().to_enum());
     }
     wr_byte((byte)pr.realm2().to_enum());
+}
+
+/*!
+ * @brief 最後にターゲットしたものを書き込む
+ * @details 種類 (0: なし、1: マス、2: モンスター) に続けて、マスなら座標、モンスターならフロアのモンスター番号を書く。
+ */
+static void wr_last_target()
+{
+    const auto target = Target::get_last_target();
+    if (const auto m_idx = target.get_m_idx()) {
+        wr_byte(2);
+        wr_s16b(*m_idx);
+        return;
+    }
+
+    if (const auto pos = target.get_position()) {
+        wr_byte(1);
+        wr_s16b(static_cast<int16_t>(pos->y));
+        wr_s16b(static_cast<int16_t>(pos->x));
+        return;
+    }
+
+    wr_byte(0);
+}
+
+/*!
+ * @brief 休憩・釣り・コマンドの繰り返しの続きと、画面に表示している範囲を書き込む
+ * @param creature クリーチャーへの参照
+ * @details 休憩の残り、釣りの向き、繰り返し中のコマンドとその引数・残りの回数・方向を書く。
+ * 方向がターゲットを指すときは、最後のターゲット (wr_last_target()) を指すものとして印だけを書く。
+ * 表示している範囲は、再開したときに範囲が変わったとして disturb() しないよう書く
+ */
+static void wr_continuous_actions(CreatureEntity &creature)
+{
+    wr_s32b(creature.get_resting());
+    wr_byte(static_cast<uint8_t>(creature.get_fishing_dir()));
+    wr_s16b(command_cmd);
+    wr_s16b(command_arg);
+    wr_s16b(command_rep);
+    wr_byte(static_cast<uint8_t>(command_dir.dir()));
+    wr_bool(command_dir.is_targetting());
+    wr_s16b(static_cast<int16_t>(panel_row_min));
+    wr_s16b(static_cast<int16_t>(panel_col_min));
 }
 
 /*!
@@ -152,12 +212,7 @@ void wr_player(CreatureEntity &creature)
     // wr_creature_common() で保存済み (hp_frac/max_mp/current_mp/current_mp_frac は v52 拡張)
     wr_s16b(creature.get_max_plv());
 
-    const auto &dungeon_records = DungeonRecords::get_instance();
-    auto tmp8u = static_cast<uint8_t>(dungeon_records.size());
-    wr_byte(tmp8u);
-    for (const auto &[_, dungeon_record] : dungeon_records) {
-        wr_s16b(static_cast<int16_t>(dungeon_record->get_max_level()));
-    }
+    wr_dungeons();
 
     wr_s16b(0);
     wr_s16b(0);
@@ -282,4 +337,10 @@ void wr_player(CreatureEntity &creature)
     // 通常プレイヤーは PLAYER (= 0)。セーブファイルバージョン 48 以降。
     wr_s16b(enum2i(creature.get_r_idx()));
     wr_s16b(enum2i(creature.get_ap_r_idx()));
+
+    // ペット・乗馬の攻撃対象と、最後にターゲットしたもの。セーブファイルバージョン 58 以降。
+    wr_s16b(static_cast<int16_t>(creature.get_pet_t_m_idx()));
+    wr_s16b(static_cast<int16_t>(creature.get_riding_t_m_idx()));
+    wr_last_target();
+    wr_continuous_actions(creature);
 }

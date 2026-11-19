@@ -7,30 +7,52 @@
 #include "autopick/autopick-drawer.h"
 #include "autopick/autopick-describer.h"
 #include "autopick/autopick-dirty-flags.h"
+#include "autopick/autopick-editor-util.h"
 #include "autopick/autopick-entry.h"
 #include "autopick/autopick-util.h"
 #include "io/pref-file-expressor.h"
+#include "io/read-pref-file.h"
 #include "system/creature-entity.h"
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
+#include "util/string-processor.h"
 #include "view/display-util.h"
+#include <algorithm>
+#include <fmt/format.h>
+#include <string_view>
 #include <tuple>
 
 constexpr auto DESCRIPT_HGT = 3;
 constexpr std::string_view EXPRESSION_DIRECTIVE_PREFIX = "?:";
 constexpr std::string_view AUTOREGISTER_DIRECTIVE = "$AUTOREGISTER";
 
-static void process_dirty_expression(CreatureEntity &creature, text_body_type *tb)
+/*!
+ * @brief 条件式の評価結果と、読込エラーによって無効になる後続行の状態を更新する
+ */
+void update_autopick_expression_states(CreatureEntity &creature, AutopickTextBody *tb)
 {
-    if ((tb->dirty_flags & DIRTY_EXPRESSION) == 0) {
+    const auto edited_line = tb->dirty_line;
+    const auto include_edited = (edited_line >= 0) && (static_cast<size_t>(edited_line) < tb->lines_list.size()) &&
+                                tb->lines_list[edited_line] && ((tb->states[edited_line] & LSTAT_INCLUDE) || tb->lines_list[edited_line]->starts_with("%:"));
+    if (((tb->dirty_flags & (DIRTY_EXPRESSION | DIRTY_ALL)) == 0) && !include_edited) {
         return;
     }
 
     byte state = 0;
     for (auto y = 0; tb->lines_list[y]; y++) {
         std::string_view s(*tb->lines_list[y]);
-        if (!s.starts_with(EXPRESSION_DIRECTIVE_PREFIX)) {
+        if (!(state & LSTAT_BYPASS) && s.starts_with("%:") &&
+            (check_autopick_file_conditions(creature, s.substr(2)) == PREF_EXPRESSION_ERROR)) {
+            state = LSTAT_BYPASS | LSTAT_EXPRESSION_ERROR;
+        }
+        if ((state & LSTAT_EXPRESSION_ERROR) || !s.starts_with(EXPRESSION_DIRECTIVE_PREFIX)) {
             tb->states[y] = state;
+            if (s.starts_with("%:")) {
+                tb->states[y] |= LSTAT_INCLUDE;
+            }
+            if (s.starts_with(EXPRESSION_DIRECTIVE_PREFIX)) {
+                tb->states[y] |= LSTAT_EXPRESSION;
+            }
             continue;
         }
 
@@ -40,11 +62,10 @@ static void process_dirty_expression(CreatureEntity &creature, text_body_type *t
             state |= LSTAT_AUTOREGISTER;
         }
 
-        std::string s_keep(s);
-        auto ss = s_keep.data();
-        char f;
-        auto v = process_pref_file_expr(creature, &ss, &f);
-        if (v == "0") {
+        const auto result = process_pref_file_expr_checked(creature, s);
+        if (!result) {
+            state = LSTAT_BYPASS | LSTAT_EXPRESSION_ERROR;
+        } else if (*result == "0") {
             state |= LSTAT_BYPASS;
         } else {
             state &= ~LSTAT_BYPASS;
@@ -59,7 +80,7 @@ static void process_dirty_expression(CreatureEntity &creature, text_body_type *t
 /*!
  * @brief Draw text
  */
-void draw_text_editor(CreatureEntity &creature, text_body_type *tb)
+void draw_text_editor(CreatureEntity &creature, AutopickTextBody *tb)
 {
     int by1 = 0, by2 = 0;
 
@@ -71,26 +92,14 @@ void draw_text_editor(CreatureEntity &creature, text_body_type *tb)
      */
     tb->hgt -= 2 + DESCRIPT_HGT;
 
-#ifdef JP
-    /* Don't let cursor at second byte of kanji */
-    for (int i = 0; (*tb->lines_list[tb->cy])[i]; i++) {
-        if (iskanji((*tb->lines_list[tb->cy])[i])) {
-            i++;
-            if (i == tb->cx) {
-                /*
-                 * Move to a correct position in the
-                 * left or right
-                 */
-                if (i & 1) {
-                    tb->cx--;
-                } else {
-                    tb->cx++;
-                }
-                break;
-            }
+    // カーソルを2バイト文字の2バイト目に置かないよう、左右どちらかの文字の境界へ動かす
+    if (tb->is_cursor_on_second_byte_of_kanji()) {
+        if (tb->cx & 1) {
+            tb->cx--;
+        } else {
+            tb->cx++;
         }
     }
-#endif
     if (tb->cy < tb->upper || tb->upper + tb->hgt <= tb->cy) {
         tb->upper = tb->cy - (tb->hgt) / 2;
     }
@@ -126,7 +135,7 @@ void draw_text_editor(CreatureEntity &creature, text_body_type *tb)
         term_putstr(0, tb->hgt + 1, sepa_length, TERM_WHITE, buf);
     }
 
-    process_dirty_expression(creature, tb);
+    update_autopick_expression_states(creature, tb);
     if (tb->mark) {
         tb->dirty_flags |= DIRTY_ALL;
 
@@ -158,7 +167,7 @@ void draw_text_editor(CreatureEntity &creature, text_body_type *tb)
                 leftcol = 1;
                 break;
             }
-            if (iskanji(msg.front())) {
+            if (is_multibyte_char_at(msg)) {
                 msg.remove_prefix(1);
                 j++;
             }
@@ -181,23 +190,25 @@ void draw_text_editor(CreatureEntity &creature, text_body_type *tb)
         } else if (by1 != by2) {
             term_putstr(leftcol, i + 1, tb->wid - 1, TERM_YELLOW, msg);
         } else {
-            const auto x0 = leftcol + tb->left;
-            const int len = tb->lines_list[tb->cy]->length();
-            const auto bx1 = std::min(tb->mx, tb->cx);
-            auto bx2 = std::max(tb->mx, tb->cx);
-
-            if (bx2 > len) {
-                bx2 = len;
+            /*
+             * 選択範囲の前・選択範囲・選択範囲の後に分けて描く。選択範囲は表示を始める位置 x0 より左を除き、
+             * 端が全角文字の途中にあれば (行頭に '!' などを足した場合など)、文字を割らないようにその文字を含める。
+             */
+            const std::string_view line(*tb->lines_list[y]);
+            const auto x0 = line.length() - msg.length();
+            auto bx1 = std::max<size_t>(std::min(tb->mx, tb->cx), x0);
+            if (is_second_byte_of_kanji(line, static_cast<int>(bx1))) {
+                bx1--;
+            }
+            auto bx2 = std::clamp<size_t>(std::max(tb->mx, tb->cx), bx1, line.length());
+            if (is_second_byte_of_kanji(line, static_cast<int>(bx2))) {
+                bx2++;
             }
 
             term_gotoxy(leftcol, i + 1);
-            if (x0 < bx1) {
-                term_addstr(bx1 - x0, color, msg);
-            }
-            if (x0 < bx2) {
-                term_addstr(bx2 - bx1, TERM_YELLOW, msg.substr(bx1 - x0));
-            }
-            term_addstr(-1, color, msg.substr(bx2 - x0));
+            term_addstr(-1, color, line.substr(x0, bx1 - x0));
+            term_addstr(-1, TERM_YELLOW, line.substr(bx1, bx2 - bx1));
+            term_addstr(-1, color, line.substr(bx2));
         }
     }
 
@@ -218,13 +229,15 @@ void draw_text_editor(CreatureEntity &creature, text_body_type *tb)
     }
 
     if (tb->dirty_flags & DIRTY_NOT_FOUND) {
-        str1 = format(_("パターンが見つかりません: %s", "Pattern not found: %s"), tb->search_str.data());
+        str1 = fmt::format(_("パターンが見つかりません: {}", "Pattern not found: {}"), tb->search_str);
     } else if (tb->dirty_flags & DIRTY_SKIP_INACTIVE) {
-        str1 = format(_("無効状態の行をスキップしました。(%sを検索中)", "Some inactive lines are skipped. (Searching %s)"), tb->search_str.data());
+        str1 = fmt::format(_("無効状態の行をスキップしました。({}を検索中)", "Some inactive lines are skipped. (Searching {})"), tb->search_str);
     } else if (tb->dirty_flags & DIRTY_INACTIVE) {
-        str1 = format(_("無効状態の行だけが見付かりました。(%sを検索中)", "Found only an inactive line. (Searching %s)"), tb->search_str.data());
+        str1 = fmt::format(_("無効状態の行だけが見付かりました。({}を検索中)", "Found only an inactive line. (Searching {})"), tb->search_str);
     } else if (tb->dirty_flags & DIRTY_NO_SEARCH) {
         str1 = _("検索するパターンがありません(^S で検索)。", "No pattern to search. (Press ^S to search.)");
+    } else if (tb->states[tb->cy] & LSTAT_EXPRESSION_ERROR) {
+        str1 = _("条件式エラーのため、この行以降は読み込まれません。", "A condition error prevents loading this and subsequent lines.");
     } else if ((*tb->lines_list[tb->cy])[0] == '#') {
         str1 = _("この行はコメントです。", "This line is a comment.");
     } else if ((*tb->lines_list[tb->cy])[0] && (*tb->lines_list[tb->cy])[1] == ':') {

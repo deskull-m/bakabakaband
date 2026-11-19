@@ -6,9 +6,11 @@
 #include "object/object-value.h"
 #include "object/tval-types.h"
 #include "store/store-util.h"
+#include "store/store.h"
 #include "system/creature-entity.h"
 #include "system/floor/town-info.h"
 #include "system/floor/town-list.h"
+#include "system/floor/town-records.h"
 #include "system/item-entity.h"
 #include "util/object-sort.h"
 #include <algorithm>
@@ -16,6 +18,8 @@
 /*!
  * @brief 我が家にオブジェクトを加える /
  * Add the item "o_ptr" to the inventory of the "Home"
+ * @param creature クリーチャーへの参照
+ * @param store アイテムを加える店舗 (我が家または博物館)
  * @param o_ptr 加えたいオブジェクトの構造体参照ポインタ
  * @return 収めた先のID
  * @details
@@ -26,8 +30,9 @@
  * known, the player may have to pick stuff up and drop it again.
  * </pre>
  */
-int home_carry(CreatureEntity &creature, ItemEntity *o_ptr, StoreSaleType store_num)
+int home_carry(CreatureEntity &creature, Store &store, ItemEntity *o_ptr)
 {
+    const auto store_num = store.get_sale_type();
     bool old_stack_force_notes = stack_force_notes;
     bool old_stack_force_costs = stack_force_costs;
     if (store_num != StoreSaleType::HOME) {
@@ -35,8 +40,8 @@ int home_carry(CreatureEntity &creature, ItemEntity *o_ptr, StoreSaleType store_
         stack_force_costs = false;
     }
 
-    for (int slot = 0; slot < st_ptr->stock_num; slot++) {
-        auto &item_store = *st_ptr->stock[slot];
+    for (int slot = 0; slot < store.stock_num; slot++) {
+        auto &item_store = *store.stock[slot];
         if (item_store.is_similar(*o_ptr)) {
             item_store.absorb(*o_ptr);
             if (store_num != StoreSaleType::HOME) {
@@ -53,56 +58,45 @@ int home_carry(CreatureEntity &creature, ItemEntity *o_ptr, StoreSaleType store_
         stack_force_costs = old_stack_force_costs;
     }
 
-    /* No space? */
-    /*
-     * 隠し機能: オプション powerup_home が設定されていると
-     *           我が家が 20 ページまで使える
-     */
-    if ((store_num != StoreSaleType::HOME) || powerup_home) {
-        if (st_ptr->stock_num >= st_ptr->stock_size) {
-            return -1;
-        }
-    } else {
-        if (st_ptr->stock_num >= ((st_ptr->stock_size) / 10)) {
-            return -1;
-        }
+    if (store.stock_num >= store_get_stock_limit(store)) {
+        return -1;
     }
 
-    const auto first = st_ptr->stock.begin();
-    const auto last = st_ptr->stock.begin() + st_ptr->stock_num;
+    const auto first = store.stock.begin();
+    const auto last = store.stock.begin() + store.stock_num;
     const auto slot_it = std::find_if(first, last,
         [&](const auto &item) { return object_sort_comp(creature, *o_ptr, *item); });
     const int slot = std::distance(first, slot_it);
 
     std::rotate(first + slot, last, last + 1);
 
-    st_ptr->stock_num++;
-    *st_ptr->stock[slot] = o_ptr->clone();
+    store.stock_num++;
+    *store.stock[slot] = o_ptr->clone();
     chg_virtue(creature, Virtue::SACRIFICE, -1);
-    (void)combine_and_reorder_home(creature, store_num);
+    (void)combine_and_reorder_home(creature, store);
     return slot;
 }
 
-static bool exe_combine_store_items(ItemEntity *o_ptr, ItemEntity *j_ptr, const int max_num, const int i, bool *combined)
+static bool exe_combine_store_items(Store &store, ItemEntity *o_ptr, ItemEntity *j_ptr, const int max_num, const int i, bool *combined)
 {
     if (o_ptr->number + j_ptr->number > max_num) {
         return false;
     }
 
     j_ptr->absorb(*o_ptr);
-    const auto begin = st_ptr->stock.begin();
-    std::rotate(begin + i, begin + i + 1, begin + st_ptr->stock_num);
+    const auto begin = store.stock.begin();
+    std::rotate(begin + i, begin + i + 1, begin + store.stock_num);
 
-    st_ptr->stock_num--;
-    st_ptr->stock[st_ptr->stock_num]->wipe();
+    store.stock_num--;
+    store.stock[store.stock_num]->wipe();
     *combined = true;
     return true;
 }
 
-static void sweep_reorder_store_item(ItemEntity &item, const int i, bool *combined)
+static void sweep_reorder_store_item(Store &store, ItemEntity &item, const int i, bool *combined)
 {
     for (auto j = 0; j < i; j++) {
-        auto &item_store = *st_ptr->stock[j];
+        auto &item_store = *store.stock[j];
         if (!item_store.is_valid()) {
             continue;
         }
@@ -112,7 +106,7 @@ static void sweep_reorder_store_item(ItemEntity &item, const int i, bool *combin
             continue;
         }
 
-        exe_combine_store_items(&item, &item_store, max_num, i, combined);
+        exe_combine_store_items(store, &item, &item_store, max_num, i, combined);
 
         const auto old_num = item.number;
         const auto remain = item_store.number + item.number - max_num;
@@ -131,14 +125,14 @@ static void sweep_reorder_store_item(ItemEntity &item, const int i, bool *combin
     }
 }
 
-static bool exe_reorder_store_item(CreatureEntity &creature)
+static bool exe_reorder_store_item(CreatureEntity &creature, Store &store)
 {
     const auto comp = [&creature](const auto &item1, const auto &item2) {
         return object_sort_comp(creature, *item1, *item2);
     };
 
-    const auto first = st_ptr->stock.begin();
-    const auto last = st_ptr->stock.begin() + st_ptr->stock_num;
+    const auto first = store.stock.begin();
+    const auto last = store.stock.begin() + store.stock_num;
 
     if (std::is_sorted(first, last, comp)) {
         return false;
@@ -149,17 +143,17 @@ static bool exe_reorder_store_item(CreatureEntity &creature)
 }
 
 /*!
- * @brief 現在の町の指定された店舗のアイテムを整理する /
+ * @brief 指定された店舗のアイテムを整理する /
  * Combine and reorder items in store.
- * @param store_num 店舗ID
+ * @param creature クリーチャーへの参照
+ * @param store 整理する店舗
  * @return 実際に整理が行われたならばTRUEを返す。
  */
-bool combine_and_reorder_home(CreatureEntity &creature, const StoreSaleType store_num)
+bool combine_and_reorder_home(CreatureEntity &creature, Store &store)
 {
+    const auto store_num = store.get_sale_type();
     auto old_stack_force_notes = stack_force_notes;
     auto old_stack_force_costs = stack_force_costs;
-    auto *old_st_ptr = st_ptr;
-    st_ptr = &TownList::get_instance().get_town(1).get_store(store_num);
     auto flag = false;
     if (store_num != StoreSaleType::HOME) {
         stack_force_notes = false;
@@ -169,25 +163,37 @@ bool combine_and_reorder_home(CreatureEntity &creature, const StoreSaleType stor
     auto combined = true;
     while (combined) {
         combined = false;
-        for (auto i = st_ptr->stock_num - 1; i > 0; i--) {
-            auto &item = *st_ptr->stock[i];
+        for (auto i = store.stock_num - 1; i > 0; i--) {
+            auto &item = *store.stock[i];
             if (!item.is_valid()) {
                 continue;
             }
 
-            sweep_reorder_store_item(item, i, &combined);
+            sweep_reorder_store_item(store, item, i, &combined);
         }
 
         flag |= combined;
     }
 
-    flag |= exe_reorder_store_item(creature);
+    flag |= exe_reorder_store_item(creature, store);
 
-    st_ptr = old_st_ptr;
     if (store_num != StoreSaleType::HOME) {
         stack_force_notes = old_stack_force_notes;
         stack_force_costs = old_stack_force_costs;
     }
 
     return flag;
+}
+
+/*!
+ * @brief 我が家または博物館のアイテムを整理する
+ * @param creature クリーチャーへの参照
+ * @param store_num 店舗の種類 (我が家または博物館)
+ * @return 実際に整理が行われたならばTRUEを返す。
+ * @details 我が家と博物館は全ての町で内容を共有するため、特定の町の店舗を対象とする。
+ */
+bool combine_and_reorder_home(CreatureEntity &creature, const StoreSaleType store_num)
+{
+    auto &store = TownList::get_instance().get_town(TownId::OUTPOST).get_store(store_num);
+    return combine_and_reorder_home(creature, store);
 }

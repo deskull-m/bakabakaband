@@ -55,7 +55,7 @@ void store_owner_says_comment(int price, StoreSaleType store_num)
  * @details
  * We paid "price", it was worth "value", and we thought it was worth "guess"
  */
-void purchase_analyze(CreatureEntity &creature, PRICE price, PRICE value, PRICE guess)
+void purchase_analyze(CreatureEntity &creature, PRICE price, int64_t value, int64_t guess)
 {
     /* Item was worthless, but we bought it */
     if ((value <= 0) && (price > value)) {
@@ -98,7 +98,7 @@ void purchase_analyze(CreatureEntity &creature, PRICE price, PRICE value, PRICE 
         if (one_in_(4)) {
             chg_virtue(creature, Virtue::HONOUR, 1);
         }
-        if (10 * price < value) {
+        if (int64_t{ 10 } * price < value) {
             chg_virtue(creature, Virtue::SACRIFICE, 1);
         }
         sound(SoundKind::STORE4);

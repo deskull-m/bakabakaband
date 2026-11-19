@@ -73,7 +73,7 @@ void wizard_player_modifier(CreatureEntity &creature)
     case '\r':
         break;
     case 'a':
-        msg_format("Your alignment is %d.", creature.alignment);
+        msg_print("Your alignment is {}.", creature.alignment);
         break;
     case 'c':
         wiz_reset_class(creature);

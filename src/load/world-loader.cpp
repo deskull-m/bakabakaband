@@ -1,6 +1,5 @@
 #include "load/world-loader.h"
 #include "floor/dungeon-feeling.h"
-#include "load/angband-version-comparer.h"
 #include "load/load-util.h"
 #include "load/load-zangband.h"
 #include "market/bounty.h"
@@ -15,6 +14,7 @@
 #include "system/floor/wilderness-grid.h"
 #include "system/inner-game-data.h"
 #include "world/world.h"
+#include <fmt/format.h>
 
 static void rd_hengband_dungeons()
 {
@@ -24,6 +24,8 @@ static void rd_hengband_dungeons()
     const int max = rd_byte();
     for (auto i = 0; i < max; i++) {
         int tmp16s = rd_s16b();
+        // 古いセーブは帰還の解放と実際の訪問を区別しない
+        const auto visited = loading_savefile_version_is_older_than(55) ? tmp16s > 0 : rd_bool();
         if (i >= dungeons_size) {
             continue;
         }
@@ -31,8 +33,12 @@ static void rd_hengband_dungeons()
         const auto dungeon_id = i2enum<DungeonId>(i);
         const auto &dungeon = dungeons.get_dungeon(dungeon_id);
         auto &record = records.get_record(dungeon_id);
+        record.reset();
         if (tmp16s > 0) {
             record.set_max_level(tmp16s);
+            if (visited) {
+                record.mark_visited();
+            }
         }
 
         if (record.get_max_level() > dungeon.maxdepth) {
@@ -88,7 +94,7 @@ static void rd_world_info(CreatureEntity &creature)
     auto &floor = *creature.get_floor();
     floor.generated_turn = rd_s32b();
     auto &df = DungeonFeeling::get_instance();
-    df.set_feeling(rd_s32b());
+    df.set_turns(rd_s32b());
 
     world.game_turn = rd_s32b();
     world.dungeon_turn = rd_s32b();
@@ -132,7 +138,7 @@ errr analyze_wilderness(void)
     auto &wilderness = WildernessGrids::get_instance();
     const auto &area = wilderness.get_area();
     if ((wild_y_size > area.height()) || (wild_x_size > area.width())) {
-        load_note(format(_("荒野が大きすぎる(%d/%d)！", "Wilderness is too big (%d/%d)!"), wild_x_size, wild_y_size));
+        load_note(fmt::format(_("荒野が大きすぎる({}/{})！", "Wilderness is too big ({}/{})!"), wild_x_size, wild_y_size));
         return 23;
     }
 

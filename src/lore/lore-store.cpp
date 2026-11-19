@@ -7,7 +7,7 @@
 #include "core/window-redrawer.h"
 #include "monster/monster-info.h"
 #include "system/creature-entity.h"
-#include "system/redrawing-flags-updater.h"
+#include "system/deferred-update-requests.h"
 #include "tracking/lore-tracker.h"
 #include <lore/lore-store.h>
 #include <system/floor-type-definition.h>
@@ -102,7 +102,7 @@ int lore_do_probe(CreatureEntity &creature, MonraceId r_idx)
 
     monrace.r_can_evolve = true;
     if (LoreTracker::get_instance().is_tracking(r_idx)) {
-        RedrawingFlagsUpdater::get_instance().set_flag(SubWindowRedrawingFlag::MONSTER_LORE);
+        DeferredUpdateRequests::get_instance().set_flag(SubWindowRedrawingFlag::MONSTER_LORE);
     }
 
     return n;
@@ -144,6 +144,6 @@ void lore_treasure(CreatureEntity &creature, MONSTER_IDX m_idx, ITEM_NUMBER num_
     }
 
     if (LoreTracker::get_instance().is_tracking(monster.get_r_idx())) {
-        RedrawingFlagsUpdater::get_instance().set_flag(SubWindowRedrawingFlag::MONSTER_LORE);
+        DeferredUpdateRequests::get_instance().set_flag(SubWindowRedrawingFlag::MONSTER_LORE);
     }
 }

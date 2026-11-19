@@ -13,6 +13,7 @@
 #include "flavor/flavor-describer.h"
 #include "flavor/object-flavor-types.h"
 #include "floor/floor-object.h"
+#include "io/input-context.h"
 #include "io/input-key-acceptor.h"
 #include "main/sound-of-music.h"
 #include "object/item-use-flags.h"
@@ -22,6 +23,7 @@
 #include "term/term-color-types.h"
 #include "util/int-char-converter.h"
 #include "util/string-processor.h"
+#include <fmt/format.h>
 
 /*!
  * @brief 与えられたアイテムが自動拾いのリストに登録されているかどうかを検索する
@@ -63,7 +65,7 @@ bool get_object_for_search(CreatureEntity &creature, AutopickSearch &as)
 
     as.item = item;
     const auto item_name = describe_flavor(creature, *as.item, (OD_NO_FLAVOR | OD_OMIT_PREFIX | OD_NO_PLURAL));
-    as.search_str = format("<%s>", item_name.data());
+    as.search_str = fmt::format("<{}>", item_name);
     return true;
 }
 
@@ -78,7 +80,7 @@ bool get_destroyed_object_for_search(CreatureEntity &creature, AutopickSearch &a
 
     as.item = std::shared_ptr<ItemEntity>(&autopick_last_destroyed_object, [](ItemEntity *) {});
     const auto item_name = describe_flavor(creature, *as.item, (OD_NO_FLAVOR | OD_OMIT_PREFIX | OD_NO_PLURAL));
-    as.search_str = format("<%s>", item_name.data());
+    as.search_str = fmt::format("<{}>", item_name);
     return true;
 }
 
@@ -102,6 +104,7 @@ AutopickSearch get_string_for_search(CreatureEntity &creature, const AutopickSea
     const std::string prompt(_("検索(^I:持ち物 ^L:破壊された物): ", "Search key(^I:inven ^L:destroyed): "));
     const auto col = prompt.length();
     prt(prompt, 0, 0);
+    const InputContextScope context_scope({ InputKind::STRING, prompt, StringInputDetails{ max_search_length, buf } });
     int pos = 0;
     while (true) {
         bool back = false;
@@ -239,7 +242,7 @@ AutopickSearch get_string_for_search(CreatureEntity &creature, const AutopickSea
 /*!
  * @brief Search next line matches for o_ptr
  */
-void search_for_object(CreatureEntity &creature, text_body_type *tb, const ItemEntity *o_ptr, bool forward)
+void search_for_object(CreatureEntity &creature, AutopickTextBody *tb, const ItemEntity *o_ptr, bool forward)
 {
     autopick_type an_entry;
     int bypassed_cy = -1;
@@ -295,7 +298,7 @@ void search_for_object(CreatureEntity &creature, text_body_type *tb, const ItemE
 /*!
  * @brief Search next line matches to the string
  */
-void search_for_string(text_body_type *tb, std::string_view search_str, bool forward)
+void search_for_string(AutopickTextBody *tb, std::string_view search_str, bool forward)
 {
     int bypassed_cy = -1;
     int bypassed_cx = 0;

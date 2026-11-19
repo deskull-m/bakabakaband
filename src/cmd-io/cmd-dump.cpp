@@ -14,10 +14,11 @@
 #include "core/asking-player.h"
 #include "dungeon/quest.h"
 #include "floor/dungeon-feeling.h"
+#include "floor/floor-base-definitions.h"
 #include "io-dump/dump-remover.h"
 #include "io-dump/dump-util.h"
 #include "io/files-util.h"
-#include "io/input-key-acceptor.h"
+#include "io/input-context.h"
 #include "io/interpret-pref-file.h"
 #include "io/read-pref-file.h"
 #include "locale/english.h"
@@ -28,18 +29,92 @@
 #include "system/angband-system.h"
 #include "system/creature-entity.h"
 #include "system/dungeon/dungeon-definition.h"
+#include "system/dungeon/quest-definition.h"
 #include "system/floor/floor-info.h"
 #include "system/floor/town-info.h"
 #include "system/floor/town-list.h"
 #include "system/inner-game-data.h"
+#include "system/monrace/monrace-definition.h"
+#include "system/monrace/monrace-list.h"
 #include "term/gameterm.h"
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
+#include "term/z-rand.h"
 #include "util/angband-files.h"
+#include "util/compass-direction.h"
 #include "util/int-char-converter.h"
 #include "view/display-messages.h"
 #include "view/display-player.h" // 暫定。後で消す.
 #include "world/world.h"
+#include <algorithm>
+#include <fmt/format.h>
+#include <string_view>
+#include <vector>
+
+namespace {
+/*!
+ * @brief この階の「宿敵」として扱うモンスター種族 ID を集める
+ * @param floor フロアへの参照
+ * @return 宿敵の種族 ID 一覧 (該当なしなら空)
+ * @details 対象はランダムクエストの討伐対象とダンジョンの主の 2 種。
+ *          MonsterMiscType::QUESTOR フラグでは判定しない。同フラグは
+ *          ゴルフィンブール / オベロン / 混沌のサーペント / リッキーの 4 種族が
+ *          データ側で常時持っており、クエストと無関係な文脈でも真になるため。
+ */
+std::vector<MonraceId> collect_nemesis_monrace_ids(const FloorType &floor)
+{
+    std::vector<MonraceId> nemesis_ids;
+    const auto quest_id = floor.get_random_quest_id();
+    if (inside_quest(quest_id)) {
+        const auto &quest = QuestList::get_instance().get_quest(quest_id);
+        if (MonraceList::is_valid(quest.r_idx)) {
+            nemesis_ids.push_back(quest.r_idx);
+        }
+    }
+
+    // ダンジョンの主がランダムクエストの対象と同一種族なら二重に並べない。
+    const auto &dungeon = floor.get_dungeon_definition();
+    const auto is_already_listed = std::find(nemesis_ids.begin(), nemesis_ids.end(), dungeon.final_guardian) != nemesis_ids.end();
+    if (dungeon.has_guardian() && !is_already_listed) {
+        nemesis_ids.push_back(dungeon.final_guardian);
+    }
+
+    return nemesis_ids;
+}
+
+/*!
+ * @brief 階の宿敵の気配を 16 方位で伝える
+ * @param creature クリーチャーへの参照
+ * @details 階の雰囲気が判明している (DungeonFeeling の値が 0 以外) ときだけ表示する。
+ *          **視認・感知していない個体も対象**で、広いフロアでランダムクエストの対象や
+ *          ダンジョンの主を探し回る手間を減らすのが狙い。同じ種族が複数いる場合
+ *          (討伐数が求められるランダムクエスト等) は最寄りの 1 体だけを伝える。
+ */
+void report_nemesis_direction(CreatureEntity &creature)
+{
+    if (DungeonFeeling::get_instance().get_feeling() == 0) {
+        return;
+    }
+
+    const auto &floor = *creature.get_floor();
+    const auto self_pos = creature.get_position();
+    for (const auto nemesis_id : collect_nemesis_monrace_ids(floor)) {
+        // ペットに付いた個体は宿敵ではないので除く。
+        const auto m_idx = creature.find_nearest_creature(
+            [nemesis_id](const CreatureEntity &candidate) { return (candidate.get_r_idx() == nemesis_id) && !candidate.is_pet(); });
+        if (m_idx == 0) {
+            continue;
+        }
+
+        const auto vec = floor.get_monster(m_idx).get_position() - self_pos;
+        if ((vec.y == 0) && (vec.x == 0)) {
+            continue;
+        }
+
+        msg_print(_("宿敵の気配を{}の方角に感じる！", "You sense your nemesis to the {}!"), describe_compass_direction(vec));
+    }
+}
+}
 
 /*!
  * @brief 画面を再描画するコマンドのメインルーチン
@@ -65,15 +140,16 @@ void do_cmd_colors(CreatureEntity &creature)
 {
     FILE *auto_dump_stream;
     screen_save();
-    const auto initial_filename = format("%s.prf", creature.base_name.data());
+    const auto initial_filename = fmt::format("{}.prf", creature.base_name);
     while (true) {
         term_clear();
         prt(_("[ カラーの設定 ]", "Interact with Colors"), 2, 0);
         prt(_("(1) ユーザー設定ファイルのロード", "(1) Load a user pref file"), 4, 5);
         prt(_("(2) カラーの設定をファイルに書き出す", "(2) Dump colors"), 5, 5);
         prt(_("(3) カラーの設定を変更する", "(3) Modify colors"), 6, 5);
-        prt(_("コマンド: ", "Command: "), 8, 0);
-        const auto key = inkey();
+        constexpr auto prompt = _("コマンド: ", "Command: ");
+        prt(prompt, 8, 0);
+        const auto key = input_key_with_context(InputKind::COMMAND_CHAR, prompt);
         if (key == ESCAPE) {
             break;
         }
@@ -81,8 +157,7 @@ void do_cmd_colors(CreatureEntity &creature)
         switch (key) {
         case '1': {
             prt(_("コマンド: ユーザー設定ファイルをロードします", "Command: Load a user pref file"), 8, 0);
-            prt(_("ファイル: ", "File: "), 10, 0);
-            const auto ask_result = askfor(70, initial_filename);
+            const auto ask_result = input_string_on_row(_("ファイル: ", "File: "), 10, 70, initial_filename);
             if (!ask_result) {
                 continue;
             }
@@ -95,8 +170,7 @@ void do_cmd_colors(CreatureEntity &creature)
         case '2': {
             constexpr auto mark = "Colors";
             prt(_("コマンド: カラーの設定をファイルに書き出します", "Command: Dump colors"), 8, 0);
-            prt(_("ファイル: ", "File: "), 10, 0);
-            const auto ask_result = askfor(70, initial_filename);
+            const auto ask_result = input_string_on_row(_("ファイル: ", "File: "), 10, 70, initial_filename);
             if (!ask_result) {
                 continue;
             }
@@ -106,7 +180,7 @@ void do_cmd_colors(CreatureEntity &creature)
                 continue;
             }
 
-            auto_dump_printf(auto_dump_stream, _("\n# カラーの設定\n\n", "\n# Color redefinitions\n\n"));
+            auto_dump_print(auto_dump_stream, _("\n# カラーの設定\n\n", "\n# Color redefinitions\n\n"));
             for (auto i = 0; i < 256; i++) {
                 int kv = angband_color_table[i][0];
                 int rv = angband_color_table[i][1];
@@ -122,32 +196,37 @@ void do_cmd_colors(CreatureEntity &creature)
                     name = color_names[i];
                 }
 
-                auto_dump_printf(auto_dump_stream, _("# カラー '%s'\n", "# Color '%s'\n"), name);
-                auto_dump_printf(auto_dump_stream, "V:%d:0x%02X:0x%02X:0x%02X:0x%02X\n\n", i, kv, rv, gv, bv);
+                auto_dump_print(auto_dump_stream, _("# カラー '{}'\n", "# Color '{}'\n"), name);
+                auto_dump_print(auto_dump_stream, "V:{}:0x{:02X}:0x{:02X}:0x{:02X}:0x{:02X}\n\n", i, kv, rv, gv, bv);
             }
 
-            close_auto_dump(&auto_dump_stream, mark);
-            msg_print(_("カラーの設定をファイルに書き出しました。", "Dumped color redefinitions."));
+            // 書き出せなかった場合は close_auto_dump() がその旨を表示するので、成功したときだけ知らせる
+            if (close_auto_dump(&auto_dump_stream, mark)) {
+                msg_print(_("カラーの設定をファイルに書き出しました。", "Dumped color redefinitions."));
+            }
+
             break;
         }
         case '3': {
+            // 色番号は見本の描画属性にもそのまま使うため、テキストの色として有効な範囲に留める。
+            // 16以上は属性の上位ビットが全角文字やタイルのフラグと重なり、画面バッファの範囲外を読み書きする
+            constexpr byte num_colors = std::size(color_names);
             static byte a = 0;
             prt(_("コマンド: カラーの設定を変更します", "Command: Modify colors"), 8, 0);
             while (true) {
-                concptr name;
                 clear_from(10);
-                for (byte i = 0; i < 16; i++) {
+                for (byte i = 0; i < num_colors; i++) {
                     term_putstr(i * 4, 20, -1, a, "###");
-                    term_putstr(i * 4, 22, -1, i, format("%3d", i));
+                    term_putstr(i * 4, 22, -1, i, fmt::format("{:3}", i));
                 }
 
-                name = ((a < 16) ? color_names[a] : _("未定義", "undefined"));
-                term_putstr(5, 10, -1, TERM_WHITE, format(_("カラー = %d, 名前 = %s", "Color = %d, Name = %s"), a, name));
+                const auto name = color_names[a];
+                term_putstr(5, 10, -1, TERM_WHITE, fmt::format(_("カラー = {}, 名前 = {}", "Color = {}, Name = {}"), a, name));
                 term_putstr(5, 12, -1, TERM_WHITE,
-                    format("K = 0x%02x / R,G,B = 0x%02x,0x%02x,0x%02x", angband_color_table[a][0], angband_color_table[a][1], angband_color_table[a][2],
-                        angband_color_table[a][3]));
-                term_putstr(0, 14, -1, TERM_WHITE, _("コマンド (n/N/k/K/r/R/g/G/b/B): ", "Command (n/N/k/K/r/R/g/G/b/B): "));
-                auto ch = inkey();
+                    fmt::format("K = 0x{:02x} / R,G,B = 0x{:02x},0x{:02x},0x{:02x}", angband_color_table[a][0], angband_color_table[a][1], angband_color_table[a][2], angband_color_table[a][3]));
+                constexpr auto color_prompt = _("コマンド (n/N/k/K/r/R/g/G/b/B): ", "Command (n/N/k/K/r/R/g/G/b/B): ");
+                term_putstr(0, 14, -1, TERM_WHITE, color_prompt);
+                auto ch = input_key_with_context(InputKind::COMMAND_CHAR, color_prompt);
                 if (ch == ESCAPE) {
                     break;
                 }
@@ -172,10 +251,10 @@ void do_cmd_colors(CreatureEntity &creature)
                     angband_color_table[a][0] = (byte)(angband_color_table[a][0] - 1);
                     break;
                 case 'n':
-                    a++;
+                    a = static_cast<byte>((a + 1) % num_colors);
                     break;
                 case 'N':
-                    a--;
+                    a = static_cast<byte>((a + num_colors - 1) % num_colors);
                     break;
                 case 'r':
                     angband_color_table[a][1] = (byte)(angband_color_table[a][1] + 1);
@@ -215,7 +294,7 @@ void do_cmd_note()
     }
 
     const auto note(note_opt.value());
-    msg_format(_("メモ: %s", "Note: %s"), note.data());
+    msg_print(_("メモ: {}", "Note: {}"), note);
 }
 
 /*
@@ -236,12 +315,15 @@ void do_cmd_feeling(CreatureEntity &creature)
         return;
     }
     FloorType *floor_ptr = creature.get_floor();
-    int grids_rate = floor_ptr->width * floor_ptr->height * 100 / (MAX_WID * MAX_HGT);
+    // ダンジョンフロアの広さ評価は街・荒野の上限 (MAX_*) ではなくダンジョン専用の上限
+    // (MAX_DUNGEON_*) を基準にする。MAX_* を分母にすると、ダンジョンの上限を下げた分だけ
+    // grids_rate の取り得る上限も下がり、下記 8 段階のうち上位 4 段が永久に出なくなる。
+    int grids_rate = floor_ptr->width * floor_ptr->height * 100 / (MAX_DUNGEON_WID * MAX_DUNGEON_HGT);
 
     if (floor_ptr->allianceID != AllianceType::NONE) {
         auto a_ptr = alliance_list.find(floor_ptr->allianceID)->second;
         if (!a_ptr->isAnnihilated()) {
-            msg_format(_("ここは%sの支配下にある。", "This place is under %s's control."), a_ptr->name.c_str());
+            msg_print(_("ここは{}の支配下にある。", "This place is under {}'s control."), a_ptr->name);
         }
     }
 
@@ -295,6 +377,7 @@ void do_cmd_feeling(CreatureEntity &creature)
     }
 
     msg_print(feeling_text);
+    report_nemesis_direction(creature);
 }
 
 /*
@@ -305,10 +388,12 @@ void do_cmd_time(CreatureEntity &creature)
 {
     const auto &[day, hour, min] = AngbandWorld::get_instance().extract_date_time(InnerGameData::get_instance().get_start_race());
     std::string day_buf = (day < MAX_DAYS) ? std::to_string(day) : "*****";
-    constexpr auto mes = _("%s日目, 時刻は%d:%02d %sです。", "This is day %s. The time is %d:%02d %s.");
-    msg_format(mes, day_buf.data(), (hour % 12 == 0) ? 12 : (hour % 12), min, (hour < 12) ? "AM" : "PM");
+    constexpr auto mes = _("{}日目, 時刻は{}:{:02} {}です。", "This is day {}. The time is {}:{:02} {}.");
+    msg_print(mes, day_buf, (hour % 12 == 0) ? 12 : (hour % 12), min, (hour < 12) ? "AM" : "PM");
+    // ゲームの時間が経過しない操作なので、ゲームの乱数生成器は使わない
+    auto &rng = get_external_rng();
     std::filesystem::path path;
-    if (!randint0(10) || creature.is_hallucinated()) {
+    if (!randint0(rng, 10) || creature.is_hallucinated()) {
         path = path_build(ANGBAND_DIR_FILE, _("timefun_j.txt", "timefun.txt"));
     } else {
         path = path_build(ANGBAND_DIR_FILE, _("timenorm_j.txt", "timenorm.txt"));
@@ -354,7 +439,7 @@ void do_cmd_time(CreatureEntity &creature)
 
         if (buf[0] == 'D') {
             num++;
-            if (!randint0(num)) {
+            if (!randint0(rng, num)) {
                 desc = buf + 2;
             }
 

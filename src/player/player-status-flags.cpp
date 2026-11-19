@@ -73,8 +73,8 @@ BIT_FLAGS common_cause_flags(CreatureEntity &creature, tr_type tr_flag)
 
 }
 
-#define SPELL_SW 22
-#define SPELL_WALL 20
+constexpr auto SPELL_SW = 22;
+constexpr auto SPELL_WALL = 20;
 
 BIT_FLAGS convert_inventory_slot_type_to_flag_cause(inventory_slot_type inventory_slot)
 {
@@ -481,6 +481,7 @@ BIT_FLAGS get_player_flags(CreatureEntity &creature, tr_type tr_flag)
     case TR_IM_DARK:
         return has_immune_dark(creature);
     case TR_NASTY:
+    case TR_JOKE:
     case TR_INDESTRUCTIBLE:
     case TR_NEVER_MOVE:
     case TR_INVEN_ACTIVATE:
@@ -1735,11 +1736,8 @@ bool has_two_handed_weapons(CreatureEntity &creature)
 BIT_FLAGS has_lite(CreatureEntity &creature)
 {
     BIT_FLAGS result = 0L;
-    if (CreatureClass(creature).equals(PlayerClassType::NINJA)) {
-        return 0L;
-    }
-
-    if (creature.ppersonality == PERSONALITY_MUNCHKIN) {
+    // ここで判定する発光のうち、忍者が得ないのはマンチキンの性格と吸血鬼 (種族・変身の表で除いている) の分だけ
+    if ((creature.ppersonality == PERSONALITY_MUNCHKIN) && !CreatureClass(creature).equals(PlayerClassType::NINJA)) {
         result |= FLAG_CAUSE_PERSONALITY;
     }
 

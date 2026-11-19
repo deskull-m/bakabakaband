@@ -1,8 +1,9 @@
 #include "cmd-io/cmd-knowledge.h"
 #include "bot/bot-json-output.h"
 #include "cmd-visual/cmd-draw.h"
+#include "core/asking-player.h"
 #include "game-option/birth-options.h"
-#include "io/input-key-acceptor.h"
+#include "io/input-context.h"
 #include "knowledge/knowledge-alliance.h"
 #include "knowledge/knowledge-autopick.h"
 #include "knowledge/knowledge-experiences.h"
@@ -22,6 +23,7 @@
 #include "term/screen-processor.h"
 #include "util/int-char-converter.h"
 #include "view/display-messages.h"
+#include <fmt/format.h>
 
 /*
  * Interact with "knowledge"
@@ -34,7 +36,7 @@ void do_cmd_knowledge(CreatureEntity &creature)
     TermCenteredOffsetSetter tcos(MAIN_TERM_MIN_COLS, MAIN_TERM_MIN_ROWS);
     while (true) {
         term_clear();
-        prt(format(_("%d/3 ページ", "page %d/3"), (p + 1)), 2, 65);
+        prt(fmt::format(_("{}/3 ページ", "page {}/3"), (p + 1)), 2, 65);
         prt(_("現在の知識を確認する", "Display current knowledge"), 3, 0);
         if (p == 0) {
             prt(_("(1) 既知の伝説のアイテム                 の一覧", "(1) Display known artifacts"), 6, 5);
@@ -70,8 +72,9 @@ void do_cmd_knowledge(CreatureEntity &creature)
         prt(_("-続く-", "-more-"), 17, 8);
         prt(_("ESC) 抜ける", "ESC) Exit menu"), 21, 1);
         prt(_("SPACE) 次ページ", "SPACE) Next page"), 21, 30);
-        prt(_("コマンド:", "Command: "), 20, 0);
-        i = inkey();
+        constexpr auto prompt = _("コマンド:", "Command: ");
+        prt(prompt, 20, 0);
+        i = input_key_with_context(InputKind::COMMAND_CHAR, prompt);
 
         if (i == ESCAPE) {
             break;

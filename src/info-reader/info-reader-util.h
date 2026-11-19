@@ -1,22 +1,32 @@
 #pragma once
 
-#include "system/angband.h"
-#include "util/bit-flags-calculator.h"
+#include "info-reader/parse-error-types.h"
+#include "system/h-type.h"
 #include <concepts>
+#include <cstdint>
+#include <limits>
 #include <map>
+#include <nlohmann/json_fwd.hpp>
 #include <string>
 #include <string_view>
+#include <tl/expected.hpp>
 #include <tl/optional.hpp>
 #include <unordered_map>
 #include <utility>
 
-/*
- * Size of memory reserved for initialization of some arrays
- */
-extern int error_idx; //!< エラーが発生したinfo ID
+//! ベースアイテム・アーティファクト・エゴ定義で共有する価格 (cost) の上限。
+//! 数量や割引の計算で桁あふれしないよう PRICE 上限の 1/32 に抑える。
+//! ヘッダのため windows.h の max マクロ展開を避けて括弧で囲む (MSVC C4003 対策)。
+constexpr auto ITEM_COST_MAX = (std::numeric_limits<PRICE>::max)() / 32;
 
-enum class RandomArtActType : short;
-RandomArtActType grab_one_activation_flag(std::string_view what);
+class BaseitemKey;
+
+//! 種別 (tval) の上限。種別を添字にする色の表が 128 要素のため 127 とする。
+constexpr int ITEM_TYPE_MAX = 127;
+//! 副種別 (sval) の既定上限。
+constexpr int ITEM_SUBTYPE_DEFAULT_MAX = 128;
+//! 種別ごとの副種別 (sval) の上限を返す (武器熟練度・呪文・魔道具の表のサイズに依存)。定義は baseitem-reader.cpp。
+int item_subtype_max(const BaseitemKey &key);
 
 #ifndef JP
 void append_english_text(std::string &text, std::string_view add);
@@ -66,6 +76,25 @@ bool info_grab_one_const(uint32_t &buf, const Dict &dict, Key &&what)
     auto val = info_get_const(dict, std::forward<Key>(what));
     if (val) {
         buf = static_cast<uint32_t>(*val);
+        return true;
+    }
+    return false;
+}
+
+/*!
+ * @brief info文字列からフラグを探し、フラグ集合にセットする
+ * @param fg フラグをセットするフラグ集合 (FlagGroup など)
+ * @param dict 文字列からフラグへの変換表
+ * @param what 検索する文字列
+ * @return 見つけてセットしたらtrue。見つからなければフラグ集合を変えずにfalse
+ */
+template <typename FlagGroupT, typename Key, DictIndexedBy<Key> Dict>
+    requires requires(FlagGroupT &fg, const typename Dict::mapped_type &flag) { fg.set(flag); }
+bool info_grab_one_flag(FlagGroupT &fg, const Dict &dict, Key &&what)
+{
+    auto val = info_get_const(dict, std::forward<Key>(what));
+    if (val) {
+        fg.set(*val);
         return true;
     }
     return false;

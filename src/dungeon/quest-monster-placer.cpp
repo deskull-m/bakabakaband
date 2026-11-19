@@ -47,7 +47,7 @@ bool place_quest_monsters(CreatureEntity &creature)
                 Pos2D pos(0, 0);
                 int l;
                 for (l = SAFE_MAX_ATTEMPTS; l > 0; l--) {
-                    pos = Pos2D(randint0(floor.height), randint0(floor.width));
+                    pos = Pos2D{ randint0(floor.height), randint0(floor.width) };
                     const auto &grid = floor.get_grid(pos);
                     const auto &terrain = grid.get_terrain();
                     if (terrain.flags.has_none_of({ TerrainCharacteristics::MOVE, TerrainCharacteristics::CAN_FLY })) {

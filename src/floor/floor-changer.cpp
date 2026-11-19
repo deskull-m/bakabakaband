@@ -45,11 +45,13 @@
 #include "system/monrace/monrace-list.h"
 #include "system/terrain/terrain-definition.h"
 #include "system/terrain/terrain-list.h"
+#include "target/target.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
 #include "window/main-window-util.h"
 #include "world/world.h"
 #include <algorithm>
+#include <fmt/format.h>
 #include <range/v3/view.hpp>
 
 /*!
@@ -161,7 +163,7 @@ static void place_pet(CreatureEntity &creature)
         } else {
             const auto &monster = party_monsters[current_monster];
             auto &monrace = monster.get_real_monrace();
-            msg_format(_("%sとはぐれてしまった。", "You have lost sight of %s."), monster_desc(creature, monster, 0).data());
+            msg_print(_("{}とはぐれてしまった。", "You have lost sight of {}."), monster_desc(creature, monster, 0));
             if (record_named_pet && monster.is_named()) {
                 exe_write_diary(floor, DiaryKind::NAMED_PET, RECORD_NAMED_PET_LOST_SIGHT, monster_desc(creature, monster, MD_INDEF_VISIBLE));
             }
@@ -429,6 +431,11 @@ void change_floor(CreatureEntity &creature)
     panel_col_min = 0;
     panel_col_max = 0;
     creature.set_ambush_flag(false);
+
+    // ターゲットとペット・乗馬の攻撃対象は前の階のマスやモンスターの番号を指すので、階を替えるときに消す。
+    // 読み込んで再開したときは、階を作り直さない限りここを通らず、セーブした値を使う。
+    Target::clear_last_target();
+    creature.reset_pet_riding_targets();
     update_floor(creature);
     place_pet(creature);
     Travel::get_instance().reset_goal();

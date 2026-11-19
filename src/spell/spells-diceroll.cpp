@@ -37,7 +37,7 @@ static bool common_saving_throw_impl(CreatureEntity &creature, int pow, const Cr
 
     if (check_no_conf && monrace.resistance_flags.has(MonsterResistanceType::NO_CONF)) {
         if (is_original_ap_and_seen(creature, target)) {
-            monrace.resistance_flags.set(MonsterResistanceType::NO_CONF);
+            monrace.r_resistance_flags.set(MonsterResistanceType::NO_CONF);
         }
         return true;
     }
@@ -51,7 +51,8 @@ static bool common_saving_throw_impl(CreatureEntity &creature, int pow, const Cr
         pow = pow * 2 / 3;
     }
     // [提案C2第3弾・セーヴ] applies_stat_combat_bonus の対象は WIS セーヴ補正を実効レベルへ加算 (opt-in・既定OFF)
-    return ((monrace.level + target.get_save_stat_bonus()) > randint1((pow - 10) < 1 ? 1 : (pow - 10)) + 5);
+    // [提案C5・セーヴ] MAGIC_RES 突然変異のセーヴ補正も実効レベルへ加算 (opt-in・既定OFF)
+    return ((monrace.level + target.get_save_stat_bonus() + target.get_save_mutation_bonus()) > randint1((pow - 10) < 1 ? 1 : (pow - 10)) + 5);
 }
 
 /*!

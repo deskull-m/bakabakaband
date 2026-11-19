@@ -123,12 +123,12 @@
 /*
  * Available graphic modes
  */
-// clang-format off
-#define GRAPHICS_NONE       0
-#define GRAPHICS_ORIGINAL   1
-#define GRAPHICS_ADAM_BOLT  2
-#define GRAPHICS_HENGBAND   3
-// clang-format on
+enum : byte {
+    GRAPHICS_NONE = 0,
+    GRAPHICS_ORIGINAL = 1,
+    GRAPHICS_ADAM_BOLT = 2,
+    GRAPHICS_HENGBAND = 3,
+};
 
 #ifdef USE_X11
 #ifndef __MAKEDEPEND__
@@ -149,7 +149,7 @@
 /*
  * Include some helpful X11 code.
  */
-#include "maid-x11.cpp"
+#include "main-unix/x11-helper.h"
 
 /*
  * Notes on Colors:
@@ -543,7 +543,7 @@ static errr Infowin_prepare(Window xid)
 #ifdef USE_XFT
     Visual *vis = DefaultVisual(Metadpy->dpy, 0);
     if (vis->c_class != TrueColor) {
-        quit_fmt("Display does not support truecolor.\n");
+        quit("Display does not support truecolor.\n");
     }
     iwin->draw = XftDrawCreate(Metadpy->dpy, iwin->win, vis, Metadpy->cmap);
 #endif
@@ -871,7 +871,7 @@ static void Infofnt_init_data(concptr name)
     if (use_xft_runtime) {
         XftFont *info = XftFontOpenName(Metadpy->dpy, 0, name);
         if (!info) {
-            quit_fmt("Failed to find font:\"%s\"", name);
+            quit(fmt::format("Failed to find font:\"{}\"", name));
         }
         Infofnt_prepare_xft(info);
         Infofnt_prepare_tile_width();
@@ -886,18 +886,18 @@ static void Infofnt_init_data(concptr name)
 
     XFontSet info = XCreateFontSet(Metadpy->dpy, name, &missing_list, &missing_count, &default_font);
     if (missing_count > 0) {
-        printf("missing font(s): \n");
+        fmt::println("missing font(s): ");
         while (missing_count-- > 0) {
-            printf("\t%s\n", missing_list[missing_count]);
+            fmt::println("\t{}", missing_list[missing_count]);
         }
         XFreeStringList(missing_list);
     }
     if (!info) {
-        quit_fmt("Failed to find font:\"%s\"", name);
+        quit(fmt::format("Failed to find font:\"{}\"", name));
     }
     if (Infofnt_prepare_fontset(info) < 0) {
         XFreeFontSet(Metadpy->dpy, info);
-        quit_fmt("Failed to prepare font:\"%s\"", name);
+        quit(fmt::format("Failed to prepare font:\"{}\"", name));
     }
     Infofnt_prepare_tile_width();
 }
@@ -1087,7 +1087,7 @@ static void send_key(const char key)
     // キーバッファが一杯なら入力を捨てる
     const int head_nxt = game_term->key_head + 1 == game_term->key_size ? 0 : game_term->key_head + 1;
     if (head_nxt == game_term->key_tail) {
-        plog_fmt("key buffer overflow, ignoring key 0x%02X", key);
+        plog(fmt::format("key buffer overflow, ignoring key 0x{:02X}", static_cast<uint8_t>(key)));
         return;
     }
 
@@ -1123,7 +1123,7 @@ static void react_keypress(XKeyEvent *xev)
         Status status;
         n = XmbLookupString(Focuswin->xic, ev, buf, 125, &ks, &status);
         if (status == XBufferOverflow) {
-            printf("Input is too long, and dropped\n");
+            fmt::println("Input is too long, and dropped");
             return;
         }
         if (status != XLookupKeySym && status != XLookupBoth) {
@@ -1194,9 +1194,9 @@ static void react_keypress(XKeyEvent *xev)
 
     std::string msg;
     if (ks) {
-        msg = format("%c%s%s%s%s_%lX%c", 31, mc ? "N" : "", ms ? "S" : "", mo ? "O" : "", mx ? "M" : "", (unsigned long)(ks), 13);
+        msg = fmt::format("{:c}{}{}{}{}_{:X}{:c}", 31, mc ? "N" : "", ms ? "S" : "", mo ? "O" : "", mx ? "M" : "", ks, 13);
     } else {
-        msg = format("%c%s%s%s%sK_%X%c", 31, mc ? "N" : "", ms ? "S" : "", mo ? "O" : "", mx ? "M" : "", ev->keycode, 13);
+        msg = fmt::format("{:c}{}{}{}{}K_{:X}{:c}", 31, mc ? "N" : "", ms ? "S" : "", mo ? "O" : "", mx ? "M" : "", ev->keycode, 13);
     }
 
     send_keys(msg.data());
@@ -2220,7 +2220,7 @@ static void IMInstantiateCallback(Display *display, XPointer unused1, XPointer u
 
     xim = XOpenIM(display, nullptr, nullptr, nullptr);
     if (!xim) {
-        printf("can't open IM\n");
+        fmt::println("can't open IM");
         return;
     }
 
@@ -2234,7 +2234,7 @@ static void IMInstantiateCallback(Display *display, XPointer unused1, XPointer u
         }
     }
     if (i >= xim_styles->count_styles) {
-        printf("Sorry, your IM does not support 'Root' preedit style...\n");
+        fmt::println("Sorry, your IM does not support 'Root' preedit style...");
         XCloseIM(xim);
         return;
     }
@@ -2249,7 +2249,7 @@ static void IMInstantiateCallback(Display *display, XPointer unused1, XPointer u
         }
         iwin->xic = XCreateIC(xim, XNInputStyle, (XIMPreeditNothing | XIMStatusNothing), XNClientWindow, iwin->win, XNFocusWindow, iwin->win, nullptr);
         if (!iwin->xic) {
-            printf("Can't create input context for Term%d\n", i);
+            fmt::println("Can't create input context for Term{}", i);
             continue;
         }
 
@@ -2298,7 +2298,7 @@ static void game_term_nuke_x11(term_type *)
 {
     for (auto i = 0; i < MAX_TERM_DATA; i++) {
         infofnt *ifnt = data[i].fnt.get();
-        infowin *iwin = data[i].win.get();
+        [[maybe_unused]] infowin *iwin = data[i].win.get();
         if (ifnt) {
 #ifdef USE_XFT
             if (ifnt->xft_info) {
@@ -2309,9 +2309,11 @@ static void game_term_nuke_x11(term_type *)
                 XFreeFontSet(Metadpy->dpy, ifnt->fontset_info);
             }
         }
+#ifdef USE_XIM
         if (iwin && iwin->xic) {
             XDestroyIC(iwin->xic);
         }
+#endif
 #ifdef USE_XFT
         if (iwin && iwin->draw) {
             XftDrawDestroy(iwin->draw);
@@ -2328,17 +2330,19 @@ static void game_term_nuke_x11(term_type *)
         unix_sound::finalize_sound();
     }
 
+#ifdef USE_XIM
     if (Metadpy->xim) {
         XCloseIM(Metadpy->xim);
     }
     XUnregisterIMInstantiateCallback(Metadpy->dpy, NULL, NULL, NULL, IMInstantiateCallback, NULL);
+#endif
     XCloseDisplay(Metadpy->dpy);
 }
 
 static tl::optional<int> getenv_int(const std::string &key)
 {
     if (const auto val = getenv(key.data())) {
-        return str_to_int(val);
+        return str_to_num<int>(val);
     }
 
     return tl::nullopt;
@@ -2372,16 +2376,16 @@ static window_setting get_window_setting(int window_no)
     if (const auto str = get_config("WINDOW")) {
         const auto vals = str_split(str, ',', true);
         if (vals.size() >= 2) {
-            ws.cols = str_to_int(vals[0]).and_then(allow_positive).value_or(TERM_DEFAULT_COLS);
-            ws.rows = str_to_int(vals[1]).and_then(allow_positive).value_or(TERM_DEFAULT_ROWS);
+            ws.cols = str_to_num<int>(vals[0]).and_then(allow_positive).value_or(TERM_DEFAULT_COLS);
+            ws.rows = str_to_num<int>(vals[1]).and_then(allow_positive).value_or(TERM_DEFAULT_ROWS);
         }
         if (vals.size() >= 4) {
-            ws.x_pos = str_to_int(vals[2]).value_or(-1);
-            ws.y_pos = str_to_int(vals[3]).value_or(-1);
+            ws.x_pos = str_to_num<int>(vals[2]).value_or(-1);
+            ws.y_pos = str_to_num<int>(vals[3]).value_or(-1);
         }
         if (vals.size() >= 6) {
-            ws.x_inner_border = str_to_int(vals[4]).and_then(allow_positive).value_or(1);
-            ws.y_inner_border = str_to_int(vals[5]).and_then(allow_positive).value_or(1);
+            ws.x_inner_border = str_to_num<int>(vals[4]).and_then(allow_positive).value_or(1);
+            ws.y_inner_border = str_to_num<int>(vals[5]).and_then(allow_positive).value_or(1);
         }
     }
 
@@ -2416,7 +2420,7 @@ term_data_init(term_data *td, int i)
     XWMHints *wh;
 #endif
 
-    font = getenv(format("ANGBAND_X11_FONT_%d", i).data());
+    font = getenv(fmt::format("ANGBAND_X11_FONT_{}", i).data());
     if (!font) {
         font = getenv("ANGBAND_X11_FONT");
     }
@@ -2616,7 +2620,7 @@ errr init_x11(int argc, char *argv[])
             continue;
         }
 
-        plog_fmt("Ignoring option: %s", argv[i]);
+        plog(fmt::format("Ignoring option: {}", argv[i]));
     }
 
 #ifdef USE_LOCALE
@@ -2626,17 +2630,17 @@ errr init_x11(int argc, char *argv[])
 
 #ifdef DEFAULT_LOCALE
     if (!strcmp(setlocale(LC_ALL, nullptr), "C")) {
-        printf("try default locale \"%s\"\n", DEFAULT_LOCALE);
+        fmt::println("try default locale \"{}\"", DEFAULT_LOCALE);
         setlocale(LC_ALL, DEFAULT_LOCALE);
     }
 #endif
 
     if (!strcmp(setlocale(LC_ALL, nullptr), "C")) {
-        printf("WARNING: Locale is not supported. Non-english font may be displayed incorrectly.\n");
+        fmt::println("WARNING: Locale is not supported. Non-english font may be displayed incorrectly.");
     }
 
     if (!XSupportsLocale()) {
-        printf("can't support locale in X\n");
+        fmt::println("can't support locale in X");
         setlocale(LC_ALL, "C");
     }
 #else

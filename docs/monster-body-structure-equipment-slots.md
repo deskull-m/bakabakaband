@@ -19,16 +19,29 @@
 | Phase 2.6 | AC / 耐性集計の extended_inventory 反映 (FLAG_CAUSE_INVEN_EXTENDED) | ✅ |
 | Phase 2.7 | extended_equipment_slots の JSON 個別上書き | ✅ |
 | 表示 | r recall に体構造タグ表示、装備時メッセージ | ✅ |
+| 表示 | c ステータス 1 ページ目に自分の体構造を表示 (2026-09-01) | ✅ |
+| 表示 | 装備一覧から体構造的に存在しない部位を消去 (2026-09-01) | ✅ |
+| 表示 | 特性フラグ一覧・能力修正表の装備列から非該当部位を消去 (2026-09-01) | ✅ |
 | 分類調整 | D → DRACONIC、n → HUMANOID リファインメント | ✅ |
 
 **現状分類分布**:
-- HUMANOID:    1326 (フル装備可能)
-- DRACONIC:      76 (フル装備 + TAIL_RING + WING_L + WING_R)
-- QUADRUPED:    366 (首/胴体/頭のみ)
-- INCORPOREAL:  350 (装備不可)
-- AMORPHOUS:    114 (リング 2 個のみ)
-- SERPENTINE:    63 (首/胴体 + TAIL_RING)
-- BIPEDAL:       52 (首/光源/胴体/頭/脚)
+- HUMANOID:    1311 (フル装備可能)
+- DRACONIC:      77 (フル装備 + TAIL_RING + WING_L + WING_R)
+- QUADRUPED:    293 (通常スロットなし)
+- INSECTOID:     67 (通常スロットなし。QUADRUPED と同一構成)
+- INCORPOREAL:  300 (装備不可)
+- AMORPHOUS:    109 (通常スロットなし)
+- WORM:          47 (通常スロットなし + TAIL_RING)
+- WINGED_HUMANOID: 43 (HUMANOID から体の上を除く + WING_L + WING_R)
+- WING_ARMED_HUMANOID: 3 (HUMANOID から利き手・逆手を除く + WING_L + WING_R)
+- AVIAN:         39 (通常スロットなし + WING_L + WING_R)
+- SERPENTINE:     1 (通常スロットなし + TAIL_RING。コカトリスのみ)
+- VORTEX:        20 (装備不可)
+- SPHERE:        17 (装備不可)
+- BIPEDAL:       11 (通常スロットなし)
+- FORMLESS:      12 (装備不可)
+- GASEOUS:       10 (装備不可)
+- XAREN:          3 (装備不可)
 
 **実装ファイル一覧**:
 - `src/system/monrace/body-structure-types.h` (新規)
@@ -43,6 +56,10 @@
 - `src/save/monster-writer.cpp` + `src/load/old/monster-loader-savefile50.cpp` (save/load)
 - `src/view/display-player-inventory-page.{h,cpp}` (拡張部位セクション)
 - `src/view/display-lore.cpp` (体構造タグ)
+- `src/view/display-player.cpp` + `src/view/display-util.cpp` + `src/view/status-first-page.h` (c ステータスの体構造行)
+- `src/view/display-player-inventory-page.cpp` (c コマンド装備ページの `display_equipment_section()`) + `src/window/main-window-equipments.cpp` + `src/window/display-sub-windows.cpp` + `src/io-dump/character-dump.cpp` + `src/inventory/floor-item-getter.cpp` (装備一覧から非該当部位を消去)
+- `src/view/display-characteristic.cpp` + `src/view/display-player-stat-info.cpp` + `src/view/display-util.{h,cpp}` + `src/view/display-player.cpp` (特性フラグ表・能力修正表の装備列を消去、列見出しの動的生成)
+- `src/test/system/monrace/test-body-structure-policy.cpp` (ポリシー・表示名のユニットテスト)
 - `src/monster-floor/monster-object.cpp` (装備時メッセージ)
 - `lib/edit/MonraceDefinitions.jsonc` (全モンスターの body_structure 設定)
 
@@ -154,6 +171,47 @@ enum class BodyStructureType : uint8_t {
 INCORPOREAL を対象とし、後 4 種は Phase 2 (extended slots) で
 追加する。
 
+**実装状況 (現行)**: 上記のうち AQUATIC のみ未実装で、
+実際の enum は `HUMANOID(0)` 〜 `DRACONIC(6)` に **`FORMLESS(7)`** /
+**`GASEOUS(8)`** / **`VORTEX(9)`** / **`XAREN(10)`** / **`AVIAN(11)`** /
+**`WORM(12)`** / **`INSECTOID(13)`** / **`WINGED_HUMANOID(14)`** /
+**`WING_ARMED_HUMANOID(15)`** / **`SPHERE(16)`** を加えた 17 種
+(当初案と異なり `AVIAN` は 11 番、`INSECTOID` は 13 番)。
+`FORMLESS` (不定形) は「決まった形を持たない塊・雲・霧」用、
+`GASEOUS` (気体) は「毒ガス・煙・蒸気」用、
+`VORTEX` (ボルテックス) は「渦・竜巻・奔流」用、
+`XAREN` (ザレン型) は「岩を泳ぐ多腕多脚の異形」用で、
+**この 4 種はいずれも装備枠が一切ない**。
+`AVIAN` (鳥型) は「前肢が完全な翼になった鳥類」用で、
+**通常スロットは持たず両翼の装飾だけ**を持つ。
+`WORM` (長胴型) は「ミミズ〜蛇〜東洋竜のような、手足を持たない長い胴が
+身体の主体である生き物」用で、スロット構成は `SERPENTINE` と同一
+(**通常スロットなし + 尾の指輪**)。**`SERPENTINE` が担っていた意味論の実体は
+こちらへ移った**。
+`INSECTOID` (節足型) は「外骨格と多数の脚を持つ節足動物」用で、
+スロット構成は `QUADRUPED` と同一 (**通常スロットなし**)。当初案の
+「多腕」拡張スロットは `ExtendedSlotType` に該当する値が無いため未実装。
+`SERPENTINE` に残っていた多足類はここへ移り、**`SERPENTINE` には
+コカトリス 1 体だけが残っている** (鶏の体に蛇の尾という構成上、
+尾の指輪が適合するため据え置き)。
+`WINGED_HUMANOID` (有翼人) は「有翼のデーモン・天使のように、人型の体に
+翼が生えた存在」用で、スロット構成は **`HUMANOID` から体の上 (クローク) だけを
+除いた全スロット** + 両翼の装飾。背の翼が邪魔でマントの類を羽織れない一方、
+手も脚も人型なので武器・防具は通常どおり扱える。
+`WING_ARMED_HUMANOID` (翼腕人) は「ハーピー・鴉人のように、両腕そのものが翼に
+なった存在」用で、スロット構成は **`HUMANOID` から利き手・逆手を除いた全スロット**
++ 両翼の装飾。武器も盾も持てない代わり、背に翼を負うわけではないので
+**体の上 (クローク) は `WINGED_HUMANOID` と違って羽織れる**。
+`SPHERE` (球体) は「手足も頭も首も無い、球そのものが身体である存在」用で、
+`INCORPOREAL` / `FORMLESS` / `GASEOUS` / `VORTEX` / `XAREN` と同じく**装備枠が
+一切ない**。五者の関係は `INCORPOREAL` = 実体なし / `FORMLESS` = 実体あり・形が不定 /
+`GASEOUS` = 実体が気体 / `VORTEX` = 回転・流動する現象 / `SPHERE` = 形の定まった球体。
+`AMORPHOUS` の表示名は `FORMLESS` 追加にあわせて「不定形」から
+**「粘体型」** に変更した (スライム・ゼリー・モルド等 114 体が該当し、
+enum コメントの「スライム・ジェル」という実態に沿わせたもの)。
+当初案の「擬足に指輪をはめる」扱いは人型スロットの流用なので**廃止**し、
+現行では通常スロット・拡張スロットとも持たない。
+
 ### 1.2 スロット可否ポリシー
 
 新規ファイル: `src/system/monrace/body-structure-policy.h/.cpp`
@@ -167,19 +225,48 @@ struct BodySlotPolicy {
 const BodySlotPolicy &get_body_slot_policy(BodyStructureType type);
 ```
 
-各タイプのデフォルト定義例:
+各タイプのデフォルト定義 (**現行実装**):
 
-| BodyStructure | MAIN_HAND | SUB_HAND | BOW | RING×2 | NECK | LITE | BODY | OUTER | HEAD | ARMS | FEET |
-|---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| HUMANOID | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
-| BIPEDAL | × | × | × | × | ○ | ○ | ○ | × | ○ | × | ○ |
-| QUADRUPED | × | × | × | × | ○ | × | ○ | × | ○ | × | × |
-| SERPENTINE | × | × | × | × | ○ | × | ○ | × | × | × | × |
-| AMORPHOUS | × | × | × | ○ | × | × | × | × | × | × | × |
-| INCORPOREAL | × | × | × | × | × | × | × | × | × | × | × |
+**通常装備スロットを持つのは人型系 3 種と竜体だけ**で、それ以外の体構造は
+1 つも持たない。当初案は獣に「首/胴体/頭」のような部分的な人型スロットを
+与えていたが、人間用の装具は人型の体に合わせた形をしているため不整合であり、
+**倒して身ぐるみを剥げるのは人型が主**という方針に合わせて全て閉じた。
+獣側の装飾は身体に合った**拡張スロット** (尾の指輪・両翼の装飾) で表現する。
 
-`ASSHOLE` スロット (尻穴) は HUMANOID 以外は基本的に無効
-(独自仕様だが SERPENTINE は example として有効でもよい)。
+| BodyStructure | MAIN_HAND | SUB_HAND | BOW | RING×2 | NECK | LITE | BODY | OUTER | HEAD | ARMS | FEET | ASSHOLE | 拡張 |
+|---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|---|
+| HUMANOID | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | — |
+| WINGED_HUMANOID | ○ | ○ | ○ | ○ | ○ | ○ | ○ | × | ○ | ○ | ○ | ○ | 両翼 |
+| WING_ARMED_HUMANOID | × | × | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | 両翼 |
+| DRACONIC | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | 尾の指輪 + 両翼 |
+| BIPEDAL | × | × | × | × | × | × | × | × | × | × | × | × | — |
+| QUADRUPED | × | × | × | × | × | × | × | × | × | × | × | × | — |
+| INSECTOID | × | × | × | × | × | × | × | × | × | × | × | × | — |
+| AVIAN | × | × | × | × | × | × | × | × | × | × | × | × | 両翼 |
+| WORM | × | × | × | × | × | × | × | × | × | × | × | × | 尾の指輪 |
+| SERPENTINE | × | × | × | × | × | × | × | × | × | × | × | × | 尾の指輪 |
+| AMORPHOUS | × | × | × | × | × | × | × | × | × | × | × | × | — |
+| INCORPOREAL | × | × | × | × | × | × | × | × | × | × | × | × | — |
+| FORMLESS | × | × | × | × | × | × | × | × | × | × | × | × | — |
+| GASEOUS | × | × | × | × | × | × | × | × | × | × | × | × | — |
+| VORTEX | × | × | × | × | × | × | × | × | × | × | × | × | — |
+| XAREN | × | × | × | × | × | × | × | × | × | × | × | × | — |
+| SPHERE | × | × | × | × | × | × | × | × | × | × | × | × | — |
+
+- **通常スロットの集合は「全 13」「全 13 − クローク」「全 13 − 両手」「なし」の
+  4 通りだけ**で、部分的な集合を持つ体構造は存在しない。
+- `wield_slot()` は通常スロットが体構造で不可なら `find_extended_slot()` で
+  拡張スロットを試し、それも無ければ `-1` (所持品行き) を返す。よって獣に
+  `equip_kind` を書いた場合でも、**拡張スロットに適合する単品なら装備される**
+  (尾の指輪 ← 指輪 / 両翼 ← アミュレット / 第二の首 ← アミュレット・笛 /
+  第三の頭 ← 兜・王冠)。適合しなければ所持品に入る (死亡時は所持品ごと床へ落ちる)。
+- 拡張スロットの中身は `drop_all_inventory()` の走査対象外なので、
+  **剥ぎ取れる装備としては扱われない**。獣の装飾を表すだけの枠だが、AC・耐性は
+  Phase 2.6 で集計対象に入っている。
+
+`ASSHOLE` スロット (尻穴) は**実装済みの通常スロット** (`INVEN_ASSHOLE`) で、
+`wield_slot()` が `ItemKindType::ANAL_PLUG` をここへ割り当てる。上表の「全 13」には
+このスロットを含む。
 
 ### 1.3 MonraceDefinition への追加
 
@@ -399,7 +486,7 @@ ExtendedSlot 参照は `creature.get_extended_inventory(slot_id)`
   "id": 200,
   "name": { "ja": "コブラ", "en": "Cobra" },
   "body_structure": "SERPENTINE"
-  // 自動的に MAIN_HAND/SUB_HAND/BOW/RING×2/LITE/OUTER/HEAD/ARMS/FEET/ASSHOLE が無効
+  // 自動的に通常スロット全 13 部位が無効になり、拡張スロットの尾の指輪だけが残る
 }
 ```
 
@@ -501,14 +588,99 @@ ExtendedSlot 参照は `creature.get_extended_inventory(slot_id)`
 
 ---
 
+## 装備一覧表示からの非該当部位の消去 (2026-09-01)
+
+体構造的に装備できない部位は、装備一覧に「(なし)」として並べても意味が無い
+(四足獣に「利き腕」、不定形に「頭」が並ぶ) ため、**一覧から消去**する。
+
+判定は `CreatureEntity::should_display_equipment_slot(slot)` に集約する。
+
+```cpp
+// 装備できる部位は当然表示する。
+// 装備できない部位でも、実際にアイテムが入っているなら表示する
+// (消すと外す手段が無くなるため)。
+bool should_display_equipment_slot(int slot) const;
+```
+
+**適用箇所 (空きスロットを並べる表示すべて):**
+
+| 箇所 | 関数 |
+|---|---|
+| `e` コマンド / アイテム選択の装備一覧 | `show_equipment()` (`window/main-window-equipments.cpp`) |
+| 装備サブウィンドウ | `display_equipment()` (`window/display-sub-windows.cpp`) |
+| c コマンド「装備＆所持品」ページ | `display_equipment_section()` (`view/display-player-inventory-page.cpp`) |
+| キャラクタダンプ | `dump_aux_equipment_inventory()` (`io-dump/character-dump.cpp`) |
+| メニュー選択の候補数 | `test_equipment_floor()` (`inventory/floor-item-getter.cpp`) |
+
+**注意点:**
+
+- **装備サブウィンドウは行番号がスロット番号由来だった**ため、実際に表示した数を
+  数える running counter へ変更した (消した分だけ後続行が詰まる)。末尾の消去範囲も
+  固定値 `INVEN_TOTAL - INVEN_MAIN_HAND` から実際の表示行数に変更。人型では
+  従来と同じ 13 行になるため挙動は不変。
+- **メニュー選択 (`use_menu`) の候補数を同じ条件で数える必要がある。**
+  `test_equipment_floor()` が `show_equipment()` と別に候補数を数えており、
+  条件がずれるとカーソル位置と表示行がずれる。
+- ラベル (`prepare_label_string()` / `index_to_label()`) は**スロット番号由来**なので、
+  行を消してもラベルは変わらない (詰めても `a) b) c)` が振り直されることはない)。
+- 実際に持っているアイテムを隠さない方針のため、`equippy` のシンボル行
+  (`display_player_equippy()`) は変更不要 (空きスロットは元々空白で描画される)。
+
+---
+
+## 装備部位ごとに列を並べる表からの非該当部位の消去 (2026-09-01)
+
+c コマンドの能力詳細ページには、**装備部位ごとに 1 列**を並べる表が複数ある。
+これらも装備一覧と同じく、体構造的に存在しない部位は**列ごと消す**。
+
+**対象の表:**
+
+| ページ | 表 | 描画 |
+|---|---|---|
+| 2 | 能力修正 (STR/INT/… × 装備) | `display_equipments_compensation()` (`view/display-player-stat-info.cpp`) |
+| 2 | 基本耐性 / 上位耐性 / その他耐性 | `display_*_resistance_info()` (`view/display-characteristic.cpp`) |
+| 3 | 倍打 / 属性ブランド (武器スロットのみ) | `display_slay_info()` / `display_brand_info()` |
+| 3-4 | その他特性 / ESP / オーラ 等 | `display_*_info()` |
+
+**列見出しの動的生成:** 見出しはハードコードの `"abcdefghijkl@"` / `"abc@"` だったが、
+消した部位に合わせる必要があるため `build_equipment_column_labels()`
+(`view/display-util.{h,cpp}`) で生成する。文字は装備一覧と同じくスロット由来
+(`INVEN_MAIN_HAND` が `'a'`) なので、**部位を消しても残った列の文字は変わらない**
+(四足獣なら `fhj@`)。
+
+**列を並べる 3 者は必ず同じ条件で詰めること:**
+
+1. 症状文字を組み立てる `process_*_characteristics()` (`display-characteristic.cpp`)
+2. 装備シンボル行 `display_player_equippy()` (`display-player.cpp`)
+3. 列見出し `build_equipment_column_labels()` (`display-util.cpp`)
+
+**あわせて修正した既存の列ズレ:** 装備スロットは
+`INVEN_MAIN_HAND`(24)〜`INVEN_ASSHOLE`(36) の **13 個**だが、従来の見出しは
+`abcdefghijkl` の **12 文字** ＋ `@` だった。このため 13 列目 (尻の穴) に見出しが無く、
+`@` (クリーチャー自身の欄) が 13 列目の上にずれていた。動的生成により
+`abcdefghijklm@` の 14 文字となり解消する (人型の表示が 1 列分変わる)。
+`INVEN_ASSHOLE` 追加時の取りこぼしと思われる。武器スロット限定の表の見出し
+`"abc@"` は 3 スロット ＋ `@` で元々正しかった。
+
+**`display_player_equippy()` の余白埋め:** メインウィンドウのサイドバー
+(`ROW_EQUIPPY`) は描画前に画面クリアされないため、列が減ったときに古いシンボルが
+残らないよう、消した分を空白で埋めている (c コマンドの各表は `clear_from(0)` 後に
+描画されるので本来は不要だが、共通の描画関数なので一律で行う)。
+
+---
+
 ## 未決事項 / 検討項目
 
-1. **AMORPHOUS のリング装備可否**: スライムは「擬足にリングをはめる」
-   と考えると面白いが、不自然との意見もあり。最終決定は実装時。
+1. **AMORPHOUS のリング装備可否**: → **決着済み (不可)**。擬足に指輪という扱いも
+   人型スロットの流用なので、通常スロットを全て閉じる方針にあわせて廃止した。
 2. **プレイヤーが装備不可能なボディタイプを持つ可能性**:
-   将来「変身」「変異」でプレイヤーも body_structure を変えるか?
-   現状はプレイヤー = HUMANOID 固定で良いが、`mimic_form` 連動の
-   検討余地あり。
+   → **一部実現済み**。`player_birth_as_monster` でモンスターを選ぶと
+   `r_idx != MonraceId::PLAYER` となり、プレイヤーもその種族の
+   `body_structure` に従う (人型以外になり装備部位が減る)。判定は
+   `CreatureEntity::get_body_structure()` に集約し、`can_equip_to()` /
+   拡張スロット / c コマンドの体構造表示が同じ窓口を共有する。
+   通常のプレイヤー (`r_idx == MonraceId::PLAYER`) は従来どおり
+   HUMANOID 固定。`mimic_form` 連動は未対応 (変身中も体構造は変わらない)。
 3. **ペット / 召喚モンスターの装備引き継ぎ**: ペット化したモンスター
    に装備を渡す際の `can_equip_to()` チェック。提案 13 のフェーズ C
    で実装した「ペットへの装備譲渡」コマンドの拡張。
@@ -535,3 +707,7 @@ ExtendedSlot 参照は `creature.get_extended_inventory(slot_id)`
 | 日付 | 内容 | 担当 |
 |---|---|---|
 | 2026-05-14 | 初版設計提案 | Claude Code (claude/monster-stealth-perception-e6cuk) |
+| 2026-09-01 | c ステータス 1 ページ目に体構造を表示。表示名/表示色を `body_structure_name()` / `body_structure_color()` に集約し r recall と共用。`CreatureEntity::get_body_structure()` を新設 | Claude Code (claude/creature-entity-integration-zzgibe) |
+| 2026-09-01 | 装備一覧 (e コマンド / 装備サブウィンドウ / キャラクタダンプ / c 装備ページ) から体構造的に存在しない部位を消去。判定を `CreatureEntity::should_display_equipment_slot()` に集約 | Claude Code (claude/creature-entity-integration-zzgibe) |
+| 2026-09-01 | 特性フラグ一覧・能力修正表の装備列からも非該当部位を消去。列見出しを `build_equipment_column_labels()` で動的生成し、`INVEN_ASSHOLE` 分の列ズレも解消 | Claude Code (claude/creature-entity-integration-zzgibe) |
+| 2026-11-01 | 人型系 3 種と竜体以外の通常スロットを全て閉鎖 (獣に部分的な人型スロットを与える不整合の解消)。`is_armament_capable()` 軸を追加。あわせて AC 集計・近接武器選択に `can_equip_to()` ガードを入れ、体構造変更前のセーブに残る装備が効かないようにした | Claude Code |

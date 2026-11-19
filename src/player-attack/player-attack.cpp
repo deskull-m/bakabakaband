@@ -14,7 +14,6 @@
 #include "combat/martial-arts-table.h"
 #include "combat/slaying.h"
 #include "floor/geometry.h"
-#include "game-option/cheat-types.h"
 #include "inventory/inventory-slot-types.h"
 #include "main/sound-definitions-table.h"
 #include "main/sound-of-music.h"
@@ -498,8 +497,7 @@ static void apply_actual_attack(
     const auto is_berserker = CreatureClass(creature).equals(PlayerClassType::BERSERKER);
     pa_ptr->attack_damage = mon_damage_mod(creature, *pa_ptr->m_ptr, pa_ptr->attack_damage, is_death_scythe || (is_berserker && one_in_(2)));
     critical_attack(creature, pa_ptr);
-    msg_format_wizard(creature, CHEAT_MONSTER, _("%dのダメージを与えた。(残hp %d/%d(%d))", "You do %d damage. (left HP %d/%d(%d))"),
-        pa_ptr->attack_damage, pa_ptr->m_ptr->hp - pa_ptr->attack_damage, pa_ptr->m_ptr->maxhp, pa_ptr->m_ptr->max_maxhp);
+    msg_print_wizard_damage(creature, *pa_ptr->m_ptr, pa_ptr->attack_damage);
 }
 
 /*!
@@ -590,7 +588,7 @@ void exe_player_attack_to_monster(CreatureEntity &creature, POSITION y, POSITION
     }
 
     if (pa_ptr->weak && !(*mdeath)) {
-        msg_format(_("%sは弱くなったようだ。", "%s^ seems weakened."), pa_ptr->m_name);
+        msg_print(_("{}は弱くなったようだ。", "{} seems weakened."), str_upcase_first(pa_ptr->m_name));
     }
 
     if ((pa_ptr->drain_left != MAX_VAMPIRIC_DRAIN) && one_in_(4)) {

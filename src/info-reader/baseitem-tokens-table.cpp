@@ -189,6 +189,7 @@ const std::unordered_map<std::string_view, tr_type> baseitem_flags = {
     { "SUSHI", TR_SUSHI },
     { "STANDARDIZED", TR_STANDARDIZED },
     { "IM_LITE", TR_IM_LITE },
+    { "JOKE", TR_JOKE },
 };
 
 /*!
@@ -225,5 +226,21 @@ const std::unordered_map<std::string_view, ItemGenerationTraitType> baseitem_gen
     { "XTRA_DICE_SIDE", ItemGenerationTraitType::XTRA_DICE_SIDE },
     { "ADD_DICE", ItemGenerationTraitType::ADD_DICE },
     { "DOUBLED_DICE", ItemGenerationTraitType::DOUBLED_DICE },
+};
+
+/*!
+ * 装備品の文明水準トークンの定義 /
+ * Civilization levels of gear
+ * @details enum の順序がそのまま文明の進み具合を表す (CivilizationLevel 参照)。
+ */
+const std::unordered_map<std::string_view, CivilizationLevel> baseitem_civilizations = {
+    { "STONE", CivilizationLevel::STONE },
+    { "BRONZE", CivilizationLevel::BRONZE },
+    { "IRON", CivilizationLevel::IRON },
+    { "INDUSTRIAL", CivilizationLevel::INDUSTRIAL },
+    { "ATOMIC", CivilizationLevel::ATOMIC },
+    { "INFORMATION", CivilizationLevel::INFORMATION },
+    { "SOLAR", CivilizationLevel::SOLAR },
+    { "GALACTIC", CivilizationLevel::GALACTIC },
 };
 // clang-format on

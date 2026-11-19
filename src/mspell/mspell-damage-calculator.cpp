@@ -10,6 +10,8 @@
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
 #include "util/bit-flags-calculator.h"
+#include <algorithm>
+#include <sstream>
 
 /*!
  * @brief モンスターの使う呪文の威力を決定する /
@@ -76,7 +78,7 @@ static int monspell_damage_base(
     case MonsterAbilityType::DISPEL:
         return -1;
     case MonsterAbilityType::ROCKET:
-        dam = (hp / 4) > 800 ? 800 : (hp / 4);
+        dam = std::min(hp / 4, 800);
         break;
     case MonsterAbilityType::SHOOT:
         dice = shoot_dice;
@@ -93,49 +95,49 @@ static int monspell_damage_base(
     case MonsterAbilityType::BR_ELEC:
     case MonsterAbilityType::BR_FIRE:
     case MonsterAbilityType::BR_COLD:
-        dam = ((hp / 3) > 1600 ? 1600 : (hp / 3));
+        dam = std::min(hp / 3, 1600);
         break;
     case MonsterAbilityType::BR_POIS:
-        dam = ((hp / 3) > 800 ? 800 : (hp / 3));
+        dam = std::min(hp / 3, 800);
         break;
     case MonsterAbilityType::BR_NETH:
-        dam = ((hp / 6) > 550 ? 550 : (hp / 6));
+        dam = std::min(hp / 6, 550);
         break;
     case MonsterAbilityType::BR_LITE:
     case MonsterAbilityType::BR_DARK:
-        dam = ((hp / 6) > 400 ? 400 : (hp / 6));
+        dam = std::min(hp / 6, 400);
         break;
     case MonsterAbilityType::BR_CONF:
     case MonsterAbilityType::BR_SOUN:
-        dam = ((hp / 6) > 450 ? 450 : (hp / 6));
+        dam = std::min(hp / 6, 450);
         break;
     case MonsterAbilityType::BR_CHAO:
-        dam = ((hp / 6) > 600 ? 600 : (hp / 6));
+        dam = std::min(hp / 6, 600);
         break;
     case MonsterAbilityType::BR_DISE:
-        dam = ((hp / 6) > 500 ? 500 : (hp / 6));
+        dam = std::min(hp / 6, 500);
         break;
     case MonsterAbilityType::BR_NEXU:
-        dam = ((hp / 3) > 250 ? 250 : (hp / 3));
+        dam = std::min(hp / 3, 250);
         break;
     case MonsterAbilityType::BR_TIME:
-        dam = ((hp / 3) > 150 ? 150 : (hp / 3));
+        dam = std::min(hp / 3, 150);
         break;
     case MonsterAbilityType::BR_INER:
     case MonsterAbilityType::BR_GRAV:
-        dam = ((hp / 6) > 200 ? 200 : (hp / 6));
+        dam = std::min(hp / 6, 200);
         break;
     case MonsterAbilityType::BR_SHAR:
-        dam = ((hp / 6) > 500 ? 500 : (hp / 6));
+        dam = std::min(hp / 6, 500);
         break;
     case MonsterAbilityType::BR_PLAS:
-        dam = ((hp / 6) > 150 ? 150 : (hp / 6));
+        dam = std::min(hp / 6, 150);
         break;
     case MonsterAbilityType::BR_FORC:
-        dam = ((hp / 6) > 200 ? 200 : (hp / 6));
+        dam = std::min(hp / 6, 200);
         break;
     case MonsterAbilityType::BR_MANA:
-        dam = ((hp / 3) > 250 ? 250 : (hp / 3));
+        dam = std::min(hp / 3, 250);
         break;
     case MonsterAbilityType::BA_NUKE:
         mult = powerful ? 2 : 1;
@@ -143,26 +145,26 @@ static int monspell_damage_base(
         dice = Dice(10, 6);
         break;
     case MonsterAbilityType::BR_NUKE:
-        dam = ((hp / 3) > 800 ? 800 : (hp / 3));
+        dam = std::min(hp / 3, 800);
         break;
     case MonsterAbilityType::BA_CHAO:
         dam = (powerful ? (rlev * 3) : (rlev * 2));
         dice = Dice(10, 10);
         break;
     case MonsterAbilityType::BR_DISI:
-        dam = ((hp / 6) > 150 ? 150 : (hp / 6));
+        dam = std::min(hp / 6, 150);
         break;
     case MonsterAbilityType::BR_VOID:
-        dam = ((hp / 3) > 250 ? 250 : (hp / 6));
+        dam = std::min(hp / 6, 250);
         break;
     case MonsterAbilityType::BR_ABYSS:
-        dam = ((hp / 3) > 250 ? 250 : (hp / 6));
+        dam = std::min(hp / 6, 250);
         break;
     case MonsterAbilityType::BR_FECES:
-        dam = ((hp / 3) > 250 ? 250 : (hp / 6));
+        dam = std::min(hp / 6, 250);
         break;
     case MonsterAbilityType::BR_SPIDER_STRING:
-        dam = ((hp / 10) > 100 ? 100 : (hp / 10));
+        dam = std::min(hp / 10, 100);
         break;
     case MonsterAbilityType::BA_ACID:
         if (powerful) {
@@ -426,6 +428,8 @@ static int monspell_damage_base(
         return -1;
     case MonsterAbilityType::S_ELDRAZI:
         return -1;
+    case MonsterAbilityType::S_ROBOT:
+        return -1;
     case MonsterAbilityType::MAX:
         return -1;
     default:
@@ -433,6 +437,43 @@ static int monspell_damage_base(
     }
 
     return monspell_damage_roll(dam, dice, mult, div, TYPE);
+}
+
+/*!
+ * @brief モンスターの射撃ダメージが暗黙に前提としている弓の倍率
+ * @details 従来 `monrace.shoot_damage_dice` は「弓を含めた射撃ダメージそのもの」
+ *          として調整されていた。装備弓の倍率をそのまま乗じると素の 2〜4 倍に
+ *          膨れ上がるため、この基準倍率で正規化し、**基準より上等な弓を持った
+ *          分だけ**強くなるようにする。既定の 2 では最下級の弓 (スリング /
+ *          ショートボウ = x2) を持つ個体の射撃ダメージは従来と完全に同じ。
+ *          射撃バランスの調整はこの定数と `decide_initial_bow()` のレベル帯
+ *          テーブルで行うこと。
+ */
+constexpr auto MONSTER_SHOOT_BASELINE_MAGNIFICATION = 2;
+
+/*!
+ * @brief 装備している弓の性能を射撃ダメージへ反映する
+ * @param monster 射撃を行うモンスター
+ * @param dam 種族の射撃ダイスから求めた素のダメージ
+ * @return 装備弓を反映した射撃ダメージ
+ * @details プレイヤーの射撃 (`exe_fire`) と同じく、弓のダメージ修正を加えた上で
+ *          倍率を乗じる。弓を装備していない (あるいは倍率を持たない弓の) 場合は
+ *          素のダメージをそのまま返すため、既存モンスターの挙動は変わらない。
+ */
+static int apply_equipped_bow_to_shoot_damage(const CreatureEntity &monster, int dam)
+{
+    const auto &bow = monster.inventory[INVEN_BOW];
+    if (!bow || !bow->is_valid() || (bow->bi_key.tval() != ItemKindType::BOW)) {
+        return dam;
+    }
+
+    const auto magnification = bow->get_arrow_magnification();
+    if (magnification <= 0) {
+        return dam;
+    }
+
+    const auto boosted = (dam + bow->to_d) * magnification / MONSTER_SHOOT_BASELINE_MAGNIFICATION;
+    return std::max(boosted, 0);
 }
 
 /*!
@@ -451,7 +492,14 @@ int monspell_damage(CreatureEntity &creature, MonsterAbilityType ms_type, MONSTE
     DEPTH rlev = monster_level_idx(floor, m_idx);
     int hp = (TYPE == DAM_ROLL) ? monster.hp : monster.max_maxhp;
 
-    return monspell_damage_base(creature, ms_type, hp, rlev, monster_is_powerful(floor, m_idx), monrace.shoot_damage_dice, 0, TYPE);
+    const auto dam = monspell_damage_base(creature, ms_type, hp, rlev, monster_is_powerful(floor, m_idx), monrace.shoot_damage_dice, 0, TYPE);
+    if ((ms_type != MonsterAbilityType::SHOOT) || (dam < 0)) {
+        return dam;
+    }
+
+    // 射撃は装備している弓の性能を反映する (種族単位の monspell_race_damage() は
+    // 個体を持たないため対象外)。
+    return apply_equipped_bow_to_shoot_damage(monster, dam);
 }
 
 /*!
@@ -494,4 +542,70 @@ int monspell_bluemage_damage(CreatureEntity &creature, MonsterAbilityType ms_typ
     const auto shoot_dice = weapon_ptr ? weapon_ptr->damage_dice : Dice(1, 1);
 
     return monspell_damage_base(creature, ms_type, creature.get_current_hp(), plev * 2, false, shoot_dice, shoot_base, TYPE);
+}
+
+/*!
+ * @brief 呪文のダメージのダイスを文字列にする
+ * @tparam F ダメージの値の種類 (spell_flag_type の値) を int で受けて、その値を int で返す呼び出し可能な型
+ * @param damage_of ダメージの値の種類 (BASE_DAM・DICE_NUM など) を受けて、その値を返す関数
+ * @return std::string ダメージを表す文字列 (固定値か、ダイスを含む式。例: "50"、"10+2d6")
+ */
+template <typename F>
+static std::string describe_damage_dice(F damage_of)
+{
+    const auto base_damage = damage_of(BASE_DAM);
+    const auto dice_num = damage_of(DICE_NUM);
+    const auto dice_side = damage_of(DICE_SIDE);
+    const auto dice_mult = damage_of(DICE_MULT);
+    const auto dice_div = damage_of(DICE_DIV);
+    if (dice_num == 0) {
+        return std::to_string(base_damage);
+    }
+
+    std::stringstream ss;
+    if (base_damage != 0) {
+        ss << base_damage << '+';
+    }
+
+    if (dice_num != 1) {
+        ss << dice_num;
+    }
+    ss << 'd' << dice_side;
+
+    if (dice_mult != 1 || dice_div != 1) {
+        ss << '*';
+        if (dice_div == 1) {
+            ss << dice_mult;
+        } else {
+            ss << '(' << dice_mult << '/' << dice_div << ')';
+        }
+    }
+
+    return ss.str();
+}
+
+/*!
+ * @brief モンスターの種族が使う呪文のダメージを文字列にする
+ * @param creature クリーチャーへの参照
+ * @param ms_type 呪文番号
+ * @param monrace_id 呪文を唱えるモンスターの種族ID
+ * @return std::string ダメージを表す文字列 (固定値か、ダイスを含む式)
+ * @details 威力の値を持つ呪文 (攻撃呪文と魔力吸収) にだけ使う。それ以外の呪文では値がどれも -1 になる
+ */
+std::string describe_monspell_race_damage(CreatureEntity &creature, MonsterAbilityType ms_type, MonraceId monrace_id)
+{
+    return describe_damage_dice([&](int type) { return monspell_race_damage(creature, ms_type, monrace_id, type); });
+}
+
+/*!
+ * @brief 青魔導師が使う呪文のダメージを文字列にする
+ * @param creature クリーチャーへの参照
+ * @param ms_type 呪文番号
+ * @param plev 使用するレベル
+ * @return std::string ダメージを表す文字列 (固定値か、ダイスを含む式)
+ * @details 威力の値を持つ呪文 (攻撃呪文と魔力吸収) にだけ使う。それ以外の呪文では値がどれも -1 になる
+ */
+std::string describe_monspell_bluemage_damage(CreatureEntity &creature, MonsterAbilityType ms_type, PLAYER_LEVEL plev)
+{
+    return describe_damage_dice([&](int type) { return monspell_bluemage_damage(creature, ms_type, plev, type); });
 }

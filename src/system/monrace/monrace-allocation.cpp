@@ -23,7 +23,7 @@ MonraceAllocationEntry::MonraceAllocationEntry(MonraceId index, int level, short
  * @brief 一般的なモンスター生成ルーチンで生成しても良いモンスターか否かのフィルタ処理
  * @param level 生成基準階
  * @return 生成許可ならばtrue、禁止ならばfalse
- * @details クエストモンスター、ダンジョンの主、指定階未満でのFORCE_DEPTH フラグ持ちは生成禁止
+ * @details クエストモンスター、ダンジョンの主、指定階未満でのFORCE_DEPTH フラグ持ち、生成上限階層 (max_level) を超えた階は生成禁止
  */
 bool MonraceAllocationEntry::is_permitted(int threshold_level) const
 {
@@ -37,6 +37,10 @@ bool MonraceAllocationEntry::is_permitted(int threshold_level) const
     }
 
     if (monrace.misc_flags.has(MonsterMiscType::FORCE_DEPTH) && (monrace.level > threshold_level)) {
+        return false;
+    }
+
+    if (monrace.is_too_deep_to_generate(threshold_level)) {
         return false;
     }
 

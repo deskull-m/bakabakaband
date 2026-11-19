@@ -46,9 +46,9 @@
 #include "system/baseitem/baseitem-key.h"
 #include "system/baseitem/baseitem-list.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/floor/floor-info.h"
 #include "system/item-entity.h"
-#include "system/redrawing-flags-updater.h"
 #include "target/target-getter.h"
 #include "term/screen-processor.h"
 #include "view/display-messages.h"
@@ -172,7 +172,7 @@ static void activate_artifact(CreatureEntity &creature, std::shared_ptr<ItemEnti
     case RandomArtActType::MURAMASA:
         return;
     default:
-        msg_format("Special timeout is not implemented: %d.", enum2i(it_activation->index));
+        msg_print("Special timeout is not implemented: {}.", enum2i(it_activation->index));
         return;
     }
 }
@@ -321,11 +321,7 @@ void exe_activate(CreatureEntity &creature, INVENTORY_IDX i_idx)
     sound(SoundKind::ZAP);
     if (ae.item->has_activation()) {
         activate_artifact(creature, ae.item);
-        static constexpr auto flags = {
-            SubWindowRedrawingFlag::INVENTORY,
-            SubWindowRedrawingFlag::EQUIPMENT,
-        };
-        RedrawingFlagsUpdater::get_instance().set_flags(flags);
+        DeferredUpdateRequests::get_instance().request_carried_item_lists_redrawing();
         return;
     }
 
@@ -352,7 +348,7 @@ void exe_activate(CreatureEntity &creature, INVENTORY_IDX i_idx)
 
     if (randint1(100) <= ae_ptr->broken) {
         std::string o_name = describe_flavor(creature, *ae_ptr->item, OD_OMIT_PREFIX);
-        msg_format(_("%sは壊れた！", "%s is destroyed!"), o_name.data());
+        msg_print(_("{}は壊れた！", "{} is destroyed!"), o_name);
         curse_weapon_object(creature, true, *ae_ptr->item);
     }
 }

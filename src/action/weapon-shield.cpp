@@ -24,12 +24,12 @@
 static void display_wielding_message(const std::string &item_name, bool is_two_handed)
 {
     if (is_two_handed) {
-        msg_format(_("%sを両手で構えた。", "You are wielding %s with both hands."), item_name.data());
+        msg_print(_("{}を両手で構えた。", "You are wielding {} with both hands."), item_name);
         return;
     }
 
     const auto hand = left_hander ? _("左手", "left") : _("右手", "right");
-    msg_format(_("%sを%sで構えた。", "You are wielding %s in your %s hand."), item_name.data(), hand);
+    msg_print(_("{}を{}で構えた。", "You are wielding {} in your {} hand."), item_name, hand);
 }
 
 /*!
@@ -48,7 +48,7 @@ static void move_to_main_hand(CreatureEntity &creature)
     if (item_sub_hand.is_cursed()) {
         const auto is_two_handed = item_sub_hand.allow_two_hands_wielding() && can_two_hands_wielding(creature);
         if (is_two_handed) {
-            msg_format(_("%sを両手で構えた。", "You are wielding %s with both hands."), item_name.data());
+            msg_print(_("{}を両手で構えた。", "You are wielding {} with both hands."), item_name);
         }
         return;
     }
@@ -74,7 +74,7 @@ static void move_to_sub_hand(CreatureEntity &creature)
     if (has_melee_weapon(creature, INVEN_MAIN_HAND)) {
         const auto is_two_handed = item_main_hand.allow_two_hands_wielding() && can_two_hands_wielding(creature);
         if (is_two_handed) {
-            msg_format(_("%sを両手で構えた。", "You are wielding %s with both hands."), item_name.data());
+            msg_print(_("{}を両手で構えた。", "You are wielding {} with both hands."), item_name);
         }
         return;
     }
@@ -87,7 +87,7 @@ static void move_to_sub_hand(CreatureEntity &creature)
     item_sub_hand = item_main_hand.clone();
     inven_item_increase(creature, INVEN_MAIN_HAND, -item_main_hand.number);
     inven_item_optimize(creature, INVEN_MAIN_HAND);
-    msg_format(_("%sを持ち替えた。", "You shifted %s to your other hand."), item_name.data());
+    msg_print(_("{}を持ち替えた。", "You shifted {} to your other hand."), item_name);
 }
 
 /*!

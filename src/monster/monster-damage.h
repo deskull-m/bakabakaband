@@ -37,7 +37,7 @@ private:
     void dying_scream(std::string_view m_name);
     void show_kill_message(std::string_view note, std::string_view m_name);
     void show_explosion_message(std::string_view died_mes, std::string_view m_name);
-    void show_bounty_message(std::string_view m_name);
+    void show_bounty_message();
     void set_redraw();
     void process_masochist_reaction();
     void process_sadist_reaction();

@@ -16,6 +16,7 @@
 #include "inventory/inventory-util.h"
 #include "inventory/item-selection-util.h"
 #include "io/command-repeater.h"
+#include "io/input-context.h"
 #include "io/input-key-acceptor.h"
 #include "io/input-key-requester.h"
 #include "main/sound-of-music.h"
@@ -24,13 +25,12 @@
 #include "object/object-info.h"
 #include "player/player-status-flags.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
-#include "system/redrawing-flags-updater.h"
 #include "term/gameterm.h"
 #include "term/screen-processor.h"
-#include "term/z-form.h"
 #include "util/enum-converter.h"
 #include "util/int-char-converter.h"
 #include "util/string-processor.h"
@@ -201,11 +201,45 @@ static void test_equipment_floor(CreatureEntity &creature, FloorItemSelection *f
     }
 
     for (const auto i_idx : INVEN_WIELDING_SLOTS) {
+        // show_equipment() が体構造的に存在しない部位を一覧から消すため、
+        // メニュー選択の候補数も同じ条件で数える (消した行とカーソルがずれないように)。
+        if (!creature.should_display_equipment_slot(i_idx)) {
+            continue;
+        }
+
         if (creature.is_select_ring_slot() ? is_ring_slot(i_idx)
                                            : item_tester.okay(creature.inventory[i_idx].get()) || (fis_ptr->mode & USE_FULL)) {
             fis_ptr->max_equip++;
         }
     }
+}
+
+/*!
+ * @brief アイテムの選択の入力待ちの文脈を作る
+ * @param fis アイテムの選択の状態 (選べる区分・ラベルの範囲など)
+ * @param pmt 選択目的のメッセージ
+ * @return 入力待ちの文脈
+ */
+static InputContext make_item_input_context(const FloorItemSelection &fis, std::string_view pmt)
+{
+    auto area = ItemSelectionArea::INVENTORY;
+    if (command_wrk == USE_EQUIP) {
+        area = ItemSelectionArea::EQUIPMENT;
+    } else if (command_wrk == USE_FLOOR) {
+        area = ItemSelectionArea::FLOOR;
+    }
+
+    const ItemInputDetails details{
+        .area = area,
+        .inventory = fis.allow_inven,
+        .equipment = fis.allow_equip,
+        .floor = fis.allow_floor,
+        .first_label = fis.n1,
+        .last_label = fis.n2,
+        .force = fis.force,
+        .menu = use_menu,
+    };
+    return { InputKind::ITEM, std::string(pmt), details };
 }
 
 /*!
@@ -314,11 +348,7 @@ tl::optional<short> get_item_floor(CreatureEntity &creature, std::string_view pm
         screen_save();
     }
 
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    static constexpr auto flags = {
-        SubWindowRedrawingFlag::INVENTORY,
-        SubWindowRedrawingFlag::EQUIPMENT,
-    };
+    auto &dur = DeferredUpdateRequests::get_instance();
     while (!fis.done) {
         int ni = 0;
         int ne = 0;
@@ -341,8 +371,8 @@ tl::optional<short> get_item_floor(CreatureEntity &creature, std::string_view pm
             fis.toggle = !fis.toggle;
         }
 
-        rfu.set_flags(flags);
-        handle_stuff(creature);
+        dur.request_carried_item_lists_redrawing();
+        window_stuff(creature);
         COMMAND_CODE get_item_label = 0;
         if (command_wrk == USE_INVEN) {
             fis.n1 = I2A(fis.i1);
@@ -460,7 +490,11 @@ tl::optional<short> get_item_floor(CreatureEntity &creature, std::string_view pm
 
         ss << " ESC";
         prt(fmt::format("({}) {}", ss.str(), pmt), 0, 0);
-        fis.which = inkey();
+        {
+            const InputContextScope input_context(make_item_input_context(fis, pmt));
+            fis.which = inkey();
+        }
+
         if (use_menu) {
             int max_line = 1;
             if (command_wrk == USE_INVEN) {
@@ -674,7 +708,7 @@ tl::optional<short> get_item_floor(CreatureEntity &creature, std::string_view pm
                 grid.o_idx_list.rotate(*creature.get_floor());
             }
 
-            rfu.set_flag(SubWindowRedrawingFlag::FLOOR_ITEMS);
+            dur.set_flag(SubWindowRedrawingFlag::FLOOR_ITEMS);
             window_stuff(creature);
             const auto &floor = *creature.get_floor();
             fis.floor_item_index = scan_floor_items(floor, creature.get_position(), { ScanFloorMode::ITEM_TESTER, ScanFloorMode::ONLY_MARKED }, item_tester);
@@ -899,8 +933,8 @@ tl::optional<short> get_item_floor(CreatureEntity &creature, std::string_view pm
         toggle_inventory_equipment();
     }
 
-    rfu.set_flags(flags);
-    handle_stuff(creature);
+    dur.request_carried_item_lists_redrawing();
+    window_stuff(creature);
     prt("", 0, 0);
     if (fis.oops && !str.empty()) {
         msg_print(str);

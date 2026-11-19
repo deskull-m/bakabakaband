@@ -41,18 +41,18 @@ static void dump_magic_eater(CreatureEntity &creature, FILE *fff)
         return;
     }
 
-    fprintf(fff, _("\n\n  [取り込んだ魔法道具]\n", "\n\n  [Magic devices eaten]\n"));
+    fmt::println(fff, _("\n\n  [取り込んだ魔法道具]", "\n\n  [Magic devices eaten]"));
     const auto &baseitems = BaseitemList::get_instance();
     for (auto tval : { ItemKindType::STAFF, ItemKindType::WAND, ItemKindType::ROD }) {
         switch (tval) {
         case ItemKindType::STAFF:
-            fprintf(fff, _("\n[杖]\n", "\n[Staffs]\n"));
+            fmt::println(fff, _("\n[杖]", "\n[Staffs]"));
             break;
         case ItemKindType::WAND:
-            fprintf(fff, _("\n[魔法棒]\n", "\n[Wands]\n"));
+            fmt::println(fff, _("\n[魔法棒]", "\n[Wands]"));
             break;
         case ItemKindType::ROD:
-            fprintf(fff, _("\n[ロッド]\n", "\n[Rods]\n"));
+            fmt::println(fff, _("\n[ロッド]", "\n[Rods]"));
             break;
         default:
             break;
@@ -67,7 +67,7 @@ static void dump_magic_eater(CreatureEntity &creature, FILE *fff)
             }
 
             const auto &baseitem = baseitems.lookup_baseitem({ tval, i });
-            const auto buf = format("%23s (%2d)", baseitem.name.data(), item.count);
+            const auto buf = fmt::format("{:>23} ({:2})", fmt::bytes(baseitem.name), item.count);
             desc_list.emplace_back(buf);
         }
 
@@ -99,8 +99,8 @@ static void dump_magic_eater(CreatureEntity &creature, FILE *fff)
  */
 static void dump_smith(CreatureEntity &creature, FILE *fff)
 {
-    fprintf(fff, _("\n\n  [手に入れたエッセンス]\n\n", "\n\n  [Get Essence]\n\n"));
-    fprintf(fff, _("エッセンス   個数     エッセンス   個数     エッセンス   個数", "Essence      Num      Essence      Num      Essence      Num "));
+    fmt::println(fff, _("\n\n  [手に入れたエッセンス]\n", "\n\n  [Get Essence]\n"));
+    fmt::print(fff, _("エッセンス   個数     エッセンス   個数     エッセンス   個数", "Essence      Num      Essence      Num      Essence      Num "));
 
     const auto &essences = Smith::get_essence_list();
     auto n = essences.size();
@@ -110,13 +110,13 @@ static void dump_smith(CreatureEntity &creature, FILE *fff)
 
     auto row = n / 3 + 1;
     for (auto i = 0U; i < row; i++) {
-        fprintf(fff, "\n");
-        fprintf(fff, "%-11s %5d     ", Smith::get_essence_name(essences[i]), amounts[i]);
+        fmt::print(fff, "\n");
+        fmt::print(fff, "{:<11} {:5}     ", fmt::bytes(Smith::get_essence_name(essences[i])), amounts[i]);
         if (i + row < n) {
-            fprintf(fff, "%-11s %5d     ", Smith::get_essence_name(essences[i + row]), amounts[i + row]);
+            fmt::print(fff, "{:<11} {:5}     ", fmt::bytes(Smith::get_essence_name(essences[i + row])), amounts[i + row]);
         }
         if (i + row * 2 < n) {
-            fprintf(fff, "%-11s %5d", Smith::get_essence_name(essences[i + row * 2]), amounts[i + row * 2]);
+            fmt::print(fff, "{:<11} {:5}", fmt::bytes(Smith::get_essence_name(essences[i + row * 2])), amounts[i + row * 2]);
         }
     }
 

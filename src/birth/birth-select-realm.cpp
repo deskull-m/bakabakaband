@@ -1,6 +1,7 @@
 #include "birth/birth-select-realm.h"
 #include "birth/birth-util.h"
 #include "core/asking-player.h"
+#include "io/input-context.h"
 #include "io/input-key-acceptor.h"
 #include "mind/mind-elementalist.h"
 #include "player-base/player-class.h"
@@ -8,9 +9,9 @@
 #include "system/creature-entity.h"
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
-#include "term/z-form.h"
 #include "util/int-char-converter.h"
 #include "view/display-util.h"
+#include <fmt/format.h>
 #include <string>
 #include <tl/optional.hpp>
 
@@ -68,7 +69,7 @@ static void analyze_realms(CreatureEntity &creature, RealmType selecting_realm, 
 
         birth_realm_ptr->sym[birth_realm_ptr->n] = I2A(birth_realm_ptr->n);
 
-        const auto buf = format("%c%c %s", birth_realm_ptr->sym[birth_realm_ptr->n], birth_realm_ptr->p2, PlayerRealm::get_name(realm).data());
+        const auto buf = fmt::format("{:c}{:c} {}", birth_realm_ptr->sym[birth_realm_ptr->n], birth_realm_ptr->p2, PlayerRealm::get_name(realm));
         put_str(buf, 12 + (birth_realm_ptr->n / 5), 2 + 15 * (birth_realm_ptr->n % 5));
         birth_realm_ptr->picks[birth_realm_ptr->n++] = realm;
     }
@@ -83,12 +84,11 @@ static void move_birth_realm_cursor(birth_realm_type *birth_realm_ptr)
     c_put_str(TERM_WHITE, birth_realm_ptr->cur, 12 + (birth_realm_ptr->os / 5), 2 + 15 * (birth_realm_ptr->os % 5));
 
     if (birth_realm_ptr->cs == birth_realm_ptr->n) {
-        birth_realm_ptr->cur = format("%c%c %s", '*', birth_realm_ptr->p2, _("ランダム", "Random"));
+        birth_realm_ptr->cur = fmt::format("{:c}{:c} {}", '*', birth_realm_ptr->p2, _("ランダム", "Random"));
     } else {
         const auto realm = birth_realm_ptr->picks[birth_realm_ptr->cs];
         const auto &realm_name = PlayerRealm::get_name(realm);
-        birth_realm_ptr->cur = format("%c%c %s", birth_realm_ptr->sym[birth_realm_ptr->cs], birth_realm_ptr->p2,
-            realm_name.data());
+        birth_realm_ptr->cur = fmt::format("{:c}{:c} {}", birth_realm_ptr->sym[birth_realm_ptr->cs], birth_realm_ptr->p2, realm_name);
         c_put_str(TERM_L_BLUE, realm_name, 3, 40);
         prt(_("の特徴", ": Characteristic"), 3, 40 + realm_name->length());
         prt(PlayerRealm::get_subinfo(realm), 4, 40);
@@ -129,7 +129,7 @@ static void interpret_realm_select_key(birth_realm_type *birth_realm_ptr, char c
     }
 }
 
-static bool get_a_realm(CreatureEntity &creature, birth_realm_type *birth_realm_ptr)
+static bool get_a_realm(CreatureEntity &creature, birth_realm_type *birth_realm_ptr, BirthStep step)
 {
     birth_realm_ptr->os = birth_realm_ptr->n;
     while (true) {
@@ -138,11 +138,15 @@ static bool get_a_realm(CreatureEntity &creature, birth_realm_type *birth_realm_
             break;
         }
 
-        const auto buf = format(_("領域を選んで下さい(%c-%c) ('='初期オプション設定): ", "Choose a realm (%c-%c) ('=' for options): "),
-            birth_realm_ptr->sym[0], birth_realm_ptr->sym[birth_realm_ptr->n - 1]);
+        const auto buf = fmt::format(_("領域を選んで下さい({:c}-{:c}) ('='初期オプション設定): ", "Choose a realm ({:c}-{:c}) ('=' for options): "), birth_realm_ptr->sym[0], birth_realm_ptr->sym[birth_realm_ptr->n - 1]);
 
         put_str(buf, 10, 10);
-        char c = inkey();
+        char c;
+        {
+            const InputContextScope input_context({ InputKind::BIRTH, buf, BirthInputDetails{ step } });
+            c = inkey();
+        }
+
         interpret_realm_select_key(birth_realm_ptr, c);
         if (c == 'S') {
             return true;
@@ -185,12 +189,13 @@ static bool get_a_realm(CreatureEntity &creature, birth_realm_type *birth_realm_
 
 /*!
  * @brief プレイヤーの魔法領域を選択する / Choose from one of the available magical realms
+ * @param step 1つ目と2つ目のどちらの領域を選ぶか
  * @param selecting_realm 現在選択中の魔法領域
  * @param choices 選択可能な魔法領域のビット配列
  * @return 選択した魔法領域のID
  * @details 領域数が0 (戦士等)or 1 (観光客等)なら自動での値を返す
  */
-static tl::optional<RealmType> select_realm(CreatureEntity &creature, RealmType selecting_realm, RealmChoices choices)
+static tl::optional<RealmType> select_realm(CreatureEntity &creature, BirthStep step, RealmType selecting_realm, RealmChoices choices)
 {
     clear_from(10);
     if (choices.count() <= 1) {
@@ -203,8 +208,8 @@ static tl::optional<RealmType> select_realm(CreatureEntity &creature, RealmType 
 
     birth_realm_type birth_realm;
     analyze_realms(creature, selecting_realm, choices, &birth_realm);
-    birth_realm.cur = format("%c%c %s", '*', birth_realm.p2, _("ランダム", "Random"));
-    if (get_a_realm(creature, &birth_realm)) {
+    birth_realm.cur = fmt::format("{:c}{:c} {}", '*', birth_realm.p2, _("ランダム", "Random"));
+    if (get_a_realm(creature, &birth_realm, step)) {
         return tl::nullopt;
     }
 
@@ -228,8 +233,9 @@ static void cleanup_realm_selection_window(void)
 static bool check_realm_selection(CreatureEntity &creature, int count)
 {
     if (count < 2) {
-        prt(_("何かキーを押してください", "Hit any key."), 0, 0);
-        (void)inkey();
+        constexpr auto prompt = _("何かキーを押してください", "Hit any key.");
+        prt(prompt, 0, 0);
+        (void)input_key_with_context(InputKind::ANY_KEY, prompt);
         prt("", 0, 0);
         return true;
     } else if (input_check_strict(creature, _("よろしいですか？", "Are you sure? "), UserCheck::DEFAULT_Y)) {
@@ -239,11 +245,11 @@ static bool check_realm_selection(CreatureEntity &creature, int count)
     return false;
 }
 
-static tl::optional<RealmType> process_choose_realm(CreatureEntity &creature, RealmChoices choices)
+static tl::optional<RealmType> process_choose_realm(CreatureEntity &creature, BirthStep step, RealmChoices choices)
 {
     auto selecting_realm = RealmType::NONE;
     while (true) {
-        const auto selected_realm = select_realm(creature, selecting_realm, choices);
+        const auto selected_realm = select_realm(creature, step, selecting_realm, choices);
         if (!selected_realm || *selected_realm == RealmType::NONE) {
             return selected_realm;
         }
@@ -265,7 +271,7 @@ static void print_choosed_realms(CreatureEntity &creature)
     PlayerRealm pr(creature);
     std::string choosed_realms;
     if (pr.realm2().is_available()) {
-        choosed_realms = format("%s, %s", pr.realm1().get_name().data(), pr.realm2().get_name().data());
+        choosed_realms = fmt::format("{}, {}", pr.realm1().get_name(), pr.realm2().get_name());
     } else {
         choosed_realms = pr.realm1().get_name();
     }
@@ -301,7 +307,7 @@ bool get_player_realms(CreatureEntity &creature)
     }
 
     /* Select the first realm */
-    const auto realm1 = process_choose_realm(creature, PlayerRealm::get_realm1_choices(creature.pclass));
+    const auto realm1 = process_choose_realm(creature, BirthStep::FIRST_REALM, PlayerRealm::get_realm1_choices(creature.pclass));
     if (!realm1) {
         return false;
     }
@@ -312,7 +318,7 @@ bool get_player_realms(CreatureEntity &creature)
     print_choosed_realms(creature);
 
     /* Select the second realm */
-    const auto realm2 = process_choose_realm(creature, PlayerRealm::get_realm2_choices(creature.pclass));
+    const auto realm2 = process_choose_realm(creature, BirthStep::SECOND_REALM, PlayerRealm::get_realm2_choices(creature.pclass));
     if (!realm2) {
         return false;
     }

@@ -18,9 +18,9 @@
 #include "util/png-displayer.h"
 #endif
 
-/* Special flags in the attr data */
-#define AF_BIGTILE2 0xf0
-#define AF_TILE1 0x80
+//! Special flags in the attr data
+constexpr auto AF_BIGTILE2 = 0xf0;
+constexpr auto AF_TILE1 = 0x80;
 
 #ifdef JP
 /*
@@ -28,13 +28,16 @@
  * 属性に全角文字の1バイト目、2バイト目も記憶。
  * By FIRST
  */
-#define AF_KANJI1 0x10
-#define AF_KANJI2 0x20
-#define AF_KANJIC 0x0f
+constexpr auto AF_KANJI1 = 0x10;
+constexpr auto AF_KANJI2 = 0x20;
+constexpr auto AF_KANJIC = 0x0f;
 #endif
 
 /* The current "term" */
 term_type *game_term = nullptr;
+
+//! キー入力待ちの間に繰り返し呼ばれるフック (詳細はz-term.hを参照)
+void (*term_inkey_wait_hook)() = nullptr;
 
 /*** Local routines ***/
 
@@ -261,14 +264,15 @@ static errr term_pict_hack(TERM_LEN x, TERM_LEN y, int n, const TERM_COLOR *ap, 
 /*
  * Mentally draw an attr/char at a given location
  * Assumes given location and values are valid.
+ * @return 画面の内容が変わったならtrue
  */
-static void term_queue_char_aux(TERM_LEN x, TERM_LEN y, const DisplaySymbolPair &symbol_pair)
+static bool term_queue_char_aux(TERM_LEN x, TERM_LEN y, const DisplaySymbolPair &symbol_pair)
 {
     if ((x < 0) || (x >= game_term->wid)) {
-        return;
+        return false;
     }
     if ((y < 0) || (y >= game_term->hgt)) {
-        return;
+        return false;
     }
 
     const auto &scrn = game_term->scr;
@@ -286,7 +290,7 @@ static void term_queue_char_aux(TERM_LEN x, TERM_LEN y, const DisplaySymbolPair 
     should_ignore &= *scr_taa == symbol_background.color;
     should_ignore &= *scr_tcc == symbol_background.character;
     if (should_ignore) {
-        return;
+        return false;
     }
 
     /* Save the "literal" information */
@@ -312,14 +316,17 @@ static void term_queue_char_aux(TERM_LEN x, TERM_LEN y, const DisplaySymbolPair 
         game_term->x2[y] = x;
     }
 
+    // 行頭には左隣が無いので、変更範囲を広げない (x1 が負になり、後の描画で範囲外を読むのを防ぐ)
 #ifdef JP
-    if (((scrn->a[y][x] & AF_BIGTILE2) == AF_BIGTILE2) || (scrn->a[y][x] & AF_KANJI2))
+    if ((x > 0) && (((scrn->a[y][x] & AF_BIGTILE2) == AF_BIGTILE2) || (scrn->a[y][x] & AF_KANJI2)))
 #else
-    if ((scrn->a[y][x] & AF_BIGTILE2) == AF_BIGTILE2)
+    if ((x > 0) && ((scrn->a[y][x] & AF_BIGTILE2) == AF_BIGTILE2))
 #endif
         if ((x - 1) < game_term->x1[y]) {
             game_term->x1[y]--;
         }
+
+    return true;
 }
 
 void term_queue_char(TERM_LEN x, TERM_LEN y, const DisplaySymbolPair &symbol_pair)
@@ -332,8 +339,9 @@ void term_queue_char(TERM_LEN x, TERM_LEN y, const DisplaySymbolPair &symbol_pai
  * If use_bigtile is FALSE, simply call term_queue_char().
  * Otherwise, mentally draw a pair of attr/char at a given location.
  * Assumes given location and values are valid.
+ * @return 画面の内容が変わったならtrue
  */
-void term_queue_bigchar(TERM_LEN x, TERM_LEN y, const DisplaySymbolPair &symbol_pair_initial)
+bool term_queue_bigchar(TERM_LEN x, TERM_LEN y, const DisplaySymbolPair &symbol_pair_initial)
 {
 #ifdef JP
     /*
@@ -355,8 +363,7 @@ void term_queue_bigchar(TERM_LEN x, TERM_LEN y, const DisplaySymbolPair &symbol_
 
     /* If non bigtile mode, call orginal function */
     if (!use_bigtile) {
-        term_queue_char_aux(ch_x, ch_y, symbol_pair_initial);
-        return;
+        return term_queue_char_aux(ch_x, ch_y, symbol_pair_initial);
     }
 
     /* A tile becomes a Bigtile */
@@ -397,8 +404,9 @@ void term_queue_bigchar(TERM_LEN x, TERM_LEN y, const DisplaySymbolPair &symbol_
     }
 
     /* Display pair of attr/char */
-    term_queue_char_aux(ch_x, ch_y, symbol_pair);
-    term_queue_char_aux(ch_x + 1, ch_y, { { color, character }, {} });
+    const auto is_changed_left = term_queue_char_aux(ch_x, ch_y, symbol_pair);
+    const auto is_changed_right = term_queue_char_aux(ch_x + 1, ch_y, { { color, character }, {} });
+    return is_changed_left || is_changed_right;
 }
 
 /*
@@ -434,9 +442,9 @@ static void term_queue_chars(TERM_LEN x, TERM_LEN y, int n, TERM_COLOR a, std::s
     /*
      * 全角文字の右半分から文字を表示する場合、
      * 重なった文字の左部分を消去。
-     * 表示開始位置が左端でないと仮定。
+     * 行頭には左隣が無いので何もしない。
      */
-    if ((scr_aa[x] & AF_KANJI2) && (scr_aa[x] & AF_BIGTILE2) != AF_BIGTILE2) {
+    if ((x > 0) && (scr_aa[x] & AF_KANJI2) && (scr_aa[x] & AF_BIGTILE2) != AF_BIGTILE2) {
         scr_cc[x - 1] = ' ';
         scr_aa[x - 1] &= AF_KANJIC;
         x1 = x2 = x - 1;
@@ -450,14 +458,15 @@ static void term_queue_chars(TERM_LEN x, TERM_LEN y, int n, TERM_COLOR a, std::s
         /* check */
         if (!(a & AF_TILE1) && iskanji(*s)) {
             char nc1 = *s++;
-            char nc2 = *s;
 
-            byte na1 = (a | AF_KANJI1);
-            byte na2 = (a | AF_KANJI2);
-
-            if ((--n == 0) || !nc2) {
+            // 後半バイトを描く余地が無いか、文字列が前半バイトで終わっている (view の終端か NUL) なら、前半バイトだけでは描かずに終える
+            if ((--n == 0) || (s == sv.end()) || (*s == '\0')) {
                 break;
             }
+
+            char nc2 = *s;
+            byte na1 = (a | AF_KANJI1);
+            byte na2 = (a | AF_KANJI2);
 
             if (scr_aa[x++] == na1 && scr_aa[x] == na2 && scr_cc[x - 1] == nc1 && scr_cc[x] == nc2 && (scr_taa[x - 1] == 0) && (scr_taa[x] == 0) && (scr_tcc[x - 1] == 0) && (scr_tcc[x] == 0)) {
                 continue;
@@ -1324,7 +1333,7 @@ void term_draw(int x, int y, const DisplaySymbol &symbol)
     }
 
     /* Paranoia -- illegal char */
-    if (symbol.has_character()) {
+    if (!symbol.has_character()) {
         return;
     }
 
@@ -1534,10 +1543,12 @@ void term_erase(int x, int y, tl::optional<int> n_opt)
     /*
      * 全角文字の右半分から文字を表示する場合、
      * 重なった文字の左部分を消去。
+     * 行頭には左隣が無いので何もしない。
      */
-    if (n > 0 && (((scr_aa[x] & AF_KANJI2) && !(scr_aa[x] & AF_TILE1)) || (scr_aa[x] & AF_BIGTILE2) == AF_BIGTILE2))
+    if (n > 0 && x > 0 && (((scr_aa[x] & AF_KANJI2) && !(scr_aa[x] & AF_TILE1)) || (scr_aa[x] & AF_BIGTILE2) == AF_BIGTILE2))
 #else
-    if (n > 0 && (scr_aa[x] & AF_BIGTILE2) == AF_BIGTILE2)
+    /* 大きなタイルの右半分から消去する場合は左半分も消去する。行頭には左隣が無いので何もしない */
+    if (n > 0 && x > 0 && (scr_aa[x] & AF_BIGTILE2) == AF_BIGTILE2)
 #endif
     {
         x--;
@@ -1802,6 +1813,64 @@ errr term_key_push(int k)
     return 1;
 }
 
+/*!
+ * @brief キューにあと何個キーを積めるか数える
+ * @return 積めるキーの数
+ * @details
+ * term_key_push()は空きが無くなっても積むことを拒否せず、循環キューを一周して
+ * 先に積んだキーを壊すため、まとめて積む場合は事前に空きを確かめる必要がある。
+ * キューの大きさはフロントエンドが決めるため、一度に積める量もそれに従う。
+ */
+int term_key_queue_room()
+{
+    const auto size = game_term->key_size;
+    if (size == 0) {
+        return 0;
+    }
+
+    const auto pending = (game_term->key_head + size - game_term->key_tail) % size;
+    return size - 1 - pending;
+}
+
+/*!
+ * @brief キー列をキューへまとめて積む
+ * @param keys 積むキー列
+ * @return 全て積めた場合0、空きが足りず1つも積まなかった場合は非0
+ * @details
+ * term_key_push()はキューの先頭へ挿入するため、正しい順序で消費させるには
+ * 末尾から逆順に積む必要がある。逆順に積む都合上、途中で空きが尽きると
+ * 失われるのはキー列の先頭側になる。意味の異なる操作を実行させないよう、
+ * 全て積めない場合は1つも積まない。
+ */
+errr term_keys_push(std::string_view keys)
+{
+    if (std::cmp_greater(keys.size(), term_key_queue_room())) {
+        return 1;
+    }
+
+    for (auto it = keys.rbegin(); it != keys.rend(); ++it) {
+        (void)term_key_push(static_cast<unsigned char>(*it));
+    }
+
+    return 0;
+}
+
+/*!
+ * @brief 保留中のイベントを1件だけ取り出す
+ * @return 取り出した場合0、保留中のイベントが無い場合または取り出せない場合は非0
+ * @details
+ * term_xtra()は戻り値を捨てるため、イベントを取り切ったか否かを判定できない。
+ * ポーリングによる入力待ちでは打ち切る条件が要るため、ここだけフックを直接呼ぶ。
+ */
+static errr take_pending_event()
+{
+    if (!game_term->xtra_hook) {
+        return 1;
+    }
+
+    return (*game_term->xtra_hook)(TERM_XTRA_EVENT, false);
+}
+
 /*
  * @brief Check for a pending keypress on the key queue.
  * @param wait Wait for a keypress.
@@ -1818,7 +1887,21 @@ char term_inkey(bool wait, bool take)
 
     if (wait) {
         while (game_term->key_head == game_term->key_tail) {
-            term_xtra(TERM_XTRA_EVENT, true);
+            if (term_inkey_wait_hook == nullptr) {
+                term_xtra(TERM_XTRA_EVENT, true);
+                continue;
+            }
+
+            // フックに仕事をさせるため、フロントエンドをブロックさせずに
+            // 保留中のイベントを取り切ってから制御を渡す
+            while ((game_term->key_head == game_term->key_tail) && (take_pending_event() == 0)) {
+                ;
+            }
+
+            // キーが届いていれば外側のループが抜ける。無駄に待たせないようフックは呼ばない
+            if (game_term->key_head == game_term->key_tail) {
+                (*term_inkey_wait_hook)();
+            }
         }
     } else if (game_term->key_head == game_term->key_tail) {
         term_xtra(TERM_XTRA_EVENT, false);
@@ -2070,7 +2153,7 @@ void term_putstr_v(int x, int y_initial, size_t n, uint8_t color, std::string_vi
 
             i++;
             y++;
-            if (sv[i] == '\0') {
+            if ((i >= sv.length()) || (sv[i] == '\0')) {
                 break;
             }
 

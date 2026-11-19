@@ -19,7 +19,9 @@
 #include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"
 #include "target/projection-path-calculator.h"
+#include "util/string-processor.h"
 #include "view/display-messages.h"
+#include <fmt/format.h>
 
 /*!
  * @brief MonsterMessages.jsonc において、発話ではなく行動のみが描写されているモンスターであるかを調べる
@@ -44,7 +46,7 @@ static bool is_acting_monster(const MonraceId r_idx)
 static void escape_monster(CreatureEntity &player, turn_flags *turn_flags_ptr, const CreatureEntity &monster, concptr m_name)
 {
     if (turn_flags_ptr->is_riding_mon) {
-        msg_format(_("%sはあなたの束縛から脱出した。", "%s^ succeeded to escape from your restriction!"), m_name);
+        msg_print(_("{}はあなたの束縛から脱出した。", "{} succeeded to escape from your restriction!"), str_upcase_first(m_name));
         if (process_fall_off_horse(player, -1, false)) {
             msg_print(_("地面に落とされた。", "You have fallen from the pet you were riding."));
         }
@@ -65,11 +67,11 @@ static void escape_monster(CreatureEntity &player, turn_flags *turn_flags_ptr, c
         speak &= player.get_floor()->has_los_at(m_pos);
         speak &= projectable(floor, m_pos, p_pos);
         if (speak) {
-            msg_format(_("%s^「ピンチだ！退却させてもらう！」", "%s^ says 'It is the pinch! I will retreat'."), m_name);
+            msg_print(_("{}「ピンチだ！退却させてもらう！」", "{} says 'It is the pinch! I will retreat'."), str_upcase_first(m_name));
         }
 
-        msg_format(_("%s^がテレポート・レベルの巻物を読んだ。", "%s^ reads a scroll of teleport level."), m_name);
-        msg_format(_("%s^が消え去った。", "%s^ disappears."), m_name);
+        msg_print(_("{}がテレポート・レベルの巻物を読んだ。", "{} reads a scroll of teleport level."), str_upcase_first(m_name));
+        msg_print(_("{}が消え去った。", "{} disappears."), str_upcase_first(m_name));
     }
 
     if (turn_flags_ptr->is_riding_mon && process_fall_off_horse(player, -1, false)) {
@@ -109,8 +111,7 @@ bool runaway_monster(CreatureEntity &creature, turn_flags *turn_flags_ptr, MONST
 
     const auto m_name = monster_desc(creature, monster, 0);
     if (turn_flags_ptr->is_riding_mon && riding_pinch < 2) {
-        msg_format(
-            _("%sは傷の痛さの余りあなたの束縛から逃れようとしている。", "%s^ seems to be in so much pain and tries to escape from your restriction."), m_name.data());
+        msg_print(_("{}は傷の痛さの余りあなたの束縛から逃れようとしている。", "{} seems to be in so much pain and tries to escape from your restriction."), str_upcase_first(m_name));
         riding_pinch++;
         disturb(creature, true, true);
         return false;

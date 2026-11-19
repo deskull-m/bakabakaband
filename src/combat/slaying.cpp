@@ -1,5 +1,6 @@
 #include "combat/slaying.h"
 #include "artifact/fixed-art-types.h"
+#include "combat/attack-criticality.h"
 #include "effect/attribute-types.h"
 #include "mind/mind-samurai.h"
 #include "monster-race/race-flags-resistance.h"
@@ -8,17 +9,67 @@
 #include "object-enchant/tr-types.h"
 #include "object/tval-types.h"
 #include "player-base/player-class.h"
+#include "player-base/player-race.h"
+#include "player-info/race-info.h"
+#include "player-info/race-types.h"
 #include "player/attack-defense-types.h"
+#include "player/player-sex.h"
 #include "realm/realm-hex-numbers.h"
 #include "specific-object/torch.h"
 #include "spell-realm/spells-crusade.h"
 #include "spell-realm/spells-hex.h"
+#include "sv-definition/sv-weapon-types.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/redrawing-flags-updater.h"
+#include "term/z-rand.h"
 #include "util/bit-flags-calculator.h"
+#include "util/dice.h"
+#include <algorithm>
+
+namespace {
+/*!
+ * @brief プレイヤーがモンスター種別 (MonsterKindType) 相当の性質を持つか判定する
+ * (モンスターの武器攻撃でスレイ判定の標的がプレイヤーの場合に使用)
+ * @details モンスターの kind_flags に相当する概念を、プレイヤーの種族 (CreatureRace) /
+ * 生死種別 (PlayerRaceLifeType) / 性別 (player_sex) / アライメント (alignment) から求める。
+ * 種族由来の性質 (UNDEAD/DEMON/ORC/TROLL/GIANT/DRAGON/HUMAN) はミミック変身を考慮する
+ * (life() / equals() が変身を反映)。EVIL/GOOD はアライメント表記の善悪境界 (>10 / <-10) に合わせる。
+ * ANIMAL は対応するプレイヤー種族が無いため常に false。
+ */
+bool player_counts_as_kind(CreatureEntity &player, MonsterKindType kind)
+{
+    const CreatureRace race(&player);
+    switch (kind) {
+    case MonsterKindType::HUMAN:
+        return race.equals(PlayerRaceType::HUMAN);
+    case MonsterKindType::MALE:
+        return player.get_psex() == player_sex::SEX_MALE;
+    case MonsterKindType::FEMALE:
+        return player.get_psex() == player_sex::SEX_FEMALE;
+    case MonsterKindType::UNDEAD:
+        return race.life() == PlayerRaceLifeType::UNDEAD;
+    case MonsterKindType::DEMON:
+        return race.life() == PlayerRaceLifeType::DEMON;
+    case MonsterKindType::ORC:
+        return race.equals(PlayerRaceType::ORC);
+    case MonsterKindType::TROLL:
+        return race.equals(PlayerRaceType::TROLL);
+    case MonsterKindType::GIANT:
+        return race.equals(PlayerRaceType::GIANT);
+    case MonsterKindType::DRAGON:
+        return race.equals(PlayerRaceType::DRACONIAN);
+    case MonsterKindType::EVIL:
+        return player.alignment < -10;
+    case MonsterKindType::GOOD:
+        return player.alignment > 10;
+    default:
+        return false;
+    }
+}
+}
 
 /*!
  * @brief プレイヤー攻撃の種族スレイング倍率計算
@@ -28,7 +79,7 @@
  * @param m_ptr 目標モンスターの構造体参照ポインタ
  * @return スレイング加味後の倍率(/10倍)
  */
-MULTIPLY mult_slaying(CreatureEntity &creature, MULTIPLY mult, const TrFlags &flags, const CreatureEntity &target)
+MULTIPLY mult_slaying(CreatureEntity &creature, MULTIPLY mult, const TrFlags &flags, CreatureEntity &target)
 {
     static const struct slay_table_t {
         tr_type slay_flag;
@@ -65,7 +116,22 @@ MULTIPLY mult_slaying(CreatureEntity &creature, MULTIPLY mult, const TrFlags &fl
     for (size_t i = 0; i < sizeof(slay_table) / sizeof(slay_table[0]); ++i) {
         const struct slay_table_t *p = &slay_table[i];
 
-        if (flags.has_not(p->slay_flag) || monrace.kind_flags.has_not(p->affect_race_flag)) {
+        if (flags.has_not(p->slay_flag)) {
+            continue;
+        }
+
+        // プレイヤーが攻撃対象の場合 (モンスターの武器攻撃) は、モンスター種族定義の
+        // kind_flags の代わりにプレイヤー自身の種族/生死種別/性別/アライメントから
+        // スレイ対象性を判定する。プレイヤーには思い出フラグ (r_kind_flags) が無いため記録はしない。
+        if (target.is_player()) {
+            if (player_counts_as_kind(target, p->affect_race_flag)) {
+                mult = std::max(mult, p->slay_mult);
+            }
+
+            continue;
+        }
+
+        if (monrace.kind_flags.has_not(p->affect_race_flag)) {
             continue;
         }
 
@@ -79,6 +145,48 @@ MULTIPLY mult_slaying(CreatureEntity &creature, MULTIPLY mult, const TrFlags &fl
     return mult;
 }
 
+namespace {
+/*!
+ * @brief プレイヤーが属性ブランドに免疫を持つか (モンスターの武器攻撃で標的がプレイヤーの場合に使用)
+ * @details 毒ブランドはプレイヤー用の免疫クエリが無いため常に false (免疫なし扱い)。
+ */
+bool is_player_immune_to_brand(CreatureEntity &target, tr_type brand_flag)
+{
+    switch (brand_flag) {
+    case TR_BRAND_ACID:
+        return target.has_immune_acid() != 0;
+    case TR_BRAND_ELEC:
+        return target.has_immune_elec() != 0;
+    case TR_BRAND_FIRE:
+        return target.has_immune_fire() != 0;
+    case TR_BRAND_COLD:
+        return target.has_immune_cold() != 0;
+    default:
+        return false;
+    }
+}
+
+/*!
+ * @brief プレイヤーが属性ブランドに弱点を持つか (モンスターの武器攻撃で標的がプレイヤーの場合に使用)
+ * @details 毒ブランドはプレイヤー用の弱点クエリが無いため常に false (弱点なし扱い)。
+ */
+bool is_player_vulnerable_to_brand(CreatureEntity &target, tr_type brand_flag)
+{
+    switch (brand_flag) {
+    case TR_BRAND_ACID:
+        return target.has_vuln_acid() != 0;
+    case TR_BRAND_ELEC:
+        return target.has_vuln_elec() != 0;
+    case TR_BRAND_FIRE:
+        return target.has_vuln_fire() != 0;
+    case TR_BRAND_COLD:
+        return target.has_vuln_cold() != 0;
+    default:
+        return false;
+    }
+}
+}
+
 /*!
  * @brief プレイヤー攻撃の属性スレイング倍率計算
  * @param creature クリーチャーへの参照
@@ -87,7 +195,7 @@ MULTIPLY mult_slaying(CreatureEntity &creature, MULTIPLY mult, const TrFlags &fl
  * @param m_ptr 目標モンスターの構造体参照ポインタ
  * @return スレイング加味後の倍率(/10倍)
  */
-MULTIPLY mult_brand(CreatureEntity &creature, MULTIPLY mult, const TrFlags &flags, const CreatureEntity &target)
+MULTIPLY mult_brand(CreatureEntity &creature, MULTIPLY mult, const TrFlags &flags, CreatureEntity &target)
 {
     static const struct brand_table_t {
         tr_type brand_flag;
@@ -106,6 +214,19 @@ MULTIPLY mult_brand(CreatureEntity &creature, MULTIPLY mult, const TrFlags &flag
         const struct brand_table_t *p = &brand_table[i];
 
         if (flags.has_not(p->brand_flag)) {
+            continue;
+        }
+
+        // プレイヤーが攻撃対象の場合 (モンスターの武器攻撃) は、モンスター種族定義の代わりに
+        // プレイヤー自身の免疫/弱点を参照してブランド倍率を決める。モンスター標的と対称に、
+        // 免疫でブランド無効・弱点で 5 倍・それ以外 (部分耐性含む) は通常 2.5 倍とする。
+        // (この属性ブランド倍率モデルではモンスターも「免疫のみ無効・部分耐性は素通し」のため対称)
+        if (target.is_player()) {
+            if (is_player_immune_to_brand(target, p->brand_flag)) {
+                continue;
+            }
+
+            mult = std::max<short>(mult, is_player_vulnerable_to_brand(target, p->brand_flag) ? 50 : 25);
             continue;
         }
 
@@ -150,7 +271,7 @@ MULTIPLY mult_brand(CreatureEntity &creature, MULTIPLY mult, const TrFlags &flag
  * Note that most brands and slays are x3, except Slay Animal (x2),\n
  * Slay Evil (x2), and Kill dragon (x5).\n
  */
-int calc_attack_damage_with_slay(CreatureEntity &creature, ItemEntity *o_ptr, int tdam, const CreatureEntity &target, combat_options mode, bool thrown)
+int calc_attack_damage_with_slay(CreatureEntity &creature, ItemEntity *o_ptr, int tdam, CreatureEntity &target, combat_options mode, bool thrown)
 {
     auto flags = o_ptr->get_flags();
     torch_flags(o_ptr, flags); /* torches has secret flags */
@@ -212,7 +333,7 @@ int calc_attack_damage_with_slay(CreatureEntity &creature, ItemEntity *o_ptr, in
 
         if (!pc.equals(PlayerClassType::SAMURAI) && (flags.has(TR_FORCE_WEAPON)) && (creature.get_current_mp() > (o_ptr->damage_dice.maxroll() / 5))) {
             creature.sub_current_mp((1 + (o_ptr->damage_dice.maxroll() / 5)));
-            RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::MP);
+            DeferredUpdateRequests::get_instance().set_flag(MainWindowRedrawingFlag::MP);
             mult = mult * 3 / 2 + 20;
         }
 
@@ -235,6 +356,137 @@ int calc_attack_damage_with_slay(CreatureEntity &creature, ItemEntity *o_ptr, in
         mult = 150;
     }
     return tdam * mult / 10;
+}
+
+/*!
+ * @brief 武器を装備したクリーチャーの1打撃分の武器ダメージを、プレイヤーの打撃処理と同一の式で算出する
+ * @param attacker 攻撃側クリーチャー (プレイヤー・モンスターいずれも可)
+ * @param weapon 使用する近接武器
+ * @param target 攻撃対象クリーチャー (プレイヤー・モンスターいずれも可)
+ * @param hand 使用する手 (0=利き手 / 1=逆手)。会心判定の基本命中力 (meichuu) 参照に使う
+ * @return 武器ダイス→スレイ/ブランド倍率→会心→ヴォーパル→武器の to_d までを反映したダメージ値
+ * @details
+ * プレイヤーの process_weapon_attack() が武器から算出する部分
+ * (ダイスロール→calc_attack_damage_with_slay()→critical_norm()→process_vorpal_attack()
+ * → to_d 加算) と同一のパイプラインを、攻撃側の種別 (プレイヤー/モンスター) に依らず
+ * 共通で適用する。これにより、武器を装備したモンスターは対プレイヤー・対モンスターの
+ * いずれでもプレイヤーと同じ武器打撃ダメージを与える。
+ * プレイヤー固有の追加ダイス (damage_dice_bonus) ・get_to_d(hand) 等の
+ * 装備/職業由来ボーナスは呼出側で別途反映される (モンスターは get_melee_stat_damage_bonus() 等)。
+ * ヴォーパルの倍率算出はプレイヤーと同一だが、ルーンソード呪唱 (術者状態) や
+ * 斬鉄剣無効化 (対象が非切断) 等の術者/対象文脈依存分岐は武器固有プロパティのみに限定する。
+ */
+int calc_weapon_melee_damage(CreatureEntity &attacker, ItemEntity &weapon, CreatureEntity &target, int hand, int extra_damage_dice)
+{
+    const auto flags = weapon.get_flags();
+    // 魔術ブランド (TR_BRAND_MAGIC) 等による追加ダイスは、プレイヤーと同じく基本ロールに含めて
+    // スレイ/ブランド/会心の各倍率を通す。
+    const auto base_roll = Dice::roll(weapon.damage_dice.num + extra_damage_dice, weapon.damage_dice.sides);
+    auto damage = calc_attack_damage_with_slay(attacker, &weapon, base_roll, target, HISSATSU_NONE, false);
+    damage = critical_norm(attacker, weapon.weight, weapon.to_h, damage, attacker.get_to_h(hand), HISSATSU_NONE, flags.has(TR_IMPACT));
+
+    // ヴォーパル (メッタ斬り): プレイヤーの process_vorpal_attack() と同一の倍率算出。
+    // メッセージは攻撃者・対象双方の文脈が必要なため、共通ダメージ計算では省略する。
+    if (flags.has(TR_VORPAL)) {
+        const auto is_vorpal_artifact = weapon.is_specific_artifact(FixedArtifactId::VORPAL_BLADE) || weapon.is_specific_artifact(FixedArtifactId::CHAINSWORD);
+        const auto vorpal_chance = is_vorpal_artifact ? 2 : 4;
+        if (randint1(vorpal_chance * 3 / 2) == 1) {
+            auto vorpal_magnification = 2;
+            while (one_in_(vorpal_chance)) {
+                vorpal_magnification++;
+            }
+            damage *= vorpal_magnification;
+        }
+    }
+
+    damage += weapon.to_d;
+    return damage;
+}
+
+/*!
+ * @brief 吸血武器を装備したクリーチャーの近接打撃による吸血 (HP 吸収) を適用する
+ * @param attacker 攻撃側クリーチャー (プレイヤー・モンスターいずれも可)
+ * @param weapon 使用した近接武器
+ * @param target 攻撃対象クリーチャー (プレイヤー・モンスターいずれも可)
+ * @param weapon_damage calc_weapon_melee_damage() が返した当該打撃の武器ダメージ
+ * @return 吸収して回復した (ロールした) HP 量。0 なら吸血が発生しなかった
+ * @details
+ * プレイヤーの吸血処理 (blood-sucking-processor.cpp) と同じく、TR_VAMPIRIC を持つ武器で
+ * 生命のある対象 (has_living_flag) を攻撃した場合に、与えた武器ダメージ (対象の残 HP が上限) を
+ * 元に 2d(drain/6) の HP を攻撃側へ回復する。吸血はダメージ倍率を持たず回復のみ (プレイヤー版と同様)。
+ * プレイヤー版が行う対象最大 HP 減少 (weaken) は、既存のモンスター吸血 (heal_monster_by_melee) が
+ * 回復のみである慣習に合わせて行わない。回復量の攻撃全体上限 (MAX_VAMPIRIC_DRAIN) も既存モンスター
+ * 吸血同様に設けない。メッセージ表示・体力バー再描画は呼出側が担う。
+ */
+int drain_life_to_attacker(CreatureEntity &attacker, const CreatureEntity &target, int amount)
+{
+    if (!target.has_living_flag()) {
+        return 0;
+    }
+
+    const auto drain = std::min(amount, target.get_current_hp());
+    constexpr auto real_drain = 5;
+    if (drain <= real_drain) {
+        return 0;
+    }
+
+    const auto drain_heal = Dice::roll(2, drain / 6);
+    attacker.heal_hp(drain_heal);
+    return drain_heal;
+}
+
+int apply_weapon_vampiric_drain(CreatureEntity &attacker, const ItemEntity &weapon, const CreatureEntity &target, int weapon_damage)
+{
+    if (!weapon.get_flags().has(TR_VAMPIRIC)) {
+        return 0;
+    }
+
+    return drain_life_to_attacker(attacker, target, weapon_damage);
+}
+
+/*!
+ * @brief 毒針 (SV_POISON_NEEDLE) による当該打撃のダメージを求める
+ * @param weapon 使用した近接武器
+ * @param target 攻撃対象クリーチャー (プレイヤー・モンスターいずれも可)
+ * @return 毒針でなければ nullopt。毒針の場合、即死判定成功で対象の現在 HP + 1 (致死)、失敗で 1
+ * @details
+ * プレイヤーの critical_attack() の毒針処理と同じく、`randint1(randint1(level/7)+5) == 1` で即死。
+ * ただし対象が UNIQUE 扱い (プレイヤーおよび UNIQUE モンスター) または NO_INSTANTLY_DEATH 耐性を
+ * 持つ場合は即死せず 1 ダメージに留める。プレイヤーは常に UNIQUE 扱い (is_unique) のため、
+ * モンスターが毒針で攻撃してもプレイヤーが即死することはない。
+ */
+tl::optional<int> poison_needle_blow_damage(const ItemEntity &weapon, const CreatureEntity &target)
+{
+    if (weapon.bi_key != BaseitemKey(ItemKindType::SWORD, SV_POISON_NEEDLE)) {
+        return tl::nullopt;
+    }
+
+    const auto &monrace = target.get_monrace();
+    const auto no_instant_death = target.is_unique() || monrace.resistance_flags.has(MonsterResistanceType::NO_INSTANTLY_DEATH);
+    if (!no_instant_death && (randint1(randint1(monrace.level / 7) + 5) == 1)) {
+        return target.get_current_hp() + 1;
+    }
+
+    return 1;
+}
+
+/*!
+ * @brief 装備武器による近接打撃が地震を起こすか判定する
+ * @param weapon 使用した近接武器
+ * @param weapon_damage calc_weapon_melee_damage() が返した当該打撃の武器ダメージ
+ * @return 地震を起こすなら true
+ * @details
+ * プレイヤーの does_equip_cause_earthquake() と同じく、地震付与武器 (TR_EARTHQUAKE) で
+ * 与えたダメージが 50 を超えるか 1/7 の確率で地震を起こす。実際の地震発生はモンスターの
+ * 全打撃終了後 (打撃ループ中は floor / monster 参照が無効化されうるため) に呼出側が行う。
+ */
+bool does_weapon_cause_earthquake(const ItemEntity &weapon, int weapon_damage)
+{
+    if (!weapon.get_flags().has(TR_EARTHQUAKE)) {
+        return false;
+    }
+
+    return (weapon_damage > 50) || one_in_(7);
 }
 
 AttributeFlags melee_attribute(CreatureEntity &creature, ItemEntity *o_ptr, combat_options mode)

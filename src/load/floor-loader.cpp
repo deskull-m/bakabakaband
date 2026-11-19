@@ -22,11 +22,39 @@
 #include "system/angband-version.h"
 #include "system/enums/terrain/terrain-tag.h"
 #include "system/floor/floor-info.h"
+#include "system/floor/monster-corpse.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
 #include "util/angband-files.h"
+#include "util/enum-converter.h"
 #include "util/finalizer.h"
+#include <fmt/format.h>
+
+namespace {
+/*!
+ * @brief v62 の死体の所持品から亡骸の形 (死体 / 骨) を取り出す
+ * @details v62 では死体・骨のアイテムを死体の所持品へ入れていた。v63 以降は
+ *          MonsterCorpse::remains_sval で表すので、その種族の死体・骨のアイテムを
+ *          所持品から外して形だけを移す。見つからなければ既定 (死体) のまま。
+ */
+void extract_remains_from_belongings(MonsterCorpse &corpse)
+{
+    for (auto &item_ptr : corpse.body.inventory) {
+        if (!item_ptr || !MonsterCorpse::is_remains_item(*item_ptr)) {
+            continue;
+        }
+
+        if (item_ptr->pval != enum2i(corpse.body.get_r_idx())) {
+            continue;
+        }
+
+        corpse.remains_sval = *item_ptr->bi_key.sval();
+        item_ptr->wipe();
+        return;
+    }
+}
+}
 
 /*!
  * @brief 保存されたフロアを読み込む / Read the saved floor
@@ -190,10 +218,55 @@ errr rd_saved_floor(CreatureEntity &creature, saved_floor_type *sf_ptr)
 
         auto &monster = floor.m_list[m_idx];
         monster_loader->rd_monster(monster);
+        // 倒されたモンスターの跡 (空きの番号) は、番号を保つためにそのまま書かれている。
+        // グリッドに置かず、生きているモンスターの数 (m_cnt) からも種族の数 (cur_num) からも除く。
+        if (!monster.is_valid()) {
+            floor.m_cnt--;
+            continue;
+        }
         monster.set_floor(creature.get_floor());
         auto &grid = floor.get_grid(monster.get_position());
         grid.m_idx = m_idx;
         monster.get_real_monrace().increment_current_numbers();
+    }
+
+    if (loading_savefile_version_is_older_than(62)) {
+        return 0;
+    }
+
+    // 死体はモンスターと同じ形式で並んでいる。グリッドのチェインは保存して
+    // いないので、読み込んだ座標から組み直す (cur_num は死亡時に減らしてある
+    // ので、生きたモンスターと違って increment_current_numbers() は呼ばない)。
+    limit = rd_u16b();
+    if (limit > MAX_FLOOR_CORPSES) {
+        return 163;
+    }
+
+    for (auto i = 1; i < limit; i++) {
+        MonsterCorpse loaded;
+        monster_loader->rd_monster(loaded.body);
+        if (loading_savefile_version_is_older_than(63)) {
+            extract_remains_from_belongings(loaded);
+        } else {
+            loaded.remains_sval = rd_byte();
+        }
+
+        const auto pos = loaded.get_position();
+        if (!loaded.is_valid() || !floor.contains(pos, FloorBoundary::OUTER_WALL_INCLUSIVE)) {
+            continue;
+        }
+
+        const auto corpse_idx = floor.pop_empty_index_corpse();
+        if (corpse_idx == 0) {
+            return 164;
+        }
+
+        auto &corpse = floor.get_corpse(corpse_idx);
+        corpse = std::move(loaded);
+        corpse.body.set_floor(creature.get_floor());
+        auto &corpse_grid = floor.get_grid(pos);
+        corpse.next_corpse_idx = corpse_grid.corpse_idx;
+        corpse_grid.corpse_idx = corpse_idx;
     }
 
     return 0;
@@ -279,7 +352,7 @@ bool load_floor(CreatureEntity &creature, saved_floor_type *sf_ptr, BIT_FLAGS mo
     }
 
     auto floor_savefile = savefile.string();
-    const auto ext = format(".F%02d", (int)sf_ptr->savefile_id);
+    const auto ext = fmt::format(".F{:02}", sf_ptr->savefile_id);
     floor_savefile.append(ext);
 
     safe_setuid_grab();

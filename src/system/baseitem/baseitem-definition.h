@@ -9,6 +9,8 @@
 #include "object-enchant/tr-flags.h"
 #include "object-enchant/trg-types.h"
 #include "system/baseitem/baseitem-key.h"
+#include "system/baseitem/civilization-level-types.h"
+#include "system/h-type.h"
 #include "util/dice.h"
 #include "util/flag-group.h"
 #include "view/display-symbol.h"
@@ -49,6 +51,7 @@ public:
 
     int level{}; /*!< ベースアイテムの基本生成階 / Level */
     AllianceType alliance_idx{}; /*!< アイテムの製造元アライアンス / Manufacturing alliance */
+    CivilizationLevel civilization{ CivilizationLevel::NONE }; /*!< その装備が属する文明水準 / Civilization level of the gear */
 
     struct alloc_table {
         int level; /*!< ベースアイテムの生成階 */
@@ -59,6 +62,7 @@ public:
     bool easy_know{}; /*!< ベースアイテムが初期からベース名を判断可能かどうか / This object is always known (if aware) */
     RandomArtActType act_idx{}; /*!< 発動能力のID /  Activative ability index */
 
+    BaseitemDefinition clone_without_required_fields() const;
     bool is_valid() const;
     std::string stripped_name() const;
     bool order_cost(const BaseitemDefinition &other) const;

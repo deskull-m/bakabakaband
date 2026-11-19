@@ -76,6 +76,6 @@ bool build_type14(CreatureEntity &creature, DungeonData *dd_ptr)
     grid.mimic = grid.feat;
     grid.set_terrain_id(trap);
     constexpr auto fmt = _("%sの部屋が生成されました。", "Room of %s was generated.");
-    msg_format_wizard(creature, CHEAT_DUNGEON, fmt, TerrainList::get_instance().get_terrain(trap).name.data());
+    msg_print_wizard(creature, CHEAT_DUNGEON, fmt, TerrainList::get_instance().get_terrain(trap).name);
     return true;
 }

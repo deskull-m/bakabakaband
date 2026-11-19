@@ -1,4 +1,5 @@
 #include "system/creature-party/creature-party-definition.h"
+#include "alliance/alliance.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "util/dice.h"
 #include "util/enum-converter.h"
@@ -26,7 +27,17 @@ CreaturePartyDefinition::CreaturePartyDefinition()
     , max_level(999)
     , rarity(1)
     , allow_unique(false)
+    , alliance_idx(AllianceType::NONE)
 {
+}
+
+/*!
+ * @brief パーティが既定のアライアンスに属しているかどうか判定
+ * @return 属していれば true
+ */
+bool CreaturePartyDefinition::belongs_to_alliance() const
+{
+    return this->alliance_idx != AllianceType::NONE;
 }
 
 /*!

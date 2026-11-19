@@ -7,7 +7,7 @@
 #include "market/arena.h"
 #include "core/asking-player.h"
 #include "core/show-file.h"
-#include "core/stuff-handler.h"
+#include "core/window-redrawer.h"
 #include "floor/floor-mode-changer.h"
 #include "market/arena-entry.h"
 #include "market/building-actions-table.h"
@@ -18,7 +18,6 @@
 #include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"
 #include "term/screen-processor.h"
-#include "term/z-form.h"
 #include "tracking/lore-tracker.h"
 #include "util/int-char-converter.h"
 #include "view/display-messages.h"
@@ -63,7 +62,8 @@ static bool check_battle_metal_babble(CreatureEntity &creature)
     msg_erase();
 
     AngbandWorld::get_instance().set_arena(false);
-    reset_tim_flags(creature);
+    reset_arena_buffs(creature);
+    msg_erase();
     FloorChangeModesStore::get_instace()->set(FloorChangeMode::SAVE_FLOORS);
     creature.get_floor()->inside_arena = true;
     creature.set_leaving(true);
@@ -90,18 +90,19 @@ static bool go_to_arena(CreatureEntity &creature)
         return false;
     }
 
-    if ((arena_record == ArenaRecord::POWER_WYRM) && !check_battle_metal_babble(creature)) {
-        return false;
-    }
-
     if (creature.get_riding() && !CreatureClass(creature).is_tamer()) {
         msg_print(_("ペットに乗ったままではアリーナへ入れさせてもらえなかった。", "You don't have permission to enter with pet."));
         msg_erase();
         return false;
     }
 
+    if (arena_record == ArenaRecord::POWER_WYRM) {
+        return check_battle_metal_babble(creature);
+    }
+
     AngbandWorld::get_instance().set_arena(false);
-    reset_tim_flags(creature);
+    reset_arena_buffs(creature);
+    msg_erase();
     FloorChangeModesStore::get_instace()->set(FloorChangeMode::SAVE_FLOORS);
     creature.get_floor()->inside_arena = true;
     creature.set_leaving(true);
@@ -127,7 +128,7 @@ bool arena_comm(CreatureEntity &creature, int cmd)
 
         const auto &monrace = entries.get_monrace();
         LoreTracker::get_instance().set_trackee(monrace.idx);
-        handle_stuff(creature);
+        window_stuff(creature);
         return false;
     }
     case BACT_ARENA_RULES:

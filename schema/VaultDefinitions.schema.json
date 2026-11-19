@@ -1,0 +1,53 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Vault definitions",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["vaults"],
+  "properties": {
+    "vaults": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "name", "type", "rating", "height", "width", "layout"],
+        "properties": {
+          "id": { "type": "integer", "minimum": 0, "maximum": 32767 },
+          "name": { "type": "string", "minLength": 1 },
+          "type": { "type": "integer", "enum": [7, 8, 17, 18, 19, 20] },
+          "rating": { "type": "integer", "minimum": 0, "maximum": 2147483647 },
+          "height": { "type": "integer", "minimum": 1, "maximum": 242 },
+          "width": { "type": "integer", "minimum": 1, "maximum": 242 },
+          "min_depth": { "type": "integer", "minimum": 0, "maximum": 2147483647 },
+          "max_depth": { "type": "integer", "minimum": 0, "maximum": 2147483647 },
+          "rarity": { "type": "integer", "minimum": 0, "maximum": 2147483647 },
+          "flags": {
+            "type": "array",
+            "items": { "type": "string", "enum": ["NO_ROTATION"] }
+          },
+          "features": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["symbol", "feat"],
+              "properties": {
+                "symbol": { "type": "string", "minLength": 1, "maxLength": 1, "pattern": "^[ -~]$" },
+                "feat": { "type": "integer", "minimum": 0, "maximum": 32767 },
+                "appearance": { "type": "integer", "minimum": 0, "maximum": 32767 },
+                "monster": { "type": "string", "minLength": 1 }
+              }
+            }
+          },
+          "layout": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 242,
+            "items": { "type": "string", "minLength": 1, "maxLength": 242, "pattern": "^[ -~]+$" }
+          }
+        }
+      }
+    }
+  }
+}

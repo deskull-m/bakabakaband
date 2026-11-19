@@ -131,6 +131,7 @@ void OtherItemsEnchanter::generate_corpse()
     const std::unordered_map<int, MonsterDropType> match = {
         { SV_SKELETON, MonsterDropType::DROP_SKELETON },
         { SV_CORPSE, MonsterDropType::DROP_CORPSE },
+        { SV_SCALE, MonsterDropType::DROP_SCALE },
     };
 
     get_mon_num_prep_enum(this->creature, MonraceHook::FIGURINE);
@@ -174,7 +175,7 @@ void OtherItemsEnchanter::generate_statue()
     this->o_ptr->pval = enum2i(monrace_id);
     if (cheat_peek) {
         const auto &monrace = monraces.get_monrace(monrace_id);
-        msg_format(_("%sの像", "Statue of %s"), monrace.name.data());
+        msg_print(_("{}の像", "Statue of {}"), monrace.name);
     }
 
     object_aware(this->creature, *this->o_ptr);

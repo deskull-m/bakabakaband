@@ -10,16 +10,11 @@
 
 #pragma once
 
-#include "util/point-2d.h"
-#include <tl/expected.hpp>
-
 extern bool reinit_wilderness;
 
-enum parse_error_type : int;
 class CreatureEntity;
 void wilderness_gen(CreatureEntity &creature);
 void wilderness_gen_small(CreatureEntity &creature);
 void init_wilderness_encounter();
 void init_wilderness_terrains();
-tl::expected<Pos2D, parse_error_type> parse_line_wilderness(char *line, int xmin, int xmax, const Pos2D &pos_parsing);
 bool change_wild_mode(CreatureEntity &creature, bool encount);

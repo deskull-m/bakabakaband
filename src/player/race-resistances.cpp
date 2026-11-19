@@ -1,5 +1,4 @@
 #include "player/race-resistances.h"
-#include "inventory/inventory-slot-types.h"
 #include "mind/mind-elementalist.h"
 #include "mutation/mutation-flag-types.h"
 #include "object-enchant/tr-types.h"
@@ -9,7 +8,6 @@
 #include "player-info/samurai-data-type.h"
 #include "player/special-defense-types.h"
 #include "system/creature-entity.h"
-#include "system/item-entity.h"
 #include "util/bit-flags-calculator.h"
 
 /*!
@@ -71,37 +69,6 @@ void tim_player_immunity(CreatureEntity &creature, TrFlags &flags)
     }
     if (creature.get_timed_effect(CreatureTimedEffect::WRAITH_FORM)) {
         flags.set(TR_RES_DARK);
-    }
-}
-
-/*!
- * @brief プレイヤーの装備による免疫フラグを返す
- * @param creature クリーチャーへの参照
- * @param flags フラグを保管する配列
- */
-void known_obj_immunity(CreatureEntity &creature, TrFlags &flags)
-{
-    flags.clear();
-
-    for (const auto i_idx : INVEN_WIELDING_SLOTS) {
-        const auto *o_ptr = creature.inventory[i_idx].get();
-        if (!o_ptr->is_valid()) {
-            continue;
-        }
-
-        const auto o_flags = o_ptr->get_flags_known();
-        if (o_flags.has(TR_IM_ACID)) {
-            flags.set(TR_RES_ACID);
-        }
-        if (o_flags.has(TR_IM_ELEC)) {
-            flags.set(TR_RES_ELEC);
-        }
-        if (o_flags.has(TR_IM_FIRE)) {
-            flags.set(TR_RES_FIRE);
-        }
-        if (o_flags.has(TR_IM_COLD)) {
-            flags.set(TR_RES_COLD);
-        }
     }
 }
 

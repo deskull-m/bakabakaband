@@ -20,6 +20,7 @@
 #include "system/item-entity.h"
 #include "system/terrain/terrain-definition.h"
 #include "target/projection-path-calculator.h"
+#include "util/bit-flags-calculator.h"
 #include "world/world.h"
 #include <range/v3/view.hpp>
 

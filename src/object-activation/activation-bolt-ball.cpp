@@ -98,7 +98,7 @@ bool activate_bolt_cold_1(CreatureEntity &creature)
 
 bool activate_bolt_hypodynamia_1(CreatureEntity &creature, std::string_view name)
 {
-    msg_format(_("あなたは%sに敵を締め殺すよう命じた。", "You order the %s to strangle your opponent."), name.data());
+    msg_print(_("あなたは{}に敵を締め殺すよう命じた。", "You order the {} to strangle your opponent."), name);
     const auto dir = get_aim_dir(creature);
     if (!dir) {
         return false;
@@ -154,7 +154,7 @@ bool activate_bolt_drain_2(CreatureEntity &creature)
 
 bool activate_bolt_mana(CreatureEntity &creature, std::string_view name)
 {
-    msg_format(_("% sに魔法のトゲが現れた...", "The %s grows magical spikes..."), name.data());
+    msg_print(_("% sに魔法のトゲが現れた...", "The {} grows magical spikes..."), name);
     const auto dir = get_aim_dir(creature);
     if (!dir) {
         return false;
@@ -226,7 +226,7 @@ bool activate_ball_fire_1(CreatureEntity &creature)
 
 bool activate_ball_fire_2(CreatureEntity &creature, std::string_view name)
 {
-    msg_format(_("% sから炎が吹き出した...", "The %s rages in fire..."), name.data());
+    msg_print(_("% sから炎が吹き出した...", "The {} rages in fire..."), name);
     const auto dir = get_aim_dir(creature);
     if (!dir) {
         return false;
@@ -322,7 +322,7 @@ bool activate_rocket(CreatureEntity &creature)
 
 bool activate_ball_water(CreatureEntity &creature, std::string_view name)
 {
-    msg_format(_("% sが深い青色に鼓動している...", "The %s throbs deep blue..."), name.data());
+    msg_print(_("% sが深い青色に鼓動している...", "The {} throbs deep blue..."), name);
     const auto dir = get_aim_dir(creature);
     if (!dir) {
         return false;
@@ -335,7 +335,7 @@ bool activate_ball_water(CreatureEntity &creature, std::string_view name)
 bool activate_ball_lite(CreatureEntity &creature, std::string_view name)
 {
     const auto num = Dice::roll(5, 3);
-    msg_format(_("% sが稲妻で覆われた...", "The %s is surrounded by lightning..."), name.data());
+    msg_print(_("% sが稲妻で覆われた...", "The {} is surrounded by lightning..."), name);
     const auto p_pos = creature.get_position();
     const auto &floor = *creature.get_floor();
     for (auto k = 0; k < num; k++) {
@@ -361,7 +361,7 @@ bool activate_ball_lite(CreatureEntity &creature, std::string_view name)
 
 bool activate_ball_dark(CreatureEntity &creature, std::string_view name)
 {
-    msg_format(_("% sが深い闇に覆われた...", "The %s is covered in pitch-darkness..."), name.data());
+    msg_print(_("% sが深い闇に覆われた...", "The {} is covered in pitch-darkness..."), name);
     const auto dir = get_aim_dir(creature);
     if (!dir) {
         return false;
@@ -373,7 +373,7 @@ bool activate_ball_dark(CreatureEntity &creature, std::string_view name)
 
 bool activate_ball_mana(CreatureEntity &creature, std::string_view name)
 {
-    msg_format(_("% sが青白く光った．．．", "The %s becomes pale..."), name.data());
+    msg_print(_("% sが青白く光った．．．", "The {} becomes pale..."), name);
     const auto dir = get_aim_dir(creature);
     if (!dir) {
         return false;

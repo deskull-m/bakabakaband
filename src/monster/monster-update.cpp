@@ -29,6 +29,7 @@
 #include "status/element-resistance.h"
 #include "system/angband-system.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/enums/monrace/monrace-id.h"
 #include "system/floor/floor-info.h"
@@ -37,7 +38,6 @@
 #include "system/monrace/monrace-list.h"
 #include "system/monrace/monrace-records.h"
 #include "system/player-type-definition.h"
-#include "system/redrawing-flags-updater.h"
 #include "target/projection-path-calculator.h"
 #include "tracking/health-bar-tracker.h"
 #include "util/bit-flags-calculator.h"
@@ -106,17 +106,17 @@ bool update_riding_monster(CreatureEntity &creature, turn_flags *turn_flags_ptr,
  */
 void update_map_flags(turn_flags *turn_flags_ptr)
 {
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
+    auto &dur = DeferredUpdateRequests::get_instance();
     if (!turn_flags_ptr->do_view) {
         return;
     }
 
-    rfu.set_flag(StatusRecalculatingFlag::FLOW);
+    dur.set_flag(StatusRecalculatingFlag::FLOW);
     static constexpr auto flags = {
         SubWindowRedrawingFlag::OVERHEAD,
         SubWindowRedrawingFlag::DUNGEON,
     };
-    rfu.set_flags(flags);
+    dur.set_flags(flags);
 }
 
 /*!
@@ -130,7 +130,7 @@ void update_lite_flags(turn_flags *turn_flags_ptr, const MonraceDefinition &monr
     const auto has_lite = monrace.brightness_flags.has_any_of({ Mbt::HAS_LITE_1, Mbt::HAS_LITE_2 });
     const auto except_has_lite = EnumClassFlagGroup<Mbt>(self_ld_mask).set({ Mbt::HAS_DARK_1, Mbt::HAS_DARK_2 });
     if (turn_flags_ptr->do_move && (monrace.brightness_flags.has_any_of(except_has_lite) || (has_lite && !AngbandSystem::get_instance().is_phase_out()))) {
-        RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::MONSTER_LITE);
+        DeferredUpdateRequests::get_instance().set_flag(StatusRecalculatingFlag::MONSTER_LITE);
     }
 }
 
@@ -513,7 +513,7 @@ static void update_invisible_monster(CreatureEntity &creature, um_type *um_ptr, 
 
     HealthBarTracker::get_instance().set_flag_if_tracking(m_idx);
     if (monster.is_riding()) {
-        RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::UHEALTH);
+        DeferredUpdateRequests::get_instance().set_flag(MainWindowRedrawingFlag::UHEALTH);
     }
 
     if (!creature.is_hallucinated()) {
@@ -552,7 +552,7 @@ static void update_visible_monster(CreatureEntity &creature, um_type *um_ptr, MO
 
     HealthBarTracker::get_instance().set_flag_if_tracking(m_idx);
     if (um_ptr->m_ptr->is_riding()) {
-        RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::UHEALTH);
+        DeferredUpdateRequests::get_instance().set_flag(MainWindowRedrawingFlag::UHEALTH);
     }
 
     if (um_ptr->do_disturb && (disturb_pets || um_ptr->m_ptr->is_hostile())) {

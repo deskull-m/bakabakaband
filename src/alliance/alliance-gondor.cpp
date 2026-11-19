@@ -9,12 +9,14 @@
  * @return 印象ポイント
  * @details 現在は空実装
  */
-int AllianceGondor::calcImpressionPoint([[maybe_unused]] const CreatureEntity &creature) const
+int AllianceGondor::calcImpressionPoint(const CreatureEntity &creature) const
 {
     int impression = 0;
     impression += calcIronmanHostilityPenalty();
 
-    // TODO: ゴンドールの価値観に基づく印象ポイント計算を実装
+    // トールキンの善玉陣営: 善のアライメントほどそこそこプラス、悪の場合は大きめにマイナス
+    impression += (creature.alignment > 0) ? creature.alignment : creature.alignment * 3;
+
     return impression;
 }
 

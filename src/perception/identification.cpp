@@ -1,10 +1,11 @@
 #include "perception/identification.h"
 #include "alliance/alliance.h"
 #include "artifact/fixed-art-types.h"
+#include "core/asking-player.h"
 #include "flavor/flavor-describer.h"
 #include "flavor/object-flavor-types.h"
 #include "game-option/special-options.h"
-#include "io/input-key-acceptor.h"
+#include "io/input-context.h"
 #include "object-enchant/object-ego.h"
 #include "object-enchant/tr-types.h"
 #include "object-enchant/trc-types.h"
@@ -26,6 +27,7 @@
 #include "util/enum-converter.h"
 #include <algorithm>
 #include <array>
+#include <fmt/format.h>
 #include <string>
 
 /*!
@@ -40,6 +42,8 @@ bool screen_object(CreatureEntity &creature, const ItemEntity &item, BIT_FLAGS m
 {
     std::array<std::string, 128> info{};
     int trivial_info = 0;
+    // ベースアイテムから作った仮のアイテムは人形・像・死体類のモンスター種族が未設定である
+    const auto is_fake_object = any_bits(mode, SCROBJ_FAKE_OBJECT);
     const auto flags = item.get_flags();
 
     const auto item_text = item.is_fixed_artifact() ? item.get_fixed_artifact().text.data() : item.get_baseitem().text.data();
@@ -52,11 +56,27 @@ bool screen_object(CreatureEntity &creature, const ItemEntity &item, BIT_FLAGS m
     const auto &baseitem = item.get_baseitem();
     if (baseitem.alliance_idx != AllianceType::NONE) {
         const auto &alliance = alliance_list.at(baseitem.alliance_idx);
-        info[i++] = format(_("製造元: %s", "Manufactured by: %s"), alliance->name.data()).data();
+        info[i++] = fmt::format(_("製造元: {}", "Manufactured by: {}"), alliance->name).data();
+    }
+
+    // 文明水準。装備品ほぼ全てに付くため、製造元と同様 trivial_info の確定より前に積む
+    // (後に積むと全ての武器・防具が「特筆すべき情報あり」になってしまう)。
+    if (baseitem.civilization != CivilizationLevel::NONE) {
+        info[i++] = fmt::format(
+            _("それは{}時代の産物だ。", "It is a product of the {} Age."),
+            civilization_level_name(baseitem.civilization));
     }
 
     if (item.is_equipment()) {
         trivial_info = i;
+    }
+
+    // 正当な所有権。trivial_info より後に積むことで「特筆すべき情報」として扱わせ、
+    // 他に何の特性も無い品でも *鑑定* でこの 1 行が表示されるようにする。
+    if (item.has_rightful_owner()) {
+        info[i++] = fmt::format(
+            _("この品の正統な所有権は{}にある。", "The rightful ownership of this item belongs to {}."),
+            item.describe_rightful_owner());
     }
 
     if (flags.has(TR_INVEN_ACTIVATE)) {
@@ -70,6 +90,10 @@ bool screen_object(CreatureEntity &creature, const ItemEntity &item, BIT_FLAGS m
 
     if (flags.has(TR_NASTY)) {
         info[i++] = _("それは例のアレだ。", "It is .. need I say anything more?");
+    }
+
+    if (flags.has(TR_JOKE)) {
+        info[i++] = _("それはまともな装具ではない。", "It is not a serious piece of gear.");
     }
 
     const auto &bi_key = item.bi_key;
@@ -110,7 +134,7 @@ bool screen_object(CreatureEntity &creature, const ItemEntity &item, BIT_FLAGS m
         info[i++] = _("それは物を強く投げることを可能にする。", "It provides great strength when you throw an item.");
     }
 
-    if (bi_key.tval() == ItemKindType::STATUE) {
+    if (!is_fake_object && (bi_key.tval() == ItemKindType::STATUE)) {
         const auto &monrace = item.get_monrace();
         if (monrace.idx == MonraceId::BULLGATES) {
             info[i++] = _("それは部屋に飾ると恥ずかしい。", "It is shameful.");
@@ -821,10 +845,10 @@ bool screen_object(CreatureEntity &creature, const ItemEntity &item, BIT_FLAGS m
     screen_save();
     const auto &[wid, hgt] = term_get_size();
     std::string item_name;
-    if (!(mode & SCROBJ_FAKE_OBJECT)) {
+    if (!is_fake_object) {
         item_name = describe_flavor(creature, item, 0);
     } else {
-        item_name = describe_flavor(creature, item, (OD_NAME_ONLY | OD_STORE));
+        item_name = describe_flavor(creature, item, (OD_NAME_ONLY | OD_STORE | OD_OMIT_MONRACE));
     }
 
     prt(item_name, 0, 0);
@@ -832,10 +856,10 @@ bool screen_object(CreatureEntity &creature, const ItemEntity &item, BIT_FLAGS m
         prt("", k, 13);
     }
 
-    if (bi_key == BaseitemKey(ItemKindType::STATUE, SV_PHOTO)) {
+    if (!is_fake_object && (bi_key == BaseitemKey(ItemKindType::STATUE, SV_PHOTO))) {
         const auto &monrace = item.get_monrace();
         const auto name_length = monrace.name->length();
-        prt(format("%s: '", monrace.name.data()), 1, 15);
+        prt(fmt::format("{}: '", monrace.name), 1, 15);
         term_queue_bigchar(18 + name_length, 1, { monrace.symbol_config, {} });
         prt("'", 1, (use_bigtile ? 20 : 19) + name_length);
     } else {
@@ -846,16 +870,18 @@ bool screen_object(CreatureEntity &creature, const ItemEntity &item, BIT_FLAGS m
     for (int j = 0; j < i; j++) {
         prt(info[j], k++, 15);
         if ((k == hgt - 2) && (j + 1 < i)) {
-            prt(_("-- 続く --", "-- more --"), k, 15);
-            inkey();
+            constexpr auto more_prompt = _("-- 続く --", "-- more --");
+            prt(more_prompt, k, 15);
+            (void)input_key_with_context(InputKind::ANY_KEY, more_prompt);
             for (; k > 2; k--) {
                 prt("", k, 15);
             }
         }
     }
 
-    prt(_("[何かキーを押すとゲームに戻ります]", "[Press any key to continue]"), k, 15);
-    inkey();
+    constexpr auto prompt = _("[何かキーを押すとゲームに戻ります]", "[Press any key to continue]");
+    prt(prompt, k, 15);
+    (void)input_key_with_context(InputKind::ANY_KEY, prompt);
     screen_load();
     return true;
 }

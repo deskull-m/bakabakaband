@@ -2,11 +2,38 @@
 #include "locale/character-encoding.h"
 #include "system/angband-exceptions.h"
 #include "util/string-processor.h"
-#ifdef WINDOWS
+#ifdef _WIN32
 #include "main-win/main-win-utils.h"
+#define FD_SYS_OPEN(path, oflag, pmode) _open((path), (oflag), (pmode))
+#define FD_SYS_READ(fd, buf, n) _read((fd), (buf), (n))
+#define FD_SYS_WRITE(fd, buf, n) _write((fd), (buf), (n))
+#define FD_SYS_CLOSE(fd) _close((fd))
+#define FD_SYS_LSEEK(fd, offset, whence) _lseek((fd), (offset), (whence))
+#else
+#define FD_SYS_OPEN(path, oflag, pmode) open((path), (oflag), (pmode))
+#define FD_SYS_READ(fd, buf, n) read((fd), (buf), (n))
+#define FD_SYS_WRITE(fd, buf, n) write((fd), (buf), (n))
+#define FD_SYS_CLOSE(fd) close((fd))
+#define FD_SYS_LSEEK(fd, offset, whence) lseek((fd), (offset), (whence))
 #endif
+#include <fmt/format.h>
 #include <sstream>
 #include <string>
+
+#ifdef _WIN32
+namespace {
+std::filesystem::path path_from_sjis(std::string_view src)
+{
+    to_wchar wide(src);
+    const auto *wstr = wide.wc_str();
+    if (wstr == nullptr) {
+        return {};
+    }
+
+    return std::filesystem::path(wstr);
+}
+}
+#endif
 
 #ifdef SET_UID
 
@@ -55,8 +82,9 @@ void user_name(char *buf, int id)
 {
     struct passwd *pw;
     if ((pw = getpwuid(id))) {
-        (void)strcpy(buf, pw->pw_name);
-        buf[16] = '\0';
+        // ユーザー名は16バイトまでに切り詰める (NUL終端の分を含めて17バイト)
+        constexpr auto name_bufsize = 17;
+        angband_strcpy(buf, pw->pw_name, name_bufsize);
 
 #ifdef JP
         if (!iskanji(buf[0]))
@@ -93,7 +121,7 @@ std::filesystem::path path_parse(const std::filesystem::path &path)
     constexpr auto user_size = 128;
     char user[user_size]{};
     if ((s != nullptr) && (s >= u + user_size)) {
-        THROW_EXCEPTION(std::runtime_error, "User name is too long!");
+        return {};
     }
 
     if (s != nullptr) {
@@ -117,7 +145,7 @@ std::filesystem::path path_parse(const std::filesystem::path &path)
     }
 
     if (pw == nullptr) {
-        THROW_EXCEPTION(std::runtime_error, "Failed to get User ID!");
+        return {};
     }
 
     if (s == nullptr) {
@@ -148,12 +176,7 @@ static errr path_temp(char *buf, int max)
         return -1;
     }
 
-#if !defined(WIN32) || (defined(_MSC_VER) && (_MSC_VER >= 1900))
     angband_strcpy(buf, s, max);
-#else
-    angband_strcpy(buf, format(".%s", s), max);
-#endif
-
     return 0;
 }
 #endif
@@ -165,25 +188,43 @@ static errr path_temp(char *buf, int max)
  */
 std::filesystem::path path_build(const std::filesystem::path &path, std::string_view file)
 {
-    if ((file[0] == '~') || (prefix(file, PATH_SEP)) || path.empty()) {
-        return file;
+    if (file.empty()) {
+        return path_parse(path);
     }
 
+    if ((file[0] == '~') || prefix(file, PATH_SEP) || path.empty()) {
+#ifdef _WIN32
+        return path_from_sjis(file);
+#else
+        return std::filesystem::path(file);
+#endif
+    }
+
+    constexpr auto max_path_length = 1024;
     auto parsed_path = path_parse(path);
-#ifdef WINDOWS
+    if (parsed_path.empty()) {
+        // 基点のディレクトリを展開できない場合は、ファイル名だけの相対パスにせず開けないパスとして扱う
+        return {};
+    }
+
+#ifdef _WIN32
     // システムロケールがUTF-8の場合、appendによるUTF-16への変換時に
     // Shift-JISをUTF-8とみなしてしまい変換に失敗するので、自前でUTF-16に変換してからappendする
-    const auto &path_ret = parsed_path.append(to_wchar(file).wc_str());
-#else
-    const auto &path_ret = parsed_path.append(file);
-#endif
-    constexpr auto max_path_length = 1024;
-    const auto path_str = path_ret.string();
-    if (path_str.length() > max_path_length) {
-        THROW_EXCEPTION(std::runtime_error, format("Path is too long! %s", path_str.data()));
+    const std::filesystem::path path_ret = parsed_path.append(path_from_sjis(file).native());
+    if (path_ret.native().size() > max_path_length) {
+        THROW_EXCEPTION(std::runtime_error, "Path is too long!");
     }
 
     return path_ret;
+#else
+    const std::filesystem::path path_ret = parsed_path.append(file);
+    const auto path_str = path_ret.string();
+    if (path_str.length() > max_path_length) {
+        THROW_EXCEPTION(std::runtime_error, fmt::format("Path is too long! {}", path_str));
+    }
+
+    return path_ret;
+#endif
 }
 
 static std::string make_file_mode(const FileOpenMode mode, const bool is_binary)
@@ -220,6 +261,10 @@ static std::string make_file_mode(const FileOpenMode mode, const bool is_binary)
 FILE *angband_fopen(const std::filesystem::path &path, const FileOpenMode mode, const bool is_binary)
 {
     const auto &parsed_path = path_parse(path);
+    if (parsed_path.empty()) {
+        return nullptr;
+    }
+
     const auto &open_mode = make_file_mode(mode, is_binary);
     return fopen(parsed_path.string().data(), open_mode.data());
 }
@@ -263,28 +308,26 @@ FILE *angband_fopen_temp(char *buf, int max)
  * @brief ファイルから改行かEOFまでの文字列を読み取り、システムのエンコーディングに変換した結果を返す
  *
  * @param fp ファイルポインタ
- * @return 読み取った文字列。1バイトも読み取らずファイルの終端に達した場合はtl::nullopt
+ * @return 読み取った文字列 (改行は含まない)。1バイトも読み取らずファイルの終端に達した場合はtl::nullopt
+ * @details
+ * 行の途中に '\0' があれば、そこで行を切り、その行の残りは読み捨てる。
+ * '\0' で始まる行は空の行になる (読み飛ばさないので、行の数は変わらない)。
  */
 static tl::optional<std::string> read_line(FILE *fp)
 {
     std::string line_buf;
-
-    char buf[1024];
-    while (fgets(buf, sizeof(buf), fp) != nullptr) {
-        std::string_view sv(buf);
-
-        line_buf.append(sv.begin(), sv.end());
-        if (sv.back() == '\n') {
-            break;
+    auto has_nul = false;
+    int ch;
+    while (((ch = std::fgetc(fp)) != EOF) && (ch != '\n')) {
+        // '\0' から後ろは、その行の残りとして溜めずに読み捨てる
+        has_nul = has_nul || (ch == '\0');
+        if (!has_nul) {
+            line_buf.push_back(static_cast<char>(ch));
         }
     }
 
-    if (line_buf.empty()) {
+    if ((ch == EOF) && line_buf.empty() && !has_nul) {
         return tl::nullopt;
-    }
-
-    if (line_buf.back() == '\n') {
-        line_buf.pop_back();
     }
 
 #ifdef JP
@@ -405,7 +448,7 @@ int fd_make(const std::filesystem::path &path, bool can_write_group)
 {
     const auto permission = can_write_group ? 0644 : 0664;
     const auto &parsed_path = path_parse(path);
-    return open(parsed_path.string().data(), O_CREAT | O_EXCL | O_WRONLY | O_BINARY, permission);
+    return FD_SYS_OPEN(parsed_path.string().data(), O_CREAT | O_EXCL | O_WRONLY | O_BINARY, permission);
 }
 
 /*
@@ -416,7 +459,7 @@ int fd_make(const std::filesystem::path &path, bool can_write_group)
 int fd_open(const std::filesystem::path &path, int mode)
 {
     const auto &path_abs = path_parse(path);
-    return open(path_abs.string().data(), mode | O_BINARY, 0);
+    return FD_SYS_OPEN(path_abs.string().data(), mode | O_BINARY, 0);
 }
 
 /*
@@ -453,7 +496,7 @@ errr fd_seek(int fd, ulong n)
         return -1;
     }
 
-    ulong p = lseek(fd, n, SEEK_SET);
+    ulong p = FD_SYS_LSEEK(fd, n, SEEK_SET);
     if (p != n) {
         return 1;
     }
@@ -471,7 +514,7 @@ errr fd_read(int fd, char *buf, ulong n)
     }
 #ifndef SET_UID
     while (n >= 16384) {
-        if (read(fd, buf, 16384) != 16384) {
+        if (FD_SYS_READ(fd, buf, 16384) != 16384) {
             return 1;
         }
 
@@ -480,7 +523,7 @@ errr fd_read(int fd, char *buf, ulong n)
     }
 #endif
 
-    if (read(fd, buf, n) != (int)n) {
+    if (FD_SYS_READ(fd, buf, n) != (int)n) {
         return 1;
     }
 
@@ -498,7 +541,7 @@ errr fd_write(int fd, concptr buf, ulong n)
 
 #ifndef SET_UID
     while (n >= 16384) {
-        if (write(fd, buf, 16384) != 16384) {
+        if (FD_SYS_WRITE(fd, buf, 16384) != 16384) {
             return 1;
         }
 
@@ -507,7 +550,7 @@ errr fd_write(int fd, concptr buf, ulong n)
     }
 #endif
 
-    if (write(fd, buf, n) != (int)n) {
+    if (FD_SYS_WRITE(fd, buf, n) != (int)n) {
         return 1;
     }
 
@@ -523,6 +566,6 @@ errr fd_close(int fd)
         return -1;
     }
 
-    (void)close(fd);
+    (void)FD_SYS_CLOSE(fd);
     return 0;
 }

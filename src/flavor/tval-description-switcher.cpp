@@ -8,8 +8,11 @@
 #include "flavor/flavor-util.h"
 #include "flavor/object-flavor-types.h"
 #include "locale/english.h"
+#include "locale/localized-string.h"
 #include "object-enchant/trg-types.h"
 #include "object/tval-types.h"
+#include "player/player-realm.h"
+#include "realm/realm-types.h"
 #include "system/baseitem/baseitem-definition.h"
 #include "system/baseitem/baseitem-list.h"
 #include "system/baseitem/baseitem-record.h"
@@ -19,11 +22,37 @@
 #include "system/terrain/terrain-list.h"
 #include "util/bit-flags-calculator.h"
 #include "util/enum-converter.h"
-
-#ifdef JP
-#else
+#include "util/string-processor.h"
+#include <array>
+#include <fmt/format.h>
+#ifndef JP
 #include "player-info/class-info.h"
+#include "system/creature-entity.h"
 #endif
+
+/*!
+ * @brief 表示テンプレートからモンスター種族名のプレースホルダを取り除く
+ * @param basename モンスター種族名を含む表示テンプレート
+ * @return 種族名のプレースホルダを取り除いた表示テンプレート
+ * @details 人形・像・死体類の表示テンプレートは種族名に係る助詞・前置詞を含んでいる
+ * (日本語版「#の人形」、英語版「& Magical Figurine~ of #」など)。'#' だけを取り除くと
+ * 「の人形」「Magical Figurine of 」のような不自然な名前になるため、併せて取り除く.
+ */
+static std::string omit_monrace_placeholder(std::string_view basename)
+{
+#ifdef JP
+    static constexpr std::array<std::string_view, 2> patterns = { { "#の", "#" } };
+#else
+    static constexpr std::array<std::string_view, 3> patterns = { { " of #", "# ", "#" } };
+#endif
+
+    std::string result(basename);
+    for (const auto &pattern : patterns) {
+        result = str_replace(result, pattern, "");
+    }
+
+    return result;
+}
 
 static std::pair<std::string, std::string> describe_monster_ball(const ItemEntity &item, const describe_option_type &opt)
 {
@@ -38,28 +67,36 @@ static std::pair<std::string, std::string> describe_monster_ball(const ItemEntit
     }
 
 #ifdef JP
-    const auto monrace_name = format(" (%s)", monrace.name.data());
+    const auto monrace_name = fmt::format(" ({})", monrace.name);
 #else
     std::string monrace_name;
     if (monrace.kind_flags.has_not(MonsterKindType::UNIQUE)) {
-        monrace_name = format(" (%s%s)", (is_a_vowel(monrace.name.data()[0]) ? "an " : "a "), monrace.name.data());
+        monrace_name = fmt::format(" ({}{})", (is_a_vowel(monrace.name.data()[0]) ? "an " : "a "), monrace.name);
     } else {
-        monrace_name = format(" (%s)", monrace.name.data());
+        monrace_name = fmt::format(" ({})", monrace.name);
     }
 #endif
     return { basename, monrace_name };
 }
 
-static std::pair<std::string, std::string> describe_statue(const ItemEntity &item)
+/*!
+ * @brief 人形・像の名前を記述する
+ * @details OD_OMIT_MONRACE 指定時は種族名を省いた記述を返す.
+ */
+static std::pair<std::string, std::string> describe_statue(const ItemEntity &item, const describe_option_type &opt)
 {
     const auto &basename = item.get_baseitem().name;
+    if (any_bits(opt.mode, OD_OMIT_MONRACE)) {
+        return { omit_monrace_placeholder(basename), "" };
+    }
+
     const auto &monrace = item.get_monrace();
 #ifdef JP
     const auto &monrace_name = monrace.name.string();
 #else
     std::string monrace_name;
     if (monrace.kind_flags.has_not(MonsterKindType::UNIQUE)) {
-        monrace_name = format("%s%s", (is_a_vowel(monrace.name.data()[0]) ? "an " : "a "), monrace.name.data());
+        monrace_name = fmt::format("{}{}", (is_a_vowel(monrace.name.data()[0]) ? "an " : "a "), monrace.name);
     } else {
         monrace_name = monrace.name;
     }
@@ -67,8 +104,18 @@ static std::pair<std::string, std::string> describe_statue(const ItemEntity &ite
     return { basename, monrace_name };
 }
 
-static std::pair<std::string, std::string> describe_corpse(const ItemEntity &item)
+/*!
+ * @brief 死体・骨の名前を記述する
+ * @details OD_OMIT_MONRACE 指定時は種族名を省いた記述を返す.
+ */
+static std::pair<std::string, std::string> describe_corpse(const ItemEntity &item, const describe_option_type &opt)
 {
+    if (any_bits(opt.mode, OD_OMIT_MONRACE)) {
+        // 種族が未設定ならユニークかどうかも判らないので非ユニーク側の書式を使う
+        constexpr std::string_view basename = _("#%", "& # %");
+        return { omit_monrace_placeholder(basename), "" };
+    }
+
     const auto &monrace = item.get_monrace();
 #ifdef JP
     const auto basename = "#%";
@@ -234,146 +281,42 @@ static std::pair<std::string, std::string> describe_food(const ItemEntity &item,
     }
 }
 
-static std::pair<std::string, std::string> describe_book_life()
+#ifndef JP
+/*!
+ * @brief 職業が生命の魔法書を使うか否かを返す
+ * @param creature クリーチャーへの参照
+ * @return 生命の魔法書を使うなら true
+ */
+static bool class_uses_life_book(const CreatureEntity &creature)
 {
-#ifdef JP
-    return { "生命の魔法書%", "" };
-#else
-    if (mp_ptr->spell_book == ItemKindType::LIFE_BOOK) {
-        return { "& Book~ of Life Magic %", "" };
-    } else {
-        return { "& Life Spellbook~ %", "" };
-    }
-#endif
+    return class_magics_info.at(enum2i(creature.get_pclass())).spell_book == ItemKindType::LIFE_BOOK;
 }
+#endif
 
-static std::pair<std::string, std::string> describe_book_sorcery()
+/*!
+ * @brief 魔法書の名前を得る
+ * @param creature クリーチャーへの参照
+ * @param tval 魔法書の種類
+ * @return std::pair<std::string, std::string> {basename, modstr} のペア
+ * @details 英語版は、生命の魔法書を使う職業なら "Book of ... Magic" の形 (仙術だけは "Book of Sorcery")、
+ * それ以外の職業なら "... Spellbook" の形で表す。
+ */
+static std::pair<std::string, std::string> describe_spellbook([[maybe_unused]] const CreatureEntity &creature, ItemKindType tval)
 {
+    const auto realm = PlayerRealm::get_realm_of_book(tval);
+    const auto &realm_name = PlayerRealm::get_name(realm);
 #ifdef JP
-    return { "仙術の魔法書%", "" };
+    return { fmt::format("{}の魔法書%", realm_name), "" };
 #else
-    if (mp_ptr->spell_book == ItemKindType::LIFE_BOOK) {
+    if (!class_uses_life_book(creature)) {
+        return { fmt::format("& {} Spellbook~ %", realm_name), "" };
+    }
+
+    if (realm == RealmType::SORCERY) {
         return { "& Book~ of Sorcery %", "" };
-    } else {
-        return { "& Sorcery Spellbook~ %", "" };
     }
-#endif
-}
 
-static std::pair<std::string, std::string> describe_book_nature()
-{
-#ifdef JP
-    return { "自然の魔法書%", "" };
-#else
-    if (mp_ptr->spell_book == ItemKindType::LIFE_BOOK) {
-        return { "& Book~ of Nature Magic %", "" };
-    } else {
-        return { "& Nature Spellbook~ %", "" };
-    }
-#endif
-}
-
-static std::pair<std::string, std::string> describe_book_chaos()
-{
-#ifdef JP
-    return { "カオスの魔法書%", "" };
-#else
-    if (mp_ptr->spell_book == ItemKindType::LIFE_BOOK) {
-        return { "& Book~ of Chaos Magic %", "" };
-    } else {
-        return { "& Chaos Spellbook~ %", "" };
-    }
-#endif
-}
-
-static std::pair<std::string, std::string> describe_book_death()
-{
-#ifdef JP
-    return { "暗黒の魔法書%", "" };
-#else
-    if (mp_ptr->spell_book == ItemKindType::LIFE_BOOK) {
-        return { "& Book~ of Death Magic %", "" };
-    } else {
-        return { "& Death Spellbook~ %", "" };
-    }
-#endif
-}
-
-static std::pair<std::string, std::string> describe_book_trump()
-{
-#ifdef JP
-    return { "トランプの魔法書%", "" };
-#else
-    if (mp_ptr->spell_book == ItemKindType::LIFE_BOOK) {
-        return { "& Book~ of Trump Magic %", "" };
-    } else {
-        return { "& Trump Spellbook~ %", "" };
-    }
-#endif
-}
-
-static std::pair<std::string, std::string> describe_book_arcane()
-{
-#ifdef JP
-    return { "秘術の魔法書%", "" };
-#else
-    if (mp_ptr->spell_book == ItemKindType::LIFE_BOOK) {
-        return { "& Book~ of Arcane Magic %", "" };
-    } else {
-        return { "& Arcane Spellbook~ %", "" };
-    }
-#endif
-}
-
-static std::pair<std::string, std::string> describe_book_craft()
-{
-#ifdef JP
-    return { "匠の魔法書%", "" };
-#else
-    if (mp_ptr->spell_book == ItemKindType::LIFE_BOOK) {
-        return { "& Book~ of Craft Magic %", "" };
-    } else {
-        return { "& Craft Spellbook~ %", "" };
-    }
-#endif
-}
-
-static std::pair<std::string, std::string> describe_book_demon()
-{
-#ifdef JP
-    return { "悪魔の魔法書%", "" };
-#else
-    if (mp_ptr->spell_book == ItemKindType::LIFE_BOOK) {
-        return { "& Book~ of Daemon Magic %", "" };
-    } else {
-        return { "& Daemon Spellbook~ %", "" };
-    }
-#endif
-}
-
-static std::pair<std::string, std::string> describe_book_crusade()
-{
-#ifdef JP
-    return { "破邪の魔法書%", "" };
-#else
-    if (mp_ptr->spell_book == ItemKindType::LIFE_BOOK) {
-        return { "& Book~ of Crusade Magic %", "" };
-    } else {
-        return { "& Crusade Spellbook~ %", "" };
-    }
-#endif
-}
-
-static std::pair<std::string, std::string> describe_book_hex()
-{
-#ifdef JP
-    return { "呪術の魔法書%", "" };
-#else
-    if (mp_ptr->spell_book == ItemKindType::LIFE_BOOK) {
-        return { "& Book~ of Hex Magic %", "" };
-    } else {
-        return { "& Hex Spellbook~ %", "" };
-    }
+    return { fmt::format("& Book~ of {} Magic %", realm_name), "" };
 #endif
 }
 
@@ -383,11 +326,12 @@ static std::pair<std::string, std::string> describe_book_hex()
  * アイテムの tval に従いベース名称(basename)と修正文字列(modstr)を得る。
  * basename と modstr がどのような使われ方をするかは、describe_body() を参照。
  *
+ * @param creature クリーチャーへの参照
  * @param item アイテムへの参照
  * @param opt 記述オプション
  * @return std::pair<std::string, std::string> {basename, modstr} のペア
  */
-std::pair<std::string, std::string> switch_tval_description(const ItemEntity &item, const describe_option_type &opt)
+std::pair<std::string, std::string> switch_tval_description(const CreatureEntity &creature, const ItemEntity &item, const describe_option_type &opt)
 {
     const auto &basename = item.get_baseitem().name;
 
@@ -407,9 +351,9 @@ std::pair<std::string, std::string> switch_tval_description(const ItemEntity &it
         return describe_monster_ball(item, opt);
     case ItemKindType::FIGURINE:
     case ItemKindType::STATUE:
-        return describe_statue(item);
+        return describe_statue(item, opt);
     case ItemKindType::MONSTER_REMAINS:
-        return describe_corpse(item);
+        return describe_corpse(item, opt);
     case ItemKindType::SHOT:
     case ItemKindType::BOLT:
     case ItemKindType::ARROW:
@@ -452,31 +396,21 @@ std::pair<std::string, std::string> switch_tval_description(const ItemEntity &it
     case ItemKindType::READING_MATTER:
         return describe_food(item, opt);
     case ItemKindType::LIFE_BOOK:
-        return describe_book_life();
     case ItemKindType::SORCERY_BOOK:
-        return describe_book_sorcery();
     case ItemKindType::NATURE_BOOK:
-        return describe_book_nature();
     case ItemKindType::CHAOS_BOOK:
-        return describe_book_chaos();
     case ItemKindType::DEATH_BOOK:
-        return describe_book_death();
     case ItemKindType::TRUMP_BOOK:
-        return describe_book_trump();
     case ItemKindType::ARCANE_BOOK:
-        return describe_book_arcane();
     case ItemKindType::CRAFT_BOOK:
-        return describe_book_craft();
     case ItemKindType::DEMON_BOOK:
-        return describe_book_demon();
     case ItemKindType::CRUSADE_BOOK:
-        return describe_book_crusade();
+    case ItemKindType::HEX_BOOK:
+        return describe_spellbook(creature, item.bi_key.tval());
     case ItemKindType::MUSIC_BOOK:
         return { _("歌集%", "& Song Book~ %"), "" };
     case ItemKindType::HISSATSU_BOOK:
         return { _("& 武芸の書%", "Book~ of Kendo %"), "" };
-    case ItemKindType::HEX_BOOK:
-        return describe_book_hex();
     case ItemKindType::GOLD:
         return { basename, "" };
     case ItemKindType::TRAP:

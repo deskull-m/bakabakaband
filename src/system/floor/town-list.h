@@ -8,6 +8,7 @@ constexpr short VALID_TOWNS = 6; // @details 旧海底都市クエストのマ�
 constexpr auto SECRET_TOWN = 5; // @details ズルの町番号.
 
 enum class TownId;
+class Store;
 class TownList : public util::AbstractVectorWrapper<TownInfo> {
 public:
     TownList(TownList &&) = delete;
@@ -24,6 +25,9 @@ public:
     TownInfo &get_town(size_t index);
     const TownInfo &get_town(TownId town_id) const;
     TownInfo &get_town(TownId town_id);
+    const Store &get_home() const;
+    Store &get_home();
+    const Store &get_museum() const;
 
 private:
     TownList() = default;

@@ -39,10 +39,10 @@
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
 #include "util/angband-files.h"
-#include "view/display-messages.h"
 #include "world/world.h"
 #include <exception>
 #include <fmt/format.h>
+#include <string_view>
 #include <time.h>
 #ifdef WINDOWS
 #include "util/png-displayer.h"
@@ -197,7 +197,7 @@ void init_angband(CreatureEntity &creature, bool no_term)
         init_terrains_info();
         init_feat_variables();
     } catch (const std::exception &e) {
-        quit_fmt("地形初期化不能: %s", e.what());
+        quit(fmt::format("地形初期化不能: {}", e.what()));
     }
 
     init_note(_("[データの初期化中... (アイテム)]", "[Initializing arrays... (objects)]"));
@@ -248,11 +248,7 @@ void init_angband(CreatureEntity &creature, bool no_term)
     try {
         QuestList::get_instance().initialize();
     } catch (const std::exception &e) {
-        std::stringstream ss;
-        ss << _("ファイル読み込みエラー: ", "File loading error: ") << e.what();
-        msg_print(ss.str());
-        msg_erase();
-        quit(_("クエスト初期化エラー", "Error of quests initializing"));
+        quit(fmt::format("{}{}\n{}", _("ファイル読み込みエラー: ", "File loading error: "), e.what(), _("クエスト初期化エラー", "Error of quests initializing")));
     }
 
     init_note(_("配列を初期化しています... (パーティ)", "[Initializing arrays... (parties)]"));

@@ -12,6 +12,7 @@
 #include "floor/floor-save.h"
 #include "floor/wild.h"
 #include "game-option/cheat-options.h"
+#include "game-option/disturbance-options.h"
 #include "game-option/map-screen-options.h"
 #include "game-option/play-record-options.h"
 #include "hpmp/hp-mp-regenerator.h"
@@ -31,25 +32,28 @@
 #include "system/angband-system.h"
 #include "system/building-type-definition.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/dungeon/dungeon-definition.h"
 #include "system/dungeon/dungeon-record.h"
 #include "system/dungeon/quest-definition.h"
 #include "system/enums/dungeon/dungeon-id.h"
 #include "system/floor/floor-info.h"
 #include "system/monrace/monrace-definition.h"
-#include "system/redrawing-flags-updater.h"
 #include "target/target-checker.h"
+#include "term/screen-processor.h"
 #include "util/bit-flags-calculator.h"
+#include "util/string-processor.h"
 #include "view/display-messages.h"
 #include "world/world-collapsion.h"
 #include "world/world-turn-processor.h"
 #include "world/world.h"
+#include <fmt/format.h>
 
 static void redraw_character_xtra(CreatureEntity &creature)
 {
     auto &world = AngbandWorld::get_instance();
     world.character_xtra = true;
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
+    auto &dur = DeferredUpdateRequests::get_instance();
     static constexpr auto flags_swrf = {
         SubWindowRedrawingFlag::INVENTORY,
         SubWindowRedrawingFlag::EQUIPMENT,
@@ -59,20 +63,10 @@ static void redraw_character_xtra(CreatureEntity &creature)
         SubWindowRedrawingFlag::OVERHEAD,
         SubWindowRedrawingFlag::DUNGEON,
     };
-    rfu.set_flags(flags_swrf);
-    static constexpr auto flags_mwrf = {
-        MainWindowRedrawingFlag::WIPE,
-        MainWindowRedrawingFlag::BASIC,
-        MainWindowRedrawingFlag::EXTRA,
-        MainWindowRedrawingFlag::EQUIPPY,
-        MainWindowRedrawingFlag::MAP,
-    };
-    rfu.set_flags(flags_mwrf);
-    auto flags_srf = {
-        StatusRecalculatingFlag::BONUS,
-        StatusRecalculatingFlag::HP,
-        StatusRecalculatingFlag::MP,
-        StatusRecalculatingFlag::SPELLS,
+    dur.set_flags(flags_swrf);
+    dur.request_whole_main_window_redrawing();
+    dur.request_player_status_recalculation();
+    static constexpr auto flags_srf = {
         StatusRecalculatingFlag::VIEW,
         StatusRecalculatingFlag::LITE,
         StatusRecalculatingFlag::MONSTER_LITE,
@@ -81,7 +75,7 @@ static void redraw_character_xtra(CreatureEntity &creature)
         StatusRecalculatingFlag::DISTANCE,
         StatusRecalculatingFlag::FLOW,
     };
-    rfu.set_flags(flags_srf);
+    dur.set_flags(flags_srf);
     handle_stuff(creature);
     world.character_xtra = false;
 }
@@ -108,17 +102,23 @@ void process_dungeon(CreatureEntity &creature, bool load_game)
     world.is_loading_now = false;
     creature.set_leaving(false);
 
-    command_cmd = 0;
-    command_rep = 0;
-    command_arg = 0;
-    command_dir = Direction::none();
-
-    Target::clear_last_target();
-    creature.reset_pet_riding_targets();
     creature.set_ambush_flag(false);
     health_track(creature, 0);
 
-    disturb(creature, true, true);
+    // セーブを読み込んで再開したとき (load_game) は、セーブしている行動 (探索モード・休憩・釣り) とコマンドの繰り返しを続け、
+    // 続けた場合と同じにする。走りと移動は続きをセーブしていないので、読み込んだ時点で止まっている
+    // (load_game は新規ゲームの最初の階でも真だが、そのときはどれも始まっていない)
+    if (load_game) {
+        if (flush_disturb) {
+            flush();
+        }
+    } else {
+        command_cmd = 0;
+        command_rep = 0;
+        command_arg = 0;
+        command_dir = Direction::none();
+        disturb(creature, true, true);
+    }
     const auto quest_id = floor.get_quest_id();
     auto &quests = QuestList::get_instance();
     auto &monrace_questor = quests.get_quest(quest_id).get_bounty();
@@ -131,6 +131,9 @@ void process_dungeon(CreatureEntity &creature, bool load_game)
     }
 
     auto &dungeon_record = DungeonRecords::get_instance().get_record(floor.dungeon_id);
+    if (floor.is_underground() && !floor.is_in_quest()) {
+        dungeon_record.mark_visited();
+    }
     if ((dungeon_record.get_max_level() < floor.dun_level) && !floor.is_in_quest()) {
         dungeon_record.set_max_level(floor.dun_level);
         if (record_maxdepth) {
@@ -144,16 +147,14 @@ void process_dungeon(CreatureEntity &creature, bool load_game)
     msg_erase();
 
     redraw_character_xtra(creature);
-    auto flags_srf = {
-        StatusRecalculatingFlag::BONUS,
-        StatusRecalculatingFlag::HP,
-        StatusRecalculatingFlag::MP,
-        StatusRecalculatingFlag::SPELLS,
-        StatusRecalculatingFlag::COMBINATION,
-        StatusRecalculatingFlag::REORDER,
+    auto &dur = DeferredUpdateRequests::get_instance();
+    dur.request_player_status_recalculation();
+    static constexpr auto flags_iaf = {
+        InventoryArrangementFlag::COMBINATION,
+        InventoryArrangementFlag::REORDER,
     };
-    RedrawingFlagsUpdater::get_instance().set_flags(flags_srf);
-    handle_stuff(creature);
+    dur.set_flags(flags_iaf);
+    handle_stuff_with_inventory_arrangement(creature);
     term_fresh();
 
     auto no_feeling_quest = (quest_id == QuestId::MELKO);
@@ -193,9 +194,9 @@ void process_dungeon(CreatureEntity &creature, bool load_game)
         const auto &monrace = dungeon.get_guardian();
         if (!monrace.is_dead_unique()) {
 #ifdef JP
-            msg_format("この階には%sの主である%sが棲んでいる。", dungeon.name.data(), monrace.name.data());
+            msg_print("この階には{}の主である{}が棲んでいる。", dungeon.name, monrace.name);
 #else
-            msg_format("%s^ lives in this level as the keeper of %s.", monrace.name.data(), dungeon.name.data());
+            msg_print("{} lives in this level as the keeper of {}.", str_upcase_first(monrace.name), dungeon.name);
 #endif
         }
     }
@@ -207,7 +208,7 @@ void process_dungeon(CreatureEntity &creature, bool load_game)
     floor.monster_level = floor.base_level;
     floor.object_level = floor.base_level;
     world.is_loading_now = true;
-    if (creature.get_energy_need() > 0 && !is_watching && (floor.is_underground() || floor.is_leaving_dungeon() || floor.inside_arena)) {
+    if (!load_game && creature.get_energy_need() > 0 && !is_watching && (floor.is_underground() || floor.is_leaving_dungeon() || floor.inside_arena)) {
         creature.set_energy_need(0);
     }
 
@@ -229,7 +230,7 @@ void process_dungeon(CreatureEntity &creature, bool load_game)
 
         process_player(creature);
         process_upkeep_with_speed(creature);
-        handle_stuff(creature);
+        handle_stuff_with_inventory_arrangement(creature);
 
         move_cursor_relative(creature.y, creature.x);
         if (fresh_after) {
@@ -241,7 +242,7 @@ void process_dungeon(CreatureEntity &creature, bool load_game)
         }
 
         process_monsters(creature);
-        handle_stuff(creature);
+        handle_stuff_with_inventory_arrangement(creature);
 
         move_cursor_relative(creature.y, creature.x);
         if (fresh_after) {
@@ -253,7 +254,7 @@ void process_dungeon(CreatureEntity &creature, bool load_game)
         }
 
         WorldTurnProcessor(creature).process_world();
-        handle_stuff(creature);
+        handle_stuff_with_inventory_arrangement(creature);
 
         move_cursor_relative(creature.y, creature.x);
         if (fresh_after) {
@@ -283,6 +284,8 @@ void process_dungeon(CreatureEntity &creature, bool load_game)
         if (wild_regen) {
             wild_regen--;
         }
+
+        WorldTurnProcessor(creature).decide_auto_save();
     }
 
     if ((inside_quest(quest_id)) && monrace_questor.kind_flags.has_not(MonsterKindType::UNIQUE)) {

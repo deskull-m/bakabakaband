@@ -55,7 +55,7 @@ static void exe_ring_of_power(CreatureEntity &creature, const Direction &dir)
 
 bool activate_ring_of_power(CreatureEntity &creature, std::string_view name)
 {
-    msg_format(_("%sは漆黒に輝いた...", "The %s glows intensely black..."), name.data());
+    msg_print(_("{}は漆黒に輝いた...", "The {} glows intensely black..."), name);
     const auto dir = get_aim_dir(creature);
     if (!dir) {
         return false;

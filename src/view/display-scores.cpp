@@ -1,7 +1,8 @@
 #include "view/display-scores.h"
+#include "core/asking-player.h"
 #include "core/score-util.h"
 #include "io/files-util.h"
-#include "io/input-key-acceptor.h"
+#include "io/input-context.h"
 #include "locale/character-encoding.h"
 #include "player-info/class-info.h"
 #include "player/player-personality.h"
@@ -127,12 +128,12 @@ void display_scores(int from, int to, int note, high_score *score)
             const auto pclass = i2enum<PlayerClassType>(pc);
 #ifdef JP
             /* out_val = format("%3d.%9s  %s%s%sという名の%sの%s (レベル %d)", */
-            out_val = format("%3d.%9s  %s%s%s - %s%s (レベル %d)", place, the_score.pts, personality_info[pa].title.data(), (personality_info[pa].no ? "の" : ""),
-                the_score.who, race_info[pr].title.data(), class_info.at(pclass).title.data(), clev);
+            out_val = fmt::format("{:3}.{:>9}  {}{}{} - {}{} (レベル {})", place, fmt::bytes(the_score.pts), personality_info[pa].title, (personality_info[pa].no ? "の" : ""),
+                the_score.who, race_info[pr].title, class_info.at(pclass).title, clev);
 
 #else
-            out_val = format("%3d.%9s  %s %s the %s %s, Level %d", place, the_score.pts, personality_info[pa].title.data(), the_score.who, race_info[pr].title.data(),
-                class_info.at(pclass).title.data(), clev);
+            out_val = fmt::format("{:3}.{:>9}  {} {} the {} {}, Level {}", place, fmt::bytes(the_score.pts), personality_info[pa].title, the_score.who, race_info[pr].title,
+                class_info.at(pclass).title, clev);
 #endif
             if (mlev > clev) {
                 out_val.append(fmt::format(_(" (最高{})", " (Max {})"), mlev));
@@ -141,7 +142,7 @@ void display_scores(int from, int to, int note, high_score *score)
             c_put_str(attr, out_val, n * 4 + 2, 0);
 #ifdef JP
             if (mdun != 0) {
-                out_val = format("    最高%3d階", mdun);
+                out_val = fmt::format("    最高{:3}階", mdun);
             } else {
                 out_val = "             ";
             }
@@ -169,7 +170,7 @@ void display_scores(int from, int to, int note, high_score *score)
             }
 
             if (mdun > cdun) {
-                out_val.append(format(" (Max %d)", mdun));
+                out_val.append(fmt::format(" (Max {})", mdun));
             }
 #endif
             c_put_str(attr, out_val, n * 4 + 3, 0);
@@ -190,8 +191,9 @@ void display_scores(int from, int to, int note, high_score *score)
             c_put_str(attr, out_val, n * 4 + 4, 0);
         }
 
-        prt(_("[ ESCで中断, その他のキーで続けます ]", "[Press ESC to quit, any other key to continue.]"), MAIN_TERM_MIN_ROWS - 1, _(21, 17));
-        auto key = inkey();
+        constexpr auto prompt = _("[ ESCで中断, その他のキーで続けます ]", "[Press ESC to quit, any other key to continue.]");
+        prt(prompt, MAIN_TERM_MIN_ROWS - 1, _(21, 17));
+        const auto key = input_key_with_context(InputKind::ANY_KEY, prompt);
         prt("", MAIN_TERM_MIN_ROWS - 1, 0);
         if (key == ESCAPE) {
             break;

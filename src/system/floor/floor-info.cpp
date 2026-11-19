@@ -17,6 +17,7 @@
 #include "system/enums/monrace/monrace-hook-types.h"
 #include "system/enums/terrain/terrain-characteristics.h"
 #include "system/enums/terrain/terrain-tag.h"
+#include "system/floor/monster-corpse.h"
 #include "system/floor/wilderness-grid.h"
 #include "system/gamevalue.h"
 #include "system/grid-type-definition.h"
@@ -30,6 +31,9 @@
 #include "util/enum-range.h"
 #include "util/point-2d.h"
 #include "world/world.h"
+#include <algorithm>
+#include <array>
+#include <fmt/format.h>
 #include <range/v3/algorithm.hpp>
 
 FloorType::FloorType()
@@ -38,6 +42,9 @@ FloorType::FloorType()
     , m_list(MAX_FLOOR_MONSTERS)
     , quest_number(QuestId::NONE)
 {
+    // 添字 0 はダミー (o_list と同じ規約)
+    this->corpses.push_back(nullptr);
+
     ranges::generate(this->o_list, [] { return std::make_shared<ItemEntity>(); });
 
     for (auto &monster : this->m_list) {
@@ -286,7 +293,7 @@ bool FloorType::check_terrain_state(const Pos2D &pos, GridCountKind gck) const
     case GridCountKind::TRAP:
         return grid.has(TerrainCharacteristics::TRAP);
     default:
-        THROW_EXCEPTION(std::logic_error, format("Invalid GridCountKind is Specified! %d", enum2i(gck)));
+        THROW_EXCEPTION(std::logic_error, fmt::format("Invalid GridCountKind is Specified! {}", enum2i(gck)));
     }
 }
 
@@ -464,7 +471,7 @@ bool FloorType::filter_monrace_terrain(MonraceId monrace_id, MonraceHookTerrain 
     case MonraceHookTerrain::LAVA:
         return is_suitable_for_dungeon && monrace.is_suitable_for_lava();
     default:
-        THROW_EXCEPTION(std::logic_error, format("Invalid monrace hook type is specified! %d", enum2i(hook)));
+        THROW_EXCEPTION(std::logic_error, fmt::format("Invalid monrace hook type is specified! {}", enum2i(hook)));
     }
 }
 
@@ -668,6 +675,43 @@ short FloorType::pop_empty_index_monster()
  * @brief アイテム配列から空きを取得する
  * @return 使われていないアイテムのフロア内インデックス
  */
+/*!
+ * @brief 死体を 1 つ格納する空き添字を確保する
+ * @return 確保した添字、満杯なら 0
+ * @details 持ち去り・食事・破壊等で取り除かれた死体 (released) の添字を優先して
+ *          再利用し、無ければ push_back で伸ばす。死体の添字を保持するのは
+ *          グリッドのチェインだけで、取り除く際にチェインから外しているため
+ *          再利用しても古い参照は残らない。
+ *          満杯時は例外を投げずに 0 を返し、呼出側が死体を諦める
+ *          (死体はゲーム進行に必須ではないため)。
+ */
+short FloorType::pop_empty_index_corpse()
+{
+    for (auto corpse_idx = 1U; corpse_idx < this->corpses.size(); corpse_idx++) {
+        if (this->corpses[corpse_idx]->released) {
+            this->corpses[corpse_idx] = std::make_shared<MonsterCorpse>();
+            return static_cast<short>(corpse_idx);
+        }
+    }
+
+    if (std::ssize(this->corpses) >= MAX_FLOOR_CORPSES) {
+        return 0;
+    }
+
+    this->corpses.push_back(std::make_shared<MonsterCorpse>());
+    return static_cast<short>(this->corpses.size() - 1);
+}
+
+MonsterCorpse &FloorType::get_corpse(short corpse_idx)
+{
+    return *this->corpses.at(corpse_idx);
+}
+
+const MonsterCorpse &FloorType::get_corpse(short corpse_idx) const
+{
+    return *this->corpses.at(corpse_idx);
+}
+
 short FloorType::pop_empty_index_item()
 {
     if (this->o_list.size() < MAX_FLOOR_ITEMS) {
@@ -747,7 +791,7 @@ void FloorType::reset_lite_area()
 {
     this->lite_n = 0;
     this->mon_lite_n = 0;
-    this->redraw_n = 0;
+    this->redraw_points.clear();
     this->view_n = 0;
 }
 
@@ -774,13 +818,35 @@ void FloorType::set_redraw_at(const Pos2D &pos)
     }
 
     auto &grid = this->get_grid(pos);
-    if (grid.is_redraw() || (this->redraw_n >= REDRAW_MAX)) {
+    if (grid.is_redraw()) {
         return;
     }
 
     grid.info |= CAVE_REDRAW;
-    this->redraw_y[this->redraw_n] = pos.y;
-    this->redraw_x[this->redraw_n++] = pos.x;
+    this->redraw_points.push_back(pos);
+}
+
+/*!
+ * @brief プレイヤーの移動で明るさが変わり得る、視界内の壁を記憶と再描画の対象にする
+ * @param p_pos_old 移動前のプレイヤーの座標
+ * @param p_pos_new 移動後のプレイヤーの座標
+ * @details 壁などLOSを通さない地形の明るさは、プレイヤーの側の隣のグリッドで決まる (is_illuminated_at())。
+ * プレイヤーの側は縦・横の位置関係の符号だけで決まるので、変わり得るのは移動前と移動後の間 (両端を含む) にある行・列だけ。
+ * 視界から出入りするグリッドは update_view() が扱うので、update_view() より前に呼び、移動前の視界にあるグリッドを対象にする。
+ */
+void FloorType::set_note_and_redraw_walls_lit_from_player_side(const Pos2D &p_pos_old, const Pos2D &p_pos_new)
+{
+    const auto [y_min, y_max] = std::minmax(p_pos_old.y, p_pos_new.y);
+    const auto [x_min, x_max] = std::minmax(p_pos_old.x, p_pos_new.x);
+    for (auto i = 0; i < this->view_n; i++) {
+        const Pos2D pos(this->view_y[i], this->view_x[i]);
+        const auto is_between = ((y_min <= pos.y) && (pos.y <= y_max)) || ((x_min <= pos.x) && (pos.x <= x_max));
+        if (!is_between || this->get_grid(pos).has_los_terrain(TerrainKind::MIMIC)) {
+            continue;
+        }
+
+        this->set_note_and_redraw_at(pos);
+    }
 }
 
 void FloorType::set_view_at(const Pos2D &pos)
@@ -889,15 +955,14 @@ std::vector<Pos2D> FloorType::collect_temp_mon_lite()
 std::vector<Pos2D> FloorType::collect_redraw_points()
 {
     std::vector<Pos2D> points;
-    for (auto i = 0; i < this->redraw_n; i++) {
-        const Pos2D pos(this->redraw_y[i], this->redraw_x[i]);
-        auto &grid = this->get_grid(pos);
-        if (any_bits(grid.info, CAVE_REDRAW)) {
+    points.reserve(this->redraw_points.size());
+    for (const auto &pos : this->redraw_points) {
+        if (this->get_grid(pos).is_redraw()) {
             points.push_back(pos);
         }
     }
 
-    this->redraw_n = 0;
+    this->redraw_points.clear();
     return points;
 }
 

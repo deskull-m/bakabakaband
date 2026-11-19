@@ -8,12 +8,41 @@
 #include "alliance/alliance.h"
 #include "locale/language-switcher.h"
 #include "util/string-processor.h"
+#include <string>
+#include <string_view>
 
 BaseitemDefinition::BaseitemDefinition()
     : bi_key(ItemKindType::NONE)
     , alliance_idx(AllianceType::NONE)
     , symbol_definition(DisplaySymbol(0, '\0'))
 {
+}
+
+/*!
+ * @brief 必須項目 (name / bi_key / symbol / level / weight / cost) を除いた複製を返す
+ * @return 省略可能な項目だけを引き継いだベースアイテム定義
+ * @details 同一IDを再読込する際、JSONC で省略された省略可能項目を元の定義から保つために使う。
+ * 必須項目は再読込で必ず指定されるため複製しない。alliance_idx は bakabakaband 独自の省略可能項目。
+ */
+BaseitemDefinition BaseitemDefinition::clone_without_required_fields() const
+{
+    BaseitemDefinition cloned;
+    cloned.flavor_name = this->flavor_name;
+    cloned.text = this->text;
+    cloned.pval = this->pval;
+    cloned.ac = this->ac;
+    cloned.damage_dice = this->damage_dice;
+    cloned.to_h = this->to_h;
+    cloned.to_d = this->to_d;
+    cloned.to_a = this->to_a;
+    cloned.alloc_tables = this->alloc_tables;
+    cloned.act_idx = this->act_idx;
+    cloned.flags = this->flags;
+    cloned.gen_flags = this->gen_flags;
+    cloned.easy_know = this->easy_know;
+    cloned.alliance_idx = this->alliance_idx;
+    cloned.civilization = this->civilization;
+    return cloned;
 }
 
 /*!
@@ -34,34 +63,40 @@ bool BaseitemDefinition::is_valid() const
  */
 std::string BaseitemDefinition::stripped_name() const
 {
-    const auto tokens = str_split(this->name, ' ');
-    std::stringstream ss;
-    for (const auto &token : tokens) {
-        if (token == "" || token == "~" || token == "&" || token == "#") {
+    // 名前の先頭の "& " は冠詞を付ける位置の印なので取り除く (describe_named_item() と同じ規則)。途中の "&" は名前の一部なので残す
+    std::string_view name_without_article = this->name;
+    if (name_without_article.starts_with("& ")) {
+        name_without_article.remove_prefix(2);
+    }
+
+    std::string stripped;
+    for (const auto &token : str_split(name_without_article, ' ')) {
+        if (token == "" || token == "~" || token == "#") {
             continue;
         }
 
         auto offset = 0;
         auto endpos = token.size();
-        auto is_kanji = false;
         if (token[0] == '~' || token[0] == '#') {
             offset++;
         }
-#ifdef JP
-        if (token.size() > 2) {
-            is_kanji = iskanji(token[endpos - 2]);
-        }
 
-#endif
-        if (!is_kanji && (token[endpos - 1] == '~' || token[endpos - 1] == '#')) {
+        // 末尾のバイトが2バイト文字の後半なら、'~' や '#' と同じ値でも取り除かない。
+        // 後半バイトは先頭バイトと同じ範囲の値もとるため、2バイト文字の位置は先頭から数えて求める
+        const auto ends_with_trail_byte = str_find_all_multibyte_chars(token).contains(static_cast<int>(endpos) - 2);
+        if (!ends_with_trail_byte && (token[endpos - 1] == '~' || token[endpos - 1] == '#')) {
             endpos--;
         }
 
-        ss << token.substr(offset, endpos);
+        if (!stripped.empty()) {
+            stripped.push_back(' ');
+        }
+
+        stripped.append(token, offset, endpos - offset);
     }
 
-    ss << " ";
-    return ss.str();
+    stripped.push_back(' ');
+    return stripped;
 }
 
 bool BaseitemDefinition::order_cost(const BaseitemDefinition &other) const

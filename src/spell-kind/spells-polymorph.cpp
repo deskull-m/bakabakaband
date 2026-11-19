@@ -15,12 +15,12 @@
 #include "player/player-sex.h"
 #include "system/angband-system.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
 #include "system/monrace/monrace-definition.h"
 #include "system/monrace/monrace-list.h"
-#include "system/redrawing-flags-updater.h"
 #include "target/target-checker.h"
 #include "term/screen-processor.h"
 #include "tracking/health-bar-tracker.h"
@@ -41,8 +41,12 @@ static MonraceId select_polymorph_monrace_id(CreatureEntity &creature, MonraceId
         return monrace_id;
     }
 
-    const auto lev1 = monrace.level - ((randint1(20) / randint1(9)) + 1);
-    const auto lev2 = monrace.level + ((randint1(20) / randint1(9)) + 1);
+    const auto roll_level_diff = [] {
+        const auto numerator = randint1(20);
+        return numerator / randint1(9) + 1;
+    };
+    const auto lev1 = monrace.level - roll_level_diff();
+    const auto lev2 = monrace.level + roll_level_diff();
     for (auto i = 0; i < 1000; i++) {
         const auto new_monrace_id = get_mon_num(creature, 0, (creature.get_floor()->dun_level + monrace.level) / 2 + 5, PM_NONE);
         if (!MonraceList::is_valid(new_monrace_id)) {
@@ -197,16 +201,16 @@ bool trans_sex(CreatureEntity &creature)
 
     screen_load();
     const auto flags = { StatusRecalculatingFlag::BONUS, StatusRecalculatingFlag::HP, StatusRecalculatingFlag::MP, StatusRecalculatingFlag::SPELLS };
-    RedrawingFlagsUpdater::get_instance().set_flags(flags);
+    DeferredUpdateRequests::get_instance().set_flags(flags);
     const auto flags2 = {
         MainWindowRedrawingFlag::BASIC,
         MainWindowRedrawingFlag::HP,
         MainWindowRedrawingFlag::MP,
         MainWindowRedrawingFlag::ABILITY_SCORE,
     };
-    RedrawingFlagsUpdater::get_instance().set_flags(flags2);
+    DeferredUpdateRequests::get_instance().set_flags(flags2);
     const auto flags3 = { SubWindowRedrawingFlag::PLAYER };
-    RedrawingFlagsUpdater::get_instance().set_flags(flags3);
+    DeferredUpdateRequests::get_instance().set_flags(flags3);
 
     sp_ptr = &sex_info[creature.psex];
     handle_stuff(creature);

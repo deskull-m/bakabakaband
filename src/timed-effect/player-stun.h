@@ -4,13 +4,22 @@
 #include <string>
 #include <tuple>
 
-enum class PlayerStunRank;
+enum class PlayerStunRank {
+    NONE = 0,
+    SLIGHT = 1,
+    NORMAL = 2,
+    HARD = 3,
+    UNCONSCIOUS = 4,
+    KNOCKED = 5,
+};
+
 class PlayerStun {
 public:
     PlayerStun() = delete;
 
     static PlayerStunRank get_rank(short value);
     static std::string_view get_stun_mes(PlayerStunRank stun_rank);
+    static const char *get_stun_mes_others(PlayerStunRank stun_rank);
     static short get_accumulation(int rank);
     static int get_accumulation_rank(int total, int damage);
 

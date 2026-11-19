@@ -48,6 +48,7 @@ struct debug_spell_command {
 void wiz_debug_spell(CreatureEntity &creature);
 void wiz_dimension_door(CreatureEntity &creature);
 void wiz_summon_horde(CreatureEntity &creature);
+void wiz_summon_creature_party(CreatureEntity &creature);
 void wiz_teleport_back(CreatureEntity &creature);
 void wiz_learn_blue_magic_all(CreatureEntity &creature);
 void wiz_fillup_all_smith_essences(CreatureEntity &creature);

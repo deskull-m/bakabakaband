@@ -3,25 +3,40 @@
 AUTOMAKE_OPTIONS = foreign
 
 visual_studio_files = \
+	VisualStudio/.gitattributes \
 	VisualStudio/Bakabakaband.sln \
+	VisualStudio/Bakabakaband/Bakabakaband.Common.props \
+	VisualStudio/Bakabakaband/Bakabakaband.Configuration.props \
 	VisualStudio/Bakabakaband/Bakabakaband.vcxproj \
-	VisualStudio/Bakabakaband/Bakabakaband.vcxproj.filters \
-	VisualStudio/Bakabakaband/packages.config \
-	VisualStudio/Hengband/Hengband.vcxproj \
-	VisualStudio/Hengband/Hengband.vcxproj.filters
+	VisualStudio/Bakabakaband/BakabakabandCore.vcxproj \
+	VisualStudio/Bakabakaband/BakabakabandCore.vcxproj.filters \
+	VisualStudio/Bakabakaband/BakabakabandTest.vcxproj \
+	VisualStudio/Bakabakaband/BakabakabandTest.vcxproj.filters \
+	VisualStudio/Bakabakaband/packages.config
 
 schema_files = \
 	schema/ArtifactDefinitions.schema.json \
 	schema/BaseitemDefinitions.schema.json \
 	schema/ClassMagicDefinitions.schema.json \
+	schema/ClassSkillDefinitions.schema.json \
 	schema/CreatureParty.schema.json \
 	schema/DungeonDefinitions.schema.json \
+	schema/EgoDefinitions.schema.json \
 	schema/MonraceDefinitions.schema.json \
 	schema/MonsterMessages.schema.json \
+	schema/Quest.schema.json \
+	schema/QuestPreferences.schema.json \
 	schema/SpellDefinitions.schema.json \
-	schema/TerrainDefinitions.schema.json
+	schema/TerrainDefinitions.schema.json \
+	schema/TownDefinitionList.schema.json \
+	schema/TownPreferences.schema.json \
+	schema/VaultDefinitions.schema.json \
+	schema/WildernessDefinition.schema.json
 
 EXTRA_DIST = \
+	lib/edit/ClassSkillDefinitions.md \
+	lib/edit/VaultDefinitions.md \
+	CLAUDE.md \
 	autopick.txt \
 	autopick_eng.txt \
 	bootstrap \
@@ -30,6 +45,11 @@ EXTRA_DIST = \
 	readme-eng.md \
 	THIRD-PARTY-NOTICES.txt \
 	hengband.spec \
+	tools/bot/hbctl.py \
+	tools/bot/README.md \
+	tools/release/Build-Windows-Release-Package.ps1 \
+	tools/tests/main-window-wipe-probe.cpp \
+	tools/verify-class-skill-migration.py \
 	$(visual_studio_files) \
 	$(schema_files)
 

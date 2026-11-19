@@ -7,8 +7,8 @@
 #include "object/tval-types.h"
 #include "sv-definition/sv-lite-types.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/item-entity.h"
-#include "system/redrawing-flags-updater.h"
 #include "view/display-messages.h"
 #include "world/world.h"
 
@@ -27,14 +27,13 @@ void reduce_lite_life(CreatureEntity &creature)
         return;
     }
 
-    if (o_ptr->ego_idx == EgoType::LITE_LONG) {
-        if (AngbandWorld::get_instance().game_turn % (TURNS_PER_TICK * 2)) {
-            o_ptr->fuel--;
-        }
-    } else {
-        o_ptr->fuel--;
+    // 長寿命の光源は 2 tick に 1 回だけ燃料を減らす
+    const auto skips_burning = (o_ptr->ego_idx == EgoType::LITE_LONG) && !(AngbandWorld::get_instance().game_turn % (TURNS_PER_TICK * 2));
+    if (skips_burning) {
+        return;
     }
 
+    o_ptr->fuel--;
     notice_lite_change(creature, o_ptr);
 }
 
@@ -45,9 +44,11 @@ void reduce_lite_life(CreatureEntity &creature)
  */
 void notice_lite_change(CreatureEntity &creature, ItemEntity *o_ptr)
 {
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    if ((o_ptr->fuel < 100) || (!(o_ptr->fuel % 100))) {
-        rfu.set_flag(SubWindowRedrawingFlag::EQUIPMENT);
+    auto &dur = DeferredUpdateRequests::get_instance();
+    // 装備の一覧に残りターン数を出すが、盲目中に燃料を戻したときは表示が変わらない
+    const auto is_fuel_restored = creature.is_blind() && (o_ptr->fuel == 0);
+    if (!is_fuel_restored) {
+        dur.set_flag(SubWindowRedrawingFlag::EQUIPMENT);
     }
 
     if (creature.is_blind()) {
@@ -61,9 +62,9 @@ void notice_lite_change(CreatureEntity &creature, ItemEntity *o_ptr)
             StatusRecalculatingFlag::TORCH,
             StatusRecalculatingFlag::BONUS,
         };
-        rfu.set_flags(flags);
+        dur.set_flags(flags);
     } else if (o_ptr->ego_idx == EgoType::LITE_LONG) {
-        if ((o_ptr->fuel < 50) && (!(o_ptr->fuel % 5)) && (AngbandWorld::get_instance().game_turn % (TURNS_PER_TICK * 2))) {
+        if ((o_ptr->fuel < 50) && (!(o_ptr->fuel % 5))) {
             if (disturb_minor) {
                 disturb(creature, false, true);
             }

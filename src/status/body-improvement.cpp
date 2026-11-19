@@ -13,7 +13,7 @@
 #include "status/status-change-notice.h"
 #include "system/creature-entity.h"
 #include "system/creature-timed-effect-types.h"
-#include "system/redrawing-flags-updater.h"
+#include "system/deferred-update-requests.h"
 #include "view/display-messages.h"
 
 BodyImprovement::BodyImprovement(CreatureEntity &creature)
@@ -67,16 +67,12 @@ void BodyImprovement::set_protection(short v, bool is_decrease)
     }
 
     this->creature_ptr->set_timed_effect(CreatureTimedEffect::PROTECTION, v);
-    RedrawingFlagsUpdater::get_instance().set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
+    DeferredUpdateRequests::get_instance().set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
     if (!notice) {
         return;
     }
 
-    if (disturb_state || Travel::get_instance().is_ongoing()) {
-        disturb(*this->creature_ptr, false, true);
-    }
-
-    handle_stuff(*this->creature_ptr);
+    finish_timed_effect_change(*this->creature_ptr);
     this->is_affected = true;
 }
 
@@ -96,11 +92,7 @@ bool set_invuln(CreatureEntity &creature, short v, bool do_dec)
         return false;
     }
 
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    static constexpr auto flags_swrf = {
-        SubWindowRedrawingFlag::OVERHEAD,
-        SubWindowRedrawingFlag::DUNGEON,
-    };
+    auto &dur = DeferredUpdateRequests::get_instance();
     if (v) {
         if (creature.get_timed_effect(CreatureTimedEffect::INVULNERABILITY) && !do_dec) {
             if (creature.get_timed_effect(CreatureTimedEffect::INVULNERABILITY) > v) {
@@ -113,35 +105,27 @@ bool set_invuln(CreatureEntity &creature, short v, bool do_dec)
             chg_virtue(creature, Virtue::HONOUR, -2);
             chg_virtue(creature, Virtue::SACRIFICE, -3);
             chg_virtue(creature, Virtue::VALOUR, -5);
-            rfu.set_flag(MainWindowRedrawingFlag::MAP);
-            rfu.set_flag(StatusRecalculatingFlag::MONSTER_STATUSES);
-            rfu.set_flags(flags_swrf);
+            dur.request_monster_update_and_map_redrawing();
         }
     } else {
         if (creature.get_timed_effect(CreatureTimedEffect::INVULNERABILITY) && !music_singing(creature, MUSIC_INVULN)) {
             msg_print(_("無敵ではなくなった。", "The invulnerability wears off."));
             sound(SoundKind::BUFF_EXPIRE);
             notice = true;
-            rfu.set_flag(MainWindowRedrawingFlag::MAP);
-            rfu.set_flag(StatusRecalculatingFlag::MONSTER_STATUSES);
-            rfu.set_flags(flags_swrf);
+            dur.request_monster_update_and_map_redrawing();
             creature.add_energy_need(ENERGY_NEED());
         }
     }
 
     creature.set_timed_effect(CreatureTimedEffect::INVULNERABILITY, v);
-    rfu.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
+    dur.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
 
     if (!notice) {
         return false;
     }
 
-    if (disturb_state || Travel::get_instance().is_ongoing()) {
-        disturb(creature, false, true);
-    }
-
-    rfu.set_flag(StatusRecalculatingFlag::BONUS);
-    handle_stuff(creature);
+    dur.set_flag(StatusRecalculatingFlag::BONUS);
+    finish_timed_effect_change(creature);
     return true;
 }
 
@@ -290,19 +274,15 @@ bool set_tim_emission(CreatureEntity &creature, short v, bool do_dec)
     }
 
     creature.set_timed_effect(CreatureTimedEffect::TIM_EMISSION, v);
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
+    auto &dur = DeferredUpdateRequests::get_instance();
+    dur.set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
     if (!notice) {
         return false;
     }
 
-    if (disturb_state || Travel::get_instance().is_ongoing()) {
-        disturb(creature, false, true);
-    }
-
-    rfu.set_flag(StatusRecalculatingFlag::BONUS);
-    rfu.set_flag(StatusRecalculatingFlag::TORCH);
-    handle_stuff(creature);
+    dur.set_flag(StatusRecalculatingFlag::BONUS);
+    dur.set_flag(StatusRecalculatingFlag::TORCH);
+    finish_timed_effect_change(creature);
     return true;
 }
 /*!

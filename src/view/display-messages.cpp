@@ -5,18 +5,22 @@
 #include "game-option/map-screen-options.h"
 #include "game-option/option-flags.h"
 #include "game-option/text-display-options.h"
+#include "io/input-context.h"
 #include "io/input-key-acceptor.h"
 #include "load/load-util.h"
 #include "main/sound-of-music.h"
 #include "save/save-util.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/player-type-definition.h"
-#include "system/redrawing-flags-updater.h"
 #include "term/gameterm.h"
 #include "term/term-color-types.h"
+#include "util/finalizer.h"
 #include "util/int-char-converter.h"
 #include "world/world.h"
+#include <algorithm>
 #include <deque>
+#include <fmt/format.h>
 #include <map>
 #include <memory>
 #include <string>
@@ -28,8 +32,24 @@ COMMAND_CODE now_message;
 
 namespace {
 
+std::vector<std::string> *message_capture = nullptr;
+
 /*! 表示するメッセージの先頭位置 */
 static int msg_head_pos = 0;
+
+/*! -続く- を表示してキー入力を待っている最中か否か */
+static bool waiting_for_more = false;
+
+/*! キー入力を待っている -続く- を表示したい位置 */
+static int more_prompt_x = 0;
+
+/*!
+ * @brief メッセージ行 (画面の1行目) に表示しているメッセージ
+ * @details -続く- の待ちの最中に端末の大きさが変わった時、-続く- で上書きした部分を含めて描き直すために覚えておく
+ */
+static std::string msg_line;
+
+constexpr std::string_view MORE_PROMPT = _("-続く-", "-more-");
 
 using msg_sp = std::shared_ptr<const std::string>;
 using msg_wp = std::weak_ptr<const std::string>;
@@ -95,6 +115,31 @@ int32_t message_num(void)
 }
 
 /*!
+ * @brief スコープ内のメッセージをシステムの文字コードのまま捕捉する
+ */
+ScopedMessageCapture::ScopedMessageCapture()
+    : previous_capture(message_capture)
+{
+    message_capture = &this->captured_messages;
+}
+
+/*!
+ * @brief 元のメッセージ出力先を復元する
+ */
+ScopedMessageCapture::~ScopedMessageCapture()
+{
+    message_capture = this->previous_capture;
+}
+
+/*!
+ * @brief 捕捉した診断を出力順に返す
+ */
+const std::vector<std::string> &ScopedMessageCapture::messages() const
+{
+    return this->captured_messages;
+}
+
+/*!
  * @brief 過去のゲームメッセージを返す。 / Recall the "text" of a saved message
  * @param age メッセージの世代
  * @return メッセージの文字列ポインタ
@@ -107,7 +152,7 @@ std::shared_ptr<const std::string> message_str(int age)
 
     const auto &[msg, repeat_count] = message_history[age];
     if (repeat_count > 1) {
-        return std::make_shared<const std::string>(*msg + format(" <x%d>", repeat_count));
+        return std::make_shared<const std::string>(fmt::format("{} <x{}>", *msg, repeat_count));
     }
 
     return msg;
@@ -166,12 +211,43 @@ bool is_msg_window_flowed(void)
     return num_more >= 0;
 }
 
+/*!
+ * @brief メッセージ行を消去する
+ */
+static void erase_msg_line()
+{
+    term_erase(0, 0);
+    msg_line.clear();
+}
+
+/*!
+ * @brief メッセージ行にメッセージを表示する
+ * @param x 表示する位置
+ * @param str 表示するメッセージ
+ */
+static void put_msg_line(int x, std::string_view str)
+{
+    term_putstr(x, 0, std::ssize(str), TERM_WHITE, str);
+    msg_line.resize(x, ' ');
+    msg_line.append(str);
+}
+
+/*!
+ * @brief -続く- を表示する
+ * @param x 表示したい位置
+ * @details 端末の幅に収まらない位置であれば、右端に収まるよう左へ寄せる。
+ */
+static void put_more_prompt(int x)
+{
+    const auto &[wid, hgt] = term_get_size();
+    term_putstr(std::min<int>(x, wid - std::ssize(MORE_PROMPT)), 0, -1, TERM_L_BLUE, MORE_PROMPT);
+}
+
 /*
  * Hack -- flush
  */
 static void msg_flush(CreatureEntity &creature, int x)
 {
-    byte a = TERM_L_BLUE;
     bool show_more = (num_more >= 0);
 
     if (auto_more && !creature.is_now_damaged()) {
@@ -184,7 +260,11 @@ static void msg_flush(CreatureEntity &creature, int x)
 
     creature.set_now_damaged(false);
     if (!creature.is_playing() || show_more) {
-        term_putstr(x, 0, -1, a, _("-続く-", "-more-"));
+        put_more_prompt(x);
+        more_prompt_x = x;
+        waiting_for_more = true;
+        const auto finalizer = util::make_finalizer([] { waiting_for_more = false; });
+        const InputContextScope input_context(InputKind::MORE, MORE_PROMPT);
         while (true) {
             int cmd = inkey();
             if (cmd == ESCAPE) {
@@ -208,7 +288,7 @@ static void msg_flush(CreatureEntity &creature, int x)
         }
     }
 
-    term_erase(0, 0);
+    erase_msg_line();
 }
 
 static int split_length(std::string_view sv, int max)
@@ -276,25 +356,33 @@ static int split_length(std::string_view sv, int max)
  */
 void msg_print(std::string_view msg)
 {
+    if (message_capture != nullptr) {
+        message_capture->emplace_back(msg);
+        return;
+    }
+
     const auto &world = AngbandWorld::get_instance();
     if (world.timewalk_m_idx) {
         return;
     }
 
     if (!msg_flag) {
-        term_erase(0, 0);
+        erase_msg_line();
         msg_head_pos = 0;
     }
 
     std::string msg_includes_turn;
     if (cheat_turn) {
-        msg = msg_includes_turn = format("T:%d - %s", world.game_turn, msg.data());
+        msg = msg_includes_turn = fmt::format("T:{} - {}", world.game_turn, msg);
     }
 
-    const auto &[wid, hgt] = term_get_size();
-    const auto split_width = wid - 8;
+    // -続く- の待ちの最中に端末の大きさが変わることがあるため、分割する幅は待った後に取り直す
+    const auto get_split_width = [] {
+        const auto &[wid, hgt] = term_get_size();
+        return wid - 8;
+    };
 
-    if ((msg_head_pos > 0) && ((msg_head_pos + std::ssize(msg)) > split_width)) {
+    if ((msg_head_pos > 0) && ((msg_head_pos + std::ssize(msg)) > get_split_width())) {
         msg_flush(PlayerType::get_instance(), msg_head_pos);
         msg_flag = false;
         msg_head_pos = 0;
@@ -308,15 +396,15 @@ void msg_print(std::string_view msg)
         message_add(msg);
     }
 
-    while (std::ssize(msg) > split_width) {
+    for (auto split_width = get_split_width(); std::ssize(msg) > split_width; split_width = get_split_width()) {
         auto split = split_length(msg, split_width);
-        term_putstr(0, 0, split, TERM_WHITE, msg.data());
+        put_msg_line(0, msg.substr(0, split));
         msg_flush(PlayerType::get_instance(), split + 1);
         msg.remove_prefix(split);
     }
 
-    term_putstr(msg_head_pos, 0, msg.size(), TERM_WHITE, msg.data());
-    RedrawingFlagsUpdater::get_instance().set_flag(SubWindowRedrawingFlag::MESSAGE);
+    put_msg_line(msg_head_pos, msg);
+    DeferredUpdateRequests::get_instance().set_flag(SubWindowRedrawingFlag::MESSAGE);
     window_stuff(PlayerType::get_instance());
 
     msg_flag = true;
@@ -334,7 +422,7 @@ void msg_erase()
     }
 
     if (!msg_flag) {
-        term_erase(0, 0);
+        erase_msg_line();
         msg_head_pos = 0;
     }
 
@@ -345,13 +433,35 @@ void msg_erase()
     }
 }
 
-void msg_format(const char *fmt, ...)
+/*!
+ * @brief -続く- を表示してキー入力を待っている最中か否かを返す
+ * @return 待っている最中ならtrue
+ * @details
+ * 待っている間に端末の大きさが変わると、リサイズフックが再描画のために呼ぶ
+ * handle_stuff() から msg_erase() を経て -続く- がもう一度表示され、入力待ちが
+ * 入れ子になる。フックはこれを見て、再描画を -続く- が明けた後に延期する。
+ */
+bool is_waiting_for_more()
 {
-    va_list vp;
-    va_start(vp, fmt);
-    const auto buf = vformat(fmt, vp);
-    va_end(vp);
-    msg_print(buf);
+    return waiting_for_more;
+}
+
+/*!
+ * @brief -続く- の待ちの最中に端末の大きさが変わった時、メッセージ行と -続く- を見える位置に表示し直す
+ * @details
+ * 縮めると、変わる前の幅で表示した -続く- が画面の外に出て、見えないまま入力を待つことになる。
+ * -続く- は端末の幅に合わせて表示する位置が変わるため、前に表示した -続く- が残らないよう、
+ * メッセージ行を消去してメッセージから描き直す。待っていなければ何もしない。
+ */
+void redisplay_more_prompt()
+{
+    if (!waiting_for_more) {
+        return;
+    }
+
+    term_erase(0, 0);
+    term_putstr(0, 0, -1, TERM_WHITE, msg_line);
+    put_more_prompt(more_prompt_x);
 }
 
 /*!

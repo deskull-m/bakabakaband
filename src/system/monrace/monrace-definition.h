@@ -27,6 +27,7 @@
 #include "player/player-personality-types.h"
 #include "realm/realm-types.h"
 #include "system/angband.h"
+#include "system/baseitem/civilization-level-types.h"
 #include "system/material-type-definition.h"
 #include "system/monrace/body-structure-types.h"
 #include "system/monrace/extended-slot.h"
@@ -35,6 +36,7 @@
 #include "util/flag-group.h"
 #include "view/display-symbol.h"
 #include <array>
+#include <cstdint>
 #include <string>
 #include <string_view>
 #include <tl/optional.hpp>
@@ -43,14 +45,150 @@
 /*! モンスターが1ターンに攻撃する最大回数 (射撃を含む) / The maximum number of times a monster can attack in a turn (including SHOOT) */
 constexpr int MAX_NUM_BLOWS = 4;
 
+enum class AttributeType : int;
 enum class FixedArtifactId : short;
 enum class MonraceId : int16_t;
 
+/*!
+ * @brief 固定アイテム指定 (`equip_kinds` / `equip_tvals` / `drop_kinds` / `drop_tvals` 共通)
+ * @details `equip_*` は生成時に持たせて装備させる指定 (撃破すれば所持品ごと落ちる)、
+ *          `drop_*` は死亡時に初めて生成する指定。書式は 4 者で完全に同一で、
+ *          `id` がベースアイテムID (`*_kinds`) かアイテム種別 (`*_tvals`) かだけが異なる。
+ *          以前は `std::tuple<int, int, short, int, int, int>` だったが、
+ *          ダイス 2 要素の順序をリーダと利用側で取り違えており
+ *          ("XdY" 指定が実質 "YdX" になっていた)、思い出表示とも食い違っていた。
+ *          位置依存で誤りやすいタプルをやめ、個数ダイスは `Dice` 型で保持する。
+ */
+/*!
+ * @brief `*_tval` で tval 単体ではなくベースアイテムの分類を指定するための種別
+ * @details `kind_is_book` / `kind_is_good_book` のように tval を跨ぐ述語を
+ * データから指定するためのもの。`NONE` なら従来どおり `tval` で絞る。
+ */
+enum class MonraceDropCategory {
+    NONE,
+    SPELL_BOOK, //!< 魔法書全般 (`BaseitemKey::is_spell_book`)
+    HIGH_LEVEL_BOOK, //!< 高位魔法書 (`BaseitemKey::is_high_level_book`)
+};
+
+class MonraceDropKind {
+public:
+    int numerator{}; //!< 発生確率の分子 ("X_IN_Y" の X)
+    int denominator{}; //!< 発生確率の分母 ("X_IN_Y" の Y)
+    short id{}; //!< `*_kinds` ではベースアイテムID、`*_tvals` ではアイテム種別
+    int grade{}; //!< 品質等級 (-2:呪い 〜 2:優良、3:特別)
+    Dice dice{}; //!< 個数のダイス
+
+    /*!
+     * @brief 種族の累計撃破数がこの値の倍数のときのみ発火させる (1 = 常に発火)
+     * @details 「確実に N 体に 1 体」を表すための指定。`numerator` /
+     * `denominator` の確率抽選とは AND で組み合わさる。累計撃破数を
+     * 参照する性質上 **`drop_*` 専用**で、`equip_*` への指定は読込時に弾く。
+     */
+    int kill_interval = 1;
+
+    /*!
+     * @brief `*_tval` の品目選定を深度加重アロケーションテーブル経由にするか
+     * @details 既定 (false) は当該種別の全 sval から一様抽選する。true にすると
+     * 通常のアイテム生成 (`make_object`) と同じ深度・レアリティ加重で選ばれ、
+     * 生成階を超える深度の品は出ない。品目を指定しない **`*_tval` 専用**で、
+     * `*_kind` への指定は読込時に弾く。
+     */
+    bool use_allocation_table = false;
+
+    /*!
+     * @brief 排他グループ番号 (0 = グループ無し)
+     * @details 同じ正の値を持つエントリ同士は「どれか 1 つだけ」しか発火しない。
+     * リスト順に確率抽選し、**最初に当たったものだけ**を採用して同グループの
+     * 以降のエントリはスキップする (先勝ちカスケード)。`randint1(N)` で
+     * 択一していた旧ハードコーディングを忠実に表現するための指定。
+     * グループは 1 つのリスト (`drop_kinds` / `drop_tvals` / …) の中で閉じており、
+     * 別リストのエントリとは同じ番号でもグループを共有しない。
+     */
+    int exclusive_group = 0;
+
+    /*!
+     * @brief 生成したアイテムに `ItemMagicApplier` による魔法的強化を与えるか
+     * @details 既定 (true) は `grade` に応じた強化を適用する。false にすると
+     * `grade` を無視してベースアイテムのまま (`to_h` / `to_d` 等は
+     * ベースアイテム定義値のまま、エゴ・アーティファクト化・呪い無し) で
+     * 生成する。ハードコーディングされていた「素のアイテムを落とす」処理を
+     * 忠実に移行するための指定。
+     */
+    bool apply_magic = true;
+
+    /*!
+     * @brief `*_tval` の品目選定で許す最小 sval (0 = 下限なし)
+     * @details 当該種別のうち `sval >= sval_min` の品だけを候補にする。
+     * 「折れていない剣」(`kind_is_sword` の `sval > 2`) のように、種別の中の
+     * 一部を除きたいハードコーディングを忠実に移行するための指定。
+     * 品目を名指しする **`*_kind` では意味を持たない**ため読込時に弾く。
+     */
+    int sval_min = 0;
+
+    /*!
+     * @brief 魔法的強化で固定アーティファクト化を許すか
+     * @details 既定 (false) は `AM_NO_FIXED_ART` 付きで強化するため固定
+     * アーティファクトにはならない。true にするとこのフラグを外し、通常の
+     * アイテム生成 (`make_object`) と同じく power 2 で 1 回だけ固定
+     * アーティファクト化を試みる。`apply_magic` が false なら無意味。
+     */
+    bool allows_fixed_artifact = false;
+
+    /*!
+     * @brief 発火に必要な最小の階層 (0 = 制限なし)
+     * @details 生成階 (`dun_level`) がこの値未満なら発火しない。旧
+     * `on_dead_mimics()` が持っていた `dun_level <= N` の浅階ガード
+     * (「浅い階では落とさない」) を忠実に移行するための指定。
+     * `kill_interval` と同様、これで弾かれたエントリは `exclusive_group` を
+     * 消費しない。
+     */
+    int min_dun_level = 0;
+
+    /*!
+     * @brief tval ではなくベースアイテムの分類で候補を絞る (`NONE` なら tval 指定)
+     * @details 魔法書のように複数 tval に跨る分類を指定するための **`*_tval` 専用**
+     * オプション。指定した場合 `tval` は省略でき、書いても無視される。
+     */
+    MonraceDropCategory category = MonraceDropCategory::NONE;
+};
+
+/*!
+ * @brief 死亡時爆発の指定 (JSON キー `death_explosion`)
+ * @details 旧 `on_dead_unmaker` 相当の `case` 群が個別に書いていた
+ * 「死亡時に project() で爆発する」処理をデータ化したもの。
+ * 固定ダメージは `"Nd1"` と書く (`rand_range(1, 1)` は乱数を消費しないので
+ * 乱数列は変わらない)。
+ */
+class MonraceDeathExplosion {
+public:
+    AttributeType attribute{}; //!< 爆発の属性
+    int radius = 0; //!< 効果半径
+    Dice damage_dice{}; //!< ダメージダイス
+};
+
+/*!
+ * @brief 死亡時ランダムアーティファクト生成の指定 (JSON キー `death_random_artifact`)
+ * @details 旧 `on_dead_random_artifact()` を呼ぶ `case` 群をデータ化したもの。
+ * 「指定種別の装備品を、まともな☆になるまで振り直して 1 個落とす」処理。
+ */
+class MonraceDeathRandomArtifact {
+public:
+    short tval{}; //!< 候補とするアイテム種別
+    int sval_min = 0; //!< 候補として許す最小 sval (0 で下限なし)
+};
+
 class DropArtifact {
 public:
-    DropArtifact(FixedArtifactId fa_id, int chance);
+    DropArtifact(FixedArtifactId fa_id, int chance, tl::optional<AttributeType> required_attribute = tl::nullopt);
     FixedArtifactId fa_id;
     int chance; //!< ドロップ確率 (%)
+
+    /*!
+     * @brief この属性で止めを刺したときだけ落とす (未指定なら属性を問わない)
+     * @details メカジキを冷気で倒したときだけ『フローズン・ソードフィッシュ』が
+     * 出る、といった条件付きドロップ用。
+     */
+    tl::optional<AttributeType> required_attribute;
 };
 
 class MonsterBlow {
@@ -134,9 +272,13 @@ public:
     PlayerRaceType player_race = PlayerRaceType::NONE; //!< 種族固定指定 (提案C1。NONEで未指定。効果は未反映で prace フィールドのみ付与)
     PlayerClassType player_class = PlayerClassType::NONE; //!< 職業固定指定 (提案C1。NONEで未指定。効果は未反映で pclass フィールドのみ付与)
     bool grows_stats = false; //!< レベルアップ時に能力値も成長させるか (提案C2。既定false=オプトイン。既定バランス不変)
-    bool consumes_mp = false; //!< 呪文詠唱時に MP を消費するか (提案C4。既定false=オプトイン。既定バランス不変)
+    bool consumes_mp = false;
+    bool drops_sacred_treasures = false; //!< 撃破者が「なまけもの」なら未生成のナマケ装備を 1 つ落とすか //!< 呪文詠唱時に MP を消費するか (提案C4。既定false=オプトイン。既定バランス不変)
     EnumClassFlagGroup<PlayerMutationType> mutations{}; //!< 生成時に付与する突然変異 (提案C5。空=なし=オプトイン)
     RealmType realm_abilities = RealmType::NONE; //!< 詠唱能力を付与する魔法領域 (提案C6。NONE=なし=オプトイン。詠唱時に realm 由来の MonsterAbilityType を追加)
+    RealmType realm_abilities2 = RealmType::NONE; //!< 詠唱能力を付与する第2魔法領域 (提案C6第2弾。NONE=なし=オプトイン。realm_abilities と併用して二重詠唱者に)
+    RealmType spellbook_realm = RealmType::NONE; //!< 魔導書学習の魔法領域 (提案C6-R。NONE=なし=オプトイン。生成時に spellbook_mask の書から realm 呪文を学習)
+    uint8_t spellbook_mask = 0; //!< 学習済み魔導書のビットマスク (提案C6-R。bit b = 第b書(0..3)を学習。各書8呪文 [b*8, b*8+8) を spell_learned に登録)
     bool suffers_poison_dot = false; //!< 毒攻撃で継続毒(POISON DoT)を受けるか (提案D7。既定false=オプトイン。既定バランス不変)
     bool applies_player_race_resistances = false; //!< 付与された player_race の属性耐性を被ダメージへ反映するか (提案C1第2弾。既定false=オプトイン。既定バランス不変)
     bool applies_player_race_reflection = false; //!< 付与された player_race の反射(TR_REFLECT)をボルト反射へ反映するか (提案C1第8弾。既定false=オプトイン。既定バランス不変)
@@ -167,8 +309,10 @@ public:
     std::vector<std::tuple<int, int, MonraceId>> spawn_monsters; //!< 落とし子生成率
     std::vector<std::tuple<int, int, FEAT_IDX>> change_feats; //!< 地形変化率
     std::vector<std::tuple<int, int, short>> spawn_items; //!< アイテム自然生成率
-    std::vector<std::tuple<int, int, short, int, int, int>> drop_kinds; //!< アイテム特定ドロップ指定
-    std::vector<std::tuple<int, int, short, int, int, int>> drop_tvals; //!< アイテム種別ドロップ指定
+    std::vector<MonraceDropKind> equip_kinds; //!< 生成時装備指定 (ベースアイテムID)
+    std::vector<MonraceDropKind> equip_tvals; //!< 生成時装備指定 (アイテム種別)
+    std::vector<MonraceDropKind> drop_kinds; //!< 死亡時ドロップ指定 (ベースアイテムID)
+    std::vector<MonraceDropKind> drop_tvals; //!< 死亡時ドロップ指定 (アイテム種別)
     std::vector<std::tuple<int, int, MonraceId, int, int>> dead_spawns; //!< 死亡時モンスター生成
 
     //! 特定アーティファクトドロップリスト <アーティファクトID,ドロップ率>
@@ -180,6 +324,7 @@ public:
     MonraceId transform_r_idx{}; //!< 変身先モンスター種族ID
     PERCENTAGE transform_hp_threshold{}; //!< 変身するHP閾値(最大HPの%)
     DEPTH level{}; //!< レベル / Level of creature
+    tl::optional<DEPTH> max_level{}; //!< 生成上限階層 (この階層より深い階では通常生成されない。未指定なら無制限)
     RARITY rarity{}; //!< レアリティ / Rarity of creature
     DisplaySymbol symbol_definition{}; //!< 定義上のシンボル (色/文字).
     DisplaySymbol symbol_config{}; //!< 設定したシンボル (色/文字).
@@ -229,15 +374,38 @@ public:
     //! 詳細は docs/monster-body-structure-equipment-slots.md 参照。
     BodyStructureType body_structure{ BodyStructureType::HUMANOID };
 
+    //! 文明水準。その種族が「どの文明段階に属する存在か」を表す分類。
+    //! ベースアイテム側の `BaseitemDefinition::civilization` と同じ尺度で、
+    //! 将来「水準の一致した品のみを装備させる」判定に使う。
+    //! NONE (既定) は「文明に属さない存在」= 水準で分類しない個体。
+    CivilizationLevel civilization{ CivilizationLevel::NONE };
+
     //! 拡張装備スロットの個別上書き (Phase 2.7)。空なら body_structure の
     //! デフォルトを使う。指定があればその種別・順序の拡張スロットを持つ。
     //! 例: [SECOND_NECK, SECOND_NECK, THIRD_HEAD] でアミュレット 2 つと
     //! 兜の追加スロットを持つカスタムモンスター。
     std::vector<ExtendedSlotType> extended_slots_override{};
 
+    //! 武装度。生成時にどれだけ上質な装備を与えるかを表す種族固有の値。
+    //! 未指定 (tl::nullopt) の場合は `get_armament_level()` が
+    //! `level * ARMAMENT_LEVEL_PER_LEVEL` を既定値として返す。
+    //! 直接読まず必ず `get_armament_level()` を使うこと。
+    tl::optional<int> armament_level{};
+
+    //! `armament_level` 未指定時の既定値を種族レベルから算出する係数。
+    static constexpr int ARMAMENT_LEVEL_PER_LEVEL = 50;
+
+    //! JSON で指定できる武装度の上限 (データ検証用)。既定値の最大は
+    //! レベル上限 255 * ARMAMENT_LEVEL_PER_LEVEL = 12750 なので十分な余裕を持たせる。
+    static constexpr int ARMAMENT_LEVEL_MAX = 100000;
+
+    int get_armament_level() const;
+    bool has_armed_profession() const;
+
     bool is_valid() const;
     bool is_male() const;
     bool is_female() const;
+    MonsterSex get_sex() const;
     bool has_living_flag() const;
     bool has_demon_flag() const;
     bool has_undead_flag() const;
@@ -252,7 +420,7 @@ public:
     const MonraceDefinition &get_next() const;
     std::shared_ptr<const MonraceDefinition> get_next_shared() const;
     bool is_bounty(bool unachieved_only) const;
-    int calc_power() const;
+    int64_t calc_power() const;
     int calc_figurine_value() const;
     int calc_capture_value() const;
     std::string build_eldritch_horror_message(std::string_view description) const;
@@ -283,6 +451,7 @@ public:
     bool is_suitable_for_figurine() const;
     bool can_entry_arena() const;
     bool is_suitable_for_nightmare(int min_level) const;
+    bool is_too_deep_to_generate(int floor_level) const;
     bool is_human() const;
     bool is_eatable_human() const;
     bool is_catchable_for_fishing() const;
@@ -310,6 +479,8 @@ public:
     void emplace_drop_artifact(FixedArtifactId fa_id, int percentage);
     void emplace_reinforce(MonraceId monrace_id, const Dice &dice);
     std::vector<DropArtifact> drop_artifacts; //!< 特定アーティファクトドロップリスト
+    tl::optional<MonraceDeathExplosion> death_explosion; //!< 死亡時爆発 (未指定なら爆発しない)
+    tl::optional<MonraceDeathRandomArtifact> death_random_artifact; //!< 死亡時ランダムアーティファクト (未指定なら生成しない)
 
     //!< @todo ここから先はミュータブルなフィールドなので分離すべき.
     bool has_entity() const;

@@ -25,20 +25,22 @@
 #include <algorithm>
 #include <filesystem>
 #include <fmt/format.h>
+#include <stdexcept>
 #include <string>
 
-//!< @todo コールバック関数に変更するので、いずれ消す.
-#define PREF_TYPE_NORMAL 0
-#define PREF_TYPE_AUTOPICK 1
-#define PREF_TYPE_HISTPREF 2
+//! @todo コールバック関数に変更するので、いずれ消す.
+constexpr auto PREF_TYPE_NORMAL = 0;
+constexpr auto PREF_TYPE_AUTOPICK = 1;
+constexpr auto PREF_TYPE_HISTPREF = 2;
 
-char auto_dump_header[] = "# vvvvvvv== %s ==vvvvvvv";
-char auto_dump_footer[] = "# ^^^^^^^== %s ==^^^^^^^";
+char auto_dump_header[] = "# vvvvvvv== {} ==vvvvvvv";
+char auto_dump_footer[] = "# ^^^^^^^== {} ==^^^^^^^";
 
 // Mark strings for auto dump
 
 // Variables for auto dump
 static int auto_dump_line_num;
+static int pref_include_depth;
 
 /*!
  * @brief process_pref_fileのサブルーチン /
@@ -49,12 +51,19 @@ static int auto_dump_line_num;
  * @return エラーコード
  * @todo 関数名を変更する
  */
-static errr process_pref_file_aux(CreatureEntity &creature, const std::filesystem::path &name, int preftype)
+static errr process_pref_file_aux(CreatureEntity &creature, const std::filesystem::path &name, int preftype, bool conditions_only = false)
 {
+    if (conditions_only) {
+        std::error_code error;
+        if (!std::filesystem::is_regular_file(path_parse(name), error)) {
+            return -1;
+        }
+    }
     auto *fp = angband_fopen(name, FileOpenMode::READ);
     if (!fp) {
         return -1;
     }
+    const auto close_file = util::make_finalizer([fp] { angband_fclose(fp); });
 
     int line = -1;
     errr err = 0;
@@ -84,10 +93,12 @@ static errr process_pref_file_aux(CreatureEntity &creature, const std::filesyste
 
         /* Process "?:<expr>" */
         if (line_str->starts_with("?:")) {
-            char f;
-            char *s = line_str->data() + 2;
-            auto v = process_pref_file_expr(creature, &s, &f);
-            bypass = v == "0";
+            const auto result = process_pref_file_expr_checked(creature, std::string_view(*line_str).substr(2));
+            if (!result) {
+                err = PREF_EXPRESSION_ERROR;
+                break;
+            }
+            bypass = *result == "0";
             continue;
         }
 
@@ -97,30 +108,46 @@ static errr process_pref_file_aux(CreatureEntity &creature, const std::filesyste
 
         /* Process "%:<file>" */
         if (line_str->starts_with("%:")) {
-            static int depth_count = 0;
-            if (depth_count > 20) {
+            if (pref_include_depth > 20) {
                 continue;
             }
 
-            depth_count++;
+            pref_include_depth++;
             std::string_view file(*line_str);
             file.remove_prefix(2);
-            switch (preftype) {
-            case PREF_TYPE_AUTOPICK:
-                (void)process_autopick_file(creature, file);
-                break;
-            case PREF_TYPE_HISTPREF:
-                (void)process_histpref_file(creature, file);
-                break;
-            default:
-                (void)process_pref_file(creature, file);
-                break;
+            if (conditions_only) {
+                try {
+                    err = process_pref_file_aux(creature, path_build(ANGBAND_DIR_USER, file), PREF_TYPE_AUTOPICK, true);
+                } catch (const std::runtime_error &) {
+                    // 読めない取り込み先だけを無視し、親の後続条件式は確認する。
+                    err = -1;
+                }
+            } else {
+                switch (preftype) {
+                case PREF_TYPE_AUTOPICK:
+                    err = process_autopick_file(creature, file);
+                    break;
+                case PREF_TYPE_HISTPREF:
+                    err = process_histpref_file(creature, file);
+                    break;
+                default:
+                    err = process_pref_file(creature, file);
+                    break;
+                }
             }
 
-            depth_count--;
+            pref_include_depth--;
+            if (err == PREF_EXPRESSION_ERROR) {
+                break;
+            }
+            // 条件式以外の取り込みエラーと存在しない任意のファイルは従来どおり無視する。
+            err = 0;
             continue;
         }
 
+        if (conditions_only) {
+            continue;
+        }
         err = interpret_pref_file(creature, *line_str);
         if (err != 0) {
             if (preftype != PREF_TYPE_AUTOPICK) {
@@ -132,17 +159,32 @@ static errr process_pref_file_aux(CreatureEntity &creature, const std::filesyste
         }
     }
 
-    if (err != 0) {
+    if ((err != 0) && !conditions_only) {
         /* Print error message */
         /* ToDo: Add better error messages */
         const auto &name_str = name.string();
-        msg_format(_("ファイル'%s'の%d行でエラー番号%dのエラー。", "Error %d in line %d of file '%s'."), _(name_str.data(), err), line, _(err, name_str.data()));
-        msg_format(_("('%s'を解析中)", "Parsing '%s'"), error_line.data());
+        msg_print(_("ファイル'{0}'の{1}行でエラー番号{2}のエラー。", "Error {2} in line {1} of file '{0}'."), name_str, line, err);
+        msg_print(_("('{}'を解析中)", "Parsing '{}'"), error_line);
         msg_erase();
     }
 
-    angband_fclose(fp);
     return err;
+}
+
+/*!
+ * @brief 自動拾いエディタ用に、ルートから1段取り込んだファイルの条件式を設定へ反映せず確認する
+ * @return 条件式が不正なら PREF_EXPRESSION_ERROR、ファイルが無ければ負数、それ以外は0
+ */
+errr check_autopick_file_conditions(CreatureEntity &creature, std::string_view name)
+{
+    const auto restore_depth = util::make_finalizer([depth = pref_include_depth] { pref_include_depth = depth; });
+    pref_include_depth++;
+    try {
+        return process_pref_file_aux(creature, path_build(ANGBAND_DIR_USER, name), PREF_TYPE_AUTOPICK, true);
+    } catch (const std::runtime_error &) {
+        // 編集中の不完全なパスや読めないファイルでエディタを終了させない。
+        return -1;
+    }
 }
 
 /*!
@@ -212,19 +254,15 @@ errr process_histpref_file(CreatureEntity &creature, std::string_view name)
 
 /*!
  * @brief prfファイルのフォーマットに従った内容を出力する
- * @param fmt 出力内容
+ * @param auto_dump_stream 出力先のファイル
+ * @param str 出力内容
  */
-void auto_dump_printf(FILE *auto_dump_stream, const char *fmt, ...)
+void auto_dump_print(FILE *auto_dump_stream, std::string_view str)
 {
-    va_list vp;
-    va_start(vp, fmt);
-    const auto buf = vformat(fmt, vp);
-    va_end(vp);
-
     // '\n'はSJISのマルチバイト文字のコードに含まれないため、ダメ文字を考慮する必要はない
-    auto_dump_line_num += std::count(buf.begin(), buf.end(), '\n');
+    auto_dump_line_num += std::count(str.begin(), str.end(), '\n');
 
-    fprintf(auto_dump_stream, "%s", buf.data());
+    fmt::print(auto_dump_stream, "{}", str);
 }
 
 /*!
@@ -236,36 +274,49 @@ void auto_dump_printf(FILE *auto_dump_stream, const char *fmt, ...)
  */
 bool open_auto_dump(FILE **fpp, const std::filesystem::path &path, std::string_view mark)
 {
-    const auto header_mark_str = format(auto_dump_header, mark.data());
+    const auto header_mark_str = fmt::format(fmt::runtime(auto_dump_header), mark);
     remove_auto_dump(path, mark);
     *fpp = angband_fopen(path, FileOpenMode::APPEND);
-    if (!fpp) {
+    if (!*fpp) {
         const auto &path_str = path.string();
-        msg_format(_("%s を開くことができませんでした。", "Failed to open %s."), path_str.data());
+        msg_print(_("{} を開くことができませんでした。", "Failed to open {}."), path_str);
         msg_erase();
         return false;
     }
 
-    fprintf(*fpp, "%s\n", header_mark_str.data());
+    fmt::println(*fpp, "{}", header_mark_str);
     auto_dump_line_num = 0;
-    auto_dump_printf(*fpp, _("# *警告!!* 以降の行は自動生成されたものです。\n", "# *Warning!*  The lines below are an automatic dump.\n"));
-    auto_dump_printf(
-        *fpp, _("# *警告!!* 後で自動的に削除されるので編集しないでください。\n", "# Don't edit them; changes will be deleted and replaced automatically.\n"));
+    auto_dump_print(*fpp, _("# *警告!!* 以降の行は自動生成されたものです。\n", "# *Warning!*  The lines below are an automatic dump.\n"));
+    auto_dump_print(*fpp, _("# *警告!!* 後で自動的に削除されるので編集しないでください。\n", "# Don't edit them; changes will be deleted and replaced automatically.\n"));
     return true;
 }
 
 /*!
  * @brief prfファイルをファイルクローズする /
  * Append foot part and close auto dump.
+ * @return 書き出しとクローズの両方に成功したらtrue
+ * @details 書き込み自体は auto_dump_printf() / fprintf() が個別に結果を返さないため、
+ * ストリームに蓄積されたエラー (ディスク満杯等) を ferror() でまとめて検査する。
+ * 失敗した場合はここでその旨を表示するので、呼出元は成功時のメッセージだけを出せばよい
+ * (開けなかった場合に open_auto_dump() が表示するのと同じ方針)。
  */
-void close_auto_dump(FILE **fpp, std::string_view mark)
+bool close_auto_dump(FILE **fpp, std::string_view mark)
 {
-    const auto footer_mark_str = format(auto_dump_footer, mark.data());
-    auto_dump_printf(*fpp, _("# *警告!!* 以降の行は自動生成されたものです。\n", "# *Warning!*  The lines below are an automatic dump.\n"));
-    auto_dump_printf(
-        *fpp, _("# *警告!!* 後で自動的に削除されるので編集しないでください。\n", "# Don't edit them; changes will be deleted and replaced automatically.\n"));
-    fprintf(*fpp, "%s (%d)\n", footer_mark_str.data(), auto_dump_line_num);
-    angband_fclose(*fpp);
+    const auto footer_mark_str = fmt::format(fmt::runtime(auto_dump_footer), mark);
+    auto_dump_print(*fpp, _("# *警告!!* 以降の行は自動生成されたものです。\n", "# *Warning!*  The lines below are an automatic dump.\n"));
+    auto_dump_print(*fpp, _("# *警告!!* 後で自動的に削除されるので編集しないでください。\n", "# Don't edit them; changes will be deleted and replaced automatically.\n"));
+    fmt::println(*fpp, "{} ({})", footer_mark_str, auto_dump_line_num);
+
+    // クローズ時にもバッファのフラッシュで書き込みが発生しうるため、両方の結果を見る
+    const auto is_write_failed = ferror(*fpp) != 0;
+    const auto is_close_failed = angband_fclose(*fpp) != 0;
+    if (is_write_failed || is_close_failed) {
+        msg_print(_("ファイルへの書き出しに失敗しました。", "Failed to write the dump."));
+        msg_erase();
+        return false;
+    }
+
+    return true;
 }
 
 /*!

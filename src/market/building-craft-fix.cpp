@@ -22,11 +22,12 @@
 #include "system/baseitem/baseitem-definition.h"
 #include "system/baseitem/baseitem-list.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/item-entity.h"
-#include "system/redrawing-flags-updater.h"
 #include "term/screen-processor.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
+#include <tl/optional.hpp>
 #include <utility>
 #include <vector>
 
@@ -85,7 +86,14 @@ static void give_one_ability_of_object(ItemEntity *to_ptr, ItemEntity *from_ptr)
     }
 }
 
-static std::pair<short, std::shared_ptr<ItemEntity>> select_repairing_broken_weapon(CreatureEntity &creature, const int row)
+/*!
+ * @brief 修復対象の折れた武器を選択する
+ * @param creature クリーチャーへの参照
+ * @param row 案内メッセージを表示する行
+ * @return 修復可能な武器を選択したならばその武器とインベントリ内の位置のペア、
+ * 選択しなかった場合や修復できない武器を選択した場合は tl::nullopt
+ */
+static tl::optional<std::pair<std::shared_ptr<ItemEntity>, short>> select_repairing_broken_weapon(CreatureEntity &creature, const int row)
 {
     prt(_("修復には材料となるもう1つの武器が必要です。", "Hand one material weapon to repair a broken weapon."), row, 2);
     prt(_("材料に使用した武器はなくなります！", "The material weapon will disappear after repairing!!"), row + 1, 2);
@@ -93,35 +101,35 @@ static std::pair<short, std::shared_ptr<ItemEntity>> select_repairing_broken_wea
     constexpr auto s = _("修復できる折れた武器がありません。", "You have no broken weapon to repair.");
     const auto &[item, i_idx] = choose_item(creature, q, s, (USE_INVEN | USE_EQUIP), FuncItemTester(&ItemEntity::is_broken_weapon));
     if (!item) {
-        return { i_idx, nullptr };
+        return tl::nullopt;
     }
 
     if (!item->is_ego() && !item->is_fixed_or_random_artifact()) {
-        msg_format(_("それは直してもしょうがないぜ。", "It is worthless to repair."));
-        return { i_idx, item };
+        msg_print(_("それは直してもしょうがないぜ。", "It is worthless to repair."));
+        return tl::nullopt;
     }
 
     if (item->number > 1) {
-        msg_format(_("一度に複数を修復することはできません！", "They are too many to repair at once!"));
-        return { i_idx, item };
+        msg_print(_("一度に複数を修復することはできません！", "They are too many to repair at once!"));
+        return tl::nullopt;
     }
 
-    return { i_idx, item };
+    return std::make_pair(item, i_idx);
 }
 
 static void display_reparing_weapon(CreatureEntity &creature, const ItemEntity &item, const int row)
 {
     const auto item_name = describe_flavor(creature, item, OD_NAME_ONLY);
-    prt(format(_("修復する武器　： %s", "Repairing: %s"), item_name.data()), row + 3, 2);
+    prt(fmt::format(_("修復する武器　： {}", "Repairing: {}"), item_name), row + 3, 2);
 }
 
 static void display_repair_success_message(CreatureEntity &creature, const ItemEntity &item, const int cost)
 {
     const auto item_name = describe_flavor(creature, item, OD_NAME_ONLY);
 #ifdef JP
-    msg_format("＄%dで%sに修復しました。", cost, item_name.data());
+    msg_print("＄{}で{}に修復しました。", cost, item_name);
 #else
-    msg_format("Repaired into %s for %d gold.", item_name.data(), cost);
+    msg_print("Repaired into {} for {} gold.", item_name, cost);
 #endif
     msg_erase();
 }
@@ -136,10 +144,12 @@ static PRICE repair_broken_weapon_aux(CreatureEntity &creature, PRICE bcost)
 {
     clear_bldg(0, 22);
     auto row = 7;
-    const auto &[item_idx_broken, item_broken] = select_repairing_broken_weapon(creature, row);
-    if (!item_broken) {
+    const auto selection = select_repairing_broken_weapon(creature, row);
+    if (!selection) {
         return 0;
     }
+
+    const auto &[item_broken, item_idx_broken] = *selection;
 
     display_reparing_weapon(creature, *item_broken, row);
     constexpr auto q = _("材料となる武器は？", "Which weapon for material? ");
@@ -155,14 +165,14 @@ static PRICE repair_broken_weapon_aux(CreatureEntity &creature, PRICE bcost)
     }
 
     const auto item_name = describe_flavor(creature, *item_material, OD_NAME_ONLY);
-    prt(format(_("材料とする武器： %s", "Material : %s"), item_name.data()), row + 4, 2);
+    prt(fmt::format(_("材料とする武器： {}", "Material : {}"), item_name), row + 4, 2);
     const auto cost = bcost + object_value_real(item_broken.get()) * 2;
-    if (!input_check(format(_("＄%dかかりますがよろしいですか？ ", "Costs %d gold, okay? "), cost))) {
+    if (!input_check(fmt::format(_("＄{}かかりますがよろしいですか？ ", "Costs {} gold, okay? "), cost))) {
         return 0;
     }
 
     if (creature.get_au() < cost) {
-        msg_format(_("%sを修復するだけのゴールドがありません！", "You do not have the gold to repair %s!"), item_name.data());
+        msg_print(_("{}を修復するだけのゴールドがありません！", "You do not have the gold to repair {}!"), item_name);
         msg_erase();
         return 0;
     }
@@ -172,7 +182,7 @@ static PRICE repair_broken_weapon_aux(CreatureEntity &creature, PRICE bcost)
     if (item_broken->bi_key.sval() == SV_BROKEN_DAGGER) {
         auto n = 1;
         bi_id = 0;
-        for (short tmp_bi_id = 0; tmp_bi_id < static_cast<short>(baseitems.size()); tmp_bi_id++) {
+        for (const auto tmp_bi_id : baseitems.collect_valid_bi_ids()) {
             const auto &baseitem = baseitems.get_baseitem(tmp_bi_id);
             if (baseitem.bi_key.tval() != ItemKindType::SWORD) {
                 continue;
@@ -298,7 +308,7 @@ static PRICE repair_broken_weapon_aux(CreatureEntity &creature, PRICE bcost)
     inven_item_increase(creature, material_idx, -1);
     inven_item_optimize(creature, material_idx);
 
-    RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
+    DeferredUpdateRequests::get_instance().set_flag(StatusRecalculatingFlag::BONUS);
     handle_stuff(creature);
     return cost;
 }

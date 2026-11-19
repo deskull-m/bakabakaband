@@ -8,5 +8,5 @@ enum ape_quittance {
 };
 
 class CreatureEntity;
-struct text_body_type;
-ape_quittance do_editor_command(CreatureEntity &creature, text_body_type *tb, int com_id);
+class AutopickTextBody;
+ape_quittance do_editor_command(CreatureEntity &creature, AutopickTextBody *tb, int com_id);

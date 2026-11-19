@@ -21,13 +21,13 @@
 #include "core/show-file.h"
 #include "game-option/input-options.h"
 #include "game-option/keymap-directory-getter.h"
+#include "io/input-context.h"
 #include "io/macro-configurations-store.h"
 #include "locale/language-switcher.h"
 #include "player-info/class-info.h"
 #include "player-info/race-info.h"
 #include "system/creature-entity.h"
 #include "term/term-color-types.h"
-#include "term/z-form.h"
 #include "util/string-processor.h"
 #include <fmt/format.h>
 #include <sstream>
@@ -42,7 +42,7 @@
  * @return
  * @details Execute a single editor command
  */
-ape_quittance do_editor_command(CreatureEntity &creature, text_body_type *tb, int com_id)
+ape_quittance do_editor_command(CreatureEntity &creature, AutopickTextBody *tb, int com_id)
 {
     switch (com_id) {
     case EC_QUIT: {
@@ -61,7 +61,9 @@ ape_quittance do_editor_command(CreatureEntity &creature, text_body_type *tb, in
             break;
         }
 
-        tb->lines_list = read_pickpref_text_lines(creature.base_name, &tb->filename_mode);
+        auto [filename_mode, lines] = read_pickpref_text_lines(creature.base_name);
+        tb->filename_mode = filename_mode;
+        tb->lines_list = std::move(lines);
         tb->dirty_flags |= DIRTY_ALL | DIRTY_MODE | DIRTY_EXPRESSION;
         tb->cx = tb->cy = 0;
         tb->mark = 0;
@@ -94,17 +96,10 @@ ape_quittance do_editor_command(CreatureEntity &creature, text_body_type *tb, in
             if (len < tb->cx) {
                 tb->cx = len;
             }
-#ifdef JP
-            for (auto i = 0; (*tb->lines_list[tb->cy])[i] != '\0'; i++) {
-                if (iskanji((*tb->lines_list[tb->cy])[i])) {
-                    i++;
-                    if (i == tb->cx) {
-                        tb->cx--;
-                        break;
-                    }
-                }
+
+            if (tb->is_cursor_on_second_byte_of_kanji()) {
+                tb->cx--;
             }
-#endif
         } else if (tb->cy > 0) {
             tb->cy--;
             tb->cx = tb->lines_list[tb->cy]->length();
@@ -129,11 +124,9 @@ ape_quittance do_editor_command(CreatureEntity &creature, text_body_type *tb, in
         break;
     case EC_RIGHT: {
         const int len = tb->lines_list[tb->cy]->length();
-#ifdef JP
-        if ((tb->cx + 1 < len) && iskanji((*tb->lines_list[tb->cy])[tb->cx])) {
+        if (is_multibyte_char_at(*tb->lines_list[tb->cy], tb->cx)) {
             tb->cx++;
         }
-#endif
         tb->cx++;
 
         if (len < tb->cx) {
@@ -274,8 +267,8 @@ ape_quittance do_editor_command(CreatureEntity &creature, text_body_type *tb, in
 
         for (auto i = 0U; i < tb->yank.size(); ++i) {
             const std::string_view line(*tb->lines_list[tb->cy]);
-            std::string buf(line.substr(0, tb->cx));
-            buf.append(tb->yank[i], 0, MAX_LINELEN - buf.length() - 1);
+            // 行の上限を超える分は、2バイト文字を分断しないように切り詰める
+            auto buf = str_substr(std::string(line.substr(0, tb->cx)) + tb->yank[i], 0, MAX_LINELEN - 1);
 
             const auto is_last_line = i + 1 == tb->yank.size();
             if (!is_last_line || tb->yank_eol) {
@@ -291,9 +284,8 @@ ape_quittance do_editor_command(CreatureEntity &creature, text_body_type *tb, in
 
             const auto rest = line.substr(tb->cx);
             tb->cx = buf.length();
-            buf.append(rest, 0, MAX_LINELEN - buf.length() - 1);
-
-            tb->lines_list[tb->cy] = std::make_unique<std::string>(std::move(buf));
+            buf.append(rest);
+            tb->lines_list[tb->cy] = std::make_unique<std::string>(str_substr(std::move(buf), 0, MAX_LINELEN - 1));
             break;
         }
 
@@ -420,8 +412,7 @@ ape_quittance do_editor_command(CreatureEntity &creature, text_body_type *tb, in
             break;
         }
 
-        const auto mb_chars = str_find_all_multibyte_chars(*tb->lines_list[tb->cy]);
-        const auto delete_bytes = mb_chars.contains(tb->cx - 2) ? 2 : 1;
+        const auto delete_bytes = is_second_byte_of_kanji(*tb->lines_list[tb->cy], tb->cx - 1) ? 2 : 1;
         tb->cx -= delete_bytes;
         tb->lines_list[tb->cy]->erase(tb->cx, delete_bytes);
         tb->dirty_line = tb->cy;
@@ -528,9 +519,7 @@ ape_quittance do_editor_command(CreatureEntity &creature, text_body_type *tb, in
         if (!can_insert_line(tb, 2)) {
             break;
         }
-        const auto expression = format("?:[AND [EQU $RACE %s] [EQU $CLASS %s] [GEQ $LEVEL %02d]]",
-            creature.get_race_info()->title.en_string().data(), (*creature.get_class_info()).title.en_string().data(),
-            creature.get_level());
+        const auto expression = fmt::format("?:[AND [EQU $RACE {}] [EQU $CLASS {}] [GEQ $LEVEL {:02}]]", creature.get_race_info()->title.en_string(), (*creature.get_class_info()).title.en_string(), creature.get_level());
         tb->cx = 0;
         insert_return_code(tb);
         tb->lines_list[tb->cy] = std::make_unique<std::string>(expression);
@@ -544,7 +533,9 @@ ape_quittance do_editor_command(CreatureEntity &creature, text_body_type *tb, in
     case EC_INSERT_MACRO: {
         draw_text_editor(creature, tb);
         term_erase(0, tb->cy - tb->upper + 1, tb->wid);
-        term_putstr(0, tb->cy - tb->upper + 1, tb->wid - 1, TERM_YELLOW, _("P:<トリガーキー>: ", "P:<Trigger key>: "));
+        constexpr auto prompt = _("P:<トリガーキー>: ", "P:<Trigger key>: ");
+        term_putstr(0, tb->cy - tb->upper + 1, tb->wid - 1, TERM_YELLOW, prompt);
+        const InputContextScope context_scope(InputKind::COMMAND_CHAR, prompt);
         if (!insert_macro_line(tb)) {
             break;
         }
@@ -560,6 +551,7 @@ ape_quittance do_editor_command(CreatureEntity &creature, text_body_type *tb, in
         const auto mode = rogue_like_commands ? KeymapMode::ROGUE : KeymapMode::ORIGINAL;
         const auto mes = fmt::format("C:{}:<{}>: ", enum2i(mode), _("コマンドキー", "Keypress"));
         term_putstr(0, tb->cy - tb->upper + 1, tb->wid - 1, TERM_YELLOW, mes);
+        const InputContextScope context_scope(InputKind::COMMAND_CHAR, mes);
         if (!insert_keymap_line(tb)) {
             break;
         }

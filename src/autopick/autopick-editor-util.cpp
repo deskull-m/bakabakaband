@@ -4,12 +4,14 @@
 #include "autopick/autopick-flags-table.h"
 #include "autopick/autopick-methods-table.h"
 #include "autopick/autopick-util.h"
+#include "util/string-processor.h"
 #include <cstdlib>
+#include <utility>
 
 /*!
  * @brief Delete or insert string
  */
-void toggle_keyword(text_body_type *tb, BIT_FLAGS flg)
+void toggle_keyword(AutopickTextBody *tb, BIT_FLAGS flg)
 {
     int by1, by2;
     bool add = true;
@@ -74,7 +76,7 @@ void toggle_keyword(text_body_type *tb, BIT_FLAGS flg)
 /*!
  * @brief Change command letter
  */
-void toggle_command_letter(text_body_type *tb, AutopickMethod am)
+void toggle_command_letter(AutopickTextBody *tb, AutopickMethod am)
 {
     autopick_type an_entry;
     autopick_type *entry = &an_entry;
@@ -152,7 +154,7 @@ void toggle_command_letter(text_body_type *tb, AutopickMethod am)
 /*!
  * @brief Delete or insert string
  */
-void add_keyword(text_body_type *tb, BIT_FLAGS flg)
+void add_keyword(AutopickTextBody *tb, BIT_FLAGS flg)
 {
     int by1, by2;
     if (tb->mark) {
@@ -188,10 +190,17 @@ void add_keyword(text_body_type *tb, BIT_FLAGS flg)
 
 /*!
  * @brief Add an empty line at the last of the file
+ * @param tb エディタの状態
+ * @return 空行を追加した場合true、最終行が既に空の場合と最大行数に達している場合はfalse
+ * @details 行バッファは使用中の行の直後に nullptr の番兵があることを前提に走査されるため、
+ * insert_return_code() と同じく最大行数を超えて行を増やしてはならない。
  */
-bool add_empty_line(text_body_type *tb)
+bool add_empty_line(AutopickTextBody *tb)
 {
-    int num_lines = count_line(tb);
+    const auto num_lines = tb->count_line();
+    if (is_greater_autopick_max_line(num_lines)) {
+        return false;
+    }
 
     if (tb->lines_list[num_lines - 1]->empty()) {
         return false;
@@ -203,13 +212,13 @@ bool add_empty_line(text_body_type *tb)
     return true;
 }
 
-void kill_yank_chain(text_body_type *tb)
+void kill_yank_chain(AutopickTextBody *tb)
 {
     tb->yank.clear();
     tb->yank_eol = true;
 }
 
-void add_str_to_yank(text_body_type *tb, std::string_view str)
+void add_str_to_yank(AutopickTextBody *tb, std::string_view str)
 {
     tb->yank_eol = false;
     tb->yank.emplace_back(str);
@@ -218,7 +227,7 @@ void add_str_to_yank(text_body_type *tb, std::string_view str)
 /*!
  * @brief Do work for the copy editor-command
  */
-void copy_text_to_yank(text_body_type *tb)
+void copy_text_to_yank(AutopickTextBody *tb)
 {
     const int len = tb->lines_list[tb->cy]->length();
     if (tb->cx > len) {
@@ -262,4 +271,22 @@ void copy_text_to_yank(text_body_type *tb)
 
     tb->mark = 0;
     tb->dirty_flags |= DIRTY_ALL;
+}
+
+/*!
+ * @brief 行の指定の位置が2バイト文字の2バイト目かどうかを判定する
+ * @param line 行
+ * @param pos 位置 (バイト)
+ * @return pos の直前から2バイト文字が始まり、pos がその2バイト目であれば true
+ * @details
+ * 行末に2バイト文字の1バイト目だけが残っている場合、その直後 (行の長さの位置) は2バイト目とみなさない。
+ * 英語版では常に false を返す。
+ */
+bool is_second_byte_of_kanji(std::string_view line, int pos)
+{
+    if ((pos <= 0) || std::cmp_greater_equal(pos, line.length())) {
+        return false;
+    }
+
+    return str_find_all_multibyte_chars(line).contains(pos - 1);
 }

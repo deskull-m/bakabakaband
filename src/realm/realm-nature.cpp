@@ -41,6 +41,7 @@
 #include "target/target-getter.h"
 #include "util/dice.h"
 #include "view/display-messages.h"
+#include <fmt/format.h>
 
 /*!
  * @brief 自然領域魔法の各処理を行う
@@ -74,7 +75,7 @@ tl::optional<std::string> do_nature_spell(CreatureEntity &creature, SPELL_IDX sp
         POSITION range = plev / 6 + 2;
 
         if (info) {
-            return format("%s%s %s%d", KWD_DAM, dice.to_string().data(), KWD_RANGE, range);
+            return fmt::format("{}{} {}{}", KWD_DAM, dice.to_string(), KWD_RANGE, range);
         }
 
         if (cast) {
@@ -470,7 +471,7 @@ tl::optional<std::string> do_nature_spell(CreatureEntity &creature, SPELL_IDX sp
         POSITION q_rad = 20 + plev / 2;
 
         if (info) {
-            return format("%s%d+%d", KWD_DAM, d_dam, b_dam / 2);
+            return fmt::format("{}{}+{}", KWD_DAM, d_dam, b_dam / 2);
         }
 
         if (cast) {

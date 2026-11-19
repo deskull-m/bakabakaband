@@ -26,6 +26,7 @@ void check_experience(CreatureEntity &creature);
 void wreck_the_pattern(CreatureEntity &creature);
 std::string cnv_stat(int val);
 int16_t modify_stat_value(int value, int amount);
+int calc_score_multiplier();
 uint32_t calc_score(CreatureEntity &creature);
 
 void stop_mouth(CreatureEntity &creature);

@@ -16,7 +16,6 @@
 #include "cmd-item/cmd-magiceat.h"
 #include "cmd-visual/cmd-draw.h"
 #include "cmd-visual/cmd-visuals.h"
-#include "game-option/birth-options.h"
 #include "game-option/input-options.h"
 #include "io/command-repeater.h"
 #include "io/input-key-requester.h"
@@ -28,6 +27,7 @@
 #include "store/museum.h"
 #include "store/purchase-order.h"
 #include "store/sell-order.h"
+#include "store/store-screen.h"
 #include "store/store-util.h"
 #include "store/store.h"
 #include "system/creature-entity.h"
@@ -37,13 +37,12 @@
 #include "view/display-store.h"
 #include "window/display-sub-windows.h"
 
-/* Set this to leave the store */
-bool leave_store = false;
-
 /*!
  * @brief 店舗処理コマンド選択のメインルーチン /
  * Process a command in a store
  * @param creature クリーチャーへの参照
+ * @param store コマンドの対象となる店舗
+ * @return 店から出るならtrue
  * @note
  * <pre>
  * Note that we must allow the use of a few "special" commands
@@ -52,8 +51,9 @@ bool leave_store = false;
  * but not in the stores, to prevent chaos.
  * </pre>
  */
-void store_process_command(CreatureEntity &creature, StoreSaleType store_num)
+bool store_process_command(CreatureEntity &creature, StoreScreen &screen)
 {
+    const auto store_num = screen.get_store().get_sale_type();
     repeat_check();
     if (rogue_like_commands && (command_cmd == 'l')) {
         command_cmd = 'x';
@@ -61,98 +61,77 @@ void store_process_command(CreatureEntity &creature, StoreSaleType store_num)
 
     switch (command_cmd) {
     case ESCAPE: {
-        leave_store = true;
-        break;
+        return true;
     }
     case '-': {
         /* 日本語版追加 */
         /* 1 ページ戻るコマンド: 我が家のページ数が多いので重宝するはず By BUG */
-        if (st_ptr->stock_num <= store_bottom) {
+        if (!screen.has_multiple_pages()) {
             msg_print(_("これで全部です。", "Entire inventory is shown."));
         } else {
-            store_top -= store_bottom;
-            if (store_top < 0) {
-                store_top = ((st_ptr->stock_num - 1) / store_bottom) * store_bottom;
-            }
-
-            if ((store_num == StoreSaleType::HOME) && !powerup_home) {
-                if (store_top >= store_bottom) {
-                    store_top = store_bottom;
-                }
-            }
-
-            display_store_inventory(creature, store_num);
+            screen.turn_page_backward();
+            display_store_inventory(creature, screen);
         }
 
-        break;
+        return false;
     }
     case ' ': {
-        if (st_ptr->stock_num <= store_bottom) {
+        if (!screen.has_multiple_pages()) {
             msg_print(_("これで全部です。", "Entire inventory is shown."));
         } else {
-            store_top += store_bottom;
-
-            /*
-             * 隠しオプション(powerup_home)がセットされていないときは
-             * 我が家では 2 ページまでしか表示しない
-             */
-            auto inven_max = store_get_stock_max(store_num, powerup_home);
-            if (store_top >= st_ptr->stock_num || store_top >= inven_max) {
-                store_top = 0;
-            }
-
-            display_store_inventory(creature, store_num);
+            screen.turn_page_forward();
+            display_store_inventory(creature, screen);
         }
 
-        break;
+        return false;
     }
     case KTRL('R'): {
         do_cmd_redraw(creature);
-        display_store(creature, store_num);
-        break;
+        display_store(creature, screen);
+        return false;
     }
     case 'g': {
-        store_purchase(creature, store_num);
-        break;
+        store_purchase(creature, screen);
+        return false;
     }
     case 'd': {
-        store_sell(creature, store_num);
-        break;
+        store_sell(creature, screen);
+        return false;
     }
     case 'x': {
-        store_examine(creature, store_num);
-        break;
+        store_examine(creature, screen);
+        return false;
     }
     case '\r': {
-        break;
+        return false;
     }
     case 'w': {
         do_cmd_wield(creature);
-        break;
+        return false;
     }
     case 't': {
         do_cmd_takeoff(creature);
-        break;
+        return false;
     }
     case 'k': {
         do_cmd_destroy(creature);
-        break;
+        return false;
     }
     case 'e': {
         do_cmd_equip(creature);
-        break;
+        return false;
     }
     case 'i': {
         do_cmd_inven(creature);
-        break;
+        return false;
     }
     case 'I': {
         do_cmd_observe(creature);
-        break;
+        return false;
     }
     case KTRL('I'): {
         toggle_inventory_equipment();
-        break;
+        return false;
     }
     case 'b': {
         CreatureClass pc(creature);
@@ -170,109 +149,99 @@ void store_process_command(CreatureEntity &creature, StoreSaleType store_num)
             do_cmd_browse(creature);
         }
 
-        break;
+        return false;
     }
     case '{': {
         do_cmd_inscribe(creature);
-        break;
+        return false;
     }
     case '}': {
         do_cmd_uninscribe(creature);
-        break;
+        return false;
     }
     case '?': {
         do_cmd_help(creature);
-        break;
+        return false;
     }
     case '/': {
         do_cmd_query_symbol(creature);
-        break;
+        return false;
     }
     case 'C': {
-        creature.set_town_num(old_town_num);
         do_cmd_player_status(creature);
-        creature.set_town_num(inner_town_num);
-        display_store(creature, store_num);
-        break;
+        display_store(creature, screen);
+        return false;
     }
     case '!':
         term_user();
-        break;
+        return false;
     case '"': {
-        creature.set_town_num(old_town_num);
         do_cmd_pref(creature);
-        creature.set_town_num(inner_town_num);
-        break;
+        return false;
     }
     case '@': {
-        creature.set_town_num(old_town_num);
         do_cmd_macros(creature);
-        creature.set_town_num(inner_town_num);
-        break;
+        return false;
     }
     case '%': {
-        creature.set_town_num(old_town_num);
         do_cmd_visuals(creature);
-        creature.set_town_num(inner_town_num);
-        break;
+        return false;
     }
     case '&': {
-        creature.set_town_num(old_town_num);
         do_cmd_colors(creature);
-        creature.set_town_num(inner_town_num);
-        break;
+        return false;
     }
     case '=': {
         do_cmd_options(creature);
         (void)combine_and_reorder_home(creature, StoreSaleType::HOME);
         do_cmd_redraw(creature);
-        display_store(creature, store_num);
-        break;
+        display_store(creature, screen);
+        return false;
     }
     case ':': {
         do_cmd_note();
-        break;
+        return false;
     }
     case 'V': {
         do_cmd_version();
-        break;
+        return false;
     }
     case KTRL('F'): {
         do_cmd_feeling(creature);
-        break;
+        return false;
     }
     case KTRL('O'): {
         do_cmd_message_one();
-        break;
+        return false;
     }
     case KTRL('P'): {
         do_cmd_messages(0);
-        break;
+        return false;
     }
     case '|': {
         do_cmd_diary(creature);
-        break;
+        return false;
     }
     case '~': {
         do_cmd_knowledge(creature);
-        break;
+        return false;
     }
     case '(': {
         do_cmd_load_screen();
-        break;
+        return false;
     }
     case ')': {
         do_cmd_save_screen(creature);
-        break;
+        return false;
     }
     default: {
         if ((store_num == StoreSaleType::MUSEUM) && (command_cmd == 'r')) {
-            museum_remove_object(creature);
+            museum_remove_object(creature, screen);
         } else {
             msg_print(_("そのコマンドは店の中では使えません。", "That command does not work in stores."));
         }
 
-        break;
+        return false;
     }
     }
 }

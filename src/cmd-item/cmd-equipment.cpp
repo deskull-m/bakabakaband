@@ -29,6 +29,7 @@
 #include "object/object-info.h"
 #include "object/object-mark-types.h"
 #include "perception/object-perception.h"
+#include "perception/simple-perception.h"
 #include "player-base/player-class.h"
 #include "player-base/player-race.h"
 #include "player-info/equipment-info.h"
@@ -43,14 +44,14 @@
 #include "status/action-setter.h"
 #include "status/shape-changer.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/item-entity.h"
-#include "system/redrawing-flags-updater.h"
 #include "term/screen-processor.h"
-#include "term/z-form.h"
 #include "util/bit-flags-calculator.h"
 #include "util/int-char-converter.h"
 #include "view/display-inventory.h"
 #include "view/display-messages.h"
+#include <fmt/format.h>
 #include <utility>
 
 /*!
@@ -58,35 +59,28 @@
  */
 static void do_curse_on_equip(OBJECT_IDX slot, ItemEntity &item, CreatureEntity &creature)
 {
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
+    auto &dur = DeferredUpdateRequests::get_instance();
     if (set_anubis_and_chariot(creature) && ((slot == INVEN_MAIN_HAND) || (slot == INVEN_SUB_HAND))) {
 
         ItemEntity *anubis = creature.inventory[INVEN_MAIN_HAND].get();
         ItemEntity *chariot = creature.inventory[INVEN_SUB_HAND].get();
 
-        anubis->curse_flags.set(CurseTraitType::PERSISTENT_CURSE);
-        anubis->curse_flags.set(CurseTraitType::HEAVY_CURSE);
-        chariot->curse_flags.set(CurseTraitType::PERSISTENT_CURSE);
-        chariot->curse_flags.set(CurseTraitType::HEAVY_CURSE);
-        chariot->curse_flags.set(CurseTraitType::BERS_RAGE);
-        chariot->curse_flags.set(CurseTraitType::VUL_CURSE);
+        anubis->add_curses({ CurseTraitType::PERSISTENT_CURSE, CurseTraitType::HEAVY_CURSE });
+        chariot->add_curses({ CurseTraitType::PERSISTENT_CURSE, CurseTraitType::HEAVY_CURSE, CurseTraitType::BERS_RAGE, CurseTraitType::VUL_CURSE });
 
-        msg_format(_("『銀の戦車』プラス『アヌビス神』二刀流ッ！", "*Silver Chariot* plus *Anubis God* Two Swords!"));
-        rfu.set_flag(StatusRecalculatingFlag::BONUS);
+        msg_print(_("『銀の戦車』プラス『アヌビス神』二刀流ッ！", "*Silver Chariot* plus *Anubis God* Two Swords!"));
+        dur.set_flag(StatusRecalculatingFlag::BONUS);
         return;
     }
 
-    auto should_curse = item.get_flags().has(TR_PERSISTENT_CURSE) || item.curse_flags.has(CurseTraitType::PERSISTENT_CURSE);
-    should_curse &= item.curse_flags.has_not(CurseTraitType::HEAVY_CURSE);
-    if (!should_curse) {
+    const auto should_curse = item.get_flags().has(TR_PERSISTENT_CURSE) || item.curse_flags.has(CurseTraitType::PERSISTENT_CURSE);
+    if (!should_curse || !item.add_curses({ CurseTraitType::HEAVY_CURSE })) {
         return;
     }
 
     const auto item_name = describe_flavor(creature, item, (OD_OMIT_PREFIX | OD_NAME_ONLY));
-    item.curse_flags.set(CurseTraitType::HEAVY_CURSE);
-    msg_format(_("悪意に満ちた黒いオーラが%sをとりまいた...", "There is a malignant black aura surrounding your %s..."), item_name.data());
-    item.feeling = FEEL_NONE;
-    rfu.set_flag(StatusRecalculatingFlag::BONUS);
+    msg_print(_("悪意に満ちた黒いオーラが{}をとりまいた...", "There is a malignant black aura surrounding your {}..."), item_name);
+    dur.set_flag(StatusRecalculatingFlag::BONUS);
 }
 
 /*!
@@ -103,11 +97,11 @@ void do_cmd_equip(CreatureEntity &creature)
     (void)show_equipment(creature, 0, USE_FULL, AllMatchItemTester());
     auto weight = calc_inventory_weight(creature);
     auto weight_lim = calc_weight_limit(creature);
-    const auto mes = _("装備： 合計 %3d.%1d kg (限界の%d%%) コマンド: ", "Equipment: carrying %d.%d pounds (%d%% of capacity). Command: ");
+    constexpr auto fmt = _("装備： 合計 {:3}.{} kg (限界の{}%) コマンド: ", "Equipment: carrying {}.{} pounds ({}% of capacity). Command: ");
 #ifdef JP
-    const auto out_val = format(mes, lb_to_kg_integer(weight), lb_to_kg_fraction(weight), weight * 100 / weight_lim);
+    const auto out_val = fmt::format(fmt, lb_to_kg_integer(weight), lb_to_kg_fraction(weight), weight * 100 / weight_lim);
 #else
-    const auto out_val = format(mes, weight / 10, weight % 10, weight * 100 / weight_lim);
+    const auto out_val = fmt::format(fmt, weight / 10, weight % 10, weight * 100 / weight_lim);
 #endif
 
     prt(out_val, 0, 0);
@@ -130,7 +124,6 @@ void do_cmd_equip(CreatureEntity &creature)
  */
 void do_cmd_wield(CreatureEntity &creature)
 {
-    concptr act;
     OBJECT_IDX need_switch_wielding = 0;
     CreatureClass(creature).break_samurai_stance({ SamuraiStanceType::MUSOU });
 
@@ -242,19 +235,19 @@ void do_cmd_wield(CreatureEntity &creature)
     if (creature.inventory[slot]->is_cursed()) {
         const auto item_name = describe_flavor(creature, *creature.inventory[slot], OD_OMIT_PREFIX | OD_NAME_ONLY);
 #ifdef JP
-        msg_format("%s%sは呪われているようだ。", describe_use(creature, slot), item_name.data());
+        msg_print("{}{}は呪われているようだ。", describe_use(creature, slot), item_name);
 #else
-        msg_format("The %s you are %s appears to be cursed.", item_name.data(), describe_use(creature, slot));
+        msg_print("The {} you are {} appears to be cursed.", item_name, describe_use(creature, slot));
 #endif
         return;
     }
 
     auto should_equip_cursed = item_chosen->is_cursed() && item_chosen->is_known();
-    should_equip_cursed |= item_chosen->ident.has(IdentificationFlag::SENSE) && (FEEL_BROKEN <= item_chosen->feeling) && (item_chosen->feeling <= FEEL_CURSED);
+    should_equip_cursed |= item_chosen->ident.has(IdentificationFlag::SENSE) && is_cursed_feeling(item_chosen->feeling);
     should_equip_cursed &= confirm_wear;
     if (should_equip_cursed) {
         const auto item_name = describe_flavor(creature, *item_chosen, (OD_OMIT_PREFIX | OD_NAME_ONLY));
-        if (!input_check(format(_("本当に%s{呪われている}を使いますか？", "Really use the %s {cursed}? "), item_name.data()))) {
+        if (!input_check(fmt::format(_("本当に{}{{呪われている}}を使いますか？", "Really use the {} {{cursed}}? "), item_name))) {
             return;
         }
     }
@@ -266,9 +259,8 @@ void do_cmd_wield(CreatureEntity &creature)
     should_change_vampire &= !pr.equals(PlayerRaceType::ANDROID);
     if (should_change_vampire) {
         const auto item_name = describe_flavor(creature, *item_chosen, (OD_OMIT_PREFIX | OD_NAME_ONLY));
-        constexpr auto mes = _("%sを装備すると吸血鬼になります。よろしいですか？",
-            "%s will transform you into a vampire permanently when equipped. Do you become a vampire? ");
-        if (!input_check(format(mes, item_name.data()))) {
+        constexpr auto mes = _("{}を装備すると吸血鬼になります。よろしいですか？", "{} will transform you into a vampire permanently when equipped. Do you become a vampire? ");
+        if (!input_check(fmt::format(mes, item_name))) {
             return;
         }
     }
@@ -279,8 +271,7 @@ void do_cmd_wield(CreatureEntity &creature)
         auto &switch_item = *creature.inventory[need_switch_wielding];
         const auto item_name = describe_flavor(creature, switch_item, (OD_OMIT_PREFIX | OD_NAME_ONLY));
         std::swap(switch_item, slot_item);
-        msg_format(_("%sを%sに構えなおした。", "You wield %s at %s hand."), item_name.data(),
-            (slot == INVEN_MAIN_HAND) ? (left_hander ? _("左手", "left") : _("右手", "right")) : (left_hander ? _("右手", "right") : _("左手", "left")));
+        msg_print(_("{}を{}に構えなおした。", "You wield {} at {} hand."), item_name, (slot == INVEN_MAIN_HAND) ? (left_hander ? _("左手", "left") : _("右手", "right")) : (left_hander ? _("右手", "right") : _("左手", "left")));
         slot = need_switch_wielding;
     }
 
@@ -309,44 +300,49 @@ void do_cmd_wield(CreatureEntity &creature)
     wield_slot_item = std::move(item);
     wield_slot_item.marked.set(OmType::TOUCHED);
 
-#define STR_WIELD_HAND_RIGHT _("%s(%c)を右手に装備した。", "You are wielding %s (%c) in your right hand.")
-#define STR_WIELD_HAND_LEFT _("%s(%c)を左手に装備した。", "You are wielding %s (%c) in your left hand.")
-#define STR_WIELD_HANDS_TWO _("%s(%c)を両手で構えた。", "You are wielding %s (%c) with both hands.")
+    using WieldMessageFormat = fmt::format_string<std::string_view, char>;
+    constexpr WieldMessageFormat wield_hand_right = _("{}({:c})を右手に装備した。", "You are wielding {} ({:c}) in your right hand.");
+    constexpr WieldMessageFormat wield_hand_left = _("{}({:c})を左手に装備した。", "You are wielding {} ({:c}) in your left hand.");
+    constexpr WieldMessageFormat wield_hands_two = _("{}({:c})を両手で構えた。", "You are wielding {} ({:c}) with both hands.");
+    WieldMessageFormat act = _("{}({:c})を装備した。", "You are wearing {} ({:c}).");
 
     switch (slot) {
     case INVEN_MAIN_HAND:
         if (wield_slot_item.allow_two_hands_wielding() && (empty_hands(creature, false) == EMPTY_HAND_SUB) && can_two_hands_wielding(creature)) {
-            act = STR_WIELD_HANDS_TWO;
+            act = wield_hands_two;
+        } else if (left_hander) {
+            act = wield_hand_left;
         } else {
-            act = (left_hander ? STR_WIELD_HAND_LEFT : STR_WIELD_HAND_RIGHT);
+            act = wield_hand_right;
         }
 
         break;
     case INVEN_SUB_HAND:
         if (wield_slot_item.allow_two_hands_wielding() && (empty_hands(creature, false) == EMPTY_HAND_MAIN) && can_two_hands_wielding(creature)) {
-            act = STR_WIELD_HANDS_TWO;
+            act = wield_hands_two;
+        } else if (left_hander) {
+            act = wield_hand_right;
         } else {
-            act = (left_hander ? STR_WIELD_HAND_RIGHT : STR_WIELD_HAND_LEFT);
+            act = wield_hand_left;
         }
 
         break;
     case INVEN_BOW:
-        act = _("%s(%c)を射撃用に装備した。", "You are shooting with %s (%c).");
+        act = _("{}({:c})を射撃用に装備した。", "You are shooting with {} ({:c}).");
         break;
     case INVEN_LITE:
-        act = _("%s(%c)を光源にした。", "Your light source is %s (%c).");
+        act = _("{}({:c})を光源にした。", "Your light source is {} ({:c}).");
         break;
     default:
-        act = _("%s(%c)を装備した。", "You are wearing %s (%c).");
         break;
     }
 
     const auto item_name = describe_flavor(creature, wield_slot_item, 0);
-    msg_format(act, item_name.data(), index_to_label(slot));
+    msg_print(act, std::string_view(item_name), index_to_label(slot));
     if (wield_slot_item.is_cursed()) {
         msg_print(_("うわ！ すさまじく冷たい！", "Oops! It feels deathly cold!"));
         chg_virtue(creature, Virtue::HARMONY, -1);
-        wield_slot_item.ident.set(IdentificationFlag::SENSE);
+        sense_curse(creature, slot);
     }
 
     do_curse_on_equip(slot, wield_slot_item, creature);
@@ -359,20 +355,10 @@ void do_cmd_wield(CreatureEntity &creature)
     }
 
     calc_android_exp(creature);
-    static constexpr auto flags_srf = {
-        StatusRecalculatingFlag::BONUS,
-        StatusRecalculatingFlag::TORCH,
-        StatusRecalculatingFlag::MP,
-    };
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
-    rfu.set_flags(flags_srf);
-    rfu.set_flag(MainWindowRedrawingFlag::EQUIPPY);
-    static constexpr auto flags_swrf = {
-        SubWindowRedrawingFlag::INVENTORY,
-        SubWindowRedrawingFlag::EQUIPMENT,
-        SubWindowRedrawingFlag::PLAYER,
-    };
-    rfu.set_flags(flags_swrf);
+    auto &dur = DeferredUpdateRequests::get_instance();
+    dur.request_equipment_change_updates();
+    dur.set_flag(MainWindowRedrawingFlag::EQUIPPY);
+    dur.set_flag(SubWindowRedrawingFlag::PLAYER);
 }
 
 /*!
@@ -391,23 +377,22 @@ void do_cmd_takeoff(CreatureEntity &creature)
     }
 
     PlayerEnergy energy(creature);
-    auto &rfu = RedrawingFlagsUpdater::get_instance();
+    auto &dur = DeferredUpdateRequests::get_instance();
     if (item->is_cursed()) {
         if (item->curse_flags.has(CurseTraitType::PERMA_CURSE) || !pc.equals(PlayerClassType::BERSERKER)) {
             msg_print(_("ふーむ、どうやら呪われているようだ。", "Hmmm, it seems to be cursed."));
+            sense_curse(creature, i_idx);
             return;
         }
 
         if ((item->curse_flags.has(CurseTraitType::HEAVY_CURSE) && one_in_(7)) || one_in_(4)) {
             msg_print(_("呪われた装備を力づくで剥がした！", "You tore off a piece of cursed equipment by sheer strength!"));
-            item->ident.set(IdentificationFlag::SENSE);
-            item->curse_flags.clear();
-            item->feeling = FEEL_NONE;
-            rfu.set_flag(StatusRecalculatingFlag::BONUS);
-            rfu.set_flag(SubWindowRedrawingFlag::EQUIPMENT);
+            item->remove_curses();
+            dur.set_flag(StatusRecalculatingFlag::BONUS);
             msg_print(_("呪いを打ち破った。", "You break the curse."));
         } else {
             msg_print(_("装備を外せなかった。", "You couldn't remove the equipment."));
+            sense_curse(creature, i_idx);
             energy.set_player_turn_energy(50);
             return;
         }
@@ -418,17 +403,7 @@ void do_cmd_takeoff(CreatureEntity &creature)
     (void)inven_takeoff(creature, i_idx, 255);
     verify_equip_slot(creature, i_idx);
     calc_android_exp(creature);
-    static constexpr auto flags_srf = {
-        StatusRecalculatingFlag::BONUS,
-        StatusRecalculatingFlag::TORCH,
-        StatusRecalculatingFlag::MP,
-    };
-    rfu.set_flags(flags_srf);
-    rfu.set_flag(MainWindowRedrawingFlag::EQUIPPY);
-    static constexpr auto flags_swrf = {
-        SubWindowRedrawingFlag::INVENTORY,
-        SubWindowRedrawingFlag::EQUIPMENT,
-        SubWindowRedrawingFlag::PLAYER,
-    };
-    rfu.set_flags(flags_swrf);
+    dur.request_equipment_change_updates();
+    dur.set_flag(MainWindowRedrawingFlag::EQUIPPY);
+    dur.set_flag(SubWindowRedrawingFlag::PLAYER);
 }

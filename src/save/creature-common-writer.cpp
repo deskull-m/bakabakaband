@@ -37,8 +37,16 @@ void wr_creature_common(const CreatureEntity &creature)
     wr_s16b(static_cast<int16_t>(creature.target.x));
 
     // プレイヤー・モンスター共通の全時限効果を列挙順にダンプする (v53)。
-    // これにより約 56 種の時限効果を 1 箇所で保存し、個別保存に伴う
-    // 順序不整合 (旧フォーマットに存在) を解消する。
+    // これにより時限効果を 1 箇所で保存し、個別保存に伴う順序不整合
+    // (旧フォーマットに存在) を解消する。
+    //
+    // **件数を先頭に書く (v60)**。v59 以前は件数を持たず読込側が
+    // `CreatureTimedEffect::MAX` を使っていたため、enum に値を追加すると
+    // 「セーブデータバージョンを上げても旧セーブが読めなくなる」状態だった
+    // (読込側が新しい MAX 件を読もうとしてストリームがずれる)。件数を
+    // 自己記述にしたので、以降 enum へ値を追加してもバージョン更新は不要。
+    const auto timed_effect_count = static_cast<uint16_t>(enum2i(CreatureTimedEffect::MAX));
+    wr_u16b(timed_effect_count);
     for (auto i = 0; i < enum2i(CreatureTimedEffect::MAX); i++) {
         wr_s16b(creature.get_timed_effect(i2enum<CreatureTimedEffect>(i)));
     }

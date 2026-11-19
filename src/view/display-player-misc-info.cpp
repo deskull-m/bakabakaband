@@ -7,6 +7,7 @@
 #include "term/screen-processor.h"
 #include "term/term-color-types.h"
 #include "view/display-player-stat-info.h"
+#include <fmt/format.h>
 #include <sstream>
 
 /*!
@@ -74,7 +75,7 @@ void display_player_misc_info(CreatureEntity &creature)
     put_str(_("ＨＰ  :", "Hits  :"), 7, 1);
     put_str(_("ＭＰ  :", "Mana  :"), 8, 1);
 
-    c_put_str(TERM_L_BLUE, format("%d", (int)creature.get_level()), 6, 9);
-    c_put_str(TERM_L_BLUE, format("%d/%d", (int)creature.hp, (int)creature.maxhp), 7, 9);
-    c_put_str(TERM_L_BLUE, format("%d/%d", (int)creature.get_current_mp(), (int)creature.get_max_mp()), 8, 9);
+    c_put_str(TERM_L_BLUE, fmt::format("{}", creature.get_level()), 6, 9);
+    c_put_str(TERM_L_BLUE, fmt::format("{}/{}", creature.get_current_hp(), creature.get_max_hp()), 7, 9);
+    c_put_str(TERM_L_BLUE, fmt::format("{}/{}", creature.get_current_mp(), creature.get_max_mp()), 8, 9);
 }

@@ -41,6 +41,8 @@ private:
     bool ml{}; /*!< モンスターがプレイヤーにとって視認できるか(処理のためのテンポラリ変数) Monster is "visible" */
     EnumClassFlagGroup<MonsterSmartLearnType> smart{}; /*!< モンスターのプレイヤーに対する学習状態 / Field for "smart_learn" */
     MONSTER_IDX parent_m_idx{}; /*!< 召喚主のモンスターID */
+    short party_id{}; /*!< 所属するクリーチャーパーティの定義ID (CreatureParty.jsonc の id)。0 は非所属 */
+    MONSTER_IDX party_leader_m_idx{}; /*!< パーティのリーダーの m_idx。同値を持つ個体が 1 つの集団。リーダー自身は自分の m_idx を持つ。0 は非所属 */
     MonraceId transform_r_idx{}; /*!< 変身先モンスター種族ID */
     PERCENTAGE transform_hp_threshold{}; /*!< 変身するHP閾値(最大HPの%) */
     bool has_transformed{}; /*!< 既に変身済みかどうかのフラグ */

@@ -7,7 +7,6 @@
 #include "system/player-type-definition.h"
 #include "term/gameterm.h"
 #include "term/term-color-types.h"
-#include "term/z-form.h"
 
 #ifdef USE_CAP
 
@@ -258,8 +257,9 @@ static void do_cs(int y1, int y2)
 #endif
 
 #ifdef USE_HARDCODE
-    auto temp = format(cs, y1, y2);
-    tp(temp.data());
+    char temp[1024];
+    snprintf(temp, sizeof(temp), cs, y1, y2);
+    tp(temp);
 #endif
 }
 
@@ -276,8 +276,9 @@ static void do_cm(int x, int y)
 #endif
 
 #ifdef USE_HARDCODE
-    auto temp = format(cm, y + 1, x + 1);
-    tp(temp.data());
+    char temp[1024];
+    snprintf(temp, sizeof(temp), cm, y + 1, x + 1);
+    tp(temp);
 #endif
 }
 
