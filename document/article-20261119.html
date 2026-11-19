@@ -1,0 +1,394 @@
+<h2>(2026/11/19)<br>
+    0.0.3.0-Alphaリリースのお知らせ</h2>
+
+<p>
+    本格的♂更新ペースを成し遂げたいと思います。どうあがこうと淫夢要素はありません。
+</p>
+<p>
+    <img src="document/img/20261119-Alpha0030.jpg" alt="馬鹿馬鹿蛮怒 0.0.3.0-Alpha">
+</p>
+
+<h3>新機能</h3>
+<ul>
+    <li>新しいスコアサーバへの送信機能を追加 (<a href="https://github.com/deskull-m/bakabakaband/pull/9302">#9302</a>)</li>
+    <li>略奪による社会的問題を 4 系統実装 (評判/店/賞金首/アライアンス) (<a href="https://github.com/deskull-m/bakabakaband/pull/9221">#9221</a>)</li>
+    <li>アイテムに「正当な所有権」をモンスター種族 ID で保持する (<a href="https://github.com/deskull-m/bakabakaband/pull/9220">#9220</a>)</li>
+    <li>モンスターのパーティ編成機能を掘り下げ (<a href="https://github.com/deskull-m/bakabakaband/pull/9245">#9245</a>)</li>
+    <li>新アライアンス「ボーラス」を追加 (<a href="https://github.com/deskull-m/bakabakaband/pull/8785">#8785</a>)</li>
+    <li>トールキン善玉陣営の印象値にアライメント補正を追加 (<a href="https://github.com/deskull-m/bakabakaband/pull/8735">#8735</a>)</li>
+    <li>プレイヤーの UNIQUE 扱い (is_unique) 追加 + 毒針の即死を同化 (<a href="https://github.com/deskull-m/bakabakaband/pull/8775">#8775</a>)</li>
+</ul>
+
+<h3>死体システム</h3>
+<ul>
+    <li>モンスターの死体をフロアに遺す器を用意する (#9275 第1段) (<a href="https://github.com/deskull-m/bakabakaband/pull/9280">#9280</a>)</li>
+    <li>死体を必ず遺し、遺物を死体の中へ納める (#9275 第2段) (<a href="https://github.com/deskull-m/bakabakaband/pull/9281">#9281</a>)</li>
+    <li>所持品を床へ撒かず死体の中に残す (#9275 第3段) (<a href="https://github.com/deskull-m/bakabakaband/pull/9282">#9282</a>)</li>
+    <li>死体を漁ってアイテムを取り出せるようにする (#9275 第4段) (<a href="https://github.com/deskull-m/bakabakaband/pull/9283">#9283</a>)</li>
+    <li>死体を漁る行為を悪行として記録する (#9275 第5段) (<a href="https://github.com/deskull-m/bakabakaband/pull/9284">#9284</a>)</li>
+    <li>死体コンテナの境界条件を検証し仕上げる (#9275 第6段) (<a href="https://github.com/deskull-m/bakabakaband/pull/9285">#9285</a>)</li>
+    <li>ドラゴンの鱗を素材アイテムとして死体から剥ぎ取れるようにする (<a href="https://github.com/deskull-m/bakabakaband/pull/9286">#9286</a>)</li>
+    <li>死体のマップシンボルを共通の '~' にし、色を元のモンスターに合わせる (<a href="https://github.com/deskull-m/bakabakaband/pull/9287">#9287</a>)</li>
+    <li>床の亡骸を MonsterCorpse に一本化し、死体アイテムと相互変換する (<a href="https://github.com/deskull-m/bakabakaband/pull/9288">#9288</a>)</li>
+    <li>持ち物が残った死体も持ち去れるようにし、持ち物は周りへ散らす (<a href="https://github.com/deskull-m/bakabakaband/pull/9289">#9289</a>)</li>
+</ul>
+
+<h3>モンスターの武器打撃をプレイヤーと同化</h3>
+<ul>
+    <li>モンスターの武器打撃をプレイヤーの打撃処理と完全同化 (会心を追加) (<a href="https://github.com/deskull-m/bakabakaband/pull/8760">#8760</a>)</li>
+    <li>ヴォーパル (メッタ斬り) を同化 (<a href="https://github.com/deskull-m/bakabakaband/pull/8764">#8764</a>)</li>
+    <li>吸血武器打撃を同化 (ヴァンパイア武器の HP 吸収) (<a href="https://github.com/deskull-m/bakabakaband/pull/8765">#8765</a>)</li>
+    <li>地震武器打撃を同化 (<a href="https://github.com/deskull-m/bakabakaband/pull/8766">#8766</a>)</li>
+    <li>属性ブランド武器をプレイヤーの免疫/弱点に適用 (<a href="https://github.com/deskull-m/bakabakaband/pull/8767">#8767</a>)</li>
+    <li>スレイ武器をプレイヤーの種族性質に適用 (<a href="https://github.com/deskull-m/bakabakaband/pull/8768">#8768</a>)</li>
+    <li>カオス武器 (TR_CHAOTIC) の追加効果を同化 (<a href="https://github.com/deskull-m/bakabakaband/pull/8770">#8770</a>)</li>
+    <li>カオス武器の変身 (CE_POLYMORPH) を有効化 (<a href="https://github.com/deskull-m/bakabakaband/pull/8776">#8776</a>)</li>
+    <li>魔術ブランド (TR_BRAND_MAGIC) の追加効果を同化 (<a href="https://github.com/deskull-m/bakabakaband/pull/8777">#8777</a>)</li>
+</ul>
+
+<h3>モンスターの突然変異 (C5) と魔法領域詠唱 (C6)</h3>
+<ul>
+    <li>突然変異 curated セットに INVULN / SP_TO_HP を追加 (<a href="https://github.com/deskull-m/bakabakaband/pull/8737">#8737</a>)</li>
+    <li>受動変異の反映: REGEN / ESP (<a href="https://github.com/deskull-m/bakabakaband/pull/8739">#8739</a>)、AC 修正 (皮膚系) (<a href="https://github.com/deskull-m/bakabakaband/pull/8740">#8740</a>)、加速系 (<a href="https://github.com/deskull-m/bakabakaband/pull/8741">#8741</a>)、魔法防御 (MAGIC_RES) (<a href="https://github.com/deskull-m/bakabakaband/pull/8742">#8742</a>)、自由行動 (MOTION) (<a href="https://github.com/deskull-m/bakabakaband/pull/8743">#8743</a>)、能力値修正 13 種 (<a href="https://github.com/deskull-m/bakabakaband/pull/8744">#8744</a>)、元素オーラ (FIRE_BODY/ELEC_TOUC) (<a href="https://github.com/deskull-m/bakabakaband/pull/8746">#8746</a>)</li>
+    <li>魔法領域詠唱に第2領域 (realm_abilities2) を追加 (<a href="https://github.com/deskull-m/bakabakaband/pull/8747">#8747</a>)</li>
+    <li>魔法領域詠唱をモンスターレベルで段階化 (<a href="https://github.com/deskull-m/bakabakaband/pull/8750">#8750</a>)</li>
+    <li>realm→ability 写像表の精緻化 (<a href="https://github.com/deskull-m/bakabakaband/pull/8751">#8751</a>)</li>
+    <li>NPC の魔導書学習ベースへの組み直し (学習データ基盤 + 学習駆動詠唱) (<a href="https://github.com/deskull-m/bakabakaband/pull/8752">#8752</a>)</li>
+</ul>
+
+<h3>モンスターの能力・AI</h3>
+<ul>
+    <li>ロボット召喚 (S_ROBOT / SUMMON_ROBOT) を実装 (<a href="https://github.com/deskull-m/bakabakaband/pull/8784">#8784</a>)</li>
+    <li>糞 (汚物) のオーラを実装し変態糞土方に付与 (<a href="https://github.com/deskull-m/bakabakaband/pull/8753">#8753</a>)</li>
+    <li>テレパシー持ちモンスターの睡眠時の壁越し・長距離覚醒 (<a href="https://github.com/deskull-m/bakabakaband/pull/8800">#8800</a>)</li>
+    <li>JSON 指定の無いモンスター能力値に種族レベル比例の既定補正を与える (<a href="https://github.com/deskull-m/bakabakaband/pull/8842">#8842</a>)</li>
+    <li>モンスター開始のプレイヤーにも種族レベル比例の能力値補正を反映 (<a href="https://github.com/deskull-m/bakabakaband/pull/8843">#8843</a>)</li>
+    <li>モンスターの生成上限階層 (max_level) を JSON から指定可能にする (<a href="https://github.com/deskull-m/bakabakaband/pull/8814">#8814</a>)</li>
+</ul>
+
+<h3>モンスターの体構造</h3>
+<ul>
+    <li>体構造に不定形 (FORMLESS) を追加し、装備枠を一切持たせない (<a href="https://github.com/deskull-m/bakabakaband/pull/8872">#8872</a>)</li>
+    <li>気体 (GASEOUS) (<a href="https://github.com/deskull-m/bakabakaband/pull/8874">#8874</a>)、ボルテックス (VORTEX) (<a href="https://github.com/deskull-m/bakabakaband/pull/8875">#8875</a>)、ザレン型 (XAREN) (<a href="https://github.com/deskull-m/bakabakaband/pull/8876">#8876</a>)、鳥型 (AVIAN) (<a href="https://github.com/deskull-m/bakabakaband/pull/8883">#8883</a>)、長胴型 (WORM) (<a href="https://github.com/deskull-m/bakabakaband/pull/8884">#8884</a>)、節足型 (INSECTOID) (<a href="https://github.com/deskull-m/bakabakaband/pull/8885">#8885</a>)、有翼人 (WINGED_HUMANOID) (<a href="https://github.com/deskull-m/bakabakaband/pull/8886">#8886</a>)、翼腕人 (WING_ARMED_HUMANOID) (<a href="https://github.com/deskull-m/bakabakaband/pull/8887">#8887</a>)、球体 (SPHERE) (<a href="https://github.com/deskull-m/bakabakaband/pull/8888">#8888</a>) を追加し該当モンスターへ適用</li>
+    <li>クトゥルフ神話の不定形勢 12 体を体構造 FORMLESS へ移す (<a href="https://github.com/deskull-m/bakabakaband/pull/8873">#8873</a>)</li>
+    <li>人型マスコット・獣人・人型骸骨 20 体の体構造を QUADRUPED から HUMANOID へ (<a href="https://github.com/deskull-m/bakabakaband/pull/8823">#8823</a>)</li>
+    <li>修行僧系モンスター (KARATEKA) に利き手・逆手を除いた装備スロット表を追加 (<a href="https://github.com/deskull-m/bakabakaband/pull/9268">#9268</a>)</li>
+    <li>修行僧 (KARATEKA) の胴スロットを軽装 (SOFT_ARMOR) 限定にする (<a href="https://github.com/deskull-m/bakabakaband/pull/9269">#9269</a>)</li>
+</ul>
+
+<h3>モンスターの装備・武装度・文明水準</h3>
+<ul>
+    <li>SOLDIER / WARRIOR フラグを持つモンスターに初期武器を持たせる (<a href="https://github.com/deskull-m/bakabakaband/pull/8815">#8815</a>, <a href="https://github.com/deskull-m/bakabakaband/pull/8816">#8816</a>)</li>
+    <li>ARCHER / RANGER モンスターに初期装備の弓を持たせ射撃ダメージへ反映 (<a href="https://github.com/deskull-m/bakabakaband/pull/8839">#8839</a>)</li>
+    <li>MAGE モンスターに初期装備の軽装 (ローブ等) を着せる (<a href="https://github.com/deskull-m/bakabakaband/pull/8841">#8841</a>)</li>
+    <li>SAMURAI 系モンスターの初期武器を和風武器にする (<a href="https://github.com/deskull-m/bakabakaband/pull/9237">#9237</a>)</li>
+    <li>NINJA 持ちモンスターに職業忍者と同じ装備を持たせる (<a href="https://github.com/deskull-m/bakabakaband/pull/9238">#9238</a>)</li>
+    <li>モンスター種族に武装度 (armament_level) を追加し JSON 指定可能にする (<a href="https://github.com/deskull-m/bakabakaband/pull/8845">#8845</a>)</li>
+    <li>武装度を予算としてモンスターの装備スロットを埋める (<a href="https://github.com/deskull-m/bakabakaband/pull/8846">#8846</a>)</li>
+    <li>職業を持たないモンスターは武装度で武装しないようにする (<a href="https://github.com/deskull-m/bakabakaband/pull/9247">#9247</a>)</li>
+    <li>高位ユニーク 9 体に職業を指定して武装を復活させる (<a href="https://github.com/deskull-m/bakabakaband/pull/9248">#9248</a>)</li>
+    <li>装備品の文明水準 (CivilizationLevel) を新設し武器・防具 238 点へ付与 (<a href="https://github.com/deskull-m/bakabakaband/pull/9271">#9271</a>)</li>
+    <li>文明水準をファンタジー幻想品は区分なしに整理しモンスターへも付与 (<a href="https://github.com/deskull-m/bakabakaband/pull/9272">#9272</a>)</li>
+    <li>文明水準で生成時の装備を制限する (<a href="https://github.com/deskull-m/bakabakaband/pull/9273">#9273</a>)</li>
+    <li>ネタ装備の分類フラグ TR_JOKE を新設し装備品 14 点へ付与 (<a href="https://github.com/deskull-m/bakabakaband/pull/9270">#9270</a>)</li>
+</ul>
+
+<h3>固定ドロップ・装備指定の JSON 化</h3>
+<ul>
+    <li>装備品の固定ドロップをモンスター生成時に装備させる (<a href="https://github.com/deskull-m/bakabakaband/pull/8847">#8847</a>)</li>
+    <li>drop_tvals (アイテム種別ドロップ) の思い出表示を追加 (<a href="https://github.com/deskull-m/bakabakaband/pull/8850">#8850</a>)</li>
+    <li>drop_tval の JSON reader とスキーマを追加 (<a href="https://github.com/deskull-m/bakabakaband/pull/8851">#8851</a>)</li>
+    <li>固定アイテム指定を equip_* / drop_* の 4 キーに整理 (<a href="https://github.com/deskull-m/bakabakaband/pull/8852">#8852</a>)</li>
+    <li>固定アイテム指定に深度加重抽選 (use_allocation_table) を追加 (<a href="https://github.com/deskull-m/bakabakaband/pull/8860">#8860</a>)</li>
+    <li>ハードコーディングからの移行: 血戮悪魔のカオス・ブレード (<a href="https://github.com/deskull-m/bakabakaband/pull/8853">#8853</a>)、ボトルのノームの薬 (<a href="https://github.com/deskull-m/bakabakaband/pull/8854">#8854</a>)、いなり男のスシ (<a href="https://github.com/deskull-m/bakabakaband/pull/8855">#8855</a>)、エンゼルのおもちゃのカンヅメ (<a href="https://github.com/deskull-m/bakabakaband/pull/8859">#8859</a>)、『イェンダーの魔法使い』第二形態のアミュレット (<a href="https://github.com/deskull-m/bakabakaband/pull/8861">#8861</a>)、折れたデスソード (択一・素材指定を新設) (<a href="https://github.com/deskull-m/bakabakaband/pull/8862">#8862</a>)、<code>|</code> グループのミミック (<a href="https://github.com/deskull-m/bakabakaband/pull/8863">#8863</a>)、残り 5 シンボルのミミック (on_dead_mimics を削除) (<a href="https://github.com/deskull-m/bakabakaband/pull/8864">#8864</a>)</li>
+    <li>死亡時メッセージを SPEAK_DEATH へ、死亡時爆発を death_explosion へ移行 (<a href="https://github.com/deskull-m/bakabakaband/pull/8866">#8866</a>)</li>
+    <li>switch_special_death の残り C 群を JSON へ移行し switch 文を全廃 (<a href="https://github.com/deskull-m/bakabakaband/pull/8867">#8867</a>)</li>
+</ul>
+
+<h3>新モンスター・新アイテム</h3>
+<ul>
+    <li>子泣きじじい (<a href="https://github.com/deskull-m/bakabakaband/pull/8736">#8736</a>)</li>
+    <li>24 周目の『シルビア』 (<a href="https://github.com/deskull-m/bakabakaband/pull/8758">#8758</a>)</li>
+    <li>龍神『ニコル・ボーラス』 (<a href="https://github.com/deskull-m/bakabakaband/pull/8774">#8774</a>)</li>
+    <li>撮り鉄 (<a href="https://github.com/deskull-m/bakabakaband/pull/8810">#8810</a>)</li>
+    <li>アルミホイルハット (<a href="https://github.com/deskull-m/bakabakaband/pull/8738">#8738</a>)</li>
+    <li>頭部装備「赤いベレー帽」を新設し GOLAN のレッドベレーに被らせる (<a href="https://github.com/deskull-m/bakabakaband/pull/8870">#8870</a>)</li>
+    <li>ヘルジャパンからの亡命者を「迷い込んだ先進国の観光客」に改める (<a href="https://github.com/deskull-m/bakabakaband/pull/9215">#9215</a>)</li>
+</ul>
+
+<h3>モンスターデータの調整</h3>
+<ul>
+    <li>明らかに戦士であるモンスター 10 体に WARRIOR フラグを付与 (<a href="https://github.com/deskull-m/bakabakaband/pull/8822">#8822</a>)</li>
+    <li>職業名を冠するモンスター 12 体に欠落していた職業フラグを付与 (<a href="https://github.com/deskull-m/bakabakaband/pull/8826">#8826</a>)</li>
+    <li>黒騎士系・白騎士系に PALADIN フラグを付与 (<a href="https://github.com/deskull-m/bakabakaband/pull/8827">#8827</a>)、進化先 3 体にも付与 (<a href="https://github.com/deskull-m/bakabakaband/pull/8840">#8840</a>)</li>
+    <li>グウィンの黒騎士とアシュラムの職業フラグを PALADIN から WARRIOR へ変更 (<a href="https://github.com/deskull-m/bakabakaband/pull/8828">#8828</a>)</li>
+    <li>アライアンス GOLAN の全モンスターに軍服を装備させる (<a href="https://github.com/deskull-m/bakabakaband/pull/8868">#8868</a>)、制服に軍帽を追加し支給品として強化を抑止 (<a href="https://github.com/deskull-m/bakabakaband/pull/8869">#8869</a>)</li>
+    <li>クトゥルフ神話の旧支配者・神格 19 体の武装度を 0 にする (<a href="https://github.com/deskull-m/bakabakaband/pull/8871">#8871</a>)</li>
+    <li>解説文が名指しする武具を equip_kind で実際に持たせる (第1弾 15 体 <a href="https://github.com/deskull-m/bakabakaband/pull/8877">#8877</a>、第2弾 Lv0-29 の 22 体 <a href="https://github.com/deskull-m/bakabakaband/pull/8878">#8878</a>、第4弾 Lv50+ の 24 体 <a href="https://github.com/deskull-m/bakabakaband/pull/8879">#8879</a>)</li>
+    <li>グロンドを混沌のサーペント専用に戻し、メルコールに黄金の槍を持たせる (<a href="https://github.com/deskull-m/bakabakaband/pull/8881">#8881</a>)</li>
+    <li>黄金の槍を『冥王メルコールの大槍』の INSTA_ART ベースにし、メルコールへ割り当て (<a href="https://github.com/deskull-m/bakabakaband/pull/8882">#8882</a>)</li>
+    <li>フリーザ一族の 3 種に惑星戦士用戦闘ジャケットを装備させる (<a href="https://github.com/deskull-m/bakabakaband/pull/9213">#9213</a>)</li>
+    <li>街の t シンボルの貧窮層に汚れたボロ服を装備させる (<a href="https://github.com/deskull-m/bakabakaband/pull/9214">#9214</a>)</li>
+    <li>イーク 9 種に軽量の刃物 (ダガー) を持たせる (<a href="https://github.com/deskull-m/bakabakaband/pull/9216">#9216</a>)</li>
+    <li>AMBERITE (アンバーの血族) フラグを持つモンスターにプレイヤー種族 AMBERITE を付与 (<a href="https://github.com/deskull-m/bakabakaband/pull/9222">#9222</a>)</li>
+    <li>エルフのクロークを青銅器時代の品に分類し石器水準の個体から外す (<a href="https://github.com/deskull-m/bakabakaband/pull/9274">#9274</a>)</li>
+</ul>
+
+<h3>フロア</h3>
+<ul>
+    <li>ダンジョンフロアの最大サイズを 240x240 から 132x132 に縮小する (<a href="https://github.com/deskull-m/bakabakaband/pull/9276">#9276</a>)</li>
+    <li>階の雰囲気で宿敵の方角を 16 方位で伝える (<a href="https://github.com/deskull-m/bakabakaband/pull/9277">#9277</a>)</li>
+    <li>フロアサイズの段階選択がデッドコードだったのを修正し抽選に下限を入れる (<a href="https://github.com/deskull-m/bakabakaband/pull/9278">#9278</a>)</li>
+    <li>フロアサイズの試算値を段階分布復活後の実測基準に是正する (<a href="https://github.com/deskull-m/bakabakaband/pull/9279">#9279</a>)</li>
+</ul>
+
+<h3>画面表示・キャラクタダンプ</h3>
+<ul>
+    <li>c コマンドのステータス 1 ページ目に自分の体構造を表示する (<a href="https://github.com/deskull-m/bakabakaband/pull/8811">#8811</a>)</li>
+    <li>装備一覧から体構造的に存在しない部位を消去する (<a href="https://github.com/deskull-m/bakabakaband/pull/8812">#8812</a>)</li>
+    <li>特性フラグ一覧・能力修正表の装備列から非該当部位を消去する (<a href="https://github.com/deskull-m/bakabakaband/pull/8813">#8813</a>)</li>
+    <li>キャラクタダンプに [これまでの出来事] 節を追加 (<a href="https://github.com/deskull-m/bakabakaband/pull/9235">#9235</a>)</li>
+    <li>キャラクタダンプに [各アライアンスへの印象値] 節を追加 (<a href="https://github.com/deskull-m/bakabakaband/pull/9236">#9236</a>)</li>
+    <li>キャラダンプで帰還場所を「訪問済み」と「解放済み・未訪問」に分ける (hengband#5730 相当) (<a href="https://github.com/deskull-m/bakabakaband/pull/9110">#9110</a>)</li>
+</ul>
+
+<h3>フレーバー</h3>
+<ul>
+    <li>クッソ汚い噂を追加 (<a href="https://github.com/deskull-m/bakabakaband/pull/8733">#8733</a>, <a href="https://github.com/deskull-m/bakabakaband/pull/8734">#8734</a>, <a href="https://github.com/deskull-m/bakabakaband/pull/8745">#8745</a>, <a href="https://github.com/deskull-m/bakabakaband/pull/8748">#8748</a>, <a href="https://github.com/deskull-m/bakabakaband/pull/8755">#8755</a>, <a href="https://github.com/deskull-m/bakabakaband/pull/8756">#8756</a>, <a href="https://github.com/deskull-m/bakabakaband/pull/8769">#8769</a>, <a href="https://github.com/deskull-m/bakabakaband/pull/8778">#8778</a>, <a href="https://github.com/deskull-m/bakabakaband/pull/8779">#8779</a>, <a href="https://github.com/deskull-m/bakabakaband/pull/8797">#8797</a>, <a href="https://github.com/deskull-m/bakabakaband/pull/8804">#8804</a>, <a href="https://github.com/deskull-m/bakabakaband/pull/8806">#8806</a>)</li>
+</ul>
+
+<h3>不具合修正 (馬鹿馬鹿蛮怒独自)</h3>
+<ul>
+    <li>通常の死亡からの復活でデバッグ/詐欺使用の印 (no_score) が付く不具合を修正 (<a href="https://github.com/deskull-m/bakabakaband/pull/9301">#9301</a>)</li>
+    <li>種族分類 76 種が思い出に表示されない配線漏れを修正 (<a href="https://github.com/deskull-m/bakabakaband/pull/9300">#9300</a>)</li>
+    <li>セーブデータ版番号の採番衝突を解消し時限効果ダンプを自己記述化 (v60) (<a href="https://github.com/deskull-m/bakabakaband/pull/9246">#9246</a>)</li>
+    <li>独自職業で起動できない問題と、配布から漏れていたデータファイルを修正 (<a href="https://github.com/deskull-m/bakabakaband/pull/9129">#9129</a>)</li>
+    <li>オートローラーを整数 3〜17 の基本能力値指定で正しく機能させる (<a href="https://github.com/deskull-m/bakabakaband/pull/9131">#9131</a>)</li>
+    <li>モンスター能力詠唱の MP 不足時の麻痺時間が short で折り返す不具合を修正 (<a href="https://github.com/deskull-m/bakabakaband/pull/9134">#9134</a>)</li>
+    <li>町条件式 $RANDOMn の剰余が負になりうる不具合を修正 (hengband#5795 残り) (<a href="https://github.com/deskull-m/bakabakaband/pull/9135">#9135</a>)</li>
+    <li>固定クエストマップ行の埋め込み NUL を読み込み時に拒否 (hengband#5796 相当) (<a href="https://github.com/deskull-m/bakabakaband/pull/9136">#9136</a>)</li>
+    <li>ONLY_GOLD のドロップ枠が非 <code>$</code> 種族で潰れるガードを修正 (<a href="https://github.com/deskull-m/bakabakaband/pull/9217">#9217</a>)</li>
+    <li>武具を自ら調えない体 (獣・蟲等) に武装度由来の装備を持たせない (<a href="https://github.com/deskull-m/bakabakaband/pull/9218">#9218</a>)</li>
+    <li>人型以外の体構造から通常装備スロットを全て取り除く (<a href="https://github.com/deskull-m/bakabakaband/pull/9219">#9219</a>)</li>
+    <li>魔法領域未設定時に初期装備生成が例外で落ちるのを修正 (<a href="https://github.com/deskull-m/bakabakaband/pull/8844">#8844</a>)</li>
+    <li>固定ドロップの個数ダイスが "XdY" 指定と逆順に振られていた不具合を修正 (<a href="https://github.com/deskull-m/bakabakaband/pull/8848">#8848</a>)</li>
+    <li>固定ドロップの思い出表示が一度も出ていなかった不具合を修正 (<a href="https://github.com/deskull-m/bakabakaband/pull/8849">#8849</a>)</li>
+    <li>固定ドロップ (drop_kind / drop_tval) に drop_chosen_item ガードを追加 (<a href="https://github.com/deskull-m/bakabakaband/pull/8865">#8865</a>)</li>
+    <li>噂データの EUC-JP 変換不能文字を修正し Linux での起動失敗を解消 (<a href="https://github.com/deskull-m/bakabakaband/pull/8889">#8889</a>)</li>
+    <li>CRLF 改行のデータファイルで解析エラーになる問題を修正 (<a href="https://github.com/deskull-m/bakabakaband/pull/8891">#8891</a>)</li>
+    <li>効果音ファイルが make dist / EXTRA_DIST から抜けていたのを修正 (<a href="https://github.com/deskull-m/bakabakaband/pull/8796">#8796</a>)</li>
+</ul>
+
+<h3>変愚蛮怒からの取り込み: 不具合修正</h3>
+<ul>
+    <li>武器匠で折れた武器を一度に複数修復できてしまう不具合 (hengband#5530) (<a href="https://github.com/deskull-m/bakabakaband/pull/8791">#8791</a>)</li>
+    <li>射撃武器の命中・ダメージ修正が変異打撃や投擲に乗る不具合 (hengband#5533) (<a href="https://github.com/deskull-m/bakabakaband/pull/8792">#8792</a>)</li>
+    <li>デバッグコマンドの「願い」でクラッシュする不具合 (hengband#5535) (<a href="https://github.com/deskull-m/bakabakaband/pull/8807">#8807</a>)</li>
+    <li>召喚失敗時に summon_named_creature() が成功を返す不具合 (hengband#5543) (<a href="https://github.com/deskull-m/bakabakaband/pull/8829">#8829</a>)</li>
+    <li>量子生物のペットが見えない所で消滅しても悲しい気分のメッセージが出ない (hengband#5553) (<a href="https://github.com/deskull-m/bakabakaband/pull/8941">#8941</a>)</li>
+    <li>行頭全角右半分セルとカラー設定変更での画面バッファ範囲外読み書き (hengband#5557) (<a href="https://github.com/deskull-m/bakabakaband/pull/8943">#8943</a>)</li>
+    <li>prf ファイル書き出し失敗時の NULL 書き込みと誤成功表示 (hengband#5558) (<a href="https://github.com/deskull-m/bakabakaband/pull/8944">#8944</a>)</li>
+    <li>ヘルプの「ファイルへ移動」で存在しないファイル名指定時の異常終了 (hengband#5559) (<a href="https://github.com/deskull-m/bakabakaband/pull/8945">#8945</a>)</li>
+    <li>店の像の材質が起動時に固定され --fixed-seed で再現しない不具合 (hengband#5569) (<a href="https://github.com/deskull-m/bakabakaband/pull/8949">#8949</a>)</li>
+    <li>マクロのトリガーキー入力によるスタックバッファオーバーラン (hengband#5584) (<a href="https://github.com/deskull-m/bakabakaband/pull/8951">#8951</a>)</li>
+    <li>user_name() のユーザー名コピーによるバッファオーバーラン (hengband#5585・部分) (<a href="https://github.com/deskull-m/bakabakaband/pull/8952">#8952</a>)</li>
+    <li>モンスターの思い出にオーラ・状態異常無効が記録されない不具合 (hengband#5590) (<a href="https://github.com/deskull-m/bakabakaband/pull/8953">#8953</a>)</li>
+    <li>盲目時に深淵属性の攻撃でダメージを受けない不具合 (hengband#5593) (<a href="https://github.com/deskull-m/bakabakaband/pull/8954">#8954</a>)</li>
+    <li>元素使い (闇) の単体抹殺が光弱点の思い出有無で効果が変わる不具合 (hengband#5597) (<a href="https://github.com/deskull-m/bakabakaband/pull/8955">#8955</a>)</li>
+    <li>虚無・深淵ブレスの威力が HP753 で倍化する不具合 (hengband#5598) (<a href="https://github.com/deskull-m/bakabakaband/pull/8956">#8956</a>)</li>
+    <li>見えない耐性持ちモンスターがモンスターのオーラでダメージを受ける不具合 (hengband#5609) (<a href="https://github.com/deskull-m/bakabakaband/pull/8959">#8959</a>)</li>
+    <li>弱いモンスターを倒す (KILL_BODY) ことが思い出に記録されない不具合 (hengband#5610) (<a href="https://github.com/deskull-m/bakabakaband/pull/8960">#8960</a>)</li>
+    <li>モンスター知識メニューで一覧が空のまま r を押すと異常終了する不具合 (hengband#5613) (<a href="https://github.com/deskull-m/bakabakaband/pull/8961">#8961</a>)</li>
+    <li>ヘルプの不正リンク・~ユーザー名展開失敗での異常終了 (hengband#5614) (<a href="https://github.com/deskull-m/bakabakaband/pull/8962">#8962</a>)</li>
+    <li>format() の長大出力バグと %^s 誤記 (hengband#5581) (<a href="https://github.com/deskull-m/bakabakaband/pull/8969">#8969</a>)</li>
+    <li>既知アイテム一覧の潜在的な範囲外アクセス (hengband#5563) (<a href="https://github.com/deskull-m/bakabakaband/pull/8980">#8980</a>)</li>
+    <li>割れた薬の効果中の所持品移動で別アイテムが壊れる問題 (hengband#5685) (<a href="https://github.com/deskull-m/bakabakaband/pull/9008">#9008</a>)</li>
+    <li>NUL を含む行を読むと次の行とつながる問題 (hengband#5702) (<a href="https://github.com/deskull-m/bakabakaband/pull/9010">#9010</a>)</li>
+    <li>モンスター同士のダメージの無敵・死亡・恐怖・全耐性・手榴弾の各判定 (hengband#5752) (<a href="https://github.com/deskull-m/bakabakaband/pull/9013">#9013</a>)</li>
+    <li>モンスターの呪文相手探索で敵対モンスターにのみ射線計算する (hengband#5769) (<a href="https://github.com/deskull-m/bakabakaband/pull/9048">#9048</a>)</li>
+    <li>メッセージ消去待ち中の再リサイズで画面が空白になる問題 (hengband#5741) (<a href="https://github.com/deskull-m/bakabakaband/pull/9050">#9050</a>)</li>
+    <li>乱数を引く順序がコンパイラ依存になる問題 (hengband#5732) (<a href="https://github.com/deskull-m/bakabakaband/pull/9051">#9051</a>)</li>
+    <li>タイトル画面のサブウィンドウリサイズで field1 BGM が鳴る問題 (hengband#5761) (<a href="https://github.com/deskull-m/bakabakaband/pull/9054">#9054</a>)</li>
+    <li>英語版で耐性発動のメッセージが grows になっているのを glows に (hengband#5618) (<a href="https://github.com/deskull-m/bakabakaband/pull/9060">#9060</a>)</li>
+    <li>英語版で --output-spoilers 指定時の異常終了 (hengband#5654) (<a href="https://github.com/deskull-m/bakabakaband/pull/9063">#9063</a>)</li>
+    <li>--output-spoilers が -d 指定ディレクトリを無視する問題 (hengband#5653) (<a href="https://github.com/deskull-m/bakabakaband/pull/9064">#9064</a>)</li>
+    <li>Unix 日本語版で -u に日本語名を渡すと表示/セーブファイル名が壊れる不具合 (hengband#5674) (<a href="https://github.com/deskull-m/bakabakaband/pull/9065">#9065</a>)</li>
+    <li>床の巻物読了後にインデックス移動で別アイテムが消費される不具合 (hengband#5679) (<a href="https://github.com/deskull-m/bakabakaband/pull/9081">#9081</a>)</li>
+    <li>ダンジョンの主の配置でフロア生成が無限ループ/距離条件無視でモンスター生成する不具合 (hengband#5707) (<a href="https://github.com/deskull-m/bakabakaband/pull/9082">#9082</a>)</li>
+    <li>アイテム名記述の文字列境界バグ群と建物定義行の範囲外読み (hengband#5669) (<a href="https://github.com/deskull-m/bakabakaband/pull/9083">#9083</a>)</li>
+    <li>未鑑定品の銘が全角前半バイトで終わると終端を越えて読む不具合 (hengband#5687 部分) (<a href="https://github.com/deskull-m/bakabakaband/pull/9084">#9084</a>)</li>
+    <li>全角前半バイト終端の文字列で範囲外読み書きする不具合群 (hengband#5686) (<a href="https://github.com/deskull-m/bakabakaband/pull/9085">#9085</a>)</li>
+    <li>2 倍幅タイルで全体図サブウィンドウが狭いとゲームが落ちる不具合 (hengband#5776) (<a href="https://github.com/deskull-m/bakabakaband/pull/9091">#9091</a>)</li>
+    <li>発動「巨大アイス・ボール (400)」が威力 100 で発動する不具合 (hengband#5616) (<a href="https://github.com/deskull-m/bakabakaband/pull/9092">#9092</a>)</li>
+    <li>英語版の毒発動効果の説明と部屋生成判定の重複分岐 (hengband#5617 部分) (<a href="https://github.com/deskull-m/bakabakaband/pull/9093">#9093</a>)</li>
+    <li>codeconv() の文字コード判定 (第2水準漢字・ASCII 上書き) (hengband#5624/#5626) (<a href="https://github.com/deskull-m/bakabakaband/pull/9094">#9094</a>)</li>
+    <li>不正なマルチバイト文字で区切りを読み飛ばさない (hengband#5619) (<a href="https://github.com/deskull-m/bakabakaband/pull/9095">#9095</a>)</li>
+    <li>string-processor の 2 バイト文字走査の共通化とバグ修正 (hengband#5547) (<a href="https://github.com/deskull-m/bakabakaband/pull/9097">#9097</a>)</li>
+    <li>2 バイト文字を考慮した str_find_position とファイル表示の範囲外読み (hengband#5688・ファイル表示分) (<a href="https://github.com/deskull-m/bakabakaband/pull/9098">#9098</a>)</li>
+    <li>自動拾いエディタの漢字判定の共通化とクラッシュ修正 (hengband#5611) (<a href="https://github.com/deskull-m/bakabakaband/pull/9101">#9101</a>)</li>
+    <li>範囲選択したまま横スクロールでのエディタ異常終了 (hengband#5648) (<a href="https://github.com/deskull-m/bakabakaband/pull/9102">#9102</a>)</li>
+    <li>MP 不足時の状態異常時間が short で折り返す不具合 (hengband#5794) (<a href="https://github.com/deskull-m/bakabakaband/pull/9114">#9114</a>)</li>
+    <li>アリーナ入場と魔力消去で持続強化状態が残る不具合 (hengband#5788) (<a href="https://github.com/deskull-m/bakabakaband/pull/9115">#9115</a>)</li>
+    <li>エゴ適用後のボーナスと価格計算の整数範囲超過 (hengband#5783・オーバーフロー対策先行) (<a href="https://github.com/deskull-m/bakabakaband/pull/9116">#9116</a>)</li>
+    <li>町条件式の変数に不正な数値があると例外やゼロ除算が起きる不具合 (hengband#5795・クラッシュ対策) (<a href="https://github.com/deskull-m/bakabakaband/pull/9117">#9117</a>)</li>
+    <li>凡庸化で銘・束の個数・ロッドの充填が失われる不具合 (hengband#5818) (<a href="https://github.com/deskull-m/bakabakaband/pull/9137">#9137</a>)</li>
+</ul>
+
+<h3>変愚蛮怒からの取り込み: 定義ファイルの検証強化</h3>
+<ul>
+    <li>Dice::parse で整数末尾の余分な文字・符号・空白を拒否する (hengband#5755) (<a href="https://github.com/deskull-m/bakabakaband/pull/9030">#9030</a>)</li>
+    <li>JSON 整数の範囲判定で符号なし値の折り返しを防ぐ (hengband#5640) (<a href="https://github.com/deskull-m/bakabakaband/pull/9061">#9061</a>)</li>
+    <li>QuestReader のフラグ要素の型を検証する (hengband#5642) (<a href="https://github.com/deskull-m/bakabakaband/pull/9062">#9062</a>)</li>
+    <li>ベースアイテム ID を整数縮小の前に検証する (hengband#5694) (<a href="https://github.com/deskull-m/bakabakaband/pull/9086">#9086</a>)</li>
+    <li>RaceReader の ID 範囲とシンボル文字を検証する (hengband#5693 部分) (<a href="https://github.com/deskull-m/bakabakaband/pull/9089">#9089</a>)</li>
+    <li>クエスト凡例の整数を縮小の前に検証する (hengband#5698) (<a href="https://github.com/deskull-m/bakabakaband/pull/9090">#9090</a>)</li>
+    <li>整数読取で格納先の型の表現範囲を変換前に検査 (hengband#5781) (<a href="https://github.com/deskull-m/bakabakaband/pull/9096">#9096</a>)</li>
+    <li>固定クエストのマップがフロア範囲を超える場合に読み込みを拒否する (hengband#5727) (<a href="https://github.com/deskull-m/bakabakaband/pull/9105">#9105</a>)</li>
+    <li>クエストの開始位置がマップ候補の範囲外なら読み込みを拒否する (hengband#5774) (<a href="https://github.com/deskull-m/bakabakaband/pull/9106">#9106</a>)</li>
+    <li>設定ファイル・町マップの条件式を evaluate_condition_expression() に共通化 (hengband#5704/#5706) (<a href="https://github.com/deskull-m/bakabakaband/pull/9107">#9107</a>)</li>
+    <li>設定ファイルの条件式を検証してエラーを報告する (hengband#5763) (<a href="https://github.com/deskull-m/bakabakaband/pull/9108">#9108</a>)</li>
+    <li>ベースアイテム ID 上限と件数処理を 32767 に揃える (hengband#5754) (<a href="https://github.com/deskull-m/bakabakaband/pull/9113">#9113</a>)、その前提となるテスト基盤を先行移植 (<a href="https://github.com/deskull-m/bakabakaband/pull/9112">#9112</a>)</li>
+    <li>info_set_string の言語別 lookup と型検証を共通化する (hengband#5734) (<a href="https://github.com/deskull-m/bakabakaband/pull/9049">#9049</a>)</li>
+</ul>
+
+<h3>変愚蛮怒からの取り込み: 定義ファイルの JSONC 化</h3>
+<ul>
+    <li>固定クエストの定義を per-quest JSONC に移行 (hengband#5486) (<a href="https://github.com/deskull-m/bakabakaband/pull/8759">#8759</a>, <a href="https://github.com/deskull-m/bakabakaband/pull/8790">#8790</a>)</li>
+    <li>EgoDefinitions (hengband#5571) (<a href="https://github.com/deskull-m/bakabakaband/pull/8963">#8963</a>)</li>
+    <li>荒野定義 (hengband#5572) (<a href="https://github.com/deskull-m/bakabakaband/pull/8964">#8964</a>)</li>
+    <li>街の地形プリファレンス、地形タグを検証 (hengband#5605) (<a href="https://github.com/deskull-m/bakabakaband/pull/8976">#8976</a>)</li>
+    <li>街定義リスト (hengband#5612) (<a href="https://github.com/deskull-m/bakabakaband/pull/8981">#8981</a>)</li>
+    <li>Vault 定義 (hengband#5549・bakaba 拡張形式) (<a href="https://github.com/deskull-m/bakabakaband/pull/8988">#8988</a>)</li>
+    <li>職業技能定義 (hengband#5545・bakaba 拡張 9 技能対応) (<a href="https://github.com/deskull-m/bakabakaband/pull/9099">#9099</a>)</li>
+</ul>
+
+<h3>変愚蛮怒からの取り込み: 描画・再計算の整理と最適化</h3>
+<ul>
+    <li>Grid の flow 情報を std::array 化し update_flow() を最適化 (hengband#5712) (<a href="https://github.com/deskull-m/bakabakaband/pull/9052">#9052</a>)</li>
+    <li>地形シンボル/タグの配列化と map_info() 周辺の最適化 (hengband#5714) (<a href="https://github.com/deskull-m/bakabakaband/pull/9053">#9053</a>)</li>
+    <li>所持品の自動破壊・結合・並べ替えをコマンド区切りに集約 (hengband#5720) (<a href="https://github.com/deskull-m/bakabakaband/pull/9055">#9055</a>)</li>
+    <li>アイテム使用中に所持品整理フラグを退避しない (hengband#5731) (<a href="https://github.com/deskull-m/bakabakaband/pull/9056">#9056</a>)</li>
+    <li>所持品整理フラグを StatusRecalculatingFlag から分離 (hengband#5739) (<a href="https://github.com/deskull-m/bakabakaband/pull/9057">#9057</a>)</li>
+    <li>所持品整理予約の関数化・目的の無い handle_stuff 除去・剣術家の型崩し再計算 (hengband#5758) (<a href="https://github.com/deskull-m/bakabakaband/pull/9058">#9058</a>)</li>
+    <li>表示のみの描画は handle_stuff を window_stuff/redraw_stuff に絞る (hengband#5746) (<a href="https://github.com/deskull-m/bakabakaband/pull/9059">#9059</a>)</li>
+    <li>移動・待機でのマップ全体再描画をやめ、遅延再描画の不具合を修正 (hengband#5760) (<a href="https://github.com/deskull-m/bakabakaband/pull/9103">#9103</a>)</li>
+    <li>設定変更のコマンドで記号やオプションを変えたらマップを再描画する (hengband#5782) (<a href="https://github.com/deskull-m/bakabakaband/pull/9104">#9104</a>)</li>
+    <li>-more- 待ち中のサブウィンドウの古い地図を解消し地図再描画の遅延オプションを追加 (hengband#5715 ほか) (<a href="https://github.com/deskull-m/bakabakaband/pull/9109">#9109</a>)</li>
+    <li>宿屋・賭け・換金・改名でプレイヤー情報/呪文サブウィンドウが描き直されない (hengband#5806) (<a href="https://github.com/deskull-m/bakabakaband/pull/9118">#9118</a>)</li>
+    <li>建物の中で所持金が変わってもプレイヤー情報サブウィンドウが描き直されない (hengband#5804) (<a href="https://github.com/deskull-m/bakabakaband/pull/9119">#9119</a>)</li>
+    <li>メインウィンドウ全体・マップ・所持品整理の予約を RedrawingFlagsUpdater のメソッドにする (hengband#5797/#5800/#5793) (<a href="https://github.com/deskull-m/bakabakaband/pull/9120">#9120</a>, <a href="https://github.com/deskull-m/bakabakaband/pull/9121">#9121</a>, <a href="https://github.com/deskull-m/bakabakaband/pull/9124">#9124</a>)</li>
+    <li>周囲サブウィンドウで map_info() の結果をキャッシュ (hengband#5792) (<a href="https://github.com/deskull-m/bakabakaband/pull/9122">#9122</a>)</li>
+    <li>ダンジョン全体図を覚えた表示の変化で描き直す (hengband#5807) (<a href="https://github.com/deskull-m/bakabakaband/pull/9123">#9123</a>)</li>
+    <li>武器の祝福で所持品一覧が描き直されない不具合 (hengband#5803) (<a href="https://github.com/deskull-m/bakabakaband/pull/9125">#9125</a>)</li>
+    <li>autopick エディタ状態をクラス化し自動刻みの描き直し予約を分離 (hengband#5791) (<a href="https://github.com/deskull-m/bakabakaband/pull/9126">#9126</a>)</li>
+    <li>思い出サブウィンドウを表示内容の変化で描き直す (hengband#5810) (<a href="https://github.com/deskull-m/bakabakaband/pull/9128">#9128</a>)</li>
+    <li>床のアイテム一覧サブウィンドウを変化時に描き直す (hengband#5811) (<a href="https://github.com/deskull-m/bakabakaband/pull/9130">#9130</a>)</li>
+    <li>装備強化・凡庸化・解呪時の能力再計算とサブウィンドウ描き直し (hengband#5812) (<a href="https://github.com/deskull-m/bakabakaband/pull/9132">#9132</a>)</li>
+    <li>コマンド入力待ちごとの全サブウィンドウ描き直しを廃止 (hengband#5816) (<a href="https://github.com/deskull-m/bakabakaband/pull/9133">#9133</a>)</li>
+    <li>維持している呪術が変わったときの更新の予約をまとめる (hengband#5928) (<a href="https://github.com/deskull-m/bakabakaband/pull/9139">#9139</a>)</li>
+    <li>呪術維持中は毎ターンの再計算をまとめて省く／我慢・復讐の表示描き直しを整理 (hengband#5931) (<a href="https://github.com/deskull-m/bakabakaband/pull/9155">#9155</a>)</li>
+</ul>
+
+<h3>変愚蛮怒からの取り込み: リファクタリング</h3>
+<ul>
+    <li>店主をグローバル変数 ot_ptr ではなく店舗から求める (hengband#5570) (<a href="https://github.com/deskull-m/bakabakaband/pull/8966">#8966</a>)</li>
+    <li>店舗の内部処理でグローバル変数 st_ptr を書き換えない (hengband#5575) (<a href="https://github.com/deskull-m/bakabakaband/pull/8967">#8967</a>)、st_ptr を廃止 (hengband#5576) (<a href="https://github.com/deskull-m/bakabakaband/pull/8968">#8968</a>)</li>
+    <li>店舗のグローバル leave_store / allow_inc を廃止し break を return に (<a href="https://github.com/deskull-m/bakabakaband/pull/8970">#8970</a>)</li>
+    <li>店舗のページ表示の状態を StoreScreen にまとめる (hengband#5582) (<a href="https://github.com/deskull-m/bakabakaband/pull/8971">#8971</a>)</li>
+    <li>店舗で現在地を偽装せず、対象の町を明示的に渡す (hengband#5583) (<a href="https://github.com/deskull-m/bakabakaband/pull/8972">#8972</a>)</li>
+    <li>店舗の価格計算を純粋関数化し売買を enum で指定する (hengband#5586) (<a href="https://github.com/deskull-m/bakabakaband/pull/8973">#8973</a>)</li>
+    <li>青魔法・ものまねのブレス/ボール/ボルトを共通表に統合 (hengband#5588) (<a href="https://github.com/deskull-m/bakabakaband/pull/8974">#8974</a>)</li>
+    <li>z-rand の乱数生成を自前アルゴリズム化しテスト追加 (hengband#5604) (<a href="https://github.com/deskull-m/bakabakaband/pull/8975">#8975</a>)</li>
+    <li>描画等の乱数をゲーム進行に影響しない乱数生成器へ分離 (hengband#5606) (<a href="https://github.com/deskull-m/bakabakaband/pull/8977">#8977</a>)</li>
+    <li>参照で受ける必要のないローカル変数を値で受けるように修正 (hengband#5573) (<a href="https://github.com/deskull-m/bakabakaband/pull/8950">#8950</a>)</li>
+    <li>2 バイト文字判定を is_multibyte_char_at() に共通化 (hengband#5703) (<a href="https://github.com/deskull-m/bakabakaband/pull/9100">#9100</a>)</li>
+    <li>info-reader のヘッダで nlohmann-json の前方宣言ヘッダを使用する (hengband#5519) (<a href="https://github.com/deskull-m/bakabakaband/pull/8780">#8780</a>)</li>
+    <li>Windows 版の #define の定数を constexpr にする (hengband#5930) (<a href="https://github.com/deskull-m/bakabakaband/pull/9156">#9156</a>)</li>
+</ul>
+
+<h3>変愚蛮怒からの取り込み: 制御サーバ・ヘッドレス端末・入力文脈</h3>
+<ul>
+    <li>TCP ソケットによるゲーム制御サーバを追加する (hengband#5518) (<a href="https://github.com/deskull-m/bakabakaband/pull/8782">#8782</a>)</li>
+    <li>画面を持たない端末フロントエンド (--headless) を追加する (hengband#5521) (<a href="https://github.com/deskull-m/bakabakaband/pull/8783">#8783</a>)</li>
+    <li>bot 供給源別の能力出力と店スナップショットの改良 (hengband#5517) (<a href="https://github.com/deskull-m/bakabakaband/pull/8757">#8757</a>)</li>
+    <li>bot JSON protocol v2 と計測ログのローテーションを追加 (hengband#5554) (<a href="https://github.com/deskull-m/bakabakaband/pull/8984">#8984</a>)</li>
+    <li>ヘッドレス端末のサイズ指定・リサイズと -続く- 待ち中の端末リサイズ不具合を修正 (hengband#5722/#5724) (<a href="https://github.com/deskull-m/bakabakaband/pull/9111">#9111</a>)</li>
+    <li>制御サーバの state で店の在庫を返す (hengband#5934) (<a href="https://github.com/deskull-m/bakabakaband/pull/9138">#9138</a>)</li>
+    <li>入力待ちの文脈 (input-context) の基盤と制御サーバ公開を取り込む (hengband#5837/#5838 ほか) (<a href="https://github.com/deskull-m/bakabakaband/pull/9157">#9157</a>)</li>
+    <li>入力文脈にメッセージの -続く- と次のコマンドの待ちを公開する (hengband#5864/#5878) (<a href="https://github.com/deskull-m/bakabakaband/pull/9158">#9158</a>)</li>
+    <li>入力文脈にアイテム選択・方向・ターゲット・場所指定の待ちを公開する (hengband#5903/#5907/#5918) (<a href="https://github.com/deskull-m/bakabakaband/pull/9161">#9161</a>)</li>
+    <li>何かキーを押す待ちで入力の文脈を公開する (hengband#5932) (<a href="https://github.com/deskull-m/bakabakaband/pull/9162">#9162</a>)</li>
+    <li>独自に 1 文字を読む確認と選択の待ちで入力の文脈を公開する (hengband#5925) (<a href="https://github.com/deskull-m/bakabakaband/pull/9187">#9187</a>, <a href="https://github.com/deskull-m/bakabakaband/pull/9188">#9188</a>)</li>
+</ul>
+
+<h3>変愚蛮怒からの取り込み: ユニットテスト</h3>
+<ul>
+    <li>ユニットテストの土台を作成する (hengband#5522) (<a href="https://github.com/deskull-m/bakabakaband/pull/8789">#8789</a>)</li>
+    <li>時限効果クラスのユニットテストと乱数シード固定ヘルパ (hengband#5525・部分) (<a href="https://github.com/deskull-m/bakabakaband/pull/8808">#8808</a>)</li>
+    <li>Dice / FlagGroup クラスのユニットテスト (hengband#5539/#5541) (<a href="https://github.com/deskull-m/bakabakaband/pull/8830">#8830</a>)</li>
+    <li>MSVC ユニットテストプロジェクト BakabakabandTest の新設・ソリューション登録・登録漏れチェック・CI 実行 (hengband#5537) (<a href="https://github.com/deskull-m/bakabakaband/pull/8833">#8833</a>, <a href="https://github.com/deskull-m/bakabakaband/pull/8834">#8834</a>, <a href="https://github.com/deskull-m/bakabakaband/pull/8835">#8835</a>, <a href="https://github.com/deskull-m/bakabakaband/pull/8836">#8836</a>)</li>
+    <li>Finalizer のユニットテスト追加とクラス改良 (hengband#5551) (<a href="https://github.com/deskull-m/bakabakaband/pull/8938">#8938</a>)</li>
+    <li>定義ファイル読込ユーティリティのテスト追加と info_set_integer 範囲チェック修正 (hengband#5538) (<a href="https://github.com/deskull-m/bakabakaband/pull/8940">#8940</a>)</li>
+    <li>自動拾いエディタの空行追加のテスト追加と最大行数ガード (hengband#5552) (<a href="https://github.com/deskull-m/bakabakaband/pull/8939">#8939</a>)</li>
+    <li>自動拾いエディタのカーソル列補正のテスト追加とマーク列の範囲外読み修正 (hengband#5556) (<a href="https://github.com/deskull-m/bakabakaband/pull/8942">#8942</a>)</li>
+    <li>テストプロジェクトで C4866 を無効化しアサーションを直書きに戻す (hengband#5562・部分) (<a href="https://github.com/deskull-m/bakabakaband/pull/8946">#8946</a>)</li>
+    <li>マクロ表記変換の安全化・Shift トリガー往復修正とテスト追加 (hengband#5561) (<a href="https://github.com/deskull-m/bakabakaband/pull/8947">#8947</a>)</li>
+    <li>pref 行解釈の範囲外書き込み・異常終了修正とテスト追加 (hengband#5565) (<a href="https://github.com/deskull-m/bakabakaband/pull/8948">#8948</a>)</li>
+    <li>angband-files のテスト追加と z-form / path_build 改善 (hengband#5579・クロスプラットフォーム部分) (<a href="https://github.com/deskull-m/bakabakaband/pull/8986">#8986</a>)</li>
+</ul>
+
+<h3>変愚蛮怒からの取り込み: 一括マージ</h3>
+<ul>
+    <li>変愚 3.0.2.6 前後対応までの一括マージ (<a href="https://github.com/deskull-m/bakabakaband/pull/9189">#9189</a>)</li>
+    <li>10/30 前後の変愚修正に追随するマージ (<a href="https://github.com/deskull-m/bakabakaband/pull/9211">#9211</a>)</li>
+    <li>変愚蛮怒 11/1 前後の更新を AI マージ (<a href="https://github.com/deskull-m/bakabakaband/pull/9234">#9234</a>)</li>
+    <li>変愚 3.0.2.7 リリース分までのマージ (<a href="https://github.com/deskull-m/bakabakaband/pull/9267">#9267</a>)</li>
+</ul>
+
+<h3>ビルド・CI・配布</h3>
+<ul>
+    <li>VisualStudio プロジェクトファイルの改行コード (CRLF) を .gitattributes で固定する (hengband#5527) (<a href="https://github.com/deskull-m/bakabakaband/pull/8781">#8781</a>)</li>
+    <li>.gitattributes を追加し改行コードを LF に正規化 (<a href="https://github.com/deskull-m/bakabakaband/pull/8892">#8892</a>)</li>
+    <li>macOS / OpenBSD でコンパイルできない問題を修正 (hengband#5524) (<a href="https://github.com/deskull-m/bakabakaband/pull/8788">#8788</a>)</li>
+    <li>MSVC プロジェクトの共通設定をプロパティシートへ切り出す (hengband#5526) (<a href="https://github.com/deskull-m/bakabakaband/pull/8793">#8793</a>)</li>
+    <li>参照されていない旧 VisualStudio/Hengband プロジェクトを削除 (<a href="https://github.com/deskull-m/bakabakaband/pull/8794">#8794</a>)</li>
+    <li>ゲーム本体を BakabakabandCore 静的ライブラリプロジェクトへ分割する (hengband#5528) (<a href="https://github.com/deskull-m/bakabakaband/pull/8809">#8809</a>)</li>
+    <li>distcheck を行わない CI ジョブではサブモジュールを取得しない (hengband#5607) (<a href="https://github.com/deskull-m/bakabakaband/pull/8957">#8957</a>)</li>
+    <li>--disable-xim で X11 版がビルドできない不具合を修正 (hengband#5608) (<a href="https://github.com/deskull-m/bakabakaband/pull/8958">#8958</a>, <a href="https://github.com/deskull-m/bakabakaband/pull/8979">#8979</a>)</li>
+    <li>リリースビルドに NDEBUG を立て tl ライブラリを更新 (hengband#5574) (<a href="https://github.com/deskull-m/bakabakaband/pull/8965">#8965</a>)</li>
+    <li>maid-x11.cpp を main-unix/x11-helper.cpp に移設し X11 ビルドテストを追加 (hengband#5600) (<a href="https://github.com/deskull-m/bakabakaband/pull/8978">#8978</a>)</li>
+    <li>doctest 2.5.0 更新と GCC16/Clang21 向け record-play-movie 修正 (<a href="https://github.com/deskull-m/bakabakaband/pull/8993">#8993</a>)</li>
+    <li>clang 18 で TerrainList を取り込むファイルがビルドできない問題を修正 (hengband#5757) (<a href="https://github.com/deskull-m/bakabakaband/pull/9047">#9047</a>)</li>
+    <li>Windows 版リリースパッケージ作成スクリプトを整理する (hengband#5546) (<a href="https://github.com/deskull-m/bakabakaband/pull/9127">#9127</a>)</li>
+    <li>lib 配下の全角チルダを波ダッシュへ統一 (EUC-JP 変換対応) (<a href="https://github.com/deskull-m/bakabakaband/pull/9212">#9212</a>)</li>
+</ul>
+
+<h3>内部基盤のリファクタリング (馬鹿馬鹿蛮怒独自)</h3>
+<ul>
+    <li>CreatureEntity 統合 (<a href="https://github.com/deskull-m/bakabakaband/pull/8890">#8890</a>)</li>
+    <li>notify_self にモンスター視認時の 3 人称メッセージを追加 (D2 第3弾) (<a href="https://github.com/deskull-m/bakabakaband/pull/8795">#8795</a>)</li>
+    <li>テレポートの統一クリーチャープリミティブを新設 (D3) (<a href="https://github.com/deskull-m/bakabakaband/pull/8798">#8798</a>)</li>
+</ul>
+
+<h3>ドキュメント</h3>
+<ul>
+    <li>README の先頭にタイトルグラフィックを追加 (<a href="https://github.com/deskull-m/bakabakaband/pull/9244">#9244</a>)</li>
+    <li>フレーバー整合の装備付与 (第2〜4弾) を CLAUDE.md に反映 (<a href="https://github.com/deskull-m/bakabakaband/pull/8880">#8880</a>)</li>
+    <li>PlayerType dummy 軽量化の前提が成立しないことを実測で確認し見送り (D6) (<a href="https://github.com/deskull-m/bakabakaband/pull/8799">#8799</a>)</li>
+</ul>
+
+<h3>リリース作業</h3>
+<ul>
+    <li>Release/0.0.2.0 alpha (<a href="https://github.com/deskull-m/bakabakaband/pull/8730">#8730</a>)</li>
+    <li>0.0.3.0-Alpha リリース (<a href="https://github.com/deskull-m/bakabakaband/pull/9304">#9304</a>)</li>
+</ul>
+<p>
+    すべての変更は @deskull-m によるものです。
+</p>
+<p>
+    <strong>Full Changelog</strong>: <a href="https://github.com/deskull-m/bakabakaband/compare/0.0.2.0...0.0.3.0">https://github.com/deskull-m/bakabakaband/compare/0.0.2.0...0.0.3.0</a>
+</p>
+
+<p>
+    <a href="https://github.com/deskull-m/bakabakaband/releases/tag/0.0.3.0" style="z-index:100;">GitHub</a>
+</p>
