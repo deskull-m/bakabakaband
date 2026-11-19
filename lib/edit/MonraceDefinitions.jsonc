@@ -28437,6 +28437,7 @@
         "OPEN_DOOR",
         "BASH_DOOR",
         "EVIL",
+        "CHOASIAN",
         "ROGUE",
       ],
       "skill": {
@@ -32051,6 +32052,7 @@
         "OPEN_DOOR",
         "BASH_DOOR",
         "EVIL",
+        "CHOASIAN",
         "IM_ACID",
         "IM_FIRE",
         "IM_COLD",
@@ -33681,6 +33683,7 @@
         "TAKE_ITEM",
         "BASH_DOOR",
         "EVIL",
+        "CHOASIAN",
         "RES_TELE",
       ],
       "skill": {
@@ -36639,6 +36642,7 @@
         "BASH_DOOR",
         "SELF_LITE_2",
         "EVIL",
+        "CHOASIAN",
         "IM_ACID",
         "IM_FIRE",
         "IM_POIS",
@@ -37265,6 +37269,7 @@
         "IM_COLD",
         "DEMON",
         "EVIL",
+        "CHOASIAN",
       ],
       "skill": {
         "list": [
@@ -43609,6 +43614,7 @@
       "mob": 130,
       "flags": [
         "EVIL",
+        "CHOASIAN",
         "HUMAN",
         "FORCE_MAXHP",
         "DROP_SKELETON",
