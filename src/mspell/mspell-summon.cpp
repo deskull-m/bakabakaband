@@ -1001,7 +1001,10 @@ MonsterSpellResult spell_RF6_S_AMBERITES(CreatureEntity &creature, POSITION y, P
 
     int count = 0;
     for (auto k = 0; k < S_NUM_4; k++) {
-        count += summon_specific(creature, y, x, rlev, SUMMON_AMBERITES, (PM_ALLOW_GROUP | PM_ALLIANCE_LIMIT | PM_ALLOW_UNIQUE), m_idx) ? 1 : 0;
+        // 血統で定義されたプールなので PM_ALLIANCE_LIMIT は渡さない。
+        // AMBERITE 全 12 体がアライアンス持ちで、同フラグは実質「無所属限定」として
+        // 働くため (get_mon_num() の alliance_type が常に NONE)、渡すと 1 体も召喚できない
+        count += summon_specific(creature, y, x, rlev, SUMMON_AMBERITES, (PM_ALLOW_GROUP | PM_ALLOW_UNIQUE), m_idx) ? 1 : 0;
     }
 
     if (creature.is_blind() && count && mon_to_player) {
@@ -1044,7 +1047,8 @@ MonsterSpellResult spell_RF6_S_CHOASIANS(CreatureEntity &creature, POSITION y, P
 
     int count = 0;
     for (auto k = 0; k < S_NUM_4; k++) {
-        count += summon_specific(creature, y, x, rlev, SUMMON_CHOASIANS, (PM_ALLOW_GROUP | PM_ALLIANCE_LIMIT | PM_ALLOW_UNIQUE), m_idx) ? 1 : 0;
+        // S_AMBERITES と同じ理由で PM_ALLIANCE_LIMIT は渡さない (CHOASIAN 全 6 体が COCHAOS 所属)
+        count += summon_specific(creature, y, x, rlev, SUMMON_CHOASIANS, (PM_ALLOW_GROUP | PM_ALLOW_UNIQUE), m_idx) ? 1 : 0;
     }
 
     if (creature.is_blind() && count && mon_to_player) {
