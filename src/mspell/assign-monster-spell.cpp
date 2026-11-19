@@ -8,6 +8,7 @@
 #include "blue-magic/blue-magic-checker.h"
 #include "effect/attribute-types.h"
 #include "monster-race/race-ability-flags.h"
+#include "monster-race/race-ability-mask.h"
 #include "monster/monster-status.h"
 #include "mspell/mspell-attack/mspell-ball.h"
 #include "mspell/mspell-attack/mspell-bolt.h"
@@ -34,38 +35,11 @@ static MonsterSpellResult monspell_to_player_impl(CreatureEntity &creature, Mons
     CreatureEntity *m_ptr = &creature.get_floor()->get_monster(m_idx);
     MonraceDefinition *r_ptr = &MonraceList::get_instance().get_monrace(m_ptr->get_r_idx());
 
-    // クイルスルグは自身を中心に召喚する
-    if (r_ptr->kind_flags.has(MonsterKindType::QUYLTHLUG)) {
-        switch (ms_type) {
-
-        case MonsterAbilityType::S_KIN:
-        case MonsterAbilityType::S_CYBER:
-        case MonsterAbilityType::S_MONSTER:
-        case MonsterAbilityType::S_MONSTERS:
-        case MonsterAbilityType::S_ANT:
-        case MonsterAbilityType::S_SPIDER:
-        case MonsterAbilityType::S_HOUND:
-        case MonsterAbilityType::S_HYDRA:
-        case MonsterAbilityType::S_FAIRY:
-        case MonsterAbilityType::S_ANGEL:
-        case MonsterAbilityType::S_DEMON:
-        case MonsterAbilityType::S_UNDEAD:
-        case MonsterAbilityType::S_DRAGON:
-        case MonsterAbilityType::S_HI_UNDEAD:
-        case MonsterAbilityType::S_HI_DRAGON:
-        case MonsterAbilityType::S_AMBERITES:
-        case MonsterAbilityType::S_CHOASIANS:
-        case MonsterAbilityType::S_WALL:
-        case MonsterAbilityType::S_INSECT:
-        case MonsterAbilityType::S_ELDRAZI:
-        case MonsterAbilityType::S_ROBOT:
-        case MonsterAbilityType::S_UNIQUE:
-            x = m_ptr->x;
-            y = m_ptr->y;
-            break;
-        default:
-            break;
-        }
+    // クイルスルグは自身を中心に召喚する。召喚特技は全 31 種が対象なので
+    // 個別に case を並べず RF_ABILITY_SUMMON_MASK を参照する (特技を足しても追従する)
+    if (r_ptr->kind_flags.has(MonsterKindType::QUYLTHLUG) && RF_ABILITY_SUMMON_MASK.has(ms_type)) {
+        x = m_ptr->x;
+        y = m_ptr->y;
     }
 
     const auto is_powerful = monster_is_powerful(*creature.get_floor(), m_idx);
@@ -204,39 +178,11 @@ static MonsterSpellResult monspell_to_monster_impl(
     CreatureEntity *m_ptr = &creature.get_floor()->get_monster(m_idx);
     MonraceDefinition *r_ptr = &MonraceList::get_instance().get_monrace(m_ptr->get_r_idx());
 
-    // クイルスルグは自身を中心に召喚する
-    if (r_ptr->kind_flags.has(MonsterKindType::QUYLTHLUG)) {
-        switch (ms_type) {
-
-        case MonsterAbilityType::S_KIN:
-        case MonsterAbilityType::S_CYBER:
-        case MonsterAbilityType::S_MONSTER:
-        case MonsterAbilityType::S_MONSTERS:
-        case MonsterAbilityType::S_ANT:
-        case MonsterAbilityType::S_SPIDER:
-        case MonsterAbilityType::S_HOUND:
-        case MonsterAbilityType::S_HYDRA:
-        case MonsterAbilityType::S_FAIRY:
-        case MonsterAbilityType::S_BIRD:
-        case MonsterAbilityType::S_ANGEL:
-        case MonsterAbilityType::S_DEMON:
-        case MonsterAbilityType::S_UNDEAD:
-        case MonsterAbilityType::S_DRAGON:
-        case MonsterAbilityType::S_HI_UNDEAD:
-        case MonsterAbilityType::S_HI_DRAGON:
-        case MonsterAbilityType::S_AMBERITES:
-        case MonsterAbilityType::S_CHOASIANS:
-        case MonsterAbilityType::S_WALL:
-        case MonsterAbilityType::S_INSECT:
-        case MonsterAbilityType::S_ELDRAZI:
-        case MonsterAbilityType::S_ROBOT:
-        case MonsterAbilityType::S_UNIQUE:
-            x = m_ptr->x;
-            y = m_ptr->y;
-            break;
-        default:
-            break;
-        }
+    // クイルスルグは自身を中心に召喚する。召喚特技は全 31 種が対象なので
+    // 個別に case を並べず RF_ABILITY_SUMMON_MASK を参照する (特技を足しても追従する)
+    if (r_ptr->kind_flags.has(MonsterKindType::QUYLTHLUG) && RF_ABILITY_SUMMON_MASK.has(ms_type)) {
+        x = m_ptr->x;
+        y = m_ptr->y;
     }
     const auto is_powerful = monster_is_powerful(*creature.get_floor(), m_idx);
     if (const auto radius = get_monster_ball_radius(ms_type, is_powerful)) {
