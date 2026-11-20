@@ -2,8 +2,8 @@ extends SubViewportContainer
 
 ## 3D の地図ビュー (最小構成、#9298)
 ##
-## ワールドスナップショット (#9292/#9293) を受け、地形を MultiMesh、クリーチャー・床アイテム・
-## プレイヤーを文字のビルボードで描く。見た目は visual_catalog.gd (#9297) で決める。
+## ワールドスナップショット (#9292/#9293) を受け、地形を MultiMesh、クリーチャー・プレイヤーを立てた
+## 立体の文字、床アイテムを床に寝かせた立体の文字で描く。見た目は visual_catalog.gd (#9297) で決める。
 ## 地図を見ている間だけ view_switcher.gd (#9294) が見せる。
 ##
 ## - 地形はグリッドごとに MultiMesh のインスタンスを 1 つ割り当てる (箱用と板用の 2 つ)。
@@ -68,7 +68,7 @@ const KIND_GLYPH := 3
 var _terrain_labels := {} ## グリッドの添字 → Label3D (文字で描く地形・文字を重ねる地形)
 var _creature_tokens := {} ## id → Node3D (立体の文字と足元の円、_make_token)
 var _creature_tweens := {} ## id → Tween (隣へ動く途中のもの)
-var _item_labels := {} ## グリッドの添字 → Label3D
+var _item_labels := {} ## グリッドの添字 → Node3D (床に寝かせた立体の文字、_make_item_token)
 var _player := Vector2i.ZERO
 var _camera_yaw := 0.0
 var _camera_distance := 22.0
@@ -377,8 +377,9 @@ func _set_token(token: Node3D, text: String, color: Color, scale_factor: float) 
 	material.albedo_color = color
 	material.emission = color
 	material.emission_energy_multiplier = TOKEN_EMISSION
-	var disc: MeshInstance3D = token.get_child(1)
-	(disc.material_override as StandardMaterial3D).albedo_color = disc_color(color)
+	if token.get_child_count() > 1:
+		var disc: MeshInstance3D = token.get_child(1)
+		(disc.material_override as StandardMaterial3D).albedo_color = disc_color(color)
 
 
 ## 足元の円の色: クリーチャーの色を明るめに寄せ、中心の濃さを DISC_ALPHA にする
@@ -394,11 +395,46 @@ func _face_token_to_camera(token: Node3D) -> void:
 	glyph.rotation = Vector3(-deg_to_rad(TOKEN_TILT_DEG), -_camera_yaw, 0.0)
 
 
+## 床アイテムの大きさ (クリーチャーの文字を 1.0 として) と、寝かせた文字の中心の高さ (厚みの半分だけ床から浮かせる)
+const ITEM_TOKEN_SCALE := 0.75
+const ITEM_TOKEN_HEIGHT := TOKEN_DEPTH * ITEM_TOKEN_SCALE * 0.5 + 0.01
+
+
+## 床アイテム 1 つ分の節: 子 0 = 床に寝かせた立体の文字 (Glyph)。足元の円は付けない。
+## 文字の上端がカメラの奥を向くよう寝かせるので、カメラから見て正しい向きで読める
+func _make_item_token(text: String, color: Color) -> Node3D:
+	var token := Node3D.new()
+	var glyph := MeshInstance3D.new()
+	glyph.name = "Glyph"
+	var mesh := TextMesh.new()
+	mesh.font_size = TOKEN_FONT_SIZE
+	mesh.depth = TOKEN_DEPTH * ITEM_TOKEN_SCALE
+	glyph.mesh = mesh
+	var material := StandardMaterial3D.new()
+	material.roughness = 0.6
+	material.emission_enabled = true
+	material.next_pass = _token_outline_material
+	glyph.material_override = material
+	glyph.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_ON
+	token.add_child(glyph)
+	_set_token(token, text, color, ITEM_TOKEN_SCALE)
+	_lay_item_token(token)
+	return token
+
+
+## 床アイテムの文字を床に寝かせ (表を上へ)、カメラの水平の向きに合わせて回す
+func _lay_item_token(token: Node3D) -> void:
+	var glyph: Node3D = token.get_child(0)
+	glyph.rotation = Vector3(-PI / 2.0, -_camera_yaw, 0.0)
+
+
 func _face_tokens_to_camera() -> void:
 	if _player_token != null:
 		_face_token_to_camera(_player_token)
 	for token: Node3D in _creature_tokens.values():
 		_face_token_to_camera(token)
+	for token: Node3D in _item_labels.values():
+		_lay_item_token(token)
 
 
 ## 見せ始めたら、溜まっている変化を取り込む (見ていない間も world_snapshot_changed は来る)
@@ -647,14 +683,14 @@ func _update_item(i: int) -> void:
 	if has_item:
 		var fallback := item_fallback_symbol(_symbols[i * 4], _symbols[i * 4 + 1])
 		var item_visual := catalog.resolve_item(_tvals[i], fallback[0], fallback[1])
-		var label: Label3D = _item_labels.get(i)
+		var label: Node3D = _item_labels.get(i)
 		if label == null:
-			label = _make_glyph(item_visual["glyph"], item_visual["color"], 0.6)
+			label = _make_item_token(item_visual["glyph"], item_visual["color"])
 			_item_root.add_child(label)
 			_item_labels[i] = label
-		label.text = item_visual["glyph"]
-		label.modulate = item_visual["color"]
-		label.position = InputIntents.floor_to_world(Vector2i(i % _width, i / _width), 1.0, 0.3)
+		else:
+			_set_token(label, item_visual["glyph"], item_visual["color"], ITEM_TOKEN_SCALE)
+		label.position = InputIntents.floor_to_world(Vector2i(i % _width, i / _width), 1.0, ITEM_TOKEN_HEIGHT)
 	elif _item_labels.has(i):
 		_item_labels[i].queue_free()
 		_item_labels.erase(i)
@@ -777,7 +813,7 @@ func get_camera_yaw() -> float:
 	return _camera_yaw
 
 
-## 確認用の数 (箱・板として置いたグリッド、クリーチャー・床アイテムのビルボード)
+## 確認用の数 (箱・板として置いたグリッド、クリーチャー・床アイテムの立体の文字)
 func count_instances() -> Dictionary:
 	var boxes := 0
 	var planes := 0

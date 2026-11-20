@@ -174,6 +174,13 @@ func _process(_delta: float) -> bool:
 			if not (glyph.mesh is TextMesh and (glyph.mesh as TextMesh).text != "" and glyph.cast_shadow == GeometryInstance3D.SHADOW_CASTING_SETTING_ON and disc.cast_shadow == GeometryInstance3D.SHADOW_CASTING_SETTING_OFF and (glyph.material_override as StandardMaterial3D).next_pass != null):
 				tokens_ok = false
 		check("creature tokens are outlined extruded text with a ground disc", tokens_ok, "tokens=%d" % tokens.size())
+		# 床アイテムは床に寝かせた立体の文字 (表が上を向く)
+		var items_ok := true
+		for token: Node3D in view._item_labels.values():
+			var item_glyph: MeshInstance3D = token.get_node("Glyph")
+			if not (item_glyph.mesh is TextMesh and absf(item_glyph.global_basis.z.normalized().y - 1.0) < 0.01):
+				items_ok = false
+		check("floor items lie flat as extruded text", items_ok, "items=%d" % view._item_labels.size())
 		print("last diff update %.2f ms for %d grids" % [view.last_update_ms, view.last_changed_grids])
 		# 1 行目のメッセージ: 階の雰囲気 (^F) を出して、写しが端末の 1 行目と一致するか
 		ih.inject_key(0x06)
