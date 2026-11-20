@@ -42,6 +42,7 @@
 #include "view/display-map.h"
 #include "view/display-messages.h"
 #include "view/map-info-cache.h"
+#include "view/view-observer.h"
 #include "window/main-window-util.h"
 #include "window/overview-map-cache.h"
 #include "world/world.h"
@@ -462,6 +463,7 @@ void lite_spot(CreatureEntity &creature, const Pos2D &pos)
     // 全体図は表示のオプションが違うので、ここでは印を付けるだけにする。
     // 描き直すかは、サブウィンドウを描くときに印を付けたグリッドを求め直して決める
     OverviewMapCache::get_instance().mark_dirty(pos);
+    notify_view_grid_changed(pos);
     auto &map_info_cache = MapInfoCache::get_instance();
     if (!panel_contains(pos)) {
         // メイン画面の外のグリッドは表示が変わったか分からないので、自分の周囲を描き直す

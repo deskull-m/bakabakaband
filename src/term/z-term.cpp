@@ -12,6 +12,7 @@
 #include "game-option/runtime-arguments.h"
 #include "game-option/special-options.h"
 #include "term/gameterm.h"
+#include "term/screen-processor.h"
 #include "term/term-color-types.h"
 #include "view/display-symbol.h"
 #ifdef WINDOWS
@@ -1657,6 +1658,11 @@ void term_clear()
     game_term->y2 = h - 1;
 
     game_term->total_erase = true;
+
+    // 画面の状態の判定 (view/screen-state.h) のため、メイン画面の全体を消したことを覚える
+    if (game_term == term_screen) {
+        note_main_screen_cleared();
+    }
 }
 
 /*

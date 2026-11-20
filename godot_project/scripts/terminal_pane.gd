@@ -10,6 +10,8 @@ signal v_split_requested(pane: Node)  ## 縦に追加（左右に並べる）
 signal h_split_requested(pane: Node)  ## 横に追加（上下に並べる）
 signal close_requested(pane: Node)    ## このペインを閉じる
 
+const InputIntents = preload("res://scripts/input_intents.gd")
+
 ## ゲームノードから割り当てられたターミナルインデックス
 var terminal_index: int = -1
 var _game_node: Node = null
@@ -29,6 +31,7 @@ func _ready() -> void:
 	$PaneVBox/Header/HBox/HSplitButton.pressed.connect(func(): h_split_requested.emit(self))
 	$PaneVBox/Header/HBox/CloseButton.pressed.connect(func(): close_requested.emit(self))
 	$PaneVBox/SubViewportContainer.resized.connect(fit_subviewport)
+	$PaneVBox/SubViewportContainer.gui_input.connect(_on_terminal_gui_input)
 	add_to_group("terminal_panes")
 
 ## ターミナルを初期化してゲームノードに登録する。
@@ -62,6 +65,33 @@ func apply_pane_font(font: Font, size: int) -> void:
 		return
 	term.set_terminal_font(font, size)
 	fit_subviewport()
+
+## メイン端末の地図をクリックしたら、左クリックでトラベル、右クリックでターゲット (#9296)
+## 地図を見ていてコマンドを受け付けるときだけ HengbandGame 側が送る
+func _on_terminal_gui_input(event: InputEvent) -> void:
+	if terminal_index != 0 or _game_node == null:
+		return
+	if not (event is InputEventMouseButton) or not event.pressed:
+		return
+	if event.button_index != MOUSE_BUTTON_LEFT and event.button_index != MOUSE_BUTTON_RIGHT:
+		return
+	var term = $PaneVBox/SubViewportContainer/SubViewport/TerminalContainer/Terminal
+	var cw: int = term.get_cell_width()
+	var ch: int = term.get_cell_height()
+	if cw <= 0 or ch <= 0:
+		return
+	var cell := Vector2i(int(event.position.x) / cw, int(event.position.y) / ch)
+	var snapshot_size := Vector2i(1 << 30, 1 << 30)
+	var pos := InputIntents.cell_to_floor(cell, _game_node.get_screen_state(), snapshot_size)
+	if pos.x < 0:
+		return
+	var sent: bool
+	if event.button_index == MOUSE_BUTTON_LEFT:
+		sent = _game_node.travel_to(pos.x, pos.y)
+	else:
+		sent = _game_node.target_grid(pos.x, pos.y)
+	if sent:
+		accept_event()
 
 ## SubViewport のサイズをコンテナのピクセルサイズに合わせ、
 ## グリッドサイズをセルサイズで割った値で更新する。

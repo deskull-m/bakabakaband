@@ -763,6 +763,7 @@ libhengband_a_SOURCES = \
 	io/files-util.cpp io/files-util.h \
 	io/gf-descriptions.cpp io/gf-descriptions.h \
 	io/input-context.cpp io/input-context.h \
+	io/input-intent.cpp io/input-intent.h \
 	io/input-key-acceptor.cpp io/input-key-acceptor.h \
 	io/input-key-processor.cpp io/input-key-processor.h \
 	io/input-key-requester.cpp io/input-key-requester.h \
@@ -1564,6 +1565,11 @@ libhengband_a_SOURCES = \
 	view/display-util.cpp view/display-util.h \
 	view/map-info-cache.cpp view/map-info-cache.h \
 	view/object-describer.cpp view/object-describer.h \
+	view/observable-inventory.cpp view/observable-inventory.h \
+	view/observable-world.cpp view/observable-world.h \
+	view/screen-state.cpp view/screen-state.h \
+	view/view-event.cpp view/view-event.h \
+	view/view-observer.cpp view/view-observer.h \
 	view/status-first-page.cpp view/status-first-page.h \
 	view/status-bars-table.cpp view/status-bars-table.h \
 	\
@@ -1667,6 +1673,7 @@ hengband_test_SOURCES = \
 	\
 	test/io/test-condition-expression.cpp \
 	test/io/test-input-context.cpp \
+	test/io/test-input-intent.cpp \
 	test/io/test-interpret-pref-file.cpp \
 	test/io/test-macro-configurations-store.cpp \
 	test/io/test-pref-file-expressor.cpp \
@@ -1748,6 +1755,10 @@ hengband_test_SOURCES = \
 	test/view/test-display-lore.cpp \
 	test/view/test-map-info-cache.cpp \
 	test/view/test-map-terrain-visibility.cpp \
+	test/view/test-observable-inventory.cpp \
+	test/view/test-observable-world.cpp \
+	test/view/test-screen-state.cpp \
+	test/view/test-view-event.cpp \
 	\
 	test/window/test-overview-map-cache.cpp \
 	test/window/test-shrunk-overview-map.cpp

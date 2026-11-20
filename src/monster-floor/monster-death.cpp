@@ -54,6 +54,7 @@
 #include "term/screen-processor.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
+#include "view/view-event.h"
 #include "world/world-collapsion.h"
 #include "world/world.h"
 #include <algorithm>
@@ -398,6 +399,7 @@ void monster_death(CreatureEntity &creature, MONSTER_IDX m_idx, bool drop_item, 
     auto &floor = *creature.get_floor();
 
     MonsterDeath md(floor, m_idx, drop_item);
+    notify_view_death(*md.m_ptr);
     auto &world = AngbandWorld::get_instance();
     if ((world.timewalk_m_idx > 0) && world.timewalk_m_idx == m_idx) {
         world.timewalk_m_idx = 0;

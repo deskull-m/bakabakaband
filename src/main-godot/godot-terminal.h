@@ -13,6 +13,7 @@
  *  - 複数端末（最大8）はそれぞれ独立した GodotTerminal ノードとして扱う
  */
 
+#include <atomic>
 #include <cstdint>
 #include <godot_cpp/classes/font.hpp>
 #include <godot_cpp/classes/image_texture.hpp>
@@ -86,6 +87,19 @@ public:
     /// ターミナル全体を消去する
     void clear_all();
 
+    /// 指定した行の文字列を返す (自動テスト・デバッグ用)。範囲外なら空文字列
+    godot::String get_row_text(int y) const;
+
+    /// 矩形の範囲のセルを返す (端末の一部を別の場所に写すため)。範囲外のセルは空白
+    /// キー: cols, rows, chars (PackedInt32Array、Unicode。全角の右半分は 0), colors (PackedByteArray、端末の色)
+    godot::Dictionary get_region(int x, int y, int w, int h) const;
+
+    /// 内容が変わるたびに増える番号 (写す側が描き直すかの判定用)
+    int64_t get_content_version() const
+    {
+        return static_cast<int64_t>(content_version_.load());
+    }
+
     // --- GDScript 公開プロパティ ---
     int get_cols() const
     {
@@ -122,6 +136,7 @@ private:
     godot::Ref<godot::ImageTexture> wall_texture_; ///< wall.bmp 由来の 8x8 パターンテクスチャ
     std::vector<CellData> grid_; ///< グリッドバッファ (cols × rows)
     mutable std::mutex grid_mutex_; ///< ゲームスレッド ↔ Godotメインスレッド競合防止
+    std::atomic<uint64_t> content_version_{ 0 }; ///< get_content_version()
 
     /// グリッド座標 → バッファインデックス
     int cell_idx(int x, int y) const

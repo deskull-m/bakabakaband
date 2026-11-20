@@ -5,8 +5,11 @@
 
 #include "main-godot/godot-input-handler.h"
 
+#include "term/gameterm.h"
 #include "term/z-term.h"
 #include "util/string-processor.h"
+
+#include <chrono>
 
 #include <godot_cpp/classes/display_server.hpp>
 #include <godot_cpp/classes/input_event_key.hpp>
@@ -237,12 +240,15 @@ void GodotInputHandler::push_key(int k)
 {
     // term_key_push() はキュー先頭へのプリペンドで逆順になるため使用しない。
     // main-win.cpp の term_keypress() と同じ: key_head に追加する FIFO 方式。
-    if (!k || !game_term) {
+    // 入力は常にメインの端末 (inkey() が読む angband_terms[0]) に入れる。描画のために一時的に
+    // 切り替えた端末 (サブウィンドウ・ステータス画面のダンプ用の画面外の端末) へ入れると、元に戻したときに失われる
+    auto *const input_term = angband_terms[0] ? angband_terms[0] : game_term;
+    if (!k || !input_term) {
         return;
     }
-    game_term->key_queue[game_term->key_head++] = static_cast<char>(k);
-    if (game_term->key_head == game_term->key_size) {
-        game_term->key_head = 0;
+    input_term->key_queue[input_term->key_head++] = static_cast<char>(k);
+    if (input_term->key_head == input_term->key_size) {
+        input_term->key_head = 0;
     }
     {
         std::lock_guard<std::mutex> lock(key_mutex_);
@@ -257,6 +263,16 @@ void GodotInputHandler::wait_for_key()
     std::unique_lock<std::mutex> lock(key_mutex_);
     key_cv_.wait(lock, [this] { return key_available_ || stop_requested_; });
     key_available_ = false;
+}
+
+bool GodotInputHandler::wait_for_key_for(int timeout_ms)
+{
+    std::unique_lock<std::mutex> lock(key_mutex_);
+    const auto arrived = key_cv_.wait_for(lock, std::chrono::milliseconds(timeout_ms), [this] { return key_available_ || stop_requested_; });
+    if (arrived) {
+        key_available_ = false;
+    }
+    return arrived;
 }
 
 void GodotInputHandler::poll_events()

@@ -5,10 +5,14 @@
 
 #include "main-godot/godot-term-hooks.h"
 #include "main-godot/godot-audio-manager.h"
+#include "main-godot/godot-character-sheet.h"
 #include "main-godot/godot-input-handler.h"
+#include "main-godot/godot-player-items.h"
 #include "main-godot/godot-player-status.h"
+#include "main-godot/godot-screen-state.h"
 #include "main-godot/godot-terminal.h"
 #include "main-godot/godot-tile-layer.h"
+#include "main-godot/godot-world-snapshot.h"
 
 #include "core/visuals-reseter.h"
 #include "game-option/runtime-arguments.h"
@@ -156,6 +160,10 @@ errr term_xtra_godot(int n, int v)
         // メインターミナル (term 0) の更新時にプレイヤーステータスを同期する
         if (game_term == term_screen) {
             player_status_push(PlayerType::get_instance_ptr());
+            world_snapshot_push(PlayerType::get_instance_ptr());
+            player_items_push(PlayerType::get_instance_ptr());
+            character_sheet_push(PlayerType::get_instance_ptr());
+            screen_state_update();
         }
         return 0;
     }
@@ -180,7 +188,16 @@ errr term_xtra_godot(int n, int v)
         // v=true: キーが来るまで待機、v=false: ノンブロッキング
         if (s_input_handler) {
             if (v) {
-                s_input_handler->wait_for_key(); // Phase 4: 即時リターン
+                // 入力待ちに入る直前は、待っている入力の文脈が定まっている (#9294)
+                screen_state_update();
+                // ステータスパネル (C の画面のダンプ) は入力待ちの間にも作り直す。
+                // 表示を開いたときなど、画面の更新が無くても待ちの途中で作れるよう短い間隔で起きる
+                character_sheet_push(PlayerType::get_instance_ptr());
+                while (!s_input_handler->wait_for_key_for(100)) {
+                    if (character_sheet_is_refresh_requested()) {
+                        character_sheet_push(PlayerType::get_instance_ptr());
+                    }
+                }
             } else {
                 s_input_handler->poll_events();
             }

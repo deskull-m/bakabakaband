@@ -34,6 +34,17 @@ const MAX_TERMINALS: int = 8
 ## TerminalPane プレハブ
 const TerminalPaneScene = preload("res://scenes/terminal_pane.tscn")
 
+## ワールドスナップショットのデバッグ表示
+const WorldDebugMinimap = preload("res://scripts/world_debug_minimap.gd")
+
+## 画面の状態による地図ビューと端末の切り替え (#9294)
+const ViewSwitcher = preload("res://scripts/view_switcher.gd")
+var view_switcher: Node = null
+
+## 3D の地図ビュー (#9298)
+const DungeonView3D = preload("res://scripts/dungeon_view_3d.gd")
+var dungeon_view: Control = null
+
 ## 解決済み lib/ パス（タイル読み込みなどで再利用する）
 var _lib_path: String = ""
 
@@ -94,6 +105,42 @@ func _ready() -> void:
 	if status_panel and status_panel.has_method("connect_to_game"):
 		status_panel.connect_to_game(game)
 
+	_setup_item_windows(game)
+
+	# 画面の状態による地図ビューと端末の切り替え (#9294)
+	view_switcher = Node.new()
+	view_switcher.name = "ViewSwitcher"
+	view_switcher.set_script(ViewSwitcher)
+	add_child(view_switcher)
+	view_switcher.setup(game)
+
+	# 3D の地図ビュー (#9298)。Ctrl+Shift+D で切り替え、地図を見ている間だけ見せる
+	var view_layer := CanvasLayer.new()
+	view_layer.name = "MapViewLayer"
+	view_layer.layer = 1
+	add_child(view_layer)
+	dungeon_view = SubViewportContainer.new()
+	dungeon_view.name = "DungeonView3D"
+	dungeon_view.set_script(DungeonView3D)
+	dungeon_view.visible = false
+	view_layer.add_child(dungeon_view)
+	dungeon_view.setup(game)
+	view_switcher.map_view = dungeon_view
+	_apply_map_view_setting(game)
+	_setup_status_sidebar()
+	_setup_map_view_button()
+
+	# ワールドスナップショットのデバッグ表示 (Ctrl+Shift+M、#9292)
+	var debug_layer := CanvasLayer.new()
+	debug_layer.layer = 20
+	add_child(debug_layer)
+	var minimap := Control.new()
+	minimap.set_script(WorldDebugMinimap)
+	minimap.set_anchors_preset(Control.PRESET_FULL_RECT)
+	debug_layer.add_child(minimap)
+	minimap.setup(game, view_switcher)
+	world_minimap = minimap
+
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_WM_CLOSE_REQUEST:
 		_save_layout_config()
@@ -121,9 +168,29 @@ func _on_viewport_size_changed() -> void:
 			_save_layout_config()
 		)
 
+## 3D の地図ビューを使う設定を反映する
+## スナップショットとイベントは使う側 (3D ビュー・デバッグ用のミニマップ) のどちらかが要る間だけ作らせる
+func _apply_map_view_setting(game: Node) -> void:
+	var needed := GameState.use_map_view or (world_minimap != null and world_minimap.visible)
+	game.set_world_snapshot_enabled(needed)
+	game.set_game_events_enabled(needed)
+	view_switcher.refresh()
+
+
+var world_minimap: Control = null
+
+
 ## マウスホイールでフォントサイズを拡大縮小する
+## Ctrl+Shift+D で 3D の地図ビューを切り替える (#9298)
 func _input(event: InputEvent) -> void:
+	if event is InputEventKey and event.pressed and not event.echo and event.ctrl_pressed and event.shift_pressed and event.keycode == KEY_D:
+		toggle_map_view()
+		get_viewport().set_input_as_handled()
+		return
 	if not (event is InputEventMouseButton) or not event.pressed:
+		return
+	# Shift + ホイールは 3D の地図ビューの寄り・引きに使う
+	if event.shift_pressed and dungeon_view != null and dungeon_view.visible:
 		return
 	var delta := 0
 	if event.button_index == MOUSE_BUTTON_WHEEL_UP:
@@ -154,6 +221,13 @@ func _apply_font(game: Node) -> void:
 	var font := SystemFont.new()
 	font.font_names = [GameState.font_name, "Courier New", "Monospace"]
 	game.set_game_font(font, GameState.font_size)
+	# ステータスパネルも端末と同じ等幅のフォントで描く
+	var status_panel := get_node_or_null("StatusLayer/StatusPanel")
+	if status_panel and status_panel.has_method("set_sheet_font"):
+		status_panel.set_sheet_font(font, GameState.font_size)
+	for mirror in [status_sidebar, status_bottom_bar, status_message_line]:
+		if mirror:
+			mirror.set_sheet_font.call_deferred(font, GameState.font_size)
 	_fit_main_term()
 	# ペイン固有フォントを再適用（set_game_font でリセットされるため）
 	for pane in get_tree().get_nodes_in_group("terminal_panes"):
@@ -563,3 +637,137 @@ func _on_close_requested(pane: Node) -> void:
 	else:
 		pane.queue_free()
 	_save_layout_config.call_deferred()
+
+
+# ---- メッセージ・持ち物・装備のウィンドウ ----
+
+const ItemWindow := preload("res://scripts/item_window.gd")
+## 下のバーのボタンの文字 (ItemWindow.Kind の順)
+const ITEM_WINDOW_BUTTONS := ["M", "I", "E"]
+var item_windows: Array = []
+
+func _setup_item_windows(game: Node) -> void:
+	var layer := CanvasLayer.new()
+	layer.name = "ItemWindowLayer"
+	layer.layer = 5
+	add_child(layer)
+	game.set_item_windows_enabled(true)
+
+	var bar := $ConfigLayer/BottomBar
+	var status_button: Button = $ConfigLayer/BottomBar/StatusButton
+	for kind in ITEM_WINDOW_BUTTONS.size():
+		var window := PanelContainer.new()
+		window.set_script(ItemWindow)
+		layer.add_child(window)
+		window.setup(game, kind)
+		var state: Dictionary = GameState.item_windows.get(kind, {})
+		window.visible = bool(state.get("visible", false))
+		var x := int(state.get("x", -1))
+		var y := int(state.get("y", -1))
+		window.position = Vector2(x, y) if x >= 0 and y >= 0 else Vector2(8 + kind * 40, 40 + kind * 40)
+		window.layout_changed.connect(_on_item_window_layout_changed)
+		item_windows.append(window)
+
+		# StatusButton の左へ並べる
+		var button := status_button.duplicate() as Button
+		button.name = "ItemWindowButton%d" % kind
+		button.text = ITEM_WINDOW_BUTTONS[kind]
+		button.tooltip_text = ItemWindow.TITLES[kind]
+		var shift := 50.0 * (ITEM_WINDOW_BUTTONS.size() - kind)
+		button.offset_left = status_button.offset_left - shift
+		button.offset_right = status_button.offset_right - shift
+		bar.add_child(button)
+		button.pressed.connect(_on_item_window_button_pressed.bind(kind))
+	# 画面外へ出た保存位置を戻す
+	_clamp_item_windows.call_deferred()
+
+func _clamp_item_windows() -> void:
+	var screen := get_viewport().get_visible_rect().size
+	for window in item_windows:
+		window.position = ItemWindow.clamp_position(window.position, window.size, screen)
+
+func _on_item_window_button_pressed(kind: int) -> void:
+	var window: Control = item_windows[kind]
+	window.visible = not window.visible
+	_on_item_window_layout_changed(kind)
+
+func _on_item_window_layout_changed(kind: int) -> void:
+	var window: Control = item_windows[kind]
+	GameState.item_windows[kind] = {
+		"visible": window.visible,
+		"x": int(window.position.x),
+		"y": int(window.position.y),
+	}
+	GameState.save_config()
+
+
+# ---- 3D の地図ビューに重ねる左側の欄と下端の状態バー ----
+
+const StatusSidebar := preload("res://scripts/status_sidebar.gd")
+var status_sidebar: Control = null
+var status_bottom_bar: Control = null
+var status_message_line: Control = null
+
+## 3D の地図ビューを見ている間、端末の 1 行目 (メッセージ)・左側の欄 (能力値・HP 等)・
+## 最下行の状態バーを半透明の窓で重ねて見せる
+func _setup_status_sidebar() -> void:
+	var terminal: Node = null
+	for pane in get_tree().get_nodes_in_group("terminal_panes"):
+		if pane.terminal_index == 0:
+			terminal = pane.get_node("PaneVBox/SubViewportContainer/SubViewport/TerminalContainer/Terminal")
+	if terminal == null:
+		return
+	var layer := CanvasLayer.new()
+	layer.name = "StatusSidebarLayer"
+	layer.layer = 2
+	add_child(layer)
+	var font := SystemFont.new()
+	font.font_names = [GameState.font_name, "Courier New", "Monospace"]
+	status_sidebar = _make_terminal_mirror(layer, "StatusSidebar", terminal, font, StatusSidebar.Region.LEFT_PANEL)
+	# 下端の帯は位置を自分で決める (画面の下、下のバーの上)
+	status_bottom_bar = _make_terminal_mirror(layer, "StatusBottomBar", terminal, font, StatusSidebar.Region.BOTTOM_BAR)
+	# 1 行目 (メッセージ・-more-・プロンプト) も写す
+	status_message_line = _make_terminal_mirror(layer, "StatusMessageLine", terminal, font, StatusSidebar.Region.MESSAGE_LINE)
+	var sync := func() -> void:
+		status_sidebar.set_shown(dungeon_view.visible)
+		status_bottom_bar.set_shown(dungeon_view.visible)
+		status_message_line.set_shown(dungeon_view.visible)
+	sync.call()
+	dungeon_view.visibility_changed.connect(sync)
+
+func _make_terminal_mirror(layer: CanvasLayer, node_name: String, terminal: Node, font: Font, region: int) -> Control:
+	var mirror := PanelContainer.new()
+	mirror.name = node_name
+	mirror.set_script(StatusSidebar)
+	layer.add_child(mirror)
+	mirror.setup(terminal, font, GameState.font_size, region)
+	return mirror
+
+
+# ---- 3D の地図ビューの切り替えボタン ----
+
+var map_view_button: Button = null
+
+## 3D の地図ビューと端末の表示を切り替える (Ctrl+Shift+D・下のバーの「3D」ボタン)
+func toggle_map_view() -> void:
+	GameState.use_map_view = not GameState.use_map_view
+	GameState.save_config()
+	_apply_map_view_setting($HengbandGame)
+	if map_view_button:
+		map_view_button.set_pressed_no_signal(GameState.use_map_view)
+
+## 下のバーの M / I / E ボタンの左に「3D」の切り替えボタンを置く
+func _setup_map_view_button() -> void:
+	var status_button: Button = $ConfigLayer/BottomBar/StatusButton
+	map_view_button = status_button.duplicate() as Button
+	map_view_button.name = "MapViewButton"
+	map_view_button.text = "3D"
+	map_view_button.tooltip_text = "3D の地図ビュー 表示/非表示 (Ctrl+Shift+D)"
+	map_view_button.toggle_mode = true
+	map_view_button.set_pressed_no_signal(GameState.use_map_view)
+	# 項目ウィンドウのボタン (M / I / E) のさらに左
+	var shift := 50.0 * (ITEM_WINDOW_BUTTONS.size() + 1)
+	map_view_button.offset_left = status_button.offset_left - shift
+	map_view_button.offset_right = status_button.offset_right - shift
+	$ConfigLayer/BottomBar.add_child(map_view_button)
+	map_view_button.toggled.connect(func(_on: bool) -> void: toggle_map_view())

@@ -65,6 +65,7 @@
 #include "util/bit-flags-calculator.h"
 #include "util/string-processor.h"
 #include "view/display-messages.h"
+#include "view/view-event.h"
 
 /*!
  * @brief コンストラクタ
@@ -206,6 +207,8 @@ bool MonsterAttackPlayer::process_monster_blows()
             power += this->m_ptr->get_melee_stat_hit_bonus();
             hit = check_hit_from_monster_to_player(creature, power, this->rlev, this->m_ptr->get_remaining_stun());
         }
+
+        notify_view_melee(*this->m_ptr, creature, hit, enum2i(this->method));
 
         if (hit) {
             // 命中した。命中処理と思い出処理を行う。

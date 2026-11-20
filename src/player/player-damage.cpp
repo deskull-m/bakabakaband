@@ -75,6 +75,7 @@
 #include "util/enum-converter.h"
 #include "util/string-processor.h"
 #include "view/display-messages.h"
+#include "view/view-event.h"
 #include "world/world.h"
 #include <fmt/format.h>
 #include <sstream>
@@ -357,6 +358,9 @@ int take_hit(CreatureEntity &creature, int damage_type, int damage, std::string_
         if (creature.hp < -9999) {
             creature.hp = -9999;
         }
+        if (damage > 0) {
+            notify_view_damage(creature, damage);
+        }
     } else if (damage_type == DAMAGE_GENO) {
         creature.hp -= damage;
         if (creature.hp < -9999) {
@@ -367,6 +371,7 @@ int take_hit(CreatureEntity &creature, int damage_type, int damage, std::string_
             creature.hp = 0;
         }
         if (damage > 0) {
+            notify_view_damage(creature, damage);
             creature.on_take_hit(damage);
         }
     } else {
@@ -384,6 +389,7 @@ int take_hit(CreatureEntity &creature, int damage_type, int damage, std::string_
     auto &world = AngbandWorld::get_instance();
     if (creature.hp < 0 && !cheat_immortal) {
         creature.killer_monrace_id = killer_monrace_id;
+        notify_view_death(creature);
         creature.on_death(hit_from);
         return damage;
     }

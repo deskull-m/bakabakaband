@@ -114,6 +114,19 @@ int32_t message_num(void)
     return message_history.size();
 }
 
+namespace {
+uint64_t message_history_revision = 0;
+}
+
+/*!
+ * @brief メッセージ履歴が変わった回数を返す (繰り返し回数の増加も含む)
+ * @details 履歴が満杯だと件数は変わらないので、表示側が変化を知るのに使う
+ */
+uint64_t message_revision()
+{
+    return message_history_revision;
+}
+
 /*!
  * @brief スコープ内のメッセージをシステムの文字コードのまま捕捉する
  */
@@ -174,6 +187,7 @@ void message_add(std::string_view msg)
         // 直前と同じメッセージの場合、繰り返し回数を増やして終了
         if ((msg == *last_msg.msg) && (last_msg.repeat_count < 9999)) {
             last_msg.repeat_count++;
+            message_history_revision++;
             if (!now_message) {
                 now_message++;
             }
@@ -187,6 +201,7 @@ void message_add(std::string_view msg)
 
     // メッセージ履歴に追加
     message_history.emplace_front(make_message(std::string(msg)));
+    message_history_revision++;
 
     while (message_history.size() > MESSAGE_MAX) {
         message_history.pop_back();

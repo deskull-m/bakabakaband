@@ -5,20 +5,28 @@
 
 #include "main-godot/hengband-gdextension.h"
 #include "main-godot/godot-audio-manager.h"
+#include "main-godot/godot-character-sheet.h"
+#include "main-godot/godot-game-events.h"
 #include "main-godot/godot-init.h"
 #include "main-godot/godot-input-handler.h"
+#include "main-godot/godot-player-items.h"
 #include "main-godot/godot-player-status.h"
+#include "main-godot/godot-screen-state.h"
 #include "main-godot/godot-term-hooks.h"
 #include "main-godot/godot-terminal.h"
 #include "main-godot/godot-tile-layer.h"
+#include "main-godot/godot-world-snapshot.h"
 #include "main-godot/save-file-scanner.h"
+#include "main-godot/term-color-map.h"
 
 #include "game-option/special-options.h"
+#include "io/input-intent.h"
 #include "locale/character-encoding.h"
 #include "system/system-variables.h"
 
 #include "term/gameterm.h"
 #include "term/z-term.h"
+#include "view/observable-world.h"
 
 #include <godot_cpp/classes/config_file.hpp>
 #include <godot_cpp/classes/os.hpp>
@@ -27,6 +35,9 @@
 #include <godot_cpp/variant/array.hpp>
 #include <godot_cpp/variant/callable.hpp>
 #include <godot_cpp/variant/dictionary.hpp>
+#include <godot_cpp/variant/packed_byte_array.hpp>
+#include <godot_cpp/variant/packed_int32_array.hpp>
+#include <godot_cpp/variant/packed_string_array.hpp>
 #include <godot_cpp/variant/string.hpp>
 #include <godot_cpp/variant/string_name.hpp>
 
@@ -167,6 +178,59 @@ static godot::Dictionary snapshot_to_dict(const GodotPlayerStatusSnapshot &s)
     return d;
 }
 
+namespace {
+godot::Dictionary view_event_actor_to_dict(const ViewEventActor &actor)
+{
+    godot::Dictionary d;
+    d["id"] = static_cast<int64_t>(actor.id);
+    d["is_player"] = actor.is_player;
+    d["has_pos"] = actor.has_pos;
+    d["x"] = actor.pos.x;
+    d["y"] = actor.pos.y;
+    return d;
+}
+
+godot::Dictionary view_event_to_dict(const ViewEvent &event)
+{
+    godot::Dictionary d;
+    d["type"] = static_cast<int>(event.type);
+    d["actor"] = view_event_actor_to_dict(event.actor);
+    d["target"] = view_event_actor_to_dict(event.target);
+    switch (event.type) {
+    case ViewEventType::MELEE:
+        d["hit"] = event.hit;
+        d["method"] = event.method;
+        break;
+    case ViewEventType::DAMAGE:
+        d["value"] = event.value;
+        break;
+    case ViewEventType::PROJECTION: {
+        d["attribute"] = event.attribute;
+        d["radius"] = event.radius;
+        d["is_beam"] = event.is_beam;
+        d["is_breath"] = event.is_breath;
+        godot::PackedInt32Array path;
+        for (const auto &pos : event.path) {
+            path.push_back(pos.x);
+            path.push_back(pos.y);
+        }
+        d["path"] = path; // x, y, x, y, ...
+        godot::PackedInt32Array area;
+        for (const auto &[dist, pos] : event.area) {
+            area.push_back(pos.x);
+            area.push_back(pos.y);
+            area.push_back(dist);
+        }
+        d["area"] = area; // x, y, 中心からの距離, ...
+        break;
+    }
+    default:
+        break;
+    }
+    return d;
+}
+}
+
 void HengbandGame::_process(double delta)
 {
     (void)delta;
@@ -176,6 +240,351 @@ void HengbandGame::_process(double delta)
         last_status_version_ = snap.version;
         emit_signal("player_status_changed", snapshot_to_dict(snap));
     }
+
+    // ワールドスナップショットは中身をコピーせず版だけを見る
+    const auto world_version = world_snapshot_get_version();
+    if (world_version != last_world_version_) {
+        last_world_version_ = world_version;
+        emit_signal("world_snapshot_changed", static_cast<int64_t>(world_version));
+    }
+
+    // 表示用のゲームイベントはフレームごとにまとめて渡す (#9295)
+    if (game_events_is_enabled()) {
+        const auto events = game_events_drain();
+        if (!events.empty()) {
+            godot::Array array;
+            for (const auto &event : events) {
+                array.push_back(view_event_to_dict(event));
+            }
+            emit_signal("game_events", array);
+        }
+    }
+
+    // ステータス画面のダンプ
+    const auto sheet_version = character_sheet_get_version();
+    if (sheet_version != last_sheet_version_) {
+        last_sheet_version_ = sheet_version;
+        emit_signal("character_sheet_changed", static_cast<int64_t>(sheet_version));
+    }
+
+    // 持ち物・装備・メッセージのウィンドウ用
+    const auto inventory_version = player_inventory_get_version();
+    if (inventory_version != last_inventory_version_) {
+        last_inventory_version_ = inventory_version;
+        emit_signal("inventory_changed", static_cast<int64_t>(inventory_version));
+    }
+    const auto message_version = player_messages_get_version();
+    if (message_version != last_message_version_) {
+        last_message_version_ = message_version;
+        emit_signal("messages_changed", static_cast<int64_t>(message_version));
+    }
+
+    const auto screen_version = screen_state_get_version();
+    if (screen_version != last_screen_state_version_) {
+        last_screen_state_version_ = screen_version;
+        emit_signal("screen_state_changed", get_screen_state());
+    }
+}
+
+namespace {
+/// コマンドを受け付ける画面か (地図を見ていて、プロンプトに答えている最中でない)
+bool is_accepting_command()
+{
+    const auto state = screen_state_get();
+    return (state.info.state == ScreenState::MAP) && (!state.info.input_kind || (*state.info.input_kind == InputKind::COMMAND));
+}
+
+/// キー配置 (keymap) を通さずにコマンドを送る ('\\' の後の 1 文字はキー配置で変換されない)
+void inject_raw_command(GodotInputHandler *input_handler, std::initializer_list<int> keys)
+{
+    input_handler->inject_key('\\');
+    for (const auto key : keys) {
+        input_handler->inject_key(key);
+    }
+}
+}
+
+bool HengbandGame::travel_to(int x, int y)
+{
+    if (!input_handler_ || !is_accepting_command()) {
+        return false;
+    }
+
+    push_point_intent(PointIntentPurpose::POINT, { y, x });
+    inject_raw_command(input_handler_, { '`' });
+    return true;
+}
+
+bool HengbandGame::target_grid(int x, int y)
+{
+    if (!input_handler_ || !is_accepting_command()) {
+        return false;
+    }
+
+    push_point_intent(PointIntentPurpose::TARGET, { y, x });
+    inject_raw_command(input_handler_, { '*' });
+    return true;
+}
+
+bool HengbandGame::has_pending_point_intent() const
+{
+    return has_point_intent();
+}
+
+bool HengbandGame::walk(int dir)
+{
+    if (!input_handler_ || !is_accepting_command() || (dir < 1) || (dir > 9) || (dir == 5)) {
+        return false;
+    }
+
+    inject_raw_command(input_handler_, { ';', '0' + dir });
+    return true;
+}
+
+namespace {
+godot::Dictionary observed_item_to_dict(const ObservedItem &item)
+{
+    godot::Dictionary d;
+    d["slot"] = item.slot;
+    d["label"] = godot::String::chr(static_cast<char32_t>(item.label));
+    d["name"] = godot::String::utf8(item.name.c_str());
+    d["count"] = item.count;
+    d["weight"] = item.weight;
+    d["weight_text"] = godot::String::utf8(item.weight_text.c_str());
+    d["color"] = item.color;
+    d["symbol_color"] = item.symbol_color;
+    d["symbol"] = item.symbol_char != 0 ? godot::String::chr(static_cast<char32_t>(static_cast<unsigned char>(item.symbol_char))) : godot::String();
+    d["tval"] = item.tval;
+    d["recharging"] = item.recharging;
+    return d;
+}
+}
+
+void HengbandGame::set_character_sheet_enabled(bool enabled)
+{
+    character_sheet_set_enabled(enabled);
+}
+
+godot::Dictionary HengbandGame::get_character_sheet()
+{
+    const auto sheet = character_sheet_get();
+    godot::Dictionary d;
+    if (!sheet.lines) {
+        return d;
+    }
+
+    godot::Array lines;
+    godot::PackedStringArray texts;
+    for (const auto &line : *sheet.lines) {
+        godot::PackedInt32Array cols;
+        godot::PackedByteArray widths;
+        godot::PackedStringArray chars;
+        godot::PackedByteArray colors;
+        for (const auto &cell : line.cells) {
+            cols.push_back(cell.col);
+            widths.push_back(static_cast<uint8_t>(cell.width));
+            chars.push_back(godot::String::utf8(cell.text.c_str()));
+            colors.push_back(cell.color);
+        }
+        godot::Dictionary l;
+        l["cols"] = cols;
+        l["widths"] = widths;
+        l["chars"] = chars;
+        l["colors"] = colors;
+        lines.push_back(l);
+        texts.push_back(godot::String::utf8(line.text.c_str()));
+    }
+
+    d["version"] = static_cast<int64_t>(sheet.version);
+    d["width"] = 80;
+    d["lines"] = lines;
+    d["text"] = texts;
+    return d;
+}
+
+void HengbandGame::set_item_windows_enabled(bool enabled)
+{
+    player_items_set_enabled(enabled);
+}
+
+godot::Dictionary HengbandGame::get_inventory()
+{
+    const auto snapshot = player_inventory_get();
+    godot::Dictionary d;
+    if (!snapshot.inventory) {
+        return d;
+    }
+
+    const auto &inventory = *snapshot.inventory;
+    godot::Array pack;
+    for (const auto &item : inventory.pack) {
+        pack.push_back(observed_item_to_dict(item));
+    }
+    godot::Array equipment;
+    for (const auto &slot : inventory.equipment) {
+        godot::Dictionary e;
+        e["slot"] = slot.slot;
+        e["label"] = godot::String::chr(static_cast<char32_t>(slot.label));
+        e["slot_name"] = godot::String::utf8(slot.slot_name.c_str());
+        e["can_equip"] = slot.can_equip;
+        e["item"] = slot.has_item ? godot::Variant(observed_item_to_dict(slot.item)) : godot::Variant();
+        equipment.push_back(e);
+    }
+
+    d["version"] = static_cast<int64_t>(snapshot.version);
+    d["pack"] = pack;
+    d["equipment"] = equipment;
+    d["total_weight"] = inventory.total_weight;
+    d["weight_limit"] = inventory.weight_limit;
+    d["total_weight_text"] = godot::String::utf8(inventory.total_weight_text.c_str());
+    d["weight_limit_text"] = godot::String::utf8(inventory.weight_limit_text.c_str());
+    return d;
+}
+
+godot::Dictionary HengbandGame::get_messages()
+{
+    const auto snapshot = player_messages_get();
+    godot::Dictionary d;
+    if (!snapshot.messages) {
+        return d;
+    }
+
+    godot::PackedStringArray messages;
+    for (const auto &message : *snapshot.messages) {
+        messages.push_back(godot::String::utf8(message.c_str()));
+    }
+    d["version"] = static_cast<int64_t>(snapshot.version);
+    d["messages"] = messages;
+    return d;
+}
+
+void HengbandGame::set_game_events_enabled(bool enabled)
+{
+    game_events_set_enabled(enabled);
+}
+
+bool HengbandGame::is_game_events_enabled() const
+{
+    return game_events_is_enabled();
+}
+
+godot::Dictionary HengbandGame::get_screen_state()
+{
+    const auto state = screen_state_get();
+    godot::Dictionary d;
+    d["version"] = static_cast<int64_t>(state.version);
+    d["state"] = static_cast<int>(state.info.state);
+    d["input_kind"] = state.info.input_kind ? static_cast<int>(*state.info.input_kind) : -1;
+    d["icky_depth"] = state.icky_depth;
+    d["prompt"] = godot::String::utf8(state.prompt.c_str());
+    d["has_cursor"] = state.info.cursor_pos.has_value();
+    d["cursor_x"] = state.info.cursor_pos ? state.info.cursor_pos->x : -1;
+    d["cursor_y"] = state.info.cursor_pos ? state.info.cursor_pos->y : -1;
+    d["map_col0"] = state.map_panel.map_col0;
+    d["panel_col_min"] = state.map_panel.panel_col_min;
+    d["panel_row_prt"] = state.map_panel.panel_row_prt;
+    d["bigtile"] = state.map_panel.bigtile;
+    return d;
+}
+
+void HengbandGame::set_world_snapshot_enabled(bool enabled)
+{
+    world_snapshot_set_enabled(enabled);
+}
+
+bool HengbandGame::is_world_snapshot_enabled() const
+{
+    return world_snapshot_is_enabled();
+}
+
+namespace {
+godot::Dictionary observed_creature_to_dict(const ObservedCreature &creature)
+{
+    godot::Dictionary d;
+    d["id"] = static_cast<int64_t>(creature.display_id);
+    d["m_idx"] = creature.m_idx;
+    d["x"] = creature.pos.x;
+    d["y"] = creature.pos.y;
+    d["race_id"] = creature.race_id;
+    d["health"] = static_cast<int>(creature.health);
+    d["flags"] = static_cast<int>(creature.flags);
+    d["symbol"] = creature.symbol_char != 0 ? godot::String::chr(static_cast<char32_t>(static_cast<unsigned char>(creature.symbol_char))) : godot::String();
+    d["symbol_color"] = creature.symbol_color;
+    d["light_radius"] = creature.light_radius;
+    return d;
+}
+
+/*!
+ * @brief グリッドの観測結果を詰めた配列を作る
+ * @param indices 詰めるグリッドの添字。nullptr なら全グリッド
+ */
+void pack_observed_grids(godot::Dictionary &d, const ObservableWorld &world, const std::vector<int32_t> *indices)
+{
+    const auto count = indices ? static_cast<int64_t>(indices->size()) : static_cast<int64_t>(world.grids.size());
+    godot::PackedInt32Array terrain;
+    godot::PackedByteArray shapes;
+    godot::PackedByteArray flags;
+    godot::PackedByteArray symbols; // 1 グリッドあたり fg_color, fg_char, bg_color, bg_char の 4 バイト
+    godot::PackedByteArray object_tvals;
+    terrain.resize(count);
+    object_tvals.resize(count);
+    shapes.resize(count);
+    flags.resize(count);
+    symbols.resize(count * 4);
+    for (int64_t i = 0; i < count; ++i) {
+        const auto index = indices ? static_cast<size_t>((*indices)[static_cast<size_t>(i)]) : static_cast<size_t>(i);
+        const auto &grid = world.grids[index];
+        terrain.set(i, grid.terrain_id);
+        shapes.set(i, static_cast<uint8_t>(grid.shape));
+        flags.set(i, grid.flags);
+        symbols.set(i * 4, grid.fg_color);
+        symbols.set(i * 4 + 1, grid.fg_char);
+        symbols.set(i * 4 + 2, grid.bg_color);
+        symbols.set(i * 4 + 3, grid.bg_char);
+        object_tvals.set(i, grid.object_tval);
+    }
+
+    d["terrain"] = terrain;
+    d["object_tvals"] = object_tvals;
+    d["shapes"] = shapes;
+    d["flags"] = flags;
+    d["symbols"] = symbols;
+}
+
+godot::Dictionary make_world_snapshot_dict(const GodotWorldSnapshot &snapshot, const std::vector<int32_t> *indices)
+{
+    const auto &world = *snapshot.world;
+    godot::Dictionary d;
+    d["version"] = static_cast<int64_t>(snapshot.version);
+    d["floor_version"] = static_cast<int64_t>(snapshot.floor_version);
+    d["full"] = indices == nullptr;
+    d["width"] = world.width;
+    d["height"] = world.height;
+    d["dungeon_id"] = world.dungeon_id;
+    d["dun_level"] = world.dun_level;
+    d["is_wild_mode"] = world.is_wild_mode;
+    d["player_x"] = world.player_pos.x;
+    d["player_y"] = world.player_pos.y;
+    d["player_light_radius"] = world.player_light_radius;
+    d["player_blind"] = world.player_blind;
+    d["player_hallucinated"] = world.player_hallucinated;
+    if (indices) {
+        godot::PackedInt32Array packed_indices;
+        packed_indices.resize(static_cast<int64_t>(indices->size()));
+        for (size_t i = 0; i < indices->size(); ++i) {
+            packed_indices.set(static_cast<int64_t>(i), (*indices)[i]);
+        }
+        d["indices"] = packed_indices;
+    }
+    pack_observed_grids(d, world, indices);
+
+    godot::Array creatures;
+    for (const auto &creature : world.creatures) {
+        creatures.push_back(observed_creature_to_dict(creature));
+    }
+    d["creatures"] = creatures;
+    return d;
+}
 }
 
 godot::Dictionary HengbandGame::get_player_status()
@@ -185,6 +594,74 @@ godot::Dictionary HengbandGame::get_player_status()
         return godot::Dictionary();
     }
     return snapshot_to_dict(snap);
+}
+
+godot::Dictionary HengbandGame::get_world_snapshot()
+{
+    const auto snapshot = world_snapshot_get();
+    if (!snapshot.world) {
+        return godot::Dictionary();
+    }
+
+    return make_world_snapshot_dict(snapshot, nullptr);
+}
+
+godot::Dictionary HengbandGame::get_world_snapshot_changes(int64_t since_version)
+{
+    const auto snapshot = world_snapshot_get();
+    if (!snapshot.world) {
+        return godot::Dictionary();
+    }
+
+    // 基準の版がフロアを作り直す前なら、差分ではなく全体を返す
+    if ((since_version <= 0) || (static_cast<uint64_t>(since_version) < snapshot.floor_version)) {
+        return make_world_snapshot_dict(snapshot, nullptr);
+    }
+
+    std::vector<int32_t> indices;
+    const auto &grid_versions = *snapshot.grid_versions;
+    for (size_t i = 0; i < grid_versions.size(); ++i) {
+        if (grid_versions[i] > static_cast<uint64_t>(since_version)) {
+            indices.push_back(static_cast<int32_t>(i));
+        }
+    }
+
+    return make_world_snapshot_dict(snapshot, &indices);
+}
+
+godot::Color HengbandGame::get_term_color(int color_idx) const
+{
+    return term_color_to_godot(static_cast<uint8_t>(color_idx & 0x7F));
+}
+
+godot::Array HengbandGame::get_terrain_catalog()
+{
+    godot::Array array;
+    if (!is_game_started()) {
+        return array;
+    }
+
+    for (const auto &entry : build_terrain_catalog()) {
+        godot::Dictionary d;
+        d["id"] = entry.id;
+        d["tag"] = godot::String::utf8(entry.tag.c_str());
+        d["name"] = sys_string_to_godot(entry.name);
+        d["shape"] = static_cast<int>(entry.shape);
+        d["symbol"] = entry.symbol_char != 0 ? godot::String::chr(static_cast<char32_t>(static_cast<unsigned char>(entry.symbol_char))) : godot::String();
+        d["symbol_color"] = entry.symbol_color;
+        array.push_back(d);
+    }
+    return array;
+}
+
+void HengbandGame::set_world_snapshot_verify(bool verify)
+{
+    world_snapshot_set_verify(verify);
+}
+
+int64_t HengbandGame::get_world_snapshot_verify_mismatches() const
+{
+    return static_cast<int64_t>(world_snapshot_get_verify_mismatches());
 }
 
 void HengbandGame::_notification(int p_what)
@@ -597,6 +1074,77 @@ void HengbandGame::_bind_methods()
     // 引数: status (Dictionary) - get_player_status() と同じキー構成
     ADD_SIGNAL(MethodInfo("player_status_changed",
         PropertyInfo(Variant::DICTIONARY, "status")));
+
+    // 座標・方向で指定する入力 (#9296)
+    ClassDB::bind_method(D_METHOD("travel_to", "x", "y"), &HengbandGame::travel_to);
+    ClassDB::bind_method(D_METHOD("target_grid", "x", "y"), &HengbandGame::target_grid);
+    ClassDB::bind_method(D_METHOD("walk", "dir"), &HengbandGame::walk);
+    ClassDB::bind_method(D_METHOD("has_pending_point_intent"), &HengbandGame::has_pending_point_intent);
+
+    // ステータス画面のダンプ (C コマンドの画面)
+    ClassDB::bind_method(D_METHOD("set_character_sheet_enabled", "enabled"), &HengbandGame::set_character_sheet_enabled);
+    ClassDB::bind_method(D_METHOD("get_character_sheet"), &HengbandGame::get_character_sheet);
+    ADD_SIGNAL(MethodInfo("character_sheet_changed", PropertyInfo(Variant::INT, "version")));
+
+    // 持ち物・装備・メッセージのウィンドウ
+    ClassDB::bind_method(D_METHOD("set_item_windows_enabled", "enabled"), &HengbandGame::set_item_windows_enabled);
+    ClassDB::bind_method(D_METHOD("get_inventory"), &HengbandGame::get_inventory);
+    ClassDB::bind_method(D_METHOD("get_messages"), &HengbandGame::get_messages);
+    // シグナル: 持ち物・装備が変わった / メッセージが増えた (有効時のみ)
+    ADD_SIGNAL(MethodInfo("inventory_changed", PropertyInfo(Variant::INT, "version")));
+    ADD_SIGNAL(MethodInfo("messages_changed", PropertyInfo(Variant::INT, "version")));
+
+    // 表示用のゲームイベント (#9295)
+    ClassDB::bind_method(
+        D_METHOD("set_game_events_enabled", "enabled"),
+        &HengbandGame::set_game_events_enabled);
+    ClassDB::bind_method(
+        D_METHOD("is_game_events_enabled"),
+        &HengbandGame::is_game_events_enabled);
+    // シグナル: そのフレームまでに起きた表示用のゲームイベント (有効時のみ)
+    // 引数: events (Array[Dictionary]) - 古い順
+    ADD_SIGNAL(MethodInfo("game_events",
+        PropertyInfo(Variant::ARRAY, "events")));
+
+    // 画面の状態 (#9294)
+    ClassDB::bind_method(
+        D_METHOD("get_screen_state"),
+        &HengbandGame::get_screen_state);
+    // シグナル: 画面の状態 (地図・プロンプト・ターゲット選択・メニュー・全画面) が変わった
+    // 引数: state (Dictionary) - get_screen_state() と同じキー構成
+    ADD_SIGNAL(MethodInfo("screen_state_changed",
+        PropertyInfo(Variant::DICTIONARY, "state")));
+
+    // ワールドスナップショット (観測可能ワールドモデル、#9292)
+    ClassDB::bind_method(
+        D_METHOD("set_world_snapshot_enabled", "enabled"),
+        &HengbandGame::set_world_snapshot_enabled);
+    ClassDB::bind_method(
+        D_METHOD("is_world_snapshot_enabled"),
+        &HengbandGame::is_world_snapshot_enabled);
+    ClassDB::bind_method(
+        D_METHOD("get_world_snapshot"),
+        &HengbandGame::get_world_snapshot);
+    ClassDB::bind_method(
+        D_METHOD("get_terrain_catalog"),
+        &HengbandGame::get_terrain_catalog);
+    ClassDB::bind_method(
+        D_METHOD("get_term_color", "color_idx"),
+        &HengbandGame::get_term_color);
+    ClassDB::bind_method(
+        D_METHOD("get_world_snapshot_changes", "since_version"),
+        &HengbandGame::get_world_snapshot_changes);
+    ClassDB::bind_method(
+        D_METHOD("set_world_snapshot_verify", "verify"),
+        &HengbandGame::set_world_snapshot_verify);
+    ClassDB::bind_method(
+        D_METHOD("get_world_snapshot_verify_mismatches"),
+        &HengbandGame::get_world_snapshot_verify_mismatches);
+
+    // シグナル: ワールドスナップショットが更新された (有効時のみ)
+    // 引数: version (int) - get_world_snapshot() の "version" と同じ値
+    ADD_SIGNAL(MethodInfo("world_snapshot_changed",
+        PropertyInfo(Variant::INT, "version")));
 }
 
 // ---------------------------------------------------------------------------

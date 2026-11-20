@@ -52,6 +52,7 @@
 #include "util/bit-flags-calculator.h"
 #include "util/string-processor.h"
 #include "view/display-messages.h"
+#include "view/view-event.h"
 #include "wizard/wizard-messages.h"
 #include "world/world.h"
 
@@ -562,7 +563,9 @@ void exe_player_attack_to_monster(CreatureEntity &creature, POSITION y, POSITION
 
         creature.plus_incident_tree("ATTACK_EXE_COUNT", 1);
 
-        if (!process_attack_hit(creature, pa_ptr, chance)) {
+        const auto is_hit = process_attack_hit(creature, pa_ptr, chance);
+        notify_view_melee(creature, *pa_ptr->m_ptr, is_hit);
+        if (!is_hit) {
             continue;
         }
 

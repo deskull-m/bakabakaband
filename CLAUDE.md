@@ -5049,8 +5049,16 @@ MSBuild -warnAsError .\VisualStudio\Bakabakaband.sln /t:Rebuild /p:Configuration
 
 Godot 4.x 版 (`src/main-godot/` の GDExtension バックエンド) はゲームコア
 (`src/`) を共有 DLL/共有ライブラリとしてビルドし、`godot_project/` から
-ロードする。autotools / MSVC の端末版ビルドとは**独立**しており、CI には
-組み込んでいない。ビルドシステムはリポジトリルートの `SConstruct` (SCons)。
+ロードする。autotools / MSVC の端末版ビルドとは**独立**したビルドで、
+ビルドシステムはリポジトリルートの `SConstruct` (SCons)。
+
+**CI (`.github/workflows/build-godot-gdextension.yml`) は Linux 向けの
+GDExtension ビルドと、Godot headless での拡張の読込確認を行う** (`src/**` /
+`SConstruct` / `godot-cpp` / `godot_project/**` を変更する PR のみ)。
+SConstruct は `src/` を glob で集めるため、`src/Makefile.am` に載らない孤立
+ソースや Godot 版でだけ欠けるシンボルはここで落ちる。Linux ビルドは既定で英語版
+(`JP` 未定義) で、日本語版 (`scons japanese=yes`) も `build-japanese` ジョブでビルドと
+読込確認を行う。Windows の Godot ビルドは CI 対象外。
 
 ```bash
 # 依存ツール: SCons 4.x / Python 3.8+ / C++20 対応コンパイラ
@@ -5078,10 +5086,19 @@ godot --path godot_project
   (libcurl 依存)・`src/test/` を除外する。GCC では godot-cpp 既定の
   `-fno-exceptions` を除去し `-fexceptions` を付与する等の差異があるため、
   ソース追加・除外時は `SConstruct` の `exclude_*` 集合を更新すること。
-- `USE_GODOT` / `GODOT_RICH_UI` マクロで端末ステータス描画を抑制し Godot 側の
-  StatusPanel に委ねる分岐が入る (通常ビルドではマクロ未定義で無効)。
+- `USE_GODOT` マクロで Godot 版を識別する (`GODOT_RICH_UI` は現在 SConstruct で定義しておらず、
+  端末の左側の欄・下段は端末版と同じに描く)。`GODOT_RICH_UI` を定義すると端末ステータス描画を抑制し
+  Godot 側の StatusPanel に委ねる分岐が有効になる (コードには残してある)。
 - 詳細な設計・移植改変点・既知の制限は
   [`docs/godot-interface.md`](docs/godot-interface.md) を参照。
+- **3D インターフェースの基盤 (Epic #9290)**: ゲームコアには表示非依存の観測点だけを足し
+  (`src/view/observable-world` / `view-observer` / `screen-state` / `view-event`、
+  `src/io/input-intent`)、いずれも未使用時は何もせず乱数・ゲーム状態に触れない。
+  **プレイヤーが知り得る情報だけを渡す** (地形は `is_map_terrain_visible()`、クリーチャーは
+  `is_visible_on_map()`)。`lite_spot()` / `print_map()` / `apply_raw_damage()` /
+  `project()` / 近接の打撃 / `point_target()` / `target_set()` に 1 行の通知・取り出しがあるので、
+  **上流マージでこれらを触るときは残すこと**。Godot 側の 3D ビューは
+  `godot_project/scripts/dungeon_view_3d.gd` (下のバーの「3D」ボタン / Ctrl+Shift+D)。
 
 ---
 

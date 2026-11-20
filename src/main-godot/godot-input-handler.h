@@ -47,6 +47,9 @@ public:
     /// TERM_XTRA_EVENT(wait=true) から呼ばれる。キーが来るまでブロック。
     void wait_for_key();
 
+    /// wait_for_key() を最大 timeout_ms ミリ秒だけ待つ。キーが来た (または停止を求められた) なら true
+    bool wait_for_key_for(int timeout_ms);
+
     /// TERM_XTRA_EVENT(wait=false) の non-blocking 版。
     void poll_events();
 

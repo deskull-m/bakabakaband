@@ -63,6 +63,7 @@
 #include "util/enum-converter.h"
 #include "util/string-processor.h"
 #include "view/display-messages.h"
+#include "view/view-event.h"
 #include "world/world.h"
 #include <algorithm>
 #include <fmt/format.h>
@@ -2200,6 +2201,29 @@ void CreatureEntity::init_monster_profile()
     this->realm1 = RealmType::NONE;
     this->realm2 = RealmType::NONE;
     this->element_realm = ElementRealmType::NONE;
+}
+
+void CreatureEntity::apply_raw_damage(int damage)
+{
+    this->hp -= damage;
+    if (this->hp < -9999) {
+        this->hp = -9999;
+    }
+    if (damage > 0) {
+        notify_view_damage(*this, damage);
+        this->on_take_hit(damage);
+    }
+}
+
+uint32_t CreatureEntity::get_display_id() const
+{
+    // 払い出しはゲームスレッドの表示処理からのみ行う。一周するのは約 43 億体の後なので考慮しない
+    static uint32_t next_display_id = 0;
+    if (this->display_id == 0) {
+        this->display_id = ++next_display_id;
+    }
+
+    return this->display_id;
 }
 
 void CreatureEntity::wipe()

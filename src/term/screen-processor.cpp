@@ -1,6 +1,7 @@
 #include "term/screen-processor.h"
 #include "io/input-key-acceptor.h"
 #include "locale/japanese.h"
+#include "term/gameterm.h"
 #include "term/term-color-types.h"
 #include "util/string-processor.h"
 #include "view/display-messages.h"
@@ -11,6 +12,13 @@
  * Hack -- prevent "accidents" in "screen_save()" or "screen_load()"
  */
 static int screen_depth = 0;
+
+/*!
+ * @brief メイン画面の全体を消したときの、重ねた画面の深さ (0 なら消していない)
+ * @details 画面の状態の判定 (view/screen-state.h) で、重ねた画面が一覧を地図の上に重ねたものか、
+ * 画面全体を使う表示 (キャラクター情報など) かを見分けるのに使う。表示の判定にだけ使い、ゲームの進行には使わない
+ */
+static int main_screen_cleared_depth = 0;
 
 /*
  * Move the cursor
@@ -43,8 +51,14 @@ void screen_save()
 
     term_save();
 
-    AngbandWorld::get_instance().character_icky_depth++;
+    auto &world = AngbandWorld::get_instance();
+    world.character_icky_depth++;
     screen_depth++;
+
+    // 新しく重ねた画面はまだ消していない (同じ深さで以前に消した印は、閉じた画面のもの)
+    if (main_screen_cleared_depth >= world.character_icky_depth) {
+        main_screen_cleared_depth = 0;
+    }
 }
 
 /*
@@ -70,6 +84,26 @@ void screen_load(ScreenLoadOptType opt)
     default:
         break;
     }
+
+    // 消した画面を閉じたら、消した印も外す
+    if (main_screen_cleared_depth > world.character_icky_depth) {
+        main_screen_cleared_depth = 0;
+    }
+}
+
+void note_main_screen_cleared()
+{
+    const auto depth = static_cast<int>(AngbandWorld::get_instance().character_icky_depth);
+    // 外側の画面で既に消していたら、その深さを保つ (内側を閉じても外側は消えたまま)
+    if ((depth > 0) && ((main_screen_cleared_depth == 0) || (depth < main_screen_cleared_depth))) {
+        main_screen_cleared_depth = depth;
+    }
+}
+
+bool is_main_screen_cleared_since_save()
+{
+    const auto depth = static_cast<int>(AngbandWorld::get_instance().character_icky_depth);
+    return (main_screen_cleared_depth > 0) && (depth >= main_screen_cleared_depth);
 }
 
 /*
@@ -258,5 +292,9 @@ void clear_from(int row)
     for (int y = row; y < game_term->hgt; y++) {
         TermOffsetSetter tos(0, tl::nullopt);
         term_erase(0, y);
+    }
+
+    if ((row <= 0) && (game_term == term_screen)) {
+        note_main_screen_cleared();
     }
 }
