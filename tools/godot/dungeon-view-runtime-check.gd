@@ -12,6 +12,7 @@ extends SceneTree
 const VisualCatalog = preload("res://scripts/visual_catalog.gd")
 
 var resized_from := Vector2i.ZERO
+var inventory_first_line := ""
 var save_path := OS.get_environment("HB_SAVE")
 var game: Node = null
 var view: Control = null
@@ -145,11 +146,22 @@ func _process(_delta: float) -> bool:
 		# 一覧を開いたまま端末の大きさを変える (Godot スレッドから頼み、ゲームスレッドが入力待ちの合間に反映する)。
 		# 比べる基準の画面と大きさが合わず一覧の範囲が求まらないので、窓には写さず端末へ戻す
 		resized_from = Vector2i(term.get_cols(), term.get_rows())
+		# 一覧の 1 行目の先頭 (縮めても切れない部分) を覚えておく
+		var first_row: Dictionary = term.get_region(rect.position.x, rect.position.y, mini(rect.size.x, 16), 1)
+		inventory_first_line = ""
+		for ch in first_row["chars"]:
+			if ch != 0 and ch != 0x20:
+				inventory_first_line += char(ch)
 		game.set_sub_window_size(0, resized_from.x - 4, resized_from.y)
 	if phase == 1 and phase_frame == 170:
 		var term = current_scene.status_sidebar._terminal
 		var state: Dictionary = game.get_screen_state()
 		check("resizing during a list goes back to the terminal", not view.visible and not current_scene.status_overlay_menu.visible and term.get_cols() == resized_from.x - 4, "visible=%s state=%s cols=%d" % [view.visible, state, term.get_cols()])
+		# 大きさを変えた後も、キーを押す前から端末に一覧が描き直されている
+		var screen := ""
+		for y in term.get_rows():
+			screen += term.get_row_text(y).replace(" ", "")
+		check("the list is redrawn after resizing", screen.contains(inventory_first_line), "first=\"%s\" screen=\"%s\"" % [inventory_first_line, screen])
 		ih.inject_key(0x1B)
 		game.set_sub_window_size(0, resized_from.x, resized_from.y)
 		# 全画面の表示 (キャラクター情報) は従来どおり端末に戻す

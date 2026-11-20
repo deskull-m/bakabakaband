@@ -94,6 +94,9 @@ bool apply_pending_term_resizes()
         auto *saved = game_term;
         term_activate(resize.term);
         term_resize(resize.cols, resize.rows);
+        // term_resize() は再描画を予約するだけで、入力待ちの間は term_fresh() が呼ばれない。
+        // Godot 側の端末は大きさを変えると中身が空になるので、ここで描き直す (開いている一覧が消えないように)
+        term_redraw();
         if (saved) {
             term_activate(saved);
         }
