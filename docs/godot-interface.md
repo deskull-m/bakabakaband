@@ -303,8 +303,9 @@ StatusPanel に表示を委ねる。メイン端末の行数も下段 3 行ぶ�
 | 判定 (表示非依存) | `src/view/screen-state.{h,cpp}` | `classify_screen_state()` が入力待ちの文脈 (`io/input-context.h`)・重ねた画面の深さ (`character_icky_depth`)・重ねてから画面全体を消したか から `ScreenState` を決める |
 | 画面全体を消した印 | `src/term/screen-processor.cpp` | `term_clear()` / `clear_from(0)` (メイン画面) で印を付け、`screen_save()` / `screen_load()` で外す。表示の判定にだけ使う |
 | ブリッジ | `src/main-godot/godot-screen-state.{h,cpp}` | 入力待ちに入る直前 (`TERM_XTRA_EVENT`) と画面の更新 (`TERM_XTRA_FRESH`) で求め、変わったときだけ公開する |
-| GDScript | `HengbandGame.get_screen_state()` / シグナル `screen_state_changed(state)` | `state` / `input_kind` / `icky_depth` / `prompt` / `has_cursor` / `cursor_x` / `cursor_y` |
-| 切り替え | `godot_project/scripts/view_switcher.gd` | 地図ビューが登録されていて `GameState.use_map_view` が真のとき、`MAP` / `MAP_WITH_PROMPT` / `TARGETING` の間だけ地図ビューを見せる (地図ビューが無い現状では何もしない) |
+| GDScript | `HengbandGame.get_screen_state()` / シグナル `screen_state_changed(state)` | `state` / `input_kind` / `icky_depth` / `prompt` / `has_cursor` / `cursor_x` / `cursor_y` / `overlay_x` / `overlay_y` / `overlay_w` / `overlay_h` (重ねた範囲。無ければ `overlay_w = 0`) |
+| 重ねた範囲 | `src/term/screen-processor.cpp` の `calc_main_screen_overlay_region()` | 最初の `screen_save()` の時点のメイン画面 (地図) を覚えておき、いまの画面と違うセルを囲む矩形を返す (1 行目を除く)。`set_main_screen_overlay_tracking(true)` の間だけ覚える (Godot 版は起動時に有効にする) |
+| 切り替え | `godot_project/scripts/view_switcher.gd` (判定の補助は `screen_overlay.gd`) | 地図ビューが登録されていて `GameState.use_map_view` が真のとき、`MAP` / `MAP_WITH_PROMPT` / `TARGETING` / `OVERLAY_MENU` の間は地図ビューを見せる (`FULLSCREEN_TEXT` は端末)。`overlay_menus_on_map` を偽にすると `OVERLAY_MENU` も端末に戻す |
 
 | 状態 | 判定 |
 |---|---|
@@ -445,6 +446,29 @@ StatusPanel に表示を委ねる。メイン端末の行数も下段 3 行ぶ�
   最初に見つかった `GodotTerminal` を読んでいたため、サブウィンドウのペインを持つレイアウトでは
   別の端末の行を出しうる上、色の無いプロポーショナルな文字だった。端末の写しに置き換えて解消した。
 - 窓はマウスの操作を通す (地図のクリックを妨げない)。
+
+### 地図の上に重ねた一覧 (持ち物・装備など) を半透明の窓で見せる
+
+![3D の地図ビューの上に写した持ち物の一覧](images/godot-overlay-menu.png)
+
+持ち物 (`i`)・装備 (`e`) の一覧やアイテム・呪文の選択の一覧のように、`screen_save()` で
+**地図の上に重ねた画面 (`OVERLAY_MENU`)** の間も 3D の地図ビューのまま、その一覧だけを
+半透明の窓 (`Region.OVERLAY`) に写す。端末の画面には戻らない。
+
+- 写す範囲はゲーム側が求める (`calc_main_screen_overlay_region()`)。**最初の `screen_save()` の
+  時点のメイン画面と比べて違うセルを囲む矩形**で、1 行目 (プロンプトはメッセージの行の窓が写す) は除く。
+  一覧の位置・大きさを GDScript 側で推測しないので、どのコマンドの一覧でも同じ仕組みで写せる。
+  一覧の中から別の一覧を重ねた場合 (持ち物 → アイテムのコマンド) は両方を囲む。
+- 窓は**端末で一覧が出ている位置**に置き、画面からはみ出さないよう寄せる (`overlay_position()`)。
+  背景は他の窓より濃くし (不透明度 0.78)、枠線を付ける。
+- `FULLSCREEN_TEXT` (店・知識・キャラクター情報・ヘルプなど、重ねてから画面全体を消した表示) は
+  従来どおり端末に戻す。
+- 比べる基準の画面はメイン端末の `term_win` の写し 1 枚 (80×24 なら数 KB) で、`screen_save()` で
+  深さが 0 → 1 になるときだけ取り、深さ 0 に戻ったら捨てる。ゲームの進行・乱数には触れない。
+- 地図と同じ文字・色で一覧の空白を書いたセルは「違うセル」にならない。一覧の縁が地図の空白と
+  重なる場合は矩形が 1 桁狭くなりうるが、写す中身は端末と同じなので読めなくなることはない。
+- 確認: `tools/godot/dungeon-view-runtime-check.gd` (持ち物を開いても 3D のまま、窓の中身が端末の
+  矩形と一致、キャラクター情報では端末に戻る)。
 
 ### 地形のテクスチャ
 

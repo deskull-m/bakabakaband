@@ -24,6 +24,7 @@ ScreenStateInfo g_last_info;
 int g_last_depth = -1;
 std::string g_last_prompt;
 GodotScreenState::MapPanel g_last_panel;
+tl::optional<ScreenRegion> g_last_overlay;
 
 std::string to_utf8(const std::string &text)
 {
@@ -44,7 +45,8 @@ void screen_state_update()
     const auto info = classify_screen_state(inputs);
     const auto prompt = inputs.input_context ? inputs.input_context->prompt : std::string();
     const GodotScreenState::MapPanel panel{ panel_col_of(panel_col_min), panel_col_min, panel_row_prt, use_bigtile };
-    if ((info == g_last_info) && (depth == g_last_depth) && (prompt == g_last_prompt) && (panel == g_last_panel)) {
+    const auto overlay = calc_main_screen_overlay_region();
+    if ((info == g_last_info) && (depth == g_last_depth) && (prompt == g_last_prompt) && (panel == g_last_panel) && (overlay == g_last_overlay)) {
         return;
     }
 
@@ -52,6 +54,7 @@ void screen_state_update()
     g_last_depth = depth;
     g_last_prompt = prompt;
     g_last_panel = panel;
+    g_last_overlay = overlay;
 
     std::lock_guard lock(g_mutex);
     g_state.version = g_version.load() + 1;
@@ -59,6 +62,7 @@ void screen_state_update()
     g_state.icky_depth = depth;
     g_state.prompt = to_utf8(prompt);
     g_state.map_panel = panel;
+    g_state.overlay_region = overlay;
     g_version.store(g_state.version);
 }
 

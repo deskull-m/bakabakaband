@@ -124,12 +124,31 @@ func _process(_delta: float) -> bool:
 		2:
 			pass
 	if phase == 1 and phase_frame == 150:
-		check("hidden in the inventory", not view.visible)
-		check("status sidebar hidden in the inventory", not current_scene.status_sidebar.visible)
+		# 地図の上に重ねる一覧 (持ち物) は 3D のまま、半透明の窓に写す
+		check("still visible in the inventory", view.visible)
+		var overlay = current_scene.status_overlay_menu
+		var state: Dictionary = game.get_screen_state()
+		var rect := Rect2i(state["overlay_x"], state["overlay_y"], state["overlay_w"], state["overlay_h"])
+		var term = current_scene.status_sidebar._terminal
+		var expected := ""
+		for y in range(rect.position.y, rect.end.y):
+			expected += term.get_row_text(y).substr(rect.position.x, rect.size.x).replace(" ", "")
+		var mirrored := ""
+		for line in overlay._view._lines:
+			mirrored += "".join(line["chars"]).replace(" ", "")
+		check("inventory shown in the overlay window", overlay.visible and rect.has_area() and mirrored != "" and mirrored == expected, "rect=%s mirror=\"%s\" term=\"%s\"" % [rect, mirrored, expected])
+		ih.inject_key(0x1B)
+		# 全画面の表示 (キャラクター情報) は従来どおり端末に戻す
+		ih.inject_key(0x43)
+	if phase == 1 and phase_frame == 180:
+		check("hidden in the character sheet", not view.visible)
+		check("status sidebar hidden in the character sheet", not current_scene.status_sidebar.visible)
+		check("overlay window hidden in the character sheet", not current_scene.status_overlay_menu.visible)
 		ih.inject_key(0x1B)
 	if phase == 1 and phase_frame == 210:
 		check("visible again on the map", view.visible)
 		check("status sidebar shown again", current_scene.status_sidebar.visible)
+		check("overlay window hidden on the map", not current_scene.status_overlay_menu.visible)
 		# 下端の状態バーは端末の最下行と同じ中身 (空なら隠す)
 		var bar = current_scene.status_bottom_bar
 		var term = current_scene.status_sidebar._terminal

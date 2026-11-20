@@ -3,10 +3,13 @@
 #include "locale/japanese.h"
 #include "term/gameterm.h"
 #include "term/term-color-types.h"
+#include "term/z-term.h"
 #include "util/string-processor.h"
 #include "view/display-messages.h"
 #include "view/display-symbol.h"
 #include "world/world.h"
+#include <algorithm>
+#include <memory>
 
 /*
  * Hack -- prevent "accidents" in "screen_save()" or "screen_load()"
@@ -19,6 +22,12 @@ static int screen_depth = 0;
  * 画面全体を使う表示 (キャラクター情報など) かを見分けるのに使う。表示の判定にだけ使い、ゲームの進行には使わない
  */
 static int main_screen_cleared_depth = 0;
+
+/*!
+ * @brief 地図の上に重ねる前 (最初の screen_save()) のメイン画面 (set_main_screen_overlay_tracking() が有効のときだけ覚える)
+ */
+static bool main_screen_overlay_tracking = false;
+static std::unique_ptr<term_win> main_screen_before_overlay;
 
 /*
  * Move the cursor
@@ -55,6 +64,11 @@ void screen_save()
     world.character_icky_depth++;
     screen_depth++;
 
+    // 最初に重ねる直前のメイン画面 (地図) を覚えておき、重ねた部分の範囲を求められるようにする
+    if (main_screen_overlay_tracking && (world.character_icky_depth == 1) && (game_term != nullptr) && (game_term == angband_terms[0])) {
+        main_screen_before_overlay = game_term->scr->clone();
+    }
+
     // 新しく重ねた画面はまだ消していない (同じ深さで以前に消した印は、閉じた画面のもの)
     if (main_screen_cleared_depth >= world.character_icky_depth) {
         main_screen_cleared_depth = 0;
@@ -89,6 +103,59 @@ void screen_load(ScreenLoadOptType opt)
     if (main_screen_cleared_depth > world.character_icky_depth) {
         main_screen_cleared_depth = 0;
     }
+
+    if (world.character_icky_depth == 0) {
+        main_screen_before_overlay.reset();
+    }
+}
+
+void set_main_screen_overlay_tracking(bool enabled)
+{
+    main_screen_overlay_tracking = enabled;
+    if (!enabled) {
+        main_screen_before_overlay.reset();
+    }
+}
+
+tl::optional<ScreenRegion> calc_screen_overlay_region(const term_win &base, const term_win &current, int first_row)
+{
+    if ((base.a.size() != current.a.size()) || base.a.empty() || (base.a[0].size() != current.a[0].size())) {
+        return tl::nullopt;
+    }
+
+    const auto height = static_cast<int>(current.a.size());
+    const auto width = static_cast<int>(current.a[0].size());
+    auto min_x = width;
+    auto min_y = height;
+    auto max_x = -1;
+    auto max_y = -1;
+    for (auto y = std::max(0, first_row); y < height; y++) {
+        for (auto x = 0; x < width; x++) {
+            if ((base.a[y][x] == current.a[y][x]) && (base.c[y][x] == current.c[y][x])) {
+                continue;
+            }
+
+            min_x = std::min(min_x, x);
+            min_y = std::min(min_y, y);
+            max_x = std::max(max_x, x);
+            max_y = std::max(max_y, y);
+        }
+    }
+
+    if (max_x < 0) {
+        return tl::nullopt;
+    }
+
+    return ScreenRegion{ min_x, min_y, max_x - min_x + 1, max_y - min_y + 1 };
+}
+
+tl::optional<ScreenRegion> calc_main_screen_overlay_region()
+{
+    if (!main_screen_before_overlay || (AngbandWorld::get_instance().character_icky_depth == 0) || (angband_terms[0] == nullptr)) {
+        return tl::nullopt;
+    }
+
+    return calc_screen_overlay_region(*main_screen_before_overlay, *angband_terms[0]->scr, 1);
 }
 
 void note_main_screen_cleared()

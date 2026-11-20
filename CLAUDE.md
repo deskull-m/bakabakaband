@@ -5099,6 +5099,10 @@ godot --path godot_project
   `project()` / 近接の打撃 / `point_target()` / `target_set()` に 1 行の通知・取り出しがあるので、
   **上流マージでこれらを触るときは残すこと**。Godot 側の 3D ビューは
   `godot_project/scripts/dungeon_view_3d.gd` (下のバーの「3D」ボタン / Ctrl+Shift+D)。
+  持ち物・装備の一覧など `screen_save()` で地図の上に重ねた画面 (`OVERLAY_MENU`) は 3D のまま
+  半透明の窓に写す。範囲は `calc_main_screen_overlay_region()` (`src/term/screen-processor.cpp`) が
+  最初の `screen_save()` 時点の画面との差から求めるので、**上流マージで `screen_save()` /
+  `screen_load()` を触るときは基準画面の取得・破棄を残すこと**。
 
 ---
 

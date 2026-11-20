@@ -39,6 +39,7 @@ const WorldDebugMinimap = preload("res://scripts/world_debug_minimap.gd")
 
 ## 画面の状態による地図ビューと端末の切り替え (#9294)
 const ViewSwitcher = preload("res://scripts/view_switcher.gd")
+const ScreenOverlay = preload("res://scripts/screen_overlay.gd")
 var view_switcher: Node = null
 
 ## 3D の地図ビュー (#9298)
@@ -707,6 +708,8 @@ const StatusSidebar := preload("res://scripts/status_sidebar.gd")
 var status_sidebar: Control = null
 var status_bottom_bar: Control = null
 var status_message_line: Control = null
+## 地図の上に重ねた一覧 (持ち物・装備など、screen_save() で重ねた画面) の写し
+var status_overlay_menu: Control = null
 
 ## 3D の地図ビューを見ている間、端末の 1 行目 (メッセージ)・左側の欄 (能力値・HP 等)・
 ## 最下行の状態バーを半透明の窓で重ねて見せる
@@ -728,12 +731,25 @@ func _setup_status_sidebar() -> void:
 	status_bottom_bar = _make_terminal_mirror(layer, "StatusBottomBar", terminal, font, StatusSidebar.Region.BOTTOM_BAR)
 	# 1 行目 (メッセージ・-more-・プロンプト) も写す
 	status_message_line = _make_terminal_mirror(layer, "StatusMessageLine", terminal, font, StatusSidebar.Region.MESSAGE_LINE)
+	# 一覧の窓は他の窓より後に足して手前に描く
+	status_overlay_menu = _make_terminal_mirror(layer, "StatusOverlayMenu", terminal, font, StatusSidebar.Region.OVERLAY)
 	var sync := func() -> void:
 		status_sidebar.set_shown(dungeon_view.visible)
 		status_bottom_bar.set_shown(dungeon_view.visible)
 		status_message_line.set_shown(dungeon_view.visible)
+		_sync_overlay_menu()
 	sync.call()
 	dungeon_view.visibility_changed.connect(sync)
+	$HengbandGame.screen_state_changed.connect(func(_state: Dictionary) -> void: _sync_overlay_menu())
+
+
+## 地図の上に一覧を重ねている間 (OVERLAY_MENU) だけ、その範囲を写した窓を見せる
+func _sync_overlay_menu() -> void:
+	if status_overlay_menu == null:
+		return
+	var rect := ScreenOverlay.overlay_rect(view_switcher.current)
+	status_overlay_menu.set_overlay_rect(rect)
+	status_overlay_menu.set_shown(dungeon_view.visible and rect.has_area())
 
 func _make_terminal_mirror(layer: CanvasLayer, node_name: String, terminal: Node, font: Font, region: int) -> Control:
 	var mirror := PanelContainer.new()

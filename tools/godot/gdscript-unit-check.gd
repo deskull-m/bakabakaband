@@ -40,6 +40,15 @@ func _initialize() -> void:
 	cases.append([VisualCatalog.tile_region(0x83, 0x82, Vector2i(16, 16)), Rect2i(32, 48, 16, 16)])
 	# 地形のテクスチャ
 	cases.append([vc.resolve_terrain(1)["texture"], "floor"])
+	# 地図の上に重ねた一覧 (OVERLAY_MENU) の間も 3D を見せ、範囲は get_screen_state() の overlay_* から作る
+	const VS = preload("res://scripts/screen_overlay.gd")
+	cases.append([[VS.shows_map_view(4, true), VS.shows_map_view(4, false), VS.shows_map_view(5, true), VS.shows_map_view(1, false)], [true, false, false, true]])
+	cases.append([VS.overlay_rect({ "state": 4, "overlay_x": 13, "overlay_y": 1, "overlay_w": 40, "overlay_h": 8 }), Rect2i(13, 1, 40, 8)])
+	cases.append([VS.overlay_rect({ "state": 1, "overlay_x": 13, "overlay_y": 1, "overlay_w": 40, "overlay_h": 8 }), Rect2i()])
+	# 一覧の窓は端末と同じ位置に置き、画面の右端・下端からはみ出さないよう寄せる
+	const SB = preload("res://scripts/status_sidebar.gd")
+	cases.append([SB.overlay_position(Rect2i(13, 1, 40, 8), Vector2(10, 20), Vector2(400, 160), Vector2(1280, 800)), Vector2(130, 28)])
+	cases.append([SB.overlay_position(Rect2i(100, 30, 40, 8), Vector2(10, 20), Vector2(400, 160), Vector2(1280, 800)), Vector2(876, 800 - SB.BOTTOM_MARGIN - 160)])
 	# 末尾のカンマは取り除くが、文字列の中のカンマは残す
 	cases.append([VisualCatalog.parse_jsonc('{ "mesh": "res://a,}.tres", "b": [1, ], }'), { "mesh": "res://a,}.tres", "b": [1.0] }])
 	# 見つけた罠 (TRAP) は板に端末の文字を重ねる

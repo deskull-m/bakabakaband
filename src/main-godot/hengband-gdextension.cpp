@@ -484,6 +484,12 @@ godot::Dictionary HengbandGame::get_screen_state()
     d["panel_col_min"] = state.map_panel.panel_col_min;
     d["panel_row_prt"] = state.map_panel.panel_row_prt;
     d["bigtile"] = state.map_panel.bigtile;
+    // 地図の上に重ねている一覧などの範囲 (端末の桁・行)。重ねていなければ overlay_w = 0
+    const auto overlay = state.overlay_region.value_or(ScreenRegion{});
+    d["overlay_x"] = overlay.x;
+    d["overlay_y"] = overlay.y;
+    d["overlay_w"] = overlay.w;
+    d["overlay_h"] = overlay.h;
     return d;
 }
 

@@ -59,6 +59,9 @@ func _process(_d: float) -> bool:
 				ih.inject_key(k)
 		else:
 			ih.inject_key(0x67)
+	# 設定から開いた状態で始まることがあるので、撮る前にも閉じておく
+	if frame == 470 and OS.get_environment("HB_STATUS_PANEL") == "0" and current_scene.has_node("StatusLayer/StatusPanel"):
+		current_scene.get_node("StatusLayer/StatusPanel").visible = false
 	if frame == 480 and OS.get_environment("HB_KEYS") != "":
 		for k in OS.get_environment("HB_KEYS").split(","):
 			game.get_node("InputHandler").inject_key(int(k))

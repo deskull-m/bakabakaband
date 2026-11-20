@@ -13,6 +13,7 @@
 #include "system/player-type-definition.h"
 #include "system/system-variables.h"
 #include "term/gameterm.h"
+#include "term/screen-processor.h"
 #include "term/z-term.h"
 #include "term/z-util.h"
 
@@ -82,6 +83,8 @@ void run_game_thread(const std::filesystem::path &lib_path,
     world_snapshot_install_observer();
     // 表示用のゲームイベントを Godot 側へ流す (#9295)
     game_events_install_sink();
+    // 3D 表示の上に一覧 (持ち物・装備など) を写すため、地図の上に重ねた範囲を求められるようにする
+    set_main_screen_overlay_tracking(true);
 
     term_activate(term_screen);
 
