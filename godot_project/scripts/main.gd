@@ -226,7 +226,7 @@ func _apply_font(game: Node) -> void:
 	var status_panel := get_node_or_null("StatusLayer/StatusPanel")
 	if status_panel and status_panel.has_method("set_sheet_font"):
 		status_panel.set_sheet_font(font, GameState.font_size)
-	for mirror in [status_sidebar, status_bottom_bar, status_message_line]:
+	for mirror in [status_sidebar, status_bottom_bar, status_message_line, status_overlay_menu]:
 		if mirror:
 			mirror.set_sheet_font.call_deferred(font, GameState.font_size)
 	_fit_main_term()
