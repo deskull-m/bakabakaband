@@ -305,7 +305,7 @@ StatusPanel に表示を委ねる。メイン端末の行数も下段 3 行ぶ�
 | ブリッジ | `src/main-godot/godot-screen-state.{h,cpp}` | 入力待ちに入る直前 (`TERM_XTRA_EVENT`) と画面の更新 (`TERM_XTRA_FRESH`) で求め、変わったときだけ公開する |
 | GDScript | `HengbandGame.get_screen_state()` / シグナル `screen_state_changed(state)` | `state` / `input_kind` / `icky_depth` / `prompt` / `has_cursor` / `cursor_x` / `cursor_y` / `overlay_x` / `overlay_y` / `overlay_w` / `overlay_h` (重ねた範囲。無ければ `overlay_w = 0`) |
 | 重ねた範囲 | `src/term/screen-processor.cpp` の `calc_main_screen_overlay_region()` | 最初の `screen_save()` の時点のメイン画面 (地図) を覚えておき、いまの画面と違うセルを囲む矩形を返す (1 行目を除く)。`set_main_screen_overlay_tracking(true)` の間だけ覚える (Godot 版は起動時に有効にする) |
-| 切り替え | `godot_project/scripts/view_switcher.gd` (判定の補助は `screen_overlay.gd`) | 地図ビューが登録されていて `GameState.use_map_view` が真のとき、`MAP` / `MAP_WITH_PROMPT` / `TARGETING` / `OVERLAY_MENU` の間は地図ビューを見せる (`FULLSCREEN_TEXT` は端末)。`overlay_menus_on_map` を偽にすると `OVERLAY_MENU` も端末に戻す |
+| 切り替え | `godot_project/scripts/view_switcher.gd` (判定の補助は `screen_overlay.gd`) | 地図ビューが登録されていて `GameState.use_map_view` が真のとき、`MAP` / `MAP_WITH_PROMPT` / `TARGETING` / `OVERLAY_MENU` の間は地図ビューを見せる (`FULLSCREEN_TEXT` は端末)。`overlay_menus_on_map` を偽にすると `OVERLAY_MENU` も端末に戻す。一覧の範囲が求まらない (一覧を開いたまま端末の大きさが変わり、比べる基準の画面と大きさが合わない) ときも、窓に何も写せないので端末に戻す |
 
 | 状態 | 判定 |
 |---|---|
@@ -460,9 +460,9 @@ StatusPanel に表示を委ねる。メイン端末の行数も下段 3 行ぶ�
 
 | 描くもの | 内容 |
 |---|---|
-| 照準の輪 | カーソルのマス (`get_screen_state()` の `cursor_x` / `cursor_y`) に、ゆっくり回って脈打つ輪を置く。ターゲットの選択と見るコマンドは黄、場所の指定は緑。壁に埋もれないよう奥行きを無視して描く (文字のビルボードより先に描き、クリーチャーの文字は隠さない) |
+| 照準の輪 | カーソルのマス (`get_screen_state()` の `cursor_x` / `cursor_y`) に、ゆっくり回って脈打つ輪を置く。ターゲットの選択と見るコマンドは黄、場所の指定は緑。壁に埋もれないよう奥行きを無視して描く。立体の文字の材質は奥行きの先描き付きの半透明 (`TRANSPARENCY_ALPHA_DEPTH_PRE_PASS`、優先度 0) にして印 (優先度 -1) より後に描くので、印がクリーチャーの文字を隠さない (不透明だと半透明の印より先に描かれ、上から塗られる) |
 | 射線 | **ターゲットの選択 (見るコマンドを除く) のときだけ**、プレイヤーからカーソルまでのマスに印を並べる。見えているクリーチャーのマス (ボルトはそこで当たる) は橙、その先は薄く、記憶している壁などで止まる最後のマスは赤 |
-| カメラ | カーソルを出している間はプレイヤーとカーソルの中間を見る (遠くのマスを選んでも画面に収まる) |
+| カメラ | カーソルを出している間はプレイヤーとカーソルの中間を見て、両方 (と周り 1.5 グリッド) が画面に収まるまで引く (`targeting_camera_distance()`)。利用者の寄り具合 (`_camera_distance`) は変えないので、選び終えると元に戻る |
 
 - 射線はゲーム側の `observe_target_path()` (`src/view/observable-world.cpp`) が求める。
   経路はゲームの投射と同じ直線 (`ProjectionPath`) で、射程はゲームの `MAX_RANGE`。
@@ -629,6 +629,12 @@ Linux ビルドで日本語/英語が違っても読み込める。実測 (地�
   文字コードが合わず化ける (新しく出たメッセージは正しく出る)。
 
 ## 既知の制限・今後の課題
+
+- **端末の大きさの変更はゲームスレッドで反映する**。Godot 側 (`set_sub_window_size()`) は
+  `request_term_resize()` で頼むだけにし、ゲームスレッドが入力待ち (`TERM_XTRA_EVENT`) の合間に
+  `apply_pending_term_resizes()` で `term_resize()` する。Godot スレッドで直接 `term_resize()` すると、
+  ゲームスレッドが画面を読んでいる最中 (`screen_state_update()` の一覧の範囲の比較など) に配列の大きさが
+  変わりうるため。ゲーム開始前は従来どおりその場で反映する。
 
 - **セーブファイル形式**: `save-file-scanner.cpp` はタイトル画面のセーブ一覧表示用に
   セーブファイルヘッダを独自に走査する。bakabakaband のセーブデータ

@@ -328,7 +328,16 @@ static func _make_token_outline_material() -> StandardMaterial3D:
 	outline.cull_mode = BaseMaterial3D.CULL_FRONT
 	outline.grow = true
 	outline.grow_amount = TOKEN_OUTLINE_WIDTH
+	_draw_after_markers(outline)
 	return outline
+
+
+## 照準の輪・射線の印 (奥行きを無視する半透明、優先度 -1) より後に描き、印が文字を隠さないようにする。
+## 不透明のままだと半透明より先に描かれ、奥行きを無視する印に上から塗られてしまう。
+## 奥行きの先描き (depth pre-pass) なら半透明の扱いでも影を落とし、前後関係も保てる
+static func _draw_after_markers(material: StandardMaterial3D) -> void:
+	material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA_DEPTH_PRE_PASS
+	material.render_priority = 0
 
 
 ## クリーチャー・プレイヤー 1 体分の節: 子 0 = 立体の文字 (Glyph)、子 1 = 足元の円 (Disc)。
@@ -345,6 +354,7 @@ func _make_token(text: String, color: Color, scale_factor: float) -> Node3D:
 	var material := StandardMaterial3D.new()
 	material.roughness = 0.6
 	material.emission_enabled = true
+	_draw_after_markers(material)
 	material.next_pass = _token_outline_material
 	glyph.material_override = material
 	glyph.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_ON
@@ -413,6 +423,7 @@ func _make_item_token(text: String, color: Color) -> Node3D:
 	var material := StandardMaterial3D.new()
 	material.roughness = 0.6
 	material.emission_enabled = true
+	_draw_after_markers(material)
 	material.next_pass = _token_outline_material
 	glyph.material_override = material
 	glyph.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_ON
@@ -763,9 +774,20 @@ func _on_game_events(_events: Array) -> void:
 	pass
 
 
+## カメラの位置: 注視点からの向き (縦・奥行きの比)。距離はこれに _camera_distance を掛ける
+const CAMERA_OFFSET_DIR := Vector2(0.85, 0.55)
+
+
 func _update_camera() -> void:
-	var focus := camera_focus(InputIntents.floor_to_world(_player), InputIntents.floor_to_world(_cursor), _cursor_shown)
-	var offset := Vector3(0, _camera_distance * 0.85, _camera_distance * 0.55).rotated(Vector3.UP, -_camera_yaw)
+	var player := InputIntents.floor_to_world(_player)
+	var cursor := InputIntents.floor_to_world(_cursor)
+	var focus := camera_focus(player, cursor, _cursor_shown)
+	# カーソルを出している間は、プレイヤーとカーソルの両方が画面に収まるまで引く。
+	# _camera_distance (利用者が決めた寄り具合) は変えないので、選び終えると元の寄り具合に戻る
+	var distance := _camera_distance
+	if _cursor_shown and size.y > 0.0:
+		distance = targeting_camera_distance(_camera_distance, player, cursor, _camera_yaw, _camera.fov, size.x / size.y)
+	var offset := Vector3(0, distance * CAMERA_OFFSET_DIR.x, distance * CAMERA_OFFSET_DIR.y).rotated(Vector3.UP, -_camera_yaw)
 	_camera.position = focus + offset
 	_camera.look_at(focus, Vector3.UP)
 	_face_tokens_to_camera()
@@ -942,6 +964,25 @@ static func target_path_colors(count: int, creature_index: int, blocked: bool) -
 			color = PATH_BLOCKED_COLOR
 		colors.append(color)
 	return colors
+
+
+## ターゲットの選択中のカメラの距離: プレイヤーとカーソルの両方 (と周り TARGET_VIEW_MARGIN グリッド) が
+## 画面に収まる距離と、利用者の距離 base の大きい方。注視点は両者の中間 (camera_focus)
+const TARGET_VIEW_MARGIN := 1.5
+
+
+static func targeting_camera_distance(base: float, player: Vector3, cursor: Vector3, yaw: float, fov_deg: float, aspect: float) -> float:
+	# カメラから見た左右 (x) と奥行き (z) に直す
+	var delta := (cursor - player).rotated(Vector3.UP, yaw)
+	var half_x := absf(delta.x) * 0.5 + TARGET_VIEW_MARGIN
+	var half_z := absf(delta.z) * 0.5 + TARGET_VIEW_MARGIN
+	var pitch := atan2(CAMERA_OFFSET_DIR.x, CAMERA_OFFSET_DIR.y)
+	var tan_v := tan(deg_to_rad(fov_deg) * 0.5)
+	var tan_h := tan_v * maxf(aspect, 0.1)
+	# 手前側の点はカメラに近く見える範囲が狭いので、近い側で収まる距離 (注視点からカメラまで) を求める
+	var near := half_z * cos(pitch)
+	var need := maxf(near + half_z * sin(pitch) / tan_v, near + half_x / tan_h)
+	return maxf(base, need / CAMERA_OFFSET_DIR.length())
 
 
 ## カメラの注視点: カーソルを出している間はプレイヤーとカーソルの中間 (遠くのマスを選んでも画面に収まる)

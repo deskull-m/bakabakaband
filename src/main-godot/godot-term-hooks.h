@@ -58,6 +58,13 @@ void apply_bigtile_mode(bool enabled);
 /// @param graf_name  "old"(8x8) / "new"(16x16) / "ne2"(32x32) / "ascii"
 void apply_tile_mode(bool enabled, const char *graf_name = "old");
 
+/// 端末の大きさの変更をゲームスレッドへ頼む (Godot スレッドから呼ぶ)。
+/// 同じ端末への依頼が溜まっていれば最後の大きさだけを残す
+void request_term_resize(term_type *term, int cols, int rows);
+
+/// 頼まれた端末の大きさの変更を反映する (ゲームスレッドから呼ぶ)。反映したものがあれば true
+bool apply_pending_term_resizes();
+
 /// resize_hook: ターミナルサイズ変更時のコールバック
 void term_resize_hook_godot();
 

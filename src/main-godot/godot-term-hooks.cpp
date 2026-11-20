@@ -26,9 +26,12 @@
 #include "term/z-term.h"
 #include "window/main-window-util.h"
 
+#include <algorithm>
 #include <atomic>
 #include <chrono>
+#include <mutex>
 #include <thread>
+#include <vector>
 
 using namespace hengband_godot;
 
@@ -37,6 +40,17 @@ static GodotInputHandler *s_input_handler = nullptr;
 /// term_data_godot 配列への参照（TERM_XTRA_REACT / resize_hook 用）
 static term_data_godot *s_term_data = nullptr;
 static int s_term_count = 0;
+
+namespace {
+/// Godot スレッドから頼まれた端末の大きさの変更 (ゲームスレッドが入力待ちの合間に反映する)
+struct PendingTermResize {
+    term_type *term;
+    int cols;
+    int rows;
+};
+std::mutex s_resize_mutex;
+std::vector<PendingTermResize> s_pending_resizes;
+}
 
 /// Godot スレッドからタイルモードが変更されたことをゲームスレッドに伝えるフラグ
 /// apply_tile_mode() がセット → TERM_XTRA_REACT がクリアして reset_visuals() を呼ぶ
@@ -55,6 +69,36 @@ void set_term_data_array(term_data_godot *arr, int count)
 {
     s_term_data = arr;
     s_term_count = count;
+}
+
+void request_term_resize(term_type *term, int cols, int rows)
+{
+    const std::scoped_lock lock(s_resize_mutex);
+    const auto it = std::find_if(s_pending_resizes.begin(), s_pending_resizes.end(), [term](const auto &r) { return r.term == term; });
+    if (it != s_pending_resizes.end()) {
+        it->cols = cols;
+        it->rows = rows;
+        return;
+    }
+    s_pending_resizes.push_back({ term, cols, rows });
+}
+
+bool apply_pending_term_resizes()
+{
+    std::vector<PendingTermResize> pending;
+    {
+        const std::scoped_lock lock(s_resize_mutex);
+        pending.swap(s_pending_resizes);
+    }
+    for (const auto &resize : pending) {
+        auto *saved = game_term;
+        term_activate(resize.term);
+        term_resize(resize.cols, resize.rows);
+        if (saved) {
+            term_activate(saved);
+        }
+    }
+    return !pending.empty();
 }
 
 // ---------------------------------------------------------------------------
@@ -186,6 +230,9 @@ errr term_xtra_godot(int n, int v)
         return 0;
     case TERM_XTRA_EVENT:
         // v=true: キーが来るまで待機、v=false: ノンブロッキング
+        // Godot スレッドから頼まれた端末の大きさの変更は、ここ (ゲームスレッド) で反映する。
+        // Godot スレッドで直接 term_resize() すると、ゲームスレッドが画面を読んでいる最中に配列が変わりうる
+        apply_pending_term_resizes();
         if (s_input_handler) {
             if (v) {
                 // 入力待ちに入る直前は、待っている入力の文脈が定まっている (#9294)
@@ -194,6 +241,9 @@ errr term_xtra_godot(int n, int v)
                 // 表示を開いたときなど、画面の更新が無くても待ちの途中で作れるよう短い間隔で起きる
                 character_sheet_push(PlayerType::get_instance_ptr());
                 while (!s_input_handler->wait_for_key_for(100)) {
+                    if (apply_pending_term_resizes()) {
+                        screen_state_update();
+                    }
                     if (character_sheet_is_refresh_requested()) {
                         character_sheet_push(PlayerType::get_instance_ptr());
                     }

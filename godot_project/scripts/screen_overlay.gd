@@ -17,9 +17,16 @@ static func is_map_state(state: int) -> bool:
 	return state == STATE_MAP or state == STATE_MAP_WITH_PROMPT or state == STATE_TARGETING
 
 
-## 地図ビューを見せる状態か (重ねた一覧を窓に写すなら OVERLAY_MENU も含む)
-static func shows_map_view(state: int, overlay_menus: bool) -> bool:
-	return is_map_state(state) or (overlay_menus and state == STATE_OVERLAY_MENU)
+## 地図ビューを見せる状態か (get_screen_state() の Dictionary)。
+## 重ねた一覧を窓に写すなら OVERLAY_MENU も含めるが、写す範囲が求まらないとき (一覧を開いている間に
+## 端末の大きさが変わり、比べる基準の画面と大きさが合わなくなった等) は窓に何も写せないので端末を見せる
+static func shows_map_view(state: Dictionary, overlay_menus: bool) -> bool:
+	if state.is_empty():
+		return false
+	var value := int(state.get("state", 0))
+	if is_map_state(value):
+		return true
+	return overlay_menus and value == STATE_OVERLAY_MENU and overlay_rect(state).has_area()
 
 
 ## 地図の上に重ねている一覧の範囲 (端末の桁・行、get_screen_state() の overlay_*)。重ねていなければ大きさ 0

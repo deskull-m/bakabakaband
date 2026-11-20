@@ -938,7 +938,11 @@ void HengbandGame::set_sub_window_size(int idx, int cols, int rows)
     if (td.tile_layer) {
         td.tile_layer->set_grid_size(cols, rows);
     }
-    // term_resize で z-term 側にも反映
+    // z-term 側の配列はゲームスレッドが読み書きしているので、ゲーム中はゲームスレッドに頼む
+    if (is_game_started()) {
+        request_term_resize(&td.t, cols, rows);
+        return;
+    }
     term_type *saved = game_term;
     term_activate(&td.t);
     term_resize(cols, rows);

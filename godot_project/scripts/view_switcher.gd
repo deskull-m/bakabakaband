@@ -50,9 +50,10 @@ func _on_screen_state_changed(state: Dictionary) -> void:
 	refresh()
 
 
-## 設定や地図ビューが変わったときにも呼ぶ
+## 設定や地図ビューが変わったときにも呼ぶ。端末の大きさが変わると一覧の範囲も変わり、
+## ゲーム側が screen_state_changed を出し直すので、ここで選び直される
 func refresh() -> void:
-	var show := GameState.use_map_view and map_view != null and not current.is_empty() and ScreenOverlay.shows_map_view(current["state"], overlay_menus_on_map)
+	var show := GameState.use_map_view and map_view != null and ScreenOverlay.shows_map_view(current, overlay_menus_on_map)
 	if show == _showing_map:
 		return
 	_showing_map = show

@@ -11,6 +11,7 @@ extends SceneTree
 
 const VisualCatalog = preload("res://scripts/visual_catalog.gd")
 
+var resized_from := Vector2i.ZERO
 var save_path := OS.get_environment("HB_SAVE")
 var game: Node = null
 var view: Control = null
@@ -130,14 +131,27 @@ func _process(_delta: float) -> bool:
 		var state: Dictionary = game.get_screen_state()
 		var rect := Rect2i(state["overlay_x"], state["overlay_y"], state["overlay_w"], state["overlay_h"])
 		var term = current_scene.status_sidebar._terminal
+		# 端末のマスの座標で切り出す (get_row_text() は全角の右半分を詰めるので、桁と文字の位置がずれる)。
+		# 空白と全角の右半分 (0) は窓の側でも数えないので除く
+		var region: Dictionary = term.get_region(rect.position.x, rect.position.y, rect.size.x, rect.size.y)
 		var expected := ""
-		for y in range(rect.position.y, rect.end.y):
-			expected += term.get_row_text(y).substr(rect.position.x, rect.size.x).replace(" ", "")
+		for ch in region["chars"]:
+			if ch != 0 and ch != 0x20:
+				expected += char(ch)
 		var mirrored := ""
 		for line in overlay._view._lines:
 			mirrored += "".join(line["chars"]).replace(" ", "")
 		check("inventory shown in the overlay window", overlay.visible and rect.has_area() and mirrored != "" and mirrored == expected, "rect=%s mirror=\"%s\" term=\"%s\"" % [rect, mirrored, expected])
+		# 一覧を開いたまま端末の大きさを変える (Godot スレッドから頼み、ゲームスレッドが入力待ちの合間に反映する)。
+		# 比べる基準の画面と大きさが合わず一覧の範囲が求まらないので、窓には写さず端末へ戻す
+		resized_from = Vector2i(term.get_cols(), term.get_rows())
+		game.set_sub_window_size(0, resized_from.x - 4, resized_from.y)
+	if phase == 1 and phase_frame == 170:
+		var term = current_scene.status_sidebar._terminal
+		var state: Dictionary = game.get_screen_state()
+		check("resizing during a list goes back to the terminal", not view.visible and not current_scene.status_overlay_menu.visible and term.get_cols() == resized_from.x - 4, "visible=%s state=%s cols=%d" % [view.visible, state, term.get_cols()])
 		ih.inject_key(0x1B)
+		game.set_sub_window_size(0, resized_from.x, resized_from.y)
 		# 全画面の表示 (キャラクター情報) は従来どおり端末に戻す
 		ih.inject_key(0x43)
 	if phase == 1 and phase_frame == 180:
@@ -216,7 +230,10 @@ func _process(_delta: float) -> bool:
 		var reaches: bool = path.size() >= 2 and Vector2i(path[path.size() - 2], path[path.size() - 1]) == markers["cursor"]
 		check("targeting keeps the map view", view.visible and state["state"] == 3, "state=%d" % state["state"])
 		check("cursor ring at the target", markers["cursor_shown"] and markers["cursor"] == Vector2i(state["cursor_x"], state["cursor_y"]), "markers=%s" % markers)
-		check("target path drawn to the cursor", markers["path_marks"] == path.size() / 2 and markers["path_marks"] > 0 and (reaches or state["target_path_blocked"]), "marks=%d path=%s blocked=%s" % [markers["path_marks"], path, state["target_path_blocked"]])
+		# 狙えるクリーチャーがいないとカーソルはプレイヤーのマスから始まり、射線は空になる
+		var on_player: bool = markers["cursor"] == view._player
+		var path_ok: bool = path.is_empty() if on_player else (markers["path_marks"] > 0 and (reaches or state["target_path_blocked"]))
+		check("target path drawn to the cursor", markers["path_marks"] == path.size() / 2 and path_ok, "marks=%d path=%s blocked=%s on_player=%s" % [markers["path_marks"], path, state["target_path_blocked"], on_player])
 		ih.inject_key(0x1B)
 		# 見るコマンド (l): 照準の輪だけで射線は描かない
 		ih.inject_key(0x6C)
