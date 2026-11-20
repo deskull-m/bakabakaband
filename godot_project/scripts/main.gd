@@ -128,6 +128,7 @@ func _ready() -> void:
 	view_switcher.map_view = dungeon_view
 	_apply_map_view_setting(game)
 	_setup_status_sidebar()
+	_setup_map_view_button()
 
 	# ワールドスナップショットのデバッグ表示 (Ctrl+Shift+M、#9292)
 	var debug_layer := CanvasLayer.new()
@@ -178,9 +179,7 @@ func _apply_map_view_setting(game: Node) -> void:
 ## Ctrl+Shift+D で 3D の地図ビューを切り替える (#9298)
 func _input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed and not event.echo and event.ctrl_pressed and event.shift_pressed and event.keycode == KEY_D:
-		GameState.use_map_view = not GameState.use_map_view
-		GameState.save_config()
-		_apply_map_view_setting($HengbandGame)
+		toggle_map_view()
 		get_viewport().set_input_as_handled()
 		return
 	if not (event is InputEventMouseButton) or not event.pressed:
@@ -740,3 +739,32 @@ func _make_terminal_mirror(layer: CanvasLayer, node_name: String, terminal: Node
 	layer.add_child(mirror)
 	mirror.setup(terminal, font, GameState.font_size, region)
 	return mirror
+
+
+# ---- 3D の地図ビューの切り替えボタン ----
+
+var map_view_button: Button = null
+
+## 3D の地図ビューと端末の表示を切り替える (Ctrl+Shift+D・下のバーの「3D」ボタン)
+func toggle_map_view() -> void:
+	GameState.use_map_view = not GameState.use_map_view
+	GameState.save_config()
+	_apply_map_view_setting($HengbandGame)
+	if map_view_button:
+		map_view_button.set_pressed_no_signal(GameState.use_map_view)
+
+## 下のバーの M / I / E ボタンの左に「3D」の切り替えボタンを置く
+func _setup_map_view_button() -> void:
+	var status_button: Button = $ConfigLayer/BottomBar/StatusButton
+	map_view_button = status_button.duplicate() as Button
+	map_view_button.name = "MapViewButton"
+	map_view_button.text = "3D"
+	map_view_button.tooltip_text = "3D の地図ビュー 表示/非表示 (Ctrl+Shift+D)"
+	map_view_button.toggle_mode = true
+	map_view_button.set_pressed_no_signal(GameState.use_map_view)
+	# 項目ウィンドウのボタン (M / I / E) のさらに左
+	var shift := 50.0 * (ITEM_WINDOW_BUTTONS.size() + 1)
+	map_view_button.offset_left = status_button.offset_left - shift
+	map_view_button.offset_right = status_button.offset_right - shift
+	$ConfigLayer/BottomBar.add_child(map_view_button)
+	map_view_button.toggled.connect(func(_on: bool) -> void: toggle_map_view())

@@ -5025,7 +5025,7 @@ godot --path godot_project
   `is_visible_on_map()`)。`lite_spot()` / `print_map()` / `apply_raw_damage()` /
   `project()` / 近接の打撃 / `point_target()` / `target_set()` に 1 行の通知・取り出しがあるので、
   **上流マージでこれらを触るときは残すこと**。Godot 側の 3D ビューは
-  `godot_project/scripts/dungeon_view_3d.gd` (Ctrl+Shift+D)。
+  `godot_project/scripts/dungeon_view_3d.gd` (下のバーの「3D」ボタン / Ctrl+Shift+D)。
 
 ---
 

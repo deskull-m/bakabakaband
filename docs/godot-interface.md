@@ -397,7 +397,7 @@ StatusPanel に表示を委ねる。メイン端末の行数も下段 3 行ぶ�
 ![3D の地図ビュー (地下 1 階)](images/godot-dungeon-view-3d.png)
 
 `godot_project/scripts/dungeon_view_3d.gd` (`SubViewportContainer`) が、ワールドスナップショットを
-3D で描く。**Ctrl+Shift+D** (または `GameState.use_map_view`) で有効にすると、`view_switcher.gd` が
+3D で描く。下のバーの **「3D」ボタン** か **Ctrl+Shift+D** (または `GameState.use_map_view`) で有効にすると、`view_switcher.gd` が
 地図を見ている間だけ見せ、メニュー・全画面の文章では端末に戻す。
 
 | 要素 | 実装 |

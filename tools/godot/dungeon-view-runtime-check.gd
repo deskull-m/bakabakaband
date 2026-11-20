@@ -16,6 +16,7 @@ var game: Node = null
 var view: Control = null
 var ih: Node = null
 var phase := 0
+var status_before := false
 var phase_frame := 0
 var ok := true
 var start_player := Vector2i.ZERO
@@ -143,6 +144,21 @@ func _process(_delta: float) -> bool:
 		for line in msg._view._lines:
 			msg_text += "".join(line["chars"])
 		check("message line mirrors the first row", row0 != "" and msg.visible and msg_text == row0.replace(" ", ""), "row0=\"%s\" mirror=\"%s\"" % [row0, msg_text])
+		# 下のバーの「3D」ボタンで切り替える (ステータスパネル・項目ウィンドウには波及しない)
+		var button: Button = current_scene.map_view_button
+		status_before = current_scene.get_node("StatusLayer/StatusPanel").visible
+		check("3D button reflects the setting", button != null and button.button_pressed)
+		ih.inject_key(0x1B)
+		button.button_pressed = false
+	if phase == 1 and phase_frame == 400:
+		check("3D button turns the map view off", not view.visible and not root.get_node("GameState").use_map_view and not current_scene.status_sidebar.visible)
+		check("3D button leaves the status panel alone", current_scene.get_node("StatusLayer/StatusPanel").visible == status_before)
+		current_scene.get_node("ConfigLayer/BottomBar/ItemWindowButton0").pressed.emit()
+		current_scene.map_view_button.button_pressed = true
+	if phase == 1 and phase_frame == 440:
+		check("3D button turns the map view on again", view.visible and root.get_node("GameState").use_map_view)
+		check("M button leaves the status panel alone", current_scene.get_node("StatusLayer/StatusPanel").visible == status_before)
+		current_scene.get_node("ConfigLayer/BottomBar/ItemWindowButton0").pressed.emit()
 		print("RESULT: ", "OK" if ok else "NG")
 		OS.kill(OS.get_process_id())
 	return false
