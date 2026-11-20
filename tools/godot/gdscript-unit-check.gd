@@ -56,6 +56,8 @@ func _initialize() -> void:
 	# カーソルを出している間のカメラはプレイヤーとカーソルの中間を見る
 	cases.append([DungeonView.camera_focus(Vector3(0, 0, 0), Vector3(10, 0, 4), true), Vector3(5, 0, 2)])
 	cases.append([DungeonView.camera_focus(Vector3(1, 0, 1), Vector3(10, 0, 4), false), Vector3(1, 0, 1)])
+	cases.append([is_equal_approx(DungeonView.disc_color(Color(1, 0, 0)).a, DungeonView.DISC_ALPHA), true])
+	cases.append([DungeonView.disc_color(Color(0, 0, 0)).r > 0.0, true])
 	# 末尾のカンマは取り除くが、文字列の中のカンマは残す
 	cases.append([VisualCatalog.parse_jsonc('{ "mesh": "res://a,}.tres", "b": [1, ], }'), { "mesh": "res://a,}.tres", "b": [1.0] }])
 	# 見つけた罠 (TRAP) は板に端末の文字を重ねる

@@ -162,8 +162,18 @@ func _process(_delta: float) -> bool:
 		var want := expected_counts()
 		var got: Dictionary = view.count_instances()
 		check("instances still match after moving", got["boxes"] == want["boxes"] and got["planes"] == want["planes"] and got["creatures"] == want["creatures"], "got=%s want=%s" % [got, want])
-		var label_pos: Vector3 = view._player_label.position
-		check("player billboard follows", Vector2i(int(floor(label_pos.x)), int(floor(label_pos.z))) == want["player"], "label=%s player=%s start=%s" % [label_pos, want["player"], start_player])
+		var label_pos: Vector3 = view._player_token.position
+		check("player token follows", Vector2i(int(floor(label_pos.x)), int(floor(label_pos.z))) == want["player"], "label=%s player=%s start=%s" % [label_pos, want["player"], start_player])
+		# クリーチャーとプレイヤーは立体の文字 (影を落とす) と足元の円で描く
+		var tokens: Array = [view._player_token]
+		tokens.append_array(view._creature_tokens.values())
+		var tokens_ok := true
+		for token: Node3D in tokens:
+			var glyph: MeshInstance3D = token.get_node("Glyph")
+			var disc: MeshInstance3D = token.get_node("Disc")
+			if not (glyph.mesh is TextMesh and (glyph.mesh as TextMesh).text != "" and glyph.cast_shadow == GeometryInstance3D.SHADOW_CASTING_SETTING_ON and disc.cast_shadow == GeometryInstance3D.SHADOW_CASTING_SETTING_OFF):
+				tokens_ok = false
+		check("creature tokens are extruded text with a ground disc", tokens_ok, "tokens=%d" % tokens.size())
 		print("last diff update %.2f ms for %d grids" % [view.last_update_ms, view.last_changed_grids])
 		# 1 行目のメッセージ: 階の雰囲気 (^F) を出して、写しが端末の 1 行目と一致するか
 		ih.inject_key(0x06)
