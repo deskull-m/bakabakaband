@@ -144,6 +144,56 @@ godot --path godot_project
 未ビルドだと Godot 起動時に GDExtension のロードに失敗するため、先に
 ステップ 2 を済ませておくこと。
 
+### Windows でのビルド
+
+Windows では **常に日本語版** (`JP` / `SJIS`) になる (`japanese=yes` は Linux 専用の指定)。
+CI では Windows 向けの GDExtension をビルドしていないので、手元での確認が必要。
+
+**必要なもの**
+
+| ツール | 入手先・備考 |
+|---|---|
+| Visual Studio 2022 以降 (Community 可) | 「C++ によるデスクトップ開発」ワークロード (MSVC v143 以降 + Windows SDK) |
+| Python 3.8 以上 | python.org 版。インストール時に「Add python.exe to PATH」を有効に |
+| SCons | `py -m pip install scons` |
+| Git for Windows | サブモジュールの取得に使う |
+| Godot 4.6 (標準版) | 実行・エディタ。.NET 版は不要 |
+
+**手順** (「x64 Native Tools Command Prompt for VS」または通常の PowerShell。SCons が MSVC を自動で探す)
+
+```powershell
+git clone https://github.com/deskull-m/bakabakaband.git
+cd bakabakaband
+git submodule update --init godot-cpp
+scons platform=windows target=template_debug -j8
+```
+
+- 成果物は `bin\bakabakaband.windows.template_debug.x86_64.dll`。リリース版は `target=template_release`。
+- 起動は Godot エディタで `godot_project\project.godot` を開いて実行するか、
+  `Godot_v4.6-stable_win64.exe --path godot_project`。ゲームデータはリポジトリの `lib\` を使う
+  (`main.gd` が `res://../lib` を参照するので、`godot_project` と `lib` の位置関係を崩さないこと)。
+- **実行文字コード**: `SConstruct` は `/execution-charset` を指定せず、システムの既定
+  (日本語 Windows では CP932) に任せている。**システムロケールが日本語でない Windows では
+  文字列が CP932 にならず日本語が化ける**ので、その場合は「設定 → 時刻と言語 → 言語と地域 →
+  管理用の言語の設定 → システムロケールの変更」で日本語にするか、`SConstruct` の Windows 分岐の
+  `CCFLAGS` に `/execution-charset:932` を足す。
+- **DLL の上書き**: Godot が起動中だと DLL がロックされてリンクに失敗する (`LNK1104`)。
+  ビルド前に Godot を閉じること (`.gdextension` は `reloadable = false`)。
+- MinGW でビルドする場合は `use_mingw=yes` を付ける (godot-cpp の指定)。ただし `SConstruct` の
+  Windows 分岐は MSVC のフラグ (`/source-charset` / `/EHsc` / `winmm` / `DbgHelp`) を前提にしているので、
+  MinGW では調整が要る (未確認)。
+
+**端末版 (Godot を使わない Windows ネイティブ版)** は Visual Studio のソリューションでビルドする
+(CI の `build-test-with-msvc.yml` と同じ)。こちらは `libcurl` サブモジュールと NuGet の復元が要る。
+
+```powershell
+git submodule update --init VisualStudio/Bakabakaband/libcurl
+nuget restore .\VisualStudio\Bakabakaband.sln
+MSBuild .\VisualStudio\Bakabakaband.sln /t:Rebuild /p:Configuration=Debug
+```
+
+`Bakabakaband.sln` を Visual Studio で開いてビルドしてもよい (NuGet は自動で復元される)。
+
 ## bakabakaband への移植にあたっての改変点
 
 hengband-godot は変愚蛮怒 (上流) のコードを前提としているため、bakabakaband の
