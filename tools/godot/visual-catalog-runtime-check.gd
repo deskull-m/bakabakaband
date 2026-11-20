@@ -19,8 +19,13 @@ var frame := 0
 func _initialize() -> void:
 	var gs = root.get_node("GameState")
 	gs.save_path = save_path
+	# 画面の大きさの変化などで設定が保存されるので、利用者の設定ファイルを書き換えないよう別の場所へ向ける
+	gs.config_path = "user://runtime-check-config.cfg"
 	gs.layout_data = {}
 	change_scene_to_file("res://scenes/main.tscn")
+
+
+var observing := false
 
 
 func _process(_delta: float) -> bool:
@@ -37,11 +42,13 @@ func _process(_delta: float) -> bool:
 		OS.kill(OS.get_process_id())
 	if game.get_player_status().is_empty() or frame < 150:
 		return false
-	if frame == 150:
+	# プレイヤーが揃ってから 1 度だけ観測を始め、最初のスナップショットができるまで待つ
+	if not observing:
+		observing = true
 		game.set_world_snapshot_enabled(true)
 		game.get_node("InputHandler").inject_key(0x12)
 		return false
-	if frame < 240:
+	if game.get_world_snapshot().is_empty():
 		return false
 
 	var catalog: Array = game.get_terrain_catalog()

@@ -55,6 +55,10 @@ void game_events_push(const ViewEvent &event)
     }
 
     std::lock_guard lock(g_mutex);
+    // 確かめてからロックを取るまでの間に無効化 (と溜まりの消去) が挟まりうるので、ロックの中で確かめ直す
+    if (!g_enabled.load()) {
+        return;
+    }
     if (g_queue.size() >= MAX_QUEUED_EVENTS) {
         g_queue.pop_front();
     }

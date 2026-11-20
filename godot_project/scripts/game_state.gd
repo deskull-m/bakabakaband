@@ -38,8 +38,14 @@ var use_map_view: bool = false
 var item_windows: Dictionary = {}
 
 const _CONFIG_PATH := "user://hengband_config.cfg"
+## 設定ファイルの場所。確認用のスクリプトは利用者の設定を書き換えないよう別の場所へ向ける
+## (環境変数 HB_CONFIG_PATH でも変えられる)
+var config_path := _CONFIG_PATH
 
 func _ready() -> void:
+	var override := OS.get_environment("HB_CONFIG_PATH")
+	if override != "":
+		config_path = override
 	load_config()
 	_restore_window()
 
@@ -65,11 +71,11 @@ func save_config() -> void:
 	cfg.set_value("status_panel", "visible", status_panel_visible)
 	cfg.set_value("display", "use_map_view", use_map_view)
 	cfg.set_value("item_windows", "state", item_windows)
-	cfg.save(_CONFIG_PATH)
+	cfg.save(config_path)
 
 func load_config() -> void:
 	var cfg := ConfigFile.new()
-	if cfg.load(_CONFIG_PATH) != OK:
+	if cfg.load(config_path) != OK:
 		return
 	font_name = cfg.get_value("display", "font_name", font_name)
 	font_size = cfg.get_value("display", "font_size", font_size)

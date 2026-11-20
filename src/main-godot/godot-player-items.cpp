@@ -25,8 +25,8 @@ GodotMessageSnapshot g_messages; ///< g_mutex で保護
 /// ゲームスレッド専用: 前回公開した内容 (内部の文字コード)
 ObservedInventory g_last_inventory;
 bool g_has_last_inventory = false;
-int32_t g_last_message_count = -1;
-std::string g_last_message;
+uint64_t g_last_message_revision = 0;
+bool g_has_last_message_revision = false;
 
 std::string to_utf8(const std::string &text)
 {
@@ -80,15 +80,14 @@ void push_inventory(PlayerType &player)
 
 void push_messages()
 {
-    // 件数と最新の 1 件が同じなら変わっていない (同じ文の繰り返しは最新の 1 件の "<xN>" に現れる)
-    const auto count = message_num();
-    const auto latest = count > 0 ? *message_str(0) : std::string();
-    if ((count == g_last_message_count) && (latest == g_last_message)) {
+    // 履歴が満杯だと件数は変わらないので、履歴が変わった回数で見る
+    const auto revision = message_revision();
+    if (g_has_last_message_revision && (revision == g_last_message_revision)) {
         return;
     }
 
-    g_last_message_count = count;
-    g_last_message = latest;
+    g_last_message_revision = revision;
+    g_has_last_message_revision = true;
     auto messages = observe_recent_messages(GODOT_MESSAGE_WINDOW_LINES);
     for (auto &message : messages) {
         message = to_utf8(message);

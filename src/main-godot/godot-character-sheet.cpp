@@ -8,6 +8,7 @@
 #include "io-dump/player-status-dump.h"
 #include "locale/character-encoding.h"
 #include "system/h-config.h"
+#include "system/item-entity.h"
 #include "system/player-type-definition.h"
 #include "world/world.h"
 
@@ -28,6 +29,21 @@ GodotCharacterSheet g_sheet; ///< g_mutex で保護
 /// ゲームスレッド専用
 std::vector<PlayerStatusDumpLine> g_last_lines;
 GAME_TURN g_last_turn = 0;
+uint64_t g_last_holdings = 0;
+
+/*!
+ * @brief 所持金と持ち物の指紋 (ターンが進まない店での売買・装備の変更を拾う)
+ * @details 店の中ではゲームターンが進まないので、ターンだけを見ると売買で変わった所持金が残る
+ */
+uint64_t calc_holdings_fingerprint(const PlayerType &player)
+{
+    auto hash = static_cast<uint64_t>(static_cast<uint32_t>(player.get_au()));
+    for (const auto &item : player.inventory) {
+        const auto value = item ? ((static_cast<uint64_t>(static_cast<uint16_t>(item->bi_id)) << 16) | static_cast<uint16_t>(item->number)) : 0;
+        hash = (hash * 1099511628211ULL) ^ value;
+    }
+    return hash;
+}
 
 std::string to_utf8(const std::string &text)
 {
@@ -86,12 +102,14 @@ void character_sheet_push(PlayerType *player_ptr)
         return;
     }
 
-    // 1 回作るのにステータス画面を 5 枚描くので、ゲームターンが進んだときだけ作り直す
-    if (!g_refresh_requested.exchange(false) && (world.game_turn == g_last_turn)) {
+    // 1 回作るのにステータス画面を 5 枚描くので、ゲームターンが進んだか所持金・持ち物が変わったときだけ作り直す
+    const auto holdings = calc_holdings_fingerprint(*player_ptr);
+    if (!g_refresh_requested.exchange(false) && (world.game_turn == g_last_turn) && (holdings == g_last_holdings)) {
         return;
     }
 
     g_last_turn = world.game_turn;
+    g_last_holdings = holdings;
     auto lines = collect_player_status_dump_offscreen(*player_ptr);
     if (lines == g_last_lines) {
         return;

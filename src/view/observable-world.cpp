@@ -36,6 +36,9 @@ ObservedTerrainShape classify_observed_terrain(short terrain_id)
     if (flags.has(TerrainCharacteristics::DOWN_STAIRS)) {
         return ObservedTerrainShape::STAIRS_DOWN;
     }
+    if (flags.has(TerrainCharacteristics::TRAP)) {
+        return ObservedTerrainShape::TRAP;
+    }
     if (flags.has(TerrainCharacteristics::DOOR)) {
         // 閉じた扉は開けられ、開いた扉は閉じられる。壊れた扉はどちらでもなく通れる
         return flags.has(TerrainCharacteristics::MOVE) ? ObservedTerrainShape::DOOR_OPEN : ObservedTerrainShape::DOOR_CLOSED;
@@ -166,12 +169,12 @@ namespace {
 
 ObservedCreature observe_creature(const CreatureEntity &player, short m_idx, const CreatureEntity &monster)
 {
-    const auto &floor = *player.get_floor();
     ObservedCreature observed;
     observed.display_id = monster.get_display_id();
     observed.m_idx = m_idx;
     observed.pos = monster.get_position();
-    if (floor.get_grid(observed.pos).is_view()) {
+    // 視界内のグリッドでもテレパシーで感知しただけの個体は「直接見えている」にしない
+    if (monster.is_in_view()) {
         observed.flags |= OBSERVED_CREATURE_IN_VIEW;
     }
     if (player.get_riding() == m_idx) {

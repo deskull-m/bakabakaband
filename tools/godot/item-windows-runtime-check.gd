@@ -23,6 +23,8 @@ var pack_count := -1
 func _initialize() -> void:
 	var gs = root.get_node("GameState")
 	gs.save_path = save_path
+	# 画面の大きさの変化などで設定が保存されるので、利用者の設定ファイルを書き換えないよう別の場所へ向ける
+	gs.config_path = "user://runtime-check-config.cfg"
 	gs.layout_data = {}
 	gs.item_windows = {}
 	change_scene_to_file("res://scenes/main.tscn")
@@ -90,7 +92,9 @@ func _process(_delta: float) -> bool:
 			elif phase_frame == 240:
 				ih.inject_key(0x1B)
 				var inv: Dictionary = game.get_inventory()
-				check("inventory_changed on drop", inventory_signals > 0, "signals=%d first item now: %s" % [inventory_signals, inv.get("pack", [{}])[0].get("name", "")])
+				var pack: Array = inv.get("pack", [])
+				var first_item: String = "(empty pack)" if pack.is_empty() else str(pack[0].get("name", ""))
+				check("inventory_changed on drop", inventory_signals > 0, "signals=%d first item now: %s" % [inventory_signals, first_item])
 				var last: PackedStringArray = game.get_messages().get("messages", PackedStringArray())
 				check("drop message shown", message_signals > 0 and last.size() > 0 and windows[0]._body.get_parsed_text().contains(last[last.size() - 1]), "signals=%d last=\"%s\"" % [message_signals, last[last.size() - 1] if last.size() > 0 else ""])
 				print("RESULT: ", "OK" if ok else "NG")

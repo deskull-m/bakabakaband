@@ -233,7 +233,8 @@ void world_snapshot_push(PlayerType *player_ptr)
     }
 
     world->creatures = observe_creatures(player);
-    if (can_diff && game_events_is_enabled()) {
+    // グリッドを全て作り直した回でも、同じフロアなら移動は起きている (別のフロアへの移動は移動として扱わない)
+    if (g_last.world && is_same_floor(*g_last.world, *world) && game_events_is_enabled()) {
         push_move_events(*g_last.world, *world, player.get_display_id());
     }
     g_collector.all_dirty = false;

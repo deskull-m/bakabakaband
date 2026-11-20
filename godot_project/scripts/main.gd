@@ -139,6 +139,7 @@ func _ready() -> void:
 	minimap.set_anchors_preset(Control.PRESET_FULL_RECT)
 	debug_layer.add_child(minimap)
 	minimap.setup(game, view_switcher)
+	world_minimap = minimap
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_WM_CLOSE_REQUEST:
@@ -168,11 +169,15 @@ func _on_viewport_size_changed() -> void:
 		)
 
 ## 3D の地図ビューを使う設定を反映する
+## スナップショットとイベントは使う側 (3D ビュー・デバッグ用のミニマップ) のどちらかが要る間だけ作らせる
 func _apply_map_view_setting(game: Node) -> void:
-	if GameState.use_map_view:
-		game.set_world_snapshot_enabled(true)
-		game.set_game_events_enabled(true)
+	var needed := GameState.use_map_view or (world_minimap != null and world_minimap.visible)
+	game.set_world_snapshot_enabled(needed)
+	game.set_game_events_enabled(needed)
 	view_switcher.refresh()
+
+
+var world_minimap: Control = null
 
 
 ## マウスホイールでフォントサイズを拡大縮小する
@@ -719,8 +724,6 @@ func _setup_status_sidebar() -> void:
 	var font := SystemFont.new()
 	font.font_names = [GameState.font_name, "Courier New", "Monospace"]
 	status_sidebar = _make_terminal_mirror(layer, "StatusSidebar", terminal, font, StatusSidebar.Region.LEFT_PANEL)
-	# 地図ビューのメッセージの行の下に置く
-	status_sidebar.position = Vector2(4, terminal.get_cell_height() + 8)
 	# 下端の帯は位置を自分で決める (画面の下、下のバーの上)
 	status_bottom_bar = _make_terminal_mirror(layer, "StatusBottomBar", terminal, font, StatusSidebar.Region.BOTTOM_BAR)
 	# 1 行目 (メッセージ・-more-・プロンプト) も写す

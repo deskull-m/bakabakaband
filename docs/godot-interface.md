@@ -264,7 +264,7 @@ StatusPanel に表示を委ねる。メイン端末の行数も下段 3 行ぶ�
 - 各グリッドの表示シンボル (`symbols`、1 グリッド 4 バイト: 前景色・前景文字・
   背景色・背景文字) は `map_info()` の結果そのもの。タイル表示中はタイルの
   行・列になるので、2D タイルセットをビルボードに流用できる。
-- 形状 (`shapes`) は `ObservedTerrainShape` (床・壁・扉・階段・液体・木・入口等)。
+- 形状 (`shapes`) は `ObservedTerrainShape` (床・壁・扉・階段・液体・木・入口・見つけた罠等)。
   地形フラグから C++ 側で分類するので、GDScript は地形定義を持たなくてよい。
 - 動作確認用に **Ctrl+Shift+M** でデバッグ用ミニマップ
   (`godot_project/scripts/world_debug_minimap.gd`) を表示できる。表示中だけ
@@ -381,7 +381,7 @@ StatusPanel に表示を委ねる。メイン端末の行数も下段 3 行ぶ�
 
 | 要素 | 場所 | 内容 |
 |---|---|---|
-| 定義ファイル | `godot_project/data/visuals.jsonc` | `terrain.by_tag` (地形の `key`) / `terrain.by_shape` (形状の名前) / `monsters.by_race` (種族 ID) / `monsters.by_symbol` (文字) / `items.by_tval` (種別)。1 件は `mesh` / `sprite` / `shape` (`box`・`plane`・`none`) / `scale` / `height` / `color` |
+| 定義ファイル | `godot_project/data/visuals.jsonc` | `terrain.by_tag` (地形の `key`) / `terrain.by_shape` (形状の名前) / `monsters.by_race` (種族 ID) / `monsters.by_symbol` (文字) / `items.by_tval` (種別)。1 件は `mesh` / `sprite` / `shape` (`box`・`plane`・`none`) / `scale` / `height` / `color` / `texture` / `overlay_glyph` (箱・板の上に端末の文字も立てる。見つけた罠 `TRAP` で使う) |
 | 解決 | `godot_project/scripts/visual_catalog.gd` | 地形: by_tag → by_shape → 文字。クリーチャー: by_race → by_symbol → 文字。床アイテム: by_tval → 文字。幻覚中のクリーチャーは `?`。JSONC (コメント・末尾のカンマ) を読む |
 | 地形の一覧 | `HengbandGame.get_terrain_catalog()` (`build_terrain_catalog()`) | 地形 ID → タグ・名前・形状・定義上の文字と色。定義ファイルを地形のタグで書けるようにするため |
 | クリーチャー・床アイテム | スナップショットの `creatures[].symbol` / `symbol_color`、`object_tvals` | 見かけの種族の定義上の文字 (タイル表示の設定に依らない)。幻覚中は伏せる |
@@ -404,7 +404,8 @@ StatusPanel に表示を委ねる。メイン端末の行数も下段 3 行ぶ�
 |---|---|
 | 地形 | 箱用・板用の `MultiMesh` を 1 つずつ。**グリッドごとにインスタンスを 1 つ割り当て**、差分では変わったグリッドのインスタンスだけ書き換える。全体はバッファ (`MultiMesh.buffer`) をまとめて渡す。見た目は `visual_catalog.gd` で地形 ID ごとに 1 度だけ解決してキャッシュ |
 | クリーチャー | 表示用 ID ごとの `Label3D` (文字のビルボード、端末の色)。1 グリッド程度の移動は Tween で滑らかに動かす。感知のみのものは暗く |
-| 床アイテム・プレイヤー | `Label3D` |
+| 床アイテム・プレイヤー | `Label3D`。床アイテムは地形を知らないグリッド (感知など) でも描く。タイル表示中は `symbols` がタイルの位置なので、定義の無い床アイテムは `&` で描く |
+| 文字で描く地形 | 定義の無い地形 (`kind = glyph`) と `overlay_glyph` を指定した地形 (見つけた罠) は、端末の文字の `Label3D` を立てる |
 | カメラ | プレイヤーを斜め上から追う。中ボタンのドラッグで回転、Shift + ホイールで寄る・引く |
 | クリック | 床の高さの平面に投影してフロアの座標を求め、左でトラベル・右でターゲット |
 | メッセージ | 端末の 1 行目を重ねて見せる |
@@ -415,9 +416,10 @@ StatusPanel に表示を委ねる。メイン端末の行数も下段 3 行ぶ�
 - `tools/godot/dungeon-view-runtime-check.gd`: 置いた箱・板・ビルボードの数がスナップショットと
   一致すること、持ち物を開くと隠れて戻ると見えること、移動に追従することを確かめる
   (headless では `MultiMesh.get_instance_transform()` が値を返さないので、ビュー自身が覚えている
-  グリッドごとの種類で数える)。
+  グリッドごとの種類で数える)。設定は利用者の設定ファイルではなく `user://runtime-check-config.cfg`
+  に書く (`GameState.config_path`。環境変数 `HB_CONFIG_PATH` でも変えられる)。
 - `tools/godot/screenshot.gd`: 仮想ディスプレイ + ソフトウェア OpenGL で実際に描いた画面を保存する。
-- 未対応: `visuals.jsonc` の `mesh` / `sprite` は現状は床の板で代用、近接攻撃・ボルトの演出 (#8805 等)。
+- 未対応: `visuals.jsonc` の `mesh` / `sprite` は現状は床の板で代用 (定義の無い地形は文字のビルボード)、近接攻撃・ボルトの演出 (#8805 等)。
 
 ### 3D の地図ビューに重ねるメッセージ・左側の欄・下端の状態バー
 
@@ -495,6 +497,15 @@ StatusPanel に表示を委ねる。メイン端末の行数も下段 3 行ぶ�
 ```bash
 HB_SAVE=<使い捨てのセーブファイル> godot --headless --path godot_project \
     --script "$PWD"/tools/godot/world-snapshot-runtime-check.gd
+```
+
+チェックスクリプトはゲームのスレッドを止めずに抜けるため、最後に自分のプロセスを強制終了する
+(成否に関わらずシェルからは異常終了に見える)。成否を終了コードで受けたいときは
+`tools/godot/run-runtime-check.sh` を通す (出力の `RESULT: OK` を見て 0 / 1 を返す。
+`GODOT` で実行ファイル、第 2 引数で制限秒数を指定できる)。
+
+```bash
+HB_SAVE=<使い捨てのセーブファイル> sh tools/godot/run-runtime-check.sh tools/godot/world-snapshot-runtime-check.gd
 ```
 
 セーブは端末版のヘッドレス実行 (`tools/bot/README.md`) で作れる。端末版と Godot 版の
@@ -602,5 +613,6 @@ scons platform=linux target=template_debug -j$(nproc)
 sh .github/scripts/check-godot-extension-load.sh <godot 実行ファイル> godot_project
 ```
 
-**Linux ビルドは英語版になる**点に注意 (`SConstruct` の Linux 分岐は `JP` を定義しない)。
-日本語版の Godot ビルドは Windows 分岐 (`JP` / `SJIS`) のみで、CI では確認していない。
+**Linux ビルドは既定で英語版になる**点に注意 (`SConstruct` の Linux 分岐は既定で `JP` を定義しない)。
+日本語版は `scons platform=linux target=template_debug japanese=yes` でビルドでき、CI の
+`build-japanese` ジョブでも確認している。CI で確認していないのは Windows の GDExtension ビルド。

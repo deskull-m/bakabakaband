@@ -48,3 +48,9 @@ void clear_point_intent()
     std::lock_guard lock(intent_mutex);
     pending_intent = tl::nullopt;
 }
+
+bool has_point_intent()
+{
+    std::lock_guard lock(intent_mutex);
+    return pending_intent && (std::chrono::steady_clock::now() - pending_intent->pushed_at <= INTENT_LIFETIME);
+}

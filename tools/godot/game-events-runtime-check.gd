@@ -25,6 +25,8 @@ var player_id := -1
 func _initialize() -> void:
 	var gs = root.get_node("GameState")
 	gs.save_path = save_path
+	# 画面の大きさの変化などで設定が保存されるので、利用者の設定ファイルを書き換えないよう別の場所へ向ける
+	gs.config_path = "user://runtime-check-config.cfg"
 	gs.layout_data = {}
 	change_scene_to_file("res://scenes/main.tscn")
 
@@ -70,6 +72,8 @@ func _on_events(events: Array) -> void:
 			samples[name] = DebugMinimap.describe_event(event)
 
 
+## ゲームのスレッドを止めずに抜けるため強制終了する。成否は "RESULT:" の行で見る
+## (終了コードが要るときは tools/godot/run-runtime-check.sh を通す)
 func _finish() -> void:
 	print("EVENT COUNTS: ", counts)
 	for name in samples:

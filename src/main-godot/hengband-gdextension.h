@@ -113,6 +113,8 @@ public:
     /// いずれもキー配置 (keymap) を通さずに元祖のコマンドを送る
     bool travel_to(int x, int y);
     bool target_grid(int x, int y);
+    /// travel_to / target_grid で積んだ座標が、まだゲームに取り出されていないか (確認用)
+    bool has_pending_point_intent() const;
     bool walk(int dir);
 
     /// ステータス画面のダンプ (C コマンドの画面、キャラクタダンプの先頭と同じ内容) を作るか (既定は無効)。

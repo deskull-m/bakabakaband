@@ -92,6 +92,9 @@ func connect_to_game(game: Node) -> void:
 func _on_visibility_changed() -> void:
 	if _game:
 		_game.set_character_sheet_enabled(visible)
+		# 隠している間に届いた更新は捨てているので、開いたら公開済みのものを読み直す
+		if visible:
+			_on_sheet_changed(0)
 
 
 func _on_sheet_changed(_version: int) -> void:

@@ -94,7 +94,8 @@ void screen_load(ScreenLoadOptType opt)
 void note_main_screen_cleared()
 {
     const auto depth = static_cast<int>(AngbandWorld::get_instance().character_icky_depth);
-    if (depth > 0) {
+    // 外側の画面で既に消していたら、その深さを保つ (内側を閉じても外側は消えたまま)
+    if ((depth > 0) && ((main_screen_cleared_depth == 0) || (depth < main_screen_cleared_depth))) {
         main_screen_cleared_depth = depth;
     }
 }

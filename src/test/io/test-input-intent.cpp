@@ -7,11 +7,14 @@ TEST_CASE("Point intents are taken once and only for the same purpose")
     const auto restore = util::make_finalizer([] { clear_point_intent(); });
     clear_point_intent();
     CHECK_FALSE(take_point_intent(PointIntentPurpose::POINT));
+    CHECK_FALSE(has_point_intent());
 
     push_point_intent(PointIntentPurpose::TARGET, { 3, 4 });
+    CHECK(has_point_intent());
 
     // 用途が違えば取り出さず、残しておく
     CHECK_FALSE(take_point_intent(PointIntentPurpose::POINT));
+    CHECK(has_point_intent());
 
     const auto pos = take_point_intent(PointIntentPurpose::TARGET);
     REQUIRE(pos);
@@ -19,6 +22,7 @@ TEST_CASE("Point intents are taken once and only for the same purpose")
 
     // 一度取り出したら無くなる
     CHECK_FALSE(take_point_intent(PointIntentPurpose::TARGET));
+    CHECK_FALSE(has_point_intent());
 }
 
 TEST_CASE("A newer point intent replaces the older one")

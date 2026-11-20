@@ -32,3 +32,6 @@ tl::optional<Pos2D> take_point_intent(PointIntentPurpose purpose);
 
 /// 積まれている意図を捨てる
 void clear_point_intent();
+
+/// 失効していない意図が積まれたまま (まだ取り出されていない) か
+bool has_point_intent();

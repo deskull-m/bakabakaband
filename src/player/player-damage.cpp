@@ -358,6 +358,9 @@ int take_hit(CreatureEntity &creature, int damage_type, int damage, std::string_
         if (creature.hp < -9999) {
             creature.hp = -9999;
         }
+        if (damage > 0) {
+            notify_view_damage(creature, damage);
+        }
     } else if (damage_type == DAMAGE_GENO) {
         creature.hp -= damage;
         if (creature.hp < -9999) {
@@ -368,6 +371,7 @@ int take_hit(CreatureEntity &creature, int damage_type, int damage, std::string_
             creature.hp = 0;
         }
         if (damage > 0) {
+            notify_view_damage(creature, damage);
             creature.on_take_hit(damage);
         }
     } else {

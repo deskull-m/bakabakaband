@@ -4984,8 +4984,9 @@ Godot 4.x 版 (`src/main-godot/` の GDExtension バックエンド) はゲー�
 GDExtension ビルドと、Godot headless での拡張の読込確認を行う** (`src/**` /
 `SConstruct` / `godot-cpp` / `godot_project/**` を変更する PR のみ)。
 SConstruct は `src/` を glob で集めるため、`src/Makefile.am` に載らない孤立
-ソースや Godot 版でだけ欠けるシンボルはここで落ちる。Linux ビルドは英語版
-(`JP` 未定義) で、Windows / 日本語版の Godot ビルドは CI 対象外。
+ソースや Godot 版でだけ欠けるシンボルはここで落ちる。Linux ビルドは既定で英語版
+(`JP` 未定義) で、日本語版 (`scons japanese=yes`) も `build-japanese` ジョブでビルドと
+読込確認を行う。Windows の Godot ビルドは CI 対象外。
 
 ```bash
 # 依存ツール: SCons 4.x / Python 3.8+ / C++20 対応コンパイラ

@@ -79,7 +79,8 @@ static void notify_view_projection(CreatureEntity &creature, MONSTER_IDX src_idx
     } else if (src_idx == 0) {
         event.actor = make_view_event_actor(creature);
     }
-    if (!event.actor.has_pos && floor.has_los_at(pos_source)) {
+    // 罠など、クリーチャーでない発生源だけ発生点を見せる (見えないモンスターの位置は明かさない)
+    if ((src_idx < 0) && !event.actor.has_pos && floor.has_los_at(pos_source)) {
         event.actor.pos = pos_source;
         event.actor.has_pos = true;
     }
@@ -250,7 +251,8 @@ ProjectResult project(CreatureEntity &creature, const MONSTER_IDX src_idx, POSIT
     }
 
     // 3D 表示などの演出のため、プレイヤーから見える軌跡と効果範囲を知らせる (端末版の描画と同じく、盲目や PROJECT_HIDE では知らせない)
-    if (is_view_event_sink_active() && !is_blind && !(flag & (PROJECT_HIDE))) {
+    // ブレスは上で PROJECT_HIDE を外しているので、呼出元が隠すよう指定したか (old_hide) も見る
+    if (is_view_event_sink_active() && !is_blind && !(flag & (PROJECT_HIDE)) && !old_hide) {
         notify_view_projection(creature, src_idx, pos_source, pos_target, path_g, path_n, positions, rad, typ, flag, breath);
     }
 

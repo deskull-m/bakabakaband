@@ -13,6 +13,7 @@
 //   "height": 高さ (グリッド = 1.0。壁・扉の箱の高さなど)
 //   "color":  色 ("#rrggbb")。無ければ端末の色
 //   "shape":  "box" (箱) / "plane" (床の板) / "none" (置かない)。mesh も sprite も無いときの形
+//   "overlay_glyph": true なら箱・板の上に端末の文字のビルボードも立てる (罠など、文字で見分ける地形)
 //   "texture": 箱・板に貼るテクスチャの名前 (assets/textures/terrain/<名前>.png、128x128)。
 //             色はテクスチャに端末の地形の色を掛けて付くので、テクスチャは明暗の模様だけでよい。
 //             tools/godot/gen-terrain-textures.py が生成する
@@ -31,7 +32,9 @@
       "TREE": { "shape": "box", "height": 1.2, "scale": 0.6, "texture": "tree" },
       "ENTRANCE": { "shape": "box", "height": 1.0, "texture": "door" },
       "OTHER_PASSABLE": { "shape": "plane", "texture": "dirt" },
-      "OTHER_OBSTACLE": { "shape": "box", "height": 0.8, "texture": "rubble" }
+      "OTHER_OBSTACLE": { "shape": "box", "height": 0.8, "texture": "rubble" },
+      // 見つけた罠は床の板に端末の文字 (^ の色) を立てて見分けられるようにする
+      "TRAP": { "shape": "plane", "texture": "floor", "overlay_glyph": true }
     },
     // 地形のタグ (lib/edit/TerrainDefinitions.jsonc の key) ごとの上書き
     "by_tag": {

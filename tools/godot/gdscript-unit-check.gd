@@ -40,6 +40,18 @@ func _initialize() -> void:
 	cases.append([VisualCatalog.tile_region(0x83, 0x82, Vector2i(16, 16)), Rect2i(32, 48, 16, 16)])
 	# 地形のテクスチャ
 	cases.append([vc.resolve_terrain(1)["texture"], "floor"])
+	# 末尾のカンマは取り除くが、文字列の中のカンマは残す
+	cases.append([VisualCatalog.parse_jsonc('{ "mesh": "res://a,}.tres", "b": [1, ], }'), { "mesh": "res://a,}.tres", "b": [1.0] }])
+	# 見つけた罠 (TRAP) は板に端末の文字を重ねる
+	var trap_vc := VisualCatalog.new()
+	trap_vc.definitions = VisualCatalog.parse_jsonc('{ "terrain": { "by_shape": { "TRAP": { "shape": "plane", "overlay_glyph": true } } } }')
+	trap_vc.set_terrain_catalog([{ "id": 7, "tag": "TRAP_X", "shape": VisualCatalog.SHAPE_NAMES.find("TRAP"), "symbol": "^", "symbol_color": 3 }])
+	var trap_visual := trap_vc.resolve_terrain(7)
+	cases.append([[trap_visual["kind"], trap_visual["overlay_glyph"], trap_visual["glyph"]], ["plane", true, "^"]])
+	cases.append([VisualCatalog.SHAPE_NAMES.find("TRAP"), 12])
+	# タイル表示中の symbols (最上位ビット付きのタイルの行・列) は床アイテムの文字に使わない
+	cases.append([DungeonView.item_fallback_symbol(0x85, 0x90), [DungeonView.ITEM_TILE_FALLBACK_GLYPH, DungeonView.ITEM_TILE_FALLBACK_COLOR]])
+	cases.append([DungeonView.item_fallback_symbol(11, 0x21), ["!", 11]])
 	cases.append([DungeonView.collect_texture_names({ "terrain": { "by_shape": { "A": { "texture": "x" }, "B": {} }, "by_tag": { "C": { "texture": "y" }, "D": { "texture": "x" } } } }), ["x", "y"]])
 	var texture_names := DungeonView.collect_texture_names(vc.definitions)
 	for name in texture_names:

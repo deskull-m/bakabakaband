@@ -25,6 +25,8 @@ var ok := true
 func _initialize() -> void:
 	var gs = root.get_node("GameState")
 	gs.save_path = save_path
+	# 画面の大きさの変化などで設定が保存されるので、利用者の設定ファイルを書き換えないよう別の場所へ向ける
+	gs.config_path = "user://runtime-check-config.cfg"
 	gs.layout_data = {}
 	change_scene_to_file("res://scenes/main.tscn")
 
@@ -117,6 +119,8 @@ func _process(_delta: float) -> bool:
 			elif phase_frame == 120:
 				var st: Dictionary = game.get_screen_state()
 				check("back to map after target", st["state"] == 1, "state=%d prompt=\"%s\"" % [st["state"], st["prompt"]])
+				# 積んだ座標がターゲットの選択で取り出されたこと ('*' が何もしなくても上の確認は通るため)
+				check("target intent consumed", not game.has_pending_point_intent())
 				print("RESULT: ", "OK" if ok else "NG")
 				OS.kill(OS.get_process_id())
 	return false

@@ -131,3 +131,6 @@ func _place() -> void:
 		position = Vector2(4, get_viewport_rect().size.y - BOTTOM_MARGIN - size.y)
 	elif region == Region.MESSAGE_LINE:
 		position = Vector2(4, 2)
+	else:
+		# メッセージの行の窓 (1 行 + 余白) の下。文字の大きさを変えたら行の高さに合わせて動かす
+		position = Vector2(4, _terminal.get_cell_height() + 8)

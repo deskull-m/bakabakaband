@@ -40,6 +40,7 @@ enum class ObservedTerrainShape : uint8_t {
     ENTRANCE = 9, //!< 店・施設の入口
     OTHER_PASSABLE = 10, //!< 上記以外の通れる地形
     OTHER_OBSTACLE = 11, //!< 上記以外の通れない地形
+    TRAP = 12, //!< 見つけた罠 (床の罠も落とし戸も、文字で見分けられるよう床とは分ける)
 };
 
 /*!

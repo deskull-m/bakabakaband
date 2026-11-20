@@ -2,6 +2,7 @@
 
 #include "system/angband.h"
 #include <concepts>
+#include <cstdint>
 #include <fmt/format.h>
 #include <memory>
 #include <string>
@@ -34,6 +35,7 @@ extern bool msg_flag;
 extern COMMAND_CODE now_message;
 
 int32_t message_num(void);
+uint64_t message_revision();
 std::shared_ptr<const std::string> message_str(int age);
 void message_add(std::string_view msg);
 void msg_erase(void);

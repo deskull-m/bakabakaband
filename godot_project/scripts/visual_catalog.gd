@@ -15,12 +15,13 @@ extends RefCounted
 ##   glyph:  文字 (String)。glyph_color: 端末の色の番号
 ##   scale / height: 数値。color: Color (定義に無ければ端末の色から)
 ##   texture: 箱・板に貼るテクスチャの名前 (assets/textures/terrain/<名前>.png)。無ければ ""
+##   overlay_glyph: 箱・板の上に端末の文字のビルボードも立てるか (罠など、文字で見分ける地形)
 ##   source: どの定義から決まったか ("by_tag" / "by_shape" / "by_race" / "by_symbol" / "by_tval" / "fallback")
 
 const DEFAULT_PATH := "res://data/visuals.jsonc"
 
 ## ObservedTerrainShape (src/view/observable-world.h) の名前
-const SHAPE_NAMES: Array[String] = ["UNKNOWN", "FLOOR", "WALL", "DOOR_CLOSED", "DOOR_OPEN", "STAIRS_UP", "STAIRS_DOWN", "LIQUID", "TREE", "ENTRANCE", "OTHER_PASSABLE", "OTHER_OBSTACLE"]
+const SHAPE_NAMES: Array[String] = ["UNKNOWN", "FLOOR", "WALL", "DOOR_CLOSED", "DOOR_OPEN", "STAIRS_UP", "STAIRS_DOWN", "LIQUID", "TREE", "ENTRANCE", "OTHER_PASSABLE", "OTHER_OBSTACLE", "TRAP"]
 
 var definitions: Dictionary = {}
 var load_error: String = ""
@@ -61,11 +62,38 @@ static func parse_jsonc(text: String) -> Variant:
 		else:
 			out += c
 			i += 1
-	# 末尾のカンマ (", }" / ", ]") を取り除く
-	var re := RegEx.new()
-	re.compile(",(\\s*[}\\]])")
-	out = re.sub(out, "$1", true)
-	return JSON.parse_string(out)
+	return JSON.parse_string(_strip_trailing_commas(out))
+
+
+## 末尾のカンマ (", }" / ", ]") を取り除く。文字列の中のカンマはそのまま残す
+static func _strip_trailing_commas(text: String) -> String:
+	var out := ""
+	var i := 0
+	var in_string := false
+	while i < text.length():
+		var c := text[i]
+		if in_string:
+			out += c
+			if c == "\\" and i + 1 < text.length():
+				out += text[i + 1]
+				i += 2
+				continue
+			if c == "\"":
+				in_string = false
+			i += 1
+			continue
+		if c == "\"":
+			in_string = true
+		elif c == ",":
+			var j := i + 1
+			while j < text.length() and text[j] in [" ", "\t", "\n", "\r"]:
+				j += 1
+			if j < text.length() and (text[j] == "}" or text[j] == "]"):
+				i += 1
+				continue
+		out += c
+		i += 1
+	return out
 
 
 func load_definitions(path: String = DEFAULT_PATH) -> bool:
@@ -117,6 +145,7 @@ func _build(entry: Dictionary, source: String, glyph: String, glyph_color: int) 
 		"color": Color.html(entry["color"]) if entry.has("color") else _term_color(glyph_color),
 		"source": source,
 		"texture": str(entry.get("texture", "")),
+		"overlay_glyph": bool(entry.get("overlay_glyph", false)),
 	}
 	if entry.has("mesh"):
 		result["kind"] = "mesh"

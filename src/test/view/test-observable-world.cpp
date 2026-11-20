@@ -62,6 +62,17 @@ TEST_CASE("Observed terrain shapes follow the terrain characteristics")
     CHECK(classify_observed_terrain(ids.door_id) == ObservedTerrainShape::DOOR_CLOSED);
     CHECK(classify_observed_terrain(ids.open_door_id) == ObservedTerrainShape::DOOR_OPEN);
     CHECK(classify_observed_terrain(ids.down_stairs_id) == ObservedTerrainShape::STAIRS_DOWN);
+
+    // 見つけた罠は床の罠でも落とし戸でも罠として分ける (床の板だけでは見分けられないため)
+    const auto trap_id = static_cast<short>(terrains.size());
+    terrains.resize(terrains.size() + 1);
+    auto &trap = terrains.get_terrain(trap_id);
+    trap.idx = trap_id;
+    trap.mimic = trap_id;
+    trap.flags = { TerrainCharacteristics::TRAP, TerrainCharacteristics::FLOOR, TerrainCharacteristics::MOVE };
+    CHECK(classify_observed_terrain(trap_id) == ObservedTerrainShape::TRAP);
+    trap.flags = { TerrainCharacteristics::TRAP, TerrainCharacteristics::MOVE };
+    CHECK(classify_observed_terrain(trap_id) == ObservedTerrainShape::TRAP);
 }
 
 TEST_CASE("Observed health bands match the monster health display")

@@ -29,6 +29,8 @@ var ids_seen := {}
 func _initialize() -> void:
 	var gs = root.get_node("GameState")
 	gs.save_path = save_path
+	# 画面の大きさの変化などで設定が保存されるので、利用者の設定ファイルを書き換えないよう別の場所へ向ける
+	gs.config_path = "user://runtime-check-config.cfg"
 	gs.layout_data = {}
 	root.size = Vector2i(1280, 800)
 	change_scene_to_file("res://scenes/main.tscn")
@@ -91,7 +93,15 @@ func _process(_delta: float) -> bool:
 					_next()
 		3:
 			if phase_frame > 120:
+				# 通知が届く前に新しい版が公開されていることがあるので、手元へ取り込んでから同じ版どうしで比べる
+				_on_changed(0)
 				var full: Dictionary = game.get_world_snapshot()
+				if int(full["version"]) != last_version:
+					if phase_frame > 600:
+						print("RESULT: snapshot version did not settle")
+						_finish(1)
+						return true
+					return false
 				var same: bool = full["shapes"] == local_shapes
 				dump_screen("after moves")
 				print("creatures now: ", full["creatures"])
@@ -133,6 +143,8 @@ func _next() -> void:
 	phase += 1
 	phase_frame = 0
 
+## 結果を出して抜ける。ゲームのスレッドを止めずに抜けるため強制終了するので、成否は
+## "RESULT:" の行で見る (終了コードが要るときは tools/godot/run-runtime-check.sh を通す)
 func _finish(code: int) -> void:
 	print("RESULT: ", "OK" if code == 0 else "NG")
 	OS.kill(OS.get_process_id())

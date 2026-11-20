@@ -25,6 +25,8 @@ var start_player := Vector2i.ZERO
 func _initialize() -> void:
 	var gs = root.get_node("GameState")
 	gs.save_path = save_path
+	# 画面の大きさの変化などで設定が保存されるので、利用者の設定ファイルを書き換えないよう別の場所へ向ける
+	gs.config_path = "user://runtime-check-config.cfg"
 	gs.layout_data = {}
 	gs.use_map_view = true
 	root.size = Vector2i(1280, 800)
@@ -46,15 +48,22 @@ func expected_counts() -> Dictionary:
 	var boxes := 0
 	var planes := 0
 	var items := 0
+	var terrain_glyphs := 0
 	for i in terrain.size():
-		var kind: String = vc.resolve_terrain(terrain[i])["kind"]
+		var visual := vc.resolve_terrain(terrain[i])
+		var kind: String = visual["kind"]
 		if kind == "box":
 			boxes += 1
+		elif kind == "glyph":
+			terrain_glyphs += 1
 		elif kind != "none":
 			planes += 1
-		if (flags[i] & 1) != 0 and (flags[i] & 8) != 0:
+		if kind != "glyph" and kind != "none" and visual.get("overlay_glyph", false):
+			terrain_glyphs += 1
+		# 見つけた床アイテムは地形を知らないグリッドにも描く
+		if (flags[i] & 8) != 0:
 			items += 1
-	return { "boxes": boxes, "planes": planes, "creatures": s["creatures"].size(), "items": items, "player": Vector2i(s["player_x"], s["player_y"]) }
+	return { "boxes": boxes, "planes": planes, "creatures": s["creatures"].size(), "items": items, "terrain_glyphs": terrain_glyphs, "player": Vector2i(s["player_x"], s["player_y"]) }
 
 
 func _process(_delta: float) -> bool:
@@ -88,12 +97,15 @@ func _process(_delta: float) -> bool:
 				check("status sidebar shown with the map", sidebar.visible and sidebar_text.contains("HP"), sidebar_text.replace("\n", " | "))
 				var got: Dictionary = view.count_instances()
 				var want := expected_counts()
-				check("instances match the snapshot", got["boxes"] == want["boxes"] and got["planes"] == want["planes"] and got["creatures"] == want["creatures"] and got["items"] == want["items"], "got=%s want=%s" % [got, want])
+				check("instances match the snapshot", got["boxes"] == want["boxes"] and got["planes"] == want["planes"] and got["creatures"] == want["creatures"] and got["items"] == want["items"] and got["terrain_glyphs"] == want["terrain_glyphs"], "got=%s want=%s" % [got, want])
 				print("full build %.1f ms" % view.last_full_build_ms)
 				# 光源 (#9299): プレイヤーの光の届く範囲は光源の半径に合わせる
 				var snap: Dictionary = game.get_world_snapshot()
 				var radius: int = snap["player_light_radius"]
-				check("player light follows the light radius", (radius == 0 and got["player_light"] == 0.0) or is_equal_approx(got["player_light"], radius + 0.75), "radius=%d range=%s" % [radius, got["player_light"]])
+				# 盲目なら光は置かない (スナップショットの半径は光源の値のまま)
+				var blind: bool = snap.get("player_blind", false)
+				var expected_light := 0.0 if blind or radius == 0 else radius + 0.75
+				check("player light follows the light radius", is_equal_approx(got["player_light"], expected_light), "radius=%d blind=%s range=%s" % [radius, blind, got["player_light"]])
 				var lit_creatures := 0
 				for c in snap["creatures"]:
 					if c["light_radius"] > 0:

@@ -18,6 +18,8 @@ var frame := 0
 func _initialize() -> void:
 	var gs = root.get_node("GameState")
 	gs.save_path = save_path
+	# 画面の大きさの変化などで設定が保存されるので、利用者の設定ファイルを書き換えないよう別の場所へ向ける
+	gs.config_path = "user://runtime-check-config.cfg"
 	gs.layout_data = {}
 	gs.use_map_view = OS.get_environment("HB_MAP_VIEW") != "0"
 	if OS.get_environment("HB_STATUS_PANEL") == "0":
@@ -65,7 +67,10 @@ func _process(_d: float) -> bool:
 		if v and v.visible:
 			print("view visible=", v.visible, " size=", v.size, " counts=", v.count_instances(), " state=", game.get_screen_state()["state"], " cam=", v._camera.global_position, " vp=", v._viewport.size)
 		var img := root.get_texture().get_image()
-		img.save_png(out)
-		print("saved ", out, " ", img.get_size())
+		var err := img.save_png(out)
+		if err == OK:
+			print("saved ", out, " ", img.get_size())
+		else:
+			print("FAILED to save ", out, ": ", error_string(err))
 		OS.kill(OS.get_process_id())
 	return false

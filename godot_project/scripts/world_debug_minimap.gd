@@ -25,6 +25,7 @@ const SHAPE_COLORS: Array[Color] = [
 	Color(1.0, 0.85, 0.2),      # ENTRANCE
 	Color(0.5, 0.5, 0.45),      # OTHER_PASSABLE
 	Color(0.55, 0.45, 0.45),    # OTHER_OBSTACLE
+	Color(0.9, 0.3, 0.3),       # TRAP
 ]
 
 ## ObservedGridFlag

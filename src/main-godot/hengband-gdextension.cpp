@@ -326,6 +326,11 @@ bool HengbandGame::target_grid(int x, int y)
     return true;
 }
 
+bool HengbandGame::has_pending_point_intent() const
+{
+    return has_point_intent();
+}
+
 bool HengbandGame::walk(int dir)
 {
     if (!input_handler_ || !is_accepting_command() || (dir < 1) || (dir > 9) || (dir == 5)) {
@@ -1074,6 +1079,7 @@ void HengbandGame::_bind_methods()
     ClassDB::bind_method(D_METHOD("travel_to", "x", "y"), &HengbandGame::travel_to);
     ClassDB::bind_method(D_METHOD("target_grid", "x", "y"), &HengbandGame::target_grid);
     ClassDB::bind_method(D_METHOD("walk", "dir"), &HengbandGame::walk);
+    ClassDB::bind_method(D_METHOD("has_pending_point_intent"), &HengbandGame::has_pending_point_intent);
 
     // ステータス画面のダンプ (C コマンドの画面)
     ClassDB::bind_method(D_METHOD("set_character_sheet_enabled", "enabled"), &HengbandGame::set_character_sheet_enabled);

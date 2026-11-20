@@ -58,7 +58,11 @@ var _grid_kind := PackedByteArray()
 const KIND_NONE := 0
 const KIND_BOX := 1
 const KIND_PLANE := 2
+## 箱も板も置かず、端末の文字のビルボードだけを立てる (定義が無い地形)
+const KIND_GLYPH := 3
+var _terrain_labels := {} ## グリッドの添字 → Label3D (文字で描く地形・文字を重ねる地形)
 var _creature_labels := {} ## id → Label3D
+var _creature_tweens := {} ## id → Tween (隣へ動く途中のもの)
 var _item_labels := {} ## グリッドの添字 → Label3D
 var _player := Vector2i.ZERO
 var _camera_yaw := 0.0
@@ -308,6 +312,9 @@ func _rebuild(full: Dictionary) -> void:
 	for label in _item_labels.values():
 		label.queue_free()
 	_item_labels.clear()
+	for label in _terrain_labels.values():
+		label.queue_free()
+	_terrain_labels.clear()
 
 	# 全体はインスタンスを 1 つずつ設定せず、バッファ (変換 12 + 色 4 の float) をまとめて渡す
 	var box_buffer := PackedFloat32Array()
@@ -318,8 +325,12 @@ func _rebuild(full: Dictionary) -> void:
 		var placed := _compute_grid(i)
 		_grid_kind[i] = placed[0]
 		var target := box_buffer if placed[0] == KIND_BOX else plane_buffer
-		if placed[0] != KIND_NONE:
+		if placed[0] == KIND_BOX or placed[0] == KIND_PLANE:
 			_write_instance(target, i, placed[1], placed[2], placed[3])
+		else:
+			# 置かないインスタンスは大きさ 0 にする (バッファの既定の 0 は変換も 0 だが、明示しておく)
+			_write_instance(target, i, HIDDEN, Color.BLACK, 0)
+		_update_terrain_label(i, placed)
 		_update_item(i)
 	_box_mm.instance_count = count
 	_plane_mm.instance_count = count
@@ -375,7 +386,8 @@ func _apply_changes(changes: Dictionary) -> void:
 	last_changed_grids = indices.size()
 
 
-## 地形 ID ごとに解決した見た目 [KIND_*, 大きさの Basis, 高さ, 色, テクスチャの層]
+## 地形 ID ごとに解決した見た目 [KIND_*, 大きさの Basis, 高さ, 色, テクスチャの層, 文字, 文字の色]
+## 文字は KIND_GLYPH の地形と、定義で "overlay_glyph" を指定した地形 (罠など) だけが持つ ("" なら立てない)
 ## 地形の種類は数百しかないので、グリッドごとに解決し直さない
 var _terrain_visual_cache := {}
 
@@ -394,27 +406,58 @@ func _terrain_visual(terrain_id: int) -> Array:
 		placed_kind = KIND_BOX
 	elif kind == "none":
 		placed_kind = KIND_NONE
+	elif kind == "glyph":
+		placed_kind = KIND_GLYPH
+	var glyph := ""
+	if placed_kind == KIND_GLYPH or visual.get("overlay_glyph", false):
+		glyph = visual.get("glyph", "")
+	var glyph_color := color
 	var layer: int = _texture_layers.get(visual.get("texture", ""), 0)
-	# 板・文字のビルボード・未対応のメッシュは、いまは床の板で代用する
+	# 未対応のメッシュ・スプライトは、いまは床の板で代用する
 	if placed_kind == KIND_PLANE:
 		color = color * (TEXTURED_PLANE_BRIGHTNESS if layer > 0 else PLANE_BRIGHTNESS)
 		color.a = 1.0
-	cached = [placed_kind, Basis().scaled(Vector3(s, height, s)), height, color, layer]
+	cached = [placed_kind, Basis().scaled(Vector3(s, height, s)), height, color, layer, glyph, glyph_color]
 	_terrain_visual_cache[terrain_id] = cached
 	return cached
 
 
-## 1 グリッドに何を置くか: [KIND_*, 変換, 色, テクスチャの層]
+## 1 グリッドに何を置くか: [KIND_*, 変換, 色, テクスチャの層, 文字, 文字の色, 文字の高さ]
 func _compute_grid(i: int) -> Array:
 	var visual := _terrain_visual(_terrain[i])
 	var kind: int = visual[0]
 	if kind == KIND_NONE:
-		return [KIND_NONE, HIDDEN, Color.BLACK, 0]
+		return [KIND_NONE, HIDDEN, Color.BLACK, 0, "", Color.BLACK, 0.0]
 	var color := grid_color(visual[3], _flags[i], _blind)
+	var glyph_color := grid_color(visual[6], _flags[i], _blind)
 	var center := Vector3((i % _width) + 0.5, 0.0, (i / _width) + 0.5)
 	if kind == KIND_BOX:
-		return [KIND_BOX, Transform3D(visual[1], center + Vector3(0, float(visual[2]) / 2.0, 0)), color, visual[4]]
-	return [KIND_PLANE, Transform3D(Basis(), center), color, visual[4]]
+		return [KIND_BOX, Transform3D(visual[1], center + Vector3(0, float(visual[2]) / 2.0, 0)), color, visual[4], visual[5], glyph_color, float(visual[2]) + TERRAIN_GLYPH_HEIGHT]
+	if kind == KIND_GLYPH:
+		return [KIND_GLYPH, HIDDEN, color, 0, visual[5], glyph_color, TERRAIN_GLYPH_HEIGHT]
+	return [KIND_PLANE, Transform3D(Basis(), center), color, visual[4], visual[5], glyph_color, TERRAIN_GLYPH_HEIGHT]
+
+
+## 地形の文字のビルボードの高さ (床アイテムの文字より低くし、同じグリッドで重ならないようにする)
+const TERRAIN_GLYPH_HEIGHT := 0.15
+
+
+## 地形の文字のビルボードを立てる・外す (_compute_grid の結果に従う)
+func _update_terrain_label(i: int, placed: Array) -> void:
+	var glyph: String = placed[4]
+	if glyph == "":
+		if _terrain_labels.has(i):
+			_terrain_labels[i].queue_free()
+			_terrain_labels.erase(i)
+		return
+	var label: Label3D = _terrain_labels.get(i)
+	if label == null:
+		label = _make_glyph(glyph, placed[5], 0.6)
+		_item_root.add_child(label)
+		_terrain_labels[i] = label
+	label.text = glyph
+	label.modulate = placed[5]
+	label.position = InputIntents.floor_to_world(Vector2i(i % _width, i / _width), 1.0, placed[6])
 
 
 ## 1 グリッドの地形と床アイテムを描き直す (差分用)
@@ -434,13 +477,33 @@ func _update_grid(i: int) -> void:
 	else:
 		_box_mm.set_instance_transform(i, HIDDEN)
 		_plane_mm.set_instance_transform(i, HIDDEN)
+	_update_terrain_label(i, placed)
 	_update_item(i)
 
 
+## タイル表示中に symbols の代わりに使う床アイテムの文字と色 (色は端末の白)
+const ITEM_TILE_FALLBACK_GLYPH := "&"
+const ITEM_TILE_FALLBACK_COLOR := 1
+
+
+## symbols の色・文字の組がタイルの行・列か (タイル表示中は両方の最上位ビットが立つ)
+static func is_tile_symbol(color_byte: int, char_byte: int) -> bool:
+	return (color_byte & 0x80) != 0 and (char_byte & 0x80) != 0
+
+
+## 床アイテムの文字と色 (symbols の前景)。タイル表示中は symbols がタイルの位置なので使わない
+static func item_fallback_symbol(color_byte: int, char_byte: int) -> Array:
+	if is_tile_symbol(color_byte, char_byte):
+		return [ITEM_TILE_FALLBACK_GLYPH, ITEM_TILE_FALLBACK_COLOR]
+	return [char(char_byte), color_byte]
+
+
 func _update_item(i: int) -> void:
-	var has_item := (_flags[i] & GRID_OBJECT) != 0 and (_flags[i] & GRID_KNOWN) != 0
+	# 見つけた床アイテムは地形を知らないグリッドにも在りうる (感知など) ので、地形の既知は問わない
+	var has_item := (_flags[i] & GRID_OBJECT) != 0
 	if has_item:
-		var item_visual := catalog.resolve_item(_tvals[i], char(_symbols[i * 4 + 1]), _symbols[i * 4])
+		var fallback := item_fallback_symbol(_symbols[i * 4], _symbols[i * 4 + 1])
+		var item_visual := catalog.resolve_item(_tvals[i], fallback[0], fallback[1])
 		var label: Label3D = _item_labels.get(i)
 		if label == null:
 			label = _make_glyph(item_visual["glyph"], item_visual["color"], 0.6)
@@ -474,12 +537,23 @@ func _sync_creatures(creatures: Array) -> void:
 		else:
 			label.text = visual["glyph"]
 			label.modulate = color
+			# 前の移動の途中なら止める (止めないと、テレポート後に古い行き先へ戻される)
+			var previous: Tween = _creature_tweens.get(id)
+			if previous != null:
+				previous.kill()
+				_creature_tweens.erase(id)
 			if label.position.distance_to(target) <= 1.5 and is_inside_tree():
-				create_tween().tween_property(label, "position", target, MOVE_TWEEN_SEC)
+				var tween := create_tween()
+				tween.tween_property(label, "position", target, MOVE_TWEEN_SEC)
+				_creature_tweens[id] = tween
 			else:
 				label.position = target
 	for id in _creature_labels.keys():
 		if not seen.has(id):
+			var tween: Tween = _creature_tweens.get(id)
+			if tween != null:
+				tween.kill()
+				_creature_tweens.erase(id)
 			_creature_labels[id].queue_free()
 			_creature_labels.erase(id)
 	_sync_creature_lights(creatures)
@@ -570,6 +644,6 @@ func count_instances() -> Dictionary:
 		elif kind == KIND_PLANE:
 			planes += 1
 	return {
-		"boxes": boxes, "planes": planes, "creatures": _creature_labels.size(), "items": _item_labels.size(),
+		"boxes": boxes, "planes": planes, "creatures": _creature_labels.size(), "items": _item_labels.size(), "terrain_glyphs": _terrain_labels.size(),
 		"player_light": _player_light.omni_range if _player_light.visible else 0.0, "creature_lights": _creature_lights.size(),
 	}

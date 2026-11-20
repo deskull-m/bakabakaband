@@ -13,6 +13,10 @@ on:
       - "godot-cpp"
       - "godot_project/**"
       - ".github/workflows/build-godot-gdextension.yml"
+      # ワークフローが走らせる確認のスクリプト
+      - ".github/scripts/check-godot-extension-load.gd"
+      - ".github/scripts/check-godot-extension-load.sh"
+      - "tools/godot/gdscript-unit-check.gd"
 
   # 手動トリガーを許可
   workflow_dispatch:
