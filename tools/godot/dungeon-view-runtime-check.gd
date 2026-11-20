@@ -190,6 +190,27 @@ func _process(_delta: float) -> bool:
 		check("3D button turns the map view on again", view.visible and root.get_node("GameState").use_map_view)
 		check("M button leaves the status panel alone", current_scene.get_node("StatusLayer/StatusPanel").visible == status_before)
 		current_scene.get_node("ConfigLayer/BottomBar/ItemWindowButton0").pressed.emit()
+		# ターゲットの選択 (*): 3D のまま照準の輪と、プレイヤーからの射線を描く
+		ih.inject_key(0x2A)
+	if phase == 1 and phase_frame == 480:
+		var state: Dictionary = game.get_screen_state()
+		var markers: Dictionary = view.get_target_markers()
+		var path: PackedInt32Array = state["target_path"]
+		var reaches: bool = path.size() >= 2 and Vector2i(path[path.size() - 2], path[path.size() - 1]) == markers["cursor"]
+		check("targeting keeps the map view", view.visible and state["state"] == 3, "state=%d" % state["state"])
+		check("cursor ring at the target", markers["cursor_shown"] and markers["cursor"] == Vector2i(state["cursor_x"], state["cursor_y"]), "markers=%s" % markers)
+		check("target path drawn to the cursor", markers["path_marks"] == path.size() / 2 and markers["path_marks"] > 0 and (reaches or state["target_path_blocked"]), "marks=%d path=%s blocked=%s" % [markers["path_marks"], path, state["target_path_blocked"]])
+		ih.inject_key(0x1B)
+		# 見るコマンド (l): 照準の輪だけで射線は描かない
+		ih.inject_key(0x6C)
+	if phase == 1 and phase_frame == 520:
+		var markers: Dictionary = view.get_target_markers()
+		check("look shows only the cursor", markers["cursor_shown"] and markers["path_marks"] == 0, "markers=%s" % markers)
+		ih.inject_key(0x1B)
+		ih.inject_key(0x1B)
+	if phase == 1 and phase_frame == 560:
+		var markers: Dictionary = view.get_target_markers()
+		check("cursor hidden back on the map", not markers["cursor_shown"] and markers["path_marks"] == 0, "markers=%s" % markers)
 		print("RESULT: ", "OK" if ok else "NG")
 		OS.kill(OS.get_process_id())
 	return false

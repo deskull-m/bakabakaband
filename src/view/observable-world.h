@@ -19,6 +19,7 @@
 #include "util/point-2d.h"
 #include <cstdint>
 #include <string>
+#include <tl/optional.hpp>
 #include <vector>
 
 class CreatureEntity;
@@ -150,6 +151,23 @@ ObservedGrid observe_grid(CreatureEntity &player, const Pos2D &pos, bool with_sy
 
 /// 見えているクリーチャーの観測結果を作る
 std::vector<ObservedCreature> observe_creatures(CreatureEntity &player);
+
+/*!
+ * @brief プレイヤーからターゲットのマスまでの射線 (ボルト・矢の軌跡の目安)
+ * @details 経路はゲームの投射と同じ直線 (ProjectionPath) で、止まる位置はプレイヤーが知っている
+ * ことだけで決める (記憶している地形が投射を通さないマスで止める。知らない壁では止めない)。
+ * 見えているクリーチャーがいるマスは、ボルトがそこで当たる目安として最初の 1 つを返す。
+ */
+struct ObservedTargetPath {
+    std::vector<Pos2D> grids; //!< プレイヤーの次のマスから順に (プレイヤー自身のマスは含まない)
+    bool blocked = false; //!< 最後のマスが、記憶している投射を通さない地形 (壁など) か
+    tl::optional<int> creature_index; //!< 経路上で最初に見えているクリーチャーがいるマスの添字
+
+    bool operator==(const ObservedTargetPath &) const = default;
+};
+
+/// プレイヤーから dst までの射線を求める (dst がプレイヤーの位置なら空)
+ObservedTargetPath observe_target_path(const CreatureEntity &player, const Pos2D &dst);
 
 /*!
  * @brief 地形の一覧の 1 件 (見た目の定義を地形のタグで書けるようにするため)

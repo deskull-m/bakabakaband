@@ -256,3 +256,58 @@ TEST_CASE("The terrain catalog lists tags, shapes and default symbols")
     CHECK(entry.symbol_char == '#');
     CHECK(entry.symbol_color == 7);
 }
+
+TEST_CASE("The target path stops only at walls the player remembers")
+{
+    auto &terrains = TerrainList::get_instance();
+    auto &world = AngbandWorld::get_instance();
+    const auto old_size = terrains.size();
+    const auto restore_options = test::scoped_restore(view_hidden_walls);
+    const auto restore = util::make_finalizer([&terrains, &world, old_size, wild = world.is_wild_mode()] {
+        terrains.resize(old_size);
+        world.set_wild_mode(wild);
+    });
+    const auto ids = add_test_terrains(terrains, old_size);
+    world.set_wild_mode(false);
+    view_hidden_walls = true;
+
+    // 8 x 3 のフロアの真ん中の行を床にし、x = 4 に壁を置く
+    auto floor_ptr = std::make_unique<FloorType>();
+    auto &floor = *floor_ptr;
+    floor.width = 8;
+    floor.height = 3;
+    for (const auto &pos : floor.get_area()) {
+        auto &grid = floor.get_grid(pos);
+        grid.feat = (pos.y == 1) ? ids.floor_id : ids.wall_id;
+        grid.mimic = 0;
+        grid.info = 0;
+    }
+    const Pos2D wall_pos{ 1, 4 };
+    floor.get_grid(wall_pos).feat = ids.wall_id;
+
+    auto player_ptr = std::make_unique<PlayerType>();
+    auto &player = *player_ptr;
+    player.set_floor(floor_ptr.get());
+    player.y = 1;
+    player.x = 1;
+    const Pos2D cursor{ 1, 6 };
+
+    // プレイヤー自身のマスを選んだら射線は無い
+    CHECK(observe_target_path(player, player.get_position()).grids.empty());
+
+    // 知らない壁では止めない (壁の位置を明かさない)
+    const auto unknown = observe_target_path(player, cursor);
+    CHECK_FALSE(unknown.blocked);
+    REQUIRE_FALSE(unknown.grids.empty());
+    CHECK(unknown.grids.front() == Pos2D(1, 2));
+    CHECK(unknown.grids.back() == cursor);
+    CHECK(unknown.grids.size() == 5);
+    CHECK_FALSE(unknown.creature_index);
+
+    // 記憶している壁では、その壁のマスで止まる
+    floor.get_grid(wall_pos).info = CAVE_MARK | CAVE_KNOWN;
+    const auto known = observe_target_path(player, cursor);
+    CHECK(known.blocked);
+    REQUIRE(known.grids.size() == 3);
+    CHECK(known.grids.back() == wall_pos);
+}

@@ -5103,6 +5103,9 @@ godot --path godot_project
   半透明の窓に写す。範囲は `calc_main_screen_overlay_region()` (`src/term/screen-processor.cpp`) が
   最初の `screen_save()` 時点の画面との差から求めるので、**上流マージで `screen_save()` /
   `screen_load()` を触るときは基準画面の取得・破棄を残すこと**。
+  ターゲットの選択・場所の指定 (`TARGETING`) の間は 3D 上に照準の輪と射線を描く。射線は
+  `observe_target_path()` (`src/view/observable-world.cpp`) が**プレイヤーの記憶している地形だけで**
+  止まる位置を決める (知らない壁では止めない)。
 
 ---
 

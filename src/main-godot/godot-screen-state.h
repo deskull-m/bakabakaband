@@ -8,6 +8,7 @@
  */
 
 #include "term/screen-processor.h"
+#include "view/observable-world.h"
 #include "view/screen-state.h"
 
 #include <cstdint>
@@ -33,6 +34,9 @@ struct GodotScreenState {
 
     /// 地図の上に重ねている一覧などの範囲 (端末の桁・行、1 行目を除く)。重ねていなければ無し
     tl::optional<ScreenRegion> overlay_region;
+
+    /// ターゲットの選択 (見るコマンドを除く) の間、プレイヤーからカーソルまでの射線。それ以外は無し
+    tl::optional<ObservedTargetPath> target_path;
 };
 
 /// ゲームスレッドから呼ぶ: 画面の状態を求め直し、変わっていれば公開する

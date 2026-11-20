@@ -11,6 +11,9 @@ extends SubViewportContainer
 ## - 座標は X 軸 = 東、Z 軸 = 南、1 グリッド = 1 (input_intents.gd と同じ)
 ## - 左クリックでトラベル、右クリックでターゲット (#9296)。中ボタンのドラッグでカメラを回し、
 ##   Shift + ホイールで寄る・引く
+## - ターゲットの選択・場所の指定 (画面の状態が TARGETING) の間は、カーソルのマスに照準の輪を置き、
+##   ターゲットの選択ではプレイヤーからの射線 (ゲーム側の observe_target_path()) をマスごとの印で描く。
+##   カメラはプレイヤーとカーソルの中間を見る
 ## - 視界・光源・記憶 (#9299): グリッドは「視界内で明るい」「視界内だが暗い」「記憶だけ」の 3 段階の
 ##   明るさで描き、未知のグリッドは描かない。盲目なら全て記憶だけとして描く。プレイヤーの光源と
 ##   光を持つモンスターには OmniLight3D を置く。見え方の判定はすべてゲーム側の値 (スナップショット)
@@ -135,6 +138,7 @@ func _ready() -> void:
 	_world.add_child(_player_label)
 	_player_light = _make_light(Color(1.0, 0.85, 0.6))
 	_world.add_child(_player_light)
+	_setup_target_markers()
 
 
 
@@ -145,6 +149,7 @@ func setup(game_node: Node) -> void:
 	_load_terrain_textures()
 	game.world_snapshot_changed.connect(_on_world_snapshot_changed)
 	game.game_events.connect(_on_game_events)
+	game.screen_state_changed.connect(_on_screen_state_changed)
 	visibility_changed.connect(_on_visibility_changed)
 
 
@@ -586,7 +591,7 @@ func _on_game_events(_events: Array) -> void:
 
 
 func _update_camera() -> void:
-	var focus := InputIntents.floor_to_world(_player)
+	var focus := camera_focus(InputIntents.floor_to_world(_player), InputIntents.floor_to_world(_cursor), _cursor_shown)
 	var offset := Vector3(0, _camera_distance * 0.85, _camera_distance * 0.55).rotated(Vector3.UP, -_camera_yaw)
 	_camera.position = focus + offset
 	_camera.look_at(focus, Vector3.UP)
@@ -646,4 +651,144 @@ func count_instances() -> Dictionary:
 	return {
 		"boxes": boxes, "planes": planes, "creatures": _creature_labels.size(), "items": _item_labels.size(), "terrain_glyphs": _terrain_labels.size(),
 		"player_light": _player_light.omni_range if _player_light.visible else 0.0, "creature_lights": _creature_lights.size(),
+	}
+
+
+# ---- ターゲットの選択・場所の指定のカーソルと射線 ----
+
+## InputKind (src/io/input-context.h) の値
+const INPUT_KIND_TARGET := 8
+const INPUT_KIND_POINT := 9
+## ScreenState の TARGETING
+const SCREEN_TARGETING := 3
+## 照準の輪の色: ターゲットの選択 / 場所の指定
+const CURSOR_TARGET_COLOR := Color(1.0, 0.85, 0.2)
+const CURSOR_POINT_COLOR := Color(0.35, 1.0, 0.5)
+## 射線の印の色: 届く区間 / 見えているクリーチャーの位置 (ボルトはここで当たる) / その先 / 壁などで止まる位置
+const PATH_COLOR := Color(1.0, 0.9, 0.35, 0.8)
+const PATH_CREATURE_COLOR := Color(1.0, 0.45, 0.15, 0.95)
+const PATH_BEYOND_COLOR := Color(0.75, 0.65, 0.4, 0.55)
+const PATH_BLOCKED_COLOR := Color(1.0, 0.15, 0.15, 0.95)
+## 射線の印の大きさ (グリッド = 1.0) と高さ (床の板・テクスチャより少し上)
+const PATH_MARK_SIZE := 0.32
+const MARKER_HEIGHT := 0.04
+## 射線の印の上限 (ゲームの射程 MAX_RANGE より十分大きい)
+const MAX_PATH_MARKS := 64
+
+var _cursor := Vector2i.ZERO
+var _cursor_shown := false
+var _cursor_ring: MeshInstance3D
+var _cursor_material: StandardMaterial3D
+var _path_mm: MultiMesh
+var _marker_time := 0.0
+
+
+func _setup_target_markers() -> void:
+	var torus := TorusMesh.new()
+	torus.inner_radius = 0.34
+	torus.outer_radius = 0.48
+	torus.rings = 32
+	torus.ring_segments = 8
+	_cursor_material = StandardMaterial3D.new()
+	_cursor_material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	_cursor_material.albedo_color = CURSOR_TARGET_COLOR
+	# 壁や床に埋もれないよう奥行きを無視して描く。文字のビルボード (優先度 0) より先に描き、
+	# カーソルのマスにいるクリーチャーの文字を隠さない
+	_cursor_material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	_cursor_material.no_depth_test = true
+	_cursor_material.render_priority = -1
+	torus.surface_set_material(0, _cursor_material)
+	_cursor_ring = MeshInstance3D.new()
+	_cursor_ring.mesh = torus
+	_cursor_ring.scale = Vector3(1.0, 0.25, 1.0)
+	_cursor_ring.visible = false
+	_world.add_child(_cursor_ring)
+
+	var mark := PlaneMesh.new()
+	mark.size = Vector2(PATH_MARK_SIZE, PATH_MARK_SIZE)
+	var mark_material := StandardMaterial3D.new()
+	mark_material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	mark_material.vertex_color_use_as_albedo = true
+	mark_material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	mark_material.no_depth_test = true
+	mark_material.render_priority = -1
+	mark.surface_set_material(0, mark_material)
+	_path_mm = MultiMesh.new()
+	_path_mm.transform_format = MultiMesh.TRANSFORM_3D
+	_path_mm.use_colors = true
+	_path_mm.mesh = mark
+	_path_mm.instance_count = MAX_PATH_MARKS
+	_path_mm.visible_instance_count = 0
+	var path_instance := MultiMeshInstance3D.new()
+	path_instance.multimesh = _path_mm
+	_world.add_child(path_instance)
+
+
+func _on_screen_state_changed(state: Dictionary) -> void:
+	apply_target_state(state)
+
+
+## 画面の状態からカーソルと射線を置き直す (TARGETING でなければ隠す)
+func apply_target_state(state: Dictionary) -> void:
+	if _cursor_ring == null:
+		return
+	var targeting := int(state.get("state", 0)) == SCREEN_TARGETING and bool(state.get("has_cursor", false))
+	_cursor_shown = targeting
+	_cursor_ring.visible = targeting
+	if not targeting:
+		_path_mm.visible_instance_count = 0
+		_update_camera()
+		return
+	_cursor = Vector2i(int(state["cursor_x"]), int(state["cursor_y"]))
+	_cursor_material.albedo_color = CURSOR_POINT_COLOR if int(state.get("input_kind", -1)) == INPUT_KIND_POINT else CURSOR_TARGET_COLOR
+	_cursor_ring.position = InputIntents.floor_to_world(_cursor, 1.0, MARKER_HEIGHT)
+
+	var path: PackedInt32Array = state.get("target_path", PackedInt32Array())
+	var count := mini(path.size() / 2, MAX_PATH_MARKS)
+	var colors := target_path_colors(count, int(state.get("target_path_creature_index", -1)), bool(state.get("target_path_blocked", false)))
+	for i in count:
+		var pos := Vector2i(path[i * 2], path[i * 2 + 1])
+		_path_mm.set_instance_transform(i, Transform3D(Basis(), InputIntents.floor_to_world(pos, 1.0, MARKER_HEIGHT)))
+		_path_mm.set_instance_color(i, colors[i])
+	_path_mm.visible_instance_count = count
+	_update_camera()
+
+
+## 射線の印の色。見えているクリーチャー (creature_index) までが届く区間で、その先は薄く描く。
+## 記憶している壁などで止まる (blocked) なら最後の印を赤にする
+static func target_path_colors(count: int, creature_index: int, blocked: bool) -> Array[Color]:
+	var colors: Array[Color] = []
+	for i in count:
+		var color := PATH_COLOR
+		if creature_index >= 0 and i == creature_index:
+			color = PATH_CREATURE_COLOR
+		elif creature_index >= 0 and i > creature_index:
+			color = PATH_BEYOND_COLOR
+		if blocked and i == count - 1:
+			color = PATH_BLOCKED_COLOR
+		colors.append(color)
+	return colors
+
+
+## カメラの注視点: カーソルを出している間はプレイヤーとカーソルの中間 (遠くのマスを選んでも画面に収まる)
+static func camera_focus(player: Vector3, cursor: Vector3, cursor_shown: bool) -> Vector3:
+	return (player + cursor) * 0.5 if cursor_shown else player
+
+
+func _process(delta: float) -> void:
+	if _cursor_ring == null or not _cursor_ring.visible:
+		return
+	# 照準の輪をゆっくり回して脈打たせ、どこにあるか目に付くようにする
+	_marker_time += delta
+	_cursor_ring.rotation.y = _marker_time * 1.5
+	var pulse := 1.0 + 0.12 * sin(_marker_time * 6.0)
+	_cursor_ring.scale = Vector3(pulse, 0.25, pulse)
+
+
+## 確認用: 照準の輪と射線の印の状態
+func get_target_markers() -> Dictionary:
+	return {
+		"cursor_shown": _cursor_ring != null and _cursor_ring.visible,
+		"cursor": _cursor,
+		"path_marks": _path_mm.visible_instance_count if _path_mm else 0,
 	}

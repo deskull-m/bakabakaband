@@ -49,6 +49,13 @@ func _initialize() -> void:
 	const SB = preload("res://scripts/status_sidebar.gd")
 	cases.append([SB.overlay_position(Rect2i(13, 1, 40, 8), Vector2(10, 20), Vector2(400, 160), Vector2(1280, 800)), Vector2(130, 28)])
 	cases.append([SB.overlay_position(Rect2i(100, 30, 40, 8), Vector2(10, 20), Vector2(400, 160), Vector2(1280, 800)), Vector2(876, 800 - SB.BOTTOM_MARGIN - 160)])
+	# 射線の印の色: クリーチャーの位置で当たり、その先は薄く、壁で止まる最後の印は赤
+	var path_colors := DungeonView.target_path_colors(4, 1, true)
+	cases.append([path_colors.map(func(c): return c), [DungeonView.PATH_COLOR, DungeonView.PATH_CREATURE_COLOR, DungeonView.PATH_BEYOND_COLOR, DungeonView.PATH_BLOCKED_COLOR]])
+	cases.append([DungeonView.target_path_colors(2, -1, false).map(func(c): return c), [DungeonView.PATH_COLOR, DungeonView.PATH_COLOR]])
+	# カーソルを出している間のカメラはプレイヤーとカーソルの中間を見る
+	cases.append([DungeonView.camera_focus(Vector3(0, 0, 0), Vector3(10, 0, 4), true), Vector3(5, 0, 2)])
+	cases.append([DungeonView.camera_focus(Vector3(1, 0, 1), Vector3(10, 0, 4), false), Vector3(1, 0, 1)])
 	# 末尾のカンマは取り除くが、文字列の中のカンマは残す
 	cases.append([VisualCatalog.parse_jsonc('{ "mesh": "res://a,}.tres", "b": [1, ], }'), { "mesh": "res://a,}.tres", "b": [1.0] }])
 	# 見つけた罠 (TRAP) は板に端末の文字を重ねる

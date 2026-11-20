@@ -490,6 +490,17 @@ godot::Dictionary HengbandGame::get_screen_state()
     d["overlay_y"] = overlay.y;
     d["overlay_w"] = overlay.w;
     d["overlay_h"] = overlay.h;
+    // ターゲットの選択中の射線 (x, y, x, y, ...)。止まる位置の手掛かりも渡す
+    godot::PackedInt32Array path;
+    if (state.target_path) {
+        for (const auto &pos : state.target_path->grids) {
+            path.push_back(pos.x);
+            path.push_back(pos.y);
+        }
+    }
+    d["target_path"] = path;
+    d["target_path_blocked"] = state.target_path && state.target_path->blocked;
+    d["target_path_creature_index"] = (state.target_path && state.target_path->creature_index) ? *state.target_path->creature_index : -1;
     return d;
 }
 
