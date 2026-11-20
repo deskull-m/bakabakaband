@@ -142,6 +142,7 @@ func _ready() -> void:
 	_item_root = Node3D.new()
 	_world.add_child(_item_root)
 	_disc_texture = _make_disc_texture()
+	_token_outline_material = _make_token_outline_material()
 	_player_token = _make_token("@", Color.WHITE, 1.0)
 	_world.add_child(_player_token)
 	_player_light = _make_light(Color(1.0, 0.85, 0.6))
@@ -293,7 +294,12 @@ const DISC_SIZE := 0.95
 const DISC_ALPHA := 0.35
 const DISC_HEIGHT := 0.02
 
+## 立体の文字の縁取り: 法線方向へ膨らませた裏面を黒で描く (背面法)。太さはグリッド = 1.0 の単位
+const TOKEN_OUTLINE_WIDTH := 0.035
+const TOKEN_OUTLINE_COLOR := Color(0, 0, 0)
+
 var _disc_texture: Texture2D
+var _token_outline_material: StandardMaterial3D
 
 
 ## 足元の円のテクスチャ: 中心から外へ透明になる放射状のグラデーション
@@ -314,6 +320,17 @@ static func _make_disc_texture() -> Texture2D:
 	return texture
 
 
+## 縁取りの材質: 表を描かずに裏面だけを法線方向へ膨らませて描くので、文字の輪郭の外側に縁が出る
+static func _make_token_outline_material() -> StandardMaterial3D:
+	var outline := StandardMaterial3D.new()
+	outline.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	outline.albedo_color = TOKEN_OUTLINE_COLOR
+	outline.cull_mode = BaseMaterial3D.CULL_FRONT
+	outline.grow = true
+	outline.grow_amount = TOKEN_OUTLINE_WIDTH
+	return outline
+
+
 ## クリーチャー・プレイヤー 1 体分の節: 子 0 = 立体の文字 (Glyph)、子 1 = 足元の円 (Disc)。
 ## 節の位置はグリッドの床の中心 (高さ 0)
 func _make_token(text: String, color: Color, scale_factor: float) -> Node3D:
@@ -328,6 +345,7 @@ func _make_token(text: String, color: Color, scale_factor: float) -> Node3D:
 	var material := StandardMaterial3D.new()
 	material.roughness = 0.6
 	material.emission_enabled = true
+	material.next_pass = _token_outline_material
 	glyph.material_override = material
 	glyph.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_ON
 	token.add_child(glyph)

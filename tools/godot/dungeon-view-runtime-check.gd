@@ -171,9 +171,9 @@ func _process(_delta: float) -> bool:
 		for token: Node3D in tokens:
 			var glyph: MeshInstance3D = token.get_node("Glyph")
 			var disc: MeshInstance3D = token.get_node("Disc")
-			if not (glyph.mesh is TextMesh and (glyph.mesh as TextMesh).text != "" and glyph.cast_shadow == GeometryInstance3D.SHADOW_CASTING_SETTING_ON and disc.cast_shadow == GeometryInstance3D.SHADOW_CASTING_SETTING_OFF):
+			if not (glyph.mesh is TextMesh and (glyph.mesh as TextMesh).text != "" and glyph.cast_shadow == GeometryInstance3D.SHADOW_CASTING_SETTING_ON and disc.cast_shadow == GeometryInstance3D.SHADOW_CASTING_SETTING_OFF and (glyph.material_override as StandardMaterial3D).next_pass != null):
 				tokens_ok = false
-		check("creature tokens are extruded text with a ground disc", tokens_ok, "tokens=%d" % tokens.size())
+		check("creature tokens are outlined extruded text with a ground disc", tokens_ok, "tokens=%d" % tokens.size())
 		print("last diff update %.2f ms for %d grids" % [view.last_update_ms, view.last_changed_grids])
 		# 1 行目のメッセージ: 階の雰囲気 (^F) を出して、写しが端末の 1 行目と一致するか
 		ih.inject_key(0x06)
