@@ -199,12 +199,17 @@ void GodotTerminal::draw_cursor_rect(int x, int y)
 
 void GodotTerminal::set_grid_size(int cols, int rows)
 {
-    if (cols == cols_ && rows == rows_) {
-        return;
+    // 桁数・行数と配列は _draw() (メインスレッド) や draw_text() (ゲームスレッド) が同じ錠の下で読むので、
+    // 変更も錠の下でまとめて行う
+    {
+        std::lock_guard<std::mutex> lock(grid_mutex_);
+        if (cols == cols_ && rows == rows_) {
+            return;
+        }
+        cols_ = cols;
+        rows_ = rows;
+        grid_.assign(static_cast<size_t>(cols_ * rows_), CellData{});
     }
-    cols_ = cols;
-    rows_ = rows;
-    resize_grid();
     content_version_.fetch_add(1);
     call_deferred("queue_redraw");
 }
@@ -238,14 +243,14 @@ void GodotTerminal::set_terminal_font(const Ref<Font> &font, int font_size)
 
 void GodotTerminal::draw_text(int x, int y, int n, uint8_t color, const char *str)
 {
-    if (y < 0 || y >= rows_ || x < 0) {
-        return;
-    }
-
     // n はセル数（半角=1、全角=2）。UTF-8文字列を全て変換してからセル数で打ち切る
     const auto codepoints = utf8_to_codepoints(str, 512);
     {
         std::lock_guard<std::mutex> lock(grid_mutex_);
+        // 行の範囲は錠の下で調べる (調べた後に大きさが変わると範囲外を書きうる)
+        if (y < 0 || y >= rows_ || x < 0) {
+            return;
+        }
         int col = x;
         const int col_end = x + n; // セル上限
         for (const char32_t cp : codepoints) {
@@ -273,11 +278,11 @@ void GodotTerminal::draw_text(int x, int y, int n, uint8_t color, const char *st
 
 void GodotTerminal::wipe_cells(int x, int y, int n)
 {
-    if (y < 0 || y >= rows_) {
-        return;
-    }
     {
         std::lock_guard<std::mutex> lock(grid_mutex_);
+        if (y < 0 || y >= rows_ || x < 0) {
+            return;
+        }
         for (int i = 0; i < n && (x + i) < cols_; ++i) {
             auto &cell = grid_[cell_idx(x + i, y)];
             cell.ch = U' ';
