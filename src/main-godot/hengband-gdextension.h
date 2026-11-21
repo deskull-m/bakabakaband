@@ -154,7 +154,12 @@ public:
     /// 画面の状態を返す (#9294)
     /// キー: version, state (ScreenState: 0=NO_GAME 1=MAP 2=MAP_WITH_PROMPT 3=TARGETING
     ///       4=OVERLAY_MENU 5=FULLSCREEN_TEXT), input_kind (InputKind の値、不明なら -1),
-    ///       icky_depth, prompt (String), has_cursor, cursor_x, cursor_y (TARGETING のときのフロア座標)
+    ///       icky_depth, prompt (String), has_cursor, cursor_x, cursor_y (TARGETING のときのフロア座標),
+    ///       overlay_x, overlay_y, overlay_w, overlay_h (地図の上に重ねている一覧などの範囲。端末の桁・行で、
+    ///       1 行目を除く。重ねていなければ overlay_w = 0),
+    ///       target_path (PackedInt32Array: x, y, x, y, ... ターゲットの選択中のプレイヤーからカーソルへの射線。
+    ///       見るコマンド・場所の指定・それ以外では空), target_path_blocked (最後のマスが記憶している壁などか),
+    ///       target_path_creature_index (射線上で最初に見えているクリーチャーのマスの添字。無ければ -1)
     godot::Dictionary get_screen_state();
 
     /// ワールドスナップショット (観測可能ワールドモデル) の作成を有効/無効にする。既定は無効

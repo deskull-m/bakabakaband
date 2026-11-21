@@ -2,8 +2,8 @@ extends SubViewportContainer
 
 ## 3D の地図ビュー (最小構成、#9298)
 ##
-## ワールドスナップショット (#9292/#9293) を受け、地形を MultiMesh、クリーチャー・床アイテム・
-## プレイヤーを文字のビルボードで描く。見た目は visual_catalog.gd (#9297) で決める。
+## ワールドスナップショット (#9292/#9293) を受け、地形を MultiMesh、クリーチャー・プレイヤーを立てた
+## 立体の文字、床アイテムを床に寝かせた立体の文字で描く。見た目は visual_catalog.gd (#9297) で決める。
 ## 地図を見ている間だけ view_switcher.gd (#9294) が見せる。
 ##
 ## - 地形はグリッドごとに MultiMesh のインスタンスを 1 つ割り当てる (箱用と板用の 2 つ)。
@@ -11,6 +11,11 @@ extends SubViewportContainer
 ## - 座標は X 軸 = 東、Z 軸 = 南、1 グリッド = 1 (input_intents.gd と同じ)
 ## - 左クリックでトラベル、右クリックでターゲット (#9296)。中ボタンのドラッグでカメラを回し、
 ##   Shift + ホイールで寄る・引く
+## - ターゲットの選択・場所の指定 (画面の状態が TARGETING) の間は、カーソルのマスに照準の輪を置き、
+##   ターゲットの選択ではプレイヤーからの射線 (ゲーム側の observe_target_path()) をマスごとの印で描く。
+##   カメラはプレイヤーとカーソルの中間を見る
+## - クリーチャーとプレイヤーは文字を押し出した立体 (TextMesh) で立て、平行光で床に影を落とす。
+##   足元にはグラデーションの円を敷き、どのグリッドにいるかを示す。文字はカメラの向きに合わせて回す
 ## - 視界・光源・記憶 (#9299): グリッドは「視界内で明るい」「視界内だが暗い」「記憶だけ」の 3 段階の
 ##   明るさで描き、未知のグリッドは描かない。盲目なら全て記憶だけとして描く。プレイヤーの光源と
 ##   光を持つモンスターには OmniLight3D を置く。見え方の判定はすべてゲーム側の値 (スナップショット)
@@ -44,7 +49,7 @@ var _box_mm: MultiMesh
 var _plane_mm: MultiMesh
 var _creature_root: Node3D
 var _item_root: Node3D
-var _player_label: Label3D
+var _player_token: Node3D
 
 var _version := 0
 var _width := 0
@@ -61,9 +66,9 @@ const KIND_PLANE := 2
 ## 箱も板も置かず、端末の文字のビルボードだけを立てる (定義が無い地形)
 const KIND_GLYPH := 3
 var _terrain_labels := {} ## グリッドの添字 → Label3D (文字で描く地形・文字を重ねる地形)
-var _creature_labels := {} ## id → Label3D
+var _creature_tokens := {} ## id → Node3D (立体の文字と足元の円、_make_token)
 var _creature_tweens := {} ## id → Tween (隣へ動く途中のもの)
-var _item_labels := {} ## グリッドの添字 → Label3D
+var _item_labels := {} ## グリッドの添字 → Node3D (床に寝かせた立体の文字、_make_item_token)
 var _player := Vector2i.ZERO
 var _camera_yaw := 0.0
 var _camera_distance := 22.0
@@ -111,12 +116,17 @@ func _ready() -> void:
 	env.environment.background_mode = Environment.BG_COLOR
 	env.environment.background_color = Color.BLACK
 	env.environment.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
-	env.environment.ambient_light_color = Color(0.45, 0.45, 0.45)
+	env.environment.ambient_light_color = Color(AMBIENT_LEVEL, AMBIENT_LEVEL, AMBIENT_LEVEL)
 	_world.add_child(env)
 	# 箱の面を見分けるための弱い平行光。明るさの段階はグリッドの色で表し、光源は OmniLight3D で添える
+	# クリーチャーの立体の文字の影を床に落とす (地形は影を落とさない。_make_multimesh)
 	var sun := DirectionalLight3D.new()
-	sun.light_energy = 0.35
+	sun.light_energy = SUN_ENERGY
 	sun.rotation_degrees = Vector3(-60, 30, 0)
+	sun.shadow_enabled = true
+	sun.shadow_opacity = SHADOW_OPACITY
+	sun.directional_shadow_mode = DirectionalLight3D.SHADOW_ORTHOGONAL
+	sun.directional_shadow_max_distance = 60.0
 	_world.add_child(sun)
 
 	_camera = Camera3D.new()
@@ -131,10 +141,15 @@ func _ready() -> void:
 	_world.add_child(_creature_root)
 	_item_root = Node3D.new()
 	_world.add_child(_item_root)
-	_player_label = _make_glyph("@", Color.WHITE, 1.0)
-	_world.add_child(_player_label)
+	_disc_texture = _make_disc_texture()
+	_token_outline_material = _make_token_outline_material()
+	_player_token = _make_token("@", Color.WHITE, 1.0)
+	_world.add_child(_player_token)
 	_player_light = _make_light(Color(1.0, 0.85, 0.6))
+	# プレイヤーの光源は周りのクリーチャーの影を落とす (地形は影を落とさないので軽い)
+	_player_light.shadow_enabled = true
 	_world.add_child(_player_light)
+	_setup_target_markers()
 
 
 
@@ -145,6 +160,7 @@ func setup(game_node: Node) -> void:
 	_load_terrain_textures()
 	game.world_snapshot_changed.connect(_on_world_snapshot_changed)
 	game.game_events.connect(_on_game_events)
+	game.screen_state_changed.connect(_on_screen_state_changed)
 	visibility_changed.connect(_on_visibility_changed)
 
 
@@ -163,6 +179,8 @@ func _make_multimesh(mesh: Mesh) -> MultiMesh:
 	mesh.surface_set_material(0, _terrain_material)
 	var instance := MultiMeshInstance3D.new()
 	instance.multimesh = mm
+	# 壁が床に影を落とすと明るさの段階 (grid_color) が読みにくくなるので、影は受けるだけにする
+	instance.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	_world.add_child(instance)
 	return mm
 
@@ -258,6 +276,178 @@ func _make_glyph(text: String, color: Color, scale_factor: float) -> Label3D:
 	return label
 
 
+# ---- クリーチャーとプレイヤーの立体の文字・影・足元の円 ----
+
+## 平行光と環境光の強さ。平行光を強めにして影が見えるようにし、そのぶん環境光を落とす
+const SUN_ENERGY := 0.7
+const AMBIENT_LEVEL := 0.38
+const SHADOW_OPACITY := 1.0
+## 立体の文字の大きさ (scale 1.0 で高さ約 0.8 グリッド)・押し出しの厚み・カメラ側から見た後ろへの傾き
+const TOKEN_PIXEL_SIZE := 0.017
+const TOKEN_FONT_SIZE := 48
+const TOKEN_DEPTH := 0.12
+const TOKEN_TILT_DEG := 15.0
+## 文字が暗い所で沈まないよう、色の一部を自己発光させる
+const TOKEN_EMISSION := 0.35
+## 足元の円の直径 (グリッド = 1.0)・中心の濃さ・高さ (床の板より上、射線の印より下)
+const DISC_SIZE := 0.95
+const DISC_ALPHA := 0.35
+const DISC_HEIGHT := 0.02
+
+## 立体の文字の縁取り: 法線方向へ膨らませた裏面を黒で描く (背面法)。太さはグリッド = 1.0 の単位
+const TOKEN_OUTLINE_WIDTH := 0.035
+const TOKEN_OUTLINE_COLOR := Color(0, 0, 0)
+
+var _disc_texture: Texture2D
+var _token_outline_material: StandardMaterial3D
+
+
+## 足元の円のテクスチャ: 中心から外へ透明になる放射状のグラデーション
+static func _make_disc_texture() -> Texture2D:
+	var gradient := Gradient.new()
+	gradient.set_offset(0, 0.0)
+	gradient.set_color(0, Color(1, 1, 1, 1))
+	gradient.set_offset(1, 1.0)
+	gradient.set_color(1, Color(1, 1, 1, 0))
+	gradient.add_point(0.55, Color(1, 1, 1, 0.55))
+	var texture := GradientTexture2D.new()
+	texture.gradient = gradient
+	texture.fill = GradientTexture2D.FILL_RADIAL
+	texture.fill_from = Vector2(0.5, 0.5)
+	texture.fill_to = Vector2(0.5, 0.0)
+	texture.width = 64
+	texture.height = 64
+	return texture
+
+
+## 縁取りの材質: 表を描かずに裏面だけを法線方向へ膨らませて描くので、文字の輪郭の外側に縁が出る
+static func _make_token_outline_material() -> StandardMaterial3D:
+	var outline := StandardMaterial3D.new()
+	outline.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	outline.albedo_color = TOKEN_OUTLINE_COLOR
+	outline.cull_mode = BaseMaterial3D.CULL_FRONT
+	outline.grow = true
+	outline.grow_amount = TOKEN_OUTLINE_WIDTH
+	_draw_after_markers(outline)
+	return outline
+
+
+## 照準の輪・射線の印 (奥行きを無視する半透明、優先度 -1) より後に描き、印が文字を隠さないようにする。
+## 不透明のままだと半透明より先に描かれ、奥行きを無視する印に上から塗られてしまう。
+## 奥行きの先描き (depth pre-pass) なら半透明の扱いでも影を落とし、前後関係も保てる
+static func _draw_after_markers(material: StandardMaterial3D) -> void:
+	material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA_DEPTH_PRE_PASS
+	material.render_priority = 0
+
+
+## クリーチャー・プレイヤー 1 体分の節: 子 0 = 立体の文字 (Glyph)、子 1 = 足元の円 (Disc)。
+## 節の位置はグリッドの床の中心 (高さ 0)
+func _make_token(text: String, color: Color, scale_factor: float) -> Node3D:
+	var token := Node3D.new()
+	var glyph := MeshInstance3D.new()
+	glyph.name = "Glyph"
+	var mesh := TextMesh.new()
+	mesh.font_size = TOKEN_FONT_SIZE
+	mesh.depth = TOKEN_DEPTH
+	mesh.vertical_alignment = VERTICAL_ALIGNMENT_BOTTOM
+	glyph.mesh = mesh
+	var material := StandardMaterial3D.new()
+	material.roughness = 0.6
+	material.emission_enabled = true
+	_draw_after_markers(material)
+	material.next_pass = _token_outline_material
+	glyph.material_override = material
+	glyph.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_ON
+	token.add_child(glyph)
+
+	var disc := MeshInstance3D.new()
+	disc.name = "Disc"
+	var plane := PlaneMesh.new()
+	plane.size = Vector2(DISC_SIZE, DISC_SIZE)
+	disc.mesh = plane
+	var disc_material := StandardMaterial3D.new()
+	disc_material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	disc_material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	disc_material.albedo_texture = _disc_texture
+	disc.material_override = disc_material
+	disc.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	disc.position = Vector3(0, DISC_HEIGHT, 0)
+	token.add_child(disc)
+	_set_token(token, text, color, scale_factor)
+	_face_token_to_camera(token)
+	return token
+
+
+func _set_token(token: Node3D, text: String, color: Color, scale_factor: float) -> void:
+	var glyph: MeshInstance3D = token.get_child(0)
+	var mesh: TextMesh = glyph.mesh
+	mesh.text = text
+	mesh.pixel_size = TOKEN_PIXEL_SIZE * scale_factor
+	var material: StandardMaterial3D = glyph.material_override
+	material.albedo_color = color
+	material.emission = color
+	material.emission_energy_multiplier = TOKEN_EMISSION
+	if token.get_child_count() > 1:
+		var disc: MeshInstance3D = token.get_child(1)
+		(disc.material_override as StandardMaterial3D).albedo_color = disc_color(color)
+
+
+## 足元の円の色: クリーチャーの色を明るめに寄せ、中心の濃さを DISC_ALPHA にする
+static func disc_color(color: Color) -> Color:
+	var tint := color.lerp(Color.WHITE, 0.3)
+	tint.a = DISC_ALPHA
+	return tint
+
+
+## 立体の文字をカメラの水平方向へ向け、少し後ろへ傾けて上から読みやすくする
+func _face_token_to_camera(token: Node3D) -> void:
+	var glyph: Node3D = token.get_child(0)
+	glyph.rotation = Vector3(-deg_to_rad(TOKEN_TILT_DEG), -_camera_yaw, 0.0)
+
+
+## 床アイテムの大きさ (クリーチャーの文字を 1.0 として) と、寝かせた文字の中心の高さ (厚みの半分だけ床から浮かせる)
+const ITEM_TOKEN_SCALE := 0.75
+const ITEM_TOKEN_HEIGHT := TOKEN_DEPTH * ITEM_TOKEN_SCALE * 0.5 + 0.01
+
+
+## 床アイテム 1 つ分の節: 子 0 = 床に寝かせた立体の文字 (Glyph)。足元の円は付けない。
+## 文字の上端がカメラの奥を向くよう寝かせるので、カメラから見て正しい向きで読める
+func _make_item_token(text: String, color: Color) -> Node3D:
+	var token := Node3D.new()
+	var glyph := MeshInstance3D.new()
+	glyph.name = "Glyph"
+	var mesh := TextMesh.new()
+	mesh.font_size = TOKEN_FONT_SIZE
+	mesh.depth = TOKEN_DEPTH * ITEM_TOKEN_SCALE
+	glyph.mesh = mesh
+	var material := StandardMaterial3D.new()
+	material.roughness = 0.6
+	material.emission_enabled = true
+	_draw_after_markers(material)
+	material.next_pass = _token_outline_material
+	glyph.material_override = material
+	glyph.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_ON
+	token.add_child(glyph)
+	_set_token(token, text, color, ITEM_TOKEN_SCALE)
+	_lay_item_token(token)
+	return token
+
+
+## 床アイテムの文字を床に寝かせ (表を上へ)、カメラの水平の向きに合わせて回す
+func _lay_item_token(token: Node3D) -> void:
+	var glyph: Node3D = token.get_child(0)
+	glyph.rotation = Vector3(-PI / 2.0, -_camera_yaw, 0.0)
+
+
+func _face_tokens_to_camera() -> void:
+	if _player_token != null:
+		_face_token_to_camera(_player_token)
+	for token: Node3D in _creature_tokens.values():
+		_face_token_to_camera(token)
+	for token: Node3D in _item_labels.values():
+		_lay_item_token(token)
+
+
 ## 見せ始めたら、溜まっている変化を取り込む (見ていない間も world_snapshot_changed は来る)
 func _on_visibility_changed() -> void:
 	if visible:
@@ -291,7 +481,7 @@ func _pull() -> void:
 		last_update_ms = (Time.get_ticks_usec() - start) / 1000.0
 	_sync_creatures(changes["creatures"])
 	_player = Vector2i(changes["player_x"], changes["player_y"])
-	_player_label.position = InputIntents.floor_to_world(_player, 1.0, 0.6)
+	_player_token.position = InputIntents.floor_to_world(_player)
 	_place_light(_player_light, _player, int(changes.get("player_light_radius", 0)) if not _blind else 0)
 	_version = changes["version"]
 	_update_camera()
@@ -504,14 +694,14 @@ func _update_item(i: int) -> void:
 	if has_item:
 		var fallback := item_fallback_symbol(_symbols[i * 4], _symbols[i * 4 + 1])
 		var item_visual := catalog.resolve_item(_tvals[i], fallback[0], fallback[1])
-		var label: Label3D = _item_labels.get(i)
+		var label: Node3D = _item_labels.get(i)
 		if label == null:
-			label = _make_glyph(item_visual["glyph"], item_visual["color"], 0.6)
+			label = _make_item_token(item_visual["glyph"], item_visual["color"])
 			_item_root.add_child(label)
 			_item_labels[i] = label
-		label.text = item_visual["glyph"]
-		label.modulate = item_visual["color"]
-		label.position = InputIntents.floor_to_world(Vector2i(i % _width, i / _width), 1.0, 0.3)
+		else:
+			_set_token(label, item_visual["glyph"], item_visual["color"], ITEM_TOKEN_SCALE)
+		label.position = InputIntents.floor_to_world(Vector2i(i % _width, i / _width), 1.0, ITEM_TOKEN_HEIGHT)
 	elif _item_labels.has(i):
 		_item_labels[i].queue_free()
 		_item_labels.erase(i)
@@ -527,16 +717,15 @@ func _sync_creatures(creatures: Array) -> void:
 		var color: Color = visual["color"]
 		if (int(c["flags"]) & CREATURE_IN_VIEW) == 0:
 			color = color.darkened(0.4)
-		var target := InputIntents.floor_to_world(Vector2i(c["x"], c["y"]), 1.0, 0.6 * float(visual["scale"]))
-		var label: Label3D = _creature_labels.get(id)
+		var target := InputIntents.floor_to_world(Vector2i(c["x"], c["y"]))
+		var label: Node3D = _creature_tokens.get(id)
 		if label == null:
-			label = _make_glyph(visual["glyph"], color, float(visual["scale"]))
+			label = _make_token(visual["glyph"], color, float(visual["scale"]))
 			_creature_root.add_child(label)
-			_creature_labels[id] = label
+			_creature_tokens[id] = label
 			label.position = target
 		else:
-			label.text = visual["glyph"]
-			label.modulate = color
+			_set_token(label, visual["glyph"], color, float(visual["scale"]))
 			# 前の移動の途中なら止める (止めないと、テレポート後に古い行き先へ戻される)
 			var previous: Tween = _creature_tweens.get(id)
 			if previous != null:
@@ -548,14 +737,14 @@ func _sync_creatures(creatures: Array) -> void:
 				_creature_tweens[id] = tween
 			else:
 				label.position = target
-	for id in _creature_labels.keys():
+	for id in _creature_tokens.keys():
 		if not seen.has(id):
 			var tween: Tween = _creature_tweens.get(id)
 			if tween != null:
 				tween.kill()
 				_creature_tweens.erase(id)
-			_creature_labels[id].queue_free()
-			_creature_labels.erase(id)
+			_creature_tokens[id].queue_free()
+			_creature_tokens.erase(id)
 	_sync_creature_lights(creatures)
 
 
@@ -585,11 +774,23 @@ func _on_game_events(_events: Array) -> void:
 	pass
 
 
+## カメラの位置: 注視点からの向き (縦・奥行きの比)。距離はこれに _camera_distance を掛ける
+const CAMERA_OFFSET_DIR := Vector2(0.85, 0.55)
+
+
 func _update_camera() -> void:
-	var focus := InputIntents.floor_to_world(_player)
-	var offset := Vector3(0, _camera_distance * 0.85, _camera_distance * 0.55).rotated(Vector3.UP, -_camera_yaw)
+	var player := InputIntents.floor_to_world(_player)
+	var cursor := InputIntents.floor_to_world(_cursor)
+	var focus := camera_focus(player, cursor, _cursor_shown)
+	# カーソルを出している間は、プレイヤーとカーソルの両方が画面に収まるまで引く。
+	# _camera_distance (利用者が決めた寄り具合) は変えないので、選び終えると元の寄り具合に戻る
+	var distance := _camera_distance
+	if _cursor_shown and size.y > 0.0:
+		distance = targeting_camera_distance(_camera_distance, player, cursor, _camera_yaw, _camera.fov, size.x / size.y)
+	var offset := Vector3(0, distance * CAMERA_OFFSET_DIR.x, distance * CAMERA_OFFSET_DIR.y).rotated(Vector3.UP, -_camera_yaw)
 	_camera.position = focus + offset
 	_camera.look_at(focus, Vector3.UP)
+	_face_tokens_to_camera()
 
 
 
@@ -634,7 +835,7 @@ func get_camera_yaw() -> float:
 	return _camera_yaw
 
 
-## 確認用の数 (箱・板として置いたグリッド、クリーチャー・床アイテムのビルボード)
+## 確認用の数 (箱・板として置いたグリッド、クリーチャー・床アイテムの立体の文字)
 func count_instances() -> Dictionary:
 	var boxes := 0
 	var planes := 0
@@ -644,6 +845,165 @@ func count_instances() -> Dictionary:
 		elif kind == KIND_PLANE:
 			planes += 1
 	return {
-		"boxes": boxes, "planes": planes, "creatures": _creature_labels.size(), "items": _item_labels.size(), "terrain_glyphs": _terrain_labels.size(),
+		"boxes": boxes, "planes": planes, "creatures": _creature_tokens.size(), "items": _item_labels.size(), "terrain_glyphs": _terrain_labels.size(),
 		"player_light": _player_light.omni_range if _player_light.visible else 0.0, "creature_lights": _creature_lights.size(),
+	}
+
+
+# ---- ターゲットの選択・場所の指定のカーソルと射線 ----
+
+## InputKind (src/io/input-context.h) の値
+const INPUT_KIND_TARGET := 8
+const INPUT_KIND_POINT := 9
+## ScreenState の TARGETING
+const SCREEN_TARGETING := 3
+## 照準の輪の色: ターゲットの選択 / 場所の指定
+const CURSOR_TARGET_COLOR := Color(1.0, 0.85, 0.2)
+const CURSOR_POINT_COLOR := Color(0.35, 1.0, 0.5)
+## 射線の印の色: 届く区間 / 見えているクリーチャーの位置 (ボルトはここで当たる) / その先 / 壁などで止まる位置
+const PATH_COLOR := Color(1.0, 0.9, 0.35, 0.8)
+const PATH_CREATURE_COLOR := Color(1.0, 0.45, 0.15, 0.95)
+const PATH_BEYOND_COLOR := Color(0.75, 0.65, 0.4, 0.55)
+const PATH_BLOCKED_COLOR := Color(1.0, 0.15, 0.15, 0.95)
+## 射線の印の大きさ (グリッド = 1.0) と高さ (床の板・テクスチャより少し上)
+const PATH_MARK_SIZE := 0.32
+const MARKER_HEIGHT := 0.04
+## 射線の印の上限 (ゲームの射程 MAX_RANGE より十分大きい)
+const MAX_PATH_MARKS := 64
+
+var _cursor := Vector2i.ZERO
+var _cursor_shown := false
+var _cursor_ring: MeshInstance3D
+var _cursor_material: StandardMaterial3D
+var _path_mm: MultiMesh
+var _marker_time := 0.0
+
+
+func _setup_target_markers() -> void:
+	var torus := TorusMesh.new()
+	torus.inner_radius = 0.34
+	torus.outer_radius = 0.48
+	torus.rings = 32
+	torus.ring_segments = 8
+	_cursor_material = StandardMaterial3D.new()
+	_cursor_material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	_cursor_material.albedo_color = CURSOR_TARGET_COLOR
+	# 壁や床に埋もれないよう奥行きを無視して描く。文字のビルボード (優先度 0) より先に描き、
+	# カーソルのマスにいるクリーチャーの文字を隠さない
+	_cursor_material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	_cursor_material.no_depth_test = true
+	_cursor_material.render_priority = -1
+	torus.surface_set_material(0, _cursor_material)
+	_cursor_ring = MeshInstance3D.new()
+	_cursor_ring.mesh = torus
+	_cursor_ring.scale = Vector3(1.0, 0.25, 1.0)
+	_cursor_ring.visible = false
+	_world.add_child(_cursor_ring)
+
+	var mark := PlaneMesh.new()
+	mark.size = Vector2(PATH_MARK_SIZE, PATH_MARK_SIZE)
+	var mark_material := StandardMaterial3D.new()
+	mark_material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	mark_material.vertex_color_use_as_albedo = true
+	mark_material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	mark_material.no_depth_test = true
+	mark_material.render_priority = -1
+	mark.surface_set_material(0, mark_material)
+	_path_mm = MultiMesh.new()
+	_path_mm.transform_format = MultiMesh.TRANSFORM_3D
+	_path_mm.use_colors = true
+	_path_mm.mesh = mark
+	_path_mm.instance_count = MAX_PATH_MARKS
+	_path_mm.visible_instance_count = 0
+	var path_instance := MultiMeshInstance3D.new()
+	path_instance.multimesh = _path_mm
+	_world.add_child(path_instance)
+
+
+func _on_screen_state_changed(state: Dictionary) -> void:
+	apply_target_state(state)
+
+
+## 画面の状態からカーソルと射線を置き直す (TARGETING でなければ隠す)
+func apply_target_state(state: Dictionary) -> void:
+	if _cursor_ring == null:
+		return
+	var targeting := int(state.get("state", 0)) == SCREEN_TARGETING and bool(state.get("has_cursor", false))
+	_cursor_shown = targeting
+	_cursor_ring.visible = targeting
+	if not targeting:
+		_path_mm.visible_instance_count = 0
+		_update_camera()
+		return
+	_cursor = Vector2i(int(state["cursor_x"]), int(state["cursor_y"]))
+	_cursor_material.albedo_color = CURSOR_POINT_COLOR if int(state.get("input_kind", -1)) == INPUT_KIND_POINT else CURSOR_TARGET_COLOR
+	_cursor_ring.position = InputIntents.floor_to_world(_cursor, 1.0, MARKER_HEIGHT)
+
+	var path: PackedInt32Array = state.get("target_path", PackedInt32Array())
+	var count := mini(path.size() / 2, MAX_PATH_MARKS)
+	var colors := target_path_colors(count, int(state.get("target_path_creature_index", -1)), bool(state.get("target_path_blocked", false)))
+	for i in count:
+		var pos := Vector2i(path[i * 2], path[i * 2 + 1])
+		_path_mm.set_instance_transform(i, Transform3D(Basis(), InputIntents.floor_to_world(pos, 1.0, MARKER_HEIGHT)))
+		_path_mm.set_instance_color(i, colors[i])
+	_path_mm.visible_instance_count = count
+	_update_camera()
+
+
+## 射線の印の色。見えているクリーチャー (creature_index) までが届く区間で、その先は薄く描く。
+## 記憶している壁などで止まる (blocked) なら最後の印を赤にする
+static func target_path_colors(count: int, creature_index: int, blocked: bool) -> Array[Color]:
+	var colors: Array[Color] = []
+	for i in count:
+		var color := PATH_COLOR
+		if creature_index >= 0 and i == creature_index:
+			color = PATH_CREATURE_COLOR
+		elif creature_index >= 0 and i > creature_index:
+			color = PATH_BEYOND_COLOR
+		if blocked and i == count - 1:
+			color = PATH_BLOCKED_COLOR
+		colors.append(color)
+	return colors
+
+
+## ターゲットの選択中のカメラの距離: プレイヤーとカーソルの両方 (と周り TARGET_VIEW_MARGIN グリッド) が
+## 画面に収まる距離と、利用者の距離 base の大きい方。注視点は両者の中間 (camera_focus)
+const TARGET_VIEW_MARGIN := 1.5
+
+
+static func targeting_camera_distance(base: float, player: Vector3, cursor: Vector3, yaw: float, fov_deg: float, aspect: float) -> float:
+	# カメラから見た左右 (x) と奥行き (z) に直す
+	var delta := (cursor - player).rotated(Vector3.UP, yaw)
+	var half_x := absf(delta.x) * 0.5 + TARGET_VIEW_MARGIN
+	var half_z := absf(delta.z) * 0.5 + TARGET_VIEW_MARGIN
+	var pitch := atan2(CAMERA_OFFSET_DIR.x, CAMERA_OFFSET_DIR.y)
+	var tan_v := tan(deg_to_rad(fov_deg) * 0.5)
+	var tan_h := tan_v * maxf(aspect, 0.1)
+	# 手前側の点はカメラに近く見える範囲が狭いので、近い側で収まる距離 (注視点からカメラまで) を求める
+	var near := half_z * cos(pitch)
+	var need := maxf(near + half_z * sin(pitch) / tan_v, near + half_x / tan_h)
+	return maxf(base, need / CAMERA_OFFSET_DIR.length())
+
+
+## カメラの注視点: カーソルを出している間はプレイヤーとカーソルの中間 (遠くのマスを選んでも画面に収まる)
+static func camera_focus(player: Vector3, cursor: Vector3, cursor_shown: bool) -> Vector3:
+	return (player + cursor) * 0.5 if cursor_shown else player
+
+
+func _process(delta: float) -> void:
+	if _cursor_ring == null or not _cursor_ring.visible:
+		return
+	# 照準の輪をゆっくり回して脈打たせ、どこにあるか目に付くようにする
+	_marker_time += delta
+	_cursor_ring.rotation.y = _marker_time * 1.5
+	var pulse := 1.0 + 0.12 * sin(_marker_time * 6.0)
+	_cursor_ring.scale = Vector3(pulse, 0.25, pulse)
+
+
+## 確認用: 照準の輪と射線の印の状態
+func get_target_markers() -> Dictionary:
+	return {
+		"cursor_shown": _cursor_ring != null and _cursor_ring.visible,
+		"cursor": _cursor,
+		"path_marks": _path_mm.visible_instance_count if _path_mm else 0,
 	}

@@ -5099,6 +5099,15 @@ godot --path godot_project
   `project()` / 近接の打撃 / `point_target()` / `target_set()` に 1 行の通知・取り出しがあるので、
   **上流マージでこれらを触るときは残すこと**。Godot 側の 3D ビューは
   `godot_project/scripts/dungeon_view_3d.gd` (下のバーの「3D」ボタン / Ctrl+Shift+D)。
+  持ち物・装備の一覧など `screen_save()` で地図の上に重ねた画面 (`OVERLAY_MENU`) は 3D のまま
+  半透明の窓に写す。範囲は `calc_main_screen_overlay_region()` (`src/term/screen-processor.cpp`) が
+  最初の `screen_save()` 時点の画面との差から求めるので、**上流マージで `screen_save()` /
+  `screen_load()` を触るときは基準画面の取得・破棄を残すこと**。
+  ターゲットの選択・場所の指定 (`TARGETING`) の間は 3D 上に照準の輪と射線を描く。射線は
+  `observe_target_path()` (`src/view/observable-world.cpp`) が**プレイヤーの記憶している地形だけで**
+  止まる位置を決める (知らない壁では止めない)。
+  クリーチャー・プレイヤーは文字を押し出した立体 (`TextMesh`、黒の縁取り付き) と足元のグラデーションの円で描き、
+  平行光とプレイヤーの光源で影を落とす (地形は影を落とさない)。床アイテムは同じ立体の文字を床に寝かせて描く。
 
 ---
 

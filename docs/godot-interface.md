@@ -303,8 +303,9 @@ StatusPanel に表示を委ねる。メイン端末の行数も下段 3 行ぶ�
 | 判定 (表示非依存) | `src/view/screen-state.{h,cpp}` | `classify_screen_state()` が入力待ちの文脈 (`io/input-context.h`)・重ねた画面の深さ (`character_icky_depth`)・重ねてから画面全体を消したか から `ScreenState` を決める |
 | 画面全体を消した印 | `src/term/screen-processor.cpp` | `term_clear()` / `clear_from(0)` (メイン画面) で印を付け、`screen_save()` / `screen_load()` で外す。表示の判定にだけ使う |
 | ブリッジ | `src/main-godot/godot-screen-state.{h,cpp}` | 入力待ちに入る直前 (`TERM_XTRA_EVENT`) と画面の更新 (`TERM_XTRA_FRESH`) で求め、変わったときだけ公開する |
-| GDScript | `HengbandGame.get_screen_state()` / シグナル `screen_state_changed(state)` | `state` / `input_kind` / `icky_depth` / `prompt` / `has_cursor` / `cursor_x` / `cursor_y` |
-| 切り替え | `godot_project/scripts/view_switcher.gd` | 地図ビューが登録されていて `GameState.use_map_view` が真のとき、`MAP` / `MAP_WITH_PROMPT` / `TARGETING` の間だけ地図ビューを見せる (地図ビューが無い現状では何もしない) |
+| GDScript | `HengbandGame.get_screen_state()` / シグナル `screen_state_changed(state)` | `state` / `input_kind` / `icky_depth` / `prompt` / `has_cursor` / `cursor_x` / `cursor_y` / `overlay_x` / `overlay_y` / `overlay_w` / `overlay_h` (重ねた範囲。無ければ `overlay_w = 0`) |
+| 重ねた範囲 | `src/term/screen-processor.cpp` の `calc_main_screen_overlay_region()` | 最初の `screen_save()` の時点のメイン画面 (地図) を覚えておき、いまの画面と違うセルを囲む矩形を返す (1 行目を除く)。`set_main_screen_overlay_tracking(true)` の間だけ覚える (Godot 版は起動時に有効にする) |
+| 切り替え | `godot_project/scripts/view_switcher.gd` (判定の補助は `screen_overlay.gd`) | 地図ビューが登録されていて `GameState.use_map_view` が真のとき、`MAP` / `MAP_WITH_PROMPT` / `TARGETING` / `OVERLAY_MENU` の間は地図ビューを見せる (`FULLSCREEN_TEXT` は端末)。`overlay_menus_on_map` を偽にすると `OVERLAY_MENU` も端末に戻す。一覧の範囲が求まらない (一覧を開いたまま端末の大きさが変わり、比べる基準の画面と大きさが合わない) ときも、窓に何も写せないので端末に戻す |
 
 | 状態 | 判定 |
 |---|---|
@@ -403,13 +404,16 @@ StatusPanel に表示を委ねる。メイン端末の行数も下段 3 行ぶ�
 | 要素 | 実装 |
 |---|---|
 | 地形 | 箱用・板用の `MultiMesh` を 1 つずつ。**グリッドごとにインスタンスを 1 つ割り当て**、差分では変わったグリッドのインスタンスだけ書き換える。全体はバッファ (`MultiMesh.buffer`) をまとめて渡す。見た目は `visual_catalog.gd` で地形 ID ごとに 1 度だけ解決してキャッシュ |
-| クリーチャー | 表示用 ID ごとの `Label3D` (文字のビルボード、端末の色)。1 グリッド程度の移動は Tween で滑らかに動かす。感知のみのものは暗く |
-| 床アイテム・プレイヤー | `Label3D`。床アイテムは地形を知らないグリッド (感知など) でも描く。タイル表示中は `symbols` がタイルの位置なので、定義の無い床アイテムは `&` で描く |
+| クリーチャー・プレイヤー | 表示用 ID ごとに、文字を押し出した立体 (`TextMesh`、端末の色、少し自己発光、黒の縁取り) と足元の円を 1 組で置く (`_make_token`)。立体の文字はカメラの水平の向きに合わせて回し、上から読みやすいよう 15° 後ろへ傾ける。足元の円は中心から外へ透明になる放射状のグラデーション (`GradientTexture2D`) で、どのグリッドにいるかを示す。縁取りは材質の `next_pass` に、法線方向へ膨らませた裏面だけを黒で描く材質を重ねる (背面法)。1 グリッド程度の移動は Tween で滑らかに動かす。感知のみのものは暗く |
+| 影 | 平行光とプレイヤーの光源が影を落とす。**影を落とすのはクリーチャー・プレイヤーの立体の文字だけ**で、地形は影を受けるだけにしている (壁の影で明るさの段階が読みにくくなるのと、影の描画を軽くするため)。モンスターの光源は影を落とさない |
+| 床アイテム | 文字を押し出した立体 (`TextMesh`、黒の縁取り付き) を**床に寝かせて**置く (`_make_item_token`)。文字の上端がカメラの奥を向くよう、カメラの水平の向きに合わせて回す。地形を知らないグリッド (感知など) でも描く。タイル表示中は `symbols` がタイルの位置なので、定義の無い床アイテムは `&` で描く |
 | 文字で描く地形 | 定義の無い地形 (`kind = glyph`) と `overlay_glyph` を指定した地形 (見つけた罠) は、端末の文字の `Label3D` を立てる |
 | カメラ | プレイヤーを斜め上から追う。中ボタンのドラッグで回転、Shift + ホイールで寄る・引く |
 | クリック | 床の高さの平面に投影してフロアの座標を求め、左でトラベル・右でターゲット |
 | メッセージ | 端末の 1 行目を重ねて見せる |
 | 視界・光源・記憶 | 下記 (#9299) |
+
+![立体の文字・影・足元の円](images/godot-creature-tokens.png)
 
 - **性能 (headless で計測)**: 全体の作り直しは地下 1 階 (60×60) で 9 ms、街 (242×242) で 212 ms
   (階に入ったときだけ)。差分の反映は 0.1〜0.3 ms (22〜36 グリッド)。
@@ -445,6 +449,52 @@ StatusPanel に表示を委ねる。メイン端末の行数も下段 3 行ぶ�
   最初に見つかった `GodotTerminal` を読んでいたため、サブウィンドウのペインを持つレイアウトでは
   別の端末の行を出しうる上、色の無いプロポーショナルな文字だった。端末の写しに置き換えて解消した。
 - 窓はマウスの操作を通す (地図のクリックを妨げない)。
+
+### ターゲットの選択・場所の指定のカーソルと射線
+
+![ターゲットの選択中の照準の輪と射線 (手前のクリーチャーで当たる)](images/godot-target-path.png)
+
+端末ではカーソルが地図のマスを指すが、3D ビューには端末のカーソルが無い。そこで画面の状態が
+`TARGETING` (ターゲットの選択 `*`・見るコマンド `l`・次元の扉などの場所の指定) の間、
+3D ビューにカーソルと射線を描く (`dungeon_view_3d.gd` の `apply_target_state()`)。
+
+| 描くもの | 内容 |
+|---|---|
+| 照準の輪 | カーソルのマス (`get_screen_state()` の `cursor_x` / `cursor_y`) に、ゆっくり回って脈打つ輪を置く。ターゲットの選択と見るコマンドは黄、場所の指定は緑。壁に埋もれないよう奥行きを無視して描く。立体の文字の材質は奥行きの先描き付きの半透明 (`TRANSPARENCY_ALPHA_DEPTH_PRE_PASS`、優先度 0) にして印 (優先度 -1) より後に描くので、印がクリーチャーの文字を隠さない (不透明だと半透明の印より先に描かれ、上から塗られる) |
+| 射線 | **ターゲットの選択 (見るコマンドを除く) のときだけ**、プレイヤーからカーソルまでのマスに印を並べる。見えているクリーチャーのマス (ボルトはそこで当たる) は橙、その先は薄く、記憶している壁などで止まる最後のマスは赤 |
+| カメラ | カーソルを出している間はプレイヤーとカーソルの中間を見て、両方 (と周り 1.5 グリッド) が画面に収まるまで引く (`targeting_camera_distance()`)。利用者の寄り具合 (`_camera_distance`) は変えないので、選び終えると元に戻る |
+
+- 射線はゲーム側の `observe_target_path()` (`src/view/observable-world.cpp`) が求める。
+  経路はゲームの投射と同じ直線 (`ProjectionPath`) で、射程はゲームの `MAX_RANGE`。
+  **止まる位置はプレイヤーが知っていることだけで決める**: 記憶している地形が投射を通さない
+  マスで止め、知らない壁では止めない (壁の位置を明かさない)。クリーチャーも見えているものだけを数える。
+- 受け渡しは `get_screen_state()` の `target_path` (x, y, x, y, ...) / `target_path_blocked` /
+  `target_path_creature_index`。カーソルが動くたびに入力の文脈が変わるので、画面の状態と一緒に公開される。
+- 確認: `tools/godot/dungeon-view-runtime-check.gd` (`*` で照準の輪と射線、`l` で輪だけ、閉じると消える)、
+  単体テスト (`src/test/view/test-observable-world.cpp`: 記憶している壁で止まり、知らない壁では止まらない)。
+
+### 地図の上に重ねた一覧 (持ち物・装備など) を半透明の窓で見せる
+
+![3D の地図ビューの上に写した持ち物の一覧](images/godot-overlay-menu.png)
+
+持ち物 (`i`)・装備 (`e`) の一覧やアイテム・呪文の選択の一覧のように、`screen_save()` で
+**地図の上に重ねた画面 (`OVERLAY_MENU`)** の間も 3D の地図ビューのまま、その一覧だけを
+半透明の窓 (`Region.OVERLAY`) に写す。端末の画面には戻らない。
+
+- 写す範囲はゲーム側が求める (`calc_main_screen_overlay_region()`)。**最初の `screen_save()` の
+  時点のメイン画面と比べて違うセルを囲む矩形**で、1 行目 (プロンプトはメッセージの行の窓が写す) は除く。
+  一覧の位置・大きさを GDScript 側で推測しないので、どのコマンドの一覧でも同じ仕組みで写せる。
+  一覧の中から別の一覧を重ねた場合 (持ち物 → アイテムのコマンド) は両方を囲む。
+- 窓は**端末で一覧が出ている位置**に置き、画面からはみ出さないよう寄せる (`overlay_position()`)。
+  背景は他の窓より濃くし (不透明度 0.78)、枠線を付ける。
+- `FULLSCREEN_TEXT` (店・知識・キャラクター情報・ヘルプなど、重ねてから画面全体を消した表示) は
+  従来どおり端末に戻す。
+- 比べる基準の画面はメイン端末の `term_win` の写し 1 枚 (80×24 なら数 KB) で、`screen_save()` で
+  深さが 0 → 1 になるときだけ取り、深さ 0 に戻ったら捨てる。ゲームの進行・乱数には触れない。
+- 地図と同じ文字・色で一覧の空白を書いたセルは「違うセル」にならない。一覧の縁が地図の空白と
+  重なる場合は矩形が 1 桁狭くなりうるが、写す中身は端末と同じなので読めなくなることはない。
+- 確認: `tools/godot/dungeon-view-runtime-check.gd` (持ち物を開いても 3D のまま、窓の中身が端末の
+  矩形と一致、キャラクター情報では端末に戻る)。
 
 ### 地形のテクスチャ
 
@@ -579,6 +629,12 @@ Linux ビルドで日本語/英語が違っても読み込める。実測 (地�
   文字コードが合わず化ける (新しく出たメッセージは正しく出る)。
 
 ## 既知の制限・今後の課題
+
+- **端末の大きさの変更はゲームスレッドで反映する**。Godot 側 (`set_sub_window_size()`) は
+  `request_term_resize()` で頼むだけにし、ゲームスレッドが入力待ち (`TERM_XTRA_EVENT`) の合間に
+  `apply_pending_term_resizes()` で `term_resize()` する。Godot スレッドで直接 `term_resize()` すると、
+  ゲームスレッドが画面を読んでいる最中 (`screen_state_update()` の一覧の範囲の比較など) に配列の大きさが
+  変わりうるため。ゲーム開始前は従来どおりその場で反映する。
 
 - **セーブファイル形式**: `save-file-scanner.cpp` はタイトル画面のセーブ一覧表示用に
   セーブファイルヘッダを独自に走査する。bakabakaband のセーブデータ

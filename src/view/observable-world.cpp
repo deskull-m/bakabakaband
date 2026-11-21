@@ -1,5 +1,7 @@
 #include "view/observable-world.h"
+#include "effect/effect-characteristics.h"
 #include "monster-race/race-brightness-flags.h"
+#include "system/angband-system.h"
 #include "system/creature-entity.h"
 #include "system/enums/terrain/terrain-characteristics.h"
 #include "system/floor/floor-info.h"
@@ -8,6 +10,7 @@
 #include "system/monrace/monrace-definition.h"
 #include "system/terrain/terrain-definition.h"
 #include "system/terrain/terrain-list.h"
+#include "target/projection-path-calculator.h"
 #include "util/bit-flags-calculator.h"
 #include "util/enum-converter.h"
 #include "view/display-map.h"
@@ -315,4 +318,32 @@ std::vector<TerrainCatalogEntry> build_terrain_catalog()
     }
 
     return catalog;
+}
+
+ObservedTargetPath observe_target_path(const CreatureEntity &player, const Pos2D &dst)
+{
+    ObservedTargetPath path;
+    const auto &floor = *player.get_floor();
+    const auto pos_player = player.get_position();
+    if ((pos_player == dst) || !floor.contains(dst, FloorBoundary::OUTER_WALL_INCLUSIVE)) {
+        return path;
+    }
+
+    // 地形では止めず (PROJECT_PATH) に直線だけを求め、止まる位置はプレイヤーの知識で決める
+    const ProjectionPath projection(floor, AngbandSystem::get_instance().get_max_range(), pos_player, pos_player, dst, PROJECT_PATH);
+    auto &terrains = TerrainList::get_instance();
+    for (const auto &pos : projection) {
+        path.grids.push_back(pos);
+        const auto &grid = floor.get_grid(pos);
+        if (!path.creature_index && grid.has_monster() && floor.get_monster(grid.m_idx).is_visible_on_map()) {
+            path.creature_index = static_cast<int>(path.grids.size()) - 1;
+        }
+
+        if (is_map_terrain_visible(player, pos) && !terrains.get_terrain(grid.get_terrain_id(TerrainKind::MIMIC)).flags.has(TerrainCharacteristics::PROJECTION)) {
+            path.blocked = true;
+            break;
+        }
+    }
+
+    return path;
 }

@@ -1,4 +1,6 @@
 #include "io/input-context.h"
+#include "term/screen-processor.h"
+#include "term/z-term.h"
 #include "view/screen-state.h"
 #include <doctest/doctest.h>
 
@@ -70,4 +72,30 @@ TEST_CASE("Saved screens are menus unless cleared or full-screen by kind")
         CHECK(classify_screen_state(make_inputs(1, context_of(kind))).state == ScreenState::FULLSCREEN_TEXT);
     }
     CHECK(classify_screen_state(make_inputs(0, context_of(InputKind::COMMAND, CommandInputDetails{ true }))).state == ScreenState::FULLSCREEN_TEXT);
+}
+
+TEST_CASE("The overlay region encloses the cells that differ from the saved map")
+{
+    const auto base = term_win::create(10, 6);
+    auto current = base->clone();
+
+    // 同じ画面なら重ねた部分は無い
+    CHECK_FALSE(calc_screen_overlay_region(*base, *current, 1));
+
+    // 一覧を重ねた範囲 (文字か色が変わったセル) を囲む
+    current->c[2][3] = 'a';
+    current->a[4][6] = 5;
+    const auto region = calc_screen_overlay_region(*base, *current, 1);
+    REQUIRE(region);
+    CHECK(*region == ScreenRegion{ 3, 2, 4, 3 });
+
+    // first_row より上 (メッセージの行) の変化は数えない
+    auto message_only = base->clone();
+    message_only->c[0][0] = 'x';
+    CHECK_FALSE(calc_screen_overlay_region(*base, *message_only, 1));
+    CHECK(calc_screen_overlay_region(*base, *message_only, 0) == ScreenRegion{ 0, 0, 1, 1 });
+
+    // 大きさが違う画面とは比べない
+    const auto resized = term_win::create(12, 6);
+    CHECK_FALSE(calc_screen_overlay_region(*base, *resized, 1));
 }

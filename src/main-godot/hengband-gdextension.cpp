@@ -484,6 +484,23 @@ godot::Dictionary HengbandGame::get_screen_state()
     d["panel_col_min"] = state.map_panel.panel_col_min;
     d["panel_row_prt"] = state.map_panel.panel_row_prt;
     d["bigtile"] = state.map_panel.bigtile;
+    // 地図の上に重ねている一覧などの範囲 (端末の桁・行)。重ねていなければ overlay_w = 0
+    const auto overlay = state.overlay_region.value_or(ScreenRegion{});
+    d["overlay_x"] = overlay.x;
+    d["overlay_y"] = overlay.y;
+    d["overlay_w"] = overlay.w;
+    d["overlay_h"] = overlay.h;
+    // ターゲットの選択中の射線 (x, y, x, y, ...)。止まる位置の手掛かりも渡す
+    godot::PackedInt32Array path;
+    if (state.target_path) {
+        for (const auto &pos : state.target_path->grids) {
+            path.push_back(pos.x);
+            path.push_back(pos.y);
+        }
+    }
+    d["target_path"] = path;
+    d["target_path_blocked"] = state.target_path && state.target_path->blocked;
+    d["target_path_creature_index"] = (state.target_path && state.target_path->creature_index) ? *state.target_path->creature_index : -1;
     return d;
 }
 
@@ -921,7 +938,11 @@ void HengbandGame::set_sub_window_size(int idx, int cols, int rows)
     if (td.tile_layer) {
         td.tile_layer->set_grid_size(cols, rows);
     }
-    // term_resize で z-term 側にも反映
+    // z-term 側の配列はゲームスレッドが読み書きしているので、ゲーム中はゲームスレッドに頼む
+    if (is_game_started()) {
+        request_term_resize(&td.t, cols, rows);
+        return;
+    }
     term_type *saved = game_term;
     term_activate(&td.t);
     term_resize(cols, rows);

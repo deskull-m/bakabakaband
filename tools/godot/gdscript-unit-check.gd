@@ -40,6 +40,30 @@ func _initialize() -> void:
 	cases.append([VisualCatalog.tile_region(0x83, 0x82, Vector2i(16, 16)), Rect2i(32, 48, 16, 16)])
 	# 地形のテクスチャ
 	cases.append([vc.resolve_terrain(1)["texture"], "floor"])
+	# 地図の上に重ねた一覧 (OVERLAY_MENU) の間も 3D を見せ、範囲は get_screen_state() の overlay_* から作る
+	const VS = preload("res://scripts/screen_overlay.gd")
+	var overlay_state := { "state": 4, "overlay_x": 2, "overlay_y": 1, "overlay_w": 30, "overlay_h": 8 }
+	cases.append([[VS.shows_map_view(overlay_state, true), VS.shows_map_view(overlay_state, false), VS.shows_map_view({ "state": 5 }, true), VS.shows_map_view({ "state": 1 }, false), VS.shows_map_view({}, true)], [true, false, false, true, false]])
+	# 一覧の範囲が求まらない (大きさ 0) なら、窓に写せないので端末を見せる
+	cases.append([VS.shows_map_view({ "state": 4, "overlay_w": 0, "overlay_h": 0 }, true), false])
+	cases.append([VS.overlay_rect({ "state": 4, "overlay_x": 13, "overlay_y": 1, "overlay_w": 40, "overlay_h": 8 }), Rect2i(13, 1, 40, 8)])
+	cases.append([VS.overlay_rect({ "state": 1, "overlay_x": 13, "overlay_y": 1, "overlay_w": 40, "overlay_h": 8 }), Rect2i()])
+	# 一覧の窓は端末と同じ位置に置き、画面の右端・下端からはみ出さないよう寄せる
+	const SB = preload("res://scripts/status_sidebar.gd")
+	cases.append([SB.overlay_position(Rect2i(13, 1, 40, 8), Vector2(10, 20), Vector2(400, 160), Vector2(1280, 800)), Vector2(130, 28)])
+	cases.append([SB.overlay_position(Rect2i(100, 30, 40, 8), Vector2(10, 20), Vector2(400, 160), Vector2(1280, 800)), Vector2(876, 800 - SB.BOTTOM_MARGIN - 160)])
+	# 射線の印の色: クリーチャーの位置で当たり、その先は薄く、壁で止まる最後の印は赤
+	var path_colors := DungeonView.target_path_colors(4, 1, true)
+	cases.append([path_colors.map(func(c): return c), [DungeonView.PATH_COLOR, DungeonView.PATH_CREATURE_COLOR, DungeonView.PATH_BEYOND_COLOR, DungeonView.PATH_BLOCKED_COLOR]])
+	cases.append([DungeonView.target_path_colors(2, -1, false).map(func(c): return c), [DungeonView.PATH_COLOR, DungeonView.PATH_COLOR]])
+	# カーソルを出している間のカメラはプレイヤーとカーソルの中間を見る
+	cases.append([DungeonView.camera_focus(Vector3(0, 0, 0), Vector3(10, 0, 4), true), Vector3(5, 0, 2)])
+	cases.append([DungeonView.camera_focus(Vector3(1, 0, 1), Vector3(10, 0, 4), false), Vector3(1, 0, 1)])
+	# 照準中は両方が収まるまで引く (寄っていても 10 マス先のカーソルが画面に入る)。近ければ利用者の距離のまま
+	cases.append([DungeonView.targeting_camera_distance(4.0, Vector3(0, 0, 0), Vector3(0, 0, 10), 0.0, 50.0, 1.6) > 10.0, true])
+	cases.append([DungeonView.targeting_camera_distance(22.0, Vector3(0, 0, 0), Vector3(1, 0, 0), 0.0, 50.0, 1.6), 22.0])
+	cases.append([is_equal_approx(DungeonView.disc_color(Color(1, 0, 0)).a, DungeonView.DISC_ALPHA), true])
+	cases.append([DungeonView.disc_color(Color(0, 0, 0)).r > 0.0, true])
 	# 末尾のカンマは取り除くが、文字列の中のカンマは残す
 	cases.append([VisualCatalog.parse_jsonc('{ "mesh": "res://a,}.tres", "b": [1, ], }'), { "mesh": "res://a,}.tres", "b": [1.0] }])
 	# 見つけた罠 (TRAP) は板に端末の文字を重ねる
