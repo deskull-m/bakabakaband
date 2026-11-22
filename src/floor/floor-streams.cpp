@@ -39,7 +39,43 @@
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
 #include "wizard/wizard-messages.h"
+#include <algorithm>
 #include <cmath>
+
+/*!
+ * @brief 川/水路の 1 マスを水 (溶岩等) 地形に変える
+ * @param floor フロアへの参照
+ * @param grid 変えるグリッドへの参照
+ * @param tag_deep 深い方の地形タグ
+ * @param tag_shallow 浅い方の地形タグ
+ * @param deep 深い方にするならtrue
+ * @details 呼出側で「フロア範囲内」「既に深い/浅い地形になっていない」ことを
+ *          確認済みであることが前提。乱数を消費しないので、呼出順を変えても
+ *          既存ダンジョンの生成結果は変わらない。
+ */
+static void carve_water_grid(FloorType &floor, Grid &grid, TerrainTag tag_deep, TerrainTag tag_shallow, bool deep)
+{
+    /* Do not convert permanent features */
+    if (grid.has(TerrainCharacteristics::PERMANENT)) {
+        return;
+    }
+
+    grid.set_terrain_id(deep ? tag_deep : tag_shallow);
+
+    /* Clear garbage of hidden trap or door */
+    grid.mimic = 0;
+
+    /* Lava terrain glows */
+    const auto &terrains = TerrainList::get_instance();
+    if (terrains.get_terrain(tag_deep).flags.has(TerrainCharacteristics::LAVA)) {
+        if (floor.get_dungeon_definition().flags.has_not(DungeonFeatureType::DARKNESS)) {
+            grid.info |= CAVE_GLOW;
+        }
+    }
+
+    /* Hack -- don't teleport here */
+    grid.info |= CAVE_NO_TELEPORT_DEST;
+}
 
 /*!
  * @brief 再帰フラクタルアルゴリズムによりダンジョン内に川を配置する
@@ -115,39 +151,80 @@ static void recursive_river(FloorType &floor, const Pos2D &pos_start, const Pos2
                         continue;
                     }
 
-                    /* Do not convert permanent features */
-                    if (grid.has(TerrainCharacteristics::PERMANENT)) {
-                        continue;
-                    }
-
                     /*
                      * Clear previous contents, add feature
                      * The border mainly gets tag2, while the center gets tag1
                      */
-                    if (Grid::calc_distance(pos_target, pos) > width) {
-                        grid.set_terrain_id(tag_shallow);
-                    } else {
-                        grid.set_terrain_id(tag_deep);
-                    }
-
-                    /* Clear garbage of hidden trap or door */
-                    grid.mimic = 0;
-
-                    /* Lava terrain glows */
-                    if (terrains.get_terrain(tag_deep).flags.has(TerrainCharacteristics::LAVA)) {
-                        if (floor.get_dungeon_definition().flags.has_not(DungeonFeatureType::DARKNESS)) {
-                            grid.info |= CAVE_GLOW;
-                        }
-                    }
-
-                    /* Hack -- don't teleport here */
-                    grid.info |= CAVE_NO_TELEPORT_DEST;
+                    const auto deep = Grid::calc_distance(pos_target, pos) <= width;
+                    carve_water_grid(floor, grid, tag_deep, tag_shallow, deep);
                 }
             }
 
             done = true;
         }
     }
+}
+
+/*!
+ * @brief 軸に平行な 1 本の水路を一定幅で掘る
+ * @param floor フロアへの参照
+ * @param pos_a 区間の端 (pos_b と y もしくは x が一致していること)
+ * @param pos_b 区間の端
+ * @param tag_deep 深い方の地形タグ
+ * @param tag_shallow 浅い方の地形タグ
+ * @param width 深い部分の半幅 (深さ `2 * width + 1` マス、その外側 1 マスが浅い縁)
+ * @details 幅が一定で縁が揃う。`recursive_river()` と違い**乱数を一切使わない**ため、
+ *          人工の堀・用水路らしい整った見た目になる。
+ */
+static void carve_canal_segment(FloorType &floor, const Pos2D &pos_a, const Pos2D &pos_b, TerrainTag tag_deep, TerrainTag tag_shallow, int width)
+{
+    const auto horizontal = (pos_a.y == pos_b.y);
+    const auto band = width + 1; // 外側 1 マスが浅い縁になる
+    const auto y_min = std::min(pos_a.y, pos_b.y) - (horizontal ? band : 0);
+    const auto y_max = std::max(pos_a.y, pos_b.y) + (horizontal ? band : 0);
+    const auto x_min = std::min(pos_a.x, pos_b.x) - (horizontal ? 0 : band);
+    const auto x_max = std::max(pos_a.x, pos_b.x) + (horizontal ? 0 : band);
+    const auto &terrains = TerrainList::get_instance();
+    for (auto y = y_min; y <= y_max; y++) {
+        for (auto x = x_min; x <= x_max; x++) {
+            const Pos2D pos(y, x);
+            if (!floor.contains(pos, FloorBoundary::OUTER_WALL_INCLUSIVE)) {
+                continue;
+            }
+
+            auto &grid = floor.get_grid(pos);
+            if (grid.feat == terrains.get_terrain_id(tag_deep)) {
+                continue;
+            }
+
+            if (grid.feat == terrains.get_terrain_id(tag_shallow)) {
+                continue;
+            }
+
+            const auto offset = horizontal ? std::abs(y - pos_a.y) : std::abs(x - pos_a.x);
+            carve_water_grid(floor, grid, tag_deep, tag_shallow, offset <= width);
+        }
+    }
+}
+
+/*!
+ * @brief 人工の堀のように整った水路をダンジョン内に配置する
+ * @param floor フロアへの参照
+ * @param pos_start 起点座標
+ * @param pos_end 終点座標
+ * @param tag_deep 深い方の地形タグ
+ * @param tag_shallow 浅い方の地形タグ
+ * @param width 深い部分の半幅
+ * @details 起点と終点を**直角に 1 回だけ折れる L 字**で結ぶ。縦横どちらを先に
+ *          通すかだけ無作為に選び、それ以外に揺らぎを入れない。城などの
+ *          人工的なダンジョン (`ARTIFICIAL_RIVER`) で `recursive_river()` の
+ *          代わりに使う (Issue #1960)。
+ */
+static void straight_river(FloorType &floor, const Pos2D &pos_start, const Pos2D &pos_end, TerrainTag tag_deep, TerrainTag tag_shallow, int width)
+{
+    const Pos2D pos_corner = one_in_(2) ? Pos2D(pos_start.y, pos_end.x) : Pos2D(pos_end.y, pos_start.x);
+    carve_canal_segment(floor, pos_start, pos_corner, tag_deep, tag_shallow, width);
+    carve_canal_segment(floor, pos_corner, pos_end, tag_deep, tag_shallow, width);
 }
 
 /*!
@@ -213,7 +290,13 @@ void add_river(FloorType &floor, DungeonData *dd_ptr)
 
     constexpr auto width_rivers = 2;
     const auto wid = randint1(width_rivers);
-    recursive_river(floor, { y1, x1 }, { y2, x2 }, tag_deep, tag_shallow, wid);
+    if (dungeon.flags.has(DungeonFeatureType::ARTIFICIAL_RIVER)) {
+        // 城などの人工的なダンジョンでは、曲がりくねった自然の川ではなく
+        // 直角に折れる整った水路を掘る (Issue #1960)。
+        straight_river(floor, { y1, x1 }, { y2, x2 }, tag_deep, tag_shallow, wid);
+    } else {
+        recursive_river(floor, { y1, x1 }, { y2, x2 }, tag_deep, tag_shallow, wid);
+    }
 
     /* Hack - Save the location as a "room" */
     if (dd_ptr->cent_n < dd_ptr->centers.size()) {
