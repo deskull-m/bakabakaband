@@ -88,6 +88,8 @@ func _initialize() -> void:
 	cases.append([is_equal_approx(logo_rect.size.x, title_vp.x * 0.33) and logo_rect.get_center().is_equal_approx(title_vp * 0.5), true])
 	cases.append([Splash.logo_rect(Vector2(2000, 300), 1200.0 / 525.0).size.y <= 300.0 * Splash.LOGO_MAX_HEIGHT_RATIO + 0.01, true])
 	cases.append([[Splash.skip_target(Splash.Phase.LOGO), Splash.skip_target(Splash.Phase.MOTTO), Splash.skip_target(Splash.Phase.TITLE)], [Splash.Phase.MOTTO, Splash.Phase.DONE, Splash.Phase.DONE]])
+	# 標語は収まるときは縮めず、収まらないときは画面の横幅 (余白を除く) に合わせて縮める
+	cases.append([[Splash.motto_font_scale(500.0, 1280.0), is_equal_approx(Splash.motto_font_scale(704.0, 400.0), (400.0 - Splash.MOTTO_MARGIN * 2.0) / 704.0), Splash.motto_font_scale(0.0, 100.0)], [1.0, true, 1.0]])
 	# ロード一覧 (#9320): 並べ替え・見出しを押したときの向き・プレイ時間の表示
 	const SaveListHelper = preload("res://scripts/save_list.gd")
 	var saves := [

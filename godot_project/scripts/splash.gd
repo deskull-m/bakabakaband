@@ -13,6 +13,8 @@ const LOGO_PATH := "res://../image/SikabaneWorksLogo.png"
 ## 標語の文字の大きさ (日本語の行 / 英語の行) と書体
 const MOTTO_JA_FONT_SIZE := 30
 const MOTTO_EN_FONT_SIZE := 22
+## 狭い画面で標語を縮めるときの文字の大きさの下限
+const MOTTO_MIN_FONT_SIZE := 8
 const MOTTO_FONT_NAMES: PackedStringArray = ["Yu Mincho", "Hiragino Mincho ProN", "Noto Serif CJK JP", "IPAMincho", "Times New Roman", "Liberation Serif", "Serif"]
 
 var _phase: Sequence.Phase = Sequence.Phase.LOGO
@@ -34,8 +36,6 @@ func _ready() -> void:
 	en.text = Sequence.MOTTO_EN
 	for label: Label in [ja, en]:
 		label.add_theme_font_override("font", font)
-	ja.add_theme_font_size_override("font_size", MOTTO_JA_FONT_SIZE)
-	en.add_theme_font_size_override("font_size", MOTTO_EN_FONT_SIZE)
 	_curtain.color.a = 1.0
 	_logo.modulate.a = 0.0
 	_motto.modulate.a = 0.0
@@ -61,8 +61,24 @@ func _fit_layout() -> void:
 	var rect := Sequence.logo_rect(vp_size, aspect)
 	_logo.set_position(rect.position)
 	_logo.set_size(rect.size)
+	_fit_motto(vp_size.x)
 	_motto.set_position(Vector2.ZERO)
 	_motto.set_size(vp_size)
+
+
+## 標語が画面の横幅に収まるよう文字の大きさを決める。収まるときは既定の大きさのまま
+## (Label は折り返さず、中身の幅が最小の幅になるので、縮めないと右へはみ出して中央からずれる)
+func _fit_motto(viewport_width: float) -> void:
+	var ja: Label = $Motto/Ja
+	var en: Label = $Motto/En
+	var widest := 0.0
+	for pair in [[ja, MOTTO_JA_FONT_SIZE], [en, MOTTO_EN_FONT_SIZE]]:
+		var label: Label = pair[0]
+		var font: Font = label.get_theme_font("font")
+		widest = maxf(widest, font.get_string_size(label.text, HORIZONTAL_ALIGNMENT_LEFT, -1, pair[1]).x)
+	var motto_scale := Sequence.motto_font_scale(widest, viewport_width)
+	ja.add_theme_font_size_override("font_size", maxi(MOTTO_MIN_FONT_SIZE, floori(MOTTO_JA_FONT_SIZE * motto_scale)))
+	en.add_theme_font_size_override("font_size", maxi(MOTTO_MIN_FONT_SIZE, floori(MOTTO_EN_FONT_SIZE * motto_scale)))
 
 
 func _input(event: InputEvent) -> void:

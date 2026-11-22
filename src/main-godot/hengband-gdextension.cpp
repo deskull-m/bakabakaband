@@ -1043,15 +1043,34 @@ void HengbandGame::fit_term_to_viewport(const Vector2i &viewport_size)
 
 namespace {
 /// セーブデータに書かれた文字列を Godot の String にする。
-/// 文字コードはセーブデータごとに記録されている (CharacterEncoding) が、日本語版は同じ版の
-/// ゲームが書いたものを読むので、UTF-8 として正しくなければシステムの文字コードとして変換する。
-godot::String save_string_to_godot(const std::string &s)
+/// セーブデータは書いたゲームのシステムの文字コード (EUC-JP / Shift_JIS / ASCII) で書かれ、
+/// どれかはセーブデータに記録されている (CharacterSummary::character_encoding)。
+/// 通常のローダ (load-util.cpp の rd_string()) と同じく、記録の文字コードからこのゲームの
+/// システムの文字コードへ直してから UTF-8 にする (Windows の日本語版で Unix の EUC-JP のセーブデータを読む場合など)。
+godot::String save_string_to_godot(const std::string &s, uint8_t encoding)
 {
-    if (is_utf8_str(s)) {
-        return godot::String::utf8(s.c_str());
+#ifdef JP
+    auto str = s;
+    switch (static_cast<CharacterEncoding>(encoding)) {
+#ifdef SJIS
+    case CharacterEncoding::EUC_JP:
+        euc2sjis(str.data());
+        break;
+#endif
+#ifdef EUC
+    case CharacterEncoding::SHIFT_JIS:
+        sjis2euc(str.data());
+        break;
+#endif
+    default:
+        break;
     }
 
-    return sys_string_to_godot(s);
+    return sys_string_to_godot(str);
+#else
+    (void)encoding;
+    return godot::String::utf8(s.c_str());
+#endif
 }
 
 /// 種族・職業・性格の名前 (範囲外なら空)
@@ -1096,7 +1115,7 @@ Array HengbandGame::scan_save_files(const String &lib_path)
         Dictionary d;
         d["path"] = path_to_godot_string(s.path); // wstring → Godot String
         // 名前はセーブデータから読む。読めなかったときはファイル名を出す
-        d["name"] = s.char_name.empty() ? path_to_godot_string(s.path.stem()) : save_string_to_godot(s.char_name);
+        d["name"] = s.char_name.empty() ? path_to_godot_string(s.path.stem()) : save_string_to_godot(s.char_name, s.character_encoding);
         d["file"] = path_to_godot_string(s.path.filename());
         d["level"] = s.level;
         d["prace"] = s.prace;

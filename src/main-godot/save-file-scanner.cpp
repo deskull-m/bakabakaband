@@ -16,6 +16,7 @@
 
 #include "main-godot/save-file-scanner.h"
 #include "save/save-header-reserved.h"
+#include "system/angband-version.h"
 
 #include <fstream>
 #include <iterator>
@@ -29,7 +30,8 @@ namespace hengband_godot {
 namespace {
 
     // ローダが参照する定数 (ゲーム本体のヘッダに依存しないよう値を写す)
-    constexpr auto VARIANT_NAME_LENGTH = 8; //!< "Hengband" の長さ (VARIANT_NAME)
+    //! ヘッダの長さ: 名前の長さ (1) + 名前 + ゲームの版 (4) + XOR キー (1) + 予約領域 (12) + セーブデータの版 (4)
+    constexpr auto HEADER_SIZE = 1 + VARIANT_NAME.length() + 4 + 1 + 12 + 4;
     constexpr auto RAND_DEG = 63; //!< 乱数状態の語数 (z-rand.h)
     constexpr auto RNG_STATE_WORDS = 4; //!< xoshiro 4x32 の状態語数
     constexpr auto MAX_WINDOW_ENTITIES = 8; //!< オプションのウィンドウ数 (option-flags.h)
@@ -154,19 +156,27 @@ namespace {
         //! info-loader.cpp の rd_version_info()
         bool read_header()
         {
-            if (this->data.size() < 14) {
+            // ヘッダの途中で切れたファイルは読まない (読み進めると例外になり、一覧から外せない)
+            if (this->data.size() < HEADER_SIZE) {
                 return false;
             }
 
-            if (this->raw_byte() != VARIANT_NAME_LENGTH) {
+            // 名前がこのゲームのもの ("Bakabaka", セーブの writer と同じ VARIANT_NAME) か
+            if (this->raw_byte() != VARIANT_NAME.length()) {
                 return false;
             }
 
-            this->pos += VARIANT_NAME_LENGTH; // "Hengband"
+            for (const auto ch : VARIANT_NAME) {
+                if (this->raw_byte() != static_cast<uint8_t>(ch)) {
+                    return false;
+                }
+            }
+
             this->xor_byte = 0;
             this->strip(4); // ゲームの版 (major, minor, patch, extra)
+            const auto key_pos = this->pos;
             this->strip(1); // XOR キー
-            this->xor_byte = this->data[13];
+            this->xor_byte = this->data[key_pos];
 
             // 旧 sf_system / sf_when / sf_lives / sf_saves の予約領域 (save-header-reserved.h)
             const auto play_time = this->rd_u32b();
@@ -432,7 +442,18 @@ std::vector<CharacterSummary> scan_save_files(const std::filesystem::path &save_
             continue;
         }
 
-        const std::vector<uint8_t> file_data((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
+        // 開けた後の読み込みの失敗 (例外) はそのファイルだけ飛ばし、ほかのセーブデータは一覧に残す
+        std::vector<uint8_t> file_data;
+        try {
+            file_data.assign(std::istreambuf_iterator<char>(f), std::istreambuf_iterator<char>());
+        } catch (const std::exception &) {
+            continue;
+        }
+
+        if (f.bad()) {
+            continue;
+        }
+
         auto summary = scan_save_data(file_data);
         if (!summary.valid) {
             continue;

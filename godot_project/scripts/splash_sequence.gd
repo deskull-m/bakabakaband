@@ -37,6 +37,19 @@ static func logo_rect(vp_size: Vector2, aspect: float) -> Rect2:
 	return Rect2((vp_size - Vector2(width, height)) * 0.5, Vector2(width, height))
 
 
+## 標語の左右に空ける余白
+const MOTTO_MARGIN := 24.0
+
+
+## 標語の文字の縮め方 (1.0 = 縮めない)。既定の大きさでの最も長い行の幅が、画面の横幅から余白を除いた幅に
+## 収まらないときだけ、両方の行を同じ割合で縮める (日本語と英語の行の大きさの比を保つ)
+static func motto_font_scale(widest_line_width: float, viewport_width: float) -> float:
+	var available := viewport_width - MOTTO_MARGIN * 2.0
+	if widest_line_width <= 0.0 or widest_line_width <= available:
+		return 1.0
+	return maxf(available, 0.0) / widest_line_width
+
+
 ## キーやマウスのボタンを押したときに飛ぶ先。ロゴからは標語へ、標語 (とタイトルのフェードイン) からはタイトルへ
 static func skip_target(phase: Phase) -> Phase:
 	match phase:
