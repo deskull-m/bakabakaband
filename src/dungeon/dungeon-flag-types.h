@@ -43,5 +43,6 @@ enum class DungeonFeatureType {
     NO_TUNNEL,
     VANISH_STAIRS,
     ARTIFICIAL_RIVER,
+    ARTIFICIAL,
     MAX,
 };

@@ -155,6 +155,8 @@ public:
     std::map<RoomType, int> room_rate; /* ダンジョン独自の部屋生成率 */
     AllianceType alliance_idx = AllianceType::NONE; /*!< 支配アライアンス */
     bool has_river_flag() const;
+    bool is_artificial() const;
+    bool has_artificial_river() const;
     bool has_guardian() const;
     const MonraceDefinition &get_guardian() const;
     short convert_terrain_id(short terrain_id, TerrainCharacteristics action) const;
