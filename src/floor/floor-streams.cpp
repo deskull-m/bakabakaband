@@ -290,7 +290,7 @@ void add_river(FloorType &floor, DungeonData *dd_ptr)
 
     constexpr auto width_rivers = 2;
     const auto wid = randint1(width_rivers);
-    if (dungeon.flags.has(DungeonFeatureType::ARTIFICIAL_RIVER)) {
+    if (dungeon.has_artificial_river()) {
         // 城などの人工的なダンジョンでは、曲がりくねった自然の川ではなく
         // 直角に折れる整った水路を掘る (Issue #1960)。
         straight_river(floor, { y1, x1 }, { y2, x2 }, tag_deep, tag_shallow, wid);
