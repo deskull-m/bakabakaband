@@ -65,6 +65,10 @@ func _ready() -> void:
 	for button: Button in [$ButtonContainer/VBox/NewGameButton, $ButtonContainer/VBox/LoadGameButton]:
 		button.add_theme_font_override("font", button_font)
 		button.add_theme_font_size_override("font_size", BUTTON_FONT_SIZE)
+		# 狭い画面ではボタンの幅を文字より狭くできるよう、収まらない文字は省略記号で切る
+		# (切らないと文字の幅がボタンの最小の幅になり、右の端からはみ出す)
+		button.clip_text = true
+		button.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 		# 左揃えの文字がボタンの縁に付かないよう、各状態の枠に左の余白を足す
 		for style_name in ["normal", "hover", "pressed", "focus", "disabled"]:
 			var style: StyleBox = button.get_theme_stylebox(style_name)
@@ -153,7 +157,13 @@ func _fit_news(area: Rect2) -> void:
 		size -= 1
 	size = maxi(NEWS_FONT_SIZE_MIN, roundi(size * NEWS_FONT_SCALE))
 	news.add_theme_font_size_override("font_size", size)
-	news.add_theme_constant_override("line_spacing", int(font.get_height(size) * (NEWS_LINE_SPACING - 1.0)))
+	var line_spacing := int(font.get_height(size) * (NEWS_LINE_SPACING - 1.0))
+	news.add_theme_constant_override("line_spacing", line_spacing)
+	# 最小の大きさでも全行が入らない狭い画面では、入る行数までにする。
+	# Label は行数ぶんの高さを最小の大きさに持つので、clip_text だけではタイトル画像に被る
+	var visible := TitleLayout.news_visible_lines(area.size.y, font.get_height(size) + line_spacing, lines.size())
+	news.max_lines_visible = -1 if visible >= lines.size() else visible
+	news.visible = visible > 0
 
 func _on_new_game() -> void:
 	GameState.save_path = ""

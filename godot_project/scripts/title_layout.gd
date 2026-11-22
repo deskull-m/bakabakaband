@@ -66,6 +66,13 @@ static func news_body(text: String) -> String:
 	return "\n".join(lines.slice(start)).strip_edges(false, true)
 
 
+## news のうち、高さ area_height に入る行数 (1 行の高さ line_height、全 total 行)
+static func news_visible_lines(area_height: float, line_height: float, total: int) -> int:
+	if line_height <= 0.0:
+		return total
+	return clampi(floori(area_height / line_height), 0, total)
+
+
 ## news の置き場所: 左上から、タイトル画像の絵の上端の手前まで
 static func news_area_rect(vp_size: Vector2, title_rect: Rect2) -> Rect2:
 	var bottom := title_content_top(title_rect) - MARGIN

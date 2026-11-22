@@ -78,6 +78,8 @@ func _initialize() -> void:
 	# news は区切りの「*」の行より後ろだけを出す (先頭の空行も除く)
 	cases.append([Title.news_body("\n  ****\n\n  ****\n\n  Based on Moria\n\n  URL\n"), "  Based on Moria\n\n  URL"])
 	cases.append([Title.news_body("no stars\n"), "no stars"])
+	# 狭い画面で news が入りきらなければ入る行数までにする (タイトル画像に被せない)
+	cases.append([[Title.news_visible_lines(48.0, 12.0, 18), Title.news_visible_lines(400.0, 12.0, 18), Title.news_visible_lines(-5.0, 12.0, 18)], [4, 18, 0]])
 	# 狭い画面でもボタンは右半分からはみ出さない
 	cases.append([Title.button_area_rect(Vector2(800, 600), Title.BUTTON_SIZE, 2, Title.BUTTON_SEPARATION).end.x <= 800.0 - Title.MARGIN + 0.01, true])
 	# 末尾のカンマは取り除くが、文字列の中のカンマは残す
