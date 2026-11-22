@@ -2672,7 +2672,11 @@ void update_creature(CreatureEntity &creature)
 
     if (dur.has(StatusRecalculatingFlag::DISTANCE)) {
         dur.reset_flag(StatusRecalculatingFlag::DISTANCE);
-        update_monsters(creature, true);
+        // 見えるかの判定はモンスターの光を求め直してから (MONSTER_STATUSES で) 行う。
+        // ここで判定すると、光の印が無いまま (光の印をセーブしないので、読み込んだ直後など) その光だけで見えている
+        // モンスターがいったん見えなくなってから見え直し、新たに見えた扱いで disturb() などが起きる。
+        // bakabakaband では距離 (cdis) をキャッシュせず update_mon_lite() 等が都度計算するため、距離の事前計算は要らない。
+        dur.set_flag(StatusRecalculatingFlag::MONSTER_STATUSES);
     }
 
     if (dur.has(StatusRecalculatingFlag::MONSTER_LITE)) {
