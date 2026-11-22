@@ -21,9 +21,13 @@
 namespace {
 void display_town_rumor(const RumorDefinition &rumor)
 {
-    msg_erase();
-    msg_print(rumor.get_description());
+    // @details 町名は使用中の荒野マップ (小規模な街オプション等) に応じてゲーム開始時に決まり、
+    // 噂の初期化時点では未確定なため、噂の文面に頼らず表示時に町名を埋め込む.
     const auto town_id = std::get<TownId>(rumor.get_id());
+    const auto &town_name = TownList::get_instance().get_town(town_id).get_name();
+    msg_erase();
+    constexpr auto rumor_fmt = _("{}という街に行ったことはあるかい？", "Have you ever been to the town of {}?");
+    msg_print(rumor_fmt, town_name);
     auto &town_records = TownRecords::get_instance();
     if (town_records.has_visited(town_id)) {
         return;
@@ -32,7 +36,7 @@ void display_town_rumor(const RumorDefinition &rumor)
     town_records.set_visited(town_id);
     msg_erase();
     constexpr auto fmt = _("{}への行き方が分かった。", "You know the way to {}.");
-    msg_print(fmt, TownList::get_instance().get_town(town_id).get_name());
+    msg_print(fmt, town_name);
 }
 
 void display_dungeon_rumor(const RumorDefinition &rumor)
