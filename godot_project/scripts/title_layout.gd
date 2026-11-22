@@ -6,9 +6,9 @@ extends RefCounted
 
 ## 画面の端からの余白
 const MARGIN := 24.0
-## ボタンの大きさ (従来の 300x48 の倍) と、ボタン同士の間
-const BUTTON_SIZE := Vector2(600, 96)
-const BUTTON_SEPARATION := 24.0
+## ボタンの大きさと、ボタン同士の間
+const BUTTON_SIZE := Vector2(300, 48)
+const BUTTON_SEPARATION := 12.0
 
 
 ## タイトル画像の置き場所: 左下、横幅は画面の 50% (余白を除く)。高すぎるときは画面の高さの 60% に縮める
@@ -28,6 +28,20 @@ static func button_area_rect(vp_size: Vector2, button_size: Vector2, count: int,
 	var width := minf(button_size.x, vp_size.x - MARGIN - left)
 	var height := button_size.y * count + separation * maxi(count - 1, 0)
 	return Rect2(left, vp_size.y - MARGIN - height, maxf(width, 0.0), height)
+
+
+## news_j.txt / news.txt のうちタイトル画面に出す部分: 区切りの「*」だけの行より後ろ (先頭の空行は除く)。
+## 区切りの行が無ければ全体
+static func news_body(text: String) -> String:
+	var lines := text.replace("\r", "").split("\n")
+	var start := 0
+	for i in lines.size():
+		var stripped := lines[i].strip_edges()
+		if not stripped.is_empty() and stripped.replace("*", "").is_empty():
+			start = i + 1
+	while start < lines.size() and lines[start].strip_edges().is_empty():
+		start += 1
+	return "\n".join(lines.slice(start)).strip_edges(false, true)
 
 
 ## news の置き場所: 左上から、タイトル画像の上端の手前まで

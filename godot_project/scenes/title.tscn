@@ -33,17 +33,17 @@ layout_mode = 0
 
 [node name="VBox" type="VBoxContainer" parent="ButtonContainer"]
 layout_mode = 0
-theme_override_constants/separation = 24
+theme_override_constants/separation = 12
 
 [node name="NewGameButton" type="Button" parent="ButtonContainer/VBox"]
 layout_mode = 2
 alignment = 0
-text = "新規ゲーム"
+text = "New Game"
 
 [node name="LoadGameButton" type="Button" parent="ButtonContainer/VBox"]
 layout_mode = 2
 alignment = 0
-text = "セーブデータから始める"
+text = "Load Game"
 
 [node name="SaveSelectPanel" type="Panel" parent="."]
 layout_mode = 1

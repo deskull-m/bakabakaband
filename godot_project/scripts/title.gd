@@ -4,7 +4,7 @@ extends Control
 ## 新規ゲーム / セーブデータから始める を選択してゲーム画面に遷移する
 ##
 ## 配置 (#9317): 左上に news (news_j.txt / news.txt)、左下に横幅 50% のタイトル画像、
-## 右下に倍の大きさの左揃えのボタン。news はタイトル画像に被らないよう、空いた高さに収まる文字の大きさで描く
+## 右下に左揃えのボタン (日英とも New Game / Load Game)。news はタイトル画像に被らないよう、空いた高さに収まる文字の大きさで描く
 
 # セーブファイル一覧 (scan_save_files の戻り値)
 var _save_entries: Array = []
@@ -38,10 +38,11 @@ const PERSONALITY_NAMES := [
 ]
 
 const TitleLayout = preload("res://scripts/title_layout.gd")
-## ボタンの文字の大きさ (既定の 16 の倍。ボタンの大きさは TitleLayout.BUTTON_SIZE)
-const BUTTON_FONT_SIZE := 32
+## ボタンの文字の大きさ (ボタンの大きさは TitleLayout.BUTTON_SIZE) と書体 (無難なサンセリフ。無ければ順に代わりを使う)
+const BUTTON_FONT_SIZE := 16
+const BUTTON_FONT_NAMES: PackedStringArray = ["Helvetica", "Helvetica Neue", "Arial", "Liberation Sans", "DejaVu Sans", "Sans-Serif"]
 ## 左揃えの文字とボタンの左端との間
-const BUTTON_TEXT_PADDING := 24.0
+const BUTTON_TEXT_PADDING := 16.0
 ## news の文字の大きさの上限と下限 (空いた高さ・幅に収まるよう、この間で決める)
 const NEWS_FONT_SIZE_MAX := 20
 const NEWS_FONT_SIZE_MIN := 8
@@ -51,7 +52,10 @@ const NEWS_LINE_SPACING := 1.15
 func _ready() -> void:
 	_load_title_image()
 	_load_news()
+	var button_font := SystemFont.new()
+	button_font.font_names = BUTTON_FONT_NAMES
 	for button: Button in [$ButtonContainer/VBox/NewGameButton, $ButtonContainer/VBox/LoadGameButton]:
+		button.add_theme_font_override("font", button_font)
 		button.add_theme_font_size_override("font_size", BUTTON_FONT_SIZE)
 		# 左揃えの文字がボタンの縁に付かないよう、各状態の枠に左の余白を足す
 		for style_name in ["normal", "hover", "pressed", "focus", "disabled"]:
@@ -87,7 +91,7 @@ func _load_news() -> void:
 	if text.is_empty():
 		push_warning("news not found: " + news_path)
 	var news: Label = $News
-	news.text = text.strip_edges(false, true)
+	news.text = TitleLayout.news_body(text)
 	var font := SystemFont.new()
 	font.font_names = [GameState.font_name, "Courier New", "Monospace"]
 	news.add_theme_font_override("font", font)
