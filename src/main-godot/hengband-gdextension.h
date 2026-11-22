@@ -84,6 +84,8 @@ public:
 
     /// ゲームスレッドが起動済みかどうかを返す（WM_CLOSE_REQUEST 判定用）
     bool is_game_started() const;
+    /// 日本語版のビルドか (タイトル画面で news_j.txt / news.txt を選ぶ)
+    static bool is_japanese();
 
     /// lib/save/ 内のセーブファイルをスキャンしてキャラクタ情報の配列を返す
     /// @param lib_path lib/ ディレクトリの絶対パス

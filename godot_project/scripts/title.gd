@@ -2,6 +2,9 @@ extends Control
 
 ## タイトル画面スクリプト
 ## 新規ゲーム / セーブデータから始める を選択してゲーム画面に遷移する
+##
+## 配置 (#9317): 左上に news (news_j.txt / news.txt)、左下に横幅 50% のタイトル画像、
+## 右下に倍の大きさの左揃えのボタン。news はタイトル画像に被らないよう、空いた高さに収まる文字の大きさで描く
 
 # セーブファイル一覧 (scan_save_files の戻り値)
 var _save_entries: Array = []
@@ -34,9 +37,31 @@ const PERSONALITY_NAMES := [
 	"がまんづよい", "むちゃくちゃ", "チャージマン",
 ]
 
+const TitleLayout = preload("res://scripts/title_layout.gd")
+## ボタンの文字の大きさ (既定の 16 の倍。ボタンの大きさは TitleLayout.BUTTON_SIZE)
+const BUTTON_FONT_SIZE := 32
+## 左揃えの文字とボタンの左端との間
+const BUTTON_TEXT_PADDING := 24.0
+## news の文字の大きさの上限と下限 (空いた高さ・幅に収まるよう、この間で決める)
+const NEWS_FONT_SIZE_MAX := 20
+const NEWS_FONT_SIZE_MIN := 8
+const NEWS_LINE_SPACING := 1.15
+
+
 func _ready() -> void:
 	_load_title_image()
-	get_viewport().size_changed.connect(_fit_title_image)
+	_load_news()
+	for button: Button in [$ButtonContainer/VBox/NewGameButton, $ButtonContainer/VBox/LoadGameButton]:
+		button.add_theme_font_size_override("font_size", BUTTON_FONT_SIZE)
+		# 左揃えの文字がボタンの縁に付かないよう、各状態の枠に左の余白を足す
+		for style_name in ["normal", "hover", "pressed", "focus", "disabled"]:
+			var style: StyleBox = button.get_theme_stylebox(style_name)
+			if style:
+				var padded := style.duplicate() as StyleBox
+				padded.content_margin_left = BUTTON_TEXT_PADDING
+				button.add_theme_stylebox_override(style_name, padded)
+	get_viewport().size_changed.connect(_fit_layout)
+	call_deferred("_fit_layout")
 	$ButtonContainer/VBox/NewGameButton.pressed.connect(_on_new_game)
 	$ButtonContainer/VBox/LoadGameButton.pressed.connect(_on_load_game)
 	$SaveSelectPanel/PanelVBox/CancelButton.pressed.connect(_on_cancel_save_select)
@@ -52,19 +77,67 @@ func _load_title_image() -> void:
 		push_warning("Failed to load image: " + img_path)
 		return
 	$Background.texture = ImageTexture.create_from_image(img)
-	call_deferred("_fit_title_image")
 
-func _fit_title_image() -> void:
-	var tex: Texture2D = $Background.texture
-	if tex == null:
-		return
+
+## news_j.txt (日本語版) / news.txt を読む。ゲーム開始時に端末へ出すものと同じファイル
+func _load_news() -> void:
+	var news_name := "news_j.txt" if $HengbandGame.is_japanese() else "news.txt"
+	var news_path := ProjectSettings.globalize_path("res://../lib/file/" + news_name)
+	var text := FileAccess.get_file_as_string(news_path)
+	if text.is_empty():
+		push_warning("news not found: " + news_path)
+	var news: Label = $News
+	news.text = text.strip_edges(false, true)
+	var font := SystemFont.new()
+	font.font_names = [GameState.font_name, "Courier New", "Monospace"]
+	news.add_theme_font_override("font", font)
+
+
+## 画面の大きさに合わせて、タイトル画像・ボタン・news を置き直す
+func _fit_layout() -> void:
 	var vp_size := get_viewport().get_visible_rect().size
-	var target_w := vp_size.x * 0.7
-	var aspect := float(tex.get_width()) / float(tex.get_height())
-	var target_h := target_w / aspect
+	var title_rect := TitleLayout.title_image_rect(vp_size, _title_aspect())
 	$Background.custom_minimum_size = Vector2.ZERO
-	$Background.set_size(Vector2(target_w, target_h))
-	$Background.set_position(Vector2((vp_size.x - target_w) * 0.5, vp_size.y * 0.1))
+	$Background.set_position(title_rect.position)
+	$Background.set_size(title_rect.size)
+
+	var buttons_rect := TitleLayout.button_area_rect(vp_size, TitleLayout.BUTTON_SIZE, 2, TitleLayout.BUTTON_SEPARATION)
+	var vbox: VBoxContainer = $ButtonContainer/VBox
+	for button: Button in vbox.get_children():
+		button.custom_minimum_size = Vector2(buttons_rect.size.x, TitleLayout.BUTTON_SIZE.y)
+	$ButtonContainer.set_position(buttons_rect.position)
+	$ButtonContainer.set_size(buttons_rect.size)
+	vbox.set_position(Vector2.ZERO)
+	vbox.set_size(buttons_rect.size)
+
+	_fit_news(TitleLayout.news_area_rect(vp_size, title_rect))
+
+
+func _title_aspect() -> float:
+	var tex: Texture2D = $Background.texture
+	if tex == null or tex.get_height() == 0:
+		return 1.0
+	return float(tex.get_width()) / float(tex.get_height())
+
+
+## news を置き、空いた高さと幅に全行が収まる文字の大きさを選ぶ
+func _fit_news(area: Rect2) -> void:
+	var news: Label = $News
+	news.set_position(area.position)
+	news.set_size(area.size)
+	var font: Font = news.get_theme_font("font")
+	var lines := news.text.split("\n")
+	var size := NEWS_FONT_SIZE_MAX
+	while size > NEWS_FONT_SIZE_MIN:
+		var height := font.get_height(size) * NEWS_LINE_SPACING * lines.size()
+		var width := 0.0
+		for line in lines:
+			width = maxf(width, font.get_string_size(line, HORIZONTAL_ALIGNMENT_LEFT, -1, size).x)
+		if height <= area.size.y and width <= area.size.x:
+			break
+		size -= 1
+	news.add_theme_font_size_override("font_size", size)
+	news.add_theme_constant_override("line_spacing", int(font.get_height(size) * (NEWS_LINE_SPACING - 1.0)))
 
 func _on_new_game() -> void:
 	GameState.save_path = ""

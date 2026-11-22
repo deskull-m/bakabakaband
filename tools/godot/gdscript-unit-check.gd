@@ -64,6 +64,17 @@ func _initialize() -> void:
 	cases.append([DungeonView.targeting_camera_distance(22.0, Vector3(0, 0, 0), Vector3(1, 0, 0), 0.0, 50.0, 1.6), 22.0])
 	cases.append([is_equal_approx(DungeonView.disc_color(Color(1, 0, 0)).a, DungeonView.DISC_ALPHA), true])
 	cases.append([DungeonView.disc_color(Color(0, 0, 0)).r > 0.0, true])
+	# タイトル画面 (#9317): 画像は左下の左半分、ボタンは右下の右半分、news は画像の上で終わる
+	const Title = preload("res://scripts/title_layout.gd")
+	var title_vp := Vector2(1494, 885)
+	var title_rect: Rect2 = Title.title_image_rect(title_vp, 1560.0 / 1393.0)
+	var buttons_rect: Rect2 = Title.button_area_rect(title_vp, Title.BUTTON_SIZE, 2, Title.BUTTON_SEPARATION)
+	var news_rect: Rect2 = Title.news_area_rect(title_vp, title_rect)
+	cases.append([title_rect.end.x <= title_vp.x * 0.5 and is_equal_approx(title_rect.end.y, title_vp.y - Title.MARGIN), true])
+	cases.append([buttons_rect.position.x >= title_vp.x * 0.5 and buttons_rect.end.x <= title_vp.x and is_equal_approx(buttons_rect.end.y, title_vp.y - Title.MARGIN), true])
+	cases.append([news_rect.end.y < title_rect.position.y and news_rect.position.y >= 0.0, true])
+	# 狭い画面でもボタンは右半分からはみ出さない
+	cases.append([Title.button_area_rect(Vector2(800, 600), Title.BUTTON_SIZE, 2, Title.BUTTON_SEPARATION).end.x <= 800.0 - Title.MARGIN + 0.01, true])
 	# 末尾のカンマは取り除くが、文字列の中のカンマは残す
 	cases.append([VisualCatalog.parse_jsonc('{ "mesh": "res://a,}.tres", "b": [1, ], }'), { "mesh": "res://a,}.tres", "b": [1.0] }])
 	# 見つけた罠 (TRAP) は板に端末の文字を重ねる

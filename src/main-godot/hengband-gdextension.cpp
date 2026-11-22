@@ -710,6 +710,15 @@ void HengbandGame::_notification(int p_what)
     }
 }
 
+bool HengbandGame::is_japanese()
+{
+#ifdef JP
+    return true;
+#else
+    return false;
+#endif
+}
+
 bool HengbandGame::is_game_started() const
 {
     return game_thread_.is_valid() && game_thread_->is_started();
@@ -1078,6 +1087,7 @@ void HengbandGame::_bind_methods()
         D_METHOD("set_bigtile_enabled", "enabled"),
         &HengbandGame::set_bigtile_enabled);
     ClassDB::bind_method(D_METHOD("is_game_started"), &HengbandGame::is_game_started);
+    ClassDB::bind_static_method("HengbandGame", D_METHOD("is_japanese"), &HengbandGame::is_japanese);
     ClassDB::bind_method(
         D_METHOD("_game_thread_func", "lib_path", "save_path"),
         &HengbandGame::_game_thread_func);
