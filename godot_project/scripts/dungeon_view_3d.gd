@@ -57,6 +57,7 @@ var _height := 0
 var _terrain := PackedInt32Array()
 var _flags := PackedByteArray()
 var _tvals := PackedByteArray()
+var _object_symbols := PackedByteArray() ## グリッドごとに床アイテム自身の色・文字の 2 バイト (無ければ 0)
 var _symbols := PackedByteArray()
 ## グリッドごとに置いたもの (KIND_*)
 var _grid_kind := PackedByteArray()
@@ -496,6 +497,7 @@ func _rebuild(full: Dictionary) -> void:
 	_terrain = full["terrain"]
 	_flags = full["flags"]
 	_tvals = full["object_tvals"]
+	_object_symbols = full.get("object_symbols", PackedByteArray())
 	_symbols = full["symbols"]
 	var count := _width * _height
 	_grid_kind.resize(count)
@@ -564,12 +566,16 @@ func _apply_changes(changes: Dictionary) -> void:
 	var terrain: PackedInt32Array = changes["terrain"]
 	var flags: PackedByteArray = changes["flags"]
 	var tvals: PackedByteArray = changes["object_tvals"]
+	var object_symbols: PackedByteArray = changes.get("object_symbols", PackedByteArray())
 	var symbols: PackedByteArray = changes["symbols"]
 	for n in indices.size():
 		var i := indices[n]
 		_terrain[i] = terrain[n]
 		_flags[i] = flags[n]
 		_tvals[i] = tvals[n]
+		if object_symbols.size() >= (n + 1) * 2 and _object_symbols.size() >= (i + 1) * 2:
+			_object_symbols[i * 2] = object_symbols[n * 2]
+			_object_symbols[i * 2 + 1] = object_symbols[n * 2 + 1]
 		for k in 4:
 			_symbols[i * 4 + k] = symbols[n * 4 + k]
 		_update_grid(i)
@@ -681,9 +687,11 @@ static func is_tile_symbol(color_byte: int, char_byte: int) -> bool:
 	return (color_byte & 0x80) != 0 and (char_byte & 0x80) != 0
 
 
-## 床アイテムの文字と色 (symbols の前景)。タイル表示中は symbols がタイルの位置なので使わない
+## 床アイテムの文字と色 (object_symbols のアイテム自身のシンボル)。
+## 地図の前景 (symbols) は上に乗ったプレイヤーやクリーチャーの '@' 等になるので使わない。
+## 分からない (幻覚中で上に誰かいる等) ときと、タイル表示中 (タイルの位置になる) は既定の文字にする
 static func item_fallback_symbol(color_byte: int, char_byte: int) -> Array:
-	if is_tile_symbol(color_byte, char_byte):
+	if char_byte == 0 or is_tile_symbol(color_byte, char_byte):
 		return [ITEM_TILE_FALLBACK_GLYPH, ITEM_TILE_FALLBACK_COLOR]
 	return [char(char_byte), color_byte]
 
@@ -692,7 +700,7 @@ func _update_item(i: int) -> void:
 	# 見つけた床アイテムは地形を知らないグリッドにも在りうる (感知など) ので、地形の既知は問わない
 	var has_item := (_flags[i] & GRID_OBJECT) != 0
 	if has_item:
-		var fallback := item_fallback_symbol(_symbols[i * 4], _symbols[i * 4 + 1])
+		var fallback := item_fallback_symbol(_object_symbols[i * 2], _object_symbols[i * 2 + 1]) if _object_symbols.size() >= (i + 1) * 2 else item_fallback_symbol(0, 0)
 		var item_visual := catalog.resolve_item(_tvals[i], fallback[0], fallback[1])
 		var label: Node3D = _item_labels.get(i)
 		if label == null:

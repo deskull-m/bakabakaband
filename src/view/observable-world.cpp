@@ -145,6 +145,10 @@ ObservedGrid observe_grid(CreatureEntity &player, const Pos2D &pos, bool with_sy
         observed.flags |= OBSERVED_GRID_OBJECT;
         if (!player.is_hallucinated()) {
             observed.object_tval = static_cast<uint8_t>(enum2i(item->bi_key.tval()));
+            // 前景 (fg_*) はプレイヤーやクリーチャーが上に乗ると '@' 等になるので、アイテム自身のシンボルを別に持つ
+            const auto symbol = item->get_symbol();
+            observed.object_color = symbol.color;
+            observed.object_char = static_cast<uint8_t>(symbol.character);
         }
     }
 
@@ -165,6 +169,13 @@ ObservedGrid observe_grid(CreatureEntity &player, const Pos2D &pos, bool with_sy
     observed.fg_char = static_cast<uint8_t>(symbol_pair.symbol_foreground.character);
     observed.bg_color = symbol_pair.symbol_background.color;
     observed.bg_char = static_cast<uint8_t>(symbol_pair.symbol_background.character);
+
+    // 幻覚中のアイテムは地図と同じ (幻覚の) シンボルにする。ただし上に誰かいれば前景はその者なので使わない
+    if (player.is_hallucinated() && (observed.flags & OBSERVED_GRID_OBJECT) && !(observed.flags & (OBSERVED_GRID_PLAYER | OBSERVED_GRID_MONSTER))) {
+        observed.object_color = observed.fg_color;
+        observed.object_char = observed.fg_char;
+    }
+
     return observed;
 }
 

@@ -70,6 +70,8 @@ struct ObservedGrid {
     uint8_t bg_color = 0; //!< map_info() の背景色
     uint8_t bg_char = 0; //!< map_info() の背景文字
     uint8_t object_tval = 0; //!< いちばん上の見つけた床アイテムの種別 (ItemKindType)。無い・幻覚中は 0
+    uint8_t object_color = 0; //!< いちばん上の見つけた床アイテムの表示色 (タイル表示時はタイルの行)。無ければ 0
+    uint8_t object_char = 0; //!< いちばん上の見つけた床アイテムの表示文字 (タイル表示時はタイルの列)。無ければ 0
 
     bool operator==(const ObservedGrid &other) const = default;
 };
