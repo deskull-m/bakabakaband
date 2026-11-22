@@ -13,7 +13,7 @@ public:
     void print_time();
     void print_world_collapse();
     void print_cheat_position();
-    void decide_auto_save();
+    void request_auto_save_if_due();
 
 private:
     CreatureEntity &creature;

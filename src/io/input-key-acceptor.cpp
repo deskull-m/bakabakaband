@@ -8,6 +8,7 @@
 #include "system/player-type-definition.h"
 #include "term/gameterm.h"
 #include "term/screen-processor.h"
+#include "term/z-term.h"
 #include "world/world.h"
 
 bool inkey_base; /* See the "inkey()" function */
@@ -549,10 +550,8 @@ bool macro_running(void)
 {
     /* マクロ展開中のみ詳細に判定する */
     if (parse_macro) {
-        int diff = angband_terms[0]->key_head - angband_terms[0]->key_tail;
-
-        /* 最終入力を展開した直後はdiff==1となる */
-        if (diff != 1) {
+        /* 最終入力を展開した直後はキューに区切りだけが残る */
+        if (term_key_queue_pending(*angband_terms[0]) != 1) {
             return true;
         }
 
