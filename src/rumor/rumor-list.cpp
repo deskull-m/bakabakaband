@@ -177,7 +177,22 @@ void RumorList::read_rumors(const std::filesystem::path &path)
 }
 
 /*!
+ * @brief 街の噂の文面を、現在の町名で組み立てる
+ * @param town_id 町ID
+ * @return 噂の文面
+ * @details 町名は使用中の荒野マップ (小規模な街オプション等) に応じてゲーム開始時に決まり、
+ * 噂の初期化 (RumorService::retouch()) の時点では未確定 (空) である.
+ * そのため街の噂は RumorDefinition::get_description() ではなく、表示時に本関数で文面を組み立てること.
+ */
+std::string RumorList::describe_town_rumor(TownId town_id) const
+{
+    const auto &town_name = TownList::get_instance().get_town(town_id).get_name();
+    return str_replace(this->type_template.at(RumorType::TOWN), NAME_TEMPLATE, town_name);
+}
+
+/*!
  * @brief 街の噂をテーブルに追加する
+ * @details 初期化時点では町名が未確定のため、ここで格納する文面は表示に使わない (describe_town_rumor() を参照).
  */
 void RumorList::add_towns()
 {
@@ -185,8 +200,8 @@ void RumorList::add_towns()
     const auto &towns = TownList::get_instance();
     for (size_t i = 1; i < towns.size(); i++) {
         if ((i < VALID_TOWNS) && (i != SECRET_TOWN)) {
-            const auto town_name = str_replace(this->type_template.at(RumorType::TOWN), NAME_TEMPLATE, towns.get_town(i).get_name());
-            rumors.emplace_back(std::make_shared<const RumorDefinition>(RumorType::TOWN, i2enum<TownId>(i - 1), town_name));
+            const auto town_id = i2enum<TownId>(i - 1);
+            rumors.emplace_back(std::make_shared<const RumorDefinition>(RumorType::TOWN, town_id, this->describe_town_rumor(town_id)));
         }
     }
 }
