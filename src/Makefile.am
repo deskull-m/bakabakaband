@@ -1302,6 +1302,7 @@ libhengband_a_SOURCES = \
 	save/player-class-specific-data-writer.cpp save/player-class-specific-data-writer.h \
 	save/player-writer.cpp save/player-writer.h \
 	save/save.cpp save/save.h \
+	save/save-header-reserved.h \
 	save/save-util.cpp save/save-util.h \
 	\
 	smith/object-smith.cpp smith/object-smith.h \

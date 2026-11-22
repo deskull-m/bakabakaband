@@ -22,6 +22,11 @@
 #include "game-option/special-options.h"
 #include "io/input-intent.h"
 #include "locale/character-encoding.h"
+#include "player-info/class-info.h"
+#include "player-info/race-types.h"
+#include "player/player-personality-types.h"
+#include "player/player-personality.h"
+#include "player/race-info-table.h"
 #include "system/angband-version.h"
 #include "system/system-variables.h"
 
@@ -1036,6 +1041,49 @@ void HengbandGame::fit_term_to_viewport(const Vector2i &viewport_size)
     set_sub_window_size(0, cols, rows);
 }
 
+namespace {
+/// セーブデータに書かれた文字列を Godot の String にする。
+/// 文字コードはセーブデータごとに記録されている (CharacterEncoding) が、日本語版は同じ版の
+/// ゲームが書いたものを読むので、UTF-8 として正しくなければシステムの文字コードとして変換する。
+godot::String save_string_to_godot(const std::string &s)
+{
+    if (is_utf8_str(s)) {
+        return godot::String::utf8(s.c_str());
+    }
+
+    return sys_string_to_godot(s);
+}
+
+/// 種族・職業・性格の名前 (範囲外なら空)
+godot::String race_title(int prace)
+{
+    if ((prace < 0) || (prace >= MAX_RACES)) {
+        return {};
+    }
+
+    return sys_string_to_godot(race_info[prace].title.string());
+}
+
+godot::String class_title(int pclass)
+{
+    const auto it = class_info.find(static_cast<PlayerClassType>(pclass));
+    if ((pclass < 0) || (it == class_info.end())) {
+        return {};
+    }
+
+    return sys_string_to_godot(it->second.title.string());
+}
+
+godot::String personality_title(int ppersonality)
+{
+    if ((ppersonality < 0) || (ppersonality >= MAX_PERSONALITIES)) {
+        return {};
+    }
+
+    return sys_string_to_godot(personality_info[ppersonality].title.string());
+}
+}
+
 Array HengbandGame::scan_save_files(const String &lib_path)
 {
     const auto lib_fs = godot_string_to_path(lib_path);
@@ -1044,18 +1092,22 @@ Array HengbandGame::scan_save_files(const String &lib_path)
     const auto summaries = hengband_godot::scan_save_files(save_dir);
 
     Array result;
-    result.resize(static_cast<int>(summaries.size()));
-    for (int i = 0; i < static_cast<int>(summaries.size()); ++i) {
-        const auto &s = summaries[i];
-
+    for (const auto &s : summaries) {
         Dictionary d;
         d["path"] = path_to_godot_string(s.path); // wstring → Godot String
-        d["name"] = String::utf8(s.char_name.c_str()); // UTF-8 → Godot String
+        // 名前はセーブデータから読む。読めなかったときはファイル名を出す
+        d["name"] = s.char_name.empty() ? path_to_godot_string(s.path.stem()) : save_string_to_godot(s.char_name);
+        d["file"] = path_to_godot_string(s.path.filename());
         d["level"] = s.level;
         d["prace"] = s.prace;
         d["pclass"] = s.pclass;
         d["ppersonality"] = s.ppersonality;
-        result[i] = d;
+        d["race"] = race_title(s.prace);
+        d["class"] = class_title(s.pclass);
+        d["personality"] = personality_title(s.ppersonality);
+        d["play_time"] = s.play_time_sec;
+        d["savefile_version"] = static_cast<int64_t>(s.savefile_version);
+        result.append(d);
     }
     return result;
 }

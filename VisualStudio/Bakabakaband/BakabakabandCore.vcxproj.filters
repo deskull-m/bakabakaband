@@ -4878,6 +4878,9 @@
     <ClInclude Include="..\..\src\save\save-util.h">
       <Filter>save</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\save\save-header-reserved.h">
+      <Filter>save</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\src\save\item-writer.h">
       <Filter>save</Filter>
     </ClInclude>

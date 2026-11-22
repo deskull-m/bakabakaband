@@ -52,17 +52,23 @@ layout_mode = 2
 alignment = 0
 text = "Load Game"
 
+[node name="SaveSelectBackdrop" type="ColorRect" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.6)
+
 [node name="SaveSelectPanel" type="Panel" parent="."]
 layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -280.0
-offset_top = -220.0
-offset_right = 280.0
-offset_bottom = 220.0
+anchors_preset = 15
+anchor_left = 0.08
+anchor_top = 0.1
+anchor_right = 0.92
+anchor_bottom = 0.9
 grow_horizontal = 2
 grow_vertical = 2
 visible = false
@@ -72,11 +78,11 @@ layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 12.0
-offset_top = 12.0
-offset_right = -12.0
-offset_bottom = -12.0
-theme_override_constants/separation = 10
+offset_left = 18.0
+offset_top = 18.0
+offset_right = -18.0
+offset_bottom = -18.0
+theme_override_constants/separation = 14
 
 [node name="TitleLabel" type="Label" parent="SaveSelectPanel/PanelVBox"]
 layout_mode = 2
@@ -86,10 +92,13 @@ horizontal_alignment = 1
 [node name="HSep" type="HSeparator" parent="SaveSelectPanel/PanelVBox"]
 layout_mode = 2
 
-[node name="SaveList" type="ItemList" parent="SaveSelectPanel/PanelVBox"]
+[node name="SaveList" type="Tree" parent="SaveSelectPanel/PanelVBox"]
 layout_mode = 2
 size_flags_vertical = 3
-custom_minimum_size = Vector2(0, 280)
+columns = 6
+column_titles_visible = true
+hide_root = true
+select_mode = 1
 
 [node name="CancelButton" type="Button" parent="SaveSelectPanel/PanelVBox"]
 layout_mode = 2
