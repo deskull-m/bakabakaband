@@ -25,7 +25,6 @@
 #include "game-option/game-play-options.h"
 #include "game-option/play-record-options.h"
 #include "grid/grid.h"
-#include "io/files-util.h"
 #include "io/write-diary.h"
 #include "market/arena-entry.h"
 #include "monster-floor/monster-generator.h"
@@ -37,6 +36,9 @@
 #include "monster/monster-timed-effects.h"
 #include "monster/monster-update.h"
 #include "monster/monster-util.h"
+#include "rumor/rumor-definition.h"
+#include "rumor/rumor-rarity.h"
+#include "rumor/rumor-service.h"
 #include "system/angband-system.h"
 #include "system/building-type-definition.h"
 #include "system/creature-entity.h"
@@ -475,12 +477,9 @@ void wipe_generate_random_floor_flags(FloorType &floor)
 
             // 移動可能で、まだ噂が刻まれていない地形に配置
             if (grid.get_terrain().has(TerrainCharacteristics::MOVE) && grid.terrain_description.empty()) {
-#ifdef JP
-                constexpr auto max_try_count = 10;
-                auto rumor = get_random_line_ja_only("rumors_j.txt", 0, max_try_count).value_or("嘘の噂もある。");
-#else
-                auto rumor = get_random_line("rumors.txt", 0).value_or("Some rumors are wrong.");
-#endif
+                // 床に刻むのは世間話 (GOSSIP) のみ。街・ダンジョン等の情報系の噂は
+                // 文面が「〜の場所はココだ： -続く-」等の後続処理前提になっているため用いない
+                const auto &rumor = RumorService::pick_rumor(RumorRarity::LOW).get_description();
                 if (!rumor.empty()) {
                     grid.terrain_description = rumor;
                     break; // 配置成功、次の噂へ
