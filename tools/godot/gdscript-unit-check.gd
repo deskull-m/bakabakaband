@@ -82,6 +82,32 @@ func _initialize() -> void:
 	cases.append([[Title.news_visible_lines(48.0, 12.0, 18), Title.news_visible_lines(400.0, 12.0, 18), Title.news_visible_lines(-5.0, 12.0, 18)], [4, 18, 0]])
 	# 狭い画面でもボタンは右半分からはみ出さない
 	cases.append([Title.button_area_rect(Vector2(800, 600), Title.BUTTON_SIZE, 2, Title.BUTTON_SEPARATION).end.x <= 800.0 - Title.MARGIN + 0.01, true])
+	# 起動時の演出 (#9319): ロゴは画面の中央で横幅 33%。キーで飛ぶ先はロゴ → 標語 → タイトル
+	const Splash = preload("res://scripts/splash_sequence.gd")
+	var logo_rect: Rect2 = Splash.logo_rect(title_vp, 1200.0 / 525.0)
+	cases.append([is_equal_approx(logo_rect.size.x, title_vp.x * 0.33) and logo_rect.get_center().is_equal_approx(title_vp * 0.5), true])
+	cases.append([Splash.logo_rect(Vector2(2000, 300), 1200.0 / 525.0).size.y <= 300.0 * Splash.LOGO_MAX_HEIGHT_RATIO + 0.01, true])
+	cases.append([[Splash.skip_target(Splash.Phase.LOGO), Splash.skip_target(Splash.Phase.MOTTO), Splash.skip_target(Splash.Phase.TITLE)], [Splash.Phase.MOTTO, Splash.Phase.DONE, Splash.Phase.DONE]])
+	# 標語は収まるときは縮めず、収まらないときは画面の横幅 (余白を除く) に合わせて縮める
+	cases.append([[Splash.motto_font_scale(500.0, 1280.0), is_equal_approx(Splash.motto_font_scale(704.0, 400.0), (400.0 - Splash.MOTTO_MARGIN * 2.0) / 704.0), Splash.motto_font_scale(0.0, 100.0)], [1.0, true, 1.0]])
+	# ロード一覧 (#9320): 並べ替え・見出しを押したときの向き・プレイ時間の表示
+	const SaveListHelper = preload("res://scripts/save_list.gd")
+	var saves := [
+		{ "name": "b", "level": 16, "race": "ドラコニアン", "play_time": 64 },
+		{ "name": "a", "level": 1, "race": "人間", "play_time": -1 },
+		{ "name": "c", "level": -1, "race": "", "play_time": 7200 },
+		{ "name": "d", "level": 16, "race": "エルフ", "play_time": 5 },
+	]
+	var names_of := func(list: Array) -> Array: return list.map(func(e: Dictionary) -> String: return e["name"])
+	cases.append([names_of.call(SaveListHelper.sort_entries(saves, SaveListHelper.Column.LEVEL, false)), ["b", "d", "a", "c"]])
+	cases.append([names_of.call(SaveListHelper.sort_entries(saves, SaveListHelper.Column.LEVEL, true)), ["a", "b", "d", "c"]])
+	cases.append([names_of.call(SaveListHelper.sort_entries(saves, SaveListHelper.Column.PLAY_TIME, true)), ["d", "b", "c", "a"]])
+	cases.append([names_of.call(SaveListHelper.sort_entries(saves, SaveListHelper.Column.NAME, false)), ["d", "c", "b", "a"]])
+	cases.append([SaveListHelper.next_sort(SaveListHelper.Column.LEVEL, false, SaveListHelper.Column.LEVEL), [SaveListHelper.Column.LEVEL, true]])
+	cases.append([SaveListHelper.next_sort(SaveListHelper.Column.LEVEL, false, SaveListHelper.Column.NAME), [SaveListHelper.Column.NAME, true]])
+	cases.append([SaveListHelper.next_sort(SaveListHelper.Column.NAME, true, SaveListHelper.Column.PLAY_TIME), [SaveListHelper.Column.PLAY_TIME, false]])
+	cases.append([[SaveListHelper.format_play_time(64), SaveListHelper.format_play_time(36125), SaveListHelper.format_play_time(-1)], ["0:01:04", "10:02:05", "?"]])
+	cases.append([[SaveListHelper.cell_text(saves[2], SaveListHelper.Column.LEVEL), SaveListHelper.cell_text(saves[2], SaveListHelper.Column.RACE)], ["?", "?"]])
 	# 末尾のカンマは取り除くが、文字列の中のカンマは残す
 	cases.append([VisualCatalog.parse_jsonc('{ "mesh": "res://a,}.tres", "b": [1, ], }'), { "mesh": "res://a,}.tres", "b": [1.0] }])
 	# 見つけた罠 (TRAP) は板に端末の文字を重ねる

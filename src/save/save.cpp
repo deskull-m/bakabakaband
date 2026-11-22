@@ -28,6 +28,7 @@
 #include "save/item-writer.h"
 #include "save/lore-writer.h"
 #include "save/player-writer.h"
+#include "save/save-header-reserved.h"
 #include "save/save-util.h"
 #include "system/artifact-type-definition.h"
 #include "system/artifact/artifact-record.h"
@@ -80,11 +81,12 @@ static bool wr_savefile_new(CreatureEntity &creature)
     x_stamp = 0L;
 
     // 旧 sf_system / sf_when / sf_lives / sf_saves の領域 (計 12 バイト)。
-    // 上流 hengband#5402 で未使用フィールドとして廃止されたが、セーブフォーマット
-    // 互換性維持のため予約領域として書き出す (Godot 用 save-file-scanner も同オフセット依存)。
-    wr_u32b(0);
+    // 上流 hengband#5402 で未使用フィールドとして廃止され、ローダは読み飛ばす。
+    // ゲームを始めずに読める情報の置き場として使う (save-header-reserved.h、
+    // Godot 版のタイトル画面のロード一覧が読む)。
+    wr_u32b(world.play_time.elapsed_sec());
     wr_u32b(static_cast<uint32_t>(time((time_t *)0)));
-    wr_u16b(0);
+    wr_u16b(SAVE_HEADER_HAS_PLAY_TIME);
     wr_u16b(0);
 
     wr_u32b(SAVEFILE_VERSION);

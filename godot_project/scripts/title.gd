@@ -3,41 +3,16 @@ extends Control
 ## タイトル画面スクリプト
 ## 新規ゲーム / セーブデータから始める を選択してゲーム画面に遷移する
 ##
+## 起動直後はメーカーロゴと標語を見せてからフェードインする (#9319、splash.gd)
+##
 ## 配置 (#9317): 左上に news (news_j.txt / news.txt)、左下に横幅 50% のタイトル画像、
 ## 右下に左揃えのボタン (日英とも New Game / Load Game)。news はタイトル画像に被らないよう、空いた高さに収まる文字の大きさで描く
 
 # セーブファイル一覧 (scan_save_files の戻り値)
 var _save_entries: Array = []
 
-# 種族名テーブル (PlayerRaceType の順番に対応)
-const RACE_NAMES := [
-	"人間", "ハーフエルフ", "エルフ", "ホビット", "ノーム", "ドワーフ",
-	"ハーフオーク", "ハーフトロル", "アンバライト", "ハイエルフ", "バーバリアン",
-	"ハーフオーガ", "ハーフジャイアント", "ハーフタイタン", "サイクロプス", "イーク",
-	"クラッコン", "コボルド", "ニーベルング", "ダークエルフ", "ドラコニアン",
-	"マインドフレイアー", "インプ", "ゴーレム", "骸骨", "ゾンビ",
-	"ヴァンパイア", "スペクター", "スプライト", "ビーストマン", "エント",
-	"アーコン", "バルログ", "ドゥナダン", "妖精", "クター",
-	"アンドロイド", "マーフォーク",
-]
-
-# 職業名テーブル (PlayerClassType の順番に対応)
-const CLASS_NAMES := [
-	"戦士", "メイジ", "プリースト", "盗賊", "レンジャー", "パラディン",
-	"戦闘魔術師", "カオス戦士", "修行僧", "精神術士", "高魔術師", "観光客",
-	"ものまね師", "魔獣使い", "魔法使い", "射撃の達人", "魔力食い", "吟遊詩人",
-	"赤魔術師", "侍", "気功師", "青魔術師", "騎兵", "狂戦士",
-	"鍛冶師", "鏡使い", "忍者", "スナイパー", "元素使い",
-]
-
-# 性格名テーブル (player_personality_type の順番に対応)
-const PERSONALITY_NAMES := [
-	"ふつう", "ちからじまん", "きれもの", "しあわせもの", "すばしっこい",
-	"いのちしらず", "コンバット", "なまけもの", "セクシーギャル", "ラッキーマン",
-	"がまんづよい", "むちゃくちゃ", "チャージマン",
-]
-
 const TitleLayout = preload("res://scripts/title_layout.gd")
+const SaveList = preload("res://scripts/save_list.gd")
 ## ボタンの文字の大きさ (ボタンの大きさは TitleLayout.BUTTON_SIZE) と書体 (無難なサンセリフ。無ければ順に代わりを使う)
 const BUTTON_FONT_SIZE := 32
 const BUTTON_FONT_NAMES: PackedStringArray = ["Helvetica", "Helvetica Neue", "Arial", "Liberation Sans", "DejaVu Sans", "Sans-Serif"]
@@ -51,9 +26,21 @@ const NEWS_FONT_SIZE_MIN := 8
 const NEWS_LINE_SPACING := 1.15
 ## 収まる大きさからさらに縮める割合 (news は控えめに出す)
 const NEWS_FONT_SCALE := 0.65
+## ロードするセーブデータの一覧の文字の大きさ (既定の大きさに対する倍率)
+const SAVE_LIST_FONT_SCALE := 1.5
+## ロード一覧の列の幅に足す余白 (セルの左右の余白と列の間)
+const SAVE_LIST_COLUMN_PADDING := 32.0
+## ロード一覧の後ろを暗くする色と、一覧の枠の色
+const SAVE_LIST_BACKDROP_COLOR := Color(0, 0, 0, 0.6)
+const SAVE_LIST_PANEL_COLOR := Color(0.08, 0.08, 0.1, 1.0)
+
+## ロード一覧の並べ方 (SaveList.Column と昇順か)
+var _sort_column: int = SaveList.default_sort()[0]
+var _sort_ascending: bool = SaveList.default_sort()[1]
 
 
 func _ready() -> void:
+	_start_splash()
 	_load_title_image()
 	_load_news()
 	var version: Label = $Version
@@ -81,7 +68,17 @@ func _ready() -> void:
 	$ButtonContainer/VBox/NewGameButton.pressed.connect(_on_new_game)
 	$ButtonContainer/VBox/LoadGameButton.pressed.connect(_on_load_game)
 	$SaveSelectPanel/PanelVBox/CancelButton.pressed.connect(_on_cancel_save_select)
-	$SaveSelectPanel/PanelVBox/SaveList.item_activated.connect(_on_save_item_activated)
+	_setup_save_list()
+
+## 起動時の演出 (#9319): ロゴ → 標語 → タイトル画面のフェードイン。起動ごとに 1 度だけ。
+## 確認用のスクリプトなどで飛ばすときは環境変数 HB_SKIP_SPLASH=1
+func _start_splash() -> void:
+	var splash: Control = $Splash
+	if GameState.splash_shown or OS.get_environment("HB_SKIP_SPLASH") == "1":
+		splash.queue_free()
+		return
+	GameState.splash_shown = true
+
 
 func _load_title_image() -> void:
 	var img_path := ProjectSettings.globalize_path("res://../image/BakabakabandTitle.png")
@@ -170,45 +167,117 @@ func _on_new_game() -> void:
 	get_tree().change_scene_to_file("res://scenes/main.tscn")
 
 func _on_load_game() -> void:
-	_populate_save_list()
+	$SaveSelectBackdrop.visible = true
 	$SaveSelectPanel.visible = true
+	_populate_save_list()
+
+## ロード一覧の表 (#9320): 名前・レベル・性格・種族・職業・プレイ時間の列を持ち、見出しを押すとその列で並べ替える
+func _setup_save_list() -> void:
+	var tree: Tree = $SaveSelectPanel/PanelVBox/SaveList
+	var japanese: bool = $HengbandGame.is_japanese()
+	var font_size := roundi(ThemeDB.fallback_font_size * SAVE_LIST_FONT_SCALE)
+	tree.add_theme_font_size_override("font_size", font_size)
+	tree.add_theme_font_size_override("title_button_font_size", font_size)
+	for node: Control in [$SaveSelectPanel/PanelVBox/TitleLabel, $SaveSelectPanel/PanelVBox/CancelButton]:
+		node.add_theme_font_size_override("font_size", font_size)
+	$SaveSelectPanel/PanelVBox/TitleLabel.text = "セーブデータを選択" if japanese else "Select a saved game"
+	$SaveSelectPanel/PanelVBox/CancelButton.text = "キャンセル" if japanese else "Cancel"
+	for column in SaveList.Column.size():
+		tree.set_column_title_alignment(column, HORIZONTAL_ALIGNMENT_LEFT)
+		# 名前の列だけ余った幅を受け取り、ほかは中身の幅に合わせる
+		tree.set_column_expand(column, column == SaveList.Column.NAME)
+		tree.set_column_clip_content(column, column == SaveList.Column.NAME)
+	# 後ろのタイトル画面が透けて読みにくいので、枠は不透明にし、その外側を暗くする
+	var panel: Panel = $SaveSelectPanel
+	var style := StyleBoxFlat.new()
+	style.bg_color = SAVE_LIST_PANEL_COLOR
+	style.set_corner_radius_all(6)
+	panel.add_theme_stylebox_override("panel", style)
+	$SaveSelectBackdrop.color = SAVE_LIST_BACKDROP_COLOR
+	tree.column_title_clicked.connect(_on_save_list_title_clicked)
+	tree.item_activated.connect(_on_save_item_activated)
+
 
 func _populate_save_list() -> void:
-	var list: ItemList = $SaveSelectPanel/PanelVBox/SaveList
-	list.clear()
 	_save_entries.clear()
-
 	var lib_path := ProjectSettings.globalize_path("res://../lib")
-	var entries: Array = $HengbandGame.scan_save_files(lib_path)
-
-	if entries.is_empty():
-		list.add_item("(セーブデータが見つかりません)")
-		return
-
-	for entry in entries:
+	for entry in $HengbandGame.scan_save_files(lib_path):
 		_save_entries.append(entry)
-		var name_str: String = entry.get("name", "???")
-		var level: int = entry.get("level", 0)
-		var prace: int = entry.get("prace", 0)
-		var pclass: int = entry.get("pclass", 0)
-		var ppersonality: int = entry.get("ppersonality", 0)
+	_refresh_save_list()
 
-		var race_name: String = RACE_NAMES[prace] if prace < RACE_NAMES.size() else "不明"
-		var cls_name: String = CLASS_NAMES[pclass] if pclass < CLASS_NAMES.size() else "不明"
-		var personality_name: String = PERSONALITY_NAMES[ppersonality] if ppersonality < PERSONALITY_NAMES.size() else "不明"
 
-		var label := "%s  Lv.%d  [%s %s %s]" % [
-			name_str, level, personality_name, race_name, cls_name
-		]
-		list.add_item(label)
+## 今の並べ方で表を作り直す。見出しには並べ替えている列に ▲ / ▼ を付ける
+func _refresh_save_list() -> void:
+	var tree: Tree = $SaveSelectPanel/PanelVBox/SaveList
+	var japanese: bool = $HengbandGame.is_japanese()
+	var headers := SaveList.headers(japanese)
+	for column in SaveList.Column.size():
+		var mark := ""
+		if column == _sort_column:
+			mark = " ▲" if _sort_ascending else " ▼"
+		tree.set_column_title(column, headers[column] + mark)
+	tree.clear()
+	var root := tree.create_item()
+	if _save_entries.is_empty():
+		var empty := tree.create_item(root)
+		empty.set_text(0, "(セーブデータが見つかりません)" if japanese else "(No saved games found)")
+		empty.set_selectable(0, false)
+		return
+	_save_entries = SaveList.sort_entries(_save_entries, _sort_column, _sort_ascending)
+	for i in _save_entries.size():
+		var row := tree.create_item(root)
+		row.set_metadata(0, i)
+		for column in SaveList.Column.size():
+			row.set_text(column, SaveList.cell_text(_save_entries[i], column))
+			if column == SaveList.Column.LEVEL:
+				row.set_text_alignment(column, HORIZONTAL_ALIGNMENT_CENTER)
+			elif column == SaveList.Column.PLAY_TIME:
+				row.set_text_alignment(column, HORIZONTAL_ALIGNMENT_RIGHT)
+		# 名前が長くて切れても、ファイル名と合わせて確かめられるようにする
+		row.set_tooltip_text(SaveList.Column.NAME, "%s\n%s" % [_save_entries[i].get("name", ""), _save_entries[i].get("file", "")])
+	_fit_save_list_columns(tree)
+	var first := root.get_first_child()
+	if first:
+		first.select(0)
+	tree.grab_focus()
+
+
+## 名前以外の列を、見出しと中身のいちばん長い文字が収まる幅にする (既定では狭すぎて種族名などが切れる)
+func _fit_save_list_columns(tree: Tree) -> void:
+	var font: Font = tree.get_theme_font("font")
+	var font_size := tree.get_theme_font_size("font_size")
+	var title_font: Font = tree.get_theme_font("title_button_font")
+	var title_size := tree.get_theme_font_size("title_button_font_size")
+	for column in SaveList.Column.size():
+		if column == SaveList.Column.NAME:
+			continue
+		var width := title_font.get_string_size(tree.get_column_title(column), HORIZONTAL_ALIGNMENT_LEFT, -1, title_size).x
+		for entry in _save_entries:
+			width = maxf(width, font.get_string_size(SaveList.cell_text(entry, column), HORIZONTAL_ALIGNMENT_LEFT, -1, font_size).x)
+		tree.set_column_custom_minimum_width(column, ceili(width + SAVE_LIST_COLUMN_PADDING))
+
+
+func _on_save_list_title_clicked(column: int, mouse_button_index: int) -> void:
+	if mouse_button_index != MOUSE_BUTTON_LEFT:
+		return
+	var next := SaveList.next_sort(_sort_column, _sort_ascending, column)
+	_sort_column = next[0]
+	_sort_ascending = next[1]
+	_refresh_save_list()
 
 func _on_cancel_save_select() -> void:
 	$SaveSelectPanel.visible = false
+	$SaveSelectBackdrop.visible = false
 
-func _on_save_item_activated(index: int) -> void:
+func _on_save_item_activated() -> void:
+	var tree: Tree = $SaveSelectPanel/PanelVBox/SaveList
+	var item := tree.get_selected()
+	if item == null or item.get_metadata(0) == null:
+		return
+	var index: int = item.get_metadata(0)
 	if index < 0 or index >= _save_entries.size():
 		return
-	var entry = _save_entries[index]
+	var entry: Dictionary = _save_entries[index]
 	var path: String = entry.get("path", "")
 	if path.is_empty():
 		return
