@@ -95,6 +95,10 @@ static void set_race_flags(lore_type *lore_ptr)
         lore_ptr->kind_flags.set(MonsterKindType::AMBERITE);
     }
 
+    if (lore_ptr->monrace->kind_flags.has(MonsterKindType::CHOASIAN)) {
+        lore_ptr->kind_flags.set(MonsterKindType::CHOASIAN);
+    }
+
     if (lore_ptr->monrace->kind_flags.has(MonsterKindType::HUMAN)) {
         lore_ptr->kind_flags.set(MonsterKindType::HUMAN);
     }
