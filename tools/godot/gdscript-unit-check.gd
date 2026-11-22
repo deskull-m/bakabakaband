@@ -70,9 +70,11 @@ func _initialize() -> void:
 	var title_rect: Rect2 = Title.title_image_rect(title_vp, 1560.0 / 1393.0)
 	var buttons_rect: Rect2 = Title.button_area_rect(title_vp, Title.BUTTON_SIZE, 2, Title.BUTTON_SEPARATION)
 	var news_rect: Rect2 = Title.news_area_rect(title_vp, title_rect)
-	cases.append([title_rect.end.x <= title_vp.x * 0.5 and is_equal_approx(title_rect.end.y, title_vp.y - Title.MARGIN), true])
+	cases.append([title_rect.end.x <= title_vp.x * 0.5, true])
+	# サブタイトルの下のバージョンの表記が画面の下端 (余白) に届く
+	cases.append([is_equal_approx(Title.version_rect(title_rect).end.y, title_vp.y - Title.MARGIN), true])
 	cases.append([buttons_rect.position.x >= title_vp.x * 0.5 and is_equal_approx(buttons_rect.end.x, title_vp.x - Title.MARGIN) and is_equal_approx(buttons_rect.end.y, title_vp.y - Title.MARGIN), true])
-	cases.append([news_rect.end.y < title_rect.position.y and news_rect.position.y >= 0.0, true])
+	cases.append([news_rect.end.y < Title.title_content_top(title_rect) and news_rect.position.y >= 0.0, true])
 	# news は区切りの「*」の行より後ろだけを出す (先頭の空行も除く)
 	cases.append([Title.news_body("\n  ****\n\n  ****\n\n  Based on Moria\n\n  URL\n"), "  Based on Moria\n\n  URL"])
 	cases.append([Title.news_body("no stars\n"), "no stars"])

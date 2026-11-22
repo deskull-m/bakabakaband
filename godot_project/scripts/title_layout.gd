@@ -9,9 +9,18 @@ const MARGIN := 24.0
 ## ボタンの大きさと、ボタン同士の間
 const BUTTON_SIZE := Vector2(300, 48)
 const BUTTON_SEPARATION := 12.0
+## タイトル画像 (image/BakabakabandTitle.png、1560x1393) の中の位置 (画像の高さに対する割合)。
+## 絵の上端 (その上は透明) と、サブタイトル「ALL WILL BE HACKED.」の下端
+const TITLE_CONTENT_TOP := 239.0 / 1393.0
+const TITLE_SUBTITLE_BOTTOM := 880.0 / 1393.0
+## サブタイトルの下に出すバージョンの表記の高さと、サブタイトルとの間
+const VERSION_HEIGHT := 28.0
+const VERSION_GAP := 4.0
 
 
-## タイトル画像の置き場所: 左下、横幅は画面の 50% (余白を除く)。高すぎるときは画面の高さの 60% に縮める
+## タイトル画像の置き場所: 左下、横幅は画面の 50% (余白を除く)。高すぎるときは画面の高さの 60% に縮める。
+## サブタイトルとその下のバージョンの表記が画面の下端 (余白) に届くまで下げる。
+## サブタイトルより下の光の残りは画面の外へはみ出す
 static func title_image_rect(vp_size: Vector2, aspect: float) -> Rect2:
 	var width := vp_size.x * 0.5 - MARGIN * 1.5
 	var height := width / maxf(aspect, 0.01)
@@ -19,7 +28,19 @@ static func title_image_rect(vp_size: Vector2, aspect: float) -> Rect2:
 	if height > max_height:
 		height = max_height
 		width = height * aspect
-	return Rect2(MARGIN, vp_size.y - MARGIN - height, maxf(width, 0.0), maxf(height, 0.0))
+	var subtitle_bottom := vp_size.y - MARGIN - VERSION_HEIGHT - VERSION_GAP
+	return Rect2(MARGIN, subtitle_bottom - height * TITLE_SUBTITLE_BOTTOM, maxf(width, 0.0), maxf(height, 0.0))
+
+
+## タイトル画像の絵の上端 (画面の座標)
+static func title_content_top(title_rect: Rect2) -> float:
+	return title_rect.position.y + title_rect.size.y * TITLE_CONTENT_TOP
+
+
+## バージョンの表記の置き場所: サブタイトルの真下、画像と同じ幅で中央揃え
+static func version_rect(title_rect: Rect2) -> Rect2:
+	var top := title_rect.position.y + title_rect.size.y * TITLE_SUBTITLE_BOTTOM + VERSION_GAP
+	return Rect2(title_rect.position.x, top, title_rect.size.x, VERSION_HEIGHT)
 
 
 ## ボタンの置き場所: 右下の端 (右と下の余白に寄せる)。ボタンの文字は左揃えで縦に並べ、
@@ -45,7 +66,7 @@ static func news_body(text: String) -> String:
 	return "\n".join(lines.slice(start)).strip_edges(false, true)
 
 
-## news の置き場所: 左上から、タイトル画像の上端の手前まで
+## news の置き場所: 左上から、タイトル画像の絵の上端の手前まで
 static func news_area_rect(vp_size: Vector2, title_rect: Rect2) -> Rect2:
-	var bottom := title_rect.position.y - MARGIN
+	var bottom := title_content_top(title_rect) - MARGIN
 	return Rect2(MARGIN, MARGIN, vp_size.x - MARGIN * 2.0, maxf(bottom - MARGIN, 0.0))

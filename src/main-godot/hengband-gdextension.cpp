@@ -22,6 +22,7 @@
 #include "game-option/special-options.h"
 #include "io/input-intent.h"
 #include "locale/character-encoding.h"
+#include "system/angband-version.h"
 #include "system/system-variables.h"
 
 #include "term/gameterm.h"
@@ -719,6 +720,11 @@ bool HengbandGame::is_japanese()
 #endif
 }
 
+godot::String HengbandGame::get_version_string()
+{
+    return sys_string_to_godot(AngbandVersion{}.build_expression(VersionExpression::FULL));
+}
+
 bool HengbandGame::is_game_started() const
 {
     return game_thread_.is_valid() && game_thread_->is_started();
@@ -1088,6 +1094,7 @@ void HengbandGame::_bind_methods()
         &HengbandGame::set_bigtile_enabled);
     ClassDB::bind_method(D_METHOD("is_game_started"), &HengbandGame::is_game_started);
     ClassDB::bind_static_method("HengbandGame", D_METHOD("is_japanese"), &HengbandGame::is_japanese);
+    ClassDB::bind_static_method("HengbandGame", D_METHOD("get_version_string"), &HengbandGame::get_version_string);
     ClassDB::bind_method(
         D_METHOD("_game_thread_func", "lib_path", "save_path"),
         &HengbandGame::_game_thread_func);

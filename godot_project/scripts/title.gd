@@ -43,6 +43,8 @@ const BUTTON_FONT_SIZE := 32
 const BUTTON_FONT_NAMES: PackedStringArray = ["Helvetica", "Helvetica Neue", "Arial", "Liberation Sans", "DejaVu Sans", "Sans-Serif"]
 ## 左揃えの文字とボタンの左端との間
 const BUTTON_TEXT_PADDING := 16.0
+## サブタイトルの下のバージョンの表記の文字の大きさ
+const VERSION_FONT_SIZE := 18
 ## news の文字の大きさの上限と下限 (空いた高さ・幅に収まるよう、この間で決める)
 const NEWS_FONT_SIZE_MAX := 20
 const NEWS_FONT_SIZE_MIN := 8
@@ -52,8 +54,12 @@ const NEWS_LINE_SPACING := 1.15
 func _ready() -> void:
 	_load_title_image()
 	_load_news()
+	var version: Label = $Version
+	version.text = "%s (Godot)" % $HengbandGame.get_version_string()
 	var button_font := SystemFont.new()
 	button_font.font_names = BUTTON_FONT_NAMES
+	version.add_theme_font_override("font", button_font)
+	version.add_theme_font_size_override("font_size", VERSION_FONT_SIZE)
 	for button: Button in [$ButtonContainer/VBox/NewGameButton, $ButtonContainer/VBox/LoadGameButton]:
 		button.add_theme_font_override("font", button_font)
 		button.add_theme_font_size_override("font_size", BUTTON_FONT_SIZE)
@@ -104,6 +110,9 @@ func _fit_layout() -> void:
 	$Background.custom_minimum_size = Vector2.ZERO
 	$Background.set_position(title_rect.position)
 	$Background.set_size(title_rect.size)
+	var version_rect := TitleLayout.version_rect(title_rect)
+	$Version.set_position(version_rect.position)
+	$Version.set_size(version_rect.size)
 
 	var buttons_rect := TitleLayout.button_area_rect(vp_size, TitleLayout.BUTTON_SIZE, 2, TitleLayout.BUTTON_SEPARATION)
 	var vbox: VBoxContainer = $ButtonContainer/VBox
