@@ -23,7 +23,7 @@ const TITLE_FADE_IN := 1.0
 
 ## 標語 (Issue #9319 の画像の文字)
 const MOTTO_JA := "この門をくぐる者は一切の良識を捨てよ"
-const MOTTO_EN := "Abandon all common sense, ye who enter here."
+const MOTTO_EN := "Abandon all decency, ye who dare enter here."
 
 
 ## ロゴの置き場所: 画面の中央、横幅は画面の 33%
