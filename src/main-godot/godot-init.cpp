@@ -23,6 +23,7 @@
 #include <godot_cpp/classes/scene_tree.hpp>
 #include <godot_cpp/variant/utility_functions.hpp>
 
+#include <cstdlib>
 #include <exception>
 #include <filesystem>
 #include <string>
@@ -43,6 +44,15 @@ namespace {
     struct GameThreadQuit {
     };
 
+    /// Godot の SceneTree::quit() が受け付ける終了コードの上限
+    constexpr int MAX_GODOT_EXIT_CODE = 125;
+
+    /// quit() の文字列が終了コードの指定 ('-' / '+' で始まる数値) か。quit() はこの場合メッセージを出さない
+    bool is_exit_code_message(std::string_view msg)
+    {
+        return !msg.empty() && ((msg.front() == '-') || (msg.front() == '+'));
+    }
+
     /// ゲームの内部の文字コード (日本語版は Shift_JIS / EUC-JP) の文字列を Godot の String にする
     godot::String sys_message_to_godot(std::string_view msg)
     {
@@ -50,8 +60,28 @@ namespace {
         return godot::String::utf8(utf8 ? utf8->c_str() : std::string(msg).c_str());
     }
 
+    /*!
+     * @brief quit() に渡された文字列から、プロセスの終了コードを決める (quit() が std::exit() に渡す値と同じ規則)
+     * @details 空なら成功 (0)、'-' / '+' で始まれば数値の終了コード、それ以外はエラー (EXIT_FAILURE)。
+     * Godot の SceneTree::quit() は 0〜125 の範囲を想定し負の値を無視して成功扱いにするので、
+     * 範囲外の数値の終了コードは EXIT_FAILURE にする。
+     */
+    int exit_status_from_quit_message(std::string_view msg)
+    {
+        if (msg.empty()) {
+            return 0;
+        }
+
+        if (!is_exit_code_message(msg)) {
+            return EXIT_FAILURE;
+        }
+
+        const auto code = std::atoi(std::string(msg).c_str());
+        return (code >= 0 && code <= MAX_GODOT_EXIT_CODE) ? code : EXIT_FAILURE;
+    }
+
     /// メインループ (シーンツリー) に終了を頼む
-    void request_tree_quit()
+    void request_tree_quit(int exit_status)
     {
         auto *engine = godot::Engine::get_singleton();
         if (!engine) {
@@ -60,7 +90,7 @@ namespace {
 
         auto *tree = godot::Object::cast_to<godot::SceneTree>(engine->get_main_loop());
         if (tree) {
-            tree->quit();
+            tree->quit(exit_status);
         }
     }
 }
@@ -71,7 +101,7 @@ static void godot_quit_aux(std::string_view msg)
     // quit("メッセージ") で渡された終了理由をコンソールに出力する。
     // これが無いと init_angband / play_game がエラーで quit した際に、
     // 理由が分からないままウィンドウだけ閉じてしまう。
-    if (!msg.empty()) {
+    if (!msg.empty() && !is_exit_code_message(msg)) {
         const auto text = sys_message_to_godot(msg);
         godot::UtilityFunctions::printerr(godot::String("Hengband quit: ") + text);
         // ウィンドウから起動した場合はコンソールが見えないので、閉じる前に理由を知らせる
@@ -80,7 +110,7 @@ static void godot_quit_aux(std::string_view msg)
         }
     }
 
-    request_tree_quit();
+    request_tree_quit(exit_status_from_quit_message(msg));
 
     // ゲームスレッドからの quit() は、ここから戻ると std::exit() されてしまうので巻き戻す
     if (std::this_thread::get_id() == game_thread_id) {
@@ -144,11 +174,11 @@ void run_game_thread(const std::filesystem::path &lib_path,
     } catch (const std::exception &e) {
         godot::UtilityFunctions::printerr(
             godot::String("Hengband game thread exception: ") + sys_message_to_godot(e.what()));
-        request_tree_quit();
+        request_tree_quit(EXIT_FAILURE);
     } catch (...) {
         godot::UtilityFunctions::printerr(
             "Hengband game thread terminated by unknown exception");
-        request_tree_quit();
+        request_tree_quit(EXIT_FAILURE);
     }
 }
 
