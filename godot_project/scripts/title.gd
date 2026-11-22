@@ -3,6 +3,8 @@ extends Control
 ## タイトル画面スクリプト
 ## 新規ゲーム / セーブデータから始める を選択してゲーム画面に遷移する
 ##
+## 起動直後はメーカーロゴと標語を見せてからフェードインする (#9319、splash.gd)
+##
 ## 配置 (#9317): 左上に news (news_j.txt / news.txt)、左下に横幅 50% のタイトル画像、
 ## 右下に左揃えのボタン (日英とも New Game / Load Game)。news はタイトル画像に被らないよう、空いた高さに収まる文字の大きさで描く
 
@@ -54,6 +56,7 @@ const NEWS_FONT_SCALE := 0.65
 
 
 func _ready() -> void:
+	_start_splash()
 	_load_title_image()
 	_load_news()
 	var version: Label = $Version
@@ -82,6 +85,16 @@ func _ready() -> void:
 	$ButtonContainer/VBox/LoadGameButton.pressed.connect(_on_load_game)
 	$SaveSelectPanel/PanelVBox/CancelButton.pressed.connect(_on_cancel_save_select)
 	$SaveSelectPanel/PanelVBox/SaveList.item_activated.connect(_on_save_item_activated)
+
+## 起動時の演出 (#9319): ロゴ → 標語 → タイトル画面のフェードイン。起動ごとに 1 度だけ。
+## 確認用のスクリプトなどで飛ばすときは環境変数 HB_SKIP_SPLASH=1
+func _start_splash() -> void:
+	var splash: Control = $Splash
+	if GameState.splash_shown or OS.get_environment("HB_SKIP_SPLASH") == "1":
+		splash.queue_free()
+		return
+	GameState.splash_shown = true
+
 
 func _load_title_image() -> void:
 	var img_path := ProjectSettings.globalize_path("res://../image/BakabakabandTitle.png")
