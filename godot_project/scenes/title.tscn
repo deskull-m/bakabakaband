@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3 uid="uid://bakabakaband_title"]
+[gd_scene load_steps=3 format=3 uid="uid://bakabakaband_title"]
 
 [ext_resource type="Script" path="res://scripts/title.gd" id="1_title"]
+[ext_resource type="Script" path="res://scripts/splash.gd" id="2_splash"]
 
 [node name="Title" type="Control"]
 layout_mode = 3
@@ -95,3 +96,44 @@ layout_mode = 2
 text = "キャンセル"
 
 [node name="HengbandGame" type="HengbandGame" parent="."]
+
+[node name="Splash" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("2_splash")
+
+[node name="Curtain" type="ColorRect" parent="Splash"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 1)
+
+[node name="Logo" type="TextureRect" parent="Splash"]
+layout_mode = 0
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Motto" type="VBoxContainer" parent="Splash"]
+layout_mode = 0
+mouse_filter = 2
+alignment = 1
+theme_override_constants/separation = 16
+
+[node name="Ja" type="Label" parent="Splash/Motto"]
+layout_mode = 2
+horizontal_alignment = 1
+theme_override_colors/font_color = Color(0.9, 0.9, 0.9, 1)
+
+[node name="En" type="Label" parent="Splash/Motto"]
+layout_mode = 2
+horizontal_alignment = 1
+theme_override_colors/font_color = Color(0.8, 0.8, 0.8, 1)

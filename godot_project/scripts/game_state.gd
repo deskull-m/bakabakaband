@@ -6,6 +6,9 @@ extends Node
 ## セーブファイルのパス（空文字列 = 新規ゲーム）
 var save_path: String = ""
 
+## 起動時の演出 (ロゴと標語、#9319) を見せたか。起動ごとに 1 度だけ見せる
+var splash_shown: bool = false
+
 ## フォント名（SystemFont の font_names[0] に使用）
 var font_name: String = "MS Gothic"
 
