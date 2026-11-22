@@ -114,7 +114,7 @@ bool store_process_command(CreatureEntity &creature, StoreScreen &screen)
         return false;
     }
     case 'k': {
-        do_cmd_destroy(creature);
+        do_cmd_destroy(creature, true);
         return false;
     }
     case 'e': {
