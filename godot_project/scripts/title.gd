@@ -49,6 +49,8 @@ const VERSION_FONT_SIZE := 18
 const NEWS_FONT_SIZE_MAX := 20
 const NEWS_FONT_SIZE_MIN := 8
 const NEWS_LINE_SPACING := 1.15
+## 収まる大きさからさらに縮める割合 (news は控えめに出す)
+const NEWS_FONT_SCALE := 0.65
 
 
 func _ready() -> void:
@@ -149,6 +151,7 @@ func _fit_news(area: Rect2) -> void:
 		if height <= area.size.y and width <= area.size.x:
 			break
 		size -= 1
+	size = maxi(NEWS_FONT_SIZE_MIN, roundi(size * NEWS_FONT_SCALE))
 	news.add_theme_font_size_override("font_size", size)
 	news.add_theme_constant_override("line_spacing", int(font.get_height(size) * (NEWS_LINE_SPACING - 1.0)))
 
