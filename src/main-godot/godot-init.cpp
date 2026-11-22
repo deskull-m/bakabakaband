@@ -9,6 +9,7 @@
 
 #include "core/game-play.h"
 #include "io/files-util.h"
+#include "locale/character-encoding.h"
 #include "main/angband-initializer.h"
 #include "system/player-type-definition.h"
 #include "system/system-variables.h"
@@ -18,14 +19,51 @@
 #include "term/z-util.h"
 
 #include <godot_cpp/classes/engine.hpp>
+#include <godot_cpp/classes/os.hpp>
 #include <godot_cpp/classes/scene_tree.hpp>
 #include <godot_cpp/variant/utility_functions.hpp>
 
 #include <exception>
 #include <filesystem>
 #include <string>
+#include <thread>
 
 namespace hengband_godot {
+
+namespace {
+    /// ゲームスレッドの ID (run_game_thread() が設定する)
+    std::thread::id game_thread_id;
+
+    /*!
+     * @brief ゲームスレッドで quit() が呼ばれたことを run_game_thread() へ伝える例外
+     * @details quit() は quit_aux から戻ると std::exit() を呼ぶ。ゲームスレッドから std::exit() すると
+     * Godot の実行中にプロセスの後始末 (静的オブジェクトの破棄) が始まり、異常終了 (signal 11) する。
+     * そこで quit_aux から戻らずにこの例外でゲームスレッドの先頭まで巻き戻し、スレッドを普通に終わらせる。
+     */
+    struct GameThreadQuit {
+    };
+
+    /// ゲームの内部の文字コード (日本語版は Shift_JIS / EUC-JP) の文字列を Godot の String にする
+    godot::String sys_message_to_godot(std::string_view msg)
+    {
+        const auto utf8 = sys_to_utf8(msg);
+        return godot::String::utf8(utf8 ? utf8->c_str() : std::string(msg).c_str());
+    }
+
+    /// メインループ (シーンツリー) に終了を頼む
+    void request_tree_quit()
+    {
+        auto *engine = godot::Engine::get_singleton();
+        if (!engine) {
+            return;
+        }
+
+        auto *tree = godot::Object::cast_to<godot::SceneTree>(engine->get_main_loop());
+        if (tree) {
+            tree->quit();
+        }
+    }
+}
 
 /// quit_aux: std::exit() の代わりに Godot のシーンツリーを終了させる
 static void godot_quit_aux(std::string_view msg)
@@ -34,20 +72,19 @@ static void godot_quit_aux(std::string_view msg)
     // これが無いと init_angband / play_game がエラーで quit した際に、
     // 理由が分からないままウィンドウだけ閉じてしまう。
     if (!msg.empty()) {
-        godot::UtilityFunctions::printerr(
-            godot::String("Hengband quit: ") + godot::String(std::string(msg).c_str()));
+        const auto text = sys_message_to_godot(msg);
+        godot::UtilityFunctions::printerr(godot::String("Hengband quit: ") + text);
+        // ウィンドウから起動した場合はコンソールが見えないので、閉じる前に理由を知らせる
+        if (auto *os = godot::OS::get_singleton(); os) {
+            os->alert(text, "Bakabakaband");
+        }
     }
 
-    // メインループに quit を要求する (ゲームスレッドから呼ばれる)
-    auto *engine = godot::Engine::get_singleton();
-    if (engine) {
-        auto *main_loop = engine->get_main_loop();
-        if (main_loop) {
-            auto *tree = godot::Object::cast_to<godot::SceneTree>(main_loop);
-            if (tree) {
-                tree->quit();
-            }
-        }
+    request_tree_quit();
+
+    // ゲームスレッドからの quit() は、ここから戻ると std::exit() されてしまうので巻き戻す
+    if (std::this_thread::get_id() == game_thread_id) {
+        throw GameThreadQuit{};
     }
 }
 
@@ -89,6 +126,7 @@ void run_game_thread(const std::filesystem::path &lib_path,
     term_activate(term_screen);
 
     auto &player = PlayerType::get_instance();
+    game_thread_id = std::this_thread::get_id();
 
     // ゲームスレッドで未捕捉の C++ 例外が発生すると std::terminate で
     // プロセスごとサイレントに落ちてしまう (Godot 側にもログが出ない)。
@@ -101,14 +139,16 @@ void run_game_thread(const std::filesystem::path &lib_path,
         play_game(player, new_game, false);
 
         quit({});
+    } catch (const GameThreadQuit &) {
+        // quit() による終了。シーンツリーへの終了の依頼は godot_quit_aux が済ませている
     } catch (const std::exception &e) {
         godot::UtilityFunctions::printerr(
-            godot::String("Hengband game thread exception: ") + godot::String(e.what()));
-        godot_quit_aux({});
+            godot::String("Hengband game thread exception: ") + sys_message_to_godot(e.what()));
+        request_tree_quit();
     } catch (...) {
         godot::UtilityFunctions::printerr(
             "Hengband game thread terminated by unknown exception");
-        godot_quit_aux({});
+        request_tree_quit();
     }
 }
 
