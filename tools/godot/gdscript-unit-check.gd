@@ -71,7 +71,7 @@ func _initialize() -> void:
 	var buttons_rect: Rect2 = Title.button_area_rect(title_vp, Title.BUTTON_SIZE, 2, Title.BUTTON_SEPARATION)
 	var news_rect: Rect2 = Title.news_area_rect(title_vp, title_rect)
 	cases.append([title_rect.end.x <= title_vp.x * 0.5 and is_equal_approx(title_rect.end.y, title_vp.y - Title.MARGIN), true])
-	cases.append([buttons_rect.position.x >= title_vp.x * 0.5 and buttons_rect.end.x <= title_vp.x and is_equal_approx(buttons_rect.end.y, title_vp.y - Title.MARGIN), true])
+	cases.append([buttons_rect.position.x >= title_vp.x * 0.5 and is_equal_approx(buttons_rect.end.x, title_vp.x - Title.MARGIN) and is_equal_approx(buttons_rect.end.y, title_vp.y - Title.MARGIN), true])
 	cases.append([news_rect.end.y < title_rect.position.y and news_rect.position.y >= 0.0, true])
 	# news は区切りの「*」の行より後ろだけを出す (先頭の空行も除く)
 	cases.append([Title.news_body("\n  ****\n\n  ****\n\n  Based on Moria\n\n  URL\n"), "  Based on Moria\n\n  URL"])

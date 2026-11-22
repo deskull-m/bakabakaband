@@ -39,7 +39,7 @@ const PERSONALITY_NAMES := [
 
 const TitleLayout = preload("res://scripts/title_layout.gd")
 ## ボタンの文字の大きさ (ボタンの大きさは TitleLayout.BUTTON_SIZE) と書体 (無難なサンセリフ。無ければ順に代わりを使う)
-const BUTTON_FONT_SIZE := 16
+const BUTTON_FONT_SIZE := 32
 const BUTTON_FONT_NAMES: PackedStringArray = ["Helvetica", "Helvetica Neue", "Arial", "Liberation Sans", "DejaVu Sans", "Sans-Serif"]
 ## 左揃えの文字とボタンの左端との間
 const BUTTON_TEXT_PADDING := 16.0

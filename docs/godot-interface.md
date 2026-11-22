@@ -247,7 +247,7 @@ StatusPanel に表示を委ねる。メイン端末の行数も下段 3 行ぶ�
 |---|---|
 | news | 左上。区切りの「*」だけの行は出さず、その後ろ (Based on Moria 以降) だけを出す (`TitleLayout.news_body()`)。日本語版は `lib/file/news_j.txt`、英語版は `news.txt` (ゲーム開始時に端末へ出すものと同じ)。どちらかは `HengbandGame.is_japanese()` で選ぶ。タイトル画像に被らないよう、画像の上端までの高さと画面幅に全行が収まる文字の大きさ (8〜20) を選ぶ |
 | タイトル画像 | 左下。横幅は画面の 50% (余白を除く)。高すぎるときは画面の高さの 60% に縮める |
-| New Game・Load Game | 右下に左揃えで並べる (300x48、文字 16)。表記は日英とも英語。書体は Helvetica (無ければ Arial / Liberation Sans / DejaVu Sans の順)。右半分に収まらないときは幅を縮める |
+| New Game・Load Game | 右下の端 (右と下の余白) に寄せ、文字は左揃えで並べる (300x48、文字 32)。表記は日英とも英語。書体は Helvetica (無ければ Arial / Liberation Sans / DejaVu Sans の順)。右半分に収まらないときは幅を縮める |
 
 ![タイトル画面](images/godot-title.png)
 

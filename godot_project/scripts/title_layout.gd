@@ -22,10 +22,11 @@ static func title_image_rect(vp_size: Vector2, aspect: float) -> Rect2:
 	return Rect2(MARGIN, vp_size.y - MARGIN - height, maxf(width, 0.0), maxf(height, 0.0))
 
 
-## ボタンの置き場所: 右下 (画面の右半分)。ボタンは左揃えで縦に並べ、右半分に収まらない幅は縮める
+## ボタンの置き場所: 右下の端 (右と下の余白に寄せる)。ボタンの文字は左揃えで縦に並べ、
+## 画面の右半分に収まらない幅は縮める
 static func button_area_rect(vp_size: Vector2, button_size: Vector2, count: int, separation: float) -> Rect2:
-	var left := vp_size.x * 0.5 + MARGIN * 0.5
-	var width := minf(button_size.x, vp_size.x - MARGIN - left)
+	var width := minf(button_size.x, vp_size.x * 0.5 - MARGIN * 1.5)
+	var left := vp_size.x - MARGIN - width
 	var height := button_size.y * count + separation * maxi(count - 1, 0)
 	return Rect2(left, vp_size.y - MARGIN - height, maxf(width, 0.0), height)
 
