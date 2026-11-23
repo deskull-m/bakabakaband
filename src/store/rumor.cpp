@@ -2,6 +2,7 @@
 #include "locale/language-switcher.h"
 #include "locale/localized-string.h"
 #include "rumor/rumor-definition.h"
+#include "rumor/rumor-list.h"
 #include "rumor/rumor-service.h"
 #include "system/angband-exceptions.h"
 #include "system/artifact-type-definition.h"
@@ -21,9 +22,10 @@
 namespace {
 void display_town_rumor(const RumorDefinition &rumor)
 {
-    msg_erase();
-    msg_print(rumor.get_description());
+    // @details 町名は噂の初期化時点では未確定のため、格納済みの文面ではなく表示時に組み立てる.
     const auto town_id = std::get<TownId>(rumor.get_id());
+    msg_erase();
+    msg_print(RumorList::get_instance().describe_town_rumor(town_id));
     auto &town_records = TownRecords::get_instance();
     if (town_records.has_visited(town_id)) {
         return;

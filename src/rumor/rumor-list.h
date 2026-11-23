@@ -4,11 +4,13 @@
 #include <filesystem>
 #include <map>
 #include <memory>
+#include <string>
 #include <string_view>
 #include <vector>
 
 enum class RumorRarity;
 enum class RumorType;
+enum class TownId;
 class RumorDefinition;
 class RumorList {
 public:
@@ -20,6 +22,7 @@ public:
     static RumorList &get_instance();
     const RumorDefinition &select_random_rumor() const;
     const RumorDefinition &select_rumor(RumorRarity rt) const;
+    std::string describe_town_rumor(TownId town_id) const;
 
     void read_rumors(const std::filesystem::path &path);
 

@@ -8,6 +8,7 @@
 
 #include "util/flag-group.h"
 
+//!< @details 値は町番号 (TownList の添字) - 1. 町定義ファイル (lib/edit/towns/NN_*.txt) の番号と対応させること.
 enum class TownId {
     OUTPOST = 0,
     TELMORA = 1,
@@ -15,6 +16,9 @@ enum class TownId {
     ANGWIL = 3,
     ZUL = 4,
     RLYEH = 5,
+    NORTH_OKAYAMA = 6,
+    GOLAN = 7,
+    SHITTO_AZITO = 8,
     MAX,
 };
 
