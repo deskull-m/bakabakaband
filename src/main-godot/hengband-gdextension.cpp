@@ -549,8 +549,10 @@ void pack_observed_grids(godot::Dictionary &d, const ObservableWorld &world, con
     godot::PackedByteArray flags;
     godot::PackedByteArray symbols; // 1 グリッドあたり fg_color, fg_char, bg_color, bg_char の 4 バイト
     godot::PackedByteArray object_tvals;
+    godot::PackedByteArray object_symbols; // 1 グリッドあたり床アイテムの color, char の 2 バイト (無ければ 0)
     terrain.resize(count);
     object_tvals.resize(count);
+    object_symbols.resize(count * 2);
     shapes.resize(count);
     flags.resize(count);
     symbols.resize(count * 4);
@@ -565,10 +567,13 @@ void pack_observed_grids(godot::Dictionary &d, const ObservableWorld &world, con
         symbols.set(i * 4 + 2, grid.bg_color);
         symbols.set(i * 4 + 3, grid.bg_char);
         object_tvals.set(i, grid.object_tval);
+        object_symbols.set(i * 2, grid.object_color);
+        object_symbols.set(i * 2 + 1, grid.object_char);
     }
 
     d["terrain"] = terrain;
     d["object_tvals"] = object_tvals;
+    d["object_symbols"] = object_symbols;
     d["shapes"] = shapes;
     d["flags"] = flags;
     d["symbols"] = symbols;

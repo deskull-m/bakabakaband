@@ -452,7 +452,7 @@ StatusPanel に表示を委ねる。メイン端末の行数も下段 3 行ぶ�
 | 定義ファイル | `godot_project/data/visuals.jsonc` | `terrain.by_tag` (地形の `key`) / `terrain.by_shape` (形状の名前) / `monsters.by_race` (種族 ID) / `monsters.by_symbol` (文字) / `items.by_tval` (種別)。1 件は `mesh` / `sprite` / `shape` (`box`・`plane`・`none`) / `scale` / `height` / `color` / `texture` / `overlay_glyph` (箱・板の上に端末の文字も立てる。見つけた罠 `TRAP` で使う) |
 | 解決 | `godot_project/scripts/visual_catalog.gd` | 地形: by_tag → by_shape → 文字。クリーチャー: by_race → by_symbol → 文字。床アイテム: by_tval → 文字。幻覚中のクリーチャーは `?`。JSONC (コメント・末尾のカンマ) を読む |
 | 地形の一覧 | `HengbandGame.get_terrain_catalog()` (`build_terrain_catalog()`) | 地形 ID → タグ・名前・形状・定義上の文字と色。定義ファイルを地形のタグで書けるようにするため |
-| クリーチャー・床アイテム | スナップショットの `creatures[].symbol` / `symbol_color`、`object_tvals` | 見かけの種族の定義上の文字 (タイル表示の設定に依らない)。幻覚中は伏せる |
+| クリーチャー・床アイテム | スナップショットの `creatures[].symbol` / `symbol_color`、`object_tvals` / `object_symbols` (床アイテム自身の色・文字。地図の前景は上に乗ったプレイヤー等の `@` になるので使わない) | 見かけの種族の定義上の文字 (タイル表示の設定に依らない)。幻覚中は伏せる |
 | 色 | `HengbandGame.get_term_color(index)` | 端末の色の番号 → Color |
 | タイル | `VisualCatalog.tile_region(row, col, cell_size)` | タイル表示中は `symbols` の色・文字がタイルの行・列になるので、既存の 2D タイルセットをビルボードのテクスチャに流用できる |
 

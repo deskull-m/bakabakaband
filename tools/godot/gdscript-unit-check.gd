@@ -120,6 +120,7 @@ func _initialize() -> void:
 	# タイル表示中の symbols (最上位ビット付きのタイルの行・列) は床アイテムの文字に使わない
 	cases.append([DungeonView.item_fallback_symbol(0x85, 0x90), [DungeonView.ITEM_TILE_FALLBACK_GLYPH, DungeonView.ITEM_TILE_FALLBACK_COLOR]])
 	cases.append([DungeonView.item_fallback_symbol(11, 0x21), ["!", 11]])
+	cases.append([DungeonView.item_fallback_symbol(0, 0), [DungeonView.ITEM_TILE_FALLBACK_GLYPH, DungeonView.ITEM_TILE_FALLBACK_COLOR]])
 	cases.append([DungeonView.collect_texture_names({ "terrain": { "by_shape": { "A": { "texture": "x" }, "B": {} }, "by_tag": { "C": { "texture": "y" }, "D": { "texture": "x" } } } }), ["x", "y"]])
 	var texture_names := DungeonView.collect_texture_names(vc.definitions)
 	for name in texture_names:
