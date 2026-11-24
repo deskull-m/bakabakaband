@@ -19,6 +19,8 @@
 #include "system/terrain/terrain-list.h"
 #include "term/z-rand.h"
 #include "wizard/wizard-messages.h"
+#include <algorithm>
+#include <array>
 #include <range/v3/view.hpp>
 
 /*!
@@ -58,14 +60,81 @@ static bool alloc_stairs_aux(const CreatureEntity &creature, const Pos2D &pos, i
 }
 
 /*!
+ * @brief 指定の辺の反対側の辺を返す
+ * @param edge 基準の辺
+ * @return 正反対の辺
+ */
+FloorEdge get_opposite_edge(FloorEdge edge)
+{
+    switch (edge) {
+    case FloorEdge::NORTH:
+        return FloorEdge::SOUTH;
+    case FloorEdge::SOUTH:
+        return FloorEdge::NORTH;
+    case FloorEdge::WEST:
+        return FloorEdge::EAST;
+    case FloorEdge::EAST:
+    default:
+        return FloorEdge::WEST;
+    }
+}
+
+/*!
+ * @brief フロアの 4 辺から 1 つを無作為に選ぶ
+ * @return 選ばれた辺
+ */
+FloorEdge choose_random_floor_edge()
+{
+    constexpr std::array edges = { FloorEdge::NORTH, FloorEdge::SOUTH, FloorEdge::WEST, FloorEdge::EAST };
+    return rand_choice(edges);
+}
+
+/*!
+ * @brief 辺に寄せる帯の厚みを算出する
+ * @param extent フロアの当該方向の長さ
+ * @return 帯の厚み (最低 1)
+ * @details 厚みは辺の長さの `1 / STAIR_EDGE_BAND_DIVISOR`。
+ *          「集中」の度合いはこの定数で調整する (大きくするほど狭くなる)。
+ */
+int calc_edge_band_depth(int extent)
+{
+    constexpr auto STAIR_EDGE_BAND_DIVISOR = 4;
+    return std::max(1, extent / STAIR_EDGE_BAND_DIVISOR);
+}
+
+/*!
+ * @brief 指定座標が当該の辺に寄せた帯の中にあるか
+ * @param pos 判定する座標
+ * @param height フロアの高さ
+ * @param width フロアの幅
+ * @param edge 寄せる辺
+ * @return 帯の中ならtrue
+ */
+bool is_within_edge_band(const Pos2D &pos, int height, int width, FloorEdge edge)
+{
+    switch (edge) {
+    case FloorEdge::NORTH:
+        return pos.y <= calc_edge_band_depth(height);
+    case FloorEdge::SOUTH:
+        return pos.y >= height - 1 - calc_edge_band_depth(height);
+    case FloorEdge::WEST:
+        return pos.x <= calc_edge_band_depth(width);
+    case FloorEdge::EAST:
+    default:
+        return pos.x >= width - 1 - calc_edge_band_depth(width);
+    }
+}
+
+/*!
  * @brief 外壁に隣接させて階段を生成する / Places some staircases near walls
  * @param creature クリーチャーへの参照
  * @param feat 配置したい地形ID
  * @param num 配置したい階段の数
  * @param walls 最低減隣接させたい外壁の数
+ * @param edge 指定するとその辺へ寄せた帯の中を優先して配置する (`POLARIZED_STAIRS` 用)
  * @return 規定数通りに生成に成功したらTRUEを返す。
  */
-bool alloc_stairs(CreatureEntity &creature, FEAT_IDX feat, int num, int walls)
+bool alloc_stairs(CreatureEntity &creature, FEAT_IDX feat, int num, int walls, tl::optional<FloorEdge> edge)
 {
     int shaft_num = 0;
     const auto &terrain = TerrainList::get_instance().get_terrain(feat);
@@ -100,21 +169,38 @@ bool alloc_stairs(CreatureEntity &creature, FEAT_IDX feat, int num, int walls)
         return false;
     }
 
+    const auto walls_initial = walls;
     for (auto i = 0; i < num; i++) {
+        // 辺の指定がある場合は帯の中を優先する。`edge` が無ければ従来どおりフロア全体から選ぶ。
+        auto restricts_to_band = edge.has_value();
         while (true) {
-            const auto can_alloc_stair = [&](const Pos2D &pos) { return alloc_stairs_aux(creature, pos, walls); };
+            const auto can_alloc_stair = [&](const Pos2D &pos) {
+                if (restricts_to_band && !is_within_edge_band(pos, floor.height, floor.width, *edge)) {
+                    return false;
+                }
+
+                return alloc_stairs_aux(creature, pos, walls);
+            };
             const auto pos_candidates =
                 floor.get_area(FloorBoundary::OUTER_WALL_INCLUSIVE) |
                 ranges::views::filter(can_alloc_stair) |
                 ranges::to_vector;
 
             if (pos_candidates.empty()) {
-                if (walls <= 0) {
-                    return false;
+                if (walls > 0) {
+                    walls--;
+                    continue;
                 }
 
-                walls--;
-                continue;
+                if (restricts_to_band) {
+                    // 帯の中に置ける床が無いならフロア全体へ逃がす。
+                    // ここで諦めるとフロア生成そのものが失敗するため、帯は「寄せる」だけの指定にする。
+                    restricts_to_band = false;
+                    walls = walls_initial;
+                    continue;
+                }
+
+                return false;
             }
 
             const auto &pos_stair = rand_choice(pos_candidates);

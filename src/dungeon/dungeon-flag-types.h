@@ -44,5 +44,6 @@ enum class DungeonFeatureType {
     VANISH_STAIRS,
     ARTIFICIAL_RIVER,
     ARTIFICIAL,
+    POLARIZED_STAIRS,
     MAX,
 };
