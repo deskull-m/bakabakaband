@@ -74,11 +74,17 @@ static bool check_death(CreatureEntity &creature)
         return true;
     }
 
+    // セーブして確認を待つ間は地図がそのまま見えているので、画面を使用中にしない
+    // (通常のセーブと同じ扱い。使用中にすると画面の状態が「地図の上に重ねた一覧」になり、
+    // Godot 版の 3D 表示が端末の表示へ切り替わってしまう)。スコアの一覧を出すときだけ使用中にする
+    auto &world = AngbandWorld::get_instance();
+    world.character_icky_depth = 0;
     do_cmd_save_game(creature, false);
     constexpr auto prompt = _("リターンキーか ESC キーを押して下さい。", "Press Return (or Escape).");
     prt(prompt, 0, 40);
     play_music(TERM_XTRA_MUSIC_BASIC, MUSIC_BASIC_EXIT);
     if (input_key_with_context(InputKind::ANY_KEY, prompt) != ESCAPE) {
+        world.character_icky_depth = 1;
         predict_score(creature);
     }
 
