@@ -11,7 +11,8 @@ angband_files = \
 	book-007_en.txt book-007_jp.txt \
 	book-008_en.txt book-008_jp.txt \
 	book-009_en.txt book-009_jp.txt \
-	book-010_en.txt book-010_jp.txt
+	book-010_en.txt book-010_jp.txt \
+	book-011_en.txt book-011_jp.txt
 
 EXTRA_DIST = \
 	$(angband_files)
