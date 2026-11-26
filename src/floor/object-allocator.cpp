@@ -21,6 +21,7 @@
 #include "wizard/wizard-messages.h"
 #include <algorithm>
 #include <array>
+#include <range/v3/range/conversion.hpp>
 #include <range/v3/view.hpp>
 
 /*!
@@ -85,7 +86,7 @@ FloorEdge get_opposite_edge(FloorEdge edge)
  */
 FloorEdge choose_random_floor_edge()
 {
-    constexpr std::array edges = { FloorEdge::NORTH, FloorEdge::SOUTH, FloorEdge::WEST, FloorEdge::EAST };
+    constexpr std::array<FloorEdge, 4> edges = { { FloorEdge::NORTH, FloorEdge::SOUTH, FloorEdge::WEST, FloorEdge::EAST } };
     return rand_choice(edges);
 }
 

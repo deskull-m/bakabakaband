@@ -16,7 +16,7 @@ TEST_CASE("get_opposite_edge: 正反対の辺を返す")
 
     SUBCASE("2 回適用すると元に戻る")
     {
-        constexpr std::array edges = { FloorEdge::NORTH, FloorEdge::SOUTH, FloorEdge::WEST, FloorEdge::EAST };
+        constexpr std::array<FloorEdge, 4> edges = { { FloorEdge::NORTH, FloorEdge::SOUTH, FloorEdge::WEST, FloorEdge::EAST } };
         for (const auto edge : edges) {
             CHECK(get_opposite_edge(get_opposite_edge(edge)) == edge);
         }
