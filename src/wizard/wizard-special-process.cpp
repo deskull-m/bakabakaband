@@ -961,7 +961,9 @@ void cheat_death(CreatureEntity &creature, bool no_penalty)
         creature.oldpx = 131;
     }
 
-    AngbandWorld::get_instance().set_wild_mode(false);
+    auto &world = AngbandWorld::get_instance();
+    world.pass_game_turn_by_death(CreatureRace(&creature).life() == PlayerRaceLifeType::UNDEAD);
+    world.set_wild_mode(false);
     creature.set_leaving(true);
     constexpr auto note = _("                            しかし、生き返った。", "                            but revived.");
     exe_write_diary(floor, DiaryKind::DESCRIPTION, 1, note);

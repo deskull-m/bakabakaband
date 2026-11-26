@@ -2,10 +2,12 @@
 #include "core/asking-player.h"
 #include "market/arena-entry.h"
 #include "player-info/race-types.h"
+#include "system/inner-game-data.h"
 #include "system/monrace/monrace-list.h"
 #include "term/term-color-types.h"
 #include "term/z-util.h"
 #include "util/bit-flags-calculator.h"
+#include <algorithm>
 #include <ctime>
 #include <fmt/format.h>
 
@@ -113,6 +115,40 @@ void AngbandWorld::pass_game_turn_by_stay()
     if (this->dungeon_turn > this->dungeon_turn_limit) {
         this->dungeon_turn = this->dungeon_turn_limit;
     }
+}
+
+/*!
+ * @brief ゲーム開始時刻を、1 日の中のターンで返す
+ * @param is_undead アンデッド系種族なら true
+ * @return ゲーム開始時刻のターン (1 日目のもの)
+ * @details アンデッド系種族は日中に地上へ出るとダメージを受けるため、夜から開始する.
+ */
+GAME_TURN AngbandWorld::get_start_turn_in_day(bool is_undead)
+{
+    return is_undead ? (TURNS_PER_TICK * 3 * TOWN_DAWN) / 4 + 1 : 1;
+}
+
+/*!
+ * @brief 死亡からの復活によってゲーム内ターンを経過させる
+ * @param is_undead アンデッド系種族なら true
+ * @details 3 日後のゲーム開始時刻 (アンデッド系種族は夜) まで進める.
+ * 復活した直後に、アンデッドが日中の地上へ放り出されてダメージを受けないようにするため.
+ */
+void AngbandWorld::pass_game_turn_by_death(bool is_undead)
+{
+    constexpr GAME_TURN a_day = TURNS_PER_TICK * TOWN_DAWN;
+    constexpr auto days_to_revive = 3;
+    const auto start_turn = get_start_turn_in_day(is_undead);
+
+    // 現在以前で直近のゲーム開始時刻の日を基準にする (種族が変わって開始時刻より前のターンになっている場合にも備えて切り捨てる)
+    auto elapsed_days = (this->game_turn - start_turn) / a_day;
+    if (this->game_turn < start_turn) {
+        elapsed_days = -1;
+    }
+
+    const auto revived_turn = start_turn + (elapsed_days + days_to_revive) * a_day;
+    const auto turn_limit = InnerGameData::get_instance().get_game_turn_limit() - 1;
+    this->game_turn = std::min<GAME_TURN>(revived_turn, turn_limit);
 }
 
 /*!

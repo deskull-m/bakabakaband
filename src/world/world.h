@@ -62,6 +62,8 @@ public:
     const MonraceDefinition &get_today_bounty() const;
     bool is_player_true_winner() const;
     void pass_game_turn_by_stay();
+    void pass_game_turn_by_death(bool is_undead);
+    static GAME_TURN get_start_turn_in_day(bool is_undead);
     std::string format_real_playtime() const;
     void set_gametime();
 

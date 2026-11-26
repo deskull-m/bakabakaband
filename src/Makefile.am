@@ -1765,7 +1765,9 @@ hengband_test_SOURCES = \
 	test/view/test-view-event.cpp \
 	\
 	test/window/test-overview-map-cache.cpp \
-	test/window/test-shrunk-overview-map.cpp
+	test/window/test-shrunk-overview-map.cpp \
+	\
+	test/world/test-world-revive-turn.cpp
 
 hengband_test_LDADD = libhengband.a
 
