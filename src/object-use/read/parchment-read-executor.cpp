@@ -14,6 +14,8 @@
 #include "system/item-entity.h"
 #include "term/screen-processor.h"
 #include "util/angband-files.h"
+#include "view/display-messages.h"
+#include <filesystem>
 #include <iomanip>
 #include <sstream>
 
@@ -30,15 +32,23 @@ bool ParchmentReadExecutor::is_identified() const
 
 bool ParchmentReadExecutor::read()
 {
-    screen_save();
     std::stringstream ss;
     ss << "book-" << std::setfill('0') << std::right << std::setw(3) << *this->o_ptr->bi_key.sval();
     ss << "_" << _("jp", "en") << ".txt";
     const auto item_name = describe_flavor(this->creature, *this->o_ptr, OD_NAME_ONLY);
     auto path = path_build(ANGBAND_DIR_FILE, "books");
     path.append(ss.str());
-    const auto &filename = path.string();
-    FileDisplayer(this->creature.name).display(true, filename, 0, 0, item_name);
+
+    // 本文ファイルが無い読み物 (宝の地図、英語版の一部の石碑等) もある。FileDisplayer::display() は
+    // ファイルが無いと例外を投げて異常終了させるため、先に存在を確かめて読めない旨を伝える。
+    std::error_code ec;
+    if (!std::filesystem::is_regular_file(path, ec)) {
+        msg_print(_("{}には読み取れることが何も書かれていない。", "There is nothing legible written on {}."), item_name);
+        return false;
+    }
+
+    screen_save();
+    FileDisplayer(this->creature.name).display(true, path.string(), 0, 0, item_name);
     screen_load();
     return false;
 }
