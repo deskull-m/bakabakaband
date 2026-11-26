@@ -97,6 +97,9 @@
     <Filter Include="window">
       <UniqueIdentifier>{65c86b54-9255-482c-ae0c-81d81c193fbb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="world">
+      <UniqueIdentifier>{3f0b6c2e-8d41-4a7b-9c55-2e1d7a9b4f63}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\stdafx.cpp" />
@@ -113,6 +116,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\test\window\test-shrunk-overview-map.cpp">
       <Filter>window</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\test\world\test-world-revive-turn.cpp">
+      <Filter>world</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\test\test-win-stubs.cpp" />
     <ClCompile Include="..\..\src\test\autopick\test-autopick-editor-util.cpp">
