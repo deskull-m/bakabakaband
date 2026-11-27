@@ -16,7 +16,6 @@
 #include "perception/object-perception.h"
 #include "system/angband.h"
 #include "system/creature-entity.h"
-#include "system/deferred-update-requests.h"
 #include "system/floor/floor-info.h"
 #include "system/grid-type-definition.h"
 #include "system/item-entity.h"
@@ -135,7 +134,6 @@ bool create_ammo(CreatureEntity &creature)
         }
 
         cave_alter_feat(creature, pos.y, pos.x, TerrainCharacteristics::STONE);
-        DeferredUpdateRequests::get_instance().set_flag(StatusRecalculatingFlag::FLOW);
         return true;
     }
     case AMMO_ARROW: {

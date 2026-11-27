@@ -111,7 +111,8 @@ void update_map_flags(turn_flags *turn_flags_ptr)
         return;
     }
 
-    dur.set_flag(StatusRecalculatingFlag::FLOW);
+    // モンスターの経路 (FLOW) は cave_alter_feat() 内の set_terrain_id_to_grid() で要求済み。
+    // ここでは地図サブウィンドウの再描画だけ要求する
     static constexpr auto flags = {
         SubWindowRedrawingFlag::OVERHEAD,
         SubWindowRedrawingFlag::DUNGEON,

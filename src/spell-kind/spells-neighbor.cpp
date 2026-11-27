@@ -78,7 +78,6 @@ bool wall_stone(CreatureEntity &creature)
     BIT_FLAGS flg = PROJECT_GRID | PROJECT_ITEM | PROJECT_HIDE;
     bool dummy = project(creature, 0, 1, creature.y, creature.x, 0, AttributeType::STONE_WALL, flg).notice;
     auto &dur = DeferredUpdateRequests::get_instance();
-    dur.set_flag(StatusRecalculatingFlag::FLOW);
     dur.set_flag(MainWindowRedrawingFlag::MAP);
     return dummy;
 }

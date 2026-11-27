@@ -662,7 +662,6 @@ void exe_fire(CreatureEntity &creature, INVENTORY_IDX i_idx, ItemEntity *j_ptr, 
                     static constexpr auto flags = {
                         StatusRecalculatingFlag::VIEW,
                         StatusRecalculatingFlag::LITE,
-                        StatusRecalculatingFlag::FLOW,
                         StatusRecalculatingFlag::MONSTER_LITE,
                     };
                     DeferredUpdateRequests::get_instance().set_flags(flags);
