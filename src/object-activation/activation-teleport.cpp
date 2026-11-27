@@ -48,8 +48,9 @@ bool activate_escape(CreatureEntity &creature)
             return true;
         }
 
+        // 新しい階に移ってから自動セーブする (ここで即座にセーブすると元の階が保存される)
         if (autosave_l) {
-            do_cmd_save_game(creature, true);
+            request_auto_save();
         }
 
         creature.set_leaving(true);
