@@ -125,10 +125,6 @@ void teleport_level(CreatureEntity &creature, MONSTER_IDX m_idx)
                 exe_write_diary(floor, DiaryKind::TELEPORT_LEVEL, 1);
             }
 
-            if (autosave_l) {
-                do_cmd_save_game(creature, true);
-            }
-
             fcms->set(FloorChangeMode::RANDOM_PLACE);
             if (!floor.is_underground()) {
                 const auto &recall_dungeon = floor.get_dungeon_definition();
@@ -153,10 +149,6 @@ void teleport_level(CreatureEntity &creature, MONSTER_IDX m_idx)
                 exe_write_diary(floor, DiaryKind::TELEPORT_LEVEL, -1);
             }
 
-            if (autosave_l) {
-                do_cmd_save_game(creature, true);
-            }
-
             fcms->set({ FloorChangeMode::SAVE_FLOORS, FloorChangeMode::UP, FloorChangeMode::RANDOM_PLACE, FloorChangeMode::RANDOM_CONNECT });
             leave_quest_check(creature);
             floor.quest_number = QuestId::NONE;
@@ -178,10 +170,6 @@ void teleport_level(CreatureEntity &creature, MONSTER_IDX m_idx)
                 exe_write_diary(floor, DiaryKind::TELEPORT_LEVEL, -1);
             }
 
-            if (autosave_l) {
-                do_cmd_save_game(creature, true);
-            }
-
             fcms->set({ FloorChangeMode::SAVE_FLOORS, FloorChangeMode::UP, FloorChangeMode::RANDOM_PLACE, FloorChangeMode::RANDOM_CONNECT });
             creature.set_leaving(true);
         }
@@ -200,16 +188,17 @@ void teleport_level(CreatureEntity &creature, MONSTER_IDX m_idx)
             if (record_stair) {
                 exe_write_diary(floor, DiaryKind::TELEPORT_LEVEL, 1);
             }
-            if (autosave_l) {
-                do_cmd_save_game(creature, true);
-            }
-
             fcms->set({ FloorChangeMode::SAVE_FLOORS, FloorChangeMode::DOWN, FloorChangeMode::RANDOM_PLACE, FloorChangeMode::RANDOM_CONNECT });
             creature.set_leaving(true);
         }
     }
 
     if (m_idx <= 0) {
+        // プレイヤーなら、上のどの分岐でも階を移る (leaving を立てる)
+        if (autosave_l) {
+            request_auto_save();
+        }
+
         sound(SoundKind::TPLEVEL);
         return;
     }

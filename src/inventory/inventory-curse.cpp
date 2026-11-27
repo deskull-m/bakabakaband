@@ -460,7 +460,7 @@ static void curse_megaton_coin(CreatureEntity &creature)
     take_hit(creature, DAMAGE_NOESCAPE, dam, _("メガトンコイン", "the Megaton Coin"));
 
     if (autosave_l && (creature.hp >= 0)) {
-        do_cmd_save_game(creature, true);
+        request_auto_save();
     }
 
     exe_write_diary(*(creature.get_floor()), DiaryKind::DESCRIPTION, 0, _("メガトンコインで落ちた!", "fell through the Megaton Coin"));

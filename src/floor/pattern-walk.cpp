@@ -76,8 +76,9 @@ void pattern_teleport(CreatureEntity &creature)
     }
 
     msg_print(_("{} 階にテレポートしました。", "You teleport to dungeon level {}."), command_arg);
+    // 新しい階に移ってから自動セーブする (ここで即座にセーブすると元の階が保存される)
     if (autosave_l) {
-        do_cmd_save_game(creature, true);
+        request_auto_save();
     }
 
     floor.dun_level = command_arg;

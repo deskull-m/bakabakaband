@@ -492,8 +492,9 @@ void wiz_jump_to_dungeon(CreatureEntity &creature)
     }
 
     msg_print("You jump to dungeon level {}.", *level);
+    // 新しい階に移ってから自動セーブする (ここで即座にセーブすると元の階が保存される)
     if (autosave_l) {
-        do_cmd_save_game(creature, true);
+        request_auto_save();
     }
 
     jump_floor(creature, *dungeon_id, *level);
