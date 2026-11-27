@@ -159,7 +159,6 @@ bool vanish_dungeon(CreatureEntity &creature)
     auto &dur = DeferredUpdateRequests::get_instance();
     dur.request_monster_update_and_map_redrawing();
     dur.request_sight_recalculation();
-    dur.set_flag(StatusRecalculatingFlag::FLOW);
     return true;
 }
 

@@ -431,7 +431,6 @@ void wiz_create_feature(CreatureEntity &creature)
 
     note_spot(creature, *pos);
     lite_spot(creature, *pos);
-    DeferredUpdateRequests::get_instance().set_flag(StatusRecalculatingFlag::FLOW);
 }
 
 /*!
