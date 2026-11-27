@@ -46,15 +46,15 @@ make install
 To run in ASCII mode:
 
 ```
-./hengband -- -n <number of windows>
+./hengband -- -n<number of windows>
 ```
 
 To run in the graphical mode:
 
 ```
-./hengband -g -- -n <number of windows> # 8x8 Tiles
-./hengband -g -- -b -n <number of windows> ## double width size tiles
-./hengband -g -- -a -n <number of windows> ## 16x16 tiles (tiles of this size are not provided)
+./hengband -g -- -n<number of windows> # 8x8 Tiles
+./hengband -g -- -b -n<number of windows> ## double width size tiles
+./hengband -g -- -a -n<number of windows> ## 16x16 tiles (tiles of this size are not provided)
 ```
 
 ### Install with `setgid`
