@@ -19,11 +19,12 @@
 #include "system/terrain/terrain-definition.h"
 #include "util/bit-flags-calculator.h"
 #include "view/display-messages.h"
+#include <limits>
 #include <queue>
 #include <vector>
 
 namespace {
-constexpr auto TRAVEL_UNABLE = 9999;
+constexpr auto COST_UNREACHED = std::numeric_limits<int>::max(); //!< 目的地からの行程をまだ求めていない、または目的地まで行けないマス
 
 /*!
  * @brief トラベル処理中に地形に応じた移動コスト基準を返す
@@ -79,10 +80,9 @@ int travel_flow_cost(CreatureEntity &creature, const Pos2D &pos)
  * @param creature	クリーチャーへの参照
  * @param pos 隣接するマスの座標
  * @param current_cost 現在のマスのコスト
- * @param wall プレイヤーが壁の中にいるならばTRUE
  * @return 隣接するマスのコスト。移動不可ならばtl::nullopt
  */
-tl::optional<int> travel_flow_aux(CreatureEntity &creature, const Pos2D pos, int current_cost, bool wall)
+tl::optional<int> travel_flow_aux(CreatureEntity &creature, const Pos2D pos, int current_cost)
 {
     const auto &floor = *creature.get_floor();
     const auto &grid = floor.get_grid(pos);
@@ -95,26 +95,21 @@ tl::optional<int> travel_flow_aux(CreatureEntity &creature, const Pos2D pos, int
         return tl::nullopt;
     }
 
-    const auto from_wall = (current_cost / TRAVEL_UNABLE);
+    // 壁や、浮遊しないと入れない地形などは通れないマスとして扱う
     auto is_wall = terrain.flags.has_any_of({ TerrainCharacteristics::WALL, TerrainCharacteristics::CAN_DIG });
     is_wall |= terrain.flags.has(TerrainCharacteristics::DOOR) && (grid.mimic > 0);
-    auto can_move = terrain.flags.has_not(TerrainCharacteristics::MOVE);
-    can_move &= terrain.flags.has(TerrainCharacteristics::CAN_FLY);
-    can_move &= !creature.has_levitation();
-
-    auto add_cost = 1;
-    if (is_wall || can_move) {
-        if (!wall || !from_wall) {
-            return tl::nullopt;
-        }
-
-        add_cost += TRAVEL_UNABLE;
-    } else {
-        add_cost = travel_flow_cost(creature, pos);
+    if (is_wall) {
+        return tl::nullopt;
     }
 
-    const auto base_cost = (current_cost % TRAVEL_UNABLE);
-    return base_cost + add_cost;
+    auto needs_levitation = terrain.flags.has_not(TerrainCharacteristics::MOVE);
+    needs_levitation &= terrain.flags.has(TerrainCharacteristics::CAN_FLY);
+    needs_levitation &= !creature.has_levitation();
+    if (needs_levitation) {
+        return tl::nullopt;
+    }
+
+    return current_cost + travel_flow_cost(creature, pos);
 }
 
 /*!
@@ -310,9 +305,6 @@ void Travel::update_flow(CreatureEntity &creature)
         return;
     }
 
-    const auto &terrain = creature.get_floor()->get_grid(creature.get_position()).get_terrain();
-    const auto wall = terrain.flags.has(TerrainCharacteristics::MOVE);
-
     using CostAndPos = std::pair<int, Pos2D>;
     auto compare = [](const auto &a, const auto &b) { return a.first > b.first; }; // costが小さいものを優先
     std::priority_queue<CostAndPos, std::vector<CostAndPos>, decltype(compare)> pq(compare);
@@ -329,7 +321,7 @@ void Travel::update_flow(CreatureEntity &creature)
         for (const auto &d : Direction::directions_8()) {
             const auto pos_neighbor = pos + d.vec();
             auto &cost_neighbor = this->costs[pos_neighbor.y][pos_neighbor.x];
-            const auto new_cost = travel_flow_aux(creature, pos_neighbor, cost, wall);
+            const auto new_cost = travel_flow_aux(creature, pos_neighbor, cost);
             if (new_cost && *new_cost < cost_neighbor) {
                 cost_neighbor = *new_cost;
                 pq.emplace(cost_neighbor, pos_neighbor);
@@ -344,6 +336,6 @@ void Travel::update_flow(CreatureEntity &creature)
 void Travel::forget_flow()
 {
     for (auto &row : this->costs) {
-        row.fill(MAX_SHORT);
+        row.fill(COST_UNREACHED);
     }
 }
