@@ -28,6 +28,9 @@
     <Filter Include="io">
       <UniqueIdentifier>{c8b717ff-2016-4112-a724-c2a1d4bd249b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="io-dump">
+      <UniqueIdentifier>{b2e4c7a9-1f3d-4e8b-a5c6-7d9e0f1a2b3c}</UniqueIdentifier>
+    </Filter>
     <Filter Include="knowledge">
       <UniqueIdentifier>{3f7c1a28-9d64-4a1e-b2f0-7c5e1a9b4d60}</UniqueIdentifier>
     </Filter>
@@ -179,6 +182,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\test\io\test-tokenizer.cpp">
       <Filter>io</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\test\io-dump\test-dump-util.cpp">
+      <Filter>io-dump</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\test\knowledge\test-knowledge-features.cpp">
       <Filter>knowledge</Filter>

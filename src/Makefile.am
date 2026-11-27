@@ -1654,6 +1654,8 @@ hengband_test_SOURCES = \
 	test/info-reader/test-vault-reader.cpp \
 	test/info-reader/test-wilderness-reader.cpp \
 	\
+	test/io-dump/test-dump-util.cpp \
+	\
 	test/io/test-condition-expression.cpp \
 	test/io/test-input-context.cpp \
 	test/io/test-interpret-pref-file.cpp \
