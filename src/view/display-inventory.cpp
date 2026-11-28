@@ -17,6 +17,7 @@
 #include "term/term-color-types.h"
 #include "util/enum-converter.h"
 #include "util/string-processor.h"
+#include "view/display-util.h"
 #include <fmt/format.h>
 
 /*!
@@ -114,9 +115,7 @@ COMMAND_CODE show_inventory(CreatureEntity &creature, int target_item, BIT_FLAGS
 
         c_put_str(out_color[j], out_desc[j], j + 1, cur_col);
         if (show_weights) {
-            const auto wgt = item.weight * item.number;
-            const auto weight = fmt::format(_("{:3}.{:1} kg", "{:3}.{:1} lb"), _(lb_to_kg_integer(wgt), wgt / 10), _(lb_to_kg_fraction(wgt), wgt % 10));
-            prt(weight, j + 1, wid - 9);
+            prt(format_item_weight(item.weight * item.number), j + 1, wid - 9);
         }
     }
 
@@ -183,9 +182,7 @@ void display_inventory(CreatureEntity &creature, const ItemTester &item_tester)
         term_putstr(cur_col, i, item_name.length(), attr, item_name);
 
         if (show_weights) {
-            const auto wgt = item.weight * item.number;
-            const auto weight = fmt::format(_("{:3}.{:1} kg", "{:3}.{:1} lb"), _(lb_to_kg_integer(wgt), wgt / 10), _(lb_to_kg_fraction(wgt), wgt % 10));
-            prt(weight, i, wid - 9);
+            prt(format_item_weight(item.weight * item.number), i, wid - 9);
         }
     }
 
