@@ -228,7 +228,6 @@ void Travel::set_goal(CreatureEntity &creature, const Pos2D &pos)
         }
     }
 
-    this->forget_flow();
     this->update_flow(creature);
     this->state = TravelState::STANDBY_TO_EXECUTE;
 }
@@ -270,6 +269,12 @@ int Travel::get_cost(const Pos2D &pos) const
  */
 void Travel::step(CreatureEntity &creature)
 {
+    // 行程は前回の探索で自分がいたマスまでしか確定していないので、そこから外れていたら求め直す
+    const auto p_pos = creature.get_position();
+    if (this->costs[p_pos.y][p_pos.x] > this->settled_cost_limit) {
+        this->update_flow(creature);
+    }
+
     this->dir = decide_travel_step_dir(creature, this->dir, this->costs);
     if (!this->dir) {
         if (this->state != TravelState::EXECUTING) {
@@ -298,12 +303,19 @@ void Travel::step(CreatureEntity &creature)
 /*!
  * @brief トラベルの目標到達地点までの行程を得る
  * @param creature クリーチャーへの参照
+ * @details 目的地から行程の短い順に確定させ、自分のいるマスが確定したら探索をやめる。
+ * 自分より行程の短いマスはすべて確定しているので、行程の短いほうへ進む限り、フロア全体を求めたときと同じ道筋になる。
+ * 自分のマスまで行けないときは、フロア全体を求める。
  */
 void Travel::update_flow(CreatureEntity &creature)
 {
+    this->forget_flow();
+    this->settled_cost_limit = std::numeric_limits<int>::max();
     if (!this->pos_goal) {
         return;
     }
+
+    const auto p_pos = creature.get_position();
 
     using CostAndPos = std::pair<int, Pos2D>;
     auto compare = [](const auto &a, const auto &b) { return a.first > b.first; }; // costが小さいものを優先
@@ -317,6 +329,10 @@ void Travel::update_flow(CreatureEntity &creature)
         const auto cost = pq.top().first;
         const auto pos = pq.top().second;
         pq.pop();
+        if (pos == p_pos) {
+            this->settled_cost_limit = cost;
+            return;
+        }
 
         for (const auto &d : Direction::directions_8()) {
             const auto pos_neighbor = pos + d.vec();
@@ -332,10 +348,13 @@ void Travel::update_flow(CreatureEntity &creature)
 
 /*!
  * @brief トラベル処理の記憶配列を初期化する Hack: forget the "flow" information
+ * @details 確定している行程も無くなるので、次の step() では行程を求め直す
  */
 void Travel::forget_flow()
 {
     for (auto &row : this->costs) {
         row.fill(COST_UNREACHED);
     }
+
+    this->settled_cost_limit = 0;
 }
