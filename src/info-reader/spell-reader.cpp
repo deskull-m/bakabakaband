@@ -120,14 +120,28 @@ ParseErrorType SpellReader::set_book_data(RealmType realm) const
     if (book_obj.is_null()) {
         return ParseErrorType::TOO_FEW_ARGUMENTS;
     }
+    if (!book_obj.is_array()) {
+        return ParseErrorType::INVALID_TYPE;
+    }
 
     for (const auto &book : book_obj) {
+        if (!book.is_object()) {
+            return book.is_null() ? ParseErrorType::TOO_FEW_ARGUMENTS : ParseErrorType::INVALID_TYPE;
+        }
+
         const auto &spells_obj = get_json_value(book, "spells");
         if (spells_obj.is_null()) {
             return ParseErrorType::TOO_FEW_ARGUMENTS;
         }
+        if (!spells_obj.is_array()) {
+            return ParseErrorType::INVALID_TYPE;
+        }
 
         for (const auto &spell : spells_obj) {
+            if (!spell.is_object()) {
+                return spell.is_null() ? ParseErrorType::TOO_FEW_ARGUMENTS : ParseErrorType::INVALID_TYPE;
+            }
+
             if (const auto err = this->set_spell_data(spell, realm); err != ParseErrorType::NONE) {
                 return err;
             }
