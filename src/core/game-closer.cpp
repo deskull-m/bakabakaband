@@ -8,7 +8,7 @@
 #include "core/game-closer.h"
 #include "cmd-io/cmd-save.h"
 #include "core/asking-player.h"
-#include "core/score-util.h"
+#include "core/score-file.h"
 #include "core/scores.h"
 #include "core/stuff-handler.h"
 #include "floor/floor-save.h"
@@ -39,8 +39,6 @@
 
 static void clear_floor(CreatureEntity &creature)
 {
-    (void)fd_close(highscore_fd);
-    highscore_fd = -1;
     clear_saved_floor_files(creature);
     signals_handle_tstp();
 }
@@ -156,11 +154,6 @@ void close_game(CreatureEntity &creature)
 
     auto &world = AngbandWorld::get_instance();
     world.character_icky_depth = 1;
-    const auto path = path_build(ANGBAND_DIR_APEX, "scores.raw");
-    safe_setuid_grab();
-    highscore_fd = fd_open(path, O_RDWR);
-    safe_setuid_drop();
-
     if (!check_death(creature)) {
         return;
     }
@@ -192,8 +185,8 @@ void close_game(CreatureEntity &creature)
         if (!AngbandSystem::get_instance().is_awaiting_report_status()) {
             (void)top_twenty(creature);
         }
-    } else if (highscore_fd >= 0) {
-        display_scores(0, 10, -1, nullptr);
+    } else if (const auto scores = read_score_file(); scores) {
+        display_scores(*scores, 0, 10, -1, nullptr);
     }
 
     clear_floor(creature);

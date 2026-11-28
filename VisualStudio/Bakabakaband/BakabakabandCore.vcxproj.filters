@@ -436,6 +436,9 @@
     <ClCompile Include="..\..\src\locale\japanese.cpp">
       <Filter>locale</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\locale\multibyte-char.cpp">
+      <Filter>locale</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\src\locale\character-encoding.cpp">
       <Filter>locale</Filter>
     </ClCompile>
@@ -2221,6 +2224,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\main-win\commandline-win.cpp">
       <Filter>main-win</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\core\score-file.cpp">
+      <Filter>core</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\core\score-util.cpp">
       <Filter>core</Filter>
@@ -4329,6 +4335,9 @@
     <ClInclude Include="..\..\src\locale\japanese.h">
       <Filter>locale</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\locale\multibyte-char.h">
+      <Filter>locale</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\src\locale\english.h">
       <Filter>locale</Filter>
     </ClInclude>
@@ -5412,6 +5421,9 @@
     </ClInclude>
     <ClInclude Include="..\..\src\player-info\equipment-info.h">
       <Filter>player-info</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\core\score-file.h">
+      <Filter>core</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\core\score-util.h">
       <Filter>core</Filter>

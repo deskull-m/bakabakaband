@@ -14,6 +14,7 @@
 
 #include "main/angband-initializer.h"
 #include "autopick/autopick-menu-data-table.h"
+#include "core/score-file.h"
 #include "floor/wild.h"
 #include "info-reader/feature-reader.h"
 #include "io/files-util.h"
@@ -167,22 +168,13 @@ void init_angband(CreatureEntity &creature, bool no_term)
         term_flush();
     }
 
-    const auto path_score = path_build(ANGBAND_DIR_APEX, "scores.raw");
-    fd = fd_open(path_score, O_RDONLY);
-    if (fd < 0) {
-        safe_setuid_grab();
-        fd = fd_make(path_score, true);
-        safe_setuid_drop();
-        if (fd < 0) {
-            const auto &filename_score = path_score.string();
-            std::string why = _("'", "Cannot create the '");
-            why.append(filename_score);
-            why.append(_("'ファイルを作成できません!", "' file!"));
-            init_angband_aux(why);
-        }
+    if (!prepare_score_file()) {
+        // 作れない理由はスコアファイルと前の版のスコアファイルのどちらのこともあるので、ディレクトリを示す
+        std::string why = _("'", "Cannot prepare the score file in '");
+        why.append(ANGBAND_DIR_APEX.string());
+        why.append(_("'のスコアファイルを準備できません!", "'!"));
+        init_angband_aux(why);
     }
-
-    (void)fd_close(fd);
 
 #ifdef WINDOWS
     if (!no_term) {
