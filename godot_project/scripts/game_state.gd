@@ -6,6 +6,9 @@ extends Node
 ## セーブファイルのパス（空文字列 = 新規ゲーム）
 var save_path: String = ""
 
+## 起動時の演出 (ロゴと標語、#9319) を見せたか。起動ごとに 1 度だけ見せる
+var splash_shown: bool = false
+
 ## フォント名（SystemFont の font_names[0] に使用）
 var font_name: String = "MS Gothic"
 
@@ -29,9 +32,23 @@ var status_panel_pos: Vector2i = Vector2i(-1, -1)
 ## ステータスパネルの表示状態
 var status_panel_visible: bool = true
 
+## 地図を見ている間、端末の代わりに地図ビュー (3D 表示など) を見せるか (#9294)
+## 地図ビューが無い現状では効果が無い
+var use_map_view: bool = false
+
+## メッセージ・持ち物・装備のウィンドウの表示状態と位置。
+## キーはウィンドウの種類 (item_window.gd の Kind)、値は {"visible": bool, "x": int, "y": int} (x<0 は未保存)
+var item_windows: Dictionary = {}
+
 const _CONFIG_PATH := "user://hengband_config.cfg"
+## 設定ファイルの場所。確認用のスクリプトは利用者の設定を書き換えないよう別の場所へ向ける
+## (環境変数 HB_CONFIG_PATH でも変えられる)
+var config_path := _CONFIG_PATH
 
 func _ready() -> void:
+	var override := OS.get_environment("HB_CONFIG_PATH")
+	if override != "":
+		config_path = override
 	load_config()
 	_restore_window()
 
@@ -55,11 +72,13 @@ func save_config() -> void:
 	cfg.set_value("status_panel", "x", status_panel_pos.x)
 	cfg.set_value("status_panel", "y", status_panel_pos.y)
 	cfg.set_value("status_panel", "visible", status_panel_visible)
-	cfg.save(_CONFIG_PATH)
+	cfg.set_value("display", "use_map_view", use_map_view)
+	cfg.set_value("item_windows", "state", item_windows)
+	cfg.save(config_path)
 
 func load_config() -> void:
 	var cfg := ConfigFile.new()
-	if cfg.load(_CONFIG_PATH) != OK:
+	if cfg.load(config_path) != OK:
 		return
 	font_name = cfg.get_value("display", "font_name", font_name)
 	font_size = cfg.get_value("display", "font_size", font_size)
@@ -77,3 +96,5 @@ func load_config() -> void:
 	var spy: int = cfg.get_value("status_panel", "y", -1)
 	status_panel_pos = Vector2i(spx, spy)
 	status_panel_visible = cfg.get_value("status_panel", "visible", true)
+	use_map_view = cfg.get_value("display", "use_map_view", false)
+	item_windows = cfg.get_value("item_windows", "state", {})

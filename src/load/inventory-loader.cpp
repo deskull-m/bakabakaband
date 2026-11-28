@@ -4,6 +4,8 @@
 #include "load/load-util.h"
 #include "load/old/item-loader-savefile50.h"
 #include "object/object-mark-types.h"
+#include "object/tval-types.h"
+#include "system/baseitem/baseitem-key.h"
 #include "system/creature-entity.h"
 #include "system/item-entity.h"
 
@@ -40,6 +42,14 @@ static errr rd_inventory(CreatureEntity &creature)
         if (n >= INVEN_MAIN_HAND) {
             item.marked.set(OmType::TOUCHED);
             *creature.inventory[n] = std::move(item);
+            continue;
+        }
+
+        // 死体から取り出した金銭がアイテムのままザックに入っていた不具合 (#9391) の救済。
+        // 金銭は本来所持品にならないので、所持金に換算して所持品には加えない。
+        // 所持金 (au) は所持品より前に読み込み済み。
+        if (item.bi_key.tval() == ItemKindType::GOLD) {
+            creature.add_au(item.pval);
             continue;
         }
 

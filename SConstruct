@@ -5,6 +5,7 @@ Usage:
   scons                          # デフォルトビルド (platform=windows target=template_debug)
   scons platform=linux           # Linux向けビルド
   scons target=template_release  # リリースビルド
+  scons platform=linux japanese=yes  # Linux 向けの日本語版 (内部の文字コードは EUC-JP)
 """
 
 import os
@@ -57,6 +58,14 @@ def collect_hengband_sources():
 
 hengband_core_sources = collect_hengband_sources()
 
+# main-unix/ は端末版 (X11 / curses) のバックエンドなのでディレクトリごと除外しているが、
+# unix-user-ids.cpp だけはゲームコア (io/files-util.cpp, io/uid-checker.cpp) が
+# Windows 以外で参照するため、Linux 等では個別に加える。
+# 加え忘れると Godot が GDExtension を読み込む時点で
+# "undefined symbol: UnixUserIds::get_effective_user_id" で失敗する。
+if env["platform"] != "windows":
+    hengband_core_sources.append("src/main-unix/unix-user-ids.cpp")
+
 # --- ビルド設定 ---
 
 # CPPPATH と USE_GODOT は全ソースに共通 (godot-cpp との互換性に問題なし)
@@ -66,7 +75,10 @@ env.Append(CPPPATH=[
     "src/external-lib/include",  # fmtlib, tl::optional 等
 ])
 
-env.Append(CPPDEFINES=["USE_GODOT", "GODOT_RICH_UI"])
+# GODOT_RICH_UI (端末の下段・時刻・深さ等の描画を止めて Godot の StatusPanel に任せる) は定義しない。
+# ステータスパネルは C コマンドの画面のダンプを出すようになり、左側の欄・下段は端末と同じに描かせて
+# 3D の地図ビューでは端末の左側の欄をそのまま重ねて見せる (scripts/status_sidebar.gd)
+env.Append(CPPDEFINES=["USE_GODOT"])
 
 # --- Hengband 専用ビルド環境 ---
 # godot-cpp は CCFLAGS に /utf-8 (=/source-charset:utf-8 /execution-charset:utf-8) を追加する。
@@ -110,6 +122,13 @@ else:
     # HAVE_USLEEP は h-config.h が HAVE_CONFIG_H 未定義時に自動定義するため付与しない
     # (二重定義警告を避ける)。
     hengband_env.Append(CPPDEFINES=["HAVE_SYS_TIME_H", "HAVE_MKSTEMP"])
+    # 日本語版: 端末版の autotools (configure の既定) と同じく内部の文字コードを EUC-JP にする。
+    # 英語版とオブジェクトファイルが混ざらないよう、拡張子を変えて別に置く
+    # (ライブラリ自体は同じ名前に出力するので、切り替えるたびにリンクし直しになる)。
+    if ARGUMENTS.get("japanese", "no") == "yes":
+        hengband_env.Append(CPPDEFINES=["JP", "EUC"])
+        hengband_env.Append(CXXFLAGS=["-fexec-charset=euc-jp-ms"])
+        hengband_env["SHOBJSUFFIX"] = ".jp" + hengband_env["SHOBJSUFFIX"]
 
 # --- ライブラリのビルド ---
 

@@ -6,9 +6,12 @@
 #include "flavor/object-flavor-types.h"
 #include "inventory/inventory-slot-types.h"
 #include "locale/language-switcher.h"
+#include "main/sound-definitions-table.h"
+#include "main/sound-of-music.h"
 #include "market/loot-notoriety.h"
 #include "monster-floor/monster-corpse-leaver.h"
 #include "system/creature-entity.h"
+#include "system/deferred-update-requests.h"
 #include "system/floor/floor-info.h"
 #include "system/floor/monster-corpse.h"
 #include "system/item-entity.h"
@@ -41,9 +44,32 @@ std::vector<int> collect_item_slots(const MonsterCorpse &corpse)
  * @brief 死体から 1 品を取り出してプレイヤーの所持品へ移す
  * @return 取り出せたらtrue
  */
+/*!
+ * @brief 死体から金銭を取り出して所持金に加える
+ * @details 床の金銭を拾う処理 (py_pickup_all_golds_on_floor()) と同じく、ザックには入れず所持金へ換算する。
+ *          金銭は所有権を刻印しない (monster-drop-generator.cpp) ので、略奪品の記録は行わない。
+ */
+void take_gold_from_corpse(CreatureEntity &creature, ItemEntity &held)
+{
+    const auto value = held.pval;
+    const auto item_name = describe_flavor(creature, held, 0);
+    const auto number = held.number;
+    creature.add_au(value);
+    held.wipe();
+    msg_print(_(" ${} の価値がある{}を見つけた。", "You have found {} gold pieces worth of {}."), value, item_name);
+    sound(SoundKind::SELL);
+    DeferredUpdateRequests::get_instance().request_gold_redrawing();
+    record_rummaged_corpse_item(creature, number);
+}
+
 bool take_item_from_corpse(CreatureEntity &creature, MonsterCorpse &corpse, int slot_in_corpse)
 {
     auto &held = *corpse.body.inventory[slot_in_corpse];
+    if (held.bi_key.tval() == ItemKindType::GOLD) {
+        take_gold_from_corpse(creature, held);
+        return true;
+    }
+
     const auto taken = held.clone();
     const auto item_name = describe_flavor(creature, taken, 0);
     if (!creature.can_store_item(taken)) {

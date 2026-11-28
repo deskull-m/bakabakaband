@@ -259,6 +259,22 @@ static void make_only_tunnel_points(const FloorType &floor, DungeonData *dd_ptr)
     }
 }
 
+/*!
+ * @brief 対向配置階段 (`POLARIZED_STAIRS`) が有効なら、下り階段を寄せる辺を抽選する
+ * @param dungeon ダンジョン定義への参照
+ * @return 寄せる辺。無効なら tl::nullopt
+ * @details 上り階段はこの正反対の辺へ寄せる。辺はフロアごとに抽選するので、
+ *          同じダンジョンでも毎回向きが変わる。
+ */
+static tl::optional<FloorEdge> decide_polarized_stair_edge(const DungeonDefinition &dungeon)
+{
+    if (dungeon.flags.has_not(DungeonFeatureType::POLARIZED_STAIRS)) {
+        return tl::nullopt;
+    }
+
+    return choose_random_floor_edge();
+}
+
 static bool make_one_floor(CreatureEntity &creature, DungeonData *dd_ptr, const DungeonDefinition &dungeon)
 {
     auto &floor = *creature.get_floor();
@@ -302,17 +318,22 @@ static bool make_one_floor(CreatureEntity &creature, DungeonData *dd_ptr, const 
 
     make_doors(creature, dd_ptr, dt_ptr);
     const auto &terrains = TerrainList::get_instance();
-    if (!alloc_stairs(creature, terrains.get_terrain_id(TerrainTag::DOWN_STAIR), Dice::roll(std::max(floor.width * floor.height / 4000, 1), 3), 3)) {
+
+    // 対向配置階段: 下り階段を 1 辺へ、上り階段をその正反対の辺へ寄せる。
+    // 通路の配置処理には手を付けないので、両者は既存の通路網で結ばれる。
+    const auto edge_down_stairs = decide_polarized_stair_edge(dungeon);
+    const auto edge_up_stairs = edge_down_stairs ? tl::make_optional(get_opposite_edge(*edge_down_stairs)) : tl::nullopt;
+    if (!alloc_stairs(creature, terrains.get_terrain_id(TerrainTag::DOWN_STAIR), Dice::roll(std::max(floor.width * floor.height / 4000, 1), 3), 3, edge_down_stairs)) {
         dd_ptr->why = _("下り階段生成に失敗", "Failed to generate down stairs.");
         return false;
     }
 
-    if (!alloc_stairs(creature, terrains.get_terrain_id(TerrainTag::UP_STAIR), Dice::roll(std::max(floor.width * floor.height / 4000, 1), 3), 3)) {
+    if (!alloc_stairs(creature, terrains.get_terrain_id(TerrainTag::UP_STAIR), Dice::roll(std::max(floor.width * floor.height / 4000, 1), 3), 3, edge_up_stairs)) {
         dd_ptr->why = _("上り階段生成に失敗", "Failed to generate up stairs.");
         return false;
     }
 
-    // ポータル配置処理（1/3の確率で1～2個配置）
+    // ポータルは「どちらの辺へ寄せるか」の意味を持たないので従来どおりフロア全体へ置く。
     if (one_in_(3)) {
         const auto portal_num = randint1(2);
         if (!alloc_stairs(creature, terrains.get_terrain_id(TerrainTag::PORTAL), portal_num, 3)) {
@@ -330,12 +351,14 @@ static bool switch_making_floor(CreatureEntity &creature, DungeonData *dd_ptr, c
         const auto &floor = *creature.get_floor();
         build_maze_vault(creature, { floor.height / 2 - 1, floor.width / 2 - 1 }, { floor.height - 4, floor.width - 4 }, false);
         const auto &terrains = TerrainList::get_instance();
-        if (!alloc_stairs(creature, terrains.get_terrain_id(TerrainTag::DOWN_STAIR), rand_range(2, 3), 3)) {
+        const auto edge_down_stairs = decide_polarized_stair_edge(dungeon);
+        const auto edge_up_stairs = edge_down_stairs ? tl::make_optional(get_opposite_edge(*edge_down_stairs)) : tl::nullopt;
+        if (!alloc_stairs(creature, terrains.get_terrain_id(TerrainTag::DOWN_STAIR), rand_range(2, 3), 3, edge_down_stairs)) {
             dd_ptr->why = _("迷宮ダンジョンの下り階段生成に失敗", "Failed to alloc up stairs in maze dungeon.");
             return false;
         }
 
-        if (!alloc_stairs(creature, terrains.get_terrain_id(TerrainTag::UP_STAIR), 1, 3)) {
+        if (!alloc_stairs(creature, terrains.get_terrain_id(TerrainTag::UP_STAIR), 1, 3, edge_up_stairs)) {
             dd_ptr->why = _("迷宮ダンジョンの上り階段生成に失敗", "Failed to alloc down stairs in maze dungeon.");
             return false;
         }

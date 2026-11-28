@@ -42,5 +42,8 @@ enum class DungeonFeatureType {
     VESTIGE,
     NO_TUNNEL,
     VANISH_STAIRS,
+    ARTIFICIAL_RIVER,
+    ARTIFICIAL,
+    POLARIZED_STAIRS,
     MAX,
 };

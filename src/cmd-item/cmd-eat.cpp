@@ -534,6 +534,25 @@ static bool exe_eat_charge_of_magic_device(CreatureEntity &creature, ItemEntity 
 }
 
 /*!
+ * @brief 食事のインシデントを記録する
+ * @param creature クリーチャーへの参照
+ * @param item 食べたオブジェクト
+ */
+static void record_eating_incident(CreatureEntity &creature, const ItemEntity &item)
+{
+    creature.plus_incident_tree("EAT", 1);
+
+    // 死体を食べた場合は詳細情報を記録
+    if (item.bi_key.tval() == ItemKindType::MONSTER_REMAINS && item.bi_key.sval() == SV_CORPSE) {
+        const auto incident_key = fmt::format("EAT/CORPSE/{}/{}/{}",
+            static_cast<int>(item.bi_key.tval()),
+            item.bi_key.sval().value_or(0),
+            item.pval);
+        creature.plus_incident_tree(incident_key, 1);
+    }
+}
+
+/*!
  * @brief 食料を食べるコマンドのサブルーチン
  * @param i_idx 食べるオブジェクトの所持品ID
  */
@@ -601,12 +620,14 @@ void exe_eat_food(CreatureEntity &creature, INVENTORY_IDX i_idx)
 
     auto food_type = CreatureRace(&creature).food();
 
-    /* Balrogs change humanoid corpses to energy */
-    if (food_type == PlayerRaceFoodType::CORPSE) {
+    // バルログ・悪魔系は人間の死体を燃やして精力に換える。上流の CORPSE (死体を捧げる) は
+    // 本作では MONSTER_REMAINS に改名しており、CORPSE は動物種族の「死体を食べる」の意味なので注意
+    if (food_type == PlayerRaceFoodType::MONSTER_REMAINS) {
         if (item->is_corpse() && item->get_monrace().is_human()) {
             const auto item_name = describe_flavor(creature, *item, (OD_OMIT_PREFIX | OD_NAME_ONLY));
             msg_print(_("{}は燃え上り灰になった。精力を吸収した気がする。", "{} is burnt to ashes.  You absorb its vitality!"), str_upcase_first(item_name));
             (void)set_food(creature, PY_FOOD_MAX - 1);
+            record_eating_incident(creature, *item);
             vary_item(creature, i_idx, -1);
             return;
         }
@@ -670,16 +691,7 @@ void exe_eat_food(CreatureEntity &creature, INVENTORY_IDX i_idx)
     };
     dur.set_flags(flags_iaf);
 
-    creature.plus_incident_tree("EAT", 1);
-
-    // 死体を食べた場合は詳細情報を記録
-    if (item->bi_key.tval() == ItemKindType::MONSTER_REMAINS && item->bi_key.sval() == SV_CORPSE) {
-        auto incident_key = fmt::format("EAT/CORPSE/{}/{}/{}",
-            static_cast<int>(item->bi_key.tval()),
-            item->bi_key.sval().value_or(0),
-            item->pval);
-        creature.plus_incident_tree(incident_key, 1);
-    }
+    record_eating_incident(creature, *item);
 
     vary_item(creature, i_idx, -1);
 }

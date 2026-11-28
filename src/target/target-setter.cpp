@@ -9,6 +9,7 @@
 #include "game-option/input-options.h"
 #include "io/cursor.h"
 #include "io/input-context.h"
+#include "io/input-intent.h"
 #include "io/input-key-requester.h"
 #include "io/screen-util.h"
 #include "main/sound-of-music.h"
@@ -597,8 +598,42 @@ void TargetSetter::sweep_target_grids()
 /*
  * Handle "target" and "look".
  */
+/*!
+ * @brief 座標で指定された意図 (3D 表示のクリックなど) からターゲットを決める (#9296)
+ * @details 見えていて狙えるモンスターがいればそのモンスター、いなければその場所をターゲットにする
+ */
+static tl::optional<Target> decide_target_from_intent(CreatureEntity &creature, target_type mode)
+{
+    if (any_bits(mode, TARGET_LOOK)) {
+        return tl::nullopt;
+    }
+
+    const auto pos = take_point_intent(PointIntentPurpose::TARGET);
+    if (!pos) {
+        return tl::nullopt;
+    }
+
+    const auto &floor = *creature.get_floor();
+    if (!floor.contains(*pos, FloorBoundary::OUTER_WALL_INCLUSIVE)) {
+        return Target::none();
+    }
+
+    const auto &grid = floor.get_grid(*pos);
+    if (grid.has_monster() && target_able(creature, grid.m_idx)) {
+        health_track(creature, grid.m_idx);
+        return Target::create_monster_target(creature, grid.m_idx);
+    }
+
+    return Target::create_grid_target(creature, *pos);
+}
+
 Target target_set(CreatureEntity &creature, target_type mode)
 {
+    if (auto target = decide_target_from_intent(creature, mode); target) {
+        Target::set_last_target(*target);
+        return *target;
+    }
+
     TargetSetter ts(creature, mode);
     ts.sweep_target_grids();
     prt("", 0, 0);

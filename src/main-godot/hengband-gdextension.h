@@ -23,6 +23,7 @@
 #include <godot_cpp/classes/thread.hpp>
 #include <godot_cpp/core/class_db.hpp>
 #include <godot_cpp/variant/array.hpp>
+#include <godot_cpp/variant/color.hpp>
 
 /// ターミナル数（メイン + サブウィンドウ最大8）
 static constexpr int HENGBAND_TERM_COUNT = 8;
@@ -83,6 +84,10 @@ public:
 
     /// ゲームスレッドが起動済みかどうかを返す（WM_CLOSE_REQUEST 判定用）
     bool is_game_started() const;
+    /// 日本語版のビルドか (タイトル画面で news_j.txt / news.txt を選ぶ)
+    static bool is_japanese();
+    /// ゲームのバージョンの表記 (例: "Bakabakaband 0.0.4.0-Alpha")。タイトル画面に出す
+    static godot::String get_version_string();
 
     /// lib/save/ 内のセーブファイルをスキャンしてキャラクタ情報の配列を返す
     /// @param lib_path lib/ ディレクトリの絶対パス
@@ -105,6 +110,93 @@ public:
     ///       stat_top_str/int/wis/dex/con/chr
     godot::Dictionary get_player_status();
 
+    /// 座標・方向で指定する入力 (#9296)。地図を見ていてコマンドを受け付けるときだけ送り、送ったら true
+    /// travel_to: (x, y) へトラベルする / target_grid: (x, y) をターゲットにする
+    /// (見えていて狙えるモンスターがいればそのモンスター、いなければその場所)
+    /// walk: 方向 (テンキー配置の 1-9、5 を除く) へ 1 歩歩く
+    /// いずれもキー配置 (keymap) を通さずに元祖のコマンドを送る
+    bool travel_to(int x, int y);
+    bool target_grid(int x, int y);
+    /// travel_to / target_grid で積んだ座標が、まだゲームに取り出されていないか (確認用)
+    bool has_pending_point_intent() const;
+    bool walk(int dir);
+
+    /// ステータス画面のダンプ (C コマンドの画面、キャラクタダンプの先頭と同じ内容) を作るか (既定は無効)。
+    /// 有効な間はゲームターンが進むたびに画面外の端末へ描いて作り直す
+    void set_character_sheet_enabled(bool enabled);
+
+    /// ステータス画面のダンプを返す (無ければ空)
+    /// キー: version, width (桁数), text (PackedStringArray、ダンプの各行), lines (Array[Dictionary{
+    ///   cols: PackedInt32Array (桁), widths: PackedByteArray (占める桁数 1/2), chars: PackedStringArray,
+    ///   colors: PackedByteArray (端末の色の番号)}])。lines は空白以外の文字だけを持つ
+    godot::Dictionary get_character_sheet();
+
+    /// 持ち物・装備・メッセージのウィンドウ用のデータを作るか (既定は無効)
+    void set_item_windows_enabled(bool enabled);
+
+    /// 持ち物と装備を返す (無ければ空)
+    /// キー: version, total_weight, weight_limit (1/10 ポンド単位), total_weight_text, weight_limit_text (端末版と同じ表記),
+    ///       pack (Array[Dictionary{slot, label, name, count, weight, weight_text, color, symbol_color, symbol, tval, recharging}]),
+    ///       equipment (Array[Dictionary{slot, label, slot_name, can_equip, item (上と同じ Dictionary、空なら null)}])
+    /// color / symbol_color は端末の色 (get_term_color() で Color にする)
+    godot::Dictionary get_inventory();
+
+    /// 直近のメッセージを返す (無ければ空)。キー: version, messages (PackedStringArray、古い順、最大 200 件)
+    godot::Dictionary get_messages();
+
+    /// 表示用のゲームイベント (#9295) の受け取りを有効/無効にする。既定は無効
+    /// 有効な間、毎フレーム game_events(Array[Dictionary]) シグナルで古い順に渡す。
+    /// 各 Dictionary: type (ViewEventType: 1=MELEE 2=PROJECTION 3=DAMAGE 4=DEATH
+    ///   5=MOVE 6=TELEPORT 7=APPEAR 8=DISAPPEAR), actor / target ({id, is_player, has_pos, x, y}),
+    ///   MELEE: hit, method / DAMAGE: value /
+    ///   PROJECTION: attribute, radius, is_beam, is_breath, path (x,y,...), area (x,y,距離,...)
+    /// MOVE 系はワールドスナップショットの差から作るので、set_world_snapshot_enabled(true) も要る。
+    /// actor.pos が移動先、target.pos が移動元
+    void set_game_events_enabled(bool enabled);
+    bool is_game_events_enabled() const;
+
+    /// 画面の状態を返す (#9294)
+    /// キー: version, state (ScreenState: 0=NO_GAME 1=MAP 2=MAP_WITH_PROMPT 3=TARGETING
+    ///       4=OVERLAY_MENU 5=FULLSCREEN_TEXT), input_kind (InputKind の値、不明なら -1),
+    ///       icky_depth, prompt (String), has_cursor, cursor_x, cursor_y (TARGETING のときのフロア座標),
+    ///       overlay_x, overlay_y, overlay_w, overlay_h (地図の上に重ねている一覧などの範囲。端末の桁・行で、
+    ///       1 行目を除く。重ねていなければ overlay_w = 0),
+    ///       target_path (PackedInt32Array: x, y, x, y, ... ターゲットの選択中のプレイヤーからカーソルへの射線。
+    ///       見るコマンド・場所の指定・それ以外では空), target_path_blocked (最後のマスが記憶している壁などか),
+    ///       target_path_creature_index (射線上で最初に見えているクリーチャーのマスの添字。無ければ -1)
+    godot::Dictionary get_screen_state();
+
+    /// ワールドスナップショット (観測可能ワールドモデル) の作成を有効/無効にする。既定は無効
+    void set_world_snapshot_enabled(bool enabled);
+    bool is_world_snapshot_enabled() const;
+
+    /// 最新のワールドスナップショットを Dictionary で返す (無ければ空)
+    /// キー: version, floor_version, full (= true), width, height, dungeon_id, dun_level, is_wild_mode,
+    ///       player_x, player_y, player_light_radius, player_blind, player_hallucinated,
+    ///       terrain (PackedInt32Array, 未知は -1), shapes (PackedByteArray, ObservedTerrainShape),
+    ///       flags (PackedByteArray, ObservedGridFlag), symbols (PackedByteArray, 1 グリッド 4 バイト),
+    ///       object_tvals (PackedByteArray, いちばん上の床アイテムの種別。無い・幻覚中は 0),
+    ///       creatures (Array[Dictionary{id, m_idx, x, y, race_id, health, flags, symbol, symbol_color, light_radius}])
+    /// グリッドの配列は行優先 (index = y * width + x)。creatures は常に全体
+    godot::Dictionary get_world_snapshot();
+
+    /// since_version より後に変わったグリッドだけを返す (#9293)
+    /// full = false のときは indices (PackedInt32Array, 行優先の添字) と同じ並びで terrain / shapes /
+    /// flags / symbols を持つ。since_version が floor_version より前 (階の移動など) なら
+    /// get_world_snapshot() と同じ全体 (full = true) を返す
+    godot::Dictionary get_world_snapshot_changes(int64_t since_version);
+
+    /// 全地形の一覧を返す (#9297、見た目の定義を地形のタグで書くため)。ゲーム開始前は空
+    /// 各要素: {id, tag, name, shape (ObservedTerrainShape), symbol (定義上の文字), symbol_color}
+    godot::Array get_terrain_catalog();
+
+    /// 端末の色 (TERM_COLOR) を Godot の Color にする (ビルボードの文字の色用)
+    godot::Color get_term_color(int color_idx) const;
+
+    /// 検証モード: 差分で作った結果をフロア全体から作った結果と毎回突き合わせ、食い違いを printerr する
+    void set_world_snapshot_verify(bool verify);
+    int64_t get_world_snapshot_verify_mismatches() const;
+
 protected:
     static void _bind_methods();
 
@@ -126,6 +218,17 @@ private:
 
     /// player_status_changed シグナル発行用: 最後に確認したスナップショットバージョン
     uint64_t last_status_version_{ 0 };
+
+    /// world_snapshot_changed シグナル発行用: 最後に確認したワールドスナップショットの版
+    uint64_t last_world_version_{ 0 };
+
+    /// screen_state_changed シグナル発行用: 最後に確認した画面の状態の版
+    uint64_t last_screen_state_version_{ 0 };
+
+    /// inventory_changed / messages_changed シグナル発行用
+    uint64_t last_inventory_version_{ 0 };
+    uint64_t last_sheet_version_{ 0 };
+    uint64_t last_message_version_{ 0 };
 
     /// タイルセットを読み込む（GDScript から呼び出す）
     /// @param graf_name  ANGBAND_GRAF に設定する値 ("old" / "new" / "ne2")

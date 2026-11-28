@@ -5,6 +5,7 @@
 #include "game-option/keymap-directory-getter.h"
 #include "io/cursor.h"
 #include "io/input-context.h"
+#include "io/input-intent.h"
 #include "io/input-key-acceptor.h"
 #include "io/screen-util.h"
 #include "system/building-type-definition.h"
@@ -200,6 +201,16 @@ void tgt_pt_info::move_to_symbol(CreatureEntity &creature)
  */
 tl::optional<Pos2D> point_target(CreatureEntity &creature)
 {
+    // 座標で指定された意図 (3D 表示のクリックなど) があれば、尋ねずにそこを選ぶ (#9296)
+    if (const auto pos_intent = take_point_intent(PointIntentPurpose::POINT); pos_intent) {
+        const auto &floor = *creature.get_floor();
+        if (!floor.contains(*pos_intent, FloorBoundary::OUTER_WALL_INCLUSIVE) || creature.is_located_at(*pos_intent)) {
+            return tl::nullopt;
+        }
+
+        return *pos_intent;
+    }
+
     tgt_pt_info info;
     info.pos = creature.get_position();
     if (expand_list) {

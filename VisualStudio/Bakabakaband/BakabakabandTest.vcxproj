@@ -67,8 +67,13 @@
     <ClCompile Include="..\..\src\test\view\test-display-lore.cpp" />
     <ClCompile Include="..\..\src\test\view\test-map-info-cache.cpp" />
     <ClCompile Include="..\..\src\test\view\test-map-terrain-visibility.cpp" />
+    <ClCompile Include="..\..\src\test\view\test-observable-inventory.cpp" />
+    <ClCompile Include="..\..\src\test\view\test-observable-world.cpp" />
+    <ClCompile Include="..\..\src\test\view\test-screen-state.cpp" />
+    <ClCompile Include="..\..\src\test\view\test-view-event.cpp" />
     <ClCompile Include="..\..\src\test\window\test-overview-map-cache.cpp" />
     <ClCompile Include="..\..\src\test\window\test-shrunk-overview-map.cpp" />
+    <ClCompile Include="..\..\src\test\world\test-world-revive-turn.cpp" />
     <ClCompile Include="..\..\src\test\autopick\test-autopick-editor-util.cpp" />
     <ClCompile Include="..\..\src\test\bot\test-bot-json-output.cpp" />
     <ClCompile Include="..\..\src\test\game-option\test-runtime-arguments.cpp" />
@@ -88,6 +93,7 @@
     <ClCompile Include="..\..\src\test\info-reader\test-wilderness-reader.cpp" />
     <ClCompile Include="..\..\src\test\io\test-condition-expression.cpp" />
     <ClCompile Include="..\..\src\test\io\test-input-context.cpp" />
+    <ClCompile Include="..\..\src\test\io\test-input-intent.cpp" />
     <ClCompile Include="..\..\src\test\io\test-interpret-pref-file.cpp" />
     <ClCompile Include="..\..\src\test\io\test-macro-configurations-store.cpp" />
     <ClCompile Include="..\..\src\test\io\test-pref-file-expressor.cpp" />
@@ -103,7 +109,9 @@
     <ClCompile Include="..\..\src\test\mspell\mspell-attack\test-mspell-ball.cpp" />
     <ClCompile Include="..\..\src\test\mspell\test-mspell-projection-table.cpp" />
     <ClCompile Include="..\..\src\test\monster-floor\test-monster-corpse.cpp" />
+    <ClCompile Include="..\..\src\test\object\test-magic-device-shatter.cpp" />
     <ClCompile Include="..\..\src\test\floor\test-floor-events.cpp" />
+    <ClCompile Include="..\..\src\test\floor\test-object-allocator.cpp" />
     <ClCompile Include="..\..\src\test\object-enchant\test-item-feeling.cpp" />
     <ClCompile Include="..\..\src\test\object-use\quaff\test-quaff-execution.cpp" />
     <ClCompile Include="..\..\src\test\object\test-object-info.cpp" />

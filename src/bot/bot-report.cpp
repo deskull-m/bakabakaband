@@ -13,7 +13,9 @@
 #include <cstdio>
 #include <fmt/format.h>
 
-#ifdef WINDOWS
+// Godot (GDExtension) 版は main-win/ をリンクしないので attach_console() が無い。
+// 標準エラー出力は Godot のコンソール (Godot_*_console.exe) に出るので、繋ぎ直しは要らない
+#if defined(WINDOWS) && !defined(USE_GODOT)
 #include "main-win/main-win-utils.h"
 #endif
 
@@ -25,7 +27,7 @@
  */
 void prepare_bot_report()
 {
-#ifdef WINDOWS
+#if defined(WINDOWS) && !defined(USE_GODOT)
     attach_console();
 #endif
 }

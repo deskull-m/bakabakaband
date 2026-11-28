@@ -165,11 +165,7 @@ void init_dungeon_quests(CreatureEntity &creature)
 void init_turn(CreatureEntity &creature)
 {
     auto &world = AngbandWorld::get_instance();
-    if (CreatureRace(&creature).life() == PlayerRaceLifeType::UNDEAD) {
-        world.game_turn = (TURNS_PER_TICK * 3 * TOWN_DAWN) / 4 + 1;
-    } else {
-        world.game_turn = 1;
-    }
+    world.game_turn = AngbandWorld::get_start_turn_in_day(CreatureRace(&creature).life() == PlayerRaceLifeType::UNDEAD);
 
     InnerGameData::get_instance().init_turn_limit();
     world.dungeon_turn = 1;

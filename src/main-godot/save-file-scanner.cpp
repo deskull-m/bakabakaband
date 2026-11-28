@@ -4,602 +4,464 @@
  *
  * Hengband のロードインフラ (グローバル状態・シングルトン) を一切使わず、
  * バイナリを直接読み出す自己完結実装。
- * 対象は SAVEFILE_VERSION >= 4 のセーブファイル (変愚蛮怒 2.x 以降)。
+ *
+ * 読む順序は src/load/ の実ローダ (load.cpp の rd_savefile() 以降) と完全に揃えてある。
+ * 各関数のコメントに対応するローダの関数名を書いてあるので、セーブデータの形式を変えたときは
+ * そちらと合わせて直すこと (ここだけ古いままだと、タイトル画面のロード一覧のレベル・種族・職業が狂う)。
+ *
+ * 馬鹿馬鹿蛮怒のローダは Hengband の版番号 (h_older_than) ではなくセーブデータのフォーマット版
+ * (SAVEFILE_VERSION) だけで分岐する。セーブデータに書かれるゲームの版は 0.0.x なので、
+ * Hengband 2.x の版番号で分岐すると全て「古い版」と判定されて読み違える (#9320)。
  */
 
 #include "main-godot/save-file-scanner.h"
+#include "save/save-header-reserved.h"
+#include "system/angband-version.h"
 
-#include <algorithm>
-#include <filesystem>
 #include <fstream>
+#include <iterator>
 #include <stdexcept>
 #include <string>
+#include <system_error>
 #include <vector>
-
-#ifdef _WIN32
-#include <windows.h>
-#endif
 
 namespace hengband_godot {
 
-// ---------------------------------------------------------------------------
-// パスエンコーディング変換ユーティリティ
-// ---------------------------------------------------------------------------
-
-#ifdef _WIN32
-/// Windows UTF-16 wstring → UTF-8 std::string
-static std::string wstring_to_utf8(const std::wstring &wstr)
-{
-    if (wstr.empty()) {
-        return {};
-    }
-    const int len = ::WideCharToMultiByte(
-        CP_UTF8, 0, wstr.c_str(), -1, nullptr, 0, nullptr, nullptr);
-    if (len <= 1) {
-        return {};
-    }
-    std::string result(len - 1, '\0');
-    ::WideCharToMultiByte(
-        CP_UTF8, 0, wstr.c_str(), -1, result.data(), len, nullptr, nullptr);
-    return result;
-}
-#else
-static std::string wstring_to_utf8(const std::wstring &wstr)
-{
-    // 非 Windows: wchar_t は UTF-32 (Linux) / UTF-16 (Mac)
-    // filesystem::path::u8string() が正しく動作する前提
-    (void)wstr;
-    return {};
-}
-#endif
-
 namespace {
 
-    // ---------------------------------------------------------------------------
-    // 最小 XOR ストリームリーダ
-    // ---------------------------------------------------------------------------
+    // ローダが参照する定数 (ゲーム本体のヘッダに依存しないよう値を写す)
+    //! ヘッダの長さ: 名前の長さ (1) + 名前 + ゲームの版 (4) + XOR キー (1) + 予約領域 (12) + セーブデータの版 (4)
+    constexpr auto HEADER_SIZE = 1 + VARIANT_NAME.length() + 4 + 1 + 12 + 4;
+    constexpr auto RAND_DEG = 63; //!< 乱数状態の語数 (z-rand.h)
+    constexpr auto RNG_STATE_WORDS = 4; //!< xoshiro 4x32 の状態語数
+    constexpr auto MAX_WINDOW_ENTITIES = 8; //!< オプションのウィンドウ数 (option-flags.h)
+    constexpr auto A_MAX = 6; //!< 能力値の数
+    constexpr auto PY_MAX_LEVEL = 60; //!< 最大プレイヤーレベル (system-variables.h)
+    constexpr auto OLD_PY_MAX_LEVEL = 50; //!< セーブ版 48 以前の最大プレイヤーレベル (birth-loader.cpp)
+    constexpr auto MIN_RANDOM_QUEST = 40; //!< ランダムクエストの最初の ID (QuestId::RANDOM_QUEST1)
+    constexpr auto TIMED_EFFECT_COUNT_UNTIL_V59 = 56; //!< セーブ版 53〜59 の時限効果の件数 (creature-common-loader.cpp)
+    constexpr int16_t QUEST_STATUS_TAKEN = 1;
+    constexpr int16_t QUEST_STATUS_COMPLETED = 2;
 
-    struct SaveReader {
-        const std::vector<uint8_t> &data;
-        size_t pos = 0;
-        uint8_t xor_byte = 0;
-
-        // ゲームバージョン (セーブファイルヘッダから読み取る)
-        uint8_t ver_major = 0;
-        uint8_t ver_minor = 0;
-        uint8_t ver_patch = 0;
-        uint8_t ver_extra = 0;
-        // セーブファイルフォーマットバージョン (SAVEFILE_VERSION)
-        uint32_t sv_version = 0;
-
-        explicit SaveReader(const std::vector<uint8_t> &d)
-            : data(d)
+    /*!
+     * @brief 最小の XOR ストリームリーダ (load-util.cpp の rd_byte() 等と同じ復号)
+     */
+    class SaveReader {
+    public:
+        explicit SaveReader(const std::vector<uint8_t> &data)
+            : data(data)
         {
         }
 
-        // ---- 基本読み取り ----
+        CharacterSummary scan()
+        {
+            CharacterSummary result;
+            if (!this->read_header()) {
+                return result;
+            }
+
+            result.valid = true;
+            result.savefile_version = this->sv_version;
+            result.play_time_sec = this->play_time_sec;
+            try {
+                this->read_body(result);
+            } catch (const std::exception &) {
+                // 途中で読めなくなった項目は -1 のまま返す (ロード自体は試せるよう一覧には残す)
+            }
+
+            return result;
+        }
+
+    private:
+        const std::vector<uint8_t> &data;
+        size_t pos = 0;
+        uint8_t xor_byte = 0;
+        uint32_t sv_version = 0;
+        int64_t play_time_sec = -1;
 
         uint8_t raw_byte()
         {
-            if (pos >= data.size()) {
+            if (this->pos >= this->data.size()) {
                 throw std::runtime_error("SaveReader: unexpected EOF");
             }
-            return data[pos++];
+
+            return this->data[this->pos++];
         }
 
         uint8_t rd_byte()
         {
-            const uint8_t c = raw_byte();
-            const uint8_t v = c ^ xor_byte;
-            xor_byte = c;
+            const auto c = this->raw_byte();
+            const auto v = static_cast<uint8_t>(c ^ this->xor_byte);
+            this->xor_byte = c;
             return v;
         }
 
         uint16_t rd_u16b()
         {
-            const uint16_t lo = rd_byte();
-            const uint16_t hi = rd_byte();
-            return lo | (hi << 8);
+            const uint16_t lo = this->rd_byte();
+            const uint16_t hi = this->rd_byte();
+            return static_cast<uint16_t>(lo | (hi << 8));
         }
 
         int16_t rd_s16b()
         {
-            return static_cast<int16_t>(rd_u16b());
+            return static_cast<int16_t>(this->rd_u16b());
         }
 
         uint32_t rd_u32b()
         {
-            uint32_t v = rd_byte();
-            v |= static_cast<uint32_t>(rd_byte()) << 8;
-            v |= static_cast<uint32_t>(rd_byte()) << 16;
-            v |= static_cast<uint32_t>(rd_byte()) << 24;
+            uint32_t v = this->rd_byte();
+            v |= static_cast<uint32_t>(this->rd_byte()) << 8;
+            v |= static_cast<uint32_t>(this->rd_byte()) << 16;
+            v |= static_cast<uint32_t>(this->rd_byte()) << 24;
             return v;
         }
 
         int32_t rd_s32b()
         {
-            return static_cast<int32_t>(rd_u32b());
+            return static_cast<int32_t>(this->rd_u32b());
         }
 
-        void strip(int n)
+        void strip(size_t n)
         {
             while (n-- > 0) {
-                rd_byte();
+                this->rd_byte();
             }
         }
 
         std::string rd_string()
         {
             std::string s;
-            for (;;) {
-                const auto ch = static_cast<char>(rd_byte());
+            while (true) {
+                const auto ch = static_cast<char>(this->rd_byte());
                 if (ch == '\0') {
-                    break;
+                    return s;
                 }
+
                 s.push_back(ch);
             }
-            return s;
         }
 
-        // FlagGroup: 先頭 2 バイトがデータサイズ、続いてそのバイト数をスキップ
-        void skip_flaggroup()
+        //! rd_FlagGroup(): 先頭 2 バイトがデータのバイト数
+        void skip_flag_group()
         {
-            const uint16_t sz = rd_byte() | (static_cast<uint16_t>(rd_byte()) << 8);
-            strip(sz);
+            this->strip(this->rd_u16b());
         }
 
-        // ---- バージョン判定ヘルパ ----
-
-        bool sv_older_than(uint32_t v) const
+        bool older_than(uint32_t version) const
         {
-            return sv_version < v;
+            return this->sv_version < version;
         }
 
-        bool h_older_than(int maj, int min, int pat, int ext = 0) const
-        {
-            if (ver_major != maj) {
-                return ver_major < maj;
-            }
-            if (ver_minor != min) {
-                return ver_minor < min;
-            }
-            if (ver_patch != pat) {
-                return ver_patch < pat;
-            }
-            return ver_extra < ext;
-        }
-
-        // ---- セクション単位スキップ ----
-
-        // 14 バイト生ヘッダ読み込み + XOR ストリーム開始設定
+        //! info-loader.cpp の rd_version_info()
         bool read_header()
         {
-            // 最低 14 バイト必要
-            if (data.size() < 14) {
+            // ヘッダの途中で切れたファイルは読まない (読み進めると例外になり、一覧から外せない)
+            if (this->data.size() < HEADER_SIZE) {
                 return false;
             }
 
-            // Byte 0: variant_length (生バイト, XOR=0)
-            const uint8_t vlen = raw_byte();
-            if (vlen != 8) { // "Hengband" の長さ
+            // 名前がこのゲームのもの ("Bakabaka", セーブの writer と同じ VARIANT_NAME) か
+            if (this->raw_byte() != VARIANT_NAME.length()) {
                 return false;
             }
 
-            // Bytes 1-8: "Hengband" (生バイト、検証省略)
-            for (int i = 0; i < 8; ++i) {
-                raw_byte();
+            for (const auto ch : VARIANT_NAME) {
+                if (this->raw_byte() != static_cast<uint8_t>(ch)) {
+                    return false;
+                }
             }
 
-            // XOR をリセットして生バイトとしてバージョンを読む
-            xor_byte = 0;
-            ver_major = rd_byte();
-            ver_minor = rd_byte();
-            ver_patch = rd_byte();
-            ver_extra = rd_byte();
+            this->xor_byte = 0;
+            this->strip(4); // ゲームの版 (major, minor, patch, extra)
+            const auto key_pos = this->pos;
+            this->strip(1); // XOR キー
+            this->xor_byte = this->data[key_pos];
 
-            // Byte 13: XOR キー (rd_byte で読むと xor_byte が更新される)
-            rd_byte();
+            // 旧 sf_system / sf_when / sf_lives / sf_saves の予約領域 (save-header-reserved.h)
+            const auto play_time = this->rd_u32b();
+            this->strip(4); // 保存した時刻
+            const auto reserved_flags = this->rd_u16b();
+            this->strip(2);
+            if ((reserved_flags & SAVE_HEADER_HAS_PLAY_TIME) != 0) {
+                this->play_time_sec = play_time;
+            }
 
-            // data[13] が実際の XOR キー
-            xor_byte = data[13];
-
-            // XOR ストリーム開始 (Byte 14 から)
-            // sf_system(4) + sf_when(4) + sf_lives(2) + sf_saves(2) = 12 バイト
-            strip(12);
-
-            // SAVEFILE_VERSION
-            sv_version = rd_u32b();
+            this->sv_version = this->rd_u32b();
             return true;
         }
 
-        void skip_dummy3()
+        void read_body(CharacterSummary &result)
         {
-            strip(3);
+            this->strip(3); // rd_dummy3()
+            result.character_encoding = this->rd_byte(); // rd_system_info()
+            this->skip_randomizer();
+            this->skip_options();
+            this->skip_messages();
+            this->skip_lore();
+            this->skip_baseitem_records();
+            this->skip_town_quest();
+            this->skip_artifacts();
+            this->read_player_world(result);
         }
 
+        //! info-loader.cpp の rd_randomizer()
         void skip_randomizer()
         {
-            // strip 4: 旧乱数状態の残骸
-            strip(4);
-            // xso::rng32 (xoshiro 4x32) の state (4 × u32 = 16 バイト)
-            strip(4 * 4);
-            // 残り RAND_DEG(=63) - 4 個を strip (4 × 59 = 236 バイト)
-            strip(4 * 59);
+            this->strip(4);
+            this->strip(4 * RAND_DEG); // 乱数状態 RNG_STATE_WORDS 語 + 残りの RAND_DEG - RNG_STATE_WORDS 語
+            static_assert(RNG_STATE_WORDS <= RAND_DEG);
         }
 
+        //! option-loader.cpp の rd_options()
         void skip_options()
         {
-            strip(16);
-            // delay_factor: version >= 9 → s32、それ以前 → byte
-            if (!sv_older_than(9)) {
-                strip(4);
-            } else {
-                strip(1);
-            }
-            strip(1); // hitpoint_warn
-            if (!h_older_than(1, 7, 0, 0)) {
-                strip(1); // mana_warn
-            }
-            strip(2); // c (u16、チートフラグ等)
-            strip(1 + 1 + 2); // autosave_l, autosave_t, autosave_freq
-            strip(8 * 4 + 8 * 4); // flag[8] + mask[8]
-            // h_older_than(0,4,5): load_zangband_options → 現代版は不要、スキップなし
-            strip(8 * 4); // savefile_window_flags: 8 × FlagGroup_bytes(4)
-            strip(8 * 4); // savefile_window_masks: 8 × FlagGroup_bytes(4)
+            this->strip(16);
+            this->strip(this->older_than(12) ? 1 : 4); // delay_factor
+            this->strip(1 + 1); // hitpoint_warn, mana_warn
+            this->strip(2); // cheat 等のフラグ
+            this->strip(1 + 1 + 2); // autosave_l, autosave_t, autosave_freq
+            this->strip(4 * MAX_WINDOW_ENTITIES * 2); // flag[], mask[]
+            this->strip(4 * MAX_WINDOW_ENTITIES * 2); // ウィンドウの flags / masks (各 4 バイト)
         }
 
+        //! info-loader.cpp の rd_messages() / display-messages.cpp の rd_message_history()
         void skip_messages()
         {
-            if (!sv_older_than(22)) {
-                // rd_message_history: count(s32) + count × (string + s16)
-                const int32_t count = rd_s32b();
-                for (int32_t i = 0; i < count; ++i) {
-                    rd_string();
-                    strip(2); // repeat_count (s16)
-                }
-            } else {
-                // 旧形式: count + count × string
-                uint32_t count;
-                if (!h_older_than(2, 2, 0, 75)) {
-                    count = rd_u32b();
-                } else {
-                    count = rd_u16b();
-                }
-                for (uint32_t i = 0; i < count; ++i) {
-                    rd_string();
-                }
-            }
-        }
-
-        void skip_system_info()
-        {
-            strip(1); // loading_character_encoding
-            skip_randomizer();
-            skip_options();
-            skip_messages();
-        }
-
-        void skip_one_lore()
-        {
-            strip(2 + 2 + 2); // r_sights, r_deaths, r_pkills
-            if (!h_older_than(1, 7, 0, 5)) {
-                strip(2); // r_akills
-            }
-            strip(2); // r_tkills
-            strip(1 + 1); // r_wake, r_ignore
-            strip(1); // r_can_evolve
-            if (sv_older_than(6)) {
-                strip(1); // r_xtra2 (廃止フラグ)
-            }
-            strip(1 + 1 + 1 + 1); // r_drop_gold, r_drop_item, strip1, r_cast_spell
-            strip(4); // r_blows[0..3]
-
-            if (sv_older_than(21)) {
-                // 旧フラグマイグレーション経路
-                /*const auto r_flags1 =*/rd_u32b();
-                /*const auto r_flags2 =*/rd_u32b();
-                /*const auto r_flags3 =*/rd_u32b();
-
-                // migrate_old_resistance_and_ability_flags
-                if (sv_older_than(3)) {
-                    strip(4 + 4 + 4); // f4, f5, f6
-                    if (!h_older_than(1, 5, 0, 3)) {
-                        strip(4); // r_flagsr
-                    }
-                } else if (sv_older_than(14)) {
-                    strip(4); // r_flagsr
-                    skip_flaggroup(); // r_ability_flags
-                } else {
-                    skip_flaggroup(); // r_resistance_flags
-                    skip_flaggroup(); // r_ability_flags
+            if (!this->older_than(27)) {
+                const auto count = this->rd_s32b();
+                for (auto i = 0; i < count; i++) {
+                    this->rd_string();
+                    this->strip(2); // 繰り返し回数
                 }
 
-                if (!sv_older_than(10)) {
-                    skip_flaggroup();
-                } // r_aura_flags
-                if (!sv_older_than(11)) {
-                    skip_flaggroup();
-                } // r_behavior_flags
-                if (!sv_older_than(12)) {
-                    skip_flaggroup();
-                } // r_kind_flags
-                if (!sv_older_than(18)) {
-                    skip_flaggroup();
-                } // r_drop_flags
-                if (!sv_older_than(19)) {
-                    skip_flaggroup();
-                } // r_feature_flags
-
-                // sv_version 20 のみ r_special_flags が存在
-                if (!sv_older_than(20)) {
-                    skip_flaggroup(); // r_special_flags
-                }
-                // migrate_old_misc_flags: sv_version >= 20 → FlagGroup 読み込み
-                if (!sv_older_than(20)) {
-                    skip_flaggroup(); // r_misc_flags
-                }
-            } else {
-                // 現代版 (sv_version >= 21): 9 個の FlagGroup
-                for (int i = 0; i < 9; ++i) {
-                    skip_flaggroup();
-                }
-            }
-
-            strip(1 + 2); // max_num, floor_id
-            if (!sv_older_than(4)) {
-                strip(2 + 4); // defeat_level, defeat_time
-            }
-            strip(1); // パディング
-        }
-
-        void skip_lore()
-        {
-            const uint16_t count = rd_u16b();
-            for (uint16_t i = 0; i < count; ++i) {
-                skip_one_lore();
-            }
-        }
-
-        void skip_items()
-        {
-            const uint16_t count = rd_u16b();
-            strip(count); // aware/tried フラグ 1 バイト × count
-        }
-
-        void skip_quests()
-        {
-            if (h_older_than(2, 1, 3)) {
                 return;
             }
 
-            rd_u16b(); // load_town: max_towns_load
+            const auto count = this->rd_u32b();
+            for (auto i = 0U; i < count; i++) {
+                this->rd_string();
+            }
+        }
 
-            const uint16_t max_quests = rd_u16b();
-            uint8_t max_rquests;
-            if (!h_older_than(1, 0, 7)) {
-                max_rquests = rd_byte();
-            } else {
-                max_rquests = 10;
+        //! lore-loader.cpp の load_lore() / rd_lore()
+        void skip_lore()
+        {
+            if (this->older_than(21)) {
+                // 旧形式の思い出フラグの移行は版ごとの分岐が多いので読まない (レベル等は不明のまま)
+                throw std::runtime_error("SaveReader: lore before savefile version 21 is not supported");
             }
 
-            // MIN_RANDOM_QUEST = 40 (QuestId::RANDOM_QUEST1)
-            constexpr int MIN_RANDOM_QUEST = 40;
-
-            for (uint16_t i = 0; i < max_quests; ++i) {
-                uint16_t quest_id_val;
-                if (!sv_older_than(17)) {
-                    quest_id_val = static_cast<uint16_t>(rd_s16b());
-                } else {
-                    quest_id_val = i;
+            const auto count = this->rd_u16b();
+            for (auto i = 0; i < count; i++) {
+                this->strip(2 * 5); // 目撃数, r_deaths, r_pkills, r_akills, r_tkills
+                this->strip(1 + 1 + 1); // r_wake, r_ignore, r_can_evolve
+                if (this->older_than(8)) {
+                    this->strip(1);
                 }
 
-                // load_quest_completion
-                const int16_t status = rd_s16b();
-                strip(2); // level
-                if (!h_older_than(1, 0, 6)) {
-                    strip(1);
-                } // complev
-                if (!h_older_than(2, 1, 2, 2)) {
-                    strip(4);
-                } // comptime
+                this->strip(1 + 1 + 1 + 1); // r_drop_gold, r_drop_item, 未使用, r_cast_spell
+                this->strip(4); // r_blows[4]
+                const auto flag_groups = this->older_than(33) ? 9 : 10; // 33 から r_era_flags
+                for (auto j = 0; j < flag_groups; j++) {
+                    this->skip_flag_group();
+                }
 
-                // クエスト進行中かどうか判定 (QuestStatusType: TAKEN=1, COMPLETED=2)
-                bool is_running = (status == 1); // TAKEN
-                is_running |= (!h_older_than(0, 3, 14) && (status == 2)); // COMPLETED
-                is_running |= (!h_older_than(1, 0, 7) && quest_id_val >= MIN_RANDOM_QUEST && quest_id_val <= static_cast<uint16_t>(MIN_RANDOM_QUEST + max_rquests));
+                this->strip(this->older_than(26) ? 1 : 2); // mob_num (旧 max_num)
+                this->strip(2); // floor_id
+                if (!this->older_than(4)) {
+                    this->strip(2 + 4); // defeat_level, defeat_time
+                }
 
+                this->strip(1);
+            }
+        }
+
+        //! item-loader-base.cpp の ItemLoaderBase::load_item()
+        void skip_baseitem_records()
+        {
+            this->strip(this->rd_u16b());
+        }
+
+        //! load.cpp の load_town_quest() (quest-loader.cpp / world-loader.cpp)
+        void skip_town_quest()
+        {
+            this->strip(2); // load_town(): 町の数
+            const auto max_quests = this->rd_u16b();
+            const auto max_rquests = this->rd_byte();
+            for (auto i = 0; i < max_quests; i++) {
+                const auto quest_id = this->older_than(17) ? i : this->rd_s16b();
+                const auto status = this->rd_s16b();
+                this->strip(2 + 1 + 4); // level, complev, comptime
+                auto is_running = (status == QUEST_STATUS_TAKEN) || (status == QUEST_STATUS_COMPLETED);
+                is_running |= (quest_id >= MIN_RANDOM_QUEST) && (quest_id <= MIN_RANDOM_QUEST + max_rquests);
                 if (!is_running) {
                     continue;
                 }
 
-                // load_quest_details
-                strip(2 + 2 + 2 + 2 + 2 + 1); // cur_num, max_num, type, r_idx, reward_fa_id, flags
-                if (!h_older_than(0, 3, 11)) {
-                    strip(1); // dungeon
-                }
+                this->strip(2 * 5 + 1); // cur_num, max_num, type, r_idx, 報酬, flags
+                this->strip(1); // dungeon
             }
 
-            // load_wilderness_info
-            strip(4 + 4); // player x, y
-            if (!h_older_than(0, 3, 7)) {
-                strip(1 + 1); // wild_mode, ambush_flag
+            this->strip(4 + 4 + 1 + 1); // load_wilderness_info(): x, y, wild_mode, ambush_flag
+            const auto wild_x = this->rd_s32b(); // analyze_wilderness()
+            const auto wild_y = this->rd_s32b();
+            if ((wild_x < 0) || (wild_y < 0) || (wild_x > 10000) || (wild_y > 10000)) {
+                throw std::runtime_error("SaveReader: invalid wilderness size");
             }
 
-            // analyze_wilderness
-            const int32_t wild_x = rd_s32b();
-            const int32_t wild_y = rd_s32b();
-            if (wild_x > 0 && wild_y > 0 && wild_x < 10000 && wild_y < 10000) {
-                strip(wild_x * wild_y * 4); // seeds
-            }
+            this->strip(static_cast<size_t>(wild_x) * static_cast<size_t>(wild_y) * 4);
         }
 
+        //! item-loader-base.cpp の ItemLoaderBase::load_artifact()
         void skip_artifacts()
         {
-            const uint16_t count = rd_u16b();
-            for (uint16_t i = 0; i < count; ++i) {
-                strip(1); // is_generated (bool)
-                if (!h_older_than(1, 5, 0, 0)) {
-                    strip(2); // floor_id
-                } else {
-                    strip(3); // 旧形式
-                }
-            }
+            const auto count = this->rd_u16b();
+            this->strip(static_cast<size_t>(count) * (1 + 2)); // is_generated, floor_id
         }
 
-        void skip_load_quick_start()
+        //! load.cpp の load_player_world() のうち rd_base_info() の性格まで
+        void read_player_world(CharacterSummary &result)
         {
-            if (h_older_than(1, 0, 13)) {
+            if (!this->older_than(4)) {
+                this->strip(4); // rd_total_play_time(): 全キャラクターの合計 (死亡時にだけ足される)
+            }
+
+            if (!this->older_than(9)) {
+                this->strip(4); // rd_world_info(): 時空崩壊度
+            }
+
+            if (!this->older_than(4)) {
+                this->skip_flag_group(); // rd_winner_class(): 勝利した職業
+                this->skip_flag_group(); // 引退した職業
+            }
+
+            if (!this->older_than(32)) {
+                const auto alliance_count = this->rd_u16b(); // rd_alliance_base_power()
+                this->strip(static_cast<size_t>(alliance_count) * (2 + 8 + 8));
+            }
+
+            // player-info-loader.cpp の rd_base_info()
+            if (this->older_than(51)) {
+                result.char_name = this->rd_string();
+            } else {
+                this->read_creature_common(result);
+            }
+
+            this->rd_string(); // died_from
+            this->rd_string(); // last_message
+            this->skip_quick_start();
+            for (auto i = 0; i < 4; i++) {
+                this->rd_string(); // 生い立ち
+            }
+
+            if (this->older_than(54)) {
+                result.prace = this->rd_byte();
+                result.pclass = this->rd_byte();
+            }
+
+            result.ppersonality = this->rd_byte();
+        }
+
+        //! creature-common-loader.cpp の rd_creature_common() (セーブ版 51 以降)
+        void read_creature_common(CharacterSummary &result)
+        {
+            result.char_name = this->rd_string();
+            this->strip(2 + 2); // y, x
+            this->strip(4 * 3 + 4); // hp, maxhp, max_maxhp, dealt_damage
+            this->strip(2 * 3); // speed, energy_need, ac
+            this->strip(4 + 4); // exp, au
+            this->strip(2 + 2); // ht, wt
+            this->strip(2 + 2); // target
+            if (this->older_than(53)) {
+                this->strip(2 * 7);
+            } else {
+                const auto count = this->older_than(60) ? TIMED_EFFECT_COUNT_UNTIL_V59 : this->rd_u16b();
+                this->strip(static_cast<size_t>(count) * 2);
+            }
+
+            this->strip(static_cast<size_t>(this->rd_u16b()) * 2); // 材質
+            if (this->older_than(52)) {
                 return;
             }
-            strip(1 + 1 + 1 + 1 + 1 + 1); // psex, prace, pclass, ppersonality, realm1, realm2
-            strip(2 + 2 + 2 + 2); // age, ht, wt, sc (s16 各)
-            strip(4); // au (s32)
-            strip(6 * 2); // stat_max[A_MAX=6] (s16 各)
-            strip(6 * 2); // stat_max_max[A_MAX=6]
-            // [セーブ ver49] 最大プレイヤーレベル拡張 (50→60) に伴い hp_table の件数が変動。
-            // birth-loader.cpp:38-42 と同じ版分岐を保持しないと後続フィールドが
-            // (60-50)*2 = 20 バイトずれて quick_ok 判定が壊れる。
-            const int hp_count = sv_older_than(49) ? 50 : 60;
-            strip(hp_count * 2); // hp_table[PY_MAX_LEVEL] (s16 各)
-            strip(2); // chaos_patron
-            strip(8 * 2); // vir_types[8]
-            for (int i = 0; i < 4; ++i) {
-                rd_string(); // history[4] (可変長)
+
+            result.level = this->rd_s16b();
+            this->strip(2); // age
+            this->strip(4 + 4 + 4 + 4); // hp_frac, max_mp, current_mp, current_mp_frac
+            this->strip(4 + 4 + 4); // max_exp, max_max_exp, exp_frac
+            this->strip(2 * A_MAX * 3); // stat_max, stat_max_max, stat_cur
+            if (this->older_than(54)) {
+                return;
             }
-            strip(1 + 1); // strip1 パディング + quick_ok
+
+            result.prace = this->rd_s16b();
+            result.pclass = this->rd_s16b();
         }
 
-        CharacterSummary scan()
+        //! birth-loader.cpp の load_quick_start()
+        void skip_quick_start()
         {
-            CharacterSummary result;
-
-            if (!read_header()) {
-                return result;
+            this->strip(6); // psex, prace, pclass, ppersonality, realm1, realm2
+            this->strip(4); // death_count
+            this->strip(2 * 4); // age, ht, wt, prestige
+            this->strip(4); // au
+            this->strip(2 * A_MAX * 2); // stat_max, stat_max_max
+            this->strip(2 * (this->older_than(49) ? OLD_PY_MAX_LEVEL : PY_MAX_LEVEL)); // hp_table
+            this->strip(2); // patron
+            this->strip(2 * 8); // 徳の種類
+            for (auto i = 0; i < 4; i++) {
+                this->rd_string(); // 生い立ち
             }
 
-            skip_dummy3();
-            skip_system_info();
-            skip_lore();
-            skip_items();
-            skip_quests();
-            skip_artifacts();
-
-            // rd_total_play_time (sv_version >= 4)
-            if (!sv_older_than(4)) {
-                strip(4);
-            }
-
-            // rd_winner_class (sv_version >= 4)
-            if (!sv_older_than(4)) {
-                skip_flaggroup(); // sf_winner
-                skip_flaggroup(); // sf_retired
-            }
-
-            // rd_base_info
-            result.char_name = rd_string(); // キャラクタ名
-            rd_string(); // died_from
-            if (!h_older_than(1, 7, 0, 1)) {
-                rd_string(); // last_message
-            }
-            skip_load_quick_start();
-            for (int i = 0; i < 4; ++i) {
-                rd_string(); // history[4]
-            }
-
-            result.prace = rd_byte();
-            result.pclass = rd_byte();
-            result.ppersonality = rd_byte();
-            strip(1); // psex
-
-            // rd_realms: 常に 2 バイト (クラス問わず)
-            strip(2);
-            strip(1); // strip_bytes(1) in rd_base_info
-
-            // rd_base_info 残り: hit_dice(1) + expfact(2) + age(2) + ht(2) + wt(2)
-            strip(1 + 2 + 2 + 2 + 2);
-
-            // rd_player_info → rd_player_status → rd_base_status + strip(24) + au
-            // rd_base_status: 3 × A_MAX(=6) × 2 = 36 バイト
-            strip(36);
-            strip(24); // strip_bytes(24)
-            strip(4); // au (s32)
-
-            // rd_experience: max_exp(4) + max_max_exp(4) + exp(4) + exp_frac(4 or 2) + lev(2)
-            strip(4); // max_exp
-            if (!h_older_than(1, 5, 4, 1)) {
-                strip(4); // max_max_exp
-            }
-            strip(4); // exp
-            if (!h_older_than(1, 7, 0, 3)) {
-                strip(4); // exp_frac (u32)
-            } else {
-                strip(2); // exp_frac 旧形式 (u16)
-            }
-            result.level = rd_s16b(); // lev
-
-            result.valid = true;
-            return result;
+            this->strip(1 + 1); // 未使用, quick_ok
         }
     };
 
-} // anonymous namespace
+} // namespace
 
-// ---------------------------------------------------------------------------
-// 公開インタフェース
-// ---------------------------------------------------------------------------
+CharacterSummary scan_save_data(const std::vector<uint8_t> &data)
+{
+    return SaveReader(data).scan();
+}
 
 std::vector<CharacterSummary> scan_save_files(const std::filesystem::path &save_dir)
 {
     std::vector<CharacterSummary> results;
-
     std::error_code ec;
-    if (!std::filesystem::exists(save_dir, ec) || !std::filesystem::is_directory(save_dir, ec)) {
+    if (!std::filesystem::is_directory(save_dir, ec)) {
         return results;
     }
 
     for (const auto &entry : std::filesystem::directory_iterator(save_dir, ec)) {
-        if (!entry.is_regular_file()) {
+        if (!entry.is_regular_file(ec)) {
             continue;
         }
 
-        const auto &path = entry.path();
-
-        // ファイル内容をメモリに読み込む
-        std::ifstream f(path, std::ios::binary);
+        std::ifstream f(entry.path(), std::ios::binary);
         if (!f) {
             continue;
         }
-        const std::vector<uint8_t> file_data(
-            (std::istreambuf_iterator<char>(f)),
-            std::istreambuf_iterator<char>());
-        f.close();
 
+        // 開けた後の読み込みの失敗 (例外) はそのファイルだけ飛ばし、ほかのセーブデータは一覧に残す
+        std::vector<uint8_t> file_data;
         try {
-            SaveReader reader(file_data);
-            auto summary = reader.scan();
-            if (summary.valid) {
-                summary.path = path;
-                // ファイル名を UTF-8 に変換してキャラクタ名に使う
-                // (Win32 API 経由で正確に UTF-16 → UTF-8 変換)
-#ifdef _WIN32
-                summary.char_name = wstring_to_utf8(path.stem().wstring());
-#else
-                const auto stem_u8 = path.stem().u8string();
-                summary.char_name = std::string(
-                    reinterpret_cast<const char *>(stem_u8.c_str()),
-                    stem_u8.size());
-#endif
-                results.push_back(std::move(summary));
-            }
-        } catch (...) {
-            // 解析失敗は無視して次のファイルへ
+            file_data.assign(std::istreambuf_iterator<char>(f), std::istreambuf_iterator<char>());
+        } catch (const std::exception &) {
+            continue;
         }
-    }
 
-    // レベル降順でソート
-    std::sort(results.begin(), results.end(), [](const CharacterSummary &a, const CharacterSummary &b) {
-        return a.level > b.level;
-    });
+        if (f.bad()) {
+            continue;
+        }
+
+        auto summary = scan_save_data(file_data);
+        if (!summary.valid) {
+            continue;
+        }
+
+        summary.path = entry.path();
+        results.push_back(std::move(summary));
+    }
 
     return results;
 }

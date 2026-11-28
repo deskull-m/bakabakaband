@@ -5,10 +5,14 @@
 
 #include "main-godot/godot-term-hooks.h"
 #include "main-godot/godot-audio-manager.h"
+#include "main-godot/godot-character-sheet.h"
 #include "main-godot/godot-input-handler.h"
+#include "main-godot/godot-player-items.h"
 #include "main-godot/godot-player-status.h"
+#include "main-godot/godot-screen-state.h"
 #include "main-godot/godot-terminal.h"
 #include "main-godot/godot-tile-layer.h"
+#include "main-godot/godot-world-snapshot.h"
 
 #include "core/visuals-reseter.h"
 #include "game-option/runtime-arguments.h"
@@ -22,9 +26,12 @@
 #include "term/z-term.h"
 #include "window/main-window-util.h"
 
+#include <algorithm>
 #include <atomic>
 #include <chrono>
+#include <mutex>
 #include <thread>
+#include <vector>
 
 using namespace hengband_godot;
 
@@ -33,6 +40,17 @@ static GodotInputHandler *s_input_handler = nullptr;
 /// term_data_godot 配列への参照（TERM_XTRA_REACT / resize_hook 用）
 static term_data_godot *s_term_data = nullptr;
 static int s_term_count = 0;
+
+namespace {
+/// Godot スレッドから頼まれた端末の大きさの変更 (ゲームスレッドが入力待ちの合間に反映する)
+struct PendingTermResize {
+    term_type *term;
+    int cols;
+    int rows;
+};
+std::mutex s_resize_mutex;
+std::vector<PendingTermResize> s_pending_resizes;
+}
 
 /// Godot スレッドからタイルモードが変更されたことをゲームスレッドに伝えるフラグ
 /// apply_tile_mode() がセット → TERM_XTRA_REACT がクリアして reset_visuals() を呼ぶ
@@ -51,6 +69,39 @@ void set_term_data_array(term_data_godot *arr, int count)
 {
     s_term_data = arr;
     s_term_count = count;
+}
+
+void request_term_resize(term_type *term, int cols, int rows)
+{
+    const std::scoped_lock lock(s_resize_mutex);
+    const auto it = std::find_if(s_pending_resizes.begin(), s_pending_resizes.end(), [term](const auto &r) { return r.term == term; });
+    if (it != s_pending_resizes.end()) {
+        it->cols = cols;
+        it->rows = rows;
+        return;
+    }
+    s_pending_resizes.push_back({ term, cols, rows });
+}
+
+bool apply_pending_term_resizes()
+{
+    std::vector<PendingTermResize> pending;
+    {
+        const std::scoped_lock lock(s_resize_mutex);
+        pending.swap(s_pending_resizes);
+    }
+    for (const auto &resize : pending) {
+        auto *saved = game_term;
+        term_activate(resize.term);
+        term_resize(resize.cols, resize.rows);
+        // term_resize() は再描画を予約するだけで、入力待ちの間は term_fresh() が呼ばれない。
+        // Godot 側の端末は大きさを変えると中身が空になるので、ここで描き直す (開いている一覧が消えないように)
+        term_redraw();
+        if (saved) {
+            term_activate(saved);
+        }
+    }
+    return !pending.empty();
 }
 
 // ---------------------------------------------------------------------------
@@ -156,6 +207,10 @@ errr term_xtra_godot(int n, int v)
         // メインターミナル (term 0) の更新時にプレイヤーステータスを同期する
         if (game_term == term_screen) {
             player_status_push(PlayerType::get_instance_ptr());
+            world_snapshot_push(PlayerType::get_instance_ptr());
+            player_items_push(PlayerType::get_instance_ptr());
+            character_sheet_push(PlayerType::get_instance_ptr());
+            screen_state_update();
         }
         return 0;
     }
@@ -178,9 +233,24 @@ errr term_xtra_godot(int n, int v)
         return 0;
     case TERM_XTRA_EVENT:
         // v=true: キーが来るまで待機、v=false: ノンブロッキング
+        // Godot スレッドから頼まれた端末の大きさの変更は、ここ (ゲームスレッド) で反映する。
+        // Godot スレッドで直接 term_resize() すると、ゲームスレッドが画面を読んでいる最中に配列が変わりうる
+        apply_pending_term_resizes();
         if (s_input_handler) {
             if (v) {
-                s_input_handler->wait_for_key(); // Phase 4: 即時リターン
+                // 入力待ちに入る直前は、待っている入力の文脈が定まっている (#9294)
+                screen_state_update();
+                // ステータスパネル (C の画面のダンプ) は入力待ちの間にも作り直す。
+                // 表示を開いたときなど、画面の更新が無くても待ちの途中で作れるよう短い間隔で起きる
+                character_sheet_push(PlayerType::get_instance_ptr());
+                while (!s_input_handler->wait_for_key_for(100)) {
+                    if (apply_pending_term_resizes()) {
+                        screen_state_update();
+                    }
+                    if (character_sheet_is_refresh_requested()) {
+                        character_sheet_push(PlayerType::get_instance_ptr());
+                    }
+                }
             } else {
                 s_input_handler->poll_events();
             }

@@ -10,6 +10,9 @@
 #include <godot_cpp/classes/image.hpp>
 #include <godot_cpp/classes/image_texture.hpp>
 #include <godot_cpp/core/class_db.hpp>
+#include <godot_cpp/variant/dictionary.hpp>
+#include <godot_cpp/variant/packed_byte_array.hpp>
+#include <godot_cpp/variant/packed_int32_array.hpp>
 #include <godot_cpp/variant/rect2.hpp>
 #include <godot_cpp/variant/vector2.hpp>
 
@@ -196,12 +199,18 @@ void GodotTerminal::draw_cursor_rect(int x, int y)
 
 void GodotTerminal::set_grid_size(int cols, int rows)
 {
-    if (cols == cols_ && rows == rows_) {
-        return;
+    // 桁数・行数と配列は _draw() (メインスレッド) や draw_text() (ゲームスレッド) が同じ錠の下で読むので、
+    // 変更も錠の下でまとめて行う
+    {
+        std::lock_guard<std::mutex> lock(grid_mutex_);
+        if (cols == cols_ && rows == rows_) {
+            return;
+        }
+        cols_ = cols;
+        rows_ = rows;
+        grid_.assign(static_cast<size_t>(cols_ * rows_), CellData{});
     }
-    cols_ = cols;
-    rows_ = rows;
-    resize_grid();
+    content_version_.fetch_add(1);
     call_deferred("queue_redraw");
 }
 
@@ -209,6 +218,7 @@ void GodotTerminal::set_cell_size(int w, int h)
 {
     cell_w_ = w;
     cell_h_ = h;
+    content_version_.fetch_add(1);
     call_deferred("queue_redraw");
 }
 
@@ -227,19 +237,20 @@ void GodotTerminal::set_terminal_font(const Ref<Font> &font, int font_size)
         cell_h_ = std::max(1, static_cast<int>(std::round(ascent + descent)));
     }
 
+    content_version_.fetch_add(1);
     call_deferred("queue_redraw");
 }
 
 void GodotTerminal::draw_text(int x, int y, int n, uint8_t color, const char *str)
 {
-    if (y < 0 || y >= rows_ || x < 0) {
-        return;
-    }
-
     // n はセル数（半角=1、全角=2）。UTF-8文字列を全て変換してからセル数で打ち切る
     const auto codepoints = utf8_to_codepoints(str, 512);
     {
         std::lock_guard<std::mutex> lock(grid_mutex_);
+        // 行の範囲は錠の下で調べる (調べた後に大きさが変わると範囲外を書きうる)
+        if (y < 0 || y >= rows_ || x < 0) {
+            return;
+        }
         int col = x;
         const int col_end = x + n; // セル上限
         for (const char32_t cp : codepoints) {
@@ -261,22 +272,24 @@ void GodotTerminal::draw_text(int x, int y, int n, uint8_t color, const char *st
             ++col;
         }
     }
+    content_version_.fetch_add(1);
     call_deferred("queue_redraw");
 }
 
 void GodotTerminal::wipe_cells(int x, int y, int n)
 {
-    if (y < 0 || y >= rows_) {
-        return;
-    }
     {
         std::lock_guard<std::mutex> lock(grid_mutex_);
+        if (y < 0 || y >= rows_ || x < 0) {
+            return;
+        }
         for (int i = 0; i < n && (x + i) < cols_; ++i) {
             auto &cell = grid_[cell_idx(x + i, y)];
             cell.ch = U' ';
             cell.color = 0; // TERM_DARK
         }
     }
+    content_version_.fetch_add(1);
     call_deferred("queue_redraw");
 }
 
@@ -285,12 +298,14 @@ void GodotTerminal::set_cursor(int x, int y)
     cursor_x_ = x;
     cursor_y_ = y;
     cursor_visible_ = true;
+    content_version_.fetch_add(1);
     call_deferred("queue_redraw");
 }
 
 void GodotTerminal::hide_cursor()
 {
     cursor_visible_ = false;
+    content_version_.fetch_add(1);
     call_deferred("queue_redraw");
 }
 
@@ -304,6 +319,7 @@ void GodotTerminal::clear_all()
         }
     }
     cursor_visible_ = false;
+    content_version_.fetch_add(1);
     call_deferred("queue_redraw");
 }
 
@@ -311,6 +327,59 @@ void GodotTerminal::resize_grid()
 {
     std::lock_guard<std::mutex> lock(grid_mutex_);
     grid_.assign(static_cast<size_t>(cols_ * rows_), CellData{});
+}
+
+godot::String GodotTerminal::get_row_text(int y) const
+{
+    std::lock_guard<std::mutex> lock(grid_mutex_);
+    if (y < 0 || y >= rows_) {
+        return godot::String();
+    }
+
+    godot::String text;
+    for (int x = 0; x < cols_; ++x) {
+        const auto ch = grid_[static_cast<size_t>(y * cols_ + x)].ch;
+        // 全角文字の右半分は 0 で埋められている
+        if (ch != 0) {
+            text += godot::String::chr(ch);
+        }
+    }
+    return text;
+}
+
+godot::Dictionary GodotTerminal::get_region(int x, int y, int w, int h) const
+{
+    godot::PackedInt32Array chars;
+    godot::PackedByteArray colors;
+    w = std::max(0, w);
+    h = std::max(0, h);
+    chars.resize(w * h);
+    colors.resize(w * h);
+    {
+        std::lock_guard<std::mutex> lock(grid_mutex_);
+        for (int dy = 0; dy < h; ++dy) {
+            for (int dx = 0; dx < w; ++dx) {
+                const auto i = dy * w + dx;
+                const auto cx = x + dx;
+                const auto cy = y + dy;
+                if (cx < 0 || cx >= cols_ || cy < 0 || cy >= rows_) {
+                    chars.set(i, U' ');
+                    colors.set(i, 0);
+                    continue;
+                }
+                const auto &cell = grid_[static_cast<size_t>(cy * cols_ + cx)];
+                chars.set(i, static_cast<int32_t>(cell.ch));
+                colors.set(i, cell.color);
+            }
+        }
+    }
+
+    godot::Dictionary d;
+    d["cols"] = w;
+    d["rows"] = h;
+    d["chars"] = chars;
+    d["colors"] = colors;
+    return d;
 }
 
 void GodotTerminal::_bind_methods()
@@ -328,6 +397,9 @@ void GodotTerminal::_bind_methods()
     ClassDB::bind_method(D_METHOD("clear_all"),
         &GodotTerminal::clear_all);
     ClassDB::bind_method(D_METHOD("get_cols"), &GodotTerminal::get_cols);
+    ClassDB::bind_method(D_METHOD("get_row_text", "y"), &GodotTerminal::get_row_text);
+    ClassDB::bind_method(D_METHOD("get_region", "x", "y", "w", "h"), &GodotTerminal::get_region);
+    ClassDB::bind_method(D_METHOD("get_content_version"), &GodotTerminal::get_content_version);
     ClassDB::bind_method(D_METHOD("get_rows"), &GodotTerminal::get_rows);
     ClassDB::bind_method(D_METHOD("get_cell_width"), &GodotTerminal::get_cell_width);
     ClassDB::bind_method(D_METHOD("get_cell_height"), &GodotTerminal::get_cell_height);
