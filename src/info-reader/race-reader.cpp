@@ -583,10 +583,14 @@ ParseErrorType RaceReader::set_mon_artifacts(nlohmann::json &artifact_data, Monr
         return ParseErrorType::NONE;
     }
     if (!artifact_data.is_array()) {
-        return ParseErrorType::TOO_FEW_ARGUMENTS;
+        return ParseErrorType::INVALID_TYPE;
     }
 
     for (const auto &artifact : artifact_data) {
+        if (!artifact.is_object()) {
+            return artifact.is_null() ? ParseErrorType::TOO_FEW_ARGUMENTS : ParseErrorType::INVALID_TYPE;
+        }
+
         FixedArtifactId fa_id{};
         if (const auto err = info_set_integer(artifact["drop_artifact_id"], fa_id, true, Range(0, 1024)); !err) {
             return err.error();
@@ -701,10 +705,14 @@ ParseErrorType RaceReader::set_mon_escorts(nlohmann::json &escort_data, MonraceD
         return ParseErrorType::NONE;
     }
     if (!escort_data.is_array()) {
-        return ParseErrorType::TOO_FEW_ARGUMENTS;
+        return ParseErrorType::INVALID_TYPE;
     }
 
     for (const auto &escort : escort_data) {
+        if (!escort.is_object()) {
+            return escort.is_null() ? ParseErrorType::TOO_FEW_ARGUMENTS : ParseErrorType::INVALID_TYPE;
+        }
+
         MonraceId monrace_id{};
         if (const auto err = info_set_integer(escort["escorts_id"], monrace_id, true, Range(0, 8192)); !err) {
             return err.error();
@@ -733,10 +741,14 @@ ParseErrorType RaceReader::set_mon_blows(nlohmann::json &blow_data, MonraceDefin
         return ParseErrorType::NONE;
     }
     if (!blow_data.is_array()) {
-        return ParseErrorType::TOO_FEW_ARGUMENTS;
+        return ParseErrorType::INVALID_TYPE;
     }
 
     for (const auto &blow : blow_data) {
+        if (!blow.is_object()) {
+            return blow.is_null() ? ParseErrorType::TOO_FEW_ARGUMENTS : ParseErrorType::INVALID_TYPE;
+        }
+
         const auto &blow_method = get_json_value(blow, "method");
         const auto &blow_effect = get_json_value(blow, "effect");
         if (blow_method.is_null() || blow_effect.is_null()) {
@@ -1056,7 +1068,7 @@ ParseErrorType RaceReader::set_mon_skills(const nlohmann::json &skill_data, Monr
         return ParseErrorType::NONE;
     }
     if (!skill_data.is_object()) {
-        return ParseErrorType::TOO_FEW_ARGUMENTS;
+        return ParseErrorType::INVALID_TYPE;
     }
 
     const auto &prob = skill_data["probability"];
@@ -1147,6 +1159,10 @@ ParseErrorType RaceReader::set_mon_final_summons(const nlohmann::json &summon_da
     }
 
     for (auto &summon_item : summon_data) {
+        if (!summon_item.is_object()) {
+            return summon_item.is_null() ? ParseErrorType::TOO_FEW_ARGUMENTS : ParseErrorType::INVALID_TYPE;
+        }
+
         int id, probability, min_num, max_num, radius;
         if (const auto err = info_set_integer(summon_item["id"], id, true, Range(1, 9999)); !err) {
             return err.error();
@@ -1183,10 +1199,14 @@ ParseErrorType RaceReader::set_mon_message(const nlohmann::json &message_data, M
         return ParseErrorType::NONE;
     }
     if (!message_data.is_array()) {
-        return ParseErrorType::TOO_FEW_ARGUMENTS;
+        return ParseErrorType::INVALID_TYPE;
     }
 
     for (const auto &message : message_data) {
+        if (!message.is_object()) {
+            return message.is_null() ? ParseErrorType::TOO_FEW_ARGUMENTS : ParseErrorType::INVALID_TYPE;
+        }
+
         const auto action = info_read_token(message["action"], r_info_message_flags);
         if (!action) {
             return action.error();

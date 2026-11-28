@@ -298,7 +298,7 @@ QuestReader::QuestReader(const nlohmann::json &quest_data, QuestType &quest, Que
 ParseErrorType QuestReader::read() const
 {
     if (!this->quest_data.is_object()) {
-        return ParseErrorType::INVALID_TYPE;
+        return this->quest_data.is_null() ? ParseErrorType::TOO_FEW_ARGUMENTS : ParseErrorType::INVALID_TYPE;
     }
 
     if (const auto err = this->set_name(); !err) {
@@ -333,7 +333,7 @@ tl::expected<void, ParseErrorType> QuestReader::set_definition() const
 {
     const auto &definition = get_json_value(this->quest_data, "definition");
     if (!definition.is_object()) {
-        return tl::make_unexpected(ParseErrorType::TOO_FEW_ARGUMENTS);
+        return tl::make_unexpected(definition.is_null() ? ParseErrorType::TOO_FEW_ARGUMENTS : ParseErrorType::INVALID_TYPE);
     }
 
     auto &meta = this->fixed_map.metadata;

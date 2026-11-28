@@ -174,6 +174,10 @@ ParseErrorType MagicReader::set_realm_data(player_magic &magics_info) const
     }
 
     for (const auto &realm : realms_data) {
+        if (!realm.is_object()) {
+            return realm.is_null() ? ParseErrorType::TOO_FEW_ARGUMENTS : ParseErrorType::INVALID_TYPE;
+        }
+
         const auto realm_name = info_read_token(get_json_value(realm, "name"), realms_list);
         if (!realm_name) {
             return realm_name.error();
@@ -189,6 +193,10 @@ ParseErrorType MagicReader::set_realm_data(player_magic &magics_info) const
         }
 
         for (const auto &spell : spells_info_obj) {
+            if (!spell.is_object()) {
+                return spell.is_null() ? ParseErrorType::TOO_FEW_ARGUMENTS : ParseErrorType::INVALID_TYPE;
+            }
+
             if (const auto err = this->set_spell_data(spell, magics_info, realm_id); err != ParseErrorType::NONE) {
                 msg_print(_("呪文データ読込失敗。ID: '{}'。", "Failed to load spell data. ID: '{}'."), this->previous_id);
                 return err;
