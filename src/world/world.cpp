@@ -52,7 +52,7 @@ bool AngbandWorld::get_arena() const
  */
 bool AngbandWorld::is_daytime() const
 {
-    int a_day = TURNS_PER_TICK * TOWN_DAWN;
+    int a_day = TURNS_PER_DAY;
     return (this->game_turn % a_day) < (a_day / 2);
 }
 
@@ -63,7 +63,7 @@ bool AngbandWorld::is_daytime() const
  */
 std::tuple<int, int, int> AngbandWorld::extract_date_time(PlayerRaceType start_race) const
 {
-    const auto a_day = TURNS_PER_TICK * TOWN_DAWN;
+    const auto a_day = TURNS_PER_DAY;
     const auto turn_in_today = (this->game_turn + a_day / 4) % a_day;
     int day;
     switch (start_race) {
@@ -105,7 +105,7 @@ bool AngbandWorld::is_player_true_winner() const
 void AngbandWorld::pass_game_turn_by_stay()
 {
     const auto oldturn = this->game_turn;
-    this->game_turn = (this->game_turn / (TURNS_PER_TICK * TOWN_DAWN / 2) + 1) * (TURNS_PER_TICK * TOWN_DAWN / 2);
+    this->game_turn = (this->game_turn / (TURNS_PER_DAY / 2) + 1) * (TURNS_PER_DAY / 2);
     if (this->dungeon_turn >= this->dungeon_turn_limit) {
         return;
     }

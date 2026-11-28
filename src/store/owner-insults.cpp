@@ -28,7 +28,7 @@ int increase_insults(void)
     st_ptr->insult_cur = 0;
     st_ptr->good_buy = 0;
     st_ptr->bad_buy = 0;
-    st_ptr->store_open = current_world_ptr->game_turn + TURNS_PER_TICK * TOWN_DAWN / 8 + randint1(TURNS_PER_TICK * TOWN_DAWN / 8);
+    st_ptr->store_open = current_world_ptr->game_turn + TURNS_PER_DAY / 8 + randint1(TURNS_PER_DAY / 8);
     return TRUE;
 }
 
