@@ -86,7 +86,7 @@ public:
     bool is_game_started() const;
     /// 日本語版のビルドか (タイトル画面で news_j.txt / news.txt を選ぶ)
     static bool is_japanese();
-    /// ゲームのバージョンの表記 (例: "Bakabakaband 0.0.3.0-Alpha")。タイトル画面に出す
+    /// ゲームのバージョンの表記 (例: "Bakabakaband 0.0.4.0-Alpha")。タイトル画面に出す
     static godot::String get_version_string();
 
     /// lib/save/ 内のセーブファイルをスキャンしてキャラクタ情報の配列を返す
