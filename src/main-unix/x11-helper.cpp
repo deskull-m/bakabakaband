@@ -60,7 +60,7 @@
 
 #endif /* IsModifierKey */
 
-static bool gamma_table_ready = true;
+static bool gamma_table_ready = false;
 static int gamma_val = 0;
 
 /*
@@ -421,7 +421,7 @@ static void GetScaledRow(XImage *Im, int x, int y, int iw, int ow, unsigned long
                 sifrac -= ow;
                 getNextPix = true;
             } else {
-                getNextPix = true;
+                getNextPix = false;
             }
         }
     } else {
@@ -578,7 +578,7 @@ static void ScaleIcon(XImage *ImIn, XImage *ImOut, int x1, int y1, int x2, int y
                 sifrac -= oy;
                 getNextRow = true;
             } else {
-                getNextRow = true;
+                getNextRow = false;
             }
         }
     } else {
