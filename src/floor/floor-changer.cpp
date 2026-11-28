@@ -285,7 +285,7 @@ static void new_floor_allocation(CreatureEntity &creature, saved_floor_type *sf_
     auto alloc_chance = floor.get_dungeon_definition().additional_monster_spawn_chance;
     const auto &world = AngbandWorld::get_instance();
     while (tmp_last_visit > world.game_turn) {
-        tmp_last_visit -= TURNS_PER_TICK * TOWN_DAWN;
+        tmp_last_visit -= TURNS_PER_DAY;
     }
 
     GAME_TURN absence_ticks = (world.game_turn - tmp_last_visit) / TURNS_PER_TICK;

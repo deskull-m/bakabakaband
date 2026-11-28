@@ -173,5 +173,4 @@ void init_turn(CreatureEntity &creature)
 
     InnerGameData::get_instance().init_turn_limit();
     world.dungeon_turn = 1;
-    world.dungeon_turn_limit = TURNS_PER_TICK * TOWN_DAWN * (MAX_DAYS - 1) + TURNS_PER_TICK * TOWN_DAWN * 3 / 4;
 }
