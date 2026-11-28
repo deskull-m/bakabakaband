@@ -721,12 +721,13 @@ MonsterSpellResult spell_RF6_S_ANGEL(CreatureEntity &creature, POSITION y, POSIT
     }
 
     const auto is_blind = creature.is_blind();
+    const auto mon_to_player = (target_type == MONSTER_TO_PLAYER);
     if (count < 2) {
-        if (is_blind && count) {
+        if (is_blind && count && mon_to_player) {
             msg_print(_("何かが間近に現れた音がする。", "You hear something appear nearby."));
         }
     } else {
-        if (is_blind) {
+        if (is_blind && mon_to_player) {
             msg_print(_("多くのものが間近に現れた音がする。", "You hear many things appear nearby."));
         }
     }
@@ -769,7 +770,8 @@ MonsterSpellResult spell_RF6_S_DEMON(CreatureEntity &creature, POSITION y, POSIT
         count += summon_specific(creature, y, x, rlev, SUMMON_DEMON, PM_ALLOW_GROUP | PM_ALLIANCE_LIMIT, m_idx) ? 1 : 0;
     }
 
-    if (creature.is_blind() && count) {
+    const auto mon_to_player = (target_type == MONSTER_TO_PLAYER);
+    if (creature.is_blind() && count && mon_to_player) {
         msg_print(_("何かが間近に現れた音がする。", "You hear something appear nearby."));
     }
 
@@ -811,7 +813,8 @@ MonsterSpellResult spell_RF6_S_UNDEAD(CreatureEntity &creature, POSITION y, POSI
         count += summon_specific(creature, y, x, rlev, SUMMON_UNDEAD, PM_ALLOW_GROUP | PM_ALLIANCE_LIMIT, m_idx) ? 1 : 0;
     }
 
-    if (creature.is_blind() && count) {
+    const auto mon_to_player = (target_type == MONSTER_TO_PLAYER);
+    if (creature.is_blind() && count && mon_to_player) {
         msg_print(_("何かが間近に現れた音がする。", "You hear something appear nearby."));
     }
 
@@ -857,7 +860,7 @@ MonsterSpellResult spell_RF6_S_DRAGON(CreatureEntity &creature, POSITION y, POSI
         count += summon_specific(creature, y, x, rlev, SUMMON_DRAGON, (PM_ALLOW_GROUP | PM_ALLIANCE_LIMIT | monster_u_mode(floor, m_idx)), m_idx) ? 1 : 0;
     }
 
-    if (creature.is_blind() && count) {
+    if (creature.is_blind() && count && mon_to_player) {
         msg_print(_("何かが間近に現れた音がする。", "You hear something appear nearby."));
     }
 
@@ -1433,7 +1436,8 @@ MonsterSpellResult spell_RF6_S_WALL(CreatureEntity &creature, POSITION y, POSITI
         count += summon_specific(creature, y, x, rlev, SUMMON_WALL, PM_ALLOW_GROUP | PM_ALLIANCE_LIMIT, m_idx) ? 1 : 0;
     }
 
-    if (creature.is_blind() && count) {
+    const auto mon_to_player = (target_type == MONSTER_TO_PLAYER);
+    if (creature.is_blind() && count && mon_to_player) {
         msg_print(_("何かが間近に現れた音がする。", "You hear something appear nearby."));
     }
 
@@ -1475,7 +1479,8 @@ MonsterSpellResult spell_RF6_S_INSECT(CreatureEntity &creature, POSITION y, POSI
         count += summon_specific(creature, y, x, rlev, SUMMON_INSECT, PM_ALLOW_GROUP | PM_ALLIANCE_LIMIT, m_idx) ? 1 : 0;
     }
 
-    if (creature.is_blind() && count) {
+    const auto mon_to_player = (target_type == MONSTER_TO_PLAYER);
+    if (creature.is_blind() && count && mon_to_player) {
         msg_print(_("何かが間近に現れた音がする。", "You hear something appear nearby."));
     }
 
@@ -1516,7 +1521,8 @@ MonsterSpellResult spell_RF6_S_ROBOT(CreatureEntity &creature, POSITION y, POSIT
         count += summon_specific(creature, y, x, rlev, SUMMON_ROBOT, PM_ALLOW_GROUP | PM_ALLIANCE_LIMIT, m_idx) ? 1 : 0;
     }
 
-    if (creature.is_blind() && count) {
+    const auto mon_to_player = (target_type == MONSTER_TO_PLAYER);
+    if (creature.is_blind() && count && mon_to_player) {
         msg_print(_("何か機械的なものが間近に現れた音がする。", "You hear something mechanical appear nearby."));
     }
 
@@ -1557,7 +1563,8 @@ MonsterSpellResult spell_RF6_S_ELDRAZI(CreatureEntity &creature, POSITION y, POS
         count += summon_specific(creature, y, x, rlev, SUMMON_ELDRAZI, PM_ALLOW_GROUP | PM_ALLIANCE_LIMIT, m_idx) ? 1 : 0;
     }
 
-    if (creature.is_blind() && count) {
+    const auto mon_to_player = (target_type == MONSTER_TO_PLAYER);
+    if (creature.is_blind() && count && mon_to_player) {
         msg_print(_("何かが間近に現れた音がする。", "You hear something appear nearby."));
     }
 
