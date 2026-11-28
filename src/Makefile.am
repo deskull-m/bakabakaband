@@ -1757,6 +1757,7 @@ hengband_test_SOURCES = \
 	test/util/test-string-processor.cpp \
 	\
 	test/view/test-display-lore.cpp \
+	test/view/test-display-util.cpp \
 	test/view/test-map-info-cache.cpp \
 	test/view/test-map-terrain-visibility.cpp \
 	test/view/test-observable-inventory.cpp \
