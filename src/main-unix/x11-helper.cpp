@@ -23,6 +23,7 @@
 #include <X11/Xutil.h>
 #include <fmt/format.h>
 #include <math.h>
+#include <vector>
 
 /*
  * This file defines some "XImage" manipulation functions for X11.
@@ -337,11 +338,6 @@ XImage *ReadBMP(Display *dpy, char *Name)
 /* Code for smooth icon rescaling from Uwe Siems, Jan 2000 */
 /* ========================================================*/
 
-/*
- * to save ourselves some labour, define a maximum expected icon width here:
- */
-constexpr auto MAX_ICON_WIDTH = 32;
-
 /* some static variables for composing and decomposing pixel values into
  * red, green and blue values
  */
@@ -508,15 +504,16 @@ static void ScaleIcon(XImage *ImIn, XImage *ImOut, int x1, int y1, int x2, int y
     int xi, yi, si, sifrac, ci, cifrac, addWhole, addFrac;
 
     /* buffers for pixel rows: */
-    unsigned long prevRed[MAX_ICON_WIDTH];
-    unsigned long prevGreen[MAX_ICON_WIDTH];
-    unsigned long prevBlue[MAX_ICON_WIDTH];
-    unsigned long nextRed[MAX_ICON_WIDTH];
-    unsigned long nextGreen[MAX_ICON_WIDTH];
-    unsigned long nextBlue[MAX_ICON_WIDTH];
-    unsigned long tempRed[MAX_ICON_WIDTH];
-    unsigned long tempGreen[MAX_ICON_WIDTH];
-    unsigned long tempBlue[MAX_ICON_WIDTH];
+    // 出力の幅 (拡大したタイルの幅) の分だけ確保する。2 倍幅のタイルや大きなフォントでは 32 画素を超える
+    std::vector<unsigned long> prevRed(ox);
+    std::vector<unsigned long> prevGreen(ox);
+    std::vector<unsigned long> prevBlue(ox);
+    std::vector<unsigned long> nextRed(ox);
+    std::vector<unsigned long> nextGreen(ox);
+    std::vector<unsigned long> nextBlue(ox);
+    std::vector<unsigned long> tempRed(ox);
+    std::vector<unsigned long> tempGreen(ox);
+    std::vector<unsigned long> tempBlue(ox);
 
     bool getNextRow;
 
@@ -532,8 +529,8 @@ static void ScaleIcon(XImage *ImIn, XImage *ImOut, int x1, int y1, int x2, int y
     if (iy == oy) {
         /* no scaling needed vertically: */
         for (yi = 0; yi < oy; yi++) {
-            GetScaledRow(ImIn, x1, y1 + yi, ix, ox, tempRed, tempGreen, tempBlue);
-            PutRGBScan(ImOut, x2, y2 + yi, ox, div, tempRed, tempGreen, tempBlue);
+            GetScaledRow(ImIn, x1, y1 + yi, ix, ox, tempRed.data(), tempGreen.data(), tempBlue.data());
+            PutRGBScan(ImOut, x2, y2 + yi, ox, div, tempRed.data(), tempGreen.data(), tempBlue.data());
         }
     } else if (iy < oy) {
         /* scaling by subsampling (grow): */
@@ -541,7 +538,7 @@ static void ScaleIcon(XImage *ImIn, XImage *ImOut, int x1, int y1, int x2, int y
         oy--;
         div *= oy;
         /* get first row: */
-        GetScaledRow(ImIn, x1, y1, ix, ox, nextRed, nextGreen, nextBlue);
+        GetScaledRow(ImIn, x1, y1, ix, ox, nextRed.data(), nextGreen.data(), nextBlue.data());
         /* si and sifrac give the subsampling position: */
         si = y1;
         sifrac = 0;
@@ -556,7 +553,7 @@ static void ScaleIcon(XImage *ImIn, XImage *ImOut, int x1, int y1, int x2, int y
                 }
                 if (yi < oy) {
                     /* only get next row if in same icon */
-                    GetScaledRow(ImIn, x1, si + 1, ix, ox, nextRed, nextGreen, nextBlue);
+                    GetScaledRow(ImIn, x1, si + 1, ix, ox, nextRed.data(), nextGreen.data(), nextBlue.data());
                 }
             }
 
@@ -569,7 +566,7 @@ static void ScaleIcon(XImage *ImIn, XImage *ImOut, int x1, int y1, int x2, int y
             }
 
             /* write row to output image: */
-            PutRGBScan(ImOut, x2, y2 + yi, ox, div, tempRed, tempGreen, tempBlue);
+            PutRGBScan(ImOut, x2, y2 + yi, ox, div, tempRed.data(), tempGreen.data(), tempBlue.data());
 
             /* advance sampling position: */
             sifrac += iy;
@@ -591,7 +588,7 @@ static void ScaleIcon(XImage *ImIn, XImage *ImOut, int x1, int y1, int x2, int y
         si = y1;
         sifrac = 0;
         /* get first input row: */
-        GetScaledRow(ImIn, x1, y1, ix, ox, nextRed, nextGreen, nextBlue);
+        GetScaledRow(ImIn, x1, y1, ix, ox, nextRed.data(), nextGreen.data(), nextBlue.data());
         for (yi = 0; yi < oy; yi++) {
             /* find endpoint of the current output row: */
             ci = si + addWhole;
@@ -609,7 +606,7 @@ static void ScaleIcon(XImage *ImIn, XImage *ImOut, int x1, int y1, int x2, int y
             si++;
             /* add values for whole pixels: */
             while (si < ci) {
-                GetScaledRow(ImIn, x1, si, ix, ox, nextRed, nextGreen, nextBlue);
+                GetScaledRow(ImIn, x1, si, ix, ox, nextRed.data(), nextGreen.data(), nextBlue.data());
                 for (xi = 0; xi < ox; xi++) {
                     tempRed[xi] += nextRed[xi] * oy;
                     tempGreen[xi] += nextGreen[xi] * oy;
@@ -620,7 +617,7 @@ static void ScaleIcon(XImage *ImIn, XImage *ImOut, int x1, int y1, int x2, int y
             /* add fraction of current input row (ending segment): */
             if (yi < oy - 1) {
                 /* only get next row if still in icon: */
-                GetScaledRow(ImIn, x1, si, ix, ox, nextRed, nextGreen, nextBlue);
+                GetScaledRow(ImIn, x1, si, ix, ox, nextRed.data(), nextGreen.data(), nextBlue.data());
             }
             sifrac = cifrac;
             for (xi = 0; xi < ox; xi++) {
@@ -629,7 +626,7 @@ static void ScaleIcon(XImage *ImIn, XImage *ImOut, int x1, int y1, int x2, int y
                 tempBlue[xi] += nextBlue[xi] * sifrac;
             }
             /* write row to output image: */
-            PutRGBScan(ImOut, x2, y2 + yi, ox, div, tempRed, tempGreen, tempBlue);
+            PutRGBScan(ImOut, x2, y2 + yi, ox, div, tempRed.data(), tempGreen.data(), tempBlue.data());
         }
     }
 }
