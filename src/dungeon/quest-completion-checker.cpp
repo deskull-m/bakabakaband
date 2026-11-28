@@ -5,7 +5,6 @@
 #include "grid/grid.h"
 #include "object-enchant/item-apply-magic.h"
 #include "system/creature-entity.h"
-#include "system/deferred-update-requests.h"
 #include "system/dungeon/quest-definition.h"
 #include "system/enums/terrain/terrain-tag.h"
 #include "system/floor/floor-info.h"
@@ -239,7 +238,6 @@ Pos2D QuestCompletionChecker::make_stairs(const bool create_stairs)
 
     msg_print(_("魔法の階段が現れた...", "A magical staircase appears..."));
     set_terrain_id_to_grid(*this->creature_ptr, m_pos, TerrainTag::DOWN_STAIR);
-    DeferredUpdateRequests::get_instance().set_flag(StatusRecalculatingFlag::FLOW);
     return m_pos;
 }
 

@@ -205,13 +205,13 @@ static bool process_door(CreatureEntity &creature, turn_flags *turn_flags_ptr, c
     if (turn_flags_ptr->did_bash_door && (one_in_(2) || is_open || terrain.flags.has(TerrainCharacteristics::GLASS))) {
         cave_alter_feat(creature, pos.y, pos.x, TerrainCharacteristics::BASH);
         if (!monster.is_valid()) {
-            auto &dur = DeferredUpdateRequests::get_instance();
-            dur.set_flag(StatusRecalculatingFlag::FLOW);
+            // モンスターの経路 (FLOW) は cave_alter_feat() 内の set_terrain_id_to_grid() で要求済み。
+            // ここでは地図サブウィンドウの再描画だけ要求する
             static constexpr auto flags = {
                 SubWindowRedrawingFlag::OVERHEAD,
                 SubWindowRedrawingFlag::DUNGEON,
             };
-            dur.set_flags(flags);
+            DeferredUpdateRequests::get_instance().set_flags(flags);
             if (is_original_ap_and_seen(creature, monster)) {
                 monrace.r_behavior_flags.set(MonsterBehaviorType::BASH_DOOR);
             }
@@ -324,13 +324,13 @@ static bool process_post_dig_wall(CreatureEntity &creature, turn_flags *turn_fla
     cave_alter_feat(creature, pos.y, pos.x, TerrainCharacteristics::CAN_DISINTEGRATE);
 
     if (!monster.is_valid()) {
-        auto &dur = DeferredUpdateRequests::get_instance();
-        dur.set_flag(StatusRecalculatingFlag::FLOW);
+        // モンスターの経路 (FLOW) は cave_alter_feat() 内の set_terrain_id_to_grid() で要求済み。
+        // ここでは地図サブウィンドウの再描画だけ要求する
         static constexpr auto flags = {
             SubWindowRedrawingFlag::OVERHEAD,
             SubWindowRedrawingFlag::DUNGEON,
         };
-        dur.set_flags(flags);
+        DeferredUpdateRequests::get_instance().set_flags(flags);
         if (is_original_ap_and_seen(creature, monster)) {
             monrace.r_feature_flags.set(MonsterFeatureType::KILL_WALL);
         }
