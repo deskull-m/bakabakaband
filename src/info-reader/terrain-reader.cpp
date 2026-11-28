@@ -50,8 +50,8 @@ static std::optional<TerrainCharacteristics> parse_terrain_action(std::string_vi
  */
 static ParseErrorType set_terrain_symbol(const nlohmann::json &symbol_obj, TerrainType &terrain)
 {
-    if (symbol_obj.is_null() || !symbol_obj.is_object()) {
-        return ParseErrorType::TOO_FEW_ARGUMENTS;
+    if (!symbol_obj.is_object()) {
+        return symbol_obj.is_null() ? ParseErrorType::TOO_FEW_ARGUMENTS : ParseErrorType::INVALID_TYPE;
     }
 
     const auto &ch_obj = symbol_obj["character"];
@@ -97,18 +97,18 @@ static ParseErrorType set_terrain_generation(const nlohmann::json &generation_ob
         return ParseErrorType::NONE;
     }
     if (!generation_obj.is_object()) {
-        return ParseErrorType::TOO_FEW_ARGUMENTS;
+        return ParseErrorType::INVALID_TYPE;
     }
 
     const auto &changes_obj = generation_obj["changes"];
     if (!changes_obj.is_array()) {
-        return ParseErrorType::TOO_FEW_ARGUMENTS;
+        return changes_obj.is_null() ? ParseErrorType::TOO_FEW_ARGUMENTS : ParseErrorType::INVALID_TYPE;
     }
 
     auto probability_sum = 0;
     for (const auto &change_obj : changes_obj) {
         if (!change_obj.is_object()) {
-            return ParseErrorType::TOO_FEW_ARGUMENTS;
+            return change_obj.is_null() ? ParseErrorType::TOO_FEW_ARGUMENTS : ParseErrorType::INVALID_TYPE;
         }
 
         const auto &terrain_obj = change_obj["terrain"];
@@ -144,8 +144,8 @@ static ParseErrorType set_terrain_generation(const nlohmann::json &generation_ob
  */
 ParseErrorType parse_terrains_json_info(nlohmann::json &element, TerrainReaderSession &session)
 {
-    if (element.is_null() || !element.is_object()) {
-        return ParseErrorType::TOO_FEW_ARGUMENTS;
+    if (!element.is_object()) {
+        return element.is_null() ? ParseErrorType::TOO_FEW_ARGUMENTS : ParseErrorType::INVALID_TYPE;
     }
 
     int id = 0;
@@ -291,7 +291,7 @@ ParseErrorType parse_terrains_json_info(nlohmann::json &element, TerrainReaderSe
     const auto &random_change_obj = element["random_change"];
     if (!random_change_obj.is_null()) {
         if (!random_change_obj.is_object()) {
-            return ParseErrorType::TOO_FEW_ARGUMENTS;
+            return ParseErrorType::INVALID_TYPE;
         }
         if (const auto err = info_set_integer(random_change_obj["prob"], terrain.random_change_prob, true, Range(0, 99999)); !err) {
             return err.error();
@@ -322,7 +322,7 @@ ParseErrorType parse_terrains_json_info(nlohmann::json &element, TerrainReaderSe
     const auto &inter_obj = element["interactions"];
     if (!inter_obj.is_null()) {
         if (!inter_obj.is_object()) {
-            return ParseErrorType::TOO_FEW_ARGUMENTS;
+            return ParseErrorType::INVALID_TYPE;
         }
 
         for (auto it = inter_obj.begin(); it != inter_obj.end(); ++it) {

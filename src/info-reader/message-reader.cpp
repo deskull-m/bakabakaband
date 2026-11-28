@@ -37,7 +37,7 @@ ParseErrorType MessageReader::read() const
 static ParseErrorType set_id_list(const nlohmann::json &id_list_data, std::vector<int> &id_list)
 {
     if (!id_list_data.is_array()) {
-        return ParseErrorType::TOO_FEW_ARGUMENTS;
+        return id_list_data.is_null() ? ParseErrorType::TOO_FEW_ARGUMENTS : ParseErrorType::INVALID_TYPE;
     }
 
     for (const auto &id_data : id_list_data) {
@@ -62,11 +62,14 @@ static ParseErrorType set_id_list(const nlohmann::json &id_list_data, std::vecto
 ParseErrorType MessageReader::set_mon_message() const
 {
     const auto &group_data = this->message_data;
-    const auto message_iter = group_data.find("message");
-    if (message_iter == group_data.end() || !message_iter->is_array()) {
-        return ParseErrorType::TOO_FEW_ARGUMENTS;
+    if (!group_data.is_object()) {
+        return group_data.is_null() ? ParseErrorType::TOO_FEW_ARGUMENTS : ParseErrorType::INVALID_TYPE;
     }
-    const auto &message_array = message_iter.value();
+    const auto &message_array = get_json_value(group_data, "message");
+    // id_list の誤りより先に報告する
+    if (!message_array.is_array()) {
+        return message_array.is_null() ? ParseErrorType::TOO_FEW_ARGUMENTS : ParseErrorType::INVALID_TYPE;
+    }
     auto id_list = std::vector<int>();
 
     const auto id_list_iter = group_data.find("id_list");
@@ -89,11 +92,11 @@ ParseErrorType MessageReader::set_mon_message() const
         }
     }
 
-    if (!message_array.is_array()) {
-        return ParseErrorType::TOO_FEW_ARGUMENTS;
-    }
-
     for (const auto &message : message_array) {
+        if (!message.is_object()) {
+            return message.is_null() ? ParseErrorType::TOO_FEW_ARGUMENTS : ParseErrorType::INVALID_TYPE;
+        }
+
         const auto action = info_read_token(get_json_value(message, "action"), r_info_message_flags);
         if (!action) {
             return action.error();
@@ -118,11 +121,10 @@ ParseErrorType MessageReader::set_mon_message() const
             }
         }
 
-        const auto language_iter = message.find("message");
-        if (language_iter == message.end() || !language_iter->is_object()) {
-            return ParseErrorType::TOO_FEW_ARGUMENTS;
+        const auto &language_list = get_json_value(message, "message");
+        if (!language_list.is_object()) {
+            return language_list.is_null() ? ParseErrorType::TOO_FEW_ARGUMENTS : ParseErrorType::INVALID_TYPE;
         }
-        const auto &language_list = language_iter.value();
 
         const auto &ja_list = language_list.find("ja");
         const auto &en_list = language_list.find("en");

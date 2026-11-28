@@ -552,7 +552,7 @@ ParseErrorType DungeonReader::set_dungeon_description(DungeonDefinition &dungeon
 ParseErrorType DungeonReader::set_dungeon_generation(DungeonDefinition &dungeon, const nlohmann::json &gen_obj)
 {
     if (!gen_obj.is_object()) {
-        return ParseErrorType::TOO_FEW_ARGUMENTS;
+        return gen_obj.is_null() ? ParseErrorType::TOO_FEW_ARGUMENTS : ParseErrorType::INVALID_TYPE;
     }
     try {
         dungeon.mindepth = static_cast<DEPTH>(gen_obj.value("min_depth", 0));
@@ -671,7 +671,7 @@ static tl::optional<ProbabilityTable<short>> build_probability_table_from_tiles(
 ParseErrorType DungeonReader::set_dungeon_floor(DungeonDefinition &dungeon, const nlohmann::json &floor_obj)
 {
     if (!floor_obj.is_object()) {
-        return ParseErrorType::TOO_FEW_ARGUMENTS;
+        return floor_obj.is_null() ? ParseErrorType::TOO_FEW_ARGUMENTS : ParseErrorType::INVALID_TYPE;
     }
     if (!floor_obj.contains("tiles")) {
         return ParseErrorType::TOO_FEW_ARGUMENTS;
@@ -691,7 +691,7 @@ ParseErrorType DungeonReader::set_dungeon_floor(DungeonDefinition &dungeon, cons
 ParseErrorType DungeonReader::set_dungeon_wall(DungeonDefinition &dungeon, const nlohmann::json &wall_obj)
 {
     if (!wall_obj.is_object()) {
-        return ParseErrorType::TOO_FEW_ARGUMENTS;
+        return wall_obj.is_null() ? ParseErrorType::TOO_FEW_ARGUMENTS : ParseErrorType::INVALID_TYPE;
     }
     if (!wall_obj.contains("tiles")) {
         return ParseErrorType::TOO_FEW_ARGUMENTS;
@@ -714,7 +714,10 @@ ParseErrorType DungeonReader::set_dungeon_wall(DungeonDefinition &dungeon, const
     if (wall_obj.contains("streams") && wall_obj["streams"].is_array()) {
         // 新形式: streams: [{ type, count, chance, priority }, ...]
         for (const auto &s_obj : wall_obj["streams"]) {
-            if (!s_obj.is_object() || !s_obj.contains("type")) {
+            if (!s_obj.is_object()) {
+                return s_obj.is_null() ? ParseErrorType::TOO_FEW_ARGUMENTS : ParseErrorType::INVALID_TYPE;
+            }
+            if (!s_obj.contains("type")) {
                 return ParseErrorType::TOO_FEW_ARGUMENTS;
             }
             DungeonStreamDefinition stream;
@@ -767,7 +770,7 @@ ParseErrorType DungeonReader::set_dungeon_final_floor(DungeonDefinition &dungeon
         return ParseErrorType::NONE;
     }
     if (!final_floor_obj.is_object()) {
-        return ParseErrorType::TOO_FEW_ARGUMENTS;
+        return ParseErrorType::INVALID_TYPE;
     }
 
     if (final_floor_obj.contains("guardian")) {
