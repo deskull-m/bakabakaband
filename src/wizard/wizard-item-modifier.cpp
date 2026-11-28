@@ -825,15 +825,16 @@ static std::vector<FixedArtifactId> find_wishing_fixed_artifact(std::string_view
 #endif
         std::string art_description = artifact.name;
 #ifdef JP
-        if (art_description.starts_with("『")) {
-            art_description = art_description.substr(2);
-            if (art_description.ends_with("』")) {
-                art_description = art_description.substr(0, art_description.length() - 2);
+        constexpr std::string_view open_quote = "『";
+        constexpr std::string_view close_quote = "』";
+        constexpr std::string_view particle_no = "の";
+        if (art_description.starts_with(open_quote)) {
+            art_description = art_description.substr(open_quote.length());
+            if (art_description.ends_with(close_quote)) {
+                art_description = art_description.substr(0, art_description.length() - close_quote.length());
             }
-        } else {
-            if (art_description.ends_with("の")) {
-                art_description = art_description.substr(0, art_description.length() - 2);
-            }
+        } else if (art_description.ends_with(particle_no)) {
+            art_description = art_description.substr(0, art_description.length() - particle_no.length());
         }
 #else
         if (art_description.starts_with('\'')) {
@@ -857,7 +858,8 @@ static std::vector<FixedArtifactId> find_wishing_fixed_artifact(std::string_view
         }
 #endif
         //!< 先頭の「★」(日本語)、「The 」(英語)を除去する.
-        const auto match_name = item_name.substr(_(2, 4));
+        constexpr std::string_view full_name_prefix = _("★", "The ");
+        const auto match_name = item_name.substr(full_name_prefix.length());
         if (cheat_xtra) {
             msg_print("Matching artifact No.{} {}({})", enum2i(fa_id), art_description, match_name);
         }
