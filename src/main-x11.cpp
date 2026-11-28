@@ -934,6 +934,28 @@ static void Infofnt_text_std_xft(int x, int y, int len, const XftColor &fg, cons
 }
 #endif
 
+/*!
+ * @brief ビットマップフォントで描く文字の背景を、セルの高さいっぱいに塗る
+ * @param x 左端 (画素)
+ * @param y 上端 (画素)
+ * @param width 幅 (画素)
+ * @details XmbDrawImageString() は、文字ごとに使うフォント自身の大きさの分しか背景を塗らない。
+ * セルの高さはフォントセットの中で最も高いフォントに、幅は最も広いフォントに合わせてあるので、
+ * 低いフォントや狭いフォントの文字ではセルの下や右が塗られず、タイルなど前に描いたものが残る。
+ * そこで背景はこの関数で塗り、文字は XmbDrawString() で描く。
+ */
+static void fill_text_background(int x, int y, int width)
+{
+    static GC gc = nullptr;
+    if (gc == nullptr) {
+        XGCValues gcv{};
+        gcv.graphics_exposures = False;
+        gc = XCreateGC(Metadpy->dpy, Metadpy->root, GCGraphicsExposures, &gcv);
+    }
+    XSetForeground(Metadpy->dpy, gc, Infoclr->bg.pixel);
+    XFillRectangle(Metadpy->dpy, Infowin->win, gc, x, y, width, Infofnt->hgt);
+}
+
 /*
  * Standard Text
  */
@@ -979,7 +1001,8 @@ static errr Infofnt_text_std(int x, int y, concptr str, int len)
             /* unreachable when XFT not compiled */
 #endif
         } else {
-            XmbDrawImageString(Metadpy->dpy, Infowin->win, Infofnt->fontset_info, Infoclr->gc, x, y, _(utf8_buf, str), _(utf8_len, len));
+            fill_text_background(x, y - Infofnt->asc, len * Infofnt->wid);
+            XmbDrawString(Metadpy->dpy, Infowin->win, Infofnt->fontset_info, Infoclr->gc, x, y, _(utf8_buf, str), _(utf8_len, len));
         }
     }
 
