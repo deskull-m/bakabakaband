@@ -58,9 +58,6 @@ void check_random_quest_auto_failure(CreatureEntity &creature)
  * @brief 10ゲームターンが進行するごとに帰還の残り時間カウントダウンと発動を処理する。
  * / Handle involuntary movement once every 10 game turns
  * @param creature クリーチャーへの参照
- * @details
- * Autosave BEFORE resetting the recall counter (rr9)
- * The creature is yanked up/down as soon as he loads the autosaved game.
  */
 void execute_recall(CreatureEntity &creature)
 {
@@ -69,14 +66,14 @@ void execute_recall(CreatureEntity &creature)
         return;
     }
 
-    if (autosave_l && (recall == 1) && !AngbandSystem::get_instance().is_phase_out()) {
-        do_cmd_save_game(creature, true);
-    }
-
     creature.set_timed_effect(CreatureTimedEffect::WORD_RECALL, recall - 1);
     DeferredUpdateRequests::get_instance().set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
     if (creature.get_timed_effect(CreatureTimedEffect::WORD_RECALL) != 0) {
         return;
+    }
+
+    if (autosave_l && !AngbandSystem::get_instance().is_phase_out()) {
+        request_auto_save();
     }
 
     disturb(creature, false, true);
@@ -154,10 +151,6 @@ void execute_floor_reset(CreatureEntity &creature)
         return;
     }
 
-    if (autosave_l && (alter == 1) && !AngbandSystem::get_instance().is_phase_out()) {
-        do_cmd_save_game(creature, true);
-    }
-
     creature.set_timed_effect(CreatureTimedEffect::ALTER_REALITY, alter - 1);
     DeferredUpdateRequests::get_instance().set_flag(MainWindowRedrawingFlag::TIMED_EFFECT);
     if (creature.get_timed_effect(CreatureTimedEffect::ALTER_REALITY) != 0) {
@@ -166,6 +159,10 @@ void execute_floor_reset(CreatureEntity &creature)
 
     disturb(creature, false, true);
     if (!inside_quest(floor.get_quest_id()) && floor.is_underground()) {
+        if (autosave_l && !AngbandSystem::get_instance().is_phase_out()) {
+            request_auto_save();
+        }
+
         msg_print(_("世界が変わった！", "The world changes!"));
 
         /* 時空崩壊度進行 */

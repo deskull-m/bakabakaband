@@ -146,10 +146,6 @@ void do_cmd_go_up(CreatureEntity &creature)
 
     PlayerEnergy(creature).set_player_turn_energy(100);
 
-    if (autosave_l) {
-        do_cmd_save_game(creature, true);
-    }
-
     const auto quest_number = floor.quest_number;
     auto &quest = quests.get_quest(quest_number);
 
@@ -207,6 +203,11 @@ void do_cmd_go_up(CreatureEntity &creature)
     }
 
     sound(SoundKind::STAIRWAY);
+
+    // 新しい階に移ってから自動セーブする (ここで即座にセーブすると元の階が保存される)
+    if (autosave_l) {
+        request_auto_save();
+    }
 
     creature.set_leaving(true);
 }
@@ -308,9 +309,6 @@ void do_cmd_go_down(CreatureEntity &creature)
     }
 
     PlayerEnergy(creature).set_player_turn_energy(100);
-    if (autosave_l) {
-        do_cmd_save_game(creature, true);
-    }
 
     auto down_num = 0;
     if (terrain.flags.has(TerrainCharacteristics::SHAFT)) {
@@ -363,6 +361,11 @@ void do_cmd_go_down(CreatureEntity &creature)
         }
 
         sound(SoundKind::STAIRWAY);
+    }
+
+    // 新しい階に移ってから自動セーブする (ここで即座にセーブすると元の階が保存される)
+    if (autosave_l) {
+        request_auto_save();
     }
 
     creature.set_leaving(true);
@@ -605,9 +608,9 @@ void do_cmd_go_portal(CreatureEntity &creature)
     // エネルギー消費
     PlayerEnergy(creature).set_player_turn_energy(100);
 
-    // オートセーブ
+    // オートセーブ (新しい階に移ってから実際に行う)
     if (autosave_l) {
-        do_cmd_save_game(creature, true);
+        request_auto_save();
     }
 
     // 階層移動処理
