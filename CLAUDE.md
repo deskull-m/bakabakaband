@@ -186,6 +186,35 @@ if (total > (std::numeric_limits<int>::max)()) {
   なお `src/external-lib/include/xoshiro.h` は素で書いているが、
   現行の include 経路では `windows.h` より先に読まれるため顕在化していない。
 
+#### 素の値を並べる CTAD の `std::array` (MSVC)
+
+`std::array` のテンプレート引数を省略 (CTAD) して**素の値を並べる**と、`std::array` 内部の
+`_Elems` へのブレース省略にあたり **`C5246`** になる (`/Wall` + `-warnAsError` で
+`C2220` に昇格して即失敗)。**型を明示して二重波括弧で書くこと**。
+
+```cpp
+// NG: C5246 '_Elems': サブオブジェクトの初期化は中かっこで囲む必要があります
+constexpr std::array edges = { FloorEdge::NORTH, FloorEdge::SOUTH, FloorEdge::WEST, FloorEdge::EAST };
+
+// OK: CTAD では二重波括弧が書けないので型を明記する
+constexpr std::array<FloorEdge, 4> edges = { { FloorEdge::NORTH, FloorEdge::SOUTH, FloorEdge::WEST, FloorEdge::EAST } };
+```
+
+- **要素が関数呼出なら CTAD のままでよい**。`wizard/` のメニュー表 4 件
+  (`debug_menu_table` 等) は要素が `std::make_tuple(...)` でブレース省略が起きないため
+  警告は出ない (実コンパイルで確認済)。**引っかかるのは列挙値のような素の値を並べた場合だけ**。
+- 二重波括弧の既存例は `src/artifact/random-art-misc.cpp` / `src/floor/geometry.h` 等。
+- **テストプロジェクトも同じ `Bakabakaband.Common.props` を import している**ので、
+  `src/test/` 側に同じ書き方があれば一緒に直すこと。
+
+#### `ranges::to_vector` は宣言ヘッダを直接 include する (MSVC IntelliSense)
+
+`rng | ranges::views::filter(...) | ranges::to_vector` の形は、`<range/v3/view.hpp>` だけだと
+`to_vector` の宣言 (`<range/v3/range/conversion.hpp>`) が推移的 include 頼みになり、
+**IntelliSense が `E0349` (`|` のオペランド不一致) を出す**。`auto` の型が壊れるため
+後続行に `E0304` (関数の引数不一致) が連鎖する。**実コンパイラは通る**が、
+使っている宣言は直接 include すること (`src/floor/floor-object.cpp` が明示 include の例)。
+
 ---
 
 ## 統合ロードマップ進捗
