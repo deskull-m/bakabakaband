@@ -90,3 +90,18 @@ TEST_CASE("WildernessReader validates layout dimensions and symbols")
     definition = {};
     CHECK(WildernessReader(data).read(definition) != ParseErrorType::NONE);
 }
+
+TEST_CASE("WildernessReader reports map size overflow as out of bounds")
+{
+    // 荒野の幅を超える行は範囲外エラー (クエスト地図と同じ扱い)。
+    auto data = make_definition();
+    data["maps"]["normal"]["layout"][1] = "####";
+    WildernessDefinition definition;
+    CHECK(WildernessReader(data).read(definition) == ParseErrorType::OUT_OF_BOUNDS);
+
+    // 荒野の高さを超える行数も範囲外エラー。
+    data = make_definition();
+    data["maps"]["normal"]["layout"].push_back("###");
+    definition = {};
+    CHECK(WildernessReader(data).read(definition) == ParseErrorType::OUT_OF_BOUNDS);
+}
