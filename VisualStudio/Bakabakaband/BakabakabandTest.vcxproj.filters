@@ -296,6 +296,9 @@
     <ClCompile Include="..\..\src\test\system\monrace\test-monrace-max-level.cpp">
       <Filter>system\monrace</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\test\term\test-gameterm.cpp">
+      <Filter>term</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\src\test\term\test-z-rand.cpp">
       <Filter>term</Filter>
     </ClCompile>
