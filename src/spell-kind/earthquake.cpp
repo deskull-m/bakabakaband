@@ -34,6 +34,7 @@
 #include <range/v3/algorithm.hpp>
 #include <range/v3/view.hpp>
 #include <span>
+#include <vector>
 
 namespace {
 std::vector<Pos2D> get_earthquake_area(FloorType &floor, const Pos2D &center, int radius)
@@ -341,7 +342,7 @@ bool earthquake(CreatureEntity &creature, const Pos2D &center, int radius, MONST
     process_hit_to_monsters(creature, pos_collapses);
 
     // プレイヤーが避けられなかった場合でも壁と重ならないようにする
-    ranges::remove(pos_collapses, creature.get_position());
+    std::erase(pos_collapses, creature.get_position());
 
     destruct_earthquake_area(creature, pos_collapses);
     glow_earthquake_area(floor, earthquake_area);
