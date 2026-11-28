@@ -691,9 +691,10 @@ void PlayerType::on_death(std::string_view cause)
         term_putstr(petal_x, petal_y, 2, TERM_VIOLET, "υ");
     }
 
+    constexpr std::string_view open_quote = "「";
     auto str = death_message.data();
-    if (strncmp(str, "「", 2) == 0) {
-        str += 2;
+    if (death_message.starts_with(open_quote)) {
+        str += open_quote.length();
     }
 
     auto *str2 = angband_strstr(str, "」");
