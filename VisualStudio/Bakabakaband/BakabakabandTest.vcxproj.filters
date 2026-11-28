@@ -10,6 +10,9 @@
     <Filter Include="cmd-io">
       <UniqueIdentifier>{e069960f-7c8e-4a93-b43d-36b2f719cb12}</UniqueIdentifier>
     </Filter>
+    <Filter Include="core">
+      <UniqueIdentifier>{d3a7f1c8-2b94-4e6a-9c1d-5e8f0a3b7c42}</UniqueIdentifier>
+    </Filter>
     <Filter Include="flavor">
       <UniqueIdentifier>{27234def-7b61-4fe4-87e9-ea3c9d42f09d}</UniqueIdentifier>
     </Filter>
@@ -135,6 +138,12 @@
     </ClCompile>
     <ClCompile Include="..\..\src\test\cmd-io\test-cmd-autopick.cpp">
       <Filter>cmd-io</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\test\core\test-score-file.cpp">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\test\core\test-score-util.cpp">
+      <Filter>core</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\test\info-reader\test-ego-reader.cpp">
       <Filter>info-reader</Filter>
@@ -341,6 +350,7 @@
     <ClInclude Include="..\..\src\test\scoped-ego-list.h" />
     <ClInclude Include="..\..\src\test\scoped-vector-wrapper.h" />
     <ClInclude Include="..\..\src\test\string-helpers.h" />
+    <ClInclude Include="..\..\src\test\temporary-json-files.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\test\info-reader\scoped-reader-state.h">

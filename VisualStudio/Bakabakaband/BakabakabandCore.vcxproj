@@ -176,6 +176,7 @@
     <ClCompile Include="..\..\src\action\movement-execution.cpp" />
     <ClCompile Include="..\..\src\cmd-io\cmd-text-command.cpp" />
     <ClCompile Include="..\..\src\combat\martial-arts-style.cpp" />
+    <ClCompile Include="..\..\src\core\score-file.cpp" />
     <ClCompile Include="..\..\src\core\score-util.cpp" />
     <ClCompile Include="..\..\src\info-reader\party-reader.cpp" />
     <ClCompile Include="..\..\src\io-dump\player-status-dump-json.cpp" />
@@ -1166,6 +1167,7 @@
     <ClInclude Include="..\..\src\cmd-action\cmd-travel.h" />
     <ClInclude Include="..\..\src\cmd-action\cmd-tunnel.h" />
     <ClInclude Include="..\..\src\action\movement-execution.h" />
+    <ClInclude Include="..\..\src\core\score-file.h" />
     <ClInclude Include="..\..\src\core\score-util.h" />
     <ClInclude Include="..\..\src\dungeon\dungeon-flag-mask.h" />
     <ClInclude Include="..\..\src\knowledge\knowledge-incident.h" />
@@ -1836,6 +1838,7 @@
     <ClCompile Include="..\..\src\grid\grid.cpp" />
     <ClCompile Include="..\..\src\locale\localized-string.cpp" />
     <ClCompile Include="..\..\src\locale\japanese.cpp" />
+    <ClCompile Include="..\..\src\locale\multibyte-char.cpp" />
     <ClCompile Include="..\..\src\locale\character-encoding.cpp" />
     <ClCompile Include="..\..\src\load\load.cpp" />
     <ClCompile Include="..\..\src\cmd-action\cmd-mind.cpp" />
@@ -2095,6 +2098,7 @@
     <ClInclude Include="..\..\src\world\world-turn-processor.h" />
     <ClInclude Include="..\..\src\locale\localized-string.h" />
     <ClInclude Include="..\..\src\locale\japanese.h" />
+    <ClInclude Include="..\..\src\locale\multibyte-char.h" />
     <ClInclude Include="..\..\src\combat\aura-counterattack.h" />
     <ClInclude Include="..\..\src\wizard\tval-descriptions-table.h" />
     <ClInclude Include="..\..\src\load\quest-loader.h" />

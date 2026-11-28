@@ -51,6 +51,7 @@ find $RPM_BUILD_ROOT/%{_datadir}/games/hengband/ -type f -name "delete.me*" -exe
 find $RPM_BUILD_ROOT/%{_datadir}/games/hengband/ -name ".git*" -exec rm -rf {} \;
 rm -rf $RPM_BUILD_ROOT/%{_datadir}/games/hengband/lib/xtra/{sound,music}
 touch $RPM_BUILD_ROOT/%{_datadir}/games/hengband/lib/apex/scores.raw
+touch $RPM_BUILD_ROOT/%{_datadir}/games/hengband/lib/apex/scores.json
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -79,9 +80,11 @@ exit 0
 %dir %{_datadir}/games/hengband/lib/user
 %dir %{_datadir}/games/hengband/lib/xtra
 %dir %{_datadir}/games/hengband/lib/xtra/graf
-%{_datadir}/games/hengband/lib/apex/h_scores.raw
+%{_datadir}/games/hengband/lib/apex/h_scores.json
 %{_datadir}/games/hengband/lib/apex/readme.txt
+# 前の版のスコアファイル。更新したときに消えると scores.json に記録を移せないので残す
 %attr(664 root,games) %config(noreplace) %{_datadir}/games/hengband/lib/apex/scores.raw
+%attr(664 root,games) %config(noreplace) %{_datadir}/games/hengband/lib/apex/scores.json
 %{_datadir}/games/hengband/lib/edit/*.txt
 %{_datadir}/games/hengband/lib/edit/quests/*.jsonc
 %{_datadir}/games/hengband/lib/edit/towns/*.txt
