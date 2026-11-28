@@ -56,20 +56,24 @@ PERCENTAGE randrate(int dice, int fix, rate_calc_type_mode mode)
 }
 
 /*!
- * @brief 酸属性攻撃に対するダメージ倍率計算
+ * @brief 酸・電撃・火炎・冷気の攻撃に対するダメージ倍率計算
+ * @param immune 免疫の要因のフラグ (FLAG_CAUSE_*)
+ * @param vuln 弱点の要因のフラグ (FLAG_CAUSE_*)
+ * @param resist 耐性の要因のフラグ (FLAG_CAUSE_*)
+ * @param oppose 一時耐性があるか
+ * @return ダメージ倍率 (%)
+ * @details 免疫があれば 0。弱点の要因ごとに、突然変異なら 2 倍、それ以外なら 4/3 倍する。
+ * その後、耐性と一時耐性でそれぞれ 1/3 にする (切り上げ)。
  */
-PERCENTAGE calc_acid_damage_rate(CreatureEntity &creature)
+static PERCENTAGE calc_basic_element_damage_rate(BIT_FLAGS immune, BIT_FLAGS vuln, BIT_FLAGS resist, bool oppose)
 {
-    PERCENTAGE per = 100;
-
-    if (creature.has_immune_acid()) {
+    if (immune) {
         return 0;
     }
 
-    BIT_FLAGS flags = creature.has_vuln_acid();
-
+    PERCENTAGE per = 100;
     for (BIT_FLAGS check_flag = 0x01U; check_flag < FLAG_CAUSE_MAX; check_flag <<= 1) {
-        if (any_bits(flags, check_flag)) {
+        if (any_bits(vuln, check_flag)) {
             if (check_flag == FLAG_CAUSE_MUTATION) {
                 per *= 2;
             } else {
@@ -78,14 +82,22 @@ PERCENTAGE calc_acid_damage_rate(CreatureEntity &creature)
         }
     }
 
-    if (creature.has_resist_acid()) {
+    if (resist) {
         per = (per + 2) / 3;
     }
-    if (is_oppose_acid(creature)) {
+    if (oppose) {
         per = (per + 2) / 3;
     }
 
     return per;
+}
+
+/*!
+ * @brief 酸属性攻撃に対するダメージ倍率計算
+ */
+PERCENTAGE calc_acid_damage_rate(CreatureEntity &creature)
+{
+    return calc_basic_element_damage_rate(creature.has_immune_acid(), creature.has_vuln_acid(), creature.has_resist_acid(), is_oppose_acid(creature));
 }
 
 /*!
@@ -93,31 +105,7 @@ PERCENTAGE calc_acid_damage_rate(CreatureEntity &creature)
  */
 PERCENTAGE calc_elec_damage_rate(CreatureEntity &creature)
 {
-    PERCENTAGE per = 100;
-
-    if (creature.has_immune_elec()) {
-        return 0;
-    }
-
-    BIT_FLAGS flags = creature.has_vuln_elec();
-    for (BIT_FLAGS check_flag = 0x01U; check_flag < FLAG_CAUSE_MAX; check_flag <<= 1) {
-        if (any_bits(flags, check_flag)) {
-            if (check_flag == FLAG_CAUSE_MUTATION) {
-                per *= 2;
-            } else {
-                per += per / 3;
-            }
-        }
-    }
-
-    if (creature.has_resist_elec()) {
-        per = (per + 2) / 3;
-    }
-    if (is_oppose_elec(creature)) {
-        per = (per + 2) / 3;
-    }
-
-    return per;
+    return calc_basic_element_damage_rate(creature.has_immune_elec(), creature.has_vuln_elec(), creature.has_resist_elec(), is_oppose_elec(creature));
 }
 
 /*!
@@ -125,32 +113,7 @@ PERCENTAGE calc_elec_damage_rate(CreatureEntity &creature)
  */
 PERCENTAGE calc_fire_damage_rate(CreatureEntity &creature)
 {
-    PERCENTAGE per = 100;
-
-    if (creature.has_immune_fire()) {
-        return 0;
-    }
-
-    BIT_FLAGS flags = creature.has_vuln_fire();
-    for (BIT_FLAGS check_flag = 0x01U; check_flag < FLAG_CAUSE_MAX; check_flag <<= 1) {
-        if (any_bits(flags, check_flag)) {
-            if (check_flag == FLAG_CAUSE_MUTATION) {
-                per *= 2;
-            } else {
-                per += per / 3;
-            }
-        }
-    }
-
-    /* Resist the damage */
-    if (creature.has_resist_fire()) {
-        per = (per + 2) / 3;
-    }
-    if (is_oppose_fire(creature)) {
-        per = (per + 2) / 3;
-    }
-
-    return per;
+    return calc_basic_element_damage_rate(creature.has_immune_fire(), creature.has_vuln_fire(), creature.has_resist_fire(), is_oppose_fire(creature));
 }
 
 /*!
@@ -166,31 +129,7 @@ PERCENTAGE calc_plasma_damage_rate(CreatureEntity &creature)
  */
 PERCENTAGE calc_cold_damage_rate(CreatureEntity &creature)
 {
-    PERCENTAGE per = 100;
-
-    if (creature.has_immune_cold()) {
-        return 0;
-    }
-
-    BIT_FLAGS flags = creature.has_vuln_cold();
-    for (BIT_FLAGS check_flag = 0x01U; check_flag < FLAG_CAUSE_MAX; check_flag <<= 1) {
-        if (any_bits(flags, check_flag)) {
-            if (check_flag == FLAG_CAUSE_MUTATION) {
-                per *= 2;
-            } else {
-                per += per / 3;
-            }
-        }
-    }
-
-    if (creature.has_resist_cold()) {
-        per = (per + 2) / 3;
-    }
-    if (is_oppose_cold(creature)) {
-        per = (per + 2) / 3;
-    }
-
-    return per;
+    return calc_basic_element_damage_rate(creature.has_immune_cold(), creature.has_vuln_cold(), creature.has_resist_cold(), is_oppose_cold(creature));
 }
 
 /*!
